@@ -3,10 +3,10 @@
 A junction detail is a live section cut. Where a wall's skin stops is **not** decided here —
 ``resolve/roof_edge.py`` has already built the answer as real per-layer closure members,
 positioned by ``roof_edge_geometry.mating_faces`` and ``roof_height_at``, and the section
-slices them like any other geometry. This module used to invent a second answer (a
-``_WEDGE_GAP_M`` of 0.05 m, a ``_DRIP_M`` of 0.04, and its own transcription of the roof
-plane), and the drawing believed the wrong one: the wall's continuous insulation was
-terminated below its own plate and the spray-foam wedge landed inside the wall.
+slices them like any other geometry. A second, model-independent answer here — fixed wedge
+and drip constants plus its own transcription of the roof plane — can disagree with the real
+one: the wall's continuous insulation terminating below its own plate, the spray-foam wedge
+landing inside the wall.
 
 So the default joint plan is **empty**. ``terminations`` survives for ``_apply_authored_join``
 alone, because an authored ``LayerJoin`` on a matched ``Transition`` is a genuine
@@ -103,17 +103,13 @@ def _spray_foam_wedge(plan: JointPlan, model, wall: ResolvedWall, roof: Resolved
     Catlin's eave note asks for exactly this: *"leave the angled mismatch between roof foam
     and wall foam; fill with closed-cell spray polyurethane foam."* Sprayed foam is the one
     thing at this junction with no solid anywhere in the model, so it is genuinely 2D-only
-    linework — but its bounds are not, and they are what the old version got wrong.
+    linework — but its bounds must still come from real geometry, not a convention.
 
     ``roof_edge`` carries each wall skin layer up to *its own* face in the roof stack, at
     that layer's own plan offset. The roof plane falls as it runs outboard, so the closure
     bands' tops step down while the plane between them slopes: the void is the sawtooth
     between the two. That is the mismatch, and it is a consequence of the resolver's own
     geometry rather than of a convention.
-
-    The old version invented a 2" gap under a "roof underside" it computed by summing the
-    *whole* assembly, which on catlin's 19.86"-deep nailbase roof put that plane 8" below
-    the top plate — and the wedge with it, inside the wall, under the plate.
     """
     bands = _closure_band_tops(model, roof, wall,
                                CutPlane(axis=direction, station_m=station), "insulation")

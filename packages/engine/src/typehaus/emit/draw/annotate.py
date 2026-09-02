@@ -95,10 +95,10 @@ class PlacedLabel:
 def text_extent(text: str, height_pt: float) -> tuple[float, float]:
     """Estimated (width, height) of a text block, **points** — what it prints as.
 
-    This is the line the whole paper-space change turns on. Lettering is a printed size, so
-    its extent is a paper measurement; converting to model inches is the caller's problem
-    and depends on the scale the sheet chose. Estimating in model inches instead is what let
-    the ladder reserve room for a 1.6" label and then print a 3" one.
+    Lettering is a printed size, so its extent is a paper measurement; converting to model
+    inches is the caller's problem and depends on the scale the sheet chose. Estimating in
+    model inches instead would let the ladder reserve room for a 1.6" label and print a 3"
+    one.
     """
     lines = text.split("\n")
     width = max(len(line) for line in lines) * height_pt * _CHAR_ASPECT

@@ -47,10 +47,10 @@ from typehaus.resolve.geometry import opening_center, rect_between, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
 #: The placeable domains an ARCHITECTURAL plan draws. Electrical (``E-POWR``) and mechanical
-#: (``M-EQPT``) devices are drawn here only because ``emit_fixtures`` used to be called with
-#: no filter at all, and they have their own sheets — E-10x, E-20x and M-10x already build
-#: from the same resolved objects. Leaving them on A-1xx put ~90 ``ED-T-LT-CAN4`` and
-#: ``REG-T-ERV-SUP`` glyphs over catlin's main-floor room plan.
+#: (``M-EQPT``) devices are excluded even though ``emit_fixtures`` can draw them: they have
+#: their own sheets — E-10x, E-20x and M-10x already build from the same resolved objects —
+#: and without this filter ~90 ``ED-T-LT-CAN4`` and ``REG-T-ERV-SUP`` glyphs land over
+#: catlin's main-floor room plan.
 ARCHITECTURAL_DOMAINS = frozenset({"plumbing", "appliance", "furniture"})
 
 
@@ -197,13 +197,11 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     in 2D. Same dedupe idiom as ``_emit_stairs``: sort for a stable draw order, then skip
     an outline that coincides with one already drawn.
 
-    A FLOOR SYSTEM'S DECK SHEET COUNTS, not only a Slab. Both exterior decks used to be a
-    ``datum="walking_surface"`` Slab sitting on top of a FloorSystem's joists, and both
-    became that FloorSystem's ``subfloor`` instead (SL-SG-PORCH in 3bf2f48, SL-SG-DECK and
-    SL-BW-DECK on 2026-08-22) — which is the right model and took the deck straight back
-    out of this drawing, because a subfloor sheet is not a solid. Reading ``model.floors``
-    beside ``model.solids`` is what keeps the conversion a modelling change rather than a
-    silent regression in the 2D set.
+    A FLOOR SYSTEM'S DECK SHEET COUNTS, not only a Slab. An exterior deck modelled as a
+    FloorSystem's ``subfloor`` (rather than a ``datum="walking_surface"`` Slab on top of its
+    joists) is the right model, but a subfloor sheet is not a solid, so it drops straight out
+    of this drawing. Reading ``model.floors`` beside ``model.solids`` is what keeps that a
+    modelling change rather than a silent regression in the 2D set.
     """
     seen_outlines: set[tuple[tuple[float, float], ...]] = set()
     rooms = [Polygon(room.clear_face) for room in model.rooms
@@ -399,12 +397,6 @@ def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
       says it. What the infill **is** belongs on the section, and ``emit/draw/section.py``
       already cuts ``model.solids`` unfiltered, so a picket, a cable and a glass lite each
       appear there at their true section and with their own material hatch.
-
-    Two alternatives were considered and rejected, so nobody has to re-litigate them: a tag
-    substring test (``-BAL``/``-PANEL``) string-sniffs a naming format the resolver owns and
-    breaks silently the day it changes; an outline-area threshold cannot separate them —
-    a 3/4" picket and a 1-1/2" post are only 4.5x apart in area, which is inside the range
-    one house's post sizes already span.
     """
     seen: set[tuple[tuple[float, float], ...]] = set()
     for solid in (s for s in model.solids

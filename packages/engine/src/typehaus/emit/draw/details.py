@@ -200,12 +200,9 @@ def _dimension_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
 def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     """Title block and material legend — in **paper space**, in the card's own bands.
 
-    They used to be measured off the current scene bounds, *including the width text
-    occupies*, so that each could be placed clear of the cut and its callouts. That is a
-    layering violation with a real cost: it imported the private ``pdf_writer._scene_bounds``
-    into the detail builder, and it made the drawing's extent depend on its own annotation,
-    which then depended on the extent. Bands cut the loop — a title strip is 0.9 paper inches
-    tall because the card says so, and no drawing can argue with it.
+    Measuring off scene bounds would import the private ``pdf_writer._scene_bounds`` and
+    make the drawing's extent depend on its own annotation. Bands cut that loop — a title
+    strip is 0.9 paper inches tall because the card says so.
 
     A frameless scene keeps the old model-space placement, because it has no bands to use.
     """

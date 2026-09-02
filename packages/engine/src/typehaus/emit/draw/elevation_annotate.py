@@ -4,13 +4,13 @@ Split out of :mod:`elevation` when that module went past the 500-line ceiling
 (``AGENTS.md`` §1.1). Everything here is *sheet* work rather than *building* work: where the
 ground goes, what the facade is made of, and what the horizontal datums are called.
 
-The layout rule these three share is that nothing places itself blind. The material callouts
-used to stagger a fixed 0.9 m down from each wall top and pile up on this house; the datum
-labels used to print at whatever elevation the storey happened to sit at, so GRADE, GARAGE
-FLOOR and MAIN FLOOR — inches apart here — printed on top of one another. They are one
-column now, sized in model inches, boxed with air, and run through :func:`annotate.dodge`
-against each other. A label that has been dodged off its own datum keeps a leader back to
-the marker, which is why these are ``Leader`` nodes and not bare ``Text``.
+The layout rule these three share is that nothing places itself blind: a fixed stagger from
+each wall top piles material callouts on this house, and GRADE, GARAGE FLOOR and MAIN
+FLOOR — inches apart here — would print on top of one another at their raw elevations. They
+are one column instead, sized in model inches, boxed with air, and run through
+:func:`annotate.dodge` against each other. A label that has been dodged off its own datum
+keeps a leader back to the marker, which is why these are ``Leader`` nodes and not bare
+``Text``.
 
 Two halves of this are **not** elevation-specific and are public for that reason: the
 grade profile's sampled points (:func:`grade_profile_points`, :func:`emit_grade_hatch`)
@@ -56,8 +56,8 @@ _CAPTURE_BAND_M = 3.048  # 10'
 _EXTEND_M = 0.6096  # 24"
 
 #: Annotation lettering, model inches. An elevation is the largest drawing in the set —
-#: forty feet across — so the 2.5" the callouts used to author rasterises to about three
-#: pixels in ``haus render``. Sized here rather than inherited so the dodge boxes and the
+#: forty feet across — so a smaller size (2.5") rasterises to about three pixels in
+#: ``haus render``. Sized here rather than inherited so the dodge boxes and the
 #: printed glyphs are the same number.
 ANNO_HEIGHT_IN = 4.0
 
@@ -184,11 +184,9 @@ def emit_sheet_annotations(b: SceneBuilder, model: ResolvedModel,
                            facade_pieces: list[VisiblePiece], edge_u: float) -> None:
     """Material callouts and the level datum string, laid out once and dodged together.
 
-    Both used to place themselves blind — the callouts on a fixed 0.9 m stagger from each
-    wall top, the level labels at whatever elevation the storey happened to sit at — so on
-    this house the callouts piled up and GRADE, MAIN FLOOR and GARAGE FLOOR printed on top of
-    one another. They are one column now: merged, stacked, and run through
-    :func:`annotate.dodge` against each other.
+    Placed blind — a fixed stagger for callouts, raw elevation for level labels — GRADE,
+    MAIN FLOOR and GARAGE FLOOR print on top of one another on this house. One column
+    instead: merged, stacked, and run through :func:`annotate.dodge` against each other.
     """
     height_pt = ANNO_HEIGHT_IN / annotate.model_in_per_pt(None)
     levels = merged_levels(model)

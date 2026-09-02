@@ -1,10 +1,10 @@
 """Cladding expression on an elevation — the outermost visible layer's own module.
 
-``ResolvedLayer`` has carried ``material_ref`` since it existed and ``board_run`` (which way
-the boards of a board finish run) since 2026-08-25, and neither had ever reached an elevation:
-the facade came out as a bare outline that could not tell a standing-seam wall from a brick
-one. This module draws the module lines a reader identifies the material by — the panel joint,
-the course band, the board line — clipped to whatever of that element is actually visible.
+``ResolvedLayer`` carries ``material_ref`` and ``board_run`` (which way the boards of a board
+finish run), but neither reaches an elevation on its own: without this module the facade is a
+bare outline that cannot tell a standing-seam wall from a brick one. This module draws the
+module lines a reader identifies the material by — the panel joint, the course band, the
+board line — clipped to whatever of that element is actually visible.
 
 What it draws and what it deliberately does not
 -----------------------------------------------

@@ -79,9 +79,9 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     the slab's own underside (RM-M-BATH2's tub-deck cap on its knee walls). All three are
     structural decks and are drawn on the framing sheets instead.
 
-    The wall case joined the other two on 2026-08-29 and is the same argument each time:
-    ``Slab`` is the model's only horizontal-sheet element that can leave its storey datum, so
-    it carries laid decking and framed platforms as well as flatwork, and this sheet must
+    All three clauses share one argument: ``Slab`` is the model's only horizontal-sheet
+    element that can leave its storey datum, so it carries laid decking and framed
+    platforms as well as flatwork, and this sheet must
     print only what actually bears on the ground. Elevation alone will not separate them —
     SL-G-STEP-0 is a real 6" pour 6" above its datum — so the test is "does the model show
     something under it", which is what the other two clauses already ask.
@@ -384,10 +384,10 @@ def _lowest_adjacent_grade_notes(model: ResolvedModel, frost_depth_in: float) ->
              + " IS THE FLOOR OF "
              + ", ".join(sorted({source for _, _, source in shallow}))
              + ", NOT THE SITE GRADE PLANE."]
-    # Two different frost measures answer this condition and they carry different citations.
-    # The note used to put all of it under R403.3, which was true of the house strips on the
-    # wing insulation and false of the garden's, whose protection is the graded stone section
-    # beneath them — a wrong citation on the sheet an inspector reads off.
+    # Two different frost measures answer this condition and they carry different citations:
+    # R403.3 for the house strips' wing insulation, but the garden's protection is the graded
+    # stone section beneath it, not R403.3 — a blanket citation is wrong on the sheet an
+    # inspector reads off.
     if insulated:
         notes.append("FROST PROTECTION FOR "
                      + ", ".join(tag for tag, _c, _s in insulated)
@@ -484,12 +484,10 @@ def _drainage_note(model: ResolvedModel) -> str:
 def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:
     """What S-100 can say about sill anchorage, which depends on what the model carries.
 
-    Until 2026-08-28 this was a flat "not modelled — ConnectorKind has no anchor bolt". Two
-    things changed: ``ConnectorKind.ANCHOR_BOLT`` exists, so a house that wants cast-in bolts
-    can author them with a diameter and an embedment; and the take-off derives MASA mudsill
-    anchors off the sill runs at a stated pitch, which IS modelled anchorage even though it
-    is not a bolt. Reporting "not modelled" over a hundred and twenty-five derived anchors
-    told the reader something untrue about the drawing set they were holding.
+    ``ConnectorKind.ANCHOR_BOLT`` lets a house author cast-in bolts with a diameter and an
+    embedment, and the take-off separately derives MASA mudsill anchors off the sill runs at
+    a stated pitch — which IS modelled anchorage even though it is not a bolt. A flat "not
+    modelled" would misreport a hundred and twenty-five derived anchors.
     """
     from typehaus.model.enums import ConnectorKind
     from typehaus.takeoff.anchors import mudsill_anchor_rows

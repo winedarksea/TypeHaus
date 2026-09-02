@@ -6,16 +6,6 @@ regions; everything here decides how those regions are *drawn* — which AIA lay
 weight, with what texture on the cladding, what glyph inside a window, and where the grade
 line, the material callouts and the level datums go without landing on top of each other.
 
-What replaced what
-------------------
-Until 2026-08-29 this module kept, per storey, only the walls exactly parallel to the facade
-at that storey's extremum, and drew each as one flat closed rectangle built from the wall
-*axis*. There was no occlusion (the freestanding garage drew straight through the house), no
-rake (a raked attic wall came out square), no banding (a 4'-0" brick wainscot came out
-full-height), openings were empty rectangles indistinguishable between a window and a door,
-and there was no cladding, no roof edge and no depth hierarchy. ``plans/30-m3-permit.md``
-lines 49-55 had committed to the projection approach and it was never built.
-
 Depth hierarchy
 ---------------
 Three layers carry it. The **dominant plane** — the depth bucket holding the most visible
@@ -158,7 +148,8 @@ def _margin_u(pieces: list[VisiblePiece]) -> float:
 
     Measured off the whole projection rather than off the facade plane: the freestanding
     garage is 28 feet in front of this house's north wall, so on the east elevation it reaches
-    well past the facade and the dimension string used to be drawn straight through it.
+    well past the facade — measuring off the facade plane would draw the dimension string
+    straight through it.
     """
     if not pieces:
         return _EXTEND_M
