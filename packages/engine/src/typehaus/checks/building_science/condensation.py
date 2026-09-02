@@ -66,11 +66,10 @@ def _carries_thermal_control(assembly: Assembly) -> bool:
 class EnvelopeSurface:
     """One (assembly, interior condition) pair the Glaser walk actually has to run.
 
-    An assembly tag alone was the wrong unit. The same ``CATLIN_EXT_2X6`` stack bounds a
-    bedroom at the house's 35% design RH and — before this house grew a plant room — would
-    have bounded a 70%-RH room at the same 35%, because the analysis keyed on the tag and
-    read the humidity off ``Preferences``. The surface is the pair: which layers, against
-    which interior air.
+    An assembly tag alone is the wrong unit: the same stack can bound rooms at different
+    design RH (e.g. a 35% bedroom and a 70% plant room), and keying the analysis on the tag
+    alone would grade every one of them at whichever figure ``Preferences`` states. The
+    surface is the pair: which layers, against which interior air.
 
     ``interior_relative_humidity`` is ``None`` when the room carries no humidity decision
     of its own, which is the ordinary case; the caller then supplies the house-wide figure
@@ -383,8 +382,7 @@ def _r806_5_deferral(ctx: CheckContext, surface: EnvelopeSurface) -> Finding | N
     pressure, because at steady state with no outward flux the stack equilibrates to the
     warm side. That is the correct limit of the method and a useless verdict: it reports
     100% RH at the deck for every unvented metal roof, at any foam thickness, however it is
-    designed. ``houses/catlin/CLAUDE.md`` recorded exactly that, and the old assembly bought
-    its margin by leaving 5.6" of bay unfilled so the walk found a drying path.
+    designed — see ``houses/catlin/CLAUDE.md``.
 
     R806.5 items 5.2 and 5.3 replace the criterion rather than relax it. Air-impermeable
     insulation bonded to the sheathing underside, at the Table R806.5 R-value and itself a

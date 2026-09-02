@@ -1,9 +1,8 @@
 """Shared Finding constructors for the checks tiers (→ 12 §Checks framework).
 
-Every check module used to hand-roll its own ``_pass``/``_fail``/``_unknown``/``_advisory``
-trio — the same four ``Finding(...)`` shapes, reconstructed independently in dozens of
-modules under ``checks/``, ``resolve/``, and ``source/``. That duplication is what this
-module retires: one place builds a Finding, everything else calls it.
+One place builds each of the four ``Finding(...)`` shapes below; every check module under
+``checks/``, ``resolve/``, and ``source/`` calls in here instead of hand-rolling its own
+``_pass``/``_fail``/``_unknown``/``_advisory`` trio.
 
 Four shapes cover every call site found in the tree:
 

@@ -122,9 +122,9 @@ def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
 @check(Tier.ADVISORY, "advisory.fixture_room_unassigned")
 def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
     """A permit fixture schedule lists a room per fixture, so an unassignable one is worth
-    saying out loud.  This is the finding that replaced ``Fixture.room`` being a required
-    string: a drag that lands a fixture outside every resolvable room stays loadable and
-    keeps its authored position, and the gap is reported here instead of at import time."""
+    saying out loud. A drag that lands a fixture outside every resolvable room stays
+    loadable and keeps its authored position; the gap is reported here, not at import
+    time."""
     return [_warn("advisory.fixture_room_unassigned",
                   f"fixture {obj.tag} is in no room — the fixture schedule needs one; move it "
                   "inside a room or extend the room boundary", (obj.tag,))
@@ -136,14 +136,10 @@ def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
 def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
     """Radiant wire zones must not run beneath a fixture's authored footprint.
 
-    The footprint read here is the RESOLVED one, off the canvas object, and that is the
-    whole point of the indirection. Until 2026-08-29 this rebuilt a box from the type's
-    ``(width, depth)`` about the fixture's centre and never applied ``Fixture.rotation``,
-    so a bath authored at rotation 90 was graded as a 59"-wide east/west box where the
-    real one is 59" north/south. A zone drawn to the real fixture failed, and a zone drawn
-    to the phantom passed while running under the actual tub — wrong in both directions,
-    and the second is the dangerous one. ``canvas_objects`` carries the rotated polygon
-    the resolver already computed, so wall attachment and non-rectangular footprints come
+    Reads the RESOLVED footprint off the canvas object, not a box rebuilt from the type's
+    ``(width, depth)`` — that would ignore ``Fixture.rotation`` and grade the wrong
+    rectangle for a rotated fixture. ``canvas_objects`` carries the rotated polygon the
+    resolver already computed, so wall attachment and non-rectangular footprints come
     along for free.
     """
     from shapely.geometry import Polygon

@@ -461,12 +461,11 @@ _CONCRETE_FINISH_MIN_COVERAGE = 0.5
 def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
     """A sealed or polished floor needs concrete under it to seal or polish.
 
-    This is drift, not a typo, and drift is what makes it worth a check. The catlin main
-    floor was one 1,233 SF cast deck until the 2026-08-21 EPS/wood overhaul replaced most of
-    it with I-joists and plywood. The rooms above kept their authored ``sealed-concrete``,
-    which still resolved, still rendered, and still billed a sealer — over a wood deck that
-    has no slab to seal. Nothing else notices: ``floor_finish`` is a free string joined to a
-    library material, and the join was never wrong.
+    This is drift, not a typo: a room's authored ``sealed-concrete`` finish can survive a
+    structure change that swaps its slab for a wood deck, still resolving, still rendering,
+    and still billing a sealer over a deck with nothing to seal. Nothing else notices:
+    ``floor_finish`` is a free string joined to a library material, and the join is never
+    wrong on its own.
 
     Covers the room's FIELD finish and any AUTHORED zone. A DERIVED zone is exempt by
     construction — it exists only because a ``Slab`` with a ``floor_finish`` is under it,

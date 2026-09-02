@@ -375,13 +375,11 @@ def _two_by_four_vs_six(
     question nobody asked: the M5 acceptance is a *wall* assembly swap on the same run.
 
     **Which 2x4 and which 2x6, when a house builds several of each: the one it builds the
-    MOST of, by resolved wall area.** This used to take whichever tag sorted first, which
-    is arbitrary in exactly the way that goes unnoticed until it doesn't — catlin gained a
-    12 3/4" built-in bookcase wall on 2026-08-27, one wall of it, and it displaced the
-    house's ~46-wall interior partition as the "2x4 stock" this comparison reports simply
-    by starting with a C. A one-off piece of millwork is not what a reader of an energy
-    sheet means by "the 2x4 wall". Area is the honest tiebreak and it is stable; the tag
-    breaks a genuine tie, so the result is still deterministic.
+    MOST of, by resolved wall area.** Sorting by tag alone is arbitrary — a one-off piece
+    of millwork could outrank the house's real interior partition simply by starting with
+    an earlier letter, which is not what a reader of an energy sheet means by "the 2x4
+    wall". Area is the honest tiebreak and it is stable; the tag breaks a genuine tie, so
+    the result is still deterministic.
     """
     areas: dict[str, float] = {}
     for wall in model.walls:

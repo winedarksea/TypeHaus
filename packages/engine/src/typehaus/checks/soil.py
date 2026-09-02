@@ -2,12 +2,9 @@
 
 A :class:`JurisdictionProfile` is shared by every house that names it, so any soil class or
 bearing value it carries can only be a *presumptive regional* figure — IRC Table R401.4.1's
-default, or a metro-wide read of the glacial till. Until 2026-08-30 the mn-2024 profile
-carried ``soil_class="GM"`` citing the **Hennepin County** soil survey, which is the same
-class of wrong-source citation as the ground snow load fixed on 2026-08-23, except sitting
-in the shared engine rather than in a house that could correct it.
+default, or a metro-wide read of the glacial till, not the actual site.
 
-:class:`Site` now states these facts too, beside ``ground_snow_load_psf`` and
+:class:`Site` states these facts too, beside ``ground_snow_load_psf`` and
 ``design_wind_speed_mph``, which are exactly the same kind of thing. The site wins; the
 profile is the fallback. A house with no soils report states neither and is graded on the
 presumption, unchanged — which is what keeps every existing plan and every test fixture

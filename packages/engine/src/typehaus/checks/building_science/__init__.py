@@ -1,4 +1,4 @@
-"""Building-science checks — advisory physics analyses introduced in M5."""
+"""Building-science checks — advisory physics analyses."""
 
 from __future__ import annotations
 

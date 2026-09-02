@@ -222,12 +222,11 @@ def _integrity_item(findings: list[Finding],
                     covered: frozenset[str] = frozenset()) -> PermitChecklistItem:
     """The catch-all line: model errors that no other checklist item answers.
 
-    ``covered`` matters more than it looks. This used to sweep up *every* ERROR-severity
-    finding, which was harmless while every CODE check passed and became a real bug the
-    moment one did not: a check on a deliberately non-gating item still emits an
-    ERROR-severity FAIL, that error landed here, and this item is always blocking — so the
-    staging lane silently blocked the gate anyway. A finding that already has a line of its
-    own is reported there, once.
+    ``covered`` matters more than it looks: sweeping up *every* ERROR-severity finding would
+    double-count a check on a deliberately non-gating item — its ERROR-severity FAIL would
+    land here too, and this item is always blocking, so the staging lane would silently
+    block the gate anyway. A finding that already has a line of its own is reported there,
+    once.
     """
     relevant = [finding for finding in findings
                 if finding.check_id not in covered

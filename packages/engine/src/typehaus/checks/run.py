@@ -118,8 +118,7 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
 
     One construction point, called from both context builders below, so ``haus check``,
     ``run_from_model`` (the cover sheet's caller) and the pytest plugin cannot disagree
-    about whether a house has engineering in it — the exact class of divergence that once
-    had A-000 lettering "NOT READY" over a set ``haus print`` had just certified.
+    about whether a house has engineering in it.
 
     The results map is lazy: constructing it computes nothing.
     """
@@ -161,10 +160,9 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
     """Run the registry against an already-resolved model.
 
     ``preferences`` wins over ``house_dir`` for callers that have already loaded them and
-    hold no directory. The cover sheet is exactly that caller, and passing neither is what
-    made it disagree with the gate: an empty ``Preferences()`` hides ``[envelope].ach50``,
-    so A-000 lettered "NOT READY" over a set ``haus print`` had just certified — the one
-    sheet whose whole job is to state the verdict, stating a different one.
+    hold no directory — the cover sheet is exactly that caller. Passing neither would
+    silently fall back to an empty ``Preferences()``, hiding ``[envelope].ach50`` and every
+    other authored preference from the gate.
     """
     prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
     jurisdiction = resolve_profile(prefs, profile)

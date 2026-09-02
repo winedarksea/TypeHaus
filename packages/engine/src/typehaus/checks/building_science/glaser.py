@@ -62,9 +62,8 @@ def vapor_retarder_class(permeance_perms: float | None) -> str | None:
 # ISO 13788 §6 fixes the surface resistances for an interstitial-condensation assessment:
 # Rsi 0.25, Rse 0.04 m²·K/W. They are deliberately not the ASHRAE winter films the R-value
 # rollup uses (0.12/0.03): the method that defines the crossing test also defines the
-# boundary layers it is calibrated against, and omitting them entirely (as this walk used
-# to) puts the whole indoor-to-outdoor ΔT across the solid layers and reads every plane
-# colder than it runs.
+# boundary layers it is calibrated against, and omitting them would put the whole
+# indoor-to-outdoor ΔT across the solid layers and read every plane colder than it runs.
 INTERIOR_SURFACE_R_US = rsi(0.25).r_us
 EXTERIOR_SURFACE_R_US = rsi(0.04).r_us
 

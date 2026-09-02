@@ -1,8 +1,8 @@
 """Wet and humid rooms — the shared concept, not a plant-room special case.
 
 A room run deliberately wet is a different building-science problem from the room next to
-it, and nothing in the model said so until :class:`~typehaus.model.enums.HumidityClass`
-existed. These rules are the consequences: what the assemblies bounding such a room have
+it, and :class:`~typehaus.model.enums.HumidityClass` is what says so. These rules are the
+consequences: what the assemblies bounding such a room have
 to carry (a Class I air+vapour control layer, and no paper-faced gypsum showing), whether
 its glazing stays above the room's own dew point, and — the one that is an air question
 rather than a material one — whether the room is held at or below the pressure of the
@@ -80,8 +80,7 @@ def humid_surfaces(ctx: CheckContext) -> list[HumidSurface]:
     about which walls bound the room: an authored ``Wall.interior_room`` first, then the
     geometric probe for the walls that do not name one. The ceiling is the room's own
     resolved construction (``resolve/ceilings.py``) — a humid room's overhead plane is
-    exactly as much a bounding surface as its walls, and the plant room's own note records
-    that its ceiling could not be checked at all before that resolver existed.
+    exactly as much a bounding surface as its walls.
     """
     setpoint = ctx.preferences.interior_setpoint_f
     walls = {wall.tag: wall for wall in ctx.model.walls}

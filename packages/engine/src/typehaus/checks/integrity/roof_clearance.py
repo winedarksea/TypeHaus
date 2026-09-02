@@ -4,21 +4,10 @@ Every other relationship between an element and the roof is owned somewhere: a b
 wall's top by ``resolve/roof_geometry.apply_to_roof_wall_tops``, the cladding lap by
 ``resolve/envelope``, member-against-member by ``checks/structural/interference``. The gap
 this closes is the one nobody owned — an element authored with an explicit elevation, under
-a roof that later moved.
-
-That is not hypothetical. ``houses/catlin/plan/mep_venting.py`` says it in its own words:
-
-    ELEVATIONS ARE STOREY-RELATIVE AND THE ATTIC DATUM IS ft(20). Authored as project
-    elevations until 2026-08-29, this run resolved 20'-0" too high and hung over the roof.
-    Nothing caught it: ``_resolve_pipe_run`` adds the datum silently and no check grades a
-    pipe against the roof plane it sits under.
-
-When catlin's attic went from a 4:12 roof over 5'-0" knee walls to a 6:12 cathedral rake on
-flat plates, the clear height at the eave went from 5'-0" to 1 1/2". Five families of
-element kept the stations they had been given under the old roof — a stair guard, a
-bookcase wall's blocking course, both ERV outdoor legs, a bath extract's grille and the
-radon riser — and ``haus check`` reported 0 FAIL through all of it. Only the 3D view showed
-it, which is not a gate.
+a roof that later moved. A pitch change can drop the clear height at an eave from feet to
+inches; nothing previously graded a railing, duct, pipe or vent against the roof plane it
+sits under, so ``haus check`` could report 0 FAIL while only the 3D view showed an element
+poking through the roof.
 
 **Subject.** An allowlist, keyed to the rule's own sentence rather than to a denylist of
 whatever exists today (the lesson ``code.R305_ceiling_height`` drew): the things that hang

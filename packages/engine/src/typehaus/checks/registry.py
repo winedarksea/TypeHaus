@@ -36,10 +36,9 @@ class FramingPreferences:
 
     module_in: float = 16.0
     # "3-stud" | "4-stud" — the live vocabulary ``Wall.corner_style_start/end`` and
-    # ``FramingSpec.corner_style`` speak; "three-stud" was never read by anything, since
-    # nothing here compared this field to the framing solver's own vocabulary at all
-    # (2026-08-25, ``structural.corner_style_matches_preference`` is the first thing that
-    # does).
+    # ``FramingSpec.corner_style`` speak; "three-stud" is never read anywhere.
+    # ``structural.corner_style_matches_preference`` is what compares this field against
+    # the framing solver's own vocabulary.
     corner: str = "3-stud"
     max_window_ro_unbroken_in: float = 14.0
     max_window_ro_nonbearing_in: float = 30.0
@@ -236,10 +235,10 @@ class CheckReport:
     def counts(self) -> ResultTally:
         """Rule-result counts (#32), one bucket per :class:`Result` member.
 
-        Deliberately *not* a 3-tuple any more. The old form ended in ``else: p += 1``,
-        which would have silently counted every ``NOT_APPLICABLE`` as a pass — the exact
-        sin #32 exists to forbid — and would have done so without a single test failing.
-        A tally that names its buckets cannot acquire that bug when a member is added.
+        Deliberately not a 3-tuple: a form that falls through to ``else: p += 1`` would
+        silently count every ``NOT_APPLICABLE`` as a pass — the exact sin #32 exists to
+        forbid — without a single test failing. A tally that names its buckets cannot
+        acquire that bug when a member is added.
         """
         tally = {result: 0 for result in Result}
         engineered = 0
