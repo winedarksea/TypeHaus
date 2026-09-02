@@ -5,17 +5,17 @@
 # front/rear placeholders without immediately failing code.site_setback; a real survey
 # will replace all of this.
 #
-# **Grade sits 2'-10" below the main floor (2026-08-21).** The model's vertical datum is the
-# main floor, so "the house comes 2'-10" out of the ground" is authored the way a drawing set
-# states it: FFE stays 0'-0" and grade drops to -2'-10". The house, the sunken garden, the
-# porch and the balcony do not move; the garage, its stem, and the breezeway's frost pads
-# follow grade down (params/foundations.py::SITE_GRADE is the one derived copy of this
-# number, and plan/manifest.py asserts the two agree — this file is editable and may hold
-# only literals, which is why the number appears twice at all).
+# **Grade sits 2'-10" below the main floor.** The model's vertical datum is the main floor,
+# so "the house comes 2'-10" out of the ground" is authored the way a drawing set states it:
+# FFE stays 0'-0" and grade drops to -2'-10". The house, the sunken garden, the porch and
+# the balcony do not move; the garage, its stem, and the breezeway's frost pads follow grade
+# down (params/foundations.py::SITE_GRADE is the one derived copy of this number, and
+# plan/manifest.py asserts the two agree — this file is editable and may hold only literals,
+# which is why the number appears twice at all).
 #
-# It was 2'-6" from 2026-08-18. The extra 4" is the basement-ceiling overhaul: the mixed
-# I-joist / EPS-formed deck over the basement is 12 5/8" deep against the old slab's 9", so
-# the house rose 4" and the basement floor stayed in the ground to keep its headroom.
+# The 4" beyond the earlier 2'-6" is the basement-ceiling overhaul: the mixed I-joist /
+# EPS-formed deck over the basement is 12 5/8" deep against the old slab's 9", so the house
+# rose 4" and the basement floor stayed in the ground to keep its headroom.
 #
 # Spot elevations capture the walkout + sunken-garden condition (decision 2): grade near
 # -2'-10" at the street/north side and around the house, the sunken-garden floor still at
@@ -70,10 +70,10 @@ SITE = Site(
     # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
     # the -15 F design air.
     soil_temp_f=47.0,
-    # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED (2026-08-30). ** The
-    # mn-2024 profile carries GM as a Twin Cities presumption, and until today it cited the
-    # **Hennepin County** soil survey for it — the same wrong-county citation as the snow
-    # load below, in the shared engine where no house could correct it.
+    # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED. ** The mn-2024 profile
+    # carries GM as a Twin Cities presumption, citing the **Hennepin County** soil survey —
+    # the same wrong-county citation as the snow load below, in the shared engine where no
+    # house could correct it.
     #
     # GM (silty gravel to inorganic silt), IRC Table R405.1's 45 psf/ft equivalent-fluid
     # group, is right for this site for the same reason it is right regionally: the whole
@@ -87,13 +87,12 @@ SITE = Site(
     # and they are the walls a real report would be commissioned for
     # (structural.foundation_unbalanced_fill).
     soil_class="GM",
-    # Ground snow load, **MN Rules 1303.1700**, corrected 2026-08-23. It read "Hennepin
-    # County / Minneapolis, IRC Table R301.2(1)" — the right number from the wrong document
-    # and the wrong county. The IRC table is the blank the state fills in, not the source,
+    # Ground snow load, **MN Rules 1303.1700**. The IRC Table R301.2(1) citation once used
+    # here named "Hennepin County / Minneapolis" — the right number from the wrong document
+    # and the wrong county; the IRC table is the blank the state fills in, not the source,
     # and this parcel is in RAMSEY County, not Hennepin.
     #
-    # The number does not move either way, and that is worth stating plainly rather than
-    # leaving to be rediscovered: 1303.1700 sets **50 psf** in every Minnesota county
+    # The number does not move either way: 1303.1700 sets **50 psf** in every Minnesota county
     # EXCEPT twenty-nine named northern ones, and neither Ramsey nor Hennepin is among them.
     # So the citation is now the one that survives a parcel lookup — if this house is ever
     # sited in a different county, the rule to re-read is named here and the exception list
@@ -120,7 +119,7 @@ SITE = Site(
     # Exposure **B** — R301.2.1.4's site-specific determination, and the site's actual
     # condition: a suburban Ramsey County parcel with buildings and trees in every upwind
     # sector for well past the 1,500' fetch §26.7.3 asks about. This is the **model-wide
-    # design basis** from 2026-08-30 forward.
+    # design basis**.
     #
     # `notes/catlin_truss_engineering.md` §2 sizes the cladding stand-off on Exposure **C**
     # instead, and that is deliberate and stays: it prints its own Exposure B number
@@ -146,8 +145,7 @@ SITE = Site(
     # slightly below the -2'-10" grade plane right at the wall and keeps falling. Distinct
     # y-stations also feed every elevation's 10'-deep grade-capture band.
     #
-    # The nine house-perimeter stations dropped 2'-6" with grade on 2026-08-18 and another
-    # 4" on 2026-08-21; their
+    # The nine house-perimeter stations moved with grade; their
     # *differences* — which is all R401.3 reads — are untouched. The four southern garden
     # stations below deliberately did **not** move: they record structures that did not move
     # either (the sunken-garden floor, and the top of W-SG-S). Both pairs sit 20'+ from the
@@ -171,23 +169,16 @@ SITE = Site(
         SpotElevation(position=pt(ft(-3), ft(14)), elevation=ft(-3)),
         SpotElevation(position=pt(ft(-9), ft(28)), elevation=ft(-3, -4)),
         # sunken garden floor, and the retaining wall's top at the far south. The last two
-        # read +0'-6" rather than the +3'-6" they carried until 2026-07-25: they record the
-        # top of W-SG-S, which used to be the base of a 36" planter bed standing on it. The
-        # bed is gone — params/raised_garden.py now builds a retaining apron that tops out
-        # level with that wall instead of 3' above it — so the plane these two stations sit
-        # on is the wall top itself. Both are inside the apron's U (x 4'..32', y -33.33'..
-        # -9.5') and stay there.
+        # read +0'-6": they record the top of W-SG-S, which params/raised_garden.py's
+        # retaining apron now tops out level with (rather than 3' above it, as a since-removed
+        # planter bed once stood). The plane these two stations sit on is the wall top itself.
+        # Both are inside the apron's U (x 4'..32', y -33.33'..-9.5') and stay there.
         #
-        # None of these four moved when grade dropped to -2'-6", or again to -2'-10": they
-        # are the tops of
-        # structures, not readings of the soil plane, and those structures stayed put. The
-        # +0'-6" pair now stands 3'-4" above grade rather than 6" above it — which is the
-        # whole point of the lift.
-        # The garden floor, and it is -9'-4" rather than the -9' these read until
-        # 2026-08-22: SL-SG-FLOOR is filed on the basement storey, so it went down with the
-        # datum on 2026-08-21 and these two annotations did not follow it. Nothing
-        # structural reads spot elevations — they are drafting annotation — which is exactly
-        # why a stale one survives.
+        # None of these four move with grade: they are the tops of structures, not readings
+        # of the soil plane, and those structures stay put.
+        # The garden floor reads -9'-4": SL-SG-FLOOR is filed on the basement storey and goes
+        # down with that datum. Nothing structural reads spot elevations — they are drafting
+        # annotation — which is exactly why a stale one can survive unnoticed.
         SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -4)),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -4)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
@@ -226,13 +217,10 @@ SITE = Site(
     utilities=(
         UtilityLine(kind=UtilityKind.SEWER, path=(pt(ft(3), ft(-20)), pt(ft(3), ft(0))),
                     entry=pt(ft(3), ft(0)), depth=ft(5)),
-        # ** MOVED TO THE FRONT OF THE LOT (2026-08-30). ** It came in at the REAR — a path
-        # from (5', -20') to a (5', 0') entry on the south basement wall — while this same
-        # file declares the street on the NORTH (SetbackSpec(edge=2, label="FRONT")) and
-        # grade "at the street/north side". A municipal water main does not run behind the
-        # house, and that single wrong-side placeholder was the entire reason the service
-        # lateral crossed the whole basement to reach the garage hydrant. It now enters
-        # from the front and terminates at the hydrant, which is the first thing it reaches.
+        # Enters at the FRONT, matching the street on the NORTH (SetbackSpec(edge=2,
+        # label="FRONT")) and grade "at the street/north side") — a municipal water main
+        # does not run behind the house. Terminates at the hydrant, the first thing it
+        # reaches.
         UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(5), ft(72)), pt(ft(5), ft(59, 6))),
                     entry=pt(ft(5), ft(59, 6)), depth=ft(6)),
         UtilityLine(kind=UtilityKind.POWER, path=(pt(ft(-32), ft(18)), pt(ft(0), ft(18))),

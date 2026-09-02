@@ -1,5 +1,5 @@
 # haus: editable
-# THE WEST ATTIC: an open stair volume and a guest studio (2026-08-29).
+# THE WEST ATTIC: an open stair volume and a guest studio.
 #
 # Two changes at once, and the first one is the one to read first.
 #
@@ -104,9 +104,9 @@ SECOND_ELEMENTS = [
 #
 # bearing_refs closes both long edges CONTIGUOUSLY, which is what the edge test demands: x=10' is
 # BM-S-BATH-E 22'-4"->26'-4", W-S-BA-E1B 26'-4"->33'-4", W-S-BA-E 33'-4"->36'; x=18' is BM-S-HALL
-# 22'-4"->30'-10", W-S-C4B 30'-10"->36'. (Naming a Beam here only began working on 2026-08-29 —
-# `_opening_edge_has_declared_bearing` used to look at `model.wall(tag)` alone and put a 13'-1"
-# header under a beam that plainly carries it.) W-S-SN3 IN THIS TUPLE IS THE MINY EDGE, NOT A
+# 22'-4"->30'-10", W-S-C4B 30'-10"->36'. (`_opening_edge_has_declared_bearing` reads a named
+# Beam's own bearing, not `model.wall(tag)` alone — otherwise a 13'-1" header would sit under a
+# beam that plainly carries it.) W-S-SN3 IN THIS TUPLE IS THE MINY EDGE, NOT A
 # THIRD NAME FOR THE X=10' EDGE — `_opening_edge_has_declared_bearing` is purely geometric (does
 # a ref's axis/footprint run along and cover the edge), so it does not care whether W-S-SN3 is
 # itself BEARING; the wall's footprint covers y=22'-6 3/8" regardless, closing the miny edge and
@@ -204,7 +204,7 @@ WALLS = [
     #
     # ** THIS IS NOT A LINE LOAD ON W-S-SN3, and it is what a reader will worry about. ** It stands
     # on the opening's doubled trimmer pair, which spans the 8'-0" from x=10' to x=18' and delivers
-    # the wall to TWO POINTS — and, since 2026-08-30, neither of those two points reaches W-S-SN3 at
+    # the wall to TWO POINTS — and neither of those two points reaches W-S-SN3 at
     # all: the trimmer is an ordinary doubled joist in the x-direction, and both the x=10' point
     # (BM-S-BATH-E, hung on it by joist hanger) and the x=18' point ride it to wherever the joist
     # itself already bears, not down through whatever wall happens to sit under a point along its
@@ -260,7 +260,7 @@ WALLS = [
 # second-storey baths already use. R311.2's 32"-clear rule governs the EGRESS door, not these.
 OPENINGS = [
     # Into the storage pocket, and its station is set by HEADROOM. W-A-STU-N is raked: it runs in x
-    # under the west half of the gable, and since 2026-08-29 the roof underside there is
+    # under the west half of the gable, and the roof underside there is
     #
     #     H(x) = 1 1/2" + x/2
     #
@@ -290,7 +290,7 @@ OPENINGS = [
     # Into the bath off the studio. `flip_hinge` parks the leaf against the wall, clear of the
     # shower's SW corner.
     #
-    # ** IT MOVED 2" WEST AND ITS SWING WAS SETTLED BY ELIMINATION ON 2026-08-29. ** Three
+    # ** IT MOVED 2" WEST AND ITS SWING WAS SETTLED BY ELIMINATION. ** Three
     # arrangements were tried and `integrity.door_swing_conflict` / `mep.pocket_occupancy`
     # decided between them:
     #   * INWARD, into the bath, sweeps FX-A-STUBATH-SH. The 36" pan is already in the NE
