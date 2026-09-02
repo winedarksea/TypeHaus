@@ -41,11 +41,9 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
                   "source_ref": z.source_ref}
                  for z in r.finish_zones
              ],
-             # Derived head and glazing (2026-09-01). These existed only inside
-             # code.R305_ceiling_height and code.R303_1_light_and_ventilation, which meant
-             # the only way to read a room's clear height or its glazing table was to parse
-             # it back out of a check's message string. They are facts about the room, so
-             # they ride on the room.
+             # Derived head and glazing: facts about the room (read by
+             # code.R305_ceiling_height and code.R303_1_light_and_ventilation), so they ride
+             # on the room rather than living only inside a check's message string.
              #
              # ``clear_height_m`` is to the lowest thing overhead INCLUDING soffits, and
              # ``soffit_area_m2`` says how much of the room that low head actually covers —

@@ -145,14 +145,12 @@ def _ratio(row: dict[str, float]) -> float:
 
 
 def estimate_areas(model: Any) -> dict[str, float]:
-    """The two $/sf denominators — and, since 2026-08-27, a driver's addressable scalars.
+    """The two $/sf denominators, plus a driver's addressable scalars.
 
-    Every caller of ``estimate_costs`` that holds a resolved model passes these. It used to
-    be optional decoration ("$/sf against a guessed area is worse than none"), and three
-    callers therefore passed ``None``: ``haus tasks``, the tasks API and the IFC emitter. A
-    ``space_summary.gross_sf`` driver made that divergence load-bearing — the same house
-    would price one way through ``haus takeoff`` and another through ``haus tasks``, and
-    ``test_work_packages`` pins those two to the same total. One helper, one answer.
+    Every caller of ``estimate_costs`` that holds a resolved model passes these: a
+    ``space_summary.gross_sf`` driver makes divergence load-bearing — the same house must
+    price the same way through ``haus takeoff`` and ``haus tasks``, and
+    ``test_work_packages`` pins those two totals together. One helper, one answer.
     """
     overall = build_space_summary(model)["overall"]
     return {"conditioned": overall["conditioned_sf"], "gross": overall["gross_sf"]}

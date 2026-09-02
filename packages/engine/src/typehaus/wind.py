@@ -1,10 +1,8 @@
 """Design wind: the site's basis, and the ASCE 7 velocity pressure derived from it.
 
-Until 2026-08-30 no part of this model carried a design wind speed, and half a dozen
-docstrings and finding messages said so in their own words. ``Site`` now carries three
-fields (``design_wind_speed_mph``, ``wind_exposure``, ``risk_category``) and this module is
-the single place that reads them, so that "what wind is this house designed for" has one
-answer and one wording.
+``Site`` carries three fields (``design_wind_speed_mph``, ``wind_exposure``,
+``risk_category``) and this module is the single place that reads them, so that "what wind
+is this house designed for" has one answer and one wording.
 
 **Carrying a wind speed is not the same as having computed a load**, and the distinction is
 the whole reason this module is small. A connector-coverage check still cannot say a joint

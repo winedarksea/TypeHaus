@@ -130,10 +130,9 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],
         # WallPaneling bands (wainscot, tile splash). Unlike a construction return these ARE
-        # render geometry: a band is a real applied surface on the room side of its wall, and
-        # until 2026-08-25 it billed without ever being drawn. One record per wall the band
-        # covers; ``outline`` is empty where the side could not be derived (a line-scoped
-        # band), which the viewer skips.
+        # render geometry: a band is a real applied surface on the room side of its wall. One
+        # record per wall the band covers; ``outline`` is empty where the side could not be
+        # derived (a line-scoped band), which the viewer skips.
         "panelings": [
             {"uid": band.uid, "tag": band.tag, "storey": band.storey, "room": band.room,
              "wall_tag": band.wall_tag, "material_ref": band.material_ref,
