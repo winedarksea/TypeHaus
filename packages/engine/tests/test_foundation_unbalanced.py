@@ -280,8 +280,15 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # `fill <= 0` and it has no steel to report. That is the finding, not a gap: an
     # assembly leaves this list by ceasing to retain earth, and W-B-S4 (the east 8'-0" of
     # the old W-B-S3, split off at the excavation edge) is the segment that still does.
-    for tag in ("CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN"):
-        assert tag in passes, tag
+    #
+    # ONE assembly since 2026-09-02, not two. CATLIN_BASEMENT_8_GARDEN's last two walls —
+    # W-B-S1 and W-B-S4, the segments named above — moved to CATLIN_BASEMENT_8 with the
+    # stucco retirement, and the check's two rows merged into one "8 CATLIN_BASEMENT_8
+    # wall(s)". Nothing about the grading changed: identical 8" pour, 45 psf/ft, 8.0' wall,
+    # 6.3' backfill and the same #5 @ 41" o.c., which is precisely why the rows could merge.
+    assert "CATLIN_BASEMENT_8" in passes
+    assert "CATLIN_BASEMENT_8_GARDEN" not in passes
+    assert "8 CATLIN_BASEMENT_8 wall(s)" in passes
     assert 'is reinforced #5 @ 41" o.c. against the #5 @ 41" o.c.' in passes
     assert "the 8' wall x 7' backfill row" in passes
     # The three free retaining walls, named by R404.4 rather than graded by the table.

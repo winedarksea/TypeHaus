@@ -338,7 +338,17 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # N-B-S1, where the buried south wall meets the sunken garden's sauna curb. The
         # key's right half moved on 2026-08-28 (the curb assembly replaced the full-height
         # liner wall) but the condition is the one it always was: the liner starts here.
-        ("assembly_change:CATLIN_BASEMENT_8_GARDEN|"
+        # (Left half was CATLIN_BASEMENT_8_GARDEN until 2026-09-02, when W-B-S1 joined
+        # CATLIN_BASEMENT_8 with the stucco retirement. Same node, same condition.)
+        # N-B-S3, NEW 2026-09-02 and a real one. W-B-S4's buried end meets W-B-S3's curb
+        # here, and it did not fire before: while both carried the parge their layer
+        # sequences were identical by (material_ref, function) and `_layers_equivalent`
+        # dropped the pair as a thickness-only variant of one construction. Now the buried
+        # end carries a GRADE-banded protection panel and the curb carries nothing, so the
+        # skin STOPS at this node — which is exactly what a builder has to be told, and the
+        # same shape of key as the resilient-channel ones below.
+        "assembly_change:CATLIN_BASEMENT_8|CATLIN_GARDEN_CURB_6",
+        ("assembly_change:CATLIN_BASEMENT_8|"
          "SAUNA_LINER_ON_GARDEN_CURB"),
         # The plant room's liner, 2026-08-18, and the same kind of transition as the sauna's
         # two lines down: a humid-side wall type starting partway along a wall line. On the

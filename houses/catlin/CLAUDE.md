@@ -1260,16 +1260,17 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local
   skin layer, so the core cannot drift between them.
-  - *The skin.* `CATLIN_BASEMENT_12`/`_8` (N/E/W) cover the XPS with a 1/2"
-    `foundation-protection-panel` banded from 6" below grade to the top of the wall —
-    2'-10" of exposure the two lifts created, ~360 SF, authored as a `Layer.extent` off the
-    `GRADE` datum. `CATLIN_BASEMENT_8_GARDEN` (south: `W-B-S1/S3`) keeps the full-height
-    parge coat, because the sunken garden exposes that face from -9'-0" to 0'-0" and a
-    grade-datum band cannot describe that. `W-B-S2` is that same stack under a fourth tag,
-    `SAUNA_LINER_ON_BASEMENT_8_GARDEN` (2026-08-18): the sauna's south face, carrying the
-    hot-side liner *inboard* of the pour, banded to the room's 7'-6" ceiling. It aligns on
-    `face("concrete-ext")` with **no** offset, so the pour sits exactly where W-B-S1/S3
-    leave it.
+  - *The skin, and since 2026-09-02 there is only one.* `CATLIN_BASEMENT_12`/`_8` cover the
+    XPS with a 1/2" `foundation-protection-panel` banded from 6" below grade to the top of
+    the wall — authored as a `Layer.extent` off the `GRADE` datum, so the two lifts grew it
+    without an edit here. `W-B-S1`/`W-B-S4` joined `CATLIN_BASEMENT_8` on 2026-09-02, which
+    is what retired the stucco: their exposure genuinely *is* a grade band (6'-4" of fill,
+    2'-2 9/16" out of the ground), so they get ~37 SF of panel. The court segments in
+    between get **no skin at all** — their XPS is inside `W-B-BRICK`'s ventilated cavity,
+    with no UV and no impact on it, and 273.7 SF of parge was buying a plasterer's
+    mobilization to finish a surface nobody sees. `CATLIN_BASEMENT_8_GARDEN` and
+    `_GARDEN_PARGE` survive unreferenced in `plan/assemblies.py`, documented, so the revert
+    is two `assembly=` edits.
   - *The pour* (2026-08-21). 12" is earned only where a cast concrete deck lands on the
     wall top beside the sill plate and needs a bearing seat inboard of it. After the
     basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which bears on the
@@ -1287,10 +1288,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     carried wood on both faces — leaving `W-B-CS2`/`W-B-CN`/`W-B-CN2` as the interior pour
     that remains.) Drop that string on any of the nine and
     `structural.foundation_unbalanced_fill` FAILs, correctly.
-  Every one of the four carries exactly 4.55" outboard of the concrete face — the panel is
-  the same 1/2" as the parge it replaces, and neither is part of the pour — which is what
-  `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off is measured from. That is why thinning the
-  wall did not move the brick veneer, and why changing a *skin* thickness would. Because
+  The banded walls carry 4.55" outboard of the concrete face over the band and 4.05" below
+  it; the court walls carry 4.05" throughout. `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off
+  was struck against the old parge and is deliberately unchanged: what the parge's deletion
+  buys is a **1-1/2" clear cavity** where there was 1" (IRC R703.8.4 wants 1" minimum), not
+  a moved veneer. That is why thinning the *wall* did not move the brick, and why changing a
+  *skin* thickness moves the cavity rather than the wythe. Because
   the walls align on `face("concrete-ext")`, the 4" came off the INSIDE face: the furnace
   room and the workshop each gained 4" of clear (the model still reports the old number —
   `clear_face` is inset from the wall axis, which did not move). See

@@ -131,7 +131,7 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
                      "BASEMENT_BRICK_VENEER", "CATLIN_BASEMENT_12",
-                     "CATLIN_BASEMENT_8", "CATLIN_BASEMENT_8_GARDEN"):
+                     "CATLIN_BASEMENT_8"):
         assert assembly in by_assembly, f"{assembly} lost its own row"
     house = by_assembly["CATLIN_BASEMENT_12"]
     garden = by_assembly["SUNKEN_GARDEN_WALL"]
@@ -140,8 +140,10 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     # the 12" row is the deck-bearing east wall alone, and the eight thinned segments order
     # their own 8" concrete at their own rate (houses/catlin/prices.toml).
     assert set(house["tags"]) == {"W-B-E1", "W-B-E2"}
-    thinned = (set(by_assembly["CATLIN_BASEMENT_8"]["tags"])
-               | set(by_assembly["CATLIN_BASEMENT_8_GARDEN"]["tags"]))
+    # One row since 2026-09-02: CATLIN_BASEMENT_8_GARDEN lost its last two walls with the
+    # stucco retirement and is unreferenced (kept in plan/assemblies.py for the revert).
+    assert "CATLIN_BASEMENT_8_GARDEN" not in by_assembly
+    thinned = set(by_assembly["CATLIN_BASEMENT_8"]["tags"])
     # W-B-N4 is the west 6'-0" of the old W-B-N3, split off on 2026-08-23 for the ESS
     # closet's west partition. Same assembly, same thickness, its own strip footing.
     # W-B-S4 is the east 8'-0" of the old W-B-S3, split off on 2026-08-28 at the excavation

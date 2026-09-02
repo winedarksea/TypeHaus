@@ -76,8 +76,13 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS",
                                             "W-B-S2", "W-B-S2-FR"}
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
+    # Filtered by TAG since 2026-09-02, not just by ``replaces_wall_finish``: RM-M-BATH2's
+    # WP-M-BATH2-SURR is the house's second finish-replacing band, and it replaces gypsum on
+    # the main storey, not basswood down here. Summing every such band was only ever right
+    # while there was one.
     splash = sum(p.area_m2 for p in catlin_model.panelings
-                 if p.replaces_wall_finish) * _M2_TO_FT2
+                 if p.replaces_wall_finish
+                 and p.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
     assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
     assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
     assert basswood["species"] == "basswood"
@@ -95,11 +100,36 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert float(basswood["board_feet"]) == pytest.approx(
         float(basswood["order_area_sqft"]) * 1.375, abs=0.06)
 
-    tile = next(row for row in rows if row["kind"] == "override")
-    assert tile["material"] == "tile"
+    tile = next(row for row in rows if row["material"] == "tile")
+    assert tile["kind"] == "override"
     assert float(tile["net_area_sqft"]) == pytest.approx(45.0, abs=0.05)
     assert float(tile["waste_pct"]) == 15.0
     assert float(tile["order_area_sqft"]) == 52.0
+
+
+def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
+    """RM-M-BATH2's marble-look surround, 2026-09-02 — the second finish-replacing band in
+    this house and the first that is not the sauna's tile.
+
+    Two 3'-0" x 7'-0" bands on the 36" pan's closed sides, 42.0 SF net. It is priced in
+    ``[wood_surfaces]`` as an UNSPLIT UPGRADE DELTA and not at a full rate, because
+    ``[fixtures]``'s ``FX-SHOWER-36`` row already buys "36x36 curbed pan plus its three-wall
+    surround panels" with its labour — a full rate here would buy these same two walls
+    twice. What this row prices is the difference between that kit-grade surround and a
+    specified cast panel.
+
+    ``species`` is deliberately unset (it is what gates ``haus millwork``, and a cast panel
+    is not a board), and so is ``stock_bf_per_sqft`` — so no board-foot column, and the band
+    draws at the 1/2" default, which is the panel's actual thickness.
+    """
+    row = next(r for r in bom["wood_surfaces"] if r["material"] == "marble-look-panel")
+    assert row["kind"] == "override"
+    assert float(row["net_area_sqft"]) == pytest.approx(42.0, abs=0.05)
+    assert float(row["order_area_sqft"]) == 47.0
+    assert not row.get("species")
+    # Billed here and nowhere else: the panel is in no assembly layer and no floor finish,
+    # which is also why the Glaser walk never reaches it and it buys no new UNKNOWN.
+    assert not row.get("also_in_envelope_layers")
 
 
 def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):

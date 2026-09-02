@@ -41,34 +41,57 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         assert (z1 - z0) * _M_TO_FT == pytest.approx((34.0 + 6.0 - 13.4375) / 12.0, abs=1e-6)
 
 
-# The assembly tag differs per segment and always has; everything the parge assertions say
-# is unchanged, which is the point of listing them rather than one tag.
+# The assembly tag differs per segment and always has, which is the point of listing them
+# rather than one tag.
 #
-# **Five segments since 2026-08-28.** W-B-S3 split at the excavation edge (x=28'-0") so each
-# half could author the backfill it actually retains, and W-B-S2/W-B-S3 became the 7 1/4"
-# CURBS under a framed walkout — so the parge over the sunken garden is now carried by a
-# curb below and a stud wall above on the same plane, which is exactly what these assertions
-# are here to hold. Every one of the five still runs its parge full height and carries no
-# above-grade protection band: the sunken garden is not a grade band.
-_SOUTH_ASSEMBLIES = {
-    "W-B-S1": "CATLIN_BASEMENT_8_GARDEN",
+# **Six segments since 2026-08-28**, and TWO POPULATIONS since 2026-09-02. W-B-S3 split at
+# the excavation edge (x=28'-0") so each half could author the backfill it actually retains,
+# and W-B-S2/W-B-S3 became the 7 1/4" CURBS under a framed walkout — so the south face is a
+# curb below and a stud wall above on one plane. The stucco retirement then split the run by
+# exposure rather than by construction: W-B-S1 and W-B-S4 are outside the excavation, 6'-4"
+# of fill with 2'-2 9/16" standing out of it, which is an ordinary grade band and takes the
+# same GRADE-banded protection panel the N/E/W walls carry. The four in between are inside
+# the court, where the XPS sits in W-B-BRICK's ventilated cavity and buys no skin at all.
+_SOUTH_BANDED = {
+    "W-B-S1": "CATLIN_BASEMENT_8",
+    "W-B-S4": "CATLIN_BASEMENT_8",
+}
+_SOUTH_COURT = {
     "W-B-S2": "SAUNA_LINER_ON_GARDEN_CURB",
     "W-B-S2-FR": "SAUNA_LINER_ON_GARDEN_FRAMED",
     "W-B-S3": "CATLIN_GARDEN_CURB_6",
     "W-B-S3-FR": "CATLIN_GARDEN_FRAMED_2X6",
-    "W-B-S4": "CATLIN_BASEMENT_8_GARDEN",
 }
+_SOUTH_ASSEMBLIES = {**_SOUTH_BANDED, **_SOUTH_COURT}
 
 
-def test_the_south_wall_keeps_a_full_height_parge_and_no_band(catlin_model):
-    """The sunken garden exposes W-B-S* from -9'-0" to 0'-0", which is not a grade band."""
+def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_model):
+    """Inverted 2026-09-02, from ``..._keeps_a_full_height_parge_and_no_band``.
+
+    The old assertion was that the sunken garden's exposure is not a grade band and so the
+    south run has to carry its finish full height. That reading was right about the geometry
+    and wrong about the requirement: the court walls' XPS is not exposed at all — it is
+    inside W-B-BRICK's ventilated cavity, with no UV and no impact on it — so it needs no
+    finish, and the only genuinely exposed south foam is on the two ends, where the exposure
+    IS a grade band. So: no parge anywhere in this house, a GRADE-banded panel on W-B-S1/S4,
+    and nothing outboard of ``xps-b`` on the four court segments.
+    """
     for tag, assembly in _SOUTH_ASSEMBLIES.items():
         wall = catlin_model.wall(tag)
         assert wall.assembly == assembly
-        parge = next(ly for ly in wall.layers if ly.name == "parge")
-        assert not parge.is_banded
-        assert parge.band(wall) == (wall.z0_m, wall.z1_m)
-        assert not any(ly.name == _PANEL for ly in wall.layers)
+        assert not any(ly.name == "parge" for ly in wall.layers), tag
+
+    for tag in _SOUTH_BANDED:
+        wall = catlin_model.wall(tag)
+        panel = next(ly for ly in wall.layers if ly.name == _PANEL)
+        assert panel.is_banded, tag
+        assert panel.band(wall) != (wall.z0_m, wall.z1_m), tag
+
+    for tag in _SOUTH_COURT:
+        wall = catlin_model.wall(tag)
+        assert not any(ly.name == _PANEL for ly in wall.layers), tag
+        names = [ly.name for ly in wall.layers]
+        assert names[-1] == "xps-b", tag
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
@@ -134,19 +157,21 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
-    """239 SF: 108 LF of N/E/W perimeter x 2'-2 9/16". It was 360 SF against a 3'-4" band
+    """276 SF: the perimeter's banded run x 2'-2 9/16". It was 360 SF against a 3'-4" band
     until 2026-08-23, when the pour stopped at the bearing seat and took the band's head down
     with it — the band runs grade-less-6" to the top of the wall, and the top of the wall
-    moved. Billing the wall's face instead would
-    order the panel for every buried foot of foam it never reaches — which is exactly what
-    the parge coat it replaced was doing, over 1,394 SF house-wide."""
+    moved — and 239 SF until 2026-09-02, when W-B-S1/S4 joined the band with the stucco
+    retirement. Billing the wall's face instead would order the panel for every buried foot
+    of foam it never reaches — which is exactly what the parge coat it replaced was doing,
+    over 1,394 SF house-wide."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-protection-panel"]
-    assert panel["net_area_sqft"] == pytest.approx(239.1, abs=1.0)
-    # The parge survives only on the south wall (and the porch railing's CMU back face).
-    assert rows["stucco"]["net_area_sqft"] < 500.0
+    assert panel["net_area_sqft"] == pytest.approx(276.3, abs=1.0)
+    # And the parge survives nowhere: retired house-wide 2026-09-02. `Material(tag="stucco")`
+    # is still in library/materials.py — this house simply has no instance of it.
+    assert "stucco" not in rows
 
 
 def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
@@ -159,14 +184,20 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts
-    # No south segment gets a protection panel — the sunken garden is not a grade band.
-    assert not any(name.endswith(_PANEL) for name in parts if name.startswith("W-B-S"))
+    # Only the south segments OUTSIDE the excavation get a panel (2026-09-02): W-B-S1 and
+    # W-B-S4 are backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band.
+    # The four inside the court are not — their XPS is in W-B-BRICK's ventilated cavity —
+    # and they carry no skin at all, so there is nothing for the exporter to aggregate.
+    south_banded = {name for name in parts
+                    if name.startswith("W-B-S") and name.endswith(_PANEL)}
+    assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}"}
     # The sauna's south liner is the other banded stack in the house, and it exports the
     # same way: three parts stopping at the room's 7'-6" ceiling, not at the wall's top.
     # On W-B-S2-FR since 2026-08-28 — the south face is a framed wall on a curb now, and
     # the curb's own liner is unbanded (it runs the curb's full 7 1/4"), so only the
     # framed wall's three layers are partial and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
+        "W-B-S1:protection-panel", "W-B-S4:protection-panel",
         "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]

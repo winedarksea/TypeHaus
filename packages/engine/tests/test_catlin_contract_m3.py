@@ -1371,10 +1371,14 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX"}
 
 
-_PERIMETER_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",
-                         "CATLIN_BASEMENT_8_GARDEN", "CATLIN_GARDEN_CURB_6",
-                         "SAUNA_LINER_ON_GARDEN_CURB", "CATLIN_GARDEN_FRAMED_2X6",
-                         "SAUNA_LINER_ON_GARDEN_FRAMED")
+# Split in two on 2026-09-02 with the stucco retirement. The invariant used to be one
+# number, 4.55" outboard of the concrete face on every perimeter assembly, because every one
+# of them carried a 1/2" skin over the XPS — a protection panel on N/E/W, a parge coat on the
+# south. The south's parge is gone, so the two halves differ by exactly that skin.
+_BURIED_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8")
+_COURT_ASSEMBLIES = ("CATLIN_GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
+                     "CATLIN_GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
+_PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
@@ -1406,7 +1410,11 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     # walls standing on those curbs. One of each pair carries the sauna's liner inboard.
     south = [w for w in perimeter if w.tag.startswith("W-B-S")]
     assert len(south) == 6, sorted(w.tag for w in south)
-    assert len([w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]) == 2
+    # The two buried pours joined CATLIN_BASEMENT_8 on 2026-09-02 with the stucco
+    # retirement — the same assembly the N/E/W walls carry, because the same thing is true
+    # of them: their exposure is a grade band. CATLIN_BASEMENT_8_GARDEN has no instance left.
+    assert {w.tag for w in south if w.assembly == "CATLIN_BASEMENT_8"} == {"W-B-S1", "W-B-S4"}
+    assert not [w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
         assert len(xps) == 2
@@ -1454,18 +1462,28 @@ def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
 
 
 def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
-    """N-B-BRICK-W/-E stand off ``inch(-4.55)`` from the concrete face. That number is the
-    library core's tail (0.05" damp-proofing + 2 x 2" XPS = 4.05") plus a 1/2" house skin,
-    and it must survive a change of pour thickness — the veneer, the excavation, the XPS
-    plane and the drain tile are all measured off the *exterior* face, which is the datum
-    the walls align on, so only the inside face moved on 2026-08-21."""
+    """Every perimeter assembly carries the library core's 4.05" tail outboard of the pour
+    (0.05" damp-proofing + 2 x 2" XPS), and it must survive a change of pour thickness — the
+    veneer, the excavation, the XPS plane and the drain tile are all measured off the
+    *exterior* face, which is the datum the walls align on, so only the inside face moved on
+    2026-08-21.
+
+    What sits outboard of THAT is a house skin, and since the 2026-09-02 stucco retirement
+    there is only one: a 1/2" protection panel, banded off GRADE, on the walls whose exposure
+    is a grade line. The court walls carry nothing — their XPS is inside W-B-BRICK's
+    ventilated cavity. N-B-BRICK-W/-E's ``inch(-4.55)`` stand-off is unchanged and was struck
+    against the old parge; what the deletion buys is a 1-1/2" clear cavity where there was 1".
+    """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
-        after_pour = [l for l in asm.layers
-                      if l.name in ("damp-proof", "xps-a", "xps-b", "parge",
-                                    "protection-panel")]
-        outboard = sum(l.thickness.inches for l in after_pour)
-        assert outboard == pytest.approx(4.55), tag
+        core = [l for l in asm.layers if l.name in ("damp-proof", "xps-a", "xps-b")]
+        assert sum(l.thickness.inches for l in core) == pytest.approx(4.05), tag
+        skin = [l for l in asm.layers if l.name in ("parge", "protection-panel")]
+        if tag in _BURIED_ASSEMBLIES:
+            assert [l.name for l in skin] == ["protection-panel"], tag
+            assert skin[0].thickness.inches == pytest.approx(0.5), tag
+        else:
+            assert skin == [], tag
 
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):

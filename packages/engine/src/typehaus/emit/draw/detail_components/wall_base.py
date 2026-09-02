@@ -305,7 +305,21 @@ def _authored_protection_band(wall: ResolvedWall) -> ResolvedLayer | None:
 
 
 def _foam_is_already_covered(wall: ResolvedWall) -> bool:
-    """Whether a full-height layer stands outboard of the wall's outermost insulation."""
+    """Whether a full-height layer stands outboard of the wall's outermost insulation.
+
+    A latent trap worth naming, surfaced by houses/catlin on 2026-09-02. That house's
+    sunken-garden curbs used to return True here (a full-height parge coat sat outboard of
+    their XPS) and now return False — their outboard face is bare foam inside a ventilated
+    brick cavity. They draw no protection board anyway, but only because ``site.grade`` is a
+    single house-wide number: the curb tops are 5'-8" below it, so the derived branch's
+    ``height_in`` comes out negative and falls under ``min_exposed_height_in``.
+
+    That gate knows nothing about an excavation. A wall standing in an open court whose floor
+    is nine feet below grade reads as deeply buried, and if this dispatch ever changes — or a
+    curb like that is ever authored near grade — the derived branch will happily draw
+    protection board on a face inside a brick cavity, where nothing hits it and nothing sees
+    it. The fix, when it is needed, is local grade, not a wider tolerance here.
+    """
     layers = [ly for ly in wall.layers if not getattr(ly, "is_cavity", False)]
     last_foam = max((index for index, ly in enumerate(layers)
                      if ly.function == "insulation"), default=None)

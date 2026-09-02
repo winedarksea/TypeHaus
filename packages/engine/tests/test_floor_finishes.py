@@ -329,8 +329,17 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # The other half of that move: RM-M-LIVING is now a vinyl-sheet room too, on the zone
     # alone, and the corridor joins the mudroom/laundry/powder-bath spine it runs between.
     assert "RM-M-LIVING" in rows["vinyl-sheet"]["rooms"]
-    assert {"RM-M-BATH1", "RM-M-LAUNDRY", "RM-M-MUDROOM"} <= set(
+    # RM-B-BATH joined the spine on 2026-09-02, off `tile`: 30.2 sf under the basement
+    # stair with no radiant zone, which is this house's whole test for tile. Note it is NOT
+    # in the wood-deck retype set below — it sits on SL-B-FLOOR, so it never had a sealer
+    # problem; it is a finish decision, like RM-M-BATH1's, and the reasoning is the same one
+    # (no grout, no backer, no threshold, and the 6" integral flash cove IS the
+    # waterproofing). RM-M-BATH2 keeps its tile: FH-M-BATH2 is its only heat source at 98%
+    # of the room's load, and that is where tile earns the mass.
+    assert {"RM-M-BATH1", "RM-M-LAUNDRY", "RM-M-MUDROOM", "RM-B-BATH"} <= set(
         rows["vinyl-sheet"]["rooms"])
+    assert "RM-B-BATH" not in rows["tile"]["rooms"]
+    assert "RM-M-BATH2" in rows["tile"]["rooms"]
 
 
 # --- 5. a sealer needs a slab to seal ----------------------------------------------------

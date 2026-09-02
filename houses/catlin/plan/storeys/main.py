@@ -24,6 +24,7 @@ from typehaus import (
     LayerMaterial,
     Node,
     Occupancy,
+    PanelingSpan,
     Post,
     RadiantSystem,
     Railing,
@@ -1582,6 +1583,43 @@ PANELING = [
     WallPaneling(uid="ESE0EDBW2X", tag="WP-M-STUDY-FELT", room="RM-M-STUDY",
                  material_ref="pet-felt-panel", offset=ft(3), height=ft(6),
                  walls=("W-M-CLN2", "W-M-HS4")),
+    # RM-M-BATH2's shower surround (2026-09-02): the marble-look panel the owner wants,
+    # replacing an unmodelled tiled surround. Patterned on WP-B-SAUNA-SPLASH — same job,
+    # the two closed sides of a 36" pan, `replaces_wall_finish=True` so the gypsum's paint
+    # is netted out of the wood_surfaces area.
+    #
+    # ** THE TWO WALLS ARE W-M-BA2E2 AND W-M-BDN1, NOT W-M-BA2E. ** FX-M-BATH2-SH's
+    # `wall_ref` names W-M-BA2E, which is the RISER's wall — the same trap plan/fixtures.py
+    # already calls out for the basin. W-M-BA2E runs y 22'-4" -> 18'-0" and never touches
+    # the pan. The spans below are struck off the fixture's authored position and NOT off
+    # `Room.clear_face`, which is inset from the wall AXIS and would land the band inside
+    # the studs. FX-M-BATH2-SH sits at (6'-2 5/8", 14'-8 3/8"), so the 36" pan occupies
+    # x 4'-8 5/8"..7'-8 5/8" and y 13'-2 3/8"..16'-2 3/8":
+    #   * W-M-BA2E2 runs south from N-M-D2 (y=18'-0"), so the pan's north edge is
+    #     18'-0" - 16'-2 3/8" = 1'-9 5/8" along it. The 2 3/8" residue is W-M-BDN1's own
+    #     half-thickness, which is where the pan stops.
+    #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-8 5/8" along it, ending on
+    #     x = 7'-8 5/8" = N-M-TUBDK-E.
+    # D-M-BATH2 sits at 1'-5"..3'-11" on W-M-BDN1, clear of the span.
+    #
+    # ** W-M-TUBDK-S IS ALSO A BOUNDING WALL AND MUST NOT BE SPANNED. ** It is the tub
+    # deck's 20 3/4" knee wall; a 7'-0" band would clamp to its top and buy 5.3 SF of
+    # shower panel on a bath apron. Authoring `spans` at all is what excludes it
+    # (resolve/paneling.py) — this is the reason the band is not authored `room=`-wide.
+    #
+    # `height=ft(7)` on a zero offset, which is FX-SHOWER-36's own type height. 2 x 3'-0" x
+    # 7'-0" = 42.0 SF net.
+    #
+    # Known limitation: `replaces_wall_finish` only nets out in `wood_surfaces`, so
+    # `envelope_layers` still bills about 42 SF of latex paint behind the panel (~$65-125).
+    # The gypsum genuinely stays and is genuinely bought; only the paint on it is wrong.
+    WallPaneling(uid="AWV1DA0P86", tag="WP-M-BATH2-SURR", room="RM-M-BATH2",
+                 material_ref="marble-look-panel", height=ft(7),
+                 replaces_wall_finish=True,
+                 spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
+                                     length=ft(3)),
+                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 8.615),
+                                     length=ft(3)))),
 ]
 
 

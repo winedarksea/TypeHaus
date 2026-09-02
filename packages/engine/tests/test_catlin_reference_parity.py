@@ -135,15 +135,14 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
 def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
     # The XPS used to be the wall's outermost material, which meant bare foam was the finish
     # wherever the wall was not backfilled. A fifth layer closed that on 2026-08-01 (a
-    # full-height parge) and split in two on 2026-08-18, because the two exposures are not
-    # the same condition: N/E/W stand 2'-6" out of the ground and take a protection panel
-    # banded to that, while the south wall is open from -9'-0" to 0'-0" into the sunken
-    # garden and keeps the parge over its whole height. Both are last in their stack because
-    # they are outboard of everything, and both are 1/2", which is why neither moved anything
-    # (these walls align on face("concrete-ext")).
+    # full-height parge), split in two on 2026-08-18, and came back to one on 2026-09-02:
+    # the parge was retired house-wide, and the two south segments whose foam is genuinely
+    # exposed took the same GRADE-banded protection panel N/E/W carry. It is last in the
+    # stack because it is outboard of everything, and it is 1/2", the same as the parge, so
+    # nothing moved (these walls align on face("concrete-ext")). The court walls carry no
+    # fifth layer at all and are not perimeter-pour assemblies — see test_layer_extent.py.
     for tag, outermost in (("CATLIN_BASEMENT_12", "protection-panel"),
-                           ("CATLIN_BASEMENT_8", "protection-panel"),
-                           ("CATLIN_BASEMENT_8_GARDEN", "parge")):
+                           ("CATLIN_BASEMENT_8", "protection-panel")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
         assert [layer.name for layer in asm.layers] == [
             "concrete", "damp-proof", "xps-a", "xps-b", outermost

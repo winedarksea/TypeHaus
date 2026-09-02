@@ -547,38 +547,62 @@ CATLIN_ROOF = Assembly(
 # without anything here being edited.
 #
 # On the south the sunken garden exposes the foam from -9'-4" to 0'-0", which is not a band
-# off grade at all — grade is above the garden floor by nine feet there — so that wall keeps
-# the full-height parge coat, and keeps CATLIN_BASEMENT_8_GARDEN to say so.
+# off grade at all — grade is above the garden floor by nine feet there. That used to be the
+# argument for a full-height parge coat on the whole south run. **It is not the argument any
+# more (2026-09-02): the court walls buy no skin at all**, because the sunken garden's foam is
+# not exposed — it is inside W-B-BRICK's ventilated cavity, with no UV and no impact on it.
+# What is genuinely exposed on the south is 6" of nobody's business either side of the
+# excavation, so W-B-S1 and W-B-S4 took the ordinary CATLIN_BASEMENT_8 panel band and the
+# court segments took nothing. See `_GARDEN_PARGE` below for the retirement in full.
 #
-# Both carry the same 4.55" outboard of the concrete face, which is what N-B-BRICK-W/-E's
-# inch(-4.55) stand-off is measured from. That number now decomposes as 4.05" of library
-# core outboard of the pour (0.05" damp-proof + 2x 2" XPS) plus 0.5" of house skin — the
-# panel is deliberately the same 1/2" as the parge it replaces, so the stand-off never moves,
-# and it is independent of the pour's thickness.
+# So the two are no longer the same tail. The banded walls carry 4.55" outboard of the
+# concrete face over their band and 4.05" below it; the court walls carry 4.05" throughout.
+# N-B-BRICK-W/-E's inch(-4.55) stand-off is unchanged and deliberately so — it was struck
+# against the parge, and what the parge's deletion buys is a 1-1/2" clear cavity instead of
+# a 1" one (IRC R703.8.4 asks for 1" minimum). 4.05" is 0.05" damp-proof + 2x 2" XPS, and is
+# independent of the pour's thickness.
 
 # The exposed-foundation band (2026-08-18, deeper since 2026-08-21). Runs from 6" *below*
 # grade — so no foam edge shows at the soil line, and so the panel is what the shovel hits
 # rather than the XPS — up to the top of the wall, where its head tucks under the
-# rainscreen's Z-flashing with the bug screen above it. The wall top has been the bearing
+# rainscreen's Z-flashing with the bug screen above it. Since 2026-09-02 it is the ONLY
+# skin over foundation XPS anywhere in this house, on all four sides. The wall top has been the bearing
 # seat at -1'-1 7/16", not 0'-0", since the 2026-08-23 seat rework: the framed wall above
 # now reaches back down to meet it (``resolve/platform.extend_walls_to_foundation``), so
-# the two skins abut there rather than leaving the mudsill and rim bare. It replaces the
-# full-height parge
-# the N/E/W walls used to claim over nine feet of buried foam: the parge was added
-# 2026-08-01 for the *south* wall's exposure and applied to all four sides because a layer
-# had no way to say "only here".
+# the two skins abut there rather than leaving the mudsill and rim bare. It replaced the
+# full-height parge the N/E/W walls used to claim over nine feet of buried foam: the parge
+# was added 2026-08-01 for the *south* wall's exposure and applied to all four sides because
+# a layer had no way to say "only here". W-B-S1 and W-B-S4 finished that move on 2026-09-02.
 _PROTECTION_PANEL = Layer(name="protection-panel",
                           material_ref="foundation-protection-panel",
                           thickness=inch(0.5), function=LayerFunction.CLADDING,
                           extent=LayerExtent(
                               bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
 
+# **UNREFERENCED since 2026-09-02. Kept for the revert**, on the CATLIN_EXT_2X6_SWINBURNE
+# precedent above: putting the parge back is two `assembly=` edits in
+# plan/storeys/basement.py plus four `_GARDEN_PARGE,` lines here. Be honest about what that
+# buys — every consumer in this house derives from *walls*, so an unreferenced assembly
+# saves no test churn at all. It preserves the reasoning and nothing else.
+#
 # Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and on the south
-# the exposure runs the full wall from the sunken garden floor to the main-storey siding —
-# bare pink foam was reading as the wall's finish. Reuses the porch railing's Portland-cement
-# stucco; rides outboard of everything so the concrete face (the footings/damp-proofing/
-# drain-tile datum) is untouched. Full height and staying that way: this face has no grade
-# line on it to band against.
+# the exposure was read as running the full wall from the sunken garden floor to the
+# main-storey siding — bare pink foam reading as the wall's finish. Reuses the porch
+# railing's Portland-cement stucco; rides outboard of everything so the concrete face (the
+# footings/damp-proofing/drain-tile datum) is untouched.
+#
+# **Why it went.** The finish was 273.7 SF billed, of which about 29 SF — W-B-S1/S4's band
+# above grade — was ever a visible exposed surface. ~139 SF sits inside W-B-BRICK's
+# ventilated cavity where there is neither UV nor impact, and ~106 SF is behind 6'-4" of
+# backfill. prices.toml's own note said a parge scope this size sits near a plasterer's
+# minimum call-out, so the $/SF arithmetic was never the real number: a $1,500-2,500
+# mobilization was, and deleting the scope deletes the trade. The exposed 29 SF is not a
+# material swap either — the protection panel costs MORE per SF — it is the same GRADE band
+# the N/E/W walls have carried since 2026-08-18, which is what those two segments' exposure
+# actually is.
+#
+# `Material(tag="stucco")` stays in library/materials.py: it is a library item, CONTRIBUTING
+# has a promotion flow and no de-promotion flow, and engine tests use the tag.
 _GARDEN_PARGE = Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
                       function=LayerFunction.FINISH)
 
@@ -605,6 +629,10 @@ CATLIN_BASEMENT_8 = Assembly(
 )
 
 # The south wall, which the sunken garden opens to the air over its whole 9'.
+#
+# **UNREFERENCED since 2026-09-02** — W-B-S1 and W-B-S4 moved to CATLIN_BASEMENT_8 with the
+# stucco retirement, and they were its only two instances. Kept, with `_GARDEN_PARGE`, so the
+# revert is two `assembly=` edits in plan/storeys/basement.py.
 CATLIN_BASEMENT_8_GARDEN = Assembly(
     tag="CATLIN_BASEMENT_8_GARDEN",
     layers=(
@@ -771,8 +799,8 @@ SUNKEN_GARDEN_COLUMN_20 = Assembly(
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
-# There is no CMU backer wythe here, because the existing CATLIN_BASEMENT_8_GARDEN concrete
-# (damp-proofing + 4" XPS + parge already outboard) IS the backer — this wall stands 1" off
+# There is no CMU backer wythe here, because the existing basement concrete
+# (damp-proofing + 4" XPS already outboard) IS the backer — this wall stands 1-1/2" off
 # it on masonry ties. A fictional backer would double-count concrete already modeled by
 # W-B-S2/W-B-S3. No `interfaces`: non-bearing.
 #
@@ -858,7 +886,7 @@ BASEMENT_BRICK_VENEER = Assembly(
               extent=LayerExtent(
                   bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(93.333)))),
     ),
-    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_8_GARDEN wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
+    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -1320,9 +1348,9 @@ GARAGE_BRICK_WAINSCOT = Assembly(
 #     horizontal, corners R-4.9        dimension C = 40"
 #
 # The **vertical leg is already built**: the south basement walls compose off
-# FOUNDATION_WALL_8_XPS4_CORE, 4" of XPS = R-20 against the table's R-6.7, and
-# CATLIN_BASEMENT_8_GARDEN carries that face full height precisely because the garden exposes
-# it from -9'-0" to 0'-0". Only the horizontal band is new.
+# FOUNDATION_WALL_8_XPS4_CORE, 4" of XPS = R-20 against the table's R-6.7, and the core
+# carries that face full height from -9'-0" to 0'-0" — the XPS itself was never the banded
+# layer, only the skin over it was. Only the horizontal band is new.
 #
 # Both wings are specified far over the table rather than at it. R-5 and R-10 against R-1.7
 # and R-4.9 is not generosity: 1" is the thinnest XPS anyone stocks, the labour and the
@@ -1946,12 +1974,13 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # saving is the floor, not the number.
 #
 # **The stack is the concrete one with studs where the pour was**, not CATLIN_EXT_2X6: the
-# outboard face has to stay exactly where it is. The damp-proofing, the 4" of XPS and the
-# full-height parge all continue from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands
-# 4.55" off that finished face on its own footing with two arched reveals dimensioned to
-# it. `alignment=face("sheathing-ext")` puts the sheathing's outboard face on the node
-# line exactly where `face("concrete-ext")` put the pour's, so the whole outboard tail —
-# and the brick's 1" cavity — lands on the plane it always did. The rooms inside gain
+# outboard face has to stay exactly where it is. The damp-proofing and the 4" of XPS continue
+# from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.55" off its own footing with two
+# arched reveals dimensioned to it. `alignment=face("sheathing-ext")` puts the sheathing's
+# outboard face on the node line exactly where `face("concrete-ext")` put the pour's, so the
+# whole outboard tail lands on the plane it always did. (The parge was the third layer of
+# that tail until 2026-09-02; the brick's cavity is 1-1/2" clear now rather than 1", which is
+# the veneer standing still while the wall behind it got thinner.) The rooms inside gain
 # 1 3/8" (8" of pour becomes 6 5/8" of stud and gypsum), and the 6" curb below leaves only
 # the gypsum's own 5/8" oversailing it, which is what drywall over a curb does everywhere.
 #
@@ -1969,7 +1998,6 @@ _GARDEN_FRAMED_OUTBOARD = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-    _GARDEN_PARGE,
 )
 
 _GARDEN_FRAMED_STUD = Layer(
@@ -1983,7 +2011,7 @@ _GARDEN_FRAMED_STUD = Layer(
 # footings. **6" and not the 8" the rest of the south wall is**, and the reason is a plane
 # and not a load: 6" of concrete is exactly stud-plus-sheathing, so the curb's outboard
 # face lands on the node line where the sheathing's does — keeping the damp-proofing, the
-# XPS, the parge and W-B-BRICK's 1" cavity on one plane top to bottom — AND its inboard
+# XPS and W-B-BRICK's cavity on one plane top to bottom — AND its inboard
 # face lands where the studs' does, so there is no shelf inside the room to collect water.
 # An 8" curb would have bought a 2" ledge on the wet side of a sauna wall. The curb
 # retains nothing (`unbalanced_fill=ft(0)`), so no table asks it for thickness.
@@ -2007,10 +2035,9 @@ CATLIN_GARDEN_CURB_6 = Assembly(
     tag="CATLIN_GARDEN_CURB_6",
     layers=(
         *_GARDEN_CURB_CORE,
-        _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on CATLIN_BASEMENT_8_GARDEN's own damp-proofing, 4 in. XPS and parge",
+    source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on its own damp-proofing and 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement",
 )
 
 # The same curb under the sauna's south face. The liner runs DOWN over it — it is not
@@ -2024,7 +2051,6 @@ SAUNA_LINER_ON_GARDEN_CURB = Assembly(
     layers=(
         *_SAUNA_LINER,
         *_GARDEN_CURB_CORE,
-        _GARDEN_PARGE,
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin sunken-garden curb under the sauna (W-B-S2), 2026-08-28: CATLIN_GARDEN_CURB_6 with the sauna liner carried down over its face so the hot side's vapour control is continuous to the slab",
@@ -2039,7 +2065,7 @@ CATLIN_GARDEN_FRAMED_2X6 = Assembly(
         *_GARDEN_FRAMED_OUTBOARD,
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the SAME outboard tail CATLIN_BASEMENT_8_GARDEN carries (damp-proofing, 4 in. XPS, full-height parge) so the sunken garden's finished face does not move",
+    source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the same outboard tail the curb below it carries (damp-proofing, 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement) so the sunken garden's finished face does not move",
 )
 
 # The sauna's south face, on the framed run. The liner instead of gypsum, and
@@ -2729,6 +2755,25 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1e3a5c",
              source="garage eave + rake fascia weather face, 2026-08-26 only — Western States Metal Roofing \"Regal Blue\", PVDF/Kynar over 24 ga. steel; the manufacturer publishes no hex (its own page warns the on-screen swatch differs from the panel), so this value is an approximation and a physical chip governs"),
+    # RM-M-BATH2's shower back (2026-09-02): the 36" pan's two closed sides, WP-M-BATH2-SURR.
+    #
+    # **Not `pvc-panel`.** That tag is RM-S-PLANT's Trusscore liner and is priced over 445.8
+    # SF; folding 47 SF of a different product into it would make both unseparable and would
+    # price a bathroom surround at a greenhouse liner's rate. This is its own tag so the
+    # owner's selection (see prices.toml) lands on one line.
+    #
+    # NO `species`, deliberately — that field is what gates `haus millwork`, and a cast
+    # panel is not a board to be ripped out of stock. NO `stock_bf_per_sqft` either: unset,
+    # `resolve/paneling.py` draws the band at its 1/2" default, which is this panel's actual
+    # thickness. And NO vapour field, on the same reading `library/materials.py` states for
+    # `pvc-panel` and `fiber-cement` — a butted, adhered panel with sealed joints has no
+    # published ASTM E96 number that means anything at an assembly scale, and declaring one
+    # would be inventing it. It costs nothing here: the panel is in no *assembly*, only a
+    # `WallPaneling`, so the Glaser walk never reaches it and it buys no new UNKNOWN.
+    Material(tag="marble-look-panel",
+             name="Marble-look cast shower wall panel (1/2\")",
+             r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
+             source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
     # The above-grade foundation band on CATLIN_BASEMENT_8/_12 (2026-08-18). Aluminium-faced
     # rigid protection panel — the trade product for exactly this, and what
     # notes/basement_to_framed_wall_detail.md already called for in prose ("rigid metal/PVC
@@ -2763,7 +2808,7 @@ MATERIALS = [
              r_per_inch=0.0, density=1100.0, hatch="metal",
              color="#1c1f24",
              source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12); no ASTM E96 rating published for a butted, mechanically-fastened protection board in this class, so the vapour fields are unset and the Glaser walk reports UNKNOWN"),
-    # stucco (porch railing CMU back face + basement parge coat), composite-deck (porch
+    # stucco (no instance in this house since 2026-09-02), composite-deck (porch
     # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py on
     # 2026-08-22 (CONTRIBUTING §Promotion flow); they arrive here through
     # STARTER_MATERIALS above.

@@ -139,12 +139,19 @@ NODES = [
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
     # to 28'-0" (params/sunken_garden.py's ``_x_ax_e``, where grade comes back up).
-    # y is NOT 0'-0": the south walls' node line is the concrete face, and
-    # CATLIN_BASEMENT_8_GARDEN carries 4.55" outboard of it (damp-proofing + 2x 2" XPS +
-    # parge) — a tail that is independent of the pour, which is why thinning the wall to 8"
-    # in 2026-08-21 did not move this number; the veneer stands off
-    # that finished face, hence the -4.55". Wall aligns on face("air-gap-int") so the 1"
-    # cavity begins exactly on the parge.
+    # y is NOT 0'-0": the south walls' node line is the concrete face, and the south stack
+    # carries 4.05" outboard of it (0.05" damp-proofing + 2x 2" XPS) — a tail that is
+    # independent of the pour, which is why thinning the wall to 8" in 2026-08-21 did not
+    # move this number; the veneer stands off that finished face, hence the -4.55".
+    #
+    # The stand-off is 4.55" and NOT 4.05" because it was struck against the parge coat the
+    # south wall carried until 2026-09-02, when the stucco was deleted house-wide (it was
+    # 273.7 SF of finish of which ~29 SF was ever visible; see plan/assemblies.py). The node
+    # is deliberately left where it is: moving the veneer 1/2" inboard would move its two
+    # arched reveals, its own footing and every garage-relative literal downstream of it, to
+    # buy nothing. What the deletion changes is the cavity, which opens from 1" to 1-1/2" —
+    # still over IRC R703.8.4's 1" minimum, and better-draining. Wall aligns on
+    # face("air-gap-int"), which now begins on bare XPS.
     Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.55)),
          open_end=True),
     Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.55)),
@@ -247,18 +254,28 @@ WALLS = [
     # footnote f rounds the table row. It changes no grade: 6.3' still lands on the 7' row
     # and the two buried segments keep ``#5 @ 41" o.c.`` The two zero-fill segments drop
     # the bar with the load — see W-B-S2 below.
+    #
+    # **W-B-S1 and W-B-S4 joined CATLIN_BASEMENT_8 on 2026-09-02**, off the
+    # CATLIN_BASEMENT_8_GARDEN they had carried since the south wall was split. That is the
+    # same fill table read a second way: these two segments are the only south run whose
+    # exposure is an ordinary grade line — 6'-4" of backfill with 2'-2 9/16" of wall standing
+    # out of it — which is exactly the condition _PROTECTION_PANEL's GRADE-banded extent was
+    # written for, and nothing like the nine feet of open court in between. So they buy about
+    # 37 SF of panel over 16.83 LF instead of 106 SF of parge over a face that is under the
+    # dirt. The court segments are not banded at all; they are bare XPS in a brick cavity.
+    # See plan/assemblies.py for the whole stucco retirement.
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
-                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_8_GARDEN",
+                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.'),
-    # The sauna's south side. W-B-S1 and W-B-S3 stay on the bare garden wall deliberately —
-    # they bound the workshop and the patio side — but this one segment is a room face in a
-    # WET room, so it carries the liner variant of the same stack
-    # (SAUNA_LINER_ON_BASEMENT_8_GARDEN): the vapour control has to be continuous on all
-    # four faces or it is not vapour control. The liner grows 3 1/2" inward and mitres to
+    # The sauna's south side. W-B-S1 takes the buried wall's own stack and W-B-S3 the bare
+    # curb — they bound the workshop and the patio side — but this one segment is a room face
+    # in a WET room, so it carries the liner variant of the curb (SAUNA_LINER_ON_GARDEN_CURB,
+    # SAUNA_LINER_ON_BASEMENT_8_GARDEN before the 2026-08-28 curb split): the vapour control
+    # has to be continuous on all four faces or it is not vapour control. The liner grows 3 1/2" inward and mitres to
     # W-B-CS's at N-B-S2 — same assembly family, so no derived return there.
     # Alignment stays `face("concrete-ext")` with NO offset, unlike W-B-CS's inch(-6):
     # `_face_offset_from_interior` falls through the three liner layers (no name match) and
@@ -309,9 +326,13 @@ WALLS = [
     # not the 8'-0" they would be off the slab.
     #
     # `face("sheathing-ext")` is the deliberate mirror of the pour's `face("concrete-ext")`:
-    # it pins the sheathing's outboard face on the node line, so the damp-proofing, the 4"
-    # of XPS and the parge continue on exactly the plane they occupy on W-B-S1 and W-B-S4
-    # either side, and W-B-BRICK's 4.55" stand-off and its two arched reveals do not move.
+    # it pins the sheathing's outboard face on the node line, so the damp-proofing and the 4"
+    # of XPS continue on exactly the plane they occupy on W-B-S1 and W-B-S4 either side, and
+    # W-B-BRICK's 4.55" stand-off and its two arched reveals do not move. (The parge used to
+    # be third on that list; it was deleted house-wide on 2026-09-02, and W-B-S1/S4 now carry
+    # a GRADE-banded protection panel that stops well below this run. The plane the veneer
+    # was struck against is 1/2" thinner everywhere, which is a wider cavity and not a
+    # moved face — see N-B-BRICK-W above.)
     # The tie hardware does change in reality — corrugated ties into framing instead of
     # anchors into concrete — which is ordinary for veneer over wood, and is said out loud
     # here because the model cannot say it.
@@ -336,7 +357,7 @@ WALLS = [
     # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
     # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.
     FoundationWall(uid="72HXFS8M11", tag="W-B-S4", start_node="N-B-S3",
-                   end_node="N-B-SE", assembly="CATLIN_BASEMENT_8_GARDEN",
+                   end_node="N-B-SE", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
@@ -771,8 +792,18 @@ ROOMS = [
     # east-west, not facing the long wall: 3'-0" of depth can't fit a WC facing N/S (needs
     # 40"+ for bowl + IRC P2705.1 clearance), but fits one sideways in 36" — hence WC west,
     # lavatory east (plan/fixtures.py).
+    #
+    # Sheet vinyl, not tile (2026-09-02), joining the house's washable spine — RM-M-BATH1
+    # and RM-M-LAUNDRY took the same move on 2026-08-25, RM-2-BATH on the second storey and
+    # the attic studio's before that. 30.2 sf with no radiant zone under it, which is the
+    # whole test: tile earns its cost where it is the emitter's mass (RM-M-BATH2 keeps its
+    # tile for exactly that reason, at 98% of FH-M-BATH2's load). Here it buys grout to
+    # keep, a backer board, a membrane and a threshold at the door, for a floor three feet
+    # wide under a stair. Heat-welded sheet with a 6" integral flash cove that laps the wall
+    # and dies behind the wall finish: floor and wall are one tray with no base joint, and
+    # the cove IS the waterproofing — nothing impermeable goes under it.
     Room(uid="CBR407AAAA", tag="RM-B-BATH", seed=pt(ft(14), ft(20)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_INT_2X6_BRG /

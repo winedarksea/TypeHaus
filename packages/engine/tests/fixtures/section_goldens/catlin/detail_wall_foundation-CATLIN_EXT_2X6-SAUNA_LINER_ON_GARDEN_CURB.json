@@ -399,34 +399,6 @@
       "node": "polyline",
       "points": [
         [
-          -4.550000000000001,
-          -109.4375
-        ],
-        [
-          -4.050000000000001,
-          -109.4375
-        ],
-        [
-          -4.050000000000001,
-          -102.1875
-        ],
-        [
-          -4.550000000000001,
-          -102.1875
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBW102AAAA",
-      "tag": "W-B-S2/parge"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           8.5,
           -102.1875
         ],
@@ -872,34 +844,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.550000000000001,
-          -102.1875
-        ],
-        [
-          -4.050000000000001,
-          -102.1875
-        ],
-        [
-          -4.050000000000001,
-          -66.75442913385827
-        ],
-        [
-          -4.550000000000001,
-          -66.75442913385827
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "3BF9ZDQPT1",
-      "tag": "W-B-S2-FR/parge"
-    },
-    {
-      "space": "model",
       "node": "hatch",
       "boundary": [
         [
@@ -1155,7 +1099,7 @@
       "node": "polyline",
       "points": [
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -112.93750000000001
         ],
         [
@@ -1167,7 +1111,7 @@
           -109.4375
         ],
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -109.4375
         ]
       ],
@@ -1183,7 +1127,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -112.93750000000001
         ],
         [
@@ -1195,7 +1139,7 @@
           -109.4375
         ],
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -109.4375
         ]
       ],
@@ -1211,7 +1155,7 @@
       "node": "polyline",
       "points": [
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -113.93749999999999
         ],
         [
@@ -1223,7 +1167,7 @@
           -112.9375
         ],
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -112.9375
         ]
       ],
@@ -1239,7 +1183,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -113.93749999999999
         ],
         [
@@ -1251,7 +1195,7 @@
           -112.9375
         ],
         [
-          -26.203543307086615,
+          -25.70354330708662,
           -112.9375
         ]
       ],
@@ -1828,43 +1772,18 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.300000000000001,
+          -3.05,
           -128.53776246719167
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.70354330708662,
         -128.53776246719167
-      ],
-      "to": [
-        -4.300000000000001,
-        -128.53776246719167
-      ],
-      "text": "parge 0.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -3.05,
-          -139.1933180227472
-        ],
-        "name": ""
-      },
-      "at": [
-        -27.203543307086615,
-        -139.1933180227472
       ],
       "to": [
         -3.05,
-        -139.1933180227472
+        -128.53776246719167
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
@@ -1879,17 +1798,17 @@
         "kind": "point",
         "xy": [
           -1.05,
-          -144.521095800525
+          -133.86554024496942
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -144.521095800525
+        -26.70354330708662,
+        -133.86554024496942
       ],
       "to": [
         -1.05,
-        -144.521095800525
+        -133.86554024496942
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
@@ -1904,17 +1823,17 @@
         "kind": "point",
         "xy": [
           -0.025,
-          -149.84887357830277
+          -139.1933180227472
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -149.84887357830277
+        -26.70354330708662,
+        -139.1933180227472
       ],
       "to": [
         -0.025,
-        -149.84887357830277
+        -139.1933180227472
       ],
       "text": "damp-proof 0.05\"",
       "height": 1.6,
@@ -1929,17 +1848,17 @@
         "kind": "point",
         "xy": [
           3.0000000000000004,
-          -155.17665135608055
+          -144.521095800525
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -155.17665135608055
+        -26.70354330708662,
+        -144.521095800525
       ],
       "to": [
         3.0000000000000004,
-        -155.17665135608055
+        -144.521095800525
       ],
       "text": "concrete 6\"",
       "height": 1.6,
@@ -1954,17 +1873,17 @@
         "kind": "point",
         "xy": [
           7.000000000000001,
-          -160.50442913385834
+          -149.84887357830277
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -160.50442913385834
+        -26.70354330708662,
+        -149.84887357830277
       ],
       "to": [
         7.000000000000001,
-        -160.50442913385834
+        -149.84887357830277
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
@@ -1979,17 +1898,17 @@
         "kind": "point",
         "xy": [
           8.25,
-          -165.83220691163612
+          -155.17665135608055
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -165.83220691163612
+        -26.70354330708662,
+        -155.17665135608055
       ],
       "to": [
         8.25,
-        -165.83220691163612
+        -155.17665135608055
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
@@ -2004,17 +1923,17 @@
         "kind": "point",
         "xy": [
           9.0,
-          -171.1599846894139
+          -160.50442913385834
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -171.1599846894139
+        -26.70354330708662,
+        -160.50442913385834
       ],
       "to": [
         9.0,
-        -171.1599846894139
+        -160.50442913385834
       ],
       "text": "shiplap-liner 1\"",
       "height": 1.6,
@@ -2028,43 +1947,18 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.300000000000001,
+          -3.05,
           -75.25998468941383
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.70354330708662,
         -75.25998468941383
-      ],
-      "to": [
-        -4.300000000000001,
-        -75.25998468941383
-      ],
-      "text": "parge 0.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          -3.05,
-          -85.91554024496939
-        ],
-        "name": ""
-      },
-      "at": [
-        -27.203543307086615,
-        -85.91554024496939
       ],
       "to": [
         -3.05,
-        -85.91554024496939
+        -75.25998468941383
       ],
       "text": "xps-b 2\"",
       "height": 1.6,
@@ -2079,17 +1973,17 @@
         "kind": "point",
         "xy": [
           -1.05,
-          -96.57109580052496
+          -85.91554024496939
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -96.57109580052496
+        -26.70354330708662,
+        -85.91554024496939
       ],
       "to": [
         -1.05,
-        -96.57109580052496
+        -85.91554024496939
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
@@ -2104,17 +1998,17 @@
         "kind": "point",
         "xy": [
           -0.025,
-          -101.89887357830274
+          -91.24331802274718
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -101.89887357830274
+        -26.70354330708662,
+        -91.24331802274718
       ],
       "to": [
         -0.025,
-        -101.89887357830274
+        -91.24331802274718
       ],
       "text": "damp-proof 0.05\"",
       "height": 1.6,
@@ -2129,17 +2023,17 @@
         "kind": "point",
         "xy": [
           0.25,
-          -107.22665135608052
+          -101.89887357830274
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -107.22665135608052
+        -26.70354330708662,
+        -101.89887357830274
       ],
       "to": [
         0.25,
-        -107.22665135608052
+        -101.89887357830274
       ],
       "text": "sheathing 0.5\"",
       "height": 1.6,
@@ -2154,17 +2048,17 @@
         "kind": "point",
         "xy": [
           3.25,
-          -112.5544291338583
+          -107.22665135608052
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -112.5544291338583
+        -26.70354330708662,
+        -107.22665135608052
       ],
       "to": [
         3.25,
-        -112.5544291338583
+        -107.22665135608052
       ],
       "text": "stud 5.5\"",
       "height": 1.6,
@@ -2179,17 +2073,17 @@
         "kind": "point",
         "xy": [
           7.000000000000001,
-          -117.88220691163609
+          -112.5544291338583
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -117.88220691163609
+        -26.70354330708662,
+        -112.5544291338583
       ],
       "to": [
         7.000000000000001,
-        -117.88220691163609
+        -112.5544291338583
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
@@ -2204,17 +2098,17 @@
         "kind": "point",
         "xy": [
           8.25,
-          -123.20998468941387
+          -117.88220691163609
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -123.20998468941387
+        -26.70354330708662,
+        -117.88220691163609
       ],
       "to": [
         8.25,
-        -123.20998468941387
+        -117.88220691163609
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
@@ -2229,17 +2123,17 @@
         "kind": "point",
         "xy": [
           9.0,
-          -133.86554024496942
+          -123.20998468941387
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -133.86554024496942
+        -26.70354330708662,
+        -123.20998468941387
       ],
       "to": [
         9.0,
-        -133.86554024496942
+        -123.20998468941387
       ],
       "text": "shiplap-liner 1\"",
       "height": 1.6,
@@ -2259,7 +2153,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.70354330708662,
         -69.93220691163604
       ],
       "to": [
@@ -2284,7 +2178,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.70354330708662,
         -80.58776246719161
       ],
       "to": [
@@ -2304,17 +2198,17 @@
         "kind": "point",
         "xy": [
           -5.05,
-          -91.24331802274718
+          -96.57109580052496
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
-        -91.24331802274718
+        -26.70354330708662,
+        -96.57109580052496
       ],
       "to": [
         -5.05,
-        -91.24331802274718
+        -96.57109580052496
       ],
       "text": "air-gap 1\"",
       "height": 1.6,
@@ -2684,190 +2578,6 @@
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.550000000000001,
-          -112.9375
-        ],
-        [
-          8.499999999999998,
-          -112.9375
-        ],
-        [
-          8.499999999999998,
-          -106.9375
-        ],
-        [
-          -4.550000000000001,
-          -106.9375
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "fiber-cement"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.550000000000001,
-          -112.9375
-        ],
-        [
-          8.499999999999998,
-          -112.9375
-        ],
-        [
-          8.499999999999998,
-          -106.9375
-        ],
-        [
-          -4.550000000000001,
-          -106.9375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-baseboard"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -17.6,
-          -106.3375
-        ],
-        [
-          -4.3000000000000025,
-          -106.3375
-        ],
-        [
-          -4.3000000000000025,
-          -107.28750000000001
-        ],
-        [
-          -4.8000000000000025,
-          -107.28750000000001
-        ],
-        [
-          -4.8000000000000025,
-          -106.8375
-        ],
-        [
-          -17.6,
-          -106.8375
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "flashing"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -17.6,
-          -106.3375
-        ],
-        [
-          -4.3000000000000025,
-          -106.3375
-        ],
-        [
-          -4.3000000000000025,
-          -107.28750000000001
-        ],
-        [
-          -4.8000000000000025,
-          -107.28750000000001
-        ],
-        [
-          -4.8000000000000025,
-          -106.8375
-        ],
-        [
-          -17.6,
-          -106.8375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.7,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-baseboard-flashing"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -4.800000000000001,
-          -112.9375
-        ],
-        [
-          -4.550000000000001,
-          -112.9375
-        ],
-        [
-          -4.550000000000001,
-          -106.9375
-        ],
-        [
-          -4.800000000000001,
-          -106.9375
-        ]
-      ],
-      "pattern": "membrane",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "air-barrier"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -4.800000000000001,
-          -112.9375
-        ],
-        [
-          -4.550000000000001,
-          -112.9375
-        ],
-        [
-          -4.550000000000001,
-          -106.9375
-        ],
-        [
-          -4.800000000000001,
-          -106.9375
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.25,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:sauna-membrane"
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",
@@ -2945,7 +2655,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        -26.203543307086615,
+        -25.70354330708662,
         -157.3686023622047
       ],
       "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
@@ -3787,7 +3497,7 @@
     "• Basement CI: 4\" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.",
     "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
     "• **The exposed band is modelled now, not only drawn (2026-08-18).** The 2026-08-18 lift put grade at -2'-6\", and the 2026-08-21 basement-ceiling overhaul took it to -2'-10\", so the north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so both lifts grew it (and the panel order, ~324 SF to ~374 SF) without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
-    "• **The parge coat is off these three walls and stays on the south one.** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The south wall keeps it, in its own assembly (`CATLIN_BASEMENT_8_GARDEN`) — a grade-datum band cannot describe a face whose exposure runs from -9'-0\" to 0'-0\". Every one of these assemblies still carries exactly 4.55\" outboard of the concrete face, which is what `N-B-BRICK-W`/`-E`'s stand-off is measured from.",
+    "• **The parge coat is gone from every wall in this house (2026-09-02).** The full-height parge added 2026-08-01 was there for the *south* wall, which the sunken garden opens to the air over its whole 9', and it landed on all four sides only because a layer had no way to say \"only here\". The N/E/W walls dropped it for the GRADE-banded protection panel on 2026-08-18; the south wall followed on 2026-09-02, once the 273.7 SF was measured against what was actually visible (about 29 SF). `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — took the same panel band, because 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments took nothing: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.55\" outboard of the concrete face over the band and 4.05\" below it, and `N-B-BRICK-W`/`-E`'s 4.55\" stand-off did not move — the veneer's clear cavity opened from 1\" to 1-1/2\" instead.",
     "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there (2026-08-23).** For as long as the basement walls ran to 0'-0\" the top of the concrete and the bottom of the framed wall were one elevation, and `detail_components/wall_base.py` said so in a comment — `junction_z = framed.z0_m  # top of concrete == bottom of framed wall`. They are 13 7/16\" apart now. The pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is unchanged and is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The component reads `concrete.z1_m` now, so the L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it. **Nothing in the detail's own stack moved** — the same pieces in the same order, one plane lower.",
     "• **The sill is one board and it is shared (2026-08-23).** This has always been the intent of the line further down — \"the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on\" — and until 2026-08-23 the model only half-carried it: `CR-CONC-TO-FRAMED-SILL` was returned under the framed wall's studs and stopped where the framed wall did, so the stretches where a floor bore and no wall stacked (W-B-CN's north 4.05 LF, W-B-CS's 0.83 LF) ordered no plate at all, and the joists themselves resolved *inside* the pour with nothing between wood and concrete. One rule takes the **union** of the two runs now, on the seat, and it bills 370.0 LF where it billed 358.6. There is no second rule and there must not be: two rules over one board is a double-bill, and that is exactly what retiring `floor:on_concrete_wall` prevents.",
     "• **The pour is 8\" everywhere the detail applies (2026-08-21), and the steel is `#5 @ 41\" o.c.` (2026-08-23).** The bar changed with the seat, not with the design: an exactly 8'-0\" wall is IRC Table R404.1.2(8)'s 8'-unsupported row rather than the 10' row a 9'-4\" wall rounds up to, and that cell reads `#5 @ 41\"` where the taller one read `#6 @ 48\"` — a lighter bar at a tighter spacing. This detail is the wood-over-concrete transition, and 12\" was only ever earned where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own bearing seat inboard of it. Wood does not: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. After the 2026-08-21 basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which lands on the east wall and the centre line — neither of which this detail draws. So the north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Nothing in the drawn transition changed: the walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they did, and the 4\" came off the inside face where the sill has room to spare.",
@@ -3832,7 +3542,7 @@
       5.199999999999999
     ],
     "center": [
-      29.364763779527557,
+      29.614763779527557,
       -110.0615157480315
     ],
     "scale": 0.375,

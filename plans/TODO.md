@@ -501,9 +501,14 @@ the future.
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Rename all the wall assemblies to just their type (no need for "CATLIN" in them) and make sure they are in the library
-- **The showers are still unclassified.** Same axis, same rules, same question to answer
-    first: what is actually behind the tile. The sauna is the worked example of what
-    answering it costs — a liner variant on the wall that turned out not to have one.
+- **The showers are still unclassified — one of four is answered (2026-09-02).**
+    Same axis, same rules, same question to answer first: what is actually behind the tile.
+    The sauna is the worked example of what answering it costs — a liner variant on the wall
+    that turned out not to have one. `FX-M-BATH2-SH` now has a modelled surround:
+    `WP-M-BATH2-SURR`, a marble-look cast panel on the pan's two closed sides, priced as an
+    upgrade delta against the fixture row that already buys a kit surround. `FX-A-STUBATH-SH`
+    and the two flanged inserts still have nothing, and the same logic points at giving
+    `FX-A-STUBATH-SH` the same panel.
   - **`FX-S-BALC-HYD`'s sleeve.** A freeze-proof wall hydrant passes through the plant room's
     liner into a −15 °F wall — a vapour leak and a cold surface at once. Needs a sealed,
     insulated sleeve detail; `SleevePenetration` exists but not for this condition.

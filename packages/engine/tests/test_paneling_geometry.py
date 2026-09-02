@@ -130,12 +130,13 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_three_authored_ones(bands):
+def test_the_catlin_bands_are_the_four_authored_ones(bands):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
-    assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT"}
+    assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
+                           "WP-M-BATH2-SURR"}
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
     assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
     for band in by_tag["WP-B-SAUNA-SPLASH"]:
@@ -155,6 +156,23 @@ def test_the_catlin_bands_are_the_three_authored_ones(bands):
         assert band.z1_m == pytest.approx(108 * _IN, abs=1e-6)
         assert not band.replaces_wall_finish
         # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
+        assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
+    # RM-M-BATH2's marble-look shower surround (2026-09-02): the 36" pan's two closed sides,
+    # 3'-0" x 7'-0" each on a zero offset. The walls are W-M-BA2E2 and W-M-BDN1 and NOT
+    # W-M-BA2E — FX-M-BATH2-SH's `wall_ref` names the riser's wall, three feet west of the
+    # pan, which is the trap this assertion exists to hold. W-M-TUBDK-S bounds the room too
+    # and must stay out: it is the tub deck's 20 3/4" knee wall, and a room-wide band would
+    # clamp to its top and buy 5.3 SF of shower panel on a bath apron. Authoring `spans` is
+    # what excludes it.
+    assert len(by_tag["WP-M-BATH2-SURR"]) == 2
+    assert {b.wall_tag for b in by_tag["WP-M-BATH2-SURR"]} == {"W-M-BA2E2", "W-M-BDN1"}
+    for band in by_tag["WP-M-BATH2-SURR"]:
+        assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
+        assert band.z0_m == pytest.approx(0.0, abs=1e-6)
+        assert band.z1_m == pytest.approx(84 * _IN, abs=1e-6)
+        assert band.replaces_wall_finish
+        # A cast panel states no board stock, so it takes the 1/2" default — which is,
+        # again, the panel's own thickness.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
 
 

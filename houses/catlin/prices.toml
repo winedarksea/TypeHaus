@@ -1865,7 +1865,12 @@
 "FX-VANITY-48-SINGLE" = { material = { low = 750, high = 2400 }, labour = { low = 280, high = 660 } }  # 1 ea
 # 36x36 curbed pan plus its three-wall surround panels, set on a mortar bed. The tiled
 # version of this wall is NOT here — see the basis note above.
-"FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 2 ea
+# ** THIS ROW ALREADY BUYS THE SURROUND, INCLUDING ITS LABOUR. ** RM-M-BATH2's
+# WP-M-BATH2-SURR (2026-09-02) is priced in [wood_surfaces] as an UPGRADE DELTA, material
+# only, precisely so the same two walls are not bought twice. If this row is ever re-scoped
+# to a pan alone, that row has to become a full rate on the same day. The `# 2 ea` this
+# comment carried was stale — there are three 36" pans.
+"FX-SHOWER-36" = { material = { low = 300, high = 1000 }, labour = { low = 200, high = 470 } }  # 3 ea
 "FX-TOILET-STD" = { material = { low = 180, high = 700 }, labour = { low = 110, high = 260 } }  # 4 ea
 # ** THE CARRIER CAME OUT OF THIS ROW ON 2026-08-31 AND IS NOW ITS OWN LINE. ** This row's
 # own comment had said for months that "the carrier is set during framing rather than at
@@ -1997,10 +2002,16 @@
 # 2026-08-25: the tile scope collapsed from 495 SF to 119. RM-B-SAUNA went to sealed
 # concrete (its shower is a curbed liner pan, which brings its own waterproof floor), and
 # RM-M-BATH1 and RM-M-LAUNDRY went to sheet vinyl with the hall. What is left is RM-B-BATH
-# and RM-M-BATH2 — two small floors. ** 119 SF is under any tile sub's minimum: expect a
-# LUMP of $1,500-2,500 for the pair rather than the $/SF arithmetic, the same mobilisation
-# argument the oak and vinyl-sheet rows make. ** The rate is kept so the line is not zero.
-"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 119 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all
+# ** 2026-09-02: 119 -> 84 SF. ** RM-B-BATH's 30.2 sf went to `vinyl-sheet` below — 3'-0"
+# of floor under a stair with no radiant zone under it, which is the whole test for tile in
+# this house. What is left is RM-M-BATH2's floor, which stays tile because FH-M-BATH2 is its
+# only heat source at 98% of the room's load and tile is that emitter's mass, plus
+# RM-B-SAUNA's WP-B-SAUNA-SPLASH wall override.
+# ** 84 SF is still well under any tile sub's minimum: expect a LUMP of $1,500-2,500 rather
+# than the $/SF arithmetic, the same mobilisation argument the oak and vinyl-sheet rows make.
+# The tile trade is NOT deleted by this change and should not be presented as if it were —
+# only the stucco scope deletes a trade. ** The rate is kept so the line is not zero.
+"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 84 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all
 # 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
 # $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
 # a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
@@ -2019,7 +2030,11 @@
 # but confirm the SCOPE of the cove before pricing: a 6" flash cove up every wall of six
 # rooms plus a corridor is a lot more welded linear foot than the RM-S-PLANT number was
 # researched against, and a plain glue-down with a vinyl base would be half this rate. **
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 385 SF
+# 2026-09-02: +30.2 sf as RM-B-BATH retyped off tile. The `# 385 SF` this row carried was
+# stale before that (the attic-studio pass had already taken it to 432); 466 SF is the
+# blessed post-change figure off `haus takeoff`. The cove-scope caveat above stands and
+# grows with it.
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 466 SF
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -2187,12 +2202,18 @@
 # redesign and it is NOT taken here — this row is the fibreglass base case.
 # Sources: published R-30C cathedral batt retail $/SF 2026, uplifted ~15% over the R-19 row.
 "fiberglass-r30c" = { material = { low = 0.7, high = 1.25 }, labour = { low = 0.6, high = 1.05 } }  # 1449.0 SF — R-30C compressed to 6-7/8" in the 11-7/8" bay
-"foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 324 SF
-# 2026-08-18: the above-grade foundation band on the N/E/W basement walls, 324 SF
-# (108 LF of perimeter x the 3'-0" the panel runs, 6" of it below grade). Aluminium-faced
-# rigid protection panel, sold in 4' x 8' sheets and fastened into the XPS with washered
-# pins; it costs more per SF than the parge coat it replaces and covers a quarter of the
-# area, because the parge was claimed over 9' of wall that is backfilled.
+"foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 276.3 SF
+# 2026-08-18: the above-grade foundation band on the basement walls, authored as a
+# `Layer.extent` off the GRADE datum rather than as a number here, so the 2026-08-21 deck
+# overhaul and the 2026-08-23 bearing-seat rework moved it without an edit. The `# 324 SF`
+# this comment carried was arithmetic (108 LF x 3'-0") and had been stale since that seat
+# rework; 276.3 SF is the blessed post-change figure off `haus takeoff`.
+# 2026-09-02: +37.2 SF as W-B-S1 and W-B-S4 — the two ends of the south wall either side of
+# the sunken garden's excavation, 16.83 LF of genuinely buried wall — joined
+# CATLIN_BASEMENT_8 with the stucco retirement below. Aluminium-faced rigid protection
+# panel, sold in 4' x 8' sheets and fastened into the XPS with washered pins; it costs more
+# per SF than the parge coat it replaced and covers a fraction of the area, because the
+# parge was claimed over wall that is backfilled or inside a brick cavity.
 # Sources: homewyse.com 2026 foundation insulation protection board, and the same range
 # the trade quotes for aluminium foundation coving.
 "gwb" = { material = { low = 0.45, high = 0.75 }, labour = { low = 1.1, high = 1.9 } }  # 13577.3 SF — hang + tape + Level 4; +2,498 SF with the drywalled basement ceiling (2026-08-21)
@@ -2494,14 +2515,23 @@
 # rate assumes no staging).
 "roof-adhered-butyl-ht" = { material = { low = 1.3, high = 2.3 }, labour = { low = 1.0, high = 1.8 } }  # 1547.9 SF — the sloped deck plane, out to the fascia; it laps the girt oversail
 "struct-1-plywood" = { material = { low = 0.9, high = 1.7 }, labour = { low = 1, high = 1.9 } }  # 5554.7 SF — +1547.9 on 2026-08-31 as the roof deck came here from the ZIP row below
-# 2026-08-20: the MATERIAL rate was an installed rate that had crept into the material column.
-# A parge/skim coat is $0.60-1.50/SF in material; 3-coat stucco over lath is $1.50-2.50/SF.
-# This band spans both readings because the assembly does not yet say which it is — resolve
-# that and the range halves. The labour is where the money always was: parging is a
-# labour-dominated trade, and at 422 SF this is near a plasterer's minimum call-out, so
-# expect a floor of roughly $1,500-2,500 whatever the $/SF arithmetic says.
-"stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # 422.1 SF (was 1394.1 SF: the N/E/W walls' parge was
-# replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
+# RETIRED 2026-09-02 — commented out, not deleted, on the `glazed-green-brick` convention
+# stated at the head of this file: a priced row that vanishes silently makes the house
+# cheaper by an amount nobody can attribute. This one is worth about -$1,200 to -$2,460.
+#
+# It is retired because the labour was always the whole argument and the labour was a
+# mobilization. A parge/skim coat is $0.60-1.50/SF in material; 3-coat stucco over lath is
+# $1.50-2.50/SF, and the band below spanned both readings because the assembly never said
+# which it was. Parging is a labour-dominated trade, and at this scope it sat near a
+# plasterer's minimum call-out — expect a floor of roughly $1,500-2,500 whatever the $/SF
+# arithmetic says. So the question was never the rate. It was whether the house wanted a
+# plasterer on site at all for 273.7 SF of which about 29 SF was ever visible: ~139 SF was
+# inside W-B-BRICK's ventilated cavity and ~106 SF behind 6'-4" of backfill. The visible 29
+# SF is a grade band, and the house already owns a grade-banded skin for exactly that
+# (`foundation-protection-panel` above). See plan/assemblies.py `_GARDEN_PARGE`.
+#
+# The `# 422.1 SF` below was stale — live was 273.7 SF at retirement.
+# "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # was 273.7 SF
 "white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
 # ** XPS IS THICKNESS-QUALIFIED SINCE 2026-08-31, AND IT HAD TO BE. ** `envelope_layers`
 # qualifies its price key on `thickness_in` (cli/prices.py QUALIFIED_KEY_FIELD), and this
@@ -2897,7 +2927,8 @@
 #   oak          also_in_floor_finishes  -> priced in [floor_finishes], 351 SF, same number
 #   sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
-#   tile         the RM-B-SAUNA override, 52 SF of the same tile [floor_finishes] prices
+#   tile         the RM-B-SAUNA override — see the correction below, it is NOT a mirror
+#   marble-look-panel  billed here and nowhere else, like pet-felt-panel
 # Basis for walnut: hardwood T&G paneling material $2-6/SF for common species, and walnut is
 # at the top of the species ladder — homeguide.com tongue-and-groove ceiling cost 2026,
 # designtransitionstudio.com walnut price guide, homewyse.com wall paneling 2026.
@@ -2905,7 +2936,15 @@
 # "elm-timber" =    # 0 SF — timber, bills in structural_solids
 # "oak" =    # 351 SF — billed in [floor_finishes]
 # "sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
-# "tile" =    # 52 SF — billed in [floor_finishes]
+# ** THE "billed in [floor_finishes]" CLAIM ON THIS ROW WAS FALSE, and is corrected here
+# rather than repeated (2026-09-02). ** [floor_finishes]'s `tile` is FLOOR area in other
+# rooms; WP-B-SAUNA-SPLASH is 45 SF of WALL tile on the sauna pan's two closed sides, and
+# nothing anywhere in this file pays for it. It is genuinely unpriced scope, left commented
+# rather than rated because the tile sub's minimum call-out (see [floor_finishes]) swallows
+# it whole — the 84 SF lump quoted there is what actually buys this 45 SF as well as
+# RM-M-BATH2's floor. Rate it here only if that section ever moves to true $/SF bidding, or
+# the same square feet get bought twice.
+# "tile" =    # 52 SF — NOT billed in [floor_finishes]; see above
 "walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 51 SF
 # ADDED 2026-08-29 with RM-M-STUDY's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
 # felt board on the south and north walls, band 3'-0" to 9'-0". It is billed here and nowhere
@@ -2918,6 +2957,24 @@
 # board at the low end and a named specification at the high. Labour is cut-and-adhere over
 # painted gypsum with a mitred edge at the wainscot cap; no framing, no substrate.
 "pet-felt-panel" = { material = { low = 4, high = 9 }, labour = { low = 2, high = 5 } }  # 62 SF
+# ADDED 2026-09-02 with RM-M-BATH2's shower surround, WP-M-BATH2-SURR — 42 SF net / 47 SF
+# ordered of marble-look cast panel on the 36" pan's two closed sides.
+#
+# ** THIS IS AN UPGRADE DELTA, NOT A RATE, and it is deliberately UNSPLIT. ** [fixtures]'s
+# `FX-SHOWER-36` row already buys "36x36 curbed pan plus its three-wall surround panels",
+# labour included, for all three 36" pans in this house. A full $/SF rate here would pay for
+# these same two walls a second time. What this row buys is the difference between the
+# kit-grade surround already inside that fixture's material half and a specified cast panel.
+# `[basis] wood_surfaces = "material"`, so an unsplit range bills entirely as material —
+# which IS the statement: the labour to hang a panel is in the fixture row and does not
+# change with the panel's grade. Cross-referenced from the FX-SHOWER-36 note so the two
+# cannot drift.
+#
+# $4-11/SF is wide because the product family is an OPEN OWNER SELECTION: cultured marble
+# runs about $8-12/SF installed-goods, cast solid surface $12-20, acrylic $5-9, and the
+# delta over a builder-kit surround is what is left after the kit's own value comes out.
+# One owner selection collapses this range; until then the spread is honest.
+"marble-look-panel" = { low = 4, high = 11 }  # 47 SF
 
 [openings]
 # ** RE-SOURCED FROM PRE-TAX LIST PRICES, 2026-08-20b. ** This section previously derived its
@@ -4431,12 +4488,22 @@ cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
 # and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
 finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }
 # Explicitly NOT inside the tile labour rate in [floor_finishes]. NOT DRIVEN (2026-08-27):
-# the quantity this wants is WET-WALL area, and a shower surround is not a modelled finish —
-# `floor_finishes` has 119 SF of floor tile and `wood_surfaces` 45 SF of wall tile, which
-# together are a fifth of what this row is buying. Driving it off the floor alone would
-# implicitly re-scope the row to floors, which is worse than a lump. The lump stands until a
-# shower surround is a layer.
-finish-tile-backer-and-waterproofing = { low = 4000, high = 8000 }
+# the quantity this wants is WET-WALL area, and a shower surround is not a modelled finish.
+# Driving it off the floor alone would implicitly re-scope the row to floors, which is worse
+# than a lump. The lump stands until a shower surround is a layer.
+#
+# ** $4,000-8,000 -> $2,000-4,500 on 2026-09-02, AND THIS IS A JUDGEMENT, NOT A MEASUREMENT.
+# ** It carries most of the saving in the bath pass and has to be presented to the owner that
+# way. What changed under it:
+#   * RM-B-BATH went to sheet vinyl with a 6" integral flash cove. That floor now needs no
+#     backer and no membrane at all — the cove IS the waterproofing — and no threshold.
+#   * RM-M-BATH2's shower back is WP-M-BATH2-SURR, a cast panel over 42 SF that bonds to
+#     gypsum by construction. No backer, no membrane behind it either.
+# What is left, and why this cannot go to zero: RM-M-BATH2's 84 SF of tiled floor over
+# FH-M-BATH2, RM-B-SAUNA's 45 SF of splash tile, and the RM-S-SUITEBATH niche. Halving the
+# lump is a defensible reading of that residue; it is not an arithmetic result, and the next
+# person to touch it should re-argue it rather than trust it.
+finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # DRIVEN 2026-08-27 off the door count — 37 today, 36 when this was written. [openings]
 # prices the leaf and its install, not
 # the lockset, the hinges or the stop. $84-306 each spans a builder-grade passage set and a

@@ -116,8 +116,9 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
     # ``CATLIN_BASEMENT_*`` covers every perimeter foundation assembly: the N/W wall with
-    # its above-grade protection band, the 12" east wall, and the south wall with its
-    # full-height parge over the sunken garden (2026-08-18). They differ in what covers the
+    # its above-grade protection band, the 12" east wall, and the two buried ends of the
+    # south wall, which joined that same band on 2026-09-02 when the stucco was retired.
+    # They differ in what covers the
     # exterior XPS, which is a field condition well outside an opening's perimeter, and
     # since 2026-08-21 they differ in the pour too — but the buck, the frame and the
     # flashing at a window in cast concrete are the same detail at 8" as at 12" (only the
@@ -130,14 +131,14 @@ TRANSITIONS = (
     # flashing here is nothing like a standard framed opening.
     # Same reasoning as the garden arch above, one wall further north: the reveals through
     # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,
-    # sealed opening is the one in the CATLIN_BASEMENT_8_GARDEN wall behind them (TR-CATLIN-
+    # sealed opening is the one in the concrete/framed wall behind them (TR-CATLIN-
     # BASEMENT-OPENING already draws that). A second sheet here would detail a perimeter
     # that has no perimeter work.
     Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING",
                condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
-               suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
+               suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1-1/2\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
     # The sunken garden's framed walkout (2026-08-28). D-B-PATIO used to be a hole formed
     # in an 8" pour and TR-CATLIN-BASEMENT-OPENING drew it; it is an ordinary innie opening
     # in a 2x6 wall now — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.

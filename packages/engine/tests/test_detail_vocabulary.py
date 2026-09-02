@@ -357,15 +357,26 @@ def test_protection_board_starts_at_grade(catlin_model):
 
 
 def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
-    """Buried foam gets no board — the backfill protects it. The south basement wall is the
-    house's one wall where that is still the whole story below its top: the sunken garden
-    exposes it from -9'-0" to 0'-0", which is not a band off grade at all, so it carries a
-    full-height parge and no banded panel for the component to draw.
+    """Buried foam gets no board — the backfill protects it.
+
+    REPOINTED 2026-09-02. This used to name ``CATLIN_BASEMENT_8_GARDEN``, whose full-height
+    parge left no banded panel for the component to draw; that assembly has no instance since
+    the stucco retirement and the condition key no longer exists. The case that documents the
+    same rule now is the sunken garden's curb, and it documents it through a different door:
+    ``foam_protection_board`` DOES fall to its derived branch here (there is no covering layer
+    to short it out), but the curb's top is at -102 3/16", 5'-8" below site grade, so the
+    derived ``height_in`` comes out negative — below ``min_exposed_height_in`` — and the
+    component returns nothing.
+
+    That is a thinner guarantee than the old one and worth saying out loud: it rests on the
+    negative-height gate rather than on the foam being covered, and ``site.grade`` is a single
+    house-wide number that knows nothing about the excavation. If that dispatch ever changes,
+    this wall would draw protection board on a face inside a brick cavity.
 
     (Until the 2026-08-18 lift the *whole* basement was this case, because the wall topped
-    out at grade. N/E/W now stand 2'-6" out of the ground — see the test below.)"""
+    out at grade. The perimeter now stands 2'-6" out of the ground — see the test below.)"""
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:CATLIN_BASEMENT_8_GARDEN|CATLIN_EXT_2X6")
+        catlin_model, "wall_foundation:CATLIN_EXT_2X6|CATLIN_GARDEN_CURB_6")
     assert "foam-protection-board" not in _component_tags(scene)
 
 
