@@ -423,11 +423,11 @@ _BEARING_CHAIN_LIMIT = 6
 def _bearing_of(ctx: CheckContext, post: Post) -> tuple[object, tuple[str, ...]]:
     """Walk ``supported_by`` to whatever finally carries this post, and how it got there.
 
-    It used to follow **exactly one** ``Post -> Post`` link and know about nothing but
-    ``Pad``, so ``PT-SG-BF2 -> PT-SG-FCOL -> FT-SG-FCOL`` (a post on a column on a bell) and
+    Following the whole chain — not just one ``Post -> Post`` link ending at a ``Pad`` — lets
+    ``PT-SG-BF2 -> PT-SG-FCOL -> FT-SG-FCOL`` (a post on a column on a bell) and
     ``PT-SG-BR1 -> W-SG-W1`` (a pillar on a foundation wall with its own strip footing) both
-    came out as "does not bear on a resolvable Pad" — a sentence about the CHECK's reach
-    dressed up as a fact about the model. The model says exactly what those posts bear on.
+    report what they actually bear on, rather than "does not bear on a resolvable Pad" — a
+    sentence about the CHECK's reach dressed up as a fact about the model.
 
     Returns the last element in the chain and the tags it passed through, so the finding can
     quote the evidence rather than assert a conclusion.

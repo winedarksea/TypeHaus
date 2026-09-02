@@ -397,10 +397,9 @@ def corner_style_matches_preference(ctx: CheckContext) -> list[Finding]:
     """Every corner an assembly declares at the house's own style, BUILT that way.
 
     ``preferences.toml``'s ``[framing] corner`` is the one place a house states its corner
-    style once; nothing compared it to what the solver actually built until this rule, which
-    is exactly the gap that let a house author ``corner_style_end="4-stud"`` on four exterior
-    walls and still ship zero 4-stud corners (2026-08-25) — the override never took effect,
-    and nothing said so.
+    style once; nothing else compares it to what the solver actually built, so an override
+    that never took effect (e.g. ``corner_style_end="4-stud"`` shipping zero 4-stud corners)
+    would otherwise go unnoticed.
 
     Scoped to walls whose own STRUCTURE ``FramingSpec.corner_style`` already matches the
     declared preference: a wall on a *different* assembly-declared style (the freestanding

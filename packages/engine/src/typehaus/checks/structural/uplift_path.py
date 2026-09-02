@@ -15,23 +15,17 @@ The chain this check walks, top down:
 6. post  -> what it stands on   — a base under every post
 
 **It grades coverage, not capacity.** A finding says a joint has hardware or has none; it
-never says the hardware is big enough. Until 2026-08-30 the reason was that nothing in this
-model carried a design wind speed at all; ``Site`` now carries one, and the reason has
-narrowed rather than gone away — *this* check still derives no demand from it. It knows no
-tributary area, no force coefficient, and no share of the storey shear for any joint it
-walks, and a connector schedule without a load is a drawing, not a calculation. ``wind.py``
-owns the wording, so the site's actual basis is quoted rather than a stale absence claim.
-Until 2026-08-30 a covered link therefore reported UNKNOWN, never PASS, so that "there is
-hardware here" could not be mistaken for "this joint is adequate" (#64). The concern was
-right; the mechanism was not. It put the sentence an engineer must act on at the end of 59
-identical rows — the shape a reader scans past — and it spent the UNKNOWN column, which is
-supposed to mean "a real input is missing", on a scope disclaimer.
+never says the hardware is big enough. ``Site`` carries a design wind speed, but *this*
+check still derives no demand from it: it knows no tributary area, no force coefficient, and
+no share of the storey shear for any joint it walks, and a connector schedule without a load
+is a drawing, not a calculation. ``wind.py`` owns the wording, so the site's actual basis is
+quoted rather than a stale absence claim.
 
-**The rule is now named for what it grades and passes when it passes**, and the capacity
-question is hoisted into one ENGINEERED item per roof (``lateral_uplift/RF-HOUSE``,
-``lateral_uplift/RF-GARAGE``): two rows a reviewer must act on, that a professional seal has
-to cover and that ``haus engineering`` lists. That is decision #64's refinement, not its
-reversal — the question stays open and is more visible, not less.
+**The rule is named for what it grades, and passes when it passes.** A covered link is a
+PASS of the coverage rule that actually runs; it never claims the joint is adequate (#64) —
+that capacity question is hoisted into one ENGINEERED item per roof
+(``lateral_uplift/RF-HOUSE``, ``lateral_uplift/RF-GARAGE``): two rows a reviewer must act on,
+that a professional seal has to cover and that ``haus engineering`` lists.
 ``checks/structural/lateral_racking.py`` is the one place that does compute a wind demand,
 and it covers the balcony's braced bays only.
 
@@ -66,11 +60,10 @@ from typehaus.takeoff.uplift_joints import (
 )
 from typehaus.wind import capacity_caveat
 
-#: Renamed from ``structural.uplift_load_path`` on 2026-08-30, and the rename IS the fix.
-#: The old id promised to grade the load path; the rule grades whether every joint in it is
-#: *covered*, which is a different and narrower claim. Under the honest name a covered joint
-#: is an honest PASS of the rule that actually ran, and the capacity question moves to where
-#: it can be tracked — the engineering register (see ``uplift_capacity_items`` below).
+#: The id names what the rule grades: whether every joint in the chain is *covered*, a
+#: narrower claim than "the load path is adequate". A covered joint is an honest PASS under
+#: this name, and the capacity question is tracked separately in the engineering register
+#: (see ``uplift_capacity_items`` below).
 _CHECK_ID = "structural.uplift_path_coverage"
 
 #: The house-level items the capacity question now lives on, one per roof. Two rows a
@@ -105,11 +98,11 @@ class Link:
     #: column as a real break — and take ``haus check`` to exit 1 over it.
     not_evaluable: str | None = None
     #: Why this joint is outside what a *connector-coverage* rule governs at all — as
-    #: opposed to ``not_evaluable``, which is "I could not look". The two used to share one
-    #: field and one UNKNOWN, and they are different sentences: a post that never declares
-    #: what it stands on is a hole in the model somebody can fill, while a cast column on a
-    #: cast footing has no connector by design and never will. The first is UNKNOWN; the
-    #: second is NOT_APPLICABLE, which is a verdict about the building.
+    #: opposed to ``not_evaluable``, which is "I could not look". They are different
+    #: sentences: a post that never declares what it stands on is a hole in the model
+    #: somebody can fill, while a cast column on a cast footing has no connector by design
+    #: and never will. The first is UNKNOWN; the second is NOT_APPLICABLE, which is a verdict
+    #: about the building.
     not_governed: str | None = None
 
 
@@ -142,12 +135,9 @@ def _finding(link: Link, site) -> Finding:
             fix_hint=("declare the joint so a rule can derive it (a Roof/FloorSystem "
                       "bearing_ref, a Post.supported_by, a Beam.bearing_ref), or author a "
                       "Connector naming both members"))
-    # PASS, since 2026-08-30 — of a rule now named for what it grades. This used to be an
-    # UNKNOWN so that "there is hardware here" could not be mistaken for "this joint is
-    # adequate" (#64). That concern was right and the mechanism was wrong: the sentence it
-    # protected ran at the end of 59 identical rows, which is exactly what a reader scans
-    # past. It is now one named ENGINEERED item per roof, which a signoff has to cover and
-    # `haus engineering` lists — more visible, not less. See decision #64's refinement.
+    # PASS, of a rule named for what it grades: "there is hardware here" is never mistaken
+    # for "this joint is adequate" (#64), because that question is one named ENGINEERED item
+    # per roof, which a signoff has to cover and `haus engineering` lists.
     return Finding(
         severity=Severity.WARN, check_id=_CHECK_ID, result=Result.PASS,
         message=(f"[advisory, not engineering] {link.name} is connected by {link.hardware} "

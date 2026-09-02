@@ -13,8 +13,8 @@ zones describe. It is also the one input in the whole calculation that this repo
 
 **Why the table is not transcribed here.** ASCE 7-16 is a copyrighted standard and its
 Fig. 29.3-1 grid is not published in any freely accessible authoritative source. Three
-individual cells could be verified on 2026-08-30, each from a worked example by an
-independent engineering vendor, and those three are below. The rest are not, and this
+individual cells could be verified, each from a worked example by an independent
+engineering vendor, and those three are below. The rest are not, and this
 module will not interpolate, curve-fit, or "reasonably assume" its way across them.
 
 That constraint is not a defeat, and the check built on this module is not crippled by it.
@@ -49,7 +49,7 @@ class Cell:
     citation: str
 
 
-#: Cases A and B cells verified 2026-08-30 against published worked examples. Each is one
+#: Cases A and B cells verified against published worked examples. Each is one
 #: engineer's reading of the figure for one geometry — enough to bound and sanity-check,
 #: never enough to interpolate between.
 VERIFIED_CASE_AB: tuple[Cell, ...] = (
@@ -81,8 +81,8 @@ MAX_VERIFIED_CASE_C_SEEN = 4.07
 
 #: Fig. 29.3-1's note for a sign with openings: where the open area is under 30 % of gross,
 #: C_f is multiplied by ``1 - (1 - eps) ** 1.5``, eps being the solidity ratio (solid area
-#: over gross). Confirmed 2026-08-30 in both Meca articles and SkyCiv's ASCE 7-16 load
-#: generator documentation.
+#: over gross). Confirmed in both Meca articles and SkyCiv's ASCE 7-16 load generator
+#: documentation.
 _OPENING_REDUCTION_EXPONENT = 1.5
 #: The same note's limit: below this solidity the reduction formula is not the right model
 #: and the appurtenance is an *open* sign or a trussed frame (§29.4), not a porous solid one.

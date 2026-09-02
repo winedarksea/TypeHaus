@@ -2,12 +2,9 @@
 
 A deck that is cast concrete over part of its plan and joists over the rest has two stacks
 that have to agree twice: at the top, where the two finished floors meet, and at the bottom,
-where both land on the same pour. The top has been guarded since 2026-08-21 — an explicit
-``Slab.top_elevation``, and ``integrity.slab_thickness`` holding the build-up to a layer
-boundary. **The bottom was not guarded at all**, and for two days it was wrong: catlin's
-joists and their rim resolved inside the top foot of walls that ran to the storey datum,
-with nothing between the wood and the concrete, while the deck's soffit sat 1 9/16" above
-the plane the mudsill actually sits on.
+where both land on the same pour. The top is guarded by an explicit ``Slab.top_elevation``
+and by ``integrity.slab_thickness`` holding the build-up to a layer boundary. This check
+guards the bottom, which nothing else does.
 
 The physical rule is one sentence. *The deck's soffit and the underside of the wood bay's
 mudsill are the same plane, and every concrete wall in the storey below tops out on it.*

@@ -44,12 +44,11 @@ from typehaus.model.trim import Flashing
 
 _ADVISORY = "[advisory, not engineering] "
 
-#: Renamed 2026-08-30, and the rename is what lets the PASS below be honest. These
-#: two rules grade PRESENCE — is a sealed underlayment layer in the assembly, is a
+#: These two rules grade PRESENCE — is a sealed underlayment layer in the assembly, is a
 #: drip flashing on record — and cannot grade FORTIFIED compliance, because the
 #: gauge, the ASTM/ICC listing and the fastening schedule are documentation facts
-#: no model carries. Under the old names a PASS would have claimed the standard was
-#: met. Deliberately NOT hoisted into the engineering register: what is outstanding
+#: no model carries; the names say PRESENT so a PASS never claims the standard was met.
+#: Deliberately NOT hoisted into the engineering register: what is outstanding
 #: here is a submittal document, not a calculation, and an engineer's seal is the
 #: wrong instrument for it.
 _CHECK_SEALED_DECK = "structural.fortified_roof_sealed_deck_present"

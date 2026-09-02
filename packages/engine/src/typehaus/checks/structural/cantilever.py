@@ -4,9 +4,8 @@ Every span table this model owns — the interior floor tables in
 :mod:`typehaus.checks.structural.checks`, AWC DCA6 Table 3A in
 :mod:`typehaus.checks.structural.deck_tables` — is a *uniform load* table. It answers "how
 far may this joist reach carrying 40 psf over its whole length", and it is silent about a
-6x6 pillar set down on the free end of one 1 1/2" ply. That silence used to read as a pass:
-the porch joists cleared their span, the pillar resolved, and no rule looked at the fact
-that the pillar was standing on the overhang.
+6x6 pillar set down on the free end of one 1 1/2" ply — nothing else in this model looks
+at whether a point load is standing on an overhang.
 
 This check looks. Scope is a ``FloorSystem`` whose ``JoistSpec`` declares any cantilever,
 paired with what it resolved into; the load is a ``Post`` naming that deck in

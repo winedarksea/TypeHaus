@@ -7,15 +7,13 @@ wall height and by how much unbalanced backfill it retains. Many of its cells re
 no vertical reinforcement required, i.e. plain concrete is enough. Past the table the wall
 is an engineered element, and the code says so.
 
-This check used to screen against a table it called "IRC Table R404.1.2(1)", capping a 12"
-wall at 7' of unbalanced fill at 45 psf/ft. That was wrong twice over. R404.1.2(1) is
-"MINIMUM HORIZONTAL REINFORCEMENT FOR CONCRETE BASEMENT WALLS" — two rows about where to
-put horizontal bars, carrying no backfill limits at all — and no IRC edition from 2009
-through 2021 publishes any maximum-unbalanced-fill table for plain *concrete* walls. The
-limits it used matched nothing: not R404.1.2(8), not the plain *masonry* table R404.1.1(1),
-not IBC 1807.1.6.3(1). They were also wrong in the unsafe direction — not conservative, but
-rejecting walls the code plainly permits. A 12" wall at 45 psf/ft retaining 9' of fill on a
-9' storey needs no vertical steel at all.
+IRC Table R404.1.2(1) is "MINIMUM HORIZONTAL REINFORCEMENT FOR CONCRETE BASEMENT WALLS" —
+two rows about where to put horizontal bars, carrying no backfill limits at all — and is not
+this check's table; no IRC edition from 2009 through 2021 publishes any maximum-unbalanced-
+fill table for plain *concrete* walls. This check screens against R404.1.2(8), the only
+table that keys unbalanced fill to soil class, wall height and thickness; the plain
+*masonry* table R404.1.1(1) and IBC 1807.1.6.3(1) are separate tables for a different wall
+material and do not apply here.
 
 Same contract as the sibling structural checks: this is a table lookup, labeled advisory,
 and it never claims to be a design. It also never guesses an input — no soil class means
@@ -188,12 +186,11 @@ def _handoff(ctx, cid: str, reason: str, tags: tuple[str, ...], *,
              spec: str | None = None) -> list[Finding]:
     """This condition is outside the prescriptive path — delegate it, one item per wall.
 
-    Every branch below that used to hard-code ``Result.UNKNOWN`` and end its sentence with
-    the word "engineered" now comes here. Nothing about the gate moves: with no calculation
-    registered for ``retaining_wall`` the finding is still UNKNOWN and still blocks. What it
-    gains is a *name* — ``retaining_wall/W-SG-E2`` — that ``engineering.toml`` can seal and
-    that ``structural.frost_depth`` can point at too, so one engineer's design over these
-    walls answers both checks instead of each carrying its own untraceable paragraph.
+    With no calculation registered for ``retaining_wall`` the finding is UNKNOWN and blocks,
+    same as a hard-coded UNKNOWN would. What routing through here gains is a *name* —
+    ``retaining_wall/W-SG-E2`` — that ``engineering.toml`` can seal and that
+    ``structural.frost_depth`` can point at too, so one engineer's design over these walls
+    answers both checks instead of each carrying its own untraceable paragraph.
     """
     return [_engineered(ctx, cid, item_id(_KIND, tag), f"{tag}: {reason}", (tag,),
                         code="IRC R404.4", authored=spec)

@@ -1,14 +1,10 @@
 """``structural.window_framing_module`` — small openings against the stud grid.
 
-Split out of ``checks.py`` on 2026-08-28 when the rule stopped being one function: reading
-the *host wall's* own module instead of the house preference brought the RO ladder's own
-arithmetic (:func:`_ro_caps`) with it, and the file was already over the 500-line bound.
-
-The grid arithmetic itself moved out again on 2026-08-30, to ``_stud_grid.py``, when
-``structural.door_framing_module`` needed the same four answers. What stays here is what is
-specific to a WINDOW: :func:`_ro_caps`, the ladder that says how wide a rough opening may be
-before it breaks more than one stud. That ladder must not be shared — see the note at the top
-of ``door_module.py`` for the four catlin doors it would falsely accuse.
+The grid arithmetic itself lives in ``_stud_grid.py``, shared with
+``structural.door_framing_module``. What stays here is what is specific to a WINDOW:
+:func:`_ro_caps`, the ladder that says how wide a rough opening may be before it breaks more
+than one stud. That ladder must not be shared — see the note at the top of ``door_module.py``
+for the four catlin doors it would falsely accuse.
 """
 
 from __future__ import annotations
@@ -65,10 +61,9 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
     check and the framing it checks must never disagree about how many studs an opening
     costs. That is also why the module read here is the wall's own STRUCTURE
     ``FramingSpec.spacing`` with ``preferences.toml``'s as the fallback, and not the
-    preference house-wide: the solver has always laid a wall out on the assembly field, so
-    a house with one wall off the declared module was being graded against a grid nobody
-    built. The two agreed only while every spacing in the house was 16" (fixed
-    2026-08-28); ``_ro_caps`` moves the opening ladder with it, since every rung on it is
+    preference house-wide: the solver lays a wall out on the assembly field, so a house
+    with one wall off the declared module would otherwise be graded against a grid nobody
+    built. ``_ro_caps`` moves the opening ladder with it, since every rung on it is
     arithmetic on the module.
     """
     from typehaus.model.enums import LayerFunction
@@ -94,8 +89,8 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
         if framing is None:
             continue  # concrete / masonry openings do not consume stud bays
         # The module the wall is FRAMED on, which halves on a staggered partition — see
-        # _stud_grid.wall_module. Read straight off ``framing.spacing`` until 2026-08-30,
-        # which disagreed with the solver by a factor of two on every staggered wall.
+        # _stud_grid.wall_module. Reading straight off ``framing.spacing`` disagrees with
+        # the solver by a factor of two on a staggered wall.
         module_in = wall_module(framing, rules.module_in)
         spacing = module_in * 0.0254
         stud_in = member_actual(framing.member)[0]

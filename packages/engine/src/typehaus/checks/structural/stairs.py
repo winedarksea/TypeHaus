@@ -31,8 +31,8 @@ MAX_RISER_VARIATION_IN = 0.375
 # Categories whose top face is a surface a foot lands on, in the order a climber meets
 # them. A winder box's deck is its ``winder`` tread; a U-stair's platform is its ``landing``
 # deck. The joists, rims and posts under a platform are ``landing_framing`` and are excluded
-# by category — this used to need a child-key prefix list, because every member of a landing
-# shared one category.
+# by category — a single frozenset test, not a child-key prefix list, since walking surface
+# and framing are separate categories.
 _WALKING_SURFACE_CATEGORIES = frozenset({"tread", "winder", "landing"})
 
 # How close a supporting element's top has to be to a post's base to be carrying it.
