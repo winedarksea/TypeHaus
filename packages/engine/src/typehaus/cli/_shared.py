@@ -60,9 +60,8 @@ class TierName(StrEnum):
 class ExitOn(StrEnum):
     """What makes `haus check` exit non-zero.
 
-    ``fail`` is the default because the old ERROR-only gate could not see catlin's four
-    advisory FAILs — the command exited 0 while reporting failures, so no script could
-    use it as a gate.
+    ``fail`` is the default: an ERROR-only gate can't see catlin's four advisory FAILs — the
+    command would exit 0 while reporting failures, so no script could use it as a gate.
     """
 
     error = "error"

@@ -2,9 +2,7 @@
 
 Copies a shipped house as the starting point rather than writing one out of inline string
 constants: ``houses/starter`` by default (a small, immediately-buildable two-storey house)
-or ``houses/catlin`` with ``--template catlin``. The inline "minimal" template that used to
-live here was a third copy of the starter plan and drifted from it — a scaffolded house that
-no test ever built.
+or ``houses/catlin`` with ``--template catlin``.
 """
 
 from __future__ import annotations

@@ -96,11 +96,8 @@ def render(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
-    # (A copy of `haus print`'s --sealed gate stood here and referenced `sealed` and
-    # `checklist`, neither of which this command has: every `haus render` raised NameError
-    # from 2026-08-2x until 2026-08-30. It does not belong here either way — `haus print`
-    # is the submittal gate, `haus render` is the look-at-it loop, and gating the loop on a
-    # professional seal would make the drawings unreadable exactly when they are needed.)
+    # `haus print` is the submittal gate; `haus render` is the look-at-it loop. Gating the
+    # loop on a professional seal would make the drawings unreadable exactly when needed.
     model, _ = resolve(result.plan)
     # A forced scale is meaningless without a sheet to print it on — the frameless path has
     # no viewport to hold the drawing to — so asking for one asks for the default sheet.

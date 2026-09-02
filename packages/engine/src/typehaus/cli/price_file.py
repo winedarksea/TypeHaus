@@ -40,43 +40,42 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
              "footing_bedding",
              "pipe_runs", "pipe_fittings", "ducts",
-             # Duct elbows by the piece and duct wrap by the foot (2026-08-25) — the
-             # air-side mirrors of pipe_fittings/pipe_insulation, neither of which had an
-             # air-side twin until ``DuctRun`` carried elevations and an insulation spec.
+             # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
+             # pipe_fittings/pipe_insulation.
              "duct_fittings", "duct_insulation",
              "sleeves", "conduit",
-             # The three electrical tables the model resolved and nothing priced (2026-08-27):
+             # The three electrical tables the model resolves and nothing else prices:
              # branch-circuit wire by the foot, the PV array by the watt, and the low-voltage
              # raceways [conduit] deliberately excludes. Each replaces a lump sum — see
              # ``Prices.conductors``.
              "conductors", "solar_modules", "data_raceways",
-             # Plumbing specialties (2026-08-01): devices by the piece, their loose install
-             # kits, and hot-line insulation by the foot.
+             # Plumbing specialties: devices by the piece, their loose install kits, and
+             # hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
-             # Self-regulating heater cable by the foot (2026-08-28).
+             # Self-regulating heater cable by the foot.
              "freeze_protection",
              "edge_trim",
-             # Joist/beam tape by the foot (2026-08-27). See ``Prices.member_protection``.
+             # Joist/beam tape by the foot. See ``Prices.member_protection``.
              "member_protection",
-             # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
+             # Monolithic wall structure: concrete/masonry walls by the yard.
              "wall_structure",
-             # Structural WOOD solids by the yard (2026-08-22) — the other half of
-             # [concrete]. See ``Prices.timber``.
+             # Structural WOOD solids by the yard — the other half of [concrete]. See
+             # ``Prices.timber``.
              "timber",
-             # Sheet-metal families the yard is the wrong unit for (2026-08-08): guards and
-             # gutter/leader runs by the foot.
+             # Sheet-metal families the yard is the wrong unit for: guards and gutter/leader
+             # runs by the foot.
              "railings", "drainage",
-             # Pre-framing construction-rule returns (2026-08-18), by the lineal foot.
+             # Pre-framing construction-rule returns, by the lineal foot.
              "construction_returns",
-             # The sill seal under those plates (2026-08-24), by the lineal foot, keyed on
-             # the product the resolver picked. See ``Prices.sill_gaskets``.
+             # The sill seal under those plates, by the lineal foot, keyed on the product the
+             # resolver picked. See ``Prices.sill_gaskets``.
              "sill_gaskets",
-             # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
-             # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
+             # Loose furnishings — priced, reported, and deliberately *not* summed into the
+             # construction total. See ``EXCLUDED_FROM_TOTAL``.
              "furnishings",
-             # Lump sums the model cannot resolve (2026-08-20). The only section with no BOM
-             # table behind it: ``estimate_costs`` synthesises one row per authored key, at
-             # quantity 1. See ``Prices.allowances``.
+             # Lump sums the model cannot resolve. The only section with no BOM table behind
+             # it: ``estimate_costs`` synthesises one row per authored key, at quantity 1. See
+             # ``Prices.allowances``.
              "allowances")
 
 
@@ -114,10 +113,9 @@ class PriceRange:
 
 ZERO = PriceRange(0.0, 0.0)
 
-#: What a unit price *includes*. The distinction lived only in prose comments at the top of
-#: houses/catlin/prices.toml until now, which meant no consumer could act on it: an estimate
-#: could not tell a homeowner's material budget from a contractor's installed number, and
-#: sales tax (material only, in MN) had nothing to apply itself to.
+#: What a unit price *includes*. Without this a consumer cannot tell a homeowner's material
+#: budget from a contractor's installed number, and sales tax (material only, in MN) has
+#: nothing to apply itself to.
 MATERIAL, LABOUR, INSTALLED = "material", "labour", "installed"
 BASES = (MATERIAL, LABOUR, INSTALLED)
 
@@ -174,10 +172,10 @@ class UnitPrice(PriceRange):
     #: The unit this rate is *per*, when the row overrides its section's default — a key of
     #: :data:`ALTERNATE_UNITS` for the section. ``None`` means the section's own unit.
     unit: str | None = None
-    #: An ``[allowances]`` row's QUANTITY SOURCE (2026-08-27), and the only place in the file
-    #: where a rate is joined to something without a BOM plan behind it. ``None`` — every row
-    #: in every other section, and every undriven allowance — means the historical behaviour:
-    #: quantity 1, unit "ls", the number written is the line total.
+    #: An ``[allowances]`` row's QUANTITY SOURCE, and the only place in the file where a rate
+    #: is joined to something without a BOM plan behind it. ``None`` — every row in every
+    #: other section, and every undriven allowance — means: quantity 1, unit "ls", the number
+    #: written is the line total.
     #:
     #: A driver turns a lump sum into rate x model quantity WITHOUT moving it out of
     #: [allowances]. That matters because the two facts an allowance carries are separable:
@@ -202,86 +200,80 @@ class Prices:
     concrete: Mapping[str, PriceRange] = field(default_factory=dict)
     floor_heat: Mapping[str, PriceRange] = field(default_factory=dict)
     placeables: Mapping[str, PriceRange] = field(default_factory=dict)
-    # The 2026-07-25 BOM sweep. An unpriced section is invisible in `haus variants compare`,
-    # so every new billable family gets a table here even where no house supplies prices yet.
+    # An unpriced section is invisible in `haus variants compare`, so every billable family
+    # gets a table here even where no house supplies prices yet.
     floor_finishes: Mapping[str, PriceRange] = field(default_factory=dict)
     envelope_layers: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Species wood (2026-08-02), keyed on material tag. Mind the mirrors: rows flagged
-    # ``also_in_*`` are billed primarily in envelope_layers / floor_finishes /
-    # structural_solids — price a material here OR there, not in both tables.
+    # Species wood, keyed on material tag. Mind the mirrors: rows flagged ``also_in_*`` are
+    # billed primarily in envelope_layers / floor_finishes / structural_solids — price a
+    # material here OR there, not in both tables.
     wood_surfaces: Mapping[str, PriceRange] = field(default_factory=dict)
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Fittings by the piece (2026-08-24), keyed as they are ordered: "elbow-90-4in",
-    # "wye-4x2in". Material only by design — a fitting is a part you buy, and the labour of
-    # making it up is inside the run's own installed $/LF, which is where it has always been.
+    # Fittings by the piece, keyed as they are ordered: "elbow-90-4in", "wye-4x2in". Material
+    # only by design — a fitting is a part you buy, and the labour of making it up is inside
+    # the run's own installed $/LF.
     pipe_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     ducts: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Duct elbows by the piece and duct wrap by the foot (2026-08-25), the air-side mirrors
-    # of ``pipe_fittings`` and ``pipe_insulation`` above, and neither could exist before
-    # ``DuctRun`` carried elevations: a plan polyline has no riser to turn at, so there were
-    # no fittings to count, and there was no field to hang a wrap spec on.
+    # Duct elbows by the piece and duct wrap by the foot, the air-side mirrors of
+    # ``pipe_fittings`` and ``pipe_insulation`` above.
     duct_fittings: Mapping[str, PriceRange] = field(default_factory=dict)
     duct_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     conduit: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Branch-circuit conductors by the lineal foot (2026-08-27), keyed on ``poles`` — "1" for
-    # a 120 V circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The
-    # takeoff has reported this length since the panel schedule existed; until now the wire
-    # was carried as the ``electrical-branch-circuit-conductors`` lump sum, because
-    # ``UNPRICED_VIEWS`` said "the model resolves the route but not the wire". It resolves
-    # both — the route is [conduit] and this is the wire in it. Mind the mirror: the two are
-    # separate purchases at separate rates, and neither includes the other.
+    # Branch-circuit conductors by the lineal foot, keyed on ``poles`` — "1" for a 120 V
+    # circuit (3 conductors: hot, neutral, ground), "2" for a 240 V one (4). The route is
+    # [conduit] and this is the wire in it. Mind the mirror: the two are separate purchases
+    # at separate rates, and neither includes the other.
     conductors: Mapping[str, PriceRange] = field(default_factory=dict)
-    # The PV array by the WATT (2026-08-27), keyed on the module product. Solar is the one
-    # trade that quotes in $/W rather than $/each, and the model carries the watts, so this
-    # is the closest a modelled quantity ever gets to how the trade actually prices. Reads
+    # The PV array by the WATT, keyed on the module product. Solar is the one trade that
+    # quotes in $/W rather than $/each, and the model carries the watts, so this is the
+    # closest a modelled quantity ever gets to how the trade actually prices. Reads
     # ``solar_modules``, the list view of ``solar["by_product"]``. The inverter, battery and
     # PV junction box stay in [placeables]; this is modules, racking and rapid shutdown.
     solar_modules: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Low-voltage raceway by the lineal foot (2026-08-27), keyed on ``service`` — "data" or
-    # "spare". Its own table rather than more rows in [conduit]: ``data_raceway_takeoff``
-    # deliberately excludes these from the power raceway table, and the two tag families
+    # Low-voltage raceway by the lineal foot, keyed on ``service`` — "data" or "spare". Its
+    # own table rather than more rows in [conduit]: ``data_raceway_takeoff`` deliberately
+    # excludes these from the power raceway table, and the two tag families
     # (``CD-*-DATA-*`` / ``CD-*-SPARE-*`` against the power ``CD-B-KITCHEN``-style tags) are
     # disjoint, so pricing here bills each run exactly once.
     data_raceways: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Plumbing specialties (2026-08-01). Keyed on the accessory *kind* / part name / spec
-    # rather than a model number: a price list is written before the model is chosen.
+    # Plumbing specialties. Keyed on the accessory *kind* / part name / spec rather than a
+    # model number: a price list is written before the model is chosen.
     plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
     install_parts: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Self-regulating heater cable by the lineal foot (2026-08-28), keyed on the spec
-    # string the run names in ``PipeRun.freeze_protection``. Deliberately its own table
-    # rather than more rows in [pipe_insulation]: cable and lagging are two purchases by
-    # two trades, they go on the SAME run one over the other, and a single table keyed on
-    # one spec field could only ever hold whichever was written last.
+    # Self-regulating heater cable by the lineal foot, keyed on the spec string the run names
+    # in ``PipeRun.freeze_protection``. Deliberately its own table rather than more rows in
+    # [pipe_insulation]: cable and lagging are two purchases by two trades, they go on the
+    # SAME run one over the other, and a single table keyed on one spec field could only ever
+    # hold whichever was written last.
     freeze_protection: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
-    # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
+    # Edge trim by the lineal foot, keyed on the row category — fascia, soffit,
+    # drip_flashing, edge_cladding, corner_trim, ridge_cap ...
     edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Self-adhered framing-top membrane by the lineal foot (2026-08-27), keyed on the
-    # catalog material tag the deck or beam names in ``top_protection``. Priced per foot of
-    # MEMBER, not per foot of roll: the tape width comes off the member's own cross-section
-    # and rides on the BOM row, so a beam that gains a ply orders wider tape rather than
-    # silently under-covering. A 3-ply 2x12 is 4 1/2" across; the common 3 1/8" roll is not
-    # enough, and that is a real ordering mistake this row exists to prevent.
+    # Self-adhered framing-top membrane by the lineal foot, keyed on the catalog material tag
+    # the deck or beam names in ``top_protection``. Priced per foot of MEMBER, not per foot of
+    # roll: the tape width comes off the member's own cross-section and rides on the BOM row,
+    # so a beam that gains a ply orders wider tape rather than silently under-covering. A
+    # 3-ply 2x12 is 4 1/2" across; the common 3 1/8" roll is not enough, and that is a real
+    # ordering mistake this row exists to prevent.
     member_protection: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Monolithic wall structure (2026-08-03), keyed on the *assembly* tag rather than the
-    # material: a placed yard of SUNKEN_GARDEN_WALL and a yard of CATLIN_BASEMENT_12 are
-    # both "concrete" and are not the same price. Priced by the cubic yard; the rows also
-    # carry net_area_sqft, so a face-priced second plan entry can be added later — but
-    # price each assembly in one table only.
+    # Monolithic wall structure, keyed on the *assembly* tag rather than the material: a
+    # placed yard of SUNKEN_GARDEN_WALL and a yard of CATLIN_BASEMENT_12 are both "concrete"
+    # and are not the same price. Priced by the cubic yard; the rows also carry
+    # net_area_sqft, so a face-priced second plan entry can be added later — but price each
+    # assembly in one table only.
     wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Structural WOOD solids by the cubic yard (2026-08-22), keyed exactly like [concrete]:
-    # the solid CATEGORY, optionally qualified by assembly as ``"beam:BEAM_LVL"``.
+    # Structural WOOD solids by the cubic yard, keyed exactly like [concrete]: the solid
+    # CATEGORY, optionally qualified by assembly as ``"beam:BEAM_LVL"``.
     #
     # It reads the *same* ``structural_solids`` BOM table [concrete] does, and the two are
     # kept apart by ``prices.MATERIAL_ONLY`` alone: [concrete] bills the rows whose
     # ``structure_material`` is concrete, this one bills the rows whose material is a wood.
-    # Before this table existed there was nowhere else for a beam to go — "beam" is a
-    # category, not a material, so twenty LVL and KDAT sticks billed through a $/cy rate
-    # sitting in the ready-mix table with a nine-line comment apologising for it.
+    # "beam" is a category, not a material, so LVL and KDAT sticks need this table rather
+    # than the ready-mix one.
     #
     # A yard is an odd unit for lumber and it is the honest one here: ``structural_solids``
     # measures volume, and these members bill NOWHERE else — the framing takeoff reads
@@ -290,45 +282,40 @@ class Prices:
     # ``count`` and ``plan_area_sqft``; converting a yard to a foot is the house's business,
     # not the engine's.
     timber: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Guards by the lineal foot of guard line (2026-08-08), keyed on the railing product
-    # type. A count cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard
-    # are both "1".
+    # Guards by the lineal foot of guard line, keyed on the railing product type. A count
+    # cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard are both "1".
     railings: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Gutters and leaders by the foot (2026-08-08), keyed on the drainage row category.
-    # Mind the mirror: these runs also surface in ``structural_solids`` as a fraction of a
-    # cubic yard of sheet metal — price them here, and leave `gutter`/`downspout` blank in
-    # [concrete]. The drywell rows carry length 0 and bill their aggregate there instead.
+    # Gutters and leaders by the foot, keyed on the drainage row category. Mind the mirror:
+    # these runs also surface in ``structural_solids`` as a fraction of a cubic yard of sheet
+    # metal — price them here, and leave `gutter`/`downspout` blank in [concrete]. The
+    # drywell rows carry length 0 and bill their aggregate there instead.
     drainage: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Construction-rule returns by the lineal foot (2026-08-18), keyed on the row's
-    # ``takeoff_category`` — "pt-sill-plate", "rim-spray-foam", "sauna-liner-return", ...
+    # Construction-rule returns by the lineal foot, keyed on the row's ``takeoff_category`` —
+    # "pt-sill-plate", "rim-spray-foam", "sauna-liner-return", ...
     #
-    # This table was the last section of the BOM with no price join at all, which was
-    # tolerable while every return was a *lap* of material some other table already bought
-    # (the sauna liner turning a corner is more of the polyiso already in [envelope_layers]).
-    # ``rim-spray-foam`` broke that: closed-cell foam in a rim cavity is in no assembly and
-    # no other table, so it is material nobody was paying for. Mind the same mirror the
-    # drainage note describes — price a return here only where it is a *separate purchase*,
-    # and leave the pure laps blank rather than billing the same material twice.
+    # Price a return here only where it is a *separate purchase* — most returns are a *lap*
+    # of material some other table already bought (the sauna liner turning a corner is more
+    # of the polyiso already in [envelope_layers]) — and leave the pure laps blank rather
+    # than billing the same material twice. Mind the same mirror the drainage note describes.
     construction_returns: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Sill seal by the lineal foot (2026-08-24), keyed on ``gasket_product`` —
-    # ``sill-seal-foam`` or ``sill-seal-peel-stick``. Its own table rather than a component
-    # of ``pt-sill-plate``: the plate rate above is a *delta* over the SPF board
-    # ``[framing]`` already bills, the gasket is a separate purchase at a separate rate, and
-    # rolling it into the delta made the two impossible to move independently — which is
-    # exactly what happened when the peel-and-stick form appeared on the envelope walls and
-    # the plain foam stayed on the interior ones.
+    # Sill seal by the lineal foot, keyed on ``gasket_product`` — ``sill-seal-foam`` or
+    # ``sill-seal-peel-stick``. Its own table rather than a component of ``pt-sill-plate``:
+    # the plate rate above is a *delta* over the SPF board ``[framing]`` already bills, the
+    # gasket is a separate purchase at a separate rate, and rolling it into the delta would
+    # make the two impossible to move independently — envelope walls and interior walls can
+    # carry different gasket products.
     sill_gaskets: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Loose furnishings (2026-08-08), keyed on the same catalog type tag as [placeables]
-    # and read against the same BOM rows. A sofa is not a construction cost, and rolling
-    # one into the build number makes the build number wrong in both directions — it is
-    # too high to bid against and too volatile to track. Split rather than dropped: the
-    # estimate still prices and reports it, beside the total instead of inside it.
-    # ``load_prices`` rejects a type priced in both tables.
+    # Loose furnishings, keyed on the same catalog type tag as [placeables] and read against
+    # the same BOM rows. A sofa is not a construction cost, and rolling one into the build
+    # number makes the build number wrong in both directions — it is too high to bid against
+    # and too volatile to track. Split rather than dropped: the estimate still prices and
+    # reports it, beside the total instead of inside it. ``load_prices`` rejects a type
+    # priced in both tables.
     furnishings: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Lump sums, keyed on a slug the house invents (2026-08-20). THE ONE SECTION WITH NO
-    # QUANTITY BEHIND IT — every other table is a $/unit rate joined to a BOM row the model
-    # resolved, and this one is a flat dollar figure for scope the model does not resolve at
-    # all: excavation, the utility connections, permits, the general contractor.
+    # Lump sums, keyed on a slug the house invents. THE ONE SECTION WITH NO QUANTITY BEHIND
+    # IT — every other table is a $/unit rate joined to a BOM row the model resolved, and
+    # this one is a flat dollar figure for scope the model does not resolve at all:
+    # excavation, the utility connections, permits, the general contractor.
     #
     # This is not a hole in decision #28, it is the decision working. The engine still ships
     # no numbers; the *house* says what its site work costs, in its own file, the same way it
@@ -349,7 +336,7 @@ class Prices:
     #: False when the file declares no ``[basis]`` at all, so a reader can tell "this house
     #: says its prices are material" from "nobody has said". Never guessed at silently.
     basis_declared: bool = False
-    #: The provenance sentences that used to live only in ``prices.toml``'s prose header.
+    #: The provenance sentence for each section's basis.
     basis_notes: Mapping[str, str] = field(default_factory=dict)
     #: ``[codes]`` — a builder's own NAHB numbers, keyed "section" or "section:key" (#28).
     codes: Mapping[str, str] = field(default_factory=dict)
@@ -471,10 +458,8 @@ def _price(section: str, key: str, raw: object, path: Path,
            default_basis: str = MATERIAL) -> UnitPrice:
     """One price-table value, in any of the four accepted shapes.
 
-    The grammar grew rather than changed: an existing bare number or ``{low, high}`` still
-    means exactly what it meant, and picks up its section's declared basis. Only the two new
-    shapes — a ``basis =`` override and an explicit ``material``/``labour`` split — say
-    anything the old file could not.
+    A bare number or ``{low, high}`` picks up its section's declared basis. The other two
+    shapes are a ``basis =`` override and an explicit ``material``/``labour`` split.
     """
     unit: str | None = None
     driver: str | None = None

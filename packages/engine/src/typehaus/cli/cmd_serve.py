@@ -1,9 +1,7 @@
 """`haus serve` — the FastAPI server plus the compiled browser app it delivers.
 
-Split out of :mod:`typehaus.cli.app` at the seam that file already marked ("V6: serve
-subcommand (cross-machine app delivery) — keep edits localized"). Honouring that note is the
-point of this module: UI discovery and the command that consumes it now live in one file, so
-the cross-machine delivery path can be edited without touching any other command.
+UI discovery and the command that consumes it live in one file, so the cross-machine
+delivery path can be edited without touching any other command.
 """
 
 from __future__ import annotations
@@ -15,10 +13,10 @@ import typer
 from typehaus.cli._shared import _resolve_house, app, console
 
 
-# --- V6: serve subcommand (cross-machine app delivery) — keep edits localized for V8 merge ---
+# cross-machine app delivery — keep edits localized to this module
 def _find_ui_dist(explicit: Path | None) -> Path | None:
     """Locate a built UI (a directory holding ``index.html``) so one ``haus serve`` command can
-    deliver the browser app on another machine (V6). An explicit ``--ui-dir`` is authoritative —
+    deliver the browser app on another machine. An explicit ``--ui-dir`` is authoritative —
     it is used as-is (returns None if it lacks index.html, so the caller errors) and never falls
     back to discovery. Otherwise the ``TYPEHAUS_UI_DIST`` env var wins, then a walk up from the
     cwd and this package looks for a repo-root ``ui/dist``. Returns None when nothing is found."""
@@ -58,7 +56,7 @@ def serve(
     """Run the FastAPI server: model.json, PATCH /plan, undo/redo, live reload (WP2.1).
 
     Also serves the compiled browser app at ``/`` when a built ``ui/dist`` is present, so a
-    user on another computer runs this one command and opens the house in a browser (V6)."""
+    user on another computer runs this one command and opens the house in a browser."""
     try:
         import uvicorn
     except ImportError as exc:

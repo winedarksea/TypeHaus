@@ -85,8 +85,6 @@ def takeoff(
                "solar_modules": bom["solar_modules"],
                "backup_power": bom["backup_power"],
                "luminaire_schedule": bom["luminaire_schedule"],
-               # lighting_controls was the one section bill_of_materials produced and this
-               # payload dropped — the switch legs simply never reached `haus takeoff`.
                "lighting_controls": bom["lighting_controls"],
                "light_runs": bom["light_runs"],
                "light_run_materials": bom["light_run_materials"],
@@ -337,8 +335,8 @@ def _print_driver_overlaps(estimate: dict, console: Console) -> None:
     """Driven allowances measured off BOM rows another section also priced.
 
     Not an error and deliberately not silent. [allowances]'s one rule is that an allowance
-    must be scope no other section prices, and until drivers existed nothing could even
-    look — so this is the only automatic check that rule has ever had. It cannot decide:
+    must be scope no other section prices; this is the only automatic check of that rule.
+    It cannot decide:
     measuring a roof vent mat off the standing seam's square footage is right, and billing
     the standing seam twice is wrong, and the two are the same shape. It names them so a
     reader can look at the one line where it matters.
@@ -439,8 +437,7 @@ def _print_basis(estimate: dict) -> None:
     """material / labour / merged, and whether the file actually declared its basis.
 
     A total that does not say what it includes is the difference between a homeowner's
-    shopping list and a contractor's bid, and until ``[basis]`` existed the only statement
-    of it was a prose comment at the top of prices.toml.
+    shopping list and a contractor's bid.
     """
     net = estimate["bid"]["net"]
     if not estimate.get("basis_declared"):

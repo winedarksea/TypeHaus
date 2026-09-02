@@ -165,11 +165,7 @@ class SemanticModel:
 
     def storey(self, key: str,
                datum_buildings: tuple[str, ...] | None = None) -> SemanticStorey | None:
-        """The authoritative storey for ``key`` — the same rule the equivalence report uses.
-
-        This was first-wins while the report was last-wins, so the two could disagree about
-        which of several same-keyed storeys a comparison meant.
-        """
+        """The authoritative storey for ``key`` — the same rule the equivalence report uses."""
         matches = [item for item in self.storeys if item.key == key]
         if not matches:
             return None

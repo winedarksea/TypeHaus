@@ -100,43 +100,43 @@ ESTIMATE_PLANS = (
     ("duct_insulation", "duct_insulation", "spec", "length_ft", "LF"),
     ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
     ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),
-    # The three tables the model resolved and nothing priced until 2026-08-27, each
-    # replacing a lump sum in [allowances]. ``conductors`` keys on ``poles`` (1 = a 120 V
-    # circuit's three wires, 2 = a 240 V circuit's four); ``solar_modules`` is billed by the
-    # WATT, which is how the PV trade quotes and what the model carries; ``data_raceways``
-    # keys on ``service`` and reads a table ``conduit`` deliberately excludes, so the two
-    # tag families stay disjoint and no run bills twice.
+    # Three tables the model resolves and nothing else prices, each replacing a lump sum in
+    # [allowances]. ``conductors`` keys on ``poles`` (1 = a 120 V circuit's three wires, 2 = a
+    # 240 V circuit's four); ``solar_modules`` is billed by the WATT, which is how the PV
+    # trade quotes and what the model carries; ``data_raceways`` keys on ``service`` and reads
+    # a table ``conduit`` deliberately excludes, so the two tag families stay disjoint and no
+    # run bills twice.
     ("conductors", "conductors", "poles", "length_ft", "LF"),
     ("solar_modules", "solar_modules", "product", "watts", "W"),
     ("data_raceways", "data_raceways", "service", "length_ft", "LF"),
     ("plumbing_specialties", "plumbing_specialties", "kind", "count", "ea"),
     ("install_parts", "install_parts", "part", "count", "ea"),
     ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
-    # Heater cable by the foot, keyed on the spec (2026-08-28). Mirrors nothing:
-    # [pipe_runs] bills the pipe the cable follows, never the cable.
+    # Heater cable by the foot, keyed on the spec. Mirrors nothing: [pipe_runs] bills the
+    # pipe the cable follows, never the cable.
     ("freeze_protection", "freeze_protection", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
-    # Framing-top membrane by the foot, keyed on the material tag (2026-08-27). It
-    # mirrors nothing: `framing` bills the stick the tape covers, not the tape.
+    # Framing-top membrane by the foot, keyed on the material tag. Mirrors nothing: `framing`
+    # bills the stick the tape covers, not the tape.
     ("member_protection", "member_protection", "material", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
-    # The wood half of ``structural_solids`` (2026-08-22). Identical join to ``concrete``,
-    # on the identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both
-    # billing the same row. See the field comment on ``Prices.timber``.
+    # The wood half of ``structural_solids``. Identical join to ``concrete``, on the
+    # identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both billing the same
+    # row. See the field comment on ``Prices.timber``.
     ("timber", "structural_solids", "category", "volume_cubic_yards", "cy"),
     ("railings", "railings", "type", "length_ft", "LF"),
-    # Pre-framing returns by the foot, keyed on ``takeoff_category`` (2026-08-18).
+    # Pre-framing returns by the foot, keyed on ``takeoff_category``.
     ("construction_returns", "construction_returns", "category", "length_ft", "LF"),
-    # The sill seal under those plates, keyed on the product the resolver picked
-    # (2026-08-24). Priced separately from ``pt-sill-plate`` above, which is a delta over
-    # the SPF board and no longer carries a foam-sealer component.
+    # The sill seal under those plates, keyed on the product the resolver picked. Priced
+    # separately from ``pt-sill-plate`` above, which is a delta over the SPF board and does
+    # not carry a foam-sealer component.
     ("sill_gaskets", "sill_gaskets", "product", "length_ft", "LF"),
     ("drainage", "drainage", "category", "length_ft", "LF"),
     # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
     ("furnishings", "placeables", "type", "count", "ea"),
-    # Lump sums (2026-08-20). The BOM table this names does not come from the model — see
-    # ``ALLOWANCES`` and ``_allowance_rows``.
+    # Lump sums. The BOM table this names does not come from the model — see ``ALLOWANCES``
+    # and ``_allowance_rows``.
     ("allowances", "allowances", "item", "count", "ls"),
 )
 
@@ -169,8 +169,8 @@ ALLOWANCE_KEY_FIELD = "item"
 #: top of billing as lumber in ``sheet_goods``/``framing`` — a double-count, not just a
 #: mis-price.
 #:
-#: The value was a single material tag until 2026-08-22, and one tag could not say "any
-#: structural wood" — which is what ``timber`` needs. ``timber`` reads the *same*
+#: A single material tag cannot say "any structural wood" — which is what ``timber`` needs.
+#: ``timber`` reads the *same*
 #: ``structural_solids`` table ``concrete`` does, and the two are told apart here and
 #: nowhere else: a Beam or a Post is a solid whose category says nothing about what it is
 #: made of, so the material is the only honest discriminator.
@@ -234,15 +234,13 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: they are one $/SF rate only if a 2-1/2" spray costs what a 1-1/2" spray costs, which it
 #: does not. Qualifying by ``thickness_in`` prices each band at its own rate; a house that
 #: keeps its bare ``polyiso`` key keeps one rate over every thickness, unchanged.
-#: ``ducts`` needs it a sixth time, and it is the case [basis_notes] had been asking for in
-#: writing since the 2026-08-25 radial pass: one ``supply`` rate covering a 6" insulated
-#: riser, a 3" semi-rigid radial and a 14x8 galvanized trunk, because ``ducts`` keys on
-#: ``system`` alone. Semi-rigid is roughly half the material of sheet metal and installs in a
-#: fraction of the time — that speed IS the argument for a radial system — so one blended
-#: rate is weighted for today's mix and silently wrong the moment the mix moves. The takeoff
-#: has reported ``material`` per row since that pass; a row whose material the model never
-#: named (the sheet-metal trunks) has an empty string there, which is falsy, so it keeps
-#: pricing on the bare key exactly as before.
+#: ``ducts`` needs it a sixth time: one ``supply`` rate covering a 6" insulated riser, a 3"
+#: semi-rigid radial and a 14x8 galvanized trunk, because ``ducts`` keys on ``system`` alone.
+#: Semi-rigid is roughly half the material of sheet metal and installs in a fraction of the
+#: time — that speed IS the argument for a radial system — so one blended rate is weighted
+#: for today's mix and silently wrong the moment the mix moves. The takeoff reports
+#: ``material`` per row; a row whose material the model never named (the sheet-metal trunks)
+#: has an empty string there, which is falsy, so it keeps pricing on the bare key.
 #:
 #: A value may be a TUPLE, in which case the qualifiers stack most-significant first and a
 #: lookup tries progressively less specific keys: ``supply:semi_rigid:3.0`` →
@@ -333,16 +331,14 @@ _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 #: BOM tables no :data:`ESTIMATE_PLANS` entry reads, and why each is not a hole.
 #:
 #: The estimate's discipline is that a price with nothing to multiply cannot appear. The
-#: mirror of that — a *quantity* with no price — is what ``unpriced`` reports, and until
-#: 2026-08-21 it could only report a miss inside a table some plan already read. A table no
-#: plan named at all fell through both: not priced, and not listed as unpriced either. That
-#: is how ``light_run_materials`` (LED tape, extrusion channel, end caps and corner
-#: connectors) came to be resolved, exported, and invisible to every cost surface.
+#: mirror of that — a *quantity* with no price — is what ``unpriced`` reports. A table no
+#: plan named at all must not fall through both silently: not priced, and not listed as
+#: unpriced either.
 #:
-#: So the sweep at the end of :func:`estimate_costs` is now the other way round: every BOM
-#: table is either priced by a plan, **declared here with a reason**, or listed in
-#: ``unpriced``. A new takeoff table added upstream surfaces as unpriced until somebody
-#: decides which of the three it is — loud by default, which is the point.
+#: The sweep at the end of :func:`estimate_costs` guarantees every BOM table is either priced
+#: by a plan, **declared here with a reason**, or listed in ``unpriced``. A new takeoff table
+#: added upstream surfaces as unpriced until somebody decides which of the three it is — loud
+#: by default, which is the point.
 #:
 #: A "view" is a table whose scope is genuinely billed somewhere else. Each value says
 #: where, and each was checked against the catlin estimate rather than assumed.
@@ -354,9 +350,9 @@ UNPRICED_VIEWS: dict[str, str] = {
     "glazing_panels": "priced in [concrete] as glazing:<assembly> (structural_solids)",
     "glazing_trim": "priced in [concrete] as glazing_trim (structural_solids)",
     "bug_screens": "priced in [concrete] as bug_screen:<assembly> (structural_solids)",
-    # Tread and riser stock is lumber; the nosings and transitions are an allowance — and
-    # since 2026-08-27 an allowance DRIVEN off this very table's ``tread_lf``, so the
-    # quantity is no longer unread, only unpriced by a section of its own.
+    # Tread and riser stock is lumber; the nosings and transitions are an allowance DRIVEN
+    # off this very table's ``tread_lf``, so the quantity is not unread, only unpriced by a
+    # section of its own.
     "stair_finish": "treads bill in [framing]; nosings drive the finish-transitions allowance",
     # The milling schedule. Everything it shares with another section says so (``also_in_*``)
     # and bills there; what is only here — the stool and shelf boards — is deliberately
@@ -381,9 +377,8 @@ UNPRICED_VIEWS: dict[str, str] = {
     "light_runs": "run geometry; its materials are light_run_materials",
     # ``solar`` is a dict of summaries (panel/watt totals, the per-string voltage check);
     # the priced view of it is the ``solar_modules`` list beside it — see ``takeoff/bom.py``.
-    # ``conductors`` and ``data_raceways`` are priced in their own sections since 2026-08-27:
-    # the model resolves the route *and* the wire, and the three allowances that stood in for
-    # them are gone from houses/catlin/prices.toml.
+    # ``conductors`` and ``data_raceways`` are priced in their own sections: the model
+    # resolves the route *and* the wire.
     "solar": "priced as solar_modules (the by_product view of this dict)",
     "backup_power": "priced in [placeables] as the EQ-T-* types",
 }
@@ -517,11 +512,10 @@ def _allowance_rows(prices: Prices, bom: Mapping[str, Any],
                                dict[str, list[tuple[str, Mapping[str, Any]]]]]:
     """One synthetic BOM row per authored allowance, and what each driven one consumed.
 
-    An UNDRIVEN row is quantity 1 and unit "ls", exactly as every allowance was before
-    2026-08-27: the number in the file is the line total. A DRIVEN row carries the model
-    quantity its ``driver =`` resolved instead, so the same rate now moves when the house
-    does — and it is still an allowance, with an allowance's basis, cost code, CSV row and
-    work package. Nothing downstream needs to know which kind it got.
+    An UNDRIVEN row is quantity 1 and unit "ls": the number in the file is the line total. A
+    DRIVEN row carries the model quantity its ``driver =`` resolved instead, so the same rate
+    moves when the house does — and it is still an allowance, with an allowance's basis, cost
+    code, CSV row and work package. Nothing downstream needs to know which kind it got.
 
     Sorted so the estimate, the CSV and the task export list them in the same order run to
     run; a lump-sum block that reshuffles between exports is one no reviewer can diff.
