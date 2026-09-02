@@ -1,10 +1,9 @@
 """Edge trim by the lineal foot — the fascia/soffit/flashing family the solids sweep hides.
 
-``glazing_trim_takeoff`` records the gap this closes for its own extrusions: the engine had
-no lineal-foot section for trim at all, so the fascia/gutter family was only ever billed as
-solids — cubic feet of PVC and aluminium, which is not how a fascia board or a drip edge is
-bought. ``drainage_takeoff`` closed the gap for the stormwater half (gutter, leader); this
-section is the rest of the family: the boards and formed metal along a deck or roof edge.
+Cubic feet of PVC and aluminium is not how a fascia board or a drip edge is bought.
+``glazing_trim_takeoff`` bills its own extrusions the same lineal-foot way and
+``drainage_takeoff`` covers the stormwater half (gutter, leader); this section is the rest
+of the family: the boards and formed metal along a deck or roof edge.
 
 Two sources, exactly like the gutters:
 

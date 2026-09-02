@@ -1,13 +1,9 @@
 """The door-hardware rows of the bill of materials.
 
-Door ironmongery had no counted representation anywhere in the takeoff: ``hardware_takeoff``
-was four structural-connector generators, ``library/hardware.py`` was Simpson connectors,
-and the only way to get a door's hardware onto an estimate was the ``finish-door-*``
-lump-sum allowance. For most doors a lump sum is defensible — a lockset is a lockset. For a
-pocket door it is not. The frame kit *is* the pocket: it brings the split studs, the head
-track, the hangers and the guides, it is bought one per door, and which one you buy is
-decided by the leaf width. An estimate that carries it as part of a finish allowance cannot
-tell you that the 4'-0" leaf needs a different frame from the 3'-0" one.
+For most doors the ``finish-door-*`` lump-sum allowance is defensible — a lockset is a
+lockset. For a pocket door it is not: the frame kit *is* the pocket (split studs, head
+track, hangers, guides), bought one per door, and which one you buy is decided by the leaf
+width. A lump sum cannot tell you the 4'-0" leaf needs a different frame from the 3'-0" one.
 
 Only pocket kits are derived here so far. The resolved model is enough to do it without
 reaching back to the plan: ``ResolvedOpening.pocket_run_m`` is non-zero for exactly the

@@ -106,7 +106,7 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
                         spliceable: bool = False) -> Counter:
     """The stock sticks one ``(profile, category, material)`` group is actually bought in.
 
-    Long pieces bucket one-for-one, exactly as before. Short ones are packed first-fit-
+    Long pieces bucket one-for-one. Short ones are packed first-fit-
     decreasing into the shortest stock, kerf included, so the order reflects the sticks a
     framer carries to the saw rather than one per cut. A fabricated member (a floor truss)
     is never nested: it is made to its length, and two of them do not come off one blank.
@@ -199,7 +199,7 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "spliceable": splice[(profile, category, material)],
             # The species/product the member is cut from, when the model knows it — a KDAT
             # outrigger and an SPF stud are both "2x4" and are not the same purchase. ``None``
-            # for ordinary framing, which is what every row said before truss walls existed.
+            # for ordinary framing.
             "material": material or None,
             "pieces": len(lengths),
             "cut_length_ft": round(sum(lengths), 1),
@@ -368,8 +368,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             areas[("subfloor", system.subfloor.material_ref,
                    system.subfloor.thickness.meters)] += gross - openings
             # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
-            # the same deck, and was simply never read here — a whole storey of ceiling
-            # drywall silently absent from the order.
+            # the same deck.
             for layer in system.ceiling_below:
                 areas[("ceiling", layer.material_ref, layer.thickness.meters)] += gross - openings
 

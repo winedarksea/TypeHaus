@@ -94,9 +94,8 @@ def glazing_panel_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 def glazing_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of glazing extrusion, grouped by profile and material.
 
-    The engine had no lineal-foot section for trim at all — the fascia/gutter family was
-    only ever billed as solids. This mirrors ``construction_returns_takeoff``'s row shape so
-    an estimator reads both the same way.
+    Mirrors ``construction_returns_takeoff``'s row shape so an estimator reads both the
+    same way.
     """
     from typehaus.model.trim import GlazingTrim
 

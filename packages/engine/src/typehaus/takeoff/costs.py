@@ -12,11 +12,9 @@ the house directory and versioned with the plan:
 * **extra** — real spend that is on no estimate line at all, so the running total is the
   project's rather than just the modelled material's.
 
-  Its scope NARROWED on 2026-08-20 and the old examples here were stale within a day. Permit
-  fees, the dumpster and site delivery used to be the canonical ``extra`` — they are now
-  ``[allowances]`` rows in ``prices.toml``, which means they are estimated, cost-coded,
-  scheduled by trade, and joined here like any other line. Checking one off as ``extra`` today
-  would double it against its own allowance.
+  Permit fees, the dumpster and site delivery are ``[allowances]`` rows in ``prices.toml``,
+  not ``extra`` — they are estimated, cost-coded, scheduled by trade, and joined here like
+  any other line. Checking one off as ``extra`` would double it against its own allowance.
 
   What still belongs in ``extra`` is spend nobody forecast in any form: the change order, the
   replacement for the thing that was damaged, the trip charge for the second visit. If a cost

@@ -1,9 +1,9 @@
 """Stormwater by the foot and the piece: gutters, leaders, trenches, soakaways.
 
-Drainage was billed only as solids — cubic feet of aluminium and stone, which is not how
-any of it is bought. ``takeoff/glazing.py::glazing_trim_takeoff`` records the same gap for
-the extrusion family and closes it the same way; this is the rest of that sentence, for the
-family whose head is a hung channel and whose tail is a hole full of rock.
+Cubic feet of aluminium and stone is not how any of this is bought.
+``takeoff/glazing.py::glazing_trim_takeoff`` bills the same extrusion family the same way;
+this is the rest of that family, whose head is a hung channel and whose tail is a hole full
+of rock.
 
 One flat section rather than four, with a uniform row shape, because it is one order: an
 estimator pricing drainage wants the leaders on the same page as the gutter they hang off.

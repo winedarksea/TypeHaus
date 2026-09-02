@@ -60,11 +60,11 @@ class ExposedFastenerCladdingRules:
     # PBR major ribs at 12 in o.c.; the screws land in the flats between them, so the rib
     # pitch is also the horizontal screw pitch.
     rib_pitch_in: float = 12.0
-    # The support crossing — for this house the horizontal girt course, which has been at
-    # 24" since 2026-09-01 and was at 32" for the week before it. **This is a rule default,
-    # not a reading of the band**, so it and the assembly's ``FramingSpec.spacing`` have to
-    # be kept in step by hand; they agree today. A house whose girts are not at 24" and does
-    # not override this gets a field screw count for a wall it is not building.
+    # The support crossing — for this house the horizontal girt course, at 24" o.c.
+    # **This is a rule default, not a reading of the band**, so it and the assembly's
+    # ``FramingSpec.spacing`` have to be kept in step by hand. A house whose girts are not
+    # at 24" and does not override this gets a field screw count for a wall it is not
+    # building.
     support_pitch_in: float = 24.0
     # One panel's net coverage, which is the horizontal spacing of the sidelap joints.
     panel_coverage_in: float = 36.0
@@ -141,20 +141,18 @@ class HangerDetectionRules:
 class KneeBraceRules:
     """Knee braces are authored one element per *physical* brace, and billed the same way.
 
-    This was a matched pair per joint, on the reasoning that a braced post takes one brace
-    each side. That only holds where the beam continues past its post: at a beam *end* — every
-    pillar of the balcony, and the common case for a deck — a single brace is all that fits in
-    the beam's plane, and a post braced in two directions is two braces against two different
-    members. Both are geometry the model already carries, so the take-off counts records
-    rather than inferring a multiplier the plan cannot see.
+    A braced post takes one brace each side only where the beam continues past its post: at
+    a beam *end* — every pillar of the balcony, and the common case for a deck — a single
+    brace is all that fits in the beam's plane, and a post braced in two directions is two
+    braces against two different members. Both are geometry the model already carries, so
+    the take-off counts records rather than inferring a multiplier the plan cannot see.
     """
 
-    # Pieces of knee-brace hardware per modeled brace. **Two since 2026-08-30**, when the
-    # role moved from Simpson's Outdoor Accents APVKB (a single decorative saddle, and — as
-    # the reports turned out to say — unrated) to the KBS1Z, whose installation instruction
-    # is one connector at EACH END of the brace: "For 2x knee brace, install single KBS1Z on
-    # each end (see connection type 2)". The published F1 this catalog records is measured
-    # through that pair, so billing one would order half the connection the capacity assumes.
+    # Pieces of knee-brace hardware per modeled brace. **Two**: the KBS1Z installation
+    # instruction is one connector at EACH END of the brace: "For 2x knee brace, install
+    # single KBS1Z on each end (see connection type 2)". The published F1 this catalog
+    # records is measured through that pair, so billing one would order half the connection
+    # the capacity assumes.
     #
     # It is a property of the hardware family, which is why it lives here beside the bolt
     # count rather than on the element: every brace in every house takes whatever the

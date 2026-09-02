@@ -142,15 +142,15 @@ def bill_of_materials(
         # roof's derived formed trim. Same gap as drainage — flashing billed as cubic feet
         # of aluminium is not an order.
         "edge_trim": edge_trim_takeoff(model),
-        # Joist/beam tape by the foot of member it covers (2026-08-27). Neither
-        # `framing` (sticks by profile, house-wide) nor `structural_solids` (beams by
-        # the yard) can address "the two garden decks' joists", so nothing could bill
-        # the membrane that keeps water out of a built-up beam's ply seams.
+        # Joist/beam tape by the foot of member it covers. Neither `framing` (sticks by
+        # profile, house-wide) nor `structural_solids` (beams by the yard) can address
+        # "the two garden decks' joists", so nothing could bill the membrane that keeps
+        # water out of a built-up beam's ply seams.
         "member_protection": member_protection_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
         # Fittings by the piece, counted off the runs' own 3D polylines and the drainage
-        # graph — not estimated. Its arrival re-based [pipe_runs]: the drain and vent $/LF
-        # rates used to carry "a share of fittings" and now price bare pipe (→ #62).
+        # graph — not estimated. Kept separate so [pipe_runs]'s drain/vent $/LF rates
+        # price bare pipe only, not a share of fittings (→ #62).
         "pipe_fittings": fitting_takeoff(model),
         # The supply system's protection budget, which no section could see before
         # `PipeAccessory` existed: valves and preventers by the piece, and the loose
@@ -160,9 +160,9 @@ def bill_of_materials(
         # Hot-water line insulation by the foot (IRC N1103.4.2). A field on the run, so it
         # cannot drift out of length with the pipe it sleeves.
         "pipe_insulation": pipe_insulation_takeoff(model),
-        # Heater cable by the foot (2026-08-28), the electrical twin of the row above.
-        # Kept apart from it because a traced AND lagged run is the normal outdoor spec
-        # in this climate, and one blended row cannot say that.
+        # Heater cable by the foot, the electrical twin of the row above. Kept apart
+        # because a traced AND lagged run is the normal outdoor spec in this climate,
+        # and one blended row cannot say that.
         "freeze_protection": freeze_protection_takeoff(model),
         "ducts": duct_takeoff(model),
         # Elbows by the piece off the ducts' own 3D polylines, the same derivation
@@ -182,7 +182,7 @@ def bill_of_materials(
         "conduit": conduit_takeoff(model),
         "conductors": conductor_takeoff(model),
         "solar": solar,
-        # The priced view of the dict above (2026-08-27). Every ``ESTIMATE_PLANS`` entry
+        # The priced view of the dict above. Every ``ESTIMATE_PLANS`` entry
         # reads a LIST of rows, and ``solar`` is a dict of summaries — panel and watt
         # totals, the per-string cold-Voc check — so it could not be joined to a price
         # without either flattening it (and losing the string check) or teaching the join

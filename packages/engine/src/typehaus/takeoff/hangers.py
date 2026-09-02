@@ -139,7 +139,7 @@ def ridge_tie_strap_rows(model: ResolvedModel, rules: HangerDetectionRules) -> l
     The sloped hanger holds a rafter up in the beam's depth and does nothing across the peak.
     Weyerhaeuser's H5S ridge detail adds an LSTA24 rafter-to-rafter over the top for any slope
     above 3:12 (catlin's 4:12 is squarely in it) and APA D710 10c calls for the same from
-    1/4:12. It was missing from this house entirely: 56 hangers and no strap.
+    1/4:12.
 
     Counted per PAIR by station rather than as ``hangers // 2``, so a rafter that has lost its
     opposite number shows up as an uncounted end rather than half a strap.

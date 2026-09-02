@@ -42,7 +42,7 @@ DEPTH_OF_DISCHARGE = 0.90
 # sees a normal-incidence noon, and MN's strong-sun days in the season that matters for an
 # outage are short and cold. PVWatts-class annual averages for MN run ~3.5 kWh/kW/day for
 # a south-facing array; 3.0 is that number haircut for the E/W split. Estimate, not a
-# production model — no shading, soiling, snow, or hourly curve is modeled. (2026-08-02)
+# production model — no shading, soiling, snow, or hourly curve is modeled.
 STRONG_DAY_KWH_PER_KW = 3.0
 
 # Motor-start multiple applied to the largest single SHED-tier motor load when checking

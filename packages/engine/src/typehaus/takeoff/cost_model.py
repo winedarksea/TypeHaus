@@ -86,8 +86,7 @@ def apply_waste(section: str, key: str, parts: Mapping[str, PriceRange],
     board to install 100 SF and throw 10 SF away. You do not pay the installer 10% more for
     it — an installed labour rate is quoted per square foot of FINISHED area and already has
     normal cutting inside it. Charging waste on labour makes waste and contingency look like
-    the same thing, which is the complaint that produced this fix: before it, 41% of this
-    house's waste ($10,531 – $19,796) was being added to labour.
+    the same thing.
 
     A MERGED row is the exception, and necessarily so: an installed price with no declared
     split cannot have its material half identified, so the factor rides on the whole number

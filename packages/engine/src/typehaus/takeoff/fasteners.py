@@ -249,21 +249,19 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
     wall (``truss_frame.py``) puts a block every 40" up every outrigger on the 16" stud
     module and takes two screws through block + sheathing into the stud.
 
-    A ONE-TIER catlin wall (``truss_girts.py`` since 2026-09-01) puts a block on every other
-    stud under every 24" girt course and takes ONE screw per block, and that screw is the
-    entire load path: 8" through the girt (1-1/2"), the three-ply block (4-1/2") and the
-    sheathing (1/2"), leaving 1-1/2" in the stud. One row, one length, no second pass.
+    A ONE-TIER catlin wall (``truss_girts.py``) puts a block on every other stud under every
+    24" girt course and takes ONE screw per block, and that screw is the entire load path:
+    8" through the girt (1-1/2"), the three-ply block (4-1/2") and the sheathing (1/2"),
+    leaving 1-1/2" in the stud. One row, one length, no second pass.
 
-    A TWO-TIER wall is the 2026-08-26 scheme and still framed if an assembly asks for it:
-    the two tiers land in different things, so they are two rows and two lengths — block-1
-    through girt + block + sheathing into the stud, block-2 through girt + block into the
-    inner girt.
+    A TWO-TIER wall is still framed if an assembly asks for it: the two tiers land in
+    different things, so they are two rows and two lengths — block-1 through girt + block +
+    sheathing into the stud, block-2 through girt + block into the inner girt.
 
     Length is derived the same way every other screw here is: everything the screw passes
     through, plus the embedment rule. **No foam is in the path in any case** — every screw
     is wood-to-wood with continuous lateral support, and the ccSPF is sprayed around it
-    afterwards — which is what separates it from the 8" screws through 4" of rigid board
-    that this wall type replaced, even where the length now happens to match.
+    afterwards.
     """
     from typehaus.resolve.framing.truss_wall import BLOCK_CATEGORY, truss_girt_bands
 

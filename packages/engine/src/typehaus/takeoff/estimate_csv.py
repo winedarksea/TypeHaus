@@ -3,8 +3,7 @@
 RSMeans Online and Craftsman Cloud both accept CSV/Excel alongside their AI PDF upload, and
 what their parsers want is exactly this: one clean row per item, each carrying a code, a
 unit, a quantity and a price. Buildertrend and a QuickBooks job-cost import read the same
-shape. A printed PDF takeoff sheet was considered and not built — it would have to be
-re-typed at the other end.
+shape.
 
 The column set is fixed and authored here (:data:`ESTIMATE_COLUMNS`) rather than derived
 from whatever keys happen to be present, so adding a field to the estimate payload cannot

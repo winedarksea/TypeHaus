@@ -25,11 +25,10 @@ different instruction and a different rough quantity:
 * ``sawn timber`` — cut to its finished section from the log, not built up from board
   stock. Its rough size is the finished section plus a dressing skim, and nothing else.
 
-That last one is why this column replaced a ``glue_up`` boolean on 2026-08-29. The boolean
-made every over-size piece a glue-up by construction, which put the tudor posts on a
-five-lamination stack they are not (they are milled 6-1/8" square out of an elm log) and
-made a 44-5/8" stair landing ask for a 45" board that has never existed. Both were the
-column's own shape, not the model's.
+A boolean ``glue_up`` flag cannot express this: it would make every over-size piece a
+glue-up by construction, putting the tudor posts on a five-lamination stack they are not
+(they are milled 6-1/8" square out of an elm log) and asking a 44-5/8" stair landing for a
+45" board that has never existed.
 """
 
 from __future__ import annotations
@@ -185,9 +184,8 @@ def _piece_row(use: str, material_ref: str, materials: Mapping[str, object], pie
         rough_width_in = board_width_in + _WIDTH_LOSS_IN
 
     # A piece finishing thicker than its own stock dresses to is an AUTHORING error, not a
-    # milling instruction — the material names the wrong nominal stock. It used to be
-    # silently absorbed as a lamination count, which is what put the tudor posts on a
-    # five-layer stack. Say it instead.
+    # milling instruction — the material names the wrong nominal stock. Say so rather than
+    # silently absorbing it as a lamination count.
     yield_in = _FINISHED_FROM_QUARTERS.get(quarters) if quarters else None
     if yield_in is not None and thickness_in > yield_in + 1e-9:
         note = (f'{thickness_in:.2f}" finished cannot come out of {quarters}/4, which '
@@ -400,8 +398,8 @@ def _timber_rows(model: ResolvedModel, materials: Mapping[str, object],
     ``wood_surfaces`` bills a timber as a section over an ordered length, which is right for
     an estimator and says nothing to a sawyer. What it needs to hear is the rough SECTION:
     a 6-1/8" post is cut 6-5/8" square out of the log and dressed back, and the only waste
-    is that skim. Nothing about board stock applies — this used to report the post as five
-    laminations of 8/4, which is a real way to make a post and is not how these are made.
+    is that skim. Nothing about board stock applies — a laminated-post report would be a
+    real way to make a post, but not how these are made.
     """
     from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 

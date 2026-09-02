@@ -65,9 +65,9 @@ def _is_heat_pump(circuit, consumers: list) -> bool:
     """A circuit feeding the heat-pump system NEC 220.82(C)(2) takes at 100%.
 
     Typed, not name-matched: an ``Equipment`` of an HVAC kind on the circuit is the modeled
-    answer. This used to look for "minisplit" in the description, which silently dropped the
-    whole heating term to zero the day the units were renamed — and put them in the
-    fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
+    answer. A name match on the description is fragile — a renamed unit would silently drop
+    the heating term to zero and land it in the fixed-appliance bucket (B)(3), which (B)
+    explicitly excludes heating loads from.
     """
     return any(
         element.element_kind == "Equipment"
@@ -117,8 +117,8 @@ def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 # The service size, when the model states none. 200A is the ordinary residential service and
-# the number this summary was hard-coded to before ``ElectricalDeviceType.service_amps``
-# existed; it is now a *fallback*, and the summary says which of the two it used.
+# the fallback when no device states ``service_amps``; the summary says which of the two it
+# used.
 DEFAULT_SERVICE_AMPS = 200.0
 
 
@@ -150,9 +150,7 @@ def _service_amps(model: ResolvedModel) -> tuple[float, str]:
     """The service ampacity this house states, and where it came from.
 
     Authored on the service-entrance product — the meter socket or the main disconnect —
-    because that is the piece of equipment whose rating *is* the service size. It used to be
-    the literal ``200`` in the returned dict, which meant a house could not say it had a
-    400A service and the 220.82 comparison silently graded every plan against 200A.
+    because that is the piece of equipment whose rating *is* the service size.
     """
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
     best: tuple[float, str] | None = None

@@ -167,12 +167,9 @@ def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
       other and where the strap has the most to do;
     * the **run between** those corners, strapped at ``wall_strap_pitch_ft``.
 
-    The run term is why this reads 80 straps rather than 8 (2026-08-28). Corners alone put
-    two straps on a 36 ft facade and left thirty-two feet of it holding the storey above by
-    nails through a rim board — the whole middle of every elevation, which is where uplift
-    is largest on a low-slope roof. The pitch matches the 4 ft the mudsill anchors and the
-    LTP4 tie plates already run at, so the three of them read as one rhythm on the drawings
-    instead of three schedules a framer has to hold apart.
+    The run term matters: corners alone leave the middle of a long facade strapped only by
+    nails through a rim board, where uplift is largest on a low-slope roof. The pitch
+    matches the mudsill anchors and LTP4 tie plates so the three read as one rhythm.
     """
     exterior_framed = {wall.tag: wall for wall in model.walls if _is_exterior_framed_wall(wall)}
     stacked_below = {edge.lower_wall for edge in model.stack_edges}

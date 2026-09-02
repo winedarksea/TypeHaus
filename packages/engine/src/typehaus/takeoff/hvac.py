@@ -289,10 +289,9 @@ def heating_zones(
 def duct_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     """Every resolved duct run: system, routing, developed length, section, intent.
 
-    ``length_ft`` is the resolver's developed length — plan run plus every rise — not the
-    plan sum this used to compute for itself. The two agreed while no duct had an elevation
-    to rise through; now a riser is a leg like any other and a schedule that printed its
-    plan projection would print zero for it.
+    ``length_ft`` is the resolver's developed length — plan run plus every rise, not just
+    the plan projection. A riser is a leg like any other; a plan-only sum would print zero
+    for it.
 
     ``diameter_in`` and the two host refs are what a reader needs to find a run on site: a
     6" semi-rigid radial and a 6x6 rectangular branch are not the same duct, and "which

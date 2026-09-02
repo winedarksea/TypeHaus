@@ -205,21 +205,14 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                            lining_layer.material_ref,
                            lining_layer.thickness.meters)] += net_ceiling_m2
 
-    # Slabs had the identical hole ``wall_structure.py`` names in so many words: a slab is a
-    # ``ResolvedSolid``, ``structural_solids_takeoff`` bills its gross volume as concrete, and
-    # every *other* layer of its assembly — below-slab XPS, an EPS stay-in-place deck form,
-    # the furring rib, the gypsum thermal barrier under it — reached no order at all. Billed
-    # on the plan outline net of its floor openings, which is the same net area
-    # ``structural_solids_takeoff`` extrudes, so the covering and the pour cannot disagree
-    # about how big the slab is. STRUCTURE stays out for the wall path's reason: concrete is
-    # bought by the yard, and ``structural_solids`` already bills it.
-    #
-    # ``footing`` and ``pad`` are here for the same reason and were added the day a footing
-    # could carry an assembly at all (2026-08-22). ``Footing`` had no assembly, no material
-    # and no reinforcement, so there was never a non-structural layer on one to bill; the
-    # moment there is — a frost-protected shallow footing bearing on 2" of 40 psi XPS — the
-    # foam under it has to reach an order, and the slab loop was the only place that knew how
-    # to bill a horizontal solid's covering.
+    # A slab, footing or pad is a ``ResolvedSolid``: ``structural_solids_takeoff`` bills its
+    # gross volume as concrete, but every *other* layer of its assembly — below-slab XPS, an
+    # EPS stay-in-place deck form, the furring rib, the gypsum thermal barrier, foam under a
+    # frost-protected footing — needs its own order line. Billed on the plan outline net of
+    # its floor openings, matching the net area ``structural_solids_takeoff`` extrudes, so
+    # the covering and the pour cannot disagree about how big the solid is. STRUCTURE stays
+    # out for the wall path's reason: concrete is bought by the yard, and
+    # ``structural_solids`` already bills it.
     for solid in model.solids:
         if solid.category not in _LAYERED_SOLID_SCOPES or solid.assembly is None:
             continue

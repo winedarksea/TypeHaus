@@ -107,7 +107,7 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # ``sill_gaskets`` section below, so a house that files one as a construction return
     # still lands on the right trade.
     ("construction_returns", "*gasket*", CostCode("2100", "07 27 00", "walls")),
-    # Allowances (2026-08-20). ** THE KEY PREFIX IS THE TRADE DECLARATION. ** These match on a
+    # Allowances. ** THE KEY PREFIX IS THE TRADE DECLARATION. ** These match on a
     # leading segment rather than a substring, and that is a correctness requirement, not a
     # style choice: the first draft used substrings and filed "waterproofing" under ROOF,
     # because "p-r-o-o-f" contains "roof", and "egress-window-wells" under PLUMBING via
@@ -161,7 +161,7 @@ SECTION_CODES: dict[str, CostCode] = {
     "duct_insulation": CostCode("3200", "23 07 13", "mechanical"),
     "sleeves": CostCode("3100", "22 05 17", "plumbing"),
     "conduit": CostCode("3300", "26 05 33", "electrical"),
-    # The wire in that raceway (2026-08-27). CSI 26 05 19 is "Low-Voltage Electrical Power
+    # The wire in that raceway. CSI 26 05 19 is "Low-Voltage Electrical Power
     # Conductors and Cables", the section a branch circuit's NM-B belongs to; 26 31 00 is
     # "Photovoltaic Collectors"; and a data raceway is the same 26 05 33 as a power one,
     # because a raceway is a raceway — what differs is the service pulled through it.
@@ -180,7 +180,7 @@ SECTION_CODES: dict[str, CostCode] = {
     # gone under the deck sheet before the roof trade arrives.
     "member_protection": CostCode("2000", "07 26 00", "framing"),
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
-    # Structural wood solids (2026-08-22) — free-standing beams and posts, which is rough
+    # Structural wood solids — free-standing beams and posts, which is rough
     # carpentry however they are measured. Reached only when ``_solid_code`` declines,
     # which it does not for a beam or a column; it is the honest default for a wood solid
     # in a category the trade table has not classified.
@@ -188,15 +188,15 @@ SECTION_CODES: dict[str, CostCode] = {
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
     "furnishings": CostCode("4200", "12 50 00", "furniture"),
-    # Pre-framing returns (2026-08-18). The default is rough carpentry — the sill plate and
+    # Pre-framing returns. The default is rough carpentry — the sill plate and
     # the liner laps are a framer's work; KEY_PATTERNS above re-files the insulation, the
     # masonry and the channel rows onto their own trades.
     "construction_returns": CostCode("2000", "06 11 00", "framing"),
-    # Sill seal (2026-08-24), the seal under those plates. CSI 07 27 00 is Air Barriers,
+    # Sill seal, the seal under those plates. CSI 07 27 00 is Air Barriers,
     # which is what the peel-and-stick form is; the plain foam is the same trade's material
     # on the same joint.
     "sill_gaskets": CostCode("2100", "07 27 00", "walls"),
-    # Lump sums (2026-08-20). NAHB 1000 is Land and Site Work and CSI 01 21 00 is literally
+    # Lump sums. NAHB 1000 is Land and Site Work and CSI 01 21 00 is literally
     # "Allowances", so the pair is the honest default for scope the model cannot resolve.
     # A key that lands HERE rather than on a KEY_PATTERNS prefix above is an unclassified
     # one: readable, but it will be scheduled as earthwork. Name it for its trade instead.
@@ -208,21 +208,17 @@ SECTION_CODES: dict[str, CostCode] = {
 #: sections whose *table* name and whose *content* disagree: ``[concrete]`` in a
 #: ``prices.toml`` bills every resolved solid there is a $/cy for — the elm timbers, the
 #: breezeway polycarbonate, the composite deck, the soakaway stone — and only some of them
-#: are pours. ``[timber]`` (2026-08-22) splits the structural wood back out of it, and
+#: are pours. ``[timber]`` splits the structural wood back out of it, and
 #: reads the same BOM rows, so it needs the same category-versus-material reasoning.
 SOLID_SECTIONS = frozenset({"concrete", "timber"})
 
 #: Where a ``structural_solids`` row files once its solid *category* has named the trade
 #: that owns it (:func:`typehaus.emit.trades.solid_trade`).
 #:
-#: ** THE SECTION NAME IS NOT THE TRADE. ** Until this table existed, every row in
-#: ``[concrete]`` inherited ``SECTION_CODES["concrete"]``, so ``column:ELM_TIMBER`` (four
-#: solid elm timbers), ``column:POST_WHITE_PAINT`` (painted 6x6 pillars),
-#: ``glazing:BREEZEWAY_GLAZED_WALL`` (multiwall polycarbonate), ``drywell`` (#57 washed
-#: stone) and ``soffit`` (2x framing with gypsum on three sides) were all exported under
-#: NAHB 1300 / CSI 03 30 00 CAST-IN-PLACE CONCRETE and scheduled into the concrete sub's
-#: work package. ``emit/trades.SOLID_CATEGORY_TRADE`` already knew better for every one of
-#: them; the two tables simply never spoke. This is where they speak.
+#: ** THE SECTION NAME IS NOT THE TRADE. ** A ``[concrete]`` row is not necessarily concrete
+#: work: ``column:ELM_TIMBER``, ``glazing:BREEZEWAY_GLAZED_WALL`` and ``soffit`` are all
+#: priced there but belong to framing, openings and floors respectively — this table routes
+#: each solid category to its real trade instead of inheriting ``SECTION_CODES["concrete"]``.
 #:
 #: Keyed by trade rather than by category so it cannot drift from that table: a new solid
 #: category files itself the moment ``SOLID_CATEGORY_TRADE`` names its trade.
