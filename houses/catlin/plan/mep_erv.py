@@ -7,20 +7,17 @@
 # sub-manifolds and twenty-one semi-rigid radials. mep_hvac.py was at its page budget with
 # the trunks alone.
 #
-# =============================== WHAT CHANGED, AND WHY ================================
+# =============================== THE SYSTEM, IN BRIEF ==================================
 #
-# **The machine is real now.** EQ-T-ERV was `24x24x30, 210 cfm, SRE 0.75` with two
-# `# TODO verify datasheet` markers against it. It is a **Broan B210E75RT**: 6" round top
-# ports, 24.8"W x 21.6"H x 21"D, MERV 8 filter, 81% SRE at 32 F and **65% SRE at -13 F**.
-# EQ-B-ERV keeps its uid (IFC GlobalId stability) and its position.
+# **The machine** is a **Broan B210E75RT**: 6" round top ports, 24.8"W x 21.6"H x 21"D,
+# MERV 8 filter, 81% SRE at 32 F and **65% SRE at -13 F**. EQ-B-ERV keeps its uid (IFC
+# GlobalId stability) and its position.
 #
-# ** THE RATING POINT IS 206 CFM AT 0.4" W.G., NOT 210 AT 0.2" (corrected 2026-09-01). **
-# HVI certifies this machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI ID 2004940)
-# — see the note at DU-S-ERV-R-PLANT below, which had it right. "210 CFM at 0.2 in. w.g." is
-# the model-name point off the fan curve; it is where the number in the model number comes
-# from, not where the machine is certified. Every comment in this file that treated 0.2" as
-# the rating point was therefore assuming HALF the static budget the design actually has,
-# which is the direction that hides a problem rather than inventing one.
+# ** THE RATING POINT IS 206 CFM AT 0.4" W.G., NOT 210 AT 0.2". ** HVI certifies this
+# machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI ID 2004940) — see the note at
+# DU-S-ERV-R-PLANT below. "210 CFM at 0.2 in. w.g." is the model-name point off the fan
+# curve, not the rating point; reading it as the rating point understates the real static
+# budget by half.
 # `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
 # separate decision with a live verdict behind it.
 #
@@ -67,10 +64,10 @@
 #
 # ================================ ROUTING DECLARATIONS ================================
 #
-# `routing=CHASE` on the basement and attic radials is a *declaration*, not the escape hatch
-# it used to be. Since 2026-08-25 a duct inside a modeled `Soffit` says so with `soffit_ref`
-# and is graded by `mep.duct_soffit_occupancy`; CHASE now means only what it has always
-# honestly meant — a framed shaft that is not modeled as a `Soffit`:
+# `routing=CHASE` on the basement and attic radials is a *declaration*, not an escape hatch.
+# A duct inside a modeled `Soffit` says so with `soffit_ref` and is graded by
+# `mep.duct_soffit_occupancy`; CHASE means only a framed shaft that is not modeled as a
+# `Soffit`:
 #   * basement: boxed under the mixed SL-M-DECK / FS-M-* ceiling, the same status as the
 #     rectangular trunks these replace;
 #   * attic: a boxed floor chase along the west wall at x=1'-0" carries the north-south leg
@@ -148,44 +145,32 @@ EQUIPMENT_ERV_MAIN = [
 # LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 34'-6"), fully
 # accessible in RM-A-POCKET.
 #
-# ** THE MANIFOLD MOVED x 2'-6" -> 5'-0" ON 2026-08-29, AND M1305.1.3 IS WHY. ** At 6:12 off
-# a rafter plate the roof underside is `1 1/2" + x/2`, so its old station had 16 1/2" of
-# clearance — the 8"-deep box fits, but the code wants a PASSAGEWAY not less than 30" high to
-# reach it and a level working space in front. 5'-0" gives 31 1/2" at the box and 46 1/2" at
-# the far side of a 30" working space, so a person can crawl to it and kneel at it. The four
-# radials below each gained 2'-6" of run to the x=1'-0" chase head and nothing else changed. Extract only: the level's fresh-air duty is the mixing-box feed,
+# ** THE MANIFOLD IS AT x=5'-0", AND M1305.1.3 IS WHY. ** At 6:12 off a rafter plate the
+# roof underside is `1 1/2" + x/2`, so the code's passageway (not less than 30" high, with
+# a level working space in front) governs the station: 5'-0" gives 31 1/2" at the box and
+# 46 1/2" at the far side of a 30" working space, so a person can crawl to it and kneel at
+# it. Extract only: the level's fresh-air duty is the mixing-box feed,
 # which stays a full-size 6" branch off the supply riser rather than a radial, because it
 # carries ~100 of the machine's 210 authored cfm on its own (206 certified — see the header).
 EQUIPMENT_ERV_ATTIC = [
     Equipment(uid="3QT1F3F01A", tag="EQ-A-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(5), ft(34, 6)), footprint=(inch(24), inch(8)),
-              # RM-A-POCKET since 2026-08-29: the west loft became a guest studio and this
-              # end of it was walled off as a storage pocket. The manifold did not move —
-              # the room around it did, and D-A-POCKET is a door rather than a scuttle
-              # precisely so this stays serviceable.
+              # RM-A-POCKET, walled off as a storage pocket in the guest studio's west loft;
+              # D-A-POCKET is a door rather than a scuttle precisely so this stays
+              # serviceable.
               room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6",
               mount=Mount(kind=MountKind.FLOOR)),
 ]
 
-# THE MIXING BOX — now inside SF-S-HP1, in the return chamber at the air handler's return
-# face, which is the one place in this loop where fresh air may legally arrive.
+# THE MIXING BOX — inside SF-S-HP1, in the return chamber at the air handler's return
+# face, which is the one place in this loop where fresh air may legally arrive, upstream of
+# the coil, the strip heater and the unit's own filter-back grille. Injecting it anywhere
+# downstream of the coil and the 2 kW strip heater would deliver 100 cfm of -15 F design
+# outdoor air — half the house's fresh air — untempered.
 #
-# ** IT MOVED FROM (20'-8", 11'-4") TO (24'-1", 1'-9") ON 2026-08-30, AND THE OLD SPOT
-# WAS A REAL DEFECT. ** Reading south to north inside SF-S-DUCT the order used to be: air
-# handler y 6'-0"..9'-7", trunk head 9'-7", return grille 9'-8", strip heater 9'-10"..10'-8",
-# mixing box 11'-4". So 100 cfm of -15 F design outdoor air — half the house's fresh air —
-# was injected DOWNSTREAM of both the coil and the 2 kW strip heater and reached the rooms
-# untempered. It landed there because `mep.duct_soffit_occupancy` pushed it 18" north of
-# where the plan wanted it: a packing outcome in a box the placeholder air handler had
-# already filled, not intent. With the machine in SF-S-HP1 the return chamber is a real
-# chamber, and the box sits in it, upstream of the coil, the strip heater and the unit's own
-# filter-back grille.
-#
-# ** IT WAS ALSO NEARLY DELETED, AND THE BACKDRAFT DAMPER IS WHY IT IS STILL HERE. ** The
-# element looks like a fitting once the return is a proper plenum, and a wye would do. It
-# would not. `plan/mep_registers.py` has said since 2026-07-30 that the ERV enters the return
-# "not a hard-coupled duct … so either machine can run alone", and this box is where that
-# damper lives:
+# ** IT LOOKS LIKE A FITTING ONCE THE RETURN IS A PROPER PLENUM, AND A WYE WOULD NOT DO. **
+# `plan/mep_registers.py` states the ERV enters the return "not a hard-coupled duct … so
+# either machine can run alone", and this box is where that damper lives:
 #   * AIR HANDLER RUNNING, ERV OFF — the return chamber is at negative pressure. With no
 #     damper the blower pulls backwards through the 6" feed, through the attic sub-manifold
 #     and out through a stopped, therefore non-recovering, ERV core and its outdoor intake.
@@ -219,25 +204,22 @@ EQUIPMENT_ERV_SECOND = [
 
 # THE TWO EXTERIOR HOODS — west facade at the NW chase, stacked, exhaust over intake.
 #
-# ** BOTH HOODS CAME OFF THE NORTH GABLE ON 2026-08-30, AND THE GABLE ROUTE WAS A REAL
-# DEFECT, NOT A PREFERENCE. ** DU-ERV-EA's 18'-0" horizontal leg at +23'-0" passed squarely
-# through the rough openings of BOTH gable windows — WIN-A-N1 (x 10'-9"..13'-3") and
-# WIN-A-N2 (x 22'-9"..25'-3"), each sill +22'-0", head +25'-0". An 8" OD wrapped duct
-# centred on +23'-0" spans 22'-8"..23'-4": 8" above the sill, 100% inside the glass, across
-# 2'-6" of each unit. WIN-A-N1 is the only window daylighting FO-A-HALL's double-height
-# stair void (storeys/attic.py), so the duct crossed it 13'-0" above the second-storey hall,
-# in full view. Nothing in the engine grades a run against an opening; see `run_through_opening`.
+# ** THE NORTH GABLE IS NOT A VIABLE ROUTE FOR THESE. ** A horizontal leg at +23'-0" would
+# pass squarely through the rough openings of BOTH gable windows — WIN-A-N1 (x
+# 10'-9"..13'-3") and WIN-A-N2 (x 22'-9"..25'-3"), each sill +22'-0", head +25'-0" — 8"
+# above the sill, 100% inside the glass, across 2'-6" of each unit. WIN-A-N1 is the only
+# window daylighting FO-A-HALL's double-height stair void (storeys/attic.py), so the duct
+# would cross it 13'-0" above the second-storey hall, in full view. Nothing in the engine
+# grades a run against an opening; see `run_through_opening`.
 #
-# The second half of the defect is that this leg was never "6 inches off the north gable"
-# as the old note here claimed. That figure measured to the SHEATHING. Against the finished
-# face it is 0.63": at y=35'-6" the 8" envelope takes 4.00" of a 5 1/2" stud cavity, eats
-# the 0.625" gwb layer, and stands 3.37" proud into the room. It could not be closed in.
+# It also could not sit inside the gable wall's cavity: against the finished face an 8"
+# envelope at y=35'-6" takes 4.00" of a 5 1/2" stud cavity, eats the 0.625" gwb layer, and
+# stands 3.37" proud into the room — it could not be closed in.
 #
-# The two claims that had kept the pair on the gable both fail on measurement, and
-# houses/catlin/CLAUDE.md carries the argument: RM-M-MECH is 5'-3" x 1'-11" and not the
-# 5'-11" x 2'-7" quoted (room polygons run 6" past an exterior wall's interior face), and the
-# "20"-34" above grade" figure is the 13 7/16" RIM BAND, not the 10'-0" wall. The ten-foot
-# separation was the real obstacle and it was only ever tested horizontally.
+# houses/catlin/CLAUDE.md carries the rest of the argument against the gable: RM-M-MECH is
+# 5'-3" x 1'-11", not 5'-11" x 2'-7" (room polygons run 6" past an exterior wall's interior
+# face), and the "20"-34" above grade" figure is the 13 7/16" RIM BAND, not the 10'-0" wall.
+# The ten-foot separation is the real constraint and is tested horizontally.
 #
 # 13'-0" of rise clears `mep.erv_outdoor_terminals`' 10'-0" on 3-D distance alone, and
 # IRC M1506.3 independently waives the ten feet "where the exhaust opening is located not
@@ -288,12 +270,10 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # continuous basement-to-attic shaft: RM-M-MECH's floor on main, the 2'-9" x 2'-2 1/8" notch
 # walled by W-S-CH-W/W-S-CH-S in RM-S-BATH1's NW corner on second, out onto the attic deck.
 #
-# ** RE-MEASURED 2026-08-30, AND THE OLD FIGURE WAS 6" TOO GENEROUS ON EVERY EXTERIOR FACE. **
-# This note used to read "x 0 5/8"..30 3/4" by y 33'-3 1/8"..35'-11 3/8" — 30 1/8" wide by
-# 32 3/8" deep", and both numbers were taken off ROOM polygons. `resolve/rooms.py` polygonizes
-# from wall AXES and insets only by the lining, and these walls are `face("sheathing-ext")`,
-# so their axis IS the sheathing exterior: 6" of exterior-wall stud was being counted as shaft
-# on each such face. Against the resolved wall LAYERS the notch is
+# ** MEASURED OFF WALL LAYERS, NOT ROOM POLYGONS. ** `resolve/rooms.py` polygonizes from
+# wall AXES and insets only by the lining, and these walls are `face("sheathing-ext")`, so
+# their axis IS the sheathing exterior: a room-polygon reading counts 6" of exterior-wall
+# stud as shaft on each such face. Against the resolved wall LAYERS the notch is
 # **x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" wide by 26 1/8" deep.**
 #
 # That matters, because the three-in-a-row below was arithmetic against the wrong west face.
@@ -303,11 +283,10 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # risers that still run the full height, and moving either of them is its own pass. It is
 # written down so the next person does not re-derive the 30 1/8" and conclude it fits.
 #
-# The 2026-08-30 hood move made the shaft materially emptier, which is what makes the above
-# tractable rather than urgent. DU-ERV-OA now stops at the main storey and DU-ERV-EA at the
-# second, so the four-in-a-shaft problem exists only below main; above the second storey the
-# shaft carries two ducts, not four. DU-ERV-EA's own riser moved off y=35'-6" — which was
-# inside the NORTH wall's stud cavity by 4 5/8" — to y=34'-8".
+# The hoods stacking at the NW chase makes the above tractable rather than urgent: DU-ERV-OA
+# stops at the main storey and DU-ERV-EA at the second, so the four-in-a-shaft problem
+# exists only below main; above the second storey the shaft carries two ducts, not four.
+# DU-ERV-EA's own riser sits at y=34'-8", clear of the NORTH wall's stud cavity.
 #
 # The shaft also carries six plumbing vents and VR-M-RADON-VENT clustered at (1'-0", 34'-6"),
 # and eight conduits between x=1'-6" and x=2'-6" at y=34'-6"..35'-0". It is not roomy, and
@@ -329,27 +308,20 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # `code.M1502_dryer_exhaust` uses for M1502.3 and is a fact about the geometry rather than a
 # naming convention.
 DUCTS_ERV_RISERS = [
-    # ** IT STOPS UNDER THE DECK NOW (2026-08-30), AND ONLY THIS ONE DOES. ** +244" is the
+    # ** IT STOPS UNDER THE DECK, AND ONLY THIS ONE DOES. ** +244" is the
     # centreline of a 6" duct lying on the attic deck, and it is right for the three risers
     # that surface east of x=11 1/2" — but this column is at x=0'-5", where the 6:12 underside
-    # is 4" above that deck. A 6" duct cannot come up there; it was 1.4" proud of the rafters
-    # and `integrity.element_above_roof` said so. So the riser tops out on FS-ATTIC's bottom
-    # chord instead (231 7/8" = the deck less 8 7/8", the same datum DU-S-ERV-HP-FEED already
-    # uses) and its feed jogs the 7" east in the bay before standing up — the move
-    # VR-M-RADON-VENT makes for the same reason, in the same shaft, at the same rake.
+    # is 4" above that deck. A 6" duct cannot come up there; it would be 1.4" proud of the
+    # rafters, which `integrity.element_above_roof` catches. So the riser tops out on
+    # FS-ATTIC's bottom chord instead (231 7/8" = the deck less 8 7/8", the same datum
+    # DU-S-ERV-HP-FEED uses) and its feed jogs the 7" east in the bay before standing up — the
+    # same move VR-M-RADON-VENT makes, in the same shaft, at the same rake.
     #
-    # Moving the column east instead was the other option and it is not available: the chase's
-    # measured clear is 24" (see the note above — it is not the 30 1/8" this used to cite)
-    # and the three-in-a-row at x=5"/14"/23" already over-fills it by an inch.
-    # ** BOTH RISERS NOW REACH THE MANIFOLD THEY WERE ALWAYS DESCRIBED AS SERVING
-    # (2026-09-01). ** Until this pass each stopped dead at -19 7/16" in the chase — the
-    # basement manifolds' port level, and nothing else about the point — while this file's
-    # own note above said "basement manifolds to attic manifold". The manifolds are at
-    # x 5'-6"..7'-6", 61" and 73" of plan away, and the horizontal leg between was never
-    # drawn. `mep.duct_connectivity` is the check that says so out loud now; it could not
-    # have, before its equipment test grew an elevation band, because both ends "landed on"
-    # EQ-M-ERV-HOOD-OA — the gable hood 67" above them, sharing a plan point the way anything
-    # in one chase does.
+    # Moving the column east instead is not available: the chase's measured clear is 24" (see
+    # the note above) and the three-in-a-row at x=5"/14"/23" already over-fills it by an inch.
+    # ** BOTH RISERS REACH THE MANIFOLD THEY SERVE. ** The manifolds are at
+    # x 5'-6"..7'-6", 61" and 73" of plan away, and the horizontal leg between is drawn.
+    # `mep.duct_connectivity` is the check that grades it.
     #
     # THE SUPPLY LEG GOES ROUND THE NORTH of EQ-B-ERV: east at y=31'-8", which is 3 1/2"
     # clear of the machine's north face (y=376 1/2") and stops at x=5'-10", 2" short of
@@ -390,11 +362,10 @@ DUCTS_ERV_RISERS = [
     # `mep.erv_outdoor_terminals` reads an OUTDOOR_AIR run from its hood inward and an
     # EXHAUST run outward to its hood, which is the direction the air goes and the direction
     # a plan reader traces.
-    # ** BOTH OUTDOOR LEGS STOP AT THE NW CHASE NOW (2026-08-30). ** They used to climb the
-    # full 24'-6" to the north gable; see EQUIPMENT_ERV_HOODS_* above for why that route was
-    # a defect and not merely long. Each is now a riser out of the basement manifold and one
-    # straight penetration through the west wall: the intake at +4'-0" on the main storey,
-    # the discharge at +17'-0" on the second. -53 LF of R-8 wrapped 6" duct between them.
+    # ** BOTH OUTDOOR LEGS STOP AT THE NW CHASE. ** See EQUIPMENT_ERV_HOODS_* above for why
+    # the north-gable route is not viable. Each is a riser out of the basement manifold and
+    # one straight penetration through the west wall: the intake at +4'-0" on the main
+    # storey, the discharge at +17'-0" on the second.
     #
     # The x=-0'-6" hood vertex on each is NOT decoration. `mep.erv_outdoor_terminals` decides
     # which EXHAUST run is the machine's discharge by asking whether the run's LAST vertex
@@ -421,12 +392,10 @@ DUCTS_ERV_RISERS = [
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
             #
-            # ** THE RISER MOVED OFF y=35'-6", WHICH WAS INSIDE THE NORTH WALL. ** The real
-            # shaft clear is x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" x 26",
-            # not the figure this file used to carry, which counted
-            # 6" of exterior-wall stud as shaft on each measured face. At y=35'-6" this
-            # riser's 8" envelope stood 4 5/8" inside W-M-N3B / W-S-N3B's stud cavity for its
-            # whole height. y=34'-8" is 9" clear of the shaft's north face.
+            # ** y=34'-8", CLEAR OF THE NORTH WALL. ** The shaft clear is x 0'-6 5/8"..2'-6
+            # 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" x 26". At y=35'-6" an 8" envelope would
+            # stand 4 5/8" inside W-M-N3B / W-S-N3B's stud cavity for its whole height;
+            # y=34'-8" is 9" clear of the shaft's north face.
             path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(31, 1)),
                   pt(ft(4, 7), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
                   pt(ft(1, 11), ft(34, 8)), pt(inch(-6), ft(34, 8))),
@@ -448,10 +417,8 @@ DUCTS_ERV_RISERS = [
 # eight feet of exposed duct off the old (27', 27') position. It still throws away from
 # FURN-B-PLAY-TV on the east wall.
 DUCTS_ERV_BASEMENT = [
-    # ** THE MACHINE'S OWN TWO TRUNKS, DRAWN 2026-09-01. ** EQ-B-ERV had no duct to either
-    # manifold — the six radials below started at boxes that nothing fed. No check could say
-    # so: `mep.duct_connectivity` grades duct ENDS, and a manifold with nothing arriving at it
-    # has no end to orphan. Both are 6", the machine's full 210 cfm, and both leave its top.
+    # ** THE MACHINE'S OWN TWO TRUNKS. ** Both are 6", the machine's full 210 cfm, and both
+    # leave its top.
     #
     # THE SUPPLY TRUNK IS THE SIMPLE ONE: straight up 14 3/8" off the port to the radial
     # layer at 7'-6", then 19" east into EQ-B-ERV-MAN-SUP's west half at y=30'-4". It stays
@@ -544,12 +511,11 @@ DUCTS_ERV_BASEMENT = [
 #     That is what the neck of a radial bundle looks like coming off a pair of manifolds in a
 #     6'-0" closet, and they stay on those centres all the way south rather than fanning out,
 #     because a lane is a straight line in this model and a bundle is not.
-#   * Two pairs share part of one bay: STUDY and LAUNDRY both ride 20'-8" east of x=4'-8",
-#     and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay holds two 3" ducts side
-#     by side without argument; nothing in the engine grades duct-against-duct outside a
-#     modeled Soffit, so this note is the only record that it was looked at. The STUDY/
-#     LAUNDRY overlap grew on 2026-08-30 — they now share the 20'-8" bay from x=4'-8" to
-#     x=15'-0" rather than parting at x=10'-6" — and it is still two tubes in one bay.
+#   * Two pairs share part of one bay: STUDY and LAUNDRY both ride the 20'-8" bay from
+#     x=4'-8" to x=15'-0", and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay
+#     holds two 3" ducts side by side without argument; nothing in the engine grades
+#     duct-against-duct outside a modeled Soffit, so this note is the only record that it was
+#     looked at.
 _PORT_Z = inch(-20)
 _BAY_Z = inch(-10.375)
 
@@ -566,16 +532,13 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=15),
-    # ** IT ENDED IN A WALL FOR ONE DAY AND IS A CEILING RUN AGAIN (2026-08-30). ** The
-    # 2026-08-29 version dropped a riser into W-M-LS for a 5'-0" sidewall supply; the owner
-    # paired RM-M-STUDY with a LOW extract instead (DU-M-ERV-R-LAUNDRY below), which is what
-    # makes a ceiling supply work in a 148 cf box, and asked for this one back overhead by
-    # ED-M-STUDY-SPOT. So the riser point and the -60" elevation are gone and the run is
-    # four points again, the shape every other level-2 ceiling radial has.
+    # ** A CEILING RUN, FOUR POINTS, THE SHAPE EVERY OTHER LEVEL-2 CEILING RADIAL HAS. **
+    # RM-M-STUDY is paired with a LOW extract instead (DU-M-ERV-R-LAUNDRY below), which is
+    # what makes a ceiling supply work in a 148 cf box, feeding overhead by ED-M-STUDY-SPOT.
     #
-    # ** IT RIDES THE 20'-8" BAY 3'-10" FURTHER EAST THAN IT EVER HAS, AND THAT COSTS
-    # NOTHING BECAUSE IT IS THE SAME BAY. ** FS-S-WEST's joist lines are at 8" + n*16", so
-    # the terminal's 20'-8" sits between the joists at 20'-0" and 21'-4" for the whole ride
+    # ** IT RIDES THE 20'-8" BAY, AND THAT COSTS NOTHING BECAUSE IT IS ONE BAY. **
+    # FS-S-WEST's joist lines are at 8" + n*16", so the terminal's 20'-8" sits between the
+    # joists at 20'-0" and 21'-4" for the whole ride
     # from x=4'-6" to x=17'-2" — no jog, no crossing, one straight length of semi-rigid.
     # Stopping short of the joist at 21'-4" is also why the grille cannot sit on the
     # sconce's own 21'-5" line; the argument is on REG-M-SUP4 in plan/mep_registers.py.
@@ -619,8 +582,8 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=20),
-    # ** THE ONE TWO-HEADED RADIAL IN THE HOUSE (2026-08-30), AND THE PORT BUDGET IS WHY.
-    # ** RM-M-STUDY asked for a stale-air pickup. It could not have its own lane:
+    # ** THE ONE TWO-HEADED RADIAL IN THE HOUSE, AND THE PORT BUDGET IS WHY.
+    # ** RM-M-STUDY needs a stale-air pickup. It cannot have its own lane:
     # EQ-M-ERV-MAN-EXH is an EQ-T-ERV-MANIFOLD-10 and all TEN of its ports are spoken for —
     # BATH1, VANITY, KITCH, BATH2, SUITEBATH, LAUNDRY, MUD, BED1, BED2, PLANT. There is no
     # -12 in the catalog, and the closet bay these hang in is 39" x 31" already holding a
@@ -660,16 +623,13 @@ DUCTS_ERV_LEVEL2 = [
     # a pure riser into the wall. x=15'-0" for the crossing is 3'-0" clear of the trusses'
     # east bearing at W-M-C2/C3, well out of the end panels; -108" is storey-relative on the
     # `second` datum (+10'-0"), i.e. 12" above the main floor.
-    # ** THE EAST JOG IS GONE (2026-08-30) AND THE RUN IS ~2'-6" SHORTER. ** REG-M-RET-STUDY
-    # moved 16'-6" -> 14'-6" to get out from under FURN-M-STUDY-DESK-LEAF's stowed envelope
-    # (the argument is on the register), and the old path only ran east to x=15'-0" and then
-    # doglegged back to reach 16'-6". At 14'-6" the radial turns south once and drops: one
-    # corner instead of three, on a two-headed run whose whole risk is accumulated bend loss.
-    # The crossings are unchanged in kind — south from the 20'-8" bay still cuts the joists at
-    # 20'-0" and 18'-8", legal because FS-S-WEST is open-web with an 8 7/8" chord opening —
-    # and the drop is now 3'-6" further from those trusses' east bearing at W-M-C2/C3, not
-    # nearer. -108" is storey-relative on the `second` datum (+10'-0"), i.e. 12" above the
-    # main floor.
+    # ** ONE CORNER, NOT THREE, ON A TWO-HEADED RUN WHOSE WHOLE RISK IS ACCUMULATED BEND
+    # LOSS. ** REG-M-RET-STUDY sits at 14'-6" (out from under FURN-M-STUDY-DESK-LEAF's
+    # stowed envelope — the argument is on the register), so the radial turns south once
+    # and drops there. South from the 20'-8" bay cuts the joists at 20'-0" and 18'-8", legal
+    # because FS-S-WEST is open-web with an 8 7/8" chord opening, clear of the trusses' east
+    # bearing at W-M-C2/C3. -108" is storey-relative on the `second` datum (+10'-0"), i.e.
+    # 12" above the main floor.
     DuctRun(uid="ANSKB7EGDH", tag="DU-M-ERV-R-LAUNDRY", system=DuctSystem.RETURN,
             path=(pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(35)), pt(ft(4, 8), ft(20, 8)),
                   pt(ft(10, 6), ft(20, 8)), pt(ft(14, 6), ft(20, 8)), pt(ft(14, 6), ft(18)),
@@ -696,13 +656,11 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="semi_rigid", design_cfm=5),
-    # THE PLANT ROOM'S EXTRACT, MOVED DOWN HERE FROM THE ATTIC MANIFOLD 2026-08-29 (it was
-    # DU-A-ERV-R-PLANT, and before that DU-S-PLANT-EXH; it keeps the uid through both moves).
+    # THE PLANT ROOM'S EXTRACT. It keeps the DU-S-PLANT-EXH/DU-A-ERV-R-PLANT uid.
     #
-    # ** IT LEFT THE ATTIC BECAUSE ITS DECK CHASE BECAME A BEDROOM. ** Off EQ-A-ERV-MAN-EXH it
-    # ran the x=1'-0" chase 21'-8" down the base of RM-A-STUDIO's west knee wall — the last duct
-    # on that wall, and the whole reason the wall needed a shoe. Down here it never enters the
-    # attic at all.
+    # ** IT IS DOWN HERE BECAUSE THE ATTIC'S DECK CHASE IS A FINISHED BEDROOM. ** Off
+    # EQ-A-ERV-MAN-EXH it would run the x=1'-0" chase 21'-8" down the base of RM-A-STUDIO's
+    # west knee wall. Down here it never enters the attic at all.
     #
     # ** THE TRUSSES ARE WHY THIS WORKS AND FS-ATTIC IS WHY IT DID NOT. ** Both floors span x,
     # so a north-south run crosses every joist in either — but FS-S-WEST is 11 7/8" OPEN-WEB
@@ -721,9 +679,9 @@ DUCTS_ERV_LEVEL2 = [
     # of everything: no sibling radial reaches south of y=6'-0" except DU-M-ERV-R-BED, which
     # terminates at (9'-0", 6'-0").
     #
-    # ** IT STAYS A HIGH TERMINAL, WHICH IS THE POINT THE 2026-08-18 NOTE ARGUED. ** Humid air
-    # stratifies, so the wettest air in RM-S-PLANT is the air overhead. The grille cannot be in
-    # the ceiling any more — this duct is below the room now, not above it — so it rises inside
+    # ** IT IS A HIGH TERMINAL. ** Humid air
+    # stratifies, so the wettest air in RM-S-PLANT is the air overhead. The grille is not in
+    # the ceiling — this duct is below the room, not above it — so it rises inside
     # W-S-C1 and discharges at 8'-6", six inches under the 9'-0" ceiling. W-S-C1 is
     # PLANT_INT_2X6_BRG_HUMID at 7.43": a 5 1/2" cavity, room for a 75 mm riser AND a
     # vapour-tight boot through the liner. W-S-PS1, the room's north wall, is 2x4 and is not.
@@ -736,26 +694,22 @@ DUCTS_ERV_LEVEL2 = [
     # point, and the real static budget is about double what those comments assume. This is
     # still the radial whose drop the installer must check — 25 cfm, and longest again now.
     # -20" is the manifold port, -10 3/8" a 3" duct on the truss bottom chord.
-    # ** THE RISER STOOD IN A DOORWAY UNTIL 2026-08-30, AND NOTHING GRADED IT. ** It came up
-    # at (18'-0", 4'-8"), which is the CLEAR OPENING of D-S-PLANT: that door is centred on
-    # y=4'-0" in W-S-C1 with its jacks at y=2'-8 1/4" and y=5'-3 3/4", so y=4'-8" is 7" inside
-    # the north jamb. The run therefore did three impossible things in a row — through the
-    # bearing wall's sole plate, then 78 1/2" of bare 3" duct standing free in the rough
-    # opening with nothing to strap it to and the leaf swinging through it, then a 3" bore
-    # through a solid 2-ply 2x8 header. `mep.duct_joist_bay` PASSED it and even printed the
-    # station twice in its R302.11 fire-blocking list, because it grades the bay and never
-    # asks what the riser stands in.
+    # ** THE RISER MUST NOT STAND IN D-S-PLANT'S CLEAR OPENING, AND `mep.duct_joist_bay`
+    # DOES NOT CATCH IT. ** That door is centred on y=4'-0" in W-S-C1 with its jacks at
+    # y=2'-8 1/4" and y=5'-3 3/4", so a riser at y=4'-8" would stand 7" inside the north
+    # jamb: through the bearing wall's sole plate, 78 1/2" of bare 3" duct standing free in
+    # the rough opening with nothing to strap it to and the leaf swinging through it, then a
+    # 3" bore through a solid 2-ply 2x8 header. `mep.duct_joist_bay` grades the bay and never
+    # asks what the riser stands in, so it would PASS.
     #
     # The fix is one bay north, and it is nearly free. y=7'-4" (88" = 8 + 5 x 16) is a truss
     # bay centre AND a stud bay centre in the same wall — the coincidence this file already
     # leans on at y=4'-8" — so the duct rides the bay east and stands up between the studs at
     # y=80" and y=96", clear of the door's kings at 65 1/4" and of ED-S-PLANT-SW one bay
-    # south. **It is 2'-8" SHORTER**, 53'-0" against 55'-8".
-    #
-    # Every argument the 2026-08-29 pass made survives intact: still W-S-C1, still the 5 1/2"
+    # south, at 53'-0" developed length: still W-S-C1, still the 5 1/2"
     # PLANT_INT_2X6_BRG_HUMID cavity that takes both the riser and a vapour-tight boot, still
-    # a high sidewall terminal at 8'-6" for the stratification reason above. The supply/extract
-    # throw across the room improves slightly, 11'-0" to 11'-7 1/2".
+    # a high sidewall terminal at 8'-6" for the stratification reason above. Supply/extract
+    # throw across the room is 11'-7 1/2".
     #
     # The alternative bay, y=2'-0" south of the door, is 2'-8" LONGER and lands the riser in
     # the same stud bay as ED-S-PLANT-SW-TIMER's gasketed box — a 3" duct and a 2 1/2" box in
@@ -782,29 +736,15 @@ DUCTS_ERV_LEVEL2 = [
 # one. FS-ATTIC is I-joist, so unlike level 2 there is no crossing the bays: all the
 # north-south travel happens ON the deck, above the joists, where it costs nothing in DEPTH.
 #
-# ** THAT LAST CLAUSE NEEDED AMENDING ON 2026-08-29, AND THEN THE THING IT WAS APOLOGISING FOR
-# WAS MOSTLY REMOVED. ** The x=1'-0" chase now runs the length of a FINISHED BEDROOM, and the
-# first version of that chase carried DU-S-ERV-HP-FEED's 6" beside a 3" for 21'-8" along the
-# base of a 5'-0" knee wall — roughly 12" wide by 8-9" tall, about 22 sf of the studio's 357,
-# and wide enough to swallow the west wall's receptacle band. The answer then was to box it as
-# a bench (FURN-A-STUDIO-PLINTH) whose `work_surface=False` broke the 210.52 wall line.
-#
-# ** THE 6" DID NOT HAVE TO BE THERE, AND THE BENCH IS GONE WITH IT. ** DU-S-ERV-HP-FEED turns
-# east one bay sooner (y=22'-0") and reaches SF-S-DUCT down RM-A-EAST-UNFIN's deck instead —
-# same developed length, and the exposed run moved from a guest bedroom to an unfinished loft.
-# DU-A-ERV-R-STUBATH's east leg went into the y=19'-4" bay in the same pass, where it travels
-# ALONG the joists and bores nothing. The knee wall then carried ONE 75 mm duct for a few hours,
-# and now carries none — see the next paragraph. ED-A-STUDIO-RC8/RC9 stay: the wall is in the
-# 210.52 test on its own merits whatever is or is not lying at its foot.
-#
-# ** AND THEN THE LAST ONE LEFT TOO, SO THE KNEE WALL IS BARE. ** This block used to say
-# DU-A-ERV-R-PLANT could not move, on the grounds that feeding it from FS-S-WEST's trusses would
-# turn its ceiling grille into a floor boot and give up the stratification argument. That was
-# half right: the duct did move down to the trusses (it is DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2
-# now), but the terminal did NOT become a floor boot — it rises inside W-S-C1's 5 1/2" cavity to
-# a HIGH SIDEWALL grille at 8'-6", six inches under the ceiling, still in the warm wet air at the
-# top of the room. The argument was about height, not about which direction the boot arrives
-# from. What is left on the studio's west knee wall is nothing at all.
+# ** THE x=1'-0" CHASE RUNS THE LENGTH OF A FINISHED BEDROOM, AND THE KNEE WALL AT ITS FOOT
+# IS BARE. ** DU-S-ERV-HP-FEED turns east at y=22'-0" and reaches SF-S-DUCT down
+# RM-A-EAST-UNFIN's deck instead of running the knee wall's length; DU-A-ERV-R-STUBATH's
+# east leg rides the y=19'-4" bay, ALONG the joists, boring nothing; DU-A-ERV-R-PLANT feeds
+# from FS-S-WEST's trusses (DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2), rising inside W-S-C1's
+# 5 1/2" cavity to a HIGH SIDEWALL grille at 8'-6" — still in the warm wet air at the top of
+# the room, so the stratification argument is unaffected; only the direction the boot
+# arrives from changed. ED-A-STUDIO-RC8/RC9 stay: the wall is in the 210.52 test on its own
+# merits whatever is or is not lying at its foot.
 #
 # The remaining rejected alternative is unchanged: bore the FS-ATTIC I-joists and run
 # north-south in the bays. The hole chart permits it, but at x=1'-0" every hole would fall
@@ -824,23 +764,20 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
-    # THE ATTIC'S OWN PICKUP WAS TWO FEET FROM THE MANIFOLD AND NEVER LEFT THE DECK. It does
-    # now, and the reason is a wall rather than a duct: REG-A-RET1's terminal ended up inside
-    # the walled storage pocket on 2026-08-29, extracting a guest bedroom's air through a
-    # closed door. Both moved to the studio's NW corner together.
+    # THE ATTIC'S OWN PICKUP, at the studio's NW corner, not the walled storage pocket —
+    # REG-A-RET1 must not extract a guest bedroom's air through a closed door.
     #
-    # It takes the x=1'-0" chase south past W-A-STU-N to the boot at (1'-0", 20'-8"). It had two
-    # companions there, DU-A-ERV-R-PLANT and DU-S-ERV-HP-FEED; both left on 2026-08-29 and this
-    # run's 1'-7" inside the studio is now most of what is left of that chase. All of it is ON
-    # the deck: FS-ATTIC is I-joist, so there is no crossing bays here and the north-south travel
-    # costs nothing in depth. Developed length goes from ~4' to about 15' — still the shortest
-    # radial on this manifold, so it takes nobody's pressure headroom.
+    # It takes the x=1'-0" chase south past W-A-STU-N to the boot at (1'-0", 20'-8"); this
+    # run's 1'-7" inside the studio is most of what remains of that chase. All of it is ON
+    # the deck: FS-ATTIC is I-joist, so there is no crossing bays here and the north-south
+    # travel costs nothing in depth. Developed length ~15' — the shortest radial on this
+    # manifold, so it takes nobody's pressure headroom.
     DuctRun(uid="DYNQDC9ZMJ", tag="DU-A-ERV-R-ATTIC", system=DuctSystem.RETURN,
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
                   pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=9),
-    # THE GUEST BATH'S EXTRACT, added 2026-08-29 with the bath. Same chase south to y=19'-0",
+    # THE GUEST BATH'S EXTRACT. Same chase south to y=19'-0",
     # then east on the deck to the W-A-STU-W axis at x=9'-7 1/2" and UP inside that wall's
     # 5 1/2" staggered cavity to REG-A-STUBATH-EXH at 7'-0". The rise is the whole reason the
     # terminal is a wall grille rather than a floor boot: this room follows the roof and has no
@@ -849,26 +786,25 @@ DUCTS_ERV_ATTIC = [
     # 20 cfm continuous, matching every other bath terminal in the house — and small enough
     # that the extra run costs the machine nothing measurable.
     #
-    # ** ITS EAST LEG USED TO LIE ON THE DECK AND THAT WAS WRONG. ** From x=1'-0" to the wet
-    # wall it crossed 8'-7" of RM-A-STUDIO's floor at y=19'-0" — a duct laid across the middle
-    # of a bedroom, not against a knee wall where the rest of the chase at least has a rake to
-    # hide under. It rides the FS-ATTIC bay instead, which costs nothing: the leg runs EAST, and
-    # FS-ATTIC's I-joists span x, so travelling east is travelling ALONG a bay. Nothing is bored.
+    # ** THE EAST LEG MUST NOT LIE ACROSS THE DECK. ** From x=1'-0" to the wet
+    # wall, laying it across RM-A-STUDIO's floor at y=19'-0" would put 8'-7" of duct across
+    # the middle of a bedroom. It rides the FS-ATTIC bay instead, which costs nothing: the
+    # leg runs EAST, and FS-ATTIC's I-joists span x, so travelling east is travelling ALONG
+    # a bay. Nothing is bored.
     #
-    # y moved 19'-0" -> 19'-4" (232" = 8 + 14 x 16) to land on a bay centre, and
-    # REG-A-STUBATH-EXH moved the same 4" with it so the riser still meets its grille. 19'-4" is
+    # y=19'-4" (232" = 8 + 14 x 16) is a bay centre; REG-A-STUBATH-EXH is the same 4" over so
+    # the riser meets its grille. 19'-4" is
     # well inside RM-A-STUBATH (y 17'-4 3/4" .. 22'-3 3/8"), and it is a different bay from the
     # one PR-A-STUBATH-DRAIN takes at 20'-8", so the two do not share a cavity.
     DuctRun(uid="WCH6Z4DZX0", tag="DU-A-ERV-R-STUBATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(19, 4)),
                   pt(ft(1), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4))),
-            # ** THE RISER TOP FOLLOWED ITS GRILLE DOWN ON 2026-08-30. ** It stood at 84"
-            # while REG-A-STUBATH-EXH moved to 4'-4" on 2026-08-29 — the register was
-            # corrected and the duct that feeds it was not, so 32" of 3" duct rose past its
-            # own boot and out through the rake, which at x=9'-7 1/2" is 4'-11 1/4" above the
-            # deck. `integrity.element_above_roof` named it (24.6" proud); nothing else could,
-            # because `mep.register_duct_match` grades the pair in plan and they agree there.
+            # ** THE RISER TOP MUST FOLLOW ITS GRILLE. ** REG-A-STUBATH-EXH is at 4'-4"; a
+            # riser topping out higher rises past its own boot and out through the rake,
+            # which at x=9'-7 1/2" is 4'-11 1/4" above the deck. `integrity.element_above_roof`
+            # catches that; `mep.register_duct_match` only grades the pair in plan, where they
+            # agree regardless of elevation.
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z, inch(52)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid",
@@ -876,22 +812,20 @@ DUCTS_ERV_ATTIC = [
     # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a ceiling
     # grille rather than a floor boot, which for stale air is the better end of the room anyway.
     #
-    # ** REROUTED 2026-08-29, AND THERE IS NO WAY ROUND THE NORTH. ** Its bay leg crossed
-    # x 10'..18' at y=31'-4", and FO-A-HALL now spans that whole band to the north gable —
-    # FO-A-HALL's maxy IS W-A-N2's inside gwb face, so the strip between the void and the wall
-    # is wall, not deck. EVERY west-to-east route north of the studio is severed.
+    # ** THERE IS NO WAY ROUND THE NORTH. ** A bay leg crossing x 10'..18' at y=31'-4" would
+    # hit FO-A-HALL, which spans that whole band to the north gable — FO-A-HALL's maxy IS
+    # W-A-N2's inside gwb face, so the strip between the void and the wall is wall, not deck.
+    # EVERY west-to-east route north of the studio is severed.
     #
     # So it goes down the x=1'-0" chase to y=22'-0" (264" = 8 + 16 x 16, a bay centre, and below
     # W-A-STU-N's sole plate so the partition is irrelevant), east under the studio floor to
-    # x=29', then north on the east loft's deck to the existing grille, which does not move.
-    # ** 32'-8" -> ~53'-6", and for a few days that made it the longest radial in the house. **
-    # It is not any more: DU-M-ERV-R-PLANT went to 55'-8" on 2026-08-29 when it moved down to the
-    # FS-S-WEST trusses. Length was never the criterion anyway — BED3 carries 5 cfm (~102 fpm in
+    # x=29', then north on the east loft's deck to the existing grille. **~53'-6", not the
+    # longest radial in the house** — DU-M-ERV-R-PLANT is 55'-8" on the FS-S-WEST trusses.
+    # Length was never the criterion anyway — BED3 carries 5 cfm (~102 fpm in
     # 75 mm, where 21 extra feet costs hundredths of an inch w.g.), while PLANT carries 25 cfm and
-    # is the run whose drop the installer must check. Note the two are no longer even on the same
-    # machine port: BED3 is on EQ-A-ERV-MAN-EXH, PLANT on EQ-M-ERV-MAN-EXH. The alternative —
-    # re-filing BED3 onto the main-storey manifold — is still blocked by FO-S-STAIR, which is what
-    # pushed it up here in the first place, and that manifold is now full at 10 of 10.
+    # is the run whose drop the installer must check. The two are on different machine ports:
+    # BED3 on EQ-A-ERV-MAN-EXH, PLANT on EQ-M-ERV-MAN-EXH. Re-filing BED3 onto the main-storey
+    # manifold is blocked by FO-S-STAIR, and that manifold is full at 10 of 10.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(29), ft(22)),
@@ -902,12 +836,9 @@ DUCTS_ERV_ATTIC = [
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=5),
 ]
 
-# THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop, and the last of
-# plans/TODO.md's undrawn verticals to close.
+# THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
 #
-# It keeps DU-S-ERV-HP-FEED's tag and uid, and nothing else: the run it replaces tapped a
-# joist-bay trunk at y=12'-8" that no longer exists, and its rise into the soffit was undrawn
-# because `DuctRun` had nowhere to put an elevation. It now comes off the supply riser's head
+# It keeps DU-S-ERV-HP-FEED's tag and uid. It comes off the supply riser's head
 # on the attic deck, takes the boxed floor chase south, rides the FS-ATTIC bay at y=11'-4"
 # east, and **drops into SF-S-DUCT** onto the mixing box — a drop that is drawn, swept, and
 # billed at its developed length.
@@ -918,34 +849,31 @@ DUCTS_ERV_ATTIC = [
 # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; -20 7/8" is a 6" duct on SF-S-DUCT's clear
 # underside at 216 1/8".
 #
-# ** REROUTED 2026-08-29 SO IT NEVER ENTERS THE GUEST STUDIO, AND IT COST NOTHING. ** It used
-# to run the x=1'-0" deck chase south all the way to y=11'-4" — 10'-11" of 6" duct along the
-# base of a finished bedroom's knee wall, and the single item that set that chase's SECTION.
-# Everything else on that wall is 75 mm.
+# ** IT NEVER ENTERS THE GUEST STUDIO. ** Running the x=1'-0" deck chase south all the way
+# to y=11'-4" would put 10'-11" of 6" duct along the base of a finished bedroom's knee wall
+# — the single item that would set that chase's SECTION, where everything else on that wall
+# is 75 mm.
 #
-# It now turns east one bay sooner, in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and
+# It turns east one bay sooner, in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and
 # for the same reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate
 # so the partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
 # west-to-east route north of it. From x=20'-8" it rises back onto RM-A-EAST-UNFIN's deck and
-# runs south to the same SF-S-DUCT drop it always used. An UNFINISHED loft is where a 6" duct
-# lying on a deck belongs.
-#
-# ** THE DEVELOPED LENGTH IS UNCHANGED — 11'-7" comes off the west leg and 10'-8" goes onto the
-# east one. ** So this is not a trade of pressure for joinery: the machine sees the same run,
-# and DU-M-ERV-R-PLANT (25 cfm) remains the radial whose drop the installer must check.
+# runs south to the same SF-S-DUCT drop. An UNFINISHED loft is where a 6" duct
+# lying on a deck belongs. Developed length: 11'-7" west leg, 10'-8" east leg — the machine
+# sees the same run either way, and DU-M-ERV-R-PLANT (25 cfm) remains the radial whose drop
+# the installer must check.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
-            # ** ITS FIRST 7" WENT INTO THE BAY ON 2026-08-30. ** It came off the riser head
+            # ** ITS FIRST 7" IS IN THE BAY. ** It comes off the riser head
             # on the deck at x=0'-5", under 4" of roof. It picks the riser up on FS-ATTIC's
             # bottom chord instead and stands up at x=1'-0", where the underside is 7 1/2"
             # and a bare 6" duct on the deck clears by 1/2". The 7" east is ALONG a bay —
             # FS-ATTIC's I-joists span x — so nothing is bored; the north-south leg that
-            # follows stays on the deck for exactly that reason, as it always has.
-            # ** THE TAIL FOLLOWED THE MIXING BOX SOUTH ON 2026-08-30. ** Every attic leg
-            # above, and the drop at (20'-8", 11'-4"), are UNCHANGED — the machine sees the
-            # same 6" run to the same point. What is new is the 12'-2" that continues from
-            # there: south inside SF-S-DUCT beside the 18x8 trunk (18 + 2 hanger gap + 6 = 26
-            # against 30 3/4" clear, which is the whole reason the trunk went to 18x8 and not
+            # follows stays on the deck for the same reason.
+            # ** THE TAIL FOLLOWS THE MIXING BOX SOUTH. ** From the drop at (20'-8", 11'-4")
+            # the machine sees a 6" run continuing 12'-2": south inside SF-S-DUCT beside the
+            # 18x8 trunk (18 + 2 hanger gap + 6 = 26
+            # against 30 3/4" clear, which is the whole reason the trunk is 18x8 and not
             # 20x8), across the y=7'-6" seam into SF-S-HP1, east at y=5'-5 1/2" — the
             # band between the air handler's discharge plenum and ST-S2A's lowest stringer,
             # which is the only place in the box where a 6" duct may cross all three
@@ -954,7 +882,7 @@ DUCTS_ERV_MIX_FEED = [
             # 72 3/4" cavity, so x=20'-8" runs straight through it, and only the east third
             # of the box is a lane. Nothing rides RM-A-STUDY's finished floor.
             #
-            # ** THE JOG MAY NOT MOVE SOUTH. ** Since 2026-08-31 it clears the north edge of
+            # ** THE JOG MAY NOT MOVE SOUTH. ** It clears the north edge of
             # DU-S-HP-SOUTH-RISE's take-off leg and EQ-S-HP1-STRIP's plate by 1 1/8" — the
             # tightest joint in this box, and one `mep.duct_soffit_occupancy` will not
             # report, because it compares a pair's clearance ACROSS the box and this one is
@@ -962,9 +890,7 @@ DUCTS_ERV_MIX_FEED = [
             # may not.
             #
             # One elevation the whole way, -24 7/8" (215 1/8" absolute): 6" above SF-S-HP1's
-            # cavity floor, which came down 4" when the box went from a 17" drop to 21" for
-            # the FLEXX Ultra cabinet. It was -20 7/8" against the old floor for the same 6".
-            # A step would buy nothing.
+            # cavity floor.
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),

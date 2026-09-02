@@ -52,10 +52,9 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_supply_devices.SUPPLY_DEVICES_GARAGE,
                  *mep_hvac.DUCTS_MAIN,
                  *mep_erv.EQUIPMENT_ERV_MAIN,
-                 # The outdoor-air INTAKE hood, on the west face of RM-M-MECH since
-                 # 2026-08-30. Both hoods used to be filed on `attic` together; they
-                 # are on different storeys now because they are stacked, which is
-                 # what makes the pair legal without ten feet of facade.
+                 # The outdoor-air INTAKE hood, on the west face of RM-M-MECH. Filed on a
+                 # different storey from its EXHAUST partner because the pair is stacked,
+                 # which is what makes it legal without ten feet of facade.
                  *mep_erv.EQUIPMENT_ERV_HOODS_MAIN,
                  *mep_erv.DUCTS_ERV_RISERS,
                  *mep_registers.REGISTERS_MAIN]
@@ -97,7 +96,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
                    *mep_supply_devices.SUPPLY_DEVICES_SECOND,
-                   # The two balcony condensers' defrost lines (2026-08-28) — filed on
+                   # The two balcony condensers' defrost lines — filed on
                    # `second` because the deck they cross IS this storey's datum.
                    *mep_drainage.HP_CONDENSATE]
 ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,

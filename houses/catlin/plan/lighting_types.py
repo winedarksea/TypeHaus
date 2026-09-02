@@ -144,7 +144,7 @@ LUMINAIRE_TYPES = (
     # Multi-watt selectable; specified at the 50 W setting because the point of putting them
     # here is supplementing a north-of-45 winter.
     #
-    # WET rated and UL 8800 listed, not merely damp (2026-08-18). Both are requirements, not
+    # WET rated and UL 8800 listed, not merely damp. Both are requirements, not
     # upgrades: NEC Article 410 Part XVI (added in the 2020 cycle) requires horticultural
     # lighting equipment to be *listed*, and UL 8800 is that listing — it admits only damp-
     # or wet-rated horticultural luminaires. RM-S-PLANT is held at 70% RH and is misted, so
@@ -211,12 +211,9 @@ LUMINAIRE_TYPES = (
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
                   lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
                   dimmable=True, load_va=8.0, ports=_POWER_120),
-    # Same fixture with the switch on it. It was specified for RM-A-DEN, a 43 ft2 attic
-    # nook with no wall on the way in to put a switch on, so the fixture carried its own.
     # ``integral_switch`` is what exempts it from ``electrical.lighting_controls``.
-    # THE NOOK IS GONE (2026-08-27) and ED-A-STUDIO-SCONCE now sits in RM-A-STUDIO, so the
-    # integral switch is a convenience rather than a necessity there — kept, because the
-    # loft's own switching is at the far end and this fixture is 30' from it.
+    # ED-A-STUDIO-SCONCE sits in RM-A-STUDIO, 30' from the loft's own switching, so the
+    # integral switch is a convenience there rather than a necessity.
     # J2: the plant room's spot. Same adjustable down-spot as J, wet-location listed with a
     # gasketed lens and a corrosion-resistant housing — RM-S-PLANT is a damp location
     # throughout and a wet one where it is misted, and this one is 6'-0" up a wall the room
@@ -291,9 +288,7 @@ LUMINAIRE_TYPES = (
 
     # --- Q: the garage shop light -----------------------------------------------------
     # A garage is an unconditioned, unheated space that cars drive snow into, so the shop
-    # light is damp rated even though nothing rains on it. This replaced the generic
-    # ED-T-LIGHT the whole house used to run on — a fixture with no lamp, no lumens and no
-    # listing is not something a schedule can print a row for.
+    # light is damp rated even though nothing rains on it.
     LuminaireType(tag="ED-T-LT-SHOP4", name="4' LED shop light, damp, surface mount",
                   form=LuminaireForm.LINEAR_TUBE, type_mark="Q",
                   footprint=(ft(4), inch(5)), height=inch(3), plan_symbol="linear-light",

@@ -27,14 +27,14 @@ from typehaus.model import m
 
 ELECTRICAL_DEVICE_TYPES = (
     # ``bus_amps=225`` is what `code.NEC_705_12_interconnection` computes the 120% rule
-    # against (2026-08-02). It is the busbar rating, deliberately not the 200A service:
+    # against. It is the busbar rating, deliberately not the 200A service:
     # NEC 705.12(B)(3)(2) sizes the allowable backfeed on the bus, and this panel is a 225A
     # bus on a 200A main precisely so there is 70A of source headroom.
     ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
                           plan_symbol="panel", spaces=54, bus_amps=225,
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # Backup subpanel on the EG4's dedicated load output (2026-08-02). 12 spaces for the 7
+    # Backup subpanel on the EG4's dedicated load output. 12 spaces for the 7
     # in use — the spare six are room for a second always-on circuit. No ``bus_amps``:
     # nothing backfeeds this bus, and a stated rating would wrongly get graded by the
     # 705.12 check against a service main it doesn't have (see checks/mep/power_sources.py).
@@ -44,10 +44,9 @@ ELECTRICAL_DEVICE_TYPES = (
                           plan_symbol="panel", spaces=12,
                           ports=(ServicePort(tag="feed", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # ED-T-LIGHT is gone. It was a generic "Ceiling light" with no lamp, no lumens and no
-    # listing, standing one per room; every light in the house is now a real product from
-    # plan/lighting_types.py carrying a schedule mark, and a fixture a schedule cannot
-    # print a row for has no place in a lighting plan.
+    # Every light in the house is a real product from plan/lighting_types.py carrying a
+    # schedule mark — a generic fixture with no lamp, no lumens and no listing has no place
+    # in a lighting plan; a schedule cannot print a row for it.
     ElectricalDeviceType(tag="ED-T-SWITCH", name="Wall switch", footprint=(inch(4), inch(2)), height=inch(2),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
@@ -65,7 +64,7 @@ ELECTRICAL_DEVICE_TYPES = (
                           footprint=(inch(4), inch(2)), height=inch(2),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # The plant room's outlets (2026-08-18). NEC 2023 makes RM-S-PLANT a damp location
+    # The plant room's outlets. NEC 2023 makes RM-S-PLANT a damp location
     # throughout and a wet one anywhere it is misted or hosed, which changes three things at
     # once about an ordinary duplex: WR listing (the receptacle body itself), a GFCI device
     # (E3902/210.8 — and at the device, not the breaker, per the circuit convention in
@@ -104,9 +103,7 @@ ELECTRICAL_DEVICE_TYPES = (
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
-                     # x moved 1'-2" -> 0'-10" with the 2026-08-21 12" -> 8" thinning of
-                     # W-B-W1/W2: these are face-mounted, and the west wall's inside face
-                     # went from x=1'-0" to x=0'-8".
+                     # x=0'-10": face-mounted on W-B-W1/W2, whose inside face is x=0'-8".
                      position=pt(inch(10), ft(29)), type_ref="ED-T-PANEL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
@@ -162,11 +159,8 @@ MAIN_DEVICES = [
     # Circuits still deferred (decision 1): symbols and mounting heights, not a panel
     # schedule. Counter outlets at 42" (6" backsplash over the 36" counter, under 54"
     # cabinets). KRF1 is an ordinary duplex — the fridge's future battery-backup circuit
-    # isn't modeled. Positions reflect the 2026-07-30 range/sink/dishwasher wall swaps
-    # (KGF3 followed the range north with N3). KGF1 and KGF2 both still fall inside the
-    # 2026-08-26 base run's B30 bay (30'-10".."33'-4") after the sink/dishwasher
-    # re-composition, so neither moved — KGF1 is no longer "on the dishwasher's spot"
-    # (the dishwasher moved to the sink base's west side).
+    # isn't modeled. KGF1 and KGF2 both fall inside the base run's B30 bay
+    # (30'-10".."33'-4").
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(25, 6), ft(35, 3.375)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
@@ -179,34 +173,28 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(35, 4.375), ft(28, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
-    # ** N4's COUNTER HAS HAD NO RECEPTACLE SINCE IT WAS BUILT (found 2026-08-24). ** It is
+    # ** N4's COUNTER HAS NO RECEPTACLE. ** It is
     # 5'-11" of L-shaped top from KGF2 round the inside corner to the end of the run,
     # against 210.52(C)(1)'s 24". Nothing in the engine checks 210.52(C) — the counter rule
-    # reports UNKNOWN by design, because counter casework is not resolved geometry — which
-    # is exactly why it went unnoticed through three kitchen passes. y=34'-8" clears
-    # WIN-M-KIT-E's north jamb at 34'-7".
+    # reports UNKNOWN by design, because counter casework is not resolved geometry.
+    # y=34'-8" clears WIN-M-KIT-E's north jamb at 34'-7".
     ElectricalDevice(uid="DCP5ZCJVTK", tag="ED-M-LIVING-KGF7", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(35, 4.375), ft(34, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
-    # --- FURN-M-KIT-MIXER-GARAGE's outlets (2026-08-24) ------------------------------
-    # ** BOTH OF THESE LIVE INSIDE THE CABINET, AND THAT IS THE POINT. ** The owner asked
-    # for the stand mixer to slide straight out onto the peninsula with "outlet in the
-    # cabinet". That was first built as three flush ED-T-RECEPTACLE-POPUP units cut into the
-    # countertop plus one inside a base bay under a spring lift — a misreading on both
-    # counts. The pop-ups (KGF5/KGF6) and their type are deleted with this correction; KGF4
-    # keeps its uid, which is a shipped IFC GlobalId, and moves into the garage where the
-    # brief actually put it.
+    # --- FURN-M-KIT-MIXER-GARAGE's outlets ---------------------------------------------
+    # ** BOTH OF THESE LIVE INSIDE THE CABINET, AND THAT IS THE POINT. ** The stand mixer
+    # slides straight out onto the peninsula with the outlet in the cabinet. KGF4 keeps its
+    # uid, a shipped IFC GlobalId.
     #
     # 42": 6" above the peninsula's 36" top, so a cord reaches an appliance standing on the
     # pull-out shelf and coils clear of it when the shelf travels. x=35'-4 3/8" is the east
     # wall's finish face plus 1" — the garage's back IS that wall, so these are ordinary
     # wall-hosted boxes, not floating in-cabinet ones. y=25'-9" and 26'-8" are inside the
-    # garage's y 25'-2 3/8"..27'-2 3/8" after it was bumped south against the tall bank.
+    # garage's y 25'-2 3/8"..27'-2 3/8".
     #
     # ** GFCI, and it is not merely belt-and-braces here. ** These sit ~10'-7" from
-    # FX-M-KITCH-SINK (2026-08-26: ~11'-0" before the sink moved +9" east), outside
-    # E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
+    # FX-M-KITCH-SINK, outside E3902.10's 6' reach, and CKT-KITCH-SA1 is a GFCI breaker
     # anyway — but a receptacle serving a countertop appliance a step from a sink is exactly
     # where an inspector will want the device, and a GFCI device costs less than an argument.
     #
@@ -231,31 +219,27 @@ MAIN_DEVICES = [
                      position=pt(ft(35, 4.375), ft(26, 8)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
-    # Behind the range at 6": the whip drops to the floor box, not to a counter height. Moved
-    # north with APPL-M-RANGE when it swapped with N3; x is still the wall-face constant
-    # (35'-4") and y is the range's new along-wall position.
+    # Behind the range at 6": the whip drops to the floor box, not to a counter height. x is
+    # the wall-face constant (35'-4"); y is the range's along-wall position.
     ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(35, 3.375), ft(31, 8.375)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(6)), rotation=deg(270)),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
-    # coil deck, so the plug is reachable without pulling the whole cabinet out.
-    # y 31'-5 3/8" -> 31'-0 5/8" -> 31'-4 5/8" (both 2026-08-24): south with the pantry
-    # room's partition, then back north with the cold run when W-M-PAN-S moved 4"
-    # (storeys/main.py). Fridge now y 30'-1 3/4"..32'-10 5/8".
+    # coil deck, so the plug is reachable without pulling the whole cabinet out. Fridge is
+    # y 30'-1 3/4"..32'-10 5/8".
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(31, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
-    # Inside the sink base, 18" up: the dishwasher's cord. Follows APPL-M-DW, which moved
-    # to the sink base's west side (2026-08-26) when the base run was re-composed to centre
-    # the sink under WIN-M-KITCH — see storeys/main.py's OPENINGS and plan/placeables.py's
-    # kitchen header.
+    # Inside the sink base, 18" up: the dishwasher's cord. Follows APPL-M-DW on the sink
+    # base's west side — see storeys/main.py's OPENINGS and plan/placeables.py's kitchen
+    # header.
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(28, 6), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # The disposer outlet, in the sink base, the same 18" up on the same wall face —
-    # reachable by the cord from APPL-M-DISP hanging under the bowl at 29'-4" (2026-08-26,
-    # moved with the sink). Single 5-20R on CKT-DISPOSAL; the wall control is the 24V loop
-    # billed with the appliance, not a switch on this branch.
+    # reachable by the cord from APPL-M-DISP hanging under the bowl at 29'-4". Single 5-20R
+    # on CKT-DISPOSAL; the wall control is the 24V loop billed with the appliance, not a
+    # switch on this branch.
     ElectricalDevice(uid="N4A3YD3680", tag="ED-M-LIVING-KDS1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(29, 9), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-520S",
                      circuit="CKT-DISPOSAL",
@@ -268,9 +252,9 @@ MAIN_DEVICES = [
 # None carry `room=`, so a stale-coordinate device still matches by tag suffix and passes —
 # that's how these got stranded inside partitions in the first place.
 SECOND_DEVICES = [
-    # Retyped to the wet-location fan 2026-08-18: a standard "damp-rated" bath-and-porch
-    # fixture is inadequate in a room that condenses on purpose, and this one hangs at the
-    # ceiling where the wettest air in the room collects.
+    # The wet-location fan: a standard "damp-rated" bath-and-porch fixture is inadequate in
+    # a room that condenses on purpose, and this one hangs at the ceiling where the wettest
+    # air in the room collects.
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(9), ft(6)), type_ref="ED-T-LT-FAN52-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-PLANT", controlled_by=("ED-S-PLANT-SW",),
@@ -293,10 +277,9 @@ SECOND_DEVICES = [
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(22, 2.375), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
-    # y follows W-S-BD1's south face, which came 1/2" into this room on 2026-08-30 when the
-    # wall became INT_2X4_RC (plan/storeys/second.py) — the resilient channel goes on the
-    # BED1 side. The box's back sits ON the face and the box is 2" deep, so the authored y is
-    # the face LESS 1": 17'-5 1/8" - 1" = 17'-4 1/8". It was 17'-4 5/8" against the old face.
+    # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
+    # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
+    # 2" deep, so the authored y is the face LESS 1": 17'-5 1/8" - 1" = 17'-4 1/8".
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(25, 11), ft(17, 4.125)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
@@ -347,8 +330,7 @@ SECOND_DEVICES = [
                      position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # On W-S-BD-N's vanity face beside the two mirror lights, so it travels with them:
-    # y 25'-11 5/8" -> 26'-1 5/8" when that wall moved 2" north on 2026-08-29.
+    # On W-S-BD-N's vanity face beside the two mirror lights, so it travels with them.
     ElectricalDevice(uid="CED014K2AA", tag="ED-S-VANITY-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(5), ft(26, 1.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
@@ -356,8 +338,7 @@ SECOND_DEVICES = [
                      position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
                      room="RM-S-HALL", controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py): W-S-BD-N2, which
-    # used to carry this switch, came out with O-S-STAIRTOP on 2026-07-28.
+    # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py).
     ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(11, 6), ft(22, 8.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
@@ -370,15 +351,12 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
-# Attic habitable rooms, both east of the ridge. ** THE CATHEDRAL PLANE CHANGED ON 2026-08-29
-# AND BOTH CEILING BOXES CAME DOWN WITH IT. ** It used to follow a 4:12 roof off a 5'-0" knee
-# wall, so at x=27' the plane was 5' + 9'/3 = 8' — "the same 8' the rest of the house's
-# ceiling boxes sit at, which is why these lights need no special elevation". At 6:12 off a
-# 1 1/2" rafter plate the underside is `1 1/2" + x/2` mirrored about x=18', which at these
-# two fittings' x=22'-0" is 7'-1 1/2". A recessed can sits IN that plane, so that is the
-# elevation; the 9'-8" they carried was 2'-6 1/2" of fresh air. The stations do not move —
+# Attic habitable rooms, both east of the ridge. ** THE CATHEDRAL PLANE SETS BOTH CEILING
+# BOX ELEVATIONS. ** At 6:12 off a 1 1/2" rafter plate the underside is `1 1/2" + x/2`
+# mirrored about x=18', which at these two fittings' x=22'-0" is 7'-1 1/2". A recessed can
+# sits IN that plane, so that is the elevation. The stations do not move —
 # x=22'-0" is inside the 13'-9"..22'-3" band where the ceiling clears 7'-0" (see
-# plan/lighting_attic.py, which relocated the rest of the storey's fittings).
+# plan/lighting_attic.py, which places the rest of the storey's fittings).
 ATTIC_DEVICES = [
     # RM-A-EAST-UNFIN (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
@@ -403,17 +381,13 @@ ATTIC_DEVICES = [
 # --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
 # Gasketed blank cover plate, beside the CN-M-VENT-CLAMP riser cluster (24'-4"/24'-10"/
 # 25'-4") it serves — filed on the attic storey because the gable carries siding well above
-# it there, giving a 25'-6" box cladding to grip. 3' east of the riser (2026-07-28: riser
-# moved x=3'->1', box followed to stay clear).
+# it there, giving a 25'-6" box cladding to grip. 3' east of the riser.
 #
-# ** MOVED x 4'-0" -> 16'-4" ON 2026-08-29, AND IT IS STILL 3'-0" EAST OF THE RISER. **
-# Both numbers changed for one reason: the riser jogged east inside the attic to x 13'-4"
-# (mep_venting.py) and the gable's rake dropped to `20'-11 3/8" + x/2`. At the old x=4'-0"
-# the plane now stands at 22'-11 3/8" — three feet BELOW this box — so the enclosure had
-# nothing to hang on. At 16'-4" the plane is 29'-1 3/8" and the box hangs with 3'-7" of
-# cladding over it, beside the clamps exactly as it was drawn to be. MN 1303.2402 subp. 6
-# wants the fan's box within reach of the riser and `code.MN_1303_2402_radon` grades that
-# at 8'-0"; 3'-0" holds it.
+# ** AT x=16'-4", STILL 3'-0" EAST OF THE RISER. ** The riser jogs east inside the attic to
+# x 13'-4" (mep_venting.py) and the gable's rake is `20'-11 3/8" + x/2`. At x=16'-4" the
+# plane is 29'-1 3/8" and the box hangs with 3'-7" of cladding over it, beside the clamps.
+# MN 1303.2402 subp. 6 wants the fan's box within reach of the riser and
+# `code.MN_1303_2402_radon` grades that at 8'-0"; 3'-0" holds it.
 #
 # Both heights below are the same 25'-6": Mount elevation is storey-relative (attic datum
 # 20'), Connector elevation is project-frame absolute.
@@ -422,13 +396,11 @@ NEMA_BOX = [
                      position=pt(ft(16, 4), ft(36, 10.25)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
-# ** CN-A-NEMA-CLAMP is GONE (2026-08-26), and this list is empty on purpose. **
+# ** CN-A-NEMA-CLAMP is GONE, and this list is empty on purpose. **
 # It was a plain S-5! seam clamp: the box's own fastener, sharing ED-A-NEMA-JB's point
-# exactly, and it had followed that box out to the cladding face on 2026-08-03 (the box had
-# been hanging 4" clear of the siding it is supposed to be clamped to), out 1/2" more on
-# 2026-08-23 with the Swinburne truss, and 1" more on 2026-08-26 with the catlin truss.
+# exactly.
 #
-# The gable wall it sits on is `pbr-panel-26` now. **This is WALL and not roof**, which is
+# The gable wall it sits on is `pbr-panel-26`. **This is WALL and not roof**, which is
 # the fact that decides it: at x=4' the rake stands near 26'-6" and the box hangs at 25'-6",
 # so it is a foot below the roof line on an exposed-fastener panel with no seam anywhere in
 # it. An S-5! clamp has nothing to close on.
@@ -450,8 +422,8 @@ NEMA_CLAMP = []
 # gasketed T09150HWAM screws the panel itself is hung on (library/hardware.py,
 # THROUGH_PANEL_PIPE_STRAP; same hardware as CN-M-VENT-CLAMP1..3).
 #
-# ** This was an S-5! CanDuit #13 ring on an S-5! seam clamp until 2026-08-26, and it is
-# not a downgrade — it is the only thing that can work. ** The CanDuit's entire value is
+# ** This is not a downgrade from an S-5! CanDuit #13 ring on a seam clamp — it is the only
+# thing that can work. ** The CanDuit's entire value is
 # non-penetration, and S5_CANDUIT_PIPE_CLAMP declares `requires_role=ROLE_STANDING_SEAM_CLAMP`,
 # so every ring ordered brings a seam clamp with it. `pbr-panel-26` has no seam to clamp:
 # the ring would arrive with a bracket that has nothing to grip. On a wall already screwed
@@ -463,12 +435,9 @@ NEMA_CLAMP = []
 # `size=` change here and nothing more. The strap is sized on pipe OUTER diameter exactly
 # the way the ring was: a 4" round leader is 4.0" OD, hence **#13**, and `size` bills it
 # through `hardware_by_model`'s family-prefix match. ** THREE per leader at ~6' o.c.
-# (5'/11'/17') SINCE 2026-08-29 — it was four, and the fourth is gone with the knee wall. **
-# CN-A-LEADER-W4/E4 stood at 23'-0" on W-A-W1/W-A-E2, which were 5'-0" walls carrying the
-# eave to 25'-0". The eave is 20'-11 3/8" now (6:12 off a 1 1/2" rafter plate), so there is
-# no leader at 23'-0" to strap and no wall behind it either — those two walls are plates.
-# Each leader is ~4'-11" shorter and the 17'-0" strap is 3'-11" below its new head, which is
-# inside the same ~6' spacing the other three keep. 6' apart is three 24" girt courses, so
+# (5'/11'/17'). ** The eave is 20'-11 3/8" (6:12 off a 1 1/2" rafter plate); the top strap
+# at 17'-0" sits 3'-11" below the head, inside the same ~6' spacing the other three keep.
+# 6' apart is three 24" girt courses, so
 # every strap lands on a course and none of them needs its own blocking. Each on the wall
 # with cladding at that elevation. Plan position is the leader's own centreline, 8.77" outboard
 # of the sheathing datum (trough mid-width, params/roof_trim.py::_TROUGH_MID_IN) — literal

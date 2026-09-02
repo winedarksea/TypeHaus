@@ -22,23 +22,19 @@ EQUIPMENT_TYPES_ERV = (
     # 6" -> 160 mm manifold adapter (one per manifold) a real line in the BOM rather than a
     # shrug: the collared radial manifolds this system uses are 160 mm stock.
     #
-    # OUTDOOR_AIR/EXHAUST_AIR are new `Service` members (2026-08-25). Until they existed the
-    # outdoor side of this machine could not be spelled at all, and plan/electrical.py said
-    # so in a comment — an ERV with no intake and no discharge is not modeled.
     # ** 210 IS THE MODEL-NAME NUMBER; 206 AT 0.4" W.G. IS THE CERTIFIED ONE. **
     # HVI certifies this machine at 206 cfm net supply at 0.4" w.g. (HVI ID 2004940). The
-    # "210 CFM at 0.2 in. w.g." this file and plan/mep_erv.py used to quote as the rating
-    # point is a point on the fan curve — the one the model number is named for — and taking
-    # it as the rating point understated the static budget by about half.
+    # "210 CFM at 0.2 in. w.g." on the box is a point on the fan curve — the one the model
+    # number is named for — and taking it as the rating point understates the static budget
+    # by about half.
     #
-    # ** `ventilation_cfm` IS DELIBERATELY LEFT AT 210 (2026-09-01). ** It is not an
-    # oversight and it is not a rounding choice. Moving it to 206 moves a LIVE VERDICT:
-    # code.N1103_6_whole_house_ventilation reads 210 provided against 203 required, and at
-    # 206 it reads 206 against 203 — still passing, but on a 3 cfm margin instead of 7 — and
-    # tests/test_catlin_erv.py:30-33 asserts the current figure. Changing it is a ventilation
-    # decision with a test and a code verdict behind it, which is a different pass from
-    # correcting the prose. The name and the source string below carry the real number so
-    # nobody re-derives 0.2" from this row.
+    # ** `ventilation_cfm` IS DELIBERATELY LEFT AT 210. ** Moving it to 206 moves a LIVE
+    # VERDICT: code.N1103_6_whole_house_ventilation reads 210 provided against 203 required,
+    # and at 206 it reads 206 against 203 — still passing, but on a 3 cfm margin instead of
+    # 7 — and tests/test_catlin_erv.py:30-33 asserts the current figure. Changing it is a
+    # ventilation decision with a test and a code verdict behind it, not a prose fix. The
+    # name and the source string below carry the real number so nobody re-derives 0.2" from
+    # this row.
     EquipmentType(tag="EQ-T-BROAN-B210E75RT",
                   name="Broan B210E75RT ERV, 206 CFM at 0.4\" w.g., 6\" top ports",
                   footprint=(inch(24.8), inch(21)), height=inch(21.6),

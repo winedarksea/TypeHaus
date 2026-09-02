@@ -98,25 +98,20 @@ _project = Project(
     building=Building(name="Catlin House"),
     format_version=format_version,
     requires_engine=requires_engine,
-    # One pan-button click right + one down from the plain whole-building fit — the start
-    # position the model is actually reviewed from (2026-08-03).
+    # The start position the model is reviewed from.
     default_view_pan=(1.0, 1.0),
-    # 2026-08-29. Until this was set, EVERY ClearanceZone carrying a ``code_profile`` was
-    # silently dropped by ``resolve/placeables.py::_resolved_clearance_zones`` — which in
-    # this catalog is exactly one zone, the water-closet envelope, and therefore all five of
-    # this house's water closets were graded against no clear space at all. RM-M-BATH1 sat
-    # 1.06" inside UPC 402.5's 24" for weeks and reported 0 FAIL. The blast radius of turning
-    # it on is that one zone family: ``grep -rn 'code_profile=' library/ houses/`` returns a
-    # single hit.
+    # Required: any ClearanceZone carrying a ``code_profile`` (in this catalog, only the
+    # water-closet envelope) is silently dropped by
+    # ``resolve/placeables.py::_resolved_clearance_zones`` without it, and every water closet
+    # grades against no clear space at all. Blast radius is that one zone family —
+    # ``grep -rn 'code_profile=' library/ houses/`` returns a single hit.
     active_code_profile="MN/IRC",
 )
 
 _storeys = (
-    # -9'-1 7/16": the bearing seat less an exactly 8'-0" pour. It was a literal ft(-9, -4)
-    # here until 2026-08-23 — the one storey elevation not derived from the arithmetic that
-    # sets it — which is how the basement floor and the walls standing on it could have
-    # moved apart. It reads from ``params/main_deck.py`` now, the way ``main`` already reads
-    # MAIN_DATUM from the same module.
+    # -9'-1 7/16": the bearing seat less an exactly 8'-0" pour. Reads from
+    # ``params/main_deck.py``, the way ``main`` already reads MAIN_DATUM from the same
+    # module — a literal here would let the basement floor and its walls drift apart.
     Storey(uid="STBASEAAAA", tag="basement", elevation=main_deck.BASEMENT_DATUM,
            default_ceiling_height=ft(9)),
     # The datum every other elevation in the house is measured from, and the plane
@@ -129,9 +124,9 @@ _storeys = (
     # GARAGE_STEM_REVEAL above *grade*, not above the house datum, because the garage is
     # driven into off the ground and the ground is 2'-6" below the main floor. The slab it
     # floors stays down at grade, one GARAGE_STEM_REVEAL below this storey — which is why
-    # the overhead door carries a negative sill (plan/storeys/garage.py). Plates grew to
-    # 8'-4" on 2026-08-21 so the garage roof stayed put when grade took the storey down 4";
-    # see the note on WALLS there.
+    # the overhead door carries a negative sill (plan/storeys/garage.py). Plates are 8'-4"
+    # so the garage roof stays put as grade takes the storey down; see the note on WALLS
+    # there.
     Storey(uid="STGARAAAAA", tag="garage",
            elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
            default_ceiling_height=ft(8, 4)),
