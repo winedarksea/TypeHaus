@@ -52,11 +52,7 @@ def _dims(scene):
 
 
 def _axis_bbox_in(catlin_model, storey):
-    """The FACE bbox, inches — what the exterior chains are struck on since the third tier.
-
-    Still named for the axis it used to read, because every caller here wants the same
-    thing: the four coordinates a facade chain lies on.
-    """
+    """The FACE bbox, inches — the four coordinates a facade chain lies on."""
     walls = [w for w in catlin_model.walls if w.storey == storey]
     minx, maxx, miny, maxy = wall_face_bounds(walls)
     return minx / M_PER_IN, maxx / M_PER_IN, miny / M_PER_IN, maxy / M_PER_IN
@@ -221,9 +217,8 @@ def test_roof_plan_has_downslope_arrows_with_pitch_notes(catlin_model, roof_scen
         expected = 90.0 if roof.ridge_direction == "x" else 0.0
         rotations = {a.rotation for a in arrows if a.uid == roof.uid}
         assert rotations == {expected, (expected + 180.0) % 360.0}
-    # ** THE TWO ROOFS DIFFER IN PITCH SINCE 2026-08-29. ** RF-HOUSE went 4:12 -> 6:12 with
-    # the attic redesign; RF-GARAGE is untouched. So the note is per-plane and per-roof, not
-    # one string for the house — which is what this now reads.
+    # The two roofs differ in pitch (RF-HOUSE 6:12, RF-GARAGE 4:12), so the note is
+    # per-plane and per-roof, not one string for the house.
     for roof in gables:
         pitch = catlin_model.plan.by_tag(roof.tag).pitch
         note = f"{pitch.rise:g}:{pitch.run:g}"
@@ -257,9 +252,8 @@ def test_roof_plan_dimensions_the_garage_overhang_once(catlin_model, roof_scene)
     # The zero-overhang house roof gets no fabricated eave dimension — except the one the
     # cladding LAP produces, which is not an overhang: the footprint runs 7 1/4" past the
     # sheathing datum to cover the wall panel, and the roof plan dimensions that face-to-edge
-    # distance like any other. It appeared on 2026-08-29 because the attic's bearing walls
-    # became skinless rafter plates and `roof_layer_setbacks._skinned` now resolves their
-    # stand-in, so the lap is drawn where before it collapsed to nothing.
+    # distance like any other. The attic's bearing walls are skinless rafter plates, and
+    # `roof_layer_setbacks._skinned` resolves their stand-in to draw the lap.
     house_dims = [d for d in dims if d.uid == house.uid]
     for d in house_dims:
         length = math.hypot(d.p1[0] - d.p0[0], d.p1[1] - d.p0[1])

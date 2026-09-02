@@ -285,11 +285,9 @@ def test_every_ess_rule_answers_not_applicable_on_a_house_with_no_battery(catlin
     """A house with no ESS is not a house failing the ESS rules — and it is not a house
     that *could not be evaluated* for them either.
 
-    These five used to return nothing at all, which reads as the right answer and is not:
-    a permit item with no matched findings resolves to UNKNOWN, so "there is no battery
-    here" and "nobody looked" were the same answer, and the R327 line sat in the non-gating
-    staging lane purely because of that. Each rule now says the absence out loud, and the
-    item gates.
+    A permit item with no matched findings resolves to UNKNOWN, so "there is no battery
+    here" and "nobody looked" would be the same answer if these five rules returned
+    nothing. Each rule says the absence out loud instead, and the item gates.
     """
     plan = catlin_plan
     for storey in plan.storeys:

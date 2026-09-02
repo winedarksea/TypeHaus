@@ -119,8 +119,7 @@ def test_a_fixable_door_fails_and_is_told_where_to_go(findings):
     fails = [f for f in findings if f.result is Result.FAIL]
     assert fails
     overhead = next(f for f in fails if "D-G-OVERHEAD" in f.element_tags)
-    # 156" (13'-0") since GARAGE_WALL_2X6 went to 24" o.c. on 2026-08-31 — it was 152" on
-    # the 16" grid.
+    # 156" (13'-0") is the nearest legal centre on GARAGE_WALL_2X6's 24" o.c. module.
     assert "156" in overhead.fix_hint  # the nearest legal centre, in inches along the wall
     # ...and the offset a plan author actually types, because `from_node` is to the near EDGE.
     assert "near EDGE" in overhead.fix_hint
@@ -162,9 +161,9 @@ def test_catlin_carries_exactly_one_decided_advisory(catlin_model):
 # --- the mechanism the decided advisory rides on -------------------------------------------
 
 def test_suppression_by_tag_drops_one_element_and_no_other():
-    """``[checks] suppress`` took only whole check ids until 2026-08-30, which made it useless
-    for an advisory a house has looked at and decided: silencing the rule to accept one
-    finding also throws away every other finding it would ever make.
+    """Whole-check ``[checks] suppress`` is useless for an advisory a house has looked at and
+    decided: silencing the rule to accept one finding also throws away every other finding
+    it would ever make.
 
     ``check.id:ELEMENT-TAG`` accepts the one. It must not reach a second element, and the bare
     form must go on meaning what it always meant."""

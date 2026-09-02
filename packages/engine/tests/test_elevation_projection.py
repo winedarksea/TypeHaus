@@ -78,8 +78,8 @@ def test_a_full_height_void_does_not_punch_a_hole_in_the_shadow():
 
 # --- occlusion ---------------------------------------------------------------------------
 def test_the_house_and_the_garage_occlude_each_other(catlin_model):
-    """The freestanding garage stands 4' north of the house and used to draw straight
-    through it. Whichever is nearer the eye must hide the other."""
+    """The freestanding garage stands 4' north of the house. Whichever is nearer the eye
+    must hide the other."""
     for facing in ("north", "south"):
         view = view_for(facing)
         pieces = occlude(collect_candidates(catlin_model, view), view)
@@ -203,9 +203,8 @@ def test_the_overhead_door_reads_as_a_sectional_door(catlin_model):
 
 # --- cladding ----------------------------------------------------------------------------
 def test_the_cladding_texture_reaches_the_face_fastened_panel(catlin_model):
-    """``pbr-panel-26`` matches none of ``palette.family_of``'s needles, so the whole house
-    used to come out blank while the garage's ``standing-seam-nailstrip-26`` was textured.
-    The catalog's own ``exposed_fastener`` flag is what says which module to draw."""
+    """``pbr-panel-26`` matches none of ``palette.family_of``'s needles, so the catalog's
+    own ``exposed_fastener`` flag is what says which module to draw."""
     scene = build_elevation(catlin_model, "south")
     panel = [node for node in _polylines(scene, "A-WALL-FINI")
              if node.tag and node.tag.startswith("W-M-S")]
@@ -258,8 +257,8 @@ def _bounds(nodes) -> tuple[float, float, float, float]:
 
 # --- roof edge ---------------------------------------------------------------------------
 def test_the_eave_water_chain_reaches_the_elevation(catlin_model):
-    """``resolve/roof_trim.py`` resolves drip edge, box gutter and downspout as solids and
-    the elevation read none of them until 2026-08-29."""
+    """``resolve/roof_trim.py`` resolves drip edge, box gutter and downspout as solids, and
+    the elevation must draw them."""
     for facing in ("east", "west"):
         scene = build_elevation(catlin_model, facing)
         assert _polylines(scene, "A-ROOF-TRIM"), f"{facing}: no roof edge trim drawn"
@@ -273,8 +272,7 @@ def test_the_roof_is_drawn_as_a_surface(catlin_model):
 
 
 def test_the_ridge_stands_at_thirty_feet_three(catlin_model):
-    """6:12, zero overhang — ``houses/catlin/CLAUDE.md``. The stale renders on disk before
-    this rewrite still showed the retired 32'-0" ridge.
+    """6:12, zero overhang — ``houses/catlin/CLAUDE.md``.
 
     The drawing tops out at the *finished* ridge, not the structural one: ``ridge_z_m`` is
     the rafter-top plane and this roof carries 6" of polyiso, a nailbase deck, a vent mat

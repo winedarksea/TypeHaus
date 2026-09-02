@@ -5,8 +5,8 @@ the check was ever exercised against. Once grade moves — as it does when a hou
 out of the ground by dropping grade under it — a footing that has not moved is that much
 *less* deep, and the rule has to say so.
 
-Since 2026-08-22 there is a second way for the two to diverge, and it does not move
-``Site.grade`` at all: an *excavation*. A footing beside an open sunken court is measured
+There is a second way for the two to diverge, and it does not move ``Site.grade`` at all:
+an *excavation*. A footing beside an open sunken court is measured
 from that court's floor (IRC R403.1.4.1), and no single grade plane can express it — see
 ``test_frost_depth_excavation.py`` for that half. These pin the plane half, which the
 excavation-aware derivation is a strict refinement of: away from a hole, the plane is still

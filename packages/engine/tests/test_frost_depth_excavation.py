@@ -130,8 +130,8 @@ def test_without_the_wing_insulation_the_same_four_footings_fail(catlin_plan, ca
 #: the court floor and the 42" aggregate section under it is what reaches frost depth.
 _THE_RETAINING_WALL_FOOTINGS = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S")
 
-#: The two that stand under a ``Post``, not a ``FoundationWall``. Belled to frost depth on
-#: 2026-08-29 (→ houses/catlin/params/sunken_garden.py), so unlike the five above they now
+#: The two that stand under a ``Post``, not a ``FoundationWall``. Belled to frost depth
+#: (→ houses/catlin/params/sunken_garden.py), so unlike the five above they
 #: pass on plain cover and lean on no section at all.
 _THE_FREESTANDING_COLUMN_PADS = ("FT-SG-COL", "FT-SG-FCOL")
 
@@ -149,7 +149,7 @@ def test_the_retaining_wall_footings_pass_on_the_aggregate_section(frost_by_tag)
     Asserting only ``PASS`` here would go green again the moment the check started
     measuring the wrong thing, so the section and the citation are asserted too.
 
-    All seven of the garden's footings read UNKNOWN until 2026-08-29, on the reading that a
+    All seven of the garden's footings once read UNKNOWN, on the reading that a
     footing standing inside the excavation is retaining it. That was true of these five and
     irrelevant: the frost protection was already modelled and simply was not being counted.
     """
@@ -165,8 +165,8 @@ def test_the_retaining_wall_footings_pass_on_the_aggregate_section(frost_by_tag)
 def test_the_belled_column_piers_pass_on_cover_and_not_on_the_section(frost_by_tag):
     """The two pads are the case that stopped needing the argument.
 
-    They were 12"-deep spread bells passing on 54" of stone under them. On 2026-08-29 the
-    owner chose to auger them to frost depth instead — the bell moved down, the sonotube
+    They were 12"-deep spread bells passing on 54" of stone under them. The owner chose to
+    auger them to frost depth instead — the bell moved down, the sonotube
     above it grew, and each now has a full 42" of cover in its own right. So they must land
     in the plain "at least 42 inches below their lowest adjacent grade" bucket and must NOT
     cite the soil-replacement branch: a pier that reaches frost depth does not need ASCE 32,
@@ -200,13 +200,9 @@ def test_footings_away_from_the_excavation_are_unmoved(frost_by_tag):
 
 
 def test_footing_assembly_reaches_the_resolved_solid(catlin_plan, catlin_model):
-    """``Footing`` carried no assembly and no material at all until 2026-08-22.
-
-    Every footing in every house therefore priced and scheduled as plain cast concrete out
-    of the hardcoded category row, and an insulated footing form — the FPSF answer to a
-    shallow-cover condition — was simply not expressible. The invariant: whatever a
-    ``Footing`` names, its resolved solid carries, so ``structural_solids_takeoff`` groups
-    it and ``[concrete]``'s qualified key can price it apart from the plain strips.
+    """The invariant: whatever a ``Footing`` names, its resolved solid carries, so
+    ``structural_solids_takeoff`` groups it and ``[concrete]``'s qualified key can price
+    it apart from the plain strips.
     """
     from typehaus.model.structure import Footing
 
@@ -290,8 +286,8 @@ def test_the_declared_section_is_what_moves_the_verdict(catlin_model):
     This is the pair that stops the branch from being unfalsifiable — if the check passed
     these footings for some other reason, clearing the flag would not change the answer.
 
-    The subject is a wall footing, and it has to be. The column pads were the probe until
-    2026-08-29; belling them to frost depth gave them cover of their own, so clearing the
+    The subject is a wall footing, and it has to be. The column pads were the probe before
+    they were belled to frost depth, which gave them cover of their own, so clearing the
     flag now leaves them PASS — which is correct, and useless as a control. ``FT-SG-S`` is
     the far side of the court, out of reach of every R403.3 wing, and has nothing but its
     section.

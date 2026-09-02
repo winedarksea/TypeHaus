@@ -80,31 +80,31 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-BIFOLD60": (60.0, DoorOperation.BIFOLD, False, False),
         "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
-        # RM-M-MUD-CLOSET's bypass slider (2026-08-02): the framed replacement for
-        # FURN-M-MUD-CLOSET-S keeps the furniture's sliding-door intent.
+        # RM-M-MUD-CLOSET's bypass slider: the framed replacement for FURN-M-MUD-CLOSET-S,
+        # keeping the furniture's sliding-door intent.
         "DT-INT-BYPASS48": (48.0, DoorOperation.SLIDE, False, False),
-        # RM-M-PANTRY's bypass pair (2026-08-24). The 60" leaf D-M-MUDC could not have:
-        # W-M-MUDC-N's framed span is 63 1/8" and a 62" RO leaves 1 1/8" for jamb packs,
-        # where W-M-PAN-S offers 71 1/2".
+        # RM-M-PANTRY's bypass pair. The 60" leaf D-M-MUDC could not have: W-M-MUDC-N's
+        # framed span is 63 1/8" and a 62" RO leaves 1 1/8" for jamb packs, where
+        # W-M-PAN-S offers 71 1/2".
         "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
-        # D-A-STUDY's Murphy-style bookcase door (2026-08-27), hidden in W-A-SN's built-in.
-        # Its RO is DT-INT-SWING30's exactly, which is the point of the retype — nothing
-        # re-phases and the jamb pack is unchanged — and `operation` stays SWING, because a
-        # bookcase door IS a swinging door and inventing an enum member for the millwork it
-        # is faced with would put a finish choice in a framing field.
+        # D-A-STUDY's Murphy-style bookcase door, hidden in W-A-SN's built-in. Its RO is
+        # DT-INT-SWING30's exactly, so nothing re-phases and the jamb pack is unchanged;
+        # `operation` stays SWING because a bookcase door IS a swinging door and inventing
+        # an enum member for the millwork it is faced with would put a finish choice in a
+        # framing field.
         "DT-INT-BOOKCASE30": (30.0, DoorOperation.SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
-        # The house's one sub-6'-8" leaf (2026-08-29): RM-A-POCKET's service access under
-        # the attic's 6:12 west rake, where no full-height door fits anywhere on its host
-        # wall. 24 x 36 still clears IRC M1305.1.3's 30" x 22" passageway minimum, and no
-        # habitable room is reached through it.
+        # The house's one sub-6'-8" leaf: RM-A-POCKET's service access under the attic's
+        # 6:12 west rake, where no full-height door fits anywhere on its host wall. 24 x 36
+        # still clears IRC M1305.1.3's 30" x 22" passageway minimum, and no habitable room
+        # is reached through it.
         "DT-INT-ACCESS24": (24.0, DoorOperation.SWING, False, False),
     }
     # The house catalog is the union of its own types and the library's shared pocket
-    # family (2026-08-21), which is what D-M-LAUN is typed from. The two tag sets must
-    # stay disjoint — `integrity.duplicate_catalog_tag` proves it at load time, and this
-    # pins that the promotion did not quietly shadow a house type.
+    # family, which is what D-M-LAUN is typed from. The two tag sets must stay disjoint —
+    # `integrity.duplicate_catalog_tag` proves it at load time, and this pins that the
+    # promotion did not quietly shadow a house type.
     library_pockets = {door_type.tag for door_type in STARTER_DOOR_TYPES}
     assert set(types) == set(expected) | library_pockets
     assert not (set(expected) & library_pockets)
@@ -343,12 +343,7 @@ def test_catlin_garage_door_emits_the_overhead_symbol(catlin_model):
 
 
 def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_model):
-    """O-S-CLOSET is the house's only bifold since D-M-LAUN became a pocket (2026-08-21).
-
-    It lives on ``second``; this test read ``main`` while D-M-LAUN was the bifold there.
-    Retyping that door emptied the main storey of bifolds, so the storey moved rather than
-    the assertion being dropped — the BIFOLD symbol still has to be exercised.
-    """
+    """O-S-CLOSET is the house's only bifold, and it lives on ``second``."""
     names = {node.name for node in build_floorplan(catlin_model, "second").nodes
              if isinstance(node, Symbol)}
     assert DOOR_BIFOLD in names
@@ -367,11 +362,10 @@ def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_model):
 
 
 def test_synthetic_slide_door_emits_the_sliding_symbol():
-    """No SLIDE-operation door is instantiated in the catlin model any more — the balcony
-    door D-M-BALC was retyped from slide to french, its intended replacement. The catalog
-    entry DT-EXT-SLIDE60 is orphaned (no opening references it) but is deliberately kept in
-    the catalog, so the SLIDE operation itself must still be exercised synthetically here
-    rather than dropped: a slider must not draw a swing arc into the room.
+    """No SLIDE-operation door is instantiated in the catlin model: DT-EXT-SLIDE60 is
+    orphaned (no opening references it) but deliberately kept in the catalog, so the
+    SLIDE operation must still be exercised synthetically here — a slider must not
+    draw a swing arc into the room.
     """
     width_in = 60.0
     assert symbol_name_for_operation(DoorOperation.SLIDE) == DOOR_SLIDING

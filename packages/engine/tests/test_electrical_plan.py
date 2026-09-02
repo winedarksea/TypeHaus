@@ -24,13 +24,11 @@ def starter_model(starter_dir: Path):
 def test_starter_models_a_minimal_electrical_package_on_both_storeys(starter_model):
     """The template carries the smallest package a house can be wired from.
 
-    It used to carry exactly one device — the MN 1303.2402 subp. 6 junction box beside the
-    radon riser, required of every new MN dwelling — and that single mandatory box was
-    enough to flip ``electrical.room_lighting`` and ``electrical.receptacle_spacing`` from
-    *not modeled* to *modeled and incomplete*, so the template shipped four advisory FAILs
-    that said nothing about the design. ``plan/electrical.py`` answers them: a panel, a
-    light + switch in each of the two habitable rooms, and NEC 210.52 receptacles on their
-    wall lines.
+    The MN 1303.2402 subp. 6 junction box beside the radon riser is required of every new
+    MN dwelling; alone it is enough to flip ``electrical.room_lighting`` and
+    ``electrical.receptacle_spacing`` from *not modeled* to *modeled and incomplete*.
+    ``plan/electrical.py`` answers them: a panel, a light + switch in each of the two
+    habitable rooms, and NEC 210.52 receptacles on their wall lines.
     """
     with_content = [s.tag for s in starter_model.plan.storeys
                     if has_electrical_content(starter_model, s.tag)]
@@ -145,8 +143,8 @@ def test_meter_and_disconnect_render_with_dedicated_symbols(catlin_model):
 
 
 def test_the_water_heater_is_modeled(catlin_model):
-    """One tank, not two (2026-08-15): the house carries a single 80-gal hybrid HPWH,
-    not a 120V-compressor tank beside a 240V-element tank — that split was a modelling
+    """One tank, not two: the house carries a single 80-gal hybrid HPWH, not a
+    120V-compressor tank beside a 240V-element tank — that split was a modelling
     artifact of one product's two internal power draws, corrected in plan/mep.py."""
     equipment_with_storey = [(storey.tag, element) for storey in catlin_model.plan.storeys
                              for element in catlin_model.plan.storey_elements(storey.tag)
@@ -175,8 +173,7 @@ def test_outdoor_heat_pumps_have_distinct_3d_symbol_geometry(catlin_model):
     from typehaus.model.placeable_symbols import model_parts
 
     types = {product.tag: product for product in catlin_model.plan.library.equipment_types}
-    # EQ-T-GREE-VIREO-GEN3 -> EQ-T-GREE-FLEXX-ULTRA-24-OD on 2026-08-31 with the System 1
-    # retype. A new outdoor type that forgets `plan_symbol` draws as an anonymous massing box
+    # A new outdoor type that forgets `plan_symbol` draws as an anonymous massing box
     # in 3D and nothing else complains, which is what this list is here to prevent.
     for type_tag in ("EQ-T-GREE-FLEXX-ULTRA-24-OD", "EQ-T-GREE-MULTI-U30",
                      "EQ-T-GREE-SAPPHIRE-9-OD"):
@@ -288,23 +285,21 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
 def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
     """``electrical.island_receptacle`` returns NOT_APPLICABLE on catlin, and that is correct.
 
-    This test asserted a PASS on FURN-M-KIT-ISLAND until 2026-08-24, when the island became
-    FURN-M-KIT-PENINSULA and landed its east end on the east wall. The check's own
-    population rule is "freestanding by more than ``_NEAR_WALL_M`` from every room
-    boundary" — a peninsula reads as near-wall and is deliberately not graded, because a
-    carcass against a wall is ``receptacle_spacing``'s beat, not this one. With no
-    freestanding work-surface carcass left in the house the check has nothing to grade and
-    says so. Since 2026-08-30 it says so as N/A rather than UNKNOWN, and it earns that by
-    counting: eight work-surface units were read and every one of them stands against a
-    boundary, so "this house has no island" is a fact about the building. Had *no*
-    work-surface casework been modeled at all the answer would still be UNKNOWN, because
-    then the question would be unanswerable rather than answered.
+    The check's population rule is "freestanding by more than ``_NEAR_WALL_M`` from every
+    room boundary" — FURN-M-KIT-PENINSULA reads as near-wall (its east end lands on the
+    east wall) and is deliberately not graded, because a carcass against a wall is
+    ``receptacle_spacing``'s beat, not this one. With no freestanding work-surface carcass
+    left in the house the check has nothing to grade and says so — as N/A rather than
+    UNKNOWN, and it earns that by counting: eight work-surface units were read and every
+    one of them stands against a boundary, so "this house has no island" is a fact about
+    the building. Had *no* work-surface casework been modeled at all the answer would
+    still be UNKNOWN, because then the question would be unanswerable rather than answered.
 
     ** THIS IS AN HONEST REGRESSION IN COVERAGE, NOT A FIX. ** The peninsula still has
     countertop-serving receptacles — ED-M-LIVING-KGF4 and KMX1, both inside
     FURN-M-KIT-MIXER-GARAGE at 42", which is "above the counter surface" under
-    210.52(C)(3) — but nothing in the engine grades 210.52(C) at all, which it reports
-    UNKNOWN by design. What used to be checked here is now only reviewed.
+    210.52(C)(3) — but nothing in the engine grades 210.52(C) at all, so it reports UNKNOWN
+    by design.
     """
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Tier
@@ -320,11 +315,10 @@ def test_a_wall_attached_peninsula_is_not_graded_as_an_island(catlin_model):
 def test_an_island_with_no_receptacle_is_reported(catlin_model):
     """Pull the peninsula off the wall and strip its receptacles: it fails, citing 210.52(C).
 
-    Re-anchored 2026-08-24. It used to delete ED-M-LIVING-KGF4 and lean on the island's own
-    freestanding position; there is no freestanding carcass in the house any more, so the
-    fixture has to make one. Moving the peninsula's resolved footprint is what does it —
-    the check populates off ``model.canvas_objects``, not off the plan — and stripping every
-    receptacle on the storey is what makes the *finding* rather than a pass.
+    There is no freestanding carcass in the house, so the fixture makes one by moving the
+    peninsula's resolved footprint — the check populates off ``model.canvas_objects``, not
+    off the plan — and stripping every receptacle on the storey is what makes the *finding*
+    rather than a pass.
     """
     from dataclasses import replace
 

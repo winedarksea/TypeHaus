@@ -1,13 +1,13 @@
 """``DuctRun`` carries the pipe stack: elevations, a swept solid, a developed length.
 
-Until 2026-08-25 a duct had no elevation field at all, so a four-storey ERV existed only as
-plan polylines that teleported between floors — no vertical leg was drawn anywhere, ducts
-emitted no 3D solids, and ``duct_takeoff`` billed plan length, which measures a riser as the
-zero length it projects to. The field set is ``PipeRun``'s, the solver is ``PipeRun``'s (with
-the check-id prefix as a parameter), and the sweep kernel is the shared one.
+Without it, a four-storey ERV exists only as plan polylines that teleport between floors —
+no vertical leg drawn anywhere, no 3D solid, and ``duct_takeoff`` billing plan length, which
+measures a riser as the zero length it projects to. The field set is ``PipeRun``'s, the
+solver is ``PipeRun``'s (with the check-id prefix as a parameter), and the sweep kernel is
+the shared one.
 
-These tests pin the four things that made the move worth doing, plus the one invariant that
-made it safe: a duct that authors no elevation resolves exactly where it always did.
+These tests pin the four things the elevation field is for, plus the one invariant that
+keeps it safe: a duct that authors no elevation resolves exactly where it always did.
 """
 
 from __future__ import annotations
@@ -113,15 +113,14 @@ def test_stating_no_section_is_an_error() -> None:
 
 def test_catlin_ducts_all_resolve_a_z_per_vertex(catlin_model) -> None:
     """Never None, even where nothing is authored: the resolver derives one z from the
-    soffit, the joist bay or the storey datum, so no consumer re-derives it (and no consumer
-    re-derives it *differently* — that derivation used to live in the IFC emitter alone,
-    which is why nothing else could draw a duct)."""
+    soffit, the joist bay or the storey datum, so no consumer re-derives it, and no
+    consumer re-derives it *differently*."""
     for duct in catlin_model.ducts:
         assert len(duct.z_m) == len(duct.path), duct.tag
 
 
 def test_catlin_ducts_are_swept_solids(catlin_model) -> None:
-    """A duct is one mitred tube, the way a pipe is — not the nothing it used to be."""
+    """A duct is one mitred tube, the way a pipe is."""
     swept = {s.tag[:-4] for s in catlin_model.solids
              if s.category.startswith("duct_") and s.sweep is not None}
     assert swept == {d.tag for d in catlin_model.ducts}
@@ -130,12 +129,9 @@ def test_catlin_ducts_are_swept_solids(catlin_model) -> None:
 def test_a_drawn_riser_bills_more_than_its_plan_projection(catlin_model) -> None:
     """``DU-ERV-RISER-SUP``'s last two vertices are one plan point at two elevations — the
     whole basement-to-attic rise — so its developed length exceeds its plan projection by
-    that much. Billing the projection is exactly what ``duct_takeoff`` did before this.
-
-    This asserted ``plan == 0`` while the run *was* the bare vertical. It stopped being one
-    on 2026-09-01, when the basement leg into ``EQ-B-ERV-MAN-SUP`` that this file's own
-    comment had always described was finally drawn (`mep.duct_connectivity`), so the
-    property under test is now the difference rather than the total."""
+    that much: the basement leg into ``EQ-B-ERV-MAN-SUP`` (`mep.duct_connectivity`) makes
+    the plan projection nonzero, so the property under test is the difference rather than
+    the total."""
     riser = next(d for d in catlin_model.ducts if d.tag == "DU-ERV-RISER-SUP")
     plan = sum(math.dist(a, b) for a, b in zip(riser.path, riser.path[1:], strict=False))
     assert riser.path[-1] == pytest.approx(riser.path[-2])  # the rise: one plan point twice

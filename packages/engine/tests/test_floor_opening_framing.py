@@ -78,7 +78,7 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
 
 
 def test_header_ply_count_tracks_the_span(catlin_model):
-    """The stair well and the attic well used to draw the identical single ply."""
+    """Ply count must track span, not draw the same single ply for every opening."""
     band = cross_section("11.875 I-joist").depth_m
     short = cross_section(opening_header_profile(ft(3, 4).meters, band))
     long = cross_section(opening_header_profile(ft(11).meters, band))

@@ -6,8 +6,8 @@ engineering spec does to it, and that an authored ``unbalanced_fill`` beats the 
 proxy. The catlin fixture pins the landed verdicts.
 
 The table this reads is the real one, and it is far more permissive than the invented table
-this check shipped with until 2026-08-16: a 12" wall at 45 psf/ft retaining 9' on a 9' storey
-needs no vertical steel at all. The old table capped it at 7' and demanded an engineer.
+this check used to ship with: a 12" wall at 45 psf/ft retaining 9' on a 9' storey needs no
+vertical steel at all. The old table capped it at 7' and demanded an engineer.
 """
 
 from __future__ import annotations
@@ -244,8 +244,8 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     The sunken garden does NOT follow them, and that is the point of keeping the two apart:
     W-SG-E2/S/W2 are free retaining walls open along their whole top, so R404.4 sends them to
     an engineered design whatever the table would have said; W-SG-W1/E1 have not yet declared
-    whether the porch deck braces their head. A third UNKNOWN sat here until 2026-08-18 —
-    W-SG-ARCH, 16" and so off the table's thickest published section — and went with the wall.
+    whether the porch deck braces their head. A third UNKNOWN — W-SG-ARCH, 16" and so off
+    the table's thickest published section — went with the wall.
     """
     from typehaus.checks.code.mn_residential.profile import MN_2024
 
@@ -266,22 +266,21 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     assert "CATLIN_BASEMENT_12" in passes
     assert "needs no vertical reinforcement" in passes
     assert "GARAGE_ICF_6" in passes
-    # The other nine segments went to 8" on 2026-08-21, which the same table permits ONLY
-    # with vertical steel. The bar itself moved on 2026-08-23: the flat bearing seat made the
-    # pour exactly 8'-0" instead of 9'-4", which is the 8' unsupported row rather than the
-    # 10' one, and that cell reads #5 @ 41" o.c. — a lighter bar at a tighter spacing.
+    # The other nine segments are 8", which the same table permits ONLY with vertical
+    # steel. The flat bearing seat makes the pour exactly 8'-0" instead of 9'-4", which is
+    # the 8' unsupported row rather than the 10' one, and that cell reads #5 @ 41" o.c. —
+    # a lighter bar at a tighter spacing.
     # This is the assertion that stops the steel being silently
     # dropped: without the authored string the check still reports, but as a FAIL, and
     # `fails == ""` above would catch it — this catches the subtler regression where the
     # walls quietly go back to 12" instead.
-    # SAUNA_LINER_ON_BASEMENT_8_GARDEN was the third until 2026-08-28. W-B-S2 authors
-    # `unbalanced_fill=ft(0)` now — it stands inside the sunken garden's court and retains
-    # nothing, which the derived proxy could not know — so the check skips it entirely at
-    # `fill <= 0` and it has no steel to report. That is the finding, not a gap: an
-    # assembly leaves this list by ceasing to retain earth, and W-B-S4 (the east 8'-0" of
+    # W-B-S2 authors `unbalanced_fill=ft(0)` — it stands inside the sunken garden's court
+    # and retains nothing, which the derived proxy could not know — so the check skips it
+    # entirely at `fill <= 0` and it has no steel to report. That is the finding, not a gap:
+    # an assembly leaves this list by ceasing to retain earth, and W-B-S4 (the east 8'-0" of
     # the old W-B-S3, split off at the excavation edge) is the segment that still does.
     #
-    # ONE assembly since 2026-09-02, not two. CATLIN_BASEMENT_8_GARDEN's last two walls —
+    # ONE assembly, not two. CATLIN_BASEMENT_8_GARDEN's last two walls —
     # W-B-S1 and W-B-S4, the segments named above — moved to CATLIN_BASEMENT_8 with the
     # stucco retirement, and the check's two rows merged into one "8 CATLIN_BASEMENT_8
     # wall(s)". Nothing about the grading changed: identical 8" pour, 45 psf/ft, 8.0' wall,

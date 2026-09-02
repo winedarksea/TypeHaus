@@ -41,15 +41,15 @@ def test_foundation_plan_draws_basement_walls_and_slab(catlin_model):
     slab_tags = {n.tag for n in layers["A-SLAB"] if isinstance(n, Polyline)}
     assert "SL-B-FLOOR" in slab_tags
     # Walls drawn are basement-storey, or the garage brick wainscot's veneer — never a
-    # re-render of "main". The wainscot (W-G-BRICK-*, 2026-08-26) is filed on "garage" for
-    # an unrelated reason (RM-GARAGE's conditioned=False, so it must not be mistaken for an
-    # envelope wall between conditioned rooms — see houses/catlin/CLAUDE.md), but it is a
-    # real `FoundationWall` with an absolute elevation, so `foundation_walls()` picks it up
+    # re-render of "main". The wainscot (W-G-BRICK-*) is filed on "garage" for an unrelated
+    # reason (RM-GARAGE's conditioned=False, so it must not be mistaken for an envelope wall
+    # between conditioned rooms — see houses/catlin/CLAUDE.md), but it is a real
+    # `FoundationWall` with an absolute elevation, so `foundation_walls()` picks it up
     # by `is_foundation` regardless of storey and it legitimately belongs on S-100 too.
     wall_tags = {n.tag for n in layers["S-FNDN"] if isinstance(n, Polyline)}
-    # W-B-CS was here until 2026-08-28, when it was framed — it is not a FoundationWall any
-    # more and has no business on S-100's foundation layer. W-B-S2 replaces it: the sunken
-    # garden's sauna curb, a real 7 1/4" pour on FT-B-S2.
+    # W-B-CS is not a FoundationWall (it was framed) and has no business on S-100's
+    # foundation layer. W-B-S2 replaces it: the sunken garden's sauna curb, a real 7 1/4"
+    # pour on FT-B-S2.
     assert {"W-B-S1", "W-B-S2", "W-GF-N"} <= wall_tags
     assert all(catlin_model.wall(tag).storey in ("basement", "garage") for tag in wall_tags)
 
@@ -79,7 +79,7 @@ def test_footing_bedding_undercut_and_insulation(catlin_model):
     assert "#57" in bedding.aggregate
 
 
-#: The two porch piers. Their bells were augered to frost depth on 2026-08-29, so they
+#: The two porch piers. Their bells are augered to frost depth, so they
 #: bear on undisturbed soil and take a levelling course rather than the wall footings'
 #: 42" replacement section — see
 #: test_catlin_outdoor_structures.py::test_the_two_porch_piers_are_belled_to_frost_depth...

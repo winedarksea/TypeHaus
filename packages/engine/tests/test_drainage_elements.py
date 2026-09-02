@@ -1,10 +1,10 @@
 """Authored drainage elements, and the checks that hold their references to real things.
 
-Drainage used to be asserted in prose. Two of the Catlin gutters sloped "to the east
-downspout" while no such leader existed anywhere in the plan; the pit outside the garage was
-a deepened footing bedding, so its excavation perimeter billed as drain tile that is not
-there. This file covers the elements that replaced those stand-ins and the two advisory
-checks that make the same mistake catchable next time.
+Drainage claims made only in prose are unenforced: two of the Catlin gutters sloped "to the
+east downspout" while no such leader existed anywhere in the plan, and the pit outside the
+garage was a deepened footing bedding whose excavation perimeter billed as drain tile that
+is not there. This file covers the real elements and the two advisory checks that catch
+that class of mistake.
 """
 
 from __future__ import annotations
@@ -74,10 +74,9 @@ def _x1(solid) -> float:
 
 
 def test_the_balcony_leader_hangs_outside_the_east_retaining_wall(catlin_model):
-    """It used to be authored at the east beam axis, which is dead centre of *both* the 6x6
-    pillar PT-SG-BF3 and the 12" band of W-SG-E1 — a leader run down the inside of a column
-    and a wall. It hangs outboard of them now, which is also why it discharges to the raised
-    terrace (level with the retaining top) instead of nine feet down into the garden."""
+    """The leader hangs outboard of the 6x6 pillar PT-SG-BF3 and the 12" band of W-SG-E1, so
+    it discharges to the raised terrace (level with the retaining top) instead of nine feet
+    down into the garden."""
     leader = next(s for s in catlin_model.solids if s.tag == "TR-SG-LEADER-SE")
     gutter_bands = [s for s in catlin_model.solids
                     if s.tag.startswith("TR-SG-GUTTER-") and s.category == "gutter"]
@@ -116,9 +115,9 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
     garden needs one, because its floor is 9' down with no downhill side for anything to
     daylight to.
 
-    ``min`` over the beds is what pins the well: since 2026-08-29 the two porch piers'
-    bells are augered to frost depth and take a 7" levelling course instead, so their beds
-    stop 2'-9" above this plane. They still drain here, which is the other half of the
+    ``min`` over the beds is what pins the well: the two porch piers' bells are augered
+    to frost depth and take a 7" levelling course instead, so their beds stop 2'-9" above
+    this plane. They still drain here, which is the other half of the
     assertion below — every FT-SG-* bed discharges to DRW-SG-MAIN, deep section or not."""
     well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
     assert well.category == "drywell"

@@ -93,8 +93,7 @@ def test_coincident_level_datums_share_one_marker(catlin_model):
 def test_level_labels_do_not_overprint(catlin_model):
     """GRADE, GARAGE FLOOR, MAIN FLOOR and BASEMENT T.O. PLATE sit within 3'-4" here.
 
-    They used to print on top of each other; they are dodged now, so no two datum labels
-    may come within one line of each other in z.
+    Labels are dodged, so no two datum labels may come within one line of each other in z.
     """
     scene = build_elevation(catlin_model, "south")
     zs = sorted(node.at[1] for node in scene.nodes

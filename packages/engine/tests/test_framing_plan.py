@@ -22,7 +22,7 @@ def starter_model(starter_dir: Path):
 
 
 def test_starter_wires_floor_system(starter_model):
-    # houses/starter/plan/storeys/main.py:FLOOR used to be an unwired bare JoistSpec.
+    # houses/starter/plan/storeys/main.py:FLOOR is wired to a real FloorSystem.
     assert [f.tag for f in starter_model.floors] == ["FS-MAIN"]
 
 

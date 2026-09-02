@@ -68,11 +68,10 @@ def test_floorplan_marks_windows_by_schedule_mark_and_carries_door_handing(scene
 def test_the_architectural_plan_carries_no_raw_element_tag(scene: Scene):
     """No node's *text* may be an authoring tag — the drawing is not the plan source.
 
-    The whole failure mode this replaced: openings printed ``op.tag``, placeables printed
-    ``type_ref``, rooms printed ``room.tag`` and floor-heat zones printed ``zone.tag``, so
-    a 1/4"-scale plan was a field of dashed uppercase nobody could read. Element provenance
-    still travels on ``Polyline.tag``/``uid`` for XDATA and hit-testing, which is where it
-    belongs.
+    Openings, placeables, rooms and floor-heat zones must never print their raw tag
+    (``op.tag``, ``type_ref``, ``room.tag``, ``zone.tag``) — a 1/4"-scale plan of dashed
+    uppercase is unreadable. Element provenance still travels on ``Polyline.tag``/``uid``
+    for XDATA and hit-testing, which is where it belongs.
     """
     tagged = {node.tag for node in scene.nodes if getattr(node, "tag", None)}
     printed = {node.content for node in scene.nodes if isinstance(node, Text)}
@@ -93,12 +92,9 @@ def test_every_plan_label_is_a_printed_size(scene: Scene):
 
 
 def test_the_architectural_plan_leaves_the_trade_devices_to_their_own_sheets() -> None:
-    """No ``E-POWR`` / ``M-EQPT`` content on A-1xx (→ ``ARCHITECTURAL_DOMAINS``).
-
-    ``emit_fixtures`` was called with no domain filter, so every electrical device and every
-    mechanical register drew on the architectural plan as well as on E-10x/M-10x — ~90
-    glyphs and captions over catlin's main-floor room plan. Floor heat went the same way,
-    to ``_shared.emit_floor_heat`` for the HVAC plan to adopt.
+    """No ``E-POWR`` / ``M-EQPT`` content on A-1xx (→ ``ARCHITECTURAL_DOMAINS``). Electrical
+    devices, mechanical registers and floor heat belong on E-10x/M-10x via
+    ``_shared.emit_floor_heat``, not on the architectural plan.
     """
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     model, _ = resolve(load_plan(house).plan)
@@ -200,12 +196,9 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
 
 
 def test_room_blocks_say_name_area_and_ceiling_height() -> None:
-    """A room label is three things, and the plan used to print one and a half of them.
-
-    ``RM-M-LIVING`` was the *name* — an authoring tag — and the ceiling height was on no
-    drawing in the set although ``ResolvedCeiling`` has carried it per deck region since
-    2026-08-25. 8'-10 9/16" is what the main floor's 9'-0" nominal actually resolves to
-    under 5/8" gypsum on the second floor's deck.
+    """A room label states name, area and ceiling height. 8'-10 9/16" is what the main
+    floor's 9'-0" nominal resolves to under 5/8" gypsum on the second floor's deck
+    (``ResolvedCeiling`` carries it per deck region).
     """
     from typehaus.emit.draw.plan_labels import room_display_name
 

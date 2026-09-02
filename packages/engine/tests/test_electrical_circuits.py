@@ -195,12 +195,11 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    # 36: 36 after the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED, plus
-    # CKT-DISPOSAL (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15) when
-    # the two-tank water heater became one, plus CKT-BATH2-TUB (2026-08-29) — the
-    # dedicated 120 V 15 A GFCI circuit Kohler's spec sheet REQUIRES for the drop-in
-    # bath's Bask heated surface, which is the first circuit in this house a plumbing
-    # fixture has ever asked for. Then MINUS CKT-HP1-STRIP (2026-08-31): System 1's 2 kW
+    # 37: 36 after the microgrid refactor retired CKT-BACKUP-FEED, plus CKT-DISPOSAL,
+    # minus CKT-WH-HP folded into CKT-WH-240 when the two-tank water heater became one,
+    # plus CKT-BATH2-TUB — the dedicated 120 V 15 A GFCI circuit Kohler's spec sheet
+    # REQUIRES for the drop-in bath's Bask heated surface, the first circuit in this house
+    # a plumbing fixture has ever asked for. Then MINUS CKT-HP1-STRIP: System 1's 2 kW
     # inline duct heater became a factory heat kit inside the air handler's cabinet, fed and
     # staged from the unit, so it rides CKT-HP1-AH and the panel gets its spare 2-pole back.
     assert len(rows) == 37
@@ -225,13 +224,13 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
     # 830 W, not the 5,000 VA the 14-30R receptacle type carries: the dryer is a ventless
-    # heat-pump machine and CKT-DRYER authors its nameplate (2026-08-15). The 30A branch and
-    # the 14-30R stay — a provision for a future vented dryer — which is exactly why the
+    # heat-pump machine and CKT-DRYER authors its nameplate. The 30A branch and the 14-30R
+    # stay — a provision for a future vented dryer — which is exactly why the
     # receptacle-derived figure was the wrong one to let stand on a service with no room.
     assert rows["CKT-DRYER"]["connected_va"] == 830
     # The notes' backup set is tiered, and every one of them is on the subpanel. CKT-WH-240
-    # joined the SHED tier 2026-08-15 in place of CKT-WH-HP, when the two-tank water heater
-    # became one ProTerra on one (governed) circuit.
+    # is in the SHED tier in place of CKT-WH-HP, since the two-tank water heater became one
+    # ProTerra on one (governed) circuit.
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-240", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-HP3"}
@@ -261,7 +260,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # heat costs the service nothing. The heat-pump circuits are identified by the typed
     # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
     #
-    # ** SIX -> FIVE ON 2026-08-31, AND THE SIXTH DID NOT LEAVE THE HOUSE. ** EQ-S-HP1-STRIP
+    # ** SIX BECAME FIVE, AND THE SIXTH DID NOT LEAVE THE HOUSE. ** EQ-S-HP1-STRIP
     # is still a SPACE_HEATER Equipment; what went is its own circuit. As a factory heat kit
     # inside the FLEXX Ultra's cabinet it rides CKT-HP1-AH, and that circuit also carries a
     # DUCTED_AIR_HANDLER — so `_bucket` files the pair as heat_pump, not resistance_heat.
@@ -284,7 +283,7 @@ def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
     fails = [f for f in findings if f.result.value == "fail"]
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"]
-    # 12 since 2026-08-29: RM-A-STUDIO. The west attic loft was STORAGE and outside
+    # 12, including RM-A-STUDIO. The west attic loft was STORAGE and outside
     # `_HABITABLE`, so 210.52 spacing was not evaluated for it at all; as a guest BEDROOM it
     # is, and seven new receptacles (plan/electrical.py) are what close the gaps the check
     # named. RM-A-EAST-UNFIN and RM-A-POCKET are still storage and still not counted.
@@ -346,17 +345,17 @@ def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
     # 5 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. The fifth
-    # power trunk is CD-A-PV-EAST (2026-08-29): a ConduitRun travels flat at its
-    # `start_elevation` and rises only at its LAST point, so "up the chase, then east along
-    # the attic deck, then up the gable" is two runs. It became two when the 6:12 roof put
-    # the old single riser's 25'-6" head 3'-10" outside the building at x=1'-6". The last
-    # three arrived 2026-08-22 with the workshop, study and media-room drops — and one of
-    # them, CD-B-DATA-SHOP, is the answer to "can it share the spa conduit": it runs 6" east
-    # of CD-B-SPA and parallel to it the whole way, because NEC 800.133/725 forbids comms
-    # sharing a RACEWAY with power and `ConduitRun.service` is one value, never a set.
+    # power trunk is CD-A-PV-EAST: a ConduitRun travels flat at its `start_elevation` and
+    # rises only at its LAST point, so "up the chase, then east along the attic deck, then
+    # up the gable" is two runs — the 6:12 roof puts the old single riser's 25'-6" head
+    # 3'-10" outside the building at x=1'-6". The last three are the workshop, study and
+    # media-room drops — and one of them, CD-B-DATA-SHOP, is the answer to "can it share
+    # the spa conduit": it runs 6" east of CD-B-SPA and parallel to it the whole way,
+    # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
+    # `ConduitRun.service` is one value, never a set.
     assert len(catlin_model.conduits) == 16
-    # Not all from the panel any more: the three 2026-08-02 microgrid runs start at the PV
-    # junction box and at the inverter, and every data run starts at the patch enclosure.
+    # Not all from the panel: the three microgrid runs start at the PV junction box and at
+    # the inverter, and every data run starts at the patch enclosure.
     # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the
     # honest statement for a second leg of one raceway: there is no junction box at the
     # elbow, the conduit simply turns.
@@ -371,7 +370,7 @@ def test_catlin_conduit_trunks(catlin_model):
     assert all(20 < row["length_ft"] < 70 for row in rows)
     assert not [run.tag for row in rows for run in catlin_model.conduits
                 if run.tag in row["tags"] and run.service in ("data", None)]
-    # The PV feed reaches the attic junction box — in two legs since 2026-08-29. The riser
+    # The PV feed reaches the attic junction box in two legs. The riser
     # tops out on the attic DECK (20'-6"), because the 6:12 roof underside at its x=1'-6"
     # chase is 20'-8 1/4" and it cannot rise to the box's 25'-6" there; CD-A-PV-EAST carries
     # it east under the north rake and up the gable. Both are asserted, so a future pass
@@ -467,9 +466,9 @@ def test_catlin_slot_map_is_complete_and_unique(catlin_model):
     columns are honest (2-pole pairs share a column because slot and slot+2 have the same
     parity).
 
-    Per panel since 2026-08-02: the house has two enclosures now, and slot 2 of the backup
-    subpanel is a different piece of metal from slot 2 of the service panel. Collapsing
-    them into one map made the second panel's first circuit look like a double-tap.
+    Per panel: the house has two enclosures, and slot 2 of the backup subpanel is a
+    different piece of metal from slot 2 of the service panel. Collapsing them into one
+    map made the second panel's first circuit look like a double-tap.
     """
     circuits = catlin_model.plan.library.circuits
     assert all(circuit.slot is not None for circuit in circuits)
@@ -486,15 +485,15 @@ def test_catlin_slot_map_is_complete_and_unique(catlin_model):
 
 
 def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
-    """ED-T-PANEL was a 42-space enclosure carrying a 52-space schedule, so this check
-    used to FAIL by design and the last ten circuits sat past the bus. The panel was
-    swapped for a 54-space unit (plan/mep.py), and the check now PASSES.
+    """A 42-space enclosure carrying a 52-space schedule would FAIL this check by design,
+    with the last ten circuits past the bus; the panel is a 54-space unit (plan/mep.py),
+    so it PASSES.
 
-    Since 2026-08-02 the check reconciles *both* enclosures, and the service panel is far
-    less crowded: moving the six backup circuits and retiring CKT-BACKUP-FEED took it from
-    52 spaces of 54 down to 44 (2026-08-07's CKT-DISPOSAL and 2026-08-15's CKT-WH-240 move
-    to the backup subpanel land it at 43), with the subpanel carrying 8 of its 12. All four
-    numbers are measured off the model, never pinned."""
+    The check reconciles *both* enclosures, and the service panel is far less crowded:
+    moving the six backup circuits and retiring CKT-BACKUP-FEED took it from 52 spaces of
+    54 down to 44, and CKT-DISPOSAL's addition plus CKT-WH-240's move to the backup
+    subpanel land it at 43, with the subpanel carrying 8 of its 12. All four numbers are
+    measured off the model, never pinned."""
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
     assert findings
@@ -509,15 +508,15 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, CKT-BATH2-TUB
-    # (2026-08-29) spent one more for the drop-in bath's heated surface, and CKT-HP1-STRIP's
-    # deletion (2026-08-31) gave a 2-pole back. Eleven spare.
+    # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, CKT-BATH2-TUB spent
+    # one more for the drop-in bath's heated surface, and CKT-HP1-STRIP's deletion gave a
+    # 2-pole back. Eleven spare.
     assert main == (43, 54)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
-    # And the enclosure it replaced still would not have held the schedule — which is why
-    # it was replaced, and what keeps this from passing for the wrong reason.
+    # A 42-space enclosure still would not hold the schedule, which keeps this from
+    # passing for the wrong reason.
     retagged = tuple(c.model_copy(update={"panel_ref": "ED-M-PANEL"}) for c in circuits)
     assert any(f.result.value == "fail" for f in _spaces_findings(42, retagged))
 
@@ -623,8 +622,8 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     from typehaus.takeoff.runs import conduit_schedule
 
     payload = model_to_dict(catlin_model)["electrical"]
-    # ``conduit_schedule`` since 2026-08-30: the per-RUN view beside the by-trade-size bill,
-    # from takeoff/runs.py. It covers power and comms together — neither ``conduit`` here nor
+    # ``conduit_schedule`` is the per-RUN view beside the by-trade-size bill, from
+    # takeoff/runs.py. It covers power and comms together — neither ``conduit`` here nor
     # ``data.raceways`` can answer "where does this raceway go" alone, because each skips the
     # other's runs so no foot of pipe is ordered twice.
     assert set(payload) == {"panel_schedule", "service_load", "conduit", "conduit_schedule",
@@ -637,9 +636,8 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit_schedule"] == conduit_schedule(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    # 36: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL
-    # (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15), plus
-    # CKT-BATH2-TUB (2026-08-29) for the drop-in bath's Bask heated surface.
+    # 37: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
+    # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface.
     assert len(payload["panel_schedule"]) == 37
 
 
@@ -705,7 +703,7 @@ def test_wall_space_is_not_traced_across_a_stair_well():
     model, _ = resolve(plan)
     assert _room_result(model, "RM-A-STUDY") == "pass"
 
-    ledge = pt(m(35.83 * 0.3048), m(8.28 * 0.3048))  # where RC2 used to sit
+    ledge = pt(m(35.83 * 0.3048), m(8.28 * 0.3048))  # a stranded spot off the strip
     stranded = tuple(
         element.model_copy(update={"position": ledge})
         if getattr(element, "tag", None) == "ED-A-STUDY-RC2" else element
@@ -731,15 +729,10 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     # dishwasher cord, both inside the sink base at 18" up. Neither is anybody's idea of
     # kitchen-counter coverage, but this check grades 210.52(A)'s *wall* rule, where a 125V
     # receptacle below the 5'-6" cut-off counts wherever it stands, and both happen to sit
-    # in the stretch this test empties. Leaving either would hold the north wall covered
-    # for a reason that has nothing to do with the kettle outlet under test.
-    #
-    # KDW1 joined the list on 2026-08-27: it did not move house, the SINK did. The base run
-    # was re-composed on 2026-08-26 to centre the bowl under WIN-M-KITCH, the dishwasher
-    # went to the sink base's west side with it, and its cord outlet landed 3'-0" from the
-    # wall space's start — inside the 6' this test needs empty. Nothing about the check or
-    # the kettle changed; a piece of casework moved 15" and quietly took over the coverage
-    # the assertion was reading.
+    # in the stretch this test empties: KDW1's cord outlet lands 3'-0" from the wall
+    # space's start, inside the 6' this test needs empty. Leaving either would hold the
+    # north wall covered for a reason that has nothing to do with the kettle outlet under
+    # test.
     #
     # Removing the devices, not demoting their types: a plain RECEPTACLE kind counts on the
     # kind alone, and only the combination kind consults ports — which is the asymmetry this
@@ -767,23 +760,16 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     """210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or similar work
     surfaces" alongside doorways as things wall space is unbroken by.
 
-    ** RE-ANCHORED 2026-08-24, AND THE REASON MATTERS MORE THAN THE EDIT. ** This used to
-    name 7'-1" of catlin's north wall — FURN-M-KIT-PANTRY-E plus the tall pull-outs at the
-    head of the west run — and prove the rule by giving every counterless type a countertop
-    and watching RM-M-LIVING flip pass -> fail. All three of those cabinets are gone: the
-    pantry became a framed room (RM-M-PANTRY) and the pull-outs stood where its south
-    partition now runs. The room's counterless fixed cabinets are the east tall bank
-    (FURN-M-KIT-PANTRY-S1/S2) and the mixer garage, and RM-M-LIVING now has enough
-    receptacles that it passes WITH OR WITHOUT their break — so the old mutation asserts
-    'fail' on a house that no longer fails, and no other room in the house depends on the
-    break either (RM-S-BATH1's closet is in a bathroom, which is not habitable and is not
-    graded).
+    RM-M-LIVING's counterless fixed cabinets are the east tall bank
+    (FURN-M-KIT-PANTRY-S1/S2) and the mixer garage. The room has enough receptacles that it
+    passes 210.52(A) WITH OR WITHOUT their break, so a room-verdict mutation would be vacuous
+    here (and no other room in the house depends on the break: RM-S-BATH1's closet is in a
+    bathroom, which is not habitable and is not graded).
 
-    So the mutation is pointed at the RULE instead of at one room's incidental dependence
-    on it: the break intervals themselves have to appear for a counterless cabinet and have
-    to vanish when the same cabinet is given a work surface. That is the behaviour
-    210.52(A)(2)(1) describes, and unlike a room verdict it cannot be made vacuous by adding
-    a receptacle somewhere else.
+    So the mutation is pointed at the RULE instead: the break intervals themselves have to
+    appear for a counterless cabinet and have to vanish when the same cabinet is given a
+    work surface. That is the behaviour 210.52(A)(2)(1) describes, and unlike a room
+    verdict it cannot be made vacuous by adding a receptacle somewhere else.
     """
     from typehaus.checks.code.mn_residential.profile import MN_2024
     from typehaus.checks.mep.electrical import _fixed_cabinet_intervals

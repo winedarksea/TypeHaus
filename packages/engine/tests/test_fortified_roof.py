@@ -48,12 +48,10 @@ def test_all_three_checks_are_registered_in_the_structural_tier() -> None:
 
 def test_every_finding_is_advisory_and_says_what_it_did_not_grade(
         sealed_deck, drip_edge, load_path) -> None:
-    """Inverted on 2026-08-30 with ``structural.uplift_path_coverage``, and for its reason.
-
-    These asserted that nothing here is ever a PASS, so that "presence" could not be read as
-    "FORTIFIED compliance". The rules are now named for what they grade —
-    ``..._sealed_deck_present``, ``..._drip_edge_present`` — so a PASS claims presence and
-    nothing more, and every message still names what it did not grade.
+    """The rules are named for what they grade — ``..._sealed_deck_present``,
+    ``..._drip_edge_present`` — so a PASS claims presence and nothing more ("presence"
+    must not be read as "FORTIFIED compliance"), and every message still names what it
+    did not grade.
 
     Deliberately NOT hoisted into the engineering register, unlike the uplift capacity
     question: what is outstanding here is a gauge, an ASTM/ICC listing and a fastening
@@ -93,8 +91,7 @@ def test_the_house_roof_deck_is_sealed(sealed_deck) -> None:
 
 
 def test_the_house_roof_has_a_drip_edge_on_every_footprint_edge(drip_edge) -> None:
-    """Eaves (W/E) and rakes (N/S) both need one — §4.5 wants both, and the rakes were the
-    gap this closed (2026-08-30): they used to carry only the derived corner-trim angle."""
+    """Eaves (W/E) and rakes (N/S) both need one — §4.5 wants both."""
     house = [f for f in drip_edge if f.element_tags[:1] == ("RF-HOUSE",)]
     assert len(house) == 4
     assert all(f.result is Result.PASS for f in house)

@@ -135,7 +135,7 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
 def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "structural_solids",
-                        # The sill seal under the bearing plates (2026-08-24), by the lineal
+                        # The sill seal under the bearing plates, by the lineal
                         # foot and by product — its own section because
                         # ``construction_returns`` reconciles 1:1 with the resolved returns
                         # (→ ``takeoff/anchors.sill_gasket_rows``).
@@ -145,19 +145,19 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conductors", "solar",
                         # The list view of ``solar["by_product"]`` that
-                        # [solar_modules] prices (2026-08-27) — every price plan
+                        # [solar_modules] prices — every price plan
                         # reads a list and ``solar`` is a dict of summaries.
                         "solar_modules", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
                         "light_run_materials", "lighting_load",
-                        # Structured cabling (2026-08-02).
+                        # Structured cabling.
                         "data_devices", "data_raceways", "poe_budget",
-                        # The 2026-07-25 sweep: resolved-but-unbilled families.
+                        # Resolved-but-unbilled families.
                         "floor_finishes", "envelope_layers", "openings", "stair_finish",
-                        # Species wood rollup (2026-08-02): sauna liner, panelings,
+                        # Species wood rollup: sauna liner, panelings,
                         # timber posts and species floors in sf/bf.
                         "wood_surfaces",
-                        # The milling schedule (2026-08-28): the same wood as a cut list in
+                        # The milling schedule: the same wood as a cut list in
                         # rough stock, plus the derived stools and shelf boards.
                         "hardwood",
                         "footing_bedding", "pipe_runs", "pipe_fittings", "ducts", "sleeves",
@@ -179,19 +179,19 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # foot — neither visible until `DuctRun` gained elevations and an
                         # `insulation` field (the ERV pass).
                         "duct_fittings", "duct_insulation",
-                        # The species-wood rollup (2026-08-02, hardwood pass).
+                        # The species-wood rollup (hardwood pass).
                         "wood_surfaces",
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
                         # authored runs and derived roof trim alike (→ takeoff/edge_trim.py).
                         "edge_trim",
-                        # Framing-top membrane by the foot (2026-08-27): joist/beam tape,
+                        # Framing-top membrane by the foot: joist/beam tape,
                         # which `framing` (sticks by profile, house-wide) and
                         # `structural_solids` (beams by the yard) both cannot address.
                         "member_protection",
-                        # Heater cable by the foot (2026-08-28), the electrical twin of
+                        # Heater cable by the foot, the electrical twin of
                         # `pipe_insulation` — a traced AND lagged run is the outdoor norm.
                         "freeze_protection",
-                        # Monolithic wall structure (2026-08-03): a STRUCTURE layer that
+                        # Monolithic wall structure: a STRUCTURE layer that
                         # frames no members and is not a solid reached no row at all —
                         # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).
                         "wall_structure"}
@@ -201,9 +201,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
-# the reason it is not billable. This is the test that would have caught the drift the
-# 2026-07-25 sweep cleaned up: eight families had been resolved for months and were reaching
-# no order, and nothing said so because the section list only ever asserted its own contents.
+# the reason it is not billable. This is the test that would catch the drift where a family
+# is resolved but reaches no order, silently, because the section list only ever asserted
+# its own contents.
 #
 # Adding a collection to ResolvedModel now forces a decision here — bill it, or say why not.
 _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
@@ -238,9 +238,9 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
 
 # collection name -> the BOM section(s) that bill it.
 _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
-    # Walls bill by their parts. This was a *waiver* until 2026-08-03, and its text —
-    # "`framing` for the studs, `envelope_layers` for the stack" — was the false claim the
-    # missing-concrete bug lived inside: `envelope_layers` never billed STRUCTURE, so a
+    # Walls bill by their parts. A waiver whose text read "`framing` for the studs,
+    # `envelope_layers` for the stack" was once the false claim the missing-concrete bug
+    # lived inside: `envelope_layers` never billed STRUCTURE, so a
     # wall whose core is a pour or a masonry course reached no row at all.
     # `test_every_wall_layer_is_billed_or_waived` below is the assertion that says so.
     "walls": ("framing", "envelope_layers", "wall_structure"),
@@ -306,13 +306,9 @@ _WAIVED_LAYER_FUNCTIONS: dict[str, str] = {
     "airgap": "an air gap is nothing at all — a void between layers, with no material",
 }
 
-# FURRING used to live in the waiver above, with an apology attached: no wall framed
-# strapping at all, so on a monolithic wall (W-B-CS, a `struct-1-plywood` liner band over
-# concrete) it reached no BOM section whatsoever. `resolve/framing/furring.py` now frames
-# every FURRING layer that carries a FramingSpec, so the waiver is gone and this is the
-# assertion that replaces it — asserted below rather than waived, because "the framing cut
-# list carries it" is exactly the kind of claim that was false for months while nobody
-# could see it.
+# `resolve/framing/furring.py` frames every FURRING layer that carries a FramingSpec, so
+# this asserts the claim rather than waiving it — a monolithic wall (W-B-CS, a
+# `struct-1-plywood` liner band over concrete) has to reach a BOM section, not go silent.
 
 
 def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
