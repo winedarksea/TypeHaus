@@ -1,10 +1,10 @@
 """The flat bearing seat under catlin's mixed deck, and what breaks it.
 
 ``structural.mixed_deck_bearing_seat`` exists because the arithmetic in
-``houses/catlin/params/main_deck.py`` was right and unguarded: for two days in August 2026
-the deck's soffit sat 1 9/16" above the plane the wood bay's mudsill lands on, and nothing
-in the engine had an opinion. These tests nudge each of the six numbers that plane is made
-of and assert the build goes red.
+``houses/catlin/params/main_deck.py`` was right and unguarded: the deck's soffit could sit
+1 9/16" above the plane the wood bay's mudsill lands on, and nothing in the engine had an
+opinion. These tests nudge each of the six numbers that plane is made of and assert the
+build goes red.
 """
 
 from __future__ import annotations
@@ -88,8 +88,8 @@ def test_a_stepped_pour_fails_before_anything_else_is_measured(catlin_plan, catl
 def test_joists_left_sitting_in_the_pour_fail(catlin_plan, catlin_model):
     """The plate is what holds the joists off the concrete, and it is 1 1/2" plus a gasket.
 
-    Taking the walls up to the joist soffit is the pre-2026-08-23 model exactly: the deck
-    would still land on them, and the wood would have nothing between it and the pour.
+    Taking the walls up to the joist soffit leaves the deck landing on them with the wood
+    having nothing between it and the pour.
     """
     from typehaus.resolve import resolve
 
@@ -118,10 +118,9 @@ def test_an_alignment_offset_that_stops_matching_the_thickness_is_caught(
     the structure and leave the number and the bearing layer slides off the x=18' grid while
     the joists keep stopping on it — the silent failure the check is for.
 
-    It read ``face("concrete-ext", offset=inch(-6))`` against a 12" pour until 2026-08-28,
-    when the wall was framed and it became ``face("stud-ext", offset=inch(-2.75))`` against
-    5 1/2" of stud. The trap did not go away with the concrete; it followed the wall, which
-    is why this test did too."""
+    It reads ``face("stud-ext", offset=inch(-2.75))`` against 5 1/2" of stud, now that the
+    wall is framed rather than poured. The trap is not about the pour; it follows the wall,
+    which is why this test does too."""
     # -5" against 5 1/2" of stud: the studs then run 17'-9 1/4"..18'-2 3/4" shifted 2 1/4"
     # west, so the joists that stop on x=18' have well under the 1 1/2" the check wants on
     # the near side. (-2.75", the authored number, is a genuine half of 5.5". The rule is
@@ -139,7 +138,7 @@ def test_an_alignment_offset_that_stops_matching_the_thickness_is_caught(
 def test_the_seat_is_the_number_the_basement_walls_are_authored_to(catlin_model):
     """``plan/storeys/basement.py`` is editable-dialect and cannot import the arithmetic, so
     it repeats -13 7/16" and -9'-1 7/16" as literals. This is the tie between the copies."""
-    # W-B-S2 and W-B-S3 are the 7 1/4" curbs under the framed walkout since 2026-08-28.
+    # W-B-S2 and W-B-S3 are the 7 1/4" curbs under the framed walkout.
     # They stand on the same slab and the same footings as every other pour here, but they
     # stop at -102 3/16" by design and have nothing to say about the seat — the framed
     # walls on them do, and they reach it. Excluded by name rather than by height so a wall
@@ -148,12 +147,11 @@ def test_the_seat_is_the_number_the_basement_walls_are_authored_to(catlin_model)
     walls = [w for w in catlin_model.walls
              if w.tag.startswith("W-B-") and w.is_foundation
              and w.tag != "W-B-BRICK" and w.tag not in _CURBS]
-    # 15 since 2026-08-24: W-B-STR and W-B-STR3 are framed 2x6 bearing walls now, not
-    # FoundationWalls, so they are no longer pours authored to the seat. What they stand
-    # on did not move — their own z0 is still the basement floor and their footings are
-    # unchanged — but they have nothing to say about the pour's top. **14 on 2026-08-28**:
-    # W-B-CS was framed the same way, and W-B-S3 split into W-B-S3 + W-B-S4 at the
-    # excavation edge, of which only W-B-S4 is a full-height pour.
+    # W-B-STR and W-B-STR3 are framed 2x6 bearing walls, not FoundationWalls, so they are no
+    # longer pours authored to the seat. What they stand on did not move — their own z0 is
+    # still the basement floor and their footings are unchanged — but they have nothing to
+    # say about the pour's top. W-B-CS was framed the same way, and W-B-S3 split into
+    # W-B-S3 + W-B-S4 at the excavation edge, of which only W-B-S4 is a full-height pour.
     assert len(walls) == 13
     # The two curbs, separately: same base, same 7 1/4" of pour, top on the framed walls'
     # own base so the chain footing -> curb -> plate is continuous.

@@ -4,10 +4,9 @@ The enclosure is 8'-0" x 4'-0" x 4'-0", and every one of those numbers is a *she
 dimension: two 4'x8' sheets stood on end whole and uncut as the E/W walls, and one 8'x4'
 halved to make the 4'x4' roof. The height is measured on the glazing — floor-beam soffit
 (-7 1/4") to roof-sheet underside (+7'-4 3/4") — not on the clear headroom above the
-decking, which is what the retired "10' stock" era measured and why the standing sheets used
-to be cut at 9'-10 3/4".
+decking.
 
-Two holes the enclosure used to have, both fixed and both still asserted here:
+Two gaps this glazing must not have, both asserted here:
 
 * 8 1/4" of framing stood bare below each standing sheet, because the sheet started at the
   deck surface while the structure goes down to the floor-beam soffit;
@@ -139,9 +138,9 @@ def test_every_sheet_that_can_hold_water_sits_in_a_weeping_channel(catlin_model)
 
 
 def test_nothing_glazes_below_the_deck(catlin_model):
-    """The 1'-10 3/4" the 2026-08-18 lift opened under the deck is open air (2026-08-21).
-    The retired skirt was a half-sheet plus six channels, and the standing sheet's foot at
-    the floor-beam soffit is the bottom of the glazed assembly again."""
+    """The 1'-10 3/4" opened under the deck is open air. The retired skirt was a half-sheet
+    plus six channels, and the standing sheet's foot at the floor-beam soffit is the bottom
+    of the glazed assembly again."""
     tags = {getattr(e, "tag", None) for e in catlin_model.plan.all_elements()}
     assert not [t for t in tags if t and "SKIRT" in t]
     soffit = min(s.z0_m for s in _solids(catlin_model, "GL-BW-WALL-W"))
@@ -165,8 +164,6 @@ def test_the_h_channel_bills_as_its_own_line(catlin_model):
     assert "H" in profiles
     h_row = next(row for row in rows if row["profile"] == "H")
     # Two channels, one per side, each running the glazing's N-S depth — the sheet's own
-    # uncut 4'-0". This briefly read 3'-11 1/2" on 2026-08-23, when the truss wall moved the
-    # house cladding 0.48" north and closed the clear slot to exactly 4'-0"; the garage moved
-    # 1/2" north the same day rather than the sheet being ripped, so the slot is 4'-0 1/2"
-    # again and the reveal is once more a leftover (params/breezeway.py `_REVEAL_FT`).
+    # uncut 4'-0". The slot is 4'-0 1/2", so the reveal is a leftover of that
+    # (params/breezeway.py `_REVEAL_FT`).
     assert h_row["length_ft"] == pytest.approx(2 * 4.0, abs=0.05)

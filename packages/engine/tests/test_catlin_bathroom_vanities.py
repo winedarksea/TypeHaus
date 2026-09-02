@@ -1,4 +1,4 @@
-"""The five other bathrooms' vanities (2026-08-30).
+"""The five other bathrooms' vanities.
 
 Every bathroom in this house except RM-M-BATH2 had a bare bowl and no cabinet: five
 ``FX-LAV-24`` and one ``FX-LAV-COMPACT``, footprints with no carcass and nowhere to put
@@ -6,7 +6,7 @@ anything. They are stock-width vanities now, and each one is held in place by so
 that is invisible from the plan source:
 
   * the wall's own FINISH FACE, which is not ``Room.clear_face`` -- two of these were
-    authored off ``clear_face`` years ago and stood *inside* the studs, at 0 FAIL;
+    authored off ``clear_face`` and stood *inside* the studs, at 0 FAIL;
   * a WATER CLOSET's Minnesota envelope, which is UPC 402.5's 24"/15" and not the IRC's 21";
   * a DOOR'S SWING ARC, which is a quarter-disc and not the bounding box -- the hall bath
     gets 48" instead of a special-order 42" only because the difference is real;
@@ -85,10 +85,10 @@ def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet():
 def test_the_attic_guest_bath_was_deliberately_left_alone():
     """RM-A-STUBATH keeps its compact bowl, and that is a decision, not an omission.
 
-    Its water closet moved onto the west wall on 2026-08-30 while this pass was running, and
-    that move puts the toilet's 24" front envelope across the north wall a vanity would have
-    used. There is no 30"+ run left in the room that a cabinet's own front clearance does not
-    then push into the shower. If the attic bath is re-laid out, this is the test to delete.
+    Its water closet sits on the west wall, and that puts the toilet's 24" front envelope
+    across the north wall a vanity would have used. There is no 30"+ run left in the room
+    that a cabinet's own front clearance does not then push into the shower. If the attic
+    bath is re-laid out, this is the test to delete.
     """
     model = _model()
     assert _obj(model, "FX-A-STUBATH-LAV").type_ref == "FX-LAV-COMPACT"
@@ -117,8 +117,7 @@ def test_no_vanity_stands_in_a_water_closets_minnesota_envelope():
     NOT the IRC's 21". Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33 outright and
     1309.0307 sends fixtures to Minn. R. ch. 4714 / the 2018 UPC. This walks the envelope by
     hand rather than trusting the resolved zone, so it still holds if the code profile is
-    ever unset -- which is exactly the state the house was in until 2026-08-29, when every
-    one of these zones was silently inert.
+    ever unset.
     """
     model = _model()
     closets = {o.tag: o for o in model.canvas_objects

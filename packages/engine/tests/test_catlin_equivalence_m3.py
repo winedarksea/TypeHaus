@@ -124,27 +124,24 @@ DECLARED_DIVERGENCES = {
         "side walls replaced the arched cross-wall, and the 42\" masonry parapet over it "
         "became RL-SG-PORCH (→ contract test)"
     ),
-    # "Sunken Garden North Wall Footing" was declared here until 2026-08-03 — the garden's
-    # north wall was removed in the redesign and nothing stood on its footing line. It is
-    # gone from this list because something does again: FT-B-BRICK, the plinth under the
-    # glazed-brick veneer (params/foundations.py), lands 0.6 m from it and the matcher pairs
-    # the two. They are not the same element and the north wall is still gone; a strip of
-    # concrete simply runs along that line once more, which is all the matcher claims.
-    # The garage moved 7'-5 5/8" south, from a 12' sheathing-plane gap to 4'-6 3/8", so the
-    # breezeway between it and the house is a 4'-0 1/2" slot sized to one polycarbonate
-    # panel. (7'-0" of that was the 2026 redesign; the last 5 5/8" came on 2026-08-15, when
-    # the ICF stem was aligned flush with the cladding and the wall lines followed it south
-    # so the slot would not open up.) 7'-5 5/8" is far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that
-    # far is not the same element in the same place, and the matcher is right to say so.
-    # The garage itself is unchanged in size, section and framing; only its y is different.
-    # 2026-08-24. The reference drew this line as 8" of concrete on x=11'; it was 12" of
-    # concrete on x=10' for as long as it was a pour, which DECLARED_WALL_EXTENT_CHANGES
-    # below used to record. It is a 2x6 bearing STUD wall on x=10' now — two of them,
-    # W-B-STR and W-B-STR3 — because it retains nothing (`unbalanced_fill` was always
-    # ft(0)) and what it carries is FS-M-MECH/FS-M-STAIR's joists and the W-M-STRW stack,
-    # which is a stud-wall job on a footing. The footing is the part that did NOT change.
-    # The matcher stops pairing it, correctly: a 6 1/4"/6 7/8" framed stack on a different
-    # line is not the same element as an 8" pour, and there is no pour on this line to pair.
+    # "Sunken Garden North Wall Footing" is not declared here even though that wall is gone:
+    # FT-B-BRICK, the plinth under the glazed-brick veneer (params/foundations.py), lands
+    # 0.6 m from the old footing line and the matcher pairs the two. They are not the same
+    # element — a strip of concrete simply runs along that line once more, which is all the
+    # matcher claims.
+    #
+    # The garage move (_GARAGE_MOVED) leaves it unchanged in size, section and framing; only
+    # its y is different, and 7'-5 5/8" is far past MAX_PAIRED_PLACEMENT_DELTA_M —
+    # deliberately: an element that travelled that far is not the same element in the same
+    # place, and the matcher is right to say so.
+    #
+    # The reference drew the basement stair-side line as 8" of concrete on x=11'; it is a
+    # 2x6 bearing STUD wall on x=10' now — two of them, W-B-STR and W-B-STR3 — because it
+    # retains nothing (`unbalanced_fill` is always ft(0)) and what it carries is
+    # FS-M-MECH/FS-M-STAIR's joists and the W-M-STRW stack, which is a stud-wall job on a
+    # footing. The footing is the part that did NOT change. The matcher stops pairing it,
+    # correctly: a 6 1/4"/6 7/8" framed stack on a different line is not the same element as
+    # an 8" pour, and there is no pour on this line to pair.
     "House Basement Stair Side Wall (8\")": (
         "the stair shaft's west wall is two framed 2x6 bearing walls on x=10' since "
         "2026-08-24 (W-B-STR + W-B-STR3), not a pour on x=11' — see plan/storeys/basement.py"
@@ -169,11 +166,9 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 #
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
 DECLARED_WALL_EXTENT_CHANGES: dict[str, tuple[float, str]] = {
-    # Empty since 2026-08-24. Its one entry, "House Basement Stair Side Wall (8\")", moved
-    # to DECLARED_DIVERGENCES: that line is framed now and the matcher no longer pairs it
-    # with the reference pour at all, so there is no paired extent left to bound. The
-    # mechanism stays — a wall whose plan extent changes by decision is pinned to the size
-    # of the change here, so a further silent stretch still fails.
+    # Empty: the mechanism stays even with nothing in it — a wall whose plan extent changes
+    # by decision is pinned to the size of the change here, so a further silent stretch
+    # still fails.
 }
 
 HOUSE_SIZE_FT = 36.0
@@ -251,14 +246,10 @@ DECLARED_STOREY_ELEVATION_MOVES = {
                         "because it had the house at grade; the garage has not moved "
                         "relative to the ground it is driven into, the ground moved "
                         "relative to the house"),
-    # **"basement" is deliberately absent.** It was declared at -2.8448 (-9'-4") from
-    # 2026-08-21, when the mixed I-joist / EPS-formed deck replaced a 9" cast slab and the
-    # house rose 4" while the basement floor stayed in the ground. The 2026-08-23
-    # flat-bearing-seat rework is the opposite move: the deck deepened to 14 3/8" and the
-    # FLOOR came up 2 9/16" to meet its soffit, with grade untouched. That leaves the slab at
-    # -9'-1 7/16", which is 1 7/16" off the reference's -9'-0" — inside the +/-0.05 m the
-    # comparison allows, so the entry would be stale and the `stale` assertion below deletes
-    # it for us. The basement agrees with the reference model again; do not re-add it.
+    # **"basement" is deliberately absent.** The slab sits at -9'-1 7/16", which is 1 7/16"
+    # off the reference's -9'-0" — inside the +/-0.05 m the comparison allows, so an entry
+    # here would be stale and the `stale` assertion below would delete it for us. The
+    # basement agrees with the reference model again; do not re-add it.
 }
 
 
@@ -316,8 +307,8 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     pairs = _paired(equivalence, "wall")
     # 19, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs,
     # *both* centerlines unpair because a stretch of each is an LVL rather than wall —
-    # BM-S-HALL on second, BM-M-HALL on main — and the basement stair side wall unpaired on
-    # 2026-08-24 when it stopped being a pour at all (all recorded in DECLARED_DIVERGENCES).
+    # BM-S-HALL on second, BM-M-HALL on main — and the basement stair side wall unpaired
+    # when it stopped being a pour at all (all recorded in DECLARED_DIVERGENCES).
     # Every wall that still pairs must still be within a construction-scale move of its
     # reference line, which the loop below asserts.
     assert len(pairs) >= 19, equivalence.status_counts()
@@ -344,7 +335,7 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
 def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     """The reference drew 7 layer-walls per exterior wall; the resolved stack carries 7.
 
-    It carried 9 until the 2026-08-23 truss wall, and the two it gave up are the point of
+    It carried 9 before the truss wall, and the two it gave up are the point of
     this test rather than a hole in it: the WRB went because closed-cell foam is the water
     plane now, and the two rigid-CI courses became sprayed bands plus a ``CavityFill`` inside
     the inner girt — a fill is not a layer, deliberately, because it is the other path
@@ -356,7 +347,7 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     layer-walls than the reference. Comparing layer *counts* per run is what makes the
     layer-per-wall and layerset-per-wall conventions commensurable.
     """
-    # ** THE FOUR ATTIC KNEE WALLS ARE OUT OF SCOPE SINCE 2026-08-29. ** The reference drew
+    # ** THE FOUR ATTIC KNEE WALLS ARE OUT OF SCOPE. ** The reference drew
     # them as 7-layer exterior stud walls 5'-0" tall; what stands there now is
     # CATLIN_RAFTER_PLATE — one structure layer, 1 1/2" of 2x6 laid flat on the deck, with
     # no lining, sheathing or cladding because a plate on a subfloor has no faces. Comparing
@@ -372,9 +363,9 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
     exterior = [item for item in house_walls if item.reference_layer_count == 7]
     assert exterior, [item.reference_name for item in house_walls]
-    # EIGHT since 2026-09-01; it was TEN from 2026-08-26 and seven before that. Paint, gwb,
-    # stud, sheathing, then THREE stand-off layers where the outrigger band was one — 4" of
-    # foam in ONE band, the 1/2" vent gap, the girt — then the cladding.
+    # EIGHT: paint, gwb, stud, sheathing, then THREE stand-off layers where the outrigger
+    # band was one — 4" of foam in ONE band, the 1/2" vent gap, the girt — then the
+    # cladding.
     #
     # The two that went are the inner girt and the 1" `foam-vent` slice in front of it. The
     # foam was authored as three bands so `analysis._layer_rsi` could parallel-path the inner
@@ -383,10 +374,10 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     # NOT changed is the depth (6" of stand-off) or the count's direction: still strictly
     # more layers than the seven-layer reference, which is what this test is about.
     #
-    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID (2026-08-18): the same
-    # layers outboard of the studs, with a three-layer sealed liner (PVC panel / drainage
-    # strapping / Class I membrane) in place of the two-layer painted-gypsum lining. One
-    # more than the rest.
+    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID: the same layers
+    # outboard of the studs, with a three-layer sealed liner (PVC panel / drainage strapping
+    # / Class I membrane) in place of the two-layer painted-gypsum lining. One more than the
+    # rest.
     _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
     expected = {name: 9 for name in _HUMID_LINED}
     assert all(item.current_layer_count == expected.get(item.reference_name, 8)

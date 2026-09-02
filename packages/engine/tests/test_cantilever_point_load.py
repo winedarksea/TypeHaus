@@ -6,7 +6,7 @@ whole value is in never going quiet: a post on the overhang is a finding whateve
 authored — FAIL with nothing carrying it, UNKNOWN once the reinforcement contract is met,
 never PASS.
 
-The fixtures are synthetic, and since 2026-08-28 they are the *only* coverage of the arms:
+The fixtures are synthetic, and they are the *only* coverage of the arms:
 catlin had exactly one such post (PT-SG-BR2, on the porch's 17" north overhang), and moving
 the rear balcony pillar row onto the back-beam line deleted the condition rather than
 mitigating it. So these fixtures now carry the whole contract — every arm, and both sides of
@@ -304,9 +304,9 @@ def test_catlin_has_no_post_on_a_cantilever_at_all(catlin_findings):
     PT-SG-BR2 stood on FS-SG-PORCH's 17" north overhang — the only post in the house that
     did — and the finding read UNKNOWN because all three mitigation arms matched: an
     authored 3-ply JoistReinforcement, 2 sistered plies and 2 blocks off the geometry, and
-    CN-SG-TIE-BR2 at the far bearing. On 2026-08-28 the rear balcony pillar row moved onto
-    the back-beam line, 3" south of the bearing, and the mitigation was deleted with the
-    condition rather than kept.
+    CN-SG-TIE-BR2 at the far bearing. The rear balcony pillar row now sits on the back-beam
+    line, 3" south of the bearing, and the mitigation was deleted along with the condition
+    rather than kept.
 
     An empty report is the honest one here, and the 3" is what makes it honest: ``_band``
     is closed at the bearing line (``post_axis >= axis_hi - end - _EPS``), so a pillar

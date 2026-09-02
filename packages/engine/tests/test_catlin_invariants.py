@@ -3,8 +3,8 @@
 ``houses/catlin/CLAUDE.md`` §"House facts that must stay true" is a list of invariants the
 plan is *supposed* to hold, and one of them says so out loud: "The breezeway follows the
 doors, and **nothing enforces that but this line**." That is exactly the failure mode this
-house has already had — the 2026-07-28 mudroom conversion pushed ``D-M-ENTRY`` 4'-0" east
-and the shelter stood 3'-6" off its own door for four days, until an unrelated landing check
+house has already had — the mudroom conversion pushed ``D-M-ENTRY`` 4'-0" east and the
+shelter stood 3'-6" off its own door for four days, until an unrelated landing check
 happened to notice. A prose invariant that only a code check can catch by accident is not
 enforced; this module is where those lines stop being prose.
 """
@@ -82,8 +82,8 @@ def test_breezeway_is_the_briefs_literal_four_feet(catlin_model):
 
 def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model):
     """`D-G-SERVICE` carries the same negative sill as `D-G-OVERHEAD` so both doors land
-    at 0'-0" on the shared deck — the 22" step at the garage was resolved on 2026-08-01 by
-    gapping the ICF stem to a grade beam, and a future stem edit must not silently undo it."""
+    at 0'-0" on the shared deck — the 22" step at the garage was resolved by gapping the ICF
+    stem to a grade beam, and a future stem edit must not silently undo it."""
     storey_z = {s.tag: s.elevation.meters for s in catlin_model.plan.storeys}
     levels = {}
     for tag in (ENTRY_DOOR, SERVICE_DOOR):
@@ -112,12 +112,12 @@ def test_the_patio_door_keeps_its_seven_inch_flood_threshold(catlin_model):
     `sill_height=inch(7)` — carried in a comment and asserted by nothing, so any edit that
     retyped the door or rebuilt the wall could have dropped it to the floor silently.
 
-    Derived from the resolved model rather than read off the source, and 2026-08-28 is
-    exactly why: `sill_height` went `inch(7)` -> `inch(0)` that day and the threshold went
-    UP. The door's host wall is the framed walkout now and its base is the top of a 7 1/4"
-    concrete curb — the threshold is built rather than authored, and it is a quarter inch
-    higher than the number it replaced because 7 1/4" is the actual width of a 2x8. Reading
-    the source would have called that a regression; reading the model calls it what it is.
+    Derived from the resolved model rather than read off the source: `sill_height` reads
+    `inch(0)` in the plan, and the built threshold is still 7 1/4" because the door's host
+    wall is the framed walkout now and its base is the top of a 7 1/4" concrete curb — the
+    threshold is built rather than authored, and it is a quarter inch higher than the raw
+    `inch(7)` sill would suggest because 7 1/4" is the actual width of a 2x8. Reading the
+    source would call that a regression; reading the model calls it what it is.
     """
     door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
@@ -135,8 +135,8 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
 
     `code.R311_3_exterior_landing` allows a non-required exterior door 7.75" — one riser —
     down to its landing. The garden floor outside this door is flush with the basement slab
-    and is the landing, so the flood threshold IS that step. At 7 1/4" — the 2026-08-28
-    curb, up from a 7" authored sill — it passes with 1/2" to spare; at 8" it FAILS, and the
+    and is the landing, so the flood threshold IS that step. At 7 1/4" — the curb, up from a
+    7" authored sill — it passes with 1/2" to spare; at 8" it FAILS, and the
     failure would read as a landing problem rather than as the threshold decision it is.
     That half inch is the whole remaining budget, and it is why the curb is one board deep
     and not two.

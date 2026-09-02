@@ -43,8 +43,8 @@ def eave(catlin_model):
     derived = next(d for d in derive_detail_slices(catlin_model) if d.key == _KEY)
     scene, _findings = build_detail(catlin_model, derived)
     wall = next(w for w in catlin_model.walls if w.tag in derived.condition.element_tags)
-    # ** THE CONDITION NAMES THE PLATE; THE SKIN BELONGS TO THE WALL UNDER IT. ** Since
-    # 2026-08-29 the attic's eave is a 1 1/2" CATLIN_RAFTER_PLATE laid flat on the deck, and
+    # ** THE CONDITION NAMES THE PLATE; THE SKIN BELONGS TO THE WALL UNDER IT. **
+    # The attic's eave is a 1 1/2" CATLIN_RAFTER_PLATE laid flat on the deck, and
     # `envelope._roof_wall_conditions` keys the condition on the assembly whose faces
     # actually meet the roof — the CATLIN_EXT_2X6 run the plate `stacks_on` — while still
     # naming the plate in `element_tags`, because the plate is the element that terminates

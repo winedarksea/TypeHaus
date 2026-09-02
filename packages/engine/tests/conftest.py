@@ -115,7 +115,7 @@ def catlin_model(catlin_plan):
 def catlin_areas(catlin_model_ro):
     """The $/sf denominators, and what a ``space_summary.*`` allowance driver reads.
 
-    Every production caller of ``estimate_costs`` passes these since 2026-08-27 (see
+    Every production caller of ``estimate_costs`` passes these (see
     ``server/space_summary.estimate_areas``), because catlin drives two allowances off
     gross and conditioned area. A test that prices catlin's real ``prices.toml`` without
     them is testing a call shape nothing makes any more — and gets a ValueError saying so,
@@ -130,12 +130,11 @@ def catlin_areas(catlin_model_ro):
 def swinburne_model(catlin_plan):
     """A two-wall L of ``CATLIN_EXT_2X6_SWINBURNE`` walls with one window.
 
-    The Swinburne truss wall stopped being a *catlin* wall on 2026-08-26 — the house is on
-    the catlin truss's horizontal girts now — but nothing about the vertical outrigger frame
-    was deleted, and ``test_truss_wall_geometry.py`` is what keeps it honest. So the geometry
-    tests moved off ``catlin_model`` and onto this: the smallest plan that exercises every
-    piece of the pack (field outriggers on the module, a jamb outrigger and its filler, head
-    and sill blocking, blocks, tabs, bucks, and one owned L corner for the corner box).
+    The Swinburne truss wall is no longer a *catlin* wall — the house is on the catlin
+    truss's horizontal girts now — but the vertical outrigger frame it defines is still
+    real, and ``test_truss_wall_geometry.py`` keeps it honest via this smallest plan that
+    exercises every piece of the pack (field outriggers on the module, a jamb outrigger and
+    its filler, head and sill blocking, blocks, tabs, bucks, and one owned L corner).
 
     The assembly is the REAL retired tuple, read back out of the catlin library rather than
     restated here, which is the point: this fixture is a live test of the documented revert

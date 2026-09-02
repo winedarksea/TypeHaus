@@ -29,53 +29,39 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     """``length_ft`` is what prices a railing and none of the new columns may disturb it:
     ten authored railings, grouped by product and storey, at their plan run.
 
-    The tenth is RL-SG-PORCH (2026-08-18), which replaced the porch's masonry parapet — so
-    the fascia-mount product now bills two guards, 36.3 LF of porch under 38.3 LF of
-    balcony, and the ``style == "masonry"`` group this test used to exclude is empty."""
+    The tenth is RL-SG-PORCH, which replaced the porch's masonry parapet — so the
+    fascia-mount product bills two guards, 36.3 LF of porch and 38.3 LF of balcony, and the
+    ``style == "masonry"`` group this test excludes is empty."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
-    # Eleven since 2026-08-22: RL-G-SERVICE, the handrail on the garage service stair. It is
-    # new because the *stair* is new — five concrete slabs until `Stair` could express a
-    # step-down within one storey, and R311.7.8 asks for a handrail on any flight of four or
-    # more risers the moment one is a flight at all.
-    # Twelve since 2026-08-24: RL-M-STAIRHEAD, 4 1/2" of panel guard closing the well
-    # partition's end where W-M-STRS used to. It bills as a railing row like any other —
-    # 0.4 LF is a real line on a real product, and the alternative was leaving a 4 1/2"
-    # hole at the head of the stairs off the BOM entirely.
-    # Thirteen since 2026-08-29: RL-A-FLIGHT-GUARD, 10'-0" of raked guard on ST-S2A's own
-    # open south side. RL-A-STAIR guards the attic *deck* edge on that same plan line; the
-    # flight below it was unguarded over a 30"-120" fall into RM-S-STUDY2 and no check was
-    # asking, because R312.1 is graded against floor-opening edges.
+    # RL-G-SERVICE is the handrail on the garage service stair, new because the *stair* is
+    # new, and R311.7.8 asks for a handrail on any flight of four or more risers.
+    # RL-M-STAIRHEAD is 4 1/2" of panel guard closing the well partition's end; it bills as a
+    # railing row like any other — 0.4 LF on a real product, rather than leaving a hole off
+    # the BOM entirely.
+    # RL-A-FLIGHT-GUARD is 10'-0" of raked guard on ST-S2A's own open south side.
+    # RL-A-STAIR guards the attic *deck* edge on that same plan line; the flight below it is
+    # unguarded over a 30"-120" fall into RM-S-STUDY2, and R312.1 is graded against
+    # floor-opening edges rather than this one.
     assert sum(int(row["count"]) for row in rows) == 13
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
-    # 76.6 since 2026-08-29, not 74.6: RL-SG-BALCONY's two side legs each grew 12" when the
-    # balcony's front plane moved south of the porch's. RL-SG-PORCH is unchanged.
+    # 76.6, not 74.6: RL-SG-BALCONY's two side legs each run 12" longer, since the balcony's
+    # front plane sits south of the porch's. RL-SG-PORCH is unchanged.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(76.6, abs=0.1)
-    # 23.4 since 2026-08-24, not 23.0: RL-M-STAIRHEAD's 4 1/2" joins the same product group.
-    # 26.4 on 2026-08-29 when RL-A-STAIR gained a 3'-0" east leg, and **17.3 since 2026-08-30,
-    # which is 9.1 LF LESS THAN BEFORE THE KNEE WALLS CAME OUT AT ALL.** That is not a
-    # regression, it is the rake: a 42" guard's top stands at 282", the roof underside over
-    # this well is `240" + 2 1/4" + (36' - x)/2`, and the two meet at x=29'-4 1/2". East of
-    # that the railing was inside the roof — 3 of 5 posts, 20 of 40 balusters and the whole
-    # east leg, 35 7/8" proud at the far end — and only the 3D view showed it until
-    # `integrity.element_above_roof` was written. W-A-GC-S, a raked ToRoof partition, closes
-    # x 29'-4 1/2"..35'-5 3/8" instead, and the east edge carries nothing because with 4 3/4"
-    # of clear height there is no walking surface for R312.1.1 to reach.
-    #
-    # So this row falls and a partition row rises. The guard product is billed by its RUN, so
-    # a shorter run has to bill shorter — the failure mode this test exists to catch is the
-    # opposite one, a railing that quietly keeps billing a length it no longer runs.
-    #
-    # 27.3 since 2026-08-29: RL-A-FLIGHT-GUARD's 10'-0" raked run down ST-S2A's open side,
-    # the same product bearing its own handrail (role="guard_and_handrail"), so the bar is
-    # billed once inside this component system rather than twice.
+    # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
+    # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
+    # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,
+    # W-A-GC-S, closes that stretch instead, since the east edge has no R312.1.1 walking
+    # surface to guard. RL-A-FLIGHT-GUARD's 10'-0" raked run down ST-S2A's open side (its own
+    # handrail, role="guard_and_handrail", billed once) makes up the rest. The guard product
+    # bills by its RUN, so a shorter run must bill shorter — the failure mode this test
+    # catches is a railing that quietly keeps billing a length it no longer runs.
     assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(27.3, abs=0.1)
-    # 36.7, not 30.0, since 2026-08-22, in two parts: RL-A-HANDRAIL gained 3'-0" at its east
-    # end so it runs beside ST-S2A's winder fan as well as its straight flight (which is what
-    # R311.7.8.2 asks of it, and what `code.R311_7_8_handrail` started measuring rather than
-    # reading off `continuous=True`), and RL-G-SERVICE added 3'-8" on the new garage stair.
+    # 36.7, in two parts: RL-A-HANDRAIL runs beside ST-S2A's winder fan as well as its
+    # straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail` rather than read
+    # off `continuous=True`), and RL-G-SERVICE adds 3'-8" on the garage stair.
     assert by_type["(untyped railing)"] == pytest.approx(36.7, abs=0.1)
 
 
@@ -94,7 +80,7 @@ def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_mo
     row, because a per-row number can be right while a whole railing is missing from the
     grouping.
 
-    Scoped to the baluster guards since 2026-08-24: ``railing_infill`` is the category for
+    Scoped to the baluster guards: ``railing_infill`` is the category for
     every style of infill solid, and RL-M-STAIRHEAD's is a single panel lite, billed as
     ``panel_count``/``panel_area_sqft`` and never as a picket. Counting the raw category
     against ``baluster_count`` would report the panel as a missing picket, which is why the
@@ -195,25 +181,18 @@ def test_every_finish_row_resolved_a_real_material(bom):
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
-    """The unfinished attic rooms lost their carpet on 2026-08-25: bulk storage walks on
-    FS-ATTIC's plywood and nothing goes over it. The row exists so the floor is not silently
-    missing from the schedule — but it orders zero, because there is nothing to order.
+    """The unfinished attic rooms carry no floor finish: bulk storage walks on FS-ATTIC's
+    plywood and nothing goes over it. The row exists so the floor is not silently missing
+    from the schedule — but it orders zero, because there is nothing to order.
 
-    It was 1,079 SF, then 1,118 SF on 2026-08-27 (RM-A-DEN deleted into the west loft, and
-    ~6 SF given back to RM-A-STUDY by W-A-SN's thickening), and it is 609 SF now.
+    RM-A-STUDIO is deliberately left BARE — `floor_finish=None` — rather than sealed:
+    FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that grade because these
+    rooms walk on it, and a clear sealer is a `prices.toml` allowance rather than a finish.
+    RM-A-STUBATH is billed separately (vinyl-sheet), and FO-A-HALL's stair-hall void left
+    the schedule entirely because there is no deck there.
 
-    ** THE 2026-08-29 MOVEMENT IS THE POINT OF THIS TEST. ** RM-A-WEST-UNFIN was 598 SF of
-    this row; it became RM-A-STUDIO (356 SF, still bare), RM-A-STUBATH (vinyl-sheet, 50 SF)
-    and RM-A-POCKET (134 SF, still bare), and
-    103 SF of it stopped being floor at all — that is FO-A-HALL, the stair-hall void. So
-    RM-A-STUDIO is deliberately left BARE — `floor_finish=None` — so it stays in this row
-    rather than leaving it: FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that
-    grade because these rooms walk on it, and a clear sealer is a `prices.toml` allowance
-    rather than a finish. Only the 50 SF bath left for a billed row (vinyl-sheet), and the
-    void's ~109 SF left the schedule entirely because there is no deck there any more.
-
-    That is why this row is asserted on its area AND separately on ordering zero AND on its
-    room list: any one of the three alone would have read this change as a saving."""
+    This row is asserted on its area AND separately on ordering zero AND on its room list:
+    any one of the three alone would read a real change as a saving."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
     assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET", "RM-A-STUDIO"]
     assert float(row["net_area_sqft"]) == pytest.approx(965.3, abs=1.5)
@@ -224,10 +203,10 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     """S3 moved five second-storey rooms to LVP and one closet to carpet; S6 has to bill
     exactly those. The two halves are only useful together."""
     lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
-    # RM-S-LANDING was folded into RM-S-HALL when the centre line opened up under
-    # BM-S-HALL, so the one hall row now bills what used to be two. The two main-floor
-    # rooms joined on 2026-08-02 when solid oak retreated to the studies (§Hardwood).
-    # RM-M-PANTRY joined 2026-08-24 and contributes ZERO area: it stands entirely on
+    # RM-S-LANDING folded into RM-S-HALL when the centre line opened up under BM-S-HALL, so
+    # the one hall row bills what used to be two rooms; solid oak retreated to the studies
+    # (§Hardwood).
+    # RM-M-PANTRY contributes ZERO area: it stands entirely on
     # SL-M-DECK, so its whole floor derives polished-concrete and its authored "lvp" is the
     # intent if that slab outline ever moves, not a field finish. It is in the room list
     # because the list is by authored finish; the sqft assertions elsewhere are what pin
@@ -536,9 +515,9 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     east_second_net = _gross_sqft("FS-S-EAST")
     assert float(gwb["net_area_sqft"]) > west_second_net + east_second_net
 
-    # The main storey's wood bays are four systems since 2026-08-23, not two: the west half
-    # split at the bathroom node line so the mechanical-room and stair bays could bear on the
-    # x=10' line. FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
+    # The main storey's wood bays are four systems, not two: the west half split at the
+    # bathroom node line so the mechanical-room and stair bays could bear on the x=10' line.
+    # FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
     others = (_gross_sqft("FS-M-WEST") + _gross_sqft("FS-M-MECH")
               + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
               + _gross_sqft("FS-M-EAST"))
@@ -546,13 +525,12 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # room-level liner overrides carve their clear faces back out of the decks they hang
     # under (the sauna out of FS-M-WEST, the plant room out of FS-ATTIC).
     sl_m_deck_net = 414.0  # 18' x 23', no floor openings (params/main_deck.py)
-    # FS-ATTIC has TWO holes in it since 2026-08-29. FO-A-HALL (103 SF) opened the deck
-    # over the ST-M2S well so the stair hall runs to the roof — and because this deck's
-    # underside IS the second storey's ceiling, the board stops at the void exactly as the
-    # deck does. `takeoff/framing.py` has always billed `gross - openings`; what changed on
-    # the same day is that the GEOMETRY finally agrees with it (`resolve/ceilings.py` used
-    # to draw a gypsum plane straight across a stair shaft). This line is the arithmetic
-    # half of that fix; test_ceilings.py has the geometric half.
+    # FS-ATTIC has TWO holes in it. FO-A-HALL (103 SF) opens the deck over the ST-M2S well
+    # so the stair hall runs to the roof — and because this deck's underside IS the second
+    # storey's ceiling, the board stops at the void exactly as the deck does.
+    # `takeoff/framing.py` bills `gross - openings`; the GEOMETRY has to agree with it
+    # (`resolve/ceilings.py`) — the geometric half is test_ceilings.py, this line is the
+    # arithmetic half.
     attic_net = (_gross_sqft("FS-ATTIC") - _opening_sqft("FO-A-STAIR")
                  - _opening_sqft("FO-A-HALL"))
     sauna_net = _room_sqft("RM-B-SAUNA")
@@ -592,8 +570,8 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
 
     Reconciled against the walls themselves: the total is the run of exactly the walls whose
     cavity starts at their own base, which on catlin is the main-storey perimeter. The garage
-    dropped out on 2026-08-20 when GARAGE_WALL_2X6 lost its rainscreen furring — nail strip
-    face-fastens straight to the Zip-R, so there is no cavity there to close.
+    has no rainscreen furring on GARAGE_WALL_2X6 — nail strip face-fastens straight to the
+    Zip-R, so there is no cavity there to close.
     """
     from typehaus.resolve.accessories import screens_rainscreen_base
     from typehaus.resolve.geometry import length, sub
@@ -614,9 +592,9 @@ def test_bug_screen_rows_are_grouped_by_the_cavity_they_are_cut_to(bom):
     """The strip is bought in the section that fills the cavity, so a house with two
     different batten depths is two different orders.
 
-    Catlin is down to ONE depth since 2026-08-20 — the garage's 3/8" battens went with its
-    rainscreen, leaving only the house's 1/2" — so what this can still prove is the grouping
-    itself: one row per distinct depth, never one row per wall.
+    Catlin is down to ONE depth — the garage has no rainscreen battens, leaving only the
+    house's 1/2" — so what this can still prove is the grouping itself: one row per distinct
+    depth, never one row per wall.
     """
     rows = bom["bug_screens"]
     depths = {float(row["cavity_depth_in"]) for row in rows}
@@ -643,20 +621,20 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # Structure
         "framing", "framing_by_size", "structural_solids", "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
-        # The sill seal under the bearing plates (2026-08-24): its own section because
+        # The sill seal under the bearing plates: its own section because
         # `construction_returns` reconciles 1:1 with the resolved returns.
         "sill_gaskets",
-        # Monolithic wall structure (2026-08-03): the concrete/masonry wall cores that
+        # Monolithic wall structure: the concrete/masonry wall cores that
         # frame no members and are not solids, so no other section could see them.
         "wall_structure",
         # Envelope & openings
         "envelope_layers", "wood_surfaces",
-        # The milling schedule (2026-08-28) — the same wood as a rough-stock cut list.
+        # The milling schedule — the same wood as a rough-stock cut list.
         "hardwood",
         "glazing_panels", "glazing_trim", "edge_trim",
-        # Self-adhered membrane over framing tops, by the foot of member (2026-08-27).
+        # Self-adhered membrane over framing tops, by the foot of member.
         "member_protection",
-        # Self-regulating heater cable by the foot of run traced (2026-08-28).
+        # Self-regulating heater cable by the foot of run traced.
         "freeze_protection",
         "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
@@ -664,7 +642,7 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "ducts", "duct_fittings", "duct_insulation", "sleeves", "floor_heat", "drainage",
         # Electrical
         "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
-            # `solar_modules` (2026-08-27) is the list view of `solar["by_product"]` that
+            # `solar_modules` is the list view of `solar["by_product"]` that
             # [solar_modules] prices — every ESTIMATE_PLANS entry reads a list, and `solar`
             # is a dict of summaries. Both keys ship: the dict is the UI's contract.
             "solar", "solar_modules", "backup_power",

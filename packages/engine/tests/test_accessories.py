@@ -74,8 +74,8 @@ def _solids(model, category):
 def _balcony_deck_top(model) -> float:
     """Top of the aluminium boards over FS-SG-DECK — the balcony walking surface.
 
-    There is no SL-SG-DECK slab standing in for it any more (2026-08-22): the plank is the
-    floor system's own ``subfloor``, so the surface underfoot is the resolved deck sheet.
+    The plank is the floor system's own ``subfloor``, so the surface underfoot is the
+    resolved deck sheet.
     """
     deck = next(f for f in model.floors if f.tag == "FS-SG-DECK")
     assert deck.deck_z1_m > deck.deck_z0_m, "FS-SG-DECK must resolve a deck sheet"
@@ -108,11 +108,10 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
     # It lands on the beam soffit, and leaves from the post face rather than its centre —
     # an end buried in the column reads as a member clash.
     assert member.z1_end_m == pytest.approx(8.4583333 * FT)
-    # -10.270833', not -9.5': the balcony's front pillar row moved 12" south on 2026-08-29
-    # so PT-SG-BF2 could bear on PT-SG-FCOL instead of through a porch joist, then came 2
-    # 3/4" back north on 2026-08-30 so the beam ends — which stayed on -10.5' — roof the
-    # post tops instead of stopping on their axes. The brace follows its post; the plane the
-    # porch's own beams sit on never moved at all.
+    # -10.270833', not -9.5': the balcony's front pillar row sits 12" south of PT-SG-FCOL's
+    # bearing line, and the beam ends — pinned at -10.5' — land 2 3/4" back north so they roof
+    # the post tops instead of stopping on their axes. The brace follows its post; the plane
+    # the porch's own beams sit on never moved at all.
     post_centre_y = (-10.5 + 2.75 / 12.0) * FT
     assert abs(member.p0[1] - post_centre_y) == pytest.approx(2.75 * 0.0254)
 
@@ -122,8 +121,8 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> Non
     beam/rail end and another at the post end — instead of the single floating marker box
     the old spelling drew.
 
-    The part is `KBS1Z` since 2026-08-30 (it was the Outdoor Accents `APVKB45-6`, which has
-    no published allowable load in any code report). One connector per end is Simpson's own
+    The part is `KBS1Z` — the Outdoor Accents `APVKB45-6` alternative has no published
+    allowable load in any code report. One connector per end is Simpson's own
     installation for a 2x brace into a wider member, so the geometry the resolver draws and
     the count `knee_brace_rows` bills now agree — two bands, two pieces."""
     member = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
@@ -142,15 +141,15 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> Non
 
 
 def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None:
-    """The N-S brace rises to the beam soffit; the E-W brace now rises to the rail's own
-    (lower) soffit, since the rail hangs face-bolted below the pillar-top plane rather than
-    riding on it the way the old girt did. The two braces at a corner land on different
-    planes now, deliberately — the brace still carries its own soffit rather than deriving
-    one from its storey, and there is no longer a reason for the two to agree."""
+    """The N-S brace rises to the beam soffit; the E-W brace rises to the rail's own (lower)
+    soffit, since the rail hangs face-bolted below the pillar-top plane rather than riding on
+    it. The two braces at a corner land on different planes deliberately — the brace still
+    carries its own soffit rather than deriving one from its storey, and there is no reason
+    for the two to agree."""
     ns = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     ew = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-EW").members[0]
-    # 8.458', not the 8.625' this was until 2026-08-23: the beams went 3-2x10 -> 3-2x12 to
-    # clear IRC Table R507.5(1), and the whole pillar-top band came down 2" with them.
+    # 8.458': the beams are 3-2x12, not 3-2x10, to clear IRC Table R507.5(1), and the
+    # pillar-top band sits 2" lower for it.
     assert ns.z1_end_m == pytest.approx(8.4583333 * FT)  # N-S beam soffit
     assert ew.z1_end_m == pytest.approx(7.8541667 * FT)  # rail soffit — below the beams' now
     # Both feet stay above the pillar base and clear of the porch railing top (3.583'). The
@@ -191,7 +190,7 @@ def test_the_balcony_brace_rails_hang_clear_of_the_pillar_tops(catlin_model) -> 
         pillar_ys = [p[1] for p in solids[pillar_tag].outline]
         assert min(rail_ys) >= max(pillar_ys) - 1e-9
     # The rails name no pillars for the schedule, so the pillars keep the heights the deck
-    # joists gave them (the rear row 2" high for drainage) — unchanged from the girt era.
+    # joists gave them (the rear row 2" high for drainage).
     assert solids["PT-SG-BF1"].z1_m == pytest.approx(8.4583333 * FT)
     assert solids["PT-SG-BR1"].z1_m == pytest.approx(8.625 * FT)
 
@@ -199,10 +198,10 @@ def test_the_balcony_brace_rails_hang_clear_of_the_pillar_tops(catlin_model) -> 
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
     dowels = _solids(catlin_model, "dowel")
     foam = _solids(catlin_model, "thermal_break")
-    # Two locations x 3 bars. It was three until 2026-08-29: FT-SG-COL used to be doweled
-    # to the house footing across a foam block, and belling that pier to frost depth put its
-    # top 1'-10" BELOW FT-B-S2's underside. There is no longer a joint between the two pours
-    # for a bar to cross or for foam to break — the separation is the thermal break.
+    # Two locations x 3 bars: FT-SG-COL is doweled to the house footing across a foam block.
+    # Belling that pier to frost depth put its top 1'-10" BELOW FT-B-S2's underside, so there
+    # is no joint between the two pours for a bar to cross or foam to break — the separation
+    # itself is the thermal break.
     assert len(dowels) == 6
     assert len(foam) == 2
     # Bars sit at mid-footing (~ -9.25') and span ~24" across the joint.
@@ -260,17 +259,15 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     assert len(outs) == 2 * _PIPE_SWEEP_BANDS  # each horizontal jog is one swept stack
     exit_z = ft(23, 10).meters
     jog_z = ft(19, 6).meters
-    # ** THE CHASE STOPS AT THE JOG SINCE 2026-08-29, AND -CHASE2 CARRIES ON ABOVE IT. **
+    # ** THE CHASE STOPS AT THE JOG, AND -CHASE2 CARRIES ON ABOVE IT. **
     # The riser rises from below grade at x=1'-0" as it always did, but the attic's 6:12
     # roof underside there is 20'-8 1/4" — it cannot reach the 23'-10" wall exit at that
     # station. `VentRun.chase_offset` steps it east inside FS-ATTIC's I-joist band (through
     # the webs) and it stands up again further along. No roof penetration, and the chase
     # itself does not move through any storey below.
     #
-    # The jog was 12'-4" to x=13'-4" until 2026-08-30, which stood the pipe pair ON WIN-A-N1:
-    # the pair straddles its station about 7 3/4" overall and that window's rough opening
-    # runs x 10'-9"..13'-3". It is 8'-7 1/2" to x=9'-7 1/2" now — west of the window, and on
-    # PR-A-STUBATH-VENT's own wet-wall line, which deletes that run's last leg entirely.
+    # The jog runs to x=9'-7 1/2" — west of WIN-A-N1, and on PR-A-STUBATH-VENT's own wet-wall
+    # line, which deletes that run's last leg entirely.
     chase2 = [s for s in vent if s.tag.endswith("CHASE2")]
     assert len(chase2) == 2
     for c in chases:
@@ -283,23 +280,19 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
         assert abs((j.z0_m + j.z1_m) / 2 - jog_z) < inch(2).meters
     for o in outs:
         assert abs((o.z0_m + o.z1_m) / 2 - exit_z) < inch(2).meters
-    # Termination is derived: 12" above the true roof surface at the exterior riser — now at
-    # x=13'-4" with the jog — not the 33' that was once authored.
+    # Termination is derived: 12" above the true roof surface at the exterior riser.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
     riser_x = ft(9, 7.5).meters  # the jogged station — see chase_offset above
     expected = roof_height_at(roof, (riser_x, ft(37).meters)) + skin + inch(12).meters
     # eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
-    # foam + nailbase deck + underlayment + vent mat + standing seam) adds another 7.975"
-    # above that deck plane, so the derived termination rides that much higher than the
-    # bare-plate datum. The skin is summed here rather than written down, so a roof rebuild
-    # moves the vent with it — 2026-08-20 took it from 8.5" to 7.975" and nothing broke.
-    # The jog moves the riser toward the ridge and a 6:12 plane climbs twice as fast as the
-    # 4:12 it replaced, so this number is sensitive to the station: ~29'-7" at the 2026-08-29
-    # x=13'-4", ~27'-9" at the x=9'-7 1/2" it took on 2026-08-30. It is BELOW the 30'-3" ridge
-    # either way, which is the claim that matters — a termination over the ridge is a pipe
-    # with no roof under it — and moving WEST buys margin on it rather than spending it.
+    # foam + nailbase deck + underlayment + vent mat + standing seam) adds ~7.975" above
+    # that deck plane, so the derived termination rides that much higher than the bare-plate
+    # datum. The skin is summed here rather than written down, so a roof rebuild moves the
+    # vent with it. A 6:12 plane climbs twice as fast as the 4:12 it replaced, so this number
+    # is sensitive to the riser's station; it stays BELOW the ridge either way, which is the
+    # claim that matters — a termination over the ridge is a pipe with no roof under it.
     assert expected < 30 * FT
     assert expected < roof.ridge_z_m
     for t in terms:
@@ -559,13 +552,12 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     # Six runs (two eaves + four rake halves), each a formed section of cleat / face / hem.
     assert len(corner_trim) == 18
     assert {m.child_key.rsplit("-", 1)[1] for m in corner_trim} == {"cleat", "face", "hem"}
-    # ** THE HEM REACHES BELOW THE DECK PLANE SINCE 2026-08-31, AND THAT IS THE DETAIL. **
-    # Every piece stood above `eave` while eight inches of stack sat on the deck; with the
-    # outsulation deleted the roofing underside is 0.74" above it and the trim's 4" leg —
-    # which doubles as the barge board at the rake — necessarily hangs 3.26" BELOW, lapping
-    # down over the wall panel heads. What is invariant is the closure: the trim brackets
-    # the roof stack, its top at or above the roofing and its hem below the deck, so there
-    # is no open joint between the two runs of metal.
+    # ** THE HEM REACHES BELOW THE DECK PLANE, AND THAT IS THE DETAIL. ** With no outsulation,
+    # the roofing underside sits 0.74" above the deck and the trim's 4" leg — which doubles as
+    # the barge board at the rake — hangs 3.26" BELOW it, lapping down over the wall panel
+    # heads. What is invariant is the closure: the trim brackets the roof stack, its top at or
+    # above the roofing and its hem below the deck, so there is no open joint between the two
+    # runs of metal.
     tops = {round(m.z1_m, 6) for m in corner_trim}
     assert max(tops) > eave, (max(tops), eave)
     assert min(m.z0_m for m in corner_trim) < eave
@@ -665,9 +657,9 @@ def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
                 if screens_rainscreen_base(catlin_model, wall)}
     assert set(screens) == expected
     # The house wall is screened; the GARAGE wall deliberately is not, and that is the point
-    # of deriving this rather than authoring it. GARAGE_WALL_2X6 dropped its rainscreen furring
-    # on 2026-08-20 (nail strip face-fastens straight to the Zip-R), so there is no cavity left
-    # to close — and the rule noticed without anyone editing a screen.
+    # of deriving this rather than authoring it. GARAGE_WALL_2X6 has no rainscreen furring
+    # (nail strip face-fastens straight to the Zip-R), so there is no cavity left to close —
+    # and the rule noticed without anyone editing a screen.
     assert "W-M-S1" in expected
     assert "W-G-S" not in expected
 
@@ -679,13 +671,13 @@ def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_mode
     Three ways a wall can spell that cavity, and this house has used two of them:
 
     * a band PACKED WITH INSULATION vents only the unfilled remainder in front of the fill —
-      the Swinburne outrigger wall (2026-08-23), 1" of a 3-1/2" band, where drawing the whole
-      band would have ordered a 3-1/2" insect closure for a 1" job;
-    * a SOLID band with its gap authored BEHIND it as its own AIRGAP layer — the catlin truss
-      (2026-08-26). Its outer girt is 1-1/2" of solid KDAT with a 1/2" vent behind it, and
-      between the 24" courses that gap opens into the 1-1/2" the girts stand off. So the
-      cavity is **2.0"**, and reading the band alone would report 1-1/2" of wood as air and
-      miss the air entirely.
+      the Swinburne outrigger wall, 1" of a 3-1/2" band, where drawing the whole band would
+      have ordered a 3-1/2" insect closure for a 1" job;
+    * a SOLID band with its gap authored BEHIND it as its own AIRGAP layer — the catlin
+      truss. Its outer girt is 1-1/2" of solid KDAT with a 1/2" vent behind it, and between
+      the 24" courses that gap opens into the 1-1/2" the girts stand off. So the cavity is
+      **2.0"**, and reading the band alone would report 1-1/2" of wood as air and miss the
+      air entirely.
 
     Both are one function (``rainscreen_band``), and the strip the model draws spans exactly
     what it reports — the two polygons unioned — or the order and the drawing disagree.

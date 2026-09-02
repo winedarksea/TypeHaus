@@ -1,4 +1,4 @@
-"""RM-M-BATH2's vanity, its radiant floor, and the joists under the drop-in bath (2026-08-29).
+"""RM-M-BATH2's vanity, its radiant floor, and the joists under the drop-in bath.
 
 Three changes landed together and each is silently breakable from somewhere else:
 
@@ -287,8 +287,8 @@ def test_the_zone_holds_every_manufacturer_keepout():
 
 
 def test_the_keepout_check_reads_the_rotated_footprint():
-    """The engine fix this zone depends on. Until 2026-08-29
-    `advisory.floor_heat_fixture_keepout` rebuilt each fixture's box from its TYPE's
+    """The engine fix this zone depends on.
+    `advisory.floor_heat_fixture_keepout` used to rebuild each fixture's box from its TYPE's
     (width, depth) about its centre and never applied rotation, so a bath authored at
     rotation 90 was graded as a 59"-wide EAST/WEST box. A zone drawn to the phantom PASSED
     while running under the actual tub, which is the dangerous half of that defect."""

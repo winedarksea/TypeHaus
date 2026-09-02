@@ -23,11 +23,10 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 
 # 4:12. Roof-stack offsets are perpendicular to the slope; elevations are vertical.
-# 6:12 since 2026-08-29 (params/roof_trim.py hand-copies these; they move together).
+# 6:12 (params/roof_trim.py hand-copies these; they move together).
 SLOPE_FACTOR = math.hypot(1.0, 6.0 / 12.0)
 #: Structural deck surface — the plane the drip flashing lies on and the membrane laps over.
-#: 0.625" of CDX plywood since 2026-08-31; it was 7.165" while a 5/8" nailbase sat on top of
-#: 6" of polyiso, and the roof edge came down 6.81" perpendicular when that stack was deleted.
+#: 0.625" of CDX plywood.
 DRIP_CEILING_IN = 0.625 * SLOPE_FACTOR
 #: Roofing underside == the head of the wall cladding on a continuous-skin edge. The deck
 #: plus the 0.04" adhered butyl membrane, and nothing else.
@@ -122,7 +121,7 @@ def test_corner_trim_hangs_outboard_of_the_wall_it_laps(eave) -> None:
     trim = eave.member("eave-hi-corner-trim")
     assert trim[0] == pytest.approx(0.0, abs=1e-6), "inner face sits on the footprint edge"
     assert trim[1] > 0.0, "the trim must stand outboard of the edge, not inside the cladding"
-    # ** W-S-E1, NOT W-A-E1, SINCE 2026-08-29. ** The attic's east eave wall is a 1 1/2"
+    # ** W-S-E1, NOT W-A-E1. ** The attic's east eave wall is a 1 1/2"
     # rafter plate now and carries no skin at all, so the closure band the roof edge laps is
     # the one belonging to the wall the plate STANDS ON — the second storey's own
     # CATLIN_EXT_2X6 run (`roof_edge.skin_stand_ins`, keyed off the authored `stacks_on`).
@@ -156,11 +155,7 @@ def test_the_gutter_is_mounted_tight_to_the_wall(eave) -> None:
 
 
 def test_the_drip_throws_water_into_the_middle_of_the_trough(eave) -> None:
-    """Where the turn-down ends is the whole detail: inside the channel, below its rim.
-
-    Before, the roof's own drip line fell 0.65" *behind* the gutter's back sheet — every drop
-    off the standing seam landed on the wall.
-    """
+    """Where the turn-down ends is the whole detail: inside the channel, below its rim."""
     turn_down = eave.solid("TR-RF-DRIP-E-1-DRIP")
     bottom = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
     front = eave.solid("TR-RF-GUTTER-E-1-FRONT")
@@ -176,9 +171,7 @@ def test_the_drip_flange_lies_on_the_top_deck_and_nothing_else_reaches_it(eave) 
     """The drip flashing lies ON the top deck and the underlayment laps OVER it.
 
     This is the constraint that stops the gutter simply being raised until every lap is
-    comfortable: the rim has a ceiling. Until 2026-08-20 that ceiling was the batten
-    cavity's underside and the rule was "do not dam the vent slot"; the roof is a screwed
-    nailbase now, and the ceiling is the top deck's own surface.
+    comfortable: the rim has a ceiling, and the ceiling is the top deck's own surface.
 
     Which makes the drip edge the *exception* the rule exists to protect, not an instance of
     it — and reading it as an instance is what put the drip a whole inch under the deck it is

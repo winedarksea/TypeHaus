@@ -1,6 +1,6 @@
 """The Catlin ERV as a system: the terminal set, the risers, the outdoor side.
 
-The 2026-08-25 pass replaced a *furnace*-shaped ventilator — nine rectangular trunks, a
+This pass replaced a *furnace*-shaped ventilator — nine rectangular trunks, a
 placeholder machine, no outdoor side at all — with a Broan B210E75RT on a semi-rigid radial
 install. These are the facts that pass had to establish and that a later edit must not
 quietly undo.
@@ -145,12 +145,8 @@ def test_the_hoods_clear_the_code_separations(catlin_plan, catlin_model) -> None
     """IRC M1602.2 / ASHRAE 62.2 §6.8 want 10 ft intake-to-exhaust, 3 ft from a plumbing vent
     or a dryer, and enough height to clear drifted snow.
 
-    The pair made this on the north gable by horizontal separation until 2026-08-30 and makes
-    it at the NW chase by VERTICAL separation now. The old form of this docstring said "no
-    pair of hoods near the shaft can make the ten feet" and cited RM-M-MECH at 5'-11" x 2'-7";
-    the room is really 5'-3" x 1'-11" (``resolve/rooms.py`` polygonizes from wall axes, so an
-    exterior-wall room reads 6" past its own interior face), and the claim was only ever true
-    of a HORIZONTAL pair. ``erv_outdoor_terminals`` measures a 3-D distance."""
+    The pair makes it at the NW chase by VERTICAL separation. ``erv_outdoor_terminals``
+    measures a 3-D distance."""
     findings = erv_outdoor_terminals(check_context(catlin_plan, catlin_model))
     assert findings
     assert not [f for f in findings if f.result is not Result.PASS], \
@@ -158,13 +154,12 @@ def test_the_hoods_clear_the_code_separations(catlin_plan, catlin_model) -> None
 
 
 def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
-    """The rule that governs the pair since 2026-08-30, replacing the north-gable mirror.
+    """The rule that governs the pair, replacing the north-gable mirror.
 
-    This test used to assert ``x(OA) + x(EA) == 36.0`` — the gable's mirror about the ridge —
-    and its own docstring noted that nothing but this test enforced it. The hoods left the
-    gable because ``DU-ERV-EA``'s horizontal leg ran through the rough openings of both gable
-    windows; the mirror was a facade rule, not a code rule, and it does not apply to a pair
-    that is no longer on a gable.
+    This test used to assert ``x(OA) + x(EA) == 36.0`` — the gable's mirror about the ridge.
+    The hoods left the gable because ``DU-ERV-EA``'s horizontal leg ran through the rough
+    openings of both gable windows; the mirror was a facade rule, not a code rule, and it
+    does not apply to a pair that is no longer on a gable.
 
     What replaces it is the arrangement that makes the pair legal without ten feet of facade:
     both on the west wall at the NW chase, EXHAUST ABOVE INTAKE. Two independent things want
@@ -199,7 +194,7 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
 # --- the mixing box --------------------------------------------------------------------
 
 def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_model) -> None:
-    """** THIS TEST ASSERTED THE DEFECT UNTIL 2026-08-30, AND THE REVERSAL IS THE POINT. **
+    """** THIS TEST ONCE ASSERTED THE DEFECT, AND THE REVERSAL IS THE POINT. **
 
     It used to require the mixing box NORTH of the strip heater, because that is where
     `mep.duct_soffit_occupancy` had pushed it: reading south to north, SF-S-DUCT's cavity
@@ -231,8 +226,8 @@ def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
     assert feed.uid == "CSDV02AAAA"
     # Two drawn drops, 28 7/8" in total: the attic deck down into the FS-ATTIC bay, and the
     # bay down through the second-storey ceiling onto EQ-S-ERV-MIX inside SF-S-HP1.
-    # 24 7/8" until 2026-08-31 — the second drop got 4" longer when SF-S-HP1 went from a 17"
-    # drop to 21" for the FLEXX Ultra cabinet and its cavity floor came down with it. The tail
-    # still sits 6" above that floor, which is the invariant; the fall is the consequence.
+    # The second drop is 21" for the FLEXX Ultra cabinet, whose cavity floor came down with
+    # it. The tail sits 6" above that floor, which is the invariant; the fall is the
+    # consequence.
     fall_in = (max(feed.z_m) - min(feed.z_m)) / M_PER_IN
     assert fall_in == pytest.approx(28.875, abs=0.01)

@@ -72,9 +72,9 @@ def test_water_closet_fixture_size_is_separate_from_required_code_clearance(
         fixture_type, expected_depth_inches: float) -> None:
     """A real bowl stays small; its code envelope is a distinct 30" by depth+24" polygon.
 
-    24", not the 21" this asserted until 2026-08-29: Minn. R. 1309.0010 subp. 3.D deletes
-    the IRC chapter P2705.1 lives in and 1309.0307 sends fixtures to ch. 4714, which adopts
-    UPC 402.5 unamended. See ``library/placeables/fixtures.py`` for the citation trail.
+    24": Minn. R. 1309.0010 subp. 3.D deletes the IRC chapter P2705.1 lives in and 1309.0307
+    sends fixtures to ch. 4714, which adopts UPC 402.5 unamended. See
+    ``library/placeables/fixtures.py`` for the citation trail.
     """
     assert tuple(dimension.inches for dimension in fixture_type.footprint) == pytest.approx(
         (20 if fixture_type is TOILET else 15, expected_depth_inches))
@@ -387,9 +387,9 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
 
     # A placeable is measured off the floor it STANDS on, not off the storey datum
     # (``resolve/room_floor.py``) — and on this storey those are not the same plane. The
-    # datum is top-of-joists; RM-M-LIVING sits on SL-M-DECK, whose polished cap has been
-    # pinned to the wood bays' plywood top since 2026-08-21
-    # (``params/main_deck.py::MAIN_FINISHED_FLOOR``). So everything in the living room stands
+    # datum is top-of-joists; RM-M-LIVING sits on SL-M-DECK, whose polished cap is pinned
+    # to the wood bays' plywood top (``params/main_deck.py::MAIN_FINISHED_FLOOR``).
+    # So everything in the living room stands
     # 3/4" above everything in RM-M-BED next door.
     #
     # ** That step is the other rooms being wrong, not this one. ** ``room_floor_elevation``
@@ -434,8 +434,8 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
     76c1871 defect: a 6.46" nudge that built cleanly and only showed up in
     `mep.sleeve_alignment`.
 
-    Read on the basement's WC since 2026-08-21: this was FX-M-BATH2-WC until the deck
-    overhaul framed the main floor and its cast sleeve went with the pour.
+    Read on the basement's WC, since the main floor's own WC lost its cast sleeve when the
+    deck overhaul framed it.
     """
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
