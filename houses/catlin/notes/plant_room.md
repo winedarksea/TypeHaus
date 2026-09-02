@@ -29,12 +29,8 @@ source:
 
 # Notes
 
-2026-08-18. `RM-S-PLANT` is to be a tropical plant room held at **~75 °F / 70 % RH
+`RM-S-PLANT` is a tropical plant room held at **~75 °F / 70 % RH
 year-round**, including Minnesota winters at the house's −15 °F heating design temperature.
-Until this pass it was an ordinary `Occupancy.LIVING` room with `floor_finish="tile"`,
-generic `CATLIN_EXT_2X6` walls and painted gypsum — nothing about it was built for humidity.
-This closes the "add the plant room wall types" item that had stood open in `plans/TODO.md`
-since 2026-08-02.
 
 The room is the second storey's SW corner, x 0'→18' × y 0'→9', 9'-0" ceiling. It is the
 **worst location in the house** for this: two exterior walls, three windows, an exterior
@@ -71,21 +67,18 @@ condensed below about +13 °F outdoors — most of a Minnesota winter.
 `building_science.glazing_dew_point` is the rule that says so, and it now prints the margin
 for every one of the three units.
 
-**Good news on the existing wall, and the 2026-08-23 truss wall does not change it.**
-`CATLIN_EXT_2X6`'s exterior insulation was 2" polyiso (1.0 perm-in, 0.5 perm at 2") plus 2"
-EPS (3.9 perm-in), which ran ≈ 0.4 perm — Class II, slow but real outward drying. It is now
-4" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: the same Class II**,
-in one bonded seamless application instead of two boarded courses and a sheet WRB. The wall
-did not need re-engineering then and does not now.
-
-The warning the boarded stack carried is moot rather than wrong, and is kept here because it
-is why the foam's permeance is a spec line and not an incidental: **glass-faced or unfaced
-polyiso, never foil-faced.** Foil-faced polyiso (the house's own `polyiso-foil`, 0.03 perm)
-would have sandwiched the stud bay between two vapour barriers with wet-prone wood at 25 °F
-in between — the one genuinely unrecoverable mistake available here, and the model would not
-have caught it, because it carries the permeable number. There is no board in this wall any
-more, so there is nothing left to specify wrongly; the sprayed foam's 1.6 perm-in is authored
+**The existing wall does not need re-engineering.**
+`CATLIN_EXT_2X6`'s exterior insulation is
+4" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: Class II**,
+in one bonded seamless application. There is no board in this wall, so there is nothing to
+specify wrongly; the sprayed foam's 1.6 perm-in is authored
 in `library/materials.py` and the condensation gate reads it directly.
+
+**If this wall is ever specified with board insulation again: glass-faced or unfaced
+polyiso, never foil-faced.** Foil-faced polyiso (the house's own `polyiso-foil`, 0.03 perm)
+would sandwich the stud bay between two vapour barriers with wet-prone wood at 25 °F in
+between — the one genuinely unrecoverable mistake available here, and the model would not
+catch it, because it carries the permeable number.
 
 **RH strategy.** Hold 70 % whenever outdoors is ≥ +10 °F; below that, reset the setpoint down
 to ~55 % at −15 °F. With the HP glazing this is a comfort/safety margin on the frames rather
@@ -187,8 +180,8 @@ it with a ceiling of its own), so authoring the liner here needed a room-scoped 
 ceiling pipeline (`resolve/ceilings.py`). `RM-S-PLANT` authors the same three layers as the
 wall liner (`pvc-panel`, `liner-furring`, `humid-membrane`), restated in
 `plan/storeys/second.py` since the editable dialect cannot import `assemblies.py`'s
-`_HUMID_LINER`. `building_science.humid_room_liner`/`_finish` now grade the ceiling exactly
-as they grade the walls, closing the gap this section used to record.
+`_HUMID_LINER`. `building_science.humid_room_liner`/`_finish` grade the ceiling exactly
+as they grade the walls.
 
 ### Floor
 
@@ -255,11 +248,9 @@ Every hole is a hole in the only barrier.
 
 ## Ventilation, pressure and humidity control
 
-**The arrangement was backwards.** `REG-S-HP-PLANT` was a supply-only terminal, so System 1
-*pressurised* a 70 %-RH room, driving moist air into every crack in its envelope — and
 `DU-S-HP-SOUTH` ties the room's air to the whole-house air handler and every other room on
-that branch. `mep.humid_room_pressure` is the rule written for exactly this, and it FAILed the
-house until the extract below existed.
+that branch, so an unbalanced plant room drives moist air into every crack in its envelope.
+`mep.humid_room_pressure` grades exactly this.
 
 What is built now:
 
@@ -268,8 +259,7 @@ What is built now:
    harmless — and plant-room air never leaks into a wall cavity.
 2. **Matched extract**: `REG-S-ERV-PLANT-EXH` (25 cfm), at the far end of the room from the
    supply, **high**, because humid air stratifies and the wettest air in the room is the air
-   overhead. Its radial has moved twice since this note was written and the terminal moved with
-   it the second time — see the 2026-08-29 addendum at the end.
+   overhead. See the addendum at the end for the terminal's routing.
 3. **Motorised isolation damper** on the System 1 terminal (`REG-T-HP-SUP-DAMPERED`), so
    System 1 can neither dry the room nor carry its moisture house-wide.
 4. **RH-driven control** — none of this self-regulates humidity.
@@ -355,13 +345,8 @@ misted or hosed.
 
 ## Addendum, 2026-08-29 — the extract moved, and the terminal with it
 
-`DU-S-PLANT-EXH` became `DU-A-ERV-R-PLANT` on the attic sub-manifold (2026-08-25), and is now
-**`DU-M-ERV-R-PLANT` on the LEVEL-2 manifold** (`EQ-M-ERV-MAN-EXH`, which this fills to 10 of
-10). Same uid throughout.
-
-**The second move was not about air.** The attic route ran the x=1'-0" deck chase for 21'-8"
-along the base of what had become a finished guest bedroom's knee wall — the last duct there,
-and the whole reason that wall was carrying a joinery allowance. The run now goes south through
+`DU-S-PLANT-EXH` is **`DU-M-ERV-R-PLANT` on the LEVEL-2 manifold** (`EQ-M-ERV-MAN-EXH`, which
+this fills to 10 of 10). The run goes south through
 **`FS-S-WEST`'s open-web trusses** at x=2'-10", east along the y=4'-8" bay, and **up inside
 `W-S-C1`** to a high sidewall grille at 8'-6".
 
@@ -377,20 +362,19 @@ vapour-tight boot through the Class I liner. `W-S-C1` is `PLANT_INT_2X6_BRG_HUMI
 would fit and the boot would not, and a boot that cannot be sealed is exactly the penetration
 this whole note exists to prevent.
 
-**Ceiling → high sidewall does not give up the stratification argument**, which was about
+**High sidewall does not give up the stratification argument**, which is about
 *height*, not about which direction the boot arrives from. 8'-6" is six inches under the 9'-0"
-ceiling. Separation from `REG-S-HP-PLANT` improves from 5'-9" to 6'-9".
+ceiling. Separation from `REG-S-HP-PLANT` is 6'-9".
 
-**Length went 47'-5" → 55'-8"**, of which 9'-4" is the rise. That is affordable, and the reason
-is a correction worth carrying: **the machine's rating point is 0.4" w.g., not the 0.2" that
+**Length is 55'-8"**, of which 9'-4" is the rise. **The machine's rating point is 0.4" w.g., not the 0.2" that
 several comments in `plan/mep_erv.py` still quote.** HVI certifies the Broan B210E75RT at 206
 cfm net supply at 0.4" (HVI ID 2004940); 210 cfm at 0.2" is the model-name point off the
 manufacturer's fan curve.
 
-**Two corrections to "Why a dampered branch and not a through-wall unit" above,** from a
-2026-08-29 re-check against primary sources. Both *strengthen* that section's conclusion:
+**Two corrections to "Why a dampered branch and not a through-wall unit" above,** both
+*strengthening* that section's conclusion:
 
-- Its fallback suggestion, the **Panasonic WhisperComfort 60**, should not be used. The
+- The Panasonic WhisperComfort 60 fallback should not be used. The
   FV-04VE1 is discontinued and no longer in the HVI directory; the current FV-06VE1 closes its
   supply damper below 20 °F and runs exhaust-only roughly 75% of the heating season here.
 - The **Lunos e2** is not the escape hatch either. Its own installation manual gives −15 °C to
