@@ -235,17 +235,16 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
     if len(spans) >= 2:
         crown = (spans[0][1] + spans[1][0]) / 2.0
         nodes += crown_glazing_bar(crown, panel_top + CFG.wedge_rise_in, crop_in)
-    # The two roof edges now land on the standing sheets' own line, in a shared H channel
-    # rather than an eave U with 14 1/2" of open elevation under it.
+    # The two roof edges land on the standing sheets' own line, in a shared H channel.
     for u_edge, roof_sign in ((spans[0][0], 1.0), (spans[-1][1], -1.0)):
         nodes += shared_h_channel(u_edge, panel_underside, roof_sign, crop_in)
         nodes += gasketed_fastener(u_edge + roof_sign * 2.0, panel_top, crop_in)
 
-    # The sill U-channel is the assembly's only drainage path now that the eave U is gone,
-    # so the detail draws it wherever the cut crosses one. Read off the resolved trim solid
-    # rather than offset from the sheet: the sill sits at the deck surface, which the sheet
-    # now *passes* on its way down to the floor-beam soffit, so there is no fixed distance
-    # between the two to hard-code.
+    # The sill U-channel is the assembly's only drainage path, so the detail draws it
+    # wherever the cut crosses one. Read off the resolved trim solid rather than offset
+    # from the sheet: the sill sits at the deck surface, which the sheet passes on its way
+    # down to the floor-beam soffit, so there is no fixed distance between the two to
+    # hard-code.
     for solid, u0, u1, _z0, z1 in _cut_solids(model, "glazing_trim", direction, station, crop):
         if "-SILL-" not in solid.tag:
             continue

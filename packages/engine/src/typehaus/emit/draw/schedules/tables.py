@@ -121,11 +121,11 @@ def _add_table(fig, rows: list[tuple], col_labels: tuple[str, ...],
                bbox: tuple[float, float, float, float],
                truncate: tuple[int, ...] = ()) -> None:
     """Contained tables: matplotlib's default rows are font-height-sized and spill past a
-    short axes (the ledger page is 11" tall where the old portrait pages had 14-17").
-    An explicit table bbox compresses rows to fit; a list too long for the box at legible
-    lettering is split into two side-by-side runs, and the font tracks the row height.
-    Column widths follow the content (→ ``_column_weights``); they are computed over the
-    full row list so a split table's two runs stay aligned with each other."""
+    short axes (the ledger page is 11" tall). An explicit table bbox compresses rows to
+    fit; a list too long for the box at legible lettering is split into two side-by-side
+    runs, and the font tracks the row height. Column widths follow the content
+    (→ ``_column_weights``); they are computed over the full row list so a split table's
+    two runs stay aligned with each other."""
     if not rows:
         return
     col_widths = _column_weights(rows, col_labels)

@@ -19,9 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover — annotations only
     from typehaus.checks.registry import Preferences
 
 #: Lettering pitch for the sheet index, inches per row. 8pt monospace on a 0.135" pitch is
-#: the density a real index prints at; the old layout used a *figure fraction* instead, so
-#: the same 0.021 was 0.23" on ledger and 0.50" on 24x36 — an index twice as airy on the
-#: bigger sheet, which is the opposite of what a bigger sheet is for.
+#: the density a real index prints at.
 _INDEX_PITCH_IN = 0.135
 
 #: Narrowest index column, inches — the width the *column count* is decided against, so that
@@ -53,20 +51,12 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
                  preferences: Preferences | None = None) -> None:
     """A-000 — the identity of the set, the code data behind it, and the sheet index.
 
-    Two things were wrong with this page and both were invisible on 11x17.
+    The checklist is evaluated with the actual ``preferences`` (from the set writer): without
+    them ``[envelope].ach50`` is unreadable and the air-leakage item reads UNKNOWN even on a
+    house that passes it, and ``haus print`` gates on that same evaluation being clean.
 
-    **It disagreed with the gate.** The checklist was evaluated with no preferences at all,
-    so ``[envelope].ach50`` was unreadable and the air-leakage item came back UNKNOWN on a
-    house that passes it. ``haus print`` refuses to run unless the gate is clean, which
-    means the one branch this page could actually reach printed the *opposite* verdict from
-    the one that let it be printed. The preferences now arrive from the set writer.
-
-    **It dropped sheets on the floor.** The index was laid out in figure fractions at a
-    fixed 24 rows per column and a fixed 0.33-fraction column step, which is three columns
-    before the fourth lands off the paper. Catlin's set is 98 sheets: 26 of them were drawn
-    past the right edge, on the one page whose entire job is to say what is in the set. The
-    layout is in paper inches now and takes its row count from :func:`content_box`, so the
-    column count follows the paper — and if a set ever outgrows even that, the overflow is
+    The index layout is in paper inches and takes its row count from :func:`content_box`, so
+    the column count follows the paper; if a set ever outgrows even that, the overflow is
     *stated on the sheet* rather than silently clipped.
     """
     from typehaus.checks import evaluate_permit_checklist, run_from_model
@@ -243,8 +233,8 @@ def _gate_statement(profile: JurisdictionProfile, checklist: PermitChecklist) ->
     unsealed = checklist.unsealed
     if unsealed:
         # Draft. The set prints, and says out loud what it is: a requirement this engine
-        # computed, and no licensed professional has signed. "Engineering" used to be one
-        # word in the generic disclaimer below; this replaces the hand-wave with a count.
+        # computed, and no licensed professional has signed — spelled out as a count rather
+        # than folded into the generic disclaimer below.
         return _gate_sentence(
             profile,
             f"PASS — DRAFT, NOT FOR CONSTRUCTION. {len(unsealed)} requirement(s) rest on "
@@ -260,7 +250,6 @@ def _gate_sentence(profile: JurisdictionProfile, verdict: str) -> str:
 
     "engineering" stays in the disclaimer because the *scope* caveat is still true — this
     engine computes four limit-state families, not a building's whole structural design.
-    What the verdict above no longer does is let that one word stand in for a state.
     """
     return (f"Declared {profile.name} checklist: {verdict}. This set encodes a declared "
             "subset only; verify local amendments, engineering, MEP, and energy before "

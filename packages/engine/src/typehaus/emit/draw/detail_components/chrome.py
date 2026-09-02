@@ -32,22 +32,18 @@ def _participating_layers(model, derived):
     out: list[tuple[str, float, str]] = []
     for wall in condition_walls(model, derived.condition):
         for layer in wall.layers:
-            # **Cavity fills included, since 2026-08-31.** They used to be skipped, and the
-            # result was a legend that named the studs and not the batt between them: a
-            # cavity IS drawn in the cut (``section_cavity`` emits it from the assembly
-            # precisely because the IR gives it no solid), so leaving it out broke this
-            # module's own rule that the strip names what the cut is made of. It surfaced on
-            # the flash-and-batt roof, where the two bay fills are the assembly, but the
-            # wall's stud batt had been drawn-and-unnamed the whole time. Nothing here can
-            # over-name: ``_paper_legend`` intersects this list with what the scene drew.
+            # Cavity fills are included: a cavity IS drawn in the cut (``section_cavity``
+            # emits it from the assembly since the IR gives it no solid), so leaving it out
+            # would break this module's rule that the strip names what the cut is made of.
+            # ``_paper_legend`` intersects this list with what the scene drew, so nothing
+            # here can over-name.
             out.append((layer.material_ref, layer.thickness_m / M_PER_IN, layer.function))
     tags = derived.condition.element_tags
     for roof in model.roofs:
         # By **assembly** as well as by element tag. A wall/roof condition is keyed on the
         # two assemblies it joins (``CATLIN_EXT_2X6|CATLIN_ROOF``), never on the roof
-        # element's own tag (``RF-HOUSE``), so this loop matched nothing on the one detail
-        # that is mostly roof: the eave legended its wall and left every roof layer out,
-        # including the underlayment and the vent mat the notes spend a paragraph each on.
+        # element's own tag (``RF-HOUSE``), so matching tag alone misses roof-heavy details
+        # like the eave, dropping layers such as the underlayment and the vent mat.
         if roof.tag not in tags and roof.assembly not in tags:
             continue
         asm = model.plan.library.resolve_assembly(roof.assembly)

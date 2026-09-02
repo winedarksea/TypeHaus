@@ -320,10 +320,8 @@ class OpeningDetailConfig:
     #: between them; a detail that guessed would draw the head flashing 2" low on one of
     #: them and there is no way to see that on a sheet.
     #:
-    #: 3-1/2" is the head/sill COURSE's face on the wall and it did not move on 2026-09-01
-    #: when the girt tier went to one: a course is still a 2x4 laid flat. What moved is the
-    #: BLOCK behind it (1-1/2" → 4-1/2"), which this number is not — the outie detail reads
-    #: the stand-off depth off the resolved stack.
+    #: 3-1/2" is the head/sill COURSE's face on the wall — a 2x4 laid flat — not the BLOCK
+    #: behind it, whose depth the outie detail reads off the resolved stack instead.
     girt_blocking_in: float = 3.5
     #: How far the head flashing laps UP the spray-foam face before it turns out. Shorter
     #: than the innie head's 3" rise: it starts above the head blocking rather than behind a
@@ -438,8 +436,7 @@ class BreezewayGlazingConfig:
     extrusion_draw_in: float = 0.25
     #: Building facts for the shared H channel where the standing sheet's head meets the
     #: roof sheet's edge. ``_resolve_edge_run`` draws every profile as the same box, so the
-    #: only place this joint reads as a *joint* is the 2D detail — and the joint is the whole
-    #: reason the two sheets now meet on one line instead of 3 1/4" and 14 1/2" apart.
+    #: only place this joint reads as a *joint* is the 2D detail.
     #: ``h_slot_in`` is the slot each sheet enters (16mm sheet plus fitting clearance);
     #: ``h_lap_in`` is how far the legs grip it; ``h_web_in`` is the plate between them.
     h_slot_in: float = 0.75

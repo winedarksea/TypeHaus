@@ -47,11 +47,9 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     if is_outboard_high is None or crop is None:
         return []
     # The top of the POUR, which is where the flashings, the gasket and the mudsill all
-    # land. It was read off ``framed.z0_m`` — "top of concrete == bottom of framed wall" —
-    # and that equality died on 2026-08-23: catlin's basement walls top out on the bearing
-    # seat at -13 7/16" while the framed wall above them still starts at the storey datum,
-    # so the whole detail drew 13 7/16" above the concrete it is a detail of. The garage
-    # stem, where the two ARE the same elevation, is unchanged by reading the concrete.
+    # land. Read off ``concrete.z1_m`` rather than ``framed.z0_m``: catlin's basement walls
+    # top out on the bearing seat while the framed wall above starts at the storey datum, so
+    # the two are not the same elevation there, though they are at the garage stem.
     junction_z = concrete.z1_m / M_PER_IN
     intervals = layer_intervals(framed, direction, station)
     out_sign = 1.0 if is_outboard_high else -1.0
@@ -161,8 +159,8 @@ def sill_gasket_in(model, wall) -> float:
 
     Prefers the authored ``FramingSpec.sill_gasket`` on the wall assembly's structure
     layer — the model field that owns the fact — and falls back to the pinned reference
-    when no layer carries one. Both are the **compressed** thickness since 2026-08-24:
-    what the joint measures once the plate is bolted down, not the roll it came off.
+    when no layer carries one. Both are the **compressed** thickness: what the joint
+    measures once the plate is bolted down, not the roll it came off.
     """
     assembly = model.plan.library.resolve_assembly(wall.assembly)
     if assembly is not None:
@@ -278,16 +276,13 @@ def _authored_protection_band(wall: ResolvedWall) -> ResolvedLayer | None:
     Consolidating here is the same move ``wall_base`` already made for the bug screen, whose
     material and height it imports straight from ``resolve/accessories.py``.
 
-    **"The last banded layer" is not the test, and used to be.** A band is a general
-    mechanism — an interior thermal barrier above grade, a brick ledge below it — and only
-    a band that both stands OUTBOARD OF THE INSULATION it protects and runs UP TO THE WALL
-    TOP is the panel this component draws. Catlin's garage ICF stem carries an interior
-    ``gwb-stem`` band (code.R316_4) and, on its two brick-ledged east segments, an outboard
-    ``brick-ledge`` band that runs from the wall base up to one course above grade. The old
-    rule read the gypsum on one and the concrete ledge on the other, drawing a "protection
-    board" over a buried shelf. Neither is a protection panel; both walls fall through to
-    the derived band below, which is grade-to-top on the outboard foam face — the same
-    answer the gypsum coincidentally gave.
+    A band is a general mechanism — an interior thermal barrier above grade, a brick ledge
+    below it — and only a band that both stands OUTBOARD OF THE INSULATION it protects and
+    runs UP TO THE WALL TOP is the panel this component draws. Catlin's garage ICF stem
+    carries an interior ``gwb-stem`` band (code.R316_4) and, on its two brick-ledged east
+    segments, an outboard ``brick-ledge`` band that runs from the wall base up to one course
+    above grade — neither is a protection panel, so both fall through to the derived band
+    below, grade-to-top on the outboard foam face.
     """
     layers = [layer for layer in wall.layers if not getattr(layer, "is_cavity", False)]
     last_foam = max((index for index, layer in enumerate(layers)
@@ -307,18 +302,14 @@ def _authored_protection_band(wall: ResolvedWall) -> ResolvedLayer | None:
 def _foam_is_already_covered(wall: ResolvedWall) -> bool:
     """Whether a full-height layer stands outboard of the wall's outermost insulation.
 
-    A latent trap worth naming, surfaced by houses/catlin on 2026-09-02. That house's
-    sunken-garden curbs used to return True here (a full-height parge coat sat outboard of
-    their XPS) and now return False — their outboard face is bare foam inside a ventilated
-    brick cavity. They draw no protection board anyway, but only because ``site.grade`` is a
-    single house-wide number: the curb tops are 5'-8" below it, so the derived branch's
-    ``height_in`` comes out negative and falls under ``min_exposed_height_in``.
-
-    That gate knows nothing about an excavation. A wall standing in an open court whose floor
-    is nine feet below grade reads as deeply buried, and if this dispatch ever changes — or a
-    curb like that is ever authored near grade — the derived branch will happily draw
-    protection board on a face inside a brick cavity, where nothing hits it and nothing sees
-    it. The fix, when it is needed, is local grade, not a wider tolerance here.
+    A latent trap: ``site.grade`` is a single house-wide number, so a wall standing in an
+    excavated court (catlin's sunken-garden curbs are 5'-8" below grade) reads as deeply
+    buried even though its outboard face is bare foam inside a ventilated brick cavity. They
+    draw no protection board only because the derived branch's ``height_in`` comes out
+    negative and falls under ``min_exposed_height_in`` — not because this function knows
+    about the excavation. If this dispatch ever changes, or a curb like that is authored near
+    grade, the derived branch will happily draw protection board on a face nothing hits or
+    sees. The fix, when needed, is local grade, not a wider tolerance here.
     """
     layers = [ly for ly in wall.layers if not getattr(ly, "is_cavity", False)]
     last_foam = max((index for index, ly in enumerate(layers)

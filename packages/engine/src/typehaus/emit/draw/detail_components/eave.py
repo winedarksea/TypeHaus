@@ -63,9 +63,7 @@ def zero_overhang_eave(model, wall, crop, direction, station,
     # carries the *name* and the lap direction a builder reads the detail for.
     #
     # It hangs off ``head_z``, the head of the cladding it caps — **not** ``junction_z``,
-    # which is the top of the roof *structure*, a whole roof stack below. On catlin that is
-    # 7.9" of difference: the apron was drawn floating inside the wall's exterior foam, six
-    # inches under the panel head it is named for, with the leader pointing at it.
+    # which is the top of the roof *structure*, a whole roof stack below (7.9" on catlin).
     apron = path_from_steps(
         (clad_out - out_sign * cfg.apron_back_in, head_z),
         [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
@@ -204,12 +202,9 @@ def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: 
                      crop_bottom_z: float, slope: float = 1.0) -> list[IRNode]:
     """The screened intake for whatever air gap the roof assembly actually carries.
 
-    This used to be a slot in the *wall* plane, which is where a vented-batten roof takes its
-    intake: the air came up behind the cladding and into a gap sitting straight on the foam.
-    Catlin's roof no longer vents there. Its only gap is a ~1/4" mat rolled *above* the top
-    deck, under the standing seam, so the intake is a screened opening at the eave edge of
-    that band and the wall plane below it is continuous air barrier. Drawing the old wall
-    slot on this assembly told a builder to leave a hole through the air barrier.
+    Catlin's roof vents through a ~1/4" mat rolled *above* the top deck, under the standing
+    seam, not through a slot in the wall plane: the intake is a screened opening at the eave
+    edge of that band, and the wall plane below it stays continuous air barrier.
 
     A roof with no air gap at all is unvented by design and gets no screen, rather than a
     screen over an opening that does not exist.

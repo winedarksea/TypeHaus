@@ -104,11 +104,9 @@ def ceiling_underside_over(model, crop, direction, station, u_lo_in, u_hi_in):
     """The elevation of whatever forms the sauna's ceiling, in metres, or ``None``.
 
     Two structures can be over this room and the drop ceiling hangs the same way under
-    either: a concrete deck's soffit, or a framed floor's joist soffit. Catlin's sauna sat
-    under the 9" cast deck until 2026-08-21, and under FS-M-WEST's I-joists since — asking
-    only about slabs, which is all this did, silently drew no drop ceiling at all the moment
-    the deck over it became wood. The room's own detail note says it in as many words:
-    "primary structure above may be joists or concrete deck; hang drop framing accordingly".
+    either: a concrete deck's soffit, or a framed floor's joist soffit. The room's own
+    detail note says it in as many words: "primary structure above may be joists or
+    concrete deck; hang drop framing accordingly".
 
     Whichever is lowest wins, so a room straddling a boundary reads its own ceiling plane.
     ``None`` only when nothing at all is over the room, and then the drop ceiling draws
