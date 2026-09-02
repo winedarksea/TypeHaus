@@ -1,4 +1,4 @@
-"""``WallPaneling`` bands as drawable geometry (2026-08-25).
+"""``WallPaneling`` bands as drawable geometry.
 
 A band billed and was never drawn: ``resolve/paneling.py`` computed the wall, the run and the
 band height, kept the area and threw the rectangle away, so a wainscot appeared on the order
@@ -157,7 +157,7 @@ def test_the_catlin_bands_are_the_four_authored_ones(bands):
         assert not band.replaces_wall_finish
         # PET felt states no board stock, so it takes the 1/2" default — which is the panel.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
-    # RM-M-BATH2's marble-look shower surround (2026-09-02): the 36" pan's two closed sides,
+    # RM-M-BATH2's marble-look shower surround: the 36" pan's two closed sides,
     # 3'-0" x 7'-0" each on a zero offset. The walls are W-M-BA2E2 and W-M-BDN1 and NOT
     # W-M-BA2E — FX-M-BATH2-SH's `wall_ref` names the riser's wall, three feet west of the
     # pan, which is the trap this assertion exists to hold. W-M-TUBDK-S bounds the room too

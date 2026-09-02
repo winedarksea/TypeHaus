@@ -90,11 +90,11 @@ def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
     """Two living-room runs share one PSU; the leader and its marker should appear once
     per PSU, not once per run, and every leader should actually reach the PSU's position.
 
-    Filtered to the LIVING PSU's own leaders on 2026-08-24. The main sheet carries a SECOND
-    supply since the kitchen got under-cabinet task light: four LR-M-KIT-* runs on
-    ED-M-KITCH-LT-PSU, which is on CKT-LT-BACKUP where the living room's is on CKT-LT-MAIN.
-    Counting every dashed cove leader on the sheet would only pin 6 == 6 and would stop
-    saying anything about one-marker-per-shared-PSU, which is the property under test.
+    Filtered to the LIVING PSU's own leaders: the main sheet carries a SECOND supply, since
+    the kitchen's under-cabinet task light runs four LR-M-KIT-* runs on ED-M-KITCH-LT-PSU
+    (CKT-LT-BACKUP, where the living room's is CKT-LT-MAIN). Counting every dashed cove
+    leader on the sheet would only pin 6 == 6 and would stop saying anything about
+    one-marker-per-shared-PSU, which is the property under test.
     """
     _M_TO_IN = 39.37007874015748
     scene = build_lighting_plan(catlin_model, "main")

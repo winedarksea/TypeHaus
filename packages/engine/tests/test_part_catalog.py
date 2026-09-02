@@ -15,20 +15,18 @@ def test_wall_layers_carry_their_raw_material_ref(catlin_model):
     cannot — they all fold to ``"rigid"`` through ``family_of``, which is right for a viewer
     material and useless for a hatch.
 
-    Asked of the ROOF stack since 2026-08-23: the catlin wall carried 2" of polyiso against
-    2" of EPS until the truss wall replaced both with one sprayed foam, and the roof is where
-    two different rigid materials still meet in one assembly. The wall is checked here for
-    the same property one detail out — a plywood sheathing against a sprayed foam against a
-    treated outrigger, none of which a folded finish key can tell apart either.
+    The roof is where two different rigid materials still meet in one assembly. The wall is
+    checked here for the same property one detail out — a plywood sheathing against a
+    sprayed foam against a treated outrigger, none of which a folded finish key can tell
+    apart either.
     """
     wall_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "wall")
                  if part.catalog is not None and part.catalog.material_ref}
     assert {"closed-cell-spray-foam", "struct-1-plywood", "kdat"} <= wall_refs
     roof_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "roof")
                  if part.catalog is not None and part.catalog.material_ref}
-    # Two different rigid materials in one roof stack, restated 2026-08-31: it was the
-    # 6" of polyiso against the ZIP deck; the outsulation is deleted and the pair that
-    # tests the same property now is the CDX deck against the adhered butyl membrane.
+    # Two different rigid materials in one roof stack: the CDX deck against the adhered
+    # butyl membrane.
     assert {"roof-adhered-butyl-ht", "struct-1-plywood"} <= roof_refs
     assert layer_material_key("polyiso", "insulation") == \
            layer_material_key("eps", "insulation")
@@ -60,10 +58,9 @@ def test_roof_bands_and_members_and_decks_are_catalogued(catlin_model):
 
 
 def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
-    """``section._solid_material``'s walk, moved into the resolver.
-
-    Every solid used to hatch as concrete in section — right for a footing, wrong for a
-    composite deck, an aluminium extrusion or a glass baluster panel.
+    """``section._solid_material``'s walk, moved into the resolver. A solid that hatches as
+    concrete is right for a footing, wrong for a composite deck, an aluminium extrusion or a
+    glass baluster panel.
     """
     by_category: dict[str, set[str]] = {}
     for element in catlin_model.geometry.elements:
@@ -76,7 +73,7 @@ def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
     assert by_category, "no solids carried a catalog ref"
     assert by_category.get("footing") == {"concrete"}   # the blanket rule's one right case
     # A composite/aluminium deck is a "slab" category and is not concrete; a polycarbonate
-    # glazing panel is not concrete either. Both hatched as concrete before this walk moved.
+    # glazing panel is not concrete either.
     assert by_category.get("slab", set()) - {"concrete"}
     assert "concrete" not in by_category.get("glazing", set())
 

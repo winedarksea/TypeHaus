@@ -11,16 +11,16 @@ from typehaus.checks.registry import Tier
 
 @pytest.fixture(scope="module")
 def second_floor(catlin_model):
-    """The east half — I-joist, unchanged since 2026-08-21 — for the generic joist-bay
-    tests below. Its x-span is 18'-36' (5.4864m-10.9728m), so the synthetic duct paths
-    here sit inside that range rather than the pre-split fixture's 1m-5m."""
+    """The east half — I-joist — for the generic joist-bay tests below. Its x-span is
+    18'-36' (5.4864m-10.9728m), so the synthetic duct paths here sit inside that range
+    rather than the pre-split fixture's 1m-5m."""
     return next(f for f in catlin_model.floors if f.tag == "FS-S-EAST")
 
 
 @pytest.fixture(scope="module")
 def west_floor(catlin_model):
-    """The west half — open-web floor truss, since 2026-08-21 — for the open-web
-    legality tests. Its x-span is 0'-18' (0m-5.4864m)."""
+    """The west half — open-web floor truss — for the open-web legality tests. Its
+    x-span is 0'-18' (0m-5.4864m)."""
     return next(f for f in catlin_model.floors if f.tag == "FS-S-WEST")
 
 

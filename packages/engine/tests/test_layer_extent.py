@@ -34,24 +34,18 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(grade_m - inch(6).meters)
         assert z1 == pytest.approx(wall.z1_m)
-        # 2'-2 9/16" of panel over an 8'-0" wall — the point of banding it. (Grade is
-        # -2'-10" since the 2026-08-21 deck overhaul and the band starts 6" under it; the
-        # wall stops at the -13 7/16" bearing seat rather than at 0'-0" since 2026-08-23,
-        # which is where the 1'-1 7/16" the band lost went.)
+        # 2'-2 9/16" of panel over an 8'-0" wall — the point of banding it. Grade is
+        # -2'-10"; the band starts 6" under it. The wall stops at the -13 7/16" bearing
+        # seat, not at 0'-0".
         assert (z1 - z0) * _M_TO_FT == pytest.approx((34.0 + 6.0 - 13.4375) / 12.0, abs=1e-6)
 
 
-# The assembly tag differs per segment and always has, which is the point of listing them
-# rather than one tag.
-#
-# **Six segments since 2026-08-28**, and TWO POPULATIONS since 2026-09-02. W-B-S3 split at
-# the excavation edge (x=28'-0") so each half could author the backfill it actually retains,
-# and W-B-S2/W-B-S3 became the 7 1/4" CURBS under a framed walkout — so the south face is a
-# curb below and a stud wall above on one plane. The stucco retirement then split the run by
-# exposure rather than by construction: W-B-S1 and W-B-S4 are outside the excavation, 6'-4"
-# of fill with 2'-2 9/16" standing out of it, which is an ordinary grade band and takes the
-# same GRADE-banded protection panel the N/E/W walls carry. The four in between are inside
-# the court, where the XPS sits in W-B-BRICK's ventilated cavity and buys no skin at all.
+# The assembly tag differs per segment, which is the point of listing them rather than one
+# tag. W-B-S1 and W-B-S4 are outside the excavation, 6'-4" of fill with 2'-2 9/16" standing
+# out of it, which is an ordinary grade band and takes the same GRADE-banded protection
+# panel the N/E/W walls carry. The four in between (W-B-S2/S3 and their -FR framed
+# siblings, a curb below and a stud wall above) are inside the court, where the XPS sits in
+# W-B-BRICK's ventilated cavity and buys no skin at all.
 _SOUTH_BANDED = {
     "W-B-S1": "CATLIN_BASEMENT_8",
     "W-B-S4": "CATLIN_BASEMENT_8",
@@ -66,15 +60,11 @@ _SOUTH_ASSEMBLIES = {**_SOUTH_BANDED, **_SOUTH_COURT}
 
 
 def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_model):
-    """Inverted 2026-09-02, from ``..._keeps_a_full_height_parge_and_no_band``.
-
-    The old assertion was that the sunken garden's exposure is not a grade band and so the
-    south run has to carry its finish full height. That reading was right about the geometry
-    and wrong about the requirement: the court walls' XPS is not exposed at all — it is
-    inside W-B-BRICK's ventilated cavity, with no UV and no impact on it — so it needs no
-    finish, and the only genuinely exposed south foam is on the two ends, where the exposure
-    IS a grade band. So: no parge anywhere in this house, a GRADE-banded panel on W-B-S1/S4,
-    and nothing outboard of ``xps-b`` on the four court segments.
+    """The court walls' XPS is not exposed at all — it is inside W-B-BRICK's ventilated
+    cavity, with no UV and no impact on it — so it needs no finish. The only genuinely
+    exposed south foam is on the two ends, where the exposure IS a grade band. So: no parge
+    anywhere in this house, a GRADE-banded panel on W-B-S1/S4, and nothing outboard of
+    ``xps-b`` on the four court segments.
     """
     for tag, assembly in _SOUTH_ASSEMBLIES.items():
         wall = catlin_model.wall(tag)
@@ -97,16 +87,15 @@ def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_m
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
     """The sauna's south wall runs past the room's 7'-6" ceiling to the bearing seat, and
     the liner is banded off WALL_TOP so the takeoff does not buy basswood, furring and
-    foil-faced polyiso for the wall above the ceiling. The offset is 6" since 2026-08-23 —
-    the wall stops on the bearing seat rather than at 0'-0". What is pinned is the CEILING,
-    at 7'-6" over the slab.
+    foil-faced polyiso for the wall above the ceiling. The offset is 6" — the wall stops on
+    the bearing seat rather than at 0'-0". What is pinned is the CEILING, at 7'-6" over the
+    slab.
 
-    **The wall is W-B-S2-FR since 2026-08-28**: the south face is a 2x6 stud wall on a
-    7 1/4" curb now. The band did not have to move with it, and that is the interesting
-    part — a ``LayerExtent`` is measured off the wall TOP, and the top did not move. What
-    did move is the wall's base, so the banded run is 7'-6" less the curb, and the curb
-    (W-B-S2, checked below) carries the missing 7 1/4" unbanded. The ceiling is still at
-    7'-6" over the slab, which is the number that matters.
+    The wall is W-B-S2-FR: the south face is a 2x6 stud wall on a 7 1/4" curb. The band did
+    not have to move with it, and that is the interesting part — a ``LayerExtent`` is
+    measured off the wall TOP, and the top did not move. What did move is the wall's base,
+    so the banded run is 7'-6" less the curb, and the curb (W-B-S2, checked below) carries
+    the missing 7 1/4" unbanded.
     """
     wall = catlin_model.wall("W-B-S2-FR")
     curb = catlin_model.wall("W-B-S2")
@@ -157,20 +146,16 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
-    """276 SF: the perimeter's banded run x 2'-2 9/16". It was 360 SF against a 3'-4" band
-    until 2026-08-23, when the pour stopped at the bearing seat and took the band's head down
-    with it — the band runs grade-less-6" to the top of the wall, and the top of the wall
-    moved — and 239 SF until 2026-09-02, when W-B-S1/S4 joined the band with the stucco
-    retirement. Billing the wall's face instead would order the panel for every buried foot
-    of foam it never reaches — which is exactly what the parge coat it replaced was doing,
-    over 1,394 SF house-wide."""
+    """276 SF: the perimeter's banded run x 2'-2 9/16". Billing the wall's face instead
+    would order the panel for every buried foot of foam it never reaches — which is exactly
+    what the parge coat it replaced was doing, over 1,394 SF house-wide."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-protection-panel"]
     assert panel["net_area_sqft"] == pytest.approx(276.3, abs=1.0)
-    # And the parge survives nowhere: retired house-wide 2026-09-02. `Material(tag="stucco")`
-    # is still in library/materials.py — this house simply has no instance of it.
+    # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials.py
+    # — this house simply has no instance of it.
     assert "stucco" not in rows
 
 
@@ -184,18 +169,18 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts
-    # Only the south segments OUTSIDE the excavation get a panel (2026-09-02): W-B-S1 and
-    # W-B-S4 are backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band.
-    # The four inside the court are not — their XPS is in W-B-BRICK's ventilated cavity —
-    # and they carry no skin at all, so there is nothing for the exporter to aggregate.
+    # Only the south segments outside the excavation get a panel: W-B-S1 and W-B-S4 are
+    # backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band. The four
+    # inside the court are not — their XPS is in W-B-BRICK's ventilated cavity — and they
+    # carry no skin at all, so there is nothing for the exporter to aggregate.
     south_banded = {name for name in parts
                     if name.startswith("W-B-S") and name.endswith(_PANEL)}
     assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}"}
     # The sauna's south liner is the other banded stack in the house, and it exports the
     # same way: three parts stopping at the room's 7'-6" ceiling, not at the wall's top.
-    # On W-B-S2-FR since 2026-08-28 — the south face is a framed wall on a curb now, and
-    # the curb's own liner is unbanded (it runs the curb's full 7 1/4"), so only the
-    # framed wall's three layers are partial and only they aggregate.
+    # W-B-S2-FR's south face is a framed wall on a curb; the curb's own liner is unbanded
+    # (it runs the curb's full 7 1/4"), so only the framed wall's three layers are partial
+    # and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
         "W-B-S1:protection-panel", "W-B-S4:protection-panel",
         "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
@@ -254,8 +239,7 @@ def test_the_veneer_bands_tile_the_wall_without_overlap(catlin_model):
     for (_lower, top), (bottom, _upper) in zip(bands, bands[1:], strict=False):
         assert bottom == pytest.approx(top), "a gap or an overlap in the wythe"
     # The registers are two courses; the plinth is 12 courses, 2'-8". Course = 2 2/3"
-    # nominal. The plinth was 9 courses until 2026-08-21, when it took three off the
-    # lapis field above it and carried the lower register up with it.
+    # nominal.
     heights_in = [(z1 - z0) * 39.3700787 for z0, z1 in bands]
     assert heights_in[0] == pytest.approx(32.0, abs=1e-3)
     assert heights_in[1] == pytest.approx(5.333, abs=1e-2)

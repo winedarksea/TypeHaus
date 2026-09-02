@@ -14,12 +14,7 @@ from typehaus.checks.registry import Tier
 def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_model):
     """A fixture whose waste does not drop under its own footprint authors
     ``drain_position``, and that override — not the fixture's footprint center — is what the
-    sleeve must sit under. The kitchen sink's drain leaves at the wall behind the cabinet.
-
-    (This used to read SP-M-WC1, BATH1's wall-hung carrier. That sleeve went with the
-    2026-08-21 deck overhaul: the main floor over BATH1 is I-joists now and a joist bay is
-    bored on the day, not cast before a pour. SP-M-KITCH is in the surviving concrete band
-    and makes the identical point.)"""
+    sleeve must sit under. The kitchen sink's drain leaves at the wall behind the cabinet."""
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-KITCH")
     fixture = catlin_model.plan.by_tag("FX-M-KITCH-SINK")
     assert fixture.drain_position is not None
@@ -29,9 +24,7 @@ def test_expected_drain_point_is_the_authored_outlet_when_there_is_one(catlin_mo
 
 def test_floor_wc_drains_under_its_own_bowl(catlin_model):
     """A floor-mounted WC puts the closet flange under the bowl, so the convention needs no
-    override and the sleeve sits on the fixture's own position. RM-B-BATH's WC is the one
-    left on a slab since the 2026-08-21 deck overhaul took the main floor's cast sleeves
-    away (it used to be SP-M-WC2 in BATH2)."""
+    override and the sleeve sits on the fixture's own position. RM-B-BATH's WC is on a slab."""
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-B-BATH-WC")
     fixture = catlin_model.plan.by_tag("FX-B-BATH-WC")
     assert fixture.drain_position is None
@@ -108,8 +101,7 @@ def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
     expectation is its footprint centre *projected onto that wall's axis*.
 
     Built from the real house's own library rather than read off a sleeve: catlin has no
-    unoverridden lavatory left over concrete since the 2026-08-21 deck overhaul framed the
-    main floor (it was SP-M-LAV1 in BATH1), and RM-B-BATH's lav authors a
+    unoverridden lavatory left over concrete, and RM-B-BATH's lav authors a
     ``drain_position``, which by decision 4 short-circuits the projection this measures."""
     from typehaus.model.spatial import Fixture
     from typehaus.quantities import ft, pt
@@ -343,9 +335,8 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
     slab — so the penetration is authored where the trap actually drops, not projected onto
     a wall centerline the way a wall-drained lavatory is.
 
-    Written against FX-1, the mechanical room's utility sink, which was the only such fixture
-    in the house until 2026-07-30. It is gone now: the stair-foot bathroom and the sauna's
-    shower end took the basement from one slab fixture to four, and each of them owns a stub.
+    Four slab fixtures in the basement — the stair-foot bathroom and the sauna's shower
+    end — and each of them owns a stub.
     """
     slab_fixtures = ("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH", "FX-B-SAUNA-FD")
     for tag in slab_fixtures:
@@ -361,7 +352,7 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
 
 def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
     """``advisory.wet_wall_depth`` reports only problems, so silence is the pass. It fires
-    on a drain fixture with no ``wall_ref`` at all, which is what FX-1 used to be.
+    on a drain fixture with no ``wall_ref`` at all.
 
     Note what this does *not* assert: that 5 1/2" is a code minimum. It is not — the number is
     ``preferences.toml``'s own planning allowance and the check is ADVISORY tier, in no item of
@@ -374,8 +365,7 @@ def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
 
 def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model):
     """RM-M-BATH1 is packed wall-to-wall, so both footprints have to be inside the room's
-    clear face and disjoint from each other. The lavatory used to protrude through W-M-BAE
-    into the hall, which is what D-M-BATH1's swing was colliding with."""
+    clear face and disjoint from each other."""
     from shapely.geometry import Polygon
 
     room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-BATH1").clear_face)
@@ -441,22 +431,9 @@ def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
     assert not matched, [f.message for f in matched]
 
 
-# Every fixture in the house vents, and this test exists to keep it that way.
-#
-# It used to carry an UNVENTED_FIXTURES dict of eight declared exceptions. They surfaced
-# together when the library dedupe retagged catlin's house-local fixture types onto the
-# shared ones: the house-local FX-LAV / FX-SHOWER / FX-TUB / FX-TUBSHOWER omitted
-# Service.VENT from `needs` while the shared FX-LAV-24 / FX-SHOWER-36 / FX-TUB-60 /
-# FX-TUBSHOWER-60 state it — correctly, because a fixture that drains is vented. So the
-# house's vent design (water closets only) had been authored against a claim its own fixture
-# types quietly did not make: those eight were never *passing*, they were never checked.
-#
-# The plumbing pass closed all eight. Seven got real vent runs on 2026-07-29 (the main-bath-2
-# fixtures tie into PR-M-WC-VENT rather than needing W-M-BA2E to continue past its ceiling).
-# FX-1 was last, on 2026-07-30: it could not be vented while it had no drain, and it could
-# not drain until the building main went under the slab — see PR-B-UTIL-VENT, the basement's
-# only vent branch. A ninth fixture, FX-M-BATH1-LAV, joined the check that same day when
-# FX-LAV-COMPACT was given the Service.VENT it had always been missing.
+# Every fixture in the house vents, and this test exists to keep it that way. A fixture
+# that drains is vented (Service.VENT alongside Service.DRAIN in `needs`), so a fixture
+# type that omits it silently passes an unvented design.
 def test_catlin_fixtures_all_reach_a_vent_chase(catlin_model):
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     matched = [f for f in report.findings if f.check_id == "mep.vent_reachability"]
@@ -465,13 +442,9 @@ def test_catlin_fixtures_all_reach_a_vent_chase(catlin_model):
     assert not unvented, unvented
     # The one whose wet wall stops at its own ceiling must say so, not silently pass.
     #
-    # FX-M-BATH1-WC is the last of the three. FX-S-BATH1-WC left on the ensuite de-overlap
-    # pass (it backs onto the exterior W-S-W1, which continues up). FX-M-BATH2-WC left on
-    # 2026-08-29, and by the same mechanism rather than by anyone editing plumbing: the
-    # drop-in bath pass took that bowl off the middle of RM-M-BATH2's floor and backed it
-    # onto W-M-HS1, which W-S-SN1 stacks directly over, so it vents in-wall through two
-    # storeys and no longer needs PR-M-WC-VENT's jog at all. Its tag came off that run's
-    # `serves` with the move.
+    # FX-M-BATH1-WC needs the chase; FX-S-BATH1-WC backs onto exterior W-S-W1 (continues
+    # up) and FX-M-BATH2-WC backs onto W-M-HS1, which W-S-SN1 stacks directly over, so it
+    # vents in-wall through two storeys and needs no chase.
     offset_vented = [f for f in matched if "chase" in f.message]
     chase_tags = {tag for f in offset_vented for tag in f.element_tags}
     assert "FX-M-BATH1-WC" in chase_tags
@@ -485,8 +458,8 @@ def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
     in the resolver would make every offset vent invisible to the check."""
     runs = {run.tag: run for run in catlin_model.pipe_runs if run.system == "vent"}
     assert "FX-M-BATH1-WC" in runs["PR-M-WC-VENT"].serves
-    # FX-M-BATH2-WC was here until 2026-08-29 and is deliberately not any more — it backs
-    # W-M-HS1 now and vents in-wall. See test_catlin_fixtures_all_reach_a_vent_chase.
+    # FX-M-BATH2-WC is deliberately not here — it backs W-M-HS1 and vents in-wall. See
+    # test_catlin_fixtures_all_reach_a_vent_chase.
     assert "FX-M-BATH2-WC" not in runs["PR-M-WC-VENT"].serves
     # The hall-bath branch vents the whole group, not just the water closet: the plumbing
     # pass added the lavatories and the tub-shower whose trap arms tie into the same leg.
@@ -579,9 +552,9 @@ def test_vent_reachability_fails_a_water_closet_with_no_vent_path(catlin_model):
     report = run_from_model(model, [], tier=Tier.ADVISORY)
     failed = {tag for f in report.findings if f.check_id == "mep.vent_reachability"
               and f.result.value == "fail" for tag in f.element_tags}
-    # FX-M-BATH1-WC alone since 2026-08-29: FX-M-BATH2-WC now backs W-M-HS1 and vents
-    # in-wall, so deleting this branch cannot fail it — the wet wall really does carry it,
-    # which is the one case this test is NOT trying to catch.
+    # FX-M-BATH1-WC alone: FX-M-BATH2-WC backs W-M-HS1 and vents in-wall, so deleting this
+    # branch cannot fail it — the wet wall really does carry it, which is the one case this
+    # test is NOT trying to catch.
     assert "FX-M-BATH1-WC" in failed
 
 

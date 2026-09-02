@@ -47,9 +47,7 @@ def test_a_run_type_reports_lineal_feet_instead_of_a_count(catlin_model):
     assert row["count"] == 0 and row["length_ft"] > 0
     assert row["watts"] is None and row["watts_per_ft"] == 3.0
     assert row["volts"] == 24
-    # Only this type's runs. The sum used to be over *every* light run, which was
-    # accidentally right while ED-T-LT-STRIP24 was the only STRIP type in the house and
-    # wrong the moment ED-T-LT-NICHE-SNLT joined it — a schedule row is per type.
+    # Only this type's runs — a schedule row is per type.
     total = sum(run.length_m for run in catlin_model.light_runs
                 if run.type_ref == "ED-T-LT-STRIP24") * _M_TO_FT
     assert row["length_ft"] == pytest.approx(round(total, 1))
@@ -73,9 +71,8 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
         assert by_tag[run.tag]["length_ft"] == pytest.approx(round(run.length_m * _M_TO_FT, 1))
     # The total is round(sum of exact); the by_type rows are each already rounded to 0.1,
     # so summing THEM can drift by up to 0.05 per row plus the total's own half-step. That
-    # tolerance is not slack — it is the arithmetic. It read as an exact match while there
-    # were two tape types and stopped on 2026-08-24, when ED-T-LT-STRIP24-TASK made a third:
-    # 3.3 + 94.9 + 8.9 = 107.1 against an exact 107.1667 that rounds to 107.2.
+    # tolerance is not slack — it is the arithmetic: e.g. 3.3 + 94.9 + 8.9 = 107.1 against
+    # an exact 107.1667 that rounds to 107.2.
     by_type = takeoff["by_type"]
     assert takeoff["total_length_ft"] == pytest.approx(
         sum(row["length_ft"] for row in by_type), abs=0.05 * (len(by_type) + 1))
@@ -152,8 +149,7 @@ def test_multiway_and_control_kinds_survive_into_the_schedule(catlin_model):
     # The plant-room tubes are on a timer, and the theatre sconces on a dimmer.
     assert rows["ED-S-PLANT-TUBE1"]["controls"] == ["timer"]
     assert rows["ED-B-PLAY-N-SCONCE1"]["controls"] == ["dimmer"]
-    # The west loft's sconce (RM-A-DEN's until that room was deleted 2026-08-27, tag
-    # unchanged) is switched at the fixture and names nothing.
+    # The west loft's sconce is switched at the fixture and names nothing.
     assert rows["ED-A-STUDIO-SCONCE"]["integral_switch"] and not rows["ED-A-STUDIO-SCONCE"]["switches"]
     # A 24V run reports its supply where a fixture reports a circuit.
     assert rows["LR-S-HALL-GAP"]["circuit"] is None

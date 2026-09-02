@@ -57,11 +57,11 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
     """33 of 39 windows. The plant room, the sauna and the garage are deliberately out."""
     assert {stool.assembly for stool in stools} == {"CATLIN_EXT_2X6"}
-    # ** 33 SINCE 2026-08-29, NOT 39. ** The attic lost six windows with the knee walls:
-    # the four eave units (WIN-A-W-S/W-N, WIN-A-E-S/E-N, hosted on walls that are 1 1/2"
-    # rafter plates now) and the south gable's corner pair (WIN-A-S1/S4, at x 3'-4"/32'-8"
-    # where the 6:12 rake leaves 21 1/2" of wall). 39 windows remain in the house, 33 of them
-    # in CATLIN_EXT_2X6 and so stooled.
+    # The attic's six eave/gable windows are out of scope: the four eave units
+    # (WIN-A-W-S/W-N, WIN-A-E-S/E-N, hosted on walls that are 1 1/2" rafter plates) and the
+    # south gable's corner pair (WIN-A-S1/S4, at x 3'-4"/32'-8" where the 6:12 rake leaves
+    # 21 1/2" of wall). 39 windows remain in the house, 33 of them in CATLIN_EXT_2X6 and so
+    # stooled.
     assert len(stools) == 33
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
     assert len(windows) == 39, "the six out-of-scope windows still exist; they get no oak"
@@ -130,12 +130,7 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """33 stools, four sizes — which is what makes them worth milling from few setups.
-
-    A fourth width arrived on 2026-08-29 with WT-1436 replacing the south gable's WT-1448
-    flankers... except it did not: WT-1436 is the same 14" RO in a third height, so the
-    STOOL is width-identical. What changed is only the count.
-    """
+    """33 stools, three sizes — which is what makes them worth milling from few setups."""
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in stools}
     assert len(sizes) == 3
     counts = _by_assembly(stools)
@@ -160,13 +155,9 @@ def test_the_attic_built_in_derives_its_depth_from_the_wall_pocket(catlin_model_
 def test_the_attic_bays_are_stepped_bays_with_their_own_counts(catlin_model_ro):
     """A uniform spacing does not divide into a raked case; per-bay counts are the point.
 
-    ** FIVE BAYS -> FOUR ON 2026-08-29 -> THREE ON 2026-08-30; 32 SHELVES -> 12. ** The bay
-    tops came from `5'-0" + (36' - x)/3` off a knee wall; at 6:12 off a rafter plate they
-    are `1 1/2" + (36' - x)/2`. Bay 5 (x 33'-4"..35'-5 3/8") went first at 4 1/8" of usable
-    height. Bay 4 (x 30'-8"..33'-4") went on the owner's call: 1'-0" of clear is two shelves
-    you cannot see into at the end of a run you stoop to reach. What the test is defending is
-    unchanged and is the reason it exists: the bays STEP, and the counts are per-bay because
-    one pitch does not divide into a rake.
+    The bay tops come from `5'-0" + (36' - x)/3` off a knee wall; at 6:12 off a rafter
+    plate they are `1 1/2" + (36' - x)/2`. The bays STEP, and the counts are per-bay
+    because one pitch does not divide into a rake.
     """
     bank = next(b for b in catlin_model_ro.shelf_banks if b.tag == "SB-A-STUDY")
     assert len(bank.shelves) == 3
@@ -190,13 +181,10 @@ def test_a_carcass_hosted_bank_derives_its_depth_from_the_furniture_type(catlin_
 
 
 def test_every_shelf_bank_resolves_a_host_and_a_depth(catlin_model_ro):
-    """Counted against the PLAN rather than a literal, deliberately (2026-08-29).
-
-    This asserted ``== 7`` and the number was standing in for the real invariant, which is
-    that no authored bank is silently DROPPED — an unresolvable host or an underivable depth
-    makes a bank vanish from the model with a finding nobody reads. Comparing to the
-    authored count says exactly that and needs no edit the next time the house grows a
-    bookcase, which it did three times in one day."""
+    """Counted against the PLAN rather than a literal, deliberately: comparing to the
+    authored count means no authored bank is silently DROPPED — an unresolvable host or an
+    underivable depth makes a bank vanish from the model with a finding nobody reads — and
+    it needs no edit the next time the house grows a bookcase."""
     from typehaus.model.millwork import ShelfBank
 
     authored = [el for storey in catlin_model_ro.plan.storeys

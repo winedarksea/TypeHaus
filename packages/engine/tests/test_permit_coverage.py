@@ -97,42 +97,19 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 #
 # Lower this number when you flip an item. Raising it needs a reason in the commit message.
 #
-# 21 -> 23 on 2026-08-02 for ESS (R327) and PV (NEC 705.12 / 690.12); 23 -> 24 on
-# 2026-08-22 for the thermal barrier (R316.4); 24 -> 25 on 2026-08-25 for the ERV
-# terminations (M1602.2). Three of those four rises shared one reason, recorded at length
-# at the time: the rule is about equipment a house may simply not have, the check no-op'd
-# when the equipment was absent, and an item with no matched findings resolves to UNKNOWN —
-# so gating them would have failed the permit for every house without a battery on the wall.
-#
-# 25 -> 21 on 2026-08-30. That reason was real and is now gone, and it is gone structurally
-# rather than by grinding: `Result.NOT_APPLICABLE` lets a check say "this house places no
-# balanced ventilator" as a *verdict* instead of a silence, `_item_from_findings` resolves
-# an all-N/A line to N/A, and `PermitChecklist.ok` treats N/A as nothing outstanding. The
-# ESS, PV, ERV and structural-glass-guard items now gate, and both reference houses pass:
-# catlin evaluates all four for real, starter answers N/A to all four.
-#
-# The thermal barrier (R316.4) stays staged, and its reason is untouched by any of this:
-# it answers UNKNOWN for a PVC liner and a wood structural panel because the catalog has no
-# field to classify them. That is a missing datum, not a missing barrier — a real gap, and
-# exactly the thing N/A must never be used to paper over. Flipping it still needs the
-# wood-structural-panel field first.
+# The thermal barrier (R316.4) is the one item still staged: it answers UNKNOWN for a PVC
+# liner and a wood structural panel because the catalog has no field to classify them. That
+# is a missing datum, not a missing barrier — a real gap, and exactly the thing N/A must
+# never be used to paper over. Flipping it needs the wood-structural-panel field first.
 MAX_NON_BLOCKING_ITEMS = {"mn-2024": 21}
 
-# The engineered lines (2026-08-30) are counted separately, and the split is not
-# bookkeeping — the two lanes have different exit conditions. A staging item leaves its
-# lane when *this engine* learns to answer the rule, which is work in this repo. An
-# engineered item leaves its lane when a licensed professional signs a drawing, which is
-# work no amount of code can do. Pooling them would let either one hide behind the other's
-# excuse, and would have made this commit — which shrank the staging lane from 25 to 21 —
-# look like it grew it back to 25.
+# The engineered lines are counted separately, and the split is not bookkeeping — the two
+# lanes have different exit conditions. A staging item leaves its lane when *this engine*
+# learns to answer the rule, which is work in this repo. An engineered item leaves its lane
+# when a licensed professional signs a drawing, which is work no amount of code can do.
+# Pooling them would let either one hide behind the other's excuse.
 #
 # Both pins are ratchets. Lower one when an item flips; raising either needs a reason.
-#
-# 4 -> 6 on 2026-08-30, and the reason is a net honesty gain rather than a slip: "Uplift
-# connection capacity" and "Deck equipment anchorage capacity" are what 61 coverage-only
-# UNKNOWNs collapsed INTO. Those rules now pass under names that say what they grade, and
-# the capacity question they used to carry as a trailing disclaimer is two named items a
-# seal has to cover. Two rows a reviewer must act on beats 61 they scroll past.
 MAX_UNSEALED_ITEMS = {"mn-2024": 6}
 
 
@@ -216,10 +193,10 @@ def test_the_default_profile_states_a_climate_table() -> None:
 
 # --- engineered coverage ---------------------------------------------------------------
 #
-# The static coverage test above is scoped to Tier.CODE, which is why five engineered
-# requirements — a 10' cantilever retaining wall, two round columns on belled piers, an
-# I-joist rafter, a trussed garage roof — sat on no permit line at all until 2026-08-30. A
-# reviewer reading the checklist could not see that they were carrying the submittal.
+# The static coverage test above is scoped to Tier.CODE, so an engineered requirement —
+# a 10' cantilever retaining wall, a round column on a belled pier, an I-joist rafter, a
+# trussed garage roof — can carry the submittal on no permit line at all, invisible to a
+# reviewer reading the checklist.
 #
 # This test closes that hole *dynamically*, because it has to be: whether a requirement is
 # engineered is a property of a particular house's geometry (10 feet of unbalanced fill

@@ -41,10 +41,10 @@ def _centroid(polygon):
 
 
 # The catlin case this file was written for — the porch railing's three W-SG-RAIL-* walls,
-# whose white-brick wythe had to land outboard on each — was retired 2026-08-18 with the
-# masonry guard itself. The house-wide mismatch sweep below still covers every clad wall it
-# has, and the L-corner fixtures further down reproduce the winding mistake that flipped
-# W-SG-RAIL-E's brick onto the porch, synthetically and in both directions.
+# whose white-brick wythe had to land outboard on each — was retired with the masonry guard
+# itself. The house-wide mismatch sweep below still covers every clad wall it has, and the
+# L-corner fixtures further down reproduce the winding mistake that flipped W-SG-RAIL-E's
+# brick onto the porch, synthetically and in both directions.
 
 
 def test_catlin_has_no_cladding_side_mismatch() -> None:
@@ -77,7 +77,7 @@ def test_gltf_colors_white_brick_whitewashed() -> None:
 
 
 def test_glazed_green_brick_material_ships_its_appearance() -> None:
-    """The basement's south veneer (2026-08-03) — same pattern as the white brick above.
+    """The basement's south veneer — same pattern as the white brick above.
 
     A third brick had to be distinguishable from the other two or the sunken garden's most
     visible wall would render as the masonry family's red, which is the porch's brick, not
@@ -119,7 +119,7 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
     model, _ = resolve(load_plan(CATLIN).plan)
     wall = model.wall("W-B-BRICK")
     assert wall is not None, "W-B-BRICK missing from the resolved model"
-    # Five brick regions since the Ishtar scheme (2026-08-20), but ONE wythe: they share a
+    # Five brick regions but ONE wythe: they share a
     # `Layer.slot`, so `depth_layers()` returns the air gap and the first region only, and
     # every region sits on that region's strip. Direction is what this test is about, so it
     # checks all of them — a slot that resolved its regions to different strips would build
@@ -149,7 +149,7 @@ _CLAD = Assembly(tag="CLAD", layers=(
 def _corner_plan(project, east_reversed: bool) -> PlanModel:
     """An L of two clad walls. ``east_reversed`` authors the second leg end-to-start, the
     exact mistake that once flipped the porch parapet's brick onto the porch (W-SG-RAIL-E,
-    retired 2026-08-18 — this synthetic pair is what keeps the lesson)."""
+    now retired — this synthetic pair is what keeps the lesson)."""
     library = Library(
         materials=(Material(tag="gwb", name="GWB", r_per_inch=0.9),
                    Material(tag="cmu", name="CMU", r_per_inch=0.11),

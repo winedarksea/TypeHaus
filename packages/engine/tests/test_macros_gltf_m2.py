@@ -400,11 +400,7 @@ def test_thin_rect_edges_survive_collinear_ring_padding():
 
 
 def test_roof_sticks_export_to_framing_and_skin_stays_with_the_shell(catlin_model):
-    """Every roof reaches the glb as two nodes: the shell + its skin, and its framing.
-
-    Rafters, trusses and gable studs used to ride the roof node, so turning the roof off was
-    the only way to see them and the framing toggle never reached them.
-    """
+    """Every roof reaches the glb as two nodes: the shell + its skin, and its framing."""
     from typehaus.emit.gltf import emit_gltf_dict
 
     gltf, _blob = emit_gltf_dict(catlin_model)
@@ -423,17 +419,16 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
     """End-to-end: an arched wall's layer reaches the .glb at its authored thickness, not the
     half-thickness the raw-ring edge pick produced.
 
-    W-B-BRICK carries this now: the glazed-brick veneer over the exposed south basement wall,
-    whose two reveals (AO-B-BRICK-WIN/DOOR) are segmental arches. It took over from
-    W-SG-ARCH when the sunken garden's arched cross-wall was retired (2026-08-18). More than
-    one layer, so the assertion is against the *thick* layer (3 5/8" of brick) rather than
-    the wall — which is the sharper test anyway: a half-thickness pick on the brick would
-    land at 1 13/16", indistinguishable from nothing in particular, while the 1" air gap
-    beside it proves the per-layer depths are not being merged.
+    W-B-BRICK is the glazed-brick veneer over the exposed south basement wall, whose two
+    reveals (AO-B-BRICK-WIN/DOOR) are segmental arches. More than one layer, so the assertion
+    is against the *thick* layer (3 5/8" of brick) rather than the wall — which is the sharper
+    test anyway: a half-thickness pick on the brick would land at 1 13/16", indistinguishable
+    from nothing in particular, while the 1" air gap beside it proves the per-layer depths are
+    not being merged.
 
-    Since the Ishtar scheme (2026-08-20) the brick is five banded regions of one `Layer.slot`
-    rather than one layer, which makes the max-depth assertion do double duty: five regions
-    sharing a slot must still export 3 5/8" of depth between them, not 18 1/8"."""
+    The brick is five banded regions of one `Layer.slot` rather than one layer, which makes
+    the max-depth assertion do double duty: five regions sharing a slot must still export
+    3 5/8" of depth between them, not 18 1/8"."""
     from typehaus.emit.gltf import emit_gltf_dict
 
     wall = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
@@ -480,11 +475,9 @@ def test_arch_soffit_ships_smooth_cylinder_normals():
 
 
 def test_segmental_arch_crown_lands_on_the_authored_head():
-    """``Arch.rise`` shapes the curve, it does not merely move the springline.
-
-    Until 2026-08-03 the soffit was hard-wired to a half-circle of ``width / 2``, so a 2"
-    rise on a 14" opening still drew a 7" half-round and the head ended up 5" above where it
-    was authored — visible as a semicircular reveal in the basement veneer, and as a bogus
+    """``Arch.rise`` shapes the curve, it does not merely move the springline. A shallow
+    rise must not draw as a half-round centered on the width — that would land the head
+    well above where it was authored, visible as a semicircular reveal and as a bogus
     "moved" row in the IFC self-diff because the void outgrew its opening.
     """
     from typehaus.resolve.geometry_prims import (
@@ -623,7 +616,7 @@ def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
         "standing-seam-snaplock": _Authored("metal", hatch_tone),
         "standing-seam-nailstrip-26": _Authored("metal", hatch_tone),
         # The three that cannot be guessed: no "seam" in the tag, so only the declaration
-        # finds them. `board-batten-24` is the 2026-08-31 north/south wall panel — it DOES
+        # finds them. `board-batten-24` is the north/south wall panel — it DOES
         # declare skin_family="standing-seam" for the roof edge's sake, and this path never
         # reads that field, so its own `_FINISH_BASE` row is the only thing between it and
         # the "metal" family's blue-grey.

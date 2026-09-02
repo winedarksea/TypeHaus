@@ -97,10 +97,10 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     assert all("material" in member for member in members)
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     # The house edge is a continuous standing-seam wrap (flush edge, one skin wall→roof):
-    # the drip-edge band gave way to a corner trim piece. Since 2026-08-01 that piece is
-    # ordered in RF-HOUSE's own `edge_trim_material` rather than the roofing's stock — the
-    # charcoal accent coil that makes a zero-overhang rake legible. What matters here is
-    # unchanged: it names *a* material, so neither renderer falls back to category grey.
+    # the drip-edge band gave way to a corner trim piece, ordered in RF-HOUSE's own
+    # `edge_trim_material` rather than the roofing's stock — the charcoal accent coil that
+    # makes a zero-overhang rake legible. What matters here: it names *a* material, so
+    # neither renderer falls back to category grey.
     trims = [m for m in house["members"] if "-corner-trim-" in m["key"]]
     assert trims and all(m["material"] == "metal-dark-exterior" for m in trims)
     # The ridge cap is part of the same outline, so it follows the same coil — and the
@@ -108,20 +108,20 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     house_cap = [m for m in house["members"] if m["category"] == "ridge_cap"]
     assert house_cap and all(m["material"] == "metal-dark-exterior" for m in house_cap)
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
-    # The garage's gable closure carries the GARAGE WALL's own metal, not the house's. Since
-    # 2026-08-20 the catlin skin is four material tags in one `skin_family` (mechanically
-    # seamed house roof, snap-lock house walls, 24 ga nail-strip garage roof, and — since
-    # 2026-08-31, replacing 26 ga nail-strip — 7/8" corrugated garage walls), so what this
-    # asserts is the closure naming a real skin material rather than a specific one — name
-    # the tag and this test breaks every time a gauge or profile changes.
+    # The garage's gable closure carries the GARAGE WALL's own metal, not the house's. The
+    # catlin skin is four material tags in one `skin_family` (mechanically seamed house
+    # roof, snap-lock house walls, 24 ga nail-strip garage roof, 7/8" corrugated garage
+    # walls), so what this asserts is the closure naming a real skin material rather than a
+    # specific one — name the tag and this test breaks every time a gauge or profile
+    # changes.
     gable = [m for m in garage["members"]
              if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
     assert gable and all(m["material"].startswith(("standing-seam", "corrugated"))
                           for m in gable)
-    # **The garage's cap is Copper Penny since 2026-08-27, not the roofing's own stock.**
-    # RF-GARAGE authors `edge_trim_material` now, so its vented ridge cap takes the same
-    # PVDF metallic coil as its six fascia pieces — the one place on the site that does not
-    # follow the house's `#1c1f24`. The two are named through DIFFERENT fields (this one is
+    # The garage's cap is Copper Penny, not the roofing's own stock. RF-GARAGE authors
+    # `edge_trim_material`, so its vented ridge cap takes the same PVDF metallic coil as
+    # its six fascia pieces — the one place on the site that does not follow the house's
+    # `#1c1f24`. The two are named through DIFFERENT fields (this one is
     # the Roof's, the fascia's is the FasciaBoard's) with nothing keeping them in step, so
     # the tag is pinned exactly here rather than by prefix: a cap that quietly reverted to
     # the roofing stock while the fascia under it stayed copper is precisely the drift this
@@ -133,11 +133,9 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
 
 
 def test_construction_returns_serialize_with_their_overlay_metadata(catlin_payload):
-    """ConstructionRule returns reach the browser as their own records, not as solids.
-
-    The solid mirror used to be the only path to model.json, and it carried none of the
-    lap / sealant / flashing / returning-layer data the Inspector wants. Dropping it (the
-    prisms were mis-placed gray fins in 3D) means these records have to be serialized.
+    """ConstructionRule returns reach the browser as their own records, not as solids — the
+    Inspector needs the lap / sealant / flashing / returning-layer data that a solid mirror
+    cannot carry.
     """
     returns = catlin_payload["construction_returns"]
     assert returns
@@ -154,8 +152,8 @@ def test_construction_returns_serialize_with_their_overlay_metadata(catlin_paylo
 
 
 def test_second_floor_joists_are_i_joists(catlin_payload):
-    """Since 2026-08-21 only the east half kept the I-joist; the west half is a
-    floor_truss, which shares the same "flange" fields as an I-joist deliberately."""
+    """The east half is an I-joist; the west half is a floor_truss, which shares the same
+    "flange" fields as an I-joist deliberately."""
     east = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-S-EAST")
     east_joists = [m for m in east["members"] if m["category"] == "joist"]
     assert east_joists
@@ -182,11 +180,10 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     above the plate (11.875" TJI less the 5.5" 2x6 seat drop at 6:12) and its setbacks step
     monotonically outward through the stack, whatever the stack happens to be.
 
-    The layer NAMES are read off the assembly rather than typed in — they were
-    ``zip``/``polyiso-1``/``top-deck``/``roofing`` until 2026-08-31 and are
-    ``sheathing``/``membrane``/``roofing`` now, and the property being asserted (each layer
-    sets back no further than the one under it, so no layer oversails the one it lands on)
-    is the same one either way and is what a hard-coded name list was hiding."""
+    The layer NAMES are read off the assembly rather than typed in — the property being
+    asserted (each layer sets back no further than the one under it, so no layer oversails
+    the one it lands on) holds regardless of what those names are, which is what a
+    hard-coded name list was hiding."""
     from typehaus.quantities import inch
 
     for roof in catlin_payload["roofs"]:
@@ -231,10 +228,8 @@ def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
 
 
 def test_arched_openings_serialize_their_rise(catlin_payload):
-    """The brick veneer's two segmental reveals. They took this over from the sunken garden's
-    two semicircular AO-ARCH-G* when its arched cross-wall was retired (2026-08-18) — the
-    payload field is the same one, and a segmental rise exercises it better than a
-    semicircular one, whose rise is also its half-span."""
+    """The brick veneer's two segmental reveals — a segmental rise exercises the payload
+    field better than a semicircular one, whose rise is also its half-span."""
     arches = {opening["tag"]: opening for opening in catlin_payload["openings"]
               if opening["tag"].startswith("AO-B-BRICK-")}
     assert set(arches) == {"AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"}
@@ -253,9 +248,8 @@ def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload
 
 def test_model_json_serializes_finished_height_above_average_grade(catlin_payload):
     summary = catlin_payload["building_height_summary"]
-    # -2'-6": grade sits that far below the main floor since the 2026-08-18 lift, and the
-    # zoning height every roof is measured for grew by exactly that much with it.
-    # -2'-10" since the 2026-08-21 deck overhaul (it was -2'-6").
+    # -2'-10": grade sits that far below the main floor, and the zoning height every roof
+    # is measured for grew by exactly that much with it.
     assert summary["average_ground_grade_m"] == pytest.approx(-0.8636)
     assert {row["roof_tag"] for row in summary["roofs"]} == {"RF-HOUSE", "RF-GARAGE"}
     assert all(row["peak_above_grade_m"] > row["midpoint_above_grade_m"] > 0
@@ -369,12 +363,9 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
 def test_every_payload_key_has_a_ui_type(catlin_payload):
     """The wire contract's cheap enforcement (→ Phase 5): every top-level key
     ``model_to_dict`` emits must have a matching field on ``ui/src/model/types.ts``'s
-    ``Model`` interface. This is the whole mechanism keeping the two in lockstep — it used
-    to be a comment ("keep this file in lockstep with model_to_dict") that had already
-    silently dropped three whole blocks (alarms, floor_heat, variants) by the time anyone
-    checked. Line-scraping the field names out of the TS source is crude, but it needs no
-    TS toolchain and it catches exactly the failure mode that happened: a key present in
-    one language and absent in the other.
+    ``Model`` interface. Line-scraping the field names out of the TS source is crude, but it
+    needs no TS toolchain and it catches exactly the failure mode that matters: a key
+    present in one language and absent in the other.
     """
     types_ts = (
         Path(__file__).resolve().parents[3] / "ui" / "src" / "model" / "types.ts"
