@@ -14,8 +14,7 @@ import { Icon } from "../icons/Icon";
 // this wall meets that roof" is answerable without opening the plan source.
 //
 // It is also the way *into* the drawings. The engine derives one junction detail per bound
-// condition key, but every entry point used to open the viewer on whichever detail sorted
-// first — so this reader hands the viewer the key the user actually clicked, from the
+// condition key; this reader hands the viewer the key the user actually clicked, from the
 // transition that details it or from the condition itself.
 
 function ContinuityRows({ transition }: { transition: Transition }) {

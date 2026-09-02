@@ -142,8 +142,8 @@ export function runArchGeometryTests() {
     "Tessellation follows the arch radius rather than a flat constant");
 
   // A 16" concrete layer as one rectangle padded to six points — the shape a junction-solved
-  // arched wall arrives in. The literals are self-contained; the wall they were taken from
-  // (the sunken garden's arched cross-wall) was retired 2026-08-18.
+  // arched wall arrives in. The literals are self-contained, taken from the sunken garden's
+  // arched cross-wall.
   const archWall = wall([[0, 0], [6, 0]]);
   const paddedThinRect: [number, number][] = [[0.5, -0.2], [0.5, 0], [0.5, 0.2], [5.5, 0.2], [5.5, 0], [5.5, -0.2]];
   const arch = opening(3, 0.1, 2.4, 1.2, 2.4);
@@ -176,9 +176,9 @@ export function runArchGeometryTests() {
     "The soffit ring was actually found and smoothed");
 
   // A banded layer (`Layer.extent` / `Layer.slot`) must be swept over its OWN z-range, not the
-  // wall's. Until 2026-08-20 this path ignored the band, so the sunken garden's five-region
-  // Ishtar wythe — arched door, arched window, therefore swept — built five coincident
-  // full-height solids in five colours and rendered as z-fighting noise instead of bands.
+  // wall's — else the sunken garden's five-region Ishtar wythe (arched door, arched window,
+  // therefore swept) builds five coincident full-height solids in five colours and z-fights
+  // instead of banding.
   const yRange = (geo: THREE.BufferGeometry | null) => {
     assert(geo !== null, "The banded region still takes the swept-arch path");
     const bounds = new THREE.Box3().setFromBufferAttribute(
@@ -382,8 +382,6 @@ export function runSolidMaterialTests() {
   }
 
   // An unmapped category falls back to the theme's neutral rather than inventing a colour.
-  // (Construction returns used to arrive here as "return:*" solids; the engine emits none
-  // now — they are records on Model.construction_returns, drawn by nothing.)
   assert(solidColor(solid("no-such-category"), undefined, PALETTE) === PALETTE.member.concrete,
     "An unmapped category falls back to the theme's neutral, matching the emitter's _FALLBACK");
 
@@ -416,8 +414,8 @@ export function runSolidMaterialTests() {
   assert(solidCategoryLabel(undefined) === "Solid", "A category-less solid still has a heading");
   assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
   assert(solidTrade(solid("fascia")) === "roof", "Roof edge trim rides the roof toggle");
-  // The stormwater run is one toggle end to end: the gutter used to sit under Roof and the
-  // pit it drains to on the concrete fallback, which meant no single checkbox showed drainage.
+  // The stormwater run is one toggle end to end — gutter and pit both route through the same
+  // trade, so one checkbox shows the whole drainage path.
   assert(solidTrade(solid("gutter")) === "drainage", "A gutter is the head of the storm run");
   assert(solidTrade(solid("downspout")) === "drainage", "A leader follows its gutter");
   assert(solidTrade(solid("sump")) === "drainage", "The pit is the tail of the same run");
@@ -434,13 +432,12 @@ export function runSolidMaterialTests() {
 
   // Guards ride the stairs toggle, and the plan viewer's RailingOutlines gate
   // (components/Canvas2D.tsx) is on the same trade — the two have to agree or a railing shows
-  // in one viewer and not the other. They rode the concrete fallback for a long time.
+  // in one viewer and not the other.
   for (const category of ["railing", "railing_infill", "railing_glass"]) {
     assert(solidTrade(solid(category)) === "stairs",
       `${category} follows the guard it belongs to, not the concrete fallback`);
   }
-  // Connection hardware, by what kind of connection it is. 49 PV rail clamps and 8 gutter
-  // straps used to sit under Concrete for want of anywhere better.
+  // Connection hardware, by what kind of connection it is.
   assert(solidTrade(solid("connector")) === "framing",
     "A hanger, tie, post base or hold-down is the carpenter's hardware");
   assert(solidTrade(solid("snow_guard")) === "roof", "A snow rail sits on the roof skin");
@@ -448,11 +445,10 @@ export function runSolidMaterialTests() {
     "So does a seam clamp, whatever it happens to be holding");
 
   // --- translucency ----------------------------------------------------------------------
-  // `solidOpacity` used to walk the assembly ONLY, while `solidColor` right above it read the
-  // direct material ref as well. A guard's glass lite gets its translucency from a material
-  // ref (its posts and its lite share one Railing.assembly and are not the same material), so
-  // it shipped translucent in the .glb and rendered OPAQUE — and single-sided — in the live
-  // viewer. Colour and opacity have to walk the same ladder.
+  // Colour and opacity have to walk the same ladder: a guard's glass lite gets its translucency
+  // from a material ref (its posts and lite share one Railing.assembly and are not the same
+  // material), so `solidOpacity` must check the material ref too, or glass lites ship
+  // translucent in the .glb but render opaque and single-sided in the live viewer.
   const lite = solid("railing_glass", "RAILING_DARK_METAL", "S-GLASS", "guard-glass");
   assert(Math.abs(solidOpacity(lite, GLASS_CATALOG) - 0x7a / 255) < 1e-6,
     `A lite whose translucency comes from a material ref is see-through, got ${solidOpacity(lite, GLASS_CATALOG)}`);

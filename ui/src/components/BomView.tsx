@@ -16,12 +16,10 @@ import { ReaderFilter, ReaderSection, ReaderShell } from "./ReaderShell";
 
 // "BOM of all parts" (→ TODO Editor): what is in this house, and how much of it.
 //
-// The arithmetic is the engine's and only the engine's. This view used to call
-// `buildBillOfMaterials(model)` — a second implementation in the browser that billed some
-// families the engine did not, missed others, and had nothing testing that the two agreed
-// (TODO item 2). It now fetches `takeoff/bom.py::bill_of_materials` through the client, which
-// works on both surfaces: `/bom` from `haus serve`, and the same function in-process under the
-// offline pyodide engine. Everything here is arrangement — grouping, columns, formatting — and
+// The arithmetic is the engine's and only the engine's (TODO item 2): it fetches
+// `takeoff/bom.py::bill_of_materials` through the client, which works on both surfaces: `/bom`
+// from `haus serve`, and the same function in-process under the offline pyodide engine.
+// Everything here is arrangement — grouping, columns, formatting — and
 // the arrangement itself lives in model/engineBom.ts + model/engineCosts.ts so it is testable
 // without a DOM.
 //
@@ -73,8 +71,7 @@ function BomTableView({ table, actions }: { table: CostedTable; actions?: CostAc
                     // derived from the model), `entry.product` is what was actually BOUGHT.
                     // The specified product shows through as a muted placeholder until
                     // someone records something different, so the field only ever asks for
-                    // what differed — before this it asked for the whole answer over again,
-                    // against nothing, which is why it stayed empty.
+                    // what differed.
                     const specified = rc.estimate?.product ?? null;
                     const bought = rc.entry?.product ?? null;
                     return (

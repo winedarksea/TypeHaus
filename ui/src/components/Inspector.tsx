@@ -52,10 +52,9 @@ export function Inspector() {
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: PointerEvent) => {
-      // Measure the shell, not the window. The old form assumed this panel was anchored to
-      // the *window's* right edge with a fixed 12px gutter, which stopped being true once the
-      // gutter varies per breakpoint. Also cap against the canvas so a drag can never squeeze
-      // the drawing away entirely.
+      // Measure the shell, not the window: the gutter varies per breakpoint, so a fixed offset
+      // from the window edge would drift. Also cap against the canvas so a drag can never
+      // squeeze the drawing away entirely.
       const shell = asideRef.current?.offsetParent?.getBoundingClientRect();
       const shellRight = shell?.right ?? window.innerWidth;
       const shellWidth = shell?.width ?? window.innerWidth;
@@ -80,13 +79,11 @@ export function Inspector() {
 
   const visible = model !== null && selection.uid !== null;
 
-  // Publish the live width so chrome that must clear this panel can position off it. The
-  // context bar used to hardcode 320px — this panel's *minimum* — so widening the inspector
-  // slid it underneath. Anything anchored to the right edge reads --inspector-w instead.
+  // Publish the live width so chrome that must clear this panel can position off it — anything
+  // anchored to the right edge reads --inspector-w rather than hardcoding the panel's minimum.
   //
   // Reverts to the token default while the panel is hidden: the reserved gutter is only
-  // honest about a panel that is actually on screen, and that also matches what the
-  // hardcoded 320px did before.
+  // honest about a panel that is actually on screen.
   useEffect(() => {
     const root = document.documentElement.style;
     if (!visible) return;

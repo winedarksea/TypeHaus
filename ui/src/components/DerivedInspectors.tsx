@@ -16,10 +16,9 @@ import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
 import { productForMaterial } from "../model/products";
 
-// NB: construction returns (ConstructionRule laps) used to arrive here as solids with a
-// "return:" category prefix. They no longer produce solids at all — the resolver records them
-// on `Model.construction_returns`, and nothing in 3D draws them, so there is no selection to
-// inspect. Nothing left to strip from a solid's category.
+// NB: construction returns (ConstructionRule laps) produce no solids — the resolver records
+// them on `Model.construction_returns`, and nothing in 3D draws them, so there is no selection
+// to inspect.
 
 function ringSpan(points: readonly Vec2[]): [number, number] | null {
   if (points.length < 2) return null;
@@ -53,10 +52,8 @@ export function SolidInspector({ solid }: { solid: Solid }) {
       <span className="k">Assembly</span><span>{solid.assembly ?? "—"}</span>
       {/* The trim-run family (gutters, fascia, soffits, ridge caps, edge cladding, railing
           parts) names a material DIRECTLY instead of an assembly — the resolver sets it and
-          the viewer has been colouring from it since 2026-08-01, but this panel printed
-          only "Assembly —" and left the reader with nothing. Raw tag, matching
-          MemberInspector: it is the key the palette, the trade table and the take-off are
-          all written against. */}
+          the viewer colours from it. Raw tag, matching MemberInspector: it is the key the
+          palette, the trade table and the take-off are all written against. */}
       <span className="k">Material</span><span>{solid.material ?? "—"}</span>
       <ProductRows product={productForMaterial(model, solid.material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />

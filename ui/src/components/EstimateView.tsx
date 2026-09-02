@@ -353,9 +353,8 @@ export function EstimateView() {
                   }}
                   // Index-suffixed: (section, key) is NOT unique here. One prices.toml key
                   // can price several BOM rows (`standing-seam-nailstrip` bills the garage
-                  // roof and, until 2026-08-20, `standing-seam` billed wall and roof out of
-                  // one [envelope_layers] line), and the colliding React
-                  // keys rendered one of them twice.
+                  // roof; `standing-seam` can bill wall and roof out of one [envelope_layers]
+                  // line), and the colliding React keys rendered one of them twice.
                   rowKey={(row, index) => `${row.section}:${row.key}:${index}`}
                   sort={sort}
                 />}
