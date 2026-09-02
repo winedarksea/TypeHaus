@@ -61,9 +61,8 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     it would hide a real stair from the reader — ``test_bom_sweep`` asserts every stair tag
     appears here for exactly that reason. What the flag is for is the scopes that only exist
     where a finish floor meets the stair: nosings, thresholds, transition strips. Those a
-    price row can now select with ``[conditioned=True]`` instead of the rate being hand-
-    corrected by a ratio, which is what this house was doing (x 131.4/143.4, for the four
-    KDAT risers of ST-G-SERVICE in the garage).
+    price row can select with ``[conditioned=True]`` rather than a rate hand-corrected by
+    a ratio.
     """
     rows: list[dict[str, object]] = []
     for stair in sorted(model.stairs, key=lambda item: item.tag):

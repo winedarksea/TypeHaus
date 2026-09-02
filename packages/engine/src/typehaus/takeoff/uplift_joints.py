@@ -1,9 +1,9 @@
 """The authored-connector guard, and every uplift rule that grades a **joint**.
 
-Split out of ``takeoff/uplift.py`` on 2026-08-28, when that module went past the 500-line
-limit. The seam is not arbitrary: what is left there derives hardware along a *run* — a tie
-at every member that seats on a bearing line, a plate every four feet along a bottom plate —
-while everything here answers a question about one point where two named members meet. A
+The seam from ``takeoff/uplift.py`` is not arbitrary: what is left there derives hardware
+along a *run* — a tie at every member that seats on a bearing line, a plate every four feet
+along a bottom plate — while everything here answers a question about one point where two
+named members meet. A
 post and what it stands on; a beam end and the post under it; and, first, whether the plan
 already authored a ``Connector`` at that point, which is the guard every rule in both files
 asks before it bills anything.
@@ -175,9 +175,7 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """The cast-in bolt under every post base — authored or derived — that lands on concrete.
 
     An ABU is a stirrup with a hole in it; Simpson's published uplift and lateral values are
-    taken *through* a 5/8 in anchor the base does not include. Every base in this house was
-    billed without one until 2026-08-28, which is a schedule that reads as complete and is
-    short the part the capacity is measured through.
+    taken *through* a 5/8 in anchor the base does not include.
 
     This rule counts posts rather than bases because it is the JOINT that decides whether a
     bolt is needed. ``StructuralHardware.requires_role`` — the mechanism that already puts an

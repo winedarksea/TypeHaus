@@ -3,8 +3,8 @@
 Every other MEP takeoff groups — pipe by system and diameter, duct by section, conduit by
 trade size — because that is what an estimator orders against. Grouping is exactly wrong
 for the question this module answers, which is *"is this run longer than it needs to be?"*.
-That question is per run, and until now nothing in the engine asked it: ``model/mep.py``
-declares auto-routing a non-goal, and a non-goal still leaves the authored route ungraded.
+That question is per run: ``model/mep.py`` declares auto-routing a non-goal, and a
+non-goal still leaves the authored route ungraded.
 
 The row's four lengths are the whole idea:
 

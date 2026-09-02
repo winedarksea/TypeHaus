@@ -1,16 +1,12 @@
 """The *specified* product behind an estimate line — a label, never a number.
 
-``costs.toml`` has always had a free-text ``product`` field: the estimator types what was
-actually bought into ``BomView`` and nothing in the model can check it, because until
-``Product`` (model/product.py) the model had no idea what was *specified*. That is the
-disconnected-document problem in its smallest form — two records of the same fact, one of
-them unreadable.
+``costs.toml``'s free-text ``product`` field is what the estimator types after the fact;
+nothing in the model could check it before ``Product`` (model/product.py) existed.
 
-This module closes exactly that half of it, and no more. It derives, per estimate
-``(section, key)``, the brand + model the plan specifies, so the BOM row can show it and the
-estimator only has to write down what *differed*. It is presentation: it never enters a
-price, a quantity or any arithmetic, which is what keeps decision #28 intact — a ``Product``
-carries no dollars, and this carries no dollars either.
+This module derives, per estimate ``(section, key)``, the brand + model the plan specifies,
+so the BOM row can show it and the estimator only has to write down what *differed*. It is
+presentation: it never enters a price, a quantity or any arithmetic, which is what keeps
+decision #28 intact — a ``Product`` carries no dollars, and this carries no dollars either.
 
 Dollars stay where they were: ``prices.toml`` for the rate, ``costs.toml`` for what was
 paid, both house-owned and both outside the undo journal (paying a bill is not a plan edit).

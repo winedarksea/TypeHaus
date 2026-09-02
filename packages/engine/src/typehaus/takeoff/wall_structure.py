@@ -4,10 +4,8 @@ A wall's STRUCTURE layer becomes one of two things. If it frames, its studs and 
 ``FramedMember`` records and ``framing_takeoff`` bills them stick by stick. If it does not —
 a concrete pour, an ICF core, a CMU or SRW course, a brick wythe — it produces no members,
 and it is not a ``ResolvedSolid`` either (walls never enter ``model.solids``), so
-``structural_solids_takeoff`` cannot see it. Until this section existed those walls reached
-no BOM row at all: on the catlin house that was 43 of 154 walls, ~3,800 sf and ~131 cubic
-yards of concrete and masonry — more concrete than the whole priced order the estimate knew
-about. ``W-B-BRICK``, the glazed-brick wythe at the sunken garden, is what surfaced it.
+``structural_solids_takeoff`` cannot see it. ``W-B-BRICK``, the glazed-brick wythe at the
+sunken garden, is what surfaced the gap.
 
 This is a *second* section rather than an extension of ``envelope_layers`` for the same
 reason ``envelope_layers`` is separate from ``sheet_goods``: concrete is bought by the yard
@@ -65,10 +63,9 @@ def wall_structure_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     **Every** monolithic STRUCTURE layer bills, not just the first one. An assembly may
     split one row of its stack into regions at a height (``Layer.slot``), and those regions
     are different materials at different prices — catlin's brick wythe is a brown plinth
-    under a lapis field with two gold registers in it. Asking
-    :func:`~typehaus.resolve.framing.solver.structure_layer` for "the" structure layer, as
-    this did until 2026-08-20, billed all 122 SF of that wall as the plinth's brown brick
-    and never mentioned the glaze. A banded region takes its own band area from
+    under a lapis field with two gold registers in it, and asking
+    :func:`~typehaus.resolve.framing.solver.structure_layer` for "the" structure layer would
+    miss every region but the first. A banded region takes its own band area from
     :func:`~typehaus.takeoff.envelope.wall_layer_net_area_m2` — the same helper
     ``envelope_layers`` uses, so a covering and the thing it covers cannot disagree about
     how tall a band is. An unbanded layer still gets the whole wall face, so no existing

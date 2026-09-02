@@ -1,10 +1,10 @@
 """Plumbing specialties: the in-line devices, and the kits that come with them.
 
 ``pipe_run_takeoff`` bills pipe by the foot and ``sleeve_takeoff`` bills sleeves by the
-piece; neither can see a valve, because until :class:`~typehaus.model.mep.PipeAccessory`
-existed there was nothing to see. A supply system's whole protection budget — the main
-shutoff, the backflow preventers, the hose-bib vacuum breakers, the washer arrestors, the
-capped RO tee — was prose in a notes file, so it appeared on no order and in no schedule.
+piece; neither can see a valve — that is :class:`~typehaus.model.mep.PipeAccessory`. A
+supply system's whole protection budget — the main shutoff, the backflow preventers, the
+hose-bib vacuum breakers, the washer arrestors, the capped RO tee — lives here, on order
+and in schedule.
 
 Two sections, because they are two orders placed with two different suppliers:
 

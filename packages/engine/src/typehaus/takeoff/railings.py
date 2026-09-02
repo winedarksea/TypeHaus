@@ -30,10 +30,8 @@ from typehaus.resolve.sweep import sweep_length_m
 _M_TO_FT = 3.280839895013123
 _M2_TO_SQFT = 10.763910416709722
 
-#: The key an untyped railing groups under. It is also what lands in the emitted ``type``,
-#: which used to be the raw ``None`` — so the key the reader saw and the key the estimator
-#: matched on were different strings, and 30 LF of handrail could only be priced by a
-#: ``"None"`` entry in prices.toml working around it.
+#: The key an untyped railing groups under, and what lands in the emitted ``type`` — so the
+#: reader's key and the estimator's price-match key are the same string.
 UNTYPED_RAILING = "(untyped railing)"
 #: Masonry guard rows. Named rather than left blank so the estimate shows the line and its
 #: zero rate, instead of the guard quietly not appearing in the railing section at all.
@@ -80,10 +78,7 @@ def _brackets(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
     """This railing's wall brackets — what carries it where posts would be the wrong item.
 
     A wall-mounted handrail is bought as a rail and a box of brackets, and it has no posts
-    at all. Until ``Railing.mount`` was read (2026-08-22) the resolver drew posts under one
-    anyway, so this section counted them and nobody noticed the order was for the wrong
-    part; when the posts went away, the *station* walk this file reads went with them and
-    took the sloped rail length with it.
+    at all.
     """
     return _by_part(model, tag, "BRACKET")
 
@@ -102,13 +97,9 @@ def _stations(model: ResolvedModel, tag: str) -> list[ResolvedSolid]:
 def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
     """The top rail's *true* run, following the walking surface rather than its projection.
 
-    The rail carries its own 3D polyline now (:class:`~typehaus.resolve.model.SolidSweep`),
-    so this is the developed length of that polyline — the cap stock a rake actually
-    consumes, about 19% over the plan run on a code stair — read straight off the drawn
-    geometry. It used to be recovered by summing post-to-post hypotenuses, which was the best
-    a stack of level bands could offer: the stations track the rake and the walk puts one at
-    every path vertex, but between two stations the sum is a chord across whatever the
-    surface does, and a wall-mounted rail had to borrow its brackets to have stations at all.
+    The rail carries its own 3D polyline (:class:`~typehaus.resolve.model.SolidSweep`), so
+    this is the developed length of that polyline — the cap stock a rake actually consumes,
+    about 19% over the plan run on a code stair — read straight off the drawn geometry.
 
     ``rail_count > 1`` puts more than one bar on the same path; the *top* rail is the one
     this row prices, so the longest is taken rather than the sum. Falls back to the station

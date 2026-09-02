@@ -32,12 +32,9 @@ def _product_description(kind: str, type_ref: str,
 
     This field is the row's human description everywhere downstream —
     ``cli/prices._DESCRIPTION_FIELDS`` reads ``product`` — so it lands in the estimate, the
-    CSV and the task export. It used to be ``getattr(product, "name", None) or "UNKNOWN"``,
-    and neither :class:`~typehaus.model.types.WindowType` nor
-    :class:`~typehaus.model.types.DoorType` HAS a ``name`` field — only ``FurnitureType``
-    does. So the fallback fired on every row, and every opening line in the estimate read
-    UNKNOWN whether or not the type resolved. The bug was invisible because it looked
-    exactly like the thing it was supposed to report.
+    CSV and the task export. Neither :class:`~typehaus.model.types.WindowType` nor
+    :class:`~typehaus.model.types.DoorType` has a ``name`` field (only ``FurnitureType``
+    does), so this cannot fall back to ``getattr(product, "name", None)``.
 
     Nothing here invents a product name: the type tag IS the name a house orders by, and
     the operation and size are read off the resolved type. An opening with no type still

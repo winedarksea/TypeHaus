@@ -136,19 +136,13 @@ def _elbow_key(angle_deg: float, diameter_m: float) -> str:
 def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Elbows and wyes **counted off the geometry**, by system, fitting and size.
 
-    Both halves used to be guesses, and said so in their row labels:
-
-    * an elbow was any interior vertex whose *plan* turn cleared a flat 20°, with a
-      hard-coded ``return 90.0`` standing in wherever a leg had no plan direction at all.
-      A run knows its own 3D polyline now, so the turn is measured — a vertical drop meeting
-      a horizontal branch is the 90° it actually is, a rolled offset is the 45° it actually
-      is — and snapped to the stock angle it is bought as
-      (→ :func:`~typehaus.resolve.sweep.sweep_turns`).
-    * a tee was any pair of runs on one system sharing a vertex within 20 mm, found by
-      comparing every run against every other. ``drain_tie_ins`` already does real geometric
-      parent inference for the drainage graph — it is what ``mep.pipe_sizing`` rolls fixture
-      load up through — and it yields *both* diameters, so the row is sized correctly rather
-      than at the larger of the two.
+    An elbow is a turn measured on the run's own 3D polyline — a vertical drop meeting a
+    horizontal branch is the 90° it actually is, a rolled offset the 45° it actually is —
+    and snapped to the stock angle it is bought as
+    (→ :func:`~typehaus.resolve.sweep.sweep_turns`). A wye comes from ``drain_tie_ins``'s
+    real geometric parent inference for the drainage graph — the same rollup
+    ``mep.pipe_sizing`` uses for fixture load — which yields *both* diameters, so the row is
+    sized correctly rather than at the larger of the two.
 
     Supply tees are not counted. There is no equivalent parent inference for a pressurised
     system (a water branch has no invert to arrive above, so nothing distinguishes a tee

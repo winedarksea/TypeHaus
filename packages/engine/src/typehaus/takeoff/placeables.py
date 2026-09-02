@@ -45,8 +45,7 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 def floor_heat_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per resolved radiant zone: the wire/element length the order is placed for.
 
-    This lived as a patch inside the `haus takeoff` CLI command; it belongs in the BOM
-    payload so every consumer (CLI, server, pricing) reads the same rows.
+    Kept in the BOM payload so every consumer (CLI, server, pricing) reads the same rows.
     """
     return [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
              "wire_length_ft": round(zone.wire_length_m * _M_TO_FT, 1)}

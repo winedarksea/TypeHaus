@@ -226,17 +226,10 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
     # The ASSEMBLY hand-off is coarse and should be: a tie naming a roof or a floor is the
     # plan saying "I own this deck's uplift", and there is nothing to disambiguate.
     covered = tags_covered_by(model, kinds)
-    # The SUPPORT hand-off is not, and reading it coarsely was a bug (2026-08-29). A support
-    # was skipped whenever ANY authored hurricane tie mentioned it — including a tie at the
-    # far end of that member, holding it down to what IT bears on. The sunken garden's porch
-    # is the case: CN-SG-TIE-COL/-FCOL tie the four porch beams to the two cast columns
-    # UNDER them, which said nothing about the 32 joists bearing on top, yet stood the
-    # derived rule down at all four. That was latent while the front pair was flush-framed
-    # (hangers.py billed those ends instead); when the front beams dropped on 2026-08-29 and
-    # every joist end started bearing, the porch reported a break in the load path with the
-    # hardware for a different joint as the reason. ``authored_joints`` is the pairwise
-    # answer and exists for exactly this distinction — a support stands the rule down only
-    # when one connector names the support and the thing bearing on it TOGETHER.
+    # The SUPPORT hand-off must not be this coarse: a connector naming a support stands the
+    # rule down only for the specific member bearing on it, never for every member that
+    # support carries. ``authored_joints`` is the pairwise answer — a support stands the rule
+    # down only when one connector names the support and the thing bearing on it TOGETHER.
     joints = authored_joints(model, kinds)
     elements_by_tag = {element.tag: element
                        for storey in model.plan.storeys
@@ -315,23 +308,16 @@ def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> 
     """Ties along a beam whose bearing runs its whole length.
 
     ``bearing_connections`` above ties member ENDS, which is the right rule for every rafter,
-    truss heel and joist in the house and the wrong one for a beam that never leaves its wall.
-    Catlin's ridge is the case, and until 2026-08-28 it produced nothing at all: ``uplift.py``
-    walks ``Roof.bearing_refs`` (the three knee walls) and ``FloorSystem.joists.bearing_refs``,
-    and ``checks/structural/uplift_path.py`` walks ``Beam.bearing_refs`` but skips a ref that
-    resolves to a wall rather than a post. So the single member carrying the whole roof down
-    the centre of the house had no connector on the report and none in the order — the path
-    was continuous in compression and stopped dead in tension.
+    truss heel and joist in the house and the wrong one for a beam that never leaves its wall
+    — catlin's ridge is the case, and nothing else in the load path covers it.
 
     An H2.5A is what the rest of this schedule buys and what a 3-1/2" beam on a 5-1/2" plate
     takes; the pitch is the house's own 4'. Both are commodity choices recorded in
-    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design. The model
-    has carried a design wind speed since 2026-08-30 (``Site.design_wind_speed_mph``), and it
-    changes nothing here: this function derives a *schedule* — how many ties, at what pitch —
-    and no part of it reads a wind field, computes a tributary uplift, or compares one against
-    the tie's allowable. It bills the layout a builder would install. Turning V_ult into a
-    per-tie demand is ``checks/structural/`` work, and today only the balcony's braced bays
-    have it (``lateral_racking.py``).
+    ``houses/catlin/notes/ridge_beam_detail.md``, not an engineered uplift design: this
+    function derives a *schedule* — how many ties, at what pitch — and no part of it reads a
+    wind field, computes a tributary uplift, or compares one against the tie's allowable.
+    Turning ``Site.design_wind_speed_mph`` into a per-tie demand is ``checks/structural/``
+    work (``lateral_racking.py`` today, for the balcony's braced bays only).
     """
     pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
     groups: dict = {}

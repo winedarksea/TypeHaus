@@ -111,10 +111,7 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of duct, grouped by system, section, routing and material.
 
     ``length_m`` is the resolver's own **developed** length — plan run plus every rise —
-    the same rule ``pipe_run_takeoff`` above already followed. This function used to
-    re-derive a plan-only sum from the path, which billed the ERV's four-storey riser as
-    the zero length a vertical leg projects to; the ducts had no elevations to sum, so
-    there was nothing else it could have done.
+    the same rule ``pipe_run_takeoff`` above already followed.
 
     Section is part of the key because a 12x6 and a 14x8 trunk are different sheet-metal
     orders — and a 6" round is a third order again, which is why ``diameter_in`` is its own
@@ -125,12 +122,9 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     ``terminal`` answers "does this run end at a room" — true when some ``Register`` names
     the run in ``duct_ref``. It is the honest axis for every scope that is incurred *per
-    termination*: the boot, the collar adapter, the strap and the seal at the grille. Before
-    it existed the only way to select those runs was a diameter filter, which selected them
-    by coincidence: it happened that this house's radials are 3" and its trunks 6", so
-    ``diameter_in=3.0`` picked out the nine terminating runs and a 4" radial would have
-    silently dropped out of the bill. Diameter is a purchase axis; termination is a labour
-    one, and they are only accidentally the same list.
+    termination*: the boot, the collar adapter, the strap and the seal at the grille.
+    Diameter is a purchase axis; termination is a labour one, and they are only
+    accidentally the same list.
     """
     registered = {register.duct_ref for register in model.plan.all_elements()
                   if register.element_kind == "Register" and register.duct_ref is not None}
