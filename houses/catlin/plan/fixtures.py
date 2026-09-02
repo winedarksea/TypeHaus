@@ -2,15 +2,14 @@
 # Permit-schedule plumbing fixture/appliance *instances* for Catlin (M3 WP3.4/WP3.10).
 # `# haus: editable` so UI drags (moving a toilet, the washer, …) round-trip to source.
 # Their FixtureType/ApplianceType catalog lives in the non-editable `library/placeables/`
-# at the repo root (it uses `frozenset(...)`, which the editable dialect forbids). The
-# house-local `fixture_types.py` this line used to name went away in the `3d3973a` dedupe.
+# at the repo root (it uses `frozenset(...)`, which the editable dialect forbids).
 
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
 from typehaus.model import m
 
-# --- basement (2026-07-30 plumbing pass) -----------------------------------------------
+# --- basement ----------------------------------------------------------------------------
 # Both RM-B-SAUNA fixtures drain under the slab to PR-B-MAIN-DRAIN, not a wall stack
-# (as the retired FX-1 utility sink did; see plan/mep.py SLAB_STUBS).
+# (see plan/mep.py SLAB_STUBS).
 #
 # 36"x36" curbed pan in the NE corner (only corner with both sides finished wall, at
 # y=13'-6 3/16" and x=17'-2 1/2"); curbed rather than curbless because the floor drain at
@@ -31,24 +30,22 @@ BASEMENT_FIXTURES = (
             room="RM-B-SAUNA", position=pt(ft(13, 6), ft(12, 0.1875)),
             wall_ref="W-B-CS"),
     # RM-B-BATH (stair-foot bath, 3'-0" deep): each fixture backs an end wall so depth runs
-    # along the 7'-0" length. WC is floor-mounted (owner's call, 2026-07-30), not wall-hung,
-    # since the west end is 12" cast concrete and a wall-hung carrier would cost 6 1/2" of
-    # furring. `wall_ref` on both is W-B-BA-N (north partition, not each one's backing
-    # wall): it's the room's only stud cavity, carries their shared vent, and is a 5 1/2"
-    # wet-wall (not 2x4) because a 3" WC branch needs the depth. Trap arms: 12" (WC), 17"
-    # (lav), both well inside Table 1002.2's 6'-0"/3'-6" limits.
+    # along the 7'-0" length. WC is floor-mounted, not wall-hung, since the west end is 12"
+    # cast concrete and a wall-hung carrier would cost 6 1/2" of furring. `wall_ref` on both
+    # is W-B-BA-N (north partition, not each one's backing wall): it's the room's only stud
+    # cavity, carries their shared vent, and is a 5 1/2" wet-wall (not 2x4) because a 3" WC
+    # branch needs the depth. Trap arms: 12" (WC), 17" (lav), both well inside Table
+    # 1002.2's 6'-0"/3'-6" limits.
     Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOILET-STD",
             room="RM-B-BATH", position=pt(ft(11, 8), ft(20)), rotation=deg(90),
             wall_ref="W-B-BA-N"),
-    # Same uid as the retired FX-1: this is that fixture relocated, not a new one. The
-    # mechanical room's utility sink was the basement's only lavatory and the owner's decision
-    # of 2026-07-30 moved it here, so the IFC GlobalId follows the fixture rather than being
-    # retired with the tag. `drain_position` puts the trap 6" off the east wall face, under the
-    # basin's back where the tailpiece actually drops, over SP-B-BATH-LAV.
-    # ** A 36" VANITY SINCE 2026-08-30, AND THE DEPTH IS SET BY THE DOOR. ** This was an
-    # FX-LAV-24 -- a bare 24" bowl on the east wall with nothing under it. The east wall is
-    # 39.61" of clear run (y 218.38"..257.99" between W-B-CW2's and W-B-BA-N's finish
-    # faces), which takes a 36" cabinet with 1.8" at each end.
+    # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
+    # fixture rather than being retired with the tag. `drain_position` puts the trap 6" off
+    # the east wall face, under the basin's back where the tailpiece actually drops, over
+    # SP-B-BATH-LAV.
+    # ** A 36" VANITY, AND THE DEPTH IS SET BY THE DOOR. ** The east wall is 39.61" of clear
+    # run (y 218.38"..257.99" between W-B-CW2's and W-B-BA-N's finish faces), which takes a
+    # 36" cabinet with 1.8" at each end.
     #
     # ** 18" DEEP, NOT 21", BECAUSE D-B-BATH'S SWING ARC REACHES THIS WALL. ** Tested
     # against the real ``swing_clearance`` polygon rather than its bounding box: a 21"-deep
@@ -61,8 +58,8 @@ BASEMENT_FIXTURES = (
     # y=238.19", so y 220.19"..256.19". The 21" front zone then reaches x=171", clear of
     # FX-B-BATH-WC's 24" front envelope, which ends at x=178".
     #
-    # `drain_position` is unchanged and still correct: (17'-0", 20'-0") falls inside the new
-    # carcass, 6" off the east wall face under the basin's back, over SP-B-BATH-LAV.
+    # `drain_position` (17'-0", 20'-0") falls inside the carcass, 6" off the east wall face
+    # under the basin's back, over SP-B-BATH-LAV.
     Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-36-SHALLOW",
             room="RM-B-BATH", position=pt(inch(201), inch(238.19)), rotation=deg(-90),
             wall_ref="W-B-BA-N", drain_position=pt(ft(17), ft(20))),
@@ -70,14 +67,9 @@ BASEMENT_FIXTURES = (
 
 # ** RM-M-BATH1 IS 61.98" x 44.24" BETWEEN FINISH FACES, AND THAT IS WHY THE WALL-HUNG
 # BOWL STAYS. ** (x 6.635"..68.615" off W-M-W2/W-M-BAE, y 271.385"..315.625" off
-# W-M-HS1/W-M-STOS.) It was 42.24" deep until 2026-08-29, when W-M-STOS moved 2" north —
-# see below. The room's resolved `clear_face` reads 70.73" x 46.73" and is NOT the
+# W-M-HS1/W-M-STOS.) The room's resolved `clear_face` reads 70.73" x 46.73" and is NOT the
 # number to design against: `resolve/rooms.py` polygonizes wall AXES and insets only the
-# lining, so it hands back a room ~2.4"-3.4" oversize on every side. The older comment here
-# ("3'-2" x 4'-3-1/4"") matched neither and is gone.
-#
-# ** FX-TOILET-STD DOES NOT FIT THIS ROOM IN ANY ORIENTATION. ** Asked and answered
-# 2026-08-29; the arithmetic is here so it is not asked a third time.
+# lining, so it hands back a room ~2.4"-3.4" oversize on every side.
 #
 # The governing dimension is 24" in front, and it is NOT the IRC's 21": Minn. R. 1309.0010
 # subp. 3.D deletes IRC chapters 25-33 outright (only P2904 survives) and 1309.0307 replaces
@@ -87,28 +79,26 @@ BASEMENT_FIXTURES = (
 # "the clear space in front of any water closet or bidet shall be not less than twenty-four
 # (24) inches." (Anoka's and Farmington's residential bathroom handouts both print 15"/24"
 # and cite 402.5. The 21" people quote is IRC's, and the 21" dwelling-unit exception attached
-# to it is a Washington amendment.) `_water_closet_required_clearance` encodes 24" as of
-# 2026-08-29 and this house now sets `active_code_profile="MN/IRC"`, so the envelope really
-# is graded rather than silently dropped — see plan/manifest.py.
+# to it is a Washington amendment.) `_water_closet_required_clearance` encodes 24", and this
+# house sets `active_code_profile="MN/IRC"`, so the envelope really is graded rather than
+# silently dropped — see plan/manifest.py.
 #
-# ** THE ROOM MISSED THAT BY 1.06" AND THE WALL MOVED, NOT THE TOILET. ** At the old
-# 42.24" depth the 19.3" bowl left 22.94". No fixture change could close it: the shortest
-# wall-hung bowl obtainable in the US is 18.90" (Duravit D-Code Compact, 480 mm; the TOTO RP
-# Compact this type is modelled on is 19.29"), which still leaves 23.34", and every "450 mm"
+# ** THE WALL MOVED, NOT THE TOILET. ** At the room's old 42.24" depth the 19.3" bowl left
+# 22.94" against the 24" needed. No fixture change could close it: the shortest wall-hung
+# bowl obtainable in the US is 18.90" (Duravit D-Code Compact, 480 mm; the TOTO RP Compact
+# this type is modelled on is 19.29"), still leaving 23.34", and every "450 mm"
 # short-projection pan on the market turns out to be floor-standing back-to-wall, not
-# wall-hung. So W-M-STOS went north 2" to y=26'-6" (plan/storeys/main.py) and the bowl now
-# has 24.94". The cost was 2" off RM-M-MUD-CLOSET, 34 3/4" -> 32 3/4", the bottom of the
+# wall-hung. So W-M-STOS went north 2" to y=26'-6" (plan/storeys/main.py) and the bowl has
+# 24.94". The cost was 2" off RM-M-MUD-CLOSET, 34 3/4" -> 32 3/4", the bottom of the
 # 32"-36" reach-in band; the closet has no rod or shelf authored in it.
 #
-# ** FX-TOILET-STD STILL DOES NOT FIT THIS ROOM IN ANY ORIENTATION, EVEN AT 44.24". **
-# Asked and answered 2026-08-29; the arithmetic is here so it is not asked a third time.
-# On the south wall a 28"-deep bowl leaves 16.24" against the 24" it needs. Turned 90 degrees
-# onto the west wall it DOES clear in front — 33.98" — but its 15"-each-side band is then 30"
-# of the room's 44.24" depth and its front envelope reaches x=58.635", and there is no
-# 18"x14" strip left anywhere for FX-M-BATH1-LAV: 14.24" north of the band, 14.24" south of
-# it, 9.98" east of the envelope. The east wall is spoken for by D-M-BATH1's 24" opening at
-# y 280"..304", and the north wall repeats the south wall's 16.24". This is a compact-fixture
-# room by geometry, not by preference.
+# ** FX-TOILET-STD DOES NOT FIT THIS ROOM IN ANY ORIENTATION, EVEN AT 44.24". ** On the
+# south wall a 28"-deep bowl leaves 16.24" against the 24" it needs. Turned 90 degrees onto
+# the west wall it DOES clear in front — 33.98" — but its 15"-each-side band is then 30" of
+# the room's 44.24" depth and its front envelope reaches x=58.635", leaving no 18"x14" strip
+# for FX-M-BATH1-LAV: 14.24" north of the band, 14.24" south of it, 9.98" east of the
+# envelope. The east wall is spoken for by D-M-BATH1's 24" opening at y 280"..304", and the
+# north wall repeats the south wall's 16.24". This is a compact-fixture room by geometry.
 #
 # One caveat on the check: `resolve/placeables.py::_clearance_conflicts` compares a required
 # zone against PEER PLACEABLE FOOTPRINTS ONLY. It never asks whether the zone fits the room,
@@ -117,26 +107,25 @@ BASEMENT_FIXTURES = (
 #
 # WC is a wall-hung compact on the south wall; rotation 180 turns bowl/front north, so the
 # china's back lands ON W-M-HS1's finish face at y=271.385" — hence y=281.035" for a bowl
-# 19.3" deep. It read 280.27" until 2026-08-29, which buried the back 3/4" in the wall.
+# 19.3" deep.
 #
 # ** THE CARRIER IS IN W-M-HS1 AND `wall_ref` STILL SAYS W-M-BAE, ON PURPOSE. ** That is
 # this file's documented idiom (see ATTIC_FIXTURES: wall_ref names the WET wall a fixture
 # plumbs into, not the wall it hangs on). The bowl bolts to a frame in W-M-HS1 — retyped to
-# INT_2X6_STAGGERED_PLUMBING on 2026-08-29 for FX-M-BATH2-WC, which is what makes it a legal
-# home for one — and its 3" waste drops through the deck in that wall's own bay. From there
-# PR-B-WC1-DRAIN runs to the W-M-BAE stack, which is where the vent takeoff
-# (PR-M-WC-VENT, 49.8" away against Table 1002.2's 72" for 3") and the supply riser already
-# are. Both walls are 5.5" of structure, so `advisory.wet_wall_depth` is satisfied either way
-# — and since 2026-08-31 that is no longer a coincidence anyone has to notice: the HOST wall
-# is graded on its own by `advisory.carrier_bay_depth`, which reads the wall the body backs
-# onto rather than `wall_ref`, and reports W-M-HS1's 5 1/2" against the 5 1/2" a Duofix-class
+# INT_2X6_STAGGERED_PLUMBING for FX-M-BATH2-WC, which is what makes it a legal home for one —
+# and its 3" waste drops through the deck in that wall's own bay. From there PR-B-WC1-DRAIN
+# runs to the W-M-BAE stack, which is where the vent takeoff (PR-M-WC-VENT, 49.8" away
+# against Table 1002.2's 72" for 3") and the supply riser already are. Both walls are 5.5"
+# of structure, so `advisory.wet_wall_depth` is satisfied either way, and the HOST wall is
+# graded on its own by `advisory.carrier_bay_depth`, which reads the wall the body backs onto
+# rather than `wall_ref`, and reports W-M-HS1's 5 1/2" against the 5 1/2" a Duofix-class
 # frame wants.
 #
 # ** THE CARRIER BAY AND FX-M-BATH2-WC SHARE 16.3" OF THIS WALL, AND THAT IS THE DETAIL, NOT
-# A DEFECT (measured 2026-08-31). ** The frame's clear bay runs x 16.53"..36.28" (19 3/4",
-# Geberit's 500 mm element, centred on the bowl at x=26.41"), with its flanking studs out to
-# x 15.03" and 37.78". FX-M-BATH2-WC backs the SOUTH face of the same wall at x=2'-6", so
-# its 20"-wide body spans x 20"..40" and its 1/2" cold stub lands squarely inside the band.
+# A DEFECT. ** The frame's clear bay runs x 16.53"..36.28" (19 3/4", Geberit's 500 mm
+# element, centred on the bowl at x=26.41"), with its flanking studs out to x 15.03" and
+# 37.78". FX-M-BATH2-WC backs the SOUTH face of the same wall at x=2'-6", so its 20"-wide
+# body spans x 20"..40" and its 1/2" cold stub lands squarely inside the band.
 # `advisory.carrier_bay_conflict` reports it every run.
 #
 # ** NO NUDGE FIXES IT, AND THE ARITHMETIC IS WHY. ** To clear a 22 3/4" carrier band on a
@@ -154,12 +143,9 @@ BASEMENT_FIXTURES = (
 # the check prints it as one: PASS, with the crossing spelled out. In a 3 1/2" wall the same
 # geometry would be a FAIL, because there would be nothing to cross through.
 #
-# ** THERE IS NO `drain_position` HERE ANY MORE, AND ITS ABSENCE IS THE POINT (2026-08-31).
-# ** It read (6'-0", 22'-7") until 2026-08-29 — a point on W-M-BAE's axis, at the far corner
-# of the room, with the china 46" west of the waste it was supposedly bolted to — and then
-# (26.41", 22'-4"), which was right. Both were a human restating something the model can
-# now derive: `resolve/mep_sleeves._expected_drain_point` branches on `mount.kind == WALL`
-# before it reaches the "no WATER_HOT ⇒ floor-drained" heuristic, reads the type's own DRAIN
+# ** THERE IS NO `drain_position` HERE, AND ITS ABSENCE IS THE POINT. ** The model derives
+# it: `resolve/mep_sleeves._expected_drain_point` branches on `mount.kind == WALL` before
+# reaching the "no WATER_HOT ⇒ floor-drained" heuristic, reads the type's own DRAIN
 # `ServicePort`, and projects it onto the wall the body backs onto — W-M-HS1, found
 # geometrically by `resolve/framing/carriers.backing_wall`, NOT by `wall_ref`.
 #
@@ -167,22 +153,15 @@ BASEMENT_FIXTURES = (
 # off the frame's face, and the type cannot know how thick the gypsum in front of it is. On
 # W-M-HS1 the nominal alone would land the drop at y=269.135", where a 3.5"-OD pipe pokes an
 # eighth of an inch out through the drywall. The wall's own axis at y=22'-4" is where it
-# actually runs: centred in the 5 1/2" cavity, 1" of cover each side. The derived point
-# equals the deleted override to four decimal places, which is how the deletion was proved
-# safe before it was made.
+# actually runs: centred in the 5 1/2" cavity, 1" of cover each side.
 #
-# y nudged +2" (2026-08-15), same reason as the lavatory's +6" nudge (2026-07-29):
-# N-M-W2/N-M-C2 pushed north onto the west facade's 16" column module, dragging the
-# room's south clear face with it.
-#
-# ** W-M-BAE IS THE WET WALL AND IT IS NOT A TYPO — checked and reverted 2026-08-30. **
-# plans/TODO.md carried this as a stale reference on the reasoning that W-M-BAE is a
-# *vertical* wall on the x = 6'-0" line while this bowl stands at x 1'-6.9"..2'-9.9" and
-# backs onto W-M-HS1. The geometry is right and the conclusion is wrong: `Fixture.wall_ref`
-# is the fixture's WET WALL for venting (`checks/mep/plumbing_dwv.vent_reachability` reads
-# nothing else), not a backing wall the body touches. W-M-BAE stops at its own ceiling, so
-# this WC takes the offset path — `PR-M-WC-VENT`, whose x = 6' leg is W-M-BAE's own stud
-# bay (plan/mep_venting.py, and the comment there names both WC wet walls).
+# ** W-M-BAE IS THE WET WALL AND IT IS NOT A TYPO. ** W-M-BAE is a *vertical* wall on the
+# x = 6'-0" line while this bowl stands at x 1'-6.9"..2'-9.9" and backs onto W-M-HS1 — but
+# `Fixture.wall_ref` is the fixture's WET WALL for venting
+# (`checks/mep/plumbing_dwv.vent_reachability` reads nothing else), not a backing wall the
+# body touches. W-M-BAE stops at its own ceiling, so this WC takes the offset path —
+# `PR-M-WC-VENT`, whose x = 6' leg is W-M-BAE's own stud bay (plan/mep_venting.py, and the
+# comment there names both WC wet walls).
 #
 # Pointing it at W-M-HS1 does not fail: W-S-SN1 stacks over HS1, so the check reports the
 # in-wall path and PASSES — silently orphaning PR-M-WC-VENT's bath1 leg. What catches it is
@@ -192,15 +171,13 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
             position=pt(m(0.670778), m(7.138289)), rotation=deg(180), wall_ref="W-M-BAE",
             mount=Mount(kind=MountKind.WALL, elevation=inch(1.375))),
-    # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
-    # the room's south face moved with it and the lavatory's old y left it poking through
-    # into the hall (test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other).
-    # ** A 24" VANITY SINCE 2026-08-30, AND IT USED TO SIT 2 1/2" INSIDE THE WALL. ** The
-    # old FX-LAV-COMPACT (18" x 14", no cabinet) was placed at y=268.94", which is north of
-    # W-M-HS1's finish face at y=271.39" -- it was authored off `Room.clear_face`, whose
-    # north edge reads 268.64" because rooms.py polygonises wall AXES. Same class of error
-    # as the one caught in RM-M-BATH2 on 2026-08-29; nothing checks a Fixture against a wall
-    # face, so it built and checked clean for months. Fixed here along with the retype.
+    # `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other` holds this fixture
+    # clear of the hall — the room's south face tracks N-M-W2/N-M-C2's station.
+    # ** A 24" VANITY, NOT A BARE BOWL 2 1/2" INSIDE THE WALL. ** The old FX-LAV-COMPACT
+    # (18" x 14", no cabinet) had been authored off `Room.clear_face`, whose north edge
+    # reads 268.64" because rooms.py polygonises wall AXES — 2 1/2" north of W-M-HS1's real
+    # finish face at y=271.39". Nothing checks a Fixture against a wall face, so this class
+    # of error builds and checks clean silently.
     #
     # ** 24" IS EVERYTHING THIS ROOM HAS. ** The wall-hung water closet takes the west half
     # of the north wall: its centreline is x=26.41", so its 15" side band ends at x=41.41",
@@ -220,11 +197,8 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-VANITY-24-SHALLOW",
             room="RM-M-BATH1", position=pt(inch(53.5), inch(280.39)), wall_ref="W-M-BAE",
             rotation=deg(180)),
-    # 2026-08-29, the drop-in bath pass: this bowl finally backs onto a wall. It had stood
-    # free in the middle of the floor with its tank 9 3/4" clear of anything since the
-    # 2026-07-29 wall move, and `wall_ref` said W-M-BA2E — a wall it was 5'-5" away from.
-    # Both are fixed here: it backs W-M-HS1 (retyped to the plumbing assembly for it, see
-    # storeys/main.py) at rotation 0, which is the rotation that puts the tank on +y.
+    # Backs W-M-HS1 (retyped to the plumbing assembly for it, see storeys/main.py) at
+    # rotation 0, which is the rotation that puts the tank on +y.
     #
     # x=2'-6" is bounded on BOTH sides and there is not much room between them. P2705.1
     # wants 15" clear each side of the centreline: west of 1'-9 5/8" the envelope runs into
@@ -240,17 +214,15 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET-STD", room="RM-M-BATH2",
             position=pt(ft(2, 6), ft(20, 10.615)), rotation=deg(0), wall_ref="W-M-HS1"),
     # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
-    # plumbing wall, the bath north of it. They are intentionally separate instances/types
+    # plumbing wall, the drop-in bath north of it. Intentionally separate instances/types
     # rather than a tub-shower combination, so the permit schedule and future owner
-    # selections can treat them independently — and since 2026-08-29 the bath is a drop-in,
-    # which a combination unit could not be.
+    # selections can treat them independently.
     #
-    # The shower moved 4 1/4" SOUTH on 2026-08-29, hard against W-M-BDN1's face at
-    # y=13'-2 3/8", and that 4 1/4" is the whole integration: the shower's north face and
-    # the tub deck's south face are now the SAME LINE (y=16'-2 3/8"), so W-M-TUBDK-S is one
-    # framed 2x4 run doing both jobs — the deck's south knee wall on its north side, the
-    # shower's north wall on its south. The two wet fixtures read as one built element
-    # down the east wall instead of two boxes with a 4" slot of dead floor between them.
+    # The shower sits hard against W-M-BDN1's face at y=13'-2 3/8", and the shower's north
+    # face and the tub deck's south face are on the SAME LINE (y=16'-2 3/8"), so
+    # W-M-TUBDK-S is one framed 2x4 run doing both jobs — the deck's south knee wall on its
+    # north side, the shower's north wall on its south. The two wet fixtures read as one
+    # built element down the east wall instead of two boxes with dead floor between them.
     # The room's depth is spent exactly: 36" of shower + 70 1/4" of deck = 106 1/4" clear.
     #
     # `drain_position` is unchanged and is NOT the pan's centre — it never was; it is where
@@ -259,11 +231,10 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36", room="RM-M-BATH2",
             position=pt(ft(6, 2.615), ft(14, 8.375)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
-    # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** (2026-08-29, replacing
-    # the FX-TUB-60 alcove allowance that stood here from the M3 fixture pass.) The bath has
-    # no skirt: it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor,
-    # and Kohler is explicit that the rim carries no load. So this Fixture is the RIM, and
-    # the thing that occupies the room is the framed deck box in storeys/main.py.
+    # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:
+    # it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor, and Kohler
+    # is explicit that the rim carries no load. So this Fixture is the RIM, and the thing
+    # that occupies the room is the framed deck box in storeys/main.py.
     #
     # Position is the centre of the deck's 36 1/8" x 65 3/4" bay with the bath pushed north:
     # 2" of tiled deck at the head (x 4'-8 11/16"..7'-8 7/16", y 16'-10 15/16"..21'-10 5/8"),
@@ -293,18 +264,15 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-KOHLER-UNDERSCORE-6036",
             room="RM-M-BATH2", position=pt(ft(6, 2.56), ft(19, 4.77)), rotation=deg(90),
             wall_ref="W-M-BA2E", drain_position=pt(ft(7, 4), ft(19, 4.8))),
-    # ** A 54" ONE-BASIN VANITY SINCE 2026-08-29, AND IT USED TO BE A KITCHEN SINK. ** The
-    # instance that stood here was ``FX-KITCHEN-SINK-33`` -- the library's DOUBLE-BOWL
-    # kitchen sink -- hung on a 27" wall mount to drag its deck down to lavatory height. It
-    # drew two bowls on the bathroom plan, billed as a kitchen sink in the fixture schedule,
-    # and modelled no cabinet whatsoever. The owner asked for one basin and as much drawer
-    # and shelf as the wall will hold, so it is now FX-VANITY-54-SINGLE (plan/fixture_types
-    # .py), which carries the cabinet, the single basin and the 36" comfort-height counter.
+    # ** A 54" ONE-BASIN VANITY, NOT A KITCHEN SINK ON A WALL MOUNT. ** FX-VANITY-54-SINGLE
+    # (plan/fixture_types.py) carries the cabinet, the single basin and the 36"
+    # comfort-height counter — unlike the library's DOUBLE-BOWL ``FX-KITCHEN-SINK-33`` this
+    # replaced, which modelled no cabinet and billed as a kitchen sink on the schedule.
     #
     # ** NO ``mount``, AND THAT IS THE CHANGE THAT MATTERS. ** A vanity STANDS ON THE FLOOR.
-    # The old 27" wall mount was a workaround for a fixture type that models only a deck;
-    # leaving it in place would have floated a 54" cabinet 27" up the wall with its toe kick
-    # in mid-air. The type's own 41 1/2" height now puts the counter at 36" from the floor.
+    # A wall mount is a workaround for a fixture type that models only a deck; carrying one
+    # here would float a 54" cabinet up the wall with its toe kick in mid-air. The type's
+    # own 41 1/2" height puts the counter at 36" from the floor.
     #
     # ** POSITION IS STRUCK OFF THE WALLS' OWN FINISH FACES, NOT OFF `Room.clear_face`. **
     # This is the trap that cost a rebuild: `clear_face` is inset from the wall AXIS by the
@@ -326,74 +294,57 @@ MAIN_FIXTURES = (
     #
     # ** D-M-BATH2 SWINGS OUT BECAUSE OF THIS CABINET, AND THE TWO CANNOT BOTH CHANGE BACK.
     # ** The door's 30" opening runs x 2'-0"..4'-6" and this cabinet's east face is at
-    # x=1'-11 5/8", 3 5/8" inside it; swinging IN, the leaf clipped the cabinet by 25 in2
-    # (`integrity.door_swing_conflict`, an UNKNOWN — `haus check --only fail` stayed clean
-    # through it, so it was found in the takeoff's findings rather than at the gate). The
-    # owner chose to turn the door around rather than shorten this to 45 1/2" or thin it to
-    # 17", because that was the only one of the three that cost no storage. Re-hang the door
-    # inward and the vanity has to give up one of its two dimensions; see storeys/main.py.
+    # x=1'-11 5/8", 3 5/8" inside it; swinging IN, the leaf clips the cabinet by 25 in2
+    # (`integrity.door_swing_conflict`, an UNKNOWN — `haus check --only fail` stays clean
+    # through it, so it is found in the takeoff's findings rather than at the gate). Turning
+    # the door out was chosen over shortening this to 45 1/2" or thinning it to 17" because
+    # that costs no storage. Re-hang the door inward and the vanity has to give up one of
+    # its two dimensions; see storeys/main.py.
     #
     # WIN-M-BATH2 is not in the way and is worth saying so, because it nearly is: the window
     # runs y 18'-6 1/2"..20'-9 1/2" with a 3'-0" sill, which is the SAME plane as this
     # counter. It clears the cabinet's north end by 11 7/8" of bare wall.
     #
-    # ** ``drain_position`` IS UNCHANGED, AND THAT IS A RESULT, NOT AN OVERSIGHT. ** The
-    # basin sits over the 30" sink base at the NORTH end, centreline y=16'-3 5/8", and the
-    # basin is 20" x 15 1/2" about it — so it spans x 3 3/8"..18 7/8", y 15'-5 5/8"..17'-1 5/8".
-    # The authored tailpiece at (1'-0", 16'-6") falls inside that rectangle, 2 3/8" north of
-    # the basin centreline and effectively on its x centre. Moving the pipe to chase the
-    # 5 7/8" the old bowl's centre travelled would have re-pointed PR-B-SINK2-DRAIN into a
-    # diagonal trap arm 2 3/8" off PR-B-SH2-DRAIN's line for nothing. Nothing in
-    # plan/mep_drainage.py moves for this change.
+    # ``drain_position`` is unchanged, deliberately: the basin sits over the 30" sink base
+    # at the NORTH end, centreline y=16'-3 5/8", 20" x 15 1/2" about it — spanning
+    # x 3 3/8"..18 7/8", y 15'-5 5/8"..17'-1 5/8". The authored tailpiece at (1'-0", 16'-6")
+    # falls inside that rectangle, 2 3/8" north of the basin centreline and effectively on
+    # its x centre. Re-pointing the pipe would put PR-B-SINK2-DRAIN into a diagonal trap arm
+    # 2 3/8" off PR-B-SH2-DRAIN's line for nothing.
     Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-54-SINGLE",
             room="RM-M-BATH2", position=pt(inch(17.135), inch(185.375)), rotation=deg(90),
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(16, 6))),
-    # --- RM-M-LAUNDRY (2026-07-31) -----------------------------------------------------
+    # --- RM-M-LAUNDRY -------------------------------------------------------------------
     # 62 3/4"x48 3/4" alcove behind D-M-LAUN (56" bifold spanning the north side) — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation
     # 180) and front north through the opening. 28"+1"+24"=53" fits the stack+tub inside
     # the 56" opening; the stack's west face sits on the door opening (not the wall face)
-    # to centre the tower on x=9'-6", the dryer receptacle's existing location.
+    # to centre the tower on x=9'-6", the dryer receptacle's location.
     #
     # `wall_ref` W-M-BA2E is the *service* wall (carries the washer standpipe/supply box),
     # not the back wall — both wastes drop through SL-M-DECK to the basement, so there is
     # no wall stack in this room at all.
     #
-    # Retyped from APPL-WASHER to the stacked pair (uid/tag kept so mep.py's
-    # `serves=("FX-M-LAUNDRY",)` refs still resolve). Heat-pump dryer is ventless; its
-    # condensate drains via PR-M-DRYER-COND to the tub beside it.
-    #
-    # Room (and both fixtures) slid north 8" on 2026-08-03 with the W-M-CLN/CLN2 move;
-    # this appliance sized that move — 40" deep leaves 8 3/4" to the door plane, the
-    # margin the bifold track needs and no more.
-    #
-    # Retyped again 2026-08-24, allowance -> product: the LG WashTower the owner selected
-    # (plan/appliance_types.py). Position is untouched. The tower is 27"x32 3/4"x74 3/8"
-    # against the allowance's 28"x40"x80", so the 2026-08-03 move north is now 7 1/4"
-    # roomier than the paragraph above describes — 16" to the door plane, not 8 3/4". The
-    # margin only ever needed to be positive, so nothing moves to collect the slack.
+    # Stacked pair (uid/tag kept so mep.py's `serves=("FX-M-LAUNDRY",)` refs still resolve).
+    # Heat-pump dryer is ventless; its condensate drains via PR-M-DRYER-COND to the tub
+    # beside it. It is the LG WashTower (plan/appliance_types.py), 27"x32 3/4"x74 3/8",
+    # leaving 16" of clear floor to the door plane — the margin the bifold track needs.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-LG-WASHTOWER",
               room="RM-M-LAUNDRY", position=pt(m(2.89712), m(6.06006)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
     # Utility tub, 1" east of the stack — also the *receptor*: PR-M-DRYER-COND air-gaps
     # over its 34" rim, why the dryer needs no vent or condensate pump line.
     #
-    # `drain_position` held at y=18'-9" through the 2026-08-03 move north (basin moved,
-    # waste didn't) since SP-M-LSINK/PR-B-LSINK-DRAIN/the 45" trap arm below are all
-    # authored on this y. Originally offset to clear W-B-CW2 (12" concrete on the y=18'
-    # axis) by 3".
+    # `drain_position` at y=18'-9" — offset 3" to clear W-B-CW2 (12" concrete on the y=18'
+    # axis) — is what SP-M-LSINK/PR-B-LSINK-DRAIN/the 45" trap arm below are all authored on.
     #
     # SL-M-DECK (9" concrete) means every main-storey fixture drops straight down its own
     # sleeve rather than running a trap arm sideways — same as PR-B-SINK2/WASH-DRAIN. The
     # tub wet-vents off the laundry stack: a 45" 2" branch (MN Plumbing Table 1002.2 caps
-    # 1 1/2" at 42") ties into PR-M-WC-VENT's existing x=8' leg, no new pipe.
-    # 2026-08-29: y +1 5/8" (5.82791 -> 5.86920 m) with W-M-CLN's laundry face, retyped to
-    # INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py). The basin backed onto that wall with
-    # 9/16" to spare and the retype took 1 5/8", so it was 1 1/16" into the studs until it
-    # followed. (2026-08-30: W-M-CLN retyped again, to the single-gwb
-    # INT_2X4_STAGGERED_GWB — the face gave back 5/8", so the basin followed it south by
-    # the same amount. `wall_ref`-relative, so it tracked without a coordinate edit here.)
+    # 1 1/2" at 42") ties into PR-M-WC-VENT's existing x=8' leg, no new pipe. y = 5.86920 m
+    # (was 5.82791) is the basin backed onto W-M-CLN, INT_2X4_STAGGERED_GWB's face;
+    # `wall_ref`-relative, so it tracks the wall without a coordinate edit here.
     # ** `wall_ref` STILL SAYS W-M-BA2E AND THAT IS NOT THE WALL IT TOUCHES: **
     # W-M-BA2E is 3'-0" west and is where PR-B-CW-WASH/PR-B-HW-WASH rise; the basin's back
     # is on W-M-CLN. Left as authored because `wall_ref` is what the supply pair names as
@@ -401,14 +352,12 @@ MAIN_FIXTURES = (
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
             position=pt(m(3.62083), m(5.86920)), rotation=deg(180), wall_ref="W-M-BA2E",
             drain_position=pt(ft(11, 9), ft(18, 9))),
-    # Kitchen sink moved to the north wall 2026-07-30 with the range/sink swap, then
-    # flipped with the dishwasher to sit mid-run, then moved +9" east (2026-08-26) to
-    # x=29'-4" when the base run was re-composed and the window's column moved onto it
-    # instead — see storeys/main.py's OPENINGS and plan/placeables.py's kitchen header.
-    # Dead-centred under WIN-M-KITCH now, at y=34'-5 3/8" (24" counter depth). W-M-N1 is
-    # the wet wall (CATLIN_EXT_2X6, same as the old W-M-E2 — see mep.py's PR-M-KITCH-VENT).
-    # The 27" mount is restated here (not just on the type) because the resolver reads the
-    # instance Mount; it lands the rim on the 36" counter with 9" of bowl below.
+    # x=29'-4": dead-centred under WIN-M-KITCH, which moved its own column onto this station
+    # when the base run was re-composed (storeys/main.py's OPENINGS, plan/placeables.py's
+    # kitchen header). y=34'-5 3/8" is 24" counter depth. W-M-N1 is the wet wall
+    # (CATLIN_EXT_2X6 — see mep.py's PR-M-KITCH-VENT). The 27" mount is restated here (not
+    # just on the type) because the resolver reads the instance Mount; it lands the rim on
+    # the 36" counter with 9" of bowl below.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
             position=pt(ft(29, 4), ft(34, 5.375)), wall_ref="W-M-N1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
@@ -424,29 +373,22 @@ MAIN_FIXTURES = (
 # 3" south of the tub-shower. Lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING). All three
 # footprints are pairwise disjoint with 9"+ clearance between any two.
 #
-# ALCOVE CHECK, 2026-08-21. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly
-# the standard alcove footprint (the type's 7'-0" height is the modelled surround envelope,
-# matching FX-SHOWER-36 — not a product dimension). A flanged insert nails to studs on
-# THREE sides. Measured at real finish faces, FX-S-BATH1-SH had two: the chase wall at
-# x 2'-11 3/8" against the tub's west end at 2'-11 3/4" (0.36" of scribe), and the north
-# wall at y 35'-5 3/8" against the tub's north edge at 35'-4 1/2". Its EAST end at
-# x 7'-11 3/4" stood open, with 1'-8 7/8" of dead floor out to the east wall at x 9'-8 5/8".
+# ALCOVE CHECK. FX-TUBSHOWER-60 is a 60"x30" flanged insert, which is exactly the standard
+# alcove footprint (the type's 7'-0" height is the modelled surround envelope, matching
+# FX-SHOWER-36 — not a product dimension). A flanged insert nails to studs on THREE sides.
+# Measured at real finish faces, FX-S-BATH1-SH has two: the chase wall at x 2'-11 3/8"
+# against the tub's west end at 2'-11 3/4" (0.36" of scribe), and the north wall at
+# y 35'-5 3/8" against the tub's north edge at 35'-4 1/2". Its EAST end at x 7'-11 3/4" is
+# open, with 1'-8 7/8" of dead floor out to the east wall at x 9'-8 5/8".
 # FURN-S-BATH1-SHELF (plan/placeables.py) closes it: the shelf's west panel is the return,
-# with a 2x4 framed behind it for the flange to nail to.
-#
-# The west side was not quite two walls either, and is now. W-S-CH-W used to stop at
-# y 33'-1 5/8", 3 1/8" short of the tub's front, so the southernmost 3 1/8" of the west
-# flange had nothing to nail to. The chase's south corners moved 3 1/8" south on 2026-08-21
-# (storeys/second.py, NODES) and that wall now runs the tub's full 30". All three sides are
-# real.
+# with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
+# chase's south corners run the tub's full 30" (storeys/second.py, NODES).
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET-STD", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
-    # ** A 48" VANITY SINCE 2026-08-30 -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. **
-    # It replaces a bare FX-LAV-24 that had also been 1.9" inside W-S-BA-E1B's finish face
-    # (x=116.62") and carried `rotation=deg(90)`, which points a fixture's back at -x. The
-    # bowl backs the EAST wall, so the correct rotation is -90; the old value was invisible
-    # only because FX-LAV-24 has no clearance zone to point the wrong way.
+    # ** A 48" VANITY -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. ** The bowl backs the
+    # EAST wall, so `rotation=deg(-90)` — `deg(90)` points a fixture's back at -x, the wrong
+    # way here.
     #
     # ** 48" FITS ONLY AS A REAL ARC. ** The usable run is bounded north by D-S-BATH1's
     # swing and south by FURN-S-BATH1-SHELF (the shower's return panel) at y=394.5". The
@@ -454,12 +396,10 @@ SECOND_FIXTURES = (
     # special-order cabinet -- but the swing is a quarter-disc, and tested against the real
     # polygon a 21"-deep carcass clears from y=345.88" on. So the cabinet runs
     # y 345.88"..393.88": 48" of stock width, scribing to the shelf with 0.62" to spare,
-    # and the two read as one continuous run of millwork along the wall. ** Re-run that
-    # test if this door, this shelf or W-S-BD-N1B ever moves ** -- 0.62" is the whole
-    # margin, and the north wall already moved 2" south once, on 2026-08-30.
+    # reading as one continuous run of millwork along the wall. ** Re-run that test if this
+    # door, this shelf or W-S-BD-N1B ever moves ** -- 0.62" is the whole margin.
     #
-    # Re-measured 2026-09-01 against the resolved arc, closing a TODO that read "the lav is
-    # in the way of the door swing": swing bounds x 84..114, y 318..348; carcass bounds
+    # Measured against the resolved arc: swing bounds x 84..114, y 318..348; carcass bounds
     # x 95.62..116.62, y 345.88..393.88. Intersection area **0.0 sf**, minimum distance
     # **0.21"**. The BOUNDING BOXES overlap 2.12" in y, which is the whole reason it reads
     # as a conflict on a plan sheet -- and `integrity.door_swing_conflict`
@@ -480,48 +420,42 @@ SECOND_FIXTURES = (
     # quadrant clear, so WC sits north of the swing against the north wall, lav east of it
     # also against the north wall, shower in the NE corner.
     #
-    # `wall_ref` is W-S-SN3 (2026-08-30, was W-S-DC2) — no `rotation` is authored, and this
-    # house's own convention is that an un-rotated FX-TOILET-STD backs a HORIZONTAL wall
-    # (FX-M-BATH2-WC on W-M-HS1, rotation=0) while a VERTICAL one needs rotation=90
-    # (FX-S-BATH1-WC on W-S-W1, FX-A-STUBATH-WC on W-A-STU-W). W-S-DC2 is vertical; W-S-SN3
-    # is horizontal — this WC physically backs SN3, same split the lav's `wall_ref` used to
-    # carry (`FX-S-SUITEBATH-LAV`, above).
+    # `wall_ref` is W-S-SN3 — no `rotation` is authored, and this house's own convention is
+    # that an un-rotated FX-TOILET-STD backs a HORIZONTAL wall (FX-M-BATH2-WC on W-M-HS1,
+    # rotation=0) while a VERTICAL one needs rotation=90 (FX-S-BATH1-WC on W-S-W1,
+    # FX-A-STUBATH-WC on W-A-STU-W). W-S-SN3 is horizontal — this WC physically backs it.
     #
-    # It is also FLUSH to that wall now, which it never was: authored at y=249.71" it stood
-    # 1.92" off the old 4 3/4" partition's face and would still have stood 0.92" off the
-    # 6.77" wet wall that replaced it. Back = centre + 14" (the bowl's own 28" projection),
-    # so y=250.625" puts the tank against SN3's 264.625" gwb face. Nothing grades a WC
-    # against a wall face — `test_..._vanities` covers only vanities — so this was invisible.
+    # It is FLUSH to that wall: back = centre + 14" (the bowl's own 28" projection), so
+    # y=250.625" puts the tank against SN3's 264.625" gwb face. Nothing grades a WC against
+    # a wall face — `test_..._vanities` covers only vanities.
     #
-    # **W-S-DC2 still MUST stay a full-depth wet wall**, and after the 2026-08-30 vent
-    # reroute the reason is no longer anything in THIS room: `PR-S-SUITEBATH-VENT` takes off
-    # on SN3 now and its riser is entirely north of DC2. What still needs DC2's 5.5" cavity
-    # is the ATTIC studio bath one storey up — `PR-A-STUBATH-DRAIN` drops 10'-0" inside it
-    # and `PR-A-CW/HW-STUBATH` rise through it into W-A-STU-W. Retyping DC2 to a 2x4
-    # assembly (e.g. for resilient channel) would leave those with nowhere to run.
+    # **W-S-DC2 still MUST stay a full-depth wet wall**, though not for anything in THIS
+    # room: `PR-S-SUITEBATH-VENT` takes off on SN3 now and its riser is entirely north of
+    # DC2. What still needs DC2's 5.5" cavity is the ATTIC studio bath one storey up —
+    # `PR-A-STUBATH-DRAIN` drops 10'-0" inside it and `PR-A-CW/HW-STUBATH` rise through it
+    # into W-A-STU-W. Retyping DC2 to a 2x4 assembly (e.g. for resilient channel) would
+    # leave those with nowhere to run.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET-STD",
             room="RM-S-SUITEBATH", position=pt(inch(134.81), inch(250.625)),
             wall_ref="W-S-SN3"),
-    # ** A 30" VANITY SINCE 2026-08-30. ** The NORTH wall (W-S-SN3 — this bullet said "south"
-    # while the cabinet's `wall_ref` still pointed at W-S-SBS across the room) gives 31.76"
-    # between the water closet's 15" side band (its centreline is x=134.81", so the band ends
-    # at x=149.81") and the tub-shower's west face at x=181.57". 30" is the largest stock
-    # width that fits; this cabinet runs x 150.5"..180.5", clearing the WC band by 0.69" and
-    # scribing to the tub with 1.07". The room is 71" deep so this one keeps the standard 21"
-    # carcass, and the 21" front zone stops at y=222.63", with W-S-SBS's face 29 1/4" further
-    # on. None of those x dimensions moved when the wall was retyped; only y did.
+    # ** A 30" VANITY. ** The NORTH wall (W-S-SN3) gives 31.76" between the water closet's
+    # 15" side band (centreline x=134.81", band ends at x=149.81") and the tub-shower's west
+    # face at x=181.57". 30" is the largest stock width that fits; this cabinet runs
+    # x 150.5"..180.5", clearing the WC band by 0.69" and scribing to the tub with 1.07".
+    # The room is 71" deep so this one keeps the standard 21" carcass, and the 21" front
+    # zone stops at y=222.63", with W-S-SBS's face 29 1/4" further on.
     #
-    # `wall_ref` is W-S-SN3 (2026-08-30, was W-S-SBS) — the wall this vanity actually backs
-    # onto is now also the WET wall it drains into, so the split convention the attic suite
-    # still uses (`wall_ref` names the drain wall, not the physical back) no longer applies
-    # here: W-S-SN3 is INT_2X6_STAGGERED_PLUMBING for exactly this fixture
-    # (`plan/storeys/second.py`), so the two now agree.
+    # `wall_ref` is W-S-SN3 — the wall this vanity backs onto is also the WET wall it
+    # drains into, so the split convention the attic suite still uses (`wall_ref` names the
+    # drain wall, not the physical back) does not apply here: W-S-SN3 is
+    # INT_2X6_STAGGERED_PLUMBING for exactly this fixture (`plan/storeys/second.py`), so the
+    # two agree.
     #
-    # ** THE BACK IS AT y=264.63", NOT 265.63". ** The retype took SN3 from a 4 3/4"
-    # partition to a 6.77" wet wall, which moved its south face 1.000" INTO this room, so
-    # every fixture and device on that face followed it by exactly 1.000" — this cabinet,
-    # ED-S-SUITEBATH-RC1 and ED-S-SUITEBATH-MIRROR. `test_each_vanity_backs_its_walls_finish_
-    # face_not_the_rooms_clear_face` is what catches this one; nothing catches the other two.
+    # ** THE BACK IS AT y=264.63", NOT 265.63". ** SN3 is a 6.77" wet wall whose south face
+    # sits 1.000" INTO this room from a plain 4 3/4" partition's line, so every fixture and
+    # device on that face — this cabinet, ED-S-SUITEBATH-RC1, ED-S-SUITEBATH-MIRROR — follows
+    # it by exactly 1.000". `test_each_vanity_backs_its_walls_finish_face_not_the_rooms_
+    # clear_face` is what catches this one; nothing catches the other two.
     #
     # NEC 210.52(D)'s receptacle is `ED-S-SUITEBATH-RC1` (plan/electrical.py) at x=148",
     # 2 1/2" west of the cabinet's outside edge and far inside the 36" limit.
@@ -533,10 +467,10 @@ SECOND_FIXTURES = (
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,
     # extended south, clearing the WC zone, the south lav, and the door swing.
     #
-    # SAME DEFECT, LEFT OPEN (2026-08-21). This insert also stands in two walls, not three:
-    # the east wall and W-S-SN3 to the north are closed, and its SOUTH end is open with only
-    # 10.4" to W-S-SBS. That is why the hall bath's fix does not transfer — a return
-    # partition here leaves 5 5/8" of filler beside a 4 3/4" wall, which is a framing
+    # SAME DEFECT AS THE HALL BATH, LEFT OPEN. This insert also stands in two walls, not
+    # three: the east wall and W-S-SN3 to the north are closed, and its SOUTH end is open
+    # with only 10.4" to W-S-SBS. That is why the hall bath's fix does not transfer — a
+    # return partition here leaves 5 5/8" of filler beside a 4 3/4" wall, which is a framing
     # decision (furr the whole 10.4" out, move W-S-SBS, or accept a two-wall install and
     # detail the open end) and not a modelling one. Left for the owner rather than decided
     # here; a shelf like FURN-S-BATH1-SHELF will not fit the leftover.
@@ -546,21 +480,20 @@ SECOND_FIXTURES = (
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
     #
-    # y 25'-2" -> 25'-4" on 2026-08-29: W-S-BD-N moved 2" north with the whole y=26'-6" line
-    # (see RM-M-BATH1's note in this file), and a lavatory that BACKS a wall has to travel
-    # with it or it stands off the wall by the amount the wall moved. Both mirror lights and
-    # the switch above them moved the same 2" (plan/lighting.py).
-    # ** A 60" DOUBLE VANITY SINCE 2026-08-30, BUILT AS TWO 30" CABINETS. ** Both bowls
-    # stay: this alcove exists so two people can use it at once, and it keeps both mirrors.
-    # It is authored as two FX-VANITY-30-SHALLOW instances rather than one 60" type because
-    # that is how a 60" double is actually bought and built -- two stock 30" bases under one
-    # 61" double top -- and because one 60" fixture would collapse two lavatories into one
-    # in the fixture schedule, halving the DFU this alcove contributes to the drain.
+    # y=305.62" backs onto W-S-BD-N: a lavatory that BACKS a wall has to travel with the
+    # wall's own station or it stands off the face by the amount the wall moved (see
+    # RM-M-BATH1's note in this file for the same rule). Both mirror lights and the switch
+    # above them track the same y (plan/lighting.py).
+    # ** A 60" DOUBLE VANITY, BUILT AS TWO 30" CABINETS. ** Both bowls stay: this alcove
+    # exists so two people can use it at once, and it keeps both mirrors. It is authored as
+    # two FX-VANITY-30-SHALLOW instances rather than one 60" type because that is how a 60"
+    # double is actually bought and built -- two stock 30" bases under one 61" double top --
+    # and because one 60" fixture would collapse two lavatories into one in the fixture
+    # schedule, halving the DFU this alcove contributes to the drain.
     #
-    # ** 18" DEEP. ** W-S-BD-N moved 2" south on 2026-08-30, so the alcove is 42.62" deep
-    # (y 272.0"..314.62" between W-S-SN1's and W-S-BD-N's finish faces) and an 18" carcass
-    # clears its own 21" front zone by 3.62". A 21" one would now clear by 0.62", which is
-    # not enough margin to spend on a wall that has already moved once this week.
+    # ** 18" DEEP. ** The alcove is 42.62" deep (y 272.0"..314.62" between W-S-SN1's and
+    # W-S-BD-N's finish faces) and an 18" carcass clears its own 21" front zone by 3.62". A
+    # 21" one would clear by only 0.62", not enough margin to spend on a wall that has moved.
     #
     # ** THE BOWL SPACING IS THE CODE MINIMUM, EXACTLY. ** Centrelines at x=22.375" and
     # x=52.375": 30.0" centre-to-centre (IRC P2705.1 / IPC 405.3.1 want 30" between adjacent
@@ -571,8 +504,7 @@ SECOND_FIXTURES = (
     #
     # ** THIS ROOM HAS NO RECEPTACLE, AND IT NEEDS ONE. ** NEC 210.52(D) wants an outlet
     # within 36" of each sink's outside edge and there is not one anywhere in RM-S-VANITY.
-    # That predates this change -- the bare bowls had the same problem -- and the fix lands
-    # in plan/electrical.py. See plans/TODO.md.
+    # The fix lands in plan/electrical.py. See plans/TODO.md.
     Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-VANITY-30-SHALLOW",
             room="RM-S-VANITY", position=pt(inch(22.375), inch(305.62)),
             wall_ref="W-S-BD-N"),
@@ -587,23 +519,22 @@ SECOND_FIXTURES = (
 #
 # Stands on SL-G-FLOOR (the garage slab at 0'-0"), 1'-10" below the `garage` storey datum
 # (the ICF stem top). `resolve/placeables.py` measures mount height off the room's floor
-# (resolve/room_floor.py), not the storey datum — before 2026-08-03 it measured off the
-# datum and this (and everything else in the room) floated 22" in the air.
+# (resolve/room_floor.py), not the storey datum — off the datum this (and everything else
+# in the room) would float 22" in the air.
 #
 # Handle height (2'-6") is the type's own; everything below the slab (barrel, shutoff,
 # supply, sleeve) is authored in params/foundations.py and plan/mep.py, none UI-movable.
 # This instance is, which is why it lives here rather than in fixture_types.py.
 GARAGE_FIXTURES = (
-    # No `wall_ref` since 2026-08-15, deliberately: a 6'-0"-bury yard hydrant can't stand
-    # against a wall here without its shutoff/weep stone entering the perimeter footing's
-    # 45° influence line. Stands free at (5'-0", 59'-6") on the existing buried service
-    # line (see params/foundations.py); the 6" of y came off when FT-GF-N's footing was
-    # re-centred under the aligned garage stem.
+    # No `wall_ref`, deliberately: a 6'-0"-bury yard hydrant can't stand against a wall here
+    # without its shutoff/weep stone entering the perimeter footing's 45° influence line.
+    # Stands free at (5'-0", 59'-6") on the existing buried service line (see
+    # params/foundations.py).
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
             room="RM-GARAGE", position=pt(ft(5), ft(59, 6))),
 )
 
-# --- the guest studio: bath + wet bar (2026-08-29) -------------------------------------
+# --- the guest studio: bath + wet bar ---------------------------------------------------
 # The bath box is x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8" — ENTIRELY INSIDE
 # RM-S-SUITEBATH's footprint one storey down, which is the whole point of where it is.
 #
@@ -619,11 +550,10 @@ GARAGE_FIXTURES = (
 # y 19'-5"..21'-11". The lavatory clears its south edge by 2", the shower clears its east edge
 # by 8 3/4", and all three footprints are pairwise disjoint. The finding trigger is ~1.55 in2,
 # so 2" over an 18" face is not much slack — ** IF THE LAV MOVES, MOVE IT SOUTH AND RE-CHECK. **
-# ** THE 2026-08-29 ARRANGEMENT IS REVERSED HERE (2026-08-30), AND THE REASON IS THAT IT
-# MISREAD EXCEPTION 2. ** That pass moved the WC onto the NORTH wall and the lavatory onto
-# the SOUTH wall, both crammed into the same 20 inches of x, on this sentence: "Minn. R.
-# 1309.0305 Exception 2 asks 6'-8" over the fixture and its front clearance". It does not.
-# The exception reads:
+# ** THE WC BELONGS ON THE WET WALL, NOT THE NORTH WALL — A MISREADING OF EXCEPTION 2. **
+# Putting the WC on the north wall and the lavatory on the south, both crammed into the
+# same 20 inches of x, rests on the claim "Minn. R. 1309.0305 Exception 2 asks 6'-8" over
+# the fixture and its front clearance". It does not. The exception reads:
 #
 #     "Bathrooms shall have a minimum ceiling height of 6 feet 8 inches AT THE CENTER OF THE
 #      FRONT CLEARANCE AREA for fixtures as shown in Figure R307.1. The ceiling height above
@@ -635,15 +565,13 @@ GARAGE_FIXTURES = (
 # same lesson `haus check` teaches everywhere else: read the cited section before moving the
 # house to satisfy it.
 #
-# ** THE CLEARANCE ENVELOPE IS 15" + 24", NOT 15" + 21", AND IT IS CHECKED. ** Two things
-# that were true when the older comments in this file were written are not true now. The
-# front dimension went to UPC 402.5's 24" on 2026-08-29 (the derivation is at the head of
-# library/placeables/fixtures.py: Minn. R. 1309.0307 -> ch. 4714 -> the 2018 UPC, unamended;
-# IRC's 21" is not Minnesota's number). And `active_code_profile="MN/IRC"` is now set in
-# plan/manifest.py, which is what makes `_resolved_clearance_zones` keep the zone instead of
-# dropping it — so `integrity.placeable_required_clearance_conflict` is live here and FAILED
-# on the first draft of this arrangement. Do not trust any comment in this repo that says
-# these envelopes are inert; check the manifest.
+# ** THE CLEARANCE ENVELOPE IS 15" + 24", NOT 15" + 21", AND IT IS CHECKED. ** The front
+# dimension is UPC 402.5's 24" (derivation at the head of library/placeables/fixtures.py:
+# Minn. R. 1309.0307 -> ch. 4714 -> the 2018 UPC, unamended; IRC's 21" is not Minnesota's
+# number). `active_code_profile="MN/IRC"` in plan/manifest.py is what makes
+# `_resolved_clearance_zones` keep the zone instead of dropping it, so
+# `integrity.placeable_required_clearance_conflict` is live here. Do not trust any comment
+# in this repo that says these envelopes are inert; check the manifest.
 #
 # What is still ungraded is whether the envelope FITS THE ROOM: `_clearance_conflicts`
 # compares a zone against peer placeable FOOTPRINTS only, never against a wall. Every
@@ -733,27 +661,18 @@ ATTIC_FIXTURES = (
     # `Occupancy.KITCHEN` — that would put a 25 sf nook in `_HABITABLE` (graded for 8% glazing on
     # its own), in `_GFCI_OCCUPANCIES` and in `_STALE_OCCUPANCIES` (demanding its own exhaust
     # terminal). It is part of RM-A-STUDIO and it stays that way.
-    # ** THE BAR MOVED TO THE CENTRE WALL ON 2026-08-29 (x 8'-6" -> 17'-0"). ** It stood on
-    # W-A-STU-W's WEST face, which put the person using it at x ~7'-6" under 4'-3" of roof.
-    # There is no station near that wall the 6:12 rake makes usable, and the wall itself only
-    # runs y 17'-4"..22'-4" — inside the bath's own band — so the bar could not simply slide
-    # north or south. It goes to W-A-C2's west face at y 16'-8", SOUTH of the bath box, where
-    # the ceiling is 8'-7 1/2" and the counter is against the one full-height wall the studio
-    # has. `wall_ref` still names the wet wall (see the block above): the drain crosses the
-    # joist field west to the same stack and the bar is still on one branch, one vent.
+    # ** THE BAR IS ON THE CENTRE WALL, NOT W-A-STU-W'S WEST FACE. ** There is no station
+    # near that wall the 6:12 rake makes usable, and the wall itself only runs
+    # y 17'-4"..22'-4" — inside the bath's own band. It goes to W-A-C2's west face at
+    # y 16'-8", SOUTH of the bath box, where the ceiling is 8'-7 1/2" and the counter is
+    # against the one full-height wall the studio has. `wall_ref` still names the wet wall
+    # (see the block above): the drain crosses the joist field west to the same stack and
+    # the bar is still on one branch, one vent.
     #
-    # ** THAT MOVE WAS THEN DRAGGED OUT OF TRUE IN THE EDITOR, AND 2026-08-30 PUTS IT BACK. **
-    # The position came back from the UI as raw metres, `pt(m(5.18719), m(4.85213))` — which
-    # is (17'-0 7/32", 15'-11"), not the (17'-0", 16'-8") the comment above still described.
-    # Three things were wrong with it and none of them draws a finding:
-    #   * `rotation=deg(-90)` put the BACK of the bowl at -x. The sink faced INTO W-A-C2 and
-    #     its rim stood out into the room. deg(90) is what backs a fixture onto an east wall
-    #     (deg(0) backs south, deg(180) north, deg(-90) west) — compare FX-A-STUBATH-WC above.
-    #   * the bowl floated 1 3/8" clear of W-A-C2's 17'-8 5/8" west face instead of touching it.
-    #   * `drain_position` stayed at the authored (17'-6", 16'-8"), 9" north of where the bowl
-    #     had drifted to, so PR-A-BAR-DRAIN started at a point under no fixture.
-    # Now: back on the finish face at c/l x 17'-1 5/8" (17'-8 5/8" less half the 14" depth),
-    # c/l y 16'-4", drain under the bowl. Footprint x 16'-6 5/8"..17'-8 5/8", y 15'-7"..17'-1".
+    # `rotation=deg(90)` backs the sink onto W-A-C2's east face (deg(0) backs south, deg(180)
+    # north, deg(-90) west — compare FX-A-STUBATH-WC above). Back on the finish face at c/l
+    # x 17'-1 5/8" (17'-8 5/8" less half the 14" depth), c/l y 16'-4", drain under the bowl.
+    # Footprint x 16'-6 5/8"..17'-8 5/8", y 15'-7"..17'-1".
     #
     # ** y 16'-4" IS NOT A BAY CENTRE, AND THAT COSTS PR-A-BAR-DRAIN A 4" LEG, DELIBERATELY. **
     # 16'-8" is the bay centre and it is where the note above says this sink is — but the wall
@@ -772,22 +691,20 @@ ATTIC_FIXTURES = (
 )
 
 
-# --- the two south-face wall hydrants (2026-08-01) -------------------------------------
+# --- the two south-face wall hydrants ---------------------------------------------------
 # Unlike FX-G-HYDRANT (a *yard* hydrant, 6' bury, self-draining below frost), these are
 # *wall* hydrants: seat inside the envelope at the inboard end of a ~10" barrel that
 # self-drains outward when closed. Not buried, not shut down for winter — the owner's ask.
 #
 # Both on the south face, serving the porch (0'-0") and balcony (10' up) outdoor rooms:
 #   FX-M-PORCH-HYD  x=12'-0" on W-M-S1, the blank stretch between WIN-M-BED-S1 and
-#                   WIN-M-BED-S2 (which moved east to centre 14'-8" on 2026-08-24 — its
-#                   RO now runs 13'-5"..15'-11", leaving 1'-5" of clear wall to that jamb).
+#                   WIN-M-BED-S2 (RO 13'-5"..15'-11"), leaving 1'-5" of clear wall to that
+#                   jamb.
 #   FX-S-BALC-HYD   x=7'-4" on W-S-S1, a 16" module bay centre behind RM-S-PLANT (which
-#                   the balcony irrigation this hydrant feeds actually waters). Moved west
-#                   off 16'-8" on 2026-08-24: D-S-DECK-W slid 1'-0" inward and its rough
-#                   opening (12'-2"..17'-2") swallowed the old station. It lands in the
-#                   2'-10" of blank wall between WIN-S-PLANT1 and WIN-S-PLANT2 — the only
-#                   bay left on this wall that is not spoken for, since the 1'-7" west of
-#                   the door took ED-S-PLANT-RC1 (plan/electrical.py).
+#                   the balcony irrigation this hydrant feeds actually waters). It lands in
+#                   the 2'-10" of blank wall between WIN-S-PLANT1 and WIN-S-PLANT2 — the
+#                   only bay left on this wall not spoken for, since the 1'-7" west of the
+#                   door took ED-S-PLANT-RC1 (plan/electrical.py).
 #
 # Each names the room *behind* it, which draws an `integrity.placeable_room_mismatch`
 # (footprint centre outside its assigned room) — correct for an exterior hose bib whose

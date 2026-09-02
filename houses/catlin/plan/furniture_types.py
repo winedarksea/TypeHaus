@@ -1,22 +1,10 @@
 """House-local furniture catalog for items specific to the Catlin plan.
 
-Both mudroom closets left in 2026-08-02: the north closet became RM-M-MECH (2026-07-28)
-and the south closet FURN-M-MUD-CLOSET-S became RM-M-MUD-CLOSET (storeys/main.py) — a
-framed 2x4 partition closet with a sliding bypass door, keeping the original's no-swing
-intent. The workbench and the shoe bench were generic and moved to
-``library.placeables.furniture`` as FURN-G-WORKBENCH / FURN-M-MUD-BENCH.
-
-What is here now are three families the shared catalog has no business carrying, because
-each is *made to fit this house*: curtain rods sized to these window widths, access panels
-sized to the fittings behind these walls (both 2026-08-07), and one built-in shelf scribed
-to one bathroom alcove (2026-08-21). None is a product anyone would reuse across plans,
-which is the test for house-local.
-
-The first two families are ``plan_symbol=None`` on purpose. A rod at 7'-0" and a panel in a
-wall face are not floor-plan objects — drawing a glyph for either would put a rectangle on
-the plan where the room is empty. They are here to be *scheduled and billed*, and to exist
-in 3D at the height someone has to build them at. The shelf is the opposite case: it stands
-on the floor and occupies 20" of a small room, so it has to draw.
+Only items *made to fit this house* belong here: nothing here is a product anyone would
+reuse across plans (the test for house-local). Curtain rods and access panels are
+``plan_symbol=None`` on purpose — a rod at 7'-0" and a panel in a wall face are not
+floor-plan objects, so drawing a glyph would put a rectangle where the room is empty. They
+exist to be *scheduled and billed*, and to sit in 3D at the height someone builds them at.
 """
 
 from __future__ import annotations
@@ -59,25 +47,17 @@ CURTAIN_ROD_OUTDOOR_114 = FurnitureType(
     footprint=(inch(114), inch(6)), height=inch(2),
     plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
 )
-# The porch's two SIDE bays, 2026-08-22. Same product as the 114" front pair, cut to the
-# 8'-8" side run less its corner gaps.
+# The porch's two SIDE bays. Same product as the 114" front pair, cut to the 8'-8" side
+# run less its corner gaps.
 #
-# ** THIS IS THE FALLBACK, AND THE CONTINUOUS U WAS TRIED FIRST. ** An outdoor U-rod is a
-# real article — straight track plus corner connectors, one curtain running the whole way —
-# and ``Furniture`` could carry it: one position and one rectangular footprint per element,
-# so a U is segments on a shared path, exactly as the real product is. What defeats it is
-# the porch, not the schema. Two pillars stand in the way of the only lines a U could take:
-#   * PT-SG-BF2 sits ON the front guard line at x=18'-0", 5 1/2" square, y -9'-8 3/4" to
-#     -9'-3 1/4". A front rod stays continuous past it only if the whole path moves north of
-#     -9'-3 1/4", and at the 6" bracket projection this type carries that is a QUARTER INCH
-#     of clearance against a 6x6 in weather. Nobody builds a quarter inch.
-#   * The side pillar line (x 8'-0" / 28'-0") is 6" OUTBOARD of the guard at 8'-6"/27'-6",
-#     so a rod hung on the pillars drops its curtain outside the 42" railing.
-# Pulling the path inboard far enough to answer both costs 6" of an 8'-8" porch on three
-# sides, needs three new types and moves two rods that are already right — to buy continuity
-# across a pillar the curtain cannot pass at any line. Four bay panels is what the structure
-# actually offers: the front is two bays because PT-SG-BF2 divides it, and the sides are one
-# each. Recorded in plans/TODO.md so the decision is not re-litigated from the product alone.
+# A continuous outdoor U-rod (straight track + corner connectors, one curtain) was tried
+# first and rejected: PT-SG-BF2 sits ON the front guard line at x=18'-0" (5 1/2" square,
+# y -9'-8 3/4" to -9'-3 1/4"), leaving only a quarter inch of bracket clearance past it in
+# weather, and the side pillar line (x 8'-0"/28'-0") is 6" outboard of the guard, dropping
+# a pillar-hung curtain outside the 42" railing. Pulling the path inboard to answer both
+# costs 6" of the porch on three sides and three new types. Four bay panels — front split
+# by PT-SG-BF2, one per side — is what the structure actually offers. Recorded in
+# plans/TODO.md so the decision is not re-litigated from the product alone.
 CURTAIN_ROD_OUTDOOR_98 = FurnitureType(
     tag="FT-CURTAIN-ROD-OUTDOOR-98", name='Outdoor curtain rod, 98"',
     footprint=(inch(98), inch(6)), height=inch(2),
@@ -130,45 +110,32 @@ BATH1_SHELF_2030 = FurnitureType(
 )
 
 
-# --- RM-M-STUDY, the call booth (2026-08-29) --------------------------------------------
+# --- RM-M-STUDY, the call booth --------------------------------------------------------
 #
 # The house's smallest habitable room and its only windowless one, finished as a booth for
 # video calls and homework. Both pieces are house-local by the test at the top of this file —
 # each is scribed to one 4-foot box, and nobody reuses either.
 #
-# ** THE LAYOUT TURNED 90 DEGREES ON THE OWNER'S REVIEW, SAME DAY. ** The first fit-out put
-# the bench down the WEST wall and the desk across the south, which made a room you walk
-# into and turn around in. It is now a bench along the NORTH wall running east-west, facing
-# a desk in the SOUTH-WEST corner: you enter, step into the pocket east of the desk, sit,
-# and slide west. A booth you slide into, not a room you walk into. Two things follow from
-# that turn and neither is cosmetic:
+# Bench along the NORTH wall running east-west, facing a desk in the SOUTH-WEST corner: you
+# enter, step into the pocket east of the desk, sit, and slide west. Two things follow:
 #
-#   1. The bench and the desk now face each other across the room's SHORT dimension, so
-#      their depths compete for one 44 1/8". The bench lost 1" (18" -> 17", still a full
-#      seat depth against a back) to leave 7 1/8" of clear floor between the two front
-#      faces. Your feet go UNDER the desk, which is why that number can be small: the top
-#      is a cantilevered slab on cleats, and there is no leg or stretcher at the front.
-#   2. The bench is no longer fastened to a wall this house retyped. It stands on the
-#      floor as a plinth, scribed to the wainscot at its back and to the wall at each end.
-#      That matters because its wall is now W-M-HS4, which storeys/main.py deliberately did
-#      NOT retype (it carries a stack edge). A plinth needs no structural fastening, so the
-#      turn costs nothing there. See the W-M-LS note in storeys/main.py for what the west
-#      wall's retype is now earning instead. ** AND IT IS NOT MERELY CONVENIENT, IT IS THE
-#      ONLY LEGAL ANSWER: ** D-M-LAUN's leaf parks inside W-M-HS4 between x 12'-4" and
-#      16'-5", and `mep.pocket_occupancy` refuses a fastener, a device or a pipe anywhere
-#      in that cavity. This bench covers x 13'-8 3/4"..17'-7 3/4", so a cleat screwed to
-#      that wall would be a FAIL as well as a hole in a door pocket.
+#   1. Bench and desk face each other across the room's SHORT dimension (44 1/8"), so their
+#      depths compete. The bench is 17" deep (a full seat depth against a back), leaving
+#      7 1/8" of clear floor to the desk front. Your feet go UNDER the desk — the top is a
+#      cantilevered slab on cleats, no leg or stretcher at the front.
+#   2. The bench is a floor-standing plinth, scribed to the wainscot at its back and the
+#      wall at each end — NOT fastened to its wall, W-M-HS4. That is the only legal answer:
+#      D-M-LAUN's leaf parks inside W-M-HS4 between x 12'-4" and 16'-5", and
+#      `mep.pocket_occupancy` refuses any fastener, device or pipe in that cavity. This
+#      bench covers x 13'-8 3/4"..17'-7 3/4", so a cleat screwed to the wall would FAIL.
 #
-# ** EVERY DIMENSION BELOW IS DERIVED FROM out/model.json, NOT FROM A DOCUMENT. ** After
-# W-M-LS and W-M-CLN2 were retyped to INT_2X4_STAGGERED_DOUBLE_GWB (storeys/main.py), the
-# room's four resolved gypsum faces are x 13'-8" .. 17'-8 5/8" and y 18'-4" .. 22'-1 5/8" —
-# a 48 5/8" x 45 5/8" clear box, about 15.4 sf. ** STALE AS OF 2026-08-30: ** both walls
-# retyped again to the single-gwb INT_2X4_STAGGERED_GWB (1 1/4" thinner), which should
-# open this box by about 5/8" on each of the two retyped faces (~49 1/4" x 46 1/4") — but
-# that number is asserted here, not re-derived from a rebuild, and the STUDY_BENCH
-# footprint, its wainscot-return scribe and the seat-length math below are still cut to
-# the OLD box. Re-derive from a fresh `out/model.json` (never `Room.clear_face`, see below)
-# before this casework is actually built.
+# Every dimension below is derived from `out/model.json`: the room's four resolved gypsum
+# faces were x 13'-8" .. 17'-8 5/8", y 18'-4" .. 22'-1 5/8" — a 48 5/8" x 45 5/8" clear box,
+# ~15.4 sf — with W-M-LS/W-M-CLN2 as INT_2X4_STAGGERED_DOUBLE_GWB. **STALE:** both walls are
+# now the thinner single-gwb INT_2X4_STAGGERED_GWB, opening the box ~5/8" per retyped face
+# (~49 1/4" x 46 1/4"), but the STUDY_BENCH footprint, wainscot-return scribe and seat-length
+# math below are still cut to the OLD box. Re-derive from a fresh `out/model.json` (never
+# `Room.clear_face`, see below) before this casework is built.
 # ** DO NOT MEASURE OFF `Room.clear_face`: **
 # `resolve/rooms.py::_lining_inset` insets a claimed face by one uniform 0.635" whatever the
 # wall actually is, so it still reports the 4'-8" x 4'-4" axis box and the published 19.3 sf
@@ -185,21 +152,15 @@ BATH1_SHELF_2030 = FurnitureType(
 # No `clearances` on either, per the casework rule BATH1_SHELF_2030 states: a built-in's
 # back is the wall, its ends are its neighbours, and the floor in front of it is the floor
 # you stand on to use it. A declared zone here would be the room.
-# ** THE SEAT DECK IS 16", NOT 18", AND THE 2" IS THE CUSHION. ** A bench is framed to a
-# height; a CHAIR is set to one. The 18" this was first drawn at is the right number for a
-# bare dining bench and the wrong one the moment a 3" foam cushion goes on it: high-resilience
-# foam settles ~1 1/2" under an adult, so an 18" deck seats you at ~19 1/2" and a 20" deck
-# would seat you at 21 1/2". The differential that matters is COMPRESSED SEAT to desk top, and
-# it wants to be 11"-12" (a 29" desk against the 17"-18" an office chair is actually used at).
-# 16" + 1 1/2" = 17 1/2", against FT-STUDY-DESK's 29 1/2" top, is 12". Exact.
+# ** SEAT DECK IS 16", NOT 18" — THE 2" IS THE CUSHION. ** A 3" HR-foam cushion settles
+# ~1 1/2" under an adult, so an 18" deck seats you at ~19 1/2". Compressed-seat-to-desk-top
+# wants 11"-12" (a 29" desk against the 17"-18" an office chair is used at); 16" + 1 1/2" =
+# 17 1/2" against FT-STUDY-DESK's 29 1/2" top is 12", exact.
 #
-# ** THIS IS WHY THE DESK DID NOT MOVE. ** The other way to close the same gap is to raise the
-# desk to 31", and that is the expensive way: 31" is above the 28"-30" band for seated laptop
-# work and it would shrug the shoulders of anyone using it, AND it buries ED-M-STUDY-RC1/-RC2
-# and ED-M-STUDY-DATA1, all three of which sit at 32" *because* they are 2 1/2" over a 29 1/2"
-# top. Framing the bench 2" lower costs nothing and touches no device. Lower the deck, never
-# raise the desk — and if the cushion is ever re-specced thicker than 3", this number is what
-# has to move, not the desk.
+# The desk stays at 29 1/2" rather than raising to 31" to close the same gap: 31" is above
+# the 28"-30" seated-laptop band and buries ED-M-STUDY-RC1/-RC2/-DATA1, all three sited at
+# 32" (2 1/2" over a 29 1/2" top). Lower the deck, never raise the desk — if the cushion is
+# ever re-specced thicker than 3", this number is what moves.
 STUDY_BENCH = FurnitureType(
     tag="FT-STUDY-BENCH", name='Study booth bench, 47" x 17"',
     footprint=(inch(47), inch(17)), height=inch(16),
@@ -216,15 +177,11 @@ STUDY_BENCH = FurnitureType(
            "carrying a stack edge, and nothing here asks it to hold a cantilever.",
 )
 
-# ** ``plan_symbol`` WAS "desk" AND WAS DRAWING TWO THINGS THAT ARE NOT BUILT. ** The text
-# below has always said this top is cantilevered off cleats with the knee space open to the
-# wall, and `furniture.py`'s "desk" is ``slab(apron=True, modesty_panel=True)`` — which plots
-# four corner legs AND a panel across the back of the knee space. The symbol and the source
-# note have disagreed since the piece was authored; the note was right. "wall-desk" (added to
-# the engine 2026-08-30, ``legs=False, modesty_panel=False``) is the same slab with an apron
-# and nothing standing on the floor, which is what a cleat-hung top is. FT-STUDY-DESK-LEAF
-# below needs the same symbol for a harder reason: a leaf with a leg or a modesty panel
-# cannot fold.
+# ``plan_symbol="wall-desk"`` (``slab(apron=True, legs=False, modesty_panel=False)``), not
+# "desk" (which plots four corner legs and a back panel): this top is cantilevered off
+# cleats with the knee space open to the wall, and nothing stands on the floor.
+# FT-STUDY-DESK-LEAF below needs the same symbol for a harder reason: a leaf with a leg or a
+# modesty panel cannot fold.
 STUDY_DESK = FurnitureType(
     tag="FT-STUDY-DESK", name='Study booth desk top, 29" x 20"',
     footprint=(inch(29), inch(20)), height=inch(29.5),
@@ -241,74 +198,58 @@ STUDY_DESK = FurnitureType(
 )
 
 
-# ** THE FOLD-DOWN LEAF (2026-08-30). ONLY THE EXTRA LENGTH FOLDS, AND THAT IS THE DESIGN. **
+# ** THE FOLD-DOWN LEAF. ONLY THE EXTRA LENGTH FOLDS, AND THAT IS THE DESIGN. **
 #
-# The ask was a desk long enough for two, that folds to the wall, and that still lets one
-# person get in and out easily. Those pull against each other only if the WHOLE desk folds:
-# a 47" top deployed leaves this room no standing floor at all (see the geometry below), so
-# a fold-everything desk would have to be folded and unfolded every single time anyone walked
-# in, for the 95% of days one person works here alone. Folding only the 18" the second person
-# needs keeps the daily room exactly as it is — a fixed 29" desk and the 18 7/8" pocket you
-# step into — and buys the two-person case on demand.
+# The ask was a desk long enough for two that folds to the wall and still lets one person
+# get in and out easily. A fold-EVERYTHING desk would have to be folded and unfolded every
+# time anyone walked in, for the 95% of days one person works here alone. Folding only the
+# 18" the second person needs keeps the daily room exactly as it is — a fixed 29" desk and
+# the 18 7/8" pocket — and buys the two-person case on demand.
 #
-# ** 47" IS THE ROOM'S CEILING, AND IT IS BELOW EVERY PUBLISHED TWO-PERSON MINIMUM. ** 29"
-# fixed + 18" leaf = 47", the full lined box, 23 1/2" each. The trade literature wants 30"
-# per person (a comfortable two-person desk is 72" x 30"); 24" is where "elbows touch" starts.
-# So this is honestly a squeeze, and it is a squeeze for two people around ONE laptop, not for
-# two people each working. Nothing can fix that: 47 1/8" is the wall, and 20" of depth is
-# already under the 24"-30" a two-person setup wants. Do not read the leaf as a second
-# workstation.
+# ** 47" IS THE ROOM'S CEILING, BELOW EVERY PUBLISHED TWO-PERSON MINIMUM. ** 29" fixed +
+# 18" leaf = 47", the full lined box, 23 1/2" each — a squeeze for two people around ONE
+# laptop, not for two people each working; trade literature wants 30" per person (a
+# comfortable two-person desk is 72" x 30"), 24" is where "elbows touch" starts. Do not
+# read the leaf as a second workstation.
 #
-# ** DEPLOYED, THIS ROOM HAS NO FLOOR, AND THAT IS FINE. ** Deployed the leaf holds
-# y 220 3/4"..240 3/4" across the pocket, leaving the same 7 1/8" slot between desk front and
-# bench front that exists at the fixed desk. You slide in from the bench, you do not walk in.
-# It is a diner booth, and the sequence is: both people sit, THEN the leaf comes down. The one
-# thing that makes this safe rather than a trap is that D-M-STUDY swings OUT of the booth
-# (`swing_clearance` resolves to x 216"..246", entirely east of the room) — so a deployed leaf
-# cannot block the door, and either occupant can lift the leaf one-handed from a seated
-# position. Check that swing again before anything here is re-hung.
+# ** DEPLOYED, THIS ROOM HAS NO FLOOR, AND THAT IS FINE. ** It holds y 220 3/4"..240 3/4"
+# across the pocket, the same 7 1/8" slot between desk front and bench front as the fixed
+# desk — a diner booth: both people sit, THEN the leaf comes down. D-M-STUDY swings OUT of
+# the booth (`swing_clearance` resolves to x 216"..246", entirely east of the room), so a
+# deployed leaf cannot block the door and either occupant can lift it one-handed, seated.
+# Re-check that swing before anything here is re-hung.
 #
-# ** IT IS MODELLED DEPLOYED, WHICH IS THE STOWED-STATE LIE WORTH TELLING. ** A Furniture is a
-# footprint on the floor plus a height; there is no way to say "a 20" panel hanging on a wall
-# between 8" and 28"". Deployed is both the state a plan drawing shows and the WORST case for
-# every collision and clearance check, so the model tests the configuration that could fail.
-# Stowed it is a flat panel projecting ~3" from the south wall of the pocket, top edge at 28",
-# bottom at 8" — entirely inside WP-M-STUDY-WAINSCOT's 36" field, which is why it folds DOWN
-# and not up. Folded UP it would stand 28"..48", cutting 12" above the wainscot cap in the one
-# place you look as you walk in, and it would bury ED-M-STUDY-RC1 at 32". Down costs the
-# stale-air grille a move (plan/mep_registers.py); up would have cost an outlet and the
-# wainscot line. Down is cheaper and better looking.
+# ** MODELLED DEPLOYED — THE STOWED-STATE LIE WORTH TELLING. ** A Furniture is a footprint
+# plus a height; there is no way to say "a 20" panel hanging on a wall between 8" and 28"".
+# Deployed is the state a plan drawing shows and the WORST case for every collision check.
+# Stowed it is a flat panel projecting ~3" from the south wall, top edge at 28", bottom at
+# 8" — inside WP-M-STUDY-WAINSCOT's 36" field, which is why it folds DOWN not up (folded UP
+# it would cut 12" above the wainscot cap and bury ED-M-STUDY-RC1 at 32").
 #
-# ** THE HARDWARE, AND WHY IT IS NOT A MURPHY-DESK KIT. ** There is no purchasable murphy-desk
-# mechanism rated for this: the Create-A-Bed kit (Rockler #78834) is the standard article and
-# it is rated 50 lb, which is a laptop and a notebook, not two adults leaning. Build it from
-# brackets: a pair of Hafele/Hebgo 287.43.419 heavy-duty folding table brackets — 18 7/8"
-# projection against this 20" leaf, 1100 lb/pair, auto-locking when raised and released by
-# light upward pressure on the locking arm, so one hand and one motion from a seated position.
-# NOT gas struts: Blum Aventos and Hafele Free Flap are specified by the weight of the flap
-# they LIFT and were never validated to carry load downward when open. If soft-close is wanted
-# it is a Sugatsune EBD damper added to a load-bearing bracket, never a flap fitting standing
-# in for one.
+# ** THE HARDWARE, AND WHY IT IS NOT A MURPHY-DESK KIT. ** No purchasable murphy-desk
+# mechanism is rated for this — the Create-A-Bed kit (Rockler #78834) is 50 lb, a laptop and
+# a notebook, not two adults leaning. Built from a pair of Hafele/Hebgo 287.43.419
+# heavy-duty folding table brackets (18 7/8" projection against this 20" leaf, 1100 lb/pair,
+# auto-locking, released by light upward pressure on the locking arm). NOT gas struts: Blum
+# Aventos / Hafele Free Flap are rated to LIFT a flap's weight, never validated to carry
+# load downward when open. Soft-close, if wanted, is a Sugatsune EBD damper added to a
+# load-bearing bracket, never a flap fitting standing in for one.
 #
-# ** RACKING IS THE FAILURE MODE, NOT CAPACITY, AND THE FIX IS CONTINUITY. ** Two brackets are
-# two pins in a line, and two pins in a line is a hinge that parallelograms sideways when
-# somebody leans on a corner. The bracket steel is never what gives. So: a continuous ledger
-# the full 18", a full-length piano hinge to it, and the leaf's west edge registering into
-# FT-STUDY-DESK's east end on bullet catches, which triangulates it against the one thing in
-# the room that cannot move. A 1 1/2" solid walnut leaf this short is stiff enough on its own;
-# no drop leg is needed, and a drop leg in the pocket would defeat the point of the pocket.
+# ** RACKING IS THE FAILURE MODE, NOT CAPACITY — THE FIX IS CONTINUITY. ** Two brackets are
+# two pins in a line, a hinge that parallelograms sideways when someone leans on a corner.
+# So: a continuous ledger the full 18", a full-length piano hinge to it, and the leaf's west
+# edge registering into FT-STUDY-DESK's east end on bullet catches, triangulating it against
+# the one thing in the room that cannot move. A 1 1/2" solid walnut leaf this short needs no
+# drop leg, which would defeat the point of the pocket.
 #
-# ** AND THE LEDGER IS WHERE THIS WALL BITES BACK. ** W-M-CLN2 is INT_2X4_STAGGERED_GWB
-# (single-gwb since 2026-08-30, was STAGGERED_DOUBLE_GWB at STC 52) and it decouples the two
-# faces *because* no stud touches both, staggered-studs geometry the retype did not touch.
-# The received detail for a wall-hung desk — a ledger lagged through the finish into every
-# stud it crosses — would either miss (there are 1 3/8" of single gypsum plus 3/4" of
-# wainscot before a lag reaches wood, was 2" with the double layer) or, worse, be
-# through-bolted to the far-face studs and short the decoupling this booth was retyped for.
-# The detail is blocking LET IN AT FRAMING, laid FLAT: study-face studs occupy 0"..3 1/2" of
-# the 5 1/2" plate and the living-side studs 2"..5 1/2", so a 2x4 on the flat sits 0"..1 1/2"
-# and clears the far studs by 1/2". The bench already carries this note ("the blocking laid
-# into the staggered bays"); the leaf needs it too, and it has to be in before the rock goes on.
+# ** THE LEDGER IS WHERE THIS WALL BITES BACK. ** W-M-CLN2 is INT_2X4_STAGGERED_GWB, and it
+# decouples its two faces because no stud touches both — a ledger lagged through the finish
+# into every stud it crosses would either miss (1 3/8" of gypsum plus 3/4" of wainscot
+# before a lag reaches wood) or, through-bolted to the far-face studs, short the decoupling
+# this wall was retyped for. The detail is blocking LET IN AT FRAMING, laid FLAT: study-face
+# studs occupy 0"..3 1/2" of the 5 1/2" plate and living-side studs 2"..5 1/2", so a 2x4 on
+# the flat sits 0"..1 1/2" and clears the far studs by 1/2". The bench carries this same
+# blocking; the leaf needs it too, in before the rock goes on.
 FOLD_LEAF = FurnitureType(
     tag="FT-STUDY-DESK-LEAF", name='Study booth desk leaf, 18" x 20", fold-down',
     footprint=(inch(18), inch(20)), height=inch(29.5),
@@ -330,11 +271,11 @@ FOLD_LEAF = FurnitureType(
 # 3'-0" seat depth. Nobody reuses that across plans.
 #
 # ** IT CANNOT BE THREE CATALOG PIECES. ** FURN-SOFA-84 and FURN-LOVESEAT-60 each declare a
-# 2'-6" ``front_zone``, so three of them arranged in a U would each stand in the next one's
-# declared walk path and draw `integrity.clearance_encroachment` three times over — for a
-# shape whose whole point is that the open middle IS the walk path. And FURN-SECTIONAL-L's
-# outline is generated by ``sectional_points``, which is hard-coded to an L (a back run plus
-# one chaise); a U is not a parameter of it.
+# 2'-6" ``front_zone``, so three of them in a U would each stand in the next one's declared
+# walk path (`integrity.clearance_encroachment`, three times over) for a shape whose whole
+# point is that the open middle IS the walk path. FURN-SECTIONAL-L's outline is generated by
+# ``sectional_points``, hard-coded to an L (a back run plus one chaise); a U is not a
+# parameter of it.
 #
 # So: an explicit ``footprint_shape``, which `resolve/placeables.py` prefers over the
 # rectangular ``footprint``, and NO clearance zones at all. The empty ``clearances`` is the
@@ -345,18 +286,13 @@ FOLD_LEAF = FurnitureType(
 # approximation plan/placeables.py already accepts for the armchair. The *plan* outline —
 # what every clearance and collision rule measures — is the true U below.
 #
-# ** IT FACED THE WRONG WAY UNTIL 2026-08-24, AND THE GLYPH IS WHY. ** The ring below was
-# first authored opening toward +y so that an *unrotated* instance would face north at the
-# screen. But every seating family in `model/placeable_symbols/_families.py` — `seating`
-# and `sectional` alike — puts its back band at ``+y`` and faces ``-y``; that is the engine's
-# convention, and `plan/placeables.py` states it at the top of the file. So the collision
-# outline opened north while the body you actually see in the viewer sat with its back to
-# the panel. Nothing caught it: `footprint_shape` is read only by
-# `resolve/placeables.py:_local_footprint` for collision and wall attachment, never by the
-# symbol that draws. The ring is now authored to the engine's convention — back run at +y,
-# opening toward -y — and FURN-B-PLAY-SECTIONAL carries ``rotation=deg(180)`` to point the
-# whole thing north. World geometry is unchanged (a 180 degree turn maps this ring onto the
-# old one exactly); what changed is that the drawn body now turns with it.
+# Every seating family in `model/placeable_symbols/_families.py` — `seating` and
+# `sectional` alike — puts its back band at ``+y`` and faces ``-y`` (`plan/placeables.py`
+# states the convention). The ring below is authored to it: back run at +y, opening toward
+# -y, with FURN-B-PLAY-SECTIONAL carrying ``rotation=deg(180)`` to point the whole thing
+# north. `footprint_shape` is read only by `resolve/placeables.py:_local_footprint` for
+# collision and wall attachment, never by the symbol that draws — so a ring authored against
+# the wrong convention draws a body with its back to the screen with nothing to catch it.
 _U_WIDTH = ft(11)
 _U_DEPTH = ft(8)
 _U_SEAT = ft(3)  # back run and arm depth alike
@@ -390,14 +326,11 @@ MEDIA_SECTIONAL_U = FurnitureType(
 )
 
 
-# --- the media room's bookcases, 2026-08-24 ----------------------------------------------
+# --- the media room's bookcases -----------------------------------------------------------
 #
 # House-local because it is a HEIGHT made to fit one room, not a product cloned from a
-# catalog. plan/placeables.py used to argue the other way — it called the library's 6'-0"
-# FURN-BOOKCASE-32 "7 1/2" short" of a real Billy and declined to correct it, on the grounds
-# that a house-local Billy would be a clone. That reasoning stands and this is not that: the
-# owner asked for the theatre's shelving to run up near the ceiling, and the number that
-# answers it comes from RM-B-PLAY-N's own section, not from a product page.
+# catalog: the owner asked for the theatre's shelving to run up near the ceiling, and the
+# number that answers it comes from RM-B-PLAY-N's own section, not a product page.
 #
 # The room's measured clear height is 8'-0" under SL-M-DECK (`code.R305_ceiling_height`) —
 # NOT the 8'-3 1/2" plan/placeables.py quoted from an older revision of the deck. 7'-6"
@@ -427,15 +360,14 @@ THEATER_BOOKCASE = FurnitureType(
             "W-B-CE's studs at every case."),
 )
 
-# --- kitchen millwork, 2026-08-24 (the peninsula/pantry-room rework) --------------------
+# --- kitchen millwork (the peninsula/pantry-room rework) --------------------------------
 #
-# FT-KIT-COLDSTORE-FILLER stood here and is RETIRED with this commit, along with its one
-# instance. It was 6 1/4" of scribed panel: the remainder of a 72" cold bay after the
-# Frigidaire Professional pair (32 7/8" each). The pantry ROOM's south partition now takes
-# 4 3/4" off the north end of that run, so the bay is 65 3/4" — exactly two appliance
-# widths — and the remainder it existed to fill is gone. Deleting the type rather than
-# leaving it unused is deliberate: an unreferenced house-local type reads as a size someone
-# might reach for, and this one is arithmetic, not a product.
+# FT-KIT-COLDSTORE-FILLER (6 1/4" of scribed panel filling the remainder of a 72" cold bay
+# after the Frigidaire Professional pair, 32 7/8" each) is RETIRED, along with its one
+# instance: the pantry ROOM's south partition now takes 4 3/4" off that run, leaving a
+# 65 3/4" bay — exactly two appliance widths, no remainder to fill. Deleting the type rather
+# than leaving it unused is deliberate: an unreferenced house-local type reads as a size
+# someone might reach for, and this one was arithmetic, not a product.
 
 
 # The over-appliance box the retired CASE-OVER-36 can no longer be. Two 36" boxes need 72";
@@ -445,21 +377,14 @@ THEATER_BOOKCASE = FurnitureType(
 # base depth so the four fronts line up on x=20'-3 3/8" and the appliances stand 3" proud,
 # clearing their own door swing).
 #
-# ** 21" TALL, NOT 24", AND HUNG AT 75" — this box was UNBUILDABLE until 2026-08-24. ** It
-# was authored 24" tall at a 72" mount. The Frigidaire columns are 71 1/2" high with the
-# hinge topping out at 72 1/2", and the manufacturer requires 1" of clearance above (both
-# numbers are in `_FRIGIDAIRE_SOURCE`, plan/appliance_types.py — the spec was read
-# correctly and then not applied to the cabinet). A cabinet bottom at 72" therefore stood
-# 1/2" BELOW the hinge it has to clear and 1 1/2" below the minimum: the door would not
-# have opened.
-#
-# The fix holds two things fixed and moves the third. The stacker course breaks at 96"
-# across every cabinet in this kitchen, so the box's TOP stays at 96"; 21" is a stock wall-
-# cabinet height, so the box stays a catalog size. That puts the bottom at 75" — 2 1/2"
-# over the hinge, comfortably past the 1" minimum, and by coincidence exactly the datum of
-# the 75" flush trim kit Frigidaire sells for these columns (deliberately not ordered; see
-# plan/appliance_types.py). The cost is 3" of storage in two cabinets, which is the price
-# of the door opening.
+# ** 21" TALL, HUNG AT 75", NOT 24" AT 72". ** The Frigidaire columns are 71 1/2" high with
+# the hinge topping out at 72 1/2", and the manufacturer requires 1" of clearance above
+# (`_FRIGIDAIRE_SOURCE`, plan/appliance_types.py). A cabinet bottom at 72" stands 1/2" below
+# the hinge and 1 1/2" below the minimum — the door would not open. The kitchen's 96" stacker
+# course fixes the box's TOP; 21" is a stock wall-cabinet height, so the bottom lands at
+# 75" — 2 1/2" over the hinge, and coincidentally the datum of the 75" flush trim kit
+# Frigidaire sells for these columns (deliberately not ordered; see plan/appliance_types.py).
+# The cost is 3" of storage in two cabinets, the price of the door opening.
 OVER_COLD_3278 = FurnitureType(
     tag="FT-KIT-OVER-COLD-3278", name='32 7/8" over-appliance cabinet',
     footprint=(inch(32.875), ft(2)), height=inch(21), plan_symbol="wall-cabinet",
@@ -473,12 +398,10 @@ OVER_COLD_3278 = FurnitureType(
 
 # --- the peninsula's mixer garage -----------------------------------------------------
 #
-# ** THIS IS WHERE THE STANDING MIXER LIVES, AND IT IS NOT A LIFT. ** The first pass at the
-# owner's "mixer slides straight out onto the peninsula, outlet in the cabinet" put a
-# Rev-A-Shelf spring lift in a BASE bay and three flush pop-ups in the countertop. Both were
-# a misreading, corrected 2026-08-24: the mixer is meant to sit at counter level already,
-# in a cabinet ABOVE the top, and slide straight out onto the counter beside it — no lifting
-# a 25 lb machine up out of a base cabinet, and no holes cut in the stone.
+# ** WHERE THE STANDING MIXER LIVES, AND IT IS NOT A LIFT. ** The owner's ask — "mixer
+# slides straight out onto the peninsula, outlet in the cabinet" — means the mixer sits at
+# counter level already, in a cabinet ABOVE the top, sliding straight out onto the counter
+# beside it: no lifting a 25 lb machine out of a base cabinet, no holes cut in the stone.
 #
 # 24" x 24" x 72": it stands ON the peninsula's countertop at 36" and runs to the 108"
 # ceiling, so its bottom shelf IS the counter plane and the pull-out slides level. 72" is
@@ -524,44 +447,32 @@ MIXER_GARAGE_24 = FurnitureType(
 # an unreviewed tag — to bill some 40 bf of 2x4. So the build lives on ``source`` (the
 # FT-BATH1-SHELF-2030 precedent) and in notes/pantry_climbable_shelving.md.
 #
-# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AND THE REASON CHANGED ON 2026-08-29. ** It used
-# to be a strength argument about plywood: a 3/4" ply shelf cannot span 70 1/4" under a
-# person (about 1,950 psi against a 1,500-2,000 psi flatwise allowable, and 1.65" of sag —
-# the stress borderline, the DEFLECTION an outright failure), and halving the span fixed
-# both. The shelves are 1 1/2" solid white oak now (plan/millwork.py, owner stock), and at
-# that thickness the full 70 1/4" span carries 250 lb at midspan on S = 6.75 in^3 at only
-# ~650 psi. STRENGTH IS NO LONGER THE ARGUMENT. Deflection still is: I = 5.06 in^4 gives
-# ~0.223" full-span, and this shelf is graded as a FLOOR, so the criterion is L/360 =
-# 0.195" and the full span misses it. Gabled to ~34 3/4" it is ~322 psi and ~0.027", which
-# is not close to any limit. The gable also stays because the cleat and blocking layout is
-# built around it, and because it is what makes the bottom bay a step rather than a plank.
+# ** THE MID-SPAN GABLE IS NOT OPTIONAL, AND STRENGTH IS NO LONGER THE ARGUMENT. ** Shelves
+# are 1 1/2" solid white oak (plan/millwork.py, owner stock); the full 70 1/4" span carries
+# 250 lb at midspan at only ~650 psi (S = 6.75 in^3), well under a 1,500-2,000 psi flatwise
+# allowable. Deflection still fails it: I = 5.06 in^4 gives ~0.223" full-span against this
+# shelf's L/360 = 0.195" floor criterion. Gabled to ~34 3/4" it is ~322 psi and ~0.027", not
+# close to any limit. The gable also stays because the cleat/blocking layout is built around
+# it, and it makes the bottom bay a step rather than a plank.
 #
-# ** THE 1x3 HARDWOOD NOSE IS GONE, and that is a consequence, not an omission. ** It was a
-# stiffener — a 3/4" x 2 1/2" edge nearly triples a ply shelf's effective I, and it was the
-# cheapest way to take the spring out of 0.20" of gabled ply sag. There is 0.027" to take
-# out now. Its other job, giving a ply edge a hardwood face, is done by the shelf being
-# hardwood. This also closes a quantity gap: the nose was ~41 LF of hardwood that nothing
-# in the model counted.
+# No 1x3 hardwood nose: that stiffener existed to triple a PLY shelf's effective I and take
+# the spring out of gabled ply sag; solid oak needs none of it, and it also closes a
+# quantity gap — the nose was ~41 LF of hardwood nothing in the model counted.
 #
 # ** SOLID WOOD ON CLEATS MOVES, AND THE FASTENING HAS TO LET IT. ** Boards run the 34 3/4"
-# bay, so the grain is along the bay and the 18" of seasonal movement is FRONT TO BACK —
-# along the side cleats, across their line of screws. Roughly 1/4" of tangential movement
-# across 18" of white oak over a Minnesota RH swing. Screw tight at the FRONT only;
-# elongate every side-cleat and back-cleat hole rearward. A solid shelf pinned hard on
-# three sides splits, and it splits in year two, not on the day it goes in.
+# bay (grain along it), so seasonal movement is FRONT TO BACK — along the side cleats,
+# across their screw line — roughly 1/4" of tangential movement across 18" of white oak over
+# a Minnesota RH swing. Screw tight at the FRONT only; elongate every side- and back-cleat
+# hole rearward. A solid shelf pinned hard on three sides splits, in year two, not on install.
 #
-# ** 18" DEEP, 2026-08-29, and it replaces the 24" of 2026-08-24. ** The room is 26" clear
-# N-S, so 24" left 2" of floor and 18" leaves 8". What bought the change is the milling
-# supply, not the ergonomics: the owner's white oak runs to 18" wide, a finished 18" board
-# needs about 18 3/4" in the rough once an edge is straight-lined and the other jointed, and
-# 24" was two boards edge-glued on every shelf. 18" is one hand-picked wide board per shelf.
-# The published guidance was always against 24" anyway — 16" is the usual practical maximum
-# for a reach-in and 20"+ is called too deep to see into — so the depth that made the stock
-# work is also the depth that makes the pantry work. What is given up is real and is
-# ~25% of the shelf area. Two things still make an 18" reach-in good rather than merely
-# legal: the shelves are STANDABLE, so the bottom bay is a step and the top shelf is
-# reachable; and ED-M-PANTRY-LT is a vertical slot, the one fixture that lights the depth
-# behind what is on each shelf.
+# ** 18" DEEP, NOT 24". ** The room is 26" clear N-S, so 24" left 2" of floor and 18" leaves
+# 8". The milling supply drove it, not the ergonomics: the owner's white oak runs to 18"
+# wide (a finished 18" board needs ~18 3/4" in the rough once edge-jointed), so 18" is one
+# hand-picked board per shelf where 24" was two edge-glued. Published guidance favours 18"
+# anyway — 16" is the usual practical reach-in maximum, 20"+ reads too deep to see into.
+# ~25% of shelf area is given up for it. Two things still make an 18" reach-in good: the
+# shelves are STANDABLE (bottom bay a step, top shelf reachable), and ED-M-PANTRY-LT is a
+# vertical slot lighting the depth behind whatever is on each shelf.
 #
 # Shelf pitch is GRADUATED, not uniform — uniform spacing wastes about two shelves' worth of
 # volume, and since every shelf is rated to be stood on regardless of pitch, climbing does
@@ -636,7 +547,7 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 )
 
 
-# --- Closet shelf-and-rod, the four dedicated closets (2026-08-30) ------------------------
+# --- Closet shelf-and-rod, the four dedicated closets --------------------------------------
 #
 # Ventilated ("wire") shelving on a rod, the standard closet fit-out, and the reason it is
 # a ``FurnitureType`` rather than a ``ShelfBank``: a ShelfBank reaches exactly one consumer,
@@ -688,7 +599,7 @@ CLOSET_SHELF_36 = FurnitureType(
 )
 
 
-# --- RM-M-BATH2, the over-toilet cabinet (2026-08-31) ------------------------------------
+# --- RM-M-BATH2, the over-toilet cabinet -------------------------------------------------
 #
 # The room's only storage above the vanity drawers, and the only wall left to put it on:
 # the vanity runs the south half of the west wall, the shower and the tub deck take the whole
@@ -726,7 +637,7 @@ BATH2_CAB_4506 = FurnitureType(
 )
 
 
-# --- RM-A-STUDIO's wet-bar base (2026-09-01) --------------------------------------------
+# --- RM-A-STUDIO's wet-bar base -----------------------------------------------------------
 #
 # FX-A-STUDIO-BAR-SINK is ``Mount(WALL, elevation=27")``, the identical mount to
 # FX-M-KITCH-SINK -- and that mount only describes a real thing because a run of casework

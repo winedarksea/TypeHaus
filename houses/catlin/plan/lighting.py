@@ -95,14 +95,8 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    # Moved north 2026-08-02, when the ESS closet took the furnace room's SE corner: at
-    # (9'-7", 20'-0") the switch would have stood inside RM-B-ESS, and a switch for the
-    # furnace-room lights cannot live behind the battery closet's door. The closet left for
-    # the NE corner on 2026-08-23 and this did NOT follow it — y=23'-0" is now simply
-    # mid-room on the east wall face (W-B-STR3 since that wall was split, and framed 2x6
-    # rather than concrete since 2026-08-24 — the face moved 3 1/8" east with it, and this
-    # box came with it, x=9'-5" to 9'-8 1/8", still 1" proud of the face), which is where you
-    # reach it walking in from D-B-FURN.
+    # y=23'-0" is mid-room on the east wall face (W-B-STR3, framed 2x6), x=9'-5" to 9'-8 1/8"
+    # — 1" proud of the face — which is where you reach it walking in from D-B-FURN.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(9, 8.125), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),
@@ -166,17 +160,16 @@ BASEMENT_LIGHTING = [
                      position=pt(ft(11), ft(24, 6)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),
-    # Both this and LR-B-STAIR-RAIL above moved 2 5/8" west on 2026-08-24, with the wall
-    # face they hang on: W-B-STR3 is a framed 2x6 line now and the shaft's west face is
-    # x=10'-3 3/8" instead of the pour's 10'-6". Each still sits 1" proud of that face.
+    # This and LR-B-STAIR-RAIL above hang on W-B-STR3's framed 2x6 face, x=10'-3 3/8", each
+    # 1" proud of it.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(10, 4.375), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # Moved north from y=21' on 2026-07-30: RM-B-BATH took the shaft's south 3'-0", so the old
-    # position is inside the bathroom now and `integrity.placeable_room_mismatch` said so. At
-    # y=23'-6" the can is still in the arrival zone at the foot of the flight, between the
-    # bathroom door's outswing arc and D-B-NE's opening at 22'-6"..25'-2".
+    # At y=23'-6" the can sits in the arrival zone at the foot of the flight, between the
+    # bathroom door's outswing arc and D-B-NE's opening at 22'-6"..25'-2" — north of
+    # RM-B-BATH, which claims the shaft's south 3'-0" (`integrity.placeable_room_mismatch`
+    # would flag a can any further south).
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(23, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
@@ -296,14 +289,9 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    # Moved x 22'-6" -> 25'-10" (2026-08-24), then -> 25'-2 1/2" (2026-08-26) with the base
-    # run's re-composition. At 22'-6" it resolved INSIDE W-M-PAN-S, the new pantry's south
-    # partition (axis y=32'-9"), which is also where it drew integrity.placeable_room_mismatch.
-    # It is NOT retagged into RM-M-PANTRY: its controlled_by is ED-M-KITCH-SW and the kitchen
-    # needs the can. It still follows FURN-M-KIT-E1's centre — the north counter run's west
-    # end, now that the run starts at the pantry wall instead of at FURN-M-KIT-PANTRY-E. y is
-    # unchanged, so it stays on CAN2's line, 8" south of the counter front, which is the
-    # composition.
+    # x=25'-2 1/2" follows FURN-M-KIT-E1's centre — the north counter run's west end, at the
+    # pantry wall. It is NOT retagged into RM-M-PANTRY: its `controlled_by` is ED-M-KITCH-SW
+    # and the kitchen needs the can. y stays on CAN2's line, 8" south of the counter front.
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(25, 2.5), m(9.9884)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
@@ -314,13 +302,9 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # ** BOTH EAST CANS WERE STALE, AND THE COMMENT MORE SO. ** The line that stood here
-    # said "over the sink" — the sink moved to the NORTH wall in the 2026-07-30 swap, and
-    # this can has been lighting the top of APPL-M-HOOD's canopy ever since. CAN4 was over
-    # FURN-M-KIT-N2, which the peninsula deletes. Re-laid 2026-08-24 onto what is actually
-    # underneath: CAN3 over FURN-M-KIT-N4 (centre y=34'-2 3/8") and CAN4 over the new 24"
-    # FURN-M-KIT-N3 (centre y=29'-5 3/8"). x=34'-3" is unchanged — 9 5/8" in from the
-    # counter front, the same offset the pair already had.
+    # CAN3 over FURN-M-KIT-N4 (centre y=34'-2 3/8") and CAN4 over FURN-M-KIT-N3 (centre
+    # y=29'-5 3/8"), each over the cabinet actually underneath. x=34'-3" is 9 5/8" in from
+    # the counter front.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(34, 3), ft(34, 2.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
@@ -336,9 +320,9 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # --- kitchen under-cabinet task light (2026-08-24) --------------------------------
-    # The kitchen had no task light at all: four ceiling cans over a counter you stand in
-    # front of, which is the arrangement this file's own kitchen header warns about.
+    # --- kitchen under-cabinet task light -----------------------------------------------
+    # Ceiling cans alone over a counter you stand in front of light your own shadow onto
+    # the work surface, which is the arrangement this file's own kitchen header warns about.
     #
     # ** ED-T-LT-STRIP24 IS THE WRONG TAPE FOR THIS AND IS DELIBERATELY NOT USED. ** The
     # cove tape is 3 W/ft, near 120 lm/ft; a work counter wants 350-500 lm/ft. These run on
@@ -354,9 +338,8 @@ MAIN_LIGHTING = [
     # the deep frosted diffuser are on the type, and both are spec: a bare diode line is
     # visible from a seated position at the peninsula and reflects as a row of dots in a
     # polished counter.
-    # Endpoints are literal base joints (2026-08-26 re-composition): WE1 now runs the full
-    # W-of-window bay 24'-7"..27'-10" (3'-3", was 2'-6") and WE2 the E-of-window bay
-    # 30'-10"..33'-4" (2'-6", was 2'-0") — see plan/placeables.py's kitchen header.
+    # Endpoints are literal base joints: WE1 runs the full W-of-window bay 24'-7"..27'-10"
+    # and WE2 the E-of-window bay 30'-10"..33'-4" — see plan/placeables.py's kitchen header.
     LightRun(uid="63DMV159RN", tag="LR-M-KIT-N-WE1", type_ref="ED-T-LT-STRIP24-TASK",
              path=(pt(ft(24, 7), ft(34, 5.375)), pt(ft(27, 10), ft(34, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
@@ -367,10 +350,10 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    # Extended south to 27'-2 3/8" (2026-08-24) with FURN-M-KIT-WN4, the 15" box filling the
-    # gap the mixer garage left: the tape runs the whole continuous 13"-deep upper face from
-    # the garage's north side to the range, which is also the whole of the peninsula's east
-    # counter and FURN-M-KIT-N3's top.
+    # Runs south to 27'-2 3/8" with FURN-M-KIT-WN4, the 15" box filling the gap the mixer
+    # garage left: the tape runs the whole continuous 13"-deep upper face from the garage's
+    # north side to the range, the whole of the peninsula's east counter and FURN-M-KIT-N3's
+    # top.
     LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
              path=(pt(ft(34, 5.375), ft(27, 2.375)), pt(ft(34, 5.375), ft(30, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
@@ -383,12 +366,8 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # 11'-5" of tape (2026-08-26: was 10'-2" before the north pair grew 15" with the base
-    # run's re-composition) at 5 W/ft = 57.1 W; x1.25 = 71.3 W. ** That is already past
-    # ED-T-LT-PSU-60's 60 VA ** — it cleared by 4.3 VA at the 8'-11" this run was first
-    # drawn at, and one 15" cabinet (FURN-M-KIT-WN4) spent that margin and 3.5 VA more,
-    # which is exactly why the 200 W supply was specified instead of the 60. It loads to
-    # ~36%. NOT a share of
+    # 11'-5" of tape at 5 W/ft = 57.1 W; x1.25 = 71.3 W — already past ED-T-LT-PSU-60's
+    # 60 VA, which is why the 200 W supply is specified. It loads to ~36%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
@@ -407,7 +386,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # --- RM-M-PANTRY's vertical slot (2026-08-24) -------------------------------------
+    # --- RM-M-PANTRY's vertical slot -----------------------------------------------------
     # A POINT DEVICE, NOT A LightRun — see ED-T-LT-SLOT72's note in plan/lighting_types.py
     # for why a vertical run silently bills zero feet and sizes its supply at 0 W.
     # 1'-6" to 7'-6" on the pantry's west wall (W-M-C5B's east face), so the slot lights the
@@ -455,11 +434,10 @@ MAIN_LIGHTING = [
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
     # spot for the desk, over a general can.
     #
-    # ** MOVED 2026-08-29 off the NORTH wall (it was at 15'-10 1/2", 21'-11 5/8") for the
-    # call-booth fit-out. ** With FURN-M-STUDY-DESK on the south wall you now face south, so
-    # a 6'-0" spot on the north wall is a BACKLIGHT — a silhouette on camera — and it sat as
-    # a bright blob in the middle of WP-M-STUDY-FELT, which is the backdrop the camera sees.
-    # It cannot go on the south wall either: a 20"-deep desk puts a monitor in front of it.
+    # ** ON THE EAST WALL, NOT THE NORTH. ** A spot on the north wall (behind
+    # FURN-M-STUDY-DESK, which faces south from the south wall) would be a BACKLIGHT — a
+    # silhouette on camera — bright against WP-M-STUDY-FELT, the backdrop the camera sees.
+    # The south wall is out too: a 20"-deep desk puts a monitor in front of it.
     #
     # So: the EAST wall's north sliver, the 12 15/16" of W-M-C3 north of D-M-STUDY's RO
     # (y 21'-0 11/16"..22'-1 5/8"). x is 2" — half this type's 4" depth — off that wall's
@@ -467,24 +445,19 @@ MAIN_LIGHTING = [
     # plan/electrical.py. `rotation=deg(-90)` backs it onto the east wall and aims it west.
     # ED-M-STUDY-SW is on the same sliver at 48", so the two are vertically clear.
     #
-    # ** THE ROOM TURNED UNDER IT LATER THE SAME DAY AND THIS POSITION GOT BETTER, WHICH IS
-    # LUCK AND SHOULD BE READ AS SUCH. ** It was placed to key someone seated in the SW
-    # corner of an L. The booth is a facing pair now — FURN-M-STUDY-BENCH along the north
-    # wall, FURN-M-STUDY-DESK in the SW corner — so the occupant sits with their back to the
+    # The booth is a facing pair — FURN-M-STUDY-BENCH along the north wall,
+    # FURN-M-STUDY-DESK in the SW corner — so the occupant sits with their back to the
     # north wall and faces south, and the camera on the desk looks north at them. From
-    # (17'-6 5/8", 21'-5") at 6'-0" this is now a SIDE key about 3'-0" off their left cheek,
-    # aimed across the bench: still off the backdrop, still not behind the subject, and no
-    # longer competing with a monitor. It is also above the bench's east end (seat 18") with
-    # 4'-6" of clear, so nothing standing on the bench reaches it.
+    # (17'-6 5/8", 21'-5") at 6'-0" this is a SIDE key about 3'-0" off their left cheek,
+    # aimed across the bench: off the backdrop, not behind the subject, not competing with a
+    # monitor. It is above the bench's east end (seat 18") with 4'-6" of clear, so nothing
+    # standing on the bench reaches it.
     #
-    # ** IT IS A LOCATOR AFTER ALL, ONE STOREY UP (2026-08-30). ** REG-M-SUP4 was asked for
-    # "around here", spent 2026-08-29 on the opposite wall because this sliver is 9 15/16"
-    # of bay already holding this fitting and a switch, and is now in the CEILING three feet
-    # over it at (17'-2", 20'-8") — 4 5/8" west and 9" south of directly above, the 9" being
-    # a joist line. Nothing in that sliver had to move to make room, which is the whole point
-    # of going overhead. The room's stale-air pickup went the other way and is LOW, on the
-    # south wall's east end: the east wall below this sconce is D-M-STUDY's rough opening
-    # down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
+    # REG-M-SUP4 is in the CEILING three feet over it at (17'-2", 20'-8") — 4 5/8" west and
+    # 9" south of directly above, the 9" being a joist line — rather than in this sliver,
+    # which already holds this fitting and a switch. The room's stale-air pickup is LOW, on
+    # the south wall's east end: the east wall below this sconce is D-M-STUDY's rough
+    # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
     # plan/mep_registers.py for both.
     #
     # ** NEITHER THIS NOR ED-M-STUDY-LT MAY BE DELETED. ** RM-M-STUDY is windowless and
@@ -505,19 +478,18 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # y nudged +6" (2026-07-29), matching FX-M-BATH1-LAV's move for the BATH2 wall push.
-    # y nudged +1 1/16" again (2026-08-29): the wall this hangs on is W-M-HS1, and RM-M-BATH2
-    # on its far side retyped it to the 6 3/4" wet wall for its water closet. BATH1's face
-    # went 22'-6 3/8" -> 22'-7 3/8" and the fitting has to follow it or it resolves inside
-    # the studs. Nothing about BATH1 changed; it is the other room's wall.
+    # Matches FX-M-BATH1-LAV's position, and tracks W-M-HS1's face: RM-M-BATH2 on the wall's
+    # far side retyped it to a 6 3/4" wet wall for its water closet, so BATH1's face is at
+    # 22'-7 3/8", not 22'-6 3/8" — the fitting has to follow or it resolves inside the studs.
+    # Nothing about BATH1 changed; it is the other room's wall.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
                      position=pt(m(1.36284), ft(22, 8.385)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-180),
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     # Moved north on the west wall after the toilet/lavatory moved to the
-                     # south wall; the old 22'-3" location landed inside the toilet footprint.
+                     # On the west wall, clear of the toilet/lavatory footprints on the
+                     # south wall.
                      position=pt(ft(5, 7.625), ft(25, 8.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
@@ -547,8 +519,7 @@ MAIN_LIGHTING = [
 
     # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
     # aperture — a 4" can in a 22 ft2 laundry is a headlamp.
-    # Both cans moved with the closet line on 2026-08-03: the laundry's keeps its position
-    # over the machines (+8", with them), the closet's re-centres on the widened corridor.
+    # The laundry's can sits over the machines; the closet's is centred on the corridor.
     ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(10, 8), ft(20, 2)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
@@ -567,17 +538,16 @@ MAIN_LIGHTING = [
                      position=pt(ft(8, 4.375), ft(16, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # room re-pointed to RM-M-MUD-CLOSET (2026-08-15), same correction CAN2 took
-    # 2026-07-28: the 2026-08-02 closet conversion framed a room around this ceiling point
-    # but the light kept naming the old mudroom (`integrity.placeable_room_mismatch`).
+    # room=RM-M-MUD-CLOSET: the closet conversion framed a room around this ceiling point,
+    # and the light's `room` has to name it or `integrity.placeable_room_mismatch` fires.
     # Nothing moves — a label catching up with a wall.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(29)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # room re-pointed to RM-M-MECH (2026-07-28): its ceiling position now lands inside the
-    # framed shaft closet carved out of the mudroom's north end, not the mudroom itself.
+    # room=RM-M-MECH: its ceiling position lands inside the framed shaft closet carved out
+    # of the mudroom's north end, not the mudroom itself.
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(3), ft(34, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-MECH",
@@ -700,11 +670,10 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True,
                                  elevation=ft(7, 10))),
-    # Both x's follow the hall face of W-S-BW1/BW2, which came 1/2" into the corridor on
-    # 2026-08-30 when those walls became INT_2X4_RC (plan/storeys/second.py) — the resilient
-    # channel faces the hall, because the hall is what the bedrooms are being protected from.
-    # Authored x is the face LESS 1" (box back on the face, 2" box): 21'-8 1/8" - 1" =
-    # 21'-7 1/8". It was 21'-7 5/8" against the old 4 1/2" partition.
+    # Both x's follow the hall face of W-S-BW1/BW2, INT_2X4_RC (plan/storeys/second.py) —
+    # the resilient channel faces the hall, because the hall is what the bedrooms are being
+    # protected from. Authored x is the face LESS 1" (box back on the face, 2" box):
+    # 21'-8 1/8" - 1" = 21'-7 1/8".
     ElectricalDevice(uid="QTS0005AAA", tag="ED-S-HALL-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(21, 7.125), ft(10)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL", rotation=deg(-90),
@@ -716,8 +685,8 @@ SECOND_LIGHTING = [
 
     # RM-S-SUITE: the linear wall lamp the notes ask for over the bed, on the long west
     # wall, plus cans down the west strip and one in the arm past the walk-in.
-    # Same 1 5/8" shift as ED-S-SUITE-RC5: W-S-SN1's south face came into the room when the
-    # wall became the 8" staggered sound wall. Authored y was 22'-0 1/8" against the old face.
+    # y tracks W-S-SN1's south face (same station as ED-S-SUITE-RC5), the 8" staggered
+    # sound wall.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
                      position=pt(ft(4, 11.875), ft(21, 10.5)), type_ref="ED-T-LT-WALL-LINEAR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(180),
@@ -844,9 +813,8 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.CEILING)),
 
-    # Both switches moved x 17'-7 5/8" -> 17'-6 3/4" with the humid liner on W-S-C1
-    # (2026-08-18): the wall's plant-room face came 1 1/4" west, and a switch authored to
-    # the old face resolves inside the panel.
+    # Both switches sit at x=17'-6 3/4", the humid liner on W-S-C1's plant-room face — a
+    # switch authored to the bare wall face resolves inside the panel.
     # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a timer so
     # they run a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
@@ -883,19 +851,12 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
-    # Moved down the flight 2026-09-01, from x 25'-0" / z 5'-0" to x 29'-0" / z 7'-6".
-    # ST-S2A climbs westward at 7 1/2" per 10" of run, so the further west the sconce sat the
-    # deeper it was buried in the flight it was meant to light. Measured at the old station,
-    # x=25'-0": the stringer soffit is z 17'-0 1/4" and the tread top z 17'-11 1/2" (both
-    # project-absolute), against a mount at z 15'-0" -- 2'-0" under the soffit and 2'-11 1/2"
-    # BELOW its own tread, with the plan point inside the stair outline. There is no correct
-    # elevation at x=25': the tread is at 95 1/2" storey-relative and this storey is only
-    # 10'-0" floor to floor, so an 8" fixture has no band left.
-    #
-    # At x=29'-0" the tread top is 59 1/2" storey-relative, so ft(7,6) sits 30 1/2" above the
-    # tread with the fixture topping out at 98" -- clear of the deck over, and the same
-    # relationship SC2 keeps at x=32' (45 1/2" over a 32 1/2" tread). y is unchanged: both
-    # sconces stay on the north wall run.
+    # x=29'-0", z=7'-6": ST-S2A climbs westward at 7 1/2" per 10" of run, so a station too
+    # far west buries the fixture in its own flight — at x=25'-0" the tread top is 95 1/2"
+    # storey-relative against a 10'-0" floor-to-floor storey, leaving no band for an 8"
+    # fixture. At x=29'-0" the tread top is 59 1/2" storey-relative, so ft(7,6) sits 30 1/2"
+    # above the tread with the fixture topping out at 98" -- clear of the deck over, the
+    # same relationship SC2 keeps at x=32' (45 1/2" over a 32 1/2" tread).
     #
     # ** NO CHECK CAUGHT THIS. ** `code.R303_7_stairway_illumination` counts luminaires
     # serving the flight (nine for ST-S2A, so it never depended on SC1),
@@ -964,37 +925,29 @@ SECOND_LIGHTING = [
     # landing, well and east hall are one room since the centre line opened under
     # BM-S-HALL.
     #
-    # ** ED-S-LANDING-CAN2 IS GONE (2026-08-29), AND IT IS NOT A LOSS. ** It was a
-    # ED-T-LT-CAN3 recessed at (13'-0", 24'-4"), which is inside FO-A-HALL: there is no
-    # ceiling over that point any more, and a can with `recessed_into_host_surface=True`
-    # needs a host surface to be recessed into. It could have become a pendant; it did not,
-    # because the chandelier two lines down is now a double-height fixture hanging four feet
-    # from where this can was, and two pendants over one stair well is one too many. The
-    # landing's own switch (ED-S-LANDING-SW) still runs the chandelier.
+    # There is no can over the landing itself: that point is inside FO-A-HALL, open to the
+    # roof, with no host surface for a recessed can. The chandelier below is the fixture
+    # for it instead — a double-height pendant hanging over the well — and the landing's own
+    # switch (ED-S-LANDING-SW) runs it.
     #
-    # ** THE CHANDELIER IS THE FIXTURE THIS CHANGE IS FOR. ** It used to hang 4'-0" off the
-    # 9'-0" ceiling and put its shade bottom 5'-0" over the landing. Its ceiling is gone and
-    # the volume above it now runs to the roof underside: at x=13'-11 7/8" that is
+    # ** THE CHANDELIER'S VOLUME NOW RUNS TO THE ROOF UNDERSIDE. ** At x=13'-11 7/8" that is
     # 5'-0" + x/3 = 9'-8" above the attic deck, so 19'-8" above the second floor.
     #
     # It is authored with an EXPLICIT `elevation` and NOT with `drop`, and the difference
     # matters. `resolve/placeables.py` subtracts a `drop` from `floor +
-    # storey.default_ceiling_height` — the 9'-0" plane that no longer exists over this
-    # point. `elevation` is read as the body's BASE directly, so ft(5) puts the shade bottom
-    # exactly where it always was: 5'-0" over the second floor, clear of the landing and
-    # reachable from the flight. What changed is everything above it — the fitting hangs on
-    # about 14'-8" of stem from the rafters, which is the ORDER, and it is why the well now
-    # wants a fixture that reads from the main floor as well as from the landing.
+    # storey.default_ceiling_height` — the 9'-0" plane that does not exist over this open
+    # well. `elevation` is read as the body's BASE directly, so ft(5) puts the shade bottom
+    # at 5'-0" over the second floor, clear of the landing and reachable from the flight;
+    # the fitting hangs on ~14'-8" of stem from the rafters above it, reading from the main
+    # floor as well as from the landing.
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
                      position=pt(m(4.26405), m(9.3355)), type_ref="ED-T-LT-CHANDELIER",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(5))),
-    # Moved twice as walls it rode came out; home is now W-S-SN3's north face at
-    # y=22'-6 1/4", the wall you walk straight at off the flight — a two-gang box with
-    # ED-S-LANDING-SW. Slid west to x=12' on 2026-07-28: ST-M2S now turns left, so the
-    # throat is the well's west lane (x 10'-3 3/8"..13'-9 3/4"), and x=17' was a well's
-    # width away from where you arrive.
+    # On W-S-SN3's north face at y=22'-6 1/4", the wall you walk straight at off the
+    # flight — a two-gang box with ED-S-LANDING-SW. x=12' is inside the well's west lane
+    # (x 10'-3 3/8"..13'-9 3/4"), where ST-M2S turns left, and is where you arrive.
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(12), ft(22, 8.375)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
@@ -1002,12 +955,11 @@ SECOND_LIGHTING = [
 ]
 
 # --- Attic ----------------------------------------------------------------------------
-# ** THE ATTIC'S FITTINGS MOVED TO plan/lighting_attic.py ON 2026-08-29 ** (this file was
-# 1,158 lines against AGENTS.md's 500), and the plane they answer to changed with the roof
-# the same day: the attic is a 6:12 cathedral off a 1 1/2" rafter plate now, so the ceiling
-# is `1 1/2" + x/2` above the attic floor, mirrored past x=18'. It was `5' + d/3` off a
-# 5'-0" knee wall. Every attic ceiling fixture states its elevation, sloped-ceiling trims,
-# housings in the rafter bay rather than a joist bay — see that file's own header.
+# The attic's fittings live in plan/lighting_attic.py (this file was over AGENTS.md's 500
+# lines). The attic is a 6:12 cathedral off a 1 1/2" rafter plate, so the ceiling is
+# `1 1/2" + x/2` above the attic floor, mirrored past x=18'. Every attic ceiling fixture
+# states its elevation, sloped-ceiling trims, housings in the rafter bay — see that file's
+# own header.
 # --- Garage ---------------------------------------------------------------------------
 # Two 4' shop lights on their own switch by the service door, on the house's main lighting
 # circuit (garage is freestanding but fed from ED-B-PANEL) rather than the GFCI receptacle
@@ -1024,26 +976,21 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # A third shop light over the service-door landing (2026-08-22). The two above are at
-    # y=48' and y=58', the working half of the bay; the landing is at y 40'-6"..43'-6" and
-    # the flight below it drops 2'-10" in five risers, and neither light reaches within
-    # R303.8's 4'. Stepping off a 34" landing in the dark is the reason the rule exists.
-    #
-    # Nothing was asking until 2026-08-22 either: R303.8 grades `model.stairs`, and this
-    # flight was five concrete `Slab`s. (It reads as an *exterior* stair rather than an
-    # interior one because `_stair_is_indoors` asks whether a CONDITIONED room stands over
-    # it, and the garage is deliberately unconditioned. R303.7 would want the same luminaire
-    # here and not the switching, since five risers is under its six-riser threshold.)
+    # A third shop light over the service-door landing. The two above are at y=48' and
+    # y=58', the working half of the bay; the landing is at y 40'-6"..43'-6" and the flight
+    # below it drops 2'-10" in five risers, neither light reaching within R303.8's 4'.
+    # Stepping off a 34" landing in the dark is the reason the rule exists. (It reads as an
+    # *exterior* stair rather than an interior one because `_stair_is_indoors` asks whether
+    # a CONDITIONED room stands over it, and the garage is deliberately unconditioned. R303.7
+    # would want the same luminaire here and not the switching, since five risers is under
+    # its six-riser threshold.)
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
                      position=pt(ft(6, 6), ft(42)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # On W-G-S's INTERIOR face, so it followed the wall 1" north on 2026-08-26 with the
-    # catlin truss (plan/storeys/garage.py::GARAGE_Y_SOUTH), as it did 1/2" on 2026-08-23,
-    # and 1/2" SOUTH on 2026-08-31 when GARAGE_WALL_2X6's interior face receded 7/8" (the
-    # Zip-R -> CDX sheathing swap) against only 3/8" of node-line move the other way — see
-    # plan/electrical.py's GARAGE_DEVICES comment for the full arithmetic.
+    # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
+    # plan/electrical.py's GARAGE_DEVICES comment for the face-position arithmetic.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(8, 6), ft(41, 4.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
@@ -1056,12 +1003,9 @@ GARAGE_LIGHTING = [
     # storey-relative (garage datum = stem top at 1'-10" over slab), so it sits 8'-10"
     # over the apron and its 9" housing still clears the 8'-0" top plate.
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
-                     # 2026-08-20: was 24'-3 3/8". The garage wall lost its 3/8" rainscreen
-                     # furring that day, so the cladding face — which is what a surface-mounted
-                     # sconce screws to — came in 3/8" with it. Then 2026-08-31: +3/8" again,
-                     # the opposite direction — GARAGE_WALL_2X6's cladding went 1/2" nail
-                     # strip -> 7/8" corrugated, so the face it screws to stands 3/8" further
-                     # proud of W-G-E's unmoved node line.
+                     # x=24'-3 3/8" is the cladding face — what a surface-mounted sconce
+                     # screws to — 3/8" proud of W-G-E's unmoved node line under
+                     # GARAGE_WALL_2X6's 7/8" corrugated panel.
                      position=pt(ft(24, 3.375), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(90),
                      controlled_by=("ED-G-EXT-SW",),
