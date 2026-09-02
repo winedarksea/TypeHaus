@@ -73,9 +73,9 @@ __all__ = ["annotate_building_section"]
 #: ``_shared.PLAN_RESERVATION_SCALE``.
 SECTION_RESERVATION_SCALE = 0.1875
 
-#: Printed size of every label on this sheet, points. The elevations author 4 model inches
-#: because they were written before paper space existed; a section drawn at 1/2" = 1'-0"
-#: would print that at 12 pt, which is a heading, not an annotation.
+#: Printed size of every label on this sheet, points. The elevations author 4 model inches,
+#: which a section drawn at 1/2" = 1'-0" would print at 12 pt — a heading, not an
+#: annotation — so this converts.
 ANNO_PT = TEXT_PT
 
 #: The same lettering as model inches at the reservation scale. Two things need it: the
@@ -230,9 +230,9 @@ def _emit_grade(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
 
     Drawn **outboard of the building only**. A section's ground line stops where it meets
     the foundation; run straight through, it draws earth across the basement it is
-    supposed to bound — which is what it looked like before this clipped. Returns the u the
-    ground reached on the right and the caption's reserved box, model inches: the datum
-    column has to stand clear of the one and the callouts have to dodge the other.
+    supposed to bound. Returns the u the ground reached on the right and the caption's
+    reserved box, model inches: the datum column has to stand clear of the one and the
+    callouts have to dodge the other.
     """
     view, depth = _view_of(plane)
     lo_u, _z0, hi_u, _z1 = bounds

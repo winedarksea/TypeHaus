@@ -99,11 +99,8 @@ DETAIL_FILL: dict[str, str] = {
     # to record. Same osb hatch — it is still a veneer panel.
     "plywood-underlayment-sanded": "#e7d8b4",
     "zip-r": "#3f6d3a",
-    # The roof rebuild's six new tags (2026-08-20). Every one of them was drawing as the
-    # #e8e4da fallback with no hatch — six near-white bands stacked on each other in the
-    # one detail whose whole job is to tell the roof's layers apart. These tables are
-    # explicit by tag on purpose (a substring guess would colour "roof-vent-mat" as metal),
-    # so a new material has to be entered here or it renders as nothing.
+    # Explicit by tag on purpose (a substring guess would colour "roof-vent-mat" as metal),
+    # so a new material has to be entered here or it renders as the near-white fallback.
     "zip-sheathing": "#3f6d3a",
     "roof-deck-vapor-barrier": "#1e3a5f",
     # Deliberately NOT the deck barrier's navy, though both are self-adhered sheets: the
@@ -133,9 +130,7 @@ DETAIL_FILL: dict[str, str] = {
     # needle in `_FAMILY_NEEDLES` ("clad"/"metal"/"seam" are all absent from it), so without
     # this row it would draw as the near-white fallback with no hatch.
     "pbr-panel-26": "#2f2f2f",
-    # The north/south board & batten panel (2026-08-31) draws as the same metal ink for the
-    # reason given just above: a section shows a metal skin. Listed explicitly because these
-    # tables match by TAG — `board-batten-24` hits no `_FAMILY_NEEDLES` needle either.
+    # Same reason as pbr-panel-26 above: matched by TAG, hits no `_FAMILY_NEEDLES` needle.
     "board-batten-24": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
     "cedar-tg": "#c8a26a",

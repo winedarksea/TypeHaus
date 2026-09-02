@@ -191,11 +191,10 @@ def geometry_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
 def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
     """Model-space bbox including the room lettering occupies — the **frameless** fit.
 
-    What every caller did before a :class:`~typehaus.emit.draw.scene.Frame` existed: with no
-    paper decided, the figure is fitted to the content, and text placed by its anchor would
-    be cropped off the edge unless the fit allows for its width. Correct for that world and
-    wrong for a framed one, which is why it survives beside :func:`geometry_bounds` rather
-    than being repaired.
+    With no paper decided, the figure is fitted to the content, and text placed by its
+    anchor would be cropped off the edge unless the fit allows for its width. Wrong for a
+    framed scene, which is why this survives beside :func:`geometry_bounds` rather than
+    being repaired.
     """
     us: list[float] = []
     zs: list[float] = []
@@ -542,11 +541,9 @@ def _apply_text_scale(fig, ax, scaled_text) -> None:
     the axes' own transform, because only matplotlib knows how the figure ended up fitted.
 
     ``MIN_PT`` is a real floor — a note nobody can read is not a smaller note, it is a
-    missing one. There is deliberately **no ceiling**: the 14 pt clamp that used to be here
-    was a symptom, not a fix. It existed because a tight detail's lettering could swallow the
-    drawing, and it "solved" that by silently drawing labels at the wrong relative size. The
-    fix is that annotation is sized in points against a chosen sheet, which is what
-    ``height_pt`` is for; with that available, a clamp only hides a scale mistake.
+    missing one. There is deliberately **no ceiling**: sizing annotation in points against a
+    chosen sheet (``height_pt``) is the fix for oversized lettering; a clamp would only hide
+    a scale mistake by silently drawing labels at the wrong relative size.
     """
     if not scaled_text:
         return
@@ -685,12 +682,10 @@ def _stroke_pt(node: Polyline) -> tuple[str, float]:
     """A polyline's ink and printed weight: **its own lineweight when it set one, the
     layer's default otherwise.**
 
-    Until this existed the node's ``lineweight`` was dead data everywhere but the DXF: this
-    writer resolved ``_LAYER_STYLE[layer]`` and threw the node's own weight away, so the 0.18
-    the section clipper sets for a background band and the 0.5 a grade line asks for both
-    printed at whatever single weight their layer carried. A drawing with one weight per
-    layer cannot say which of two things on the same layer is nearer, and that is the whole
-    vocabulary a hidden-line elevation, a plan poché and a detail depend on.
+    A drawing with one weight per layer cannot say which of two things on the same layer is
+    nearer, and that is the whole vocabulary a hidden-line elevation, a plan poché and a
+    detail depend on — so a node's own weight, when set, must win over the layer default
+    instead of being thrown away in favour of ``_LAYER_STYLE[layer]``.
 
     A layer whose default weight is ``0.0`` is a layer that is **not stroked** — ``A-AREA-IDEN``
     carries room identification, not linework — and stays unstroked whatever a node asks for.
@@ -831,8 +826,8 @@ def _poche_for(scene: Scene, ax: object) -> _WallPoche | None:
     Two conditions and neither is optional. **A floor plan** (``_PLAN_SCENE_PREFIX``) — see
     there for why the other twelve small-scale sandwich drawings on the set must not be
     touched. **And a chosen scale at or below** ``_POCHE_MAX_SCALE``: a frameless scene has no
-    paper, therefore no printed width to judge a band against, so it keeps exactly the
-    behaviour it had before this existed.
+    paper, therefore no printed width to judge a band against, so it falls through to
+    unpoché'd rendering.
     """
     if scene.frame is None or scene.frame.scale > _POCHE_MAX_SCALE:
         return None

@@ -147,8 +147,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
 
     The IR's wall body is already jamb-split into piers, sill bands and headers, already
     banded (``Layer.extent``), already raked under a gable and already arched at a curved
-    head — five things this function used to re-derive, each with its own idea of where a
-    layer stops. What stays here is what genuinely belongs on the drawing side: the crop,
+    head. What stays here is what genuinely belongs on the drawing side: the crop,
     thin-layer exaggeration (#36), the true-dimension label, the authored joint termination
     and the glazing line.
     """

@@ -25,17 +25,15 @@ from typehaus.resolve.geometry_slice import CutPlane
 def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> None:
     """Slice each host's ``<uid>::framing`` element — one loop for every family of stick.
 
-    The hand-rolled crossing math this replaces got the *section face* from a guess: a flat
-    1.5" for every floor joist regardless of profile, and a bounding rectangle for a raked
-    member, which loses the rake entirely. ``member_solid`` is the one member solid every
-    emitter already shares, so the cut face is now the same shape IFC sweeps and glTF draws
-    — orient, rake, birdsmouth and all. A winder tread, whose plan outline is a trapezoid no
-    box can express, rides through as its prism instead of being silently squared off.
+    ``member_solid`` is the one member solid every emitter already shares, so the cut face
+    is the same shape IFC sweeps and glTF draws — orient, rake, birdsmouth and all. A winder
+    tread, whose plan outline is a trapezoid no box can express, rides through as its prism
+    instead of being silently squared off.
 
     ``representative_roles`` names the roles that get the *nearest member* when none is cut.
     A rafter runs along the cut plane, so it draws only when one lands on the station — which
     a wall-midpoint cut rarely does, and an eave detail with no rafter in it is not an eave
-    detail. ``nearest_station`` names and tests what ``section.py`` used to do by hand.
+    detail. ``nearest_station`` names and tests that logic.
     """
     from typehaus.resolve.geometry_slice import nearest_station, slice_part
 

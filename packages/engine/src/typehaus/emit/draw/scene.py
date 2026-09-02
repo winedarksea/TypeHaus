@@ -164,10 +164,10 @@ IRNode = Polyline | Hatch | Text | ArchDimension | Leader | Symbol | Viewport
 class Frame(_IRBase):
     """The paper the drawing is laid out on — the thing that makes a scale *chosen*.
 
-    ``None`` on a :class:`Scene` means "no paper decided yet", which is what every caller
-    meant before this existed: the writer fits the content to whatever figure it likes, and
-    the drawn scale is a consequence of how much there happened to be to draw. With a frame,
-    the sheet is the independent variable and the drawing is placed into it.
+    ``None`` on a :class:`Scene` means "no paper decided yet": the writer fits the content
+    to whatever figure it likes, and the drawn scale is a consequence of how much there
+    happened to be to draw. With a frame, the sheet is the independent variable and the
+    drawing is placed into it.
 
     * ``paper`` — sheet size, paper inches (w, h).
     * ``viewport`` — (x, y, w, h) of the drawing window on that sheet, paper inches.

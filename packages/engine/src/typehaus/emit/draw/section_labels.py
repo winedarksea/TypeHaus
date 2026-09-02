@@ -153,15 +153,11 @@ def roof_layer_ladder(roof, bands, crop, z_at, ladder_labels,
                                  target=point, key=(roof.uid, name)))
     if not entries:
         return
-    # **Highest band first**, off the targets themselves. ``place_column`` fills top-down, so
-    # this is what makes rung order and band order the same order — and it is the whole
-    # difference between a ladder and a cat's cradle. This used to reverse whatever the
-    # caller passed, on the belief that the layers arrived innermost-first; the section
-    # sorted them by their offset from the *structure datum*, which is a different question
-    # from where they land on a sloped cut, and the two answers stopped agreeing once the
-    # cavity fill joined the list. The ladder came out rafter-at-the-top over a roof drawn
-    # roofing-at-the-top, so all ten leaders crossed all ten others on the way in. Sorting
-    # on the elevation the band was measured at cannot be wrong about the drawn order.
+    # **Highest band first**, off the targets themselves — not off each band's offset from
+    # the structure datum, which can disagree with where the band lands on a sloped cut.
+    # ``place_column`` fills top-down, so sorting on drawn elevation is what makes rung
+    # order and band order the same order, and it is the whole difference between a ladder
+    # and a cat's cradle.
     entries.sort(key=lambda entry: -entry.target[1])
     ladder_labels.extend(place_column(
         entries, x=u_lo / M_PER_IN - 1.0, z_top=z_hi / M_PER_IN - 1.0,
@@ -177,16 +173,11 @@ def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
     **``to`` is where the arrowhead goes, and it is the only end any renderer draws.** All
     three back ends — matplotlib's ``annotate`` in ``pdf_writer``, ``add_leader`` in
     ``dxf_writer``, and the viewer's ``DetailCanvas`` — draw the single segment ``at → to``
-    and never read ``anchor``, which is provenance for hit-testing. A roof rung used to be
-    written here as an elbow: horizontal out to the band's u at the *rung's* own height,
-    with the point on the band carried in ``anchor``. No renderer has ever drawn that second
-    leg, so the arrow stopped at the shoulder — at the label's row, on whatever band happens
-    to lie at that elevation. The eave's rungs span 22" of column against 21" of roof, so
-    every arrow landed three or four inches high of the layer it named and the whole ladder
-    read as if it were pointing one band up. The fix is to aim ``to`` at the band itself and
-    let the leader run as one diagonal. It cannot tangle: ``roof_layer_ladder`` sorts by
-    target elevation and ``place_column`` steps rungs down in that same order, so the two
-    sequences descend together and order-preserving lines do not cross.
+    and never read ``anchor``, which is provenance for hit-testing. ``to`` must aim at the
+    band itself so the leader runs as one diagonal; it cannot tangle because
+    ``roof_layer_ladder`` sorts by target elevation and ``place_column`` steps rungs down in
+    that same order, so the two sequences descend together and order-preserving lines do
+    not cross.
     """
     for placed in dodge(ladder_labels, scale=scale):
         mid_u, target_z = placed.spec.target

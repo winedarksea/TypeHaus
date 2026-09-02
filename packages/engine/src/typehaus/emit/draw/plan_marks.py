@@ -1,10 +1,7 @@
 """Opening schedule marks and their bubbles (→ 20 §Drawing IR, A-601).
 
-The plan used to print ``op.tag`` beside every window — ``WIN-M-EAST-MID``, thirty-one
-times on the exterior alone plus every interior unit — at 2.2" of building, which is under
-the writers' 4 pt legibility floor at any scale a floor plan is drawn at. A field of
-unreadable authoring tags is not annotation; the drawing has to say *which schedule row*,
-and the schedule says the rest.
+Full authoring tags are under the writers' 4 pt legibility floor at any plan scale, so the
+drawing marks *which schedule row*, not the tag, and the schedule says the rest.
 
 **The mark is per TYPE, not per opening**, and that is the convention rather than a
 shortcut: a door/window schedule is a schedule of *types* (A-601's own third column is

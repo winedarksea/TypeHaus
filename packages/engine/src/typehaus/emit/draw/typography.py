@@ -10,9 +10,9 @@ paper*, and the only reason it was ever written in model inches is that the writ
 way to say otherwise. That is what ``height_pt`` on the IR text nodes fixes, and this module
 is where the sizes it takes come from.
 
-Before this there were four copies of ``CHAR_ASPECT`` (``pdf_writer``, ``annotate``, and two
-wrap-column constants that had to match it), each with a comment saying "keep in sync with"
-the others. A constant that three modules have to agree on is not three constants.
+A constant that three modules have to agree on is not three constants — that is why
+``CHAR_ASPECT`` lives here rather than duplicated in ``pdf_writer``, ``annotate``, and the
+wrap-column code that must match it.
 
 Conversions
 -----------

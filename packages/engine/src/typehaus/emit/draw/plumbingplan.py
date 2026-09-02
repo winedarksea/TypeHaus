@@ -29,9 +29,9 @@ def storey_above(model: ResolvedModel, storey_tag: str) -> str | None:
     Not simply the next storey by elevation. A freestanding structure files its own storey
     in the same table as the house's, and once it stops sharing the house's datum it lands
     *between* two house storeys: catlin's garage sits at -0'-8" — above the basement at -9'
-    but 8" below the main floor — since grade dropped 2'-6" under the house on 2026-08-18.
-    Taking it as "the storey above the basement" put a garage yard-hydrant sleeve on the
-    basement's ceiling plan and dropped the 42 sleeves cast in the deck actually overhead.
+    but 8" below the main floor. Taking it as "the storey above the basement" put a garage
+    yard-hydrant sleeve on the basement's ceiling plan and dropped the 42 sleeves cast in
+    the deck actually overhead.
 
     So the candidate must reach this storey's own ceiling. A floor that sits below the
     ceiling of the storey under it is not that storey's ceiling; it is something standing

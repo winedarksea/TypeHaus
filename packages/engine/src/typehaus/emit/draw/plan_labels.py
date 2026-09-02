@@ -6,9 +6,9 @@ first one wrong — ``RM-M-LIVING`` is a uid-adjacent authoring tag, not a name 
 any use for, and it was printed at 4" of *building*, which is 4.7 pt at the scale the sheet
 actually lands on and vanishes at anything smaller.
 
-The third is new. ``ResolvedCeiling`` has carried a per-deck-region plane since
-2026-08-25 and no drawing has ever printed it, which is how a house whose basement ceiling
-genuinely steps 1 9/16" could look flat on every sheet in the set.
+The third is new: no drawing prints ``ResolvedCeiling``'s per-deck-region plane, which is
+how a house whose basement ceiling genuinely steps 1 9/16" could look flat on every sheet
+in the set.
 
 **A room resolves one ceiling record per deck REGION, not per plane.** ``RM-M-LIVING``
 resolves four and ``RM-B-STAIR`` resolves four, all at one height — those are polygon parts
