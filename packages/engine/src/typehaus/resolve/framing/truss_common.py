@@ -4,9 +4,9 @@ There are two ways catlin's cladding stands off its sheathing, and the model car
 
 * the **Swinburne truss** (``truss_frame.py``) — a vertical KDAT 2x4 outrigger lap-screwed
   to a plywood tab on a flat block, three chiral pieces per node, 16" o.c.;
-* the **catlin truss** (``truss_girts.py``) — two tiers of flat horizontal 2x4 girts at
-  24" o.c., each course bearing on 3-1/2" blocks at the stud module and taking one long
-  structural screw per block.
+* the **catlin truss** (``truss_girts.py``) — flat horizontal 2x4 girts at 24" o.c., each
+  course bearing on 4-1/2" blocks on every other stud and taking one 8" structural screw
+  per block. One tier since 2026-09-01; two before it, and the two-band form still frames.
 
 They are genuinely different frames: one is a chirality-and-collision problem in plan, the
 other a two-band pairing problem in elevation. What they share is the *datum* — a band
@@ -115,8 +115,9 @@ class BandFrame:
         it can only be continuous around an opening if the buck is already there to spray to.
 
         Identical on both frames but for its width, which is the stand-off depth — 5" behind
-        an outrigger, 6" behind two tiers of girts — so it is read off ``buck_depth`` rather
-        than named, and the profile string follows the wall it is actually in.
+        an outrigger, 6" behind the girts (whether that 6" is one tier on a 4-1/2" block or
+        two tiers of 1-1/2") — so it is read off ``buck_depth`` rather than named, and the
+        profile string follows the wall it is actually in.
         """
         profile = panel_profile(self.buck_depth / 0.0254, BUCK_THICKNESS_IN)
         thickness = self.buck_thickness

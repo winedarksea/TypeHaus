@@ -201,14 +201,27 @@
 # plus the 1 1/4" bottom edge) = $1.50-3.38/LF. Painting a narrow band is ~85% labour, as
 # the pillar note says of a 6x6, so that splits $0.25-0.50 material and $1.30-2.90 labour.
 "1.25x7.25 rim:post-paint-white" = { material = { low = 2.25, high = 3.75 }, labour = { low = 2.2, high = 4.6 } }  # 20 LF
-# 96 LF of this is sheathing blocking. The other 474 LF arrived on 2026-08-26: three of the
-# catlin truss's four stand-off layers are 1-1/2" deep, so each carries its own eave/rake
-# return run (~158 LF ordered apiece) where the outrigger band used to carry one 3-1/2" one.
-# Same solid-stock rate — nothing 1-1/2" thick comes off a 1/2" sheet.
-"1.5x1.5 panel" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 570 LF — sheathing blocking + girt-wall eave returns, priced as 2x2
-# The catlin truss's band C foam (1") carried out as its own eave/rake return, 2026-08-26.
-# Same solid-stock basis as the 1.5x1.5 row above, scaled by section: (1x1)/(1.5x1.5) = 0.44.
-"1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # 158 LF — girt-wall eave return
+# 96 LF of this is sheathing blocking. The rest arrived on 2026-08-26 with the catlin truss:
+# every stand-off layer carries its own eave/rake return run (~158-176 LF ordered) where the
+# outrigger band used to carry one 3-1/2" one. There were THREE such 1-1/2" runs on the
+# two-tier wall (band A foam, inner girt, outer girt); since 2026-09-01 there is **one**, the
+# girt. Same solid-stock rate — nothing 1-1/2" thick comes off a 1/2" sheet.
+"1.5x1.5 panel" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 272 LF — sheathing blocking + the girt's eave return, priced as 2x2
+# THE 4" FOAM BAND'S OWN EAVE/RAKE RETURN (2026-09-01). One 4" application means one 4" deep
+# return where the two-tier wall had a 1-1/2" one and a 1" one — this row REPLACES the "1x1
+# panel" row below it and half of the 1.5x1.5 above. Same solid-stock basis as the 1.5x1.5
+# row, scaled by section: (4x4)/(1.5x1.5) = 7.1, and labour flat (it is one run either way,
+# just a deeper rip).
+#
+# ** Without this row the wall gets CHEAPER by simplifying, and the saving is an artifact **
+# — the profile key changed from `1x1 panel`/`1.5x1.5 panel` to `4x4 panel` and an unmatched
+# key is silently dropped from the bill (`glazed-green-brick` convention; the same trap the
+# missing `closed-cell-spray-foam:1.0` row set in [envelope_layers]). Confirm `4x4 panel` is
+# not in `estimate["unpriced"]` after any change here.
+"4x4 panel" = { material = { low = 2.5, high = 4.25 }, labour = { low = 0.5, high = 1 } }  # 176 LF — the foam band's eave return
+# Retired 2026-09-01 with the band C foam it followed: there is one 4" foam band now, and its
+# return is the "4x4 panel" row above. Kept, commented, dated.
+# "1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # was 158 LF — girt-wall eave return
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
 "11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2436 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
@@ -291,12 +304,12 @@
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
 "2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
-# RE-SCOPED 2026-08-26 by the catlin truss. The girt wall's INNER tier is plain SPF — it is
-# encapsulated in closed-cell foam and never sees water — so the inner girt courses, their
-# jamb posts and head/sill courses, and every block-1 all bill here rather than on the KDAT
-# row below. That is 2,432 LF of course + post, 571 LF of block-1 and 192 LF of head/sill
-# course on top of the 6,630 LF of ordinary framing.
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 10244 LF — SPF (6,490 framing + 3,754 of inner girt tier)
+# RE-SCOPED AGAIN 2026-09-01, back to what it was before the truss: ordinary framing and
+# nothing else. Deleting the inner girt tier takes 3,972 LF off this row — 2,432 LF of inner
+# course and jamb post, 571 LF of block-1, 192 LF of inner head/sill course, and the SPF
+# offcuts that went with them — and hands nothing back, because everything outboard of the
+# sheathing is KDAT now. This is the single largest material line change in the wall.
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6272 LF — SPF, ordinary framing only
 # 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
 # (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
 # `resilient-channel` and it is deliberately the same number — single-leg RC-1 in 12' sticks,
@@ -311,20 +324,26 @@
 # acoustic upgrade paid for itself. Confirm it is not in `estimate["unpriced"]` after any
 # change here (`haus takeoff --json | jq '.cost_estimate.unpriced'`).
 "25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 312 LF
-# THE CATLIN TRUSS'S OUTER TIER (2026-08-26), and the single biggest cost lever in the wall.
-# 3,265 LF net of KDAT southern yellow pine 2x4, all of it laid FLAT: 2,432 LF of outer girt
-# course and outer jamb post, 641 LF of block-2, and 192 LF of outer head/sill course. It
-# re-scopes the 2026-08-23 row of the same name, which was 3,736 LF of on-edge outrigger.
+# THE CATLIN TRUSS'S ONE GIRT TIER (2026-08-26; the only tier since 2026-09-01), and the
+# single biggest cost lever in the wall. 2,774 LF ordered of KDAT southern yellow pine 2x4,
+# all of it laid FLAT: the girt courses, the jamb posts and the head/sill courses at every
+# RO. The three-ply BLOCKS are the same product and bill on the "3-2x4:kdat" row below,
+# where the ply count is in the profile.
+#
+# The count went UP against the 2,432 LF the outer tier carried at 32" courses and DOWN
+# against the 3,265 LF the whole outer tier cost, and both moves are the same change: 24"
+# courses are a third more course (x 32/24), and deleting the inner tier took 3,972 LF of
+# SPF off the row above rather than anything off this one.
 #
 # ** The KDAT question is settled now, and settled the other way. ** The 2026-08-23 row
 # carried an open flag asking whether the outrigger needed to be treated at all — it was
 # buried in closed-cell foam, in a vented cavity, and never saw bulk water. That reading was
-# right for that stick and is wrong for this one. The outer girt is a 3-1/2"-deep HORIZONTAL
-# LEDGE standing in the vent gap behind the cladding: it collects what gets past the panel
-# and it wet-cycles for the life of the wall. Block-2's face is the same ledge every 16" on
-# the foam plane. The vent alone does not carry that; treated stock does. The INNER tier —
-# encapsulated in foam, never wet — is where the SPF saving was actually available, and it
-# is taken: it bills on the "2x4" row above.
+# right for that stick and is wrong for this one. The girt is a 3-1/2"-deep HORIZONTAL LEDGE
+# standing in free air behind the cladding: it collects what gets past the panel and it
+# wet-cycles for the life of the wall. The block's face is the same ledge every 32" on the
+# foam plane. The vent alone does not carry that; treated stock does. There is no longer an
+# encapsulated tier where an SPF saving is available — that was the inner girt, and it is
+# gone.
 #
 # Two things set the rate apart from the SPF row:
 #   material — KDAT (kiln-dried AFTER treatment) SYP 2x4 runs about 2-2.5x SPF by the foot.
@@ -336,8 +355,9 @@
 #     against the course below it and takes one screw per block. The outrigger it replaces
 #     was held, plumbed and lap-screwed to a plywood tab at two planes, and the tab's own
 #     lap screws were never even billed. Still above a 1x4 batten: the stick is heavier and
-#     the screw is 5".
-"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 3658 LF
+#     the screw is 8" — but there is only ONE of them per crossing and only one pass, where
+#     the two-tier wall was two sticks, two screw passes and two liftings of the same board.
+"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 2774 LF
 # RETIRED 2026-08-26 with the catlin truss. This was the DOUBLED head/sill blocking over the
 # wide openings (60" French/slider) and the two-ply jamb fillers of the Swinburne truss.
 # Neither exists on a girt wall: the head course is blocked back to the cripples at every
@@ -360,11 +380,27 @@
 # "5x0.5 panel" = { material = { low = 0.5, high = 0.75 }, labour = { low = 0.4, high = 0.9 } }  # was 960 LF — tabs
 # "5x0.375 panel" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.9, high = 1.8 } }  # was 536 LF — 5" bucks
 # "3-2x4" = { material = { low = 3.9, high = 5.7 }, labour = { low = 1, high = 1.9 } }  # was 48 LF — jamb fillers
+# UN-RETIRED 2026-09-01 as a different piece entirely: THE BLOCK. One per crossing, 4-1/2"
+# tall, three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat on the sheathing over
+# every other stud at every 24" course, clamped by the girt screw and never tacked. 1,128 of
+# them, 352 LF ordered of three-ply — 1,056 LF of 2x4 by the foot, which is why the material
+# rate is 3x the "2x4:kdat" row's and not the same number.
+#
+# Charging it at the full KDAT rate is deliberately conservative and probably generous to
+# the estimate: a 3-1/2" piece is an OFFCUT, and a wall that already buys 2,774 LF of KDAT
+# girt in 8'-16' sticks generates most of these at the saw for nothing. The row is priced as
+# if none of them did, because "we will find the wood" is not a quantity.
+#
+# Labour is LOW and that is the point of the whole detail: drop three loose pieces on a
+# snapped stud line on the flat wall, lay the girt over them, drive one screw. No tacking,
+# no plumbing, no second plane. The three plies are what buy the 4-1/2" of thermal break
+# under the screw head and the 1/2" of proud that IS the vent gap.
+"3-2x4:kdat" = { material = { low = 3.9, high = 5.7 }, labour = { low = 0.5, high = 1 } }  # 352 LF (1,128 blocks x 3 plies)
 # The eave and rake RETURN at the top of the wall — each layer's own depth carried out to
 # close the cladding cavity under the roof edge — is no longer one 3-1/2" piece. The catlin
-# truss authors the stand-off as four 1-1/2"-and-under layers, so the return follows as four
-# thin runs: three on "1.5x1.5 panel" (foam, inner girt, outer girt), one on "1x1 panel"
-# (the band C foam) and one on "0.5x0.5 panel" (the vent gap), each ~146-148 LF. Retired
+# truss authors the stand-off as layers, so the return follows as one thin run per layer:
+# since 2026-09-01 that is "4x4 panel" (the foam), "0.5x0.5 panel" (the vent gap) and
+# "1.5x1.5 panel" (the girt), ~176 LF each; it was five runs on the two-tier wall. Retired
 # with the outrigger band it followed; restore with CATLIN_EXT_2X6_SWINBURNE.
 # "3.5x3.5 panel" = { material = { low = 3, high = 4.4 }, labour = { low = 0.8, high = 1.5 } }  # was 158 LF
 "2x6" = { material = { low = 0.85, high = 1.15 }, labour = { low = 0.9, high = 1.6 } }  # 9132 LF
@@ -754,25 +790,59 @@
 # derives the length and the count from the stack, and there is no longer a nailbase to screw
 # through. Kept for the rate.
 "SDWH191000DB" = { low = 1.05, high = 1.95 }  # 0 ea (was 581) — the ROOF's 10" screws through 6" of polyiso
-# 2026-08-26, the catlin truss's block screws — ONE per block, two rows, both landing on the
-# same 5" part. Derived from the resolved members rather than from a grid
-# (takeoff/fasteners.truss_wall_block_screw_rows):
-#   block-1: 1-1/2" girt + 1-1/2" block + 1/2" sheathing + 1-1/2" into the stud       = 5.00"
-#   block-2: 1-1/2" girt + 1-1/2" block + 1-1/2" into the inner girt                  = 4.50"
-# 1,957 + 2,197 = 4,154 ea. It looks like a large jump from the 2,570 the Swinburne row
-# carried, and it is not the count of *blocks* that grew — it is that a girt wall blocks
-# every course at every stud station (16" x 24") where an outrigger wall blocked every
-# outrigger every 40". One screw each instead of two takes half of it back.
-#
-# ** This row REPLACES 2,570 ea of SDWS22400DB (2026-08-23), which in turn replaced 537 ea
-# of SDWH191000DB on the walls ** — the 10" screws holding 1/2" furring through 4" of rigid
-# board. Neither truss has such a screw: every fastener here is wood-to-wood with continuous
-# lateral support and nothing bears on foam. Same basis as the 8" row below: SDWS22500DB runs
-# about $0.70-1.10 ea in the 500-count carton (Simpson list less contractor discount, 2026),
-# tracking the 8" row's $/inch.
-"SDWS22500DB" = { low = 0.7, high = 1.1 }  # 4154 ea — girt-wall block screws (block-1 + block-2)
+# RETIRED 2026-09-01 with the inner girt tier. It carried 4,154 ea of 5" screw — 1,957 into
+# the stud through block-1 and 2,197 into the inner girt through block-2 — and both rows are
+# gone: there is one tier now, one block per crossing, and one screw through the lot. The
+# row is kept commented, not deleted, on the `glazed-green-brick` convention: a priced row
+# that vanishes silently makes the house cheaper by an amount nobody can attribute.
+# "SDWS22500DB" = { low = 0.7, high = 1.1 }  # was 4154 ea — girt-wall block screws (block-1 + block-2)
 # "SDWS22400DB" = { low = 0.6, high = 0.95 }  # was 2570 ea — Swinburne truss-wall block screws
-"SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1865 ea
+#
+# ** THE CATLIN TRUSS'S ONE FASTENER (2026-09-01). ** 1,128 ea, one per crossing, and there
+# is no second screw and no nail anywhere outboard of the sheathing. Derived from the
+# resolved blocks rather than from a grid (takeoff/fasteners.truss_wall_block_screw_rows):
+#   1-1/2" girt + 4-1/2" block (3 plies) + 1/2" sheathing + 1-1/2" into the stud     = 8.00"
+#
+# The count FELL from 4,154 to 1,128 and both halves of that are the design. Deleting the
+# inner tier deletes one of the two screws at every station; putting the block on every
+# OTHER stud (32", against 24" courses) halves what is left. The tributary a crossing
+# carries went from 16" x 32" to 32" x 24" — 3.56 to 5.33 ft2 — and the screw grew from 5"
+# to 8" to cross the 4-1/2" block, so this is a more expensive screw bought a third as
+# often. See notes/catlin_truss_engineering.md §3: it is a pure WITHDRAWAL element at ~38%
+# of allowable, because the block bears the cladding's gravity in direct compression, and
+# the schedule is the one thing this wall cannot get wrong.
+#
+# ** This row REPLACES 4,154 ea of SDWS22500DB (2026-08-26), which replaced 2,570 ea of
+# SDWS22400DB (2026-08-23), which replaced 537 ea of SDWH191000DB ** — the 10" screws
+# holding 1/2" furring through 4" of rigid board. The length is back to 8" and the
+# resemblance stops there: this screw is wood-to-wood with continuous lateral support the
+# whole way and nothing bears on foam, where the 10" one cantilevered through a compressible
+# board. The 8" DB runs $469.78-634.21 per 400 (= $1.17-1.59 ea, see the CS16 note above).
+#
+# STAINLESS WAS CONSIDERED AND REJECTED, 2026-09-01, and it will be asked again. The product
+# exists — SDWS27800SS, Type 316, 8", IAPMO UES ER-192, stocked — and withdrawal is a wash
+# (385 lb allowable against the DB's 374, on a 102 lb demand). Three reasons against:
+#   thermal — 316 is ~16 W/mK against carbon's 43-50, but the SS screw is 0.276" where the
+#     DB is 0.220", Simpson's compensation for an austenitic alloy it cannot heat-treat.
+#     Bridging goes as k*D^2, so 57% more section eats most of the conductivity gain: the
+#     fastener term falls 40-49%, not ~65%, which is 0.3-1.0 R whole-wall.
+#   cost — $6.13-8.62 ea retail against $1.15-1.75 here; at 1,128 screws, +$5,000 to
+#     +$7,800. At this file's own ccSPF rate that money is 1.5-2 more inches of foam over
+#     the 3,092.6 SF wall, ~R-10 to R-13. Fifteen times the return, for an illustration of
+#     $/R and not a proposal — more foam depth moves the cladding face and its whole blast
+#     radius.
+#   driving — 316 cannot be heat-treated, so torsional strength is well below the DB's
+#     hardened core; it wants a T50 driver where the DB takes T40, through 6" of KDAT, 1,128
+#     times, and stainless galls on long run-downs. That is against the project's FIRST
+#     priority, which is the labour.
+# And the corrosion case it was meant to buy is largely absent: Zelinka, Glass & Derome
+# (USFS FPL, Corrosion Science 83 (2014) 67-74) measured fastener corrosion in ACQ-treated
+# wood as "nearly undetectable" at 75% RH (~14% MC), with a sigmoidal threshold near 15% MC.
+# KDAT is dry at install and this screw lives encapsulated in closed-cell foam. Simpson's DB
+# coating is already rated "equivalent to hot-dip galvanization... suitable for certain
+# exterior and preservative-treated wood applications." Stainless stays where it is cheap
+# and exposed: the 1-1/2" cladding fasteners below.
+"SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1128 ea — the catlin truss's one girt screw
 "SP6" = { low = 1.5, high = 2.75 }  # 424 ea
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
 "STHD" = { low = 18, high = 32 }  # 41 ea
@@ -1970,42 +2040,46 @@
 # THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
 # see `cli/prices.QUALIFIED_KEY_FIELD`.
 #
-# ** TWO PASSES, THREE AUTHORED BANDS, 4" OF FOAM. ** That distinction is the whole reason
-# this block needs a note. The applicator makes exactly TWO lifts:
-#   pass 1 — 1-1/2", flush to the block-1 faces, before the inner girts go on
-#   pass 2 — 2-1/2", burying the inner girt and finishing 1" proud of it
-# `plan/assemblies.py` splits pass 2 into two LAYERS — the girt's 1.5" CavityFill (band B)
-# and the 1.0" `foam-vent` in front of it (band C) — so `analysis._layer_rsi` can parallel-
-# path the wood through band B and still credit foam over 100% of band C. That is R-value
-# bookkeeping, NOT a third pass. Nobody sprays a 1" lift on this wall.
+# ** ONE PASS, ONE AUTHORED BAND, 4" OF FOAM (2026-09-01). ** This block used to be a
+# two-pass, three-band narrative and none of it describes the wall any more. There is no
+# inner girt to bury and no gauge lift in front of it: the applicator makes ONE 4"
+# application, on the tilted wall, through the 20-1/2" clear between courses and behind
+# them. The girt stands 1/2" off the foam face, so the whole plane is reachable from outside
+# and no course shadows a pocket.
+#
+# Two things the applicator is being paid for that a flat 4" lift does not imply, and they
+# belong in the labour half of the rate rather than in a separate row:
+#   fillet — the foam is filleted against the 1,128 block sides, not butted square (BSI-048).
+#     Planed lumber shrinks; a square cold joint at a block is exactly where the crack goes.
+#   gauge  — the lift is shaved to a gauge 1/2" behind the block's outer face, because 1/2"
+#     is inside ccSPF surface tolerance and the vent gap is the tolerance.
 #
 # Basis, the same one `[construction_returns]."rim-spray-foam"` already derives from: 2 lb
-# ccSPF is $1.00-1.50 per BOARD-FOOT installed, and a board-foot is 1 SF at 1". So
-#   pass 1, 1-1/2"  -> 1.5 bd-ft/SF -> $1.50-2.25/SF
-#   pass 2, 2-1/2"  -> 2.5 bd-ft/SF -> $2.50-3.75/SF
-#                      billed as :1.5 + :1.0 = $1.50-2.25 + $1.00-1.50, the same money
-# split here roughly 40/60 material/labour, which is where a sprayed-in-place product with a
-# rig, a crew and a cure window sits. ** THE LADDER IS LINEAR IN BOARD-FEET AND CARRIES NO
-# SET-UP **, so spelling one lift across two rows bills neither more nor less than the lift
-# does. Total for the wall: 3,093 SF x 4" = 12,370 board-feet.
+# ccSPF is $1.00-1.50 per BOARD-FOOT installed, and a board-foot is 1 SF at 1". So 4" ->
+# 4 bd-ft/SF -> $4.00-6.00/SF, split here roughly 40/60 material/labour, which is where a
+# sprayed-in-place product with a rig, a crew and a cure window sits. ** THE LADDER IS
+# LINEAR IN BOARD-FEET AND CARRIES NO SET-UP ** — both statements survive the change, which
+# is why one row at :4.0 bills exactly what the three retired rows did between them. Total
+# for the wall: 3,093 SF x 4" = 12,370 board-feet, unchanged.
 #
-# The `:1.0` row was MISSING until 2026-08-29. Band C emitted `closed-cell-spray-foam:1.0`,
-# matched no key, and fell into the take-off's "not priced" list — the bid was carrying 3"
-# of a 4" wall, about $3,700-5,500 short across CATLIN_EXT_2X6 and PLANT_EXT_2X6_HUMID
-# together. Priced at the same $1.00-1.50/bd-ft as every other row here. `:2.5` is the
-# retired one-row spelling of pass 2 and now matches nothing; it is kept only as the
-# cross-check that `:1.5` + `:1.0` still lands on it.
+# ** AND IT IS ONE MOBILISATION AGAIN. ** The 2026-08-29 note here budgeted a SECOND set-up
+# (~$500-1,500) because `notes/catlin_truss_engineering.md` §8 put 2,448 LF of inner girt
+# course, plus jamb posts and head/sill courses at 45 openings, BETWEEN the two lifts. That
+# framing operation no longer exists: all the wood and the whole screw pass happen on the
+# flat wall before tilt-up, and the sprayer arrives once, to a finished frame. Removing that
+# line is a real saving and it is the labour case for the change, not an accounting one.
 #
-# ** IT IS NOT ONE MOBILISATION. ** The earlier claim here (one visit, two lifts, same day)
-# does not survive `notes/catlin_truss_engineering.md` §8: step 5 puts 2,448 LF of inner
-# girt course, plus jamb posts and head/sill courses at 45 openings, BETWEEN pass 1 and
-# pass 2, and step 7 shaves pass 2 to a gauge before the outer girts. No sprayer waits
-# through a framing operation of that size. Budget a SECOND set-up, ~$500-1,500; the rows
-# below carry board-feet only, so that mobilisation is not in any of them.
+# The retired rows are kept commented, dated, on the `glazed-green-brick` convention: a
+# priced row that vanishes silently makes the house cheaper by an amount nobody can
+# attribute. `:1.0` in particular was MISSING until 2026-08-29 and the bid was carrying 3"
+# of a 4" wall — about $3,700-5,500 short — which is exactly the failure this convention is
+# for. Confirm `closed-cell-spray-foam:4.0` is not in `estimate["unpriced"]` after any change
+# here (`haus takeoff --json | jq '.cost_estimate.unpriced'`).
+# "closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # was 3092.6 SF twice — pass 1 (band A) and the girt fill (band B)
+# "closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # was 3092.6 SF — the rest of pass 2 (band C)
 # Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan) —
 # the same two the rim row cites; the board-feet are this assembly's own geometry.
-"closed-cell-spray-foam:1.5" = { material = { low = 0.6, high = 0.95 }, labour = { low = 0.9, high = 1.3 } }  # 3092.6 SF twice — pass 1 (band A) and the girt fill that opens pass 2 (band B)
-"closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # 3092.6 SF — the rest of pass 2 (band C). NOT a third lift
+"closed-cell-spray-foam:4.0" = { material = { low = 1.6, high = 2.4 }, labour = { low = 2.4, high = 3.6 } }  # 3092.6 SF — the one 4" application, filleted at the blocks and shaved to a gauge
 # 2026-08-31 — GARAGE_WALL_2X6's stud-bay fill, 631.3 SF at 2". A DIFFERENT BUILDING and a
 # different visit from the three rows above: the garage is detached, and its bays are
 # sprayed from inside between the studs rather than in bands over a truss wall's sheathing.
@@ -2279,8 +2353,18 @@
 # carries (46-72% over bare panel; 45 openings), for the same reason.
 #
 # LABOUR $3.70-6.55/SF, +35-50% on PBR, at the LOW end of the researched band because 20"
-# coverage is 1.8x PBR's panel count where 16" would have been 2.25x. The concealed pancake
-# screws fold in at ~$0.03/SF — at 32" girts only ~696 of them land on wood.
+# coverage is 1.8x PBR's panel count where 16" would have been 2.25x. The concealed screws
+# fold in at ~$0.04/SF — at 24" girts ~928 of them land on wood, up from ~696 at 32".
+#
+# ** THE CLADDING SCREW IS 1-1/2", STAINLESS OR ASTM A153 CLASS D HDG, ** on this row and on
+# the PBR row above, and it is NOT the 1" "plated" pancake screw a panel order ships with. It
+# has to take the full 1-1/2" thickness of the KDAT girt it lands in: this wall has no
+# sheathing behind the nailer to catch a short screw, and a fastener that stops part-way
+# through a treated ledge in a vented cavity is the one corrosion exposure in the assembly
+# (see the SDWS22800DB note in [hardware] for why the GIRT screw, encapsulated and dry, is
+# the opposite case and stays carbon steel). Metal Sales' published detail asks for 1/2" past
+# the inside face of the support, which no 1-1/2" screw in a 1-1/2" girt can give; that needs
+# a written variance from the supplier, and it is an open item.
 #
 # ** THE FIXINGS ARE INSIDE THIS RATE, unlike the PBR row. ** `board-batten-24` deliberately
 # does NOT set `Material.exposed_fastener`, so `takeoff.fasteners` bills no counted screw for
@@ -2288,11 +2372,16 @@
 # corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
 # would double-bill them.
 #
-# ** THE 32" GIRTS CONSTRAIN THE SUPPLIER, AND A PURCHASING SUBSTITUTION MUST NOT HAPPEN
-# QUIETLY. ** Board & batten is not a purlin-bearing profile. PBR at 32" o.c. carries ~160 psf
-# negative under ICC-ES ESR-4729; board & batten is ~51 psf (24 ga, interpolated from Metal
-# Sales' table, the only one published) and appears NOWHERE in ESR-4729. Against the -20 to
-# -35 psf corner-zone demand it still passes, but the margin falls from ~4.5x to ~1.5x. Of
+# ** THE GIRTS CONSTRAIN THE SUPPLIER, AND A PURCHASING SUBSTITUTION MUST NOT HAPPEN
+# QUIETLY. ** Board & batten is not a purlin-bearing profile. At 24" o.c. (2026-09-01; it was
+# 32") Metal Sales publishes 58 psf outward and 43 psf inward for 24 ga board & batten, which
+# is d/c 0.31 / 0.47 against the 18.3 psf ASD zone-5 demand — the margin roughly doubled with
+# the course spacing and is no longer the thing to watch. ** ESR-4729 DOES NOT COVER THIS WALL
+# and the earlier note here was wrong to lean on it: ** it is Western States' report, for ROOF
+# panels only, on 24 ga minimum over 16 ga steel supports. PBR's wall capacity has to be
+# re-cited to a manufacturer wall table (ASC PS230 / Metal Panels Inc. / Homewood publish
+# 144-168 psf at 3'-0" spans, so 6x or better at 24"), not to an evaluation report that never
+# governed it. What has not changed is WHO WILL SELL IT: of
 # eight manufacturers surveyed only WESTERN STATES ("most details in this guide are shown with
 # panels attached to open framing") and METAL SALES permit open girts: McElroy lists solid deck
 # only, Lyon caps furring at 18", Best Buy Metals says solid decking. Substituting any of those
@@ -2308,7 +2397,7 @@
 #
 # ** THE REVERT IS THE `pbr-panel-26` ROW ABOVE, which is why it is still here with its count
 # updated rather than deleted. ** Reverting is deleting twenty `layer_materials=` lines; it
-# restores ESR-4729 coverage and the 4.5x uplift margin, because the girts were sized for PBR.
+# restores the larger uplift margin, because the girts were sized for PBR.
 #
 # ** TRIM IS PARITY, and an earlier 2-3x figure was WRONG. ** A first pass priced board &
 # batten trim at 2-3x PBR's and put the all-four-elevations premium at +$7.5k-12k. That band
@@ -2327,8 +2416,11 @@
 # batten's guide calls for zero closures.
 #
 # Sources: Western States Metal Roofing (board & batten install guide, panel widths, metal
-# siding cost, 24 vs 26 gauge), Metal Sales published span table, ICC-ES ESR-4729, Steeldash
-# published trim list. CONFIDENCE: MEDIUM on material, MEDIUM-LOW on the labour uplift.
+# siding cost, 24 vs 26 gauge), Metal Sales published span table (NOT ESR-4729 — see above), Steeldash
+# published trim list, Metal Sales board & batten span table. CONFIDENCE: MEDIUM on material,
+# MEDIUM-LOW on the labour uplift. OPEN: Western States' own board & batten install guide
+# could not be fetched, so its open-girt permission and maximum spacing are unverified by
+# hand — Metal Sales is the only one confirmed to permit open girts at all.
 "board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 3.7, high = 6.55 } }
 # 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any

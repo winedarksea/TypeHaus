@@ -172,34 +172,6 @@
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          316.25,
-          102.28346456692913
-        ],
-        [
-          319.74999999999994,
-          102.28346456692913
-        ],
-        [
-          319.74999999999994,
-          120.0
-        ],
-        [
-          316.25,
-          120.0
-        ]
-      ],
-      "pattern": "batt",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "mineral-wool"
-    },
-    {
-      "space": "model",
       "node": "polyline",
       "points": [
         [
@@ -1530,6 +1502,78 @@
         1.228
       ],
       "content": "spf  5.5\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          0.988
+        ],
+        [
+          0.64,
+          0.988
+        ],
+        [
+          0.64,
+          1.1280000000000001
+        ],
+        [
+          0.5,
+          1.1280000000000001
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "fiberglass"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          0.988
+        ],
+        [
+          0.64,
+          0.988
+        ],
+        [
+          0.64,
+          1.1280000000000001
+        ],
+        [
+          0.5,
+          1.1280000000000001
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.7,
+        1.058
+      ],
+      "content": "fiberglass  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

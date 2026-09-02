@@ -10,9 +10,12 @@ Three of these assertions are doing unusual work and are worth reading before ch
   whole item. A d/c of 0.36 is not a pass here: the limit state that governs a concealed
   panel is screw withdrawal and nobody publishes it, so a green ratio against the only table
   anybody printed must never open the gate.
-* :func:`test_the_east_and_west_pbr_walls_are_not_items` pins the *scope*. PBR is covered by
-  ICC-ES ESR-4729 and stays prescriptive; an item enumerated for it would be this engine
-  claiming an engineer is needed where a report already answers.
+* :func:`test_the_east_and_west_pbr_walls_are_not_items` pins the *scope*. PBR's wall
+  capacity is published in the manufacturers' own wall span tables (144-168 psf at 3'-0"),
+  so it stays prescriptive; an item enumerated for it would be this engine claiming an
+  engineer is needed where a table already answers. Until 2026-09-01 the reason recorded
+  here was ICC-ES ESR-4729, which does not cover this wall at all — it is a ROOF-panel
+  report over steel supports. The scope is unchanged; the citation behind it is not.
 * :func:`test_a_span_the_allowable_was_not_read_at_is_not_interpolated` pins a refusal.
   Reading 51 psf off a 32" row and applying it to some other spacing is exactly the silent
   wrong answer this module exists to avoid.
@@ -29,15 +32,15 @@ _ORACLE = {
     "mean_roof_height_ft": 25.5990,
     "k_z": 0.669544,
     "q_h_psf": 19.2679,
-    "effective_wind_area_ft2": 2.3704,
+    "effective_wind_area_ft2": 1.3333,
     "gcp_zone5": -1.4,
     "gcp_zone4": -1.1,
     "gcpi": 0.18,
     "strength_zone5_psf": 30.4432,
     "asd_zone5_psf": 18.2659,
     "asd_zone4_psf": 14.7977,
-    "allowable_psf": 51.0,
-    "ratio": 0.3582,
+    "allowable_psf": 58.0,
+    "ratio": 0.3149,
 }
 
 #: The twenty north/south walls the board & batten override lands on (§1 of the note).
@@ -80,7 +83,7 @@ def test_the_velocity_pressure_matches_the_hand_worked_note(results):
 def test_the_cladding_pressure_matches_the_hand_worked_note(results):
     record = results["wall_panel/W-M-S1"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["support_spacing"] == 32.0
+    assert inputs["support_spacing"] == pytest.approx(24.0, abs=1e-6)
     assert inputs["effective_wind_area"] == pytest.approx(
         _ORACLE["effective_wind_area_ft2"], abs=1e-3)
     assert inputs["GCp_zone5"] == pytest.approx(_ORACLE["gcp_zone5"])
@@ -136,9 +139,9 @@ def test_a_span_the_allowable_was_not_read_at_is_not_interpolated(tmp_path):
     house = copy_house(catlin, tmp_path / "house")
     source = house / "plan" / "assemblies.py"
     text = source.read_text()
-    old = "panel_allowable_psf=51.0, panel_allowable_span_in=32.0,"
+    old = "panel_allowable_psf=58.0, panel_allowable_span_in=24.0,"
     assert old in text
-    source.write_text(text.replace(old, "panel_allowable_psf=51.0, panel_allowable_span_in=24.0,"))
+    source.write_text(text.replace(old, "panel_allowable_psf=58.0, panel_allowable_span_in=32.0,"))
     loaded = load_plan(house)
     assert loaded.plan is not None, [f.message for f in loaded.findings]
     model, _ = resolve(loaded.plan)
@@ -146,5 +149,5 @@ def test_a_span_the_allowable_was_not_read_at_is_not_interpolated(tmp_path):
     record = results["wall_panel/W-M-S1"]
     assert record.limit_states == ()
     assert record.status is Status.INCOMPLETE
-    assert any('read at this wall\'s own 32" support spacing' in name
+    assert any('read at this wall\'s own 24" support spacing' in name
                for name in record.missing)

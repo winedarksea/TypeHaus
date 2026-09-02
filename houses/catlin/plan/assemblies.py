@@ -169,66 +169,81 @@ CATLIN_EXT_2X6 = Assembly(
               cavity=CavityFill(material_ref="fiberglass")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        # BAND A, 0 - 1.5" off the sheathing. Continuous ccSPF, crossed only by the
-        # block-1s the pass frames on the stud module. There is no WRB above it because
-        # there is nothing left for one to do — ccSPF is air, water, vapour and thermal in
-        # one bonded, seamless application. Sprayed FIRST, flush to the block-1 faces and
-        # before the inner girts go on: a flat girt lying 1.5" off the sheathing shadows the
-        # pocket behind it and the foam would void there otherwise.
-        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
-              function=LayerFunction.INSULATION,
-              control={ControlLayer.AIR, ControlLayer.WATER,
-                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
-        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 32" o.c.,
-        # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
-        # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
-        # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
-        # the same unified stud module the facade's studs and windows already sit on.
+        # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
+        # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat
+        # on the sheathing over every other stud at every 24" course, 4-1/2" tall so the
+        # last 1/2" stands proud of the foam. There is no WRB above it because there is
+        # nothing left for one to do — ccSPF is air, water, vapour and thermal in one
+        # bonded, seamless application.
         #
-        # Wood and foam here are a PARALLEL path, which is the whole reason the 4" of foam
-        # is authored as three bands rather than one layer: a single 4" layer would credit
-        # foam over 100% of the area and hide both girt tiers entirely. Split,
-        # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
-        # bay, and the take-off bills the fills as `insulation (cavity)`.
-        # ff 0.109 is 3.5" of flat girt per 32" course; it was 0.146 per 24" course until
-        # 2026-08-30, and the two have to move together or the wall is credited for foam it
-        # does not have. The band A/C BLOCKS (3.2% each) are modelled by the pass and are
-        # deliberately NOT authored as a fill — a plain INSULATION layer carries no framing
-        # factor — so the card reads a little high and notes/catlin_truss_engineering.md
-        # states the honest number.
-        Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(32), layout_origin="line",
-                                  course_datum="framing-base", course_offset=inch(-3.5),
-                                  standoff="block"),
-              cavity=CavityFill(material_ref="closed-cell-spray-foam",
-                                thickness=inch(1.5), framing_factor=0.109,
-                                control={ControlLayer.AIR, ControlLayer.WATER,
-                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
-        # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
-        # then the 1/2" vented gap the block-2s stand in. The applicator shaves this lift to
-        # a gauge — inner girt face + 1" — because 1/2" is inside ccSPF surface tolerance;
-        # the alternative margins are a 2" block-2 (1" gap) or 3-3/4" of foam. See the
-        # engineering note's Risks.
-        Layer(name="foam-vent", material_ref="closed-cell-spray-foam", thickness=inch(1.0),
+        # Sprayed AFTER tilt-up, through the 20-1/2" clear between courses and behind them:
+        # the girt stands 1/2" off the foam face, so the applicator reaches the whole plane
+        # from outside and no course shadows a pocket. Fillet the foam against the block
+        # sides rather than butting it square (BSI-048) — planed lumber shrinks and a square
+        # cold joint at a block is where the crack would be — and shave the lift to a gauge
+        # 1/2" behind the block's outer face.
+        #
+        # THE INNER GIRT TIER IS GONE (2026-09-01). Band A was 1-1/2" and bands B/C carried
+        # a plain SPF girt buried in the foam. That girt sat directly ON the sheathing, so
+        # it gave its screw no thermal break at all, and it cost 10.9% wood in the first
+        # 1-1/2" of the foam to hold up nothing but the tier above it. The foam does not
+        # need backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface) and its
+        # racking contribution is its bond to the sheathing face, which is unchanged.
+        #
+        # No framing factor is authored here, deliberately, and it is why the card reads
+        # high. The blocks are 1.6% of this band's area and they are modelled by
+        # `resolve/framing/truss_girts.py`, not by the assembly: a plain INSULATION layer
+        # carries no framing factor, and giving this layer one would mean naming KDAT as its
+        # material and the foam as its *fill* — which would take the air/water/vapour plane
+        # off the layer that actually is it (`plan/transitions.py`, AIR_WATER_THERMAL). So
+        # the card says R-26 for this band and notes/catlin_truss_engineering.md §7 states
+        # the honest ~R-23.5 with the blocks and the screws in it.
+        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(4.0),
               function=LayerFunction.INSULATION,
               control={ControlLayer.AIR, ControlLayer.WATER,
                        ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        # BAND A', 4.0 - 4.5". The block's proud 1/2": the vent gap, and it is CONTINUOUS
+        # behind every course now that nothing else stands in it. That continuity is a
+        # function of stack depth (6") against foam depth (4") and of nothing else — a girt
+        # buried in the foam would interrupt it at every course, which is why the 4-1/2"
+        # variant with the girt in the foam was rejected.
         Layer(name="vent-gap", material_ref="air-barrier", thickness=inch(0.5),
               function=LayerFunction.AIRGAP),
-        # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
-        # and the one treated layer in the wall — block-2 inherits its material, which is
-        # what puts the two block tiers on two BOM rows. Same 32" courses at the SAME
-        # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
-        # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
-        # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
-        # the gap behind it is the drainage plane and it vents.
+        # BAND B, 4.5 - 6.0". THE GIRT: KDAT 2x4 laid flat, horizontal, 24" o.c., standing
+        # in free air on the blocks. The cladding nailer, the window mount plane, and the
+        # only wood outboard of the sheathing — the block inherits its material, so the two
+        # bill on one KDAT row. It is a 3-1/2"-deep horizontal ledge behind the cladding
+        # that will wet-cycle for the life of the wall, which is why KDAT and not the vent
+        # alone carries it. No fill: the gap behind it is the drainage plane and it vents.
+        #
+        # `standoff="block"` is the whole selector for `resolve/framing/truss_girts.py`;
+        # `layout_origin="line"` puts its blocks on the same unified stud module the
+        # facade's studs and windows already sit on. 24" courses against the 16" stud module
+        # make the crossing tributary 32" x 24" = 5.33 ft2.
+        #
+        # ONE 8" SDWS22800DB PER CROSSING, through girt (1-1/2") + block (4-1/2") +
+        # sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no nails, and it is the
+        # entire load path: the block bears the cladding's gravity in direct compression on
+        # the sheathing, so the screw is a pure withdrawal element at ~38% of allowable.
+        # Mark the stud line across the girt face as it is laid so the screw is not blind.
+        #
+        # `course_offset=inch(0)` is the RE-SWEPT phase for the 24" module (2026-09-01), and
+        # it is not a default left in place: the whole 1/8" sweep from -16" to +8" was
+        # re-run against the openings, and zero is the winner. 13 opening edges land exactly
+        # on a course line and 30 sit in the 7" shadow of one, against 9/24 at the -3.5"
+        # phase the 32" module used — and that phase now opens a 24.75" bay on nine walls,
+        # because the forced top course pops the module course under it
+        # (`furring.course_elevations`). At zero no bay exceeds 24.00" anywhere.
+        #
+        # The phase IS the authoring rule for a new opening, and it flipped with the sign:
+        # a course BOTTOM now lands on the framing-base module, so put the HEAD on a 24"
+        # multiple above the sole plate, or the SILL 3-1/2" above one. It was the mirror of
+        # that at -3.5". See houses/catlin/CLAUDE.md, Facade rules.
         Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(32), layout_origin="line",
-                                  course_datum="framing-base", course_offset=inch(-3.5),
+                                  spacing=inch(24), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(0),
                                   standoff="block")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
@@ -2491,10 +2506,12 @@ MATERIALS = [
     # board & batten is commonly 1"-1-1/4", so specifying 1-1/4" makes that problem vanish.
     # `panel_allowable_psf` / `panel_allowable_span_in` are the manufacturer's published
     # ALLOWABLE (ASD) uniform negative load and the span it was read at, and they are here
-    # rather than in the engine because they are a product fact. 51 psf at 32" is
-    # INTERPOLATED from Metal Sales' 24 ga board & batten table — the only span table any of
-    # the eight manufacturers surveyed publishes for this profile — and Western States, the
-    # assumed supplier, publishes none at all. **Treat it as the weakest number in this
+    # rather than in the engine because they are a product fact. 58 psf at 24" (2026-09-01,
+    # with the girt courses; it was 51 psf at 32") is read off Metal Sales' 24 ga board &
+    # batten table — the only span table any of the eight manufacturers surveyed publishes
+    # for this profile — and Western States, the assumed supplier, publishes none at all.
+    # It is the OUTWARD (suction) figure, which is what governs a wall panel; the same table
+    # gives 43 psf inward, recorded in the note. **Treat it as the weakest number in this
     # material.** `engineering/wall_panel.py` compares it against the ASCE 7-16 corner-zone
     # suction and reports the item INCOMPLETE whatever the ratio, because the limit state
     # that actually governs a concealed panel is withdrawal of the hidden leg's screws and
@@ -2503,7 +2520,7 @@ MATERIALS = [
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="board-and-batten",
              skin_family="standing-seam",
-             panel_allowable_psf=51.0, panel_allowable_span_in=32.0,
+             panel_allowable_psf=58.0, panel_allowable_span_in=24.0,
              source="24 ga. PVDF-coated steel board & batten wall panel, 20\" net coverage, ~2\" applied batten, concealed-leg pancake screws over open girts (Western States Metal Roofing / Metal Sales are the two manufacturers permitting open framing); same white paint and the same vapour-impermeable sheet steel as the five skins above"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
@@ -2811,66 +2828,81 @@ PLANT_EXT_2X6_HUMID = Assembly(
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
-        # BAND A, 0 - 1.5" off the sheathing. Continuous ccSPF, crossed only by the
-        # block-1s the pass frames on the stud module. There is no WRB above it because
-        # there is nothing left for one to do — ccSPF is air, water, vapour and thermal in
-        # one bonded, seamless application. Sprayed FIRST, flush to the block-1 faces and
-        # before the inner girts go on: a flat girt lying 1.5" off the sheathing shadows the
-        # pocket behind it and the foam would void there otherwise.
-        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(1.5),
-              function=LayerFunction.INSULATION,
-              control={ControlLayer.AIR, ControlLayer.WATER,
-                       ControlLayer.VAPOR, ControlLayer.THERMAL}),
-        # BAND B, 1.5 - 3.0". The INNER GIRT: plain SPF 2x4 laid flat, horizontal, 32" o.c.,
-        # buried in the second foam lift and never wet. One 5" SDWS per block-1 through
-        # girt + block + sheathing into the stud. `standoff="block"` is the whole selector
-        # for `resolve/framing/truss_girts.py`; `layout_origin="line"` puts its blocks on
-        # the same unified stud module the facade's studs and windows already sit on.
+        # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
+        # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat
+        # on the sheathing over every other stud at every 24" course, 4-1/2" tall so the
+        # last 1/2" stands proud of the foam. There is no WRB above it because there is
+        # nothing left for one to do — ccSPF is air, water, vapour and thermal in one
+        # bonded, seamless application.
         #
-        # Wood and foam here are a PARALLEL path, which is the whole reason the 4" of foam
-        # is authored as three bands rather than one layer: a single 4" layer would credit
-        # foam over 100% of the area and hide both girt tiers entirely. Split,
-        # `analysis._layer_rsi` parallel-paths each band exactly as it already does a stud
-        # bay, and the take-off bills the fills as `insulation (cavity)`.
-        # ff 0.109 is 3.5" of flat girt per 32" course; it was 0.146 per 24" course until
-        # 2026-08-30, and the two have to move together or the wall is credited for foam it
-        # does not have. The band A/C BLOCKS (3.2% each) are modelled by the pass and are
-        # deliberately NOT authored as a fill — a plain INSULATION layer carries no framing
-        # factor — so the card reads a little high and notes/catlin_truss_engineering.md
-        # states the honest number.
-        Layer(name="inner-girt", material_ref="spf", thickness=inch(1.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(32), layout_origin="line",
-                                  course_datum="framing-base", course_offset=inch(-3.5),
-                                  standoff="block"),
-              cavity=CavityFill(material_ref="closed-cell-spray-foam",
-                                thickness=inch(1.5), framing_factor=0.109,
-                                control={ControlLayer.AIR, ControlLayer.WATER,
-                                         ControlLayer.VAPOR, ControlLayer.THERMAL})),
-        # BAND C, 3.0 - 4.5", authored as its two halves. The last 1" of the 4" foam total,
-        # then the 1/2" vented gap the block-2s stand in. The applicator shaves this lift to
-        # a gauge — inner girt face + 1" — because 1/2" is inside ccSPF surface tolerance;
-        # the alternative margins are a 2" block-2 (1" gap) or 3-3/4" of foam. See the
-        # engineering note's Risks.
-        Layer(name="foam-vent", material_ref="closed-cell-spray-foam", thickness=inch(1.0),
+        # Sprayed AFTER tilt-up, through the 20-1/2" clear between courses and behind them:
+        # the girt stands 1/2" off the foam face, so the applicator reaches the whole plane
+        # from outside and no course shadows a pocket. Fillet the foam against the block
+        # sides rather than butting it square (BSI-048) — planed lumber shrinks and a square
+        # cold joint at a block is where the crack would be — and shave the lift to a gauge
+        # 1/2" behind the block's outer face.
+        #
+        # THE INNER GIRT TIER IS GONE (2026-09-01). Band A was 1-1/2" and bands B/C carried
+        # a plain SPF girt buried in the foam. That girt sat directly ON the sheathing, so
+        # it gave its screw no thermal break at all, and it cost 10.9% wood in the first
+        # 1-1/2" of the foam to hold up nothing but the tier above it. The foam does not
+        # need backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface) and its
+        # racking contribution is its bond to the sheathing face, which is unchanged.
+        #
+        # No framing factor is authored here, deliberately, and it is why the card reads
+        # high. The blocks are 1.6% of this band's area and they are modelled by
+        # `resolve/framing/truss_girts.py`, not by the assembly: a plain INSULATION layer
+        # carries no framing factor, and giving this layer one would mean naming KDAT as its
+        # material and the foam as its *fill* — which would take the air/water/vapour plane
+        # off the layer that actually is it (`plan/transitions.py`, AIR_WATER_THERMAL). So
+        # the card says R-26 for this band and notes/catlin_truss_engineering.md §7 states
+        # the honest ~R-23.5 with the blocks and the screws in it.
+        Layer(name="spray-foam", material_ref="closed-cell-spray-foam", thickness=inch(4.0),
               function=LayerFunction.INSULATION,
               control={ControlLayer.AIR, ControlLayer.WATER,
                        ControlLayer.VAPOR, ControlLayer.THERMAL}),
+        # BAND A', 4.0 - 4.5". The block's proud 1/2": the vent gap, and it is CONTINUOUS
+        # behind every course now that nothing else stands in it. That continuity is a
+        # function of stack depth (6") against foam depth (4") and of nothing else — a girt
+        # buried in the foam would interrupt it at every course, which is why the 4-1/2"
+        # variant with the girt in the foam was rejected.
         Layer(name="vent-gap", material_ref="air-barrier", thickness=inch(0.5),
               function=LayerFunction.AIRGAP),
-        # BAND D, 4.5 - 6.0". The OUTER GIRT: the cladding nailer, the window mount plane,
-        # and the one treated layer in the wall — block-2 inherits its material, which is
-        # what puts the two block tiers on two BOM rows. Same 32" courses at the SAME
-        # elevations as the inner girt; one 5" SDWS per block-2 into the inner girt. It is
-        # a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the
-        # life of the wall, which is why KDAT and not the vent alone carries it. No fill:
-        # the gap behind it is the drainage plane and it vents.
+        # BAND B, 4.5 - 6.0". THE GIRT: KDAT 2x4 laid flat, horizontal, 24" o.c., standing
+        # in free air on the blocks. The cladding nailer, the window mount plane, and the
+        # only wood outboard of the sheathing — the block inherits its material, so the two
+        # bill on one KDAT row. It is a 3-1/2"-deep horizontal ledge behind the cladding
+        # that will wet-cycle for the life of the wall, which is why KDAT and not the vent
+        # alone carries it. No fill: the gap behind it is the drainage plane and it vents.
+        #
+        # `standoff="block"` is the whole selector for `resolve/framing/truss_girts.py`;
+        # `layout_origin="line"` puts its blocks on the same unified stud module the
+        # facade's studs and windows already sit on. 24" courses against the 16" stud module
+        # make the crossing tributary 32" x 24" = 5.33 ft2.
+        #
+        # ONE 8" SDWS22800DB PER CROSSING, through girt (1-1/2") + block (4-1/2") +
+        # sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no nails, and it is the
+        # entire load path: the block bears the cladding's gravity in direct compression on
+        # the sheathing, so the screw is a pure withdrawal element at ~38% of allowable.
+        # Mark the stud line across the girt face as it is laid so the screw is not blind.
+        #
+        # `course_offset=inch(0)` is the RE-SWEPT phase for the 24" module (2026-09-01), and
+        # it is not a default left in place: the whole 1/8" sweep from -16" to +8" was
+        # re-run against the openings, and zero is the winner. 13 opening edges land exactly
+        # on a course line and 30 sit in the 7" shadow of one, against 9/24 at the -3.5"
+        # phase the 32" module used — and that phase now opens a 24.75" bay on nine walls,
+        # because the forced top course pops the module course under it
+        # (`furring.course_elevations`). At zero no bay exceeds 24.00" anywhere.
+        #
+        # The phase IS the authoring rule for a new opening, and it flipped with the sign:
+        # a course BOTTOM now lands on the framing-base module, so put the HEAD on a 24"
+        # multiple above the sole plate, or the SILL 3-1/2" above one. It was the mirror of
+        # that at -3.5". See houses/catlin/CLAUDE.md, Facade rules.
         Layer(name="outer-girt", material_ref="kdat", thickness=inch(1.5),
               function=LayerFunction.FURRING,
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
-                                  spacing=inch(32), layout_origin="line",
-                                  course_datum="framing-base", course_offset=inch(-3.5),
+                                  spacing=inch(24), layout_origin="line",
+                                  course_datum="framing-base", course_offset=inch(0),
                                   standoff="block")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),

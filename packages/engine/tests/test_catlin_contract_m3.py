@@ -2293,12 +2293,17 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     """The screws that hold the cladding on, and so the line the eye reads off the street.
 
     The catlin truss (2026-08-26) turned the stand-off on its side: the girts are horizontal
-    and it is their BLOCKS that phase-lock to the 16" stud module, one under every course at
-    every stud station. So the facade's vertical grid is the block grid now, and the claim is
-    the one the outrigger band used to carry — every storey of a facade lays out the identical
-    module. What it rules out is the old behaviour, where each of the six or seven wall
-    segments a facade is authored as framed its own end piece at the tee it was split at: a
-    doubled fastening line on main that the storey above put somewhere else entirely.
+    and it is their BLOCKS that phase-lock to the stud module, one under every course. So the
+    facade's vertical grid is the block grid now, and the claim is the one the outrigger band
+    used to carry — every storey of a facade lays out the identical module. What it rules out
+    is the old behaviour, where each of the six or seven wall segments a facade is authored
+    as framed its own end piece at the tee it was split at: a doubled fastening line on main
+    that the storey above put somewhere else entirely.
+
+    **32", not 16", since 2026-09-01.** One tier and one screw per crossing replaced two
+    tiers offset half a bay, and the surviving block lands on every OTHER stud. The grid is
+    coarser and the claim about it is unchanged: it is still one module, still phase-locked
+    to the studs, and still identical on every storey of a facade.
 
     **On-module stations only**, and the exclusion is the interesting half. A girt wall
     carries three kinds of deliberately off-module block: the one at each free course end,
@@ -2316,7 +2321,7 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     # would otherwise be asserting nothing after the change.
     expected = ({"main", "second"} if wall_tag in ("W-M-E1", "W-M-W1")
                 else {"main", "second", "attic"})
-    by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-1-")
+    by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-2-")
     assert set(by_storey) == expected, by_storey.keys()
     on_module = {storey: [s for s in stations if s not in _off_module(stations)]
                  for storey, stations in by_storey.items()}
@@ -2324,10 +2329,10 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     assert all(grid == grids[0] for grid in grids), (
         f"{wall_tag}: the block grid differs storey to storey\n"
         + "\n".join(f"  {storey:7s}{on_module[storey]}" for storey in sorted(expected)))
-    assert len(grids[0]) >= 20, f"{wall_tag}: only {len(grids[0])} module blocks on a facade"
+    assert len(grids[0]) >= 10, f"{wall_tag}: only {len(grids[0])} module blocks on a facade"
     grid = grids[0]
     gaps = {round(b - a, 3) for a, b in zip(grid, grid[1:], strict=False)}
-    assert gaps <= {16.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
+    assert gaps <= {32.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
 
 
 #: Facade stations, in inches from the wall line's origin, where a framed run legitimately

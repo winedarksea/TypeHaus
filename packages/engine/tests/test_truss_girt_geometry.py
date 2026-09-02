@@ -32,6 +32,7 @@ import re
 import pytest
 
 from typehaus.resolve.framing.furring import course_elevations
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.truss_wall import (
     FLANGE_BEARING,
     GirtFrame,
@@ -43,6 +44,10 @@ from typehaus.resolve.geometry import sub, unit
 IN = 0.0254
 _STOCK_FACE = 3.5 * IN     # a course's height, a post's width, a block's face
 _STUD_SPACING = 16.0 * IN
+#: The BLOCK module: every other stud since 2026-09-01, when the inner tier went and one
+#: block per crossing replaced two. It is what bounds a girt's unsupported run, and it is
+#: the 32" in the 32" x 24" tributary every load in the engineering note is derived from.
+_BLOCK_SPACING = 32.0 * IN
 _COURSE_SPACING = 32.0 * IN
 
 #: Everything the framing solver emits as a vertical stick on (or beside) the stud module.
@@ -68,16 +73,29 @@ def _girt_walls(model):
 
 
 def _bands(model, wall):
-    """``(inner, outer)`` band NAMES for one girt wall."""
+    """``(inner, outer)`` band NAMES for one girt wall.
+
+    ``inner`` is ``None`` on the ONE-TIER wall the house has built since 2026-09-01. The
+    outer band is always there — it is the girt, the mount plane and the cladding nailer —
+    so every caller that wants "the band" wants this one.
+    """
     inner, outer = truss_girt_bands(model.plan, wall.assembly)
-    return inner.name, outer.name
+    return (inner.name if inner is not None else None), outer.name
+
+
+def _tiers(model, wall):
+    """``[(band name, tier)]`` for the tiers this wall actually has, interior → exterior."""
+    inner_name, outer_name = _bands(model, wall)
+    inner_pair = [(inner_name, "1")] if inner_name is not None else []
+    return [*inner_pair, (outer_name, "2")]
 
 
 def _frame(model, wall) -> GirtFrame:
     inner_name, outer_name = _bands(model, wall)
     resolved = {ly.name: ly for ly in wall.layers if ly.polygon}
-    frame = GirtFrame.build(model.plan, wall, resolved[inner_name], resolved[outer_name],
-                            None, (None, None))
+    frame = GirtFrame.build(model.plan, wall,
+                            resolved.get(inner_name) if inner_name else None,
+                            resolved[outer_name], None, (None, None))
     assert frame is not None, wall.tag
     return frame
 
@@ -180,8 +198,8 @@ def test_the_house_has_girt_walls_at_all(catlin_model):
 # --- the blocks are on the stud module -----------------------------------------------
 
 
-def test_block_one_lands_on_the_stud_it_is_screwed_to(catlin_model):
-    """The premise of the whole detail: block-1's 5" screw goes into a STUD.
+def test_the_block_lands_on_the_stud_it_is_screwed_to(catlin_model):
+    """The premise of the whole detail: the block's 8" screw goes into a STUD.
 
     The block is 3-1/2" wide on a 1-1/2" stud and centred on the stud station, so it laps the
     stud completely. Measured as a real overlap against the resolved studlike members rather
@@ -220,7 +238,7 @@ def test_block_one_lands_on_the_stud_it_is_screwed_to(catlin_model):
                     for m in wall.members
                     if m.category in _HORIZONTAL and m.p0 != m.p1]
         for block in wall.members:
-            if block.category != "truss_block" or _tier(block) != "1":
+            if block.category != "truss_block" or _tier(block) != "2":
                 continue
             centre = _station(block, wall)
             if centre < 6.0 * IN or centre > run - 6.0 * IN:
@@ -246,46 +264,58 @@ def test_block_one_lands_on_the_stud_it_is_screwed_to(catlin_model):
             laps.append(overlap)
             if overlap < 0.75 * IN - 1e-6:
                 thin.append((wall.tag, round(centre / IN, 2), round(overlap / IN, 3)))
-    # 650 rather than the 700 this read at 24" o.c.: the 32" module of 2026-08-30 frames
-    # a quarter fewer courses and therefore a quarter fewer blocks. It is a vacuity guard,
-    # not a target — what it is here to catch is the walk finding nothing at all.
-    assert len(laps) > 650, "the field of the wall is what this measures"
-    assert not thin, (
-        f"block-1s lapping under half a stud: {thin[:6]} — the block grid has drifted off "
+    # 500 since 2026-09-01. There is ONE tier now instead of two, and its blocks are on
+    # every other stud (32") — but the courses went from 32" to 24", so the population is
+    # not simply halved. It is a vacuity guard, not a target: what it is here to catch is
+    # the walk finding nothing at all.
+    assert len(laps) > 500, "the field of the wall is what this measures"
+    # ONE, and it is named rather than hidden: W-A-N1's course at 7.925 m starts at 128.0"
+    # because the attic GABLE RAKE cut it there, 1-3/4" past the king over the window head,
+    # and the mandatory end block ``_module_stations`` frames at a course end lands at
+    # 129.75" where the nearest stick is that king at 126.75". ``GirtFrame.snap`` refuses to
+    # move it — the block would stand 3" out past the girt it carries — and that refusal is
+    # right. It is a FIELD instruction, not a model defect: drive this one into the king and
+    # let the girt end bear on the block's outer half, or add a cripple at the module.
+    # notes/catlin_truss_engineering.md §9 carries it. If this count ever grows, the grid has
+    # drifted off the stud module and that is a different thing entirely.
+    assert len(thin) <= 1, (
+        f"blocks lapping under half a stud: {thin[:6]} — the block grid has drifted off "
         "the 16 in stud module")
     # And nearly all of them cover the stud WHOLE. The handful that do not are the end block
     # of a short raked stub at an attic gable: it cannot move onto the corner post beside it
     # without standing half its width out past the girt it carries (``GirtFrame.snap``'s
     # ``bounds``), so it takes half the post and that is the right trade. If this ratio ever
     # falls, the grid has drifted rather than a few gable stubs having been crowded.
-    # The band came down from 0.99 to 0.98 on 2026-08-29 and the reason is arithmetic, not
-    # drift: the attic's east and west girt walls left the model entirely (the knee walls
-    # became 1 1/2" rafter plates), so the FIELD shrank ~15% while the gable stubs — which
-    # are the whole population of legitimate half-laps — did not. The same nine blocks are
-    # now nine out of 807 rather than nine out of a larger number.
+    # The band came down from 0.99 to 0.98 on 2026-08-29 and to 0.97 on 2026-09-01, and
+    # both moves are arithmetic rather than drift — the same denominator argument twice. In
+    # 2026-08-29 the attic's east and west girt walls left the model (the knee walls became
+    # 1 1/2" rafter plates), so the FIELD shrank ~15% while the gable stubs — which are the
+    # whole population of legitimate half-laps — did not. In 2026-09-01 the inner tier went
+    # and the block module doubled to 32", halving the field again against a third more
+    # courses; the stubs are a property of the gables and stayed put. 15 blocks out of 548.
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
-    assert full / len(laps) >= 0.98, (
-        f"only {full}/{len(laps)} block-1s lap their whole stud")
+    assert full / len(laps) >= 0.97, (
+        f"only {full}/{len(laps)} blocks lap their whole stud")
 
 
-def test_block_two_is_mid_bay_not_stacked_over_block_one(catlin_model):
-    """8" off the block-1 line, and that offset is the fastening design, not a convenience.
+def test_the_block_is_three_plies_on_every_other_stud(catlin_model):
+    """The 2026-09-01 detail in one assertion: 4-1/2" deep, and 32" apart.
 
-    Stacking the two tiers would put block-2's screw into block-1's. Offset, each tier's 5"
-    SDWS is a plain wood-to-wood connection with continuous lateral support — girt → block →
-    sheathing → stud for one, girt → block → inner girt for the other — and nothing bears on
-    foam, which is what takes this wall out of IRC Table R703.15.1 and into R301.1.3
-    (`notes/catlin_truss_engineering.md` §6).
+    Replaces ``test_block_two_is_mid_bay_not_stacked_over_block_one``, which measured the
+    half-bay offset between the two tiers. There is one tier, so there is no offset to
+    measure and the question became a different one: is the block the STACK the design says
+    it is, and is it on every OTHER stud?
 
-    Measured against the wall's own MODULE STUDS rather than against an absolute phase or
-    against either tier's own mode. ``stud`` is the category the solver mints only for a
-    module stud — a king, a jack, a cripple and a corner post are all their own categories —
-    so the mode of their stations mod 16 IS the wall's module, read off the thing the block
-    is supposed to be screwed into.
+    Both halves matter and neither is cosmetic. The depth is what the girt screw crosses —
+    a single-ply block would put the girt 3" inside the foam and the 8" screw 3" past the
+    stud — and it is what holds the girt 1/2" proud of the foam face, which IS the vent gap.
+    The 32" module is what makes a crossing's tributary 32" x 24" = 5.33 ft2, which is the
+    number every load in ``notes/catlin_truss_engineering.md`` §2-§4 is derived from.
 
-    Field blocks only. The pair under a JAMB POST is deliberately at the same station in both
-    tiers (there is one post per band and they are in line), and a rule that forbade every
-    coincidence would forbid that too.
+    Measured against the wall's own MODULE STUDS rather than an absolute phase: ``stud`` is
+    the category the solver mints only for a module stud — a king, a jack, a cripple and a
+    corner post are all their own — so the mode of their stations mod 16 IS this wall's
+    module, read off the thing the block is screwed into.
     """
     checked = 0
     for wall in _girt_walls(catlin_model):
@@ -293,44 +323,48 @@ def test_block_two_is_mid_bay_not_stacked_over_block_one(catlin_model):
         if len(module) < 4:
             continue
         phase = _modal_phase(module)
-        field = {"1": [], "2": []}
-        field_z: dict[str, list[tuple[float, float]]] = {"1": [], "2": []}
-        for member in wall.members:
-            tier = _tier(member)
-            if member.category != "truss_block" or tier is None:
-                continue
-            if not _FIELD_BLOCK.match(member.child_key):
-                continue
-            station = round(_station(member, wall) / IN, 4)
-            field[tier].append(station)
-            field_z[tier].append((station, member.z0_m))
-        if len(field["1"]) < 3 or len(field["2"]) < 3:
+        field = [m for m in wall.members
+                 if m.category == "truss_block" and _FIELD_BLOCK.match(m.child_key)]
+        if len(field) < 3:
             continue
-        on_one = [s for s in field["1"] if abs((s - phase) % 16.0) < 0.02
-                  or abs((s - phase) % 16.0 - 16.0) < 0.02]
-        on_two = [s for s in field["2"] if abs((s - phase - 8.0) % 16.0) < 0.02
-                  or abs((s - phase - 8.0) % 16.0 - 16.0) < 0.02]
-        assert len(on_one) >= 0.6 * len(field["1"]), (
-            f"{wall.tag}: only {len(on_one)}/{len(field['1'])} block-1s on the stud module")
-        assert len(on_two) >= 0.6 * len(field["2"]), (
-            f"{wall.tag}: only {len(on_two)}/{len(field['2'])} block-2s on the half-bay")
-        # And never pulled BACK onto the stud line. Both tiers carry the same courses cut
-        # into the same segments, so their off-module end blocks — at a mitred band edge, at
-        # the raked top of an attic gable, snapped onto the same gable stud — land at one
-        # station by construction, and on site that pair is driven with an inch of vertical
-        # stagger inside the block's 3-1/2" height (a construction note,
-        # notes/outie_window_truss_detail.md). What must never happen is a block-2 sharing a
-        # station ON THE STUD MODULE with a block-1 at the same elevation: that is the
-        # offset scheme collapsing, and it is exactly what an unbounded ``GirtFrame.snap``
-        # did before its reach was cut from half a bay to one board.
-        on_module = [(s, z) for s, z in field_z["2"]
-                     if abs((s - phase) % 16.0) < 0.02
-                     or abs((s - phase) % 16.0 - 16.0) < 0.02]
-        stacked = [s for s, z in on_module
-                   if any(abs(s - t) < 0.02 and abs(z - w) < 1e-9 for t, w in field_z["1"])]
-        assert not stacked, (
-            f"{wall.tag}: block-2 sitting on the stud module over a block-1 at "
-            f"{sorted(set(stacked))[:6]} — the two tiers are meant to be half a bay apart")
+        # Three plies, 4-1/2" through the wall. The profile carries the ply count, so this
+        # reads the purchase and the geometry in one string.
+        assert {m.profile for m in field} == {"3-2x4"}, wall.tag
+        assert all(cross_section(m.profile).width_m == pytest.approx(4.5 * IN, abs=1e-9)
+                   for m in field), wall.tag
+        # Every one of them on the STUD module — not half a bay off it, which is what the
+        # deleted tier was.
+        stations = [round(_station(m, wall) / IN, 4) for m in field]
+        # Half, not the 0.6 the two-tier test used, and the reason is the same denominator
+        # argument as the whole-stud ratio above: a 32" module frames half as many field
+        # stations per course as a 16" one, while the MANDATORY END BLOCK at each course end
+        # — which lands wherever the course was cut, not on the module — is a property of
+        # the segment count and did not change. On a short attic gable stub that is most of
+        # the blocks in the course. What this is watching for is the module going away
+        # entirely, and half is well clear of it.
+        on_module = [x for x in stations if abs((x - phase) % 16.0) < 0.02
+                     or abs((x - phase) % 16.0 - 16.0) < 0.02]
+        assert len(on_module) >= 0.5 * len(stations), (
+            f"{wall.tag}: only {len(on_module)}/{len(stations)} blocks on the stud module")
+        # And on every OTHER one: within a course, consecutive field blocks are 32" apart,
+        # never 16". A 16" gap is the module having quietly reverted to every stud, which
+        # would double the screw count and halve the tributary every load is derived from.
+        by_course: dict[float, list[float]] = {}
+        for member in field:
+            by_course.setdefault(round(member.z0_m, 9), []).append(
+                _station(member, wall) / IN)
+        # A gap of exactly one STUD bay is the failure this is watching for: it is what a
+        # module quietly reverted to ``self.spacing`` would produce, and it would double the
+        # screw count and halve the tributary every load is derived from. Other short gaps
+        # are legitimate and common — the mandatory end block ``_module_stations`` frames at
+        # each course end sits wherever the course was cut, and ``snap`` moves a block near
+        # an opening onto the stick that is actually there.
+        close = [(round(a, 1), round(b - a, 2)) for xs in by_course.values()
+                 for a, b in zip(sorted(xs), sorted(xs)[1:], strict=False)
+                 if abs(b - a - 16.0) < 0.02]
+        assert not close, (
+            f"{wall.tag}: field blocks one stud bay apart at {close[:6]} — the module has "
+            "reverted from every other stud to every stud")
         checked += 1
     assert checked >= 20, "vacuity guard"
 
@@ -343,12 +377,12 @@ def test_every_course_segment_is_carried(catlin_model):
 
     Three claims in one walk, per band.
 
-    **Nothing runs unsupported for more than a module.** A block lands on every stud station
-    a course crosses, so the run from either end of a segment to the block nearest it, and
-    every bay between blocks, is bounded. The bound is the 16" stud spacing, plus (for a bay
-    only) one 3-1/2" board: a course's off-module END block is the one piece that can sit
-    past the last module station, and on a raked attic gable that puts 18-1/4" between the
-    last two.
+    **Nothing runs unsupported for more than a module.** A block lands on every station of
+    the BLOCK module a course crosses — every other stud, 32", since 2026-09-01 — so the run
+    from either end of a segment to the block nearest it, and every bay between blocks, is
+    bounded. The bound is that module, plus (for a bay only) one 3-1/2" board: a course's
+    off-module END block is the one piece that can sit past the last module station, and on
+    a raked attic gable that puts a board's width between the last two.
 
     **A segment with NO block of its own is legal only where BOTH of its ends are carried by
     something other than a block of its own** — a jamb post it butts, or the band's own
@@ -365,13 +399,12 @@ def test_every_course_segment_is_carried(catlin_model):
     orphans: list[tuple[str, str, float]] = []
     measured = 0
     for wall in _girt_walls(catlin_model):
-        inner_name, outer_name = _bands(catlin_model, wall)
         butts = set()
         for opening in _openings(catlin_model, wall):
             half = opening.width_m / 2.0
             butts.add(round(opening.center_along_m - half - _STOCK_FACE, 6))
             butts.add(round(opening.center_along_m + half + _STOCK_FACE, 6))
-        for band, tier in ((inner_name, "1"), (outer_name, "2")):
+        for band, tier in _tiers(catlin_model, wall):
             blocks = [(m.z0_m, _station(m, wall)) for m in wall.members
                       if m.category == "truss_block" and _tier(m) == tier]
             if not blocks:
@@ -389,43 +422,21 @@ def test_every_course_segment_is_carried(catlin_model):
                     if not (round(lo, 6) in carried and round(hi, 6) in carried):
                         orphans.append((wall.tag, member.child_key, (hi - lo) / IN))
                     continue
-                if on_it[0] - lo > _STUD_SPACING + 1e-6:
+                if on_it[0] - lo > _BLOCK_SPACING + 1e-6:
                     unsupported.append((wall.tag, member.child_key,
                                         (on_it[0] - lo) / IN))
-                if hi - on_it[-1] > _STUD_SPACING + 1e-6:
+                if hi - on_it[-1] > _BLOCK_SPACING + 1e-6:
                     unsupported.append((wall.tag, member.child_key,
                                         (hi - on_it[-1]) / IN))
                 for a, b in zip(on_it, on_it[1:], strict=False):
-                    if b - a > _STUD_SPACING + _STOCK_FACE + 1e-6:
+                    if b - a > _BLOCK_SPACING + _STOCK_FACE + 1e-6:
                         long_bays.append((wall.tag, member.child_key, (b - a) / IN))
-    assert measured > 450, "vacuity guard: the house's girt courses"
+    # 250 rather than 450: one band instead of two, against a third more courses.
+    assert measured > 250, "vacuity guard: the house's girt courses"
     assert not orphans, (
         f"girt course segments with no block and no post to bear on: {orphans[:6]}")
     assert not unsupported, f"girt course ends running past a module: {unsupported[:6]}"
     assert not long_bays, f"block bays past a module plus a board: {long_bays[:6]}"
-
-
-# --- the two tiers are one course -----------------------------------------------------
-
-
-def test_the_two_girt_bands_are_one_course(catlin_model):
-    """Same elevations, same segments. Block-2 screws into the inner girt; a half-inch
-    disagreement between the tiers is a 5" screw into a 1/2" air gap.
-
-    Asserted on the resolved members rather than on the spec, because both bands carry the
-    same authored `FramingSpec` and the interesting failure is a *resolver* one — a band
-    mitred differently at a corner, a course cut differently around an opening.
-    """
-    for wall in _girt_walls(catlin_model):
-        inner_name, outer_name = _bands(catlin_model, wall)
-        inner = _courses(wall, inner_name)
-        outer = _courses(wall, outer_name)
-        assert len(inner) == len(outer), (
-            f"{wall.tag}: {len(inner)} inner course segments against {len(outer)} outer")
-        for (za, loa, hia, _a), (zb, lob, hib, _b) in zip(inner, outer, strict=True):
-            assert za == pytest.approx(zb, abs=1e-9), wall.tag
-            assert loa == pytest.approx(lob, abs=1e-9), wall.tag
-            assert hia == pytest.approx(hib, abs=1e-9), wall.tag
 
 
 def test_course_elevations_are_the_authored_module_and_the_frame_agrees(catlin_model):
@@ -525,15 +536,14 @@ def test_courses_abut_at_a_facade_seam_with_one_block_in_the_joint(catlin_model)
 # --- the rough opening's own frame -----------------------------------------------------
 
 
-def test_every_rough_opening_has_a_jamb_post_in_both_bands(catlin_model):
+def test_every_rough_opening_has_a_jamb_post_in_every_band(catlin_model):
     """Inner face ON the RO edge, in each band, so the flange bears and the reveal is wood."""
     bearing = FLANGE_BEARING.meters
     for wall in _girt_walls(catlin_model):
-        inner_name, outer_name = _bands(catlin_model, wall)
         for index, opening in enumerate(_openings(catlin_model, wall)):
             half = opening.width_m / 2.0
             jambs = (opening.center_along_m - half, opening.center_along_m + half)
-            for band in (inner_name, outer_name):
+            for band, _tier_id in _tiers(catlin_model, wall):
                 for side, jamb in enumerate(jambs):
                     key = f"strapping-jamb-{band}-{index:03d}-{side}"
                     post = next((m for m in wall.members if m.child_key == key), None)
@@ -546,14 +556,13 @@ def test_every_rough_opening_has_a_jamb_post_in_both_bands(catlin_model):
 
 
 def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
-    """Post inner face to post inner face — the RO's own width, in both bands."""
+    """Post inner face to post inner face — the RO's own width, in every band."""
     checked = 0
     for wall in _girt_walls(catlin_model):
-        inner_name, outer_name = _bands(catlin_model, wall)
         for index, opening in enumerate(_openings(catlin_model, wall)):
             z_sill = wall.base_ref_z_m + opening.sill_m
             z_head = z_sill + opening.height_m
-            for band in (inner_name, outer_name):
+            for band, _tier_id in _tiers(catlin_model, wall):
                 for name, z0 in (("head", z_head), ("sill", z_sill - _STOCK_FACE)):
                     key = f"ladder-{name}-{band}-{index:03d}"
                     piece = next((m for m in wall.members if m.child_key == key), None)
@@ -564,7 +573,7 @@ def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
                         f"{wall.tag} {key}: spans {piece.length_m / IN:.1f}\" of a "
                         f"{opening.width_m / IN:.1f}\" RO")
                     checked += 1
-    assert checked >= 4 * 30
+    assert checked >= 2 * 30
 
 
 def test_the_opening_support_check_passes_on_every_girt_wall(catlin_model, catlin_plan):
@@ -662,7 +671,14 @@ def test_the_frame_reads_the_band_the_same_way_the_members_were_placed(catlin_mo
     course = next(m for m in wall.members
                   if m.child_key.startswith(f"strapping-{outer_name}-"))
     assert frame.station_of(course) == pytest.approx(_station(course, wall), abs=1e-6)
-    # And the derived depths: the buck runs from the sheathing face to the outer girt's
-    # outboard face, which is 6" on this stack.
+    # And the derived depths, which are the whole of what the 2026-09-01 change moved.
+    # The buck still runs from the sheathing face to the girt's outboard face — 6" on this
+    # stack, unchanged, which is why nothing outside the wall moved. What changed is what
+    # sits in between: 4-1/2" of block where there used to be 1-1/2".
     assert frame.buck_depth / IN == pytest.approx(6.0, abs=1e-6)
-    assert (frame.band_mid - frame.inner_mid) / IN == pytest.approx(3.0, abs=1e-6)
+    assert (frame.band_in - frame.sheathing_face) / IN == pytest.approx(4.5, abs=1e-6)
+    assert frame.block_thickness["2"] / IN == pytest.approx(4.5, abs=1e-6)
+    assert frame.block_plies["2"] == 3
+    assert frame.tiers == ("2",)
+    # Every other stud: the block module is twice the wall's 16" stud spacing.
+    assert frame.block_spacing / IN == pytest.approx(32.0, abs=1e-6)

@@ -2042,12 +2042,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "mineral-wool"
     },
     {
       "space": "paper",
@@ -2084,7 +2084,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "gwb  0.625\"",
+      "content": "mineral-wool  3.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2114,12 +2114,12 @@
           1.468
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "flashing"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -2155,6 +2155,78 @@
       "anchor": [
         2.85,
         1.3980000000000001
+      ],
+      "content": "gwb  0.625\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          1.158
+        ],
+        [
+          2.79,
+          1.158
+        ],
+        [
+          2.79,
+          1.298
+        ],
+        [
+          2.65,
+          1.298
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "flashing"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          1.158
+        ],
+        [
+          2.79,
+          1.158
+        ],
+        [
+          2.79,
+          1.298
+        ],
+        [
+          2.65,
+          1.298
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        1.228
       ],
       "content": "flashing",
       "height": 3.0,

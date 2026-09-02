@@ -372,24 +372,27 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
     exterior = [item for item in house_walls if item.reference_layer_count == 7]
     assert exterior, [item.reference_name for item in house_walls]
-    # TEN since the catlin truss (2026-08-26), and it was seven before: paint, gwb, stud,
-    # sheathing, then FOUR stand-off layers where the outrigger band was one — 1-1/2" band-A
-    # foam, the inner girt, 1" band-C foam, the 1/2" vent gap, the outer girt — then the
-    # cladding. Three of the four are what a rigid-CI wall would have spelled as one slab of
-    # foam and one furring strip; splitting them is what lets `analysis._layer_rsi`
-    # parallel-path each tier's wood instead of crediting foam over 100% of the area, and
-    # what lets `rainscreen_band` find a vent gap that is not inside the band.
+    # EIGHT since 2026-09-01; it was TEN from 2026-08-26 and seven before that. Paint, gwb,
+    # stud, sheathing, then THREE stand-off layers where the outrigger band was one — 4" of
+    # foam in ONE band, the 1/2" vent gap, the girt — then the cladding.
+    #
+    # The two that went are the inner girt and the 1" `foam-vent` slice in front of it. The
+    # foam was authored as three bands so `analysis._layer_rsi` could parallel-path the inner
+    # tier's wood rather than credit foam over 100% of the area; with that tier deleted there
+    # is no wood in the foam to path, and one 4" INSULATION layer says the truth. What has
+    # NOT changed is the depth (6" of stand-off) or the count's direction: still strictly
+    # more layers than the seven-layer reference, which is what this test is about.
     #
     # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID (2026-08-18): the same
     # layers outboard of the studs, with a three-layer sealed liner (PVC panel / drainage
     # strapping / Class I membrane) in place of the two-layer painted-gypsum lining. One
-    # more than the rest — and still strictly gaining, which is what this test is about.
+    # more than the rest.
     _HUMID_LINED = {"House Second Stud Wall 1", "House Second Stud Wall 4"}
-    expected = {name: 11 for name in _HUMID_LINED}
-    assert all(item.current_layer_count == expected.get(item.reference_name, 10)
+    expected = {name: 9 for name in _HUMID_LINED}
+    assert all(item.current_layer_count == expected.get(item.reference_name, 8)
                for item in exterior), [
         item.as_dict() for item in exterior
-        if item.current_layer_count != expected.get(item.reference_name, 10)]
+        if item.current_layer_count != expected.get(item.reference_name, 8)]
 
 
 def test_house_footprint_still_measures_thirty_six_feet(reference_model, current_model):

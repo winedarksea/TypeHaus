@@ -1,4 +1,4 @@
-# Board & batten over 32" open girts — hand-worked wind check
+# Board & batten over 24" open girts — hand-worked wind check
 
 **Oracle for `packages/engine/src/typehaus/engineering/wall_panel.py`.** Worked here first,
 by hand, from the standard; the module is checked against these numbers by
@@ -6,15 +6,23 @@ by hand, from the standard; the module is checked against these numbers by
 is not verified.
 
 Subject: `board-batten-24` — 24 ga concealed-fastener steel board & batten, 20" net
-coverage — on the twenty north/south walls of the house, spanning the outer KDAT girt course
-at **32" o.c.** (`CATLIN_EXT_2X6`, `PLANT_EXT_2X6_HUMID`). The east and west walls keep
-`pbr-panel-26` and are **not** subjects here: PBR at these spacings is covered by ICC-ES
-**ESR-4729**, which is a prescriptive path — a reviewer reads the report's table and the
-question is closed.
+coverage — on the twenty north/south walls of the house, spanning the KDAT girt course at
+**24" o.c.** (`CATLIN_EXT_2X6`, `PLANT_EXT_2X6_HUMID`). Re-worked 2026-09-01, when the girt
+courses came from 32" to 24" with the one-tier truss.
+
+The east and west walls keep `pbr-panel-26` and are **not** subjects here — but the reason
+recorded until 2026-09-01 was wrong and is corrected in §5: it is not ESR-4729. **ESR-4729
+does not cover this wall at all.** It is Western States' report, it covers ROOF panels only,
+and it is written for 24 ga minimum over 16 ga steel supports. PBR's wall capacity has to be
+read off a manufacturer's own wall table, and it is: ASC Building Products' PS230, Metal
+Panels Inc. and Homewood all publish 144-168 psf allowable negative at a 3'-0" span, which
+is 6x or better at 24". That is still a table a reviewer can read, so PBR stays prescriptive
+and out of the register — but on the strength of a span table, not of an evaluation report
+that never governed it.
 
 ## 1. Why this is an engineered item and not a check
 
-Board & batten is **not a purlin-bearing profile**, and it appears nowhere in ESR-4729. The
+Board & batten is **not a purlin-bearing profile**, and no evaluation report covers it. The
 only published capacity for it is a manufacturer's own span table; the manufacturers
 disagree about whether open girts are permitted at all; and the limit state that actually
 governs a concealed panel — withdrawal of the hidden leg's screws — is published by nobody
@@ -59,13 +67,15 @@ q_h, eq. 26.10-1:
 
 Effective wind area (§26.2), span x effective width, width not less than span/3:
 
-    span = 32" = 2.6667 ft
-    A    = 2.6667 x (2.6667/3) = 2.3704 ft^2
+    span = 24" = 2.0000 ft
+    A    = 2.0000 x (2.0000/3) = 1.3333 ft^2
 
 Taking span/3 rather than the panel's real 20" coverage is the **smaller** area and so the
 **more negative** GC_p — the conservative side, and it needs no product dimension. It makes
-no difference to the coefficient here: at 2.37 ft^2 we are well below the figure's 10 ft^2
-knee, where the curve is drawn flat.
+no difference to the coefficient here: at 1.33 ft^2 we are well below the figure's 10 ft^2
+knee, where the curve is drawn flat — and it made no difference at 2.37 ft^2 either, which
+is why closing the span from 32" to 24" moves nothing in §2-§4. **The demand is unchanged.
+The whole of the 2026-09-01 gain in this note is on the capacity side.**
 
     Zone 5 (corner):  GC_p = -1.4
     Zone 4 (field):   GC_p = -1.1
@@ -88,26 +98,39 @@ the same basis before the two are set beside each other:
 
 ## 5. Panel bending — the only limit state anybody published
 
-Metal Sales' 24 ga board & batten table, interpolated to a 32" span: **51 psf allowable**.
-Western States, the assumed supplier, publishes none at all.
+Metal Sales' 24 ga board & batten table, read at a 24" span: **58 psf allowable outward**
+(suction), 43 psf inward. Western States, the assumed supplier, publishes none at all.
 
-    d/c = 18.2659 / 51 = **0.358**          -> passes, margin 2.79x
+    d/c = 18.2659 / 58 = **0.315**          -> passes, margin 3.18x
 
-**And PBR, for comparison, at the same spacing:** ESR-4729 gives ~160 psf negative, i.e.
-d/c = 0.114 and a margin of **8.76x**. Against the *strength-level* number the same two read
-1.68x and 5.26x, which is where the "~1.5x against ~4.5x" figures quoted during the design
-pass came from — they are the same comparison on the other basis, and the ASD pair is the
-one to quote, because 51 and 160 are both allowables.
+Suction is what is graded, because suction is what governs a wall panel: it is the negative
+zone-5 pressure of §3 that pulls the panel off its fasteners. The inward 43 psf is recorded
+because it is the smaller of the two, and against the same 18.27 psf demand it is d/c 0.43 —
+still passing, and still not the limit state that matters.
 
-**Either way the conclusion is the same and it is not "fine".** The girts were sized for
-PBR. Swapping the panel spends about two-thirds of the margin that spacing was bought with,
-and it spends it on the profile with no evaluation report behind it.
+**And PBR, for comparison, at the same spacing:** the wall tables named in the header give
+144-168 psf allowable negative at 3'-0", so at 24" it is ~6x that demand or better against
+board & batten's 3.18x. The figures quoted during the design pass — "~1.5x against ~4.5x" —
+were the *strength-level* pair at 32" o.c. and are superseded twice over: by the ASD basis,
+which is the one to quote because both capacities are allowables, and by the closer spacing.
+
+**The conclusion is unchanged in kind and better in degree.** The girts were sized for PBR
+and swapping the panel still spends most of the margin the spacing was bought with. What
+2026-09-01 bought back is that the spacing itself closed by a third for a different reason
+entirely — the 24" course module of the one-tier truss — so the profile with no evaluation
+report behind it now sits at 0.32 rather than 0.36.
 
 ## 6. What is NOT checked here
 
 - **Withdrawal of the concealed leg's fasteners — the governing limit state.** Unpublished
   at any spacing, by anyone. This is why the record is `INCOMPLETE` whatever §5 returns: a
-  panel that clears the only table anybody printed has not thereby been designed.
+  panel that clears the only table anybody printed has not thereby been designed. What the
+  house DOES specify for it is the screw itself: 1-1/2", stainless or ASTM A153 Class D HDG,
+  never the 1" plated pancake screw a panel order ships with — see the `board-batten-24` row
+  in `prices.toml`. It has to take the full thickness of the 1-1/2" KDAT girt, because there
+  is no sheathing behind the nailer to catch a short one. Metal Sales' own detail asks for
+  1/2" past the inside face of the support, which no 1-1/2" screw in a 1-1/2" girt can give;
+  that needs a written variance and is an open item.
 - The girt itself in bending, and its block-to-stud connection (`structural.girt_course_spacing`
   holds the spacing; nothing grades the stick).
 - Panel deflection, and thermal movement over a continuous run.

@@ -60,7 +60,11 @@ class ExposedFastenerCladdingRules:
     # PBR major ribs at 12 in o.c.; the screws land in the flats between them, so the rib
     # pitch is also the horizontal screw pitch.
     rib_pitch_in: float = 12.0
-    # The support crossing — for this house the horizontal girt course.
+    # The support crossing — for this house the horizontal girt course, which has been at
+    # 24" since 2026-09-01 and was at 32" for the week before it. **This is a rule default,
+    # not a reading of the band**, so it and the assembly's ``FramingSpec.spacing`` have to
+    # be kept in step by hand; they agree today. A house whose girts are not at 24" and does
+    # not override this gets a field screw count for a wall it is not building.
     support_pitch_in: float = 24.0
     # One panel's net coverage, which is the horizontal spacing of the sidelap joints.
     panel_coverage_in: float = 36.0

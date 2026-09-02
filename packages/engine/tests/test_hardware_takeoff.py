@@ -164,38 +164,35 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     assert not [row for row in rows if row["scope"] == "roof top deck"], \
         "the nailbase and the 6 in of polyiso it was screwed through are both gone"
 
-    # The wall is TWO rows since the catlin truss (2026-08-26), because the two girt tiers
-    # land in different things and each is billed at what it actually passes through:
-    #   block-1: 1.5 girt + 1.5 block + 0.5 sheathing + 1.5 into the stud       = 5.00 in
-    #   block-2: 1.5 girt + 1.5 block           + 1.5 into the inner girt       = 4.50 in
-    # Both round up to the same 5 in part, and neither is the 4 in screw the Swinburne pack
-    # took — that wall drove through one block, this one drives through a girt as well.
-    tiers = {"1": next(r for r in rows if r["scope"] == "girt wall block-1"),
-             "2": next(r for r in rows if r["scope"] == "girt wall block-2")}
-    for tier, row in tiers.items():
-        assert row["size"] == "5 in" and row["part_number"] == "SDWS22500DB"
-        # ONE screw per block, not two: the girt lying across the block is continuous and
-        # screwed at every block along its run, so there is no rotation for a second to
-        # resist. And the two tiers are OFFSET half a bay, never through-screwed.
-        assert "1 per block" in row["basis"], (tier, row["basis"])
-        assert "16 in o.c." in row["basis"]
-        assert set(row["by_storey"]) == {"main", "second", "attic"}
-        assert row["count"] == sum(row["by_storey"].values())
-    assert "into the stud" in tiers["1"]["basis"]
-    assert "into the inner girt" in tiers["2"]["basis"]
-    assert "8 in off the block-1 line" in tiers["2"]["basis"]
+    # ONE row since 2026-09-01, where the two-tier wall had two. The screw goes through
+    # everything in one pass and lands in the stud:
+    #   1.5 girt + 4.5 block (3 plies) + 0.5 sheathing + 1.5 into the stud       = 8.00 in
+    # It is back at the 8" length the rigid-CI wall's furring screws were, and it is not the
+    # same fastener: this one is wood-to-wood the whole way with continuous lateral support,
+    # where that one cantilevered through 4" of compressible board.
+    row = next(r for r in rows if r["scope"] == "girt wall blocks")
+    assert row["size"] == "8 in" and row["part_number"] == "SDWS22800DB"
+    assert not [r for r in rows if r["scope"].startswith("girt wall block-")], \
+        "the two-tier scopes are gone with the inner girt"
+    # ONE screw per block, not two: the girt lying across the block is continuous and screwed
+    # at every block along its run, so there is no rotation for a second to resist. And there
+    # is no second fastener anywhere in this wall — the block bears the cladding's gravity in
+    # direct compression, so this screw is a pure withdrawal element and it is the whole load
+    # path.
+    assert "1 per block" in row["basis"], row["basis"]
+    assert "3 plies" in row["basis"], row["basis"]
+    assert "32 in o.c." in row["basis"], row["basis"]
+    assert "into the stud" in row["basis"], row["basis"]
+    assert set(row["by_storey"]) == {"main", "second", "attic"}
+    assert row["count"] == sum(row["by_storey"].values())
 
-    # Counted off the resolved blocks, not off a grid — exactly one screw per block, per
-    # tier, and the two counts differ because the two modules are half a bay apart and so
-    # land differently against course ends and rough openings.
-    for tier, row in tiers.items():
-        blocks = sum(1 for w in catlin_model.walls for m in w.members
-                     if m.category == "truss_block"
-                     and girt_block_tier(m.child_key) == tier)
-        assert row["count"] == blocks > 0, tier
-    # The wall's two tiers are now the ONLY structural screws this role bills anywhere in
-    # the house — the roof's 581 came out with the nailbase.
-    assert sum(row["count"] for row in tiers.values()) == sum(r["count"] for r in rows) > 0
+    # Counted off the resolved blocks, not off a grid — exactly one screw per block.
+    blocks = sum(1 for w in catlin_model.walls for m in w.members
+                 if m.category == "truss_block" and girt_block_tier(m.child_key) is not None)
+    assert row["count"] == blocks > 0
+    # And it is the ONLY structural screw this role bills anywhere in the house — the roof's
+    # 581 came out with the nailbase, and the inner tier's took the second wall row with it.
+    assert row["count"] == sum(r["count"] for r in rows) > 0
 
 
 # --- hangers -------------------------------------------------------------------------

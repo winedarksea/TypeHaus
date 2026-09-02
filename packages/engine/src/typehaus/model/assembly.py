@@ -96,12 +96,26 @@ class FramingSpec(HausModel):
     # wall, 1-1/2" on the wall and 3-1/2" out from it. The default is what keeps every
     # existing FURRING spec framing exactly as it did.
     laid: Literal["flat", "edge"] = "flat"
-    # FURRING only: the band is held off the layer behind it by 1-1/2" blocks fastened
-    # through at the framing module, rather than lying on it. "none" (the default) is every
-    # furring band ever authored — a batten screwed flat to the sheathing, an outrigger
-    # standing on a plywood tab. "block" is the *catlin truss* girt band: a flat 2x4 course
-    # that bears on a 3-1/2" block at every stud station and takes one long structural screw
-    # per block through girt + block into what is behind it (→ ``framing/truss_girts.py``).
+    # FURRING only: the band is held off the layer behind it by BLOCKS fastened through at
+    # the framing module, rather than lying on it. "none" (the default) is every furring
+    # band ever authored — a batten screwed flat to the sheathing, an outrigger standing on
+    # a plywood tab. "block" is the *catlin truss* girt band: a flat 2x4 course bearing on a
+    # block at each module station, taking one long structural screw per block through girt
+    # + block into what is behind it (→ ``framing/truss_girts.py``).
+    #
+    # **A girt wall is ONE horizontal, flat FURRING band with ``standoff="block"``.** The
+    # TWO-band form — an inner tier buried in the insulation with the outer one screwed to
+    # it — is what catlin built between 2026-08-26 and 2026-09-01 and stays legal, both for
+    # that revert and for another house that wants it; ``truss_girt_bands`` returns the
+    # inner band as ``None`` when there is only one, and everything downstream iterates the
+    # tiers that are actually there.
+    #
+    # **The block's DEPTH is not fixed at one ply and is never authored.** It is whatever
+    # the stack leaves between the sheathing and this band's inboard face — 1-1/2" on the
+    # two-band wall, 4-1/2" (three 2x4 offcuts, ``profile="3-2x4"``) on catlin's one-band
+    # one, where the last 1/2" of it stands proud of the foam and IS the vent gap. The frame
+    # reads that depth off the resolved layers and derives the ply count from it, so moving
+    # the girt out in an assembly moves the block, the screw length and the BOM row with it.
     #
     # It is the girt frame's whole selector, and it is deliberately not ``laid``: a girt is
     # laid FLAT like an ordinary batten and only the standoff distinguishes it. Stood on

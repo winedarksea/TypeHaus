@@ -32,6 +32,9 @@ from typehaus.resolve.geometry import length, sub, unit
 IN = 0.0254
 _STOCK_FACE = 3.5 * IN
 _STUD_SPACING = 16.0 * IN
+#: The BLOCK module — every OTHER stud since 2026-09-01, when one tier and one screw per
+#: crossing replaced two tiers offset half a bay.
+_BLOCK_SPACING = 32.0 * IN
 
 #: The conflict window, bottom to bottom, between a field course and an opening's own head
 #: or sill course. Two courses less than this apart are two nailers inside one board face —
@@ -55,9 +58,17 @@ def _spec(model, wall):
 
 
 def _band_members(wall, model, rake: bool):
+    """One band's members, keyed by tier — and only the tiers the wall actually has.
+
+    ``truss_girt_bands`` returns ``inner`` as ``None`` on the ONE-TIER wall the house has
+    built since 2026-09-01, so the pair is filtered rather than unpacked blind. The outer
+    band is always there: it is the girt.
+    """
     inner, outer = truss_girt_bands(model.plan, wall.assembly)
     out = {}
     for tier, band in (("1", inner), ("2", outer)):
+        if band is None:
+            continue
         prefix = f"strapping-{band.name}-rake-" if rake else f"strapping-{band.name}-"
         members = [m for m in wall.members if m.child_key.startswith(prefix)]
         if not rake:
@@ -135,8 +146,7 @@ def test_every_raked_girt_wall_carries_a_nailer_along_its_rake(catlin_model):
     for wall in raked:
         top0, top1 = band_tops(wall)
         rakes = _band_members(wall, catlin_model, rake=True)
-        for tier in ("1", "2"):
-            members = rakes[tier]
+        for tier, members in rakes.items():
             assert members, f"{wall.tag} tier {tier}: no rake nailer"
             for member in members:
                 z1_end = member.z1_m if member.z1_end_m is None else member.z1_end_m
@@ -149,13 +159,14 @@ def test_every_raked_girt_wall_carries_a_nailer_along_its_rake(catlin_model):
                   if m.category == "truss_block" and "-rake-" in m.child_key]
         assert blocks, f"{wall.tag}: a rake nailer with no block under it"
         direction = unit(sub(wall.axis[1], wall.axis[0]))
-        for tier, prefix in (("1", "block-1-rake-"), ("2", "block-2-rake-")):
+        for tier in rakes:
+            prefix = f"block-{tier}-rake-"
             stations = sorted(
                 (m.p0[0] - wall.axis[0][0]) * direction[0]
                 + (m.p0[1] - wall.axis[0][1]) * direction[1]
                 for m in blocks if m.child_key.startswith(prefix))
             for a, b in zip(stations, stations[1:], strict=False):
-                assert b - a <= _STUD_SPACING + _STOCK_FACE + 1e-6, (
+                assert b - a <= _BLOCK_SPACING + _STOCK_FACE + 1e-6, (
                     f"{wall.tag} tier {tier}: {(b - a) / IN:.1f}\" between rake blocks")
 
 
@@ -188,16 +199,26 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     An opening's own head and sill courses are 3-1/2" boards at fixed elevations
     (`GirtFrame.opening_frame`), and a field course near one is either half-lapped with it
     or separated from it by a gap too narrow to be worth a board. Exactly coincident is the
-    best case and the design rule: **put the sill on the 32" module above the finished
-    floor, or the head 3-1/2" below one** — the module is registered so that a course TOP
-    lands on the sill datum.
+    best case and the design rule — which FLIPPED with the phase on 2026-09-01, because a
+    course BOTTOM now lands on the framing-base module rather than a course top: **put the
+    HEAD on a 24" multiple above the sole plate, or the SILL 3-1/2" above one.**
 
     The number is asserted rather than driven to zero because zero is not reachable and the
     plan that asked for it was wrong about that: the second storey carries sills at 152" and
     156", 4" apart, on different walls but on ONE module, so any phase clean for one group
-    is 4" off for the other. 19 is the measured optimum over every phase at 32" o.c. (down
-    from 38 at 24"), and 16 openings land exactly on a course line (up from 8). If a window
-    moves, this number moves — re-sweep rather than nudging the bound.
+    is 4" off for the other.
+
+    **RE-SWEPT 2026-09-01 for the 24" module**, at 1/8" from -16" to +8", and the winner is
+    ``course_offset = 0`` — 13 exact hits and 30 slivers, against 9/24 at the -3.5" phase the
+    32" module used. Two things to read before changing either number. A finer module frames
+    a third more courses, so *more* of them fall within 7" of an opening edge no matter what
+    the phase is: 30 slivers at 24" is not worse layout than 19 at 32", it is more course.
+    And the -3.5" phase is no longer available at all — it opens a 24.75" bay on nine walls
+    (the forced top course pops the module course under it), which
+    ``structural.girt_course_spacing`` fails. Of the phases that keep every bay at or under
+    24.00", zero is the one with the most exact hits by a clear margin; the runners-up trade
+    5 fewer slivers for all 13 of them. If a window moves, both numbers move — re-sweep
+    rather than nudging the bound.
     """
     conflicts: list[tuple[str, str, float]] = []
     exact = 0
@@ -215,7 +236,8 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
                     exact += 1
                 elif gap < _CONFLICT_IN - 1e-6:
                     conflicts.append((wall.tag, f"{opening.tag} {name}", round(gap, 2)))
-    assert exact >= 16, f"only {exact} opening edges land on a course line"
-    assert len(conflicts) <= 19, (
+    assert exact >= 13, f"only {exact} opening edges land on a course line"
+    assert len(conflicts) <= 30, (
         f"{len(conflicts)} field courses in the shadow of an opening's own course "
-        f"(19 is the swept optimum at 32\" o.c.): {sorted(conflicts)[:8]}")
+        f"(30 is the swept optimum at 24\" o.c. among the phases that keep every bay "
+        f"within the module): {sorted(conflicts)[:8]}")

@@ -191,42 +191,64 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
   the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
   assembly's `source`, not a separate assembly).
-- **It is a CATLIN TRUSS WALL outboard of that sheathing (2026-08-26).** 4" of 2 lb
-  closed-cell spray foam around **two tiers of flat horizontal 2x4 girts**, each course
-  bearing on 3-1/2" blocks at the stud module: band A foam over block-1 (SPF), the inner
-  girt (SPF, 32" o.c., buried), band C foam + a 1/2" vent gap over block-2 (KDAT), the outer
-  girt (KDAT, same courses at the same elevations), then the standing seam. It replaced the
-  **Swinburne truss** of 2026-08-23 — a chiral block + plywood tab + KDAT outrigger *on edge*
-  at 16" o.c. — which had in turn replaced a sheet WRB + 2" polyiso + 2" EPS + 1/2" furring on
-  537 eight-inch screws. Five things follow, each load-bearing elsewhere:
-  - **There is no WRB.** The foam is air + water + vapour + thermal, bonded and seamless,
-    and `plan/transitions.py` names `spray-foam-ext` as the water and thermal plane. The
-    build order is therefore part of the spec: **bucks before foam**, always — and now also
-    **band A before the inner girts**, because spray foam cannot reach behind a flat girt
-    lying 1-1/2" off the sheathing.
-  - **Materials are by exposure.** Inboard of the foam face (block-1, inner girt, inner jamb
-    posts and courses) is plain SPF — encapsulated, never wet. In or outboard of the vent gap
-    (block-2, outer girt, outer posts and courses) is KDAT — the outer girt is a horizontal
-    ledge behind the cladding that wet-cycles for the life of the wall. The two blocks are two
-    BOM rows because of it.
-  - **The blocks are on the STUD module; block-2 is offset half a bay.** Girts climb their own
-    32" elevation module (24" until 2026-08-30); the blocks land on 16" stud stations, and
-    block-2 on those stations plus 8". No screw passes through both tiers, so every fastener
-    is wood-to-wood with continuous lateral support and nothing bears on foam — which is why
-    IRC R703.15's through-foam furring table is not the applicable provision. See
-    `notes/catlin_truss_engineering.md`.
-  - **The course module counts from the SILLS' datum, not the wall base (2026-08-30).**
-    `course_datum="framing-base"` + `course_offset=inch(-3.5)` on all four girt bands: the
-    module is registered so a course TOP lands on the finished floor line, which is what a
-    sill height is measured from. On a main-storey wall the two datums are 13-7/16" apart
-    (`platform.py` extends the wall down over the floor rim band), and that mismatch is what
-    used to leave a field course a half inch from an opening's own head or sill course. One
-    module now runs unbroken from the wall base **through the gable rake**; three edges break
-    it and only three — a starter at the band bottom, a top course on a level wall, and a
-    **rake nailer** along each gable's raked top with the field held one board clear of it.
-    Design rule for a new opening: **sill on the 32" module above the floor (32/64/96"), or
-    head 3-1/2" below one.** `notes/outie_window_truss_detail.md` has the swept derivation,
-    `structural.girt_course_spacing` holds the bays to the authored spacing.
+- **It is a CATLIN TRUSS WALL outboard of that sheathing (2026-08-26; ONE girt tier since
+  2026-09-01).** 4" of 2 lb closed-cell spray foam in ONE application, crossed only by the
+  blocks, then the block's proud 1/2" as a continuous vent gap, then **one tier of flat
+  horizontal KDAT 2x4 girts at 24" o.c.** standing in free air, then the panel. Each crossing
+  is **three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked to 4-1/2" on the sheathing
+  over every OTHER stud**, clamped by **one 8" SDWS22800DB** driven through girt + block +
+  sheathing, 1-1/2" into the stud. It replaced the **Swinburne truss** of 2026-08-23 — a
+  chiral block + plywood tab + KDAT outrigger *on edge* at 16" o.c. — which had in turn
+  replaced a sheet WRB + 2" polyiso + 2" EPS + 1/2" furring on 537 eight-inch screws.
+  - **THE INNER GIRT TIER IS GONE (2026-09-01), and the reason is not economy.** Bands B and C
+    used to carry a plain SPF 2x4 flat buried in the foam, with the outer tier's blocks
+    bearing on it and a second 5" screw into it. It sat directly ON the sheathing, so it gave
+    its own screw no thermal break at all, and it cost a **10.9 % framing fraction in the
+    first 1-1/2" of the insulation** to hold up nothing but the tier above it. The foam needs
+    no backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface with nothing in it;
+    ESL-1372 lists 3-3/4" of ccSPF between steel Z-girts at 28" o.c.), and ccSPF's racking
+    contribution is its bond to the sheathing FACE, unchanged. Worth **+2.5 R**.
+  - **THE SCREW IS THE ONLY LOAD PATH.** One per crossing, no second tier, no second pass, no
+    nail. What makes that defensible is that the **block bears the cladding's gravity in
+    direct compression** on the sheathing, so the screw is a pure withdrawal element — 54 %
+    utilised at the note's Exposure C basis, 38 % at the site's actual Exposure B. **Mark the
+    stud line across the girt face as it is laid**: the screw is otherwise blind through 6" of
+    wood into a 1-1/2" target, and a miss is invisible once the foam is on. Inspect the
+    pattern from the ground before the sprayer arrives.
+  - **There is no WRB.** The foam is air + water + vapour + thermal, bonded and seamless, and
+    `plan/transitions.py` names `spray-foam-ext` as the water and thermal plane. The build
+    order is part of the spec: **bucks before foam**, always. What is NO LONGER part of it is
+    the two-lift order — all the wood and the whole screw pass now happen on the FLAT wall,
+    then tilt, then one 4" lift sprayed through the 20-1/2" clear between courses and behind
+    them. **Fillet the foam against the block sides** (BSI-048), never butt it square.
+  - **Everything outboard of the sheathing is KDAT.** The girt is a horizontal ledge behind
+    the cladding that wet-cycles for the life of the wall, and the block plies stand in the
+    same foam-face plane. The SPF tier that was encapsulated and never wet no longer exists,
+    so there is one BOM row out here, not two — plus `3-2x4:kdat` for the three-ply block.
+  - **The blocks are on the STUD module, on every OTHER stud.** Girts climb their own 24"
+    elevation module (32" from 2026-08-30 to 2026-09-01, 24" before that); the blocks land at
+    **32"** from the wall's LAYOUT LINE. 32" x 24" = 5.33 ft2 is the crossing tributary every
+    load in `notes/catlin_truss_engineering.md` is derived from. Every fastener is
+    wood-to-wood with continuous lateral support and nothing bears on foam — which is why IRC
+    R703.15's through-foam furring table is not the applicable provision.
+    **The block phase is solved for 32", not for 16",** and that is not pedantry: a phase is
+    only line-locked modulo the spacing it was solved for, so reusing the stud phase put half
+    of a facade's segments on the opposite 32" parity from the rest.
+  - **The course module counts from the SILLS' datum, not the wall base (2026-08-30), and its
+    phase is ZERO (2026-09-01).** `course_datum="framing-base"` + `course_offset=inch(0)` on
+    the girt band: on a main-storey wall the two datums are 13-7/16" apart (`platform.py`
+    extends the wall down over the floor rim band), and that mismatch is what used to leave a
+    field course a half inch from an opening's own head or sill course. One module runs
+    unbroken from the wall base **through the gable rake**; three edges break it and only
+    three — a starter at the band bottom, a top course on a level wall, and a **rake nailer**
+    along each gable's raked top with the field held one board clear of it.
+    **THE DESIGN RULE FOR A NEW OPENING FLIPPED WITH THE PHASE: head on a 24" multiple above
+    the sole plate (24/48/72/96"), or sill 3-1/2" above one.** It was the mirror of that at
+    the −3-1/2" phase, and that phase is no longer available — at 24" it opens a 24.75" bay on
+    nine walls and `structural.girt_course_spacing` FAILs it. Zero is the swept winner among
+    the phases that keep every bay at or under 24.00": 13 opening edges land exactly on a
+    course line, 30 sit in the 7" shadow of one.
+    `notes/outie_window_truss_detail.md` has the whole sweep.
   - **Windows are OUTIE**, in the mount plane **6"** out from the sheathing (was 5"), flanges
     bearing on the jamb posts and the head/sill courses. Derived, never authored — the mount
     plane is the outermost FURRING layer's outer face, which is why not one window moved when
@@ -238,8 +260,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     walls align on `face("sheathing-ext")` — but `params/roof_trim.py` (one named constant,
     `_WALL_OUTBOARD_IN`, with every older value beside it), `params/breezeway.py`, the garage
     wall lines and the exterior electrical all measure off the cladding and moved with it.
-    Windows and doors did NOT: they mount on the outer GIRT plane, which did not move, so
-    only the cladding return depth at a jamb changed. The garage moved just 3/8" of that 3/4",
+    Windows and doors did NOT: they mount on the GIRT plane, which did not move — and did
+    not move again on 2026-09-01 either, which is why deleting a whole girt tier moved
+    nothing outside this wall. The 6" stack simply comes out a different way now (a 4-1/2"
+    block plus a 1-1/2" girt instead of four 1-1/2" layers). Only the cladding return depth
+    at a jamb changed, back in 2026-08-26. The garage moved just 3/8" of that 3/4",
     because `params/breezeway.py` was also carrying a 3/8" rainscreen furring on the garage
     face that `GARAGE_WALL_2X6` dropped on 2026-08-20 — a correction, not a rounding.
   - **The Swinburne truss is one swap away.** Nothing vertical was deleted:
@@ -247,9 +272,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
     `standoff="block"`, and the old layer tuple is kept verbatim as `CATLIN_EXT_2X6_SWINBURNE`,
     referenced by nothing. `notes/outie_window_truss_detail.md` has the three-edit revert.
-  **The card reads R-40.4 and the honest number is ≈R-37.3** — the blocks are framed rather
-  than authored as a `CavityFill`, and the outer girt is credited its own R although it stands
-  outboard of the vent gap. `wall_r = 40` is NOT met. See the engineering note §7.
+  **The card reads R-43.5 and the honest number is ≈R-39.8 wood-only / ≈R-37.9 with the girt
+  screws counted** — the blocks are framed rather than authored as a `CavityFill`, and the
+  girt is credited its own R although it stands outboard of the vent gap. It was 40.4 / 37.3
+  on the two-tier wall. **`wall_r = 40` is now effectively met on the wood-only basis** (39.85
+  against 40) and is 2.1 short with fasteners in. Do not read the card as saying the target is
+  met; do not read the shortfall as bigger than it is either. See the engineering note §7,
+  and §7.1 for the comparison against a 4" polyiso + furring wall (this wall wins by ≈ +3 R).
   **The stud bay is FIBREGLASS, not mineral wool, since 2026-08-31** (the card read 41.4 and
   the honest number 38.2 until then). An owner cost review swept mineral wool out of every
   cavity in the house that is not damp, hot or wet: it costs 2x installed, reads the SAME
@@ -327,13 +356,26 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     corners, derived in `params/roof_trim.py` off `_WALL_OUTBOARD_IN` rather than
     hand-transcribed a fifth time. Without `vertical` a 22'-4" corner bills as 1-1/4" of
     metal, because `_EdgeRun.path` is a *plan* polyline.
-  - **It is ENGINEERED, not prescriptive (decision #65).** ESR-4729 covers PBR at 32" girts;
-    board & batten appears in no report, and the limit state that governs it — concealed-leg
-    screw withdrawal — is published by nobody. `wall_panel/<wall tag>` x 20 in
-    `haus engineering`, `INCOMPLETE` **even though bending passes at d/c 0.36**, oracled by
-    `notes/board_batten_girt_span.md`. **Only Western States and Metal Sales permit open
-    girts** of eight surveyed; substituting another forces a second girt course or a
-    continuous deck, which costs more than the panel switch.
+  - **It is ENGINEERED, not prescriptive (decision #65).** PBR's wall capacity is published
+    in the manufacturers' own wall span tables (ASC PS230 / Metal Panels Inc. / Homewood,
+    144-168 psf at 3'-0"), so PBR stays prescriptive; board & batten appears in no such
+    table beyond Metal Sales', and the limit state that governs it — concealed-leg screw
+    withdrawal — is published by nobody. `wall_panel/<wall tag>` x 20 in `haus engineering`,
+    `INCOMPLETE` **even though bending passes at d/c 0.31** (58 psf allowable at the 24"
+    girts, since 2026-09-01; it was 0.36 against 51 psf at 32"), oracled by
+    `notes/board_batten_girt_span.md`.
+    **ESR-4729 DOES NOT COVER THIS WALL and several places in this repo used to say it did.**
+    It is Western States' report, it covers ROOF panels only, and it is written for 24 ga
+    minimum over 16 ga STEEL supports. Corrected 2026-09-01 in this file, in
+    `prices.toml` and in `notes/board_batten_girt_span.md`; do not reintroduce it.
+    **Only Western States and Metal Sales permit open girts** of eight surveyed — and only
+    Metal Sales is verified, since Western States' own install guide could not be fetched;
+    substituting another forces a second girt course or a continuous deck, which costs more
+    than the panel switch.
+    **The cladding screw is 1-1/2", stainless or ASTM A153 Class D HDG**, never the 1"
+    plated pancake screw a panel order ships with: it has to take the full thickness of the
+    1-1/2" KDAT girt, which has no sheathing behind it to catch a short screw. Metal Sales'
+    "1/2" past the inside face" clause needs a written variance — open.
   - **The revert is deleting twenty `layer_materials=` lines.** `pbr-panel-26` and its
     `prices.toml` row are still live on the other elevations. Delivered cost of the switch:
     **+$2,200 to +$5,600** measured line-to-line against the day before.
@@ -878,9 +920,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       (2026-08-26)**: `_furring_module_signature` carries `direction`, so a HORIZONTAL band
       continues through a seam too. Without it every tee in a facade would put a 3" notch in
       every girt course — a course is one stick on the job, and the seam is an artifact of
-      where the partitions land inside. What phase-locks to the 16" module is now the girts'
-      **blocks**, one under every course at every stud station, and block-2 on the same
-      stations plus 8".
+      where the partitions land inside. What phase-locks to the stud grid is now the girts'
+      **blocks**, one under every course on every OTHER stud — **a 32" grid since
+      2026-09-01**, phase-locked to the layout line at 32" rather than at 16".
       `test_catlin_contract_m3.py::test_each_facade_block_grid_is_one_grid_on_every_storey`
       and `::test_no_facade_stud_stands_off_the_module_except_at_a_corner` pin it, per facade.
       The only members left off the grid are the corner packs (identical on every storey) and

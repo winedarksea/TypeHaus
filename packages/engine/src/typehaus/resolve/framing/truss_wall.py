@@ -39,8 +39,8 @@ them — is ``framing/truss_frame.py``. This module is the pass: which walls, in
 and what it reports. The names other packages use are re-exported here.
 
 **There are two truss walls now.** The Swinburne pack above is one; the **catlin truss**
-(``framing/truss_girts.py``, 2026-08-26) is the other — two tiers of flat horizontal 2x4
-girts at 24" o.c., each bearing on 3-1/2" blocks at the stud module, no tab and no
+(``framing/truss_girts.py``, 2026-08-26; one tier since 2026-09-01) is the other — flat
+horizontal 2x4 girts at 24" o.c., bearing on 4-1/2" blocks at the stud module, no tab and no
 chirality. Nothing vertical was deleted for it: the two are siblings, selected per wall off
 the assembly by :func:`truss_kind` (``laid="edge"`` + vertical → the outrigger pack,
 ``standoff="block"`` → the girts), and reverting is swapping one assembly's layer tuple.
@@ -437,12 +437,13 @@ def girt_band_findings(plan: PlanModel, wall_tag: str,
                        assembly_tag: str | None) -> list[Finding]:
     """WARN for an assembly that asks for girts but does not describe a pair of them.
 
-    A girt band is only meaningful as one of two: the inner tier is what block-2 screws into
-    and the outer tier is what the cladding lands on, and either alone is a band of wood
-    standing in foam holding nothing. Turning one on edge, or laying it vertically, is the
-    same mistake spelled differently — ``integrity.assembly_layers`` already refuses
-    ``laid="edge"`` outright, and this catches the rest at the wall that uses it, where the
-    tag an owner can act on is in hand.
+    A catlin truss is ONE girt band (the wall since 2026-09-01: the cladding nailer, on
+    4-1/2" blocks, in free air) or TWO (what it built between 2026-08-26 and then: an inner
+    tier buried in the foam with the outer one screwed to it). Three or more is not a wall
+    type, and turning a band on edge or laying it vertically is the same mistake spelled
+    differently — ``integrity.assembly_layers`` already refuses ``laid="edge"`` outright, and
+    this catches the rest at the wall that uses it, where the tag an owner can act on is in
+    hand.
     """
     bands = _standoff_layers(plan, assembly_tag)
     if not bands or truss_girt_bands(plan, assembly_tag) is not None:
@@ -452,10 +453,10 @@ def girt_band_findings(plan: PlanModel, wall_tag: str,
         check_id="structural.truss_girt_bands",
         severity=Severity.WARN, result=Result.UNKNOWN,
         message=(f"{wall_tag}: assembly {assembly_tag} carries {len(bands)} "
-                 f'standoff="block" FURRING layer(s) ({names}); a catlin truss is exactly '
-                 "two, both horizontal and both laid flat — no girts were framed"),
+                 f'standoff="block" FURRING layer(s) ({names}); a catlin truss is one or '
+                 "two, every one of them horizontal and laid flat — no girts were framed"),
         element_tags=(wall_tag,),
-        fix_hint=('author an inner and an outer girt band, each with '
+        fix_hint=('author one girt band — or an inner and an outer — each with '
                   'direction="horizontal" and the default laid="flat"'))]
 
 
@@ -468,16 +469,17 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
                      ) -> tuple[tuple[FramedMember, ...], list[Finding]]:
     """Every catlin-truss piece on one wall: blocks, jamb posts, head/sill courses, bucks.
 
-    ``()`` if the wall is not a girt wall, or if either band failed to resolve a polygon —
-    a band mitred away to nothing at a corner frames nothing, and that is not an error.
+    ``()`` if the wall is not a girt wall, or if any authored band failed to resolve a
+    polygon — a band mitred away to nothing at a corner frames nothing, and that is not an
+    error.
     """
     bands = truss_girt_bands(plan, wall.assembly)
     if bands is None:
         return (), girt_band_findings(plan, wall.tag, wall.assembly)
     resolved = {layer.name: layer for layer in wall.layers if layer.polygon}
-    inner = resolved.get(bands[0].name)
+    inner = resolved.get(bands[0].name) if bands[0] is not None else None
     outer = resolved.get(bands[1].name)
-    if inner is None or outer is None:
+    if outer is None or (bands[0] is not None and inner is None):
         return (), []
     frame = GirtFrame.build(plan, wall, inner, outer, line, continuations)
     if frame is None:
@@ -485,12 +487,14 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
 
     # A band's members are its field courses AND, on a raked wall, the one nailer along the
     # rake. They are separated here rather than inside the frame because the difference is
-    # not a property of the block pass: a field course has one elevation and pairs with its
-    # partner in the other band at that elevation, and a rake has an elevation per station.
-    # Read as a course, a rake would pair against whatever shares its ``p0`` elevation.
+    # not a property of the block pass: a field course has one elevation — and, on a two-band
+    # wall, pairs with its partner at that elevation — while a rake has an elevation per
+    # station. Read as a course, a rake would pair against whatever shares its ``p0``
+    # elevation.
     field: dict[str, list[FramedMember]] = {}
     rakes: dict[str, list[FramedMember]] = {}
-    for tier, name in ((INNER, inner.name), (OUTER, outer.name)):
+    tiers = ((INNER, inner.name),) if inner is not None else ()
+    for tier, name in (*tiers, (OUTER, outer.name)):
         prefix = f"strapping-{name}-"
         members_of = [m for m in wall.members if m.child_key.startswith(prefix)]
         rake = f"{prefix}rake-"

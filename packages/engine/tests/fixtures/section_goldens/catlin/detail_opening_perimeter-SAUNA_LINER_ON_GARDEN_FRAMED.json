@@ -2809,12 +2809,12 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "membrane",
+      "pattern": "batt",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "air-barrier"
+      "material": "mineral-wool"
     },
     {
       "space": "paper",
@@ -2851,7 +2851,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "air-barrier  0.05\"",
+      "content": "mineral-wool  5.5\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2881,12 +2881,12 @@
           1.468
         ]
       ],
-      "pattern": "none",
+      "pattern": "membrane",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "xps"
+      "material": "air-barrier"
     },
     {
       "space": "paper",
@@ -2922,6 +2922,78 @@
       "anchor": [
         2.85,
         1.3980000000000001
+      ],
+      "content": "air-barrier  0.05\"",
+      "height": 3.0,
+      "height_pt": 6.5,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "hatch",
+      "boundary": [
+        [
+          2.65,
+          1.158
+        ],
+        [
+          2.79,
+          1.158
+        ],
+        [
+          2.79,
+          1.298
+        ],
+        [
+          2.65,
+          1.298
+        ]
+      ],
+      "pattern": "none",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "xps"
+    },
+    {
+      "space": "paper",
+      "node": "polyline",
+      "points": [
+        [
+          2.65,
+          1.158
+        ],
+        [
+          2.79,
+          1.158
+        ],
+        [
+          2.79,
+          1.298
+        ],
+        [
+          2.65,
+          1.298
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.2,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        2.85,
+        1.228
       ],
       "content": "xps  2\"",
       "height": 3.0,

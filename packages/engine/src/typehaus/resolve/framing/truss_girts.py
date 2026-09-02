@@ -1,42 +1,63 @@
-"""The **catlin truss**: two tiers of flat horizontal girts on blocks (→ 11 §Framing).
+"""The **catlin truss**: one tier of flat horizontal girts on 4-1/2" blocks (→ 11 §Framing).
 
 The owner's replacement for the Swinburne outrigger pack (``truss_frame.py``, still here and
-still one assembly swap away). Four 1-1/2" layers outboard of the sheathing, all 2x stock,
-all horizontal:
+still one assembly swap away). Everything outboard of the sheathing is 2x stock laid flat and
+horizontal, in two bands and 6" total:
 
 ============  =======================  =================================================
 band          depth off the sheathing  what
 ============  =======================  =================================================
-A             0 – 1-1/2"               ccSPF, crossed by **block-1** at every stud station
-B             1-1/2 – 3"               the **inner girt** — SPF 2x4 flat, 24" o.c., buried
-C             3 – 4-1/2"               1" ccSPF + a 1/2" vent gap, crossed by **block-2**
-D             4-1/2 – 6"               the **outer girt** — KDAT 2x4 flat, the cladding nailer
+A             0 – 4"                   ccSPF, one application, crossed only by **the
+                                       block** — three loose 1-1/2" offcut plies stacked
+                                       on the sheathing over every other stud at every
+                                       24" course
+A'            4 – 4-1/2"               the block's proud 1/2": the **continuous vent gap**
+                                       behind every course
+B             4-1/2 – 6"               the **girt** — KDAT 2x4 flat, 24" o.c., standing in
+                                       free air: the cladding nailer and the window mount
+                                       plane
 ============  =======================  =================================================
 
-The two girt bands are the FURRING layers; ``framing/furring.py`` frames their field courses
-like any other horizontal batten and this pass reads back what it framed, which is what keeps
-a block under the girt it actually carries rather than on a grid of its own that would drift
-the moment a wall's length or a window's position changed. The pass adds what a course cannot
+**The inner girt tier was deleted on 2026-09-01** (decision recorded in
+``houses/catlin/CLAUDE.md`` and ``notes/catlin_truss_engineering.md``). It sat directly on
+the sheathing, so it gave its screw no thermal break at all, and it cost 10.9% wood in the
+first 1-1/2" of the foam to hold up a band that carried nothing but the block above it. The
+foam does not need it: ccSPF is applied to a vertical surface with nothing in it (ESR-4073
+§4.4.2), and its racking contribution is its bond to the sheathing face, which is unchanged.
+The two-band form is still legal here — another house may want it, and it is what catlin
+built between 2026-08-26 and 2026-09-01 — so everything below is written for *the tiers this
+wall actually has*, one or two, and ``self.tiers`` is the list.
+
+The girt band is the FURRING layer; ``framing/furring.py`` frames its field courses like any
+other horizontal batten and this pass reads back what it framed, which is what keeps a block
+under the girt it actually carries rather than on a grid of its own that would drift the
+moment a wall's length or a window's position changed. The pass adds what a course cannot
 know about itself: the blocks it bears on, the jamb posts and head/sill courses at every
 rough opening, and the buck.
 
-Two rules run through everything here and are worth stating once rather than at each use.
+Three rules run through everything here and are worth stating once rather than at each use.
 
-**Materials are by exposure.** Everything inboard of the foam face — block-1, the inner girt,
-and the inner band's jamb posts and head/sill courses — is plain SPF: it is encapsulated in
-closed-cell foam and never sees water. Everything standing in or outboard of the vent gap —
-block-2, the outer girt, and the outer band's posts and courses — is KDAT. The outer girt is
-a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle for the life of the
-wall, and block-2's face is a ledge every 16" on the foam plane. So the two blocks are two
-purchases, and ``takeoff/framing.py`` — which keys rows by material — bills them apart.
+**One fastener, and it is the whole load path.** One 8" SDWS22800DB per crossing, driven
+through girt + block (6") and the sheathing, 1-1/2" into the stud. There is no second pass
+and no nail: the block bears the cladding's gravity in direct compression on the sheathing,
+so the screw is a pure withdrawal element at about 38% of its ASD allowable. Nothing else
+holds the cladding on, which is why ``takeoff/fasteners.py`` bills it off the resolved
+blocks rather than off a grid, and why the note names the screw pattern as the one thing
+this wall cannot miss.
+
+**Materials are by exposure.** On the one-tier wall everything outboard of the sheathing is
+KDAT — the girt is a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle
+for the life of the wall, and the block plies stand in the same foam-face plane and get
+their sides filleted rather than sealed. On the two-tier wall the inner tier was plain SPF,
+encapsulated and never wet, and ``takeoff/framing.py`` — which keys rows by material — still
+bills the two apart.
 
 **The blocks are on the STUD module, not the girt module.** A girt course climbs its own 24"
 elevation module; the blocks under it are what carry it back to the framing, so they land at
 whole multiples of the *stud* spacing from the wall's layout line — the same phase
-``solver._module_stations`` gives the studs. Block-2 takes that same module shifted half a
-bay, so the two tiers' screws are offset 8" rather than stacked: an offset scheme, not a
-through-screw one, which is what lets each tier's 5" screw be a plain wood-to-wood connection
-with continuous lateral support instead of a fastener cantilevering through foam.
+``solver._module_stations`` gives the studs. On the one-tier wall the block module is
+**twice** that spacing: one block on every other stud, 32" on catlin, which is what makes a
+crossing's tributary 32" x 24" and the screw count half what the two-tier scheme needed.
 """
 
 from __future__ import annotations
@@ -89,11 +110,15 @@ GIRT_MEMBER = "2x4"
 #: beside a rough opening as landing on nothing.
 STUDLIKE = frozenset({"stud", "king", "jack", "cripple", "corner", "trimmer"})
 
-#: The two tiers, in the order the stack resolves them and the order they are built in.
-#: They are also how a block spells which tier it belongs to, in its own child key —
-#: ``block-1-...`` bears the inner girt, ``block-2-...`` the outer — which is what
-#: ``takeoff/fasteners.py`` reads to bill the two screw lengths apart. Named, and read
-#: through :func:`girt_block_tier`, so the key format lives in one place.
+#: The tiers a girt wall may have, in the order the stack resolves them and the order they
+#: are built in. They are also how a block spells which tier it belongs to, in its own child
+#: key — ``block-1-...`` bears an inner girt, ``block-2-...`` the outer one — which is what
+#: ``takeoff/fasteners.py`` reads to bill the screw lengths apart. Named, and read through
+#: :func:`girt_block_tier`, so the key format lives in one place.
+#:
+#: A ONE-TIER wall (catlin since 2026-09-01) has only ``OUTER``: its sole band *is* the outer
+#: girt — the cladding nailer, the mount plane, and the KDAT — and its blocks are
+#: ``block-2-...`` for exactly that reason, not because a phantom inner tier is missing.
 INNER, OUTER = "1", "2"
 
 _TOL = 1e-9
@@ -104,24 +129,30 @@ _KEY_TOL = 6  # decimal places an elevation is keyed at when pairing the two ban
 
 
 def truss_girt_bands(plan: PlanModel, assembly_tag: str | None
-                     ) -> tuple[Layer, Layer] | None:
+                     ) -> tuple[Layer | None, Layer] | None:
     """``(inner, outer)`` authored FURRING layers of a girt wall, or ``None``.
 
     The signature is ``FramingSpec.standoff == "block"``: the band is held off what is behind
-    it by 1-1/2" blocks at the framing module rather than lying on it. Read off the *authored*
+    it by blocks at the framing module rather than lying on it. Read off the *authored*
     assembly, so a check can ask the question without a resolved wall in hand, and returned
     interior → exterior because which tier a piece belongs to is the whole of what decides
     its material.
 
+    **The outer band is always ``[1]``; the inner one is ``None`` on a one-tier wall.** That
+    shape rather than a bare list because every caller wants the OUTER band and only the
+    frame cares whether there is an inner one: the outer girt is the mount plane, the
+    cladding nailer, the band a course spacing is read from and the one whose continuation
+    roles matter. A caller that indexes ``[1]`` is right on both wall types.
+
     ``None`` — deliberately, without complaint — for the ordinary case of no such layer at
-    all. A *malformed* girt band (one, three, or a band turned the wrong way) is a different
+    all. A *malformed* girt band (three of them, or one turned the wrong way) is a different
     thing and :func:`girt_band_findings` reports it; this returns ``None`` for that too, so
     every caller fails safe by simply not framing girts.
     """
     bands = _standoff_layers(plan, assembly_tag)
-    if len(bands) != 2 or not all(_is_girt_band(layer) for layer in bands):
+    if not 1 <= len(bands) <= 2 or not all(_is_girt_band(layer) for layer in bands):
         return None
-    return bands[0], bands[1]
+    return (bands[0] if len(bands) == 2 else None), bands[-1]
 
 
 def _standoff_layers(plan: PlanModel, assembly_tag: str | None) -> list[Layer]:
@@ -158,60 +189,116 @@ def girt_block_tier(child_key: str) -> str | None:
 
 
 class GirtFrame(BandFrame):
-    """One girt wall's two bands, and every piece measured off them.
+    """One girt wall's band or bands, and every piece measured off them.
 
     Anchored on the OUTER band — that is the mount plane, the cladding nailer and the datum
-    the buck runs out to — with the inner band's own depth read off its resolved polygon
-    rather than assumed, so the four 1-1/2" layers stay an authoring decision and this stays
-    arithmetic. Every depth is a signed offset along ``across`` from the same origin the
-    outer centreline is on (``BandFrame``), so a block and a buck cannot disagree about where
-    the sheathing face is.
+    the buck runs out to — with the SHEATHING FACE read off the resolved stack rather than
+    assumed. That single reading is what lets the same code frame both wall types: a block
+    fills whatever sits between the sheathing and the band it carries, one 1-1/2" ply on the
+    two-tier wall and three of them (4-1/2") on catlin's one-tier one, where the extra 1/2"
+    over the 4" of foam IS the vent gap. The stack stays an authoring decision and this stays
+    arithmetic.
+
+    Every depth is a signed offset along ``across`` from the same origin the outer centreline
+    is on (``BandFrame``), so a block and a buck cannot disagree about where the sheathing
+    face is.
     """
 
     def __init__(self, wall: ResolvedWall, origin: Vec, direction: Vec, across: Vec,
-                 first: float, last: float, inner: ResolvedLayer, outer: ResolvedLayer,
+                 first: float, last: float, inner: ResolvedLayer | None,
+                 outer: ResolvedLayer, sheathing_face: float,
                  structure_material: str | None, spacing: float, phase: float,
+                 block_phase: float,
                  continuations: tuple[str | None, str | None], run: float) -> None:
         super().__init__(wall, origin, direction, across, first, last,
                          outer.thickness_m, run)
-        self.inner_name, self.outer_name = inner.name, outer.name
-        self.inner_material, self.outer_material = inner.material_ref, outer.material_ref
+        self.inner_name = inner.name if inner is not None else None
+        self.outer_name = outer.name
+        self.inner_material = inner.material_ref if inner is not None else None
+        self.outer_material = outer.material_ref
         self.structure_material = structure_material
         # The stud module and its phase — NOT the girt module. See this file's header.
         self.spacing, self.phase = spacing, phase
+        # And the BLOCK module's own phase, which is a different number and has to be. Both
+        # are the wall-local station of the LAYOUT LINE's first module station
+        # (``layout_lines.layout_phase``), and a phase is only line-locked modulo the spacing
+        # it was solved for: a wall standing 16" along its line has stud phase 0 mod 16 but
+        # block phase 16 mod 32. Taking ``phase % 32`` instead put half of a facade's wall
+        # segments on the opposite 32" parity from the rest, so the facade's block grid
+        # differed storey to storey while every block was still faithfully on a stud.
+        self.block_phase = block_phase
         self.continuations = continuations
 
         section = cross_section(GIRT_MEMBER)
-        #: 1-1/2" — a girt's thickness through the wall, and a block's depth.
+        #: 1-1/2" — a girt's thickness through the wall, and one block ply's depth.
         self.stock_thickness = section.width_m
         #: 3-1/2" — a course's height on the wall, a post's width along it, and a block's
         #: face in both. Everything here is the same board.
         self.stock_face = section.depth_m
+        self.sheathing_face = sheathing_face
 
-        self.inner_mid = mean_offset(inner, across)
-        self.inner_depth = inner.thickness_m
-        # A block sits directly inboard of the girt it carries, filling the band behind it.
-        self.block_depths = {
-            INNER: self.inner_mid - (self.inner_depth + self.stock_thickness) / 2.0,
-            OUTER: self.band_mid - (self.band_depth + self.stock_thickness) / 2.0,
-        }
+        #: The tiers this wall actually has, interior → exterior. One or two; everything
+        #: below iterates it rather than the ``(INNER, OUTER)`` pair, so a one-tier wall
+        #: frames nothing for a band that is not there instead of guessing at one.
+        self.tiers: tuple[str, ...] = (INNER, OUTER) if inner is not None else (OUTER,)
+        #: The BLOCK module. Two tiers put a block at every stud, which is what their two
+        #: 5" screws assumed. One tier puts a block on every OTHER stud — 32" on catlin —
+        #: which is the whole of why a crossing's tributary is 32" x 24" and the screw count
+        #: is half what the offset scheme needed.
+        self.block_spacing = spacing if inner is not None else spacing * 2.0
+
+        self.inner_mid = mean_offset(inner, across) if inner is not None else 0.0
+        self.inner_depth = inner.thickness_m if inner is not None else 0.0
+        band_ins = {INNER: self.inner_mid - self.inner_depth / 2.0, OUTER: self.band_in}
+        # A block fills the band behind the girt it carries, all the way back to what is
+        # behind that — the sheathing for the innermost tier, the tier below for any other.
+        thicknesses = {INNER: band_ins[INNER] - sheathing_face,
+                       OUTER: (band_ins[OUTER] - sheathing_face if inner is None
+                               else self.stock_thickness)}
+        self.block_thickness = {tier: thicknesses[tier] for tier in self.tiers}
+        self.block_depths = {tier: band_ins[tier] - self.block_thickness[tier] / 2.0
+                             for tier in self.tiers}
+        # The block is a STACK of flat 2x4 offcuts, so its profile is a ply count and not a
+        # new size: three loose 3-1/2" x 3-1/2" x 1-1/2" pieces dropped on the sheathing and
+        # clamped by the girt screw, never tacked. Derived from the depth the stack leaves
+        # rather than named, so an assembly that moves the girt out moves the ply count with
+        # it and the BOM cannot disagree with the geometry.
+        self.block_plies = {tier: max(1, int(round(self.block_thickness[tier]
+                                                   / self.stock_thickness)))
+                            for tier in self.tiers}
+        self.block_profiles = {
+            tier: (GIRT_MEMBER if plies == 1 else f"{plies}-{GIRT_MEMBER}")
+            for tier, plies in self.block_plies.items()}
         self.band_mids = {INNER: self.inner_mid, OUTER: self.band_mid}
         self.band_names = {INNER: self.inner_name, OUTER: self.outer_name}
         # Girt and jamb-post/course stock follows the tier's exposure; a block follows the
-        # band it SERVES, so block-1 is the structure's own SPF and block-2 the outer girt's
-        # KDAT. Two rows in the BOM, which is what the two purchases are.
+        # band it SERVES, so an inner block is the structure's own SPF and the outer girt's
+        # block is KDAT. Two rows in the BOM where there are two tiers, which is what the
+        # two purchases were; one row, all KDAT, on the one-tier wall.
         self.band_materials = {INNER: self.inner_material, OUTER: self.outer_material}
         self.block_materials = {INNER: structure_material, OUTER: self.outer_material}
 
-        # Sheathing face: inboard of the inner girt by block-1's own depth. The buck runs
-        # from there to the outer girt's outboard face — 6" on catlin, but derived.
-        sheathing_face = self.inner_mid - self.inner_depth / 2.0 - self.stock_thickness
+        # The buck runs from the sheathing face to the outer girt's outboard face — 6" on
+        # catlin on either wall type, but derived.
         mount_plane = self.band_mid + self.band_depth / 2.0
         self.buck_depth = mount_plane - sheathing_face
         self.buck_centre = (mount_plane + sheathing_face) / 2.0
 
+    def _module(self, tier: str) -> tuple[float, float]:
+        """``(spacing, phase)`` of one tier's block module, in metres.
+
+        One tier: the block module, on the stud line the layout phase gives — every other
+        stud, and which of the two is a consequence of the phase and not a choice made here.
+        Two tiers: the stud module, with the outer tier shifted half a bay so the two tiers'
+        screws are offset 8" rather than stacked.
+        """
+        if len(self.tiers) == 1:
+            return self.block_spacing, self.block_phase
+        phase = self.phase if tier == INNER else self.phase + self.spacing / 2.0
+        return self.spacing, phase % self.spacing
+
     @classmethod
-    def build(cls, plan: PlanModel, wall: ResolvedWall, inner: ResolvedLayer,
+    def build(cls, plan: PlanModel, wall: ResolvedWall, inner: ResolvedLayer | None,
               outer: ResolvedLayer, line: object | None,
               continuations: tuple[str | None, str | None]) -> GirtFrame | None:
         _origin, _tangent, across, axis_length = wall_frame(wall)
@@ -228,10 +315,22 @@ class GirtFrame(BandFrame):
         first, last = band_extent(outer.polygon, start, direction, run)
         spec = _structure_spec(plan, wall.assembly)
         spacing = (getattr(spec, "spacing", None) or DEFAULT_SPACING).meters
+        block_spacing = spacing if inner is not None else spacing * 2.0
+        block_phase = layout_phase(spec, cast("ResolvedLayoutLine | None", line),
+                                   wall.tag, block_spacing)
+        band_in = mean_offset(outer, turned) - outer.thickness_m / 2.0
+        sheathing_face = _sheathing_face(wall, turned, band_in)
+        if sheathing_face is None:
+            # No resolved SHEATHING band inboard of the girt — an unsheathed girt wall is
+            # not a thing this house builds, but the fallback is the reading that was
+            # hard-coded before 2026-09-01 rather than a refusal to frame: one ply of block.
+            sheathing_face = band_in - cross_section(GIRT_MEMBER).width_m
         return cls(wall, start, direction, turned, first, last, inner, outer,
-                   assembly_structure_material(plan, wall.assembly), spacing,
+                   sheathing_face, assembly_structure_material(plan, wall.assembly),
+                   spacing,
                    layout_phase(spec, cast("ResolvedLayoutLine | None", line),
-                                wall.tag, spacing), continuations, run)
+                                wall.tag, spacing),
+                   block_phase, continuations, run)
 
     # --- the field ---------------------------------------------------------------
     def blocks(self, field: dict[str, list[FramedMember]],
@@ -239,28 +338,29 @@ class GirtFrame(BandFrame):
                butts: tuple[float, ...] = (),
                verticals: tuple[tuple[float, float, float], ...] = (),
                ) -> tuple[list[FramedMember], list[Finding]]:
-        """One block under every stud station each field course crosses, both tiers.
+        """One block under every module station each field course crosses, every tier.
 
-        ``field`` is the courses ``frame_furring`` already framed, keyed by tier. They are
-        paired by elevation — the two bands carry the same spec, so their courses are at the
-        same elevations and in the same segments — and a pair whose halves disagree about how
-        many segments they are in is reported rather than guessed at, because that is a girt
-        that stops somewhere its partner does not and the blocks would be the last place to
-        notice.
+        ``field`` is the courses ``frame_furring`` already framed, keyed by tier. On a
+        TWO-tier wall they are paired by elevation — the two bands carry the same spec, so
+        their courses are at the same elevations and in the same segments — and a pair whose
+        halves disagree about how many segments they are in is reported rather than guessed
+        at, because that is a girt that stops somewhere its partner does not and the blocks
+        would be the last place to notice. A one-tier wall has nothing to pair and says so
+        by having one tier, not by a special case here.
 
-        The two tiers' stations differ by half a bay and only by that: block-1 lands on the
-        stud, block-2 8" off it, which is the whole of the offset scheme.
+        The module is :meth:`_module`: every other stud on the one-tier wall, and on the
+        two-tier one the stud module with the outer tier half a bay off it.
         """
         courses = {tier: _by_elevation(members, self.station_of)
                    for tier, members in field.items()}
         out: list[FramedMember] = []
         findings: list[Finding] = []
-        elevations = sorted(set(courses[INNER]) | set(courses[OUTER]))
+        elevations = sorted({z for tier in self.tiers for z in courses.get(tier, {})})
         for course, z in enumerate(elevations):
-            segments = {tier: courses[tier].get(z, ()) for tier in (INNER, OUTER)}
-            if len(segments[INNER]) != len(segments[OUTER]):
+            segments = {tier: courses.get(tier, {}).get(z, ()) for tier in self.tiers}
+            if len(self.tiers) == 2 and len(segments[INNER]) != len(segments[OUTER]):
                 findings.append(self._pairing_finding(z, segments))
-            for tier in (INNER, OUTER):
+            for tier in self.tiers:
                 count = 0
                 for segment in segments[tier]:
                     seg_lo = self.station_of(segment)
@@ -288,14 +388,13 @@ class GirtFrame(BandFrame):
         else happens to start at the same number, and the pairing finding fires on a
         mismatch that is not one.
 
-        What does carry over is the module: block-1 on the stud, block-2 half a bay off it,
-        each block's own ``z0`` read off the rake at its own station. The block is drawn
-        square, as every other block is; it is cut on the rake on the job, and the 3-1/2"
-        it is wide puts its two upper corners within an inch of the nailer's underside on
-        catlin's 6:12 gables.
+        What does carry over is the module (:meth:`_module`), each block's own ``z0`` read
+        off the rake at its own station. The block is drawn square, as every other block is;
+        it is cut on the rake on the job, and the 3-1/2" it is wide puts its two upper
+        corners within an inch of the nailer's underside on catlin's 6:12 gables.
         """
         out: list[FramedMember] = []
-        for tier in (INNER, OUTER):
+        for tier in self.tiers:
             for index, member in enumerate(rakes.get(tier, ())):
                 seg_lo = self.station_of(member)
                 seg_hi = seg_lo + length(sub(member.p1, member.p0))
@@ -304,10 +403,10 @@ class GirtFrame(BandFrame):
                 z_lo = member.z0_m
                 z_hi = member.z0_end_m if member.z0_end_m is not None else member.z0_m
                 half = self.stock_face / 2.0
-                phase = self.phase if tier == INNER else self.phase + self.spacing / 2.0
+                spacing, phase = self._module(tier)
                 stations = _module_stations(
-                    seg_lo + half, seg_hi - half, self.spacing, self.stock_face,
-                    module=True, phase=phase % self.spacing,
+                    seg_lo + half, seg_hi - half, spacing, self.stock_face,
+                    module=True, phase=phase,
                     continuations=self._segment_continuations(seg_lo, seg_hi),
                     seams=(0.0, self.run))
                 count = 0
@@ -422,11 +521,10 @@ class GirtFrame(BandFrame):
         seg_lo = self.station_of(course)
         seg_hi = seg_lo + length(sub(course.p1, course.p0))
         half = self.stock_face / 2.0
-        # Half a bay for the outer tier: block-2 is deliberately NOT stacked over block-1.
-        phase = self.phase if tier == INNER else self.phase + self.spacing / 2.0
+        spacing, phase = self._module(tier)
         stations = _module_stations(
-            seg_lo + half, seg_hi - half, self.spacing, self.stock_face, module=True,
-            phase=phase % self.spacing,
+            seg_lo + half, seg_hi - half, spacing, self.stock_face, module=True,
+            phase=phase,
             continuations=self._segment_continuations(seg_lo, seg_hi),
             seams=(0.0, self.run))
         if not stations:
@@ -453,9 +551,18 @@ class GirtFrame(BandFrame):
                 end_cont if abs(seg_hi - course_last) < 1e-6 else None)
 
     def _block(self, tier: str, station: float, z0: float, key: str) -> FramedMember:
+        """One block: a 3-1/2" square face on the wall, ``block_thickness`` deep through it.
+
+        ``orient`` is ``across``, so the profile's ``width_m`` — 4-1/2" for the three-ply
+        stack, 1-1/2" for a single ply — runs THROUGH the wall and its 3-1/2" ``depth_m``
+        along it. One member per station rather than one per ply: the plies are loose
+        offcuts clamped by the same screw, they are ordered as a ply count and not as a
+        stick, and three coincident solids in the viewer would say nothing the profile
+        string does not.
+        """
         point = self.point(station, self.block_depths[tier])
         return FramedMember(
-            self.wall.uid, key, BLOCK_CATEGORY, GIRT_MEMBER, point, point,
+            self.wall.uid, key, BLOCK_CATEGORY, self.block_profiles[tier], point, point,
             z0, z0 + self.stock_face, self.stock_face,
             orient=self.across, material=self.block_materials[tier])
 
@@ -476,12 +583,16 @@ class GirtFrame(BandFrame):
     # --- openings ------------------------------------------------------------------
     def opening_frame(self, opening: ResolvedOpening, index: int,
                       elevations: list[float]) -> list[FramedMember]:
-        """Both tiers' jamb posts, head and sill courses, and their blocks, at one RO.
+        """Every tier's jamb posts, head and sill courses, and their blocks, at one RO.
 
         No doubling anywhere. The head course spans the RO between the two posts' inner
-        faces and is blocked back to the framing at every stud station under it, so its span
-        is 16" and not the 60" a French door's clear width would otherwise make it — which
-        is what the Swinburne ladder had to double for.
+        faces and is blocked back to the framing at every module station under it, so its
+        span is the block module and not the 60" a French door's clear width would otherwise
+        make it — which is what the Swinburne ladder had to double for.
+
+        The jamb posts are blocked at every course elevation the RO crosses, so on the
+        one-tier wall they take a block every 24" — the "≤ 24" under every jamb post, head
+        and sill course" half of the fastener schedule.
         """
         half = opening.width_m / 2.0
         jambs = (opening.center_along_m - half, opening.center_along_m + half)
@@ -491,7 +602,7 @@ class GirtFrame(BandFrame):
         # RO, the head course over it, and — for the posts — every field course between.
         sill_z, head_z = z_sill - self.stock_face, z_head
         out: list[FramedMember] = []
-        for tier in (INNER, OUTER):
+        for tier in self.tiers:
             band = self.band_names[tier]
             for side, jamb in enumerate(jambs):
                 # Outward from the opening: the post's INNER face lands on the RO edge, so
@@ -534,18 +645,38 @@ class GirtFrame(BandFrame):
                 # is the two jamb posts it runs between, each of them blocked at this very
                 # elevation. A course too narrow to contain a module station is a 14" RO,
                 # spanning post to post inside the 16" the design is sized for anyway.
-                phase = self.phase if tier == INNER else self.phase + self.spacing / 2.0
+                spacing, phase = self._module(tier)
                 half = self.stock_face / 2.0
                 span = (jambs[0] + half, jambs[1] - half)
                 for count, station in enumerate(
                         st for st in _module_stations(
-                            span[0], span[1], self.spacing, self.stock_face,
-                            module=True, phase=phase % self.spacing)
+                            span[0], span[1], spacing, self.stock_face,
+                            module=True, phase=phase)
                         if abs(st - span[0]) > 1e-9 and abs(st - span[1]) > 1e-9):
                     out.append(self._block(
                         tier, station, z0,
                         f"block-{tier}-{name}-{index:03d}-{count:02d}"))
         return out
+
+
+def _sheathing_face(wall: ResolvedWall, across: Vec, band_in: float) -> float | None:
+    """The outboard face of the wall's SHEATHING, as a signed depth along ``across``.
+
+    The block's back, and therefore its ply count, its depth and — with the girt's own
+    outboard face — the buck's width. Read off the resolved stack rather than derived from
+    the band above it, because the whole of the 2026-09-01 change is that the depth between
+    the sheathing and the girt is now 4-1/2" of foam-and-air rather than 1-1/2" of wood, and
+    a frame that assumed one ply would have put the girt inside the foam without saying so.
+
+    ``band_in`` bounds the search to sheathing that is actually BEHIND the girt: an assembly
+    is free to carry a second sheet outboard of the furring, and a block measured back to
+    that one would be inside out.
+    """
+    faces = [mean_offset(layer, across) + layer.thickness_m / 2.0
+             for layer in wall.layers
+             if layer.function == "sheathing" and layer.polygon
+             and mean_offset(layer, across) <= band_in + _TOL]
+    return max(faces) if faces else None
 
 
 def _structure_spec(plan: PlanModel, assembly_tag: str | None) -> FramingSpec | None:

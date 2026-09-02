@@ -60,34 +60,6 @@
     },
     {
       "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          180.0,
-          -24.000000000000004
-        ],
-        [
-          216.00000000000003,
-          -24.000000000000004
-        ],
-        [
-          216.00000000000003,
-          0.0
-        ],
-        [
-          180.0,
-          0.0
-        ]
-      ],
-      "pattern": "batt",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "mineral-wool"
-    },
-    {
-      "space": "model",
       "node": "polyline",
       "points": [
         [

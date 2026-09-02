@@ -319,6 +319,11 @@ class OpeningDetailConfig:
     #: number because they are two different walls, and ``resolve.truss_kind`` is what picks
     #: between them; a detail that guessed would draw the head flashing 2" low on one of
     #: them and there is no way to see that on a sheet.
+    #:
+    #: 3-1/2" is the head/sill COURSE's face on the wall and it did not move on 2026-09-01
+    #: when the girt tier went to one: a course is still a 2x4 laid flat. What moved is the
+    #: BLOCK behind it (1-1/2" → 4-1/2"), which this number is not — the outie detail reads
+    #: the stand-off depth off the resolved stack.
     girt_blocking_in: float = 3.5
     #: How far the head flashing laps UP the spray-foam face before it turns out. Shorter
     #: than the innie head's 3" rise: it starts above the head blocking rather than behind a
