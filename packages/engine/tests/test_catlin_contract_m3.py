@@ -1,16 +1,13 @@
 """WP3.7 — the catlin **design contract**: the constants the port committed to.
 
-These are *declared* facts, not a comparison: 36' house at sheathing, 16" o.c., 18' grid,
-4:12 hot roof with knee 5' / ridge 11' over the attic floor, 12" basement walls + 2x2" XPS,
-24' ICF garage 4'-6 3/8" north at the wall lines (4'-0 1/2" of clear slot once both
-skins are on),
-the freestanding arched sunken-garden structure — plus the views,
-checks and emitters those numbers feed. They are inlined here because the old repo is being
-archived, and they guard the design against silent drift.
+Declared facts, not a comparison: 36' house at sheathing, 16" o.c., 18' grid, 4:12 hot roof
+with knee 5' / ridge 11' over the attic floor, 12" basement walls + 2x2" XPS, 24' ICF garage
+4'-6 3/8" north at the wall lines (4'-0 1/2" of clear slot once both skins are on), the
+freestanding arched sunken-garden structure — plus the views, checks and emitters those
+numbers feed. They guard the design against silent drift.
 
-The *equivalence* claim they used to stand in for — "the rebuilt model still means what the
-old catlin-house IFC meant" — is now made by a real semantic comparison against that IFC in
-``test_catlin_equivalence_m3.py``. Contract facts live here; equivalence lives there.
+Equivalence to the old catlin-house IFC is a separate claim, checked in
+``test_catlin_equivalence_m3.py``; contract facts live here.
 """
 
 from __future__ import annotations
@@ -34,10 +31,9 @@ from _helpers import CATLIN as CATLIN_DIR, frames_structure
 HOUSE_SIZE_FT = 36.0
 FRAMING_SPACING_IN = 16.0
 GRID_FT = 18.0
-# ** THE KNEE WALL IS GONE (2026-08-29). ** What stands on the attic deck at the eave is a
-# 2x6 laid FLAT — CATLIN_RAFTER_PLATE, 1 1/2" on 3/4" of subfloor — so the bearing datum is
-# 20'-2 1/4" rather than 25'-0". PLATE_FT is that 2.25" expressed in feet above the attic
-# datum, and it replaces KNEE_FT everywhere KNEE_FT was the eave's height.
+# What stands on the attic deck at the eave is a 2x6 laid FLAT — CATLIN_RAFTER_PLATE, 1 1/2"
+# on 3/4" of subfloor — so the bearing datum is 20'-2 1/4" rather than 25'-0". PLATE_FT is
+# that 2.25" expressed in feet above the attic datum.
 PLATE_FT = 2.25 / 12.0
 # 6:12 over an 18'-0" half-run: 9'-0" of rise, plus the cladding lap the footprint takes.
 RIDGE_OVER_ATTIC_FT = 9.0
@@ -45,51 +41,23 @@ ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
 # House sheathing plane to garage wall line. The finished gap is tighter: the house's 7 1/4"
 # of outsulation + cladding and the garage's own 7/8" of cladding leave 4'-0 1/2" of clear
-# slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to.
-#
-# 4.57292' (4'-6 7/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
-# straddle the wall line and stand 5 5/8" proud of the cladding — a rain shelf right round
-# the building. Aligning the stem's exterior EPS face onto the wall line fixed that, and the
-# wall lines moved 5 5/8" south with it so the clear slot, and the uncut 4'-0" panel in it,
-# are exactly what they were. The *cladding* is the controlling face now, where the stem
-# used to be.
-#
-# It grew 1/2" on 2026-08-23, another 1" on 2026-08-26, and 3/8" more the same day, for the
-# identical reason every time. The Swinburne truss put the HOUSE's cladding 1/2" further
-# north (5.02" -> 5.5" proud of y=36'); the catlin truss's four flat girt layers put it 1"
-# further again (5.5" -> 6.5"); then the 1 1/4" exposed-fastener PBR panel replaced the 1/2"
-# snap-lock seam and took it to 7.25". Any of those alone would have closed the breezeway's
-# clear slot to 4'-0" or less and left an uncut 4'-0" panel with nowhere to go, so the garage
-# moved with it and the slot — and the panel's 1/2" reveal — are again exactly what they
-# were. Both wall lines moved each time; the garage is still 24'-0" square.
-#
-# That third move was only 3/8" against the house's 3/4", and the difference is a CORRECTION:
-# ``params/breezeway.py`` carried a 3/8" rainscreen furring on the garage face that
-# ``GARAGE_WALL_2X6`` dropped on 2026-08-20, so the modelled garage face had been 3/8" south
-# of where it stands for six days. Fixing that gave back exactly half the move.
-#
-# ** IT GREW 3/8" AGAIN ON 2026-08-31, and this one comes from the GARAGE end of the slot.
-# ** ``GARAGE_WALL_2X6`` went to a 7/8" corrugated exposed-fastener panel where a 1/2" nail
-# strip stood, so the garage's own proud face moved 3/8" INTO the slot with the wall line
-# standing still. Both wall lines went 3/8" north to give it back. The arithmetic below is
-# the current one:
+# slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to. The *cladding*
+# is the controlling face; the garage's ICF stem is aligned onto the wall line behind it.
 #
 #     56.625"  house sheathing plane -> garage wall line (this constant, 4.71875')
 #   -  7.25"   house outsulation + PBR panel, proud of y = 36'
 #   -  0.875"  garage corrugated panel, proud of the garage wall line
-#   = 48.5"    = 4'-0 1/2" clear, an uncut 4'-0" panel with a 1/2" reveal — unchanged for
-#               the fifth time running.
+#   = 48.5"    = 4'-0 1/2" clear, an uncut 4'-0" panel with a 1/2" reveal.
 #
-# (The Zip-R -> 5/8" CDX swap in the same edit moves NOTHING here: the wall's ``alignment``
-# puts whichever sheathing it carries on the node line, so only the cladding's own thickness
-# is in this chain.)
+# (The Zip-R vs 5/8" CDX choice moves nothing here: the wall's ``alignment`` puts whichever
+# sheathing it carries on the node line, so only the cladding's own thickness is in this
+# chain.)
 GARAGE_GAP_FT = 4.71875
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the RAFTER PLATE
 # by its depth less the seat drop across the plate (5.5" depth x 6:12 pitch = 2.75" — the
 # plate is a 2x6 to match the stud wall under it, which is what sets this term), per the
-# golden eave detail (roof_wall_eave_detail_ifc.py). 6:12 since 2026-08-29; it was
-# 11.875 - 5.5/3 at 4:12.
+# golden eave detail (roof_wall_eave_detail_ifc.py).
 DECK_RISE_FT = (11.875 - 5.5 / 2.0) / 12.0
 
 
@@ -106,7 +74,7 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         spans = {round(m.length_m / ft(1).meters, 3) for m in joists}
         assert GRID_FT in spans
 
-    # Since 2026-08-21 the second floor is FS-S-WEST/FS-S-EAST, not one whole-floor
+    # The second floor is split into FS-S-WEST/FS-S-EAST rather than one whole-floor
     # FS-SECOND: each half spans only 18' (one bearing pair, not two), so each has
     # ``expected_positions`` joists rather than ``expected_pair_count`` of them.
     west = next(f for f in catlin_model.floors if f.tag == "FS-S-WEST")
@@ -136,21 +104,16 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     findings = [finding for finding in report.findings
                 if finding.check_id in {"structural.ijoist_span", "structural.frost_depth"}]
     assert findings
-    # Nothing FAILS and nothing is UNKNOWN. Every one of the eleven footings the sunken
-    # garden reaches read a comfortable 7'-2" and passed until 2026-08-22, because the rule
-    # measured them against a grade plane six and a half feet over their heads; deriving a
-    # local grade found four house footings with 8" of cover (one with -2") and the
-    # garden's own seven with 12"-21". Both groups are answered, by two different drawn
-    # things: the house four by the IRC R403.3 wing insulation under the garden slab, the
-    # garden's five RETAINING-WALL footings by the 42" drained non-frost-susceptible
-    # aggregate section they bear on, whose thickness counts toward the frost depth under
-    # ASCE 32 (IRC R403.1.4.1). Pinning the citation, not just the verdict, is what keeps
-    # this from going green off a check that stopped measuring.
+    # Nothing FAILs and nothing is UNKNOWN. The house's four footings under the sunken
+    # garden (one with negative cover) are answered by the IRC R403.3 wing insulation under
+    # the garden slab; the garden's five RETAINING-WALL footings are answered by the 42"
+    # drained non-frost-susceptible aggregate section they bear on, whose thickness counts
+    # toward the frost depth under ASCE 32 (IRC R403.1.4.1). Pinning the citation, not just
+    # the verdict, is what keeps this from going green off a check that stopped measuring.
     #
-    # The garden's other two — the spread bells under the freestanding porch columns — were
-    # in that list until 2026-08-29, when the owner had them augered to frost depth instead
-    # of leaning on the section. They pass on plain cover now, which is why they are
-    # asserted separately and must NOT carry the citation.
+    # The garden's other two — spread bells under the freestanding porch columns — are
+    # augered to frost depth and pass on plain cover, so they are asserted separately and
+    # must NOT carry the citation.
     assert not [f for f in findings if f.result is Result.FAIL]
     assert not [f for f in findings if f.result is Result.UNKNOWN], \
         [f.message for f in findings if f.result is Result.UNKNOWN]
@@ -201,53 +164,37 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     checklist = evaluate_permit_checklist(report, "mn-2024")
-    # code.energy_prescriptive used to report UNKNOWN here because SL-B-FLOOR/SL-M-DECK had
-    # no authored assembly. Every slab now either carries one or is scoped out of the
-    # prescriptive table for a stated reason (the main-floor deck has conditioned space on
-    # both faces; the garage slab floors an unheated detached structure), so the gate is
-    # fully evaluated. It must stay that way: an UNKNOWN reappearing means a component lost
-    # its thermal input again, which is exactly what this item exists to catch.
+    # Every slab either carries an authored assembly or is scoped out of the prescriptive
+    # table for a stated reason (the main-floor deck has conditioned space on both faces;
+    # the garage slab floors an unheated detached structure), so code.energy_prescriptive is
+    # fully evaluated. An UNKNOWN reappearing means a component lost its thermal input again.
     #
-    # The plumbing pass (2026-07-29) put eight more checks on this checklist. Two of the
-    # resulting items sat UNKNOWN for a day on one open design decision — FX-1, the
-    # mechanical-room utility sink, had no routed drain, and could not have one by gravity
-    # while the basement main hung at the ceiling 6'-6" above the slab it stands on. That is
-    # settled: the sewer connection is below the slab (Minnesota buries them under frost), so
-    # the main now drops through SP-B-SLAB-MAIN and runs under the slab out beneath FT-B-S1,
-    # and FX-1 drains and vents. Every declared item is evaluated and passes again.
+    # The plumbing checks include FX-1, the mechanical-room utility sink: its drain runs
+    # through SP-B-SLAB-MAIN under the slab and out beneath FT-B-S1, below the frost line
+    # where Minnesota buries sewer connections, so it drains and vents like every other item.
     #
     # Scoped to the *gating* items: the code-coverage expansion added a staging lane of
-    # encoded-but-not-yet-gating rules (PermitItemSpec.blocking), and those are allowed to
-    # sit UNKNOWN against a house authored before they existed. What must never regress is
-    # the gate itself — an item that gates today and stops passing tomorrow.
+    # encoded-but-not-yet-gating rules (PermitItemSpec.blocking), allowed to sit UNKNOWN
+    # against a house authored before they existed. What must never regress is the gate
+    # itself — an item that gates today and stops passing tomorrow.
     # tests/test_permit_gate_catlin.py pins the size of that lane so it cannot grow.
     #
-    # EVERY gating item now passes, "Foundation frost depth" included — and that one is
-    # asserted positively rather than merely counted, because it is the item this checklist
-    # spent a week red on. It became evaluable-against-the-real-condition on 2026-08-22,
-    # when `structural.frost_depth` stopped comparing every footing to a single global grade
-    # plane and started deriving a local one. It found four house footings with 8" of cover
-    # — and one with 2" of NEGATIVE cover — below the sunken garden's floor, answered by the
-    # R403.3 wings under the garden slab. It also found the garden's OWN seven footings
-    # 12"-21" below the court floor and reported UNKNOWN, on the reading that a structure
-    # holding up the hole it stands in is an engineered design under IRC R404.4.
-    #
-    # That reading was wrong twice over (2026-08-29). Two of the seven are spread bells
-    # under freestanding porch columns and retain nothing. And for all seven the frost
-    # protection was already drawn and simply was not being counted: they bear on a 42"
-    # compacted washed-stone section, declared non-frost-susceptible and drained by a
-    # sock-wrapped tile, whose thickness counts toward the design frost depth under ASCE 32
-    # — one of the frost-protection methods IRC R403.1.4.1 lists, and which MN Rules
-    # 1309.0403 keeps. The gradation and the drainage are the assembly's authored claim;
-    # the check measures that the excavation reaches the depth.
+    # EVERY gating item passes, "Foundation frost depth" included — asserted positively
+    # rather than merely counted, because `structural.frost_depth` derives a LOCAL grade per
+    # footing rather than comparing to one global plane. The house's four footings under the
+    # sunken garden (one with negative cover) are answered by the R403.3 wings under the
+    # garden slab. The garden's own seven footings bear on a 42" compacted washed-stone
+    # section, declared non-frost-susceptible and drained by a sock-wrapped tile, whose
+    # thickness counts toward the design frost depth under ASCE 32 (IRC R403.1.4.1, kept by
+    # MN Rules 1309.0403); two of the seven are spread bells under freestanding porch columns
+    # and retain nothing. The gradation and drainage are the assembly's authored claim; the
+    # check measures that the excavation reaches the depth.
     #
     # Pinned tightly on purpose: any OTHER gating item regressing still fails the empty
     # assertion below, and this one silently going UNKNOWN again fails the two after it.
     #
-    # N/A joined PASS as a resolved verdict on 2026-08-30. Four items flipped into the gate
-    # in that commit — ESS, PV, ERV terminations, structural glass guards — and catlin
-    # answers three of them for real; "Structural glass guards" is N/A, because no guard in
-    # this house is filled with a glass panel. That is a resolved requirement, not an
+    # N/A is a resolved verdict alongside PASS: "Structural glass guards" is N/A because no
+    # guard in this house is filled with a glass panel — a resolved requirement, not an
     # unresolved one, and lettering it as a gate failure would be a false statement.
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
@@ -317,13 +264,13 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
         segments = [
             w for w in catlin_model.walls
             # PLANT_INT_2X6_BRG_HUMID is the same 2x6 bearing line with the plant room's
-            # humid liner on its west face (2026-08-18) — a finish decision on one segment,
-            # not a break in the stack, so it counts toward the run like any other segment.
-            # CATLIN_INT_2X6_BRG_RC (2026-08-31, W-M-C1 only) is the identical case one
-            # storey down: the same 2x6 studs on the same layout line, with a resilient
-            # channel and a batt added on the RM-M-BED face. A channel is finish furring
-            # carrying nothing, and the wall's `alignment` holds its studs on x=18'-0"
-            # exactly where the plain assembly had them, so the run is unbroken.
+            # humid liner on its west face — a finish decision on one segment, not a break
+            # in the stack, so it counts toward the run like any other segment.
+            # CATLIN_INT_2X6_BRG_RC (W-M-C1 only) is the identical case one storey down: the
+            # same 2x6 studs on the same layout line, with a resilient channel and a batt
+            # added on the RM-M-BED face. A channel is finish furring carrying nothing, and
+            # the wall's `alignment` holds its studs on x=18'-0" exactly where the plain
+            # assembly had them, so the run is unbroken.
             if w.storey == storey
             and w.assembly in ("CATLIN_INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID",
                                "CATLIN_INT_2X6_BRG_RC")
@@ -380,8 +327,8 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     # a 36' run. A zero-overhang roof that stops at the axis leaves the cladding standing
     # proud of its own edge, so the footprint now laps the outermost wall layer — the run,
     # and with it the ridge, grows by that lap on each side. The whole plane also rides
-    # DECK_RISE_FT higher now that the eave is the deck. The pitch is 6:12 since 2026-08-29,
-    # so the lap buys HALF its length in ridge height rather than a third.
+    # DECK_RISE_FT higher now that the eave is the deck. The pitch is 6:12, so the lap buys
+    # HALF its length in ridge height rather than a third.
     lap = _cladding_lap(catlin_model)
     base = ATTIC_ELEV_FT + PLATE_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT
     assert base < ridge_ft <= base + (lap / 2.0) / ft(1).meters + 1e-6
@@ -397,12 +344,10 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     # 36' extent (not the cladding-lapped footprint), with the end stations inset half a
     # member width so end rafters sit fully inside the gable wall planes.
     #
-    # It was 28 lines / 56 rafters at 16" o.c. until 2026-08-31. Going to 24" traded 358 LF
-    # of joist for a heavier series — the cheapest TJI in the line carries the 18'-0"
-    # HORIZONTAL span at 16" and does not at 24", so the roof is a TJI 230 now — and it is
-    # the FLANGE that this test's end-inset reads, which is why the profile string matters
-    # here and is not decoration: a bare "11.875 I-joist" guesses a 2 1/2" flange from the
-    # depth alone, and a named series states its real 2 5/16".
+    # At 24" o.c. the cheapest TJI in the line does not carry the 18'-0" HORIZONTAL span, so
+    # the roof is a TJI 230 — and it is the FLANGE that this test's end-inset reads, which is
+    # why the profile string matters and is not decoration: a bare "11.875 I-joist" guesses a
+    # 2 1/2" flange from the depth alone, and a named series states its real 2 5/16".
     assert len(rafters) == 38
     assert {member.profile for member in rafters} == {"11.875 TJI 230"}
     flange_half = cross_section("11.875 TJI 230").width_m / 2.0
@@ -453,11 +398,7 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
     # 2.75" = the seat cut across the 5.5" rafter plate at 6:12 (5.5 x 6/12), which is what
-    # `deck_rise_m` subtracts from the 11.875" rafter to get DECK_RISE_FT. It was 1.917" at
-    # 4:12 against the same plate depth, and had deepened three times before that as the
-    # zero-overhang roof's cladding lap grew: 1.17" under the rigid-CI stack, 1.333" from
-    # 2026-08-23 (Swinburne truss, +0.48"), 1.667" (catlin truss, +1.0"), 1.917" (PBR panel,
-    # +0.75"). The pitch change is the fourth and much the largest.
+    # `deck_rise_m` subtracts from the 11.875" rafter to get DECK_RISE_FT.
     birdsmouth = inch(2.75).meters
     rafters = [m for m in roof.members if m.category == "rafter"]
     assert not [m for m in roof.members if m.category == "seat_cut"], \
@@ -487,38 +428,25 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
         # 2.875", not the 2.75" `deck_rise_m` cuts: `deck_rise_m` measures the seat across
         # the assembly's 5.5" STRUCTURE layer, while the drawn heel is measured from the
         # footprint edge — which laps the cladding — in to the plumb cut. The 1/8" between
-        # them is that lap resolved against the plate's 1/2" inboard alignment, and it is
-        # the same term the 4:12 history above describes.
+        # them is that lap resolved against the plate's 1/2" inboard alignment.
         assert heel_height == pytest.approx(inch(2.875).meters, abs=1e-3)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
-    # THREE layers above the deck since 2026-08-31, not eight: the deck, one adhered
-    # membrane on it and the panel. The eight were `zip`, `deck-vb`, `polyiso-1/-2`,
-    # `top-deck`, `underlayment`, `vent-mat`, `roofing`.
+    # Three layers above the deck: the deck, one adhered membrane on it, and the panel.
     assert set(setbacks) == {"sheathing", "membrane", "roofing"}
     for edge in ("west", "east", "south", "north"):
         deck, metal = setbacks["sheathing"][edge], setbacks["roofing"][edge]
         assert deck >= metal
-        # Wall stack per the reference: the deck clips at the wall-sheathing face (the whole
-        # catlin-truss stand-off plus the cladding), metal runs 0.6" proud of the mount
-        # plane. 0.02 + 2 + 2 + 0.5 + 0.5 = 5.02" for the rigid-CI stack, 5.5" for the
-        # Swinburne truss, 6.5" when the catlin truss laid four flat layers where the
-        # outrigger band was, and 7.25" since the 1 1/4" exposed-fastener PBR panel replaced
-        # the 1/2" snap-lock seam (2026-08-26).
-        # ** THE DECK CLIPS AT THE CLADDING NOW, NOT AT THE WALL SHEATHING (2026-08-31). **
-        # It was `inch(1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25)` = 7.25" — the whole catlin-truss
-        # stand-off — while 6" of foam and a nailbase ran out over the girts and carried the
-        # metal. With no above-deck insulation left, the deck IS that plane: it oversails the
-        # last rafter, spans the girts and the panel clips straight to it. Anything else
-        # cantilevers the roofing 6.6" over open air, which is what the old rule did the day
-        # the foam left. `roof_layer_setbacks.layer_edge_setbacks` carries the promotion.
+        # The deck clips at the cladding plane, not the wall-sheathing face: with no
+        # above-deck insulation, the deck IS that plane — it oversails the last rafter, spans
+        # the girts, and the panel clips straight to it. Anything else cantilevers the
+        # roofing over open air. `roof_layer_setbacks.layer_edge_setbacks` carries this.
         assert deck == pytest.approx(inch(1.25).meters)
         # ``metal`` is ``batten - _METAL_PROUD_M``: the roofing is clipped 0.6" proud of the
         # plane it is fixed to, which is a roof-side dimension and does not know how thick
-        # the wall panel is. 1-1/4" of PBR leaves the wall panel 0.65" proud of the roofing,
-        # which is a DETAILING note for the zero-overhang edge — the corner trim covers a
-        # 0.65" step rather than overhanging the wall by 0.1", so its lower leg kicks out
-        # over the panel.
+        # the wall panel is. 1-1/4" of PBR leaves the wall panel 0.65" proud of the roofing —
+        # a DETAILING note for the zero-overhang edge: the corner trim covers a 0.65" step
+        # rather than overhanging the wall by 0.1", so its lower leg kicks out over the panel.
         assert metal == pytest.approx(inch(0.65).meters)
         # The membrane is bonded to the deck, so it rides the deck and not the panel.
         assert setbacks["membrane"][edge] == setbacks["sheathing"][edge]
@@ -528,17 +456,14 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
 
 
 def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
-    """The hot roof must have an ANSWER on condensation — and since 2026-08-31 the answer is
-    a code criterion rather than a Glaser walk — and carry a whole-assembly R >= 50, both
-    read off the resolved model rather than pinned to authored numbers.
+    """The hot roof must have an ANSWER on condensation — a code criterion, not a Glaser
+    walk — and carry a whole-assembly R >= 50, both read off the resolved model rather than
+    pinned to authored numbers.
 
-    **This test asserted a PASS on the monthly gate until the flash-and-batt rebuild, and
-    the change is the substance of that rebuild, not a relaxation.** A steady-state Glaser
-    walk cannot grade a stack sealed on its cold side by a 0-perm metal panel: with no
-    outward flux it equilibrates every plane to interior vapour pressure by construction and
-    reports ~100% RH at the deck for ANY unvented metal roof, however designed. The old
-    stack bought its margin by leaving 5.6" of the joist bay deliberately unfilled as a
-    drying path; this one fills the bay and takes IRC R806.5 item 5.3 instead, where
+    A steady-state Glaser walk cannot grade a stack sealed on its cold side by a 0-perm metal
+    panel: with no outward flux it equilibrates every plane to interior vapour pressure by
+    construction and reports ~100% RH at the deck for ANY unvented metal roof, however
+    designed. This stack fills the joist bay and takes IRC R806.5 item 5.3 instead, where
     air-impermeable insulation bonded to the sheathing at the Table R806.5 R-value IS the
     condensation control and outward drying is not required.
 
@@ -603,16 +528,16 @@ def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
 def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
     """WP3: rim (band) joists cap the deck ends, one per outermost bearing line.
 
-    Since 2026-08-21 the second floor is two systems (FS-S-WEST/FS-S-EAST), so it
-    carries four rims across the storey rather than FS-SECOND's two.
+    The second floor is two systems (FS-S-WEST/FS-S-EAST), so it carries four rims across
+    the storey rather than one whole-floor FS-SECOND's two.
     """
     for tag in ("FS-S-WEST", "FS-S-EAST", "FS-ATTIC"):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         rims = [m for m in floor.members if m.category == "rim"]
         assert len(rims) == 2, tag
-    # FS-ATTIC's rims are LSL since 2026-08-29 and say so in their profile: they are the
-    # bearing line under the rafter plates now, not a band board capping joist ends, and a
-    # 1 1/4" OSB rim would crush. The other decks keep the derived band-board profile.
+    # FS-ATTIC's rims are LSL and say so in their profile: they are the bearing line under
+    # the rafter plates, not a band board capping joist ends, and a 1 1/4" OSB rim would
+    # crush. The other decks keep the derived band-board profile.
     for tag in ("FS-S-WEST", "FS-S-EAST"):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         assert all(m.profile.endswith(" rim")
@@ -644,16 +569,11 @@ def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):
 def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
     """Every rough sill's top face and every header's underside land ON the hole.
 
-    The framing solver hands ``frame_opening`` the stud bearing line — the top of the
-    bottom plate — and until 2026-08-25 that value was used for two different jobs: where
-    a jack bears (right) and what a ``sill_m`` is measured from (wrong). ``base_ref_z_m``
-    is the sill datum, and every other consumer already read it — the wall body's cut, the
-    buck, the ladder blocking, the furring cuts, the IFC void, the elevations — so the
-    stud wall alone framed 1 1/2" high. The rough sill was flipped on top of that: emitted
-    upward from the sill line instead of hanging under it, which put it 3" into the
-    opening and left a plank of 2x6 lying across the glass of every window in the house.
-
-    Nothing checked the two against each other, which is why it shipped. This does.
+    The framing solver hands ``frame_opening`` the stud bearing line — the top of the bottom
+    plate — for where a jack bears. ``base_ref_z_m`` is the sill datum a ``sill_m`` is
+    measured from instead — every other consumer reads it: the wall body's cut, the buck,
+    the ladder blocking, the furring cuts, the IFC void, the elevations. This test checks the
+    two against each other directly.
     """
     plate_h = inch(1.5).meters
     checked = 0
@@ -683,10 +603,9 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
                 continue
             assert member.z1_m - member.z0_m == pytest.approx(plate_h, abs=1e-9)
         checked += len(openings)
-    # 75 since WIN-S-BATH-N was deleted on 2026-08-30 (76 before, and this read `> 75`, so it
-    # sat exactly on the count). It is a coverage floor, not a census: it exists to catch the
-    # fixture silently collapsing to a handful of walls, so it tracks the real number rather
-    # than being loosened to a round one that would stop noticing.
+    # 75 is a coverage floor, not a census: it exists to catch the fixture silently
+    # collapsing to a handful of walls, so it tracks the real number rather than being
+    # loosened to a round one that would stop noticing.
     assert checked >= 75, "the whole plan's openings, not a handful"
 
 
@@ -694,17 +613,13 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     """WP0: king-stud tops on a raked wall follow the roof line at their own plan
     position. A prior bug reused the last regular stud's leftover top for every
     king on the wall, regardless of the opening's actual station."""
-    # The two raked north gables: W-A-N1 (WIN-A-N2) and W-A-N2 (WIN-A-N1), each a 30" RO
-    # that breaks a stud and so pulls in a header, jacks and kings. The south gables used
-    # to be the subject here, but the 2026-07-30 facade pass moved them to the 14" family
-    # — a 14" RO fits a stud bay unbroken and frames with no header and no kings at all,
-    # leaving nothing on those walls for this rule to bite on. The north gables rake
-    # 9'-0" over their 18' (6:12 since 2026-08-29), so a single window's two kings land at
-    # clearly different heights, which is all this regression needs.
-    #
-    # ** W-A-N2 CARRIES NO WINDOW ANY MORE. ** WIN-A-N1 moved to x=12'-0" on the same pass —
-    # the rake at 6'-8" could not take a 5'-0" head — which puts it east of the x=10'-0"
-    # split, on W-A-N2B. W-A-N2B is the raked wall to check now.
+    # The two raked north gables: W-A-N1 (WIN-A-N2) and W-A-N2B (WIN-A-N1), each a 30" RO
+    # that breaks a stud and so pulls in a header, jacks and kings — unlike the south gables,
+    # whose 14" ROs fit a stud bay unbroken and frame with no header or kings at all. The
+    # north gables rake 9'-0" over their 18' (6:12), so a single window's two kings land at
+    # clearly different heights, which is all this regression needs. WIN-A-N1 sits east of
+    # the x=10'-0" split, on W-A-N2B — the raked wall to check, since W-A-N2 carries no
+    # window.
     plate_h = inch(1.5).meters
     top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
     checked = 0
@@ -774,8 +689,8 @@ def test_roof_plan_uses_resolved_plane_footprints_and_ridges(catlin_model):
 
 def test_exterior_corners_include_strength_first_third_stud(catlin_model):
     """A third stud supplements the two intersecting endpoint studs at true corners."""
-    # W-M-W1B carries the actual NW corner now (2026-07-28, RM-M-MECH's shaft closet split
-    # W-M-W1 at N-M-MECH1, well south of N-M-NW).
+    # W-M-W1B carries the NW corner: RM-M-MECH's shaft closet split W-M-W1 at N-M-MECH1,
+    # well south of N-M-NW.
     for tag in ("W-M-S1", "W-M-E1", "W-M-N1", "W-M-W1B"):
         wall = next(item for item in catlin_model.walls if item.tag == tag)
         assert any(member.category == "corner" for member in wall.members), tag
@@ -784,8 +699,8 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
 def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
-    # Six sleeping rooms since 2026-08-29: RM-A-STUDIO, the west attic loft retyped to
-    # Occupancy.BEDROOM as a guest studio. It is the reason R310 reaches the attic at all —
+    # Six sleeping rooms: RM-A-STUDIO, the west attic loft retyped to Occupancy.BEDROOM as a
+    # guest studio. It is the reason R310 reaches the attic at all —
     # a STORAGE loft is out of this rule's scope — and it passes on WIN-A-S-JUL-W with
     # nothing added: WT-2764's raw opening is 27" x 64" = 12.0 sf against 5.7, width 27"
     # against 20", height 64" against 24", sill 2'-8" against 44".
@@ -797,8 +712,8 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
 def test_every_credited_egress_window_is_in_an_exterior_wall():
     """R310.1's opening must reach "a public way, yard or court" — never the next room.
 
-    The house-side half of the ``exterior_only`` fix (2026-08-29); the two-sided synthetic
-    pair lives in ``test_code_coverage_expansion.py``. This one is the standing guard: it
+    The house-side half of the ``exterior_only`` fix; the two-sided synthetic pair lives in
+    ``test_code_coverage_expansion.py``. This one is the standing guard: it
     re-derives, from the resolved model rather than from a tag prefix, that each of the six
     windows ``code.R310_egress`` credits is on a wall with modeled space on one side only.
     Author a borrowed-light sash into a bedroom partition and the *other* file's test proves
@@ -826,28 +741,19 @@ def test_catlin_window_openings_follow_their_walls_framing_module():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings
                 if finding.check_id == "structural.window_framing_module"]
-    # **No exceptions, and that is the point of the assertion (2026-08-25).** This list
-    # carried three until the exterior assembly took its stud module from the layout line
-    # instead of from each wall's own start node: WIN-S-BATH-N, whose 7'-8" segment could
-    # not put the RO on a bay centre and still clear `integrity.opening_fits`'s 2" edge
-    # minimum, and the attic juliet pair, 3" off since the 2026-08-24 one-sided widening.
-    # Every one of the three was the same defect wearing a different hat — a wall segment
-    # laying out from a node that happens to sit off 16" — so unifying the grid dissolved
-    # all three rather than fixing them one at a time. 20 windows moved 3"-8" to get here;
-    # `houses/catlin/plan/assemblies.py` (LAYOUT_ORIGIN) has the ledger.
+    # No exceptions, and that is the point of the assertion: the exterior assembly takes its
+    # stud module from the layout line rather than from each wall's own start node, so a wall
+    # segment laying out from a node that happens to sit off 16" no longer throws its window
+    # off grid. `houses/catlin/plan/assemblies.py` (LAYOUT_ORIGIN) has the ledger.
     #
     # Keep this empty. An exception here is now evidence of a genuinely constrained wall,
     # not of an accident of authoring order, and deserves the argument written out.
     #
-    # **Renamed 2026-08-28, from ...follow_the_sixteen_inch_framing_module.** The rule is
-    # not "16"" and never was: `structural.window_framing_module` reads the HOST WALL's own
-    # `FramingSpec.spacing` now, with `preferences.toml`'s `[framing] module_in` only as the
+    # The rule is not "16"": `structural.window_framing_module` reads the HOST WALL's own
+    # `FramingSpec.spacing`, with `preferences.toml`'s `[framing] module_in` only as the
     # fallback, and re-derives the whole RO ladder at that module (`checks/structural/
-    # window_module._ro_caps`). It read the preference house-wide until then, which agreed
-    # with the solver only because every spacing in this house is 16 — a latent split brain,
-    # since the solver has always laid a wall out on the assembly field. Every window here
-    # is still on a 16" wall; the assertion is what it always was, and it is now a statement
-    # about walls rather than about a number.
+    # window_module._ro_caps`). Every window here is on a 16" wall; the assertion is a
+    # statement about walls rather than about a number.
     assert not findings, [finding.message for finding in findings]
 
 
@@ -862,24 +768,18 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
     east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
 
-    # W-A-S2 starts at N-A-S1, W-A-S3 at N-A-S2 (x 18'), and since 2026-08-25 both take
-    # their module from the layout line rather than from those nodes, so the stud lines here
-    # are the house grid itself: x 16'-0", 17'-4", 18'-8", 20'-0".
+    # W-A-S2 starts at N-A-S1, W-A-S3 at N-A-S2 (x 18'); both take their module from the
+    # layout line rather than from those nodes, so the stud lines here are the house grid
+    # itself: x 16'-0", 17'-4", 18'-8", 20'-0".
     #
-    # N-A-S1's own x is read off the model rather than written down, because it moved
-    # 10'-0" -> 8'-8" on 2026-08-27 when RM-A-DEN was deleted and it did not disturb one
-    # number below: a wall's stud grid lays out from its start node, 120 - 104 = 16, so the
-    # phase is unchanged, and the authored offset moved with it to hold the centre. That is
-    # precisely the claim worth keeping — this pair is fixed to the RIDGE, not to a node —
-    # so the test pins the resolved x and lets the node be wherever it is.
+    # N-A-S1's own x is read off the model rather than written down, since a wall's stud grid
+    # lays out from its start node and the phase is unaffected by where that node sits — this
+    # pair is fixed to the RIDGE, not to a node, so the test pins the resolved x and lets the
+    # node be wherever it is.
     #
-    # The centres sat on 16'-8"/19'-4" until the 2026-08-24 widening 18" -> 24" pushed them
-    # OUTWARD ONLY to 16'-5"/19'-7" — the inboard jambs being held by the bearing pier — and
-    # left both 3" off a stud line, the house's one knowingly-off-module pair. The line
-    # origin retired that exception: 16'-0"/20'-0" are stud lines on the unified grid, 5"
-    # further out, so each RO breaks exactly one stud again and the pair is back on module
-    # with no width change. What never moved through any of it is the mirror about the
-    # ridge, which is the gable rule that governs this composition.
+    # Centres sit on stud lines 16'-0"/20'-0" of the unified grid, so each RO breaks exactly
+    # one stud; the composition mirrors about the ridge, which is the gable rule that governs
+    # it.
     assert west.host_wall == "W-A-S2"
     assert east.host_wall == "W-A-S3"
     def wall_start_x(tag):
@@ -892,10 +792,9 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
     assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
-    # Each RO sits centred on its own stud line and breaks exactly that one stud. Widened
-    # 24" -> 27" on 2026-08-27 to close the clear pier between the pair from 24" to 21"
-    # (14" is what RB-HOUSE's south bearing point needs), which is why the half-width here
-    # is 13 1/2" and not 12": the units grew 1 1/2" PER SIDE and the centres did not move.
+    # Each RO sits centred on its own stud line and breaks exactly that one stud. The units
+    # are 27" wide, closing the clear pier between the pair to 21" (14" is what RB-HOUSE's
+    # south bearing point needs), which is why the half-width here is 13 1/2" and not 12".
     # Outboard jambs land 14'-10 1/2" and 21'-1 1/2", each 2 1/2" inside the next stud line
     # out (14'-8" and 21'-4"), so the king packs against that stud rather than standing free.
     assert west_x - inch(13.5).meters == pytest.approx(ft(14, 10.5).meters, abs=1e-6)
@@ -909,35 +808,31 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         # while needing no guard.
         assert opening.sill_m == pytest.approx(ft(2, 8).meters, abs=1e-6)
         assert opening.sill_m > inch(24).meters
-        # Unclipped: the rake did not silently eat the head.
-        # 54", not 64", since 2026-08-29: WT-2764 -> WT-2754. The 6:12 rake gives 7'-6 3/4"
-        # over the outer jambs and a 64" unit on this sill wants 8'-2". Width-identical, so
-        # everything above about centres, jambs and the pier is untouched.
+        # Unclipped: the rake did not silently eat the head. WT-2754, not WT-2764: the 6:12
+        # rake gives 7'-6 3/4" over the outer jambs and a 64" unit on this sill wants 8'-2".
+        # Width-identical, so everything above about centres, jambs and the pier is
+        # untouched.
         assert opening.height_m == pytest.approx(inch(54).meters, abs=1e-6)
         assert opening.sill_m + opening.height_m == pytest.approx(ft(7, 2).meters, abs=1e-6)
 
     # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
     # point: W-A-C1's 5-1/2" stud body plus a jack and king each side is 11-1/2", so 14"
     # carries the bearing with 2-1/2" to spare. It is also the composition's mullion, and
-    # between the two it is what forbids the pair from growing INWARD — which is why the
-    # 2026-08-24 widening was one-sided.
+    # between the two it is what forbids the pair from growing INWARD.
     #
-    # **21", not 24": the 2026-08-27 widening to 27" was spent here, and deliberately.**
-    # The pair moving back onto the grid on 2026-08-25 had banked 12 1/2" of slack over the
-    # 14" the bearing needs, and closing the gap is what the owner asked the extra 3" per
-    # unit for. 7" of that slack is left. Asserted as an exact number so the next "just make
-    # them a bit wider" has to come back through this line rather than spending the rest.
+    # 21", not 24": the pair banks 12 1/2" of slack over the 14" the bearing needs, and
+    # closing the gap is what the owner asked the extra 3" per unit for. 7" of that slack is
+    # left. Asserted as an exact number so the next "just make them a bit wider" has to come
+    # back through this line rather than spending the rest.
     pier = (east_x - inch(13.5).meters) - (west_x + inch(13.5).meters)
     assert pier == pytest.approx(inch(21).meters, abs=1e-6)
     assert pier >= inch(14).meters
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     # `integrity.opening_fits` is a hard gate and stays clean. `window_framing_module` is an
-    # ADVISORY, and between 2026-08-24 and 2026-08-25 the pair failed it by the 3" the
-    # one-sided widening cost — the house's one accepted off-module window. The line-based
-    # stud module retired that exception rather than the pair moving: on a grid shared by the
-    # whole south line, 16'-0"/20'-0" ARE stud lines. Both checks are clean now, and the
-    # advisory is asserted clean so a future re-phase cannot quietly reintroduce the debt.
+    # ADVISORY: on a grid shared by the whole south line, 16'-0"/20'-0" ARE stud lines, so
+    # both checks are clean. The advisory is asserted clean so a future re-phase cannot
+    # quietly reintroduce the debt.
     offenders = [finding for finding in report.findings
                  if finding.check_id == "integrity.opening_fits"
                  and finding.result is Result.FAIL
@@ -978,13 +873,8 @@ def _framing_offenders(tags):
 def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
     """Five exact lower columns and mirrored attic caps.
 
-    Four until 2026-08-25, when the assembly took its stud module from the layout line.
-    The fifth was the face's one broken column: W-S-W1's grid had re-phased out from under
-    WIN-S-BATH-W on 2026-08-21 when the mechanical chase moved N-S-CH3, and the window rode
-    3 1/8" south to the bay centre that move created rather than break a stud. With one grid
-    for the whole line there is no per-segment phase left to drift, so it returns to 31'-4"
-    under WIN-M-MUD. The other four shifted 4" together, which is the whole face re-hanging
-    on the house grid — same rhythm, same pairs, one datum.
+    The whole face re-hangs on the house grid — same rhythm, same pairs, one datum — so all
+    five lower columns and their attic caps line up exactly, WIN-M-MUD/WIN-S-BATH-W included.
     """
     columns = {
         ft(5, 4).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
@@ -1013,13 +903,13 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
     assert vanity.host_wall == "W-S-W2" and vanity.type_ref == "WT-1424-T"
     assert bath.host_wall == "W-M-W2" and bath.type_ref == "WT-1424-T"
 
-    # ** THE ATTIC PAIR IS GONE (2026-08-29), AND THE COLUMN IS TWO STOREYS NOW. **
-    # WIN-A-W-S and WIN-A-W-N hung on the 5'-0" knee walls at y 4'-8"/31'-4" — the one place
-    # in the house the 14" family was chosen for HEIGHT rather than width, because a 5'
-    # wall at a 2'-6" sill has exactly 24" under its plate. Those walls are 1 1/2" rafter
-    # plates now (CATLIN_RAFTER_PLATE) and a plate has nothing to glaze. Asserted as an
-    # ABSENCE rather than deleted silently: if a future pass puts glazing back on this
-    # facade's top storey it has to come back through this test.
+    # The attic pair is gone; the column is two storeys now. WIN-A-W-S/WIN-A-W-N hung on the
+    # 5'-0" knee walls at y 4'-8"/31'-4" — the one place in the house the 14" family was
+    # chosen for HEIGHT rather than width, because a 5' wall at a 2'-6" sill has exactly 24"
+    # under its plate. Those walls are 1 1/2" rafter plates now (CATLIN_RAFTER_PLATE) and a
+    # plate has nothing to glaze. Asserted as an ABSENCE rather than deleted silently: if a
+    # future pass puts glazing back on this facade's top storey it has to come back through
+    # this test.
     assert not [o for o in catlin_model.openings
                 if o.tag in ("WIN-A-W-S", "WIN-A-W-N", "WIN-A-E-S", "WIN-A-E-N")]
 
@@ -1031,11 +921,9 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
     assert mud_y == pytest.approx(ft(31, 4).meters, abs=1e-6)
     assert second_bath_y == pytest.approx(mud_y, abs=1e-6)
 
-    # The ladder backing at W-S-W3's tee is COMPLETE again (2026-08-25). WIN-S-SUITE1's
-    # header used to cross the top rung, and opening framing owns that volume, so the solver
-    # dropped the one nonstructural block and this test pinned the hole. The 4" the window
-    # moved to reach the line's grid took the header off the rung, and the rung came back —
-    # a second-order win worth asserting, because a future window move could re-open it.
+    # The ladder backing at W-S-W3's tee is COMPLETE. WIN-S-SUITE1's header crosses the top
+    # rung, and opening framing owns that volume, so the solver drops the one nonstructural
+    # block; asserted because a future window move could re-open the hole.
     suite_wall = catlin_model.wall("W-S-W3")
     suite_wall_member_keys = {member.child_key for member in suite_wall.members}
     assert "header-0" in suite_wall_member_keys
@@ -1049,26 +937,18 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
 def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
     """13'-4" / 22'-8" — the inner pair, mirrored about the 36'-0" face exactly.
 
-    The row it replaced ran a perfectly even 9'-0" beat that sat 10" north of centre: 5'-4"
-    of wall at the south end against 3'-8" at the north. An even beat is invisible; a 20"
-    asymmetry on a 36'-0" face is not. Width and head mirror too, on one 3'-0" sill, so the
-    two halves are the same picture — that is the claim, and it is pinned in all three
-    dimensions because holding only the stations would let a retype break it silently.
+    Width and head mirror too, on one 3'-0" sill, so the two halves are the same picture —
+    that is the claim, pinned in all three dimensions because holding only the stations
+    would let a retype break it silently.
 
-    **The row was four units until 2026-08-27 and is three now.** WIN-S-BED3 left it: it
-    retyped 27x36 -> 14x24 and moved 32'-0" -> 34'-0" to column with WIN-M-KIT-E below and
-    WIN-A-E-N above, a three-storey 14" column on the east face. So the outer *pair* is
-    gone — WIN-S-STUDY3 at 4'-0" has no partner — and this test stops asserting one rather
-    than asserting a mirror the design no longer claims. What it asserts instead is both
-    halves of the trade: the inner pair still mirrors, and BED3 really is in the column it
-    left the row for. A test that only dropped the dead assertion would let the column it
-    was traded for go unbuilt.
+    WIN-S-BED3 left the row for a three-storey 14" column with WIN-M-KIT-E below and
+    WIN-A-E-N above, so the outer *pair* is gone — WIN-S-STUDY3 at 4'-0" has no partner —
+    and this test does not assert one. It asserts both halves of the trade instead: the
+    inner pair still mirrors, and BED3 really is in the column it left the row for.
 
-    (The inner pair moved 4" outward on 2026-08-25 with the line-based stud module, and
-    then went 30x48 -> 27x54 the same day: the east wall is BEARING, so it takes the 27"
-    rung of the RO ladder, and R303.1's area came back in height. Both survived every claim
-    below unchanged — ``from_node`` is the NEAR jamb, so the 3" of lost width came off both
-    offsets symmetrically and held the centres.)
+    (The east wall is BEARING, so the inner pair takes the 27" rung of the RO ladder, and
+    R303.1's area comes back in height; ``from_node`` is the NEAR jamb, so lost width comes
+    off both offsets symmetrically and holds the centres.)
     """
     house = ft(36).meters
 
@@ -1092,9 +972,9 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     # Same station and same width on all three storeys, which is the whole return on
     # breaking the row. Sills deliberately do NOT column: WIN-M-KIT-E's 3'-6" is a counter
     # height and does not travel up, so asserting it would pin the wrong thing.
-    # Two storeys, not three, since 2026-08-29: WIN-A-E-N was the attic's half of this
-    # column and it hung on the east knee wall, which is a rafter plate now. The column it
-    # was traded for still exists on the two storeys that have walls to carry it.
+    # Two storeys, not three: WIN-A-E-N was the attic's half of this column and it hung on
+    # the east knee wall, which is a rafter plate now. The column it was traded for still
+    # exists on the two storeys that have walls to carry it.
     column = ("WIN-M-KIT-E", "WIN-S-BED3")
     stations = {}
     for tag in column:
@@ -1104,13 +984,9 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     for tag, y in stations.items():
         assert y == pytest.approx(ft(34).meters, abs=1e-6), tag
 
-    # The row really is a row: **all three units now read 7'-0" at the head**, on the one
-    # 3'-0" sill. It stepped up to the middle until 2026-08-27 (6'-0" outer, 7'-6" inner)
-    # and levelled that day from both ends at once — STUDY3 went 36" -> 48" tall to keep
-    # columning with WIN-M-LIV-E1, which took the same retype the same day, and BED1/BED2
-    # came 54" -> 48" giving back the height that had bought R303.1 without Exception 1.
-    # Two unrelated decisions landing on one head line is exactly the kind of thing nobody
-    # notices until it is pinned, so it is pinned: a level row is a stronger claim than a
+    # The row really is a row: all three units read 7'-0" at the head, on the one 3'-0"
+    # sill — STUDY3 keeps columning with WIN-M-LIV-E1 at that height, and BED1/BED2 hold the
+    # height that buys R303.1 without Exception 1. A level row is a stronger claim than a
     # stepped one and a later retype must not undo it by accident.
     def head(tag):
         _, opening = _opening_plan_y(catlin_model, tag)
@@ -1212,9 +1088,9 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     """A deck that encloses no walls has to draw its own outline, or the plan slice shows
     empty air where a walking surface is.
 
-    Two of the three exterior decks are FloorSystems — the porch (3bf2f48) and the balcony
-    (2026-08-22) — so neither is a Slab any more and neither would be drawn by reading
-    ``model.solids`` alone. ``_emit_slabs`` reads ``model.floors`` too, and the tag on the
+    Two of the three exterior decks are FloorSystems — the porch and the balcony — so
+    neither is a Slab and neither would be drawn by reading ``model.solids`` alone.
+    ``_emit_slabs`` reads ``model.floors`` too, and the tag on the
     polyline is the floor system's. The breezeway is the third and stays a Slab, for the
     reason params/breezeway.py gives: its plank oversails its joist field onto two door
     thresholds, and a floor system's sheet cannot. It draws from ``model.solids``, so this
@@ -1323,8 +1199,8 @@ def test_catlin_bearing_view_has_continuous_house_load_path(catlin_model):
 def test_catlin_floor_heat_zones_are_the_three_supplemental_ones(catlin_model):
     """Radiant floor is a comfort layer, not the heating system, and RM-B-SAUNA has none.
 
-    The sauna floor was deleted 2026-07-25 (a heated floor in a 190 F room has nowhere to
-    put its heat); what is left is the main bath, the patch under the dining table and the
+    The sauna floor is absent (a heated floor in a 190 F room has nowhere to put its heat);
+    what is left is the main bath, the patch under the dining table and the
     NW bathroom upstairs. All three are electric mat with a resolvable zone and wire run.
     """
     zones = {item.tag: item for item in catlin_model.floor_heat}
@@ -1356,25 +1232,18 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # all-electric contract forbids is a *combustion* appliance, not a duct.
     air = {product.tag for product in plan.library.equipment_types
            if "supply_air" in {port.service.value for port in product.ports}}
-    # The ventilator became a named product on 2026-08-25 (EQ-T-BROAN-B210E75RT), and the
-    # radial pass added two more boxes its FRESH air passes through — the 6-port supply
-    # manifold and the mixing box where the ERV leg joins System 1's return. (The 10-port
-    # manifold and the gable hoods carry stale and outdoor air, so they declare RETURN_AIR
-    # and OUTDOOR_AIR instead and are not in this set.) None of the five burns anything,
-    # which is what this assertion is actually about.
-    # EQ-T-GREE-SLIM24 -> EQ-T-GREE-DUC24 on 2026-08-30 (the slim-duct type was a
-    # REPRESENTATIVE PLACEHOLDER), then -> EQ-T-GREE-FLEXX-ULTRA-24-AH on 2026-08-31, when
-    # the DUC24 was found to be short at design temperature, to move 736 cfm rather than the
-    # 1030 its record claimed, and to carry no aux-heat terminal at all. The set is still
-    # four products and still nothing that burns, which is what is being asserted.
+    # The ERV's FRESH air passes through two more boxes — the 6-port supply manifold and the
+    # mixing box where the ERV leg joins System 1's return. (The 10-port manifold and the
+    # gable hoods carry stale and outdoor air, so they declare RETURN_AIR and OUTDOOR_AIR
+    # instead and are not in this set.) None of the five burns anything, which is what this
+    # assertion is actually about.
     assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX"}
 
 
-# Split in two on 2026-09-02 with the stucco retirement. The invariant used to be one
-# number, 4.55" outboard of the concrete face on every perimeter assembly, because every one
-# of them carried a 1/2" skin over the XPS — a protection panel on N/E/W, a parge coat on the
-# south. The south's parge is gone, so the two halves differ by exactly that skin.
+# The invariant is one number per group, not a single value: every perimeter assembly
+# carries a 1/2" skin over the XPS on N/E/W (a protection panel), but the south's parge coat
+# is gone, so the two halves differ by exactly that skin.
 _BURIED_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8")
 _COURT_ASSEMBLIES = ("CATLIN_GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
                      "CATLIN_GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
@@ -1382,37 +1251,30 @@ _PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
-    """Old: 4 perimeter segments x 2 XPS layers; new: every perimeter segment
-    carries both 2" XPS layers in its resolved stack.
+    """Every perimeter segment carries both 2" XPS layers in its resolved stack.
 
-    Eleven segments across four assemblies since 2026-08-23: eight on N/E/W with an
-    above-grade protection band, three on the south with a full-height parge into the sunken
-    garden — of which W-B-S2 also carries the sauna's liner inboard of the pour. The foam is
-    identical on all of them and so is the 4.05" it puts outboard of the pour; the splits are
-    about what covers the foam outside, what (if anything) lines the room inside, and — since
-    the thinning — how thick the pour behind it is.
-
-    It was ten until the ESS closet moved to the furnace room's NE corner and W-B-N3 split at
-    x=6'-0" into W-B-N3 + W-B-N4. That is a node, not a construction change: both halves carry
-    the same assembly, and the assertion below still runs over every one of them.
+    Eight on N/E/W with an above-grade protection band, three on the south with a
+    full-height parge into the sunken garden — of which W-B-S2 also carries the sauna's
+    liner inboard of the pour. The foam is identical on all of them and so is the 4.05" it
+    puts outboard of the pour; the splits are about what covers the foam outside, what (if
+    anything) lines the room inside, and how thick the pour behind it is.
     """
     perimeter = [w for w in catlin_model.walls
                  if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES]
-    # **14 on 2026-08-28.** W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so
-    # each half could author the backfill it actually retains; then W-B-S2 and W-B-S3
-    # became the 7 1/4" curbs under the framed walkout and took two new assemblies with
-    # them, and the framed walls on those curbs carry the identical outboard tail. The foam
-    # is still identical on every one and still 4.05" outboard of whatever is behind it,
-    # which is what this test is actually about.
+    # 14: W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so each half could author
+    # the backfill it actually retains; W-B-S2 and W-B-S3 became the 7 1/4" curbs under the
+    # framed walkout and took two new assemblies with them, and the framed walls on those
+    # curbs carry the identical outboard tail. The foam is identical on every one and still
+    # 4.05" outboard of whatever is behind it, which is what this test is actually about.
     assert len(perimeter) == 14  # same wall line, split at grid/tee/curb nodes
-    # Six south segments since 2026-08-28, in three pairs: two buried 8" pours either side
-    # of the excavation (W-B-S1, W-B-S4), the two 7 1/4" curbs inside it, and the two framed
-    # walls standing on those curbs. One of each pair carries the sauna's liner inboard.
+    # Six south segments, in three pairs: two buried 8" pours either side of the excavation
+    # (W-B-S1, W-B-S4), the two 7 1/4" curbs inside it, and the two framed walls standing on
+    # those curbs. One of each pair carries the sauna's liner inboard.
     south = [w for w in perimeter if w.tag.startswith("W-B-S")]
     assert len(south) == 6, sorted(w.tag for w in south)
-    # The two buried pours joined CATLIN_BASEMENT_8 on 2026-09-02 with the stucco
-    # retirement — the same assembly the N/E/W walls carry, because the same thing is true
-    # of them: their exposure is a grade band. CATLIN_BASEMENT_8_GARDEN has no instance left.
+    # The two buried pours carry CATLIN_BASEMENT_8 — the same assembly the N/E/W walls
+    # carry, because the same thing is true of them: their exposure is a grade band.
+    # CATLIN_BASEMENT_8_GARDEN has no instance left.
     assert {w.tag for w in south if w.assembly == "CATLIN_BASEMENT_8"} == {"W-B-S1", "W-B-S4"}
     assert not [w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]
     for wall in perimeter:
@@ -1424,17 +1286,17 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
 
 def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
     """12" is earned where a *cast* deck lands on the wall top beside the sill, and nowhere
-    else (2026-08-21). SL-M-DECK spans east-west onto the east wall and the centre line, so
-    W-B-E1/E2 keep the 12" pour and the other eight segments are 8" — which IRC Table
-    R404.1.2(8) allows at 45 psf/ft on the 10' x 7' row only with vertical steel, so each of
-    the eight must declare it or ``structural.foundation_unbalanced_fill`` FAILs.
+    else. SL-M-DECK spans east-west onto the east wall and the centre line, so W-B-E1/E2
+    keep the 12" pour and the other eight segments are 8" — which IRC Table R404.1.2(8)
+    allows at 45 psf/ft on the 10' x 7' row only with vertical steel, so each of the eight
+    must declare it or ``structural.foundation_unbalanced_fill`` FAILs.
 
-    **Three of the perimeter assemblies carry no pour at all since 2026-08-28** — the
-    sunken garden's framed walkout is a 2x6 wall on the same outboard tail — so the sweep
-    is over pours, not over the assembly set. And the two 7 1/4" curbs under that walkout
-    are 6": not a thinning, a plane. 6" of concrete is exactly stud-plus-sheathing, so the
-    curb's two faces land where the framed wall's do. They retain nothing and declare no
-    steel, which is the same reading that leaves every interior cross wall bare."""
+    Three of the perimeter assemblies carry no pour at all — the sunken garden's framed
+    walkout is a 2x6 wall on the same outboard tail — so the sweep is over pours, not over
+    the assembly set. And the two 7 1/4" curbs under that walkout are 6": not a thinning, a
+    plane. 6" of concrete is exactly stud-plus-sheathing, so the curb's two faces land where
+    the framed wall's do. They retain nothing and declare no steel, which is the same
+    reading that leaves every interior cross wall bare."""
     from typehaus.model.structure import FoundationWall
 
     perimeter = {w.tag: w for w in catlin_model.walls
@@ -1465,14 +1327,12 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
     """Every perimeter assembly carries the library core's 4.05" tail outboard of the pour
     (0.05" damp-proofing + 2 x 2" XPS), and it must survive a change of pour thickness — the
     veneer, the excavation, the XPS plane and the drain tile are all measured off the
-    *exterior* face, which is the datum the walls align on, so only the inside face moved on
-    2026-08-21.
+    *exterior* face, which is the datum the walls align on, so only the inside face moves.
 
-    What sits outboard of THAT is a house skin, and since the 2026-09-02 stucco retirement
-    there is only one: a 1/2" protection panel, banded off GRADE, on the walls whose exposure
-    is a grade line. The court walls carry nothing — their XPS is inside W-B-BRICK's
-    ventilated cavity. N-B-BRICK-W/-E's ``inch(-4.55)`` stand-off is unchanged and was struck
-    against the old parge; what the deletion buys is a 1-1/2" clear cavity where there was 1".
+    What sits outboard of THAT is a house skin: a 1/2" protection panel, banded off GRADE,
+    on the walls whose exposure is a grade line. The court walls carry nothing — their XPS
+    is inside W-B-BRICK's ventilated cavity. N-B-BRICK-W/-E's ``inch(-4.55)`` stand-off gives
+    a 1-1/2" clear cavity.
     """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
@@ -1490,13 +1350,13 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
     # 10, not 4. Two splits are door gaps, in stems that carry one rather than running a
     # continuous 22" band across it — the east at the overhead door (W-GF-E1/W-GF-E-DR/
-    # W-GF-E2) and, since 2026-08-01, the south at the service door (W-GF-S1/W-GF-S-DR/
-    # W-GF-S2). A person will not climb a 22" curb any more happily than a car will.
+    # W-GF-E2) and the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
+    # not climb a 22" curb any more happily than a car will.
     #
-    # The other two are the brick returns (2026-08-26): the veneer wraps 4'-0" around the
-    # SE and NE corners off the east elevation, and a stem under veneer needs the ledge.
-    # W-GF-S3 and W-GF-N2 are those corner pieces, on GARAGE_ICF_6_BRICKLEDGE like the
-    # whole east run; their parents keep their uids on the remnants.
+    # The other two are the brick returns: the veneer wraps 4'-0" around the SE and NE
+    # corners off the east elevation, and a stem under veneer needs the ledge. W-GF-S3 and
+    # W-GF-N2 are those corner pieces, on GARAGE_ICF_6_BRICKLEDGE like the whole east run;
+    # their parents keep their uids on the remnants.
     assert len(stem) == 10
     ledged = {w.tag for w in stem if w.assembly == "GARAGE_ICF_6_BRICKLEDGE"}
     assert ledged == {"W-GF-S3", "W-GF-E1", "W-GF-E2", "W-GF-N2"}
@@ -1508,11 +1368,9 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # the slab* rather than at any reveal at all: a low curb across a 16' vehicle door is
     # still a curb the car has to climb.
     #
-    # Every one of those numbers is measured from **grade**, not from the project datum. The
-    # two were the same thing until 2026-08-18, when grade went to -2'-6" to lift the house
-    # out of the ground and the garage — driven into at grade, and staying there — went down
-    # with the soil. Reading them off ``site.grade`` is the assertion: the reveal, the bury
-    # and the slab are properties of the ground, and the house datum is not the ground.
+    # Every one of those numbers is measured from **grade**, not from the project datum.
+    # Reading them off ``site.grade`` is the assertion: the reveal, the bury and the slab
+    # are properties of the ground, and the house datum is not the ground.
     grade_m = catlin_model.plan.project.site.grade.meters
     grade_beams = {w.tag for w in stem if w.tag in ("W-GF-E-DR", "W-GF-S-DR")}
     assert grade_beams == {"W-GF-E-DR", "W-GF-S-DR"}
@@ -1552,37 +1410,26 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     assert head == pytest.approx(slab.z1_m + ft(7.0).meters)
     assert head < wall.z1_m
 
-    # The framed header follows the head down too. It used to be pinned to the host wall's
-    # base regardless of sill, which left the LVL 22" above the hole every other emitter cut.
-    # And it sits ON the head, not a plate above it: until 2026-08-25 the opening pack was
-    # framed off the stud bearing line rather than the wall's framing base, so every header
-    # in the house stood 1 1/2" clear of the hole it carries — see
-    # test_opening_framing_registers_with_the_opening_it_frames.
+    # The framed header follows the head down. And it sits ON the head, not a plate above
+    # it — see test_opening_framing_registers_with_the_opening_it_frames.
     header = next(m for m in catlin_model.all_members()
                   if m.parent_uid == wall.uid and m.category == "header")
     assert header.z0_m == pytest.approx(head)
 
-    # …and the cripples the docstring promises are actually there. Until 2026-08-23 they
-    # were not: the head family was emitted from inside the window-only branch that carries
-    # the rough sill, so this door — the widest opening in the house — had 18" of empty
-    # wall and 16 ft of unbacked double top plate above its header. They bear on the flat
+    # …and the cripples the docstring promises are actually there. They bear on the flat
     # track nailer, not on the LVL through it.
     backing = next(m for m in catlin_model.all_members()
                    if m.parent_uid == wall.uid and m.child_key.startswith("trackbacking-"))
     cripples = [m for m in catlin_model.all_members()
                 if m.parent_uid == wall.uid and m.child_key.startswith("cripple-head-")]
-    # 16'-9" of header at 24" o.c. (W-G-E went to 24" with GARAGE_WALL_2X6 on 2026-08-31,
-    # down from a dozen 16" stations) is still several field cripples, not one.
+    # 16'-9" of header at 24" o.c. is still several field cripples, not one.
     assert len(cripples) > 5, "16'-9\" of header at 24\" o.c. is still several stations"
     for cripple in cripples:
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 
-    # ** AND THE SOLE PLATE STOPS AT THE JAMBS. ** Until 2026-08-30 `_append_plates` was
-    # never handed the wall's openings, so no bottom plate in any house was ever
-    # interrupted: this one ran the full 7.10 m across the 16'-0" hole at z = -0.3048, with
-    # nothing whatever underneath it. The ICF stem is stepped down to a grade beam right
-    # here — N-GF-E-DRS/N-GF-E-DRN in params/foundations.py are the two stations where it
-    # drops — which is exactly why there is no floor for a plate to sit on.
+    # And the sole plate stops at the jambs. The ICF stem is stepped down to a grade beam
+    # right here — N-GF-E-DRS/N-GF-E-DRN in params/foundations.py are the two stations where
+    # it drops — which is exactly why there is no floor for a plate to sit on.
     plates = sorted((m for m in catlin_model.all_members()
                      if m.parent_uid == wall.uid
                      and m.child_key.startswith("plate-bottom")),
@@ -1684,24 +1531,20 @@ def test_garage_brick_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(cat
 
 
 def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
-    """D-G-SERVICE follows the *deck*, and D-G-OVERHEAD follows the *slab*. That split is
-    the whole shape of the 2026-08-18 lift at the garage.
+    """D-G-SERVICE follows the *deck*, and D-G-OVERHEAD follows the *slab* — the whole shape
+    of the lift at the garage.
 
-    Both doors carried the same negative sill from 2026-08-01, when the service door was
-    dropped to the slab to meet a breezeway deck that also sat at 0'-0". Then grade went to
-    -2'-6" and the garage went down with it while the breezeway deck — a bridge between two
-    doors, not a thing standing on soil — stayed. The deck is still this door's landing
-    (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that both breezeway
-    doors open onto it at one level), so the threshold stays at 0'-0" and the sill turns
-    positive. Grade went down another 4" on 2026-08-21 for the basement-ceiling overhaul,
-    so it is now +1'-0" over a garage storey at -1'-0", and the 2'-10" is taken inside
+    The breezeway deck — a bridge between two doors, not a thing standing on soil — is this
+    door's landing (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that
+    both breezeway doors open onto it at one level), so the threshold stays at 0'-0" and the
+    sill is positive: +1'-0" over a garage storey at -1'-0", with the 2'-10" taken inside
     instead — by the SL-G-STEP-0 landing and the ST-G-SERVICE flight below it.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
-    # The breezeway plank is FS-BW-FLOOR's `subfloor` since 2026-08-22, not the SL-BW-DECK
-    # Slab it used to be, so the landing height is the resolved deck sheet's top.
+    # The breezeway plank is FS-BW-FLOOR's `subfloor`, so the landing height is the resolved
+    # deck sheet's top.
     deck_top = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR").deck_z1_m
 
     threshold = wall.z0_m + door.sill_m
@@ -1711,9 +1554,7 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
     # Five 6.8" risers inside close that 2'-10": a 3'-0" concrete landing level with the
-    # threshold, and four pressure-treated treads below it. (Six-inch risers while grade was
-    # -2'-6"; five concrete slabs until 2026-08-22, when `Stair` gained the optional
-    # `floor_opening` and the explicit elevations a step-down within one storey needs.)
+    # threshold, and four pressure-treated treads below it.
     landing = next(s for s in catlin_model.solids if s.tag == "SL-G-STEP-0")
     assert landing.z1_m == pytest.approx(threshold)
     assert [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")] == \
@@ -1728,8 +1569,7 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert len(treads) == 4
     assert treads[0].z1_m - slab.z1_m == pytest.approx(inch(34.0 / 5).meters)
     assert treads[-1].z1_m == pytest.approx(threshold - inch(34.0 / 5).meters)
-    # Pressure-treated, not the generic lumber every stair in the house rendered as before
-    # `Stair` had a material at all.
+    # Pressure-treated, distinct from the generic lumber elsewhere in the house.
     assert {m.material for m in stair.members} == {"kdat"}
 
 
@@ -1742,8 +1582,8 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
     for wall in catlin_model.walls:
         if not wall.tag.startswith("W-GF-"):
             continue
-        # rstrip digits, not just "12": W-GF-S3/N2 (the SE/NE brick-return corner pieces,
-        # 2026-08-26) pushed the split count past two on both sides.
+        # rstrip digits, not just "12": W-GF-S3/N2 (the SE/NE brick-return corner pieces)
+        # pushed the split count past two on both sides.
         side = wall.tag.removeprefix("W-GF-").split("-")[0].rstrip("0123456789")
         stem_groups.setdefault(side, []).append(wall)
     # Excludes "W-G-BRICK-*": the wainscot veneer (and its SE/NE corner returns) also
@@ -1775,10 +1615,10 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
         # layer's, outboard of it (resolve/framing/furring.py). Asserting one offset for all
         # of them would put the battens inside the ZIP-R they are fastened over.
         #
-        # GARAGE_WALL_2X6 has had NO furring layer since 2026-08-20 (nail strip face-fastens
-        # straight to the Zip-R), so on this house the strapping branch is currently dead. It
-        # stays coded rather than deleted because the offset rule is what the test is about,
-        # and the furring comes straight back if the garage ever re-clads.
+        # GARAGE_WALL_2X6 has no furring layer (nail strip face-fastens straight to the
+        # Zip-R), so on this house the strapping branch is currently dead. It stays coded
+        # rather than deleted because the offset rule is what the test is about, and the
+        # furring comes straight back if the garage ever re-clads.
         has_furring = any(ly.function == "furring" for ly in wall.layers)
         expected = {"strapping": band_offset("furring")} if has_furring else {}
         default_offset = band_offset("structure")
@@ -1797,21 +1637,20 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     column + two beams on each open porch edge, a metal porch guard, six 6x6 pillars +
     three balcony beams, and a 19x28 garden.
 
-    The porch's south edge was a 16" arched cross-wall under a 42" masonry parapet until
-    2026-08-18. It is a 20" round cast column and two DROPPED beams now — the same detail
-    the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
+    The porch's south edge is a 20" round cast column and two DROPPED beams — the same
+    detail the north edge has carried all along — with RL-SG-PORCH in place of a parapet.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
     # 6 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and W-SG-ARCH.
     # No north wall, no front wall, and no masonry railing over any of them.
     #
-    # **W-SG-ARCH is back and it is NOT the arch** (2026-08-30). The 16" cast cross-wall with
-    # two semicircular arches, its 42" masonry parapet and its three balcony pillars are all
-    # still retired and none of them comes back. What carries the tag now is a 12" x 17 1/2"
-    # grade beam on the same node pair, entirely below the garden floor, whose only job is to
-    # close the loop that lets W-SG-W2 and W-SG-E2 cancel each other's thrust instead of
-    # standing as two free cantilevers at FS 0.73. It reuses the retired uid deliberately.
-    # See `engineering/retaining_system.py` and `notes/sunken_garden_court_free_body.md`.
+    # W-SG-ARCH is NOT the arch: the 16" cast cross-wall with two semicircular arches, its
+    # 42" masonry parapet and its three balcony pillars are retired. What carries the tag now
+    # is a 12" x 17 1/2" grade beam on the same node pair, entirely below the garden floor,
+    # whose only job is to close the loop that lets W-SG-W2 and W-SG-E2 cancel each other's
+    # thrust instead of standing as two free cantilevers at FS 0.73. It reuses the retired
+    # uid deliberately. See `engineering/retaining_system.py` and
+    # `notes/sunken_garden_court_free_body.md`.
     assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
                                       "W-SG-ARCH"}
     # And it is BURIED — the porch reads exactly as it did, because nothing of the beam is
@@ -1824,9 +1663,8 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.
-    # The front one went from a 16" SQUARE to a 16" ROUND on 2026-08-28 — a fibre tube is
-    # $175-695 cheaper than built panels for the same height — and from 16" to 20" on
-    # 2026-08-29, when it became the SHARED bearing for the two front beams and PT-SG-BF2
+    # The front column is a round fibre tube, cheaper than built panels for the same height,
+    # sized to 20" because it is the SHARED bearing for the two front beams and PT-SG-BF2
     # (params/sunken_garden.py has the sizing table; 16" and 18" have no solution at the
     # balcony's 12" overhang). The width assertions below track the diameter because the
     # bounding box is the diameter on both axes; they are here to catch a nominal spelling
@@ -1841,8 +1679,8 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     front_beams = {b.tag: b for b in catlin_model.solids
                    if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
     assert len(front_beams) == 2
-    # DROPPED since 2026-08-29, not flush: the joists bear on top, so these two top out a
-    # porch-joist depth (7 1/4") below the 0' datum exactly as the back pair do, and the
+    # DROPPED, not flush: the joists bear on top, so these two top out a porch-joist depth
+    # (7 1/4") below the 0' datum exactly as the back pair do, and the
     # column stops at their soffit — which keeps the pour clear of the 16"-o.c. joist band
     # above it AND is what puts PT-SG-BF2 on concrete instead of on a 2x8.
     assert all(b.z1_m == pytest.approx(inch(-7.25).meters) for b in front_beams.values())
@@ -1871,15 +1709,14 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # 2 LVL back beams + 2 LVL front beams + 3 double-2x10 N-S balcony beams + 2 continuous
     # E-W brace rails (one per pillar row, face-bolted to all three posts in it; the rails
     # give the freestanding balcony a member to brace against in its second principal
-    # direction). The four E-W girts these replaced (2026-08-30) were two segments per row.
+    # direction).
     assert len(beams) == 9
     assert {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"} <= beams
     assert {"BM-SG-RAIL-R", "BM-SG-RAIL-F"} <= beams
 
-    # Both exterior decks carry their walking surface, and both do it the same way now: the
+    # Both exterior decks carry their walking surface, and both do it the same way: the
     # plank is the floor system's own deck sheet, so the surface follows the framing instead
-    # of floating beside it as a second element. The balcony's SL-SG-DECK slab was the last
-    # of the three to go (2026-08-22); no Slab is left over either deck.
+    # of floating beside it as a second element. No Slab is left over either deck.
     for tag, material in (("FS-SG-PORCH", "composite-deck"), ("FS-SG-DECK", "aluminum-deck")):
         system = catlin_model.plan.by_tag(tag)
         assert system.subfloor is not None and system.subfloor.material_ref == material
@@ -1913,29 +1750,27 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     assert by_storey["main"] >= 25
     assert by_storey["second"] >= 30
     assert by_storey["attic"] >= 12
-    # 4 wood-framed walls + 4 brick-wainscot walls (2 east piers + 2 SE/NE corner returns,
-    # 2026-08-26).
+    # 4 wood-framed walls + 4 brick-wainscot walls (2 east piers + 2 SE/NE corner returns).
     assert by_storey["garage"] == 8
     rooms = {r.tag for r in catlin_model.rooms}
-    # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place on 2026-08-29 (same uid,
-    # CAR401AAAA), and split off RM-A-STUBATH and RM-A-POCKET as new rooms.
+    # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place (same uid, CAR401AAAA),
+    # and split off RM-A-STUBATH and RM-A-POCKET as new rooms.
     assert {"RM-B-SAUNA", "RM-M-LIVING", "RM-S-PLANT", "RM-A-STUDIO",
             "RM-A-STUBATH", "RM-A-POCKET", "RM-GARAGE"} <= rooms
 
 
 def test_stairs_resolve_with_code_risers(catlin_model):
     stairs = {s.tag: s for s in catlin_model.stairs}
-    # ST-G-SERVICE joined them on 2026-08-22: five risers from the garage slab to the
-    # service-door threshold, a step-down WITHIN one storey, which `Stair` could not express
-    # until `floor_opening` became optional and `base_elevation`/`top_elevation` were added.
-    # It was five concrete `Slab`s before that, and invisible to every stair rule there is.
+    # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, a
+    # step-down WITHIN one storey, expressed via `floor_opening`/`base_elevation`/
+    # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     for stair in stairs.values():
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
-    # ST-B2M gained a riser (14 -> 15) on 2026-08-21: the basement storey went down 4" so the
-    # house could carry a 12 5/8" deck over it and keep its headroom. The three storey-to-
-    # storey flights are all in that band; ST-G-SERVICE is a 2'-10" step-down and has five.
+    # ST-B2M has 15 risers: the basement storey is down 4" from the others so the house can
+    # carry a 12 5/8" deck over it and keep its headroom. The three storey-to-storey flights
+    # are all in that band; ST-G-SERVICE is a 2'-10" step-down and has five.
     assert {stairs[tag].riser_count for tag in ("ST-B2M", "ST-M2S", "ST-S2A")} <= {14, 15, 16}
     assert stairs["ST-G-SERVICE"].riser_count == 5
     # Ordinary stairs stay compact by default: 11" boards with a 1" nose yield the 10"
@@ -1969,8 +1804,7 @@ def test_stairs_resolve_with_code_risers(catlin_model):
         assert stair.layout == "u_split_landing"
         keys = {member.child_key for member in stair.members}
         # Split-landing semantics: the riser between the two half-width landing
-        # platforms IS the step, so there is no separate step-between-landings member
-        # (it used to be a byte-identical duplicate of landing-upper).
+        # platforms IS the step, so there is no separate step-between-landings member.
         assert keys >= {"landing-lower", "landing-upper"}
         assert "step-between-landings" not in keys
 
@@ -1980,27 +1814,23 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     from typehaus.server.model_json import model_to_dict
 
     stairs = {item["tag"]: item for item in model_to_dict(catlin_model)["stairs"]}
-    # ST-G-SERVICE joined them on 2026-08-22: five risers from the garage slab to the
-    # service-door threshold, a step-down WITHIN one storey, which `Stair` could not express
-    # until `floor_opening` became optional and `base_elevation`/`top_elevation` were added.
-    # It was five concrete `Slab`s before that, and invisible to every stair rule there is.
+    # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, a
+    # step-down WITHIN one storey, expressed via `floor_opening`/`base_elevation`/
+    # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
-    # 4 1/2" well partition. It was 3'-3 3/4" in a 7'-0" well until 2026-08-24, when
-    # W-B-STR/W-B-STR3 were framed and the shaft's west face came down from x=10'-6" to the
-    # stud line's plywood at 10'-3 3/8"; the 2 5/8" went into the two flights rather than
-    # being left as a slot beside the wall.
+    # 4 1/2" well partition, measured to W-B-STR/W-B-STR3's stud-line plywood face.
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
-    # x=10'-3 3/8" since 2026-08-24 — the framed stair wall's plywood face, which is where
-    # FO-M-STAIR's west edge is now and where FO-S-STAIR's already was.
+    # x=10'-3 3/8" — the framed stair wall's plywood face, which is where FO-M-STAIR's west
+    # edge is now and where FO-S-STAIR's already was.
     assert stairs["ST-B2M"]["start"] == pytest.approx(
         [ft(10, 3.375).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
-    # one — on main, the lane D-M-STAIR stood in until the wall came out (2026-08-24).
+    # one.
     for tag in ("ST-B2M", "ST-M2S"):
         assert stairs[tag]["turn_direction"] == "left"
     assert stairs["ST-S2A"]["layout"] == "right_angle_winder"
@@ -2009,18 +1839,11 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-S2A"]["run_reversed"] is True
 
 
-# Two devices are wall-*mounted* but not wall-*hosted*, and both say so in their own
-# comments: the island GFCI is let into FURN-M-KIT-ISLAND's east end, and the porch flood
-# is strapped to pillar PT-SG-BR2. Neither is a Wall, and `wall_ref` only names Walls.
-# Devices that are deliberately not on a wall face — one, and it should stay one.
-#
-# ED-M-LIVING-KGF4 was here from 2026-08-02 (the island's end-mounted GFCI) until
-# 2026-08-24, and for two days of that it had three companions: KGF5/KGF6, flush
-# counter-top pop-ups, and KMX1 inside a base-cabinet mixer lift. All four went when the
-# mixer moved into FURN-M-KIT-MIXER-GARAGE, a counter-to-ceiling cabinet whose back IS the
-# east wall — so KGF4 and KMX1 are ordinary wall-hosted boxes at 42" now and are graded like
-# every other receptacle in the house. ** Shrinking this set is the direction it should
-# move; adding to it is how a device ends up floating in a room and nobody notices. **
+# Devices that are deliberately not on a wall face: `wall_ref` only names Walls, so a
+# device mounted elsewhere (a furniture end panel, a pillar strap) has to say so here.
+# ED-M-PORCH-FLOOD is strapped to pillar PT-SG-BR2 — the one legitimate case. Shrinking this
+# set is the direction it should move; adding to it is how a device ends up floating in a
+# room and nobody notices.
 _NOT_WALL_HOSTED = {"ED-M-PORCH-FLOOD"}
 
 
@@ -2029,8 +1852,8 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
 
     Authored device positions are plain plan points — nothing in the resolver pulls them
     onto a wall — so a box authored at the wall's axis resolves *inside* the framing, and
-    one authored a few feet off resolves in mid-air. Both were widespread until the
-    2026-08-03 pass; this is what says they stay fixed. The test grades the resolved body,
+    one authored a few feet off resolves in mid-air. This is what says they stay fixed. The
+    test grades the resolved body,
     not the authored point: its back edge sits on a wall face (a recessed box the other
     way), it does not reach through into the studs, and it is not floating in a room.
     """
@@ -2211,11 +2034,10 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     after = band_sqft(house)
     # The band lost 7' of its 23' north-south run over the 18' east half, and the zone is
     # clipped to the room, so the drop is the room's share of 7' x 18' — not the whole of it.
-    # 411.3 until 2026-08-24, when RM-M-PANTRY took the living room's NW corner — the band
-    # is clipped to the ROOM, so framing a room out of it shrinks this zone by that room's
-    # area. Then 390.6 -> 392.7 later the same day, when W-M-PAN-S moved 4" north and handed
-    # 2.1 sf back. The 7' x 18' arithmetic below is unaffected either way: the pantry is at
-    # y 33'-3 3/8"..35'-5 3/8", nowhere near the _BAND_Y line this test moves.
+    # The band is clipped to the ROOM, so RM-M-PANTRY taking the living room's NW corner
+    # shrinks this zone by that room's area; the pantry sits at y 33'-3 3/8"..35'-5 3/8",
+    # nowhere near the _BAND_Y line this test moves, so the 7' x 18' arithmetic below is
+    # unaffected.
     assert before == pytest.approx(392.7, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
 
@@ -2310,18 +2132,16 @@ def _off_module(stations) -> list[float]:
 def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_tag):
     """The screws that hold the cladding on, and so the line the eye reads off the street.
 
-    The catlin truss (2026-08-26) turned the stand-off on its side: the girts are horizontal
-    and it is their BLOCKS that phase-lock to the stud module, one under every course. So the
-    facade's vertical grid is the block grid now, and the claim is the one the outrigger band
-    used to carry — every storey of a facade lays out the identical module. What it rules out
-    is the old behaviour, where each of the six or seven wall segments a facade is authored
-    as framed its own end piece at the tee it was split at: a doubled fastening line on main
-    that the storey above put somewhere else entirely.
+    The catlin truss's stand-off is horizontal, and it is the girts' BLOCKS that phase-lock
+    to the stud module, one under every course. So the facade's vertical grid is the block
+    grid: every storey of a facade lays out the identical module. What it rules out is a
+    wall segment framing its own end piece at the tee it was split at — a doubled fastening
+    line on main that the storey above puts somewhere else entirely.
 
-    **32", not 16", since 2026-09-01.** One tier and one screw per crossing replaced two
-    tiers offset half a bay, and the surviving block lands on every OTHER stud. The grid is
-    coarser and the claim about it is unchanged: it is still one module, still phase-locked
-    to the studs, and still identical on every storey of a facade.
+    32", not 16": one tier and one screw per crossing, and the surviving block lands on
+    every OTHER stud. The grid is coarser but the claim about it is unchanged: it is still
+    one module, still phase-locked to the studs, and still identical on every storey of a
+    facade.
 
     **On-module stations only**, and the exclusion is the interesting half. A girt wall
     carries three kinds of deliberately off-module block: the one at each free course end,
@@ -2330,13 +2150,10 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     openings' business, and the openings differ storey to storey. The module underneath them
     does not — 26 stations at 16" o.c. on every facade of every storey, unbroken.
     """
-    # ** THE EAST AND WEST FACADES STOP AT THE SECOND STOREY (2026-08-29). ** Their attic
-    # segments were 5'-0" knee walls in CATLIN_EXT_2X6, girts and all; they are 1 1/2" of
-    # 2x6 laid flat now (CATLIN_RAFTER_PLATE), which carries no cladding, no girt and so no
-    # block grid. That is ~360 sf of the priciest wall in the house deleted, and the grid
-    # claim simply has nothing to say about a course of lumber. The NORTH and SOUTH facades
-    # are gables and still run all three storeys, which is what keeps this test honest — it
-    # would otherwise be asserting nothing after the change.
+    # The east and west facades stop at the second storey: their attic segments are 1 1/2"
+    # of 2x6 laid flat (CATLIN_RAFTER_PLATE), which carries no cladding, no girt and so no
+    # block grid. The north and south facades are gables and still run all three storeys,
+    # which is what keeps this test honest — it would otherwise be asserting nothing.
     expected = ({"main", "second"} if wall_tag in ("W-M-E1", "W-M-W1")
                 else {"main", "second", "attic"})
     by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-2-")
@@ -2370,8 +2187,8 @@ def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, w
     end at a tee. (King and jack studs are a different category and are not swept here: a
     jamb pack is deliberately off-module, sitting where its rough opening puts it.)
 
-    ``_FRAMED_RUN_ENDS`` is the second allowance, opened 2026-08-28. The basement's south
-    facade is not one wall: it is buried pour, then 19'-2" of 2x6 framing standing inside
+    ``_FRAMED_RUN_ENDS`` is the second allowance. The basement's south facade is not one
+    wall: it is buried pour, then 19'-2" of 2x6 framing standing inside
     the sunken garden on a curb, then buried pour again. The framed run has to put a stud at
     each of its own ends, and its west end is x=8'-10" — the excavation edge, which is where
     grade says it is and not where the module does. That is a real building corner in every
@@ -2445,11 +2262,11 @@ def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_mod
         strays = [s for s in off if min(abs(s - b) for b in breaks) > inch(12).inches]
         assert not strays, f"{storey}: studs off the centreline grid at {strays}"
         module = [s for s in stations if s not in off]
-        # 15 -> 14 on 2026-08-30, and DOWN is the right direction here. D-S-PLANT moved onto a
-        # stud line on W-S-C1, which is what `structural.door_framing_module` asks for, and a
-        # door on a stud line replaces that module stud with its own king: one fewer station
-        # in this list, one fewer stud cut in the building. Lowered to the measured value
-        # rather than widened, so a real regression still shows.
+        # DOWN is the right direction here: D-S-PLANT sits on a stud line on W-S-C1, which is
+        # what `structural.door_framing_module` asks for, and a door on a stud line replaces
+        # that module stud with its own king: one fewer station in this list, one fewer stud
+        # cut in the building. Lowered to the measured value rather than widened, so a real
+        # regression still shows.
         floor = 14 if storey == "second" else 15
         assert len(module) >= floor, f"{storey}: only {len(module)} module studs"
         shared = set(module) if shared is None else (shared & set(module))
@@ -2458,13 +2275,12 @@ def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_mod
     # of them run the full height of the house; the rest are where one storey has a door or
     # a segment the others do not.
     #
-    # ** 10 -> 9 on 2026-08-30, and the tenth did not go anywhere. ** D-S-PLANT moved onto the
-    # module on W-S-C1, and a jamb pack that lands on the module lands ON a module stud: its
-    # king is at 30 3/4" and its jack at 32 1/4", straddling station 32 to within a quarter
-    # inch. The load path there is not weaker, it is doubled — what changed is that
-    # ``_facade_stations(..., "stud")`` counts members whose child_key starts with "stud",
-    # and a king is not one. Lowered to the measured value rather than widened; a real loss of
-    # a full-height line would take this below 9.
+    # 9, not 10: D-S-PLANT sits on the module on W-S-C1, and a jamb pack that lands on the
+    # module lands ON a module stud: its king is at 30 3/4" and its jack at 32 1/4",
+    # straddling station 32 to within a quarter inch. The load path there is not weaker, it
+    # is doubled — what changed is that ``_facade_stations(..., "stud")`` counts members
+    # whose child_key starts with "stud", and a king is not one. Lowered to the measured
+    # value rather than widened; a real loss of a full-height line would take this below 9.
     assert shared is not None and len(shared) >= 9, sorted(shared or ())
 
 
@@ -2479,23 +2295,14 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     The pinned number is a ceiling, not a target, and it is not zero and should not be: a
     module stud suppressed under a window on one storey and not the other, and jamb packs at
     different stations because the windows differ, are both correct framing. What the pin
-    catches is the whole house drifting back apart — it fell from 113 to 94 when the five
-    interior bearing assemblies joined the four facades on `layout_origin="line"`, and to
-    81 on 2026-08-27 with the attic work (RM-A-DEN deleted, W-A-SN rebuilt as the 12 3/4"
-    bookcase wall, W-A-C2/W-A-E2 changing length with the two node moves). The population
-    shrank with it, 237 studs to 224, so the ratio is what actually moved: 39.7% standing
-    over nothing became 36.2%. Both numbers are re-pinned rather than one loosened — a
-    smaller house at the same ratio would slip past a ceiling still held at 94.
-
-    It went the OTHER way on 2026-08-29, 36.2% to 43.3%, and the assertion below says why
-    in full. Short version: the west attic's guest studio added three nonbearing screens
-    that stand on a trimmer pair rather than on a wall, and two second-storey walls entered
-    the population for the first time because declaring them BEARING gave them a stack edge.
+    catches is the whole house drifting back apart. Both the count and the total stud
+    population are re-pinned together rather than either loosened, so a smaller house at the
+    same ratio cannot slip past a static ceiling.
     """
-    # The arithmetic itself lives in ``checks/structural/_stud_grid.orphan_studs`` since
-    # 2026-08-30, so this pin and ``haus explain module``'s report cannot disagree about what
-    # the number means — the report exists to tell somebody which grid to re-phase, and a
-    # report that counted differently from the pin would send them after the wrong wall.
+    # The arithmetic lives in ``checks/structural/_stud_grid.orphan_studs``, so this pin and
+    # ``haus explain module``'s report cannot disagree about what the number means — the
+    # report exists to tell somebody which grid to re-phase, and a report that counted
+    # differently from the pin would send them after the wrong wall.
     from typehaus.checks.structural._stud_grid import orphan_studs
 
     total, per_wall = orphan_studs(catlin_model)
@@ -2503,61 +2310,22 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     orphan_count = sum(per_wall.values())
 
     assert total >= 220, f"fixture regression: only {total} stacked studs found"
-    # **126/291 on 2026-08-29, and this one IS a real worsening: 36.2% -> 43.3%.** Say so
-    # rather than round it off. The west attic became a guest studio, and the six walls it
-    # added or split account for the great majority of the 37 new orphans between them:
-    #   * W-A-BATH-S (12), W-A-BA-E (10), W-A-HALL-S (7) — NONBEARING attic screens that
-    #     stand on FO-A-HALL's doubled trimmer pair, on BM-S-BATH-E, or on a second-storey
-    #     wall that was retyped the same day. A partition delivered to two points by a
-    #     trimmer has no stud line below it to stack on, and asking it to would be asking
-    #     for the wrong thing.
-    #   * W-A-W1B (9), W-A-C2B (7) — the halves of W-A-W1 and W-A-C2. Both are on
-    #     `layout_origin="line"` families and their grids are unchanged; what changed is
-    #     that each half is now measured against ITS OWN lower wall rather than against the
-    #     union the undivided wall saw.
-    #   * W-S-BA-E1B and W-S-SN3 entered the population for the FIRST time, exactly as
-    #     W-M-S1/W-M-S2 did on 2026-08-28: they had no `stacks_on` until the x=10'-0" line
-    #     was declared BEARING, and a wall with no stack edge is not walked at all.
-    # None of that is drift and none of it is fixable by re-phasing a grid — but the ratio
-    # moving six points is the kind of thing this pin exists to make somebody look at, so
-    # the reason is written down instead of the number being quietly raised.
-    # Both numbers re-pinned rather than one loosened, per the docstring.
-    # **106/239 on 2026-08-30, and BOTH numbers moved for reasons worth stating.** The
-    # denominator fell 291 -> 239 with the 2026-08-29 attic redesign's walls; the numerator
-    # fell 126 -> 106 in the 2026-08-30 stud-grid pass, and 6 of that 20 is one line:
-    # W-A-BA-E's start/end nodes were swapped, so it lays out from the on-grid N-A-N3 instead
-    # of from N-A-H1's 12" residue (9 orphans -> 3). The rest is the door-module pass moving
-    # twenty-two openings onto their host walls' grids, which takes their jamb packs with
-    # them. Ratio 43.3% -> 44.4%: the RATIO went slightly the wrong way because the
-    # denominator shrank faster than the count, which is why both numbers are pinned and
-    # neither is loosened.
-    # **111/245 on 2026-08-30, and this one is ARITHMETIC, not drift.** W-S-SN3 became
-    # `INT_2X6_STAGGERED_PLUMBING` — it is the suite bath's real wet wall, the wall its WC and
-    # lavatory actually back onto (plan/storeys/second.py). A staggered partition puts its
-    # 2x4 studs on alternating faces of a 2x6 plate at 16" o.c. PER FACE, so the combined
-    # rhythm is 8", and over this wall's 100 1/2" run that is ~13 studs where the 4 3/4"
-    # partition it replaced had ~7. Every one of the six added stands at an 8" offset from
-    # the module, and W-M-HS3 below is a plain 16" o.c. partition — so five of the six CANNOT
-    # stand over a stud below, by construction. That is what a staggered wall IS: the two
-    # faces are deliberately decoupled, and asking the far face to stack is asking for the
-    # thing the assembly exists to prevent. +6 denominator, +5 numerator, ratio 44.4% ->
-    # 45.3%, and no grid anywhere can be re-phased to recover it.
-    # **113/245 on 2026-09-01, +2 numerator with the denominator UNCHANGED, and it is the
-    # same class of thing as a window.** ``FX-M-BATH1-WC``'s in-wall carrier reserved a
-    # 19 3/4" bay in W-M-HS1 (``resolve/framing/carriers.py``), which displaced the three
-    # module studs at 16"/24"/32" — and W-S-SN1 stacks on that wall. Two of its studs now
-    # stand over nothing.
-    #
-    # ** THE BAY IS NOT UNFRAMED, AND THE CRIPPLES DO NOT COUNT ON PURPOSE. ** The carrier
-    # gets flanking studs, a base and head course, and cripples above the head on the wall's
-    # own module — so the line above the frame is restored in lumber. ``orphan_studs``
-    # counts category "stud" and a cripple is not one, exactly as a window's cripples are
-    # not, and that is the right reading: what stands over a cripple stands over a header,
-    # not over a full-height stud. This is the metric working, not drifting.
-    #
-    # Re-phasing recovers nothing here: the bay's centre is the bowl's centre, and the bowl
-    # is boxed in (houses/catlin/plan/fixtures.py). Both numbers re-pinned per the docstring;
-    # the denominator did not move, which is itself the evidence that nothing else changed.
+    # 113/245 is earned, not drift, and neither number is fixable by re-phasing a grid:
+    #   * W-S-SN3 is `INT_2X6_STAGGERED_PLUMBING` — the suite bath's real wet wall. A
+    #     staggered partition puts its 2x4 studs on alternating faces of a 2x6 plate at 16"
+    #     o.c. PER FACE, so the combined rhythm is 8", and W-M-HS3 below is a plain 16" o.c.
+    #     partition — five of the six added studs CANNOT stand over a stud below, by
+    #     construction. That is what a staggered wall IS: the two faces are deliberately
+    #     decoupled.
+    #   * ``FX-M-BATH1-WC``'s in-wall carrier reserved a 19 3/4" bay in W-M-HS1
+    #     (``resolve/framing/carriers.py``), which displaced the three module studs at
+    #     16"/24"/32" — and W-S-SN1 stacks on that wall, so two of its studs now stand over
+    #     nothing. The bay is not unframed: the carrier gets flanking studs, a base and head
+    #     course, and cripples above the head on the wall's own module. ``orphan_studs``
+    #     counts category "stud" and a cripple is not one, exactly as a window's cripples are
+    #     not — this is the metric working, not drifting. Re-phasing recovers nothing: the
+    #     bay's centre is the bowl's centre, and the bowl is boxed in
+    #     (houses/catlin/plan/fixtures.py).
     assert orphan_count <= 113, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
         f"(was 113/245); first offenders {orphans[:12]}")
