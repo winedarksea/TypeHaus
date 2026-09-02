@@ -95,9 +95,8 @@ that:
 - **No separate dimmer.** It shares `ED-S-SUITEBATH-SW` with the room's cans and mirror. A
   niche light on its own dimmer is a switch leg nobody will use.
 - **No colour tuning.** 3000K fixed, matching every other tape in the house.
-- ~~**No second niche** in the hall bath (`RM-S-BATH1`)~~ — added 2026-08-02
-  (`LR-S-BATH1-NICHE`, same E1 SNLT type, stood vertical in `W-S-CH-W`, the alcove's only
-  unglazed interior wall). It did **not** share the suite's driver as this note once
-  suggested: a 30' 24V home run violates the catalog's per-area-supply rule, so it carries
-  its own PSU (`ED-S-BATH1-NICHE-PSU`, CKT-LT-UPPER), switched with `ED-S-BATH1-SW`. The
-  waterproofing rules above apply to it unchanged.
+- **There is a second niche**, in the hall bath (`RM-S-BATH1`): `LR-S-BATH1-NICHE`, same E1
+  SNLT type, stood vertical in `W-S-CH-W`, the alcove's only unglazed interior wall. It does
+  **not** share the suite's driver: a 30' 24V home run violates the catalog's per-area-supply
+  rule, so it carries its own PSU (`ED-S-BATH1-NICHE-PSU`, CKT-LT-UPPER), switched with
+  `ED-S-BATH1-SW`. The waterproofing rules above apply to it unchanged.

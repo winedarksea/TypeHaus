@@ -156,17 +156,16 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   an authored HGAM10 gusset angle on the bearing plane holds them down. The MPB66Z moment base the TODO
   weighs is the only detail that would want the 5" of side cover the old 16" square section was
   chosen for, and it is not specified. Worth knowing before anyone reshapes that column, and
-  it has been reshaped twice. **2026-08-28: 16" square -> 16" round**, which left 3.76" and
-  forecloses the MPB66Z there — priced, not overlooked, since the square cost $478-1,327
-  against $304-633 for a fibre tube of the same height. **2026-08-29: 16" round -> 20"
-  round**, for an unrelated reason — the column became the shared bearing for the two front
-  beams AND `PT-SG-BF2` when the balcony's front pillar row moved 12" south, and 16" and 18"
-  have no solution at that overhang. So the side cover came back as a side effect: a 20"
+  The 16" round section left 3.76" and forecloses the MPB66Z there — priced, not overlooked,
+  since a square section cost $478-1,327 against $304-633 for a fibre tube of the same
+  height. The column is 20" round now, because it became the shared bearing for the two
+  front beams AND `PT-SG-BF2` when the balcony's front pillar row moved 12" south, and 16"
+  and 18" have no solution at that overhang. So the side cover came back as a side effect: a 20"
   round gives **5.76"** at a centred 6" plate's corners, more than the square had, on a
   $478-967 fibre tube. The option is open again; nothing is bolted to the column that uses
   it, and the four pillars that actually want an MPB66Z are still the corner ones on 12"
   concrete wall tops.
-- ~~**The SKU at the two beam-on-column bearings.**~~ **Closed 2026-08-28.**
+- **The SKU at the two beam-on-column bearings.**
   `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` sit on the bearing plane (the beam soffit = the
   column top) and were authored `H2.5A`, which `structural.uplift_load_path` accepted as
   coverage. But an H2.5A is a **wood-to-wood** tie — its own catalog record says so,

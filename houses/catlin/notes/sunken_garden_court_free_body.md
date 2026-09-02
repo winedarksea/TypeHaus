@@ -489,7 +489,7 @@ added:
   restoring moment, and it neglects the horizontal spanning that carries much of the thrust
   to the corners of an 18'-4" wall tied at both ends. Both would help. Neither is claimed.
 - **The apron is itself documented as defective** (`params/raised_garden.py`: negative base-
-  course embedment since grade moved on 2026-08-21) and it is what creates the terrace these
+  course embedment) and it is what creates the terrace these
   walls retain. The two are **one coupled tiered system** and fixing either in isolation is
   guesswork.
 - **MN Rules 1309.0402 amends IRC Table R402.2 and adds a FOOTINGS row at 5,000 psi**

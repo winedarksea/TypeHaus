@@ -9,8 +9,8 @@ independently of the code, and the engine reproduces it to the third decimal.
 
 ## What had to be decided
 
-`SF-S-HP1` grew from nothing to a 77" x 80" bulkhead on 2026-08-30, when System 1's air
-handler moved into `RM-S-STUDY2`'s ceiling. `resolve/framing/soffit.py` framed it without
+`SF-S-HP1` is a 77" x 80" bulkhead built to hold System 1's air handler in `RM-S-STUDY2`'s
+ceiling. `resolve/framing/soffit.py` framed it without
 complaint, because that generator **lays rungs at any span**: it has no bearer concept, no
 span table and no limit. Its rungs on this box are 72 3/4" of 2x2 at 16" o.c. Nothing in
 `checks/` looked at them.
