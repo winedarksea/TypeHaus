@@ -56,6 +56,23 @@ function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stai
   ];
 }
 
+/** A member another element resolved but this one owns (`Member.parent_uid`).
+ *
+ *  A wall->roof closure band is serialized in the roof's member list — the roof is what knows
+ *  how high each layer climbs — but it is the wall's own skin carried past the top plate, and
+ *  it is drawn, toggled and picked as that wall's. So its uid names the wall, whose own member
+ *  list has never heard of the key, and the direct lookup below cannot find it. */
+function adoptedMember(model: Model, ownerUid: string, memberKey: string): Member | undefined {
+  for (const [, pool] of ownerPools(model)) {
+    for (const candidate of pool) {
+      const member = candidate.members.find(
+        (one) => one.key === memberKey && one.parent_uid === ownerUid);
+      if (member) return member;
+    }
+  }
+  return undefined;
+}
+
 /** Resolve a member uid against the live model. Null when the uid names no current member —
  *  a rebuild that deleted the wall, or a stale selection carried across a reload. */
 export function locateMember(model: Model, uid: string): LocatedMember | null {
@@ -64,7 +81,8 @@ export function locateMember(model: Model, uid: string): LocatedMember | null {
   for (const [ownerKind, pool] of ownerPools(model)) {
     const owner = pool.find((candidate) => candidate.uid === parsed.ownerUid);
     if (!owner) continue;
-    const member = owner.members.find((candidate) => candidate.key === parsed.memberKey);
+    const member = owner.members.find((candidate) => candidate.key === parsed.memberKey)
+      ?? adoptedMember(model, parsed.ownerUid, parsed.memberKey);
     if (!member) return null;
     return { member, ownerKind, ownerUid: owner.uid, ownerTag: owner.tag, storey: owner.storey };
   }

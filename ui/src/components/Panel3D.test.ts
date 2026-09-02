@@ -611,6 +611,36 @@ export function runSelectionRegistrationTests() {
   } as Roof, [0, 0], "schematic", PALETTE, undefined, roofs.picks, roofs.byUid);
   registered(roofGroup, "R-1", "roof", roofs.picks, roofs.byUid, "buildRoof");
 
+  // ** A CLOSURE BAND IS THE WALL'S, NOT THE ROOF'S. ** The roof resolves it (only the roof
+  // planes say how high the layer climbs) but it is the wall's own skin carried past the top
+  // plate, and it carries that wall's uid. Routing skin by its container instead filed a
+  // gable end's whole raking face — five layers of real wall — under the roof toggle, where
+  // turning the roof off took the wall with it, and a click on it selected the roof.
+  const closureRoof = new THREE.Group();
+  const closureWalls = new THREE.Group();
+  const closures = registry();
+  const closure = {
+    ...member("W-1-closure-0-cladding"), parent_uid: "W-1", category: "cladding",
+    material: "standing-seam", p0: [0, 0], p1: [6, 0], z0_m: 3, z1_m: 4.5,
+    z0_end_m: 3, z1_end_m: 4.5,
+  } as Member;
+  const ridgeCap = { ...member("ridge-vent-cap"), parent_uid: "R-1", category: "ridge_cap" } as Member;
+  buildRoof(closureRoof, {
+    uid: "R-1", tag: "R-1", storey: "L1", form: "gable",
+    footprint: [[0, 0], [6, 0], [6, 4], [0, 4]], eave_z_m: 3, ridge_z_m: 4.5,
+    ridge_direction: "x", assembly: "ROOF-1", surface_area_m2: 26,
+    members: [closure, ridgeCap], provenance: null,
+  } as Roof, [0, 0], "schematic", PALETTE, undefined, closures.picks, closures.byUid,
+    undefined, undefined, closureWalls);
+  assert(closureWalls.children.length > 0,
+    "The closure band draws into the walls group, so the walls toggle owns it");
+  assert(resolveMemberPickUid(closureWalls.children[0] as THREE.Mesh, 0, 0) === "W-1::W-1-closure-0-cladding",
+    "Clicking the closure band selects it as the wall's member, not the roof's");
+  assert((closures.byUid.get("W-1") ?? []).length > 0,
+    "Selecting the wall highlights the closure band that finishes it");
+  assert(closureRoof.children.length > 0,
+    "The roof keeps the skin it does own — the ridge cap stays on the roof toggle");
+
   // A stair is nothing *but* members, so every one of its picks now resolves to a tread or a
   // stringer rather than to the stair. The stair is still reachable — from the 2D plan, and
   // from the member inspector's parent link — and still highlights, because its member bucket

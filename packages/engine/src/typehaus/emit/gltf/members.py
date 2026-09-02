@@ -51,3 +51,16 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
         mb.add_sweep(solid, color)
         return
     mb.add_gbox(solid, color)
+
+
+def owned_elsewhere(member: FramedMember, container_uid: str) -> bool:
+    """Whether a member emitted under ``container_uid`` in fact belongs to another element.
+
+    A wall→roof closure band is resolved by the roof (it needs the roof planes to know how
+    high to climb) but it is the *wall's* own weather skin carried past the top plate, and it
+    carries the wall's uid in ``parent_uid``. Filing it with the roof is what put a gable
+    end's whole layer stack — a full raking triangle of wall, not a 12" strip — behind the
+    roof toggle and made it select as the roof. Ownership is the member's own answer, so both
+    exporters and the viewer ask it here rather than guessing from the container.
+    """
+    return bool(member.parent_uid) and member.parent_uid != container_uid

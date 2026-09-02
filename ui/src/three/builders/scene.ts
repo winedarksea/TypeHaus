@@ -183,7 +183,7 @@ export function populateScene(options: PopulateSceneOptions) {
   }));
   for (const roof of model.roofs ?? []) {
     buildRoof(tradeGroups.roof, roof, center, mode, palette, model.catalog, registry.picks,
-      registry.byUid, tradeGroups.framing, skinLines);
+      registry.byUid, tradeGroups.framing, skinLines, tradeGroups.walls);
   }
   for (const panel of model.solar_panels ?? []) {
     buildSolarPanel(tradeGroups.electrical, panel, center, mode, registry.picks, registry.byUid);

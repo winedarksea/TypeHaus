@@ -388,13 +388,32 @@ function bandAxis(outline: readonly Vec2[]): [Vec2, Vec2] {
   return best;
 }
 
+// One owner's skin bands, merged per layer group so the assembly-layer toggles reach them.
+// `skinLines` reaches only here: a closure band is a wall's own panel carried up past the top
+// plate, and it takes its module phase from the facade the wall was laid out on so the ribs
+// cross the joint unbroken.
+function buildSkinByLayerGroup(group: THREE.Group, members: Member[], ownerUid: string,
+  center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  catalog: Catalog | undefined, skinLines?: readonly SkinLine[]) {
+  const byGroup = new Map<LayerVisibilityGroup, Member[]>();
+  for (const member of members) {
+    const key = layerVisibilityGroupOf(member.category);
+    byGroup.set(key, [...(byGroup.get(key) ?? []), member]);
+  }
+  for (const [key, bucket] of byGroup) {
+    const firstIndex = group.children.length;
+    buildMembers(group, bucket, center, mode, palette, ownerUid, catalog?.materials, skinLines);
+    tagLayerGroup(group, firstIndex, key);
+  }
+}
+
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
 // emit/gltf/emitter.py's _add_roof — thickened into the authored assembly, plus the
 // roof's own members (rafters, ridge beam).
 export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group,
-  skinLines?: readonly SkinLine[]) {
+  skinLines?: readonly SkinLine[], wallsGroup?: THREE.Group) {
   const firstChildIndex = parent.children.length;
   const triangles = roofPlaneTriangles(roof);
   const offsetAt = roofOffsetter(triangles);
@@ -457,26 +476,31 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     parent.add(mesh);
     base = top;
   }
-  // Skin (closure bands, fascia/soffit, the roof-edge cladding) finishes the shell and stays
-  // with it; the sticks go to the framing group so rafters, trusses and gable studs sit under
-  // the framing toggle with the rest of the building's framing. Both still select as the roof.
-  // The skin is merged per layer group so the assembly-layer toggles reach it too.
+  // Skin (fascia/soffit, the roof-edge cladding) finishes the shell and stays with it; the
+  // sticks go to the framing group so rafters, trusses and gable studs sit under the framing
+  // toggle with the rest of the building's framing. Both still select as the roof. The skin is
+  // merged per layer group so the assembly-layer toggles reach it too.
+  //
+  // The closure bands are the exception, and they are why `owner` is asked at all: the roof
+  // resolves them (only the roof planes say how high each layer climbs) but they are the
+  // *wall's* own layer stack carried past the top plate, and they carry the wall's uid. They
+  // build into `wallsGroup` under that uid, so the walls toggle takes them and a click lands on
+  // the wall. Filing them by container instead put a gable end's whole raking face — five
+  // layers, ten feet of wall, not a 12" eave strip — behind the roof toggle.
   const skin = roof.members.filter((m) => !isRoofFramingMember(m));
   const framing = roof.members.filter(isRoofFramingMember);
-  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
-  for (const member of skin) {
-    const group = layerVisibilityGroupOf(member.category);
-    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
-  }
-  for (const [group, members] of skinByGroup) {
-    const skinFirstIndex = parent.children.length;
-    // `skinLines` reaches only here: a roof's closure bands are the walls' own panels carried
-    // up past the top plate, and they take their module phase from the facade the wall was laid
-    // out on so the ribs cross the joint unbroken.
-    buildMembers(parent, members, center, mode, palette, roof.uid, catalog?.materials, skinLines);
-    tagLayerGroup(parent, skinFirstIndex, group);
-  }
+  const owned = skin.filter((m) => !m.parent_uid || m.parent_uid === roof.uid);
+  const foreign = skin.filter((m) => m.parent_uid && m.parent_uid !== roof.uid);
+  buildSkinByLayerGroup(parent, owned, roof.uid, center, mode, palette, catalog, skinLines);
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
+  if (wallsGroup && foreign.length) {
+    for (const owner of [...new Set(foreign.map((m) => m.parent_uid as string))].sort()) {
+      const ownerFirstIndex = wallsGroup.children.length;
+      buildSkinByLayerGroup(wallsGroup, foreign.filter((m) => m.parent_uid === owner), owner,
+        center, mode, palette, catalog, skinLines);
+      registerSelectable(wallsGroup, ownerFirstIndex, owner, "wall", picks, byUid);
+    }
+  }
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;
     buildMembers(framingGroup, framing, center, mode, palette, roof.uid, catalog?.materials);

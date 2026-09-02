@@ -80,6 +80,12 @@ export interface Member {
   // "plate-bottom"). Joined to the parent uid it is the member's stable identity — see
   // model/memberIdentity.ts, which is what per-member 3D picking selects with.
   key: string;
+  // The element that OWNS the member, which is not always the container it arrives under: a
+  // wall->roof closure band is resolved by the roof (it needs the roof planes to know how high
+  // to climb) but is the wall's own skin carried past the top plate, and carries that wall's
+  // uid. Group and select by this, never by the container — filing a gable end's closure with
+  // the roof put a whole raking wall face behind the roof toggle.
+  parent_uid: string | null;
   category: string; // stud | plate | header | joist | rim | ridge_beam | ...
   profile: string; // never parsed client-side — shape/width_m/depth_m are pre-resolved below
   p0: Vec2;

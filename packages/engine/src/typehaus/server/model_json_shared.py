@@ -45,6 +45,12 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
     section = cross_section(m.profile)
     return {
         "key": m.child_key, "category": m.category, "profile": m.profile,
+        # Who the member *belongs* to, which is not always the container it is serialized
+        # under: a wall→roof closure band is resolved by the roof but is the wall's own skin
+        # carried past the top plate (``roof_edge.py``), and it carries the wall's uid here.
+        # Consumers group and select by this, so a gable-end closure cannot be filed under
+        # the roof toggle away from the wall it finishes.
+        "parent_uid": m.parent_uid,
         "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
         "length_m": m.length_m,
         "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m,

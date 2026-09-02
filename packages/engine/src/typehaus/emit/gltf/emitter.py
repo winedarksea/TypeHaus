@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import struct
+from collections.abc import Container, Sequence
 from pathlib import Path
 
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
@@ -33,7 +34,11 @@ from typehaus.emit.gltf.geometry import (  # noqa: F401
     _to_gltf,
     _without_collinear_vertices,
 )
-from typehaus.emit.gltf.members import _add_member, is_roof_framing_member
+from typehaus.emit.gltf.members import (
+    _add_member,
+    is_roof_framing_member,
+    owned_elsewhere,
+)
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
@@ -67,7 +72,7 @@ from typehaus.emit.gltf.walls import (
 from typehaus.emit.trades import solid_trade
 from typehaus.resolve.geometry import light_run_band_profiles
 from typehaus.resolve.geometry_ir import GBox
-from typehaus.resolve.model import ResolvedModel, ResolvedRoom, Ring
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoom, Ring
 from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.resolve.sweep import sweep_legs
 
@@ -93,6 +98,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     # materialColor); this is the .glb's half of that parity.
     authored = authored_colors(model)
 
+    wall_uids = {wall.uid for wall in model.walls}
     for wall in sorted(model.walls, key=lambda w: w.uid):
         # Wall layer prisms are the selectable "walls" body; its framing members are their own
         # "framing" node so the framing visibility toggle reaches the studs.
@@ -196,6 +202,15 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             if is_roof_framing_member(member):
                 _add_member(framing, member)
         scene.add_object(framing, trade="framing", kind="roof", uid=roof.uid)
+        # Skin the roof resolved but does not own: the wall→roof closure bands, which are the
+        # walls' own layer stacks carried past the top plate. They go out under the wall that
+        # owns them, so the walls trade takes them and a click lands on the wall — a gable
+        # end's closure is most of that wall's visible face, not roof trim.
+        for owner, members in _members_by_owner(roof.members, roof.uid, wall_uids).items():
+            mb = _MeshBuilder()
+            for member in members:
+                _add_member(mb, member)
+            scene.add_object(mb, trade="walls", kind="wall", uid=owner)
 
     for panel in sorted(model.solar_panels, key=lambda item: item.uid):
         mb = _MeshBuilder()
@@ -270,6 +285,24 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
         scene.add_object(mb, trade="earth")
     return scene.build()
+
+
+def _members_by_owner(members: Sequence[FramedMember], container_uid: str,
+                      owners: Container[str]) -> dict[str, list[FramedMember]]:
+    """Group the skin members a container resolved but does not own, by their owner.
+
+    Only owners the caller recognises (``owners``) are split out — an unknown parent_uid
+    would produce a node addressing nothing, and staying with the container is the safer
+    answer there.
+    """
+    out: dict[str, list[FramedMember]] = {}
+    for member in members:
+        if is_roof_framing_member(member) or not owned_elsewhere(member, container_uid):
+            continue
+        if member.parent_uid not in owners:
+            continue
+        out.setdefault(member.parent_uid, []).append(member)
+    return dict(sorted(out.items()))
 
 
 def _is_coating(model: ResolvedModel, material_ref: str) -> bool:

@@ -38,7 +38,7 @@ function boundsForObject(object: THREE.Object3D): THREE.Box3 {
 
 function member(overrides: Partial<Member>): Member {
   return {
-    key: "test", category: "stud", profile: "2x4", p0: [12, 23], p1: [12, 23],
+    key: "test", parent_uid: null, category: "stud", profile: "2x4", p0: [12, 23], p1: [12, 23],
     z0_m: 1, z1_m: 4, length_m: 3, z0_end_m: null, z1_end_m: null, shape: "rect",
     width_m: 0.1, depth_m: 0.2, flange_width_m: null, flange_thickness_m: null,
     web_thickness_m: null, plies: 1, orient: [1, 0], connection: null, material: null, trade: null,

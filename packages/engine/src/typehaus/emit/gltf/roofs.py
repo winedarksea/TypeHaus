@@ -14,7 +14,11 @@ base colour, not the family average.
 
 from __future__ import annotations
 
-from typehaus.emit.gltf.members import _add_member, is_roof_framing_member
+from typehaus.emit.gltf.members import (
+    _add_member,
+    is_roof_framing_member,
+    owned_elsewhere,
+)
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _material_finish_color
 from typehaus.resolve.geometry_roofs import (
@@ -48,5 +52,7 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel,
         for solid in part.solids:
             mb.add_mesh(solid, color)
     for member in roof.members:
-        if not is_roof_framing_member(member):
+        # Skin the roof owns. A closure band belongs to the wall it continues, and the caller
+        # emits it into that wall's node instead (``owned_elsewhere``).
+        if not is_roof_framing_member(member) and not owned_elsewhere(member, roof.uid):
             _add_member(mb, member)

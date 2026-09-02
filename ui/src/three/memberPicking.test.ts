@@ -14,7 +14,7 @@ function assert(condition: unknown, message: string): asserts condition {
 
 function member(overrides: Partial<Member>): Member {
   return {
-    key: "stud-000", category: "stud", profile: "2x6", p0: [0, 0], p1: [0, 0],
+    key: "stud-000", parent_uid: null, category: "stud", profile: "2x6", p0: [0, 0], p1: [0, 0],
     z0_m: 0, z1_m: 2.44, length_m: 2.44, z0_end_m: null, z1_end_m: null, shape: "rect",
     width_m: 0.038, depth_m: 0.14, flange_width_m: null, flange_thickness_m: null,
     web_thickness_m: null, plies: 1, orient: [1, 0], connection: null, material: null, trade: null,
