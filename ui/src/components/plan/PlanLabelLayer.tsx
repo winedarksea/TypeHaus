@@ -47,8 +47,8 @@ export function PlanLabelLayer({ children }: { children: ReactNode }) {
   return (
     <LabelTarget.Provider value={node}>
       {children}
-      {/* Non-interactive: labels used to be part of their group's hit area, so a cursor
-          resting on the text alone could drive a hover/no-hover oscillation. */}
+      {/* Non-interactive: were a label part of its own group's hit area, a cursor resting on
+          the text alone could drive a hover/no-hover oscillation. */}
       <g className="plan-label-layer" ref={setNode} pointerEvents="none" />
     </LabelTarget.Provider>
   );

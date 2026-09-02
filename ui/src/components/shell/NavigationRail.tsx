@@ -7,14 +7,12 @@ import { ToolRailSection } from "./ToolRailSection";
 /**
  * The permanent left navigation rail.
  *
- * This is the fix for the headline complaint. Views is the most-used control in the app and
- * its only entry point was a 12px chip floating over the drawing — `padding: 3px 10px`, no
- * min-height, so it bypassed the hit-target rule the rest of the chrome obeys. Here it is a
- * labelled destination at full target size that is always visible and never moves.
+ * Views is the most-used control in the app; this gives it a labelled destination at full
+ * target size that is always visible and never moves.
  *
- * Destinations and tools share one rail rather than occupying two competing left gutters.
- * That is also what retires the `:has(.views-panel) .toolrail` hack: panels now open to the
- * right of a rail whose width is a token, so nothing has to react to a drawer being open.
+ * Destinations and tools share one rail rather than occupying two competing left gutters,
+ * which also retires the `:has(.views-panel) .toolrail` hack: panels open to the right of a
+ * rail whose width is a token, so nothing has to react to a drawer being open.
  */
 export function NavigationRail() {
   const activePanel = useStore((s) => s.activePanel);

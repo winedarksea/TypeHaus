@@ -10,10 +10,8 @@ import type { ViewMode } from "../../state/vocabulary";
 /**
  * The top app bar: identity and location on the left, global actions on the right.
  *
- * Replaces a 130-line inline block in App.tsx that held roughly twenty controls in a 44px
- * flex row with no overflow handling. Two rules keep it from silting up again — the bar
- * carries only what is used constantly (view mode, undo/redo, search), and everything else
- * goes behind a named trigger. That is what reclaims ~380px from the reader buttons alone.
+ * Two rules keep it from silting up — the bar carries only what is used constantly (view
+ * mode, undo/redo, search), and everything else goes behind a named trigger.
  */
 export function TopBar({ pwa }: { pwa: PwaState }) {
   const model = useStore((s) => s.model);
@@ -63,8 +61,8 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
       <div className="spacer" />
 
       {/* One trigger for the six full-screen readers. Reflects the open one so the bar still
-          says where you are, which the segmented row did by staying lit. Folds into the
-          overflow on a phone, where there is only room for the constant actions. */}
+          says where you are. Folds into the overflow on a phone, where there is only room for
+          the constant actions. */}
       {!isCompact && <Menu
         label={activeReport ? activeReport.label : "Reports"}
         title="Reports — assembly, BOM, circuits, HVAC, plumbing, lighting"

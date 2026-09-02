@@ -2,10 +2,8 @@ import type { IconName } from "../../icons/names";
 import type { DetailView, Tool, ToolGroup } from "../../state/vocabulary";
 
 /**
- * The chrome's contents as data rather than as repeated JSX.
- *
- * The six reader buttons were six near-identical 8-line blocks inlined in App.tsx, which is
- * why adding a seventh reader meant copy-pasting rather than adding a row here.
+ * The chrome's contents as data rather than as repeated JSX, so adding a destination or a
+ * tool means adding a row here instead of copy-pasting a block.
  */
 
 export interface ReportSpec {
@@ -16,10 +14,8 @@ export interface ReportSpec {
 }
 
 /**
- * The full-screen readers. These are destinations, not toolbar actions — which is the
- * argument for collapsing them behind one trigger: six shouting all-caps buttons occupied
- * ~380px of the top bar's centre at every width, and were the first thing lost when it
- * narrowed.
+ * The full-screen readers. These are destinations, not toolbar actions, which is the
+ * argument for collapsing them behind one trigger rather than a row of buttons.
  */
 export const REPORTS: ReportSpec[] = [
   { id: "assembly", label: "Assembly details", icon: "wall",
@@ -52,7 +48,7 @@ export interface ToolGroupSpec {
   tools: ToolSpec[];
 }
 
-/** Moved verbatim from Toolbar.tsx; the rail renders it, the flyout drills into it. */
+/** The rail renders this directly; the flyout drills into it. */
 export const TOOL_GROUPS: ToolGroupSpec[] = [
   { id: "select", icon: "cursor", label: "Select", tools: [
     { id: "select", icon: "cursor", label: "Select", hint: "Select and move elements" },

@@ -177,8 +177,8 @@ export function ViewsPanel() {
       </select>
 
       {/* Relocated from the topbar (Phase 11): the workspace only re-emphasizes panels, which
-          is a view-recipe concern, not a top-level mode. Its old buttons now open the assembly
-          and BOM readers. */}
+          is a view-recipe concern, not a top-level mode; the assembly and BOM readers open
+          separately. */}
       <h3>Workspace</h3>
       <div className="seg-row">
         {WORKSPACES.map((w) => (

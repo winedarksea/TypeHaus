@@ -8,11 +8,8 @@ import { Menu } from "../ui/Menu";
 /**
  * The bottom status rail: a quiet, tabular readout of the view you are looking at.
  *
- * It absorbs the old floating ViewChips bar. Those five chips all called the same
- * setViewsPanelOpen — a five-segment button that did one thing — and their content (level,
- * disciplines, representation) is *status*, not control. The app already had a designated
- * status surface showing storey and lens, so the readout belongs here and the top-centre of
- * the drawing, where a floor plan's subject usually sits, goes back to the drawing.
+ * Its content (level, disciplines, representation) is *status*, not control, so it belongs
+ * here rather than the top-centre of the drawing, where a floor plan's subject usually sits.
  */
 export function StatusRail() {
   const model = useStore((s) => s.model);

@@ -151,8 +151,8 @@ export const CanvasObjectFootprint = memo(function CanvasObjectFootprint({ item,
       gesture.current = null;
       setDraggedPosition(null);
       setAlignmentPoint(null);
-      // Never dragged → a pure select, and crucially no writeback: a click used to commit
-      // whatever sub-millimetre delta the pointer happened to land on.
+      // Never dragged → a pure select, and crucially no writeback: a plain click would
+      // otherwise commit whatever sub-millimetre delta the pointer happened to land on.
       if (!active.dragging) return;
       onMove(item, draggedCenter(active.grabOffset, toWorld(event.clientX, event.clientY)));
     }}

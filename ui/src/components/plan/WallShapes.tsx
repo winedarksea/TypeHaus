@@ -101,9 +101,8 @@ export const WallShape = memo(function WallShape({ w, openings, project, selecte
           strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />}
       </g>
       {/* Building-science lens overlay. The engine already tags every resolved layer with the
-          controls it carries (`Layer.control`); until now the plan drew none of it, which is
-          why the air/water/thermal lenses "didn't seem to show much". Drawn outside the opening
-          mask and outside the dimmed fills, because a continuity lens is about the path. */}
+          controls it carries (`Layer.control`). Drawn outside the opening mask and outside the
+          dimmed fills, because a continuity lens is about the path. */}
       {(() => {
         const strokeSpec = lensStrokeSpec(activeLens);
         if (!strokeSpec) return null;

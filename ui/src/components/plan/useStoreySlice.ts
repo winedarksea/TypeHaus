@@ -64,9 +64,8 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
     [model.solids, activeStorey],
   );
   // Guards and handrails, drawn the way the sheet emitter draws them
-  // (emit/draw/floorplan.py::_emit_railings): every post and rail as its own plan outline.
-  // A guarded well edge and an open one used to look identical here — the 3D viewer was the
-  // only place a railing existed.
+  // (emit/draw/floorplan.py::_emit_railings): every post and rail as its own plan outline, so
+  // a guarded well edge reads differently from an open one.
   //
   // `category === "railing"` is the FRAME only. Guard infill resolves to `railing_infill` /
   // `railing_glass` (engine resolve/railings/parts.py) and is excluded on purpose: at plan

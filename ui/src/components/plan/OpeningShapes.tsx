@@ -70,7 +70,7 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   onPreviewEnd?: () => void;
   preview?: "valid" | "invalid";
   // The Views panel's label toggle, same contract as the room and object labels: a window's
-  // tag is a label too, and used to draw regardless.
+  // tag is a label too.
   labelMode?: LabelMode;
 }) {
   const center = pointAlong(host, o.center_along_m);

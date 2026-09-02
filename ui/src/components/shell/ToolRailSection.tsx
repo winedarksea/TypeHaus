@@ -6,11 +6,9 @@ import { TOOL_GROUPS, GROUP_OF_TOOL, type ToolGroupSpec } from "./navigationConf
 /**
  * The drawing tools, as the lower zone of the navigation rail.
  *
- * Multi-tool groups open through the shared Menu rather than a bespoke `.tool-flyout`.
- * That is not only de-duplication: the old flyout was absolutely positioned at
- * `left: calc(100% + 8px)`, i.e. outside the rail — and the rail scrolls, so it clipped
- * on both axes and the palette rendered at full size with zero pixels visible. Menu
- * positions in viewport coordinates and cannot be clipped by an ancestor.
+ * Multi-tool groups open through the shared Menu rather than a bespoke `.tool-flyout`: the
+ * rail scrolls, so anything positioned outside it would clip on both axes (see Menu.place's
+ * note). Menu positions in viewport coordinates and cannot be clipped by an ancestor.
  */
 export function ToolRailSection() {
   const tool = useStore((s) => s.tool);

@@ -1,9 +1,7 @@
 // The chosen product, printed identically wherever a selection has one — an appliance in
 // the canvas inspector, a door or window on its opening, a material behind a member or a
-// trim solid. Before this the answer lived in prose inside a type's `name` ("LG WashTower
-// WKHC252HBA (washer + heat-pump dryer)"), which is not something a panel can lay out and
-// not something an estimator can join against; the engine carries brand and model as data
-// now (model/product.py), and this is the one renderer for it.
+// trim solid. The engine carries brand and model as data (model/product.py); this is the
+// one renderer for it.
 //
 // Deliberately NOT a card or a section: a product is three more facts about the thing
 // already selected, so it lands as `.kv` rows in the block that is already open.

@@ -1,11 +1,11 @@
 // The offline EngineClient (→ 40 WP4.2; editing added in U9). Runs the engine in a pyodide Web
 // Worker; no server, no network after first load. Read/compute is fully supported — getModel,
-// getChecks, build, getArtifact("glb"). Editing (patchPlan/undo/redo) is now served in-browser by
+// getChecks, build, getArtifact("glb"). Editing (patchPlan/undo/redo) is served in-browser by
 // the pure-Python, libcst-free writeback backend, so the PWA is a real editor offline. Macros
-// (generative params/ logic) stay local-serve features. IFC export now live-loads the packaged
+// (generative params/ logic) stay local-serve features. IFC export live-loads the packaged
 // extension tarball client-side (V6); until an ifcopenshell-wasm wheel is bundled it still
-// surfaces a clear "requires local install" degradation. This is the second implementation of the same interface
-// HttpEngineClient satisfies.
+// surfaces a clear "requires local install" degradation. This is the second implementation of
+// the same interface HttpEngineClient satisfies.
 
 import type { Finding, Model } from "../model/types";
 import PyodideWorker from "./pyodide/worker?worker";

@@ -2,10 +2,9 @@ import { useStore } from "../state/store";
 import type { PlanWarningMarker } from "../model/planWarnings";
 import type { Vec2 } from "../model/types";
 
-// What the previously-mute plan markers say when clicked (→ TODO: the glowing red dot). Shows
-// the marker's identifier, tier and message, the elements it involves, and any server findings
-// that mention them — the same vocabulary the Issues drawer uses, so a marker and an issue read
-// as one system.
+// What a plan marker says when clicked (→ TODO: the glowing red dot). Shows the marker's
+// identifier, tier and message, the elements it involves, and any server findings that mention
+// them — the same vocabulary the Issues drawer uses, so a marker and an issue read as one system.
 
 const POPOVER_WIDTH_PX = 300;
 const POPOVER_HEIGHT_ALLOWANCE_PX = 260;

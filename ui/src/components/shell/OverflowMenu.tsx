@@ -20,9 +20,9 @@ const THEMES: { id: ThemePreference; label: string; icon: IconName }[] = [
 /**
  * The top bar's ⋮ menu: preferences and occasional actions.
  *
- * Density and appearance were six always-visible segmented buttons pinned to the right edge
- * — the controls a user touches least, holding the space that the controls they touch most
- * needed, and the first things to fall off a narrow viewport. They belong behind an overflow.
+ * Density and appearance are the controls a user touches least, so they belong behind an
+ * overflow rather than pinned to the right edge, holding space the higher-frequency controls
+ * need and the first to fall off a narrow viewport.
  */
 export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?: boolean }) {
   const { preference: themePreference, setPreference: setThemePreference } = useTheme();

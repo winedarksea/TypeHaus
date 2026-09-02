@@ -60,8 +60,7 @@ export function ProjectDrawer() {
 }
 
 // Lightweight collapsible section: owns its own open/closed state and renders a header button
-// (with a chevron and an optional inline action) over a body. Replaces the ad-hoc per-child
-// <h3> + magic-number margins the drawer used to stack.
+// (with a chevron and an optional inline action) over a body.
 function DrawerSection({ title, defaultOpen = false, right, children }: {
   title: string;
   defaultOpen?: boolean;

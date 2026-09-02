@@ -174,8 +174,7 @@ export interface DetailPayload {
     nodes: Record<string, unknown>[];
     notes?: string[];
     // The paper the drawing was laid out on (emit/draw/scene.py Frame). Present once the
-    // engine has chosen a sheet and a scale; null means the frameless fit-to-content path,
-    // which is what every detail was before paper space.
+    // engine has chosen a sheet and a scale; null means the frameless fit-to-content path.
     frame?: DetailFrame | null;
   };
   annotations: DetailAnnotationSpec[];

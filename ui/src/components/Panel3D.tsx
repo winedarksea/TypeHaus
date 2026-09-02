@@ -86,14 +86,12 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => {
     if (!model) return;
-    // Re-frame the camera when this is a different *building*, not when it is a different
-    // model object. The old test — `renderedModel.current === model` — could never be true
-    // after a reload: every reload re-parses model.json into a fresh object, so nudging a wall
-    // snapped the camera back to the fit view mid-edit. Keying on `contentHash`/`revision`
-    // does not fix that either; both change on exactly the edits the view should survive.
-    // The engine client is what is replaced when another house is opened (state/store.ts
-    // openOfflineHouse / init), so it is the thing that means "the old framing is meaningless".
-    // A remount (2D↔3D, split) starts with a null ref and therefore frames, as it must.
+    // Re-frame the camera only when this is a different *building*, not a different model
+    // object: every reload/edit re-parses model.json into a fresh object, and content hash /
+    // revision also change on edits the view should survive. The engine client is what is
+    // replaced when another house is opened (state/store.ts openOfflineHouse / init), so it is
+    // the thing that means the old framing is meaningless. A remount (2D↔3D, split) starts with
+    // a null ref and therefore frames, as it must.
     const preserveView = framedForClient.current === client;
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
     // The uid index only holds what the 3D builders registered, so a plan-only selection
@@ -181,8 +179,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
         </div>
         <ZoomControls label="3D view zoom" onZoom={(factor) => api.current?.zoomBy(factor)} />
       </div>}
-      {/* Nordic/schematic switch + discipline toggles now live in the shared Views panel
-          (Phase 6), reachable from the Views panel. */}
+      {/* Nordic/schematic switch + discipline toggles live in the shared Views panel (Phase 6). */}
     </div>
   );
 }
@@ -289,8 +286,8 @@ function createScene(
   // The budget is set against a white cladding face: hemisphere + key + environment together
   // have to land it comfortably under 1.0, or tone mapping is compressing an already-blown
   // surface and the seam finish has nothing to modulate. The key carries proportionally more
-  // of it than it used to, because a normal map is only visible in *directional* light —
-  // under pure ambient the seam ridges vanish however much headroom they have.
+  // of the budget than the hemisphere, because a normal map is only visible in *directional*
+  // light — under pure ambient the seam ridges vanish however much headroom they have.
   const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.8);
   const key = new THREE.DirectionalLight(0xffffff, 0.9);
   key.position.set(4, 8, 6);
@@ -509,9 +506,8 @@ function createScene(
     e.preventDefault();
     stopTween();
     // Exponent-based dolly over a *normalized, clamped* delta: a line-mode mouse notch and a
-    // pixel-mode trackpad flick otherwise differ by more than an order of magnitude, which is
-    // most of why zoom felt uncontrollable. Zoom homes on the point under the cursor, so
-    // zooming in no longer drifts off whatever you were inspecting.
+    // pixel-mode trackpad flick otherwise differ by more than an order of magnitude. Zoom
+    // homes on the point under the cursor, so zooming in tracks whatever you were inspecting.
     const anchor = pointerGroundPoint(e.clientX, e.clientY);
     const step = normalizedWheelDeltaPx(e.deltaY, e.deltaMode);
     const nextRadius = clampDollyRadius(radius * Math.exp(step * WHEEL_DOLLY_SENSITIVITY));
@@ -544,9 +540,8 @@ function createScene(
   };
   const ro = new ResizeObserver(resize);
 
-  // Dispose every mesh's geometry/material before dropping it — the previous version left
-  // these leaking on every setModel() (content.clear() only detaches Object3Ds, it never
-  // calls .dispose()).
+  // Dispose every mesh's geometry/material before dropping it: content.clear() only detaches
+  // Object3Ds, it never calls .dispose(), so skipping this leaks on every setModel().
   const clear = () => {
     sceneGeneration++;
     for (const trade of ALL_TRADES) {
@@ -678,8 +673,7 @@ function createScene(
     });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
-    // vertical origin. The old target only considered height, leaving models whose base was
-    // above zero visibly low in the canvas.
+    // vertical origin, so a model whose base sits above zero is not left low in the canvas.
     const box = buildingBox();
     if (!box.isEmpty()) {
       // Fit the sun's orthographic shadow frustum to the building, otherwise the default
