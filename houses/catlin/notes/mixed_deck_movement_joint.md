@@ -1,7 +1,6 @@
 # Main floor, wood-to-concrete boundary at y = 13'-0"
 
-Written 2026-08-21 with the basement-ceiling overhaul (`plans/TODO.md § Basement Ceiling`,
-decisions #59/#60).
+From the basement-ceiling overhaul (`plans/TODO.md § Basement Ceiling`, decisions #59/#60).
 
 ## What the boundary is
 
@@ -14,11 +13,9 @@ The main floor over the basement is two structures that meet on one line:
   I-joists at 16" o.c. with a 3/4" plywood subfloor. Same bearing lines; 18'-0" spans except
   over the mechanical room and the stair, where the x=10' line cuts them to 10'-0" and 8'-0".
 
-**What the two share is the BEARING SEAT, not the depth.** They were tuned to one depth
-(12 5/8") until 2026-08-23, which matched the two finished floors and left the deck's soffit
-1 9/16" above the plane the wood bay's mudsill sits on — i.e. the joists bearing on bare
-concrete. The deck is 14 3/8" now and both land on one flat seat at **-13 7/16"**, the whole
-way round the basement, with no step in the forms. The cost of that is at the top and it is
+**What the two share is the BEARING SEAT, not the depth.** The deck is 14 3/8" and both land
+on one flat seat at **-13 7/16"**, the whole way round the basement, with no step in the
+forms. The cost of that is at the top and it is
 3/16": the cap tops at +15/16" where the plywood tops at +3/4", which is inside the thickness
 of the 6 mm plank laid on the plywood — the two walking surfaces still meet flush, with the
 LVP 1/64"-1/20" proud. `structural.mixed_deck_bearing_seat` holds all of it.
@@ -78,7 +75,7 @@ Along x = 18' both the slab and `FS-M-WEST`'s joists bear on the same wall line,
 deflects nowhere. It is a material and height change and nothing more, and it does not want
 a soft joint.
 
-**2026-08-25: the x = 18' leg is no longer one material on its west side.** The hall band
+**The x = 18' leg is not one material on its west side.** The hall band
 became an authored `vinyl-sheet` `FinishZone` on `RM-M-LIVING`, so from y = 22.4' to 26.28'
 — the BM-M-HALL opening, which is the whole width of the hall — the cap now meets sheet
 vinyl, not plank. North of 26.28' (the stair lane) it is still LVP against the cap. Nothing
@@ -90,7 +87,7 @@ sit **low** to the cap rather than a hair proud, and the T over those 3.9 lf has
 specified for a real step. Measure it against the resolved elevations, not against this
 paragraph or the one below.
 
-**The step — and since 2026-08-23 there is very nearly none.** The plank is 6 mm SPC (5 mm
+**The step — and there is very nearly none.** The plank is 6 mm SPC (5 mm
 rigid core over a 1 mm IXPE pad that compresses under load), so it stands 0.95"-0.99" over
 the storey datum; the polished cap tops at 0.9375". The plank finishes **1/64" to 1/20"
 proud**, which is inside the tolerance any floor covering is laid to and is not a step
@@ -103,11 +100,10 @@ That 3/16" of cap over plywood is deliberate and it is derived, not dialled. The
 (1/16" gasket + 1 1/2" mudsill + 11 7/8" joist + 3/4" subfloor); the difference is spent
 upward, because the seat below is the plane that must not move. Re-spec the cover and the
 cap top moves with it — `structural.mixed_deck_bearing_seat` allows a quarter inch here,
-which is roughly a floor finish, and FAILs past it. It read 1/4" proud against a *flat* cap
-top until 2026-08-23, and 1" before 2026-08-21 when the cap was not pinned at all. Check the
-resolved elevations before ordering the moulding, not this paragraph.
+which is roughly a floor finish, and FAILs past it. Check the resolved elevations before
+ordering the moulding, not this paragraph.
 
-**And a second step, in the ceiling below — 2 1/16" since 2026-08-23, not 1/2".** The gypsum
+**And a second step, in the ceiling below — 2 1/16".** The gypsum
 is continuous across the boundary but the two faces are not coplanar: on the wood side the
 board screws straight to the joists at -12 1/2", on the concrete side to the EPS form's
 integral steel rib at -14 1/16". Two things make that number. The rib is 1/2" of it and

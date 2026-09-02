@@ -24,8 +24,8 @@ A frost-free **yard** hydrant standing on the garage slab at (x 5'-0", y 60'-0")
 washing a vehicle down and for anything else a hose reaches. It is the project's first
 `PipeSystem.WATER_COLD` run — everything authored before it is drain or vent.
 
-It is not a *wall* hydrant, and since 2026-08-15 it does not stand against a wall either —
-see "Why it stands in the floor" below. The two south-face hydrants (`FX-M-PORCH-HYD`,
+It is not a *wall* hydrant, and it does not stand against a wall either — see "Why it
+stands in the floor" below. The two south-face hydrants (`FX-M-PORCH-HYD`,
 `FX-S-BALC-HYD`) are the wall kind; the difference is the whole design, and
 `mep.hydrant_freeze_depth` grades the two families on different rules.
 
@@ -41,16 +41,11 @@ So the floor is poured to fall toward the overhead door instead, and the wash wa
 the building the way it came in — across the apron, onto the driveway. Nothing catches it
 and nothing is meant to.
 
-**`DRW-G-HYDRANT` is not that catch basin,** and this note said it was until 2026-08-15.
-It is a weep pocket: 1'-6" of fabric-wrapped washed stone, 1'-6" across, buried on the
-hydrant's own stack from -5'-6" to -7'-0", taking the few quarts the Y34 self-drains through
-the weep hole at its shutoff each time the handle closes. It is a `Drywell` because that is
-the model's aggregate-filled-hole type, not because a soakaway's worth of water reaches it.
-
-It was modelled as a locally deepened `FootingBedding` for as long as that was the closest
-thing the model had. The stand-in cost something real: a bedding's perimeter bills as
-perimeter drain tile, so the sitework take-off was ordering a ring of tile around a pocket
-that has none.
+**`DRW-G-HYDRANT` is not that catch basin.** It is a weep pocket: 1'-6" of fabric-wrapped
+washed stone, 1'-6" across, buried on the hydrant's own stack from -5'-6" to -7'-0", taking
+the few quarts the Y34 self-drains through the weep hole at its shutoff each time the handle
+closes. It is a `Drywell` because that is the model's aggregate-filled-hole type, not
+because a soakaway's worth of water reaches it.
 
 **Consequence to accept:** in deep winter the wash water will not soak away — it will freeze
 where it lands. That is the trade the no-floor-drain decision makes, and it is the right one:
@@ -64,17 +59,6 @@ foundation at (5', 35'-6") straight north to the hydrant. That is a different nu
 `_FROST` (42") in `params/foundations.py`, and the two are consistent rather than in conflict:
 42" is the *footing* frost depth the ICF stem is set to, and 6'-0" is this fixture's own bury,
 2'-6" below the stem bottom and well clear of the frost line.
-
-**It was 60'-0" long, and 36 feet of that was indoors (fixed 2026-08-30).** The run started
-at (5', 0') — the *south* basement wall — because `plan/site.py` put the water service
-entry on the rear of the lot, while that same file declares the street and the FRONT
-setback on the north. A municipal main does not run behind the house. The placeholder was
-simply on the wrong side, and everything downstream was built to accommodate it: two
-basement wall sleeves instead of one, and 36'-0" of 3/4" PEX at −8'-10" crossing
-RM-B-WORKSHOP and RM-B-FURNACE — which, with the basement slab topping out at −9'-1 7/16",
-was not buried at all but **lying 3 7/16" above the finished basement floor.** Moving the
-entry to the front deletes the crossing: the hydrant is now the first thing the service
-reaches, and the house taps the lateral where it arrives at the foundation.
 
 The run is deliberately **not** routed up into the garage and back down to the hydrant. A
 supply line freezes at its high point, not at its ends, so a run that surfaces anywhere along
@@ -128,15 +112,12 @@ built to.
 x = 5'-0" rather than the 4'-8" minimum because it is the line the service runs on — the
 service enters the lot at x = 5'-0" and the lateral goes south from here to the house,
 through `SP-GF-S-HYD` under the garage footing and `SP-B-N3-HYD` through the basement's north
-wall, so standing the fixture on it makes the run dead straight. The 2026-07-29 re-route had
-moved that leg to x = 5' for exactly this reason and then turned west at y = 61' to meet the
-hydrant, putting the last 4'-6" back inside the influence line it had just left. Moving the
-fixture deletes the jog instead of protecting it.
+wall, so standing the fixture on it makes the run dead straight.
 
-Since 2026-08-30 the hydrant stands **on the service entry itself**, not at the far end of a
-line drawn across the house. That is the ordinary arrangement for a yard hydrant, and it is
-what makes the "deliberately not routed up into the garage and back down" argument above
-cheap to honour: there is barely any run left to rise.
+The hydrant stands **on the service entry itself**, not at the far end of a line drawn
+across the house. That is the ordinary arrangement for a yard hydrant, and it is what makes
+the "deliberately not routed up into the garage and back down" argument above cheap to
+honour: there is barely any run left to rise.
 
 y = 60'-0" leaves the stone pocket 41" clear of `FT-GF-N` against the 34" it needs.
 
@@ -157,19 +138,11 @@ is the ICF stem top the wood walls bear on, not the floor (→ `CLAUDE.md`). No 
 states the offset. `resolve/placeables.py` measures every mount off the floor of the room the
 placeable is in, via `resolve/room_floor.py`, and for `RM-GARAGE` that resolves to the slab.
 
-It measured off the *storey datum* until 2026-08-03, which stood this hydrant — and the
-workbench, and every receptacle, switch and light in the garage — a flat 22" higher than
-authored. `room_floor_elevation` already existed and already knew the answer; it just lived
-in `emit/` and only the two emitters called it, so the viewer drew the floor in the right
-place and the things standing on it in the wrong one.
-
 ## Specified with the fixture
 
 The coating is recorded on `FX-HYDRANT-Y34SS`'s `source` and belongs on the plumbing
-schedule. The other two stopped being unmodellable on 2026-08-01: `PipeAccessory` is the
-element, `PA-G-HYD-SEAT` and `PA-G-HYD-VB` are the instances, and `mep.hydrant_freeze_depth`
-grades them as a PASS rather than the UNKNOWN it used to emit for want of anywhere to put
-them. This section said otherwise until 2026-08-15.
+schedule. `PipeAccessory` is the element, `PA-G-HYD-SEAT` and `PA-G-HYD-VB` are the
+instances, and `mep.hydrant_freeze_depth` grades them as a PASS.
 
 - **Supplemental epoxy coating** over the buried barrel. The standard finish is not rated for
   chloride immersion and this barrel passes through the salt layer twice a year.
@@ -181,7 +154,7 @@ them. This section said otherwise until 2026-08-15.
 
 ## The weep, and why this is still a Y34
 
-Settled 2026-08-15. The short version: **the standard draining yard hydrant stays**, and a
+The short version: **the standard draining yard hydrant stays**, and a
 dual check on its branch closes the one gap it has.
 
 `PA-G-HYD-VB` protects the hose thread, which is the opening the code names — P2902.3.1
@@ -190,8 +163,7 @@ self-draining yard hydrant has a second opening: the weep at the buried shutoff,
 empties the barrel into `DRW-G-HYDRANT`'s stone every time the handle closes and then sits
 in wet stone at -6'-0". A breaker 2'-6" above the slab is nowhere near that path.
 
-**That is a real opening, and it is not a code violation.** Two reasons, and it is worth
-being precise because the first draft of this section was not:
+**That is a real opening, and it is not a code violation.** Two reasons:
 
 - On a Y34 the drain port is uncovered only when the plunger is seated, and the plunger
   covers it as soon as the valve opens. The weep and the supply are never both connected in
@@ -220,12 +192,9 @@ A dual check, not an RPZ, because this is a low-hazard residential connection; i
 hazard would want an RPZ, which needs a drain and an annual test. That is a question for
 permit review, not something to build for ahead of the answer. -> `plans/TODO.md`.
 
-**How the check now reads it (2026-08-15).** `mep.backflow_prevention` used to grade a
-hydrant on its hose thread alone and then rubber-stamp each backflow preventer with a PASS
-restating what it was authored to serve — two loops that never met, so `PA-G-HYD-BFP` could
-be added, scheduled and billed while `FX-G-HYDRANT` read exactly as it had before. It now
-grades the **connection**: the outlet and the run that feeds it are one thing, and every
-guard device on the feed lands in the fixture's own finding.
+**How the check reads it.** `mep.backflow_prevention` grades the **connection**: the outlet
+and the run that feeds it are one thing, and every guard device on the feed lands in the
+fixture's own finding.
 
     FX-G-HYDRANT's hose thread is protected by PA-G-HYD-VB (screw-on hose-bib vacuum
     breaker, ASSE 1011), and its branch (PR-G-HYDRANT-CW) carries PA-G-HYD-BFP (3/4"

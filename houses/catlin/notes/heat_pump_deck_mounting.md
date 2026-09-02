@@ -1,6 +1,6 @@
 # Balcony heat pumps — mounting, and the eight holes
 
-Written 2026-08-28. Model: `params/sunken_garden.py` (`_HP_STAND_AT`, `HP_STAND_LEGS`,
+Model: `params/sunken_garden.py` (`_HP_STAND_AT`, `HP_STAND_LEGS`,
 `HP_STAND_ANCHORS`, `FS-SG-DECK.reinforcements`), `plan/electrical.py` (the two units),
 `plan/mep_drainage.py` (`HP_CONDENSATE`). Graded by `mep.deck_equipment_support`.
 Companion to `notes/beam_water_protection.md`, whose cap-on-tape order this must not violate.
@@ -36,8 +36,8 @@ a century.**
 > **A fastener that penetrates the waterproof plane lands only in a member that can be cut out
 > and replaced from below. Never in a beam, never in a joist.**
 
-This is the opposite of the instinct, and the temptation here is strong: after the 2026-08-28
-pillar move both units sit within an inch of the rear bearing line, so `BM-SG-BLC` is *inside*
+This is the opposite of the instinct, and the temptation here is strong: both units sit
+within an inch of the rear bearing line, so `BM-SG-BLC` is *inside*
 `EQ-M-HP2-OD`'s footprint and `BM-SG-BLW` runs under `EQ-M-HP1-OD`'s west edge. A beam directly
 over a pillar and its footing is the stiffest thing on the deck.
 
@@ -107,24 +107,18 @@ answer to the *deck* — bay centres, six inches off a beam — and the feet ans
 *cabinet*. They cannot be the same four points: HP1's west foot line lands on `BM-SG-BLW`.
 The frame is the part that reconciles them, which is why it has its own dimensions above and
 why the rails under the feet must be continuous while the deck-facing members land only on
-the eight legs.
+the eight legs. Leg spacing shorter than the foot pattern misses feet entirely — HP1's feet
+sit at ±7.30" and HP2's at ±7.80", so anything under ~15.6" centres catches HP1 and misses
+HP2. Cabinet dimensions and foot patterns are cited from the manufacturer's own drawings and
+part numbers in the table above, with the document and page on the record in
+`plan/electrical.py`. `EQ-M-HP1-OD` had been recorded as a Vireo **GEN3** — a different,
+R410A product line with a different foot pattern and a slot running the other way, and 6"
+too tall — and `EQ-M-HP2-OD` at 37" wide, the width of the cabinet's *top* rather than its
+40 5/32" base; both are corrected in `plan/electrical.py`.
 
-The first cut of this file spaced the legs **12" apart in the depth direction**. That is
-shorter than either foot pattern: HP1's feet sit at ±7.30" and HP2's at ±7.80", so a pair of
-2x4 rails at 12" centres would have caught HP1's feet on the outer arris and **missed HP2's
-entirely**. Nothing in the model could have caught it, because until 2026-08-28 nothing in
-the model knew what the cabinets' feet measured.
-
-**Two of the published cabinet dimensions were also wrong in the model.** `EQ-M-HP1-OD` was
-recorded as a Vireo **GEN3** — a different, R410A product line with a different foot pattern
-and a slot running the other way — and 6" too tall. `EQ-M-HP2-OD` was recorded at 37" wide,
-which is the width of the cabinet's *top*; its base is 40 5/32". With the true width and the
-old y, that unit stood within an inch of the balcony rim. Both are corrected in
-`plan/electrical.py`, with the document and page cited on the record.
-
-**Six inches from a beam axis is the floor, not four.** An early cut put three legs 4" off a
-centreline — 1 3/4" of clear to the face of a 4 1/2" 3-ply, not room for a base plate and its
-gasket. `mep.deck_equipment_support` failed them and the legs moved.
+**Six inches from a beam axis is the floor, not four** — 1 3/4" of clear to the face of a
+4 1/2" 3-ply is not room for a base plate and its gasket. `mep.deck_equipment_support` fails
+anything closer.
 
 **The reinforcement sits on the joist line; the anchors sit at the bay centres.** These are
 deliberately different points. `_reinforcement_members` snaps each reinforcement to the
@@ -132,13 +126,11 @@ deliberately different points. `_reinforcement_members` snaps each reinforcement
 reinforcement on the line yields two blocks, and one anchor goes at the centre of each. Four
 reinforcements serve eight anchors. Authoring one per anchor instead needs eight, and where
 two of them straddle a single bay it emits that bay's block **twice**, at the same x: double
-lumber, double butyl, two coincident solids. This house did that until 2026-08-28.
+lumber, double butyl, two coincident solids.
 
-Every anchor was also 3" off a joist line in the first cut — inside the bay, but with 2 1/4"
-of clear to the joist face. The check reported all eight as correctly hosted, because it
-tested only that the anchor fell inside a *block's bounding box*, and a block spans the full
-bay from one joist line to the next. Blocking being present is not the anchor being in it.
-The check measures the distance to the joist lines directly now.
+An anchor 3" off a joist line still sits inside the bay, with 2 1/4" of clear to the joist
+face. Blocking being present is not the anchor being in it — the check measures the distance
+to the joist lines directly.
 
 ## 12", and what it costs
 
@@ -194,18 +186,16 @@ twice. **Mind the datum** — `mount.elevation` measures from the storey datum (
 while the stand bears on the plank 1 1/2" higher, so the authored mount is 13 1/2" for a 12"
 stand. Authoring 12" put both cabinets below the tops of their own legs.
 
-Two holes in it were found on 2026-08-28 by using it, and both had the same shape — a
-plausible answer from a missing filter:
+Both must stay storey-scoped, or the check reports confidently about geometry it has not
+scoped, which is worse than no check:
 
-* **It read the wrong deck.** The porch and the balcony share one plan footprint, so a
-  whole-plan outline search matched both condensers to the porch ten feet below them, and
-  then graded the *porch pillars'* post bases as the condensers' anchors.
-* **It read beams on the wrong storey.** The porch's back beams run east-west directly under
-  the balcony's anchors. Four anchors were reported as landing on a beam that no lag through
-  this deck could reach. The deck collector had been storey-scoped to fix the first bug; the
-  beam collector, one function away, had not.
+* **The deck lookup.** The porch and the balcony share one plan footprint, so a whole-plan
+  outline search would match both condensers to the porch ten feet below them, grading the
+  *porch pillars'* post bases as the condensers' anchors.
+* **The beam lookup.** The porch's back beams run east-west directly under the balcony's
+  anchors, so an unscoped beam collector reports an anchor as landing on a beam no lag
+  through this deck could reach.
 
-A check that reports confidently about geometry it has not scoped is worse than no check.
 Both are pinned by tests.
 
 ## Still open

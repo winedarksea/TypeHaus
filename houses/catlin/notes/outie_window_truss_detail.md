@@ -25,8 +25,7 @@ source:
 
 ## What the wall is
 
-`CATLIN_EXT_2X6` is a **catlin truss wall** (2026-08-26; ONE girt tier since 2026-09-01).
-Outboard of the 2x6 studs and their 1/2" plywood sheathing there is 4" of 2 lb closed-cell
+`CATLIN_EXT_2X6` is a **catlin truss wall**, ONE girt tier. Outboard of the 2x6 studs and their 1/2" plywood sheathing there is 4" of 2 lb closed-cell
 spray foam, and the cladding stands off on **one tier of flat horizontal girts on 4-1/2"
 blocks** — all 2x4 stock, all laid flat, nothing on edge:
 
@@ -44,7 +43,7 @@ drainage plane. It is CONTINUOUS now that nothing else stands in it, and togethe
 20-1/2" of open foam face between courses it is the 2" drained, back-vented cavity the bug
 screen at the base of the wall closes. The cavity depth is unchanged from the two-tier wall.
 
-**The inner girt tier is deleted (2026-09-01).** Bands B and C used to carry a plain SPF 2x4
+**The inner girt tier is deleted.** Bands B and C used to carry a plain SPF 2x4
 flat, buried in the foam, with the outer tier's blocks bearing on it and a second 5" screw
 into it. It gave its own screw no thermal break (it sat on the sheathing), cost a 10.9 %
 framing fraction in the first 1-1/2" of foam, and held up nothing but the tier above it. The
@@ -79,7 +78,7 @@ See `notes/catlin_truss_engineering.md` §3 and §6.
 
 ## What this replaced, and how to go back
 
-Until 2026-08-26 this was a **Swinburne truss wall** (2026-08-23): a three-piece chiral pack —
+This wall replaced a **Swinburne truss wall**: a three-piece chiral pack —
 a 2x4 flat block on the sheathing, a 1/2" plywood tab, and a KDAT 2x4 **outrigger on edge**,
 vertical, 16" o.c., lap-screwed to the tab. It worked. What went wrong with it was not
 structural:
@@ -109,12 +108,12 @@ air barrier, the water barrier, the vapour retarder (4" ≈ 0.4 perm, Class II) 
 insulation in one bonded, seamless application. `plan/transitions.py` names `spray-foam-ext`
 as the water and thermal continuity face for exactly this reason.
 
-**That makes the build order part of the detail, not a preference.** What changed on
-2026-09-01 is that the whole frame now goes together BEFORE any foam exists, on the flat wall,
-and the sprayer comes once to a finished frame. The old two-lift order existed because a flat
-girt lying 1-1/2" off the sheathing shadows the pocket behind it; with the girt standing 1/2"
-clear of the foam face there is no pocket, and the applicator reaches the whole plane from
-outside through the 20-1/2" between courses.
+**That makes the build order part of the detail, not a preference.** The whole frame goes
+together BEFORE any foam exists, on the flat wall, and the sprayer comes once to a finished
+frame. The old two-lift order existed because a flat girt lying 1-1/2" off the sheathing
+would shadow the pocket behind it; with the girt standing 1/2" clear of the foam face there
+is no pocket, and the applicator reaches the whole plane from outside through the 20-1/2"
+between courses.
 
 1. Frame the wall, flat on the deck. Sheathe it. Cut the rough openings.
 2. **Set the bucks.** 3/8" plywood lining each RO on all four sides, from the sheathing face
@@ -146,9 +145,9 @@ The unit sits in the **mount plane, 6" outboard of the sheathing** — the outer
 girt, which is also what the cladding lands on — with its flanges bearing on the jamb posts
 and on the head and sill courses. It is not in the stud plane, and no window in this house
 carries a depth dimension: the mount plane is derived from the outermost furring layer's
-outer face, so it followed the assembly from 5" to 6" without a single window moving — and it
-did **not** move on 2026-09-01, which is why deleting a whole girt tier moved nothing outside
-this wall. The 6" came out of the stack a different way (a 4-1/2" block plus a 1-1/2" girt
+outer face, so it followed the assembly from 5" to 6" without a single window moving, and
+deleting a whole girt tier moved nothing outside this wall either. The 6" came out of the
+stack a different way (a 4-1/2" block plus a 1-1/2" girt
 instead of four 1-1/2" layers), and the stack is what the mount plane is read from.
 
 **Jamb bearing is no longer a question of luck.** The Swinburne wall depended on where a
@@ -169,8 +168,8 @@ needed two plies. The girt head course is blocked back to the framing at every s
 under it — landing on the cripples above the header, ordinary wall, not the void — so its span
 is the block module regardless of how wide the opening is. `prices.toml`'s `2-2x4` row is
 retired for the same reason, and so is the jamb filler, since a post set to the RO edge never
-leaves a gap to fill. (`3-2x4` came back on 2026-09-01 as a different piece entirely: it is
-the three-ply BLOCK now, not a jamb filler.)
+leaves a gap to fill. (`3-2x4` is back as a different piece entirely: it is the three-ply
+BLOCK now, not a jamb filler.)
 
 All of it is derived, not authored: `resolve/framing/truss_girts.py` places it, and
 `structural.truss_wall_opening_support` FAILs if any RO jamb ends up further than a flange's
@@ -186,10 +185,9 @@ resume.
 ## Window elevations against the girt courses
 
 This is the one thing a horizontal stand-off asks of a facade that a vertical one does not,
-and it was checked rather than assumed. **Re-derived on 2026-09-01**, when the band came from
-32" to **24" o.c.** with the one-tier truss and its module was re-phased. (It was re-derived
-once before, on 2026-08-30, for the 24" -> 32" move. That swap was TAKEN and measured at
-−$466 / −$742; it is in git history and in `plans/TODO.md`.)
+and it was checked rather than assumed. **Re-derived** when the band moved to **24" o.c.**
+with the one-tier truss and its module was re-phased; the sweep's history is in git and in
+`plans/TODO.md`.
 
 **The finding is unchanged: no window needs to move.** Measured on the built model, the
 largest clear gap between two adjacent nailer courses anywhere beside an opening — above a
@@ -304,9 +302,9 @@ heat had to travel that 8" through wood before crossing the next band, and a 1-D
 not credit it. There is no buried fin now. The new wall's uncredited 2-D effect runs the other
 way and is small — a straight column of block plies with the screw up its middle.
 
-**§7.1 of the engineering note is the comparison this wall type exists to win**, and it is
-new on 2026-09-01: against a 4" polyiso + furring wall with the same studs, sheathing and 8"
-screws, this wall is about **+3 R** — ccSPF's R/inch over cold-derated polyiso (+4), half the
+**§7.1 of the engineering note is the comparison this wall type exists to win**: against a
+4" polyiso + furring wall with the same studs, sheathing and 8" screws, this wall is about
+**+3 R** — ccSPF's R/inch over cold-derated polyiso (+4), half the
 screw density because the block carries gravity in bearing (+1), less the blocks themselves
 (−1.6). The owner's objection — *we pay for wood in the insulation layer and a rigid-foam wall
 does not* — is half right, and that is what pays it back.

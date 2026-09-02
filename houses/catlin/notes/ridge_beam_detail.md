@@ -15,18 +15,17 @@
 
 `2-1.75x14 LVL`, 36'-0", bearing continuously on `W-A-C1/C1B/C2`. Authored in
 `plan/storeys/attic.py`; graded by `structural.ridge_beam_depth`. **Section is stale — see
-the banner above; the beam is `2-1.75x16 LVL` as of 2026-08-29.**
+the banner above; the beam is `2-1.75x16 LVL`.**
 
-> **See also `notes/fortified_roof_cert.md`, 2026-08-30.** This beam's eliminate-the-thrust
-> argument below is exactly FORTIFIED Home's §2.5 "engineered alternative" to collar ties,
-> but it is documented here only as engineering narrative — the cert tracking note lists a
-> stamped PE letter citing §2.5/Appendix B1 as the open item that closes it. Nothing below
-> changes for that; this is a pointer, not a revision.
+> **See also `notes/fortified_roof_cert.md`.** This beam's eliminate-the-thrust argument
+> below is exactly FORTIFIED Home's §2.5 "engineered alternative" to collar ties, but it is
+> documented here only as engineering narrative — the cert tracking note lists a stamped PE
+> letter citing §2.5/Appendix B1 as the open item that closes it. Nothing below changes for
+> that; this is a pointer, not a revision.
 
-It was `3-1.75x11.875 LVL` until this note was written, and that section was wrong in both
-directions at once: three plies answered no load, and the depth they came with was an inch
-and a half short. Nothing in the engine could say so — every neighbouring check opts out of
-a ridge beam for a reason of its own — so the error survived a year of reviews.
+Three plies of `3-1.75x11.875 LVL` answered no load and the depth was an inch and a half
+short. No neighbouring check grades a ridge beam's depth on its own — each opts out of a
+ridge beam for a reason of its own — which is why `structural.ridge_beam_depth` exists.
 
 ## 1. Why 14", exactly
 

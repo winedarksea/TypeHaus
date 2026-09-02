@@ -29,12 +29,9 @@ source:
 
 # Notes
 
-2026-08-18. `RM-S-PLANT` is to be a tropical plant room held at **~75 °F / 70 % RH
-year-round**, including Minnesota winters at the house's −15 °F heating design temperature.
-Until this pass it was an ordinary `Occupancy.LIVING` room with `floor_finish="tile"`,
-generic `CATLIN_EXT_2X6` walls and painted gypsum — nothing about it was built for humidity.
-This closes the "add the plant room wall types" item that had stood open in `plans/TODO.md`
-since 2026-08-02.
+`RM-S-PLANT` is to be a tropical plant room held at **~75 °F / 70 % RH year-round**,
+including Minnesota winters at the house's −15 °F heating design temperature. This closes
+the "add the plant room wall types" item in `plans/TODO.md`.
 
 The room is the second storey's SW corner, x 0'→18' × y 0'→9', 9'-0" ceiling. It is the
 **worst location in the house** for this: two exterior walls, three windows, an exterior
@@ -71,7 +68,7 @@ condensed below about +13 °F outdoors — most of a Minnesota winter.
 `building_science.glazing_dew_point` is the rule that says so, and it now prints the margin
 for every one of the three units.
 
-**Good news on the existing wall, and the 2026-08-23 truss wall does not change it.**
+**Good news on the existing wall, and the truss wall does not change it.**
 `CATLIN_EXT_2X6`'s exterior insulation was 2" polyiso (1.0 perm-in, 0.5 perm at 2") plus 2"
 EPS (3.9 perm-in), which ran ≈ 0.4 perm — Class II, slow but real outward drying. It is now
 4" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: the same Class II**,
@@ -269,7 +266,7 @@ What is built now:
 2. **Matched extract**: `REG-S-ERV-PLANT-EXH` (25 cfm), at the far end of the room from the
    supply, **high**, because humid air stratifies and the wettest air in the room is the air
    overhead. Its radial has moved twice since this note was written and the terminal moved with
-   it the second time — see the 2026-08-29 addendum at the end.
+   it the second time — see the addendum at the end.
 3. **Motorised isolation damper** on the System 1 terminal (`REG-T-HP-SUP-DAMPERED`), so
    System 1 can neither dry the room nor carry its moisture house-wide.
 4. **RH-driven control** — none of this self-regulates humidity.
@@ -355,9 +352,8 @@ misted or hosed.
 
 ## Addendum, 2026-08-29 — the extract moved, and the terminal with it
 
-`DU-S-PLANT-EXH` became `DU-A-ERV-R-PLANT` on the attic sub-manifold (2026-08-25), and is now
-**`DU-M-ERV-R-PLANT` on the LEVEL-2 manifold** (`EQ-M-ERV-MAN-EXH`, which this fills to 10 of
-10). Same uid throughout.
+`DU-S-PLANT-EXH` is now **`DU-M-ERV-R-PLANT` on the LEVEL-2 manifold** (`EQ-M-ERV-MAN-EXH`,
+which this fills to 10 of 10). Same uid throughout.
 
 **The second move was not about air.** The attic route ran the x=1'-0" deck chase for 21'-8"
 along the base of what had become a finished guest bedroom's knee wall — the last duct there,
@@ -388,7 +384,7 @@ cfm net supply at 0.4" (HVI ID 2004940); 210 cfm at 0.2" is the model-name point
 manufacturer's fan curve.
 
 **Two corrections to "Why a dampered branch and not a through-wall unit" above,** from a
-2026-08-29 re-check against primary sources. Both *strengthen* that section's conclusion:
+re-check against primary sources. Both *strengthen* that section's conclusion:
 
 - Its fallback suggestion, the **Panasonic WhisperComfort 60**, should not be used. The
   FV-04VE1 is discontinued and no longer in the HVI directory; the current FV-06VE1 closes its

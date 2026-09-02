@@ -1,6 +1,6 @@
 # RM-M-PANTRY — shelving designed to be climbed
 
-2026-08-24, with the kitchen peninsula/pantry rework.
+From the kitchen peninsula/pantry rework.
 
 The owner asked for shelves in the reach-in pantry that can be **stood on**, because that
 is how the top shelf of a 7'-0" stack actually gets reached. This note is the build, and it
@@ -11,10 +11,6 @@ carries the summary on its `source`, and the arithmetic is here.
 
 Interior clear **5'-10 1/4" (E-W) x 2'-2" (N-S)**, 9'-0" to the ceiling.
 
-It was 2'-6" until the owner moved `W-M-PAN-S` 4" north later on 2026-08-24, to pull the
-cold-storage run out of the passage south of it (see `plan/storeys/main.py`). **The shelves
-did not change — the standing floor did**, from 6" to 2".
-
 | face | what it is | station |
 |---|---|---|
 | west | `W-M-C5B`'s east gypsum | x = 18'-3 3/8" |
@@ -23,8 +19,7 @@ did not change — the standing floor did**, from 6" to 2".
 | south | `W-M-PAN-S`'s north gypsum, with `D-M-PANTRY`'s 60" bypass in it | y = 33'-3 3/8" |
 
 Shelves are **70 1/4" wide** — wall face to wall face, the room's whole clear span — and
-**18" deep** against the north wall (owner's decision, 2026-08-29, replacing 24"; see
-*Depth* below).
+**18" deep** against the north wall (owner's decision, replacing 24"; see *Depth* below).
 
 ## Why a 3/4" plywood shelf cannot span this room
 
@@ -130,9 +125,9 @@ requirements do not actually fight.
 
 ## Depth: 18" — and the mill is what set it, not the ergonomics
 
-Drawn at 16", changed to **24"** on 2026-08-24 at the owner's direction, and settled at
-**18"** on 2026-08-29. The last move is the one worth explaining, because it looks like a
-retreat from the 24" decision and is not:
+Drawn at 16", changed to **24"** at the owner's direction, and settled at **18"**. The last
+move is the one worth explaining, because it looks like a retreat from the 24" decision and
+is not:
 
 - **18" is the widest shelf that comes off ONE board.** The owner's white oak runs to 18"
   wide. A finished face needs about 3/4" more than that in the rough — one edge

@@ -1,13 +1,13 @@
 # D-M-LAUN — the laundry pocket door
 
-*2026-08-21. Replaces the 56" four-leaf bifold that stood here from 2026-07-31.*
+*Replaces the 56" four-leaf bifold that stood here.*
 
 ## Why
 
 A bifold eats its own opening — four leaves stack at both jambs, so a 56" unit really gave
 about 50" of clear width — and it demanded 8¾" of clear floor in front of the track. That
 margin is not incidental: `plan/fixtures.py` records it as *the* constraint that sized the
-2026-08-03 room move, and it is why the 40"-deep stacked washer/dryer could not be deeper.
+room move, and it is why the 40"-deep stacked washer/dryer could not be deeper.
 
 The pocket gives 48" clear — a ~2" loss — and hands the 8¾" back.
 
