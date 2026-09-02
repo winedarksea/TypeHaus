@@ -55,12 +55,9 @@ _RECT_TOLERANCE_M = 1e-6
 class SoffitClearSection:
     """The usable cavity inside a framed soffit — **derived**, never authored.
 
-    Every clearance claim about a duct box in this house used to be hand arithmetic in a
-    plan comment ("the plan's 2'-8" box loses 4 1/4" total to framing/lining, leaving only
-    27 3/4" clear"). The arithmetic was right, but a comment cannot be re-run when the
-    ``FramingSpec`` changes from 2x2 to 2x3, and nothing was checking that the two 14"
-    ducts it was computed for still fit. An authored ``clear_width`` would have been no
-    better: it is a second source of truth for a number the framing already states.
+    A hand-arithmetic clearance claim in a plan comment cannot be re-run when the
+    ``FramingSpec`` changes, and an authored ``clear_width`` is no better: it is a second
+    source of truth for a number the framing already states.
 
     So the section comes off exactly the geometry :func:`_frame_one` builds — the lining
     on every face, then a ladder rail of stock depth down each long side, then the rails
@@ -142,8 +139,8 @@ def frame_soffits(model: ResolvedModel) -> list[Finding]:
 def _ladder_stock(spec: object) -> tuple[str, str]:
     """``(rail_profile, rung_profile)`` for one ``FramingSpec``.
 
-    A soffit ladder is two sticks doing two jobs, and framing them out of one profile —
-    which this module did until 2026-08-31 — makes both jobs worse. The RAIL is a plate:
+    A soffit ladder is two sticks doing two jobs, and one profile for both makes both jobs
+    worse. The RAIL is a plate:
     it is screwed to the deck above, it carries nothing between supports, and its *depth*
     is what sets the cavity width the ducts and machines have to fit in. The RUNG spans
     the box: it is the member deflection is about, and it is the nailer the underside

@@ -18,15 +18,14 @@ B             4-1/2 – 6"               the **girt** — KDAT 2x4 flat, 24" o.c
                                        plane
 ============  =======================  =================================================
 
-**The inner girt tier was deleted on 2026-09-01** (decision recorded in
-``houses/catlin/CLAUDE.md`` and ``notes/catlin_truss_engineering.md``). It sat directly on
-the sheathing, so it gave its screw no thermal break at all, and it cost 10.9% wood in the
-first 1-1/2" of the foam to hold up a band that carried nothing but the block above it. The
-foam does not need it: ccSPF is applied to a vertical surface with nothing in it (ESR-4073
-§4.4.2), and its racking contribution is its bond to the sheathing face, which is unchanged.
-The two-band form is still legal here — another house may want it, and it is what catlin
-built between 2026-08-26 and 2026-09-01 — so everything below is written for *the tiers this
-wall actually has*, one or two, and ``self.tiers`` is the list.
+**The inner girt tier was deleted** (decision recorded in ``houses/catlin/CLAUDE.md`` and
+``notes/catlin_truss_engineering.md``). It sat directly on the sheathing, so it gave its
+screw no thermal break at all, and it cost 10.9% wood in the first 1-1/2" of the foam to
+hold up a band that carried nothing but the block above it. The foam does not need it:
+ccSPF is applied to a vertical surface with nothing in it (ESR-4073 §4.4.2), and its
+racking contribution is its bond to the sheathing face, which is unchanged. The two-band
+form is still legal here — another house may want it — so everything below is written for
+*the tiers this wall actually has*, one or two, and ``self.tiers`` is the list.
 
 The girt band is the FURRING layer; ``framing/furring.py`` frames its field courses like any
 other horizontal batten and this pass reads back what it framed, which is what keeps a block
@@ -116,9 +115,9 @@ STUDLIKE = frozenset({"stud", "king", "jack", "cripple", "corner", "trimmer"})
 #: ``takeoff/fasteners.py`` reads to bill the screw lengths apart. Named, and read through
 #: :func:`girt_block_tier`, so the key format lives in one place.
 #:
-#: A ONE-TIER wall (catlin since 2026-09-01) has only ``OUTER``: its sole band *is* the outer
-#: girt — the cladding nailer, the mount plane, and the KDAT — and its blocks are
-#: ``block-2-...`` for exactly that reason, not because a phantom inner tier is missing.
+#: A ONE-TIER wall (catlin) has only ``OUTER``: its sole band *is* the outer girt — the
+#: cladding nailer, the mount plane, and the KDAT — and its blocks are ``block-2-...`` for
+#: exactly that reason, not because a phantom inner tier is missing.
 INNER, OUTER = "1", "2"
 
 _TOL = 1e-9
@@ -322,8 +321,8 @@ class GirtFrame(BandFrame):
         sheathing_face = _sheathing_face(wall, turned, band_in)
         if sheathing_face is None:
             # No resolved SHEATHING band inboard of the girt — an unsheathed girt wall is
-            # not a thing this house builds, but the fallback is the reading that was
-            # hard-coded before 2026-09-01 rather than a refusal to frame: one ply of block.
+            # not a thing this house builds, but the fallback frames one ply of block
+            # rather than refusing outright.
             sheathing_face = band_in - cross_section(GIRT_MEMBER).width_m
         return cls(wall, start, direction, turned, first, last, inner, outer,
                    sheathing_face, assembly_structure_material(plan, wall.assembly),
@@ -514,9 +513,9 @@ class GirtFrame(BandFrame):
         on bare sheathing. What actually carries that end is the jamb post it butts, which
         is blocked at this very elevation and screwed to the jack and the king behind it.
 
-        This is the same class of mistake the Swinburne pack made before 2026-08-23 (74 of
-        its blocks landed on nothing), arrived at from the other direction, and
-        ``test_truss_girt_geometry.py`` measures the lap rather than trusting the module.
+        This is the same class of mistake as a block landing on nothing, arrived at from
+        the other direction, and ``test_truss_girt_geometry.py`` measures the lap rather
+        than trusting the module.
         """
         seg_lo = self.station_of(course)
         seg_hi = seg_lo + length(sub(course.p1, course.p0))
@@ -664,9 +663,9 @@ def _sheathing_face(wall: ResolvedWall, across: Vec, band_in: float) -> float | 
 
     The block's back, and therefore its ply count, its depth and — with the girt's own
     outboard face — the buck's width. Read off the resolved stack rather than derived from
-    the band above it, because the whole of the 2026-09-01 change is that the depth between
-    the sheathing and the girt is now 4-1/2" of foam-and-air rather than 1-1/2" of wood, and
-    a frame that assumed one ply would have put the girt inside the foam without saying so.
+    the band above it: the depth between the sheathing and the girt is 4-1/2" of
+    foam-and-air, not 1-1/2" of wood, and a frame that assumed one ply would put the girt
+    inside the foam without saying so.
 
     ``band_in`` bounds the search to sheathing that is actually BEHIND the girt: an assembly
     is free to carry a second sheet outboard of the furring, and a block measured back to

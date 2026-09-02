@@ -1,8 +1,6 @@
 """Gable-end truss + rake framing for a truss roof (→ B2).
 
-A truss roof used to emit the *same* Fink truss at every position, including the two end
-positions sitting on the gable walls, and nothing at all under the rake overhang. Two things
-are wrong with that:
+The end positions sitting on the gable walls are not the same truss as the field:
 
 * A gable end is not a Fink truss. It is a **drop truss**: its top chords are set down by the
   outlooker depth and the web pattern is replaced by vertical **gable studs** at stud

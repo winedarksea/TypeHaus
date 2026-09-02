@@ -2,12 +2,12 @@
 
 A ``FramingSpec`` on a FURRING layer is an authored statement that the layer is *sticks of
 lumber on a grid* — 1x4 strapping over the sheathing of a rainscreen wall, horizontal
-battens the sauna's T&G liner nails to — and until this module existed it framed nothing at
+battens the sauna's T&G liner nails to — and without this module it frames nothing at
 all. That is a billing hole, not a drawing one: ``takeoff/envelope.py`` deliberately skips
 FURRING because it is lineal-foot stock rather than area, and the framing cut list only
-carries what the solver resolves. Between the two, every furring strip in the house reached
-no order. W-B-CS (``SAUNA_LINER_ON_CONCRETE``) is the case that made it undeniable — a
-concrete core frames no members at all, so its liner strapping had nowhere to hide.
+carries what the solver resolves. Between the two, a furring strip with no framing pass
+reaches no order — W-B-CS (``SAUNA_LINER_ON_CONCRETE``) has a concrete core that frames no
+members at all, so its liner strapping has nowhere else to hide.
 
 So this pass runs for *every* wall with such a layer, framed or monolithic. It is
 deliberately a separate pass from ``solver.frame_wall`` rather than a branch inside it:
@@ -319,9 +319,7 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
     **One module over the whole band.** Every course is at ``course_phase + k*spacing``, from
     the band's bottom to its highest top, and a raked wall is not a different regime: it
     carries the same courses the wall below it does and simply runs out of wall for them
-    (``_course_span`` clips each to the part of the run that is still there). Until
-    2026-08-30 the raked region was re-phased off a forced course at the LOWER top, which
-    put the whole gable band 11-1/2" off the module of the wall it sits on.
+    (``_course_span`` clips each to the part of the run that is still there).
 
     Three edges break the module, and only these three:
 

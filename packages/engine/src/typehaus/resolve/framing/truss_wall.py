@@ -38,10 +38,10 @@ The placement geometry — where each of those pieces goes on one wall, and ever
 them — is ``framing/truss_frame.py``. This module is the pass: which walls, in what order,
 and what it reports. The names other packages use are re-exported here.
 
-**There are two truss walls now.** The Swinburne pack above is one; the **catlin truss**
-(``framing/truss_girts.py``, 2026-08-26; one tier since 2026-09-01) is the other — flat
-horizontal 2x4 girts at 24" o.c., bearing on 4-1/2" blocks at the stud module, no tab and no
-chirality. Nothing vertical was deleted for it: the two are siblings, selected per wall off
+**There are two truss walls.** The Swinburne pack above is one; the **catlin truss**
+(``framing/truss_girts.py``) is the other — flat horizontal 2x4 girts at 24" o.c., bearing
+on 4-1/2" blocks at the stud module, no tab and no chirality. Nothing vertical was deleted
+for it: the two are siblings, selected per wall off
 the assembly by :func:`truss_kind` (``laid="edge"`` + vertical → the outrigger pack,
 ``standoff="block"`` → the girts), and reverting is swapping one assembly's layer tuple.
 This module dispatches; neither frame imports the other, and what they share is
@@ -163,8 +163,7 @@ def frame_truss_walls(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     at a band end, or beside a jamb outrigger — so the pack next door genuinely does hold
     both. It is a WARN rather than an error for exactly that reason, and it is reported
     rather than swallowed because the number is the thing worth watching: a handful is the
-    geometry being crowded, and a hundred is this pass being broken, which is what it was
-    until 2026-08-23.
+    geometry being crowded, and a hundred is this pass being broken.
 
     The one crowding this pass now *resolves* instead of reporting is the band END strip
     against the last module outrigger (``TrussFrame.crowded_end_neighbours``): on a wall
@@ -437,13 +436,12 @@ def girt_band_findings(plan: PlanModel, wall_tag: str,
                        assembly_tag: str | None) -> list[Finding]:
     """WARN for an assembly that asks for girts but does not describe a pair of them.
 
-    A catlin truss is ONE girt band (the wall since 2026-09-01: the cladding nailer, on
-    4-1/2" blocks, in free air) or TWO (what it built between 2026-08-26 and then: an inner
-    tier buried in the foam with the outer one screwed to it). Three or more is not a wall
-    type, and turning a band on edge or laying it vertically is the same mistake spelled
-    differently — ``integrity.assembly_layers`` already refuses ``laid="edge"`` outright, and
-    this catches the rest at the wall that uses it, where the tag an owner can act on is in
-    hand.
+    A catlin truss is ONE girt band (the cladding nailer, on 4-1/2" blocks, in free air) or
+    TWO (an inner tier buried in the foam with the outer one screwed to it). Three or more
+    is not a wall type, and turning a band on edge or laying it vertically is the same
+    mistake spelled differently — ``integrity.assembly_layers`` already refuses
+    ``laid="edge"`` outright, and this catches the rest at the wall that uses it, where the
+    tag an owner can act on is in hand.
     """
     bands = _standoff_layers(plan, assembly_tag)
     if not bands or truss_girt_bands(plan, assembly_tag) is not None:

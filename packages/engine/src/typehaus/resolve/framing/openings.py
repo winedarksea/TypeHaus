@@ -222,12 +222,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # off ``z0`` put the whole pack a plate — 1 1/2" — above the hole it frames, which the
     # viewer showed as a rough sill standing inside the glass of every window in the house.
     sill_datum = _sill_datum(rw, z0)
-    # Head = threshold + clear height, doors included. Doors used to skip the ``sill_m``
-    # term on the assumption a door always starts at its host wall's own floor; the Catlin
-    # garage breaks that (its overhead door drops a negative sill to the slab below the ICF
-    # stem the wall bears on), and skipping the term there left the framed header 22" above
-    # the head the wall body, the IFC void and the viewer had all already cut. Every
-    # sill_m == 0 door is unaffected.
+    # Head = threshold + clear height, doors included: a door does not always start at its
+    # host wall's own floor. Catlin's garage overhead door drops a negative sill to the slab
+    # below the ICF stem the wall bears on, so the ``sill_m`` term cannot be skipped for
+    # doors generally. Every sill_m == 0 door is unaffected.
     header_bottom = sill_datum + opening.sill_m + opening.height_m
 
     # The same phase ``opening_exclusions`` asked with. The two verdicts must agree: one
@@ -452,11 +450,8 @@ def _cripple_stations(center: float, half: float,
                       spacing: float) -> list[tuple[int, float]]:
     """Interior stations across a rough opening, as (index, station).
 
-    The pitch is the host wall's own ``FramingSpec.spacing``. It was hardcoded to
-    ``DEFAULT_SPACING`` until 2026-08-28, which framed a 16" cripple grid under every
-    rough sill in the house no matter what module the wall was actually built on — a
-    bug rather than a limitation, and the thing that had to move before any wall here
-    could be a spacing other than 16".
+    The pitch is the host wall's own ``FramingSpec.spacing``, not ``DEFAULT_SPACING`` —
+    a wall built on a spacing other than 16" needs its cripples on that same module.
 
     The two edge stations coincide with jack framing and are dropped: a cripple there
     would be a second member on the trimmer's own centreline.

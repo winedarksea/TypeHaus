@@ -17,8 +17,7 @@ Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs. The beam
 pinned to the roof plane at the peak — the deck bears across it — and each rafter is trimmed
 back by half the beam's width, so the rafter is cut plumb at the beam's FACE and hangs there
 on a sloped hanger, its own top ending half-a-width-times-the-slope below the beam's. It does
-not land on top of the beam; this paragraph said it did until 2026-08-28, and the arithmetic
-never has. What that geometry demands of the beam's DEPTH is
+not land on top of the beam. What that geometry demands of the beam's DEPTH is
 ``checks/structural/ridge.py``'s business. A truss roof carries its own ridge, so it emits no
 ridge Beam advisory.
 """
@@ -236,9 +235,7 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...],
     optional there: Weyerhaeuser's roof general notes require web stiffeners wherever the
     hanger's sides do not laterally support the top flange, its H5/H5S ridge details call for
     "beveled web stiffener required both sides", APA D710 10c says the same, and Simpson's own
-    connector guide conditions the LSSR on them. The house emitted 56 of these at the eave and
-    none at the peak until 2026-08-28 — one end of every rafter had its reinforcement modelled
-    and the other did not.
+    connector guide conditions the LSSR on them.
     """
     stiffeners: list[FramedMember] = []
     for rafter in rafters:
@@ -291,13 +288,9 @@ def _seat_rafters(
 ) -> tuple[FramedMember, ...]:
     """Give every rafter its birdsmouth, as part of its own solid.
 
-    This used to emit a separate ``seat_cut`` member — a short block occupying the same
-    volume the rafter already claims — which is why ``checks/structural/interference.py``
-    needed a clause to excuse a block overlapping its own rafter, why the takeoff carried 56
-    pieces of 11-7/8" I-joist at 3.5" that nobody buys, and why the 2D section drew a third
-    version of the notch by re-parsing its depth out of a string.
-
-    A ``SeatCut`` on the rafter says the same thing once, and
+    A separate ``seat_cut`` member would double-claim the rafter's own volume — false
+    interference, a phantom takeoff line, a section drawn by re-parsing a string. A
+    ``SeatCut`` on the rafter says the same thing once, and
     ``geometry_members.member_solid`` turns it into a real notched solid every emitter reads.
     """
     plate_top = _bearing_plate_top(model, roof)

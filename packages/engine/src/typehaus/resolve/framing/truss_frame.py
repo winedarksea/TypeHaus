@@ -86,8 +86,7 @@ DOUBLE_HEADER_SPAN = inch(48.0)
 #: Gap past which a jamb takes a whole new outrigger instead of plies laminated to the
 #: member beside it. Below this there is no room for a free member's block and tab — the
 #: pack next door already holds that plan — so a free outrigger there ends up with neither
-#: and is fastened to nothing, which is what happened to 20 of catlin's 21 jamb outriggers
-#: before 2026-08-23. Six inches is where a pack reliably stops colliding with its
+#: and is fastened to nothing. Six inches is where a pack reliably stops colliding with its
 #: neighbour's, and a 4-1/2" build-up at a jamb is an ordinary three-ply jamb post, not an
 #: exotic piece. Past it the gap is wide enough to stand a real outrigger over the jack.
 FILLER_LIMIT = inch(6.0)
@@ -476,13 +475,12 @@ class TrussFrame(BandFrame):
         would not carry them.
 
         **A tab is only in the way if it is at this piece's own elevation.** Trimming the
-        run against every tab on the wall — which is what this did until 2026-08-23 — left
-        one 15-1/2" stub at every opening in the house regardless of its width, so a 60"
-        door's flange bore on wood over a quarter of its head and the KDAT order was 80 LF
-        short. And where a tab genuinely does stand in the run (a field outrigger cut at the
-        head has its lowest tab right there), the answer is the pieces on either side of it,
-        not the last bay: this returns every surviving sub-span, so the blocking is as
-        continuous as the truss lets it be and the take-off counts what is really cut.
+        run against every tab on the wall, regardless of elevation, leaves a short stub at
+        every opening no matter its width and undercounts the KDAT order. Where a tab
+        genuinely does stand in the run (a field outrigger cut at the head has its lowest
+        tab right there), the answer is the pieces on either side of it, not the last bay:
+        this returns every surviving sub-span, so the blocking is as continuous as the truss
+        lets it be and the take-off counts what is really cut.
         """
         a, b = supports
         if b - a <= _TOL:

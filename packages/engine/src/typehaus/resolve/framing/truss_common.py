@@ -6,7 +6,7 @@ There are two ways catlin's cladding stands off its sheathing, and the model car
   to a plywood tab on a flat block, three chiral pieces per node, 16" o.c.;
 * the **catlin truss** (``truss_girts.py``) — flat horizontal 2x4 girts at 24" o.c., each
   course bearing on 4-1/2" blocks on every other stud and taking one 8" structural screw
-  per block. One tier since 2026-09-01; two before it, and the two-band form still frames.
+  per block. Catlin runs one tier; the two-band form still frames.
 
 They are genuinely different frames: one is a chirality-and-collision problem in plan, the
 other a two-band pairing problem in elevation. What they share is the *datum* — a band

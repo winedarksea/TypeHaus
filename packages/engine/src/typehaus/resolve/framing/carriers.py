@@ -3,8 +3,8 @@
 A wall-hung water closet does not hang off the drywall. It bolts to a steel frame — a
 Geberit Duofix, a TOTO DuoFit, a Zurn carrier — that stands on the floor *inside* the wall
 and carries the concealed cistern, the 3" waste bend and the whole seated load. The frame
-is 500 mm wide, so it needs a clear bay, and until this module existed the framing solver
-marched its module studs straight through one and nothing said a word. ``W-M-HS1`` is
+is 500 mm wide, so it needs a clear bay, or the framing solver's module studs march
+straight through one, silently. ``W-M-HS1`` is
 ``INT_2X6_STAGGERED_PLUMBING``, whose staggered layout *halves* the module — an 8"
 combined rhythm — so the studs it plants in a carrier's way are twice as many as usual.
 

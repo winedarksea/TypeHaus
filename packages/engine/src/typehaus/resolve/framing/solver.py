@@ -523,10 +523,10 @@ def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:
     `top_at` subtracts the top plate course(s) from the wall's top to find where the studs
     stop, and `_append_plates` places each top course downward from the same top. Neither
     clamps. Under 4 1/2" — a 1 1/2" sole plate plus a 3" double top plate — the studs come
-    out with a NEGATIVE length and the top courses stack down through the sole plate, and
-    until this finding existed all of that happened silently: the geometry drew, the BOM
-    billed, nothing failed. The wall that wants to be this short is a course of lumber laid
-    flat, and there is a field that says so.
+    out with a NEGATIVE length and the top courses stack down through the sole plate.
+    Without this finding that happens silently: the geometry draws, the BOM bills, nothing
+    fails. The wall that wants to be this short is a course of lumber laid flat, and there
+    is a field that says so.
 
     WARN/UNKNOWN rather than ERROR on purpose. It is a modelling gap, not a violation, and
     the tri-state is what this repo uses to say "cannot evaluate" without turning a house red.
