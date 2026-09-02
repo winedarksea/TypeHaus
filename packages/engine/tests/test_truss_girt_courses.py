@@ -1,13 +1,12 @@
 """The girt COURSE module: one ladder, three edges, and the rake (→ 11 §Framing).
 
 Sibling of `test_truss_girt_geometry.py`, which asks where a block lands and whether a
-course is carried. This one asks a different question — *where are the courses at all* —
-and it is the question the 2026-08-30 change is about:
+course is carried. This one asks a different question — *where are the courses at all*:
 
 * **one module, unbroken.** Every course is at `course_phase + k * spacing`, from the wall
-  base through the gable rake, with three named exceptions and no others. Until this change
-  a raked wall forced a course at its LOWER top and re-phased everything above it, which put
-  the whole rake band 11-1/2" off the module of the wall below it;
+  base through the gable rake, with three named exceptions and no others. A raked wall must
+  not force a course at its LOWER top and re-phase everything above it, which would put the
+  whole rake band 11-1/2" off the module of the wall below it;
 * **the module counts from the sills' own datum.** `course_datum="framing-base"` +
   `course_offset` is the phase, and on a main-storey wall extended down over the floor rim
   that is 13-7/16" above the wall base;
@@ -32,8 +31,7 @@ from typehaus.resolve.geometry import length, sub, unit
 IN = 0.0254
 _STOCK_FACE = 3.5 * IN
 _STUD_SPACING = 16.0 * IN
-#: The BLOCK module — every OTHER stud since 2026-09-01, when one tier and one screw per
-#: crossing replaced two tiers offset half a bay.
+#: The BLOCK module — every OTHER stud, one tier, one screw per crossing.
 _BLOCK_SPACING = 32.0 * IN
 
 #: The conflict window, bottom to bottom, between a field course and an opening's own head

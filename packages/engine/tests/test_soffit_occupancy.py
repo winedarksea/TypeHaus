@@ -67,28 +67,11 @@ def test_a_fourteen_inch_drop_clears_an_eight_inch_duct(catlin_model) -> None:
 
 def test_the_air_handler_is_the_real_cabinet_and_the_lanes_beside_it_are_real_too(
         catlin_model) -> None:
-    """This test used to read "the 21" case leaves ~4 7/8" either side of SF-S-DUCT", and
-    both halves of that were fiction.
-
-    The 21" came from EQ-T-GREE-SLIM24, an explicit REPRESENTATIVE PLACEHOLDER whose only
-    43 3/8"-wide match was Gree's discontinued low-static DUCT24HP230V1AD (589 cfm at 0.04"
-    w.c., against the 750 cfm this duct system is sized to). And 4 7/8" of sliver was never
-    a lane for anything, which is exactly why DU-S-HP-SOUTH had no riser and plans/TODO.md
-    stayed open.
-
-    The real cabinet is 43 1/2" wide, it lives in SF-S-HP1, and the point of that box is
-    that the two things which have to pass the machine — the 10x6 south-branch riser lane
-    and the 6" ERV mixing-box feed — fit BESIDE it with the hanger gap, not instead of it.
-    So the assertion is no longer a pair of symmetric margins; it is that the machine is the
-    catalogued cabinet and that the box still has lanes left over.
-
-    ** 44.47 -> 43.5 ON 2026-08-31 **, with the FLEXX Ultra retype (EQ-T-GREE-DUC24 ->
-    EQ-T-GREE-FLEXX-ULTRA-24-AH). The DUC24 was short at design temperature, moved 736 cfm
-    against a 750-cfm duct system, and had no aux-heat terminal. The graded axis here is the
-    only axis that gained anything from the swap, and it gained an inch — the cabinet's other
-    dimension went 29 11/16" -> 21 1/4", but that runs ALONG the box where there is 78 3/4"
-    and no pressure. What the depth really bought is 8 7/16" of clear box north of the
-    discharge, which the riser take-off leg and the heat kit now occupy."""
+    """The real cabinet is 43 1/2" wide (EQ-T-GREE-FLEXX-ULTRA-24-AH) and lives in SF-S-HP1.
+    The point of that box is that the two things which have to pass the machine — the 10x6
+    south-branch riser lane and the 6" ERV mixing-box feed — fit BESIDE it with the hanger
+    gap, not instead of it. So the assertion is not a pair of symmetric margins; it is that
+    the machine is the catalogued cabinet and the box still has lanes left over."""
     _, section = _section(catlin_model, "SF-S-HP1")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     xs = [x for x, _ in handler.footprint]
@@ -139,8 +122,8 @@ def test_both_soffits_are_actually_graded(soffit_findings) -> None:
     graded = {tuple(f.element_tags): f.result for f in soffit_findings}
     assert graded.get(("SF-S-DUCT",)) is Result.PASS
     assert graded.get(("SF-S-SUITE",)) is Result.PASS
-    # SF-S-HP1 joined them on 2026-08-30 and is the one that has to be graded: it is the
-    # only box in the house holding a machine and two lanes side by side.
+    # SF-S-HP1 is the one that has to be graded: it is the only box in the house holding a
+    # machine and two lanes side by side.
     assert graded.get(("SF-S-HP1",)) is Result.PASS
 
 
@@ -150,15 +133,13 @@ def test_the_air_handler_hangs_inside_the_soffit_not_at_the_storey_ceiling(catli
     9'-0" — fourteen inches above the box every comment in the plan says they live in.
 
     Each machine is checked against ITS OWN box, and the split is still the point even
-    though all three now name the same one: a single shared section would hide a machine hung
+    though all three name the same one: a single shared section would hide a machine hung
     against the wrong soffit's underside, so the mapping is authored here rather than derived.
 
-    ** EQ-S-HP1-STRIP MOVED SF-S-DUCT -> SF-S-HP1 ON 2026-08-31. ** It was the 2 kW inline
-    duct heater and it lived in the trunk because it heated the trunk. It is a FACTORY heat
-    kit now (EQ-T-GREE-FLEXX-HEATKIT-46KW), staged off the air handler's own 24 VAC board and
-    sitting in its discharge — which the DUC24 it used to be drawn against could not do at
-    all, having no aux-heat terminal. SF-S-HP1's drop went 17" -> 21" for the deeper cabinet,
-    so its underside is 7'-3"; SF-S-DUCT is unchanged at 14" and 7'-10"."""
+    EQ-S-HP1-STRIP is a FACTORY heat kit (EQ-T-GREE-FLEXX-HEATKIT-46KW) staged off the air
+    handler's own 24 VAC board, sitting in its discharge — the DUC24 has no aux-heat
+    terminal, so it cannot be drawn there. SF-S-HP1's underside is 7'-3" (21" drop, for the
+    deeper cabinet); SF-S-DUCT is 7'-10" (14" drop)."""
     homes = {"EQ-S-HP1-AH": "SF-S-HP1", "EQ-S-HP1-STRIP": "SF-S-HP1",
              "EQ-S-ERV-MIX": "SF-S-HP1"}
     for tag, soffit_tag in homes.items():

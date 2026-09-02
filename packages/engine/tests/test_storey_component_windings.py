@@ -109,17 +109,15 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     """Four structures share the ``basement`` key; each must answer for itself."""
     windings = resolve_storey_windings(catlin_model.plan, "basement")
 
-    # The house basement, the garage foundation, the retaining garden, the sunken garden —
-    # and, since 2026-08-03, the glazed-brick veneer over the exposed south wall, which is a
-    # two-node open run standing off the house and so traces as its own component.
-    #
-    # **Six since 2026-08-28**: the sunken garden's framed walkout (W-B-S2-FR/W-B-S3-FR)
-    # stands ON the south wall's two curbs, and two wall edges between one pair of nodes is
-    # a junction with no answer — the solver said so with eight `integrity.junction_polygon`
-    # ERRORs. So the framed run has its own nodes at the same three x stations with
-    # `open_end` at each end, the same device W-B-BRICK uses, and traces as its own
-    # component keyed on N-B-S1F. Like the veneer it winds at +1 rather than the
-    # perimeter's -1, which is why both framed walls author `interior_room` explicitly.
+    # Six components: the house basement, garage foundation, retaining garden, sunken
+    # garden, the glazed-brick veneer over the exposed south wall (a two-node open run
+    # standing off the house, its own component), and the sunken garden's framed walkout
+    # (W-B-S2-FR/W-B-S3-FR). The walkout stands ON the south wall's two curbs, and two wall
+    # edges between one pair of nodes is a junction with no answer, so it has its own nodes
+    # at the same three x stations with `open_end` at each end (the same device W-B-BRICK
+    # uses) and traces as its own component keyed on N-B-S1F. Like the veneer it winds at
+    # +1 rather than the perimeter's -1, which is why both framed walls author
+    # `interior_room` explicitly.
     assert len(windings.sign_by_component_key) == 6
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]
@@ -130,23 +128,18 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # The house is a closed loop, authored clockwise-in-plan, and traces to -1 on its own
     # outer ring rather than borrowing anyone's scalar.
     assert windings.sign_for_wall(house) == -1.0
-    # **The sunken garden traces a real winding again as of 2026-08-30**, and it is -1.
+    # The sunken garden traces a real winding, and it is -1: ``W-SG-ARCH`` closes
+    # MW→SW→SE→ME→MW, giving an outer ring that traces to -1, the same sense as the house.
+    # Without a closing wall the five walls form one open chain (NW→MW→SW→SE→ME→NE) whose
+    # signed area is zero, so ``sign_for_component`` falls back to
+    # ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1) — latent, since every SUNKEN_GARDEN_WALL is
+    # one centred concrete layer, so the sign only reverses two layer polygons' vertex order
+    # and moves no face; it would stop being latent the moment one of these walls took a
+    # second layer.
     #
-    # It could not between 2026-08-18 and then: retiring the arched cross-wall left its five
-    # walls as one open chain (NW→MW→SW→SE→ME→NE) whose signed area is zero, so
-    # ``sign_for_component`` fell back to ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1). That
-    # fallback was recorded as latent — every SUNKEN_GARDEN_WALL is one centred concrete
-    # layer, so the sign only reverses two layer polygons' vertex order and moves no face.
-    #
-    # ``W-SG-ARCH`` closes MW→SW→SE→ME→MW, so there is an outer ring to trace and it traces
-    # to -1, the same sense as the house. The prediction that the flip was latent was
-    # checked in BOTH directions on the day: the resolved model was diffed before and after
-    # and no face moved. It is still latent, and still would stop being so the moment one of
-    # these walls took a second layer.
-    #
-    # It matters beyond tidiness now. ``engineering/retaining_basis._heelward_offset`` reads
+    # It matters beyond tidiness: ``engineering/retaining_basis._heelward_offset`` reads
     # this sign to decide which side of an off-centre footing is the HEEL, and refuses
     # (INCOMPLETE) rather than guess when the winding is unrecoverable — so the three
     # retaining walls' eccentricity depends on this assertion holding.
     assert windings.sign_for_wall(sunken_garden) == -1.0
-    assert UNRECOVERABLE_WINDING_OUTWARD_SIGN == 1.0  # the fallback it no longer takes
+    assert UNRECOVERABLE_WINDING_OUTWARD_SIGN == 1.0  # the fallback taken when unrecoverable

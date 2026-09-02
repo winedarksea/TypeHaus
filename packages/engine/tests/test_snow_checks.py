@@ -193,15 +193,14 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     assert findings
     assert all(f.result is Result.UNKNOWN for f in findings), \
         [f.message for f in findings]
-    # Since 2026-08-30 the handoff is *named* rather than described: the message says which
-    # engineering item governs, and the finding carries the authority beside its verdict.
-    # The gate is unmoved — still UNKNOWN, still blocking — and the only thing that changed
-    # is that the outstanding work has an id a professional seal can cover.
+    # The message names which engineering item governs, and the finding carries the
+    # authority beside its verdict — still UNKNOWN, still blocking, but with an id a
+    # professional seal can cover.
     assert all(f.authority is Authority.ENGINEERED for f in findings)
     assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE"}
-    # "11.875 TJI 230" since 2026-08-31 — the roof names its series so the price row and
-    # the PE scope both key off something orderable. Either spelling is an engineered
-    # profile the sawn table does not publish, which is the point being asserted.
+    # The roof names its series ("11.875 TJI 230") so the price row and the PE scope both
+    # key off something orderable. Either spelling is an engineered profile the sawn table
+    # does not publish, which is the point being asserted.
     assert any("TJI" in f.message or "I-joist" in f.message for f in findings)
     # The trussed garage roof is the case the two-gate split exists for: this engine will
     # never compute it, so the item can never reach draft and correctly blocks a *sealed*

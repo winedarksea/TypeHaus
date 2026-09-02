@@ -96,9 +96,9 @@ def test_headroom_ignores_structure_below_the_walk():
 
 def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):
     findings = {f.message.split()[0]: f for f in stair_headroom(catlin_ctx)}
-    # ST-G-SERVICE joined the census on 2026-08-22 — five risers from the garage slab to the
-    # service-door threshold, five concrete slabs before that and invisible to every stair
-    # rule. Nothing overhangs it: it climbs into open garage.
+    # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, five
+    # concrete slabs before that and invisible to every stair rule. Nothing overhangs it:
+    # it climbs into open garage.
     assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
@@ -117,7 +117,7 @@ def test_width_measures_the_tread_boards():
 
 def test_catlin_stair_widths_pass_at_or_above_the_minimum(catlin_ctx):
     findings = stair_width(catlin_ctx)
-    assert len(findings) == 4  # + ST-G-SERVICE (2026-08-22)
+    assert len(findings) == 4  # + ST-G-SERVICE
     assert all(f.result is Result.PASS for f in findings)
     # ST-S2A rides the 36" limit exactly — the tolerance idiom is what keeps it passing.
     assert any("36.00" in f.message for f in findings)
@@ -224,7 +224,7 @@ def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
         lambda e: None if isinstance(e, Railing)
         and e.role in ("handrail", "guard_and_handrail") else e)
     findings = stair_handrail(ctx)
-    assert len(findings) == 4  # + ST-G-SERVICE (2026-08-22)
+    assert len(findings) == 4  # + ST-G-SERVICE
     assert all(f.result is Result.UNKNOWN for f in findings)
     assert all("handrail" in f.message for f in findings)
 
@@ -310,14 +310,12 @@ def test_catlin_stair_wells_are_guarded(catlin_ctx):
     by_msg = {f.message.split(":")[0]: f.message for f in findings}
     # All three wells adjudicated, and each pass names the members actually doing the
     # guarding — the second-storey well's east edge is RL-S-STAIR plus wall W-S-C4B beyond
-    # y=30'-10", which is exactly the split this check exists to measure. FO-M-STAIR joined
-    # the list on 2026-08-21: the main floor's hole used to be cut in a concrete pour and is
-    # framed in FS-M-WEST's joists now, which is what makes it a well this rule can see.
-    # FO-A-HALL joined them on 2026-08-29 — the west attic's deck opened over the ST-M2S
-    # well so the stair hall runs to the roof. It is `purpose=STAIR` deliberately (this
-    # check filters on exactly that, and `code.R312_1_guard_height` never walks a void at
-    # all), and it passes on WALLS rather than on a railing: W-A-BA-E, W-A-HALL-S, W-A-C2B
-    # and W-A-N2B close all four sides.
+    # y=30'-10", which is exactly the split this check exists to measure. FO-M-STAIR is
+    # framed in FS-M-WEST's joists, which is what makes it a well this rule can see.
+    # FO-A-HALL: the west attic's deck opens over the ST-M2S well so the stair hall runs to
+    # the roof. It is `purpose=STAIR` deliberately (this check filters on exactly that, and
+    # `code.R312_1_guard_height` never walks a void at all), and it passes on WALLS rather
+    # than on a railing: W-A-BA-E, W-A-HALL-S, W-A-C2B and W-A-N2B close all four sides.
     assert set(by_msg) == {"FO-M-STAIR", "FO-S-STAIR", "FO-A-STAIR", "FO-A-HALL"}
     assert "RL-S-STAIR" in by_msg["FO-S-STAIR"]
     assert "RL-A-STAIR" in by_msg["FO-A-STAIR"]

@@ -181,7 +181,6 @@ def test_well_partition_is_framed_between_subfloor_and_arrival(catlin_model,
         assert member.z1_m <= arrival + 1e-9, member.child_key
     for stud in studs:
         assert stud.p0 == stud.p1 and stud.orient is not None, stud.child_key
-    # The old single full-height box is gone.
     assert "well-partition" not in {m.child_key for m in stair.members}
 
 
@@ -222,9 +221,8 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert hanger.connection.startswith("concrete-wall-hanger:")
         # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
         assert not hanger.connection.startswith("framed-wall-ledger:")
-        # -1.521 m: the basement went DOWN 4" with its storey on 2026-08-21 (-1.410 ->
-        # -1.555) and back UP 2 9/16" on 2026-08-23, when the flat bearing seat took the
-        # slab to -9'-1 7/16". The landing rides the storey either way.
+        # -1.521 m: the flat bearing seat puts the slab at -9'-1 7/16". The landing rides
+        # the storey.
         assert hanger.z1_end_m == pytest.approx(-1.521, abs=0.01)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
@@ -397,14 +395,11 @@ def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
 
 # ------------------------------------------- 8b. the 2D plan symbol is surfaces only
 #
-# This section exists because the regression it guards shipped. `_emit_stairs` draws one
-# polyline per member whose category is in {tread, winder, landing}, and that filter was
-# correct when a landing was a *single* member. 782a607 turned each half-landing into a deck
-# board + 2x8 joists on a 16" grid + two perimeter rims and left every one of them
-# categorised "landing", so the drawer quietly became a framing plan: ~12 stray A-STAIR
-# polylines per U-stair landing zone, which read as uneven tread marks and a split down the
-# middle of each landing. The only 2D stair test at the time asserted that no A-STAIR
-# polyline had zero length, which every one of those strays passed.
+# `_emit_stairs` draws one polyline per member whose category is in {tread, winder,
+# landing}. A half-landing is a deck board + 2x8 joists on a 16" grid + two perimeter rims,
+# all categorised "landing" — so that filter alone quietly becomes a framing plan: ~12
+# stray A-STAIR polylines per U-stair landing zone, reading as uneven tread marks and a
+# split down the middle of each landing.
 
 def _stair_polylines(catlin_model, storey: str, stair_uid: str) -> list:
     return [node for node in build_floorplan(catlin_model, storey).nodes
@@ -659,8 +654,8 @@ def test_every_stair_walks_from_its_source_floor_to_its_destination_floor(catlin
         target = catlin_model.plan.storey(stair.to_storey)
         assert source is not None and target is not None
         # A flight's own ends where it states them (ST-G-SERVICE, a step-down within one
-        # storey), the storey table where it does not — which is every flight that rises
-        # from one floor to the next, and was every flight there was before 2026-08-22.
+        # storey), the storey table where it does not — every flight that rises from one
+        # floor to the next.
         springing = (stair.base_elevation_m if stair.base_elevation_m is not None
                      else source.elevation.meters)
         arrival = (stair.arrival_elevation_m if stair.arrival_elevation_m is not None

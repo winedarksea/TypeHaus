@@ -163,17 +163,11 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     # every S-5! row regardless of scope and use `>=` throughout, so this pins the SPLIT
     # and never an exact count or a single row's index.
     #
-    # Both halves fell on 2026-08-26 and the rule did not. The carried count was >= 11, all
-    # of it CanDuit rings on the house walls; the exposed-fastener cladding swap took those
-    # onto through-panel straps, which reach the wall themselves and carry nothing. ColorGard
-    # is the remaining ``requires_role`` part, and it pins the rule the same way.
-    #
-    # The MODELED half went to zero in the same pass, and that is the point rather than an
-    # erosion of the test. An S-5! closes on a seam; the house has no seam left to close on,
-    # so the two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP, CN-A-PV-CLAMP) and the vent
-    # riser's were removed as uninstallable. Every S-5! the model still bills is implied by
-    # the ColorGard rail on the ROOF, which kept its standing seam — so this now pins the
-    # split as "carried only", which is a stronger statement than ">= 2 modeled" was.
+    # The MODELED half is zero, and that is the point rather than an erosion of the test. An
+    # S-5! closes on a seam; the house has no wall seam left to close on — the exposed-
+    # fastener cladding swap moved the wall clamps onto through-panel straps, which carry
+    # nothing. Every S-5! the model still bills is implied by the ColorGard rail on the ROOF,
+    # which kept its standing seam — so this pins the split as "carried only".
     s5_rows = [row for row in rows if row["part_number"] == "S-5!"]
     assert s5_rows
     modeled = sum(row["count"] for row in s5_rows if row["scope"] == "modeled connector")

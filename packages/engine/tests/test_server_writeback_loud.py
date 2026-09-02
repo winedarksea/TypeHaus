@@ -1,9 +1,10 @@
 """A writeback that cannot land must fail loudly, not 200-then-snap-back.
 
-Before this, an edit to an element authored in a non-`# haus: editable` file applied on the
-in-memory fast path, returned 200, rendered — and then the async writeback raised
-`WritebackError` into a swallowed log line, after which `_reconcile` adopted source truth and
-broadcast a generic `file-changed` the UI hot-reloaded silently. Two defenses:
+The failure mode this guards against: an edit to an element authored in a non-`# haus:
+editable` file applies on the in-memory fast path, returns 200, renders — and then the
+async writeback raises `WritebackError` into a swallowed log line, after which
+`_reconcile` adopts source truth and broadcasts a generic `file-changed` the UI hot-reloads
+silently. Two defenses:
 
 * `can_route` rehearses routing *before* the fast path → synchronous 422;
 * `_notify_writeback_failed` backstops anything routing can't foresee (lint, external edit).

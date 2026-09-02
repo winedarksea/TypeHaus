@@ -57,8 +57,8 @@ def test_a_flight_with_no_opening_resolves_from_its_own_elevations(catlin_model)
 
 
 def test_the_flight_bounds_itself_when_no_opening_bounds_it(catlin_model):
-    """``outline`` is read by the plan drawing and the room-area deduction alike, and it
-    used to be the opening's ring because that was the only footprint there was."""
+    """``outline`` is read by the plan drawing and the room-area deduction alike; with no
+    opening it comes from the flight's own bounds, not an opening's ring."""
     storey = sorted(_storeys(catlin_model))[0]
     stair = _garage_flight(from_storey=storey, to_storey=storey,
                            base_elevation=ft(0), top_elevation=inch(34),
@@ -93,7 +93,7 @@ def test_no_opening_and_no_elevations_is_an_authoring_error(catlin_model):
 
 
 def test_no_opening_needs_a_start(catlin_model):
-    """The opening used to supply the origin; with none, the flight must say where it is."""
+    """With no opening to supply the origin, the flight must say where it is."""
     storey = sorted(_storeys(catlin_model))[0]
     stair = _garage_flight(from_storey=storey, to_storey=storey,
                            base_elevation=ft(0), top_elevation=inch(34), start=None)

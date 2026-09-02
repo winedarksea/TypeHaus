@@ -59,8 +59,7 @@ def test_s100_carries_footings_pads_and_slabs_from_every_storey(catlin_model):
 
 def test_s100_excludes_structural_decks_from_the_slab_schedule(catlin_model):
     # SL-M-DECK spans the basement: framing, not foundation, so it may not appear as
-    # slab-on-grade. (The porch used to be the second half of this — SL-SG-PORCH riding a
-    # joisted deck — until the slab was deleted and FS-SG-PORCH became the porch floor.)
+    # slab-on-grade.
     on_grade = {slab.tag for slab in slabs_on_grade(catlin_model)}
     assert "SL-M-DECK" not in on_grade
 
@@ -85,34 +84,30 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # but is 10"x5" cast on the house footing's toe (params/foundations.py).
     strip = next(row for row in footings.rows
                  if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
-    # -9.79', not the -10.00' it read until 2026-08-23: the strips follow the basement
-    # slab, and the slab came up 2 9/16" to meet the deck's flat bearing seat.
+    # -9.79': the strips follow the basement slab, bearing on the deck's flat bearing seat.
     assert strip[2] == '20" W × 8" D' and strip[3] == "-9.79'"
     walls = tables["FOUNDATION WALL SCHEDULE"]
-    # A whole-inch monolithic pour, thickness and run both stated. This used to read the
-    # sunken garden's 16" arched cross-wall; it reads the 12" side/retaining walls that
-    # outlived it (2026-08-18). Every THK is an inch string and every RUN a lineal foot.
+    # A whole-inch monolithic pour, thickness and run both stated: the 12" side/retaining
+    # walls. Every THK is an inch string and every RUN a lineal foot.
     assert any(row[1] == "SUNKEN_GARDEN_WALL" and row[2] == '12"' and row[3].endswith("LF")
                for row in walls.rows)
     assert all(row[2].endswith('"') and row[3].endswith("LF") for row in walls.rows)
     slabs = tables["SLAB-ON-GRADE SCHEDULE"]
     # Thickness keeps its eighth-inch fraction rather than rounding a 3-1/2" slab to 4".
-    # The counterexample this used to lean on — SL-G-HYDRANT-PED, a genuinely 4" topping
-    # block, so folding it in would have passed by rounding — was retired 2026-08-03
-    # (houses/catlin/notes/garage_hydrant.md), and every remaining pour is 3-1/2".
+    # SL-G-HYDRANT-PED, a genuinely 4" topping block that would fold in by rounding, is not
+    # in the model (houses/catlin/notes/garage_hydrant.md); every remaining pour is 3-1/2".
     assert slabs.columns[1] == "TAG" and slabs.columns[2] == "THK"
     poured = {row[1]: row[2] for row in slabs.rows}
     assert poured["SL-B-FLOOR"] == '3-1/2"' and poured["SL-G-FLOOR"] == '3-1/2"'
     assert "SL-G-HYDRANT-PED" not in poured
     # Every *floor* pour is 3-1/2". SL-G-STEP-0 is 6" — the landing at the garage service
     # door's 0'-0" threshold, 2'-10" over the slab at grade, and a 6" pad is the pour rather
-    # than a rounding of one. Its four treads were four more 6" slabs until 2026-08-22 and
-    # are a pressure-treated `Stair` now (ST-G-SERVICE), so they are framing, not flatwork,
-    # and this schedule is right not to list them.
-    # SL-SG-FROST-* are the R403.3 wing insulation under the sunken-garden slab (2026-08-22):
-    # 1" and 2" of XPS, `role="band"` assemblies with no structure in them at all. They are
-    # slabs only because a horizontal band of foam has no other element kind to be, and they
-    # are not pours.
+    # than a rounding of one. Its treads are a pressure-treated `Stair` (ST-G-SERVICE), so
+    # they are framing, not flatwork, and this schedule is right not to list them.
+    # SL-SG-FROST-* are the R403.3 wing insulation under the sunken-garden slab: 1" and 2"
+    # of XPS, `role="band"` assemblies with no structure in them at all. They are slabs
+    # only because a horizontal band of foam has no other element kind to be, and they are
+    # not pours.
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
                if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-"))), poured
     assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
@@ -128,9 +123,8 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     # number was never the wrong part — the word "GRADE" was.
     assert '42" MIN BELOW THE LOWEST ADJACENT FINISHED GRADE' in notes
     assert "SL-SG-FLOOR, NOT THE SITE GRADE PLANE" in notes
-    # The note reads the tile's authored discharge. It used to say "TO SUMP SM-B-RADON"
-    # merely because a sump solid existed somewhere in the model, while every DrainTile on
-    # the project discharges to daylight — a sheet note that contradicted its own drawing.
+    # The note reads the tile's authored discharge — every DrainTile on the project
+    # discharges to daylight.
     assert "DRAIN TILE" in notes and "DRAINING TO DAYLIGHT" in notes
     assert "STEP FOOTING" in notes
     # step callouts are placed at real adjacencies, not at every elevation pair
@@ -143,12 +137,10 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
     ids = {finding.check_id for finding in foundation_sheet_findings(catlin_model)}
     assert {"sheet.foundation.slab_reinforcement",
             "sheet.foundation.sill_anchorage"} <= ids
-    # `sheet.foundation.vapour_retarder` is NOT in that set any more, and both halves of why
-    # are the point: CATLIN_SLAB_FLOOR and GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745
-    # Class A retarder over a 4" capillary break since 2026-08-22, and the exterior slabs
-    # that never needed one — the garden floor, the garage step landing — are out of
-    # R506.2.3's scope rather than failing it. This finding was the only voice the missing
-    # layer ever had, and it spoke only on the permit sheet.
+    # `sheet.foundation.vapour_retarder` is NOT in that set: CATLIN_SLAB_FLOOR and
+    # GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745 Class A retarder over a 4" capillary
+    # break, and the exterior slabs that never needed one — the garden floor, the garage
+    # step landing — are out of R506.2.3's scope rather than failing it.
     assert "sheet.foundation.vapour_retarder" not in ids
     sheet_text = _joined(build_foundation_plan(catlin_model))
     assert "NOT SHOWN — MISSING MODEL INPUTS" in sheet_text

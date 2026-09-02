@@ -22,8 +22,7 @@ def _loader_errors(findings: list[dict]) -> list[dict]:
 def uneditable_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
     copy_house(CATLIN, dst)
-    # mep_hvac.py, not the old plan/mep.py: the MEP source was split by system and mep.py
-    # is now only the aggregator lists, which author no element and carry no header.
+    # mep_hvac.py, not plan/mep.py: mep.py holds only aggregator lists, no element, no header.
     mep = dst / "plan" / "mep_hvac.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
     return dst
@@ -51,12 +50,9 @@ def test_loader_findings_survive_a_fast_edit(client) -> None:
     them would make the error blink out until the next full rebuild."""
     c, _ = client
     model = c.get("/model").json()
-    # A wall authored with the `Wall(...)` constructor, not just any wall. `model["walls"]`
-    # is ordered by uid, so which one lands first is arbitrary and moves whenever a wall is
-    # added — on 2026-08-23 it became W-B-STR3, a `FoundationWall`, and the patch came back
-    # 422 "no editable file hosts update Wall". That is a real (pre-existing) gap in the
-    # writeback — `type: "Wall"` does not reach a FoundationWall — but it is not what this
-    # test is about, so pick a wall the op can actually address.
+    # `model["walls"]` is ordered by uid, so which one lands first is arbitrary. A
+    # `FoundationWall` 422s ("no editable file hosts update Wall") — a real writeback gap,
+    # `type: "Wall"` does not reach a FoundationWall — so pick a wall the op can address.
     foundation = {w["tag"] for w in model["walls"] if w.get("is_foundation")}
     wall = next(w for w in model["walls"] if w["tag"] not in foundation)
     resp = c.patch("/plan", json={

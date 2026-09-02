@@ -182,12 +182,6 @@ def test_the_overlay_hangs_off_the_cladding_head_not_the_structural_deck(catlin_
         f"the apron caps the cladding head at {head:.2f}, not {top:.2f}"
     assert min(z for (_u, z) in apron.points) < head, "and it laps DOWN over that head"
 
-    # The vent screen used to be tested here beside the apron, as the miniature version of
-    # the same disease — its band offsets are perpendicular to the plane and were being read
-    # as vertical. It is gone with the vent mat it sat on (2026-08-31): CATLIN_ROOF has no
-    # air gap above the deck any more, so there is nothing at the eave to screen. The apron
-    # is the whole of this test now, and it is the piece the bug was actually about.
-
 
 def test_garage_foundation_draws_slab_thermal_break(catlin_model):
     # The 1" thermal break is its own labelled component (xps + sealant cap), drawn where a
@@ -246,10 +240,10 @@ def test_authored_sauna_detail_draws_room_scale_vocabulary(catlin_model):
 
     scene = build_authored_detail_scene(catlin_model, _sauna_slice(catlin_model))
     tags = _tags(scene)
-    # Liner base + slab thermal break (previously dormant components).
+    # Liner base + slab thermal break.
     assert "detail-component:sauna-baseboard" in tags
     assert "detail-component:thermal-break" in tags
-    # New room-scale vocabulary.
+    # Room-scale vocabulary.
     assert "detail-component:sauna-bench" in tags, "two-tier benches expected"
     assert "detail-component:sauna-heater" in tags, "heater clearance box expected"
     assert "detail-component:sauna-floor-slope" in tags, "floor slope to drain expected"

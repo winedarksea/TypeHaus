@@ -1,9 +1,7 @@
 """The site earth sheet's cut-outs (``resolve/site_earth.py``).
 
-The sheet used to be cut only by the house's own ground-storey rooms, so it sliced straight
-through the freestanding garage and the open-air sunken garden — two structures that share
-no storey, room set, or wall loop with the house. The derivation is now "every slab that
-finishes at or below grade", which reaches all three without naming any of them.
+Derivation: every slab that finishes at or below grade. That reaches the house basement,
+the freestanding garage, and the open-air sunken garden without naming any of them.
 """
 
 from __future__ import annotations
@@ -21,8 +19,8 @@ FT = 0.3048
 HOUSE_BASEMENT_POINT_FT = (18.0, 18.0)
 GARAGE_POINT_FT = (12.0, 60.0)
 SUNKEN_GARDEN_POINT_FT = (18.0, -15.0)
-# Open yard — earth must still be there. East of the garage (which reaches x=24', y=41'-65'
-# now that it stands 4' off the house) and clear of the breezeway in the slot between them.
+# Open yard — earth must still be there. East of the garage (x=24', y=41'-65') and clear
+# of the breezeway in the slot between them.
 OPEN_YARD_POINT_FT = (30.0, 48.0)
 
 
@@ -48,8 +46,8 @@ def test_raised_walking_surfaces_do_not_displace_soil(catlin_model) -> None:
     Its joists cantilever 6" past the garden walls, so the strip under that overhang is
     covered by the balcony deck and by nothing at grade — earth belongs there.
 
-    Read off FS-SG-DECK's deck sheet, not a SL-SG-DECK solid: the aluminium plank became the
-    floor system's ``subfloor`` on 2026-08-22 and there is no deck Slab any more.
+    Read off FS-SG-DECK's deck sheet, not a SL-SG-DECK solid: the aluminium plank is the
+    floor system's ``subfloor`` — there is no deck Slab.
     """
     grade = site_grade_elevation_m(catlin_model)
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")

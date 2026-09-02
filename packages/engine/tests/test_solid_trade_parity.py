@@ -1,21 +1,16 @@
 """Solid-trade parity between the engine table and the three.js viewer.
 
-``SOLID_CATEGORY_TRADE`` in ``emit/trades.py`` used to be mirrored by a second, hand-authored
-table inlined in ``ui/src/three/solidMaterials.ts``, linked only by a test reading the
-TypeScript as text — the same arrangement ``test_palette_parity.py`` used for the colour
-tables. That second table is gone: ``solidMaterials.ts`` now imports
-``ui/src/generated/vocabulary.json`` (generated from ``SOLID_CATEGORY_TRADE`` by
-``emit/vocabulary_manifest.py``) directly, so a TypeScript-only entry or a disagreement
-between the two is no longer possible — there is nothing left on the TypeScript side to
-disagree. What remains possible is the checked-in JSON going stale relative to
-``SOLID_CATEGORY_TRADE``, which ``test_the_checked_in_manifest_matches_a_fresh_build`` below
-catches.
+``solidMaterials.ts`` imports ``ui/src/generated/vocabulary.json`` (generated from
+``SOLID_CATEGORY_TRADE`` by ``emit/vocabulary_manifest.py``), so nothing on the TypeScript
+side can disagree with the table. What remains possible is the checked-in JSON going stale
+relative to ``SOLID_CATEGORY_TRADE``, which ``test_the_checked_in_manifest_matches_a_fresh_build``
+below catches.
 
-The bug behind the table: every ``ResolvedSolid`` was handed to the ``concrete`` trade whatever
-its category, which filed the standalone ``Beam``/``Post`` solids away from the studs and rafters
-they carry (while an authored *ridge* beam appeared under framing, because the resolver re-types
-that one as a ``FramedMember``), and put all 791 routed pipe solids behind the Concrete toggle
-instead of Plumbing.
+The bug this guards against: every ``ResolvedSolid`` handed to the ``concrete`` trade
+whatever its category, which files standalone ``Beam``/``Post`` solids away from the studs
+and rafters they carry (an authored *ridge* beam is exempt — the resolver re-types it as a
+``FramedMember``), and puts routed pipe solids behind the Concrete toggle instead of
+Plumbing.
 """
 
 from __future__ import annotations
@@ -32,13 +27,8 @@ from _helpers import REPO_ROOT
 VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
-# Keep the reasons in emit/trades.py, next to the table.
-#
-# Empty as of 2026-08-15. ``railing`` and ``connector`` were the last two, and both were
-# escapes rather than answers: a guard rode the concrete toggle and so did 49 PV rail clamps.
-# Guards went to ``stairs`` (with the plan viewer's gate moving in the same change) and
-# connection hardware split by kind — structural hardware to framing, snow rails and seam
-# clamps to roof. What is left on the concrete fallback is pours and what is cast into them.
+# Keep the reasons in emit/trades.py, next to the table. Currently empty — what is left on
+# the concrete fallback is pours and what is cast into them.
 DELIBERATELY_UNCLASSIFIED: set[str] = set()
 
 
@@ -96,8 +86,7 @@ def test_routed_pipe_runs_are_plumbing(catlin_model) -> None:
 
 
 def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:
-    """Drainage used to be split: the gutter under Roof, the leader with it (it carried the
-    gutter category outright), and the sump pit on the concrete fallback. One run, one toggle."""
+    """The whole stormwater run — gutter, leader, sump pit — is one trade, one toggle."""
     for category in ("gutter", "downspout", "sump"):
         assert solid_trade(category) == "drainage"
     assert DRAINAGE_CATEGORIES == {"gutter", "downspout", "sump",

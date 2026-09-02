@@ -306,8 +306,8 @@ def test_supply_on_concrete_is_lacquered_copper(catlin_plan, catlin_model, catli
     assert not _fails(findings), [f.message for f in _fails(findings)]
     graded = {f.element_tags[0] for f in findings}
     # The trunks hung under the surviving concrete band are what the rule is about. The
-    # band is x 18'-36', y 13'-36' since the 2026-08-21 deck overhaul, so the trunks that
-    # still qualify are the ones whose east ends reach it.
+    # band is x 18'-36', y 13'-36', so the trunks that still qualify are the ones whose
+    # east ends reach it.
     assert {"PR-B-CW-TRUNK", "PR-B-HW-KITCH"} <= graded
     # A run that never leaves a wall or a joist bay is not visible pipe and is not asked.
     assert "PR-M-CW-HYD-DIST" not in graded
@@ -330,8 +330,7 @@ def test_the_rule_re_derives_from_what_is_overhead_not_from_a_tag_list(
         uid="TSTPM00001", tag="PR-B-CW-NEW", system=PipeSystem.WATER_COLD,
         path=(pt(ft(12), ft(6)), pt(ft(16), ft(6))), diameter=inch(0.75),
         # 7'-6" over the basement slab, i.e. -1'-7 7/16" project: clear under the -13 7/16"
-        # bearing seat. It read ft(8) until 2026-08-23, which is the seat exactly — a trunk
-        # inside the pour is not a trunk hung under it.
+        # bearing seat — a trunk inside the pour is not a trunk hung under it.
         elevations=(ft(7, 6), ft(7, 6)), material="pex")
     under_concrete = PipeRun(
         uid="TSTPM00002", tag="PR-B-CW-NEW2", system=PipeSystem.WATER_COLD,
