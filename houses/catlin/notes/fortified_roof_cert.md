@@ -51,14 +51,14 @@ alternative.
 
 ## Deck attachment — §4.2.2 — **RESOLVED BY DELETION, 2026-08-31**
 
-**The gap was:** the outer 5/8" OSB deck was **screwed** (10" SDWH191000DB through 6" of
-foam into the rafters), not nailed — RSRS-01 ring-shank nailing at 4" o.c. max does not
-apply to a screwed nailbase assembly. It was the standard's "other attachment method"
-branch rather than a deviation from it, and it wanted a PE letter to say so.
+**The gap that would exist with a screwed nailbase:** an outer 5/8" OSB deck **screwed**
+through foam into the rafters is not nailed — RSRS-01 ring-shank nailing at 4" o.c. max does
+not apply to a screwed nailbase assembly. It is the standard's "other attachment method"
+branch rather than a deviation from it, and it wants a PE letter to say so.
 
-**It closes by ceasing to exist.** The roof redesign deletes the nailbase and the foam it
-was screwed through (`plan/assemblies.py::CATLIN_ROOF`, `notes/roof_flash_and_batt.md`).
-There is now ONE deck — 5/8" CDX plywood nailed straight to the TJI rafters — which is the
+**It closes by ceasing to exist.** The roof deletes the nailbase and the foam it would be
+screwed through (`plan/assemblies.py::CATLIN_ROOF`, `notes/roof_flash_and_batt.md`).
+There is ONE deck — 5/8" CDX plywood nailed straight to the TJI rafters — which is the
 ordinary condition §4.2.2 is written for, and RSRS-01 ring-shank nailing at 4" o.c. applies
 to it directly with nothing to explain. **No PE letter is needed for this item.** Item 1
 (§2.5, the structural ridge beam) is untouched and still open.
@@ -75,11 +75,9 @@ Two consequences worth stating so this is not re-opened by mistake:
 
 ## Sealed roof deck — §4.4
 
-**Gap (closed by spec 2026-08-30; closed OUTRIGHT by construction 2026-08-31):** the taped
-layer was the *inner* ZIP nailbase; the *outer* OSB deck (the one actually under the
-covering) had an untaped-seam generic synthetic underlayment with no ASTM/ICC citation or
-fastening schedule stated. The 2026-08-30 fix taped the OSB seams (Method 1) and cited ASTM
-D226 Type II / ICC-ES AC188 on the synthetic.
+**Gap, closed OUTRIGHT by construction:** a taped-seam-only fix would have taped the OSB
+deck seams (Method 1) and cited ASTM D226 Type II / ICC-ES AC188 on a synthetic
+underlayment.
 
 **What stands now is the strongest form of the requirement, not a specification of the
 weakest.** The roof carries a **fully-adhered high-temp butyl membrane over the whole deck**
@@ -104,7 +102,7 @@ courses of foam.
 
 ## Drip edge / flashing — §4.5, §4.6
 
-**Gap (closed by spec, 2026-08-30):** the eaves (west/east) already carried a full
+**Gap (closed by spec):** the eaves (west/east) already carried a full
 drip-edge/gutter chain (`params/roof_trim.py`); the rakes (south/north gables) only got the
 derived corner-trim angle (`resolve/roof_trim.py::_corner_trim_members`), which follows the
 roof slope but is not a `Flashing(kind=DRIP_FLASHING)` element FORTIFIED's checklist can
@@ -159,9 +157,9 @@ path than the ones `uplift_path.py` walks.
 | # | Section | Item | Status | Owner |
 |---|---|---|---|---|
 | 1 | §2.5 | PE letter: structural ridge beam vs. collar ties | open | procurement |
-| 2 | §4.2.2 | PE letter: screwed-nailbase deck attachment vs. RSRS-01 | **closed 2026-08-31** — the nailbase is deleted; one nailed CDX deck, RSRS-01 applies directly | design |
-| 3 | §4.4 | Sealed deck spec (tape + underlayment citation) | **closed 2026-08-30**, superseded 2026-08-31 by a fully-adhered deck membrane | spec |
-| 4 | §4.5/4.6 | Drip edge at eaves AND rakes | **closed 2026-08-30** | spec |
+| 2 | §4.2.2 | PE letter: screwed-nailbase deck attachment vs. RSRS-01 | **closed** — the nailbase is deleted; one nailed CDX deck, RSRS-01 applies directly | design |
+| 3 | §4.4 | Sealed deck spec (tape + underlayment citation) | **closed** by a fully-adhered deck membrane | spec |
+| 4 | §4.5/4.6 | Drip edge at eaves AND rakes | **closed** | spec |
 | 5 | §4.7.3 | Manufacturer UL 580/1897 DP test report | open | procurement |
 | 6 | §7.2.3 | Manufacturer UL 2218 Class 4 hail letter | open | procurement |
 | 7 | §4.10 | PE letter: PV load path | open | procurement |

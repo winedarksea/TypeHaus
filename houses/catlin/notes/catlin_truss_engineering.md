@@ -3,9 +3,7 @@
 **House:** catlin, Minnesota (MN 2020 Residential Code, adopting the 2018 IRC).
 **Element:** the exterior wall's cladding stand-off — one tier of flat horizontal 2x4 girts
 carried on 4-1/2" blocks, standing in free air outboard of 4" of closed-cell spray foam.
-**Written:** 2026-08-26. **Revised 2026-09-01**, when the inner girt tier was deleted, the
-courses closed from 32" to 24" and the two 5" screws per crossing became one 8" one. Every
-number below is recomputed here from first principles, with the arithmetic shown, so a
+Every number below is recomputed here from first principles, with the arithmetic shown, so a
 reviewer can check the whole chain without opening the model.
 **What is asked of the reviewer:** this is a plain NDS connection design under IRC R301.1.3
 engineered design. It is not a prescriptive furring schedule and does not claim to be one.
@@ -35,9 +33,9 @@ Foam total 4", in one lift. Cladding face 6" proud of the sheathing at the mount
 outside this wall moved when the tier was deleted. Windows are OUTIE: the mount plane is the
 outer face of the girt.
 
-**What was deleted, and why.** Until 2026-09-01 bands B and C carried a second, INNER girt
-tier — plain SPF 2x4 flat, buried in the foam, with the outer tier's blocks bearing on it
-and a second 5" screw into it. It went for three reasons, in order of size:
+**Why there is only one girt tier.** A second, inner tier — plain SPF 2x4 flat, buried in the
+foam, with the outer tier's blocks bearing on it and a second screw into it — is rejected for
+three reasons, in order of size:
 
 1. **It sat directly on the sheathing**, so it gave its own screw no thermal break at all,
    and it cost a **10.9 % framing fraction in the first 1-1/2" of the foam** to hold up
@@ -72,10 +70,8 @@ support over its whole through-length** — no gap, no foam and no standoff in t
 is the failure mode IRC Table R703.15.1 tabulates and the reason that table's geometry does
 not describe this wall. The foam is sprayed around it afterwards.
 
-As built by the model: **1,128 blocks** (3,384 plies) and **1,128 screws** across the house.
-The count fell from 3,304 five-inch screws, and both halves of that are the design — deleting
-the inner tier deletes one screw per station, and putting the block on every OTHER stud
-halves what is left. The crossing tributary went the other way, 16" x 32" = 3.56 ft2 to
+As built by the model: **1,128 blocks** (3,384 plies) and **1,128 screws** across the house,
+one screw per station, block on every OTHER stud. The crossing tributary is
 **32" x 24" = 5.33 ft2**, and every load below moves with it.
 
 **Openings are framed the same way as the field, and this must not drift.** At every rough
@@ -235,7 +231,7 @@ rotation on its own.
 foam and no standoff in the path. This is an ordinary NDS connection, not a cantilevered
 fastener through insulation.
 
-**Stainless was considered and rejected (2026-09-01).** SDWS27800SS, Type 316, 8", IAPMO UES
+**Stainless was considered and rejected.** SDWS27800SS, Type 316, 8", IAPMO UES
 ER-192 — withdrawal is a wash (385 lb allowable against this screw's 374 on the same basis)
 and shear is slightly worse, which is irrelevant because the screw carries no gravity. It
 was rejected on driving torque, on cost, and because its thermal advantage is roughly half
@@ -331,18 +327,16 @@ stock pancake screw a panel order ships with, and this is a specification line, 
   no 1-1/2" screw in a 1-1/2" girt can give. **That needs a written variance from the
   supplier** and is an open item.
 
-> **For the reviewer — the panel's own span, and a citation this note used to get wrong.**
+> **For the reviewer — the panel's own span.**
 > The arithmetic above is the fastener into the girt. The **panel spanning between courses**
-> is a separate question, and until 2026-09-01 this repo answered it with **ICC-ES ESR-4729**
-> in several places. **ESR-4729 does not cover this wall**: it is Western States' report, it
-> covers ROOF panels only, and it is written for 24 ga minimum over 16 ga STEEL supports.
-> The correct sources are the manufacturers' own wall span tables, and at 24" they are
-> comfortable — ASC PS230, Metal Panels Inc. and Homewood all publish 144-168 psf allowable
-> negative for PBR at a 3'-0" span, so 6x or better at 24"; Metal Sales publishes 58 psf
-> outward / 43 psf inward for 24 ga board & batten at 24", which is d/c 0.31 / 0.43 against
-> the 18.3 psf ASD zone-5 suction that `notes/board_batten_girt_span.md` works from the
-> house's actual mean roof height. The 32" spacing this note previously carried is what made
-> the question urgent; 24" is what closed it.
+> is a separate question. **ESR-4729 does not cover this wall**: it is Western States'
+> report, it covers ROOF panels only, and it is written for 24 ga minimum over 16 ga STEEL
+> supports. The correct sources are the manufacturers' own wall span tables, and at 24" they
+> are comfortable — ASC PS230, Metal Panels Inc. and Homewood all publish 144-168 psf
+> allowable negative for PBR at a 3'-0" span, so 6x or better at 24"; Metal Sales publishes
+> 58 psf outward / 43 psf inward for 24 ga board & batten at 24", which is d/c 0.31 / 0.43
+> against the 18.3 psf ASD zone-5 suction that `notes/board_batten_girt_span.md` works from
+> the house's actual mean roof height.
 
 **Coating.** The girt screw of §3 passes through KDAT into SPF, so the SDWS's DB coating
 (rated for treated lumber) is the specification. See §9 for the one open question behind
@@ -435,7 +429,7 @@ for it three times over.** A third as many screws each crossing three times the 
 roughly a wash in count-times-length, and the new one loses on top of that because it crosses
 foam where the old block-1 screw crossed only 1-1/2". The comparison, wall to wall:
 
-| | two tiers (to 2026-08-31) | one tier (2026-09-01) |
+| | two tiers | one tier (this wall) |
 |---|---|---|
 | wood only | R-37.6 | **R-39.8** |
 | with fasteners | R-36.1 | **R-37.9** |
@@ -479,8 +473,7 @@ to chase and the bucks are not.
 
 ### 7.1 Against the rigid-foam wall — the comparison this wall type exists to win
 
-This section is new on 2026-09-01, and it is the argument the note has never written down.
-The owner's intuition is the right objection to put: *this wall pays for wood inside the
+This is the argument the owner's intuition raises: *this wall pays for wood inside the
 insulation layer, and a rigid-foam wall does not.* That is true. Here is what it buys back.
 
 Same studs, same OSB, same 4" exterior layer, same 8" screws; only the exterior layer differs.
@@ -520,10 +513,10 @@ the sheathing rather than standing the cladding off a creeping substrate.
 > a compressible span — and not read off a table. Read IRC R703.15's own table at 4" foam
 > before this note is printed with the ratio in it, or print the argument without the ratio.
 
-`prices.toml` (~767-770) has said the structural half of this in its own words since
-2026-08-26: the girt screws replaced *"the 10" screws holding 1/2" furring through 4" of
-rigid board... every fastener here is wood-to-wood with continuous lateral support and
-nothing bears on foam."* This section is that sentence with the R numbers attached.
+`prices.toml` (~767-770) says the structural half of this in its own words: the girt screws
+replaced *"the 10" screws holding 1/2" furring through 4" of rigid board... every fastener
+here is wood-to-wood with continuous lateral support and nothing bears on foam."* This
+section is that sentence with the R numbers attached.
 
 ---
 
@@ -559,13 +552,6 @@ deliberately, on the owner's premise that the labour is worth more than the line
 the cladding installer rather than letting them discover it.
 
 ## 9. Risks, stated plainly
-
-**RETIRED: "the 1/2" gap is inside ccSPF surface tolerance."** It was the first risk on this
-page for a week, and the one-tier wall answers it rather than mitigating it. The applicator
-no longer sprays to an invisible plane and shaves back to it: **the blocks stand 1/2" proud
-at every crossing and ARE the gauge**, visible across the whole wall while the gun is
-running, at 32" x 24". The two margin-buying alternatives that used to be offered here — a
-2" block giving a 1" gap, or 3-3/4" of foam — are both withdrawn as unnecessary.
 
 **Foam shrinkage at the block, and the fillet.** Planed lumber shrinks; a square cold joint
 where the foam meets a block side is exactly where a crack goes, and this wall has 1,128
@@ -607,8 +593,8 @@ threshold near 15 % MC — and this screw is encapsulated in closed-cell foam, w
 service by definition. **Confirm the supplier's treatment before this note closes the
 corrosion question.**
 
-**Two owner-optional upgrades, not material swaps.** A 2026-08-26 assessment of switching the
-girt to 20 ga hat channel or a composite/FRP section concluded KDAT 2x4 stays — steel loses
+**Two owner-optional upgrades, not material swaps.** Switching the girt to 20 ga hat channel
+or a composite/FRP section was assessed and rejected — KDAT 2x4 stays: steel loses
 too much screw pullout margin for the PBR field fastening (§5) and still needs KDAT jamb posts
 and head/sill courses at every opening either way, and FRP runs 4-6x the KDAT rate for
 durability this wall's vent gap and PBR rib voids already cover. Two narrower items are worth
@@ -631,8 +617,8 @@ blocked back to the cripples at every module station under it.
 **Window elevations and course breaks.** Every window taller than 24" now interrupts some
 field courses; that is inherent to a horizontal girt and is not a defect. What *is* avoidable
 is a near-miss — a head or sill landing an inch or two off a course line, which turns one
-clean junction into two pieces of framing inches apart. **The design rule flipped with the
-phase on 2026-09-01**: `course_offset` is now 0, so a course BOTTOM lands on the framing-base
+clean junction into two pieces of framing inches apart. **The design rule:**
+`course_offset` is 0, so a course BOTTOM lands on the framing-base
 module, and a new opening wants its **HEAD on a 24" multiple above the sole plate, or its
 SILL 3-1/2" above one**. Thirteen of catlin's opening edges land exactly on a course line and
 thirty sit in the 7" shadow of one, which is the swept optimum among the phases that keep

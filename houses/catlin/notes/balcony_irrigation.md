@@ -35,7 +35,7 @@ sunken-garden structure carries the porch at 0'-0" and the balcony 10' above it,
 north edge stops 5" short of the house cladding — so a hydrant on this wall is at arm's
 length from the deck in front of it.
 
-**There is no north-face hydrant, by decision (2026-08-01).** `FX-G-HYDRANT` already stands
+**There is no north-face hydrant, by decision.** `FX-G-HYDRANT` already stands
 on the garage's west wall at (1'-6", 62'), 26' off the house's north-west corner, and it
 reaches everything a third hydrant would have. Adding one would have meant a fourth
 envelope penetration for a second hose on the same side of the property.
@@ -130,10 +130,8 @@ downstream of it is 3/4" at 5 WSFU.
 
 ## What each hydrant carries
 
-Three `PipeAccessory` records apiece, and the reason they are elements rather than a
-sentence in this file is that the sentence was the previous state of the art —
-`mep.hydrant_freeze_depth` used to emit an UNKNOWN reading *"the model has no valve or
-backflow-preventer element, so neither can be evaluated here."*
+Three `PipeAccessory` records apiece, and they are elements rather than a
+sentence in this file because `mep.hydrant_freeze_depth` needs a real element to evaluate.
 
 - `…-SEAT` — `SHUTOFF`. The hydrant's own compression seat at the inboard end of the barrel.
   This is the shutoff; there is no second one at the fixture.

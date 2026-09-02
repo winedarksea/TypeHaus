@@ -1,6 +1,6 @@
 # RM-M-BATH2 — the over-toilet cabinet, and why the engine had to be corrected first
 
-**2026-08-31.** `FURN-M-BATH2-CAB` / `FT-BATH2-CAB-4506`. This note exists because the
+`FURN-M-BATH2-CAB` / `FT-BATH2-CAB-4506`. This note exists because the
 cabinet's two hard dimensions — 6" deep, bottom at 4'-0" AFF — are not styling, and because
 adding it required changing a code check that was reporting a violation this house does not
 have. Both facts are the kind that get lost and then re-litigated.

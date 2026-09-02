@@ -23,10 +23,9 @@ source:
 
 # Notes
 
-2026-08-02. The backup power system stopped being a flag on six circuits and became a real
-microgrid: an EG4 12kPV hybrid inverter, one 14.3 kWh battery in its own closet, the rooftop
-array landing on the inverter instead of backfeeding on its own, and a subpanel that stays
-live when the grid does not.
+The backup power system is a real microgrid: an EG4 12kPV hybrid inverter, one 14.3 kWh
+battery in its own closet, the rooftop array landing on the inverter instead of backfeeding
+on its own, and a subpanel that stays live when the grid does not.
 
 ## The topology, and why it is a subpanel
 
@@ -55,19 +54,15 @@ backwards once the enclosure's gear lives downstream of the inverter.
 The tier is authored on the circuit (`Circuit.backup_tier`) and nothing infers it: whether a
 load is worth carrying through an outage is an owner decision, not a property of the load.
 The switching hardware follows from the tier — relay-driven contactors for all three shed
-circuits now (the 2-pole heat pump, the 20A sump, and — since 2026-08-15 — the 2-pole water
-heater), with the Pro 4PM relay still bought to drive the contactor coils even though no
-circuit switches through one of its channels directly.
+circuits (the 2-pole heat pump, the 20A sump, the 2-pole water heater), with the Pro 4PM
+relay still bought to drive the contactor coils even though no circuit switches through one
+of its channels directly.
 
-**The water heater (2026-08-15).** `CKT-WH-HP` is gone. This house has one water heater — an
-80-gal Rheem ProTerra hybrid HPWH on one 240V/4,500 VA circuit — not the 120V-compressor /
-240V-element two-tank split this note used to describe; that split modelled a single
-product's two internal power draws as two appliances. `CKT-WH-240` now carries the whole
-unit on the SHED tier, and its 500 VA backup contribution — the same figure `CKT-WH-HP` used
-to carry — is enforced by `LM-WH` (`plan/circuits.py`): a Home Assistant automation
-(ESPHome's `esphome-econet`, bridging the unit's EcoNet API) forces Heat-Pump-Only mode
-whenever the house is on battery, so the number every calc below rests on is unchanged even
-though the modelling that produces it is now honest about there being one appliance, not two.
+**The water heater.** This house has one water heater — an 80-gal Rheem ProTerra hybrid
+HPWH on one 240V/4,500 VA circuit. `CKT-WH-240` carries the whole unit on the SHED tier,
+and its 500 VA backup contribution is enforced by `LM-WH` (`plan/circuits.py`): a Home
+Assistant automation (ESPHome's `esphome-econet`, bridging the unit's EcoNet API) forces
+Heat-Pump-Only mode whenever the house is on battery.
 
 ## Does the 12kPV carry it?
 
@@ -103,10 +98,10 @@ contributor and never as zero, so the calc cannot quietly flatter itself.
 south and west (steel studs, 5/8" Type X both faces), and a 2'-0" door in the west partition
 opening onto the room's open floor.
 
-**It stood in the SE corner until 2026-08-23.** The move is the one plans/TODO.md had
-recorded as BLOCKED: `EQ-B-WH`, the 24"×24" water heater, stood in the NE corner itself, and
-the battery's REQUIRED ±48"/±41" separation zone has no room or wall exemption, so no
-position in that corner cleared it. The owner's answer was to move the tank, which went to
+The closet stands in the NE corner because the SE corner does not clear it: `EQ-B-WH`, the
+24"×24" water heater, stood in the NE corner itself, and the battery's REQUIRED ±48"/±41"
+separation zone has no room or wall exemption, so no position in that corner cleared it. The
+owner's answer was to move the tank, which went to
 (5'-6", 24'-0") — south of `EQ-B-ERV`, north of `D-B-FURN`'s swing, and east of the 36" NEC
 110.26 working space in front of the panel wall. `advisory.ess_clearance` PASSES; put the
 tank back and it FAILs naming `EQ-B-WH`, which is the check that the move is what unblocked
@@ -126,8 +121,8 @@ Two things the relocation cost, both worth knowing:
   EG4 12kPV that is a real voltage-drop question and it is the one argument that could send
   this decision back.
 
-And one it gained: the battery hangs on **cast concrete** again (`W-B-N3`, 8"), rather than
-on the steel studs the 2026-08-21 overhaul left it on. 300 lb wants that.
+And one it gained: the battery hangs on **cast concrete** (`W-B-N3`, 8"), not steel studs.
+300 lb wants that.
 
 Smoke *and* heat alarms (`AL-B-ESS-SMOKE`, `AL-B-ESS-HEAT`), both inside the closet, both on
 `CKT-LT-BACKUP` so they ride the always-on tier — an alarm that dies with the grid is the

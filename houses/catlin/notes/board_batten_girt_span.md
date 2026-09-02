@@ -7,13 +7,11 @@ is not verified.
 
 Subject: `board-batten-24` — 24 ga concealed-fastener steel board & batten, 20" net
 coverage — on the twenty north/south walls of the house, spanning the KDAT girt course at
-**24" o.c.** (`CATLIN_EXT_2X6`, `PLANT_EXT_2X6_HUMID`). Re-worked 2026-09-01, when the girt
-courses came from 32" to 24" with the one-tier truss.
+**24" o.c.** (`CATLIN_EXT_2X6`, `PLANT_EXT_2X6_HUMID`).
 
-The east and west walls keep `pbr-panel-26` and are **not** subjects here — but the reason
-recorded until 2026-09-01 was wrong and is corrected in §5: it is not ESR-4729. **ESR-4729
-does not cover this wall at all.** It is Western States' report, it covers ROOF panels only,
-and it is written for 24 ga minimum over 16 ga steel supports. PBR's wall capacity has to be
+The east and west walls keep `pbr-panel-26` and are **not** subjects here. **ESR-4729 does
+not cover this wall at all.** It is Western States' report, it covers ROOF panels only, and
+it is written for 24 ga minimum over 16 ga steel supports. PBR's wall capacity has to be
 read off a manufacturer's own wall table, and it is: ASC Building Products' PS230, Metal
 Panels Inc. and Homewood all publish 144-168 psf allowable negative at a 3'-0" span, which
 is 6x or better at 24". That is still a table a reviewer can read, so PBR stays prescriptive
@@ -73,9 +71,9 @@ Effective wind area (§26.2), span x effective width, width not less than span/3
 Taking span/3 rather than the panel's real 20" coverage is the **smaller** area and so the
 **more negative** GC_p — the conservative side, and it needs no product dimension. It makes
 no difference to the coefficient here: at 1.33 ft^2 we are well below the figure's 10 ft^2
-knee, where the curve is drawn flat — and it made no difference at 2.37 ft^2 either, which
-is why closing the span from 32" to 24" moves nothing in §2-§4. **The demand is unchanged.
-The whole of the 2026-09-01 gain in this note is on the capacity side.**
+knee, where the curve is drawn flat, so nothing in §2-§4 moves with the girt spacing.
+**The demand is unchanged. The whole of the girt-spacing gain in this note is on the
+capacity side.**
 
     Zone 5 (corner):  GC_p = -1.4
     Zone 4 (field):   GC_p = -1.1
@@ -110,15 +108,12 @@ still passing, and still not the limit state that matters.
 
 **And PBR, for comparison, at the same spacing:** the wall tables named in the header give
 144-168 psf allowable negative at 3'-0", so at 24" it is ~6x that demand or better against
-board & batten's 3.18x. The figures quoted during the design pass — "~1.5x against ~4.5x" —
-were the *strength-level* pair at 32" o.c. and are superseded twice over: by the ASD basis,
-which is the one to quote because both capacities are allowables, and by the closer spacing.
+board & batten's 3.18x. The ASD basis is the one to quote, because both capacities are
+allowables.
 
-**The conclusion is unchanged in kind and better in degree.** The girts were sized for PBR
-and swapping the panel still spends most of the margin the spacing was bought with. What
-2026-09-01 bought back is that the spacing itself closed by a third for a different reason
-entirely — the 24" course module of the one-tier truss — so the profile with no evaluation
-report behind it now sits at 0.32 rather than 0.36.
+**The girts were sized for PBR, and swapping the panel still spends most of the margin the
+spacing was bought with.** The 24" course module buys back some of it, closing the profile
+with no evaluation report behind it to 0.32.
 
 ## 6. What is NOT checked here
 
