@@ -154,10 +154,10 @@ class Roof(Element):
     # resolved roof plane, so it tracks a raised-heel lift instead of drifting from it.
     eave_trim: EaveTrim | None = None
     # The coil the formed edge trim and ridge cap are ordered in, when it is not the roofing's
-    # own. Default ``None`` means "same stock as the panels", which is what every wrapped edge
-    # assumed before this existed — and why a rake trim on a zero-overhang gable was invisible:
-    # it inherited the panel colour in both renderers, so the one piece standing at the rake
-    # could not read as an edge. Naming a second material here is the ordinary way a standing-
+    # own. Default ``None`` means "same stock as the panels" — why a rake trim on a
+    # zero-overhang gable was invisible: it inherited the panel colour in both renderers, so
+    # the one piece standing at the rake could not read as an edge. Naming a second material
+    # here is the ordinary way a standing-
     # seam roof gets an accent trim, and it is a *product* choice, so it belongs on the roof
     # rather than in the resolver (the garage's white fascia must not follow the house's).
     edge_trim_material: str | None = None

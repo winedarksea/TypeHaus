@@ -36,8 +36,8 @@ class FramingSpec(HausModel):
     # so a roof assembly asks for engineered trusses without touching the framing solver.
     roof_frame: Literal["rafter", "truss"] = "rafter"
     # Wall STRUCTURE layers only: "studs" (a sole plate, studs, and top plate(s) — the
-    # default, and every wall written before this field existed) or "plate" — the layer IS
-    # one course of lumber laid flat, and nothing stands on it.
+    # default) or "plate" — the layer IS one course of lumber laid flat, and nothing
+    # stands on it.
     #
     # A rafter plate on an attic subfloor is the case that needed it: in a story-and-a-half
     # the roof lands on a 2x laid flat over the wall below, and there is no knee wall at all.
@@ -55,8 +55,8 @@ class FramingSpec(HausModel):
     chord_member: str | None = None
     web_member: str | None = None
     advanced_framing: bool = False  # single top plate + in-line stud stacking
-    # Where the stud module counts from. "wall-start" — the default, and every wall written
-    # before this existed — starts at the wall's own station 0, so two collinear segments
+    # Where the stud module counts from. "wall-start" — the default — starts at the wall's
+    # own station 0, so two collinear segments
     # split at a tee each restart the module and a wall over a wall aligns only by the
     # accident of sharing a start node. "line" counts from the wall's *layout line* instead
     # (→ resolve/layout_lines.py), so the module runs through a tee split and stacks floor
@@ -70,8 +70,8 @@ class FramingSpec(HausModel):
     # code mandate, which is exactly why it is an opt-in field rather than an inference.
     layout_origin: Literal["wall-start", "line"] = "wall-start"
     # FURRING + ``direction="horizontal"`` only: what the COURSE module counts from.
-    # "wall-base" — the default, and every band written before this field existed — is
-    # ``rw.z0_m``, the bottom of the band itself. "framing-base" is ``rw.base_ref_z_m``,
+    # "wall-base" — the default — is ``rw.z0_m``, the bottom of the band itself.
+    # "framing-base" is ``rw.base_ref_z_m``,
     # the datum every opening's sill height is measured from, which on a wall extended
     # down over a floor rim band is 13-7/16" higher.
     #
@@ -105,10 +105,9 @@ class FramingSpec(HausModel):
     #
     # **A girt wall is ONE horizontal, flat FURRING band with ``standoff="block"``.** The
     # TWO-band form — an inner tier buried in the insulation with the outer one screwed to
-    # it — is what catlin built between 2026-08-26 and 2026-09-01 and stays legal, both for
-    # that revert and for another house that wants it; ``truss_girt_bands`` returns the
-    # inner band as ``None`` when there is only one, and everything downstream iterates the
-    # tiers that are actually there.
+    # it — stays legal for a house that wants it; ``truss_girt_bands`` returns the inner
+    # band as ``None`` when there is only one, and everything downstream iterates the tiers
+    # that are actually there.
     #
     # **The block's DEPTH is not fixed at one ply and is never authored.** It is whatever
     # the stack leaves between the sheathing and this band's inboard face — 1-1/2" on the
@@ -127,8 +126,8 @@ class FramingSpec(HausModel):
     # FURRING only — the Larsen/Swinburne plywood corner box (FHB Jan 2024) that closes an
     # owned L corner's two outboard faces outboard of the sheathing, where the band's own
     # mitre otherwise leaves a full-height void with no framed member in it. "none" (the
-    # default) keeps every furred wall, including every rainscreen batten, exactly as it
-    # framed before this field existed; only a truss wall opts in.
+    # default) leaves every furred wall, including every rainscreen batten, framed as an
+    # ordinary batten; only a truss wall opts in.
     corner_cap: Literal["none", "plywood-box"] = "none"
     tee_backing_style: Literal["ladder", "stud-pack", "none"] = "ladder"
     # None uses the framing solver's named domain default.
@@ -140,10 +139,7 @@ class FramingSpec(HausModel):
     # Compressible sill-seal gasket under the sole/sill plate (capillary + air break at
     # the plate-to-concrete joint), stated as its **compressed, in-place** thickness — the
     # dimension the wall-base detail draws and the one the bearing seat is derived from
-    # (a house's seat = joist depth + mudsill + gasket). It was the *uncompressed* roll
-    # thickness until 2026-08-24, which no consumer wanted: the only reader draws the
-    # joint as built, and a house that needed the real number was hard-coding it beside
-    # this field. None = no gasket.
+    # (a house's seat = joist depth + mudsill + gasket). None = no gasket.
     sill_gasket: Length | None = None
     # Which sill-seal product that gasket is, for the BOM. None (the default) lets
     # ``resolve/construction_sills.py`` pick from the wall itself: a wall with a cladding
@@ -206,8 +202,7 @@ class LayerExtent(HausModel):
     elevations. Two layers with non-overlapping extents that name the same ``Layer.slot``
     are the two regions of one split row, and share one depth position in the stack.
 
-    ``None`` on either end means the wall's own end, which is what every layer written before
-    this existed still says by carrying no ``extent`` at all.
+    ``None`` on either end means the wall's own end.
     """
 
     bottom: LayerBound | None = None   # None -> the wall's base
@@ -236,10 +231,10 @@ class Layer(HausModel):
     # foam or the batt depending on how the bay happened to be authored.
     cavity: CavityFill | tuple[CavityFill, ...] | None = None
     # Vertical extent, when this layer does not run the wall's full height — a protection
-    # panel above grade, a splash course at the base, a water table. ``None`` is full height,
-    # and is what the whole catalog said before this field existed. A banded layer with no
-    # ``slot`` still occupies its full depth in the stack: it displaces the layers outboard
-    # of it over the whole wall, exactly as a full-height layer of the same thickness would,
+    # panel above grade, a splash course at the base, a water table. ``None`` is full
+    # height. A banded layer with no ``slot`` still occupies its full depth in the stack:
+    # it displaces the layers outboard of it over the whole wall, exactly as a full-height
+    # layer of the same thickness would,
     # because the alternative — a stack whose total thickness varies with elevation — is not
     # something ``Wall.alignment`` or any junction rule can answer.
     extent: LayerExtent | None = None

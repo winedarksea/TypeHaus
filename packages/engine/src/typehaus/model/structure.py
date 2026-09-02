@@ -71,13 +71,11 @@ class Footing(Element):
     under: str  # wall or post tag
     width: Length
     depth: Length
-    # What the strip is made of. A Footing carried no assembly and no material at all until
-    # 2026-08-22, so every footing in every house priced and scheduled as plain cast
-    # concrete out of ``emit/trades``' hardcoded category row. That is right for most of
-    # them and wrong for the one that matters: an insulated footing form (EPS faces around
-    # a concrete core) is the FPSF answer to a shallow-cover condition, and the model had
-    # no way to say a footing was one. Unset stays "plain concrete" — the resolved solid
-    # carries no assembly, ``structural_solids_takeoff`` groups it bare, and nothing moves.
+    # What the strip is made of. Unset stays "plain concrete" — the resolved solid carries
+    # no assembly, ``structural_solids_takeoff`` groups it bare and prices it out of
+    # ``emit/trades``' hardcoded category row, and nothing moves. That is right for most
+    # footings and wrong for the one that matters: an insulated footing form (EPS faces
+    # around a concrete core) is the FPSF answer to a shallow-cover condition.
     assembly: str | None = None
     # What the strip is centred on. "axis" — the parent wall's raw node line — is the
     # historical behaviour and stays the default. It is only right where the wall is
@@ -309,9 +307,8 @@ class Dowel(Element):
 
     The house and the sunken-garden footings share a compacted bed; where they abut, GFRP
     dowels pin them together *through* a rigid-foam block so the connection transfers shear
-    without bridging heat. The dowel is the schema primitive (previously the foam was only
-    recorded via ``FootingBedding.cast_foam_in_aggregate`` + a note). ``foam_thickness`` /
-    ``foam_psi`` describe the XPS block the dowel passes through — resolved as its own solid
+    without bridging heat. ``foam_thickness`` / ``foam_psi`` describe the XPS block the
+    dowel passes through — resolved as its own solid
     so the thermal break reads in the model, IFC, and take-off."""
 
     position: Point2D  # plan center of the dowel span (midpoint of the break)
@@ -331,9 +328,9 @@ class Dowel(Element):
 class Connector(Element):
     """Modeled connection hardware — joist hangers, hurricane ties, knee braces, post bases.
 
-    Previously carried only as text/notes; this makes the fastener a first-class element
-    with a small resolved solid at its connection point (→ IfcMechanicalFastener /
-    IfcDiscreteAccessory), and named refs to the members it joins."""
+    A first-class element with a small resolved solid at its connection point
+    (→ IfcMechanicalFastener / IfcDiscreteAccessory), and named refs to the members it
+    joins."""
 
     kind: ConnectorKind
     position: Point2D
@@ -364,8 +361,7 @@ class KneeBrace(Element):
     post's own plane says so with ``plane_offset`` + ``foot_lap``, never by moving
     ``position`` off the post — author the offset point instead and the geometry still
     resolves, the section still looks right, and the foot quietly leaves the post with
-    nothing to bear on. That is exactly what happened to this balcony's E-W braces between
-    2026-08-30 and the fix; see ``plane_offset``.
+    nothing to bear on; see ``plane_offset``.
     """
 
     position: Point2D  # braced post's plan centre

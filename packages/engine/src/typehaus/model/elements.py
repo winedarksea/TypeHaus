@@ -26,7 +26,7 @@ class Wall(Element):
     start_node: str
     end_node: str
     assembly: str
-    # Top constraint — in the schema from day one; only the Length arm resolves in M1.
+    # Top constraint; only the Length arm resolves in M1.
     top: Length | ToRoof | None = None  # None => underside of FloorSystem above
     # Which assembly face lies on the node-to-node axis.
     alignment: FaceRef | None = None  # None => center
@@ -37,15 +37,13 @@ class Wall(Element):
     # silently invert a flip, and does not touch this.
     interior_room: str | None = None  # None => follow the storey's outward sign
     structural_role: StructuralRole = StructuralRole.UNKNOWN
-    # Where the wall's base sits, as an absolute project elevation. ``None`` — every wall
-    # written before 2026-08-28 — means the storey datum, which is what a framed wall
-    # standing on the floor does. It is authored where a wall stands on something *within*
-    # its own storey: a framed wall on a concrete curb, where the studs start a curb's
-    # height above the slab and are that much shorter. ``FoundationWall`` has carried
-    # ``bottom_elevation`` for the walkout condition since day one and this is the same
-    # idea for the framed case — deliberately a separate field, because a FoundationWall's
-    # pair is bottom+top absolute while a framed wall keeps stating its height with ``top``
-    # relative to its own base.
+    # Where the wall's base sits, as an absolute project elevation. ``None`` means the
+    # storey datum, which is what a framed wall standing on the floor does. It is authored
+    # where a wall stands on something *within* its own storey: a framed wall on a concrete
+    # curb, where the studs start a curb's height above the slab and are that much shorter.
+    # Deliberately a separate field from ``FoundationWall.bottom_elevation`` (the walkout
+    # condition), because a FoundationWall's pair is bottom+top absolute while a framed wall
+    # keeps stating its height with ``top`` relative to its own base.
     #
     # Everything downstream follows for free: ``ResolvedWall.z0_m`` is what the framing
     # solver measures plates and studs from, what ``base_ref_z_m`` (and so every opening

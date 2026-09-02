@@ -28,9 +28,9 @@ def face(role: str, offset: Length | None = None) -> FaceRef:
 class LayerMaterial(HausModel):
     """Swaps the material of ONE named layer on ONE wall, leaving the assembly alone.
 
-    An assembly states the whole stack, materials included, so before this a wall that
-    wanted a different cladding *colour* — the same panel in a second coil colour, the same
-    brick in a second body — needed a duplicate Assembly tag differing in one
+    An assembly states the whole stack, materials included, so a wall that wants a
+    different cladding *colour* without this — the same panel in a second coil colour, the
+    same brick in a second body — needs a duplicate Assembly tag differing in one
     ``material_ref``. That duplicate is not free: it is a new key in every table keyed by
     assembly (``prices.toml``, the condition gates, the section goldens), all to say
     "same wall, different paint".

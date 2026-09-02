@@ -163,8 +163,7 @@ class DuctRun(Element):
     four-storey ERV is not a set of plan polylines that teleport between floors. A vertical
     riser is a repeated plan point at two elevations — no new concept. Where ``elevations``
     is absent the resolver derives z from the ``floor_ref`` bay (JOIST_BAY) or the storey
-    datum, so every duct authored before this field existed still resolves, and gains a 3D
-    solid for free.
+    datum, so a duct with no elevations still resolves, and gains a 3D solid for free.
 
     ``soffit_ref`` names the modeled :class:`~typehaus.model.floors.Soffit` a run is
     concealed in, mirroring ``floor_ref`` for a joist bay. It is what turns
@@ -187,8 +186,7 @@ class DuctRun(Element):
     # Storey-relative centreline elevations, mirroring PipeRun's inverts. ``elevations``
     # is one per path vertex and an entry may be None ("solve me" — see mep_slope); the
     # start/end pair is the two-point sugar. All absent -> the resolver derives one z from
-    # the floor bay or the storey, which is what every duct authored before this field
-    # existed already meant.
+    # the floor bay or the storey.
     start_elevation: Length | None = None
     end_elevation: Length | None = None
     elevations: tuple[Length | None, ...] | None = None
@@ -341,8 +339,8 @@ class VentRun(Element):
     # deck, and a riser in that chase has nowhere to go. Jogging it across the floor band to
     # a station with height is the cheap fix, and it is a fix the model could not express —
     # the alternative was moving ``chase_position`` and dragging the stack through every
-    # storey below. Both fields must be set for the jog to take; ``None`` (every riser
-    # written before this) resolves the original four-point route unchanged.
+    # storey below. Both fields must be set for the jog to take; ``None`` resolves the
+    # original four-point route unchanged.
     chase_offset: Point2D | None = None
     chase_offset_elevation: Length | None = None
     roof_termination_elevation: Length | None = None  # optional; normally derived

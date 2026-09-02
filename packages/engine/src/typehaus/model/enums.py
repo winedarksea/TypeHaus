@@ -447,9 +447,9 @@ class ConnectorKind(Enum):
     # see ``emit/draw/foundation_schedule.py``, which reported the absence of this kind.
     ANCHOR_BOLT = "anchor_bolt"            # cast-in sill anchor bolt + plate washer
     # A sealed fastener holding a piece of MECHANICAL EQUIPMENT (or its stand) down through
-    # a deck. Its own kind, and deliberately not POST_BASE, which is what it was filed as
-    # until 2026-08-28: a post base is a formed stirrup selected by the post SECTION, and it
-    # is bought, drawn and inspected as a bracket. This is a gasketed lag selected by the
+    # a deck. Its own kind, deliberately not POST_BASE: a post base is a formed stirrup
+    # selected by the post SECTION, and it is bought, drawn and inspected as a bracket.
+    # This is a gasketed lag selected by the
     # SEAL and the alloy, and the BOM printed both under one heading — "8 modeled post base
     # connector(s)" against a lag screw's part number, next to ten real ABU66SS. A reader
     # cannot order from that, and a framer reading the schedule would look for a bracket

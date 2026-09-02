@@ -32,7 +32,7 @@ class JoistSpec(HausModel):
     # Catalog material for the two rim (band) boards alone, when the band is a *finished*
     # face rather than framing hidden behind a skin — an exposed deck band painted with the
     # posts it sits over, say. ``None`` (the ordinary case) leaves the rims coloured by
-    # category and billed on the bare profile key, exactly as before. It is deliberately
+    # category and billed on the bare profile key. It is deliberately
     # narrower than a whole-system material: the joists behind the band are still bare
     # lumber, and saying so per member is the only honest way to bill the paint.
     rim_material: str | None = None
@@ -40,9 +40,8 @@ class JoistSpec(HausModel):
     # under a *bearing* line is a squash block a hundred feet long: the load crossing it is
     # not the deck's own but whatever stands on the plate above — a story-and-a-half's
     # rafter plate over the attic deck, a wall stacking over a floor — and 1 1/4" of OSB
-    # band has no business carrying it in crush. ``None`` (every deck written before this
-    # field) keeps the derived ``1.25x<depth> rim``, which is right for a band that only
-    # caps joist ends.
+    # band has no business carrying it in crush. ``None`` keeps the derived
+    # ``1.25x<depth> rim``, which is right for a band that only caps joist ends.
     #
     # Authored, not derived, and deliberately so: deciding "this rim is under a bearing
     # line" would mean the engine knowing what stacks two storeys above it, and being wrong
@@ -170,8 +169,8 @@ class Slab(Element):
     # stays at 0'-0", say. Mirrors ``FoundationWall.top_elevation``. When set it wins over
     # the storey datum outright and ``datum`` no longer applies: the slab hangs its
     # thickness below this elevation. Leave it None (the norm) and the storey datum plus
-    # ``datum`` decide, exactly as before. Authoring it is what lets a slab be filed on the
-    # storey it belongs to rather than on whichever storey happens to sit at its elevation.
+    # ``datum`` decide. Authoring it is what lets a slab be filed on the storey it belongs
+    # to rather than on whichever storey happens to sit at its elevation.
     top_elevation: Length | None = None
     # Slab-on-grade only: rigid-insulation edge break against the abutting stem/foundation
     # wall. None = slab edge pours directly against the concrete it meets.
