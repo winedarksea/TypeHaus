@@ -12,15 +12,12 @@ generic types are still in the library and still right for a house that has not 
 the wrong model of a bought one, because the two numbers that matter — the width the run is
 cut to and the circuit the electrician pulls — are the product's, not the class's.
 
-Every dimension below is off the manufacturer's own spec sheet, read 2026-08-24, and every
-``source`` carries the model number and the electrical requirement so a substitution is a
-one-line reviewable change (the idiom ``plan/mep_hvac.py`` already uses for the Rheem HPWH
-and the EG4 gear).
+Every dimension below is off the manufacturer's own spec sheet, and every ``source`` carries
+the model number and the electrical requirement so a substitution is a one-line reviewable
+change (the idiom ``plan/mep_hvac.py`` already uses for the Rheem HPWH and the EG4 gear).
 
-Since 2026-08-24 each type also names its ``product_ref`` — brand and model number as
-structured data in ``plan/products.py``, which is what the inspector sidebar and the
-estimate read. The names and sources below are unchanged and still authoritative for the
-reasoning; the ref is what a machine can follow.
+Each type also names its ``product_ref`` — brand and model number as structured data in
+``plan/products.py``, which is what the inspector sidebar and the estimate read.
 
 **Nominal vs actual, and why the footprints look odd.** A "30-inch range" is 29 7/8" wide
 and a "24-inch dishwasher" is 23 3/4". The cabinet opening is the nominal number; the
@@ -28,9 +25,9 @@ appliance is the actual one. These footprints are the *appliance*, so the run's 
 in ``plan/placeables.py`` keeps landing on cabinet faces rather than drifting by an eighth
 per box.
 
-The cold storage is Frigidaire rather than LG (owner, 2026-08-24) and the reason is the
-bay, not the badge: LG's only all-freezer is a 23 7/16" column, which would have left
-12 9/16" of hole in a 72" run built for two 36" boxes. See the pair's own note below.
+The cold storage is Frigidaire rather than LG (owner) and the reason is the bay, not the
+badge: LG's only all-freezer is a 23 7/16" column, which would have left 12 9/16" of hole
+in a 72" run built for two 36" boxes. See the pair's own note below.
 
 What is deliberately NOT here: ``APPL-HOOD-RECIRC`` and ``APPL-DISPOSAL``. LG builds no
 standalone recirculating canopy hood for the US market (its ductless path is an
@@ -48,14 +45,14 @@ from library.placeables._zones import front_zone
 # --- laundry ---------------------------------------------------------------------------
 #
 # One object, two machines — the reasoning is ``library.placeables.appliances``'s on
-# ``APPL-WASHER-DRYER-STACKED`` and is unchanged: a factory-stacked tower is one 74 3/8"
-# body with one footprint, one clearance band and one set of anchors, not a washer with a
-# dryer set on top of it. What changes is that it is now a *product*, so the box shrinks
-# from the allowance's 28"x40"x80" to the real 27"x32 3/4"x74 3/8".
+# ``APPL-WASHER-DRYER-STACKED``: a factory-stacked tower is one 74 3/8" body with one
+# footprint, one clearance band and one set of anchors, not a washer with a dryer set on
+# top of it. As a *product* the box shrinks from the allowance's 28"x40"x80" to the real
+# 27"x32 3/4"x74 3/8".
 #
 # The generic box was 7 1/4" deeper than the WashTower actually is. That matters here and
-# nowhere else in the house: ``plan/fixtures.py``'s note on FX-M-LAUNDRY says the 2026-08-03
-# move north was sized by this appliance's depth, leaving 8 3/4" to the door plane for the
+# nowhere else in the house: ``plan/fixtures.py``'s note on FX-M-LAUNDRY says the move
+# north was sized by this appliance's depth, leaving 8 3/4" to the door plane for the
 # bifold track. The real unit leaves 16", so the move is more comfortable than it was
 # authored to be, not less — no geometry moves on account of this retype.
 #
@@ -187,7 +184,7 @@ LG_DISHWASHER = ApplianceType(
 # also roughly twice the price, which is the least interesting of the three reasons.)
 #
 # **NO WATER IS CONNECTED TO EITHER UNIT, and that is a decision, not an omission**
-# (owner, 2026-08-24: the sink already carries filtered water and the household does not use
+# (owner: the sink already carries filtered water and the household does not use
 # the dispenser). Both products ship plumbed-capable — the all-refrigerator has an internal
 # dispenser and filter, the all-freezer a dual-bin automatic ice maker on a 1/4" line — and
 # Frigidaire's Use & Care manual sanctions running both dry outright: switch the ice maker
@@ -224,10 +221,9 @@ _FRIGIDAIRE_SOURCE = (
 # 75"/79" flush trim kits Frigidaire also sells are deliberately NOT ordered: they assume a
 # built-in cutout, and this run puts 21" over-cabinets at 75" instead.
 #
-# ** 75" IS THE SPEC, NOT A PREFERENCE (corrected 2026-08-24). ** It was 24" boxes at 72"
-# until the over-cabinets were swept for body overlap, which is 1/2" below the 72 1/2" hinge
-# and 1 1/2" below the 1" top clearance this very source records. The mount is the
-# manufacturer's minimum, and it lands on the 75" trim kit's own datum by coincidence.
+# ** 75" IS THE SPEC, NOT A PREFERENCE. ** 72" would put the over-cabinets 1/2" below the
+# 72 1/2" hinge and 1 1/2" below the 1" top clearance this very source records. The mount is
+# the manufacturer's minimum, and it lands on the 75" trim kit's own datum by coincidence.
 FRIGIDAIRE_ALL_REFRIGERATOR = ApplianceType(
     tag="APPL-FRIG-PRO-ALLFRIDGE",
     name="Frigidaire Professional FPRU19F8WF 19 cu ft all-refrigerator column",
@@ -259,7 +255,7 @@ FRIGIDAIRE_ALL_FREEZER = ApplianceType(
 )
 
 
-# --- the guest studio's wet bar (2026-08-29) -------------------------------------------
+# --- the guest studio's wet bar ---------------------------------------------------------
 # ** THIS IS THE ONE APPLIANCE IN THE HOUSE THAT IS A CLASS, NOT A PRODUCT, AND IT IS
 # DELIBERATE. ** Every other type in this file is a chosen model off its own spec sheet,
 # with a `product_ref` a machine can follow. This one is not, because the catalog had no

@@ -7,17 +7,15 @@
 from typehaus import Continuity, Transition
 
 
-# The three planes every envelope crossing in this house has to carry through. Retargeted
-# 2026-08-23 with the truss wall: `wrb-ext` and `ci-ext` were the outer faces of the sheet
-# WRB and the rigid-CI stack, and neither exists any more. Both roles now land on the SAME
-# face — closed-cell spray foam is the water plane and the insulation in one bonded,
-# seamless application, which is the whole reason there is no membrane above it. The air
-# plane stays on the sheathing: it is the one of the three that is continuous through a
-# foundation or a stack-width crossing where there is no foam at all.
+# The three planes every envelope crossing in this house has to carry through. `wrb-ext`
+# and `ci-ext` both land on the SAME face now — closed-cell spray foam is the water plane
+# and the insulation in one bonded, seamless application, which is why there is no membrane
+# above it. The air plane stays on the sheathing: it is the one of the three that is
+# continuous through a foundation or a stack-width crossing where there is no foam at all.
 #
-# The build order this implies is not incidental and belongs on every sheet that carries
-# this tuple: with no WRB, the foam IS the water barrier, so it is sprayed AFTER the window
-# bucks are set, never before. See notes/outie_window_truss_detail.md.
+# The build order this implies belongs on every sheet that carries this tuple: with no WRB,
+# the foam IS the water barrier, so it is sprayed AFTER the window bucks are set, never
+# before. See notes/outie_window_truss_detail.md.
 AIR_WATER_THERMAL = (
     Continuity(control="air", from_face="sheathing-ext", to_face="sheathing-ext"),
     Continuity(control="water", from_face="spray-foam-ext", to_face="spray-foam-ext"),
@@ -43,14 +41,6 @@ TRANSITIONS = (
                star=True,
                unstarred_conditions=(
                    "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
-                   # ...|CATLIN_MUDROOM_INT_2X6_EXPOSED was here until 2026-08-24. W-B-STR
-                   # and W-B-STR3 are framed now, so W-M-STRW/W-M-STRW2 are framed-on-framed
-                   # and derive no wall_foundation condition at all — see the rim band below,
-                   # which is where those two stacks moved.
-                   # ...|SAUNA_LINER_ON_CONCRETE was here until 2026-08-28. W-B-CS is
-                   # framed now, so W-M-C1 is framed-on-framed and derives no
-                   # wall_foundation condition at all — it moved to the rim band below,
-                   # exactly as the stair-wall stack did on 2026-08-24.
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
     # the air barrier and the insulation cross a floor line. An interior partition's rim
@@ -60,30 +50,21 @@ TRANSITIONS = (
                continuity=AIR_WATER_THERMAL, star=True,
                unstarred_conditions=(
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
-                   # The stair-wall stack, framed-on-framed since 2026-08-24 (it read
-                   # ...|FOUNDATION_WALL_12_INT while the basement segments were poured).
-                   # Two keys now, because W-B-STR carries the ESS closet's Type X leaf and
-                   # W-B-STR3 does not.
+                   # The stair-wall stack, framed-on-framed. Two keys now, because W-B-STR
+                   # carries the ESS closet's Type X leaf and W-B-STR3 does not.
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
-                   # W-M-C1 on W-B-CS, and the left half moved on 2026-08-31 when W-M-C1
-                   # alone took CATLIN_INT_2X6_BRG_RC (channel + batt on the bedroom face).
-                   # This pair IS that one stack, so the old key stopped deriving entirely
-                   # and `integrity.condition_star_override` said so the same build.
+                   # W-M-C1 on W-B-CS. This pair IS that one stack; the old key stopped
+                   # deriving entirely, and `integrity.condition_star_override` said so.
                    "storey_stack:rim:CATLIN_INT_2X6_BRG_RC|SAUNA_LINER_INT_2X6_BRG",
-                   # Was ...|INT_2X6_STAGGERED_PLUMBING until 2026-08-29, when W-S-BA-E1B
-                   # was retyped to carry FO-A-HALL's cut attic joists. Same stack, same
-                   # rim, same reason to leave it off the primary set — a different
+                   # Same rim, same reason to leave it off the primary set — a different
                    # assembly on top of it (plan/assemblies.py).
                    "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|CATLIN_MUDROOM_INT_2X6_EXPOSED",
                    # W-S-BD-N1B over W-M-STOS2, the other half of the same retype.
                    "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|INT_2X4_PARTITION",
-                   # ...|INT_2X4_PARTITION alone (no pair) was here until 2026-08-30: it was
-                   # W-S-SN3 stacking on W-M-HS3, both then INT_2X4_PARTITION. SN3 is
-                   # INT_2X6_STAGGERED_PLUMBING now — the suite bath's real wet wall
-                   # (plan/storeys/second.py) — so that stack derives the paired key listed
-                   # just below instead, and the unpaired one no longer resolves at all.
+                   # SN3 is INT_2X6_STAGGERED_PLUMBING now — the suite bath's real wet wall
+                   # (plan/storeys/second.py) — so that stack derives the paired key below.
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB",
                    # The plant room's two rim conditions are drawn by TR-CATLIN-PLANT-RIM
@@ -103,11 +84,10 @@ TRANSITIONS = (
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),
-    # THE OUTIE WINDOW (2026-08-23). The unit moved out of the stud plane and into the truss
-    # plane, 5" outboard of the sheathing, so the innie `window-head-jamb-sill` recipe — which
-    # measures its head flashing and sill pan from the sheathing face — draws neither piece
-    # where it now goes. `outie-window-truss` is its sibling. The notes pointer moved with it:
-    # it used to point at the eave sheet, which is the wrong drawing for an opening.
+    # THE OUTIE WINDOW. The unit sits in the truss plane, 5" outboard of the sheathing, so
+    # the innie `window-head-jamb-sill` recipe — which measures its head flashing and sill
+    # pan from the sheathing face — draws neither piece where it now goes.
+    # `outie-window-truss` is its sibling.
     Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING",
                condition_pattern="opening_perimeter:CATLIN_EXT_*",
                notes="notes/outie_window_truss_detail.md", overlay="outie-window-truss",
@@ -117,12 +97,10 @@ TRANSITIONS = (
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
     # ``CATLIN_BASEMENT_*`` covers every perimeter foundation assembly: the N/W wall with
     # its above-grade protection band, the 12" east wall, and the two buried ends of the
-    # south wall, which joined that same band on 2026-09-02 when the stucco was retired.
-    # They differ in what covers the
-    # exterior XPS, which is a field condition well outside an opening's perimeter, and
-    # since 2026-08-21 they differ in the pour too — but the buck, the frame and the
-    # flashing at a window in cast concrete are the same detail at 8" as at 12" (only the
-    # jamb gets 4" shallower), and one sheet is what draws them.
+    # south wall. They differ in what covers the exterior XPS, a field condition well
+    # outside an opening's perimeter, and in the pour depth — but the buck, the frame and
+    # the flashing at a window in cast concrete are the same detail at 8" as at 12" (only
+    # the jamb gets 4" shallower), and one sheet is what draws them.
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
                condition_pattern="opening_perimeter:CATLIN_BASEMENT_*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
@@ -139,9 +117,8 @@ TRANSITIONS = (
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
                suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1-1/2\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
-    # The sunken garden's framed walkout (2026-08-28). D-B-PATIO used to be a hole formed
-    # in an 8" pour and TR-CATLIN-BASEMENT-OPENING drew it; it is an ordinary innie opening
-    # in a 2x6 wall now — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
+    # The sunken garden's framed walkout. D-B-PATIO is an ordinary innie opening in a 2x6
+    # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
     # CATLIN_EXT_* walls take: there is no truss plane down here, the unit sits in the stud
     # plane, and the wall's water plane is the damp-proofing over the sheathing.
@@ -152,14 +129,14 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:CATLIN_GARDEN_FRAMED_2X6",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL),
-    # ** IT DECLARES ITS OWN CONTINUITY SINCE 2026-08-31, and it is not AIR_WATER_THERMAL. **
-    # GARAGE_WALL_2X6 was rebuilt that day with no WRB at all — IRC R703.2's exception for
-    # an unconditioned detached accessory building — so there is no `spray-foam-ext` band
-    # and no taped Zip-R face for the house's tuple to name. What carries all four controls
-    # here is the 2" of ccSPF IN THE BAYS (`stud-cavity`), which is why the build order on
-    # notes/garage_wall_detail_side.md is bucks before foam, exactly as it is on the house.
-    # The air plane is the foam too, not the sheathing: bare CDX is not taped and is not an
-    # air barrier, which is the whole difference from the house's `sheathing-ext` row.
+    # ** IT DECLARES ITS OWN CONTINUITY, and it is not AIR_WATER_THERMAL. ** GARAGE_WALL_2X6
+    # has no WRB at all — IRC R703.2's exception for an unconditioned detached accessory
+    # building — so there is no `spray-foam-ext` band and no taped Zip-R face for the
+    # house's tuple to name. What carries all four controls here is the 2" of ccSPF IN THE
+    # BAYS (`stud-cavity`), which is why the build order on notes/garage_wall_detail_side.md
+    # is bucks before foam, exactly as it is on the house. The air plane is the foam too,
+    # not the sheathing: bare CDX is not taped and is not an air barrier, which is the whole
+    # difference from the house's `sheathing-ext` row.
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
@@ -177,9 +154,9 @@ TRANSITIONS = (
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG",
                overlay="bearing-partition-opening"),
-    # D-A-STUDY's opening in the study bookcase wall (2026-08-27). It needs its OWN binding
-    # rather than falling under TR-CATLIN-INTERIOR-OPENING's `INT_*` glob, for the same
-    # reason CATLIN_INT_2X6_BRG does: the tag starts "CATLIN_", so the glob never sees it.
+    # D-A-STUDY's opening in the study bookcase wall. It needs its OWN binding rather than
+    # falling under TR-CATLIN-INTERIOR-OPENING's `INT_*` glob, for the same reason
+    # CATLIN_INT_2X6_BRG does: the tag starts "CATLIN_", so the glob never sees it.
     # The overlay is the interior-opening sheet, which is the right drawing — what is
     # different here is not the perimeter detail but the LEAF (a ~250 lb bookcase door) and
     # the hinge-side jamb behind it, and neither is a perimeter condition. Both are recorded
@@ -187,23 +164,22 @@ TRANSITIONS = (
     Transition(uid="QZCDFYBATE", tag="TR-CATLIN-BOOKCASE-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X4_BOOKCASE_12",
                overlay="interior-opening"),
-    # D-S-BATH1's opening in the hall bath's east wet wall, which became BEARING on
-    # 2026-08-29 and was retyped with it. Its own binding for the third time in this file's
-    # history, and the third time for the same reason: the tag starts "CATLIN_", so
-    # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is the bearing
-    # partition's, not the plain interior one — the jack/king studs at a door in a wall
-    # carrying an attic joist field are the point of the sheet.
+    # D-S-BATH1's opening in the hall bath's east wet wall, which is BEARING and was
+    # retyped with it. Its own binding, same reason as the others: the tag starts
+    # "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is
+    # the bearing partition's, not the plain interior one — the jack/king studs at a door in
+    # a wall carrying an attic joist field are the point of the sheet.
     Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_PLUMBING",
                overlay="bearing-partition-opening"),
-    # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline (2026-08-31), and
-    # the FOURTH time this file has had to say the same thing: the tag starts "CATLIN_", so
-    # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. An exact binding rather than
-    # widening TR-CATLIN-CENTER-OPENING to `CATLIN_INT_2X6_BRG*`, because that glob would
-    # also swallow CATLIN_INT_2X6_BRG_PLUMBING above and put two transitions on one
-    # condition. Same `bearing-partition-opening` overlay as the plain centreline: the
-    # jack/king pack at this door is the sheet's subject and the resilient channel does not
-    # change it — a channel dies into the opening's return and carries no load.
+    # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline. Same reason as
+    # the others: the tag starts "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob
+    # never sees it. An exact binding rather than widening TR-CATLIN-CENTER-OPENING to
+    # `CATLIN_INT_2X6_BRG*`, because that glob would also swallow
+    # CATLIN_INT_2X6_BRG_PLUMBING above and put two transitions on one condition. Same
+    # `bearing-partition-opening` overlay as the plain centreline: the jack/king pack at
+    # this door is the sheet's subject and the resilient channel does not change it — a
+    # channel dies into the opening's return and carries no load.
     Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_RC",
                overlay="bearing-partition-opening"),
@@ -229,9 +205,8 @@ TRANSITIONS = (
                            Continuity(control="air", from_face="foil-polyiso",
                                       to_face="foil-polyiso")),
                star=True),
-    # The plant room's rim band, and the hardest detail in the room. FS-S-WEST (the truss
-    # half since 2026-08-21) and FS-ATTIC both run their joists in x, so the ends bear on
-    # W-S-W4 and a parallel rim bay sits
+    # The plant room's rim band, and the hardest detail in the room. FS-S-WEST and FS-ATTIC
+    # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
     # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
     # exterior wall, and neither can take a sheet membrane — there is no continuous plane to
     # lap it onto between the joist ends. Closed-cell spray foam at the rim in BOTH floor

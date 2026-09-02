@@ -1,6 +1,5 @@
 # haus: editable
-# Wind-mitigation seam clamps on the metal skin (owner, 2026-08-20; house walls retired
-# 2026-08-26).
+# Wind-mitigation seam clamps on the metal skin.
 #
 # Non-penetrating S-5! seam clamps set on the panel seam for one job only: UPLIFT. They carry
 # nothing. Distinct from every other S-5! clamp in this plan (``plan/mep_venting.py``,
@@ -13,21 +12,19 @@
 # S-5! itself puts spacing on "the user and/or installer" — adds external seam clamps at CORNER
 # clip positions above 90 psf and only reaches the perimeter above 135 psf. So: corners.
 #
-# ** THE 48 HOUSE-WALL CLAMPS ARE GONE (2026-08-26), AND NOT AS AN ECONOMY. ** They were
-# `S-5-S`, and an S clamp closes on a snap-lock leg. The house walls are now
-# `pbr-panel-26` — an exposed-fastener PBR panel with no seam of any kind — so there is
-# nothing left for the clamp to grip and the part is not merely unnecessary but
-# uninstallable. What resisted corner uplift through those clamps is now resisted by the
-# panel's own face-fastened screws, which pass through the panel into the girt at every
-# rib flat and every course: `takeoff.fasteners.exposed_fastener_cladding_screw_rows`
-# bills 2,623 of them on the house walls (the count was 3,098 until the 2026-08-29 attic
-# redesign deleted ~572 sf of wall), and they are already denser at a corner than the
-# 8"/4'-0" grid below ever was.
+# ** THE 48 HOUSE-WALL CLAMPS ARE GONE, AND NOT AS AN ECONOMY. ** They were `S-5-S`, and an
+# S clamp closes on a snap-lock leg. The house walls are now `pbr-panel-26` — an
+# exposed-fastener PBR panel with no seam of any kind — so there is nothing left for the
+# clamp to grip and the part is not merely unnecessary but uninstallable. What resisted
+# corner uplift through those clamps is now resisted by the panel's own face-fastened
+# screws, which pass through the panel into the girt at every rib flat and every course:
+# `takeoff.fasteners.exposed_fastener_cladding_screw_rows` bills 2,623 of them on the house
+# walls, and they are already denser at a corner than the 8"/4'-0" grid below ever was.
 #
 # **The layout that remains, and what it assumes.**
-#   garage walls   NONE since 2026-08-31 — see the paragraph above the list below. It was
-#                  4 corners x 2 faces x 2 levels = 16 `S-5-N`, back when the wall was 26 ga
-#                  nail strip; a corrugated panel has no seam to clamp.
+#   garage walls   NONE — see the paragraph above the list below. It was 4 corners x 2
+#                  faces x 2 levels = 16 `S-5-N`, back when the wall was 26 ga nail strip;
+#                  a corrugated panel has no seam to clamp.
 #   garage roof    4 eave corners x 3 seams = 12 clamps, `S-5-N`, on the first three seams in
 #                  from each rake, at the eave. The garage roof is nail strip, which has no
 #                  concealed clips at all — uplift is resisted by the face-fastened flange
@@ -39,21 +36,20 @@
 #   clamps to it would be belt over a belt. The 48 PV clamps up there (`params/solar.py`) are
 #   a different part doing a different job.
 #
-# ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** The caveat narrowed on 2026-08-30
-# and did not go away. `plan/site.py` now carries a design wind speed (V_ult = 115 mph,
-# Exposure B, Risk Category II, MN Rules 1309.0301), so the *first* missing input is no longer
-# missing — but nobody has run it through ASCE 7 Ch. 30 to get a design pressure, and **no zone
-# width has been calculated**, which is the input this layout actually turns on. A clamp grid is
-# a map of corner/perimeter/field zones; having V without the zone map buys nothing. The grid
-# above is a reasonable builder's layout, and the count it produces (12, all of them on the
-# garage ROOF since 2026-08-31) is what the estimate bills. That caveat now covers the HOUSE WALLS TOO, in a different form: the screw schedule
-# that replaced the clamps there is a uniform field grid, so it carries no corner-zone
-# densification at all. **That densification is the lever** if a wind analysis is ever run —
-# tightening the screw pitch in the corner zone, not re-authoring clamps onto a panel that
-# cannot take them. Since 2026-08-31 that reading covers the GARAGE walls as well, on the
-# same terms. If one is done, S-5! runs a project configurator and a load test database
-# at calculators.s-5.com, and the corner/perimeter zone widths come out of ASCE 7 and FM
-# DS 1-28, not out of this file. Expect the count to move.
+# ** THIS IS AN AUTHORED LAYOUT, NOT AN ENGINEERED ONE. ** `plan/site.py` carries a design
+# wind speed (V_ult = 115 mph, Exposure B, Risk Category II, MN Rules 1309.0301), so the
+# *first* missing input is not missing — but nobody has run it through ASCE 7 Ch. 30 to get
+# a design pressure, and **no zone width has been calculated**, which is the input this
+# layout actually turns on. A clamp grid is a map of corner/perimeter/field zones; having V
+# without the zone map buys nothing. The grid above is a reasonable builder's layout, and
+# the count it produces (12, all on the garage ROOF) is what the estimate bills. The same
+# caveat covers both the HOUSE and the GARAGE walls, in a different form: the screw
+# schedule that replaced the clamps there is a uniform field grid, so it carries no
+# corner-zone densification at all. **That densification is the lever** if a wind analysis
+# is ever run — tightening the screw pitch in the corner zone, not re-authoring clamps onto
+# a panel that cannot take them. If one is done, S-5! runs a project configurator and a load
+# test database at calculators.s-5.com, and the corner/perimeter zone widths come out of
+# ASCE 7 and FM DS 1-28, not out of this file. Expect the count to move.
 #
 # Clamps are non-penetrating in both profiles: stainless Torx T-30 setscrews dimple the seam
 # without piercing it, so there is no sealant, no flashing and no effect on the panel warranty.
@@ -63,11 +59,11 @@
 
 from typehaus import Connector, ConnectorKind, ft, pt
 
-# ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO (2026-08-31), for the same reason and by the
-# same argument. ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip
-# seam. GARAGE_WALL_2X6 is `corrugated-panel-26` now — a 7/8" corrugated exposed-fastener
-# panel with no seam of any kind — so the part is uninstallable there, not merely unneeded.
-# What resisted corner uplift through them is resisted by the panel's own face screws:
+# ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO, for the same reason and by the same argument.
+# ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip seam.
+# GARAGE_WALL_2X6 is `corrugated-panel-26` now — a 7/8" corrugated exposed-fastener panel
+# with no seam of any kind — so the part is uninstallable there, not merely unneeded. What
+# resisted corner uplift through them is resisted by the panel's own face screws:
 # `exposed_fastener_cladding_screw_rows` bills 640 over the four garage walls (500 field +
 # 140 sidelap), where the retired grid was 16 clamps at two levels. The NAME survives as an
 # empty list rather than being deleted: `plan/manifest.py` splices it, and the swap back —

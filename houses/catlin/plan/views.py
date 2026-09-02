@@ -1,9 +1,7 @@
-"""Catlin authored detail slices — A-401+ (→ Permit-ready plan set Phase 6).
+"""Catlin authored detail slices — A-401+.
 
-The section/detail machinery (emit/draw/section.py) already fully supports authored
-Slices with crop + exaggeration; the permit set just never used it for details before
-this phase. Cut stations/crops below were verified against the resolved model (joist
-lines, wall segment boundaries, ridge elevation) — see the module docstring notes.
+Cut stations/crops below were verified against the resolved model (joist lines, wall
+segment boundaries, ridge elevation).
 """
 
 from typehaus import ExaggerationSpec, Slice, SliceKind, ft, inch, m, pt
@@ -32,8 +30,8 @@ DETAIL_SLICES = [
          crop=(pt(ft(0, -6), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
     # y=18') so the section shows the ridge's peak, cropped past the beam band at
-    # 31'-32' (ridge_z_m = 9.7652 m = 32.04'). The beam's soffit went from 31.05' to
-    # 30.87' when it deepened to 14" (2026-08-28) and is still well inside the 26'-33' crop.
+    # 31'-32' (ridge_z_m = 9.7652 m = 32.04'). The beam's soffit is at 30.87', well inside
+    # the 26'-33' crop.
     Slice(uid="CVD904AAAA", tag="SL-D-RIDGE", kind=SliceKind.DETAIL,
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
@@ -68,10 +66,10 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
          crop=(pt(ft(1, 6), ft(-4)), pt(ft(7, 6), ft(8, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
-    # ** THE DRAWING THAT PROVES THE 2026-08-29 CHANGE, AND THE ONE THAT WOULD CATCH IT
-    # COMING UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the
-    # stair hall runs open from the second floor to the roof underside. Nothing about that
-    # is visible in plan — a hole in a deck and a deck look identical from above — and a
+    # ** THE DRAWING THAT PROVES THE ATTIC CHANGE, AND THE ONE THAT WOULD CATCH IT COMING
+    # UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the stair
+    # hall runs open from the second floor to the roof underside. Nothing about that is
+    # visible in plan — a hole in a deck and a deck look identical from above — and a
     # single number in `FS-ATTIC.openings` is all that stands between this volume and a
     # gypsum lid at 9'-0". This cut is where that shows.
     #
@@ -86,8 +84,8 @@ DETAIL_SLICES = [
     # floor so the full 9'-0"-to-roof height of the volume reads at once.
     #
     # ** WHAT TO LOOK FOR: NO CEILING PLANE ACROSS x 10'..18' AT z ~19'-11". ** One drawn
-    # there means `resolve/ceilings.py` has stopped subtracting deck openings (the fix of
-    # 2026-08-29) or FO-A-HALL has fallen out of `FS-ATTIC.openings`.
+    # there means `resolve/ceilings.py` has stopped subtracting deck openings, or
+    # FO-A-HALL has fallen out of `FS-ATTIC.openings`.
     Slice(uid="CVD907AAAA", tag="SL-D-STAIRVOID", kind=SliceKind.DETAIL,
          title="Stair hall void section",
          cut_origin=pt(ft(0), ft(30)), cut_direction="x",

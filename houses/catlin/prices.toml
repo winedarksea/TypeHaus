@@ -17,33 +17,25 @@
 # bare tub on both halves). Each section header carries its own basis and sources.
 #
 # --- WHAT THE 2026-08-20 PASS DID ---------------------------------------------------------
-# It added LABOUR. Before it, 21 of the 24 sections were material-only and the estimate
-# reported $0 of labour against $218k-461k of material — a shopping list, not a cost. Now
-# almost every row carries an explicit { material = ..., labour = ... } split and the three
-# basis subtotals are all non-zero. The construction total moved $306,982-627,214 ->
-# $574,980-1,135,114, and essentially none of that is the house changing: it is labour that
-# was always going to be paid arriving in the file.
-#
-# It also corrected the material rates, in BOTH directions. The 2026-08-07 lumber numbers ran
-# 25-75% over 2026 yard list (framing lumber is flat-to-down year on year — the composite was
-# $558.19/mbf on 7 Aug 2026, -2.6% YoY — so there is no tariff spike to carry, despite the
-# 35.16% AD/CVD plus 10% Section 232 stack on Canadian stock). Against that, I-joist was 25-35%
-# LOW, LVL was low by 2-3x, standing-seam metal was 40% low at the bottom, mineral wool 35%
-# low, and the ceiling gypsum row was pricing 1/2" board against a 5/8" quantity.
+# Added LABOUR: almost every row now carries an explicit { material = ..., labour = ... }
+# split, moving the construction total $306,982-627,214 -> $574,980-1,135,114. It also
+# corrected material rates both ways: 2026-08-07 lumber ran 25-75% over 2026 yard list
+# ($558.19/mbf, -2.6% YoY — no tariff spike to carry despite the 35.16% AD/CVD + 10% Section
+# 232 stack on Canadian stock); I-joist was 25-35% low, LVL low by 2-3x, standing-seam metal
+# 40% low, mineral wool 35% low, and ceiling gypsum priced 1/2" board against a 5/8" quantity.
 #
 # Three structural findings are recorded where they belong rather than here: the suspended
 # deck's low end is commercially unobtainable (see slab:CATLIN_DECK_EPS_INT), drain_tile was
-# ~5x low, and slab-on-grade was ~2.5x low. And the single 55-65% "back out material from an
-# installed price" factor used by [openings] is gone — the real material share runs 40% to
-# 82% depending on the article, so labour is now carried as its own explicit quantity.
+# ~5x low, and slab-on-grade was ~2.5x low. The single 55-65% "back out material from an
+# installed price" factor used by [openings] is gone — real material share runs 40-82%
+# depending on the article, so labour is now carried as its own explicit quantity.
 #
 # --- WHAT THE SECOND 2026-08-20 PASS DID (owner decisions) --------------------------------
-# The list that used to sit here began "WHAT IS STILL NOT IN THIS FILE, and it is a lot" and
-# named excavation, pumping, waterproofing, roof underlayment, branch-circuit conductors, the
-# PV array, utility connections, permits and general conditions. IT IS IN THIS FILE NOW. On the
-# owner's decision the whole missing-scope register from plans/cost-options.md was authored
-# into the new [allowances] table -- 48 lump sums -- and three of the four bid-ladder stages
-# were turned on. Read those two blocks' own headers before changing either.
+# On the owner's decision the whole missing-scope register from plans/cost-options.md —
+# excavation, pumping, waterproofing, roof underlayment, branch-circuit conductors, the PV
+# array, utility connections, permits and general conditions — was authored into the new
+# [allowances] table (48 lump sums), and three of the four bid-ladder stages were turned on.
+# Read those two blocks' own headers before changing either.
 #
 # Three things are still deliberately out, and each says why where it lives: REBAR (it is
 # inside the [concrete] $/cy rates -- see [basis_notes] -- so an allowance would bill it
@@ -81,10 +73,9 @@
 # in merged so a reader can see how much of the estimate is on that footing.
 #
 # --- MATERIALS OR INSTALLED? -------------------------------------------------------------
-# This used to be four paragraphs of prose that no consumer could read. It is now the
-# [basis] and [basis_notes] tables at the bottom of this file, and the estimate reports
-# three subtotals off them: material, labour, and merged (an installed row whose split is
-# not known). A merged number is never divided into a guessed split.
+# The [basis] and [basis_notes] tables at the bottom of this file state it, and the estimate
+# reports three subtotals off them: material, labour, and merged (an installed row whose
+# split is not known). A merged number is never divided into a guessed split.
 #
 # The SECTION default is still MATERIAL ONLY, and it now applies to very few rows: as of
 # 2026-08-20 almost every row declares its own material/labour split and so reports as
