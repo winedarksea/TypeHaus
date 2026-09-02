@@ -8,6 +8,8 @@ The vision here is for non-architects to be able to use vibe coding and simple U
 
 Note that we don't intend to make this "visually stunning". The idea here is users can pass an elevation/screenshot to an AI process to get a "photorealistic render" as needed. We do aim for quality, realistic portrayals of surface where feasible without great complexity.
 
+Try it out at: [https://type-haus.com/app/](https://type-haus.com/app/). Note that the browser version allows edits, but they won't be saved and are lost on refresh, so a local server instance is needed for actual use.
+
 ## How
 
 You describe walls, rooms, openings, assemblies, and foundations as frozen typed objects.
