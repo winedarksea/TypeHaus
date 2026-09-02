@@ -1,18 +1,17 @@
 # haus: editable
 # Catlin MEP — air distribution — the ERV trunks, System 1's conditioned-air chase, equipment.
 #
-# Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
-# verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
+# plan/mep.py re-exports the storey lists below (AGENTS.md §1.1), so the manifest is
+# unchanged.
 #
-# The second-floor ERV trunks run in the second floor's joist bays — since 2026-08-21 that
-# deck is split at x=18' (FS-S-WEST: 11.875" floor truss; FS-S-EAST: 11.875" I-joist, same
-# depth, both 16" o.c., direction "x"), and each trunk's `floor_ref` names FS-S-WEST since
-# every trunk starts at x=4' — the resolver validates each segment against whichever half
-# its midpoint falls in, so the crossing at x=18' still resolves. Bay centers are
-# `8" + n*16"` from the joist-line math in resolve/floors.py; bay 15 (y=20'-8") and bay 17
-# (y=23'-4") are both clear of the stair FloorOpening (x:11'-18', y:25'-36') and both cross
-# the central bearing wall at x=18'. The terminals on these trunks are in
-# plan/mep_registers.py.
+# The second-floor ERV trunks run in the second floor's joist bays, split at x=18'
+# (FS-S-WEST: 11.875" floor truss; FS-S-EAST: 11.875" I-joist, same depth, both 16" o.c.,
+# direction "x"). Each trunk's `floor_ref` names FS-S-WEST since every trunk starts at
+# x=4' — the resolver validates each segment against whichever half its midpoint falls in,
+# so the crossing at x=18' still resolves. Bay centers are `8" + n*16"` from the joist-line
+# math in resolve/floors.py; bay 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the
+# stair FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at
+# x=18'. The terminals on these trunks are in plan/mep_registers.py.
 
 from typehaus import (
     ClearancePolicy,
@@ -44,13 +43,8 @@ REGISTER_TYPES = (
                  plan_symbol="register", ventilation_terminal=True,
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # A WALL-ORIENTED SUPPLY TYPE STOOD HERE FOR ONE DAY AND IS GONE (2026-08-30).
-    # REG-M-SUP4 spent 2026-08-29 on W-M-LS at 5'-0" and needed its own type for it; the
-    # owner then put it back in RM-M-STUDY's ceiling over ED-M-STUDY-SPOT and paired it with
-    # a LOW extract, so `REG-T-ERV-SUP-WALL` had no user left and was deleted with its
-    # prices.toml row. **The finding it was minted for outlived it and is stated on
-    # REG-T-ERV-EXH-WALL below**, which is now the house's only wall-oriented ERV terminal
-    # type: `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
+    # REG-T-ERV-EXH-WALL below is the house's only wall-oriented ERV terminal type:
+    # `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
     # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
     # the face. Mount a ceiling type on a wall and 3" of it draws inside the studs.
     RegisterType(tag="REG-T-ERV-EXH", name="ERV stale-air extract diffuser, 6\" round",
@@ -58,16 +52,12 @@ REGISTER_TYPES = (
                  plan_symbol="register", ventilation_terminal=True,
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # The house's ONE wall-oriented ERV terminal type, and the note above is why it is the
-    # only one: a CEILING diffuser lies in the plane it is cut into, so its type is a 7x7
-    # face 1" deep, and mounting that type on a WALL tells the resolver the body reaches 7"
-    # off the wall into the room. ``_body_profile`` measures a wall mount's projection as
-    # the local y extent of its footprint, so REG-A-STUBATH-EXH — the house's one wall-hung
-    # extract — read as a 7" protrusion, past A117.1 §307.2's 4", and stood as an
-    # obstruction inside FX-A-STUBATH-WC's required clear space. It surfaced the day
-    # ``active_code_profile`` was set (plan/manifest.py) and the water-closet envelope
-    # stopped being dropped; before that the zone did not resolve and nothing could collide
-    # with it. A sidewall grille is a 7" face 1" deep, which is what this says.
+    # A CEILING diffuser lies in the plane it is cut into (7x7 face, 1" deep); mounting that
+    # type on a WALL tells the resolver the body reaches 7" off the wall into the room.
+    # ``_body_profile`` measures a wall mount's projection as the local y extent of its
+    # footprint, so REG-A-STUBATH-EXH — the house's one wall-hung extract — read as a 7"
+    # protrusion, past A117.1 §307.2's 4", obstructing FX-A-STUBATH-WC's required clear
+    # space. A sidewall grille is a 7" face 1" deep, which is what this type says.
     RegisterType(tag="REG-T-ERV-EXH-WALL",
                  name="ERV stale-air extract diffuser, 6\" round, sidewall",
                  footprint=(inch(7), inch(1)), height=inch(7),
@@ -93,19 +83,16 @@ REGISTER_TYPES = (
                  source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # The plant room's pair (2026-08-18, notes/plant_room.md). The room is held at ~75 F /
-    # 70% RH year-round, which makes its ventilation a pressure question before it is an air
+    # The plant room's pair (notes/plant_room.md). The room is held at ~75 F / 70% RH
+    # year-round, which makes its ventilation a pressure question before it is an air
     # question: natatorium practice holds such a room 0.05-0.15 in. w.g. NEGATIVE to the
     # spaces around it, so house air leaks in (harmless) and room air never leaks into a
     # stud bay (the failure this whole room is built to prevent).
     #
     # A dedicated, dampered branch off EQ-B-ERV rather than a separate machine — the house
-    # already owns a proper ERV in a mechanical room with a condensate drain and real frost
-    # control, and "separate from the house ERV" is best had with an independent DAMPER, not
-    # an independent unit. (The alternative considered and rejected was a through-wall
-    # ERV: the class of unit available here is single-core and alternates supply and exhaust
-    # on 75-second half-cycles, i.e. it cyclically pressurises the room, and the one on the
-    # table is out of spec below -4 F against a -15 F design temperature.)
+    # already owns a proper ERV with a condensate drain and real frost control, and
+    # "separate from the house ERV" is best had with an independent DAMPER, not an
+    # independent unit.
     #
     # RH-driven, not schedule-driven: no terminal and no ERV self-regulates humidity, and
     # the setpoint resets from 70% down to ~55% as outdoor air falls to -15 F.
@@ -134,12 +121,11 @@ REGISTER_TYPES = (
                  plan_symbol="register",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # ** REG-T-HP-RET GREW TO A 25x20 FILTER-BACK GRILLE ON 2026-08-30. ** It was 20x14 —
-    # 280 in2 gross, and 750 cfm through it is 386 fpm face velocity. Manual D SS4-10 wants
-    # 350 fpm at a plain return grille and 300 at one carrying the filter, which is what this
-    # one is: with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else in
-    # the system, and the grille is the only serviceable face a person can reach. 480 in2
-    # gross is 225 fpm, comfortably under both.
+    # REG-T-HP-RET is a 25x20 filter-back grille. 480 in2 gross at 750 cfm is 225 fpm face
+    # velocity — under Manual D SS4-10's 350 fpm for a plain return grille and its 300 fpm
+    # for one carrying the filter, which this one does: with the machine hung in SF-S-HP1
+    # there is no filter cabinet anywhere else in the system, and the grille is the only
+    # serviceable face a person can reach.
     #
     # 30" in x and 16" in y, not a square-ish 25x20, because the return chamber it opens into
     # is the 19" of SF-S-HP1 south of the cabinet: width is the free dimension there and
@@ -166,15 +152,13 @@ REGISTER_TYPES = (
                  ports=()),
 )
 
-# No gas appliance in the house: the gas furnace that used to stand at (4', 29'-4") is gone
-# (all-electric — three Gree heat-pump systems + radiant floor), and `plan/site.py` never authored a GAS
-# UtilityLine to feed one. The air-side ports it used to carry now live on
+# No gas appliance in the house: all-electric (three Gree heat-pump systems + radiant
+# floor), and `plan/site.py` authors no GAS UtilityLine. Air-side ports live on
 # EQ-T-BROAN-B210E75RT (plan/mep_erv_types.py) and EQ-T-GREE-DUC24 (plan/electrical.py) —
-# the two things left that push air, neither of which burns anything.
+# the two things that push air, neither of which burns anything.
 EQUIPMENT_TYPES = (
-    # ONE 80-gal hybrid HPWH (2026-08-15), replacing the earlier two-tank 120V-compressor/
-    # 240V-element split. Rheem ProTerra PROPH80, EcoNet-enabled: 4.5 kW resistance element,
-    # 30A/240V dedicated circuit, single power whip.
+    # ONE 80-gal hybrid HPWH. Rheem ProTerra PROPH80, EcoNet-enabled: 4.5 kW resistance
+    # element, 30A/240V dedicated circuit, single power whip.
     #
     # Compressor-only draw ("Heat Pump"/"Energy Saver" mode) is ~360-500W per the datasheet;
     # `LM-WH` (plan/circuits.py) carries 500 VA as its `max_simultaneous_va` ceiling.
@@ -194,7 +178,7 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
-    # --- the backup microgrid (2026-08-02, notes/backup_power.md) ----------------------
+    # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
     # EG4 12kPV: name is the PV input, not the output. 12,000 W array in, 8,000 W AC out
     # continuous — the number the autonomy calc and CKT-ESS-GRID breaker use. Surge is the
@@ -233,23 +217,13 @@ EQUIPMENT_TYPES = (
                   source="EG4 PowerPro WallMount Indoor 14.3 kWh (LFP), UL 9540 listed. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
 )
 
-# --- Ventilation: ERV fresh-air / stale-air trunks in the second-floor joist bays ----
-# ================= THE RECTANGULAR ERV IS GONE (2026-08-25) =========================
+# --- Ventilation: ERV fresh-air / stale-air trunks ------------------------------------
 #
-# Nine sheet-metal ERV trunks used to live in the four lists below — 10x6 and 8x6 trunk and
-# branch with tees cut into them, sized to ASHRAE 62.2 rather than to furnace CFM and, at
-# ~505 fpm, perfectly quiet. What was wrong with them was not the sizing: it was that they
-# were a *furnace*-shaped system for a ventilator, and that half the machine they served did
-# not exist. The install is semi-rigid radial now — one 75 mm run per terminal off three
+# The ERV install is semi-rigid radial — one 75 mm run per terminal off three
 # sub-manifolds, plus a real outdoor side, plus four drawn risers — and all of it lives in
-# **plan/mep_erv.py**.
-#
-# The four lists stay as empty lists rather than being deleted, so plan/mep.py's per-storey
-# assembly (and therefore element order in model.json) is untouched by the move.
-#
-# Deleted, for the record: DU-M-ERV-RET, DU-M1-ERV-SUP, DU-M1-ERV-RET, DU-B-ERV-SUP,
-# DU-B-ERV-RET, DU-B-ERV-BATH, DU-B-SAUNA-SUP, DU-S-BATH1-EXH, DU-A-ERV-RET. Also
-# DU-S-PLANT-EXH, which the plan's port budget moved onto the attic sub-manifold.
+# **plan/mep_erv.py**. The four lists below stay empty rather than being deleted, so
+# plan/mep.py's per-storey assembly (and therefore element order in model.json) is
+# untouched.
 DUCTS = []
 
 DUCTS_MAIN = []
@@ -264,166 +238,112 @@ DUCTS_ATTIC = []
 # second-floor hallway inside that soffit, with a short return-plenum stub at its rear
 # (ERV fresh feed wyed in behind it — DU-S-ERV-HP-FEED below).
 #
-# SOFFIT routing + `soffit_ref="SF-S-DUCT"` since 2026-08-25, replacing CHASE. CHASE was
-# never a description of where these run — it was the flag that turned the joist-bay check
-# off, and nothing checked anything in its place, which is why every clearance in this file
-# used to be hand arithmetic in a comment. Naming the modeled Soffit puts them under
-# `mep.duct_soffit_occupancy`, which derives the box's clear section from its own drop,
-# framing member and lining and measures both trunks, the air handler and the strip heater
-# against it side by side. It also gives them their elevation for free: a run that names a
-# soffit and authors no elevation sits on the box's clear underside. CHASE keeps its honest
-# meaning for a framed shaft that is not modeled as a Soffit. The two crossings of the
-# x=18' bearing line are legal either way.
+# SOFFIT routing + `soffit_ref="SF-S-DUCT"`: naming the modeled Soffit puts these runs
+# under `mep.duct_soffit_occupancy`, which derives the box's clear section from its own
+# drop, framing member and lining and measures both trunks, the air handler and the strip
+# heater against it side by side. It also gives them their elevation for free: a run that
+# names a soffit and authors no elevation sits on the box's clear underside. CHASE keeps
+# its honest meaning for a framed shaft that is not modeled as a Soffit. The two crossings
+# of the x=18' bearing line are legal either way.
 # Hall is x 18'-2 3/4"..21'-8" clear: supply at x=19'-4", return at x=20'-8", side by side.
 # `design_cfm` is authored intent for a low-flow straight run (why one 24k unit covers the
 # upstairs): 14x8 @ 750 cfm is ~965 fpm.
 DUCTS_HVAC_SECOND = [
-    # ** 14x8 -> 18x8, AND IT STARTS IN SF-S-HP1 NOW (2026-08-30). ** 750 cfm through 14x8 is
-    # 965 fpm, above Manual D's 900 fpm ceiling for a trunk in a finished space — a number
-    # this file's own `design_cfm` comment asserted was "low-flow" and never divided out.
-    # 18x8 is 750 fpm. 18" and not 20" because the hall box's 30 3/4" clear has to carry the
-    # ERV mixing-box feed past the trunk as well: 18 + 2 hanger gap + 6 = 26, and the feed's
-    # own drop is fixed at x=20'-8", which 20x8 does not clear.
+    # 750 cfm through 14x8 is 965 fpm, above Manual D's 900 fpm ceiling for a trunk in a
+    # finished space; 18x8 is 750 fpm. 18" and not 20" because the hall box's 30 3/4" clear
+    # has to carry the ERV mixing-box feed past the trunk as well: 18 + 2 hanger gap + 6 =
+    # 26, and the feed's own drop is fixed at x=20'-8", which 20x8 does not clear.
     #
-    # x moved 19'-4" -> 19'-6" with the widening — the west face lands 3/8" inside the
-    # cavity and the east face keeps the full 2" off the ERV feed. REG-A-HP-EAST at
-    # (19'-4", 11'-4") is still squarely over the trunk (x 18'-9"..20'-3"), so its floor boot
-    # still rises straight.
+    # x=19'-6": the west face lands 3/8" inside the cavity and the east face keeps the full
+    # 2" off the ERV feed. REG-A-HP-EAST at (19'-4", 11'-4") is still squarely over the
+    # trunk (x 18'-9"..20'-3"), so its floor boot still rises straight.
     #
-    # It begins ON the air handler's discharge face at (19'-6", 4'-3 3/8") inside SF-S-HP1 and
-    # crosses the y=7'-6" seam into SF-S-DUCT. `soffit_ref` names the hall box because that is
-    # where 27 of its 29 feet run; the check clips a run's extent to the box it names, which is
-    # the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The 3'-2 5/8" inside SF-S-HP1
-    # is therefore not graded there — it is the plenum's own neck, and it runs in the west
-    # third of that box, well clear of ST-S2A's flight at x>=22'-5 3/8".
+    # It begins ON the air handler's discharge face at (19'-6", 4'-3 3/8") inside SF-S-HP1
+    # and crosses the y=7'-6" seam into SF-S-DUCT. `soffit_ref` names the hall box because
+    # that is where 27 of its 29 feet run; the check clips a run's extent to the box it
+    # names, which is the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts. The
+    # 3'-2 5/8" inside SF-S-HP1 is therefore not graded there — it is the plenum's own neck,
+    # in the west third of that box, well clear of ST-S2A's flight at x>=22'-5 3/8".
     #
-    # ** 750 -> 500 cfm, 2026-08-31, AND IT IS AN ARITHMETIC FIX NOT A RESIZING. ** This trunk
-    # carried 750 and DU-S-HP-SOUTH-RISE carried 250 while joining nothing, so System 1's
-    # drawn supply summed to 1,000 cfm against a machine that moves 760. The discharge is 750:
-    # 500 north up this trunk and 250 east into the riser take-off, which now leaves the same
-    # discharge face 19" further east. 18x8 at 500 cfm is 500 fpm — further under Manual D's
-    # 900 fpm ceiling than the 750 fpm it was sized for, and the section stays 18x8 because
-    # 18" is what carries the ERV mixing-box feed past it in the hall box, not what carries
-    # the air.
-    # ** IT STOPPED 18" PAST ITS LAST TAKE-OFF UNTIL 2026-09-01. ** y=33'-0" was a foot and a
-    # half of 18x8 trunk north of REG-S-HP-BED3's boot at y=31'-6", serving nothing and
-    # capped. Trimming it to the boot station is 1'-6" of 18x8 off the BOM and puts the cap
-    # where the last collar is, which is where a trunk ends. The end is a cap either way —
-    # `mep.duct_connectivity` earns that from the four `duct_ref` take-offs on this run, not
-    # from its length — so this is a material saving, not a fix for a finding.
+    # 500 cfm (not the full 750) is an arithmetic fix, not a resizing: this trunk and
+    # DU-S-HP-SOUTH-RISE used to both draw off the discharge independently, summing to
+    # 1,000 cfm against a machine that moves 760. The discharge is 750: 500 north up this
+    # trunk and 250 east into the riser take-off. 18x8 at 500 cfm is 500 fpm, further under
+    # Manual D's 900 fpm ceiling — the section stays 18x8 because that carries the ERV
+    # mixing-box feed past it in the hall box, not because it carries the air.
+    #
+    # It stops 18" past its last take-off: y=31'-6" is REG-S-HP-BED3's boot station, and the
+    # end is a cap either way — `mep.duct_connectivity` earns that from the four `duct_ref`
+    # take-offs on this run, not from its length.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 6), ft(4, 3.375)), pt(ft(19, 6), ft(31, 6))),
             width=inch(18), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=500),
-    # The return-plenum stub, rebuilt in SF-S-HP1 on 2026-08-30 and now carrying the return
-    # the right way round. It used to run (20'-8", 9'-8") -> (20'-8", 9'-2") in the hall box:
-    # REG-S-HP-RET sat 1" NORTH of the air handler's case, which is the same face the supply
-    # leaves from. A return grille at the discharge end is a short circuit drawn as a plenum.
+    # The return-plenum stub is in SF-S-HP1, on the machine's south (return) face: 25x14
+    # from REG-S-HP-RET's filter-back grille at (20'-7", 1'-9") north to (20'-7", 2'-3"),
+    # where the case's collar and flex connector pick it up 3 1/8" further on. 750 cfm
+    # through 25x14 is 309 fpm — a return velocity, not a supply one.
     #
-    # The machine's return is its south face, so the grille and this stub are south of it:
-    # 25x14 from REG-S-HP-RET's filter-back grille at (20'-7", 1'-9") north to (20'-7", 2'-3"),
-    # where the case's collar and flex connector pick it up 3 1/8" further on. 750 cfm through
-    # 25x14 is 309 fpm — a return velocity, not a supply one; the old 14x8 stub was 965.
-    #
-    # Rooms still do NOT return to the AH — the only extract is the ERV's stale pickups, and
-    # the hall (fed by door undercuts) through D-S-STUDY2's 2'-6" cased opening is the AH's
-    # breathing source. That loose coupling is unchanged by the move; the path is one cased
-    # opening longer. ERV balance is still set by its own terminals, and the AH recirculates
+    # Rooms do NOT return to the AH — the only extract is the ERV's stale pickups, and the
+    # hall (fed by door undercuts) through D-S-STUDY2's 2'-6" cased opening is the AH's
+    # breathing source. ERV balance is set by its own terminals, and the AH recirculates
     # whatever DU-S-ERV-HP-FEED injects through EQ-S-ERV-MIX at the far side of this chamber.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(ft(20, 7), ft(1, 9)), pt(ft(20, 7), ft(2, 3))),
             width=inch(25), depth=inch(14), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=750),
-    # West branch to RM-S-SUITE, rerouted 2026-07-30: tees off DU-S-HP-SUP at D-S-SUITE's
-    # centreline (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate
-    # cripple zone, then runs west down the suite's entry arm to the grille near
-    # D-S-SUITEBATH. 6'-10" of 10x8 replaces the old 10'-10" detour across RM-S-SUITEBATH.
-    # (This used to carry "an 8"-deep duct on the 14" soffit drop clears it". It does, but
-    # that is now `mep.duct_soffit_occupancy`'s answer against SF-S-SUITE's derived cavity,
-    # not a number in a comment that nothing re-runs when the FramingSpec changes.)
-    # 175 cfm: feeds two terminals — REG-S-HP-SUITE (100) and REG-A-HP-WEST (75), a floor
-    # boot up through FS-ATTIC directly above. 315 fpm through 10x8, quieter still. It read
-    # 250 until 2026-08-31, when every supply register on System 1 was given a `design_cfm`
-    # and the branch flows were made to sum to the 750 the machine actually moves.
+    # West branch to RM-S-SUITE: tees off DU-S-HP-SUP at D-S-SUITE's centreline
+    # (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate cripple
+    # zone, then runs west down the suite's entry arm to the grille near D-S-SUITEBATH.
+    # 175 cfm feeds two terminals — REG-S-HP-SUITE (100) and REG-A-HP-WEST (75), a floor
+    # boot up through FS-ATTIC directly above. 315 fpm through 10x8, quiet.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-SUITE", design_cfm=175),
-    # The two south rooms' branch (2026-08-16). RM-S-PLANT and RM-S-STUDY2 were the only
-    # conditioned rooms on this storey with no drawn terminal, which was always the odd
-    # reading: EQ-S-HP1-AH hangs in RM-S-STUDY2's own ceiling.
+    # The two south rooms' branch: RM-S-PLANT and RM-S-STUDY2 are fed off DU-S-HP-SOUTH,
+    # which reaches them from FS-ATTIC's I-joist bay at y=3'-4" because EQ-S-HP1-AH's case
+    # fills SF-S-DUCT from y=6'-0" to 9'-7" and leaves no lane south inside the soffit.
     #
-    # ** ITS RISER IS DRAWN AS OF 2026-08-30, AND THE BRANCH IS NO LONGER AN ORPHAN. ** From
-    # 2026-08-16 to 2026-08-30 this run reached (19'-4", 3'-4") in an FS-ATTIC joist bay and
-    # DU-S-HP-SUP ended at (19'-4", 9'-7") in SF-S-DUCT, and NOTHING JOINED THEM. The engine
-    # cannot catch that — no check validates that a DuctRun endpoint reaches equipment or
-    # another run, and `Register.duct_ref` is an unvalidated string — so it stood open in
-    # plans/TODO.md instead. The reason it stood open was the packing problem in the hall
-    # box, and the packing problem was an artifact of a placeholder air handler that did not
-    # exist (plan/electrical.py::EQ-T-GREE-DUC24). With the machine in SF-S-HP1 the riser has
-    # a lane and a determinable lower end, and DU-S-HP-SOUTH-RISE below is it.
+    # JOIST_BAY and not CHASE because the alternative — running west along the attic floor —
+    # cannot get past W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not
+    # open up. Inside the bay the duct passes UNDER that wall's bottom plate;
+    # mep.duct_joist_bay reports the bearing-line crossing as a fire-blocking note
+    # (R302.11), not a conflict. That note is the regression canary for this whole branch
+    # and it requires the run stay filed on the `second` storey.
     #
-    # The run KEEPS its path, its bay and its bearing crossing. JOIST_BAY and not CHASE
-    # because the alternative — running west along the attic floor — cannot get past
-    # W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not open up. Inside the
-    # bay the duct passes UNDER that wall's bottom plate; mep.duct_joist_bay reports the
-    # bearing-line crossing as a fire-blocking note (R302.11), not a conflict. That note is
-    # the regression canary for this whole branch and it requires the run stay filed on the
-    # `second` storey.
+    # 10x6/250 cfm: it also picks up RM-A-STUDY's terminal — REG-A-HP-STUDY is a straight
+    # floor boot off this run, extended east to x=26'-0". 250 cfm is 75 + 75 + 100, taken
+    # OUT of the trunk's authored 750 by damper, not added to it. 600 fpm at the riser,
+    # 420 fpm in the east arm (175 cfm to REG-S-HP-STUDY2 and REG-A-HP-STUDY), 180 fpm in
+    # the west arm (75 cfm to REG-S-HP-PLANT). 10" fits the 13 1/2" clear bay with 1 3/4"
+    # to spare and 6" fits the 11 7/8" I-joist depth.
     #
-    # ** 8x6/150 -> 10x6/250, AND EXTENDED EAST TO x=26'-0". ** It picks up RM-A-STUDY's
-    # terminal now: DU-A-HP-STUDY is deleted and REG-A-HP-STUDY is a straight floor boot off
-    # this run, the same pattern as the retired DU-A-HP-EAST -> REG-A-HP-EAST. That branch was
-    # orphaned too (it started at (19'-4", 3'-0") at -8 7/8", inside this bay, connected to
-    # nothing), it straddled the joist at y=32" and overlapped THIS duct by 4" — two 8" ducts
-    # do not fit one 13 1/2" clear bay, and it escaped mep.duct_joist_bay only by being
-    # authored CHASE — and it ran 6'-8" of bare duct across RM-A-STUDY's finished floor to get
-    # to a floor register, along a bay it never needed to leave. Deleting it kills all four
-    # faults at once; re-baying it would have fixed two and still needed a second riser.
-    #
-    # 250 cfm is 75 + 75 + 100, taken OUT of the trunk's authored 750 by damper, not added to
-    # it: 750 is the air the machine moves, and these three registers redistribute it. 600 fpm
-    # at the riser, 420 fpm in the east arm (175 cfm to REG-S-HP-STUDY2 and REG-A-HP-STUDY),
-    # 180 fpm in the west arm (75 cfm to REG-S-HP-PLANT). 10" fits the 13 1/2" clear bay with
-    # 1 3/4" to spare and 6" fits the 11 7/8" I-joist depth.
-    #
-    # The riser lands at x=23'-0 1/2", which is 3'-1 1/2" west of REG-S-HP-STUDY2 and east of
-    # the room's midpoint — a short arm east to the study and the attic study, a long one west
+    # The riser lands at x=23'-0 1/2", 3'-1 1/2" west of REG-S-HP-STUDY2 and east of the
+    # room's midpoint — a short arm east to the study and the attic study, a long one west
     # to the plant room. Manual D App. A13 calls a take-off this close to a supply plenum a
     # noise defect; it is mitigated by turning vanes at the riser, a lined plenum and first
-    # 5 ft, and a balancing damper, and the 18x8 trunk was chosen partly so the take-off could
-    # sit further downstream than a 14x8 would have allowed.
+    # 5 ft, and a balancing damper, and the 18x8 trunk was chosen partly so the take-off
+    # could sit further downstream than a 14x8 would have allowed.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
             path=(pt(ft(26), ft(3, 4)), pt(ft(6, 8), ft(3, 4))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=250),
-    # THE RISER — the vertical plans/TODO.md held open, and the last of System 1's three.
-    # A repeated plan point at two elevations IS the vertical leg, the idiom
-    # DU-S-ERV-HP-FEED's drop already uses; all `DuctRun` ever lacked was somewhere to put
-    # the second number, and it has had that since 2026-08-25.
+    # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
+    # DU-S-ERV-HP-FEED's drop already uses.
     #
     # It is a separate run from DU-S-HP-SOUTH and not a fourth vertex on it, because the two
     # live in different cavities and are graded by different checks: this leg is in SF-S-HP1
     # under `mep.duct_soffit_occupancy`, the branch is in an FS-ATTIC bay under
     # `mep.duct_joist_bay`, and a run carries one `routing` and one `soffit_ref`.
     #
-    # ** IT NOW STARTS ON THE MACHINE, 2026-08-31. ** From 2026-08-30 it began at
-    # (23'-0 1/2", 5'-1") — a plan point 7 1/4" east of the air handler's case, in mid-air.
-    # The comment here asserted that "the plenum is fabricated out to x=23'-5 1/2" to catch
-    # this take-off", and nothing in the model said otherwise: no check validates that a
-    # DuctRun endpoint reaches equipment or another run, so a branch feeding three registers
-    # hung off a sentence. It has a take-off leg now, and the leg exists because the FLEXX
-    # Ultra retype made room for it — the cabinet is 8 7/16" shallower than the DUC24, all of
-    # it taken off the north end, so there is clear box between the discharge face at
-    # y=4'-3 3/8" and the ERV feed's east jog at y=5'-5 1/2".
-    #
-    # THE TAKE-OFF LEG runs east from (21'-1", 4'-8 3/8") to (23'-0 1/2", 4'-8 3/8"). Its
-    # south edge is flush on the discharge face and its west end sits over the cabinet, so it
-    # is a collar on the discharge, not a duct that happens to end nearby. It shares its band
-    # with EQ-S-HP1-STRIP, the 4.6 kW heat kit, which is exactly right: the kit is in the
-    # discharge, the leg's centreline runs through its plate, and `mep.duct_soffit_occupancy`
-    # reads the two as one assembly. DU-S-HP-SUP's take-off is the other side of the same
-    # discharge, 10" west, and the two split it 250/500.
+    # It starts on the machine. THE TAKE-OFF LEG runs east from (21'-1", 4'-8 3/8") to
+    # (23'-0 1/2", 4'-8 3/8"). Its south edge is flush on the discharge face and its west end
+    # sits over the cabinet, so it is a collar on the discharge, not a duct that happens to
+    # end nearby. It shares its band with EQ-S-HP1-STRIP, the 4.6 kW heat kit: the kit is in
+    # the discharge, the leg's centreline runs through its plate, and
+    # `mep.duct_soffit_occupancy` reads the two as one assembly. DU-S-HP-SUP's take-off is
+    # the other side of the same discharge, 10" west, and the two split it 250/500.
     #
     # It clears the ERV feed's jog by 1 1/8" along the box rather than the 2" hanger gap —
     # the check does not compare a pair that does not overlap ALONG the box, so this one is
@@ -431,74 +351,48 @@ DUCTS_HVAC_SECOND = [
     # against the feed's 212 1/8"..218 1/8", and 1 1/8" of plan clearance is a hand's width
     # short. It is the tightest joint in the box and the reason the jog may not move south.
     #
-    # x=23'-0 1/2" is then the box's middle lane: 2 3/4" east of the case and 2 1/2" west of
+    # x=23'-0 1/2" is the box's middle lane: 2 3/4" east of the case and 2 1/2" west of
     # EQ-S-ERV-MIX, both more than the 2" hanger gap. It runs south past the machine and
     # stands up at y=3'-4", the FS-ATTIC bay centreline (8" + 2 x 16"), 19" of rise from the
     # soffit cavity into the bay. Every foot of it is south of y=5'-9", so none of it is
     # under ST-S2A.
     #
-    # 92 1/8" is a 6"-deep duct on SF-S-HP1's clear underside — it was 96 1/8" until the box
-    # went from a 17" drop to 21" for the deeper cabinet, and the cavity floor came down with
-    # it; 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord, the elevation
-    # DU-S-HP-SOUTH derives for itself from the joists and which the soffit does not move.
-    # Both storey-relative to `second`, whose datum is 10'-0 1/8" — the same convention every
-    # PipeRun on this storey uses, and the reason those two numbers are not the -8 7/8" the
-    # attic-filed runs carry for the same bay.
+    # 92 1/8" is a 6"-deep duct on SF-S-HP1's clear underside; 111 1/8" is the same duct's
+    # centreline on FS-ATTIC's bottom chord, the elevation DU-S-HP-SOUTH derives for itself
+    # from the joists, which the soffit does not move. Both storey-relative to `second`,
+    # whose datum is 10'-0 1/8" — the same convention every PipeRun on this storey uses.
     DuctRun(uid="27B8FKNDPB", tag="DU-S-HP-SOUTH-RISE", system=DuctSystem.SUPPLY,
             path=(pt(ft(21, 1), ft(4, 8.375)), pt(ft(23, 0.5), ft(4, 8.375)),
                   pt(ft(23, 0.5), ft(3, 4)), pt(ft(23, 0.5), ft(3, 4))),
             elevations=(inch(92.125), inch(92.125), inch(92.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=250),
-    # DU-S-ERV-HP-FEED moved to plan/mep_erv.py (2026-08-25). It kept its tag and its uid
-    # and nothing else: it used to tap DU-M1-ERV-SUP at y=12'-8" — a trunk that no longer
-    # exists — and its rise into the soffit was undrawn because `DuctRun` had no elevation
-    # field. It now comes off the attic sub-manifold, drops into SF-S-DUCT, and lands on the
-    # new EQ-S-ERV-MIX mixing box instead of wyeing into the return plenum by comment.
-    # DU-S-PLANT-EXH moved to plan/mep_erv.py as DU-A-ERV-R-PLANT (2026-08-25), and moved
-    # again on 2026-08-29 to DU-M-ERV-R-PLANT on the LEVEL-2 manifold, running in FS-S-WEST's
-    # open-web trusses and rising inside W-S-C1 to a high sidewall grille. Same uid throughout.
-    # The second move was not about air at all: the attic route ran the length of the new guest
-    # studio's knee wall. It was never System 1's — it is the ERV's stale pull out of
-    # RM-S-PLANT. The reasoning that survives the move is in the new run's
-    # comment and in notes/plant_room.md: 25 cfm against ~20 of makeup, extract-biased on
-    # purpose, and an ERV is damage limitation rather than humidity control.
+    # DU-S-ERV-HP-FEED is in plan/mep_erv.py: it comes off the attic sub-manifold, drops
+    # into SF-S-DUCT, and lands on EQ-S-ERV-MIX. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
+    # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside
+    # W-S-C1 to a high sidewall grille — it is not System 1's, it is the ERV's stale pull
+    # out of RM-S-PLANT: 25 cfm against ~20 of makeup, extract-biased on purpose, and an ERV
+    # is damage limitation rather than humidity control (notes/plant_room.md).
 ]
 
-# NO ATTIC BRANCH IS LEFT (2026-08-30). Both of the loft's terminals are straight floor
-# boots now — REG-A-HP-EAST off DU-S-HP-SUP and REG-A-HP-STUDY off DU-S-HP-SOUTH — and
-# DUCTS_HVAC_ATTIC is empty rather than absent, because "this storey has no horizontal duct"
-# is a fact worth stating where the list used to be.
-#
-# DU-A-HP-STUDY (uid CADH01AAAA) was the last one and it was wrong in four ways at once. It
-# started at (19'-4", 3'-0") at -8 7/8" inside the same FS-ATTIC bay DU-S-HP-SOUTH rides and
-# **was joined to nothing** — the branch tree it belonged to had no riser at all. Its 8"
-# width at y=3'-0" spanned 32"..40", straddling the joist at y=32" and overlapping
-# DU-S-HP-SOUTH by 4"; two 8" ducts do not fit one 13 1/2" clear bay, and it escaped
-# `mep.duct_joist_bay` only because it was authored `routing=CHASE`, which turns the joist
-# check off. Then it rose to +3" and ran 6'-8" east ON RM-A-STUDY's finished floor to a floor
-# register — surfacing from the floor, running on top of it and dropping back into it — along
-# a bay it never needed to leave, since FS-ATTIC's I-joists span x.
-#
-# DU-A-HP-EAST went the same way on 2026-07-30 and for the same reason: 6'-8" of run just to
-# reach a grille that could sit anywhere in an open room. Re-baying this one would have fixed
-# the straddle and the finished floor and left the orphan and a second riser to draw.
+# Both of the loft's terminals are straight floor boots — REG-A-HP-EAST off DU-S-HP-SUP and
+# REG-A-HP-STUDY off DU-S-HP-SOUTH. DUCTS_HVAC_ATTIC is empty rather than absent, because
+# "this storey has no horizontal duct" is a fact worth stating where the list would be.
 DUCTS_HVAC_ATTIC = []
 
-# The tank moved from (6'-2 1/4", 32'-9 7/8") to (5'-6", 24'-0") on 2026-08-23, to free the
-# furnace room's NE corner for the ESS closet (plan/storeys/basement.py). It is not a
-# preference: EQ-B-ESS-BATT declares a REQUIRED 48" x 41" separation zone all round
-# (EQ-T-ESS-BATT, above), `advisory.ess_clearance` grades it with no room-or-wall exemption,
-# and the old tank stood squarely inside the zone a battery in that corner would project.
-# With the room only 10' wide there is no room to buy the 48" in x — every foot west of
-# x=3'-11" is the 36" NEC 110.26 working space in front of ED-B-PANEL, ED-B-BACKUP-PANEL,
-# ED-B-BACKUP-ENCL and ED-B-NET-PATCH — so the 41" had to come out of y, which means south.
+# The tank sits at (5'-6", 24'-0"), which frees the furnace room's NE corner for the ESS
+# closet (plan/storeys/basement.py). It is not a preference: EQ-B-ESS-BATT declares a
+# REQUIRED 48" x 41" separation zone all round (EQ-T-ESS-BATT, above),
+# `advisory.ess_clearance` grades it with no room-or-wall exemption. With the room only 10'
+# wide there is no room to buy the 48" in x — every foot west of x=3'-11" is the 36" NEC
+# 110.26 working space in front of ED-B-PANEL, ED-B-BACKUP-PANEL, ED-B-BACKUP-ENCL and
+# ED-B-NET-PATCH — so the 41" had to come out of y, south.
 #
 # (5'-6", 24'-0") is what is left once the room's other fixed points are honoured: north of
 # D-B-FURN's leaf (which sweeps to y=20'-8"), west of EQ-B-ESS-INV (x=7'-0 5/16"), south of
 # EQ-B-ERV (y=28'-1 5/8"), and starting at x=4'-6" so the panel wall's working space stays
 # clear. It also SHORTENS the plumbing: all three runs below leave the tank heading south,
-# and PR-B-CW-WH now arrives straight up its own x=5'-6" line instead of doglegging.
+# and PR-B-CW-WH arrives straight up its own x=5'-6" line instead of doglegging.
 #
 # **Four literals, one position.** This coordinate is repeated verbatim as a path endpoint in
 # PR-B-HW-TRUNK, PR-B-CW-WH and PR-B-HW-BATH1 (plan/mep_supply.py) and is the datum for

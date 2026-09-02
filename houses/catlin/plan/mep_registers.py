@@ -1,38 +1,30 @@
 # haus: editable
 # Catlin MEP — air terminals — every supply, return, exhaust and transfer opening, storey by storey.
 #
-# Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
-# verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
+# plan/mep.py re-exports the storey lists below (AGENTS.md §1.1), so the manifest is
+# unchanged.
 #
-# Three families now, and the difference matters on the plan set: REG-T-ERV-* are ventilation
+# Three families, and the difference matters on the plan set: REG-T-ERV-* are ventilation
 # terminals on EQ-B-ERV's balanced trunks; REG-T-HP-* are System 1's conditioned-air terminals;
 # REG-T-TRANSFER-* is the passive one — a louver between two rooms, on no trunk at all, and the
 # only register here with no `duct_ref`. Their types and the ducts they sit on are in
 # plan/mep_hvac.py.
 #
-# ** THE ERV WAS 55 CFM OUT OF BALANCE UNTIL 2026-08-31, ON THE EXTRACT SIDE. ** EQ-B-ERV is
-# a BALANCED machine authored at 210 cfm and HVI-certified at 206 at 0.4" w.g.
-# (plan/mep_erv_types.py::EQ-T-BROAN-B210E75RT explains which number is which), and the
-# supply side was authored to exactly that: 110 cfm across the six REG-*-SUP* terminals plus
-# the 100 cfm DU-S-ERV-HP-FEED puts into EQ-S-ERV-MIX. The extract side summed to 265. That
-# is not a rounding error — it is 55 cfm of continuous depressurisation in a house tight
-# enough for it to matter, and nothing in checks/ compares the two sums, so it stood.
+# EQ-B-ERV is a BALANCED machine authored at 210 cfm, HVI-certified at 206 at 0.4" w.g.
+# (plan/mep_erv_types.py::EQ-T-BROAN-B210E75RT explains which number is which). Supply sums
+# to 210: 110 cfm across the six REG-*-SUP* terminals plus the 100 cfm DU-S-ERV-HP-FEED puts
+# into EQ-S-ERV-MIX. Extract also sums to 210, on the dampers, holding every code minimum:
 #
-# It sums to 210 now, and the reduction was taken the way a balancer takes it — on the
-# dampers, proportionally, holding every code minimum:
+#  * The seven bathroom terminals and the sauna run at 20 cfm each (IRC M1505.4.4's
+#    continuous local-exhaust rate) — 160 cfm, untouchable, 76% of the machine.
+#  * The remaining 50 cfm is shared by the other ten terminals: RM-S-PLANT 12, the workshop
+#    bench hood 12, the study return 5, mudroom 4, kitchen 4, laundry 2, the three bedroom
+#    pickups 2 each, and the attic return 5.
 #
-#  * The seven bathroom terminals and the sauna stay at 20 cfm each (IRC M1505.4.4's
-#    continuous local-exhaust rate). 160 cfm, untouchable, and 76% of the machine.
-#  * The remaining 50 cfm is what the other ten terminals share, scaled from the 105 cfm
-#    they were authored at: RM-S-PLANT 25->12, the workshop bench hood 25->12, the study
-#    return 10->5, mudroom 8->4, kitchen 8->4, laundry 5->2, the three bedroom pickups 5->2
-#    and the attic return 9->5.
-#
-# ** SAY THE COST OUT LOUD: ** RM-S-PLANT's extract and REG-B-RET1's bench hood are the two
-# that lose real air, and both were sized for a job — holding a 70% RH room negative, and
-# pulling solder fume off a bench. At 12 cfm each they are token flows. The honest fix for
-# that is a LARGER ERV, not a redistribution; this change makes the arithmetic true against
-# the machine the house actually has, and it is where a bigger machine would earn its keep.
+# RM-S-PLANT's extract and REG-B-RET1's bench hood are token flows at 12 cfm each — sized
+# for holding a 70% RH room negative and pulling solder fume off a bench respectively. The
+# honest fix is a LARGER ERV, not a redistribution; this arithmetic is true against the
+# machine the house actually has.
 
 from typehaus import (
     DuctRun,
@@ -81,9 +73,9 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(12, 6), ft(14, 1.875)), duct_ref="DU-S-HP-SUITE",
              type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
-    # The two south rooms (2026-08-16), both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay
-    # branch at y=3'-4" that reaches them from above, because the air handler's case fills
-    # SF-S-DUCT from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling
+    # The two south rooms, both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay branch at
+    # y=3'-4" that reaches them from above, because the air handler's case fills SF-S-DUCT
+    # from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling
     # grilles at 9'-0" (the storey's flat ceiling, not the 7'-10" soffit face), each a short
     # boot down out of the bay.
     #
@@ -104,41 +96,36 @@ REGISTERS_HVAC_SECOND = [
     # suspended tubes hang at x 3'-4"/8'-8". The room's only opening is D-S-PLANT back into
     # the study, at the far east end, so the supply is diagonally opposite it and the room's
     # air crosses the glazing on the way out. (placeables.py still describes the chairs as
-    # straddling a floor register at (9', 4') — that was REG-S-SUP1, retired 2026-07-29;
-    # this terminal is in the ceiling, so nothing straddles it — and placeables.py says so
-    # itself now.)
-    # Retyped to REG-T-HP-SUP-DAMPERED 2026-08-18: same grille in the same place doing the
-    # same glass wash, with a motorised isolation damper behind it. Two things it now has to
-    # be able to do that a plain terminal cannot — shut System 1 out of a 70% RH room so the
-    # branch does not carry its moisture to every other room on DU-S-HP-SOUTH, and stop
-    # pressurising a room whose vapour barrier has no redundancy. It is interlocked with
-    # REG-S-ERV-PLANT-EXH below, which is what makes the pair balanced rather than merely
-    # present. (mep.humid_room_pressure is the rule that says so out loud.)
+    # straddling a floor register at (9', 4') — that was REG-S-SUP1, since retired; this
+    # terminal is in the ceiling, so nothing straddles it, and placeables.py says so itself.)
+    # REG-T-HP-SUP-DAMPERED: same grille doing the same glass wash, with a motorised
+    # isolation damper behind it. Two things it has to do that a plain terminal cannot — shut
+    # System 1 out of a 70% RH room so the branch does not carry its moisture to every other
+    # room on DU-S-HP-SOUTH, and stop pressurising a room whose vapour barrier has no
+    # redundancy. It is interlocked with REG-S-ERV-PLANT-EXH below, which is what makes the
+    # pair balanced rather than merely present (mep.humid_room_pressure is the rule that
+    # says so out loud).
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
              position=pt(ft(6, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # The plant room's extract (2026-08-18) — the terminal the room did not have, and the
-    # single biggest thing wrong with it before. RM-S-PLANT was supply-only, so its own
-    # ventilation pushed 70%-RH air into every crack in the envelope it is now lined to
-    # protect; slightly negative is the only pressure a continuously humid room may be held
-    # at, and that takes an extract, not a better barrier.
+    # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
+    # 70%-RH air into every crack in the envelope it is now lined to protect; slightly
+    # negative is the only pressure a continuously humid room may be held at, which takes an
+    # extract, not a better barrier.
     #
     # At (14'-0", 4'-8"): the far east end of the room, 7'-5" from the supply and across
     # the room from it, so conditioned air lands on the south glass, crosses the planting
     # and leaves at the far end rather than short-circuiting. Ceiling at 9'-0" because
     # humid air stratifies — the wettest air in the room is the air at the ceiling, which is
-    # also the air directly under FS-ATTIC's I-joists.
-    # Repointed 2026-08-25 onto the ERV: the plant extract was never System 1's, it is the
-    # ERV's stale pull.
+    # also the air directly under FS-ATTIC's I-joists. Repointed onto the ERV: the plant
+    # extract is not System 1's, it is the ERV's stale pull.
     #
-    # ** CEILING -> HIGH SIDEWALL, 2026-08-29, AND THE ARGUMENT ABOVE IS WHY IT IS *HIGH*. **
-    # Its radial moved off the attic manifold and down into FS-S-WEST's open-web trusses
-    # (DU-M-ERV-R-PLANT) to get 21'-8" of duct out of the guest studio's knee wall. That put the
-    # duct BELOW this room instead of above it, so a ceiling grille is no longer reachable — but
-    # the stratification argument does not care whether the boot comes from above or from the
-    # side, only that the terminal is in the warm wet air at the top of the room. 8'-6" is six
-    # inches under the 9'-0" ceiling.
+    # HIGH SIDEWALL, not ceiling: its radial runs off the attic manifold down into
+    # FS-S-WEST's open-web trusses (DU-M-ERV-R-PLANT), putting the duct BELOW this room
+    # instead of above it — but the stratification argument does not care whether the boot
+    # comes from above or from the side, only that the terminal is in the warm wet air at
+    # the top of the room. 8'-6" is six inches under the 9'-0" ceiling.
     #
     # In W-S-C1 because that wall is PLANT_INT_2X6_BRG_HUMID — 5 1/2" of cavity, which takes a
     # 75 mm riser and a vapour-tight boot through the Class I liner. The room's north wall
@@ -152,41 +139,29 @@ REGISTERS_HVAC_SECOND = [
     # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
     #
     # y=4'-8" is the radial's own bay centre. It leaves 6'-9" between this grille and
-    # REG-S-HP-PLANT at (6'-8", 3'-4") — a foot MORE separation than the old ceiling position
-    # had — so conditioned air still lands on the south glass and crosses the planting before it
-    # is pulled out, rather than short-circuiting.
+    # REG-S-HP-PLANT at (6'-8", 3'-4"), so conditioned air still lands on the south glass and
+    # crosses the planting before it is pulled out, rather than short-circuiting.
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
-             # ** MOVED y=4'-8" -> 7'-4" ON 2026-08-30, WITH ITS RISER AND FOR ITS SAKE. **
-             # y=4'-8" put the riser feeding this grille inside D-S-PLANT's rough opening —
-             # 78 1/2" of bare duct standing in the doorway and a bore through the 2-ply 2x8
-             # header (see mep_erv.py). There is no legal riser station in that opening, so
-             # the grille could not stay. y=7'-4" is the next bay north and is a truss bay
-             # centre and a stud bay centre at once. x is unchanged, and so is every reason
-             # this terminal is a high sidewall on W-S-C1 rather than a ceiling grille.
+             # y=7'-4" is a truss bay centre and a stud bay centre at once; y=4'-8" would
+             # put the riser inside D-S-PLANT's rough opening — 78 1/2" of bare duct standing
+             # in the doorway and a bore through the 2-ply 2x8 header (see mep_erv.py) — with
+             # no legal riser station in that opening.
              room="RM-S-PLANT", position=pt(ft(17, 7), ft(7, 4)),
              duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=12,
              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    # The one return. ** IT MOVED TO THE MACHINE'S RETURN FACE ON 2026-08-30, AND WHERE IT
-    # WAS IS THE POINT. ** From 2026-07-30 it sat at (20'-8", 9'-8") — one inch north of
-    # EQ-S-HP1-AH's case, which is the same face the supply leaves from. Reading south to
-    # north inside SF-S-DUCT the order was: air handler y 6'-0"..9'-7", trunk head 9'-7",
-    # return grille 9'-8", strip heater 9'-10"..10'-8", mixing box 11'-4". A return grille at
-    # the discharge end is a short circuit drawn as a plenum, and nothing graded it.
+    # The one return: a filter-back grille in SF-S-HP1's underside at (20'-7", 1'-9"), in
+    # the return chamber at the box's south end, upstream of the coil, the strip heater and
+    # the machine's own filter — with EQ-S-ERV-MIX at the far side of the same chamber,
+    # which is what puts 100 cfm of -15 F design outdoor air UPSTREAM of the heat rather
+    # than downstream of it. DU-S-HP-RET is 25x14 from here to the case's collar.
     #
-    # It is now a filter-back grille in SF-S-HP1's underside at (20'-7", 1'-9"), in the return
-    # chamber at the box's south end, upstream of the coil, the strip heater and the machine's
-    # own filter — with EQ-S-ERV-MIX at the far side of the same chamber, which is what puts
-    # 100 cfm of -15 F design outdoor air UPSTREAM of the heat rather than downstream of it.
-    # DU-S-HP-RET is 25x14 from here to the case's collar.
+    # `room` is RM-S-STUDY2 rather than RM-S-HALL because that is the room the chamber is
+    # in. The AH draws through the study: hall -> D-S-STUDY2 (a 2'-6" cased opening, no
+    # leaf) -> return, a deliberate loose coupling.
     #
-    # `room` is RM-S-STUDY2 rather than RM-S-HALL because that is the room the chamber is in.
-    # The AH therefore draws through the study: hall -> D-S-STUDY2 (a 2'-6" cased opening, no
-    # leaf) -> return. That is one opening longer than the old path and no tighter — the
-    # deliberate loose coupling the branch's comment describes is unchanged.
-    #
-    # Elevation 7'-3", SF-S-HP1's finished underside since the box went to a 21" drop for
-    # the FLEXX Ultra cabinet (storeys/second.py), not SF-S-DUCT's 7'-10".
+    # Elevation 7'-3" is SF-S-HP1's finished underside (21" drop for the FLEXX Ultra
+    # cabinet, storeys/second.py), not SF-S-DUCT's 7'-10".
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-STUDY2",
              position=pt(ft(20, 7), ft(1, 9)), duct_ref="DU-S-HP-RET",
@@ -195,41 +170,34 @@ REGISTERS_HVAC_SECOND = [
 ]
 
 REGISTERS_HVAC_ATTIC = [
-    # ** MOVED 4" NORTH ONTO THE BAY CENTRELINE, 2026-08-30, AND ITS DUCT IS GONE. ** It was
-    # at (26'-0", 3'-0") on DU-A-HP-STUDY, an 8x6 that left the FS-ATTIC bay at (19'-4", 3'-0"),
-    # rose to +3" and ran 6'-8" east ON this room's finished floor to reach it. y=3'-4" is the
-    # bay's own centreline (8" + 2 x 16"), so the boot now drops straight down out of
-    # DU-S-HP-SOUTH, which passes directly under this point — the same straight-boot pattern as
-    # REG-A-HP-EAST and REG-A-HP-WEST, and the same retirement DU-A-HP-EAST took on 2026-07-30.
-    # 100 cfm, the east arm's larger share; see DU-S-HP-SOUTH for why that branch grew to 10x6.
+    # y=3'-4" is the FS-ATTIC bay's own centreline (8" + 2 x 16"), so the boot drops
+    # straight down out of DU-S-HP-SOUTH, which passes directly under this point — the same
+    # straight-boot pattern as REG-A-HP-EAST and REG-A-HP-WEST. 100 cfm is the east arm's
+    # larger share; see DU-S-HP-SOUTH for why that branch is 10x6.
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
              room="RM-A-STUDY", position=pt(ft(26), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # Directly above the hall soffit (2026-07-30): the boot rises straight through
-    # FS-ATTIC off the x=19'-4" trunk below, no attic duct run needed.
-    # y 10'-0" -> 11'-4" (2026-08-27): W-A-SN thickened to 12 3/4" for the study's bookcase
-    # wall, putting its north face at 9'-10 3/8" — a floor boot at 10'-0" was 1 5/8" off the
-    # new sole plate. 11'-4" is the next FS-ATTIC bay centre north and is still over
-    # DU-S-HP-SUP, so the boot rises straight as before; the grille stays inside
-    # RM-A-EAST-UNFIN and clear of FO-A-STAIR's walkway with more room than it had.
+    # Directly above the hall soffit: the boot rises straight through FS-ATTIC off the
+    # x=19'-4" trunk below, no attic duct run needed. y=11'-4" is the next FS-ATTIC bay
+    # centre north of W-A-SN's north face (9'-10 3/8", thickened to 12 3/4" for the study's
+    # bookcase wall) and is still over DU-S-HP-SUP, so the boot rises straight; the grille
+    # stays inside RM-A-EAST-UNFIN and clear of FO-A-STAIR's walkway.
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
              room="RM-A-EAST-UNFIN", position=pt(ft(19, 4), ft(11, 4)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=35,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # The west loft's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
-    # FS-ATTIC. Retired REG-A-SUP1/DU-A-ERV-SUP: the room gets conditioned air off
-    # System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning stale air at REG-A-RET1, so the ERV's
-    # attic side is extract-only — the same pattern as the second storey.
+    # The west loft's supply: a floor boot straight up off DU-S-HP-SUITE through FS-ATTIC.
+    # The room gets conditioned air off System 1 like RM-A-STUDY/RM-A-EAST-UNFIN, returning
+    # stale air at REG-A-RET1, so the ERV's attic side is extract-only.
     #
-    # ** RE-POINTED TO RM-A-STUDIO ON 2026-08-29, AND IT IS LOAD-BEARING TWICE OVER. ** The
-    # boot has not moved an inch — (16'-6", 14'-1 7/8") is inside the studio's face — but
-    # the room it names is a BEDROOM now, and this one register answers two different
-    # checks for it: `mep.ventilation_distribution` wants a fresh-air supply in a
-    # conditioned bedroom, and R303.1 Exception 1 (which is how this room gets out of its
-    # 8% glazing shortfall — see plan/lighting.py) requires a mechanical fresh-air SUPPLY
-    # Register in the room as one of its four conditions. NO MINI-SPLIT WAS ADDED and none
-    # is wanted: reusing this boot is the whole reason the studio costs what it costs.
+    # `room=RM-A-STUDIO` is LOAD-BEARING TWICE OVER: the room is a BEDROOM, and this one
+    # register answers two different checks for it — `mep.ventilation_distribution` wants a
+    # fresh-air supply in a conditioned bedroom, and R303.1 Exception 1 (which is how this
+    # room gets out of its 8% glazing shortfall — see plan/lighting.py) requires a
+    # mechanical fresh-air SUPPLY Register in the room as one of its four conditions. NO
+    # MINI-SPLIT IS WANTED: reusing this boot is the whole reason the studio costs what it
+    # costs.
     Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
              room="RM-A-STUDIO", position=pt(ft(16, 6), ft(14, 1.875)),
              duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP", design_cfm=75,
@@ -243,26 +211,19 @@ REGISTERS_HVAC_ATTIC = [
 
 # Every register here drops into a boot in the second floor's joist bay (FS-S-EAST's
 # I-joists for the three east bedroom boots at x=29'; FS-S-WEST's open-web trusses for the
-# suite's REG-S-RET2 at x=9', since 2026-08-21), flush with the finished floor — the
-# type's 1" height is the frame below it, not a kerb on top, so it still counts
-# against a neighbour's clear floor space.
+# suite's REG-S-RET2 at x=9'), flush with the finished floor — the type's 1" height is the
+# frame below it, not a kerb on top, so it still counts against a neighbour's clear floor
+# space.
 #
-# The second storey went supply-less on the ERV on 2026-07-29: the three bedroom boots kept
-# their uids (IFC GlobalId stability) but became stale-air pickups on DU-M-ERV-RET rather
-# than the deleted DU-M-ERV-SUP. Fresh air now comes from REG-S-HP-BED1/2/3 and
-# REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is what moves the
-# storey's air: in at the hall soffit, out at the far wall of each room.
+# The second storey has no supply on the ERV: the three bedroom boots kept their uids (IFC
+# GlobalId stability) but are stale-air pickups on DU-M-ERV-RET. Fresh air comes from
+# REG-S-HP-BED1/2/3 and REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is
+# what moves the storey's air: in at the hall soffit, out at the far wall of each room.
 #
-# Dropped for redundancy: REG-S-SUP6 (replaced by REG-S-HP-SUITE) and REG-S-SUP7/REG-S-RET1
-# (the hall is the plenum, not a served room).
-#
-# REG-S-SUP1 (RM-S-PLANT) and REG-S-SUP2 (RM-S-STUDY2) went with the rest of the ERV's
-# second-storey supply side on 2026-07-29, and the two rooms then stood unserved for six
-# weeks — the plant room "awaiting its own mini-HRV", the study "taking air from the hall it
-# opens onto". Both are back on 2026-08-16 as System 1 terminals, REG-S-HP-PLANT and
-# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above, on the new DU-S-HP-SOUTH branch. The
-# study was always the anomaly: EQ-S-HP1-AH hangs in that room's own ceiling soffit, and a
-# room does not breathe by being next to the machine.
+# RM-S-PLANT and RM-S-STUDY2 are served as System 1 terminals — REG-S-HP-PLANT and
+# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above, on the DU-S-HP-SOUTH branch. The study
+# was always the anomaly: EQ-S-HP1-AH hangs in that room's own ceiling soffit, and a room
+# does not breathe by being next to the machine.
 REGISTERS = [
     # One per bedroom now that the east bedrooms are equal 9'-0" bays: BED1 y 9'-18',
     # BED2 y 18'-27', BED3 y 27'-36'. RM-S-BED2 had no terminal at all before the
@@ -276,23 +237,21 @@ REGISTERS = [
             position=pt(ft(29), ft(22)), duct_ref="DU-M-ERV-R-BED2",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # ** BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT. ** It was a floor boot
-    # like them until 2026-08-25 and it cannot stay one: FO-S-STAIR blocks every FS-S bay
-    # between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 3/8"..17'-8 5/8", BED3 spans
-    # y 27'-36', and FS-S-EAST is I-joist so nothing travels north-south on the far side of
-    # the well. So this one is fed from the ATTIC sub-manifold instead of the RM-M-MECH one
-    # (DU-A-ERV-R-BED3), which makes it a grille in the ceiling rather than a boot in the
-    # floor. For stale air that is the better end of the room anyway; the asymmetry with
-    # BED1/BED2 is real and is the price of the stair well being where it is.
+    # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every
+    # FS-S bay between y=26'-0 3/8" and y=35'-5 3/8" across x 10'-3 3/8"..17'-8 5/8", BED3
+    # spans y 27'-36', and FS-S-EAST is I-joist so nothing travels north-south on the far
+    # side of the well. So this one is fed from the ATTIC sub-manifold instead of the
+    # RM-M-MECH one (DU-A-ERV-R-BED3), which makes it a grille in the ceiling rather than a
+    # boot in the floor. For stale air that is the better end of the room anyway; the
+    # asymmetry with BED1/BED2 is real and is the price of the stair well being where it is.
     Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
             position=pt(ft(29), ft(31, 4)), duct_ref="DU-A-ERV-R-BED3",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # REG-S-RET2, the suite's own extract at (9', 20'), is DELETED (2026-08-25). It was the
-    # owner's call and it is defensible on the model too: no check fires for its absence
-    # (BEDROOM is not in checks/mep/hvac.py's _STALE_OCCUPANCIES), and RM-S-SUITEBATH's
-    # REG-S-EXH3 carries the suite through the door undercut. The suite KEEPS its System 1
-    # supply REG-S-HP-SUITE — that is a conditioned-air terminal and is untouched.
+    # No REG-S-RET2 (the suite's own extract) — the owner's call, and defensible on the
+    # model too: no check fires for its absence (BEDROOM is not in
+    # checks/mep/hvac.py's _STALE_OCCUPANCIES), and RM-S-SUITEBATH's REG-S-EXH3 carries the
+    # suite through the door undercut. The suite KEEPS its System 1 supply REG-S-HP-SUITE.
 ]
 
 REGISTERS_SECOND = [
@@ -310,11 +269,11 @@ REGISTERS_SECOND = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
 ]
 
-# Main-storey terminals are ceiling grilles fed from the FS-S-WEST bays overhead — since
-# 2026-08-25 each one has its OWN 75 mm radial back to EQ-M-ERV-MAN-SUP/EXH in RM-M-MECH,
-# instead of a tee off a shared 8x6 trunk. Every position below moved a few inches onto the
-# bay centre its radial rides (8" + n*16"), which is what lets `mep.duct_joist_bay` grade the
-# run end to end rather than stopping at a trunk and leaving the last few feet undrawn.
+# Main-storey terminals are ceiling grilles fed from the FS-S-WEST bays overhead, each with
+# its own 75 mm radial back to EQ-M-ERV-MAN-SUP/EXH in RM-M-MECH. Every position below sits
+# on the bay centre its radial rides (8" + n*16"), which is what lets `mep.duct_joist_bay`
+# grade the run end to end rather than stopping at a trunk and leaving the last few feet
+# undrawn.
 #
 # The kitchen is open plan inside RM-M-LIVING (no Occupancy.KITCHEN), so its stale pickup is
 # placed by position and still carries the LIVING room=.
@@ -323,35 +282,29 @@ REGISTERS_MAIN = [
             position=pt(ft(27), ft(12, 8)), duct_ref="DU-M-ERV-R-LIVING",
             type_ref="REG-T-ERV-SUP", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # REG-M-SUP2, the living room's second outlet at (30', 26'), is gone (2026-07-29): one
-    # ERV outlet is right for an open-plan room at the whole-house rate; the pair was sized
-    # as if this were a heating trunk.
+    # No second living-room outlet: one ERV outlet is right for an open-plan room at the
+    # whole-house rate; a pair would be sized as if this were a heating trunk.
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
             position=pt(ft(9), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # ================== RM-M-STUDY: THE CALL BOOTH'S TWO TERMINALS ==================
     #
-    # ** THE ROOM HAS AN EXTRACT NOW (2026-08-30, owner), AND THAT IS WHAT PUTS THE SUPPLY
-    # BACK IN THE CEILING. ** For one day (2026-08-29) this was a lone 15 cfm supply on
-    # W-M-LS at 5'-0", and the argument for the sidewall was that 15 cfm dumped at 9'-0"
-    # into a 148 cf sealed box mixes into the room's top and reaches the breathing zone
-    # last. That argument was right about the failure and wrong about the fix. **The reason
-    # a lone ceiling supply strands its air at the ceiling is that the only way out was
-    # D-M-STUDY's undercut, four feet below it and across the room.** Give the room a
-    # LOW extract and the ceiling supply has to cross the whole occupied zone to reach it:
-    # the air is pulled down past a seated head rather than left to find its own way. So
-    # the pair below is strictly better than either terminal alone, and the supply goes
-    # back overhead where the owner asked for it, over ED-M-STUDY-SPOT.
+    # THE ROOM HAS AN EXTRACT, AND THAT IS WHAT PUTS THE SUPPLY BACK IN THE CEILING. A lone
+    # ceiling supply strands its air at the ceiling because the only way out is D-M-STUDY's
+    # undercut, four feet below it and across the room. Give the room a LOW extract and the
+    # ceiling supply has to cross the whole occupied zone to reach it: the air is pulled
+    # down past a seated head rather than left to find its own way. So the pair below is
+    # strictly better than either terminal alone, and the supply is overhead where the
+    # owner asked for it, over ED-M-STUDY-SPOT.
     #
-    # ** D-M-STUDY'S UNDERCUT IS STILL THE RELIEF PATH AND STILL MAY NOT BE CLOSED. **
-    # 15 cfm in, 10 cfm out: the booth runs +5 cfm POSITIVE, which is what a call booth
-    # wants — nothing is drawn in under the door from the hall, so the staggered studs and
-    # the felt stay the whole acoustic boundary. The 5 cfm leaves under the door. A gasket,
-    # a sweep or a drop seal added later for the last few STC points still needs a transfer
-    # grille or a jump duct to come with it — OR the extract raised to 15 cfm, which is the
-    # cheap version of that conversation and did not exist yesterday. (It is not free: see
-    # the 3" radial's ~17 cfm ceiling on DU-M-ERV-R-LAUNDRY, which this shares.)
+    # D-M-STUDY'S UNDERCUT IS THE RELIEF PATH AND MAY NOT BE CLOSED. 15 cfm in, 10 cfm out:
+    # the booth runs +5 cfm POSITIVE, which is what a call booth wants — nothing is drawn in
+    # under the door from the hall, so the staggered studs and the felt stay the whole
+    # acoustic boundary. The 5 cfm leaves under the door. A gasket, a sweep or a drop seal
+    # added later for the last few STC points needs a transfer grille or a jump duct to come
+    # with it — or the extract raised to 15 cfm, the cheap version of that fix. (Not free:
+    # see the 3" radial's ~17 cfm ceiling on DU-M-ERV-R-LAUNDRY, which this shares.)
     #
     # -- the supply, back in the ceiling ---------------------------------------------
     #
@@ -399,38 +352,32 @@ REGISTERS_MAIN = [
     # inside the last courses of WP-M-STUDY-WAINSCOT: a grille cut into walnut is ordinary
     # joinery, and the same plate ED-M-STUDY-DATA1 already asks that wainscot for.
     #
-    # ** IT MOVED WEST FROM 16'-6" TO 14'-6" ON 2026-08-30, AND FURNITURE IS WHY. ** It sat one
-    # day in the entry pocket, on exactly the argument two paragraphs up: nobody stands there,
-    # so nothing blocks the grille. Then the pocket got FURN-M-STUDY-DESK-LEAF, and a leaf
-    # STOWS by hanging down the wall it is hinged to — 8" to 28" across the whole pocket, i.e.
-    # straight over a grille whose face is 8 1/2"..15 1/2". Folding it up instead would have
-    # buried ED-M-STUDY-RC1 at 32" and cut 12" above the wainscot cap; the grille was the
-    # cheaper thing to move. ** THE GENERAL LESSON, WHICH THIS HOUSE HAS NOW LEARNED TWICE: a
-    # placeable's STOWED envelope is load-bearing on the MEP, and the model holds no geometry
-    # for it at all. ** FT-STUDY-DESK-LEAF is drawn deployed (18" x 20" on the floor); the
-    # 18" x 20" of SOUTH WALL it covers when folded exists only in prose. Nothing here can
-    # fail. Re-read plan/furniture_types.py before putting anything back on that wall below 28".
+    # It sits at 14'-6", not the entry pocket at 16'-6": FURN-M-STUDY-DESK-LEAF STOWS by
+    # hanging down the wall it is hinged to — 8" to 28" across the whole pocket, straight
+    # over a grille whose face is 8 1/2"..15 1/2". Folding it up instead would have buried
+    # ED-M-STUDY-RC1 at 32" and cut 12" above the wainscot cap; the grille was the cheaper
+    # thing to move. **THE GENERAL LESSON: a placeable's STOWED envelope is load-bearing on
+    # the MEP, and the model holds no geometry for it at all.** FT-STUDY-DESK-LEAF is drawn
+    # deployed (18" x 20" on the floor); the 18" x 20" of SOUTH WALL it covers when folded
+    # exists only in prose. Re-read plan/furniture_types.py before putting anything back on
+    # that wall below 28".
     #
     # 14'-6" is not a retreat to a worse spot, and the reason is the diagonal. The supply is
     # in the ceiling at (17'-2", 20'-8"); at 16'-6" the extract sat 2'-4" from directly under
-    # it, which is the short-circuit corner of the room. At 14'-6" the pair is corner to
-    # corner — nine feet of plan separation over eight feet of fall, so the sweep crosses the
-    # occupied zone instead of dropping down one end of it.
+    # it, the short-circuit corner of the room. At 14'-6" the pair is corner to corner — nine
+    # feet of plan separation over eight feet of fall, so the sweep crosses the occupied zone
+    # instead of dropping down one end of it.
     #
-    # ** WHAT IT COSTS: THE GRILLE IS NOW IN THE KNEE SPACE. ** 14'-6" is under the fixed
-    # desk's west half, so a shoe or a bag can sit in front of it in a way the pocket ruled
-    # out. At 10 cfm through a 7" face that is a throttle, not a blockage, and it is the price
-    # of the leaf. If it ever reads as a problem the fix is the west wall (W-M-LS, out of the
-    # foot zone entirely) — but that wall is the centre bearing line and a riser in it wants
-    # checking against the trusses before anyone tries.
+    # WHAT IT COSTS: the grille is in the knee space, under the fixed desk's west half, so a
+    # shoe or a bag can sit in front of it. At 10 cfm through a 7" face that is a throttle,
+    # not a blockage, and it is the price of the leaf. If it ever reads as a problem the fix
+    # is the west wall (W-M-LS, out of the foot zone entirely) — but that wall is the centre
+    # bearing line and a riser in it wants checking against the trusses before anyone tries.
     #
-    # ** RISER CLEARANCES, RE-WALKED FOR THE NEW STATION. ** W-M-CLN2 is
-    # INT_2X4_STAGGERED_GWB (single-gwb since 2026-08-30, same framing): 5 1/2" of cavity,
-    # unchanged by the gypsum retype, continuous, but a 2 1/8" device box and
-    # a 3" duct still do not share one 3 1/2" leaf. At 14'-6" the drop is 1'-6" from
-    # ED-M-STUDY-DATA1 (16'-0") and 2'-6" from ED-M-STUDY-RC1 (17'-0") — both further off than
-    # the 6" the old station fought for — and CD-B-DATA-STUDY rises at 16'-0" on this same
-    # wall, now 1'-6" clear instead of 6". Every clearance on this wall got better.
+    # RISER CLEARANCES. W-M-CLN2 is INT_2X4_STAGGERED_GWB: 5 1/2" of cavity, but a 2 1/8"
+    # device box and a 3" duct still do not share one 3 1/2" leaf. At 14'-6" the drop is
+    # 1'-6" from ED-M-STUDY-DATA1 (16'-0") and 2'-6" from ED-M-STUDY-RC1 (17'-0"), and
+    # CD-B-DATA-STUDY rises at 16'-0" on this same wall, now 1'-6" clear.
     Register(uid="H6C6RD9NED", tag="REG-M-RET-STUDY", kind=DuctSystem.RETURN, room="RM-M-STUDY",
             position=pt(m(4.27777), m(5.60336)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=5,
@@ -445,24 +392,17 @@ REGISTERS_MAIN = [
             position=pt(ft(4), ft(18)), duct_ref="DU-M-ERV-R-BATH2",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # ** THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. ** REG-M-RET3 was on the
-    # 2026-08-25 delete list beside REG-S-RET2, on a reading that holds up on its own terms:
-    # RM-M-LAUNDRY is a 4'-3" x 4'-3" closet with a CONDENSING dryer (APPL-LG-WASHTOWER, so
-    # M1502 does not reach it and there is no lint-laden air to pull), and the hall it opens
-    # onto is extracted six feet away at REG-M-RET5.
-    #
-    # `mep.ventilation_distribution` disagrees, and it is right to: "laundry" is in that
-    # check's stale-occupancy set (checks/mep/hvac.py::_STALE_OCCUPANCIES) because ASHRAE
-    # 62.2 lists a laundry room as a local-exhaust space, washer or dryer notwithstanding.
-    # Deleting the terminal named RM-M-LAUNDRY as unserved and put the reference house on a
-    # red — and this house is held to a clean report. (REG-S-RET2's deletion stands: BEDROOM
-    # is NOT in that set, which is the distinction the plan checked for the suite and missed
-    # here.)
+    # THE OWNER ASKED FOR THIS ONE TO GO, AND IT COULD NOT. RM-M-LAUNDRY is a 4'-3" x 4'-3"
+    # closet with a CONDENSING dryer (APPL-LG-WASHTOWER, so M1502 does not reach it and
+    # there is no lint-laden air to pull), and the hall it opens onto is extracted six feet
+    # away at REG-M-RET5 — but `mep.ventilation_distribution` disagrees, and is right to:
+    # "laundry" is in that check's stale-occupancy set (checks/mep/hvac.py::
+    # _STALE_OCCUPANCIES) because ASHRAE 62.2 lists a laundry room as a local-exhaust space,
+    # washer or dryer notwithstanding, and this house is held to a clean report. (REG-S-RET2's
+    # deletion stands: BEDROOM is NOT in that set.)
     #
     # So it stays, at 5 cfm rather than a full pickup — the smallest rate that is both true
-    # and passing, and a fair reading of "drop the laundry extract" once the closet is a
-    # trickle rather than a wet room. Repointed onto its own radial and moved 8" north onto
-    # the 20'-8" bay centre that radial rides.
+    # and passing, on its own radial at the 20'-8" bay centre that radial rides.
     Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
             position=pt(ft(10, 6), ft(20, 8)), duct_ref="DU-M-ERV-R-LAUNDRY",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
@@ -480,11 +420,10 @@ REGISTERS_MAIN = [
             position=pt(ft(4, 0.4), ft(31, 4)), duct_ref="DU-M-ERV-R-MUD",
             type_ref="REG-T-ERV-EXH", design_cfm=4,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # The one passive opening in the house (2026-08-15, plans/TODO.md): a louver in W-M-STRW
-    # that lets the mudroom share the stair's air after EQ-M-HP3-STAIR moved off this wall.
-    # No duct/damper/fan — `duct_ref` is None (the first register with none) and `kind` is
-    # TRANSFER, so ventilation checks neither credit a room with fresh air nor double-count
-    # a stale pickup beside REG-M-RET-MUD.
+    # The one passive opening in the house (plans/TODO.md): a louver in W-M-STRW that lets
+    # the mudroom share the stair's air. No duct/damper/fan — `duct_ref` is None (the first
+    # register with none) and `kind` is TRANSFER, so ventilation checks neither credit a
+    # room with fresh air nor double-count a stale pickup beside REG-M-RET-MUD.
     #
     # *** THE ROOM THIS SERVES IS RM-M-MUDROOM. `room` says RM-M-LIVING. *** A transfer
     # opening belongs to two rooms, but `room` can only hold one and the resolver reads it as
@@ -514,32 +453,26 @@ REGISTERS_BASEMENT = [
             position=pt(m(5.75157), m(3.2161)), duct_ref="DU-B-ERV-R-GYM",
             type_ref="REG-T-ERV-SUP", design_cfm=18,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # REG-B-SUP2 is back (2026-08-01), same hole and uid as before it was dropped on
-    # 2026-07-29 for sharing the basement's open volume with the gym. That argument missed
-    # the point: RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under
-    # R303.1 Exception 1, whose second half requires outdoor air supplied to *the room* — an
-    # adjacent room's grille doesn't satisfy it. **Deleting it is a hard
-    # code.R303_1_light_and_ventilation FAIL**, which is why it survived a terminal-set pass
-    # that dropped two others.
+    # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
+    # Exception 1, whose second half requires outdoor air supplied to *the room* — an
+    # adjacent room's grille doesn't satisfy it. **Deleting this terminal is a hard
+    # code.R303_1_light_and_ventilation FAIL.**
     #
-    # RE-SITED (27', 27') -> (19', 26') on 2026-08-25. The entire play-room ceiling is
-    # SL-M-DECK's 14 3/8" solid concrete with NO cavity at all, so every foot of that run is
-    # surface-mounted; entering at the room's west edge and stopping just inside cuts about
-    # eight feet of exposed duct. It still throws away from FURN-B-PLAY-TV on the east wall.
+    # (19', 26'): the entire play-room ceiling is SL-M-DECK's 14 3/8" solid concrete with NO
+    # cavity at all, so every foot of that run is surface-mounted; entering at the room's
+    # west edge and stopping just inside cuts about eight feet of exposed duct. It still
+    # throws away from FURN-B-PLAY-TV on the east wall.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
             position=pt(ft(19), ft(26)), duct_ref="DU-B-ERV-R-PLAY",
             type_ref="REG-T-ERV-SUP", design_cfm=30,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # ** THE WORKSHOP TERMINAL IS A BENCH HOOD NOW, NOT A CEILING DIFFUSER. ** (2026-08-25.)
-    # It was a 7" round grille at 8'-0", parked over the bench and described as "a bench
-    # hood's worth of pull" — but a diffuser eight feet up does not capture solder fume, it
-    # dilutes it into the room and then extracts the dilution. REG-T-ERV-BENCH-HOOD is a
-    # 30" x 12" capture face hung at 5'-6", i.e. 24" above FURN-B-WORKSHOP-BENCH-N/S's 34"
-    # tops, and it captures at the source.
+    # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet
+    # up does not capture solder fume, it dilutes it into the room and then extracts the
+    # dilution. REG-T-ERV-BENCH-HOOD is a 30" x 12" capture face hung at 5'-6", i.e. 24"
+    # above FURN-B-WORKSHOP-BENCH-N/S's 34" tops, and it captures at the source.
     #
     # It stays `kind=RETURN` rather than becoming a dedicated EXHAUST: the fumes are light,
-    # the heat is worth recovering, and this is not a spray booth — the reasoning the old
-    # comment gave, which the retype does not disturb.
+    # the heat is worth recovering, and this is not a spray booth.
     #
     # HONEST LIMIT: the two benches run ten feet along the west wall (y 3'-6"..13'-6") and
     # one 30" hood captures a fraction of that. It is a bench hood, not bench-run coverage.
@@ -547,13 +480,13 @@ REGISTERS_BASEMENT = [
             position=pt(ft(2), ft(8, 6)), duct_ref="DU-B-ERV-R-BENCH",
             type_ref="REG-T-ERV-BENCH-HOOD", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
-    # The sauna's stale pickup moved from ceiling to wall (2026-07-29), 4" above the floor on
-    # the south face below FURN-B-SAUNA-BENCH-S: a sauna stratifies hard, so the low pickup
-    # pulls the cold spent layer off the floor rather than the löyly at bench height. Paired
-    # with REG-B-SUP3 over the heater, both ends dampered (REG-T-ERV-SAUNA-*), it drives the
-    # room's convection loop — down the far wall, across the floor, out under the bench.
-    # EXHAUST at 20 cfm since 2026-08-01: the room is Occupancy.BATHROOM and its window's
-    # openable area (1.2 sf) falls short of R303.3's 1.5 sf, so mechanical exhaust governs.
+    # The sauna's stale pickup is on the wall, 4" above the floor on the south face below
+    # FURN-B-SAUNA-BENCH-S: a sauna stratifies hard, so the low pickup pulls the cold spent
+    # layer off the floor rather than the löyly at bench height. Paired with REG-B-SUP3 over
+    # the heater, both ends dampered (REG-T-ERV-SAUNA-*), it drives the room's convection
+    # loop — down the far wall, across the floor, out under the bench. EXHAUST at 20 cfm:
+    # the room is Occupancy.BATHROOM and its window's openable area (1.2 sf) falls short of
+    # R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
             position=pt(m(2.85824), m(0.407047)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
@@ -565,8 +498,8 @@ REGISTERS_BASEMENT = [
             position=pt(ft(9, 9.8125), ft(8, 9)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-ERV-SAUNA-SUP", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
-    # RM-B-BATH (2026-07-30). Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal
-    # and unlike the basement's other two stale pickups: a bathroom's air is pulled and not
+    # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
+    # the basement's other two stale pickups: a bathroom's air is pulled and not
     # recirculated. It sits over the water closet at the room's west end, the far corner from
     # the door, so the room's makeup air crosses it on the way through.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
@@ -575,26 +508,18 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]
 
-# The attic ERV terminals (2026-07-30): extract only. Four became a balanced pair on
-# 2026-07-29 (REG-A-SUP2/SUP3 gone), then the supply half went too when REG-A-SUP1 was
-# retired by REG-A-HP-WEST (the floor boot off System 1, REGISTERS_HVAC_ATTIC above), which
-# conditions the west loft instead of just ventilating it. What is left is stale pickup —
-# fresh in off System 1, stale out here, the same pattern as every other storey.
-#
-# ** THE ATTIC STOPPED BEING ONE CATHEDRAL VOLUME ON 2026-08-29. ** "One extract suffices"
-# was true while the west half was a single open loft; it is not true of a guest bedroom, a
-# closed bathroom and a walled storage pocket with three doors between them. REG-A-RET1
-# moves out of the pocket and into the studio, and the bath gets its own terminal, because
-# R303.3 requires local exhaust from a bathroom and a grille in the next room is not it.
+# The attic ERV terminals: extract only. Fresh air is off System 1 (REG-A-HP-WEST, the
+# floor boot in REGISTERS_HVAC_ATTIC above); this is the stale pickup — the same pattern as
+# every other storey. The attic is not one cathedral volume: it is a guest bedroom, a closed
+# bathroom and a walled storage pocket with three doors between them, so REG-A-RET1 sits in
+# the studio and the bath gets its own terminal, because R303.3 requires local exhaust from
+# a bathroom and a grille in the next room is not it.
 REGISTERS_ATTIC = [
-    # RELOCATED 2026-08-29. It sat at (2'-2.6", 34'-10.7"), which is inside the storage pocket
-    # now — a room nobody occupies, extracting a guest bedroom's air through a closed door.
-    # ** IT STAYS AT x=1'-0" AFTER THE 2026-08-29 ROOF CHANGE, DELIBERATELY. ** The 6:12
-    # underside there is 7 1/2" above the deck — a wedge nothing else can use, no furniture
-    # can stand in and nobody walks through — which is exactly what makes it the right home
-    # for a boxed-in 3" surface duct and a floor grille at its end. A return picks up at the
-    # floor anyway. Moving it inboard would put a duct across a finished bedroom to buy
-    # headroom a floor boot has no use for.
+    # x=1'-0": the 6:12 roof underside there is 7 1/2" above the deck — a wedge nothing else
+    # can use, no furniture can stand in and nobody walks through — which is exactly what
+    # makes it the right home for a boxed-in 3" surface duct and a floor grille at its end.
+    # Moving it inboard would put a duct across a finished bedroom to buy headroom a floor
+    # boot has no use for.
     # (1'-0", 20'-8") is a floor boot in the studio's NW corner, on the existing x=1'-0" chase,
     # at a bay centre (248" = 8 + 15 x 16), diagonally opposite REG-A-HP-WEST's supply at
     # (16'-6", 14'-1 7/8"). Fresh in at one corner, stale out at the other, which is the
@@ -612,26 +537,25 @@ REGISTERS_ATTIC = [
     # house runs at — 50 cfm intermittent would pass the same check and would be the odd one
     # out on a balanced machine whose whole attic side is continuous extract.
     #
-    # ** A WALL MOUNT IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE, AND 4'-4" IS AS HIGH AS THE
-    # WALL GOES. ** There is no ceiling plenum under a cathedral: the room follows the roof.
-    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop from a high grille
-    # into the FS-ATTIC bay, which is exactly why the wet wall carries this as well as every
-    # drain in the suite. That wall is `ToRoof`, so its own top is the rake: at x=9'-7 1/2" the
-    # 6:12 underside is 4'-11 1/4" above the deck, and the 7'-0" this grille carried until
-    # 2026-08-29 was two feet above the wall it is cut into. 4'-4" leaves 7 1/4" of wall over
-    # the boot. It is still the highest pickup this room can have.
+    # A WALL MOUNT IS WHAT MAKES A HIGH PICKUP POSSIBLE HERE, AND 4'-4" IS AS HIGH AS THE
+    # WALL GOES. There is no ceiling plenum under a cathedral: the room follows the roof.
+    # W-A-STU-W's 5 1/2" staggered cavity is the only place a duct can drop from a high
+    # grille into the FS-ATTIC bay, which is exactly why the wet wall carries this as well
+    # as every drain in the suite. That wall is `ToRoof`, so its own top is the rake: at
+    # x=9'-7 1/2" the 6:12 underside is 4'-11 1/4" above the deck. 4'-4" leaves 7 1/4" of
+    # wall over the boot — the highest pickup this room can have.
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
-            # 19'-0" -> 19'-4" on 2026-08-29, following DU-A-ERV-R-STUBATH onto the
-            # 232" bay centre so its east leg could leave the studio floor for the joist bay.
-            # x=9'-11 7/8" is W-A-STU-W's bath-side paint face (9'-10 7/8") plus the ~1" inboard
-            # offset every wall device here carries. Authored on the wall AXIS until 2026-08-29,
-            # which put its footprint centre inside the wall and outside the room —
-            # `integrity.placeable_room_mismatch` said so. The riser stays on the axis in the
-            # staggered cavity; the offset is the boot crossing the finish.
+            # y=19'-4" follows DU-A-ERV-R-STUBATH onto the 232" bay centre so its east leg
+            # could leave the studio floor for the joist bay. x=9'-11 7/8" is W-A-STU-W's
+            # bath-side paint face (9'-10 7/8") plus the ~1" inboard offset every wall device
+            # here carries, NOT the wall AXIS — on the axis the footprint centre sits inside
+            # the wall and outside the room, and `integrity.placeable_room_mismatch` says so.
+            # The riser stays on the axis in the staggered cavity; the offset is the boot
+            # crossing the finish.
             position=pt(ft(9, 11.875), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
-            # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH it carried until 2026-08-29:
-            # this is the house's only WALL-mounted extract, and on the ceiling type the
-            # resolver read its 7" face as 7" of projection into the room. See plan/mep_hvac.py.
+            # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH: this is the house's only
+            # WALL-mounted extract, and on the ceiling type the resolver read its 7" face as
+            # 7" of projection into the room. See plan/mep_hvac.py.
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4))),
 ]

@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin house millwork — the owner-milled white oak, 2026-08-28.
+# Catlin house millwork — the owner-milled white oak.
 #
 # The owner has white oak off family land in southern Minnesota at roughly $2/sf rough
 # milled, in 4/4 and 8/4, with boards commonly 12"+ wide and some to 18". That supply wins
@@ -41,9 +41,7 @@ MILLWORK = [
         stool_profile="eased",
         stool_assemblies=("CATLIN_EXT_2X6",),
         # 28 oak treads: ST-M2S (13) and ST-S2A (15, three of them winders). ST-B2M is the
-        # basement flight and is carpeted, ST-G-SERVICE is the garage's. Until this was
-        # authored the split lived only in a prices.toml comment, where nothing could check
-        # it and where it had already drifted one revision out of date.
+        # basement flight and is carpeted, ST-G-SERVICE is the garage's.
         tread_material_ref="oak-tread",
         tread_stairs=("ST-M2S", "ST-S2A"),
         max_board_width=inch(18),
@@ -58,20 +56,17 @@ MILLWORK = [
 #
 # The five bays and their tops were already worked out in the comment table at
 # plan/storeys/attic.py; this promotes that table from prose to data. Each bay is topped off
-# the usable height at its EAST end as the rake steps down. ** RE-DERIVED 2026-08-29 FOR THE
-# 6:12 ROOF. ** The tops came from `5'-0" + (36' - x)/3` and are now `1 1/2" + (36' - x)/2`,
-# less the same ~3" of build-up and seat, rounded down to the nearest 6":
+# the usable height at its EAST end as the rake steps down. The tops come from
+# `1 1/2" + (36' - x)/2`, less ~3" of build-up and seat, rounded down to the nearest 6":
 #     1  22'-8"  -> 25'-4"      usable 5'-5 1/2"   case top 5'-0"
 #     2  25'-4"  -> 28'-0"      usable 4'-1 1/2"   case top 3'-6"
 #     3  28'-0"  -> 30'-8"      usable 2'-9 1/2"   case top 2'-6"
 #     4  30'-8"  -> 33'-4"      usable 1'-5 1/2"   case top 1'-0"
 #     5  33'-4"  -> 35'-5 3/8"  usable 4 1/8"      NO CASE — the rake closes this bay out
-# ** THE RUN IS A LOW BOOKCASE NOW, NOT A WALL OF SHELVES. ** That is the honest consequence
-# of taking the knee wall out: the study's east end is under the rake rather than under a
-# 5'-0" wall, and four short bays plus a closed-out fifth is what the geometry leaves. The
-# cut list below still bills what is drawn; nobody should read the old 7'-6" tops into it.
-# Widths are CLEAR between 3/4" partitions: 2'-8" pitch less 3/4" is 2'-7 1/4"; bay 5's
-# 2'-1 3/8" pitch less 3/4" is 2'-0 5/8".
+# IT IS A LOW BOOKCASE, NOT A WALL OF SHELVES: the study's east end is under the rake
+# rather than under a 5'-0" wall, and four short bays plus a closed-out fifth is what the
+# geometry leaves. Widths are CLEAR between 3/4" partitions: 2'-8" pitch less 3/4" is
+# 2'-7 1/4"; bay 5's 2'-1 3/8" pitch less 3/4" is 2'-0 5/8".
 #
 # 8/4, and one board: a 9 7/8" pocket takes a single board with room to spare against the
 # 18" supply. 1 1/2" fixed shelves in dados need no stiffener and no edge banding at a
@@ -88,13 +83,11 @@ ATTIC_SHELVES = [
         material_ref="oak-shelf-8q",
         thickness=inch(1.5),
         profile="S4S",
-        # ** RE-CUT 2026-08-29 FOR THE 6:12 RAKE — FIVE BAYS TO FOUR; THREE SINCE 2026-08-30. **
-        # The tops are `1 1/2" + (36' - x)/2` less the build-up, rounded down to 6". Bay 5
-        # (x 33'-4"..35'-5 3/8") went first at 4 1/8" of usable height. Bay 4 (x 30'-8"..33'-4")
-        # follows it on the owner's call: 1'-0" of clear height is two shelves you cannot see
-        # into, at the end of a run you have to stoop to reach, and it reads as a leftover
-        # rather than as storage. East of 30'-8" the wall is a raked closure carrying no
-        # casework — see W-A-SN in storeys/attic.py.
+        # THREE BAYS, not five: bay 5 (x 33'-4"..35'-5 3/8") has only 4 1/8" of usable
+        # height. Bay 4 (x 30'-8"..33'-4") is dropped on the owner's call: 1'-0" of clear
+        # height is two shelves you cannot see into, at the end of a run you have to stoop
+        # to reach, and it reads as a leftover rather than as storage. East of 30'-8" the
+        # wall is a raked closure carrying no casework — see W-A-SN in storeys/attic.py.
         # Counts stay a ~12" pitch over each bay's own height, the case top included.
         bays=(
             ShelfBay(width=ft(2, 7.25), clear_height=ft(5), shelf_count=5),
@@ -106,8 +99,7 @@ ATTIC_SHELVES = [
 
 # --- the main pantry, FURN-M-PANTRY-SHELVES --------------------------------------------
 #
-# BOTH OF THIS BANK'S OPEN QUESTIONS WERE ANSWERED ON 2026-08-29. See
-# notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
+# See notes/pantry_climbable_shelving.md and the FT-KIT-PANTRY-SHELVES-70 source.
 #
 # 1. THIS SHELF IS DESIGNED TO BE CLIMBED, so its thickness is a STRUCTURAL decision, not a
 #    finish one. It is 8/4 rather than the 4/4 the other light-duty cases get: a climbing
@@ -136,8 +128,8 @@ ATTIC_SHELVES = [
 # ~20" bottom bay, 12"-14" middle, 8"-10" top — over the 7'-0" carcass.
 # --- RM-M-BATH2's vanity sink base, FX-M-BATH2-SINK ------------------------------------
 #
-# One shelf inside the 30" sink base at the north end of the 54" vanity (2026-08-29). The
-# owner asked for drawer AND shelf space; the drawers are the 24" bank at the south end and
+# One shelf inside the 30" sink base at the north end of the 54" vanity. The owner asked
+# for drawer AND shelf space; the drawers are the 24" bank at the south end and
 # are NOT modelled — the engine has no drawer vocabulary, and inventing one for six boxes is
 # not the trade. The shelf is, because a shelf IS a board: it has a species, a thickness, a
 # cut length and a mill day, and `takeoff/hardwood.py` bills it with the rest of the
@@ -159,8 +151,8 @@ ATTIC_SHELVES = [
 # the 3/4" counter substrate. The shelf sits below the trap, which is why there is ONE and
 # not two — `shelf_count=2` is that shelf plus the case top, the convention `ShelfBay`
 # documents ("the number of HORIZONTAL BOARDS in the bay, the case top included").
-# ** THE FIVE OTHER BATHROOMS' VANITY SHELVES (2026-08-30). ** Same reasoning as
-# SB-M-BATH2-VAN above, applied to the cabinets that replaced this house's bare lavatories.
+# THE FIVE OTHER BATHROOMS' VANITY SHELVES: same reasoning as SB-M-BATH2-VAN above,
+# applied to the cabinets that replaced this house's bare lavatories.
 # Each is the ONE adjustable shelf inside a sink base -- `shelf_count=2` is that shelf plus
 # the case top, per ShelfBay's own convention -- and each is why those vanities could be
 # bought as plain two-door boxes instead of drawer banks. A drawer base runs about 1.5x a
@@ -204,7 +196,7 @@ MAIN_SHELVES = [
             ShelfBay(width=inch(34.75), clear_height=ft(7), shelf_count=6),
         ),
     ),
-    # --- RM-M-STUDY's call booth, FT-STUDY-BENCH and FT-STUDY-DESK (2026-08-29) --------
+    # --- RM-M-STUDY's call booth, FT-STUDY-BENCH and FT-STUDY-DESK -----------------------
     #
     # The bench seat and the desk top. Neither is a shelf in the cabinet sense and both are
     # here for the same reason the pantry's are: a ShelfBank is how a BOARD reaches
@@ -244,7 +236,7 @@ MAIN_SHELVES = [
         profile="S4S",
         bays=(ShelfBay(width=inch(29), clear_height=inch(28), shelf_count=1),),
     ),
-    # The fold-down leaf's board (2026-08-30). Same stock, same thickness, same lay-up as the
+    # The fold-down leaf's board. Same stock, same thickness, same lay-up as the
     # desk it butts, out of the SAME FLITCH as SB-M-STUDY-DESK's two boards: the two tops meet
     # in a 20" butt joint at eye level, and a colour jump there is the one defect nobody can
     # unsee. Free to avoid at the rack, impossible to fix afterwards.
@@ -282,7 +274,7 @@ MAIN_SHELVES = [
         profile="S4S",
         bays=(ShelfBay(width=inch(18), clear_height=inch(28), shelf_count=1),),
     ),
-    # --- the mudroom bench's seat, FURN-M-MUD-BENCH (2026-08-30) ----------------------
+    # --- the mudroom bench's seat, FURN-M-MUD-BENCH -----------------------------------
     #
     # Same reason as the two above, and the same shape of fix. FURN-M-MUD-BENCH is a
     # `Furniture` on a library FurnitureType, and `takeoff/hardwood.py` admits exactly five

@@ -1,9 +1,9 @@
 # haus: editable
 # Catlin MEP — in-line supply devices — valves, stops and arrestors on the supply runs.
 #
-# Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1) verbatim; plan/mep.py
-# re-exports the storey lists so the manifest is unchanged. Each device names the run it
-# sits on; the runs themselves are in plan/mep_supply.py.
+# plan/mep.py re-exports the storey lists below (AGENTS.md §1.1), so the manifest is
+# unchanged. Each device names the run it sits on; the runs themselves are in
+# plan/mep_supply.py.
 
 from typehaus import (
     PipeAccessory,
@@ -12,7 +12,7 @@ from typehaus import (
     pt,
 )
 
-# --- In-line supply devices (2026-08-01) ---------------------------------------------
+# --- In-line supply devices -------------------------------------------------------------
 #
 # These fifteen `PipeAccessory` elements replace what used to be prose scattered across
 # notes/garage_hydrant.md, mep.hydrant_freeze_depth (an UNKNOWN) and plans/TODO.md.
@@ -24,9 +24,7 @@ SUPPLY_DEVICES_BASEMENT = [
     # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) tees off at (5', 35'-6") —
     # SP-B-N3-HYD, the north wall crossing — and rises to the basement ceiling; this valve
     # sits on that riser at 4'-0", head height, reachable with one hand, which is what
-    # "accessible" means. It moved with the tee on 2026-08-30, when the water service entry
-    # went from the rear of the lot to the front: the shutoff belongs where the water comes
-    # in, and the water now comes in on the north.
+    # "accessible" means. The shutoff belongs where the water comes in, which is the north.
     #
     # The garage hydrant is deliberately upstream, on the service itself: routing the yard
     # line up to an indoor valve and back down would put a high point above frost mid-run —
@@ -64,11 +62,9 @@ SUPPLY_DEVICES_BASEMENT = [
                   model="Sioux Chief MiniRester 660-G class, size A",
                   serves=("FX-M-LAUNDRY",)),
     # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
-    # hot water only, so it takes one arrestor, on the kitchen hot branch at the sink base.
-    # Held at the sink base's WEST face (2026-08-26) rather than sliding +9" with the rest
-    # of the kitchen hot branch: the dishwasher moved to the sink base's west side in the
-    # same re-composition, and +9" would have put this 41" east of it — across the whole
-    # carcass — instead of at the point the branch actually reaches the machine.
+    # hot water only, so it takes one arrestor, on the kitchen hot branch at the sink base,
+    # at the sink base's WEST face — the dishwasher's own side — rather than the branch's
+    # +9" offset, which would put this 41" east of the machine, across the whole carcass.
     PipeAccessory(uid="W4NL8QSJ0M", tag="PA-M-DW-WHA-HW",
                   kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-KITCH",
                   position=pt(ft(27, 10), ft(33, 7.2)), room="RM-M-LIVING",
@@ -83,7 +79,7 @@ SUPPLY_DEVICES_BASEMENT = [
                   serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
 ]
 
-# --- Branch and fixture stops (2026-08-23) --------------------------------------------
+# --- Branch and fixture stops -----------------------------------------------------------
 #
 # Until now the house had exactly ONE valve you could close: PA-B-MAIN-SHUTOFF, plus the
 # hydrant isolation above. Change a lavatory tap and the whole dwelling goes dry, including
@@ -116,14 +112,10 @@ SUPPLY_DEVICES_BASEMENT = [
 SUPPLY_STOPS = [
     # RM-M-BATH1 — the wall-hung WC and its lavatory. Cold carries both, hot the lav alone.
     #
-    # ** BOTH MOVED OUT OF W-M-BAE AND ONTO W-M-HS1 ON 2026-08-30, 8" APART. ** They had sat
-    # 4.8" apart at (6'-0", 23'-7.2") and (6'-0", 24'-0"), which is inside D-M-BATH1's rough
-    # opening — the risers under them were standing in the doorway, and the stops came along
-    # for the ride. The argument for the new wall is on the BATH1 pair in plan/mep_supply.py
-    # and is not repeated here; what matters at this end is that the two stops are still AT
-    # THEIR OWN RISER HEADS, which is this file's rule, and that the heads are now on the
-    # wall the lavatory backs onto rather than the one its door is in. Both land behind
-    # FX-M-BATH1-LAV's carcass (x 41.5"..65.5"), reachable kneeling at the cabinet.
+    # Both stops are on W-M-HS1, 8" apart, AT THEIR OWN RISER HEADS (this file's rule) — the
+    # wall the lavatory backs onto, not the one its door is in. The argument for that wall is
+    # on the BATH1 pair in plan/mep_supply.py. Both land behind FX-M-BATH1-LAV's carcass
+    # (x 41.5"..65.5"), reachable kneeling at the cabinet.
     PipeAccessory(uid="0RA7PE7K5N", tag="PA-M-BATH1-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-B-CW-BATH1", position=pt(ft(5), ft(22, 4)),
                   accessible=True, room="RM-M-BATH1",
@@ -225,8 +217,8 @@ SUPPLY_STOPS = [
 ]
 
 # The garage yard hydrant's two devices, on the service run (filed on ``main``). The hydrant
-# stands on the service ENTRY itself now (plan/site.py, 2026-08-30) — it is the first thing
-# the lateral reaches, not the last. The seat takes the run's elevation, its own buried valve
+# stands on the service ENTRY itself (plan/site.py) — the first thing the lateral reaches,
+# not the last. The seat takes the run's elevation, its own buried valve
 # at -8'-10" (the 72" bury `mep.hydrant_freeze_depth` grades, measured from the -2'-10"
 # grade); the vacuum breaker screws onto the outlet, 2'-6" above the garage slab, which puts
 # it at 0'-0".
@@ -240,7 +232,7 @@ SUPPLY_DEVICES_GARAGE = [
                   position=pt(ft(5), ft(59, 6)), elevation=ft(0), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
-    # The weep, answered (2026-08-15). PA-G-HYD-VB above protects the hose thread (the only
+    # The weep. PA-G-HYD-VB above protects the hose thread (the only
     # opening P2902.3.1 names); a self-draining yard hydrant has a second opening, the weep
     # at the buried shutoff, which empties into DRW-G-HYDRANT's stone at -6'-0". On a Y34 the
     # drain port is open only while seated and closed while open, so weep and supply are
@@ -311,12 +303,10 @@ SUPPLY_DEVICES_MAIN = [
 # The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's
 # — see the note above SUPPLY_DEVICES_MAIN.
 #
-# ** BOTH MOVED 16'-8" -> 7'-4" ON 2026-08-30. ** Neither is an independent position: the
-# seat is the inboard end of the barrel and the seal is its escutcheon, so both are the
-# hydrant's own station. They had been left behind twice over — FX-S-BALC-HYD went west on
-# 2026-08-24 when D-S-DECK-W's rough opening (x 12'-2"..17'-2") swallowed 16'-8", and the
-# riser, the barrel and these two accessories all stayed put. `mep.run_through_opening`
-# caught the pipe; nothing was ever going to catch the accessories but the pipe they name.
+# Neither is an independent position: the seat is the inboard end of the barrel and the
+# seal is its escutcheon, so both are the hydrant's own station — the riser's, at x=7'-4".
+# Nothing checks that these accessories still track a station the pipe they name actually
+# sits at; only `mep.run_through_opening` grades the pipe itself.
 SUPPLY_DEVICES_SECOND = [
     PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
@@ -334,15 +324,15 @@ SUPPLY_DEVICES_SECOND = [
 ]
 
 
-# --- the attic guest studio, 2026-08-29 -------------------------------------------------
+# --- the attic guest studio -------------------------------------------------------------
 # One accessible stop per riser at its head inside W-A-STU-W, following this file's own
 # per-group pattern. `accessible=True` is the whole point of authoring them: an attic bath fed
 # from a riser two storeys down has no other isolation short of the basement trunk, and the
 # access is the wall cavity behind D-A-STUBATH's jamb.
-# ** BOTH MOVED NORTH ON 2026-08-30 (19'-0"/19'-6" -> 20'-6"/21'-0") WITH THEIR RISERS. **
-# FX-A-STUBATH-WC went back onto this wall and stands against y 18'-6"..20'-2"; a stop behind
-# a toilet tank is not an accessible stop, and `accessible=True` is an authored claim that no
-# check can contradict. See plan/mep_supply.py, which carries the same note on the runs.
+# Both stops are north of the toilet, with their risers: FX-A-STUBATH-WC stands against
+# y 18'-6"..20'-2" on this wall, and a stop behind a toilet tank is not an accessible stop —
+# `accessible=True` is an authored claim that no check can contradict. See
+# plan/mep_supply.py, which carries the same note on the runs.
 # Filed on ``attic`` — an accessory takes ITS OWN storey's datum, not its pipe_ref's, so these
 # read ft(2, 6) against the attic deck while the runs they sit on are filed on ``main``. Both
 # stops stand in RM-A-STUBATH at 2'-6" AFF, which is the project 22'-6" the risers arrive at.
