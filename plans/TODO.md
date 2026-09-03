@@ -363,24 +363,30 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   neither question can be asked of a spacing. `deck_post.parse_cage` reads it, and an
   unreadable string is NO steel, the same conservative contract
   `retaining_basis.parse_reinforcement` keeps.
-- **FOUND OUT OF SCOPE 2026-08-30: the four breezeway piers are the same defect, unfixed.**
-  `PR-BW-1..4` are 12" round **plain concrete columns** at h/d 4.73, 4.73, 4.33, 4.33 — past
-  a pedestal's 3, so ACI 318-19 §14.1.5 does not permit them to be unreinforced any more than
-  it permitted `PT-SG-COL`. **Nothing currently grades them**: `engineering/pier_basis.cast_piers`
-  is scoped to a post on a `Footing`, and these bear on `Pad`s (`PD-BW-1..4`), so they are
-  graded by IRC Table R507.3.1's prescriptive pad rows and the COLUMN above the pad is never
-  looked at. Two pieces of work, and the second is the reason this was not just done:
-  1. widen the column check to any cast-concrete post regardless of what it bears on (keeping
-     `spread_footing` scoped to `Footing`s, since a `Pad` **is** an R507.3.1 row) — needs a
-     real concrete test, `resolve.construction_assemblies._is_concrete`, not "round means
-     concrete";
-  2. **give them a load.** `_deck_tributaries` only walks `service="deck"` FloorSystems and
-     these carry the breezeway ROOF through `PT-BW-*`, so today they would be graded at a
-     demand of self-weight alone. Publishing an understated demand is worse than publishing
-     none. The detailing limits (steel ratio, bar count, tie spacing) are load-independent and
-     could be graded first, with the axial state reported INCOMPLETE.
-  Cost when fixed: ~+16 lb of steel per pier, tens of dollars. `houses/catlin/prices.toml`'s
-  `column:PIER_CONCRETE_12` row says so and says it is not yet counted.
+- ~~**FOUND OUT OF SCOPE 2026-08-30: the four breezeway piers are the same defect, unfixed.**~~
+  **DONE 2026-09-03, taking the staged option this entry proposed.** `PR-BW-1..4` are graded
+  now: `deck_post/PR-BW-*` and nothing else — they carry `'(4) #5 vertical, #3 ties @ 10"
+  o.c.'`, ACI's own minimum for a 113.10 in² section, oracled by
+  `houses/catlin/notes/breezeway_piers.md`.
+  1. **The gate widened, and gained a concrete test it never had.** `cast_piers` admits a
+     post on a `Pad`, gated by `assembly_structure_material(...) == "concrete"` — the
+     predicate `checks/structural/uplift_path.py` uses, because `"12 round"` is a SHAPE and a
+     12" round wood column is an ordinary thing. It had no material test at all before, so
+     this closed a latent bug as well. `spread_footing` stays scoped to `Footing`s: a `Pad`
+     **is** an R507.3.1 row and `structural.deck_footing_size` grades it, and two authorities
+     on one number is worse than one.
+  2. **The axial state is INCOMPLETE, and the demand is not faked.** `_Pier.unmodelled_load`
+     derives which beams bear on a pier with no plan area behind them — here `BM-BW-RW/RE`,
+     the breezeway roof, which is neither a `Roof` nor a `FloorSystem` — and
+     `deck_post._detailing_only` grades the six load-independent detailing states in full
+     while OMITTING the §22.4.2 comparison. `deck_post.BASIS_VERSION` 2 → 3. The note's §3
+     carries a bounding estimate (d/c ≈ 0.007 even with 50 psf of snow on the roof) so nobody
+     reads the INCOMPLETE as "the pier might be too small"; the register publishes no ratio,
+     because a bound is not a design. **Closing it is upstream work**: give the roof a
+     modelled area to divide, or have the engineer state the demand.
+  Cost: **+28 lb of steel over 18.92 LF, +$18-36** — this entry's "~+16 lb per pier"
+  overstated it about fourfold (16 lb was the whole of `PT-SG-COL`'s 10.68 LF, not one
+  pier's). `column:PIER_CONCRETE_12` is re-struck and no longer says it is uncounted.
 - **Windows: 4 residual member-interference overlaps** — now **pinned** by
   `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
   honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
@@ -489,9 +495,25 @@ two elevations, which is exactly how a drain drop has always been written.
 
 ## Breezeway
 
-- **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a `Beam` is a prism). If the wedge becomes a real element the fall moves into it. (It should be a 1" slope by angle of the framing, plus a east to west slope by a small wedge under the centerpoint of each rafter to slightly bend the polycarbonate)
-  **Re-affirmed deferred 2026-08-07:** framing the fall means a sloped-`Beam` schema change,
-  which is a bigger piece of work than the batch it kept coming up in.
+- ~~**The 1" fall toward the garage is drawn, not framed**~~ **DONE 2026-09-03, and half of
+  it was WITHDRAWN rather than built.**
+  - **The E-W crown is framed.** `Wedge` is a real element: six tapered 2x4:kdat rips,
+    `WG-BW-R{1..3}{W,E}`, a back-to-back pair on every rafter, 1" at the crown feathering to
+    nothing over a 2'-0" half-span. They are ordered, cut, counted (12 LF, +$32) and cut in
+    section like any other stick. **No sloped-`Beam` schema change was needed** — the
+    deferral's premise was wrong. `FramedMember` already carried `z0_end_m`/`z1_end_m` and
+    `member_box` already built the raked hexahedron; `KneeBrace` was the working precedent
+    for an element that resolves to raked lumber and hosts itself. What was actually missing
+    was one escape hatch, `FramedMember.plan_width_m`: `plan_cross_section_m` classifies
+    flat-vs-on-edge from a member's vertical extent, and a taper is neither.
+  - **The N-S fall is WITHDRAWN, not deferred.** Owner decision 2026-09-02. It was never a
+    roof question: the 1" house-to-garage slope was *walkway* drainage, and the walkway is a
+    composite deck that drains through the 3/16" gaps between its boards. Stated in
+    `PORCH_DECK_COMPOSITE`'s source and in `params/breezeway.py`'s deviation 3. There is no
+    gap field in the model and one would buy nothing.
+  - Two things fell out on the way, both fixed: `cross_section` sent every `"2x4:kdat"` to
+    the 1.5 x 5.5 fallback (a treatment suffix is not a section), and `SL-D-BREEZEWAY`'s crop
+    was cutting off the east half of its own subject.
 
 ## Current Orientation
 
@@ -542,16 +564,27 @@ the future.
   - `SL-SG-DECK` is gone: the aluminium plank is `FS-SG-DECK`'s `subfloor` and bills as
     182.0 SF in `[sheet_goods]`. The conversion was exact — the balcony joists cantilever 6"
     and the deleted slab's outline *was* that cantilever.
-  - **`SL-BW-DECK` stays a Slab, and that is the finding.** It was converted with the
-    balcony and converted back the same day. `resolve/floors.py` draws a subfloor
-    bearing-line to bearing-line by the outline's perpendicular extent, so a floor system's
-    sheet is exactly its joist field; the breezeway plank oversails its rim 2 3/4" at each
-    end onto the two door thresholds. Keeping the post-box outline FAILS
-    `code.R311_3_exterior_landing` on D-M-ENTRY and D-G-SERVICE (a door has to open onto
-    something); stretching the outline to the faces lays a joist through PT-BW-1..4 and its
-    own neighbour, five `structural.member_interference` FAILs. These joists are hung flush
-    between the beams and cannot cantilever. **The engine has no way to say "sheet wider
-    than joist field", and that is the change this wants** — not a re-model of the deck.
+  - ~~**`SL-BW-DECK` stays a Slab, and that is the finding.**~~ **DONE 2026-09-03 — the
+    engine can say it now, and the deck is a subfloor.** `FloorSystem.subfloor_outline` is an
+    authored sheet polygon consumed in place of the derived corners: one field, one branch in
+    `resolve/floors.py`, and `deck_voids`, the elevations and the joist solver all untouched.
+    The plank bills 16.4 SF into `[sheet_goods] composite-deck` (164.7 → 181.1 SF) and the
+    `[concrete] slab:PORCH_DECK_COMPOSITE` row is dormant. Three things came with it:
+    - **`sheet_goods_takeoff` had to move too**, or the order would silently disagree with
+      the geometry: it computed area from the bounding box of `floor.members`, so a wider
+      sheet would draw wide, pass R311.3 and still bill the joist field. The subfloor reads
+      `deck_outline` now; `ceiling_below` keeps the framed extent, because a ceiling is
+      nailed to the joists. (It was already understating every deck by a rim thickness at
+      each end — +12 SF house-wide, no change in sheet count.)
+    - **The oversail is bounded, not just documented.** `structural.subfloor_oversail` grades
+      an authored sheet against `[framing] bearing_plan_tolerance_in`, because past that the
+      uplift pass finds neither a derived tie nor a hanger and FAILs every member under the
+      deck, reported nowhere near the deck (`params/sunken_garden.py` records that failure).
+      The breezeway's worst edge is 3 5/8" of 8".
+    - **No section drew a subfloor sheet at all**, which only showed up when the Slab left:
+      a floor's deck is an IR element on the floor's own uid and `emit_framing_cuts` reaches
+      `<uid>::framing`. `emit_floor_deck_cuts` closes it, and 58 goldens gained the plywood
+      their joists have always been carrying.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
@@ -640,7 +673,45 @@ the future.
 
  - Make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
- - For the breezeway sonotubes, something like https://www.homedepot.com/p/Bigfoot-20-in-Pier-Footing-Form-489-20-BF/300325004 for a "single pour footing". However right now it looks like those footings bisect the house and garage foundation walls. Perhaps the beams should be slightly cantilever to push them further out? Or we could link it in straight to the garage footings as one level?
+ - ~~For the breezeway sonotubes, something like a Bigfoot single-pour footing form. However
+   right now it looks like those footings bisect the house and garage foundation walls.~~
+   **CONFIRMED AND FIXED 2026-09-03 — it was real, and worse than it read.** Measured from
+   source, with 2'-0" pads on the frame line:
+
+   | interface | plan overlap | vertically |
+   |---|---|---|
+   | `PD-BW-1/2` ↔ `FT-B-N*` strip footing | 12 3/4" | pad 3'-1 7/16" **above** it — no contact |
+   | `PD-BW-1/2` ↔ `W-B-N*` wall assembly | **6 1/16"** | the pad's full 12" **inside** the wall band |
+   | `PD-BW-3/4` ↔ `FT-GF-S*` strip footing | 12 7/8" | pad bottom only **4" above** the footing top |
+   | `PD-BW-3/4` ↔ `W-GF-S*` ICF stem | **8 3/8"** | the pad's full 12" **inside** the stem band |
+   | `PR-BW-3/4` ↔ `W-GF-S*` ICF stem | 1 5/8" | over 4'-0" of shared height |
+
+   **Nothing in the engine could see any of it, at 0 FAIL.**
+   `structural.member_interference` deliberately skips `slab`/`footing`/`pad` solids ("beams
+   legitimately bear into concrete") and a `FoundationWall` contributes no framed members, so
+   no rule graded concrete against concrete anywhere in the house.
+   - **The remedy was the cantilever**, per the owner's own first suggestion and
+     `params/sunken_garden.py`'s exact precedent (a sonotube moved 17" south rather than
+     merging pours). The pads shrank 2'-0" → 1'-4" — `structural.deck_footing_size` graded
+     them at 4.00 ft² against a 1.00 ft² requirement, and 1.00 is already the 12" minimum
+     side, not the load — and the posts moved onto the band's centre at 2'-8" spacing, the
+     practical maximum. The floor and roof beams cantilever 0.3615' and 0.5552' against
+     R507.5.2's 0.6667'. Nothing above the beams moved.
+   - **The Bigfoot single-pour reading was rejected deliberately.** `Footing.bottom_elevation`
+     exists for exactly the belled pour, so it is a supported idiom — but
+     `checks/structural/deck.py` returns `_engineered` for a post on a `Footing`, converting
+     four PASSes into four UNKNOWNs, and the bearing area does not remotely demand a bell.
+   - **The engine gap is closed**: `structural.concrete_interference`, its own check rather
+     than a widening of `member_interference` (whose framing-into-concrete exclusion is
+     correct and must not move). Scoped to an ISOLATED pour — a `Pad`, or a wall-less
+     `Footing` — against any other concrete, and it says so in the module rather than
+     silently clearing the rest: the wider sweep reports ~80 findings of correct continuous
+     foundation work, because strip footings and walls lap at every corner by design.
+     `test_concrete_interference.py` re-creates the old pad and watches it go red.
+   - Two things fell out: the two garage-end piers no longer need to stop a course lower to
+     dodge `W-G-S`'s bottom plate (all four top out on one plane now), and `DETAIL_CUT_Y_FT`
+     can no longer cross both the foundation and the frame — it stays on the frame line, and
+     the 6x6 post is the one thing it now misses.
  - ~~Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)~~ **DONE 2026-08-30.** All three parts. The gable ends were genuinely wrong: a forced course at the lower top re-phased the whole rake band 11-1/2" off the module of the wall below it, and one wall carried a doubled course mid-run. There is now ONE module from the wall base through the rake. The spacing went to 32" o.c. (2x the stud module, so no block moved), and the module was re-phased onto the datum the window sills are measured from. See `houses/catlin/notes/outie_window_truss_detail.md` — the saving is real but small ($466-742), because the same change also nails two places that had no backing at all: the rake, and the cladding lap over the floor rim band.
 
 - **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
