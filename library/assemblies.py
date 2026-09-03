@@ -164,9 +164,13 @@ FOUNDATION_WALL_12_INT = Assembly(
 #
 # 2 x 2" rather than one 4" board: staggered joints, and 2" is the stocked thickness.
 # Damp-proofing outboard of the pour and inboard of the foam is IRC R406.1's position.
-FOUNDATION_WALL_8_XPS4_CORE = (
-    Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-          function=LayerFunction.STRUCTURE),
+#: Everything OUTBOARD of the pour, published separately because a house that states its own
+#: mix has to author its own concrete layer and cannot splat one that carries somebody else's.
+#: A ``ConcreteSpec`` is a purchase decision — one ticket from one plant — so it belongs to
+#: the house, and the library must not put one in a shared core. Slicing this out of the core
+#: at the point of use is not open to a house either: ``plan/*.py`` is the constrained
+#: editable dialect, which forbids subscripting.
+FOUNDATION_WALL_XPS4_OUTBOARD = (
     Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
@@ -176,10 +180,16 @@ FOUNDATION_WALL_8_XPS4_CORE = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
 )
 
+FOUNDATION_WALL_8_XPS4_CORE = (
+    Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+          function=LayerFunction.STRUCTURE),
+    *FOUNDATION_WALL_XPS4_OUTBOARD,
+)
+
 FOUNDATION_WALL_12_XPS4_CORE = (
     Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
           function=LayerFunction.STRUCTURE),
-    *FOUNDATION_WALL_8_XPS4_CORE[1:],
+    *FOUNDATION_WALL_XPS4_OUTBOARD,
 )
 
 # 8" + damp-proofing + 4" XPS = 12.05" total, ~R-21.8.

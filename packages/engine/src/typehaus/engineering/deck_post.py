@@ -151,6 +151,41 @@ def parse_cage(spec: str | None) -> _Cage | None:
     return _Cage(count=count, bar=bar, tie_bar=tie_bar, tie_spacing_in=spacing_in)
 
 
+def cage_for(pier: _Pier) -> _Cage | None:
+    """The cage to grade: the structured ``ReinforcementSpec`` where one is authored, else
+    the free-text string.
+
+    **Structured first, free text second, never both.** A house that has authored a spec has
+    said what it means, and re-reading the drawing string beside it is exactly how the two
+    come to disagree without anybody noticing — which is what
+    ``integrity.reinforcement_spec_agrees`` is there to catch when they do. Keeping
+    :func:`parse_cage` as the fallback is what let every oracle test pass untouched on the
+    day the struct arrived, and what lets a house migrate pour by pour rather than in one
+    sweep.
+
+    A cage needs a longitudinal COUNT and a tie SPACING to be gradeable at all — ACI bounds
+    a column's steel by ``0.01Ag`` and its bar count by four, and neither question can be
+    asked of a spacing. A struct missing either half is read as no cage, which is the same
+    conservative contract the parser keeps for an unreadable string.
+    """
+    spec = getattr(pier, "reinforcement", None)
+    if spec is None:
+        return parse_cage(pier.vertical_reinforcement)
+    longitudinal = ties = None
+    for entry in getattr(spec, "bars", ()) or ():
+        if entry.role == "vertical" and entry.count and entry.bar in _BAR:
+            longitudinal = entry
+        elif entry.role == "ties" and entry.spacing is not None and entry.bar in _BAR:
+            ties = entry
+    if longitudinal is None or ties is None:
+        return None
+    spacing_in = float(ties.spacing.inches)
+    if spacing_in <= 0.0:
+        return None
+    return _Cage(count=longitudinal.count, bar=longitudinal.bar,
+                 tie_bar=ties.bar, tie_spacing_in=spacing_in)
+
+
 def _slenderness(pier: _Pier) -> tuple[float, float, float, float]:
     """``(k*lu/r, delta_ns, magnified e_min, the e the axial cap already embeds)`` in inches.
 
@@ -190,7 +225,7 @@ def _one(pier: _Pier) -> EngineeringRecord:
     area = pier.gross_area_in2
     ratio = pier.height_in / pier.diameter_in if pier.diameter_in else float("inf")
     is_pedestal = ratio <= PEDESTAL_HEIGHT_RATIO
-    cage = parse_cage(pier.vertical_reinforcement)
+    cage = cage_for(pier)
     demand = pier.factored_lb
     minimum_steel = COLUMN_MIN_REINFORCEMENT_RATIO * area
     shape = "round" if pier.round_section else "square"

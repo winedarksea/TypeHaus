@@ -116,6 +116,13 @@ class _Geometry:
     #: Parsed by :func:`stem_flexure`; an unparseable string is treated as no steel, which
     #: is the conservative reading and reports as such.
     vertical_reinforcement: str | None = None
+    #: The STEM's reinforcement, structured. **Where this is authored it GOVERNS** and the
+    #: free text above is not parsed at all — that is the migration contract: both spellings
+    #: are kept, the struct wins every graded number, and
+    #: ``integrity.reinforcement_spec_agrees`` raises an ERROR if they ever disagree.
+    #: Keeping the parser as the fallback is what let every oracle test pass untouched on
+    #: the day the struct arrived.
+    stem_reinforcement: object | None = None
     #: The f'c this wall's assembly SPECIFIES, or None where it specifies none. None is not
     #: 3,000 psi — it is "this model does not say", and :func:`stem_flexure` falls back to
     #: ``PRESUMPTIVE_FC_PSI`` and names which of the two it used.
@@ -287,7 +294,12 @@ def stem_flexure(geometry: _Geometry, case: _Case,
         fc_psi = geometry.specified_fc_psi or PRESUMPTIVE_FC_PSI
     fc_note = (f"f'c {fc_psi:,.0f} psi" if geometry.specified_fc_psi
                else f"f'c {fc_psi:,.0f} psi PRESUMPTIVE (no mix specified)")
-    parsed = parse_reinforcement(geometry.vertical_reinforcement)
+    # Structured first, free text second, never both: a house that has authored a spec has
+    # said what it means, and re-reading the drawing string beside it is exactly how the two
+    # come to disagree without anybody noticing.
+    parsed = (bar_for_roles(geometry.stem_reinforcement, ("vertical",))
+              if geometry.stem_reinforcement is not None
+              else parse_reinforcement(geometry.vertical_reinforcement))
     if parsed is None:
         section = b_in * h_in ** 2 / 6.0
         capacity = 0.60 * 5.0 * fc_psi ** 0.5 * section / 12.0
@@ -621,6 +633,7 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
         toe_ft=toe_ft,
         heel_ft=heel_ft,
         vertical_reinforcement=getattr(wall, "vertical_reinforcement", None),
+        stem_reinforcement=getattr(wall, "reinforcement", None),
         footing_reinforcement=getattr(footing, "reinforcement", None),
         specified_fc_psi=fc_psi(spec),
         specified_cover_in=cover_in(spec),

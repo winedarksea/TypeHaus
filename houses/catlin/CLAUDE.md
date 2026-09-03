@@ -465,7 +465,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   not overlap — the hall is west of x=18' and `SL-M-DECK` starts there.
   `notes/mixed_deck_movement_joint.md` has the T-moulding (the two walking surfaces are
   flush within a plank's tolerance), the L-shaped
-  transition and the cream-polish spec.
+  transition and the cream-polish spec — whose "no fibres" clause was **superseded
+  2026-09-03** by micro-MONOFILAMENT PP at ~1.5 lb/cy (`CATLIN_INTERIOR_MIX`). Macro fibre
+  is still excluded here, and so is steel; the distinction is the whole finding.
 - **The second floor's deck is mixed too, and for a different reason than the basement's:
   services, not a concrete/wood boundary.** `FS-S-WEST` (x 0'-18') is 11 7/8" open-web
   trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8" I-joists,

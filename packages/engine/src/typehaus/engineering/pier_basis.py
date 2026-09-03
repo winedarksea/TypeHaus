@@ -93,6 +93,9 @@ class _Pier:
     #: The f'c this pier's assembly SPECIFIES, or None where it specifies none. None is not
     #: 3,000 psi: it is "this model does not say", and ``deck_post`` falls back to
     #: ``PRESUMPTIVE_FC_PSI`` and names which of the two every state was computed on.
+    #: The cage, structured. **Where this is authored it GOVERNS** and
+    #: ``deck_post.parse_cage`` is not called at all — see ``deck_post.cage_for``.
+    reinforcement: object | None = None
     specified_fc_psi: float | None = None
     #: The clear cover this pier's assembly SPECIFIES, inches, or None. Cover sets the bar
     #: circle and therefore the steel's lever arm in ``_pm_point`` — on a 12" round, 3"
@@ -547,6 +550,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             footing_depth_in=footing.depth.inches if footing is not None else 0.0,
             vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
             unmodelled_load=unmodelled.get(post.tag, ()),
+            reinforcement=getattr(post, "reinforcement", None),
             specified_fc_psi=fc_psi(concrete_spec_for(ctx.plan, post)),
             specified_cover_in=cover_in(concrete_spec_for(ctx.plan, post)),
         ))

@@ -121,11 +121,37 @@ than floating a feathered transition over a moving line.
 **The polish spec.** A **cream polish** — grind the surface paste only, about 1/16" — not
 aggregate exposure. The cap is 4 5/8" over EPS form and its reinforcement cover is not there
 to survive a salt-and-pepper grind. That implies the pour itself: hard steel trowel finish,
-**no fibres in the mix** (they fuzz the ground surface), and either a wet cure or a
-cure-and-seal the polisher's densifier will bond through — a film-forming curing compound
-has to come off before the first pass and is a cost, not a saving. Hairline flexural cracks
-over the one-way span are expected on a slab this thin and are filled with semi-rigid joint
-filler as part of the polish, not treated as a defect.
+and either a wet cure or a cure-and-seal the polisher's densifier will bond through — a
+film-forming curing compound has to come off before the first pass and is a cost, not a
+saving. Hairline flexural cracks over the one-way span are expected on a slab this thin and
+are filled with semi-rigid joint filler as part of the polish, not treated as a defect.
+
+### Fibre — this note said NO, and now says MICRO-MONOFILAMENT
+
+**Superseded 2026-09-03.** This paragraph read *"no fibres in the mix (they fuzz the ground
+surface)"*, and against **macro** fibre that is simply true: macro synthetic is explicitly
+visible at a finished surface, which is why it is accepted on industrial floors and not on
+one anybody looks at. Steel fibre is worse again — it rust-stains where it lies near the
+surface, and this is an interior floor.
+
+The owner asked for fibre here anyway, wanting a floor that is *pretty enough for everyday
+use* rather than museum grade, and there is a middle path that gets both:
+
+**Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`CATLIN_INTERIOR_MIX`). It is
+a different product answering a different question — it targets **plastic shrinkage**
+cracking in the first hours, a 55-70% reduction, which is exactly the surface cracking a
+thin 4 5/8" cap over EPS is prone to. Monofilament, not fibrillated. At the correct dosage
+and finished properly it does not fuzz, and what little presents at the surface sits in the
+paste layer a **cream polish removes** — the polish and the fibre are compatible precisely
+because the polish is a cream one.
+
+It is not structural and replaces no steel. The hard steel trowel finish and the cure
+requirements above are unchanged and matter more with fibre in the mix, not less.
+
+**Confirm the dose and the product against a supplier TDS before ordering.** The published
+range is 0.75-1.5 lb/cy and the finisher's opinion on a *polished* floor should govern the
+top end — 1.5 is where this house sits, and it is the end of the range, not the middle.
+Sika Fibermesh-150 and Euclid's micro-synthetic line are the two obvious candidates.
 
 ## Model gap, recorded rather than solved
 
