@@ -2096,6 +2096,32 @@ PORCH_JOISTS = FloorSystem(
     source="porch floor — PT 2x8 joists bearing on the front and back beam lines",
 )
 
+# --- the porch enclosure's flank blocking (2026-09-03) --------------------------------
+# The bug path nobody would have seen. FS-SG-DECK's joists run E-W and the enclosure's two
+# FLANK tracks run N-S at x = 9'-0"/27'-0" (plan/placeables.py), so the curtain plane crosses
+# EVERY 16" joist bay perpendicular. Above the track each bay is open inside<->outside — a
+# continuous 7 1/4" x 16" hole every 16" along both flanks, straight past a sealed curtain.
+# The two FRONT runs need none of this: they lie ALONG a joist line (see below), so there is
+# 1 1/2" of continuous KDAT over them for their whole length.
+#
+# ``plies=1``: ``_reinforcement_members`` lays ``range(plies - 1)`` sisters, i.e. NONE, and
+# only the blocks — the same idiom as the guard's rim blocks above, and what keeps
+# ``test_no_catlin_deck_sisters_a_joist`` green. A stray ``plies=3`` here would silently add
+# sisters and their lumber. The blocks resolve at the joists' full depth, land flush with the
+# soffit the track screws to, and inherit FS-SG-DECK's ``top_protection`` butyl.
+_ENCLOSURE_TRACK_X = (9.0, 27.0)
+# ** EVERY SECOND JOIST LINE, AND THAT IS THE WHOLE TRAP. ** One ``JoistReinforcement`` lays
+# a block in the bay on EACH side of its line. Lines 1,3,5,7 counted from the front rim fill
+# bays 1..8 exactly once; author 1..8 instead and every bay gets two blocks, which is a real
+# ``structural.member_interference`` FAIL. 1/3/5/7 and not 2/4/6/8 because index 8 is the
+# rear rim at ``max(joist y)`` and every authored ``at`` must sit STRICTLY inside the joist
+# field (``test_a_guard_block_authored_on_the_deck_edge_would_be_dropped``).
+# The cost, stated rather than hidden: the line-1 entry's second block lands in bay 0-1,
+# which is the balcony's front overhang SOUTH of the front track — one per flank, doing
+# nothing for the enclosure. Eight entries, sixteen blocks, ~17.3 lf.
+_ENCLOSURE_BLOCK_LINES = [_y_balcony_front + _k * SPEC.balcony_joist_oc_in / 12.0
+                          for _k in (1, 3, 5, 7)]   # -9'-2", -6'-6", -3'-10", -1'-2"
+
 # Balcony: 2x8 @ 16" o.c. running E-W across the three N-S beams.
 #
 # The aluminium plank is this deck's own `subfloor`, not a separate Slab standing in for
@@ -2140,13 +2166,19 @@ BALCONY_JOISTS = FloorSystem(
     # ``plies=1``: ``_reinforcement_members`` lays ``range(plies - 1)`` sisters, i.e. NONE,
     # and only the blocks. These inherit the deck's ``top_protection`` tape with every other
     # framing top.
-    reinforcements=tuple(
-        JoistReinforcement(
+    reinforcements=(
+        *(JoistReinforcement(
             at=pt(ft(_gx), ft(_gy)), plies=1, blocking=True,
             source="rim block behind an RL-SG-BALCONY fascia bracket — the four 5/16\" "
                    "through-bolts land in this block so the 2x8 rim cannot roll under the "
                    "guard's 200 lb top load")
         for _gx, _gy in _BALCONY_GUARD_STATIONS),
+        *(JoistReinforcement(
+            at=pt(ft(_ex), ft(_ey)), plies=1, blocking=True,
+            source="joist-bay closure under the porch enclosure's flank track — the "
+                   "curtain plane crosses this bay perpendicular, so without the block "
+                   "the bay is open inside<->outside above a sealed curtain")
+          for _ex in _ENCLOSURE_TRACK_X for _ey in _ENCLOSURE_BLOCK_LINES)),
     outline=_DECK_OUTLINE,
     subfloor=DeckLayer(material_ref="aluminum-deck",
                        thickness=inch(SPEC.balcony_deck_thickness_in)),
@@ -2584,10 +2616,51 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_SLAB, *FROST_WINGS, *DOWELS]
+# --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
+# ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
+# is the porch deck edge; the house cladding face is at -0'-5". The 5" between them
+# (`SPEC.gap_to_house_in`) is a deliberate insulation gap and it is open down to grade for
+# the whole 19' — an insect route from the garden straight up into the enclosure, past a
+# curtain that seals perfectly. The enclosure's flank panels stop at the deck; this closes
+# the slot they stop over.
+#
+# ** IT FASTENS TO THE GARDEN AND NOTHING ELSE. ** Screws into the porch deck's north rim
+# only; the piece cantilevers 4" north and dies on the cladding through a compressible foam
+# or brush lip that BEARS on it without penetrating it. Sloped south to drain back over the
+# deck. That lip, and the weighted flap on the flank panels' north vertical edge, are what
+# the north end is: **high bug reduction, not hermetic.** With a designed 5" gap and no
+# permission to fasten into the house wall assembly, a contact sweep is the ceiling of what
+# is achievable — and it is also the right wind-chill answer, since a compressible seal
+# tolerates the differential movement a rigid one would tear itself apart on.
+#
+# `TrimKind.BUG_SCREEN` rather than a new kind: the enum is "vented insect closure", which
+# is exactly this piece's job, and minting a kind that means the same thing would split one
+# $/LF rate across two price keys. It is not a rainscreen base (the case the enum comment
+# was written for), so it does NOT collide with the derived `bug_screen:CATLIN_EXT_2X6`
+# rows in [openings] — those come off wall layers, this is an authored `_EdgeRun` billed by
+# the foot in [edge_trim].
+#
+# `top_elevation=_porch_top` is the top of the JOISTS, which is where a piece screwed to the
+# rim lands: the composite plank's north edge laps over it.
+_SLOT_CLOSURE_REACH_IN = 4.0
+_slot_closure_y = _y_out_n + (_SLOT_CLOSURE_REACH_IN / 2.0) / 12.0  # band centre
+PORCH_SLOT_CLOSURE = Flashing(
+    uid="SGFF03AAAA", tag="TR-SG-SLOT", kind=TrimKind.BUG_SCREEN,
+    # `_x_in_w`/`_x_in_e` (8'-6"/27'-6") is the porch's clear width — the inner faces of
+    # W-SG-W1/E1, which is where the deck's north rim is reachable to screw into. 19'-0".
+    path=(pt(ft(_x_in_w), ft(_slot_closure_y)),
+          pt(ft(_x_in_e), ft(_slot_closure_y))),
+    top_elevation=_porch_top, depth=inch(2), thickness=inch(_SLOT_CLOSURE_REACH_IN),
+    material="aluminum", host_ref="FS-SG-PORCH",
+    # West→east, so the left-hand normal points north — the house side, which is the end
+    # carrying the lip rather than the fastener line.
+    back_side="left")
+
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # ties and the four corner beam-seat gussets), so main takes them whole. With the knee
 # braces retired there is no second-storey hardware at all.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS,
+                 PORCH_SLOT_CLOSURE,
                  PORCH_GUARD, PORCH_GUARD_NE,
                  *CONNECTORS, *PORCH_BEAM_CAPS,
                  HP_PAD, *HP_STAND_LEGS, *HP_STAND_ANCHORS,

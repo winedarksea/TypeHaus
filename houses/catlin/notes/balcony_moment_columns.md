@@ -382,9 +382,14 @@ Three things it costs, none of them structural:
   inside the concrete. The guard's front corners **die into the columns** — rail ends on the
   concrete, Titen Turbo at ≥3" edge distance, no baseplate at those two stations. The engine
   models no baseplate and will never ask.
-- **The two front curtain rods**, which moved from y −9'-6" to −9'-1" (`plan/placeables.py`).
-  At −9'-6" the bare rod would have run 1" inside BF1's concrete, silently: a Furniture
-  overlapping a column is nobody's check.
+- **The porch enclosure's two front track runs** (`plan/placeables.py`, and
+  `notes/porch_enclosure.md`). These were curtain rods until 2026-09-03; the rods had already
+  moved from y −9'-6" to −9'-1" for the rounds, because at −9'-6" the bare rod would have run
+  1" inside BF1's concrete, silently — a Furniture overlapping a column is nobody's check.
+  The track sits at −9'-2", on the first balcony joist centreline, clearing the rounds by 2"
+  in y. The same blind spot bit the *other* axis in the meantime: the rods hung at 8'-6",
+  which the glulam swap left 1 1/8" above the beam soffit they claimed to hang under, i.e.
+  inside BM-SG-BLW. The track hangs at 111.75", the joist soffit, which is above every beam.
 
 PT-SG-BF2 is unaffected — a 6x6 on its own line, with BM-SG-BLC cantilevering 15" past it
 since it moved onto the deck.

@@ -765,61 +765,79 @@ MAIN_PLACEABLES = [
               position=pt(inch(29.3175), inch(261.615)), rotation=deg(0),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
-    # --- porch curtain rods --------------------------------------
-    # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,
-    # BF2..BF3) on 10'-0" centres. The type is 114" in a 120" bay — a quarter inch of
-    # bracket clearance each side, which is what the structure offers and why the U-rod was
-    # rejected (plan/furniture_types.py).
+    # --- porch enclosure track ------------------------------------
+    # FOUR TRACK RUNS, NOT FOUR CURTAIN RODS (2026-09-03). The rods are gone; see
+    # `FT-PORCH-TRACK-106` in plan/furniture_types.py for why the product changed, and
+    # notes/porch_enclosure.md for the two seasonal panel sets they carry.
     #
-    # ** y IS -9'-1", NOT THE -9'-6" GUARD LINE, AND THAT IS PT-SG-BF1/BF3 (2026-09-03). **
-    # The two front CORNERS are 12" cast rounds now, and they came 5 1/4" north that day so
-    # the balcony beams cantilever over their tops (`_y_front_pillar`, params/
-    # sunken_garden.py). They span y -10'-4"..-9'-4", which swallowed the -9'-6" line: the
-    # bare rod at x 8'-3" would have run 1" INSIDE BF1's concrete, and the 6"-deep type
-    # footprint deeper still. Nothing would have said so — a Furniture overlapping a column
-    # is not `structural.member_interference`'s business and the model reported 0 FAIL with
-    # the rod buried.
+    # ** ELEVATION: 111.75", THE BALCONY JOIST SOFFIT, AND THE OLD 8'-6" WAS WRONG TWICE. **
+    # `_balcony_beam_soffit` (params/sunken_garden.py) = 10.0 - 7.25/12 - 11.875/12 = 8'-4 7/8"
+    # since the 2026-09-03 glulam swap; the joists bear on TOP of those beams, so the joist
+    # soffit is 11 7/8" higher, at 9'-4 3/4" = 112.75". The rods' comment claimed 8'-6" hung
+    # "1 1/2" under the balcony beam soffit (8'-7 1/2")" — that soffit number was the old
+    # 3-2x12 beams', and after the swap 8'-6" sat 1 1/8" ABOVE the beam plane it claimed to
+    # hang under, i.e. inside BM-SG-BLW with 7/8" to spare. Nothing graded it: a placeable
+    # against a beam is as ungraded as a placeable against a column.
+    # `Mount.elevation` is the body BOTTOM and the extrusion is 1" tall, so 111.75" puts the
+    # track's top ON the soffit. Still filed on `main`: elevation reads off the storey it is
+    # filed on and only the main datum (RM-M-BED's floor, 0") gives the right height.
     #
-    # -9'-1" clears the round by 3/4" at both ends, keeps the 1/4" to PT-SG-BF2 (a 6x6, and
-    # it did not move), and still hangs under the 2x8 balcony joist field. The curtain now
-    # falls 5" inboard of the 42" guard rather than over it, which is the better place for
-    # it. It cannot go back south without the rounds going back south.
-    # Filed on `main` not `second` because Mount.elevation reads off the floor of the storey
-    # it is filed on and only the main datum gives the right height: 8'-6" lands 1 1/2" under
-    # the balcony beam soffit (8'-7 1/2") it hangs from.
-    # No `room=`. The porch isn't a Room, and unlike the two hydrants (plan/fixtures.py) a
-    # rod has no fixture-schedule cell to fill, so naming the room behind the wall bought
-    # nothing but an `integrity.placeable_room_mismatch` advisory. The elevation datum is
-    # unaffected: `Mount.elevation` falls back to the storey datum, and RM-M-BED's floor IS
-    # the main datum (0"), so 8'-6" resolves to the same absolute height it always did.
-    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
-              position=pt(ft(13), ft(-9, -1)),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
-              position=pt(ft(23), ft(-9, -1)),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    # The two SIDE bays — the porch was curtained on its front edge only and open
-    # on both flanks, which is three quarters of a wind break. Four bay panels rather than one
-    # continuous U; the reasoning, and the U that was tried first, is on
-    # `FT-CURTAIN-ROD-OUTDOOR-98` in plan/furniture_types.py.
+    # ** FRONT LINE y = -9'-2", not the rods' -9'-1". ** -110" is the CENTRELINE of the first
+    # balcony joist behind the front rim (`_y_balcony_front` -10'-6" + 16"), so the front
+    # runs screw straight up into 1 1/2" of continuous KDAT for their whole length and need
+    # no blocking. It still clears everything: PT-SG-BF1/BF3's 12" rounds (north face -9'-4")
+    # by 2" in y and 6" in x; PT-SG-BF2 by 1 1/4" in y and by 11 7/8" in z (its top IS the
+    # beam soffit, below the track); BM-SG-BLC's faces at x 17'-10 1/4"/18'-1 3/4" by 1/4"
+    # at each run end. RL-SG-PORCH's south leg is 4" further south at -9'-6" and tops out at
+    # 43", so the panel plane falls 4" inboard of the 42" guard rather than over it.
+    # ** DO NOT DRIFT SOUTH. ** TR-SG-CAP-FRW/FRE and their butyl sit on the front beams at
+    # -9'-6"; the bottom-hem snaps at -9'-2" are 4" clear of that cap, and anchoring through
+    # it is the one thing this house does not do.
     #
-    # x = 9'-0" and 27'-0", not the 8'-6"/27'-6" guard line and not the 8'-0"/28'-0" pillar
-    # line. The pillar line is 6" OUTBOARD of the guard, so a rod on it hangs its curtain
-    # over the railing and outside the porch. The guard line clears the 6x6 by a quarter inch
-    # at this type's 6" bracket projection, which is not a clearance. 9'-0" is the first line
-    # inboard that clears the pillar by more than a bracket (6 1/2") and still has balcony
-    # joists overhead to hang from — the front pair hang from the E-W girts, these from the
-    # 2x8 joist field crossing them.
+    # ** TWO FRONT RUNS, NOT ONE — DECIDED. ** BM-SG-BLC occupies z 8'-4 7/8"..9'-4 3/4"
+    # across the curtain plane at x 17'-10 1/4"..18'-1 3/4". A continuous front track would
+    # have to drop to the BEAM soffit at 8'-4 7/8", which is 1 1/8" LOWER than the rods it
+    # replaces — the improvement would make the porch shorter than it is — and it would hang
+    # 9'-8" of track on drop brackets with no backing. Two runs dying 1/4" off the beam faces
+    # put the seam on PT-SG-BF2, which is where a seam belongs. Two 90-degree curves at
+    # (9'-0", -9'-2") and (27'-0", -9'-2") turn the corners; each substitutes for the last
+    # ~8" of both legs. ~35 lf of track in all.
     #
-    # 98" over an 8'-8" (104") guard run, centred at y=-5'-0": 3" short of the house edge at
-    # the north end and 2" clear of the front rods' bracket line at the south. Those two gaps
-    # ARE the corners — the thing four panels have and a U does not.
-    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-ROD-SW", type_ref="FT-CURTAIN-ROD-OUTDOOR-98",
-              position=pt(ft(9), ft(-5)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-ROD-SE", type_ref="FT-CURTAIN-ROD-OUTDOOR-98",
-              position=pt(ft(27), ft(-5)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
+    # No `room=`: the porch isn't a Room, and naming the room behind the wall buys only an
+    # `integrity.placeable_room_mismatch` advisory.
+    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-TRACK-FW", type_ref="FT-PORCH-TRACK-106",
+              position=pt(ft(13, 5), ft(-9, -2)),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
+    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-TRACK-FE", type_ref="FT-PORCH-TRACK-106",
+              position=pt(ft(22, 7), ft(-9, -2)),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
+    # The two FLANKS, x = 9'-0" and 27'-0" — not the 8'-6"/27'-6" guard line and not the
+    # 8'-0"/28'-0" pillar line, which is 6" OUTBOARD of the guard and would hang the panel
+    # outside the porch. 9'-0"/27'-0" clears the rounds and RL-SG-PORCH's side legs by 6",
+    # BM-SG-BLW/BLE by 9 7/8", and sits well inside the deck edge at 7'-3"/28'-9".
+    #
+    # ** THE NORTH END RUNS PAST THE DECK EDGE, AND NO FASTENER TOUCHES THE HOUSE. **
+    # `_y_out_n` = -0'-10" is the porch deck edge and the house cladding face is at -0'-5";
+    # the 5" between them (`SPEC.gap_to_house_in`) is a deliberate insulation gap, open to
+    # grade for the full 19'. The track runs to y = -0'-6", the last 4" cantilevered on a
+    # small aluminium outrigger screwed to the SIDE of the rear beam — not by lengthening
+    # the beam, which would re-open cantilever.py and its tests for nothing. The panel's
+    # north vertical edge is a weighted flap that lies on the cladding by gravity: a sweep,
+    # not a fastened seal. High bug reduction, NOT hermetic, and that is the ceiling of what
+    # a designed 5" gap with no permission to touch the wall allows. The vertical bug path
+    # up that slot is closed separately by TR-SG-SLOT (params/sunken_garden.py).
+    #
+    # ** THE WALK-THROUGH IS IN THE EAST FLANK at y ~ -7'-6". ** That is the centre of
+    # RL-SG-PORCH's 3'-0" guard opening (-6'-0" to -9'-0"), which is the porch's only route
+    # to grade via ST-SG-PORCH. A magnetic seam anywhere else and the enclosure's one opening
+    # does not line up with the porch's one exit. Nothing in the engine will ask —
+    # `code.R312_1_guard_height` PASSes across that gap either way.
+    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-TRACK-W", type_ref="FT-PORCH-TRACK-104",
+              position=pt(ft(9), ft(-4, -10)), rotation=deg(90),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
+    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-TRACK-E", type_ref="FT-PORCH-TRACK-104",
+              position=pt(ft(27), ft(-4, -10)), rotation=deg(90),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
 
     # --- the dedicated closets' shelf-and-rod runs ----------------------
     #

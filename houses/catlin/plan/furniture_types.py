@@ -39,29 +39,49 @@ CURTAIN_ROD_84 = FurnitureType(
     footprint=(inch(84), inch(4)), height=inch(2),
     plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
 )
-# The porch rods are a different product, not a longer version of the same one: outdoor
-# fabric on a pillar-to-pillar span, so the rod is heavier, the finish is exterior, and the
-# span is set by the structure (a front pillar bay) rather than by an opening.
-CURTAIN_ROD_OUTDOOR_114 = FurnitureType(
-    tag="FT-CURTAIN-ROD-OUTDOOR-114", name='Outdoor curtain rod, 114"',
-    footprint=(inch(114), inch(6)), height=inch(2),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
-)
-# The porch's two SIDE bays. Same product as the 114" front pair, cut to the 8'-8" side
-# run less its corner gaps.
+# --- the porch enclosure track -------------------------------------------------------
+# NOT A CURTAIN ROD. 2026-09-03: the two 114" rods and the two 98" side rods were replaced
+# by a snap-carrier aluminium curtain TRACK, the hardware a screened-porch enclosure is
+# actually built on (Mosquito Curtains and equivalents: 8' anodized sticks, 90-degree
+# curves, splices and end caps, screwed up through the stick's centre groove).
 #
-# A continuous outdoor U-rod (straight track + corner connectors, one curtain) was tried
-# first and rejected: PT-SG-BF2 sits ON the front guard line at x=18'-0" (5 1/2" square,
-# y -9'-8 3/4" to -9'-3 1/4"), leaving only a quarter inch of bracket clearance past it in
-# weather, and the side pillar line (x 8'-0"/28'-0") is 6" outboard of the guard, dropping
-# a pillar-hung curtain outside the 42" railing. Pulling the path inboard to answer both
-# costs 6" of the porch on three sides and three new types. Four bay panels — front split
-# by PT-SG-BF2, one per side — is what the structure actually offers. Recorded in
-# plans/TODO.md so the decision is not re-litigated from the product alone.
-CURTAIN_ROD_OUTDOOR_98 = FurnitureType(
-    tag="FT-CURTAIN-ROD-OUTDOOR-98", name='Outdoor curtain rod, 98"',
-    footprint=(inch(98), inch(6)), height=inch(2),
-    plan_symbol=None, mount=_WALL_MOUNT, source=_ROD_SOURCE,
+# ** THE PRODUCT CHANGED BECAUSE THE ROD COULD NOT SEAL. ** A rod at 8'-6" under a joist
+# soffit at 9'-4 3/4" leaves a ~10" open band across the whole opening, and rings leak at
+# the top by construction — a bug highway with a curtain hanging under it. A track screwed
+# flush to the soffit closes that band, and it is the same hardware for both panel sets:
+# no-see-um mesh in summer, 30-ga marine clear vinyl in spring and fall for wind chill.
+# Zippers were rejected as the primary closure (UV and grit make them the wear item and a
+# replacement means re-sewing a panel); they survive only at the vinyl set's corner joints.
+#
+# ``height=inch(1)`` is the extrusion, not a rod-and-finial: ``Mount.elevation`` is the body
+# BOTTOM, so the track's top lands on the soffit it fastens to. The 2" footprint depth is
+# the stick plus its carriers. ``plan_symbol=None`` as with the rods — scheduled and billed,
+# not drawn.
+#
+# ``MountKind.CEILING``, not WALL. These name no wall, so ``_resolve_location`` returns the
+# authored position untouched either way and the resolved Z is byte-identical; all WALL
+# bought was ``horizontal_projection_from_wall_m`` for A117.1 s307.2, which is moot above
+# 80". CEILING says the true thing: they hang from a soffit.
+#
+# See notes/porch_enclosure.md for the panels, the magnet seam and the north sweep.
+_TRACK_SOURCE = ("notes/porch_enclosure.md — snap-carrier aluminium curtain track, screwed "
+                 "up through the centre groove into the balcony joists/rim above; 5 screws "
+                 "per 8' stick (the VINYL spacing, so one set of hardware carries both "
+                 "panel sets).")
+# The two FRONT bays, split by PT-SG-BF2 at x = 18'-0": 8'-10" of run each, less ~8" at the
+# outboard end where a 90-degree curve substitutes for the last of the stick.
+PORCH_TRACK_106 = FurnitureType(
+    tag="FT-PORCH-TRACK-106", name='Porch enclosure track, 106"',
+    footprint=(inch(106), inch(2)), height=inch(1),
+    plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
+)
+# The two FLANK runs, x = 9'-0" and 27'-0", y -9'-2" to -0'-6". Same extrusion, cut shorter:
+# the north end runs 4" past the porch deck edge on an outrigger screwed to the side of the
+# rear beam, so the panel's north edge is over the 5" insulation gap rather than short of it.
+PORCH_TRACK_104 = FurnitureType(
+    tag="FT-PORCH-TRACK-104", name='Porch enclosure track, 104"',
+    footprint=(inch(104), inch(2)), height=inch(1),
+    plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 
 _PANEL_SOURCE = ("plans/TODO.md — plumbing access. Framed metal panel in a finished wall "
@@ -678,8 +698,8 @@ STUDIO_BAR_BASE_2418 = FurnitureType(
 )
 
 
-FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, CURTAIN_ROD_OUTDOOR_114,
-                   CURTAIN_ROD_OUTDOOR_98,
+FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
+                   PORCH_TRACK_104,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,

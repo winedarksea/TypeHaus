@@ -1299,6 +1299,62 @@
       "node": "polyline",
       "points": [
         [
+          -10.0,
+          -2.0
+        ],
+        [
+          -6.000000000000001,
+          -2.0
+        ],
+        [
+          -6.000000000000001,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGFF03AAAA-00",
+      "tag": "TR-SG-SLOT-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -10.0,
+          -2.0
+        ],
+        [
+          -6.000000000000001,
+          -2.0
+        ],
+        [
+          -6.000000000000001,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ]
+      ],
+      "pattern": "aluminum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "aluminum"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -6.000000000000001,
           -13.437499999999998
         ],

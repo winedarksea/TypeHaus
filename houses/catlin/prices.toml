@@ -419,7 +419,10 @@
 # PT-SG-BR2 — 2 sister 2x8s and 2 blocks, 28 LF — came out when the rear balcony pillar row
 # moved onto the back-beam line and the pillar stopped standing on a cantilevered joist tip.
 # The comment previously read "# 708 LF", which was several revisions stale.
-"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 464 LF
+# 2026-09-03: 524 -> 548 LF ordered. The porch enclosure's flank blocking — sixteen blocks
+# closing FS-SG-DECK's joist bays where the curtain plane crosses them, 17.3 LF cut, three
+# more 8' sticks. The "# 464 LF" this comment used to carry was itself 60 LF stale.
+"2x8" = { material = { low = 1.1, high = 1.55 }, labour = { low = 1.3, high = 2.4 } }  # 548 LF
 # D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
 # the same basis as the rows above; shallow stock, so the low end of that band.
 "3-1.75x5.5 LVL" = { material = { low = 12, high = 22 }, labour = { low = 9, high = 18 } }
@@ -1894,13 +1897,39 @@
 "FT-STUDY-DESK-LEAF" = { material = { low = 260, high = 560 }, labour = { low = 250, high = 620 } }  # 1 ea
 "FT-CURTAIN-ROD-48" = { material = { low = 25, high = 90 }, labour = { low = 35, high = 90 } }  # 8 ea
 "FT-CURTAIN-ROD-84" = { material = { low = 40, high = 140 }, labour = { low = 35, high = 90 } }  # 1 ea
-"FT-CURTAIN-ROD-OUTDOOR-114" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 150 } }  # 2 ea
-# The two SIDE bays, added with the type 2026-08-22. Same article as the 114" pair cut
-# to the 8'-8" side run, so the bracket pair, the finish and the hanging labour are
-# identical and only the tube is shorter — the material low/high come off the 114" row
-# scaled by length (98/114 = 0.86 on the tube, which is roughly half the rod's cost),
-# and labour is unchanged because two brackets in a pillar is two brackets in a pillar.
-"FT-CURTAIN-ROD-OUTDOOR-98" = { material = { low = 80, high = 235 }, labour = { low = 60, high = 150 } }  # 2 ea
+# --- the porch enclosure track (2026-09-03) ---------------------------------------------
+# ** THESE TWO ROWS REPLACE `FT-CURTAIN-ROD-OUTDOOR-114`/`-98`, WHICH ARE DELETED, NOT
+# ZEROED. ** The zero-row convention here is for a product still specified somewhere; these
+# two types cease to exist (plan/furniture_types.py). And note the direction of the trap: an
+# unpriced minted type is silently DROPPED from the bill, so a missing row for the two new
+# ones would make the total FALL and look like a saving.
+#
+# The article is a snap-carrier aluminium curtain track — the hardware a screened-porch
+# enclosure is built on (Mosquito Curtains and equivalents) — not a rod. `placeables_takeoff`
+# emits a COUNT and no length, so the track's feet, curves, splices, caps, carriers and
+# screws all ride inside these two rows, with the arithmetic written out here. Same idiom as
+# `FT-STUDY-DESK-LEAF` above, which carries its brackets, hinge, ledger and catches in one
+# number. The PANELS are not here — see `allowances.porch-enclosure-panels-mesh` and
+# `-vinyl`; a hanging fabric panel has no plan footprint this section could measure.
+#
+# Per FRONT run (106", x 9'-0"->17'-10" and 18'-2"->27'-0"):
+#   2 x 8' anodized stick (one cut to 2'-10")  $28-45 ea      $56-90
+#   1 splice + 1 end cap                                       $8-20
+#   1 x 90-degree curve (the two corners are the front runs')  $18-40
+#   18 snap carriers @ $0.60-1.20                              $11-22
+#   8 stainless screws + washers up the centre groove          $3-8
+#                                                             ---------
+#                                                             $96-180
+# The FLANK run (104") is the same list without the curve: $78-140.
+# ** SCREWS ARE SPACED FOR VINYL (5 per 8'), NOT MESH (3). ** One set of hardware carries
+# both seasonal panel sets, and the winter set is the heavy one; spacing the track for mesh
+# and hanging vinyl on it is how a track sags off a soffit.
+# Labour is an overhead run into a joist soffit — layout off the joist line, drill and drive
+# ~8 screws, land the curve square with the flank. About 1 to 1 1/2 hours a run, and the
+# north 4" of each flank run is a small aluminium outrigger screwed to the side of the rear
+# beam (see params/sunken_garden.py), which is the fiddly part of that hour.
+"FT-PORCH-TRACK-106" = { material = { low = 100, high = 185 }, labour = { low = 65, high = 165 } }  # 2 ea
+"FT-PORCH-TRACK-104" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 8 ea
@@ -3759,6 +3788,20 @@
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
 "beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 66.0 LF — formed aluminium cap over all seven built-up 3-2x12 beams (sunken garden). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — five of the seven beams carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
+# NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 5" insulation
+# gap between the porch deck's north edge and the house cladding (params/sunken_garden.py) —
+# a formed 4" aluminium band screwed to the deck's north rim, sloped south to drain, with a
+# compressible foam or brush lip that BEARS on the cladding without penetrating it. It is
+# the vertical bug path the curtain itself cannot close.
+# ** NOT THE SAME `bug_screen` AS [openings]'s. ** Those rows (`bug_screen:CATLIN_EXT_2X6`)
+# are the rainscreen cavity's base vent, derived off wall layers and billed by the SF. This
+# is an authored `_EdgeRun` billed by the foot, in a different table, with no overlap.
+# Material is above `drip_flashing`'s because the girth is wider and the brush/foam lip is a
+# purchased strip in its own right; the LABOUR is the wrb_counterflashing story again —
+# 19 feet is below any sub's minimum, so this is a $200-350 half-day LUMP spread over the
+# run, and the fitting is real: the lip has to bear evenly on a cladding line the closure is
+# scribed to, or the gap it exists to close is still open.
+"bug_screen" = { material = { low = 3, high = 7 }, labour = { low = 10.50, high = 18.50 } }  # 19.0 LF — TR-SG-SLOT, the porch enclosure's north deck-slot closure. 1 piece, 19'-0"
 "corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
 # NEW 2026-08-31, and a category the engine could not measure before. `corner_trim` above is
 # exclusively the ROOF-edge piece derived from the ROOF's cladding; `wall_corner` is the
@@ -3808,7 +3851,7 @@
 # only because two runs is two passes.
 # CONFIDENCE: HIGH on the narrow row, MEDIUM on the wide one (the 11" roll is unpriceable).
 # $/LF of member, by material tag
-"butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 402.4 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK, plus the four single-ply 2x12 girts. 1-5/8" roll
+"butyl-tape" = { material = { low = 0.40, high = 0.75 }, labour = { low = 0.30, high = 0.75 } }  # 420.8 LF — joists, rims and blocking on FS-SG-PORCH and FS-SG-DECK (+17.3 LF 2026-09-03: the porch enclosure's sixteen flank blocks, which inherit the deck's top_protection like every other stick), plus the four single-ply 2x12 girts. 1-5/8" roll
 "butyl-tape-beam" = { material = { low = 0.85, high = 1.75 }, labour = { low = 0.40, high = 1 } }  # 66.0 LF — the seven 3-ply 2x12 beams at 4 1/2" across: the porch's back and front pairs and the balcony's three. Wide roll, or two runs of the 3-1/8"
 
 [railings]
@@ -4330,6 +4373,42 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # of a DRYING argument and is no longer the argument this roof makes. The driver is left
 # wired up so restoring the mat is a rate and not a re-derivation.
 roof-ventilated-underlayment-mat = { low = 0, high = 0, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
+# THE PORCH ENCLOSURE'S TWO SEASONAL PANEL SETS (2026-09-03). The track they hang on is
+# hardware and is priced in [placeables] ("FT-PORCH-TRACK-106"/"-104"); these two rows are
+# the fabric, and fabric is why they are allowances. A hanging panel has no plan footprint
+# the model can measure and a `Furniture` for it would need an invented footprint at an
+# invented point, so [allowances] — the register for scope the model does not resolve — is
+# the only section that can carry it.
+#
+# ** UNDRIVEN, AND DELIBERATELY SO. ** The driver grammar addresses numeric BOM fields, and
+# `placeables` carries only `count`; there is no square footage of curtain anywhere in the
+# BOM to point at. `unit = "SF"` would be worse than useless here: on an UNDRIVEN row the
+# unit SELECTS a quantity field, the synthetic allowance row carries only `count`, and the
+# line would resolve to 0 SF and bill $0. So these are lump sums at count 1, which is also
+# the honest statement — nobody has quoted them.
+#
+# Four panels, ~327 SF between them: 2 x 8'-10" and 2 x 8'-8", all 9'-4" tall (soffit to
+# deck). Mosquito Curtains' published 3-sided, 39 lf heavy-mesh-plus-track example is $1,075;
+# ours is ~35 lf of track but 9'-4" tall rather than ~8', so the two are close on area and
+# the anchor holds. The mesh row is the panels only — the track's share of that $1,075 is in
+# [placeables] and must not be counted twice.
+#
+# ** THE SNAP STUDS ARE IN THE MESH ROW AND SERVE BOTH SETS. ** 32 marine studs into the
+# structure at 12-18" o.c. down each vertical edge, plus the bottom-hem snaps and the elastic
+# corner cords, plus the fibreglass hem rods, plus 8 magnets at the east-flank walk-through
+# seam (5 is the published count under 8' tall; ours is 9'-4"). NONE of the 32 go into the
+# house wall assembly — every one lands on the garden structure. Buy them with the mesh set
+# and the vinyl set hangs on hardware that is already there.
+porch-enclosure-panels-mesh = { material = { low = 850, high = 1450 }, labour = { low = 250, high = 600 } }
+# The winter set: 30-ga marine clear vinyl over the same four openings, on the same track,
+# the same carriers and the same snap studs. Roughly 2-2.5x the mesh panels alone, which is
+# what marine vinyl costs against no-see-um mesh, plus YKK marine zippers at the corner
+# joints — the ONE place a zipper is kept. Zippers were rejected as the primary closure
+# because UV and grit make them the wear item and replacing one means re-sewing a panel; a
+# vinyl set still needs a rigid corner joint and nothing else makes one.
+# Labour is lower than the mesh row's because the studs, the magnets and the hem rods are
+# already bought and located — this is a seasonal swap, not a second installation.
+porch-enclosure-panels-vinyl = { material = { low = 1700, high = 3300 }, labour = { low = 150, high = 400 } }
 # --- millwork -------------------------------------------------------------------------------
 # THE STUDY BOOKCASE WALL's casework (W-A-SN, CATLIN_INT_2X4_BOOKCASE_12). Same shape of
 # problem as the vent mat above: the wall IS modelled, but what the BOM legitimately sees is

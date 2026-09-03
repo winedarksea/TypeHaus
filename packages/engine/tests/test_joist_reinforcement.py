@@ -228,15 +228,25 @@ def test_only_the_porch_sisters_a_deck_joist(catlin_model):
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
     """Every block on these two decks answers a named joint, and nothing else does.
 
-    ``FS-SG-DECK`` hosted sixteen sacrificial blocks under two heat-pump stands until
-    2026-09-02, when both units moved to a ground pad east of the porch
-    (``houses/catlin/notes/heat_pump_ground_pad.md``) and the stands, the blocking and the
-    eight through-deck anchors went with them. It carries FOUR now, one under each of
-    RL-SG-BALCONY's south-leg guard posts: that guard stays fascia-mounted precisely
-    because this plank is the porch roof and carries no penetrations, and a fascia bracket
-    through-bolts the rim, which then needs something behind it so it cannot roll under
-    R301.5's 200 lb at 42". **The west and east legs get none** — the joists run E-W, so
-    those legs stand over the joist TIPS and bolt into the joists themselves.
+    ``FS-SG-DECK`` carries TWENTY, and they answer two different joints.
+
+    FOUR are structural: one under each of RL-SG-BALCONY's south-leg guard posts. That guard
+    stays fascia-mounted precisely because this plank is the porch roof and carries no
+    penetrations, and a fascia bracket through-bolts the rim, which then needs something
+    behind it so it cannot roll under R301.5's 200 lb at 42". **The west and east legs get
+    none** — the joists run E-W, so those legs stand over the joist TIPS and bolt into the
+    joists themselves. (It hosted sixteen more under two heat-pump stands until 2026-09-02,
+    when both units moved to a ground pad east of the porch —
+    ``houses/catlin/notes/heat_pump_ground_pad.md``.)
+
+    SIXTEEN answer an **envelope** joint, and they are the only reinforcement on either deck
+    that does. The porch enclosure's two flank tracks run N-S at x = 9'-0"/27'-0", i.e.
+    PERPENDICULAR to these joists, so the curtain plane crosses every 16" bay and each bay is
+    an open 7 1/4" x 16" hole inside<->outside above a sealed curtain
+    (``houses/catlin/notes/porch_enclosure.md``). Eight entries — every SECOND joist line,
+    because one entry blocks the bay on EACH side of its line and authoring all eight lines
+    would put two blocks in every bay, which is a real ``structural.member_interference``
+    FAIL. The two FRONT track runs need none of this: they lie ALONG a joist line.
 
     ``FS-SG-PORCH`` carries EIGHT: a pair under each centre balcony pillar (PT-SG-BR2 on the
     back beam line, PT-SG-BF2 on the front one), and a pair under each of RL-SG-PORCH's
@@ -245,13 +255,15 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     one joist line collapsed into one. A 6x6 is better backing for a guard than a block under
     a 2x2, and the station is not missing backing — it is carrying a column.
 
-    The porch pairs are ``plies=3``, the guard pairs ``plies=1``. Blocks and plies answer
-    different limit states — rollover and cross-grain bearing — and only the pillars have the
-    second one (see ``test_only_the_porch_sisters_a_deck_joist``).
+    The porch pairs are ``plies=3``, the guard pairs ``plies=1``, and so are all sixteen
+    enclosure entries. Blocks and plies answer different limit states — rollover and
+    cross-grain bearing — and only the pillars have the second one (see
+    ``test_only_the_porch_sisters_a_deck_joist``). A stray ``plies=3`` on an enclosure entry
+    would silently sister a joist and buy its lumber; the assertion below is what catches it.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 4, len(deck_blocks)
+    assert len(deck_blocks) == 20, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
     assert len(porch_blocks) == 8, len(porch_blocks)
     assert [m for m in by_tag["FS-SG-DECK"].members

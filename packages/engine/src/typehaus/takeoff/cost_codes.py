@@ -133,6 +133,12 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("allowances", "hvac-*", CostCode("3200", "23 00 00", "mechanical")),
     ("allowances", "paint-*", CostCode("4400", "09 90 00", "walls")),
     ("allowances", "cabinet-*", CostCode("4200", "12 30 00", "furniture")),
+    # A seasonal porch enclosure's fabric panels. CSI 12 20 00 is Window Treatments (12 21 00
+    # curtains and drapes, 12 22 00 curtain hardware), which is what these are, and the NAHB
+    # account and trade match the TRACK they hang on — that bills through [placeables] at
+    # 4200/furniture. Filing the panels anywhere else would split one article across two work
+    # packages, which is how the hardware gets hung and the curtains never ordered.
+    ("allowances", "porch-enclosure-*", CostCode("4200", "12 20 00", "furniture")),
     ("allowances", "finish-floor-*", CostCode("4000", "09 60 00", "floors")),
     ("allowances", "finish-transitions-*", CostCode("4000", "09 60 00", "floors")),
     ("allowances", "finish-door-*", CostCode("2400", "08 71 00", "openings")),

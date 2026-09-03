@@ -86,7 +86,12 @@ def test_deck_rows_follow_the_joist_field(rows):
     assert {r["width_in"] for r in deck_rows} == {1.25, 1.5}
     porch_and_deck_ft = sum(r["length_ft"] for r in deck_rows)
     # Two decks of 2x8s at 16" o.c.; well past the ~180 SF the plank sheet-count sees.
-    assert 300.0 < porch_and_deck_ft < 420.0
+    # The upper bound was 420.0 and the real figure was 419.7 — a 0.3 lf pass, which is a
+    # coincidence and not a test. The porch enclosure's sixteen flank blocks (2026-09-03)
+    # added 17.3 lf and tripped it. Widened to a bound that brackets the ORDER OF MAGNITUDE,
+    # which is all this assertion was ever entitled to claim: two joist fields at 16" o.c.
+    # under ~380 SF of deck cannot be 200 feet of stick and cannot be 600.
+    assert 300.0 < porch_and_deck_ft < 500.0
 
 
 def test_untaped_model_reports_nothing(swinburne_model):
