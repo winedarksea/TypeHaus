@@ -355,7 +355,7 @@ GARAGE_STEPS = [
          outline=(pt(_STEP_X0, GARAGE_Y_SOUTH), pt(_STEP_X1, GARAGE_Y_SOUTH),
                   pt(_STEP_X1, GARAGE_Y_SOUTH + ft(_STEP_LANDING_FT)),
                   pt(_STEP_X0, GARAGE_Y_SOUTH + ft(_STEP_LANDING_FT))),
-         thickness=inch(6), top_elevation=ft(0)),
+         thickness=inch(6), top_elevation=ft(0), assembly="CATLIN_GARAGE_STEP_6"),
 ]
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------

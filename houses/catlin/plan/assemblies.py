@@ -1648,6 +1648,47 @@ SG_FROST_WING_XPS2 = Assembly(
 # standing on it. That last point is why `retaining_basis.footing_states` grades the footing
 # on the WALL's specified f'c: a wall and its footing are one pour sequence off one ticket,
 # and two mixes on one truck is not a thing that happens.
+# The sunken-garden court floor and the garage's exterior service-door landing. Both poured
+# bare until 2026-09-03 — no assembly at all, so no mix, no exposure class, no bar coating.
+#
+# The EXPOSED mix, and the F3 is earned rather than inherited: the court floor is at
+# -9'-1 7/16", open to the sky, and it collects and holds every thaw; the garage landing
+# takes salt off the drive directly.
+#
+# ** ONE LAYER EACH, AND DELIBERATELY NO BASE COURSE. ** Both of these certainly bear on
+# stone in reality, and the obvious thing is to draw the 4" open-graded base its siblings
+# carry. That would add 541 SF of `capillary-break-stone` and about $950 to the estimate —
+# a real quantity change riding in on what is meant to be a specification change, and one
+# nobody asked for. What these pours needed was somewhere to state their MIX. Whether their
+# base course should be modelled is a separate question with its own money attached, and it
+# should be answered on its own.
+# ** THE THREE INTERIOR 12" BEARING WALLS KEEP `library.FOUNDATION_WALL_12_INT`, WHICH
+# CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly
+# house-locally so it could name `CATLIN_INTERIOR_MIX` was written and then dropped: the
+# three walls' tag appears in `plan/transitions.py` condition keys
+# (`wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT` and the storey-stack rim), so
+# retagging them moves detail keys and the section-card goldens with them. Against that: the
+# walls are inside the conditioned envelope with soil on neither face, so there is no
+# chloride, no freeze-thaw, and black bar at the code-minimum mix is the right answer anyway.
+# The blast radius is real and the durability gain is nil.
+CATLIN_GARDEN_SLAB = Assembly(
+    tag="CATLIN_GARDEN_SLAB",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+    ),
+    source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
+)
+
+CATLIN_GARAGE_STEP_6 = Assembly(
+    tag="CATLIN_GARAGE_STEP_6",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+    ),
+    source="the garage service door's exterior landing (IRC R311.7.6): 6\" outdoors, salt-splashed off the drive, F3+C2 mix. Its base course is not modelled",
+)
+
 CATLIN_RETAINING_FOOTING_96 = Assembly(
     tag="CATLIN_RETAINING_FOOTING_96",
     layers=(
@@ -2323,7 +2364,7 @@ _GARDEN_FRAMED_STUD = Layer(
 # subscripting. They are the same damp-proofing and 2 x 2" of XPS, in the same order.
 _GARDEN_CURB_CORE = (
     Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
-          function=LayerFunction.STRUCTURE),
+          function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
     Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
@@ -3553,6 +3594,8 @@ ASSEMBLIES = [
     FOOTING_FPSF_20,
     CATLIN_FOOTING_20,
     CATLIN_RETAINING_FOOTING_96,
+    CATLIN_GARDEN_SLAB,
+    CATLIN_GARAGE_STEP_6,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     CATLIN_INT_2X6_BRG_RC,

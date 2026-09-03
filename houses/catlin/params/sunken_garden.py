@@ -992,7 +992,7 @@ GARDEN_DRYWELL = Drywell(
 
 # --- garden slab (basement floor of the sunken garden) ---------------------------
 GARDEN_SLAB = Slab(
-    uid="SGS501AAAA", tag="SL-SG-FLOOR",
+    uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="CATLIN_GARDEN_SLAB",
     outline=(pt(ft(_x_in_w), ft(_y_in_s)), pt(ft(_x_in_e), ft(_y_in_s)),
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.slab_thickness_in),
