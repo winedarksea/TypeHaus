@@ -114,6 +114,21 @@ def test_one_h_channel_receives_both_sheets(catlin_model, side):
     assert lo < sum(_span_x(sheet)) / 2.0 < hi
 
 
+@pytest.mark.parametrize("tag", ["TR-BW-HCH-W-1", "TR-BW-HCH-E-1",
+                                 "TR-BW-FCH-S-1", "TR-BW-FCH-N-1"])
+def test_a_roof_edge_channel_does_not_stand_proud_of_the_sheet(catlin_model, tag):
+    """A GlazingTrim's ``depth`` is its VERTICAL extent, not its grip: on a channel lying
+    along a horizontal sheet edge the grip is the horizontal ``thickness``. Authoring the
+    1-1/2" lap (and, on the H, two of them plus a web) as depth stood these extrusions up to
+    1-15/16" above the roof — a hem of aluminium standing off the glazing in the 3D view."""
+    channel = _solid(catlin_model, tag)
+    sheet = _solid(catlin_model, "GL-BW-ROOF")
+    # The sheet is modelled flat at the mean wedge height, so a channel keyed off the EAVE
+    # tops out just under it; what must never happen is the channel rising above the sheet.
+    assert channel.z1_m <= sheet.z1_m + 1e-9, "the channel caps the sheet, it does not tower"
+    assert channel.z1_m > sheet.z0_m, "...and it still laps the sheet's top face"
+
+
 def test_the_eave_u_and_the_wall_head_are_gone(catlin_model):
     """Both were replaced by the H, not merely joined by it."""
     tags = {getattr(e, "tag", None) for e in catlin_model.plan.all_elements()}

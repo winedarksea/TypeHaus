@@ -10,7 +10,7 @@ import type {
 import { formatFtIn } from "../model/geometry";
 import type { LocatedMember, MemberOwnerKind } from "../model/memberIdentity";
 import type { SelectionKind } from "../state/vocabulary";
-import { solidCategoryLabel } from "../model/solidLabels";
+import { solidCategoryLabel, solidMaterialRef } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
@@ -42,6 +42,10 @@ function DerivedNote({ source }: { source: string }) {
 
 export function SolidInspector({ solid }: { solid: Solid }) {
   const model = useStore((s) => s.model);
+  // A solid that names no material of its own is not material-less: its assembly's face
+  // layer is the sheet you are looking at (the breezeway glazing is one polycarbonate
+  // layer and nothing else), and that is what the row and the product join want.
+  const material = solidMaterialRef(solid, model?.catalog);
   return <div>
     <h3>{solidCategoryLabel(solid.category)} · {solid.tag}</h3>
     <div className="kv">
@@ -54,12 +58,12 @@ export function SolidInspector({ solid }: { solid: Solid }) {
           parts) names a material DIRECTLY instead of an assembly — the resolver sets it and
           the viewer colours from it. Raw tag, matching MemberInspector: it is the key the
           palette, the trade table and the take-off are all written against. */}
-      <span className="k">Material</span><span>{solid.material ?? "—"}</span>
+      <span className="k">Material</span><span>{material ?? "—"}</span>
       {/* Hardware IS its part number: a connector marker box is unreadable without it, and
           the number here is the one the take-off bills. Only the solids that are a purchased
           part carry one, so the row stays off everything cut from stock. */}
       {solid.product && <><span className="k">Part</span><span>{solid.product}</span></>}
-      <ProductRows product={productForMaterial(model, solid.material)} />
+      <ProductRows product={productForMaterial(model, material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
       <span className="k">Thickness</span><span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
       <span className="k">Elevation</span><span>{formatFtIn(solid.z0_m)} → {formatFtIn(solid.z1_m)}</span>
@@ -175,6 +179,7 @@ function sectionSummary(located: LocatedMember): string {
 // "select the soffit" has to ask for the solid, or the click resolves to nothing.
 const OWNER_SELECTION_KIND: Record<MemberOwnerKind, SelectionKind> = {
   wall: "wall", roof: "roof", floor: "floor", stair: "stair", soffit: "solid",
+  brace: "brace", wedge: "wedge",
 };
 
 export function MemberInspector({ located }: { located: LocatedMember }) {

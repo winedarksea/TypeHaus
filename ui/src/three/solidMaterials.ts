@@ -20,6 +20,7 @@ import type { Catalog, Solid } from "../model/types";
 import {
   materialColor, materialOpacity, statesOwnColor, type ResolvedNordicPalette,
 } from "../nordic/palette";
+import { assemblyFaceMaterial } from "../model/solidLabels";
 import type { Trade } from "../state/vocabulary";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
 import vocabulary from "../generated/vocabulary.json";
@@ -87,17 +88,13 @@ export function solidColor(
   if (statesOwnColor(solid.material, catalog?.materials)) {
     return new THREE.Color(materialColor(solid.material, palette, catalog?.materials)).getHex();
   }
-  const assembly = solid.assembly
-    ? catalog?.assemblies.find((candidate) => candidate.tag === solid.assembly)
-    : undefined;
-  const layers = assembly?.layers ?? [];
-  const layer = layers.find((candidate) => candidate.function === "structure") ?? layers[0];
-  if (layer) {
+  const face = assemblyFaceMaterial(catalog, solid.assembly);
+  if (face) {
     // Pass the catalog's materials through: without them `materialColor` never sees an
     // authored `Material.color`, so every assembly-backed solid fell to its family tone
     // (the porch composite deck's authored #8a7f70 among them).
-    return paintedFinishColor(layer.material)
-      ?? new THREE.Color(materialColor(layer.material, palette, catalog?.materials)).getHex();
+    return paintedFinishColor(face)
+      ?? new THREE.Color(materialColor(face, palette, catalog?.materials)).getHex();
   }
   return SOLID_CATEGORY_COLOR[solid.category] ?? palette.member.concrete;
 }
@@ -121,12 +118,8 @@ export function solidOpacity(
   if (statesOwnColor(solid.material, catalog?.materials)) {
     return materialOpacity(solid.material, catalog?.materials);
   }
-  const assembly = solid.assembly
-    ? catalog?.assemblies.find((candidate) => candidate.tag === solid.assembly)
-    : undefined;
-  const layers = assembly?.layers ?? [];
-  const layer = layers.find((candidate) => candidate.function === "structure") ?? layers[0];
-  return layer ? materialOpacity(layer.material, catalog?.materials) : 1;
+  const face = assemblyFaceMaterial(catalog, solid.assembly);
+  return face ? materialOpacity(face, catalog?.materials) : 1;
 }
 
 export function createSolidMaterial(

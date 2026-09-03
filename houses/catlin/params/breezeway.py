@@ -509,8 +509,8 @@ WEDGES = [
 # Glazing: three 4'x8' sheets, two standing uncut and one halved across the roof.
 # ============================================================================
 # One sheet, 4'-0" x 4'-0" — half of an 8'x4', the only cut in the bill. Flutes run E-W,
-# down-slope from the crown at x = 4'-6" to each eave, so the open (draining) flute ends land
-# at x = 2'-6" and 6'-6". The sheet bends over the crown rather than butting a second sheet
+# down-slope from the crown at x = 8'-0" to each eave, so the open (draining) flute ends land
+# at x = 6'-0" and 10'-0". The sheet bends over the crown rather than butting a second sheet
 # there, which is what retired the crown glazing bar: no joint, nothing to seal.
 ROOF_GLAZING = [
     GlazingPanel(
@@ -545,6 +545,13 @@ WALL_GLAZING = [
 # ============================================================================
 _CHANNEL_DEPTH = inch(1.5)   # how far the extrusion laps the sheet face
 _CHANNEL_THICK = inch(1.0)   # its section across the sheet
+# A GlazingTrim's ``depth`` is the run's VERTICAL extent, not its grip: the resolver spans
+# ``top_elevation - depth`` to ``top_elevation`` (resolve/accessories.py::_resolve_edge_run).
+# On a channel that lies ALONG a horizontal sheet edge the grip is horizontal — it is the
+# ``thickness`` — so authoring the 1-1/2" lap as depth stood the extrusion a good inch proud
+# of the roof. The vertical extent of such a channel is the sheet plus its two walls.
+_CHANNEL_LEG = inch(0.1875)  # extrusion wall over and under the sheet it receives
+_ROOF_EDGE_DEPTH = inch(_GLAZING_THICKNESS_IN) + _CHANNEL_LEG + _CHANNEL_LEG
 _ROOF_EAVE_TOP = _RAFTER_TOP + _GLAZING_THICKNESS_IN / 12.0  # wedge is 0 at the eave
 # The north F-channel spans from the roof panel's edge back to the garage cladding, so its
 # run sits on the midline of that reach rather than on the panel edge — 1/2", the reveal the
@@ -559,20 +566,23 @@ _FCH_N_Y = (_GLAZING_Y1 + _GARAGE_CLADDING_Y) / 2.0
 #
 # "H" is already in GlazingTrim's documented profile vocabulary and was unused; this is the
 # joint it is the word for.
-_H_LAP = inch(1.5)   # how far each slot grips the sheet in it
+_H_LAP = inch(1.5)   # how far the lower slot grips the standing sheet — vertical, up its face
 _H_WEB = inch(0.5)   # the web between the two slots
-_H_DEPTH = _H_LAP + _H_WEB + _H_LAP
+# Only the lower slot's grip is vertical here: the standing sheet enters from below, while the
+# roof sheet enters the upper slot from the side (its grip is the 2" ``thickness``). So the
+# section's height is that lap, the web, the roof sheet, and the leg capping it.
+_H_DEPTH = _H_LAP + _H_WEB + inch(_GLAZING_THICKNESS_IN) + _CHANNEL_LEG
 
 ROOF_TRIM = [
     GlazingTrim(uid="BWGT01AAAA", tag="TR-BW-HCH-W", kind=TrimKind.GLAZING_CHANNEL,
                 profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF",
                 path=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
-                top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
+                top_elevation=ft(_ROOF_EAVE_TOP) + _CHANNEL_LEG,
                 depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
     GlazingTrim(uid="BWGT02AAAA", tag="TR-BW-HCH-E", kind=TrimKind.GLAZING_CHANNEL,
                 profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF",
                 path=(pt(ft(_ROOF_X1), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y1))),
-                top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
+                top_elevation=ft(_ROOF_EAVE_TOP) + _CHANNEL_LEG,
                 depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
     # No TR-BW-BAR-CROWN: the roof is one sheet bent over the crown, so there is no joint
     # there to cap. A glazing bar with nothing between its slots is a strip of flashing.
@@ -583,12 +593,14 @@ ROOF_TRIM = [
     GlazingTrim(uid="BWGT04AAAA", tag="TR-BW-FCH-S", kind=TrimKind.GLAZING_CHANNEL,
                 profile="F", path=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)),
                                    pt(ft(_ROOF_X1), ft(_GLAZING_Y0))),
-                top_elevation=ft(_ROOF_EAVE_TOP), depth=_CHANNEL_DEPTH,
-                thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
+                top_elevation=ft(_ROOF_EAVE_TOP) + _CHANNEL_LEG,
+                depth=_ROOF_EDGE_DEPTH,
+                thickness=_CHANNEL_DEPTH, material="aluminum-extrusion"),
     GlazingTrim(uid="BWGT05AAAA", tag="TR-BW-FCH-N", kind=TrimKind.GLAZING_CHANNEL,
                 profile="F", path=(pt(ft(_ROOF_X0), ft(_FCH_N_Y)),
                                    pt(ft(_ROOF_X1), ft(_FCH_N_Y))),
-                top_elevation=ft(_ROOF_EAVE_TOP), depth=_CHANNEL_DEPTH,
+                top_elevation=ft(_ROOF_EAVE_TOP) + _CHANNEL_LEG,
+                depth=_ROOF_EDGE_DEPTH,
                 thickness=ft(_GARAGE_CLADDING_Y - _GLAZING_Y1), material="aluminum-extrusion"),
 ]
 

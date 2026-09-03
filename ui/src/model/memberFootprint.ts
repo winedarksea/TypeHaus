@@ -33,6 +33,9 @@ export const FLAT_LAID_TOLERANCE_M = 1e-4;
 // each time the solver grows a category.
 // The Python twin is plan_cross_section_m in resolve/framing/profiles.py.
 export function crossWidth(m: Member): number {
+  // An authored plan width wins: a taper's vertical extent classifies it as neither face
+  // (resolve/geometry_members.py reads it first for the same reason).
+  if (m.plan_width_m) return m.plan_width_m;
   // z0_m..z1_m is the extent at one station, not the rise of a raked member end to end: a
   // rafter climbs meters along its run while its section never changes.
   return Math.abs(m.z1_m - m.z0_m - m.width_m) <= FLAT_LAID_TOLERANCE_M ? m.depth_m : m.width_m;

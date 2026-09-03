@@ -65,6 +65,10 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "flange_thickness_m": section.flange_thickness_m,
         "web_thickness_m": section.web_thickness_m, "plies": section.plies,
         "orient": list(m.orient) if m.orient is not None else None,
+        # A taper's own plan width, when the vertical extent cannot classify it (a drainage
+        # wedge is neither flat-laid nor on edge); null leaves the viewer on the same
+        # flat-vs-on-edge rule resolve/geometry_members.py uses.
+        "plan_width_m": m.plan_width_m,
         "connection": m.connection,
         "material": m.material,
         # Explicit visibility trade override (fascia is trim *and* framing); ``None`` leaves

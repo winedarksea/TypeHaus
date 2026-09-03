@@ -11,13 +11,15 @@
 //
 // Members are *derived* geometry, like solids and floors: pickable and inspectable, never
 // directly editable. The edit lives on the wall / roof / floor / stair that generated them.
-import type { Floor, Member, Model, Roof, SoffitFraming, Stair, Wall } from "./types";
+import type { Brace, Floor, Member, Model, Roof, SoffitFraming, Stair, Wall } from "./types";
 
 // ":" cannot appear in a minted uid (base32-ish) and the resolver never puts one in a child
 // key, so this separator can never be ambiguous with the parts it joins.
 export const MEMBER_UID_SEPARATOR = "::";
 
-export type MemberOwnerKind = "wall" | "roof" | "floor" | "stair" | "soffit";
+// "brace" and "wedge" are one pool (a ResolvedBrace hosts both) but two owner kinds: the
+// Inspector says "select the wedge", not "select the brace", for a drainage shim.
+export type MemberOwnerKind = "wall" | "roof" | "floor" | "stair" | "soffit" | "brace" | "wedge";
 
 export function memberUid(ownerUid: string, memberKey: string): string {
   return `${ownerUid}${MEMBER_UID_SEPARATOR}${memberKey}`;
@@ -44,7 +46,7 @@ export interface LocatedMember {
   storey: string | null;
 }
 
-function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair | SoffitFraming)[]][] {
+function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair | SoffitFraming | Brace)[]][] {
   return [
     ["wall", model.walls ?? []],
     ["roof", model.roofs ?? []],
@@ -53,6 +55,10 @@ function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stai
     // Without this a picked soffit rung resolves to null: the uid parses, no pool owns it,
     // and the 3D Inspector shows nothing for a member the viewer just drew.
     ["soffit", model.soffits ?? []],
+    // Same omission the soffits line fixed: a brace (and a wedge — same record) hosts its own
+    // sticks, so a picked drainage shim parsed to a uid no pool owned and the Inspector went
+    // blank on an element the viewer had just drawn.
+    ["brace", model.braces ?? []],
   ];
 }
 
@@ -84,7 +90,11 @@ export function locateMember(model: Model, uid: string): LocatedMember | null {
     const member = owner.members.find((candidate) => candidate.key === parsed.memberKey)
       ?? adoptedMember(model, parsed.ownerUid, parsed.memberKey);
     if (!member) return null;
-    return { member, ownerKind, ownerUid: owner.uid, ownerTag: owner.tag, storey: owner.storey };
+    // The braces pool holds both kinds; the record itself says which.
+    const kind: MemberOwnerKind = ownerKind === "brace"
+      ? ((owner as Brace).kind ?? "brace") : ownerKind;
+    return { member, ownerKind: kind, ownerUid: owner.uid, ownerTag: owner.tag,
+             storey: owner.storey };
   }
   return null;
 }

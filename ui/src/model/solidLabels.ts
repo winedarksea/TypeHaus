@@ -1,4 +1,6 @@
-// How a resolved solid's category is spelled for a reader.
+import type { Catalog } from "./types";
+
+// How a resolved solid's category and material are spelled for a reader.
 //
 // Split out of three/solidMaterials.ts, which is about how a solid is *shaded*: this is a
 // naming table with no geometry in it, and the Inspector that needs it (DerivedInspectors) is
@@ -57,4 +59,32 @@ export function solidCategoryLabel(category: string | null | undefined): string 
   if (known) return known;
   const opened = key.replace(/_/g, " ");
   return opened.charAt(0).toUpperCase() + opened.slice(1);
+}
+
+/** The material an assembly shows on its face — its STRUCTURE layer, else its first.
+ *
+ *  The same ladder three/solidMaterials.ts climbs for colour and opacity, kept here because
+ *  the Inspector needs it as a string and importing the shading module drags three.js in.
+ */
+export function assemblyFaceMaterial(
+  catalog: Catalog | undefined, assemblyTag: string | null | undefined,
+): string | null {
+  if (!assemblyTag) return null;
+  const layers = catalog?.assemblies.find((one) => one.tag === assemblyTag)?.layers ?? [];
+  const layer = layers.find((one) => one.function === "structure") ?? layers[0];
+  return layer?.material ?? null;
+}
+
+/** The material tag to print for a solid, and to join to a product.
+ *
+ *  The trim-run family names a material outright. Everything else names an ASSEMBLY, and
+ *  the Inspector printed an em dash for all of it — a glazing panel that is nothing but its
+ *  polycarbonate sheet said "—" where the sheet belongs. One hop through the assembly's
+ *  face layer answers the question the row is asking.
+ */
+export function solidMaterialRef(
+  solid: { material?: string | null; assembly?: string | null },
+  catalog: Catalog | undefined,
+): string | null {
+  return solid.material ?? assemblyFaceMaterial(catalog, solid.assembly);
 }

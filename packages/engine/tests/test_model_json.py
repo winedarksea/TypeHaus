@@ -174,6 +174,21 @@ def test_stud_carries_orient(catlin_payload):
     assert all(m["orient"] is not None and len(m["orient"]) == 2 for m in studs)
 
 
+def test_a_tapered_member_carries_its_own_plan_width(catlin_payload):
+    """A drainage wedge's vertical extent classifies it as neither flat-laid nor on edge, so
+    the resolver states its plan width outright (``FramedMember.plan_width_m``). Without that
+    field on the wire the viewer re-derived it and drew a 3-1/2" shim as a 1-1/2" ribbon on
+    edge, and only the .glb agreed with the take-off."""
+    wedges = [m for brace in catlin_payload["braces"] for m in brace["members"]
+              if brace.get("kind") == "wedge"]
+    assert wedges
+    assert all(m["plan_width_m"] == pytest.approx(0.0889, abs=1e-6) for m in wedges)
+    studs = [m for w in catlin_payload["walls"] for m in w["members"]
+             if m["category"] == "stud"]
+    assert studs and all(m["plan_width_m"] is None for m in studs), (
+        "ordinary lumber states no override — it stays on the flat-vs-on-edge rule")
+
+
 def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     """model.json contract: every roof serializes ``bearing_z_m`` and
     ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2318 m

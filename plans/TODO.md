@@ -305,7 +305,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   the salt-splash sunken-garden walls. Note that rebar rides INSIDE the $/cy rates
   (`prices.toml` `[basis_notes]`), so a house-wide switch is a rate note plus a plan of its
   own, not an element edit. `notes/balcony_moment_columns.md` §7 has the reasoning. Fiber is
-  untouched.
+  untouched. ALSO set rebar coverage to 3" everywhere exterior where possible, and make sure that wood beams bearing on the sonotube concrete have gaskets or standoffs if they need to.
 - **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
   by the two piers above, and answered the same day.) The alternative — closing both items in
   `engineering.toml` with the engineer's cage schedule and leaving the model silent — works

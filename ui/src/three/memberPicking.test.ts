@@ -203,6 +203,19 @@ function checkLocateMemberAgainstTheModel() {
     "A member key the rebuild dropped resolves to null, not to a neighbour");
   assert(locateMember(model, "W9::stud-003") === null, "An unknown owner resolves to null");
   assert(locateMember(model, "W1") === null, "A plain element uid is not a member");
+
+  // A brace (and a wedge, the same record) hosts its own sticks: without the braces pool a
+  // picked drainage shim parsed to a uid nothing owned and the Inspector went blank.
+  const shim = member({ key: "wedge", category: "blocking" });
+  const braced = {
+    walls: [], roofs: [], floors: [], stairs: [],
+    braces: [{ uid: "BW1", tag: "WG-BW-R1E", storey: "main", kind: "wedge", members: [shim] },
+             { uid: "KB1", tag: "KB-P-1", storey: "main", members: [member({ key: "brace" })] }],
+  } as unknown as Model;
+  assert(locateMember(braced, "BW1::wedge")?.ownerKind === "wedge",
+    "A picked wedge resolves to its wedge, not to nothing");
+  assert(locateMember(braced, "KB1::brace")?.ownerKind === "brace",
+    "A knee brace with no kind on the record still resolves as a brace");
 }
 
 export function runMemberPickingTests() {

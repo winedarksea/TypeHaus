@@ -325,6 +325,26 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              finish="polycarbonate",
              source="SABIC LEXAN THERMOCLEAR multiwall declaration EN 16153:2013+A1:2015 "
                     "https://ff.sabic.eu/uploads/resources/DoP%20LT2UV329X38%20-%202023.pdf"),
+    # Clear SOLID polycarbonate sheet — one monolithic ply, not a walled extrusion. A
+    # windblock wants transparency, not the multiwall's insulating flutes, and the two are
+    # separate materials rather than one with a thickness: the multiwall's R and permeance
+    # are *product* figures for a 16mm five-wall section and say nothing about solid stock.
+    # `r_per_inch` from k ~= 0.2 W/(m.K): 1"/0.2 => 0.72 h.ft2.F/Btu per inch, so 1/4" is
+    # R-0.18 — a windbreak, and the energy model must not read it as glazing insulation.
+    # `perm_rating` is a PROXY: solid PC datasheets publish WVTR around 0.3 perms at 1/8",
+    # which is ~0.04 perm-in. Class I either way, and there is no conditioned assembly in
+    # this house that depends on the figure.
+    # Colour is authored for the same reason the multiwall's is (the family inference would
+    # paint anything matching "poly" as rigid foam), and the alpha is LIGHTER than the
+    # multiwall's: clear stock reads through, opal five-wall does not.
+    Material(tag="polycarbonate-solid", name="Solid polycarbonate glazing (clear sheet)",
+             r_per_inch=0.72, density=1200.0, perm_rating=0.04,
+             hatch="glass", color="#dceff4"
+                                  "88",
+             finish="polycarbonate",
+             source="clear monolithic polycarbonate sheet (Lexan/Makrolon class), "
+                    "k~0.2 W/(m.K), density 1.20 g/cm3; WVTR ~0.3 perms at 1/8\" is a "
+                    "datasheet-class proxy, not a product declaration"),
     # Mill-finish extruded aluminium: U/H/F channels, glazing bars, panel fasteners' washers.
     # "alum" matches no needle in the family inference at all, so this colour is authored
     # for the same reason the polycarbonate's is.

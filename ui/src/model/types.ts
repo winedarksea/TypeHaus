@@ -117,6 +117,10 @@ export interface Member {
   // Plan-frame axis a vertical member (p0 == p1) is oriented along, e.g. a stud's wall
   // direction — null for horizontal/sloped members, which carry their own axis in p0->p1.
   orient: Vec2 | null;
+  // The plan width the resolver states outright, for a member whose vertical extent cannot
+  // classify it flat-vs-on-edge — a drainage wedge tapers, so its 1" crown matches neither
+  // face. Null keeps every ordinary stick on the crossWidth rule.
+  plan_width_m?: number | null;
   // Free-form connection annotation (e.g. "ridge:adjustable-slope-hanger") for the 2D
   // detail pipeline; not structured, not geometry.
   connection: string | null;
