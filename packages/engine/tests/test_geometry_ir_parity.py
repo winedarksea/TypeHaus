@@ -150,7 +150,10 @@ def test_box_width_matches_the_parsed_section_for_level_members(model) -> None:
         nx, ny = -(by - ay) / run, (bx - ax) / run
         across = [c[0] * nx + c[1] * ny for c in box.corners_bottom]
         section = cross_section(member.profile)
-        width = max(plan_cross_section_m(section, member.z1_m - member.z0_m),
+        # A tapered member (a drainage wedge) authors its own plan width, because its own
+        # vertical extent matches neither section dimension and so cannot classify it.
+        width = max(member.plan_width_m
+                    or plan_cross_section_m(section, member.z1_m - member.z0_m),
                     MINIMUM_EXTENT_M)
         assert max(across) - min(across) == pytest.approx(width, abs=TOL), member.child_key
 
