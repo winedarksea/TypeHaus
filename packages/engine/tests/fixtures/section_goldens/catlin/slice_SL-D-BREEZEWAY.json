@@ -788,6 +788,62 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          72.00000000000001,
+          88.25000000000001
+        ],
+        [
+          90.0,
+          88.25000000000001
+        ],
+        [
+          90.0,
+          89.00098425196852
+        ],
+        [
+          72.00000000000001,
+          88.25393700787403
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWWGW1AAAA",
+      "tag": "wedge"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          72.00000000000001,
+          88.25000000000001
+        ],
+        [
+          90.0,
+          88.25000000000001
+        ],
+        [
+          90.0,
+          89.00098425196852
+        ],
+        [
+          72.00000000000001,
+          88.25393700787403
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": "BWWGW1AAAA",
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "text",
       "anchor": [
         18.0,

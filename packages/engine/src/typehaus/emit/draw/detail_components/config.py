@@ -406,9 +406,6 @@ class BreezewayGlazingConfig:
 
     Building facts the model does not carry a field for:
 
-    * ``wedge_rise_in`` / ``wedge_run_in`` — the tapered sleeper on every rafter that crowns
-      the roof to each eave. A ``Beam`` is a prism, so the wedge cannot be a member; it is
-      the reason the roof drains at all, so it has to be *drawn*.
     * ``weep_pitch_in`` — how far apart the bottom U-channel is drilled. Multiwall flutes
       hold water at their low end unless the channel is vented; the spacing is a shop
       instruction, invisible in any geometry.
@@ -422,11 +419,9 @@ class BreezewayGlazingConfig:
     * ``fastener_*`` — the gasketed stainless screw drawn as head + shank + washer.
     """
 
-    #: Building fact: drainage wedge, 1" rise over the roof's 2'-0" half-span (~1:24). The
-    #: roof is a single 4'x4' sheet bent over the crown, not two flat sheets meeting at a
-    #: bar, so the rise has to stay inside 16mm multiwall's cold-bend range.
-    wedge_rise_in: float = 1.0
-    wedge_run_in: float = 24.0
+    #: The drainage wedge is no longer here. It is a ``Wedge`` element now (one raked
+    #: ``FramedMember`` each), so it is ordered, cut, counted and *cut in section* like any
+    #: other stick of lumber instead of being drawn from a constant.
     #: Building fact: weep holes at 24" o.c. through the low U-channel.
     weep_pitch_in: float = 24.0
     weep_diameter_in: float = 0.25

@@ -361,7 +361,10 @@
 #     lap screws were never even billed. Still above a 1x4 batten: the stick is heavier and
 #     the screw is 8" — but there is only ONE of them per crossing and only one pass, where
 #     the two-tier wall was two sticks, two screw passes and two liftings of the same board.
-"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 2774 LF
+# +16 LF ordered 2026-09-02: the breezeway's six drainage wedges (WG-BW-R*), tapered rips
+# off this same stock. Same rate — a rip is a saw cut, and the labour rate here is a
+# per-foot install rate, not a fabrication one.
+"2x4:kdat" = { material = { low = 1.3, high = 1.9 }, labour = { low = 0.7, high = 1.3 } }  # 2790 LF
 # RETIRED 2026-08-26 with the catlin truss. This was the DOUBLED head/sill blocking over the
 # wide openings (60" French/slider) and the two-ply jamb fillers of the Swinburne truss.
 # Neither exists on a girt wall: the head course is blocked back to the cripples at every

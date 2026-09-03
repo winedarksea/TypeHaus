@@ -877,7 +877,10 @@ PORCH_DECK_COMPOSITE = Assembly(
         Layer(name="composite-deck", material_ref="composite-deck", thickness=inch(1.0),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house porch floor — composite decking on PT 2x8 joists",
+    # Laid with a 3/16" gap between boards: the gaps ARE the drainage path, which is why no
+    # deck on this assembly is pitched. Installation instruction, not a modelled fact —
+    # there is no gap field and one would buy nothing.
+    source="catlin-house porch floor — composite decking on PT 2x8 joists, gapped 3/16\"",
 )
 
 # --- breezeway enclosure -------------------------------------------------------

@@ -15,7 +15,7 @@ from collections.abc import Sequence
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
-from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
+from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing, Wedge
 from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
@@ -98,6 +98,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_connector(model, el, storey.tag)
             elif isinstance(el, KneeBrace):
                 _resolve_knee_brace(model, el, storey.tag)
+            elif isinstance(el, Wedge):
+                _resolve_wedge(model, el, storey.tag)
             elif isinstance(el, Railing):
                 if (el.type_ref is not None
                         and not any(product.tag == el.type_ref
@@ -519,6 +521,40 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
             outline=rect_between(near, far, -band_half, band_half),
             z0_m=band_top - thickness_z, z1_m=band_top, product=el.connector,
         ))
+
+
+def _resolve_wedge(model: ResolvedModel, el: Wedge, storey: str) -> None:
+    """A tapered rip: one raked ``FramedMember`` that feathers to nothing.
+
+    ``member_box`` already builds the hexahedron this needs — the piece is full ``rise`` deep
+    at ``position`` and zero deep ``run`` away, which is the ``z1_end_m == z0_end_m`` case its
+    docstring names ("a tapered band that grows from heel to ridge"). The feathered end
+    collapses to ``MINIMUM_EXTENT_M`` there rather than to a degenerate face.
+
+    The member hosts itself on a :class:`ResolvedBrace`, the record for framing that belongs
+    to no wall, floor, roof or stair — ``kind="wedge"`` so nothing labels it a knee brace.
+    ``plan_width_m`` is authored because a taper's vertical extent cannot classify it: see
+    ``FramedMember.plan_width_m``.
+    """
+    cx, cy = el.position.xy_m
+    ux, uy = (el.direction, 0.0) if el.axis == "x" else (0.0, el.direction)
+    run = el.run.meters
+    p0 = (cx, cy)
+    p1 = (cx + ux * run, cy + uy * run)
+    base = el.base_elevation.meters
+    model.braces.append(ResolvedBrace(
+        uid=el.uid or f"{el.tag}-wedge", tag=el.tag, storey=storey, kind="wedge",
+        members=(FramedMember(
+            parent_uid=el.uid or el.tag, child_key="wedge", category="blocking",
+            profile=el.member, p0=p0, p1=p1,
+            z0_m=base, z1_m=base + el.rise.meters,
+            z0_end_m=base, z1_end_m=base,
+            length_m=run,
+            # Ripped from stock laid flat, so the wide face is what the plan sees.
+            plan_width_m=cross_section(el.member).depth_m,
+            material=assembly_structure_material(model.plan, el.assembly),
+        ),),
+    ))
 
 
 def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:

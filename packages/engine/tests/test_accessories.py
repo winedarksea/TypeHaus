@@ -524,7 +524,11 @@ def test_knee_brace_member_carries_its_paint_material(catlin_model) -> None:
     the authored white rather than the bare "brace" category lumber."""
     from typehaus.emit.gltf.palette import _hex_rgba, _material_finish_color
 
+    # ``model.braces`` hosts wedges too (a drainage wedge is BEAM_KDAT, not paint), so this
+    # is scoped to the knee braces it is about.
     for brace in catlin_model.braces:
+        if brace.kind != "brace":
+            continue
         assert brace.members[0].material == "post-paint-white", brace.tag
     assert (_material_finish_color("post-paint-white", "brace")
             == _hex_rgba("#f4f2ee"))

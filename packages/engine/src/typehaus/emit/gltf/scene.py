@@ -18,7 +18,7 @@ from typehaus.emit.trades import TRADES
 # an explicit set so a typo raises here instead of silently shipping an unselectable node.
 _SELECTION_KINDS = frozenset({
     "wall", "opening", "room", "solid", "footing_bedding", "floor", "roof", "stair",
-    "canvas_object", "brace", "paneling",
+    "canvas_object", "brace", "wedge", "paneling",
 })
 
 

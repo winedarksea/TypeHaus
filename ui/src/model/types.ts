@@ -1279,10 +1279,13 @@ export interface Floor {
 
 // A diagonal brace hosts its own member the way a floor or roof hosts its sticks: it belongs
 // to no deck or wall, so it carries the storey and the uid that picking and highlighting key on.
+// A tapered `Wedge` is the second tenant of the same record — `kind` is what tells them apart,
+// so the Inspector does not call a drainage shim a knee brace.
 export interface Brace {
   uid: string;
   tag: string;
   storey: string;
+  kind?: "brace" | "wedge";
   provenance: Provenance | null;
   members: Member[];
 }

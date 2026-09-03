@@ -545,7 +545,8 @@ export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>,
   materials?: readonly MaterialAppearance[]) {
-  buildFramedHost(parent, brace, "brace", center, mode, palette, picks, byUid, materials);
+  buildFramedHost(parent, brace, brace.kind === "wedge" ? "wedge" : "brace",
+    center, mode, palette, picks, byUid, materials);
 }
 
 export function buildSoffitFraming(parent: THREE.Group, soffit: SoffitFraming,

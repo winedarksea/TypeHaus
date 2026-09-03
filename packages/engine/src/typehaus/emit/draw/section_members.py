@@ -137,7 +137,12 @@ def _emit_member_profile(b, profile, crop, uid, tag, member_profile, pattern,
                          material) -> None:
     """One cut face of one member: its outline, its hatch and its flange datums."""
     band = profile_band(profile)
-    if band is not None:
+    # ``max(top_left, top_right)`` squares a raked top off into a rectangle. That is harmless
+    # for a member cut square to its run (the two tops are equal) and destroys the drawing of
+    # one cut ALONG its rake — a drainage wedge sliced lengthwise came out as a 1" bar of
+    # constant depth instead of the taper it is. So the rectangle path is for genuinely flat
+    # tops only; anything raked draws as the polygon its cut face actually is.
+    if band is not None and abs(band[3] - band[4]) <= 1e-9:
         u0, u1, z0, top_left, top_right = band
         rect = clip_rect(u0, u1, z0, max(top_left, top_right), crop)
         if rect is None:
@@ -203,6 +208,10 @@ def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
     """
     if walls_and_floors:
         emit_framing_cuts(b, model, model.walls, plane, crop)
+        # Braces and wedges host themselves; their sticks are real members and are cut like
+        # any other. A drainage wedge used to be *synthesised* by the breezeway detail
+        # vocabulary because nothing modelled it — now it is modelled, so it is cut.
+        emit_framing_cuts(b, model, model.braces, plane, crop)
     emit_framing_cuts(b, model, model.roofs, plane, crop,
                       representative_roles=("rafter",))
 

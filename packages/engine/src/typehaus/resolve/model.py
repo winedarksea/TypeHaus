@@ -195,6 +195,14 @@ class FramedMember:
     # because it does not have two ends in any meaningful sense. Catlin's 36' ridge is the
     # case — it bears on W-A-C1/C1B/C2 end to end.
     continuously_supported: bool = False
+    # The member's plan width, when its own vertical extent cannot say which way it was laid.
+    # ``plan_cross_section_m`` classifies flat-vs-on-edge from that extent, and a **tapered**
+    # rip is neither: a wedge 1" deep at its crown matches neither a 2x4's 1.5" width nor its
+    # 3.5" depth, so it would draw as a 1.5" ribbon on edge. This is the same class of escape
+    # hatch as ``plan_outline`` / ``orient`` / ``material`` — an authored fact the derivation
+    # cannot reach. ``None`` keeps the derived classification, which is right for every
+    # prismatic member.
+    plan_width_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -565,12 +573,21 @@ class ResolvedBrace:
     because every consumer needs a storey to file them under and one owning uid to make
     them pickable. A brace belongs to none of those, so it hosts itself rather than
     borrowing a floor whose ``members`` bounding box other consumers read as deck extent.
+
+    A :class:`~typehaus.model.structure.Wedge` is the second tenant, and for the same reason:
+    a tapered shim on a rafter belongs to no wall, floor, roof or stair either. ``kind``
+    keeps the two apart for every consumer that labels them.
     """
 
     uid: str
     tag: str
     storey: str
     members: tuple[FramedMember, ...]
+    #: What this record actually is — ``"brace"`` or ``"wedge"``. The record and
+    #: ``ResolvedModel.braces`` keep the name ``brace`` (acknowledged debt: the second tenant
+    #: arrived after the name did), so this is what an emitter and the 3D Inspector label the
+    #: thing by. Without it six drainage shims read as knee braces.
+    kind: str = "brace"
 
 
 @dataclass(frozen=True)

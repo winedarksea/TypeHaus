@@ -157,6 +157,7 @@ from typehaus.model.structure import (
     Post,
     Railing,
     SolarPanel,
+    Wedge,
 )
 from typehaus.model.trim import (
     Downspout,
@@ -240,7 +241,7 @@ __all__ = [
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "Pad", "FootingBedding", "DrainTile", "Post", "Beam",
     "FrenchDrain", "Drywell",
-    "Dowel", "Connector", "KneeBrace", "Railing", "Fascia", "Gutter", "Flashing",
+    "Dowel", "Connector", "KneeBrace", "Wedge", "Railing", "Fascia", "Gutter", "Flashing",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
     "Downspout",
     "SolarPanel",

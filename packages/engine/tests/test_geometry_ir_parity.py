@@ -28,7 +28,11 @@ TOL = 1e-6
 
 def _all_members(model) -> list:
     members = []
-    for owner in (*model.walls, *model.roofs, *model.floors, *getattr(model, "stairs", ())):
+    for owner in (*model.walls, *model.roofs, *model.floors, *getattr(model, "stairs", ()),
+                  # Braces (and wedges, the same record) host themselves and reach the IR the
+                  # same way; before they did, a knee brace's diagonal was in the model and in
+                  # neither the IR nor any section.
+                  *getattr(model, "braces", ())):
         members.extend(getattr(owner, "members", ()))
     return members
 

@@ -17,9 +17,9 @@ That reading falls straight out of the sheet:
   8'-0" tall, from the floor-beam soffit (-7 1/4") to the roof sheet's underside
   (+7'-4 3/4"). Nothing of the framing shows below it and nothing of the elevation is open
   above it.
-* The E-W extent is 4'-0" glazing line to glazing line, centred on x = 4'-6" — midway
-  between the house entry (x = 4'-0") and the garage service door (x = 5'-0") — so the
-  glazing runs x = 2'-6" to 6'-6".
+* The E-W extent is 4'-0" glazing line to glazing line, centred on x = 8'-0" — the shared
+  centre of the house entry and the garage service door, which are concentric — so the
+  glazing runs x = 6'-0" to 10'-0".
 * The roof is **one** 4'-0" x 4'-0" sheet: half of an 8'x4', cut once.
 
 The bill is therefore three sheets for the enclosure itself, and only one cut among them:
@@ -34,7 +34,7 @@ in its lower slot, the roof sheet in its upper — replacing the eave U and the 
 * The roof does not oversail the glazing line as a drip edge; it dies *in* the shared
   channel, so the sill U-channel's weep holes are the assembly's only drainage path.
 * **Headroom is now honest rather than generous.** Clear under the rafters is ~7'-3 1/4",
-  but the roof beams run N-S at x = 2'-8 3/4" / 6'-3 1/4" and their soffit is at +6'-3 1/2" —
+  but the roof beams run N-S at x = 6'-2 3/4" / 9'-9 1/4" and their soffit is at +6'-3 1/2" —
   *below* a 6'-8" door head. Those two beams sit on the glazing lines at the very edges of
   the walk-line, which runs door to door (N-S) up the middle of the 4'-0" width, so a person
   passes between them and not under them. Anyone reaching for the west or east glazing ducks.
@@ -49,7 +49,7 @@ Framing directions (the brief's "opposite rotation"):
      |===================|  N-S floor       |===================|  N-S roof beams
      |-------------------|  beams on        |-------------------|  on the post tops
      |-------------------|  the post        |-------------------|  E-W rafters
-     |===================|  lines           |===================|  crown at x = 4'-6"
+     |===================|  lines           |===================|  crown at x = 8'-0"
      house      E-W joists @ 16"            house    (wedges on every rafter)
                 deck boards N-S
 
@@ -80,11 +80,12 @@ Three places this deviates from the brief or from the plan it was built to, each
    deep, which is why the beams carry an explicit ``top_elevation``: that is the authored
    declaration ``structural.member_interference`` reads to tell this joint from the
    elevation bug it otherwise looks exactly like.
-3. **The 1" fall toward the garage lives in the wedges, not in shorter garage-side posts.**
-   A ``Beam`` is a prism, so a sloped N-S roof beam cannot be expressed; sinking the north
-   posts 1" would just leave the beam floating over them. The wedges that crown the roof
-   E-W are already a sloping element on every rafter, so they carry the N-S fall too — one
-   sloping part instead of a slope the structure cannot hold.
+3. **The wedges carry the E-W crown, and nothing else. There is no N-S fall in this roof.**
+   The 1" house-to-garage slope this module used to carry was never a roof question: it was
+   *walkway* drainage, and the walkway is a composite deck. A composite plank drains through
+   the gaps between boards, so that is where it drains (see ``PORCH_DECK_COMPOSITE`` and
+   ``DECK`` below), and the roof is left doing the one job a roof does — shedding east and
+   west off a crown. The wedges are real framing now (``WEDGES``), not a drawing.
 
 The 22" step at the garage door is resolved elsewhere, not here: ``D-G-SERVICE``
 now carries the same negative ``sill_height`` ``D-G-OVERHEAD`` always did, so it opens off
@@ -108,6 +109,7 @@ from typehaus import (
     Pad,
     Post,
     TrimKind,
+    Wedge,
     ft,
     inch,
     pt,
@@ -158,8 +160,8 @@ _REVEAL_FT = _CLEAR_GAP_FT - _PANEL_FT  # 0.04167' = 1/2"
 # N-S: post outer faces snug to the house cladding and the garage cladding — the
 # most-proud face at each end is what a post has to clear.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
-_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.7708'
-_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.3542'
+_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.8333'
+_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.4167'
 
 # The glazing runs from the house cladding north and stops one panel later — so the reveal
 # lands at the garage end rather than at the house, where the door is. The sheet's N-S
@@ -175,12 +177,12 @@ _GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 # stood 3'-6" off its own door with nothing catching the drift until
 # `code.R311_3_exterior_landing` reported it.
 _GLAZING_CENTER_X = 8.0
-_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 5.6667'
-_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 9.6667'
+_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 6.0'
+_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 10.0'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the
 # 4'-0" is the glazed dimension and not a post-centre dimension.
-_POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 2.7292' — west post centre
-_POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 6.2708' — east post centre
+_POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 6.2292' — west post centre
+_POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 9.7708' — east post centre
 # The roof glazing runs to the same E/W lines as the standing sheets, so the two meet in one
 # channel — see the module docstring for the drainage consequence.
 _ROOF_X0, _ROOF_X1 = _GLAZING_X0, _GLAZING_X1
@@ -228,18 +230,19 @@ _GLAZING_THICKNESS_IN = 0.63
 # lets one channel capture both.
 _ROOF_GLAZING_UNDER = _PIER_TOP + _WALL_SHEET_FT  # 7.3958' = +7'-4 3/4"
 
-# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 4'-6". One
+# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 8'-0". One
 # 1" rise over a 2'-0" half-span (~1:24) — shallow, but the roof is now a single bent sheet
 # rather than two flat ones meeting at a crown bar, and 1" over 2'-0" is well inside 16mm
 # multiwall's cold-bend radius. The glazing plane is authored at the *mean* wedge height,
-# a GlazingPanel being a flat sheet.
+# a GlazingPanel being a flat sheet — which puts its flat underside 1/2" below the crown.
 _WEDGE_RISE_IN = 1.0
+_WEDGE_RUN_FT = 2.0  # the half-span, crown to eave; a wedge is one rip per half
 _ROOF_GLAZING_TOP = _ROOF_GLAZING_UNDER + _GLAZING_THICKNESS_IN / 12.0
 _RAFTER_TOP = _ROOF_GLAZING_UNDER - (_WEDGE_RISE_IN / 2.0) / 12.0  # 7.3542'
 _ROOF_BEAM_TOP = _RAFTER_TOP - _RAFTER_DEPTH_FT  # 6.8958' = +6'-10 3/4"
 _POST_TOP = _ROOF_BEAM_TOP - _JOIST_DEPTH_FT  # 6.2917' = +6'-3 1/2", the roof-beam soffit
 # Clear under the rafters is ~7'-3 1/4"; under the two N-S roof beams it is +6'-3 1/2", below
-# a 6'-8" door head. They run at x = 2'-8 3/4"/6'-3 1/4", at the walk-line edges — see the
+# a 6'-8" door head. They run at x = 6'-2 3/4"/9'-9 1/4", at the walk-line edges — see the
 # module docstring. The garage's south fascia underside is at +9'-11.4", so clearance is
 # ~2'-6" and not a binding constraint.
 
@@ -400,6 +403,25 @@ RAFTERS = [
     for i in range(1, len(_RAFTER_Y) + 1)
 ]
 
+# A back-to-back pair of tapered rips on every rafter: 1" proud at the crown (x = 8'-0"),
+# feathered to nothing at each eave 2'-0" away. Six pieces, ripped from 2x4 KDAT laid flat,
+# so each one shows its 3 1/2" face in plan — which is why the member carries an explicit
+# plan width (a taper's own vertical extent cannot say which way it was laid).
+#
+# These used to be a drawing and a derivation input and nothing else: `_RAFTER_TOP` was set
+# half a wedge below the glazing, and `emit/draw/detail_components` drew a triangle from a
+# constant. Nothing was ordered or cut. `_RAFTER_TOP` still derives exactly as it did, so
+# **no elevation moves** — the six pieces are simply real now.
+WEDGES = [
+    Wedge(uid=f"BWWG{side}{i}AAAA", tag=f"WG-BW-R{i}{side}",
+          position=pt(ft(_GLAZING_CENTER_X), ft(y)), base_elevation=ft(_RAFTER_TOP),
+          run=ft(_WEDGE_RUN_FT), rise=inch(_WEDGE_RISE_IN),
+          axis="x", direction=direction, member="2x4:kdat", assembly="BEAM_KDAT",
+          bears_on=(f"BM-BW-R{i}",))
+    for i, y in enumerate(_RAFTER_Y, start=1)
+    for side, direction in (("W", -1), ("E", 1))
+]
+
 # ============================================================================
 # Glazing: three 4'x8' sheets, two standing uncut and one halved across the roof.
 # ============================================================================
@@ -539,5 +561,5 @@ CONNECTORS = [
 ]
 
 MAIN_ELEMENTS = [*NODES, *PADS, *PIERS, *POSTS, *FLOOR_BEAMS, FLOOR, DECK,
-                 *ROOF_BEAMS, *RAFTERS, *ROOF_GLAZING, *WALL_GLAZING,
+                 *ROOF_BEAMS, *RAFTERS, *WEDGES, *ROOF_GLAZING, *WALL_GLAZING,
                  *ROOF_TRIM, *WALL_TRIM, *CONNECTORS]

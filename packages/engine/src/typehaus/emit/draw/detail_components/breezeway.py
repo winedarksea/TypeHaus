@@ -4,8 +4,6 @@ The breezeway's structure (posts, beams, rafters, joists, decking) and its sheet
 extrusions are all real resolved elements, so the section cuts them without help. What it
 cannot cut is everything that makes the enclosure *work*:
 
-* the tapered **drainage wedge** on every rafter — a ``Beam`` is a prism, so the crown that
-  sheds water off this roof cannot be a member;
 * the **weep holes** drilled through the bottom U-channel, without which the flutes hold the
   water the channel exists to release;
 * the **glazing bar** and **F-channel** sections, drawn as profiles rather than as the flat
@@ -65,34 +63,6 @@ def _cut_solids(model, category: str, direction: str, station: float, crop):
             continue
         out.append((solid, u0 / M_PER_IN, u1 / M_PER_IN, z0 / M_PER_IN, z1 / M_PER_IN))
     return out
-
-
-def drainage_wedges(panels, rafter_top_in: float) -> list[IRNode]:
-    """The tapered sleepers that crown the roof from each eave to the ridge bar.
-
-    Zero at each eave, ``wedge_rise_in`` at the crown. Where the roof is two panels the crown
-    is the edge they share; where it is a single bent sheet — which is what the 4'-0" roof is
-    now, half of an 8'x4' — the crown is that sheet's own midpoint and it gets one wedge per
-    half. Either way the apex is read off the panels rather than hand-picked, so the wedge
-    follows a geometry edit.
-    """
-    if not panels:
-        return []
-    spans = sorted((u0, u1) for _solid, u0, u1, _z0, _z1 in panels)
-    if len(spans) == 1:
-        u0, u1 = spans[0]
-        crown = (u0 + u1) / 2.0
-        spans = [(u0, crown), (crown, u1)]
-    else:
-        crown = (spans[0][1] + spans[1][0]) / 2.0
-    nodes: list[IRNode] = []
-    for index, (u0, u1) in enumerate(spans):
-        eave = u0 if abs(u0 - crown) > abs(u1 - crown) else u1
-        points = ((eave, rafter_top_in),
-                  (crown, rafter_top_in),
-                  (crown, rafter_top_in + CFG.wedge_rise_in))
-        nodes += closed_region(points, f"breezeway-drainage-wedge-{index}", "spf", "lumber")
-    return nodes
 
 
 def weeping_u_channel(u_center: float, z_top: float, crop_in) -> list[IRNode]:
@@ -213,6 +183,20 @@ def breather_tape(joists, crop_in) -> list[IRNode]:
     return nodes
 
 
+def _wedge_rise_in(model, direction: str, station: float) -> float:
+    """The crown depth of the tapered wedges the cut plane crosses, in inches (0 if none)."""
+    rise = 0.0
+    for brace in getattr(model, "braces", ()):
+        if getattr(brace, "kind", "brace") != "wedge":
+            continue
+        for member in brace.members:
+            perp = ([member.p0[1], member.p1[1]] if direction == "x"
+                    else [member.p0[0], member.p1[0]])
+            if min(perp) - 0.05 <= station <= max(perp) + 0.05:
+                rise = max(rise, (member.z1_m - member.z0_m) / M_PER_IN)
+    return rise
+
+
 def breezeway_components(model, direction, station, crop) -> list[IRNode]:
     """The whole vocabulary, derived from what the cut actually crosses."""
     roof_panels = [item for item in _cut_solids(model, "glazing", direction, station, crop)
@@ -223,18 +207,21 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
                (crop[1][0] / M_PER_IN, crop[1][1] / M_PER_IN))
 
     nodes: list[IRNode] = []
-    # The rafters the wedges sit on: the beam solids directly under the glazing.
+    # No drainage wedge here any more. It used to be synthesised from BREEZEWAY_GLAZING
+    # because a ``Beam`` is a prism and nothing in the model could hold a taper. A ``Wedge``
+    # can, so the six shims are resolved members now and ``_emit_member_cuts`` cuts them like
+    # every other stick — drawing them here as well would draw each one twice.
     panel_underside = min(z0 for _s, _u0, _u1, z0, _z1 in roof_panels)
-    beams = _cut_solids(model, "beam", direction, station, crop)
-    rafter_tops = [z1 for _s, _u0, _u1, _z0, z1 in beams if z1 <= panel_underside + 1e-6]
-    if rafter_tops:
-        nodes += drainage_wedges(roof_panels, max(rafter_tops))
 
     spans = sorted((u0, u1) for _s, u0, u1, _z0, _z1 in roof_panels)
     panel_top = max(z1 for _s, _u0, _u1, _z0, z1 in roof_panels)
     if len(spans) >= 2:
         crown = (spans[0][1] + spans[1][0]) / 2.0
-        nodes += crown_glazing_bar(crown, panel_top + CFG.wedge_rise_in, crop_in)
+        # Two flat sheets meeting at a bar are drawn at their own eave height, so the bar
+        # rides the crown a wedge above them. That rise is the model's now, read off the
+        # wedges this cut actually crosses rather than repeated as a drawing constant.
+        nodes += crown_glazing_bar(crown, panel_top + _wedge_rise_in(model, direction, station),
+                                   crop_in)
     # The two roof edges land on the standing sheets' own line, in a shared H channel.
     for u_edge, roof_sign in ((spans[0][0], 1.0), (spans[-1][1], -1.0)):
         nodes += shared_h_channel(u_edge, panel_underside, roof_sign, crop_in)

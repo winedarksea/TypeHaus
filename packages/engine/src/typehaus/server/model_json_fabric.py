@@ -244,6 +244,8 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
         ],
         "braces": [
             {"uid": brace.uid, "tag": brace.tag, "storey": brace.storey,
+             # A ResolvedBrace hosts wedges too; the viewer selects and labels by this.
+             "kind": brace.kind,
              "provenance": _provenance(provenance, brace.tag),
              "members": [_member_json(member) for member in brace.members]}
             for brace in sorted(model.braces, key=lambda item: item.uid)

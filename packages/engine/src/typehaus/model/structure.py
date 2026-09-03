@@ -417,6 +417,36 @@ class KneeBrace(Element):
 
 
 @register_element
+class Wedge(Element):
+    """A tapered framing shim: a rip that grows from a feather to a crown (→ IfcMember).
+
+    The breezeway's drainage wedges are the case this exists for. A ``Beam`` is a prism, so
+    a member whose depth changes along its run cannot be one — but ``FramedMember`` already
+    carries ``z0_end_m``/``z1_end_m``, and ``member_box`` already builds the raked
+    hexahedron a tapered band needs. So the wedge is authored here, resolves to one raked
+    stick of lumber, and is ordered, cut and counted like any other piece of wood.
+
+    Geometry is the triangle a carpenter rips: the piece starts ``run`` long at
+    ``position`` — the **thick** end, ``rise`` deep — and feathers to nothing at the far end
+    along ``axis``/``direction``. A pair back to back on one member therefore makes a crown,
+    which is exactly how a flat roof is given its fall.
+
+    ``bears_on`` names the members the wedge is nailed to, for the same reason
+    ``Beam.bearing_refs`` does: the take-off and the details need to know what carries it.
+    """
+
+    position: Point2D  # the thick (crown) end, in plan
+    base_elevation: Length  # underside of the wedge, project-frame absolute
+    run: Length  # horizontal run from the crown to the feathered end
+    rise: Length  # depth at the crown; zero at the far end
+    axis: str = "x"  # "x" | "y": the plan direction the taper runs
+    direction: int = 1  # +1 / -1 sense along ``axis``
+    member: str = "2x4"  # the stock the taper is ripped from
+    bears_on: tuple[str, ...] = ()  # member tags the wedge is fastened to
+    assembly: str | None = None  # optional finish assembly, same contract as Post.assembly
+
+
+@register_element
 class Railing(Element):
     """A first-class guard rail framed from posts + rails along a plan path (→ IfcRailing).
 
@@ -560,6 +590,7 @@ for _name, _obj in (
     ("Dowel", Dowel),
     ("Connector", Connector),
     ("KneeBrace", KneeBrace),
+    ("Wedge", Wedge),
     ("Railing", Railing),
 ):
     register_constructor(_name, _obj)

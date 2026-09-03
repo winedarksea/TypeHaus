@@ -2512,6 +2512,118 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          440.25,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          89.24999983660385
+        ],
+        [
+          440.25,
+          89.24999983660385
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWWGW1AAAA",
+      "tag": "wedge"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          440.25,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          89.24999983660385
+        ],
+        [
+          440.25,
+          89.24999983660385
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          440.25,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          89.24999983660385
+        ],
+        [
+          440.25,
+          89.24999983660385
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWWGE1AAAA",
+      "tag": "wedge"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          440.25,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          88.25000000000001
+        ],
+        [
+          443.75,
+          89.24999983660385
+        ],
+        [
+          440.25,
+          89.24999983660385
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

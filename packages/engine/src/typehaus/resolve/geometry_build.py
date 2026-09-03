@@ -238,7 +238,12 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     # which is what lets the exporter merge them into one node per owner and still resolve a
     # pick back to the individual stick.
     for owner, _trade in ((model.walls, "walls"), (model.floors, "floors"),
-                          (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs")):
+                          (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs"),
+                          # A brace (and a wedge — same record) hosts itself, so its sticks
+                          # reach the IR the same way a wall's studs do. Without this the
+                          # section pipeline cannot cut them and a detail whose whole subject
+                          # is a tapered shim draws nothing where the shim is.
+                          (getattr(model, "braces", ()), "framing")):
         for host in owner:
             parts = _member_parts(getattr(host, "members", ()))
             if parts:

@@ -179,6 +179,11 @@ def cross_section(profile: str) -> CrossSection:
     so handing every caller the same instance is safe.
     """
     text = profile.strip()
+    # A treatment suffix names the *product*, not the section: "2x4:kdat" is a 2x4, kiln-dried
+    # after treatment, and it is still 1 1/2" x 3 1/2". Nothing here parsed it, so every one of
+    # them fell through to the 1.5 x 5.5 fallback and drew a 2x4 girt as a 2x6.
+    if ":" in text:
+        text = text.split(":", 1)[0]
 
     if match := _RE_MULTI_LVL.match(text):
         plies = int(match["plies"])

@@ -76,7 +76,11 @@ def member_box(member: FramedMember) -> GBox | None:
     # wide `depth_m` across for a flat-laid plate/sill/block, the thin `width_m` for a member
     # on edge. Using `width_m` unconditionally (what this did) drew every flat member as a
     # 1.5" square rod running along the wall instead of a 1.5" x 5.5" board lying on it.
-    across = max(plan_cross_section_m(section, member.z1_m - member.z0_m), MINIMUM_EXTENT_M)
+    # A tapered member's vertical extent says nothing about which way it was laid, so it
+    # carries its own plan width; see FramedMember.plan_width_m.
+    across = max(member.plan_width_m
+                 or plan_cross_section_m(section, member.z1_m - member.z0_m),
+                 MINIMUM_EXTENT_M)
     nx, ny = _unit_normal(dx, dy, run)
     half_x, half_y = nx * across / 2.0, ny * across / 2.0
     z0_end = member.z0_m if member.z0_end_m is None else member.z0_end_m
