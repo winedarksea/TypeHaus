@@ -297,16 +297,51 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   2026-07-31 by going engineered, the porch four pass the table prescriptively, and the
   balcony three went ENGINEERED on 2026-09-03 when they became glulam — a section the table
   publishes no row for. `engineering/glulam_beam.py`.)
-- **Spec fiber in concrete almost everywhere. Also galvanized rebar.** The galvanized half
-  is PARTLY DONE: the owner settled it on 2026-09-02 (hot-dip, ASTM A767 cl. 1 or A1094 —
-  epoxy delaminates, stainless costs 4-6x and fights the concrete thermally), and the five
-  sunken-garden cast columns and their dowels are specified galvanized in
-  `SUNKEN_GARDEN_COLUMN_12`. **House-wide is still open**, and so are the Sika/Vector
-  Galvashield XPX embedded zinc anodes (330 g zinc, 20+ yr, ~$1,400/box of 20) weighed for
-  the salt-splash sunken-garden walls. Note that rebar rides INSIDE the $/cy rates
-  (`prices.toml` `[basis_notes]`), so a house-wide switch is a rate note plus a plan of its
-  own, not an element edit. `notes/balcony_moment_columns.md` §7 has the reasoning. Fiber is
-  untouched. ALSO set rebar coverage to 3" everywhere exterior where possible, and make sure that wood beams bearing on the sonotube concrete have gaskets or standoffs if they need to.
+- **Spec fiber in concrete almost everywhere. Also galvanized rebar. — LARGELY DONE
+  2026-09-03.** The blocker was never the decision, it was that **the engine had no schema
+  for any of it**: no mix, no exposure class, no cover, no bar coating, no fibre. Every one
+  of those facts lived as English prose inside an `Assembly.source` string where nothing read
+  it, the engine hardcoded one presumptive 3,000 psi for every concrete calc it ran, and
+  cover was *regex-scraped* out of a free-text cage string. `ConcreteSpec` /
+  `FiberSpec` / `ReinforcementSpec` closed that, and the spec change followed on top.
+  - **Fibre**: macro-synthetic house-wide; **micro-MONOFILAMENT PP at ~1.5 lb/cy in
+    `SL-M-DECK`**, which is the interesting half. `notes/mixed_deck_movement_joint.md` said
+    "no fibres in the mix" and that stands against MACRO fibre (visible at a finished
+    surface) and against steel (it rust-stains). Micro-mono answers a different question —
+    plastic shrinkage in the first hours, a 55-70% reduction, exactly what a thin 4 5/8" cap
+    over EPS is prone to — and what little presents at the surface sits in the paste layer a
+    CREAM polish removes. Confirm the dose against a supplier TDS: 1.5 is the top of the
+    published 0.75-1.5 range.
+  - **Galvanized**: `hdg-a767` on both the buried and the exposed mixes, so every pour that
+    names one gets it. Recorded as a DECISION, not a code requirement — ACI's C1 asks nothing
+    of the bar beyond cover — so nobody later "corrects" a pour that omits it. Interior pours
+    stay black: no chloride, no freeze-thaw, nothing bought.
+  - **3" cover**: taken on the footings, where ACI Table 20.5.1.3.1(a) asks for it anyway and
+    it is free. NOT taken on the 12" round columns, where it costs 30% of the bar circle and
+    therefore of the moment lever arm — see below.
+  - **Rebar inside the $/cy rates** is no longer "a rate note plus a plan of its own":
+    `takeoff/reinforcement.py` bills the steel by the pound NOW, priced at nothing, so the
+    tonnage can be read before any rate is cut; and `[rebar_inclusive]` makes the standing
+    "cut the rates the same day" condition a hard error instead of a comment.
+  - **STILL OPEN**, and each is blocked on something specific:
+    - the two cast-column assemblies (`SUNKEN_GARDEN_COLUMN_12`, `PIER_CONCRETE_12`) still
+      read the presumptive f'c. Attaching their real mix re-oracles
+      `notes/balcony_moment_columns.md`, `notes/breezeway_piers.md` and
+      `test_pier_calcs.py`, which another session had open;
+    - **3" cover on those columns has NOT been re-run through `deck_post._pm_point`**, and
+      it must be rather than asserted: `PT-SG-BR1/BR3/BF1/BF3` are the balcony's entire
+      lateral system, so the bar circle shrinking 30% is a moment question. The fallback
+      ladder is 2.5" cover, then #4 ties, then six bars, all inside the owner's 12" cap.
+      There is also a real argument for NOT going to 3" here: ACI's 3" is for concrete cast
+      against EARTH, and these are Sonotube-formed on plastic wheel spacers;
+    - the **Galvashield XPX anodes** for the salt-splash sunken-garden walls are still
+      undecided. `notes/balcony_moment_columns.md` declines them on the COLUMNS as a belt on
+      braces over galvanized bar at 2" cover; the walls are a separate question;
+    - the **beam-bearing audit** — `PIER_CONCRETE_12` and `SUNKEN_GARDEN_COLUMN_12` already
+      specify a 1/2"-1" stainless standoff, a >=15 degree wash and EPDM/HDPE isolation, and
+      the breezeway posts sit on `ABU66SS` standoff bases. What is unaudited is whether EVERY
+      wood member bearing on concrete is covered, and `PT-SG-COL`'s grout island is a known
+      outstanding follow-up.
 - **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
   by the two piers above, and answered the same day.) The alternative — closing both items in
   `engineering.toml` with the engineer's cage schedule and leaving the model silent — works
