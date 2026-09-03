@@ -177,7 +177,8 @@ design on that same claim (`structural.frost_depth`, ASCE 32 soil replacement, 2
 | retained face | outboard, terrace at +0'-6" (the raised garden's apron holds it) |
 | resisting face | inboard, court floor at −9'-1 7/16"; toe buried 6 1/2" |
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
-| reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
+| stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
+| footing reinforcement | **`#6 @ 10" o.c.` transverse, top AND bottom**, 3" cover — sized in §7; `#4 @ 18"` longitudinal |
 
 ### Why the footing grew INBOARD and not symmetrically
 
@@ -377,11 +378,143 @@ Checked alongside:
 
 **Authoring reinforcement makes the SECTION work. It does not make the DETAILING anything
 this engine has looked at** — bar development into the footing, the corner cold joints, the
-splice at the top of the pour. Those are the engineer's, and §8 says so.
+splice at the top of the pour. Those are the engineer's, and §9 says so.
 
 ---
 
-## 7. The cross-member
+## 7. The footing — the OTHER limit state nothing had computed
+
+§6 found that the stem was a cantilever nobody had sized. **The footing is the same
+omission, one member down, and it is worse.** §4 computes the bearing pressure under the
+strip and then stops: that is a stability analysis of a rigid body, and it never asks
+whether the concrete in the strip can carry the pressure it just computed. A **4'-0" toe**
+under 1,275 psf is a flexural cantilever every bit as real as the stem, and it was
+unreinforced.
+
+Added to `engineering/retaining_basis.py::footing_states` on 2026-09-03. Same case as §4
+and §6 throughout — **at-rest, 110 pcf**, because grading the footing on a different load
+case from the stem it holds up would be two designs of one wall.
+
+### 7a. The pressure diagram
+
+From §4's governing case: `W = 6,177.5 plf`, `B = 8.000'`, `e = 0.8685'`.
+
+```
+W/B                    = 6,177.5 / 8         =   772.19 psf
+6e/B                   = 6 x 0.8685 / 8      =    0.65138
+q_toe  = W/B (1 + 6e/B) = 772.19 x 1.65138   = 1,275.2 psf     (at the toe TIP)
+q_heel = W/B (1 - 6e/B) = 772.19 x 0.34862   =   269.2 psf     (at the heel end)
+slope                   = (1,275.2 - 269.2)/8 =   125.75 psf/ft
+q at the stem face (x = 4.000' from the tip) = 1,275.2 - 503.0 =   772.2 psf
+```
+
+### 7b. Toe flexure — the governing number, and a deliberate conservatism
+
+The critical section is the **face of the stem** (ACI 318-19 §13.2.7.1(a), a concrete wall).
+The toe is designed for the **upward pressure alone**: the footing's own 150 psf pushes down
+and relieves it, and is dropped. That is not laziness — keeping it means factoring a
+*relieving* dead load, which ASCE 7-16 §2.3.1 takes at 0.9 and this module has no
+combination machinery for. Taken properly — `1.6 x M_pressure - 0.9 x M_concrete` — the
+factored demand would be about **8% lighter**. It costs 8% and it costs no argument at all.
+
+```
+rectangle   772.2 x 4.000              = 3,088.8 lb   arm 2.000'  =  6,177.6
+triangle    ½(1,275.2 - 772.2) x 4.000 = 1,006.0 lb   arm 2.667'  =  2,682.7
+                                            M service              =  8,860.3 ft-lb/ft
+Mu = 1.6 x 8,860.3   (IBC §1605.2 on H, exactly as §6)              = 14,176   ft-lb/ft
+```
+
+**PLAIN, ACI 318-19 §14.5.2.1(a).** And note `h` is **10", not 12"**: §14.5.1.7 takes 2" off
+a plain footing cast against soil, the Code's allowance for an unformed bottom face poured
+into a trench. Capacity goes as `h²`, so skipping that overstates the section by 44%.
+
+```
+Sm  = 12 x 10²/6                              = 200 in³/ft
+φMn = 0.60 x 5√3,000 x 200 / 12               = 2,739 ft-lb/ft     d/c = 5.18   ✗
+```
+
+**Five times over.** ACI §14.1.4 does permit a plain concrete footing — unlike §14.1.5 for a
+column — so unlike the stem in §6 this is not a section *outside* the Code. It is simply a
+section that does not work.
+
+### 7c. Heel flexure
+
+The mirror image, and the standard conservatism: the heel is designed for the **downward**
+soil column and concrete alone, with the upward bearing pressure under it dropped. The
+heel's job is to hold a column of earth down, and the pressure that would help is exactly
+the pressure that vanishes when the wall begins to rotate.
+
+```
+soil on heel   3.000 x 10.3698 x 110          = 3,422.0 lb   arm 1.500' = 5,133.0
+concrete       3.000 x 1.000 x 150            =   450.0 lb   arm 1.500' =   675.0
+                                                  M service             = 5,808.0 ft-lb/ft
+Mu = 1.6 x 5,808.0                                                      = 9,293   ft-lb/ft
+φMn (plain, as above)                         = 2,739 ft-lb/ft     d/c = 3.39   ✗
+```
+
+### 7d. One-way shear on the toe
+
+```
+PLAIN: critical section at h = 10" from the stem face (§14.5.5.2(a)),
+       i.e. 3.167' from the tip.
+q at 3.167'  = 1,275.2 - 125.75 x 3.167                        =   877.0 psf
+V service    = ½(1,275.2 + 877.0) x 3.167                      = 3,407.9 lb/ft
+Vu           = 1.6 x 3,407.9                                   = 5,452   lb/ft
+φVn = 0.60 x (4/3)√3,000 x 12 x 10                             = 5,258   lb/ft
+                                                                   d/c = 1.04  ✗
+```
+
+Marginal, and marginal on the same plain section that is already 5.18 over in flexure —
+so it does not change the conclusion, only confirms it.
+
+### 7e. The steel, and why it is the stem's bar
+
+`#6 @ 10" o.c.`, both faces, 3" cover. **Deliberately the same bar and spacing §6 selected
+for the stem**: one bar size on this pour is one bundle to order, one bender's setup and one
+thing for an inspector to count, and the toe does not need a different one.
+
+3" is ACI 318-19 Table 20.5.1.3.1(a) — cast against and permanently in contact with ground —
+which is the footing's actual condition and a full inch more than the stem's formed 2". It
+is applied *before* sizing, not bolted onto a `d` derived against something looser.
+
+```
+As    = 0.44 x 12/10                                    =  0.528 in²/ft
+d     = 12 - 3.000 - 0.750/2                            =  8.625 in
+a     = 0.528 x 60,000 / (0.85 x 3,000 x 12)            =  1.035 in
+φMn   = 0.90 x 0.528 x 60,000 x (8.625 - 0.518) / 12    = 19,264 ft-lb/ft
+
+  toe flexure    14,176 / 19,264                                d/c = 0.74   ✓
+  heel flexure    9,293 / 19,264                                d/c = 0.48   ✓
+```
+
+Shear re-runs on the reinforced section — critical at `d` rather than `h`, ACI §22.5.5.1,
+`φ` 0.75 rather than 0.60:
+
+```
+cut at d = 8.625" from the face, i.e. 3.281' from the tip
+q at 3.281'  = 1,275.2 - 125.75 x 3.281                        =   862.6 psf
+Vu = 1.6 x ½(1,275.2 + 862.6) x 3.281                          = 5,612   lb/ft
+φVc = 0.75 x 2√3,000 x 12 x 8.625                              = 8,503   lb/ft
+                                                                   d/c = 0.66  ✓
+```
+
+`bottom-y` `#4 @ 18"` longitudinal distribution steel is authored alongside. It carries no
+graded limit state here and is ordinary detailing practice for a strip footing.
+
+### 7f. What this does NOT settle
+
+The mat makes the **section** work. It does not make the **detailing** anything this engine
+has looked at — development of the toe bars into and past the stem face, the hook at the toe
+end, the corner mats where three footings meet, and the lap of the stem's own dowels into
+this mat. §6 said the same thing about the stem and it is no less true here.
+
+And the whole of §7 rests on §4's pressure diagram, which rests on the washed-stone bed
+being built as specified. A softer bearing plane redistributes the trapezoid and every
+number above moves with it.
+
+---
+
+## 8. The cross-member
 
 `W-SG-ARCH` returns as a **buried grade beam** on the retired arch's own node pair, reusing
 its uid. `a160812` retired a 16" cast cross-wall with two semicircular arches carrying a 42"
@@ -466,7 +599,7 @@ top — derived from the wall beds' underside — already sits on that plane.
 
 ---
 
-## 8. What this note does NOT do
+## 9. What this note does NOT do
 
 Inherited from `sunken_garden_retaining_screening.md` §5, all still open, plus what this pass
 added:
@@ -504,7 +637,7 @@ added:
 
 ---
 
-## 9. What a reviewer must still be told
+## 10. What a reviewer must still be told
 
 Even at 0 FAIL these walls are **screened, not designed**, and the items stay unsealed:
 presumptive values only, no geotechnical report, a soil class from a survey for the wrong

@@ -1558,7 +1558,7 @@ SG_FROST_WING_XPS2 = Assembly(
 # test, and "S0" would be an assumption wearing a measurement's clothes.
 # ** 5,000 psi, AND THAT SETTLES A STANDING OPEN QUESTION. ** IRC Table R402.2's basement-
 # wall row is 3,000 psi, which is what every calc in this engine presumed and what
-# `notes/sunken_garden_court_free_body.md` §8, `notes/sunken_garden_piers.md` §5 and
+# `notes/sunken_garden_court_free_body.md` §9, `notes/sunken_garden_piers.md` §6 and
 # `plans/TODO.md` all flagged as unresolved: **MN Rules 1309.0402 amends R402.2 with a
 # FOOTINGS row at 5,000 psi.** Footnote g's 2,500 psi relief needs an approved
 # water/vapour-resistance admixture, and footnote h exempts deck/porch post footings, wood

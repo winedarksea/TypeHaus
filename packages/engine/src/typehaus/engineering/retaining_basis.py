@@ -83,6 +83,17 @@ _BAR = BARS
 #: ACI 318-19 Table 20.5.1.3.1 — cast-in-place concrete exposed to earth and weather.
 _COVER_IN = {True: 2.0, False: 1.5}   # keyed on "#6 or larger"
 
+#: ACI 318-19 Table 20.5.1.3.1(a) — concrete cast against and permanently in contact with
+#: ground. A strip footing is poured into a trench, so this is its condition and not the
+#: "exposed to earth or weather" row a formed stem takes.
+_FOOTING_COVER_IN = 3.0
+
+#: ACI 318-19 §14.5.1.7 — a PLAIN footing cast against soil is computed on its thickness
+#: less 2". Capacity goes as h squared, so this is a sixth of a 12" strip given away before
+#: any number is computed. It applies to the plain branch only: a reinforced section is
+#: graded on ``d``, which already measures from the bar to the compression face.
+_PLAIN_SOIL_CAST_DEDUCTION_IN = 2.0
+
 _M_PER_FT = 0.3048
 
 
@@ -109,6 +120,10 @@ class _Geometry:
     #: 3,000 psi — it is "this model does not say", and :func:`stem_flexure` falls back to
     #: ``PRESUMPTIVE_FC_PSI`` and names which of the two it used.
     specified_fc_psi: float | None = None
+    #: The FOOTING's own reinforcement, structured — the toe and heel are a different
+    #: section from the stem and carry different bars. ``None`` means the model does not say,
+    #: which for a 4'-0" toe is not a silence anything may fill: see :func:`footing_flexure`.
+    footing_reinforcement: object | None = None
     #: The clear cover this wall's assembly SPECIFIES, inches, or None for the ACI
     #: Table 20.5.1.3.1 minimum. Cover is subtracted from the stem thickness to get ``d``,
     #: so 3" on a 12" stem is roughly -16% flexural capacity against 1-1/2": it is a
@@ -279,21 +294,196 @@ def stem_flexure(geometry: _Geometry, case: _Case,
         return demand, capacity, (f"PLAIN, {fc_note} — and ACI 318 R22.6.3 does "
                                   f"not cover an unsupported wall as plain concrete at all")
 
-    bar, spacing_in = parsed
-    area_in2, diameter_in = _BAR[bar].area_in2, _BAR[bar].diameter_in
-    as_per_ft = area_in2 * b_in / spacing_in
     # Cover comes off ``d`` directly, so an authored 3" for durability costs real capacity
     # and must not be quietly credited with the table minimum's longer lever arm.
-    cover_in = (geometry.specified_cover_in if geometry.specified_cover_in is not None
-                else _COVER_IN[bar >= 6])
-    cover_note = ("" if geometry.specified_cover_in is not None
+    capacity, how = reinforced_flexure(h_in, fc_psi, parsed, geometry.specified_cover_in)
+    return demand, capacity, f"{how}, {fc_note}"
+
+
+def reinforced_flexure(h_in: float, fc_psi: float, parsed: tuple[int, float],
+                       cover_in: float | None,
+                       *, default_cover_in: float | None = None) -> tuple[float, str]:
+    """``(phi*Mn in ft-lb per foot of section, how)`` for a singly-reinforced 12" strip.
+
+    ACI 318-19 §22.3: ``Mn = As fy (d - a/2)``, ``a = As fy / (0.85 f'c b)``, ``phi = 0.90``
+    on a tension-controlled section, which every wall and footing section in this house is
+    by an enormous margin.
+
+    Factored out of :func:`stem_flexure` so the stem and the FOOTING are graded by one
+    function rather than two that agree today. They are the same question asked about two
+    cantilevers — a stem about the top of its footing, a toe about the face of its stem —
+    and the only thing that differs between them is which cover table applies.
+    """
+    bar, spacing_in = parsed
+    area_in2, diameter_in = _BAR[bar].area_in2, _BAR[bar].diameter_in
+    b_in = 12.0
+    as_per_ft = area_in2 * b_in / spacing_in
+    fallback = default_cover_in if default_cover_in is not None else _COVER_IN[bar >= 6]
+    used_cover = cover_in if cover_in is not None else fallback
+    cover_note = ("" if cover_in is not None
                   else " (ACI Table 20.5.1.3.1 minimum, none specified)")
-    depth_in = h_in - cover_in - diameter_in / 2.0
+    depth_in = h_in - used_cover - diameter_in / 2.0
     a_in = as_per_ft * REINFORCEMENT_FY_PSI / (0.85 * fc_psi * b_in)
     capacity = 0.90 * as_per_ft * REINFORCEMENT_FY_PSI * (depth_in - a_in / 2.0) / 12.0
-    return demand, capacity, (f"#{bar} @ {spacing_in:.0f}\" o.c., As {as_per_ft:.3f} in2/ft, "
-                              f"cover {cover_in:.2f}\"{cover_note}, d {depth_in:.2f}\", "
-                              f"{fc_note}")
+    return capacity, (f"#{bar} @ {spacing_in:.0f}\" o.c., As {as_per_ft:.3f} in2/ft, "
+                      f"cover {used_cover:.2f}\"{cover_note}, d {depth_in:.2f}\"")
+
+
+def bar_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, float] | None:
+    """``(bar, spacing_in)`` for the first bar in ``spec`` whose role is one of ``roles``.
+
+    A footing mat is authored by role — ``bottom-x`` is the transverse bottom steel that
+    carries the toe, ``top-x`` the transverse top steel that carries the heel — and a bar in
+    the wrong role is not a bar this section can use. ``None`` where the spec is absent, has
+    no bar in any of those roles, or states a COUNT rather than a spacing: a strip footing
+    is billed and graded per foot of run, and "four bars" says nothing about a foot of it.
+
+    The conservative contract :func:`parse_reinforcement` keeps is kept here too — anything
+    this cannot read is reported as NO steel, never as assumed steel.
+    """
+    if spec is None:
+        return None
+    for entry in getattr(spec, "bars", ()) or ():
+        if entry.role not in roles or entry.spacing is None:
+            continue
+        spacing_in = float(entry.spacing.inches)
+        if entry.bar not in _BAR or spacing_in <= 0.0:
+            continue
+        return entry.bar, spacing_in
+    return None
+
+
+def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
+    """Toe flexure, heel flexure and one-way shear on the footing STRIP.
+
+    **These footings have a 4'-0" toe and nothing graded it.** ``_limit_states`` computed the
+    bearing pressure under the strip and never asked whether the strip could carry it — which
+    is a stability analysis of a rigid body, not a design of the concrete in it. A 4'-0"
+    cantilever under 1,275 psf is a real flexural member, and the answer as PLAIN concrete is
+    5x over: this is not a formality that passes on inspection.
+
+    Same convention as :func:`stem_flexure` and for the same reason: the safety factors above
+    are SERVICE-level per IBC §1807.2.3, and section strength is the separate question
+    §1605.2 governs, so only these rows carry ``EARTH_PRESSURE_LOAD_FACTOR``.
+
+    **Two deliberate conservatisms, each of which removes a load-factor argument rather than
+    winning one.**
+
+    * The **toe** is designed for the upward soil pressure ALONE. The footing's own weight
+      (and any soil over the toe) pushes down and relieves it, and is dropped. Keeping it
+      would mean factoring a *relieving* dead load, which ASCE 7 takes at 0.9 and this module
+      has no combination machinery for; dropping it costs about 8% of the moment and costs no
+      argument at all.
+    * The **heel** is designed for the downward soil column and concrete ALONE, with the
+      upward bearing pressure under it dropped. That is the mirror image and the standard
+      one: the heel's job is to hold a column of earth down, and the pressure that would
+      help is the pressure that vanishes exactly when the wall starts to rotate.
+
+    The critical section for flexure is the face of the stem (ACI 318-19 §13.2.7.1(a), a
+    concrete wall). For one-way shear it is ``d`` from that face for a reinforced section and
+    ``h`` from it for a plain one (§14.5.5.2(a)), which is what the two branches differ by.
+    """
+    toe_ft, heel_ft = geometry.toe_ft, geometry.heel_ft
+    width_ft, depth_ft = geometry.footing_width_ft, geometry.footing_depth_ft
+    if width_ft <= 0.0 or depth_ft <= 0.0:
+        return ()
+
+    fc_psi = geometry.specified_fc_psi or PRESUMPTIVE_FC_PSI
+    fc_note = (f"f'c {fc_psi:,.0f} psi" if geometry.specified_fc_psi
+               else f"f'c {fc_psi:,.0f} psi PRESUMPTIVE (no mix specified)")
+    h_in = depth_ft * 12.0
+    cover_in = _footing_cover_in(geometry)
+
+    # The trapezoid, toe end first. ``case.bearing_psf`` is q at the TOE; the heel end
+    # follows from the same eccentricity with the sign flipped.
+    q_toe = case.bearing_psf
+    q_heel = (case.weight_plf / width_ft
+              * (1.0 - 6.0 * case.eccentricity_ft / width_ft))
+    slope = (q_toe - q_heel) / width_ft            # psf per foot, falling toward the heel
+
+    # --- toe: cantilever about the front face of the stem, upward pressure only ----------
+    q_face = q_toe - slope * toe_ft
+    toe_service = (q_face * toe_ft * toe_ft / 2.0
+                   + 0.5 * (q_toe - q_face) * toe_ft * (2.0 * toe_ft / 3.0))
+    toe_demand = EARTH_PRESSURE_LOAD_FACTOR * toe_service
+
+    # --- heel: the soil column and the concrete over it, bearing pressure dropped --------
+    stem_height_ft = geometry.retained_height_ft - depth_ft
+    soil_on_heel = heel_ft * stem_height_ft * case.soil_pcf
+    concrete_on_heel = heel_ft * depth_ft * CONCRETE_UNIT_WEIGHT_PCF
+    heel_service = (soil_on_heel + concrete_on_heel) * heel_ft / 2.0
+    heel_demand = EARTH_PRESSURE_LOAD_FACTOR * heel_service
+
+    toe_bars = bar_for_roles(geometry.footing_reinforcement, ("bottom-x", "bottom-y"))
+    heel_bars = bar_for_roles(geometry.footing_reinforcement, ("top-x", "top-y"))
+
+    toe_capacity, toe_how = _footing_flexural_capacity(h_in, fc_psi, toe_bars, cover_in)
+    heel_capacity, heel_how = _footing_flexural_capacity(h_in, fc_psi, heel_bars, cover_in)
+
+    # --- one-way shear on the toe, the governing of the two cantilevers -----------------
+    if toe_bars is not None:
+        depth_in = h_in - cover_in - _BAR[toe_bars[0]].diameter_in / 2.0
+        offset_ft = min(depth_in / 12.0, toe_ft)
+        # ACI 318-19 §22.5.5.1: Vc = 2 lambda sqrt(f'c) b d, phi 0.75 (Table 21.2.1).
+        shear_capacity = 0.75 * 2.0 * fc_psi ** 0.5 * 12.0 * depth_in
+        shear_how = (f"ACI 318-19 §22.5.5.1 Vc = 2 lambda sqrt(f'c) b d, phi 0.75, at d "
+                     f"{depth_in:.2f}\" from the stem face — {fc_note}")
+    else:
+        plain_h_in = max(h_in - _PLAIN_SOIL_CAST_DEDUCTION_IN, 0.0)
+        offset_ft = min(plain_h_in / 12.0, toe_ft)
+        # ACI 318-19 §14.5.5.1(a): Vn = (4/3) lambda sqrt(f'c) b h, phi 0.60.
+        shear_capacity = 0.60 * (4.0 / 3.0) * fc_psi ** 0.5 * 12.0 * plain_h_in
+        shear_how = (f"ACI 318-19 §14.5.5.1(a) PLAIN, Vn = (4/3) lambda sqrt(f'c) b h, phi "
+                     f"0.60, at h {plain_h_in:.1f}\" from the stem face — §14.5.1.7 takes 2\" "
+                     f"off a footing cast against soil — {fc_note}")
+    cut_ft = toe_ft - offset_ft
+    q_cut = q_toe - slope * cut_ft
+    shear_demand = EARTH_PRESSURE_LOAD_FACTOR * 0.5 * (q_toe + q_cut) * cut_ft
+
+    return (
+        LimitState("toe flexure", toe_demand, toe_capacity, "ft-lb/ft",
+                   f"ACI 318-19 §13.2.7.1 at the stem face, strength design at 1.6H over a "
+                   f"{toe_ft:.2f}' toe — {toe_how}, {fc_note}"),
+        LimitState("heel flexure", heel_demand, heel_capacity, "ft-lb/ft",
+                   f"ACI 318-19 §13.2.7.1 at the stem face, strength design at 1.6H on a "
+                   f"{heel_ft:.2f}' heel carrying {stem_height_ft:.2f}' of soil at "
+                   f"{case.soil_pcf:.0f} pcf — {heel_how}, {fc_note}"),
+        LimitState("footing one-way shear", shear_demand, shear_capacity, "lb/ft",
+                   shear_how),
+    )
+
+
+def _footing_cover_in(geometry: _Geometry) -> float:
+    """Clear cover to the footing mat: what the pour specifies, else ACI's cast-against-earth 3"."""
+    spec = geometry.footing_reinforcement
+    authored = getattr(spec, "cover", None) if spec is not None else None
+    if authored is not None:
+        return float(authored.inches)
+    if geometry.specified_cover_in is not None:
+        return geometry.specified_cover_in
+    return _FOOTING_COVER_IN
+
+
+def _footing_flexural_capacity(h_in: float, fc_psi: float, parsed: tuple[int, float] | None,
+                               cover_in: float) -> tuple[float, str]:
+    """``(phi*Mn ft-lb/ft, how)`` — reinforced where a mat is authored, PLAIN where none is.
+
+    **Plain is what the model actually says, and it is not a formality.** ACI 318-19 §14.1.4
+    permits a plain concrete footing, so a mat this engine cannot read is graded as the plain
+    section it then is, and reported OVER if the plain section will not carry the moment —
+    which on a 4'-0" toe it will not, by a factor of five. That is the honest reading: an
+    INCOMPLETE here would say "the model is silent", where the truth is "the model is silent
+    AND the section that silence implies does not work".
+    """
+    if parsed is None:
+        plain_h_in = max(h_in - _PLAIN_SOIL_CAST_DEDUCTION_IN, 0.0)
+        section = 12.0 * plain_h_in ** 2 / 6.0
+        capacity = 0.60 * 5.0 * fc_psi ** 0.5 * section / 12.0
+        return capacity, (f"PLAIN — no mat authored on this Footing, so §14.5.2.1(a) "
+                          f"Mn = 5 lambda sqrt(f'c) Sm on a 12\" x {plain_h_in:.1f}\" gross "
+                          f"section (§14.5.1.7 takes 2\" off a pour cast against soil)")
+    return reinforced_flexure(h_in, fc_psi, parsed, cover_in,
+                              default_cover_in=_FOOTING_COVER_IN)
 
 
 def _limit_states(case: _Case, geometry: _Geometry, soil: PresumptiveSoil,
@@ -318,7 +508,10 @@ def _limit_states(case: _Case, geometry: _Geometry, soil: PresumptiveSoil,
         # moment the soil puts in it, and it is the row a base restraint does not help.
         LimitState("stem flexure", flexure_demand, flexure_capacity, "ft-lb/ft",
                    f"ACI 318 strength design at 1.6H — {flexure_how}"),
-    )
+        # The FOOTING as a section, which is the other half of the same omission the row
+        # above closed for the stem: a 4'-0" toe under a thousand-odd psf is a cantilever,
+        # and nothing here had ever asked whether it carries.
+    ) + footing_states(geometry, case)
 
 
 def _base_interface(ctx: EngineeringContext, wall) -> PresumptiveSoil | None:  # type: ignore[no-untyped-def]
@@ -428,6 +621,7 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
         toe_ft=toe_ft,
         heel_ft=heel_ft,
         vertical_reinforcement=getattr(wall, "vertical_reinforcement", None),
+        footing_reinforcement=getattr(footing, "reinforcement", None),
         specified_fc_psi=fc_psi(spec),
         specified_cover_in=cover_in(spec),
         # **Two different heights, and conflating them was the other half of the same slip.**

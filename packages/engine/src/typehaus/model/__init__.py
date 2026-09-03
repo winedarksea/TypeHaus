@@ -97,6 +97,7 @@ from typehaus.model.placeables import (
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
+from typehaus.model.rebar import BarSpec, ReinforcementSpec
 from typehaus.model.refs import (
     Arch,
     Embed,
@@ -238,6 +239,8 @@ for _name, _obj in (
     register_constructor(_name, _obj)
 
 __all__ = [
+    "ReinforcementSpec",
+    "BarSpec",
     "FiberSpec",
     "ConcreteSpec",
     "PlanModel", "Library", "Project", "Site", "Building", "Storey",

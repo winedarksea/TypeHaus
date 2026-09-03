@@ -49,6 +49,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus import (
+    BarSpec,
     Beam,
     Connector,
     ConnectorKind,
@@ -70,6 +71,7 @@ from typehaus import (
     Post,
     Railing,
     RailingKind,
+    ReinforcementSpec,
     Slab,
     Stair,
     TrimKind,
@@ -245,7 +247,30 @@ class SunkenGardenSpec:
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
-    joist_cantilever_in: float = 6.0  # deck joist tips overhang the outer beams
+    # ** 9", AND IT IS THE ALUMINIUM PLANK'S NUMBER, NOT THE JOIST'S. ** The deck's WIDTH is
+    # 2 x cantilever + 20'-0" between the outer beam axes, and Wahoo's AridDek is a 6" main
+    # board: its own installation guide's rule is that a width "not evenly divisible by 6"
+    # costs a RIPPED finish board, which on a watertight tongue-and-groove plank means
+    # cutting the tongue and the integral gutter channel off the last row. So the deck width
+    # is only ever allowed to move in whole 6" steps, and the cantilever in 3" ones.
+    #
+    #     6"  ->  21'-0" = 252" = 42 boards      9"  ->  21'-6" = 258" = 43 boards
+    #
+    # 9" was taken on 2026-09-03 for the same reason PT-SG-BF1/BF3 came north: at 6" the deck
+    # edge, and TR-SG-FASCIA's drip with it, landed exactly on the outer face of the 12"
+    # rounds (x 7'-6" / 28'-6"), so the balcony shed its water down the column faces. 3" of
+    # plank past each face is a drip line clear of the concrete, and it costs one more full
+    # board and no rip.
+    #
+    # ** IT ALSO MOVES W-RG-WEST/EAST-BALCONY. ** The 6" slot between the balcony's railing
+    # face and those two SRW returns is what TR-SG-LEADER-SE's 3" pipe threads; growing the
+    # deck into it without shortening the returns leaves the leader nowhere to hang. Both
+    # return nodes went 3'-0" -> 2'-9" the same day (params/raised_garden.py) so the whole
+    # SE detail translates 3" east unchanged.
+    #
+    # 2.5' is R507.6.1's limit here (a quarter of the 10'-0" back span between beams), so
+    # the joist is nowhere near governing. The plank module is.
+    joist_cantilever_in: float = 9.0  # deck joist tips overhang the outer beams
     balcony_level_ft: float = 10.0  # second storey
 
 
@@ -754,11 +779,43 @@ _RETAINING_FOOTING_WIDTH_IN = 96.0
 # court" for every one of them — checked, not assumed: see the footing-edge assertions in
 # `test_retaining_court.py`.
 _RETAINING_FOOTING_OFFSET_IN = 6.0
+
+# ** THE 4'-0" TOE IS A CANTILEVER, AND IT WAS UNREINFORCED UNTIL 2026-09-03. **
+#
+# `_RET_REBAR` above is the STEM's steel, and until `engineering/retaining_basis.py` grew
+# `footing_states` nothing in this repo ever asked what the FOOTING carried. It carries a
+# lot: 1,275 psf of bearing pressure on a 4'-0" cantilever is 14,176 ft-lb/ft factored, and
+# a 12" PLAIN strip is good for 2,739 — **d/c 5.18**. The heel is 3.39 over and one-way
+# shear 1.04 over on the same plain section. That was a real gap in the design, not a
+# reporting artifact, and `notes/sunken_garden_court_free_body.md` §7 is its oracle.
+#
+# `#6 @ 10"` both faces is the answer, and it is deliberately the SAME bar and spacing the
+# stem already uses: one bar size on this pour is one bundle to order, one bender's setup
+# and one thing for an inspector to count. Bottom (toe) 0.74, top (heel) 0.48, shear 0.66.
+#
+# 3" cover is ACI 318-19 Table 20.5.1.3.1(a) — cast against and permanently in contact with
+# ground — and it is the cover this whole footing is designed on, not a durability upgrade
+# bolted onto a `d` sized against something looser.
+_RETAINING_FOOTING_MAT = ReinforcementSpec(
+    bars=(
+        BarSpec(role="bottom-x", bar=6, spacing=inch(10.0),
+                note="transverse, resists the 4'-0\" toe cantilever; hook the toe end"),
+        BarSpec(role="top-x", bar=6, spacing=inch(10.0),
+                note="transverse, resists the 3'-0\" heel carrying 10.37' of soil"),
+        BarSpec(role="bottom-y", bar=4, spacing=inch(18.0),
+                note="longitudinal distribution steel; carries no graded limit state"),
+    ),
+    cover=inch(3.0),
+    lap_class="B",
+    source="sized in notes/sunken_garden_court_free_body.md §7, at-rest 110 pcf",
+)
+
 FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
             width=inch(_RETAINING_FOOTING_WIDTH_IN if w.tag in _RETAINING
                        else SPEC.footing_width_in),
             offset=inch(_RETAINING_FOOTING_OFFSET_IN) if w.tag in _RETAINING else None,
+            reinforcement=_RETAINING_FOOTING_MAT if w.tag in _RETAINING else None,
             depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
