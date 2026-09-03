@@ -410,17 +410,31 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
     assert {round(x / FT, 4) for _, x in ((0, east.axis[0][0]), (0, east.axis[1][0]))} == {32.0}
 
 
-def test_the_raised_garden_returns_three_feet_to_the_balcony(catlin_model) -> None:
+def test_the_raised_garden_returns_stop_six_inches_short_of_the_balcony(catlin_model) -> None:
+    """The GAP is the invariant, not the 2'-9" — it is TR-SG-LEADER-SE's slot.
+
+    These two returns close the apron's U against the balcony's side railing faces, and they
+    deliberately stop 6" short of them. On the east that gap is the only place the balcony's
+    3" downspout can hang: W-SG-E1's 12" band runs the whole drop inboard of it and the RG
+    return is what is outboard. They were 3'-0" until 2026-09-03, when the balcony's joist
+    cantilever went 6" -> 9" (the plank has to drip clear of the 12" columns, and the deck
+    width has to stay divisible by the 6" board) and grew the deck 3" into both gaps. The
+    returns gave the 3" back rather than the leader losing its slot.
+    """
     returns = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS[3:]}
     for tag, wall in returns.items():
         length = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
                   + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
-        assert length == pytest.approx(3 * FT, abs=1e-9), tag
+        assert length == pytest.approx(2.75 * FT, abs=1e-9), tag
         assert {round(y / FT, 4) for _, y in wall.axis} == {-10.5}, tag
     west = returns["W-RG-WEST-BALCONY"]
     east = returns["W-RG-EAST-BALCONY"]
-    assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 7.0}
-    assert {round(x / FT, 4) for x, _ in east.axis} == {29.0, 32.0}
+    assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 6.75}
+    assert {round(x / FT, 4) for x, _ in east.axis} == {29.25, 32.0}
+    # And the gap each return leaves is 6", measured to the deck edge the railing stands on.
+    deck_x = [p.xy_m[0] for p in catlin_model.plan.by_tag("FS-SG-DECK").outline]
+    assert min(deck_x) - max(x for x, _ in west.axis) == pytest.approx(0.5 * FT, abs=1e-9)
+    assert min(x for x, _ in east.axis) - max(deck_x) == pytest.approx(0.5 * FT, abs=1e-9)
 
 
 def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
@@ -646,9 +660,12 @@ def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(
     front_axis_y = catlin_model.plan.by_tag("N-SGM-FCOL").position.xy_m[1]
     assert min(heels) == pytest.approx(front_axis_y)  # flush at the bearing, no oversail
     assert min(heels) == pytest.approx(south)         # ... which is the deck's own edge
-    # The balcony keeps its own symmetric 6" — the per-end split must not have leaked.
+    # The balcony keeps its own symmetric 9" — the per-end split must not have leaked.
+    # 9", not 6", since 2026-09-03: the deck edge used to land exactly on the outer face of
+    # the 12" rounds, so the plank shed its water down the columns. The step is 3" because
+    # the AridDek main board is 6" and a deck width not divisible by 6 costs a ripped board.
     balcony = catlin_model.plan.by_tag("FS-SG-DECK").joists
-    assert balcony.cantilever.inches == pytest.approx(6.0)
+    assert balcony.cantilever.inches == pytest.approx(9.0)
     assert balcony.cantilever_start is None and balcony.cantilever_end is None
 
 

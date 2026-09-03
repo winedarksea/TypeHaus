@@ -165,10 +165,27 @@ NODES = [
          open_end=False),
     # Short returns close the U against the balcony side railings. Their far ends remain
     # open because they terminate at the balcony wall face rather than another RG wall axis.
+    #
+    # ** 2'-9", NOT 3'-0", SINCE 2026-09-03 — AND THE 6" GAP IS THE POINT, NOT THE LENGTH. **
+    # These two ends stop 6" short of the balcony's side railing faces, and that slot is what
+    # ``TR-SG-LEADER-SE``'s 3" downspout threads on the east: the pipe hangs outboard of
+    # W-SG-E1's face because the wall's 12" band runs the whole drop inboard of it, and the
+    # RG return is the only other thing near it. That day ``joist_cantilever_in`` went 6" ->
+    # 9" so the balcony plank would drip clear of the 12" columns, which grew the deck 3"
+    # each side into these gaps. The returns give the 3" back, so the whole SE detail
+    # translates east unchanged and the leader keeps its clearances.
+    #
+    # It is 2 3/4 SRW units rather than 3, i.e. one cut block per course on each return —
+    # the trade against a RIPPED finish board on a watertight aluminium deck, which is the
+    # much worse cut (it takes the tongue and the plank's integral gutter channel off).
+    #
+    # **These offsets are not free numbers: they are ``_deck_x_w``/``_deck_x_e`` minus 6".**
+    # If the balcony cantilever moves again they move with it, or the leader loses its slot
+    # and nothing in the engine will say so.
     Node(uid="RGN005AAAA", tag="N-RG-WEST-BALCONY",
-         position=pt(ft(X_WEST + 3.0), ft(Y_NORTH)), open_end=True),
+         position=pt(ft(X_WEST + 2.75), ft(Y_NORTH)), open_end=True),
     Node(uid="RGN006AAAA", tag="N-RG-EAST-BALCONY",
-         position=pt(ft(X_EAST - 3.0), ft(Y_NORTH)), open_end=True),
+         position=pt(ft(X_EAST - 2.75), ft(Y_NORTH)), open_end=True),
 ]
 
 # ``unbalanced_fill`` is authored rather than derived, and has to be. The engine derives

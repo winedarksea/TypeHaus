@@ -78,11 +78,16 @@ def test_deck_stacks_post_beam_joist(catlin_model):
     assert abs(beam.z1_m - joist.z0_m) < tol  # beam top meets joist underside
 
 
-def test_outer_joist_spans_cantilever_six_inches(catlin_model):
-    # Three beams 10' o.c. -> two 10' spans, each cantilevered 6" past the outer beam.
+def test_outer_joist_spans_cantilever_nine_inches(catlin_model):
+    # Three beams 10' o.c. -> two 10' spans, each cantilevered 9" past the outer beam.
+    # 9", not 6", since 2026-09-03: at 6" the deck edge (and TR-SG-FASCIA's drip with it)
+    # landed exactly on the outer face of the 12" columns, so the balcony shed water straight
+    # down the concrete. The step is 3" and not an inch because the AridDek main board is 6"
+    # wide and a deck width not evenly divisible by 6 costs a ripped finish board — 21'-6"
+    # is 43 whole boards where 21'-0" was 42.
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
     spans = {round(m.length_m, 3) for m in deck.members if m.category == "joist"}
-    expected = round(inch(120).meters + inch(6).meters, 3)
+    expected = round(inch(120).meters + inch(9).meters, 3)
     assert spans == {expected}
 
 

@@ -2,7 +2,7 @@
 
 **House:** catlin, Ramsey County, Minnesota (Minnesota Residential Code 2020, adopting the
 2018 IRC).
-**Structure:** the sunken garden's balcony — a 21'-0" × 9'-8" deck at +10'-0", carried on
+**Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0", carried on
 **four 12" round reinforced-concrete columns fixed at the base** (PT-SG-BR1, PT-SG-BR3,
 PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars on pinned standoff bases, under three
 treated structural-glulam beams.
@@ -79,18 +79,27 @@ leader keeps 1-1/2" clear. The extra concrete over four columns is about 0.3 cy.
 
 ### 2a. Gravity
 
-IRC R507.1 / Table R301.5: **40 psf live + 10 psf dead = 50 psf.** Deck plan area 21'-0" ×
-9'-8" = 203 ft², divided among the six posts its beams name = **33.83 ft² each.**
+IRC R507.1 / Table R301.5: **40 psf live + 10 psf dead = 50 psf.** Deck plan area 21'-6" ×
+9'-8" = 207.83 ft², divided among the six posts its beams name = **34.64 ft² each.**
 
 ```
-live   40 × 33.83 =  1,353 lb
-dead   10 × 33.83 + column self weight
-factored (1.2D + 1.6L, ASCE 7-16 §2.3.1)  =  3,845 lb
+live   40 × 34.64 =  1,386 lb
+dead   10 × 34.64 + column self weight  =  1,408 lb
+factored (1.2D + 1.6L, ASCE 7-16 §2.3.1)  =  3,907 lb
 ```
+
+**21'-6", not 21'-0", since 2026-09-03.** `joist_cantilever_in` went 6" → 9" so the plank
+and TR-SG-FASCIA's drip would clear the outer faces of the 12" rounds instead of landing on
+them, and 3" per side is the smallest step that keeps the deck width divisible by the
+AridDek main board's 6" (43 whole boards, no rip). Everything on this page that is per-post
+moved 2.4% with it, and nothing changed size: these columns run at d/c 0.02 in axial.
+**The one place a balcony area increase is not free is `PT-SG-COL`'s 30" bell** — the
+centre pillars hand their share down to it and it is at d/c 0.81 in bearing
+(`notes/sunken_garden_piers.md` §3c).
 
 **No equipment dead load.** The two Gree condensers (330 lb the pair) left this deck on
 2026-09-02 for a poured pad in the yard pocket east of the porch — see
-`heat_pump_ground_pad.md`. They were negligible on a 203 ft² deck before that, so no member
+`heat_pump_ground_pad.md`. They were negligible on a 200-odd ft² deck before that, so no member
 changed when they went; what changed is that `FS-SG-DECK`'s aluminium plank now carries
 **zero penetrations**, which is what keeps RL-SG-BALCONY on fascia brackets (§7).
 
