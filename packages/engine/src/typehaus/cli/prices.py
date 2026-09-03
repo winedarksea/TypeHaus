@@ -121,6 +121,10 @@ ESTIMATE_PLANS = (
     ("member_protection", "member_protection", "material", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
+    # Reinforcing steel by the POUND — how it is milled, shipped, and quoted. The key is the
+    # bar designation and the qualifier is the coating, so a house that has not told black
+    # and galvanized apart still prices on `#5` while one that has gets `#5:hdg-a767`.
+    ("reinforcement", "reinforcement", "bar", "weight_lb", "lb"),
     # The wood half of ``structural_solids``. Identical join to ``concrete``, on the
     # identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both billing the same
     # row. See the field comment on ``Prices.timber``.
@@ -255,6 +259,11 @@ MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
 #: blended per-foot rate across 246 LF of each was the standing admission in prices.toml.
 QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     "concrete": "assembly", "timber": "assembly",
+    # THE one line that prices black and galvanized bar separately while leaving a house
+    # that authors only `#5` completely unchanged — `#5:hdg-a767` falls back to `#5` through
+    # ``candidate_keys``. HDG is roughly +$0.30/lb, and if the two do not price apart then
+    # specifying it is invisible in the estimate, which is most of the point of specifying it.
+    "reinforcement": "coating",
     "drainage": "product", "wall_structure": "material",
     "framing": "material", "envelope_layers": "thickness_in",
     "ducts": ("material", "diameter_in"),

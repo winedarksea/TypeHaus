@@ -69,6 +69,7 @@ def takeoff(
                "framing_bom": framing_bom, "framing_by_size": framing_by_size,
                "fabricated_members": bom["fabricated_members"],
                "structural_solids": bom["structural_solids"],
+               "reinforcement": bom["reinforcement"],
                "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
                "construction_returns": bom["construction_returns"],
                "sill_gaskets": bom["sill_gaskets"],
@@ -205,6 +206,15 @@ def takeoff(
             assembly = f" · {item['assembly']}" if item["assembly"] else ""
             console.print(f"  {item['category']}{assembly}: {item['count']} × / "
                           f"{item['volume_cubic_yards']} cy")
+    if payload["reinforcement"]:
+        console.print("[bold]Reinforcing steel (by the pound, NET of laps)[/bold]")
+        total_lb = 0.0
+        for item in payload["reinforcement"]:
+            coating = f" {item['coating']}" if item["coating"] else ""
+            total_lb += float(item["weight_lb"])
+            console.print(f"  {item['bar']}{coating} in {item['scope']}: "
+                          f"{item['length_ft']} LF / {item['weight_lb']} lb")
+        console.print(f"  [dim]total {total_lb:,.0f} lb ({total_lb / 2000.0:.2f} ton)[/dim]")
     if payload["construction_returns"]:
         console.print("[bold]Construction returns (#45 pre-framing laps)[/bold]")
         for item in payload["construction_returns"]:

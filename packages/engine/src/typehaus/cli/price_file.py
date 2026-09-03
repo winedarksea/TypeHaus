@@ -59,6 +59,12 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "member_protection",
              # Monolithic wall structure: concrete/masonry walls by the yard.
              "wall_structure",
+             # Reinforcing steel by the POUND, which is how it is bought and billed. Keyed
+             # on the bar designation and qualified by coating, so `#5:hdg-a767` falls back
+             # to `#5` for a house that has not told the two apart. See
+             # ``REBAR_INCLUSIVE_SECTIONS`` — a $/cy rate that still claims to contain its
+             # own rebar, next to a non-empty reinforcement table, is a hard error.
+             "reinforcement",
              # Structural WOOD solids by the yard — the other half of [concrete]. See
              # ``Prices.timber``.
              "timber",
@@ -266,6 +272,10 @@ class Prices:
     # net_area_sqft, so a face-priced second plan entry can be added later — but price each
     # assembly in one table only.
     wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
+    #: ``[reinforcement]`` — $/lb by bar designation, qualified by coating. Hot-dip
+    #: galvanized runs roughly +$0.30/lb over black bar, and if the two do not price
+    #: separately the whole point of specifying it is invisible in the estimate.
+    reinforcement: Mapping[str, PriceRange] = field(default_factory=dict)
     # Structural WOOD solids by the cubic yard, keyed exactly like [concrete]: the solid
     # CATEGORY, optionally qualified by assembly as ``"beam:BEAM_LVL"``.
     #
@@ -503,7 +513,15 @@ def _price(section: str, key: str, raw: object, path: Path,
 #: Tables that are *not* price sections: they describe the file rather than price a row.
 #: Split out so an unknown-section error still names real typos.
 _META_SECTIONS = ("basis", "basis_notes", "waste", "contingency", "markup", "tax",
-                  "tax_included", "codes")
+                  "tax_included", "codes", "rebar_inclusive")
+
+#: The $/cy sections whose rate has historically CONTAINED its own reinforcing steel.
+#: Keyed to what the money is, because "your rate includes rebar" is useless without
+#: "and here is roughly how much of it".
+REBAR_INCLUSIVE_SECTIONS = {
+    "concrete": "cast concrete by the yard (footings, slabs, pads, piers)",
+    "wall_structure": "monolithic wall structure by the yard",
+}
 
 
 @dataclass(frozen=True)
@@ -653,6 +671,7 @@ def load_prices(house_dir: Path) -> Prices | None:
                   for key, raw in (data.get(section) or {}).items()}
         for section in _SECTIONS
     }
+    _check_rebar_not_double_billed(data, path, sections)
     notes = {str(k): str(v) for k, v in (data.get("basis_notes") or {}).items()}
     unknown_notes = sorted(set(notes) - set(_SECTIONS))
     if unknown_notes:
@@ -684,6 +703,57 @@ WASTE_IN_QUANTITY = {
     "wood_surfaces": "takeoff/wood_surfaces.py::_WASTE",
 }
 
+
+
+def rebar_is_inclusive(data: Mapping[str, Any], section: str) -> bool:
+    """Whether ``section``'s $/cy rate still claims to contain its own reinforcing steel.
+
+    **Defaults to TRUE, and that default is the point.** Every price file written before
+    reinforcement was a BOM line of its own had the steel buried in the yard rate — that was
+    the only place it could be. So silence means "still inclusive", and a house opts OUT
+    explicitly once it has actually cut the rates. Defaulting the other way would let a file
+    written last year start double-billing the day the new section got a price, silently.
+    """
+    table = data.get("rebar_inclusive") or {}
+    return bool(table.get(section, True))
+
+
+def _check_rebar_not_double_billed(data: Mapping[str, Any], path: Path,
+                                   sections: Mapping[str, Mapping[str, Any]]) -> None:
+    """Refuse a file that prices reinforcement while a $/cy rate still contains it.
+
+    ``prices.toml`` states in two places that the yard rates must be cut the same day
+    reinforcement becomes its own line, and `plans/cost-options.md` observed that *"nothing
+    enforces that"* — against an exposure of roughly five tons and $10,000-18,000. This is
+    the enforcement, and it is the same shape the file already uses twice: an explicit opt-in
+    boolean deciding whether a part bills separately or rides inside a rate
+    (``Material.exposed_fastener``), and a hard error naming the module that owns the factor
+    when a section would carry its waste twice (``WASTE_IN_QUANTITY`` above).
+
+    The trigger is PRICING reinforcement, not billing it. An unpriced ``[reinforcement]``
+    table is a quantity report: every row lands in the estimate's ``unpriced`` list, the
+    total does not move by a cent, and nothing is billed twice. That is deliberate, because
+    it is what lets the tonnage ship and be reviewed BEFORE any rate is touched — the
+    quantity ships before the dollar does.
+    """
+    if not sections.get("reinforcement"):
+        return
+    still_inclusive = sorted(
+        name for name in REBAR_INCLUSIVE_SECTIONS
+        if sections.get(name) and rebar_is_inclusive(data, name))
+    if not still_inclusive:
+        return
+    named = ", ".join(f"[{name}] ({REBAR_INCLUSIVE_SECTIONS[name]})"
+                      for name in still_inclusive)
+    raise ValueError(
+        f"{path}: [reinforcement] is priced while {named} still contains its own rebar, so "
+        f"every pound of steel would be billed twice — once by the yard and once by the "
+        f"pound. Cut the MATERIAL half out of those rates, then declare the cut:\n"
+        f"    [rebar_inclusive]\n"
+        + "".join(f"    {name} = false\n" for name in still_inclusive)
+        + "Cut the material half only: [basis_notes] says the yard rates are a sourced "
+        "material price plus a RESIDUAL labour figure, and subtracting a rebar placer's "
+        "wage out of a residual is judgement dressed as arithmetic.")
 
 
 def waste_in_quantity(section: str) -> bool:

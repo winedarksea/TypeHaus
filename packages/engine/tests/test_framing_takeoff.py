@@ -136,6 +136,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "fabricated_members",
                         "structural_solids",
+                        # Reinforcing steel by the pound. Its own section since 2026-09-03;
+                        # before that it rode invisibly inside the
+                        # ``[concrete]``/``[wall_structure]`` $/cy rates.
+                        "reinforcement",
                         # The sill seal under the bearing plates, by the lineal
                         # foot and by product — its own section because
                         # ``construction_returns`` reconciles 1:1 with the resolved returns

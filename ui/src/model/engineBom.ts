@@ -42,8 +42,11 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // `fabricated_members` follows the cut list it re-presents: it adds no quantity, it
     // states what a made-to-order member (a floor truss) has to be BUILT to — overall
     // length, clear span, seat at each end (→ takeoff/fabrication.py).
+    // `reinforcement` follows the pours it sits inside — it is bought by the pound and
+    // placed by the same crew, and until 2026-09-03 it had no line at all because the steel
+    // rode invisibly inside the $/cy rate of the two sections above it.
     sections: ["framing", "framing_by_size", "fabricated_members", "structural_solids",
-      "wall_structure",
+      "wall_structure", "reinforcement",
       "sheet_goods", "member_protection", "construction_returns", "sill_gaskets", "hardware",
       "footing_bedding"],
   },

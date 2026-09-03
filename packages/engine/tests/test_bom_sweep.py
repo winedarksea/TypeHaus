@@ -66,7 +66,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # nothing: the doorway is 3'-0" wherever it sits in the run. Six runs now, still 42.7.
     # `length_ft` is the PLAN run of the path, so the two raked PSTAIR runs read ~1.9 LF
     # light between them against the rail actually cut — flagged on the price row.
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.3, abs=0.1)
+    #
+    # 40.8, not 40.3, since 2026-09-03: RL-SG-BALCONY follows the deck edge, and
+    # `joist_cantilever_in` went 6" -> 9" so the plank drips clear of the 12" columns
+    # instead of onto them. The U gained 3" on each of its two side legs.
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.8, abs=0.1)
     assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(42.7, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
@@ -640,6 +644,9 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # order rows of `framing` with the overall length, clear span and end bearing a
         # fabricator's order needs (→ takeoff/fabrication.py).
         "framing", "framing_by_size", "fabricated_members", "structural_solids",
+        # Reinforcing steel by the pound — its own section since 2026-09-03, when it stopped
+        # riding invisibly inside the [concrete]/[wall_structure] $/cy rates.
+        "reinforcement",
         "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
         # The sill seal under the bearing plates: its own section because

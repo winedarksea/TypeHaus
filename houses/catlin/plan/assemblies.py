@@ -1641,6 +1641,22 @@ SG_FROST_WING_XPS2 = Assembly(
 # No reinforcement, deliberately. These are plain strips under IRC Table R403.1, which is a
 # prescriptive answer to a prescriptive question; a 4-6" projection on an 8" depth satisfies
 # ACI §13.3 trivially, and a second, engineered authority on the same number buys nothing.
+# The sunken-garden court's three retaining strips — 8'-0" x 1'-0", a different pour from
+# the 20x8 house strip in every way that matters: wider, deeper, reinforced top and bottom
+# (`_RETAINING_FOOTING_MAT` in params/sunken_garden.py), and poured from the EXPOSED mix
+# rather than the buried one because it is the same concrete, the same day, as the wall
+# standing on it. That last point is why `retaining_basis.footing_states` grades the footing
+# on the WALL's specified f'c: a wall and its footing are one pour sequence off one ticket,
+# and two mixes on one truck is not a thing that happens.
+CATLIN_RETAINING_FOOTING_96 = Assembly(
+    tag="CATLIN_RETAINING_FOOTING_96",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+    ),
+    source="the sunken-garden court's 8'-0\" x 1'-0\" retaining strips, reinforced #6 @ 10\" transverse top and bottom (notes/sunken_garden_court_free_body.md §7)",
+)
+
 CATLIN_FOOTING_20 = Assembly(
     tag="CATLIN_FOOTING_20",
     layers=(
@@ -3535,6 +3551,8 @@ ASSEMBLIES = [
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,
+    CATLIN_FOOTING_20,
+    CATLIN_RETAINING_FOOTING_96,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     CATLIN_INT_2X6_BRG_RC,

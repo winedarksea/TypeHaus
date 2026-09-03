@@ -2777,6 +2777,10 @@
 # THE MODEL AT ALL, so the all-in rate is the honest one. The rebar question is under
 # "Not in the estimate" in plans/cost-options.md and in plans/TODO.md, with the standing
 # condition attached: if rebar is ever authored as elements, cut these rates the same day.
+# ** THAT CONDITION IS NOW ENFORCED, NOT MERELY WRITTEN DOWN. ** Reinforcement is a BOM
+# section as of 2026-09-03 and [rebar_inclusive] wall_structure = true is this rate declaring
+# that it still absorbs its own steel. Pricing [reinforcement] without flipping that to false
+# is a hard error naming both sides — see cli/price_file._check_rebar_not_double_billed.
 # ** DAMP-PROOFING IS NO LONGER OUTSIDE THE MODEL. ** `damp-proof` (library/assemblies.py:170)
 # bills in [envelope_layers] as `air-barrier`, so the "not modelled separately" half of the
 # argument above is stale for that item and this rate may now be ~$7-18/LF high. Logged in
@@ -4123,10 +4127,12 @@
 #
 #   Rebar, $10,000-18,000.  [basis_notes] concrete says rebar is INSIDE the $/cy rates, and
 #                           those rates were raised on 2026-08-20 on exactly that assumption.
-#                           Authoring it here would bill ~5 tons of steel twice. If the
-#                           decision is ever reversed, take it out of the concrete rates the
-#                           same day — the register entry says this is a decision that should
-#                           be made explicitly, and leaving it out here is that decision.
+#                           Authoring it here would bill ~5 tons of steel twice. Since
+#                           2026-09-03 the reversal is ENFORCED rather than remembered:
+#                           [rebar_inclusive] declares which rates still contain their steel,
+#                           and pricing [reinforcement] against one that does is a hard error
+#                           naming both sides. The QUANTITY already bills (unpriced) so the
+#                           tonnage can be checked against this figure first.
 #   GC overhead and profit, $100,000-375,000.  That is the [markup] stage, which the owner
 #                           deliberately left at zero. Putting it here would turn on, through
 #                           a side door, the one thing that was explicitly turned off — and
@@ -4927,6 +4933,40 @@ allowances = true
 # better fix and would take this line out.
 solar_modules = true
 
+# --- reinforcement ---------------------------------------------------------------------
+#
+# DELIBERATELY EMPTY, and the emptiness is the safety property. `takeoff/reinforcement.py`
+# bills reinforcing steel by the pound as of 2026-09-03; until this table has rates, every
+# row lands in the estimate's `unpriced` list and the TOTAL DOES NOT MOVE. That is what lets
+# the tonnage be reviewed against the ~5 tons and $10,000-18,000 the allowance register
+# carries (see the [allowances] omission note) before a single rate is cut.
+#
+# Filling it in is the SAME-DAY other half of cutting the material rebar out of [concrete]
+# and [wall_structure]. `[rebar_inclusive]` below is what enforces that, and the enforcement
+# is the whole point: `plans/cost-options.md` recorded the standing condition and observed
+# that "nothing enforces that", against a five-ton exposure.
+#
+# When it is filled: black bar keys on the bar designation (`"#5"`); hot-dip galvanized keys
+# `"#5:hdg-a767"` and runs roughly +$0.30/lb over black. If the two do not price separately
+# then specifying galvanized bar house-wide is invisible in the estimate, which is most of
+# the reason for specifying it.
+[reinforcement]
+
+# --- rebar_inclusive -------------------------------------------------------------------
+#
+# Whether a $/cy rate still CONTAINS its own reinforcing steel. Absent means true, because
+# that was the only place rebar could live before it had a section of its own — so a file
+# written before this existed keeps its exact meaning, and a house opts out explicitly once
+# it has actually cut the rates.
+#
+# Both are still `true` here: [concrete] and [wall_structure] absorb their rebar, exactly as
+# their [basis_notes] entries say, and [reinforcement] is empty so nothing is billed twice.
+# THESE TWO LINES AND THE [reinforcement] RATES MOVE IN ONE COMMIT, or the estimate
+# double-bills roughly five tons of steel. Cut the MATERIAL half only.
+[rebar_inclusive]
+concrete       = true
+wall_structure = true
+
 [basis]
 framing              = "material"
 sheet_goods          = "material"
@@ -4955,6 +4995,7 @@ pipe_insulation      = "material"
 edge_trim            = "material"
 member_protection    = "material"
 wall_structure       = "installed"
+reinforcement        = "material"
 timber               = "material"
 railings             = "material"
 drainage             = "material"
@@ -4970,6 +5011,7 @@ allowances           = "installed"
 [basis_notes]
 duct_fittings   = "material only, and derived rather than quoted, exactly as [pipe_fittings] is: an elbow is counted off the run's own 3D polyline, so the count is geometry and the rate is a catalogue price. No tees — there is no parent inference for an air-side system the way drain_tie_ins gives one for drainage, and a radial install barely has any"
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
+reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
 wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT is the same case and the same warning. GARAGE_ICF_6_BRICKLEDGE is NOT — it is mostly ICF wall, and its rate is struck across the core row and the brick-ledge band row together, which share one key"

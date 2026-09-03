@@ -64,6 +64,7 @@ from typehaus.takeoff.plumbing_specialties import (
     plumbing_specialties_takeoff,
 )
 from typehaus.takeoff.railings import railing_takeoff
+from typehaus.takeoff.reinforcement import reinforcement_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
@@ -102,6 +103,13 @@ def bill_of_materials(
         # quantity — every piece it lists is already billed in ``framing`` above.
         "fabricated_members": fabricated_member_schedule(model),
         "structural_solids": structural_solids_takeoff(model),
+        # Reinforcing steel by the pound. Rebar used to reach the estimate only as an
+        # invisible component of the ``[concrete]`` and ``[wall_structure]`` $/cy rates —
+        # roughly five tons of it, ordered by nobody. See ``takeoff/reinforcement.py``, and
+        # note that a rate still declaring itself rebar-INCLUSIVE against a non-empty
+        # section here is a hard error in ``cli/price_file.py``: that is the double-billing
+        # guard, and it is enforced rather than remembered.
+        "reinforcement": reinforcement_takeoff(model),
         "construction_returns": construction_returns_takeoff(model),
         # The seal under the sill plates the line above bills the boards of. Its own table
         # because ``construction_returns`` reconciles 1:1 with the resolved returns

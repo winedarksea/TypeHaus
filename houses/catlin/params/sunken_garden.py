@@ -349,12 +349,32 @@ _grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
 # way a correctly-sized wall falls over. Sized in
 # `notes/sunken_garden_court_free_body.md` §6: Mu = 1.6 x 11,151 = 17,841 ft-lb/ft at
-# at-rest against phi-Mn 21,639 at #6 @ 10" (d/c 0.82). #6 @ 12" is the arithmetic
-# minimum at d/c 0.98 and is too thin a margin for a screening; the `#6 @ 38"` the
-# braced porch walls carry is nowhere near. 2" cover per ACI 318-19 Table 20.5.1.3.1
-# (earth and weather, #6 and larger), which is also IRC Table R404.1.2(8) footnote i's
-# outside-face figure for bars larger than #5.
+# at-rest against phi-Mn 22,131 at #6 @ 10" (d/c 0.81, on the 5,000 psi mix
+# `SUNKEN_GARDEN_WALL` states). #6 @ 12" is the arithmetic minimum at d/c 0.96 and is too
+# thin a margin for a screening on presumptive soil values; the `#6 @ 38"` the braced porch
+# walls carry is nowhere near. 2" cover per ACI 318-19 Table 20.5.1.3.1 (earth and weather,
+# #6 and larger), which is also IRC Table R404.1.2(8) footnote i's outside-face figure for
+# bars larger than #5.
+#
+# ** AUTHORED TWICE, AND THAT IS THE MIGRATION CONTRACT. ** The string is what prints on the
+# drawing; the struct is what `stem_flexure` grades and what `takeoff/reinforcement.py`
+# bills. Where both exist the STRUCT governs and the parser is not called at all, and
+# `integrity.reinforcement_spec_agrees` raises an ERROR if the two ever drift apart. The
+# horizontal steel was never stated in the string and is stated here: ACI 318-19 §11.6.1
+# asks 0.0020 of the gross section for #5 and smaller, i.e. 0.288 in2/ft on a 12" wall,
+# and `#4 @ 8"` is 0.300.
 _RET_REBAR = '#6 @ 10" o.c.'
+_RET_STEM_STEEL = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=6, spacing=inch(10.0),
+                note="RETAINED face — that is where the cantilever puts the tension"),
+        BarSpec(role="horizontal", bar=4, spacing=inch(8.0),
+                note="ACI 318-19 §11.6.1 temperature and shrinkage, both faces"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="sized in notes/sunken_garden_court_free_body.md §6",
+)
 # Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey datum
 # and the plank sits on them. This is the surface underfoot — what RL-SG-PORCH's 42" is
 # measured from, and what the two centre balcony pillars bear on.
@@ -554,18 +574,21 @@ WALLS = [
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
+                   reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
+                   reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
                    unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    vertical_reinforcement=_RET_REBAR,
+                   reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
 ]
 
@@ -816,6 +839,7 @@ FOOTINGS = [
                        else SPEC.footing_width_in),
             offset=inch(_RETAINING_FOOTING_OFFSET_IN) if w.tag in _RETAINING else None,
             reinforcement=_RETAINING_FOOTING_MAT if w.tag in _RETAINING else None,
+            assembly="CATLIN_RETAINING_FOOTING_96" if w.tag in _RETAINING else None,
             depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.

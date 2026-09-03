@@ -148,6 +148,10 @@ SECTION_CODES: dict[str, CostCode] = {
     "framing": CostCode("2000", "06 11 00", "framing"),
     "sheet_goods": CostCode("2000", "06 16 00", "framing"),
     "hardware": CostCode("2000", "06 05 23", "framing"),
+    # 03 21 00 is CSI's "Reinforcement Bars", a division of its own beside the cast
+    # concrete it sits in — which is exactly what this section is: the steel came OUT of the
+    # $/cy line when it stopped being invisible.
+    "reinforcement": CostCode("1310", "03 21 00", "concrete"),
     "concrete": CostCode("1300", "03 30 00", "concrete"),
     "floor_heat": CostCode("3200", "23 83 00", "mechanical"),
     "placeables": CostCode("4200", "11 30 00", "furniture"),

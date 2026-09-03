@@ -60,6 +60,47 @@ def wall_assembly_resolves(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.INTEGRITY, "integrity.element_assembly")
+def element_assembly_resolves(ctx: CheckContext) -> list[Finding]:
+    """Every OTHER element that names an assembly must name one that exists.
+
+    ``integrity.wall_assembly`` above has covered walls since the beginning, because a wall
+    with no resolvable stack has no thickness and the resolver falls over. Nothing covered a
+    Footing, a Pad, a Slab, a Post or a Beam — and those DEGRADE INSTEAD OF FAILING. A footing
+    naming an assembly that does not exist still resolves, still draws, still bills: it simply
+    reverts to the bare-pour behaviour, which is what it had before anyone named an assembly
+    at all, and looks exactly like success.
+
+    **This was found the hard way.** `CATLIN_FOOTING_20` was authored, referenced by 26
+    footings, and left out of the house's assembly list. The takeoff's group label read the
+    tag straight off the element and printed it, `haus check` was clean at 0 FAIL, and the
+    `ConcreteSpec` those 26 pours were supposed to be stating — their mix, their exposure
+    class, their bar coating — was silently reaching nothing at all. The symptom of a
+    misspelled or unregistered tag is *the feature quietly not working*, which is the worst
+    kind of symptom to have no rule for.
+
+    ERROR rather than a warning, and the same severity the wall rule carries: an assembly
+    reference that resolves to nothing is not a degraded model, it is a statement the model
+    failed to record.
+    """
+    out: list[Finding] = []
+    for el in ctx.plan.all_elements():
+        if el.element_kind in ("Wall", "FoundationWall"):
+            continue  # integrity.wall_assembly's territory
+        tag = getattr(el, "assembly", None)
+        if not tag or ctx.plan.library.resolve_assembly(tag) is not None:
+            continue
+        out.append(_err(
+            "integrity.element_assembly",
+            f"{el.element_kind.lower()} {el.tag} references unknown assembly {tag!r}. "
+            f"Unlike a wall this does not fail — it silently reverts to the bare-pour "
+            f"behaviour, so everything the assembly was carrying (its ConcreteSpec, its "
+            f"layers, its price key) reaches nothing",
+            (el.tag,),
+            "add it to the house's assembly list, or fix the reference"))
+    return out
+
+
 @check(Tier.INTEGRITY, "integrity.assembly_layers")
 def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
