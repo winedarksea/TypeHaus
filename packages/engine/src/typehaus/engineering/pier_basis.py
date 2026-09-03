@@ -480,7 +480,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     """
     from typehaus.model.structure import Footing, FoundationWall, Pad, Post
     from typehaus.resolve.assembly_material import assembly_structure_material
-    from typehaus.resolve.concrete import concrete_spec_for, cover_in, fc_psi
+    from typehaus.resolve.concrete import concrete_spec_for, cover_for, fc_psi
 
     footings = {f.under: f for f in ctx.plan.all_elements()
                 if isinstance(f, Footing) and f.under}
@@ -552,6 +552,6 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             unmodelled_load=unmodelled.get(post.tag, ()),
             reinforcement=getattr(post, "reinforcement", None),
             specified_fc_psi=fc_psi(concrete_spec_for(ctx.plan, post)),
-            specified_cover_in=cover_in(concrete_spec_for(ctx.plan, post)),
+            specified_cover_in=cover_for(ctx.plan, post)[0],
         ))
     return sorted(out, key=lambda pier: pier.tag)

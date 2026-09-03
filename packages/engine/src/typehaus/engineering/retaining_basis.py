@@ -45,7 +45,12 @@ from typehaus.engineering.soil import (
 )
 from typehaus.model.enums import LayerFunction
 from typehaus.model.rebar import BARS
-from typehaus.resolve.concrete import concrete_spec_for, cover_in, fc_psi
+from typehaus.resolve.concrete import (
+    concrete_spec_for,
+    cover_for,
+    cover_in,
+    fc_psi,
+)
 
 BASIS = "IRC R404.4; IBC 1610.1 / 1806.2 presumptive values"
 
@@ -131,10 +136,18 @@ class _Geometry:
     #: section from the stem and carry different bars. ``None`` means the model does not say,
     #: which for a 4'-0" toe is not a silence anything may fill: see :func:`footing_flexure`.
     footing_reinforcement: object | None = None
-    #: The clear cover this wall's assembly SPECIFIES, inches, or None for the ACI
+    #: The cover the FOOTING's own mix states, inches, or None. Separate from the stem's
+    #: because the two are different elements that may name different assemblies.
+    footing_mix_cover_in: float | None = None
+    #: The clear cover governing the STEM's bar, inches, or None for the ACI
     #: Table 20.5.1.3.1 minimum. Cover is subtracted from the stem thickness to get ``d``,
     #: so 3" on a 12" stem is roughly -16% flexural capacity against 1-1/2": it is a
     #: durability decision that spends section, and it must be graded on what was authored.
+    #:
+    #: Resolved by ``resolve/concrete.cover_for``, which reads the WALL's own
+    #: ``ReinforcementSpec.cover`` before its mix's. That order matters: a mix is one ticket
+    #: serving the footing cast against soil and the formed stem standing on it, and those
+    #: two faces do not want the same cover.
     specified_cover_in: float | None = None
 
 
@@ -466,13 +479,20 @@ def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
 
 
 def _footing_cover_in(geometry: _Geometry) -> float:
-    """Clear cover to the footing mat: what the pour specifies, else ACI's cast-against-earth 3"."""
+    """Clear cover to the footing mat: its own schedule, else the mix, else ACI's 3".
+
+    **The stem's cover is deliberately not a fallback here.** It used to be — this read
+    ``geometry.specified_cover_in`` second — which was harmless only while that field was the
+    mix's figure and so shared by both. Now that it is the WALL's own per-face number, using
+    it on the footing would hand a formed stem's 2" to a mat cast against soil and quietly
+    lengthen the lever arm on the toe.
+    """
     spec = geometry.footing_reinforcement
     authored = getattr(spec, "cover", None) if spec is not None else None
     if authored is not None:
         return float(authored.inches)
-    if geometry.specified_cover_in is not None:
-        return geometry.specified_cover_in
+    if geometry.footing_mix_cover_in is not None:
+        return geometry.footing_mix_cover_in
     return _FOOTING_COVER_IN
 
 
@@ -635,8 +655,9 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
         vertical_reinforcement=getattr(wall, "vertical_reinforcement", None),
         stem_reinforcement=getattr(wall, "reinforcement", None),
         footing_reinforcement=getattr(footing, "reinforcement", None),
+        footing_mix_cover_in=cover_in(concrete_spec_for(ctx.plan, footing)),
         specified_fc_psi=fc_psi(spec),
-        specified_cover_in=cover_in(spec),
+        specified_cover_in=cover_for(ctx.plan, wall)[0],
         # **Two different heights, and conflating them was the other half of the same slip.**
         # ``unbalanced_fill`` is the IRC quantity — fill against the wall, measured to the
         # base of the wall — and it is what R404.1.1's 48" threshold and Table R404.1.2(8)'s

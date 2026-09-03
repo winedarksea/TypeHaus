@@ -60,3 +60,30 @@ def cover_in(spec: ConcreteSpec | None) -> float | None:
 def fc_psi(spec: ConcreteSpec | None) -> float | None:
     """``spec``'s specified f'c, or ``None`` where there is no spec at all."""
     return None if spec is None else float(spec.fc_psi)
+
+
+def cover_for(plan: Any, element: Any) -> tuple[float | None, str | None]:
+    """The clear cover governing ``element``'s bar, in inches, and where it was authored.
+
+    **The element's own schedule wins over its mix**, and that order is the whole point of
+    this function. Cover is a property of a *face*: a footing cast against soil wants 3",
+    the formed face of the wall standing on it wants 2", and both are poured from the same
+    ticket. A ``ConcreteSpec`` is that ticket — one mix serving many elements — so a cover
+    written on it can only ever be the house default, and the ``ReinforcementSpec`` on the
+    element is the one place a per-face figure can be stated at all.
+
+    Before this existed the precedence ran the other way by accident: every calc read
+    ``ConcreteSpec.cover`` and nothing read ``ReinforcementSpec.cover``, so the 2" authored
+    on catlin's retaining stems was inert (the ACI table fallback happened to return 2" as
+    well, which is how it went unnoticed) and the basement walls silently took the buried
+    mix's cast-against-earth 3" on a formed face.
+
+    Returns ``(None, None)`` where neither states one — the caller falls back to the ACI
+    Table 20.5.1.3.1 minimum for the bar, and says so in its citation.
+    """
+    schedule = getattr(element, "reinforcement", None)
+    authored = getattr(schedule, "cover", None) if schedule is not None else None
+    if authored is not None:
+        return float(authored.inches), "its reinforcement schedule"
+    mix = cover_in(concrete_spec_for(plan, element))
+    return (mix, "its mix") if mix is not None else (None, None)

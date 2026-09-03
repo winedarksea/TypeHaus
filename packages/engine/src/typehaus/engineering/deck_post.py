@@ -593,10 +593,12 @@ def _fc_note(pier: _Pier) -> str:
 def _cover_in(pier: _Pier) -> float:
     """The cover to grade this pier on, in inches.
 
-    Three sources in falling order of authority: the ``ConcreteSpec`` on the pier's assembly
-    (structured, authored, and the one a durability check grades), the ``N" cover`` fragment
-    scraped out of the free-text cage string, and the Code minimum. The regex is kept as the
-    middle rung so that a house which has not yet migrated a pour to a structured spec is
+    Four sources in falling order of authority, resolved by ``resolve/concrete.cover_for``
+    for the first two: the ``ReinforcementSpec.cover`` authored on the pier itself, the
+    ``ConcreteSpec.cover`` on its assembly, the ``N" cover`` fragment scraped out of the
+    free-text cage string, and the Code minimum. The schedule outranks the mix because cover
+    is a property of a face and a mix is one ticket serving many faces. The regex is kept as
+    the third rung so that a house which has not yet migrated a pour to a structured spec is
     graded exactly as it was before — migration is pour by pour, never one sweep.
     """
     if pier.specified_cover_in is not None:
