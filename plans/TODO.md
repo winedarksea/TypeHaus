@@ -323,6 +323,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     `takeoff/reinforcement.py` bills the steel by the pound NOW, priced at nothing, so the
     tonnage can be read before any rate is cut; and `[rebar_inclusive]` makes the standing
     "cut the rates the same day" condition a hard error instead of a comment.
+    **The back-out gate has been RUN and it says do not cut yet** — 2.09 of ~5 tons,
+    $4,380-5,630 against the register's $10,000-18,000. `notes/rebar_backout.md` is the
+    oracle, §4 names the three modelling gaps that make up the difference (the basement
+    walls' horizontal steel, `GARAGE_ICF_6`'s bar size, `SL-M-DECK`'s cap schedule) and §5
+    is the ordered list of what to author. `tests/test_rebar_backout.py` fails loudly the
+    day the gate opens; `scripts/price_delta.py` is the one-command proof that nothing but
+    the three intended sections moved.
   - **STILL OPEN**, and each is blocked on something specific:
     - the two cast-column assemblies (`SUNKEN_GARDEN_COLUMN_12`, `PIER_CONCRETE_12`) still
       read the presumptive f'c. Attaching their real mix re-oracles
