@@ -961,7 +961,7 @@
 # column is stale for it. See plan/assemblies.py and notes/uplift_load_path.md.
 "column:SUNKEN_GARDEN_COLUMN_20" = { material = { low = 400, high = 741 }, labour = { low = 268, high = 600 } }  # 0.79 cy = 10.08 LF — PT-SG-FCOL; material re-struck 2026-08-30 for the (8) #6 cage
 # The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
-# the garden back-beam midspan, 25.9 LF between them. A round pier is cheaper per yard than
+# the garden back-beam midspan, 29.6 LF between them. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and
 # there is no chamfer, no wash and no rubbing after strip. $31-62/LF installed: fibre tube
 # $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar cage
@@ -971,11 +971,18 @@
 # 2026-08-30: PT-SG-COL's cage went #4 -> #5 — 0.01 A_g on a 12" round (113.10 in2) is
 # 1.131 in2 and four #4 bars are 0.80 in2, so the priced cage was 29% short of ACI 318-19
 # §10.6.1.1. Four #5 is 1.24 in2 and the Code's own four-bar floor for a circular tie
-# (§10.7.3.1(b)). Over PT-SG-COL's 10.68 LF that is **+16 lb of steel, +$10-20** — the whole
-# move, because the other 15.2 LF in this row are the four breezeway piers and THEY ARE NOT
-# FIXED: see plans/TODO.md, they are 12" round plain columns at h/d 4.3-4.7 with no cage
-# authored and no engineered item reaching them. When they are, this row moves again.
-"column:PIER_CONCRETE_12" = { material = { low = 476, high = 879 }, labour = { low = 638, high = 1348 } }  # 0.73 cy = 25.9 LF; $/cy, so the line is $817-1,633
+# (§10.7.3.1(b)). Over PT-SG-COL's 10.68 LF that was +16 lb of steel, +$10-20.
+#
+# 2026-09-03: **the other four piers caught up.** PR-BW-1..4 were 12" round PLAIN columns at
+# h/d 4.7 — past ACI §2.3's pedestal ratio of 3, where §14.1.5 permits no plain column at any
+# stress — with no cage authored and no engineered item reaching them (`cast_piers` indexed
+# footings from `Footing.under` and these bear on `Pad`s, so they fell out with no record at
+# all). They carry the same '(4) #5 vertical, #3 ties @ 10" o.c.' now, oracled by
+# notes/breezeway_piers.md §4. Over their 18.92 LF that is **+28 lb of steel, +$18-36**,
+# scaled off this row's own 2026-08-30 step — the material rate below moves with it.
+# (plans/TODO.md said "~+16 lb per pier", which overstates it about fourfold: 16 lb was the
+# whole of PT-SG-COL's 10.68 LF, not one pier's.)
+"column:PIER_CONCRETE_12" = { material = { low = 498, high = 923 }, labour = { low = 638, high = 1348 } }  # 0.82 cy = 29.6 LF; $/cy, so the line is $931-1,861
 # ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
 # out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
 # pipe and not even all of it. New-construction installed exterior footing drain, open trench,

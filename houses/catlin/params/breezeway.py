@@ -101,13 +101,13 @@ from typehaus import (
     Connector,
     ConnectorKind,
     FloorSystem,
-    Slab,
     GlazingPanel,
     GlazingTrim,
     JoistSpec,
     Node,
     Pad,
     Post,
+    Slab,
     TrimKind,
     Wedge,
     ft,
@@ -339,10 +339,33 @@ PADS = [
 # comment.
 _PIER_TOPS = [_PIER_TOP] * 4
 
+# ** THE CAGE IS THE MINIMUM ACI PERMITS, AND IT IS NOT OPTIONAL. ** Same section as
+# PT-SG-COL, so the same arithmetic and the same answer (params/sunken_garden.py has it in
+# full): A_g = 113.10 in2, §10.6.1.1's 1% floor is 1.131 in2, (4) #5 = 1.24 in2 (rho 1.096%)
+# clears it by 9.6% and is §10.7.3.1(b)'s own four-bar minimum for a circular tie. #3 ties
+# (§25.7.2.1, verticals #10 or smaller) at §25.7.2.2's maximum — the least of 16db = 10.0",
+# 48dt = 18.0", h = 12.0".
+#
+# **These piers are COLUMNS, not pedestals, which is the whole reason the bars are here.**
+# h/d is 4.7 (56 3/4" over 12"), past ACI §2.3's 3.0, and §14.1.5 does not permit a plain
+# concrete column at ANY stress. Before this the four stood unreinforced and ungraded:
+# `engineering/pier_basis.cast_piers` indexed footings from `Footing.under` and these bear
+# on `Pad`s, so they fell out silently — no record, not even an INCOMPLETE.
+#
+# The 1% floor is a creep, shrinkage and accidental-moment rule, indifferent to load, which
+# is fortunate: this pier's axial DEMAND cannot be computed. It carries BM-BW-RW/RE, and the
+# breezeway roof is neither a Roof nor a FloorSystem (see the ROOF FRAME block below), so
+# there is no plan area to divide among the posts. `haus engineering --item
+# deck_post/PR-BW-1` grades the six detailing states and reports the axial one INCOMPLETE
+# rather than publishing a d/c against a demand it knows is short.
+# Oracle: notes/breezeway_piers.md. Do not thin it to "save concrete".
+_PIER_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
+
 PIERS = [
     Post(uid=f"BWPR{i}AAAAA", tag=f"PR-BW-{i}", position=pt(ft(x), ft(y)),
          size="12 round", height=ft(_PIER_TOPS[i - 1] - _PAD_TOP),
-         assembly="PIER_CONCRETE_12", supported_by=f"PD-BW-{i}")
+         assembly="PIER_CONCRETE_12", vertical_reinforcement=_PIER_CAGE,
+         supported_by=f"PD-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 

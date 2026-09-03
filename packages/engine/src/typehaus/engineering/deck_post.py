@@ -46,8 +46,11 @@ KIND = "deck_post"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint. Bumped to "2"
 #: when ``Post.vertical_reinforcement`` arrived and this module stopped
-#: reporting a bare INCOMPLETE and started grading a reinforced column.
-BASIS_VERSION = "2"
+#: reporting a bare INCOMPLETE and started grading a reinforced column; to "3" when
+#: ``_detailing_only`` arrived and a pier whose axial demand the model cannot state stopped
+#: publishing a d/c against an under-count and started publishing the six detailing limits
+#: with the axial one named as missing.
+BASIS_VERSION = "3"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -199,15 +202,23 @@ def _one(pier: _Pier) -> EngineeringRecord:
         f"member a PEDESTAL at {PEDESTAL_HEIGHT_RATIO:.0f} or less and §14.1.3(d) permits it "
         f"to be plain concrete; past that it is a COLUMN, and §14.1.5 does not permit a plain "
         f"one at any stress.",
-        "§14.1.2 excludes cast-in-place piles and piers EMBEDDED IN GROUND from that chapter, "
-        "and a reviewer may reach for it here. It does not reach: the bell is embedded and "
-        "the shaft above it stands free in an open court for its whole height.",
+        "§14.1.2 excludes cast-in-place piles and piers EMBEDDED IN GROUND from that "
+        "chapter, and a reviewer may reach for it here. The exclusion is for a shaft "
+        "laterally supported by soil over its WHOLE height; every pier graded in this "
+        "module stands free above grade for part of its own, so it is a column and is "
+        "graded as one. Check that against the section before citing the exclusion.",
     )
 
     if is_pedestal and cage is None:
         return _plain_pedestal(pier, area, ratio, shape, demand, common)
     if cage is None:
         return _unreinforced_column(pier, area, ratio, shape, demand, minimum_steel, common)
+    if pier.unmodelled_load:
+        # The demand is an under-count and this module knows by how little it can say.
+        # Grading the six LOAD-INDEPENDENT detailing limits is real work and is published;
+        # the axial comparison is not, and is left out rather than printed against a number
+        # the model cannot make. See ``_detailing_only``.
+        return _detailing_only(pier, area, ratio, shape, minimum_steel, cage, common)
     return _reinforced_column(pier, area, ratio, shape, demand, minimum_steel, cage, common)
 
 
@@ -217,24 +228,22 @@ def _capacity(area_in2: float, steel_in2: float) -> float:
     return PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * squash
 
 
-def _reinforced_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,
-                       minimum_steel: float, cage: _Cage,
-                       common: tuple[str, ...]) -> EngineeringRecord:
-    """The cage is stated: grade it, and grade the four detailing limits around it."""
+def _detailing_states(pier: _Pier, area: float, minimum_steel: float,
+                      cage: _Cage) -> tuple[LimitState, ...]:
+    """The six limit states that DO NOT read the load — every one of ACI's detailing rules.
+
+    Separated because they are exactly what stays gradeable when the demand is unknown. A
+    1% steel floor, a four-bar minimum, a tie size and a tie pitch are properties of the
+    section and the cage; none of them moves when a load the model cannot see is added.
+    """
+    _slender, magnifier, eccentricity, embedded = _slenderness(pier)
     steel = cage.area_in2
-    capacity = _capacity(area, steel)
-    slenderness, magnifier, eccentricity, embedded = _slenderness(pier)
     # §25.7.2.2 — the least of 16 longitudinal diameters, 48 tie diameters, and the column's
     # own least dimension.
     tie_limit = min(16.0 * cage.bar_diameter_in, 48.0 * cage.tie_diameter_in, pier.diameter_in)
     required_tie = (_TIE_BAR_FOR_SMALL_LONGITUDINAL
                     if cage.bar <= _LARGEST_LONGITUDINAL_TAKING_A_NUMBER_3_TIE else 4)
-
-    states = (
-        LimitState("axial, tied column", demand, capacity, "lb",
-                   f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
-                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — f'c "
-                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi, fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+    return (
         LimitState("longitudinal steel", minimum_steel, steel, "in2",
                    f"ACI 318-19 §10.6.1.1 minimum {COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag"),
         LimitState("steel ratio ceiling", steel, COLUMN_MAX_REINFORCEMENT_RATIO * area, "in2",
@@ -250,6 +259,71 @@ def _reinforced_column(pier: _Pier, area: float, ratio: float, shape: str, deman
                    f"ACI 318-19 §6.6.4.5.4 e_min magnified by §6.6.4.5.2 delta_ns "
                    f"{magnifier:.3f}, against the {TIED_EMBEDDED_ECCENTRICITY_RATIO:.2f}h "
                    f"R22.4.2 says the {TIED_AXIAL_CAP:.2f} cap already carries"),
+    )
+
+
+def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_steel: float,
+                    cage: _Cage, common: tuple[str, ...]) -> EngineeringRecord:
+    """A cage graded in full against a demand that is knowably incomplete.
+
+    ``_Pier.unmodelled_load`` names beams bearing on this pier whose load is not an area
+    anywhere in the model, so ``tributary_ft2`` is an under-count of unknown size. The six
+    detailing states above are load-independent and are published; the §22.4.2 axial
+    comparison is **omitted, not estimated**. A d/c printed against a demand known to be
+    short is worse than no d/c at all — a reader takes a number at face value and has no way
+    to see what is missing from it, where an INCOMPLETE with a named cause is actionable.
+
+    The remedy is upstream and is not this module's: give the load a modelled area to divide
+    (a ``Roof`` or a ``FloorSystem`` over the beams), or have the engineer state the axial
+    demand. Either way the record becomes ``_reinforced_column``'s with nothing here changed.
+    """
+    steel = cage.area_in2
+    states = _detailing_states(pier, area, minimum_steel, cage)
+    over = any(not state.ok for state in states)
+    beams = ", ".join(pier.unmodelled_load)
+    reason = (f"the axial DEMAND on {pier.tag}. It carries {beams}, which no "
+              f"FloorSystem and no Roof names — so there is no tributary AREA for that load "
+              f"and the {pier.tributary_ft2:.1f} ft2 this pier does account for is an "
+              f"under-count of unknown size. The cage is graded in full above; the section "
+              f"is not, and is not guessed at")
+    return EngineeringRecord(
+        item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
+        basis_version=BASIS_VERSION, basis=BASIS,
+        status=Status.OVER if over else Status.INCOMPLETE,
+        summary=(f"{pier.tag}: a {pier.diameter_in:.0f}\" {shape} tied COLUMN (h/d "
+                 f"{ratio:.1f}) with {pier.vertical_reinforcement} — rho "
+                 f"{100.0 * steel / area:.2f}% against ACI 318-19 §10.6.1.1's 1% floor, and "
+                 f"six detailing limits met; the AXIAL state is not computed"),
+        inputs=_inputs(pier, area, steel, cage), limit_states=states, missing=(reason,),
+        notes=common + (
+            f"CAGE: {pier.vertical_reinforcement} — As {steel:.2f} in2, rho "
+            f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
+            f"{COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag requires. This is the MINIMUM cage the "
+            f"Code permits, not a chosen margin.",
+            f"UNMODELLED: {beams}. This is a shelter roof carried on beams and rafters with "
+            f"no Roof or FloorSystem over it, so it has no plan area to shoelace. It is a "
+            f"small load — the enclosure is 4'-0\" x 4'-0\" of 16mm multiwall on three 2x6 "
+            f"rafters — and 'small' is a judgement, not a calculation, which is exactly why "
+            f"this record declines to turn it into one.",
+            "SCREENING: the detailing limits above are complete and the section is not "
+            "graded at all. A stamped design states the demand and closes it.",
+        ), element_tags=(pier.tag,))
+
+
+def _reinforced_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,
+                       minimum_steel: float, cage: _Cage,
+                       common: tuple[str, ...]) -> EngineeringRecord:
+    """The cage is stated: grade it, and grade the four detailing limits around it."""
+    steel = cage.area_in2
+    capacity = _capacity(area, steel)
+    slenderness, magnifier, _eccentricity, _embedded = _slenderness(pier)
+
+    states = (
+        LimitState("axial, tied column", demand, capacity, "lb",
+                   f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
+                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — f'c "
+                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi, fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+        *_detailing_states(pier, area, minimum_steel, cage),
     )
     over = any(not state.ok for state in states)
     notes = common + (

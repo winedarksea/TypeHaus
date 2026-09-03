@@ -41,14 +41,27 @@ BASIS_VERSION = "1"
 BASIS = "IRC R507.3.1; IBC Table 1806.2 presumptive values"
 
 
+def _piers_on_their_own_footing(ctx: EngineeringContext) -> list[_Pier]:
+    """The subset ``cast_piers`` yields that this module governs — one with a ``Footing``.
+
+    ``cast_piers`` also yields a pier on a ``Pad``, and a ``Pad`` **is** an IRC Table
+    R507.3.1 row: ``structural.deck_footing_size`` sizes it against the same tributary and
+    the same presumptive soil, prescriptively. Minting an engineered bearing record beside
+    that one would put two authorities on one number and gain nothing — the table publishes
+    the flat-pad case, which is exactly what a pad is. What has no row is the augered BELL,
+    and a bell arrives as a ``Footing``.
+    """
+    return [pier for pier in cast_piers(ctx) if pier.footing_tag]
+
+
 @keys(KIND)
 def enumerate_piers(ctx: EngineeringContext) -> list[str]:
-    return [pier.tag for pier in cast_piers(ctx)]
+    return [pier.tag for pier in _piers_on_their_own_footing(ctx)]
 
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(ctx, pier) for pier in cast_piers(ctx)]
+    return [_one(ctx, pier) for pier in _piers_on_their_own_footing(ctx)]
 
 
 def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:

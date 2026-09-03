@@ -55,6 +55,17 @@ class _Pier:
     #: ``deck_post.parse_cage``; a string that will not parse is read as NO steel, which is
     #: the conservative direction and one the record names rather than swallows.
     vertical_reinforcement: str | None = None
+    #: Beams bearing on this pier (or on a post handed down to it) whose load NOTHING in
+    #: this module can shoelace — a beam named by no ``FloorSystem.joists.bearing_refs`` and
+    #: no ``Roof.bearing_refs`` carries a tributary that does not exist as an area anywhere
+    #: in the model. ``tributary_ft2`` is therefore an UNDER-count wherever this is set, and
+    #: ``deck_post`` refuses to publish an axial d/c against it. Empty is the ordinary case:
+    #: a post under a deck, whose whole load is that deck's area.
+    #:
+    #: The breezeway's roof is the reason this exists — a shelter roof that is neither a
+    #: ``Roof`` nor a ``FloorSystem`` but four ``Beam``s and three rafters
+    #: (``params/breezeway.py`` explains why), so there is no polygon to divide.
+    unmodelled_load: tuple[str, ...] = ()
 
     @property
     def gross_area_in2(self) -> float:
@@ -167,19 +178,75 @@ def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
     return out
 
 
-def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
-    """Every cast-concrete post standing on its own ``Footing``.
+def _unmodelled_beams(ctx: EngineeringContext) -> dict[str, tuple[str, ...]]:
+    """Post tag -> beams bearing on it that belong to no deck and no roof.
 
-    Scoped to a post that bears on a ``Footing`` — the augered-and-belled case IRC Table
-    R507.3.1's flat-pad rows and R507.4's sawn-lumber rows both have nothing to say about,
-    which is precisely why these are engineered items. A post on a ``Pad``, on a wall, on a
-    floor or on another post is somebody else's rule and is answered there
-    (``checks/structural/deck.py``, and ``tests/test_deck_post_bearing.py`` pins the split).
+    A ``Beam`` named by some ``FloorSystem.joists.bearing_refs`` or ``Roof.bearing_refs``
+    has its load accounted for as that element's area, divided among its posts by
+    :func:`_deck_tributaries`. A beam named by neither carries something the model holds
+    only as sticks — and a tributary AREA is the only currency this module has. Rather than
+    invent one, the pier says which beams it could not account for and ``deck_post`` declines
+    to publish an axial ratio. Publishing an understated demand is worse than publishing none.
     """
-    from typehaus.model.structure import Footing, Post
+    from typehaus.model.floors import FloorSystem
+    from typehaus.model.spatial import Roof
+    from typehaus.model.structure import Beam, Post
+
+    accounted: set[str] = set()
+    for element in ctx.plan.all_elements():
+        if isinstance(element, FloorSystem):
+            accounted.update(element.joists.bearing_refs or ())
+        elif isinstance(element, Roof):
+            accounted.update(getattr(element, "bearing_refs", ()) or ())
+
+    direct: dict[str, list[str]] = {}
+    for beam in ctx.plan.all_elements():
+        if not isinstance(beam, Beam) or beam.tag in accounted:
+            continue
+        for ref in beam.bearing_refs or ():
+            direct.setdefault(ref, []).append(beam.tag)
+
+    # A post standing on another post hands what it carries down, exactly as the load does.
+    collected: dict[str, set[str]] = {}
+    for post in ctx.plan.all_elements():
+        if not isinstance(post, Post) or post.tag not in direct:
+            continue
+        collected.setdefault(post.tag, set()).update(direct[post.tag])
+        below = ctx.plan.by_tag(post.supported_by) if post.supported_by else None
+        if isinstance(below, Post):
+            collected.setdefault(below.tag, set()).update(direct[post.tag])
+    return {tag: tuple(sorted(beams)) for tag, beams in collected.items()}
+
+
+def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
+    """Every CAST-CONCRETE post standing on its own ``Footing`` or ``Pad``.
+
+    Two gates, and both are load-bearing:
+
+    * **Concrete.** ``assembly_structure_material(plan, post.assembly) == "concrete"`` —
+      verbatim the predicate ``checks/structural/uplift_path.py`` uses, and for the reason
+      that ``size="12 round"`` is a SHAPE: a 12" round wood column is a perfectly ordinary
+      thing and ACI 318 has nothing to say about it. This module had no material test at
+      all until 2026-09-03, which was a latent bug as well as what kept the breezeway out.
+    * **Its own spread base.** A ``Footing`` (the augered-and-belled case) or a ``Pad`` (a
+      formed square). Neither has a row in IRC Table R507.3.1's flat-pad columns or
+      R507.4's sawn-lumber heights, which is precisely why these are engineered items. A
+      post on a wall, on a floor or on a WOOD post is somebody else's rule and is answered
+      there (``checks/structural/deck.py``, and ``tests/test_deck_post_bearing.py`` pins the
+      split).
+
+    ``footing_tag`` is ``None`` for a pad-borne pier, and ``engineering/spread_footing.py``
+    scopes itself on exactly that: a ``Pad`` **is** an R507.3.1 row and
+    ``structural.deck_footing_size`` already grades it, so minting a second, engineered
+    bearing record for the same pad would be two authorities on one number.
+    """
+    from typehaus.model.structure import Footing, Pad, Post
+    from typehaus.resolve.assembly_material import assembly_structure_material
 
     footings = {f.under: f for f in ctx.plan.all_elements()
                 if isinstance(f, Footing) and f.under}
+    pads = {p.tag: p for p in ctx.plan.all_elements() if isinstance(p, Pad)}
+    unmodelled = _unmodelled_beams(ctx)
     tributaries = _deck_tributaries(ctx)
 
     # A post standing on another post hands its whole load down. Collect it before the
@@ -203,10 +270,13 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
 
     out: list[_Pier] = []
     for post in ctx.plan.all_elements():
-        if not isinstance(post, Post):
+        if not isinstance(post, Post) or post.height is None:
+            continue
+        if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
             continue
         footing = footings.get(post.tag)
-        if footing is None or post.height is None:
+        on_pad = post.supported_by in pads if post.supported_by else False
+        if footing is None and not on_pad:
             continue
         size = _round_size(post.size)
         if size is None:
@@ -216,9 +286,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             height_in=post.height.inches,
             tributary_ft2=tributaries.get(post.tag, 0.0) + handed_trib.get(post.tag, 0.0),
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
-            footing_tag=footing.tag,
-            footing_width_in=footing.width.inches,
-            footing_depth_in=footing.depth.inches,
+            footing_tag=footing.tag if footing is not None else None,
+            footing_width_in=footing.width.inches if footing is not None else 0.0,
+            footing_depth_in=footing.depth.inches if footing is not None else 0.0,
             vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
+            unmodelled_load=unmodelled.get(post.tag, ()),
         ))
     return sorted(out, key=lambda pier: pier.tag)

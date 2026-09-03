@@ -99,8 +99,9 @@ the field was simply never filled in. Filling it in did three things:
 them, not two — `PR-BW-1..4` as well as `PT-SG-COL` and `PT-SG-FCOL` — and every one is a
 concrete pour on a concrete pour. That joint is a doweled lap into the pier's own bar cage;
 there is no connector to specify and no part to leave out. It is not even unpriced: the
-`[concrete]` table's `column:PIER_CONCRETE_12` rate is struck itemised and names "a 4-bar #4
-cage with ties $3-6/LF" inside it. What the model lacks is rebar as an *element*, which is a
+`[concrete]` table's `column:PIER_CONCRETE_12` rate is struck itemised and names a four-bar
+cage with ties inside it — **#5, not #4**, on all five 12" piers since 2026-09-03, and #4
+only on the pre-2026-08-30 strike this sentence used to quote. What the model lacks is rebar as an *element*, which is a
 much larger question than this work, and the `Dowel` primitive it does have is built for a
 horizontal bar across a footing thermal break, not a vertical column lap. Reporting the joint
 as broken would hand the reader an ABU that does not fit a 12" round pour; reporting it as
@@ -191,7 +192,9 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 
   Not the CCQM/CCTQM embedded column-cap family, which Simpson publish for solid concrete
   piers a minimum of 14" **square** with (4) #7 verticals; `PT-SG-COL` is a 12" round (113 in²)
-  on a 4-bar #4 cage.
+  on a **(4) #5** cage (1.24 in², ACI 318-19 §10.6.1.1's 1% floor — it was #4 until
+  2026-08-30, and this line said so until 2026-09-03). `PR-BW-1..4` are the same section on
+  the same cage.
 
   Still open from that same raw notes list — an STHD on each axis with an SM1 holder, a
   KGLB5B beam seat, isolation between column and wood — is a menu for the lateral design

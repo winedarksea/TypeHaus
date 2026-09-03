@@ -1,8 +1,8 @@
-"""``engineering/spread_footing.py`` and ``deck_post.py`` against a hand-worked note.
+"""``engineering/spread_footing.py`` and ``deck_post.py`` against two hand-worked notes.
 
-The oracle is ``houses/catlin/notes/sunken_garden_piers.md``, worked by hand in a separate
-pass before either module was written — the discipline every calc module in this package is
-held to.
+The oracles are ``houses/catlin/notes/sunken_garden_piers.md`` and
+``houses/catlin/notes/breezeway_piers.md``, each worked by hand in a separate pass — the
+discipline every calc module in this package is held to.
 
 Two of these assertions are doing unusual work and are worth reading before changing:
 
@@ -13,6 +13,10 @@ Two of these assertions are doing unusual work and are worth reading before chan
 * :func:`test_a_plain_cast_column_is_incomplete_and_says_why` pins an INCOMPLETE that must
   never become OK by the section getting bigger. The section is already twenty times what it
   needs; what is missing is reinforcement the model has nowhere to state.
+* :func:`test_a_pier_whose_demand_is_short_publishes_no_ratio` pins the OTHER INCOMPLETE, and
+  the more easily lost one: the breezeway piers carry a roof with no plan area anywhere in
+  the model, so their tributary is an under-count. The record grades the cage in full and
+  omits the axial state. A d/c appearing there is the regression this guards.
 """
 
 from __future__ import annotations
@@ -31,6 +35,19 @@ _FCOL_CAGE_SOURCE = "vertical_reinforcement='" + _FCOL_CAGE + "',"
 _UNREADABLE_CAGE_SOURCE = "vertical_reinforcement='rebar per engineer',"
 _FCOL_SHORT_CAGE_SOURCE = (
     "vertical_reinforcement='" + _FCOL_CAGE.replace("(8)", "(6)") + "',")
+
+# §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
+# section, tributary and cage — so one row covers them.
+_BW_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
+_BREEZEWAY_ORACLE = {
+    "height_in": 56.75, "gross_in2": 113.097, "h_over_d": 4.73,
+    "tributary_ft2": 3.1727, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
+    "dead_lb": 639.57, "live_lb": 126.91, "service_lb": 766.48, "factored_lb": 970.54,
+    "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 187_011.0,
+    "tie_spacing_in": 10.0,
+    "slenderness": 18.92, "delta_ns": 1.0006, "e_magnified_in": 0.9606, "e_capped_in": 1.20,
+}
+_BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 
 # §2 and §3c of the note.
 _ORACLE = {
@@ -102,9 +119,82 @@ def piers(catlin_plan):
     return {pier.tag: pier for pier in cast_piers(ctx)}
 
 
-def test_only_the_two_belled_piers_are_in_scope(piers) -> None:
-    """A post on a Pad, a wall, a floor or another post is somebody else's rule."""
-    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL"}
+def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
+    """Two belled piers and four pad-borne ones. A post on a wall, on a floor or on a WOOD
+    post is somebody else's rule, and so is a wood post on anything."""
+    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_BREEZEWAY_PIERS}
+
+
+def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
+    """``size="12 round"`` is a SHAPE. A 12" round wood column is an ordinary thing, and
+    ACI 318 has nothing to say about it — the material is what puts a post in this module."""
+    from typehaus.model.structure import Post
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    for element in catlin_plan.all_elements():
+        if isinstance(element, Post) and element.tag in piers:
+            assert assembly_structure_material(catlin_plan, element.assembly) == "concrete"
+    # The wood posts standing on the breezeway piers are not themselves piers.
+    assert not {"PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4"} & set(piers)
+
+
+@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
+def test_the_breezeway_load_path_reproduces_its_note(tag, piers) -> None:
+    """§2 of ``notes/breezeway_piers.md``, term by term."""
+    want = _BREEZEWAY_ORACLE
+    pier = piers[tag]
+    assert pier.height_in == pytest.approx(want["height_in"], abs=0.01)
+    assert pier.gross_area_in2 == pytest.approx(want["gross_in2"], rel=0.001)
+    assert pier.height_in / pier.diameter_in == pytest.approx(want["h_over_d"], abs=0.01)
+    assert pier.tributary_ft2 == pytest.approx(want["tributary_ft2"], abs=0.001)
+    assert pier.carried_dead_lb == pytest.approx(want["carried_dead_lb"], abs=0.5)
+    assert pier.self_weight_lb == pytest.approx(want["self_weight_lb"], abs=0.5)
+    assert pier.dead_lb == pytest.approx(want["dead_lb"], abs=1.0)
+    assert pier.live_lb == pytest.approx(want["live_lb"], abs=0.5)
+    assert pier.service_lb == pytest.approx(want["service_lb"], abs=1.0)
+    assert pier.factored_lb == pytest.approx(want["factored_lb"], abs=1.5)
+
+
+@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
+def test_a_pier_whose_demand_is_short_publishes_no_ratio(tag, results) -> None:
+    """§3 of the note: the roof has no plan area, so the tributary is an under-count.
+
+    The six load-independent detailing states are graded in full; the §22.4.2 axial state is
+    **omitted, not estimated**. Publishing an understated d/c is worse than publishing none,
+    because a reader takes a printed ratio at face value and cannot see what is missing.
+    """
+    record = results[f"deck_post/{tag}"]
+    assert record.status is Status.INCOMPLETE
+    names = [state.name for state in record.limit_states]
+    assert "axial, tied column" not in names
+    assert len(names) == 6
+    assert all(state.ok for state in record.limit_states)
+    assert record.missing and "BM-BW-R" in record.missing[0]
+
+
+@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
+def test_the_breezeway_cage_is_acis_minimum(tag, results) -> None:
+    """§4 of the note. The 1% floor is a creep/shrinkage rule, indifferent to §3's gap."""
+    want = _BREEZEWAY_ORACLE
+    record = results[f"deck_post/{tag}"]
+    states = {state.name: state for state in record.limit_states}
+    assert states["longitudinal steel"].demand == pytest.approx(want["min_steel_in2"], abs=0.001)
+    assert states["longitudinal steel"].capacity == pytest.approx(want["steel_in2"], abs=0.001)
+    assert states["bar count"].capacity == 4.0
+    assert states["tie size"].capacity == 3.0
+    assert states["tie spacing"].capacity == pytest.approx(want["tie_spacing_in"], abs=0.01)
+    assert states["minimum eccentricity"].demand == pytest.approx(
+        want["e_magnified_in"], abs=0.001)
+    assert states["minimum eccentricity"].capacity == pytest.approx(
+        want["e_capped_in"], abs=0.001)
+
+
+def test_a_pad_borne_pier_gets_no_engineered_bearing_record(results) -> None:
+    """§6 — a ``Pad`` IS an IRC Table R507.3.1 row, graded by
+    ``structural.deck_footing_size``. Two authorities on one number is worse than one."""
+    for tag in _BREEZEWAY_PIERS:
+        assert f"spread_footing/{tag}" not in results
+    assert "spread_footing/PT-SG-COL" in results
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
