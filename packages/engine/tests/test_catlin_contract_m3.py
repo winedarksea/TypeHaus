@@ -1837,7 +1837,9 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, a
     # step-down WITHIN one storey, expressed via `floor_opening`/`base_elevation`/
     # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
+    # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
+    # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
     for stair in stairs.values():
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
@@ -1851,7 +1853,11 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     assert stairs["ST-M2S"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
     assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
     assert all(stair.going_depth_m == pytest.approx(inch(10).meters, abs=1e-9)
-               for tag, stair in stairs.items() if tag != "ST-G-SERVICE")
+               for tag, stair in stairs.items()
+               if tag not in ("ST-G-SERVICE", "ST-SG-PORCH"))
+    # ST-SG-PORCH takes the garage stair's trade for the garage stair's reasons — see below.
+    assert stairs["ST-SG-PORCH"].going_depth_m == pytest.approx(inch(11).meters, abs=1e-9)
+    assert stairs["ST-SG-PORCH"].riser_count == 5
     # The garage stair takes the opposite trade: 11" boards with NO nose, so its going is the
     # full 11" and its run stays the 3'-8" the four concrete treads it replaced occupied. A
     # nose would have shortened the run and bought nothing — there is no shaft to fit into.
@@ -1890,7 +1896,9 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, a
     # step-down WITHIN one storey, expressed via `floor_opening`/`base_elevation`/
     # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
+    # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
+    # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
     # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
     # 4 1/2" well partition, measured to W-B-STR/W-B-STR3's stud-line plywood face.
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)

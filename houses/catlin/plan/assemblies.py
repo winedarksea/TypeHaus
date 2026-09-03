@@ -1682,7 +1682,7 @@ HP_PAD_ON_GRADE = Assembly(
         Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
               function=LayerFunction.SHEATHING),
     ),
-    source="catlin-house heat-pump equipment pad — 4\" unreinforced concrete on a 4\" open-graded stone base, top 2\" proud of grade with a fall away from the house and an isolation joint at W-SG-E1. No below-slab XPS and no vapour retarder: nothing over it is conditioned and nothing under it has to stay dry. The 2\" freeboard is Gree's outdoor-unit instruction (\"install 2 in above the expected snow line\"), which the 18\" stands on top of it then clear by an order of magnitude"
+    source="catlin-house heat-pump equipment pad — 56.9 SF (x 28'-6\"..36'-9\", y -7'-6\"..-0'-7 1/5\"), 4\" thick = 0.70 CY, on a 4\" open-graded stone base, top 2\" proud of grade with a fall away from the house and an isolation joint at W-SG-E1. No below-slab XPS and no vapour retarder: nothing over it is conditioned and nothing under it has to stay dry. The 2\" freeboard is Gree's outdoor-unit instruction (\"install 2 in above the expected snow line\"), which the 18\" stands on top of it then clear by an order of magnitude. It grew from 29.4 SF / 0.36 CY on 2026-09-03: the two cabinets turned to face SOUTH in one east-west row across the pocket's south half, and the north strip the turn freed carries ST-SG-PORCH, the porch's stair to grade — the flight's stringers land on this pour and its level step-off is the east end of it. One pad rather than a pad plus a stair footing: at two thirds of a yard the second form costs more than the concrete it saves"
 )
 
 # The garage service step-down, SL-G-STEP-1..4, is a real `Stair` (ST-G-SERVICE in

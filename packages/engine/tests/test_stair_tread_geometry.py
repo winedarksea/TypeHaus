@@ -64,13 +64,15 @@ def test_every_tread_is_a_full_depth_board(catlin_model):
 
 
 def test_default_treads_are_eleven_inches_with_a_one_inch_nose(catlin_model):
-    # ST-G-SERVICE is the exception and states why in its own source: 11" boards with NO
-    # nose, so its going is the full 11" and its run stays the 3'-8" the four concrete
-    # treads it replaced occupied. There is no shaft for it to fit inside, so the compaction
-    # a nose buys is worth nothing there.
+    # The two EXTERIOR flights are the exception and each states why in its own source: 11"
+    # boards with NO nose, so the going is the full 11". ST-G-SERVICE keeps the 3'-8" run the
+    # four concrete treads it replaced occupied; ST-SG-PORCH (2026-09-03) borrows the same
+    # pattern to reach grade off the porch's east edge. Neither has a shaft to fit inside, so
+    # the compaction a nose buys is worth nothing on either — and outdoors a nose is a lip
+    # that ices.
     for stair in catlin_model.stairs:
         assert stair.tread_depth_m == pytest.approx(inch(11).meters)
-        if stair.tag == "ST-G-SERVICE":
+        if stair.tag in ("ST-G-SERVICE", "ST-SG-PORCH"):
             assert stair.nosing_depth_m == 0.0
             assert stair.going_depth_m == pytest.approx(inch(11).meters)
             continue

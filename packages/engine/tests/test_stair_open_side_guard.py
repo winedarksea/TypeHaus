@@ -42,10 +42,16 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
     sides face each other over the well partition's 4 1/2" reservation, which is inside the
     stair's own outline. ST-G-SERVICE is five risers and never gets 30" up. ST-S2A is the
     one with a genuinely open side, and it carries RL-A-FLIGHT-GUARD.
+
+    ST-SG-PORCH (2026-09-03) joins ST-G-SERVICE in the third category and for the same
+    arithmetic: five risers off a pad, top tread 26.4" up, under the 30" trigger. Its two
+    RL-SG-PSTAIR guards are there because R311.7.8 wants a handrail on a four-riser flight
+    and because a 33" drop off a threshold is worth guarding, NOT because this rule asked —
+    which is why it is in the "passes without crediting a guard" list below.
     """
     findings = stair_open_side_guard(ctx)
     by_stair = _by_stair(findings)
-    assert set(by_stair) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE"}
+    assert set(by_stair) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
     assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
     assert "RL-A-FLIGHT-GUARD" in by_stair["ST-S2A"].message
     # The other three pass without crediting a guard — nothing stands on their sides.
@@ -64,7 +70,8 @@ def test_the_defect_this_rule_was_written_for(ctx):
     # and 22 1/2" over the study floor — R312.1.1 reaches neither.
     assert "10 nosing end(s)" in by_stair["ST-S2A"].message
     assert "105\" fall" in by_stair["ST-S2A"].message
-    assert {by_stair[tag].result for tag in ("ST-B2M", "ST-M2S", "ST-G-SERVICE")} \
+    assert {by_stair[tag].result
+            for tag in ("ST-B2M", "ST-M2S", "ST-G-SERVICE", "ST-SG-PORCH")} \
         == {Result.PASS}
 
 

@@ -211,15 +211,20 @@ SITE = Site(
             far_elevation=ft(-3, -2),  # -4" below grade at the 6' outer edge (4.2% away)
         ),
         # The heat-pump pad in the pocket east of the porch (SL-SG-HPPAD, authored in
-        # params/sunken_garden.py). Its top is 2" PROUD of grade at the porch wall — Gree's
-        # "install 2 in above the expected snow line" — and falls 2 1/2" over the 8'-4" to
-        # its east edge, which lands 1/2" below grade so the sheet leaves onto gravel rather
-        # than ponding at a lip. The Slab is modelled flat at its high edge; the fall is a
-        # finishing fact and lives here, where code.R401_3_impervious can read it.
+        # params/sunken_garden.py). It grew east and lost its southern strip on 2026-09-03
+        # when the two condensers turned to face south and ST-SG-PORCH took the north band:
+        # x 28'-6"..36'-9", y -7'-6"..-0'-7 1/5", 56.9 sf.
+        #
+        # Its top is 2" PROUD of grade at the house — Gree's "install 2 in above the expected
+        # snow line" — and falls 2 1/2" over the ~6'-11" the check measures to its far
+        # (south-east) corner, which lands 1/2" below the -2'-10" grade so the sheet leaves
+        # onto gravel rather than ponding at a lip. That is 3.0% against R401.3's 2%. The
+        # Slab is modelled flat at its high edge; the fall is a finishing fact and lives
+        # here, where code.R401_3_impervious can read it.
         ImperviousSurface(
             label="hp pad",
-            outline=(pt(ft(28, 6), ft(-9)), pt(ft(32), ft(-9)),
-                     pt(ft(32), ft(0, -7.2)), pt(ft(28, 6), ft(0, -7.2))),
+            outline=(pt(ft(28, 6), ft(-7, -6)), pt(ft(36, 9), ft(-7, -6)),
+                     pt(ft(36, 9), ft(0, -7.2)), pt(ft(28, 6), ft(0, -7.2))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -10.5),
         ),

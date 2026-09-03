@@ -310,8 +310,15 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
         if not columns:
             continue
 
-        fascia = nearest(ctx.plan, [posts[t] for t in columns], Fascia)
-        guard = nearest(ctx.plan, [posts[t] for t in columns], Railing)
+        # The storey this deck is FILED on is the discriminator plan-centroid distance cannot
+        # supply — see `nearest`'s own note on the day RL-SG-PORCH out-competed
+        # RL-SG-BALCONY. A plan element carries no `storey` attribute, so it is read back off
+        # the storey lists, which is where the filing actually lives.
+        deck_storey = next((st.tag for st in ctx.plan.storeys
+                            if any(e is deck for e in ctx.plan.storey_elements(st.tag))),
+                           None)
+        fascia = nearest(ctx.plan, [posts[t] for t in columns], Fascia, deck_storey)
+        guard = nearest(ctx.plan, [posts[t] for t in columns], Railing, deck_storey)
         basis = wind_basis(ctx.plan.project.site)
         ground_ft = ground_below_ft(ctx.plan)
         if guard is None or basis is None:

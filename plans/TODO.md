@@ -672,6 +672,16 @@ the future.
   its own item: `code.R312_1_guard_height` censuses `FloorSystem`s and `code.R312_1_guard`
   censuses `FloorOpening`s, so `SL-G-STEP-0` — a `Slab` — is in neither census and its 34"
   drop is graded by nothing. A rule that walks slab edges would close it.
+- **A guard opening at the END of a deck edge is invisible to `code.R312_1_guard_height`**
+  (2026-09-03, same shape as the item above). `_railing_runs_edge`
+  (`checks/code/mn_residential/fall_protection.py:353`) is a plain `LineString` distance test
+  of the guard path against the WHOLE edge segment, so a guard that covers the segment's
+  midpoint satisfies it however much of either end is missing. `RL-SG-PORCH`'s east leg was
+  shortened 3'-0" on 2026-09-03 to open `ST-SG-PORCH`'s doorway and the check reports PASS
+  either way — with the opening, without it, and with a 12'-0" opening it has never seen.
+  The guard return at the opening is on the author (`PORCH_STAIR_THRESHOLD_RAILS` is that
+  return, and `notes/porch_stair.md` says so). The fix is the same shape as the slab-edge
+  rule: grade the guard's COVERAGE of each edge, not its distance from it.
 - **`W-SG-W2`/`E2`/`S` are screened and DO NOT reach R404.4's 1.5 against sliding**
   (2026-08-30). Two things landed that day, and the first is why the second matters.
   **(a) The retained height was understated by 3'-4".** `structural.foundation_unbalanced_fill`

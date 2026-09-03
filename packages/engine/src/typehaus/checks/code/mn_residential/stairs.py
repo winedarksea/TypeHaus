@@ -19,7 +19,7 @@ from typehaus.checks.code.mn_residential.handrail_geometry import (
     flight_continuity_findings,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding
+from typehaus.findings import Finding, not_applicable
 from typehaus.quantities import ft, inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.roof_geometry import roof_underside_at
@@ -132,8 +132,21 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
     overhead structure: floor decks (outside their stair-well voids) down to their
     deepest framing, roof planes at their structural underside, and soffit faces.
     Structure only — ceiling finishes, freestanding beams and ducts are not modeled
-    against the walk — and never PASS by absence: a stair with no resolved structure
-    overhead reports UNKNOWN.
+    against the walk — and never PASS by absence: a stair with something over it that this
+    engine did not resolve reports UNKNOWN.
+
+    The one case that is not a gap is a flight with nothing over it *in plan at all*: no
+    floor deck, no roof footprint and no soffit outline covers a single sample of its
+    walking line. That is open sky, which is positive evidence that R311.7.2's subject does
+    not exist here rather than an absence of data, so it earns NOT_APPLICABLE. Two things
+    keep that from becoming a pass-by-absence in disguise:
+
+    * Plan containment is tested SEPARATELY from the plumb probe. A deck whose underside is
+      *below* the nosings covers the flight in plan and keeps it UNKNOWN — the flight passes
+      over something, and what is above that something has not been accounted for.
+    * The model must resolve at least one **roof** before the absence means anything. A house
+      whose envelope is not modelled has no cover polygons for any reason, and "no roof in
+      the model" is a gap, not a sky.
     """
     cid, code = "code.R311_7_2_stair_headroom", "R311.7.2"
     if not ctx.model.stairs:
@@ -159,10 +172,15 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for stair in ctx.model.stairs:
         worst: tuple[float, tuple[float, float], str] | None = None
+        covered = False  # anything at all standing over the walk in plan
         for stations in _flight_stations(stair).values():
             for x, y, z in _walk_samples(stations):
                 point = Point(x, y)
                 lowest: tuple[float, str] | None = None
+                if not covered:
+                    covered = (any(p.contains(point) for p, _, _ in floors)
+                               or any(p.contains(point) for p, _ in roofs)
+                               or any(p.contains(point) for p, _, _ in soffits))
                 for polygon, underside, tag in floors:
                     if (underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point)
                             and (lowest is None or underside < lowest[0])):
@@ -183,6 +201,12 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
                 if worst is None or clearance < worst[0]:
                     worst = (clearance, (x, y), lowest[1])
         if worst is None:
+            if not covered and roofs:
+                out.append(not_applicable(
+                    cid, f"{stair.tag} is open to the sky — no floor deck, roof plane or "
+                    "soffit stands over any point of its walking line, so R311.7.2 has no "
+                    "headroom to measure", (stair.tag,), code))
+                continue
             out.append(_unknown(cid, f"{stair.tag}: no resolved structure overhead of "
                                 "the walking line (floors, roofs, soffits)",
                                 (stair.tag,), code))

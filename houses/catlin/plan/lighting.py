@@ -634,6 +634,37 @@ MAIN_LIGHTING = [
                      position=pt(ft(25, 2), ft(0, 7.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # ST-SG-PORCH's top-landing light (2026-09-03). R303.8 wants a luminaire at the top
+    # landing of an exterior stair, and `code.R303_8_exterior_stairway_illumination` looks
+    # for one within 4'-0" of the flight's plan outline on its `to_storey`. Nothing already
+    # authored reaches: ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x=18'-0", ten feet
+    # west of the flight's x 28'-6"..32'-2".
+    #
+    # On W-M-S2's exterior face at the head of the flight, 7'-0" up (storey-relative, so
+    # 9'-10" over the pad the flight lands on). NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT
+    # precedent — that absence is how `electrical.wet_location` and
+    # `advisory.dark_sky_lighting` know a device is outside.
+    #
+    # y = -0'-9 3/4" puts the fitting's BACK on the cladding face at -0'-7 1/4". A device
+    # footprint is CENTRED on its authored position, and ED-T-LT-SCONCE-EXT is a 5" deep
+    # body, so the position owes the face half of that — the ED-G-EXT-LT convention, and NOT
+    # the -0'-8 7/8" the two disconnects beside it use: those are 3 1/4" cans and the offset
+    # that suits them buries this one an inch into the studs.
+    #
+    # ED-T-LT-SCONCE-EXT rather than a new full-cutoff downlight type: it is the same
+    # full-cutoff wet-rated exterior fitting as ED-G-EXT-LT, and it is already priced. A
+    # freshly minted LuminaireType with no prices.toml row is silently DROPPED from the
+    # takeoff, so a new type here would have bought a fixture the bill never showed.
+    #
+    # Controlled by ED-M-PORCH-FLOOD-SW rather than a third switch: NEC 210.70(A)(2)(b)
+    # wants the exterior light switched from inside, that switch already is, and the flood
+    # and the stair light are wanted on the same errand.
+    ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(30), ft(0, -9.75)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(180),
+                     controlled_by=("ED-M-PORCH-FLOOD-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]
 
 # --- Second storey --------------------------------------------------------------------

@@ -524,6 +524,45 @@ def test_safety_glazing_fails_an_untempered_glazed_door_and_passes_a_tempered_on
     assert _results(safety_glazing(_ctx(True))) == [Result.PASS]
 
 
+def test_safety_glazing_near_a_stair_measures_the_bottom_edge_over_the_TREAD():
+    """R308.4.6/.7 have two conditions, not one: within 60" of the walking surface AND the
+    bottom exposed edge less than 36" above the plane of *that* surface.
+
+    The height half was missing until 2026-09-03, and the horizontal test alone made every
+    window on a storey ABOVE an exterior flight hazardous — catlin's WIN-M-LIV-S1 failed on
+    a flight to grade whose nearest tread is 2'-1" BELOW the window's own floor. Both sides
+    are asserted here so the rule can rot into neither always-fail nor always-pass.
+    """
+    from typehaus.model.types import WindowType
+    from typehaus.resolve.model import FramedMember
+
+    def _ctx(tread_z_m):
+        window_type = WindowType(tag="WT-1", width=ft(3), height=ft(4), tempered=False)
+        opening = SimpleNamespace(tag="WIN-1", is_door=False, type_ref="WT-1",
+                                  host_wall="W-1", width_m=0.9, height_m=1.2,
+                                  sill_m=ft(2, 6).meters, center_along_m=1.0)
+        tread = FramedMember("S", "tread-000", "tread", "deck 11x1.5",
+                             (0.0, 0.3), (0.9, 0.3), tread_z_m - 0.04, tread_z_m, 0.9)
+        stair = SimpleNamespace(tag="ST-1", members=(tread,))
+        wall = SimpleNamespace(tag="W-1", storey="main", thickness_m=0.14,
+                               axis=[(0.0, 0.0), (3.0, 0.0)])
+        return SimpleNamespace(
+            plan=SimpleNamespace(
+                library=SimpleNamespace(window_types=[window_type], door_types=[]),
+                storeys=[SimpleNamespace(tag="main", elevation=ft(0))]),
+            model=SimpleNamespace(rooms=[], openings=[opening], stairs=[stair],
+                                  wall=lambda tag: wall),
+        )
+
+    # A tread at this storey's own floor: the 2'-6" sill is 30" over it, under 36". Hazard.
+    near = safety_glazing(_ctx(0.0))
+    assert _results(near) == [Result.FAIL]
+    assert near[0].code_ref == "R308.4.7"
+    assert "above its walking surface" in near[0].message
+    # The same window over a flight dropping to grade: the sill is 55" over the tread.
+    assert _results(safety_glazing(_ctx(ft(-2, -1).meters))) == [Result.PASS]
+
+
 def test_afci_passes_a_protected_circuit_and_fails_an_unprotected_one():
     from typehaus.model.electrical import Circuit
     from typehaus.quantities import pt

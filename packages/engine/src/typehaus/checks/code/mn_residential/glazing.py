@@ -27,6 +27,14 @@ _LARGE_PANE_MAX_SILL = inch(18)  # ...bottom edge below 18"
 _LARGE_PANE_MIN_HEAD = inch(36)  # ...top edge above 36"
 _WET_MAX_SILL = inch(60)  # R308.4.5: glazing in a wet area below 60" above the floor
 _STAIR_REACH = inch(60)  # R308.4.6/.7: within 60" of a stair or landing
+#: ...AND with the bottom exposed edge less than 36" above the plane of that walking
+#: surface. Both R308.4.6 and R308.4.7 state this height condition, and it is the half of
+#: the rule that keeps a window on a storey ABOVE an exterior flight out of scope: the
+#: horizontal test alone made every main-floor window within 5' of a stair that drops to
+#: grade hazardous, which is neither section's subject. ST-SG-PORCH beside WIN-M-LIV-S1 is
+#: the live case — the nearest tread is 2'-1" below the window's own floor, so the sill is
+#: over 36" above it however low it sits in the wall.
+_STAIR_MAX_SILL_OVER_WALK = inch(36)
 _SF_PER_M2 = 10.7639
 
 # R308.4.5 wet locations: bathtubs, showers, saunas, steam rooms, hot tubs. Read off the
@@ -157,13 +165,21 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
         if point is not None:
             centre = point_type(*point)
             floor_z = storey.elevation.meters
+            bottom_z = floor_z + sill  # the bottom exposed edge, project frame
             for line, stair_tag, tread_z in stair_lines:
                 # Only a tread near this storey's floor plane is beside this window; a
                 # flight two storeys down is 60" away in plan and nowhere near in space.
                 if abs(tread_z - floor_z) > 3.0:
                     continue
+                # Both clauses measure the bottom edge from the plane of THAT walking
+                # surface, not from the window's own floor.
+                if bottom_z - tread_z >= _STAIR_MAX_SILL_OVER_WALK.meters - 1e-9:
+                    continue
                 if line.distance(centre) <= _STAIR_REACH.meters:
-                    reasons.append(("R308.4.7", f"within 60\" of stair {stair_tag}"))
+                    reasons.append(("R308.4.7",
+                                    f"within 60\" of stair {stair_tag}, bottom edge "
+                                    f"{(bottom_z - tread_z) / .0254:.0f}\" above its "
+                                    "walking surface"))
                     break
     return reasons
 

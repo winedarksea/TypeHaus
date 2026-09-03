@@ -188,7 +188,7 @@ def ground_below_ft(plan: PlanModel) -> float:
     return min(candidates) if candidates else 0.0
 
 
-def nearest(plan: PlanModel, anchors: Any, kind: type) -> Any:
+def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None) -> Any:
     """The element of ``kind`` whose plan path actually belongs to this structure.
 
     A whole-plan ``next(... isinstance(e, kind) ...)`` is wrong and quietly so: catlin has
@@ -197,13 +197,30 @@ def nearest(plan: PlanModel, anchors: Any, kind: type) -> Any:
     12.8' instead of 23.0' and understated q_h by 12 %. Nothing about the finding text would
     have looked wrong. So the element is chosen by proximity to the ``anchors`` it is
     supposed to describe, which is the only relationship that holds when the plan grows.
+
+    **``storey`` is what stops proximity from being the only relationship**, and it is not a
+    refinement — it is a correctness fix. Plan-centroid distance cannot tell a guard one
+    storey up from a guard directly under it, and on 2026-09-03 it stopped trying: opening a
+    3'-0" doorway in ``RL-SG-PORCH``'s east leg for the porch stair moved that guard's path
+    centroid 9" south, close enough to the balcony's cast columns to beat ``RL-SG-BALCONY``
+    by 8". The porch guard's base is +0'-1" and the balcony's is +10'-0", so q_h fell 11 %
+    and every corner column's base moment with it — a change of *demand* caused by shortening
+    an unrelated railing. Filed on the structure's own storey, the two cannot be confused.
+
+    The filter is not applied when it would return nothing: a house that files its guards on
+    a storey other than its deck's still gets the historical proximity answer rather than a
+    silent ``None`` that reads as "no guard here".
     """
     xs = [a.position.xy_m[0] for a in anchors]
     ys = [a.position.xy_m[1] for a in anchors]
     cx, cy = (sum(xs) / len(xs), sum(ys) / len(ys))
+    on_storey = ({id(e) for e in plan.storey_elements(storey) if isinstance(e, kind)}
+                 if storey is not None else set())
     best, best_d = None, None
     for element in plan.all_elements():
         if not isinstance(element, kind):
+            continue
+        if on_storey and id(element) not in on_storey:
             continue
         # >= 3 points: a two-point run is a drip or a flashing edge, not the plan outline
         # of a thing this structure is bounded by.

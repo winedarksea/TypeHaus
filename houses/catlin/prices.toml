@@ -303,7 +303,11 @@
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
 "2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 82 LF
-"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF
+# 2026-09-03: this row now has a KDAT half. ST-SG-PORCH's two stringers are 2x12:kdat and
+# group separately in the BOM (32 LF ordered beside the 92 LF of spf); the [framing] rate is
+# per profile, not per treatment, so both halves bill here. The 3.7 LF plan run of each
+# stringer is 4.6 LF of stick on the rake, which the cut list already accounts for.
+"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF spf + 32 LF kdat (ST-G-SERVICE and ST-SG-PORCH stringers)
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
@@ -451,7 +455,7 @@
 # installed. The milling schedule is a VIEW and adds nothing to this estimate; if the owner
 # mills the treads rather than buying them, the MATERIAL half of this row is what falls
 # away, not the labour half.
-"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet)
+"deck 11x1.5" = { material = { low = 7, high = 14.5 }, labour = { low = 11.5, high = 23 } }  # 288 LF — stair treads (blend: 28 oak, 12 carpet); the 32 LF kdat half is the two EXTERIOR flights, ST-G-SERVICE and ST-SG-PORCH (4 treads at 3'-0" each, 2026-09-03), which are neither oak nor carpeted and sit at the low end of this blend
 # The two landing decks, one per flight that has one. `stair_finish` gives ST-B2M a widest
 # tread of 3.31' and ST-M2S 3.53', each ~2" narrower than one of these decks, which is how
 # the 42" deck is read as the carpeted basement flight and the 44.625" as the oak one.
@@ -483,7 +487,16 @@
 # dissimilar buildings, with the garage edge SCRIBED rather than butted (the deck tucks 7/8"
 # under that cladding). Folded in here at +$25-58 a sheet rather than dropped. If the
 # breezeway ever leaves this row, take it back out.
-"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 153, high = 346 } }  # 6 sheets — 181.1 SF: FS-SG-PORCH + FS-BW-FLOOR
+# 2026-09-03, second item: **the porch stair's threshold board is here and is NOT MODELLED.**
+# ST-SG-PORCH springs from the EAST face of W-SG-E1, so the 12" wall top between the porch
+# plank and the head of the flight is crossed rather than climbed, and it is decked flush at
+# +0'-1" with a 3'-0" x 12" board of this same plank — 3 SF. There is nothing to frame under
+# it (it lies on 12" of concrete), so no element models it and no takeoff row would find it;
+# it is written down here and in notes/porch_stair.md instead, the same call the framed-wall
+# line-set sleeve got. The MATERIAL is already bought: 6 x 32 = 192 SF against 184.1 net.
+# The LABOUR is not, and +$20-45 is the cut-in and the anchoring of a single trim board onto
+# a wall top, added below.
+"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 173, high = 391 } }  # 6 sheets — 184.1 SF: FS-SG-PORCH + FS-BW-FLOOR + 3 SF of UNMODELLED ST-SG-PORCH threshold board
 # The balcony's waterproof interlocking aluminium plank (FS-SG-DECK's subfloor). Bought by
 # the board like the composite above it, so this is the same sheet-EQUIVALENT conversion —
 # 32 SF at the researched installed rate. It carried the identical money as
@@ -1069,15 +1082,19 @@
 # ($0.20-0.50/SF, $16-40/cy at 3.5"); placing, screeding and finishing are the residual, and
 # finishing is why a slab's labour half is wider than a footing's.
 "slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 26.37 cy — SLAB-ON-GRADE ONLY, was merged $390-685
-# The heat-pump pad, SL-SG-HPPAD — 0.36 cy, and QUALIFIED because a third of a yard is not
-# the same product as the 26 yards above it. You cannot buy 0.36 cy of ready-mix: it is
-# either fifteen 80 lb bags mixed on site or a short-load charge that costs more than the
-# concrete. Either way the $/cy is two to three times the bulk rate, and the labour is the
-# forming, the 2 1/2" of fall and the trowel finish on a pad whose whole area is smaller
-# than one truck's washout. Unreinforced (the model authors no rebar here) and no frost
-# footing under it: an equipment pad that heaves an inch in February and comes back in April
-# has done nothing a line set cannot absorb — see plan/assemblies.py::HP_PAD_ON_GRADE.
-"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 350, high = 800 } }  # 0.36 cy — short-load or bagged; NOT the bulk slab-on-grade rate
+# The heat-pump pad, SL-SG-HPPAD — 0.70 cy (was 0.36 until 2026-09-03, when the two
+# condensers turned to face SOUTH and the pad grew east to the SE corner and north to carry
+# ST-SG-PORCH's foot and step-off; 56.9 SF at 4"). STILL QUALIFIED, and for the same reason:
+# two thirds of a yard is not the same product as the 26 yards above it. You cannot buy 0.70
+# cy of ready-mix either — it is thirty 80 lb bags mixed on site or a short-load charge that
+# costs more than the concrete — so the $/cy stays two to three times the bulk rate. The
+# labour is the forming, the 2 1/2" of fall and the trowel finish on a pad whose whole area
+# is still smaller than one truck's washout, and it does NOT double when the area does: the
+# perimeter grew by half, not the setup. Unreinforced (the model authors no rebar here) and
+# no frost footing under it: an equipment pad that heaves an inch in February and comes back
+# in April has done nothing a line set cannot absorb — see
+# plan/assemblies.py::HP_PAD_ON_GRADE. The rate is unchanged; only the quantity moved.
+"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 350, high = 800 } }  # 0.70 cy — short-load or bagged; NOT the bulk slab-on-grade rate
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -1614,7 +1631,7 @@
 "ED-T-LT-PENDANT" = { material = { low = 90, high = 400 }, labour = { low = 70, high = 160 } }  # 1 ea
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 2 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
-"ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 1 ea
+"ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 2 ea — ED-G-EXT-LT at the garage door, and ED-M-STAIR-LT over the head of ST-SG-PORCH (2026-09-03). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 5 ea
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
@@ -3795,7 +3812,22 @@
 # $/LF of guard line, by railing product type
 "(untyped railing)" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }  # 30 LF — untyped handrails, placeholder. DOUBLE-COUNT CHECK: if one of these is top-mounted on the stair guard, its labour is already inside RAILING-INT-STAIR-GUARD
 "RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 30, high = 45 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post and their four 5/16" x 4" through-bolts each, ~8 posts at 60" o.c., which no $/LF rail price carries
-"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 36.3 LF — RL-SG-PORCH, ~8 posts at 60" o.c. Same rail, same alloy, same listing; the post arrives welded to a 5x5 baseplate, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east legs, and the ~5 solid blocks under the south leg where there is no wall top — both are in [framing]
+# 2026-09-03: 42.7 LF over FIVE runs, where it was 36.3 LF over one. RL-SG-PORCH LOST 3.0 LF
+# (33.3) — its east leg stops at y -3'-10" to open a 3'-0" gap for the new porch stair — and
+# four short runs arrived around that opening: RL-SG-PSTAIR-S/N, 3.7 LF each, RAKED along
+# ST-SG-PORCH's nosing line, and RL-SG-PTHRESH-S/N, 1.0 LF each, level on the W-SG-E1 wall
+# top between the porch plank and the head of the flight. The LF here is the PLAN length of
+# each path, which under-measures a raked run by its own slope: 3.7 LF of plan is 4.6 LF of
+# rail on a 33"-in-44" rake, so read the two PSTAIR runs as ~1.9 LF light between them.
+#
+# ** THE TWO RAKED RUNS ARE NOT THIS ROW'S POST CONDITION, and the rate does not carry them. **
+# Every post priced here stands on a 12" concrete wall top and arrives welded to a 5x5
+# baseplate the material rate includes. A raked stair post stands on a 2x12 KDAT stringer: it
+# is a different baseplate on a different substrate, through-bolted rather than anchored, and
+# it wants a rake-adjustable post-and-rail kit (Williams and Fortress both sell one at a
+# premium over the level parts). Carry that premium in the estimate against these ~7.4 LF; it
+# is NOT in the numbers below.
+"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 42.7 LF over 5 runs — RL-SG-PORCH 33.3 + PSTAIR-S/N 3.7 ea (RAKED, see above) + PTHRESH-S/N 1.0 ea; ~8 posts at 60" o.c. on the porch leg, ~2 per stair run at 36" o.c., 2 per threshold cheek. Same rail, same alloy, same listing as the fascia row; the post arrives welded to a 5x5 baseplate, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east/threshold legs, the ~5 solid blocks under the south leg where there is no wall top, and the raked stair-post premium above — the first two are in [framing]
 "RAILING-INT-STAIR-GUARD" = { material = { low = 40, high = 90 }, labour = { low = 50, high = 85 } }  # 23 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
 
 [drainage]
@@ -4509,10 +4541,13 @@ envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 plumbing-municipal-water-sewer-and-sac = { low = 6000, high = 18000 }
 # Includes temporary construction power.
 electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
-# 5 pairings, ~195 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
+# 5 pairings, ~203 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
 # condensers moved to a ground pad east of the porch: HP1 now runs ~40 ft up the W-M-S2 /
 # W-S-S2 stud bay into FS-ATTIC, and HP2's three ports ~25-30 ft each through the main-floor
-# band. Routes and lengths against Gree's published limits are in
+# band. GREW ~8 LF MORE on 2026-09-03, when the two cabinets turned to face south: HP1 moved
+# +5'-4" east and +3'-0" south, and HP2 barely moved at all (+1'-0" east, +1'-0" north) so
+# its three runs are unchanged. HP1 is still at 40 ft of 164 and 21 ft of 49. Routes and
+# lengths against Gree's published limits are in
 # notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: at $26-49/LF the
 # added footage is inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries
 # drain, vent, water_cold and water_hot and no refrigerant system, so there is no line-set

@@ -770,13 +770,15 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
     On the balcony the legs answered to the deck (bay centres, six inches off a beam axis)
     and the feet to the cabinet, and the two could not coincide — decision #64. A flat slab
     has no grid, so each leg sits directly under a published foot hole: Gree's patterns are
-    29 3/4" x 15 9/16" (FXU24, HP1) and 25" x 15 19/32" (MUL30, HP2), width x depth, and both
-    cabinets are rotated 90 degrees so the width pitch runs in y.
+    29 3/4" x 15 9/16" (FXU24, HP1) and 25" x 15 19/32" (MUL30, HP2), width x depth. Both
+    cabinets sit SQUARE to the plan since 2026-09-03 (`rotation=deg(0)`, discharge facing
+    south), so the width pitch runs in **x** and the depth pitch in **y** — the transpose of
+    the arrangement that faced east, and the reason this test asserts the mapping rather
+    than assuming it.
 
     And every leg's full 2" section must land ON the pad. HP1's depth pattern is an inch
-    WIDER than its cabinet, so its west leg line sits outboard of the cabinet's own back
-    face — the reason the pad reaches all the way to W-SG-E1 instead of stopping under the
-    units.
+    WIDER than its cabinet, so its leg lines sit outboard of the cabinet's own faces on that
+    axis.
     """
     from shapely.geometry import Polygon
 
@@ -788,8 +790,8 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
     legs = {s.tag: s for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")}
     for tag, (key, width_in, depth_in) in pattern.items():
         cx, cy = units[tag].position.xy_m
-        want = {(round(cx + sx * depth_in * INCH / 2.0, 6),
-                 round(cy + sy * width_in * INCH / 2.0, 6))
+        want = {(round(cx + sx * width_in * INCH / 2.0, 6),
+                 round(cy + sy * depth_in * INCH / 2.0, 6))
                 for sx in (-1, 1) for sy in (-1, 1)}
         got = set()
         for index in range(1, 5):
@@ -798,3 +800,115 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
             got.add((round(ring.centroid.x, 6), round(ring.centroid.y, 6)))
             assert pad.contains(ring), f"PT-SG-HP{key}{index} overhangs the pad"
         assert got == want, tag
+
+
+# ---------------------------------------------------------------------------------------
+# The 2026-09-03 turn, and the stair it made room for.
+#
+# Both cabinets face SOUTH now (`rotation=deg(0)`), side by side in one east-west row across
+# the pocket's south half, and the pocket's north strip carries ST-SG-PORCH — the porch's
+# only way down to grade. The two facts are one change: a 36" flight plus two cabinets in one
+# north-south row wants 11'-7" of the 9'-6" of usable y, and turned they do not compete.
+# notes/porch_stair.md and notes/heat_pump_ground_pad.md.
+# ---------------------------------------------------------------------------------------
+_PAD_X = (28.5, 36.75)
+_PAD_Y = (-7.5, -0.6)
+
+
+def test_the_pad_grew_to_carry_the_flight_and_the_turned_row(catlin_model) -> None:
+    """56.9 sf / 0.70 cy, x 28'-6"..36'-9" by y -7'-6"..-0'-7 1/5" (was 29.4 sf / 0.36 cy).
+
+    One pour rather than a pad plus a separate stair footing: the west edge is where the
+    stringers land, the north strip is the flight and its level step-off, and the east edge
+    runs 2" past HP1's cabinet — 9" past the house's SE corner and still 21' inside the east
+    setback line. `prices.toml`'s qualified `slab:HP_PAD_ON_GRADE` row is keyed to the 0.70.
+    """
+    from shapely.geometry import Polygon
+
+    pad = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
+    x0, y0, x1, y1 = pad.bounds
+    assert (x0 / FT, x1 / FT) == pytest.approx(_PAD_X)
+    assert (y0 / FT, y1 / FT) == pytest.approx(_PAD_Y)
+    area_sf = pad.area / (FT * FT)
+    assert area_sf == pytest.approx(56.925, abs=0.05)
+    assert area_sf * (4.0 / 12.0) / 27.0 == pytest.approx(0.70, abs=0.005)
+
+
+def test_both_condensers_face_south_square_to_the_plan(catlin_model) -> None:
+    """`rotation=deg(0)` on both, and their extents are the row this house is laid out from.
+
+    The rotation is not cosmetic: it is what turns the discharge out of the pocket's own
+    reflecting faces into open yard, and what transposes the stand leg patterns in
+    params/sunken_garden.py. The 12" service gap between them is the one clearance still at
+    its published minimum, so it is asserted rather than described.
+    """
+    units = {e.tag: e for s in catlin_model.plan.storeys
+             for e in catlin_model.plan.storey_elements(s.tag)
+             if getattr(e, "tag", "") in _HP_UNITS}
+    extents = {}
+    for tag, unit in units.items():
+        assert unit.rotation.degrees == pytest.approx(0.0), tag
+        cx, cy = unit.position.xy_m
+        w, d = (q.meters for q in unit.footprint)
+        extents[tag] = (cx - w / 2.0, cx + w / 2.0, cy - d / 2.0, cy + d / 2.0)
+    hp2, hp1 = extents["EQ-M-HP2-OD"], extents["EQ-M-HP1-OD"]
+    # HP2 west, HP1 east, 12" of service gap between them.
+    assert (hp1[0] - hp2[1]) / INCH == pytest.approx(12.0, abs=0.05)
+    # HP2's west end holds 6" off W-SG-E1's east face at x 28'-6".
+    assert (hp2[0] / FT - 28.5) * 12.0 == pytest.approx(6.0, abs=0.05)
+    # HP1 stands 7 1/5" past the house's SE corner at x 36'-0", into open side yard.
+    assert (hp1[1] / FT - 36.0) * 12.0 == pytest.approx(7.2, abs=0.05)
+
+
+def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_model) -> None:
+    """ST-SG-PORCH: 5 risers, 4 treads, 36" wide, -2'-8" to +0'-1".
+
+    Both elevations are authored because neither is a storey datum — this is a step-down
+    within `main`. The top is the porch's WALKING surface (the composite plank), not the 0'-0"
+    joist top, which is the inch that makes the wall top a threshold rather than a tread.
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-SG-PORCH")
+    assert stair.riser_count == 5
+    assert stair.riser_height_m / INCH == pytest.approx(6.6)
+    assert stair.going_depth_m / INCH == pytest.approx(11.0)
+    assert stair.base_elevation_m / FT == pytest.approx(_HP_PAD_TOP_FT)
+    treads = [m for m in stair.members if m.category == "tread"]
+    assert len(treads) == 4
+    for tread in treads:
+        assert tread.length_m / FT == pytest.approx(3.0)
+    stringers = [m for m in stair.members if m.category == "stringer"]
+    assert len(stringers) == 2
+    # It lands on the pad it shares with the condensers, not beside it.
+    from shapely.geometry import Polygon
+
+    pad = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
+    assert pad.contains(Polygon(stair.outline).buffer(-0.01))
+
+
+def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catlin_model
+                                                                            ) -> None:
+    """Two raked guard-handrails on the flight, two level cheeks on the threshold, and
+    RL-SG-PORCH 3'-0" shorter with its east leg terminating at y -3'-10".
+
+    Nothing in the engine asks for the threshold pair — R312.1.1 measures the FLIGHT, whose
+    top tread is only 26.4" over the pad, and `code.R312_1_guard_height` cannot see a guard
+    opening at the END of a deck edge at all (plans/TODO.md). They are the author's guard
+    return, so they are asserted here or they are nothing.
+    """
+    rails = {e.tag: e for s in catlin_model.plan.storeys
+             for e in catlin_model.plan.storey_elements(s.tag)
+             if getattr(e, "element_kind", "") == "Railing"}
+    for tag in ("RL-SG-PSTAIR-S", "RL-SG-PSTAIR-N"):
+        rail = rails[tag]
+        assert rail.serves_stair == "ST-SG-PORCH", tag
+        assert rail.role == "guard_and_handrail", tag
+        assert rail.height.inches == pytest.approx(36.0), tag
+        assert rail.top_height is not None and rail.top_height.inches == pytest.approx(36.0)
+        assert rail.graspable_profile is not None, tag
+    for tag in ("RL-SG-PTHRESH-S", "RL-SG-PTHRESH-N"):
+        rail = rails[tag]
+        assert rail.serves_stair is None, tag  # level on the wall top, never raked
+        assert [round(p.xy_m[0] / FT, 4) for p in rail.path] == [27.5, 28.5], tag
+    porch = rails["RL-SG-PORCH"]
+    assert round(porch.path[-1].xy_m[1] / FT, 4) == pytest.approx(-3.8333, abs=1e-3)
+    assert round(porch.path[-1].xy_m[0] / FT, 4) == pytest.approx(27.5)

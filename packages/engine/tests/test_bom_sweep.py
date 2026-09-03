@@ -29,9 +29,8 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     """``length_ft`` is what prices a railing and none of the new columns may disturb it:
     ten authored railings, grouped by product and storey, at their plan run.
 
-    The tenth is RL-SG-PORCH, which replaced the porch's masonry parapet — so the
-    fascia-mount product bills two guards, 36.3 LF of porch and 38.3 LF of balcony, and the
-    ``style == "masonry"`` group this test excludes is empty."""
+    RL-SG-PORCH replaced the porch's masonry parapet, so the ``style == "masonry"`` group
+    this test excludes is empty."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
     # RL-G-SERVICE is the handrail on the garage service stair, new because the *stair* is
     # new, and R311.7.8 asks for a handrail on any flight of four or more risers.
@@ -42,19 +41,28 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # RL-A-STAIR guards the attic *deck* edge on that same plan line; the flight below it is
     # unguarded over a 30"-120" fall into RM-S-STUDY2, and R312.1 is graded against
     # floor-opening edges rather than this one.
-    assert sum(int(row["count"]) for row in rows) == 13
+    # Fourteen authored railings since 2026-09-03: ST-SG-PORCH, the porch's stair to grade,
+    # brought RL-SG-PSTAIR-S/N (raked guard-handrails, one each side) and RL-SG-PTHRESH-S/N
+    # (the level cheeks that return RL-SG-PORCH across the wall top at its head).
+    assert sum(int(row["count"]) for row in rows) == 17
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
     # 40.3, not 38.3: RL-SG-BALCONY's two side legs each run 12" longer, since the balcony's
-    # front plane sits south of the porch's. RL-SG-PORCH is unchanged at 36.3.
+    # front plane sits south of the porch's.
     #
     # Split in two on 2026-09-03: RL-SG-PORCH became a SURFACE guard on its own type_ref
     # (its west and east legs land on 12" concrete wall tops and buy no bracket kit), and
-    # the fascia type is the balcony's alone. The two still total what the one did.
+    # the fascia type is the balcony's alone.
+    #
+    # The surface product went 36.3 -> 42.7 LF the same day and over five runs, not one:
+    # RL-SG-PORCH LOST 3.0 (33.3) when its east leg stopped short to open ST-SG-PORCH's
+    # doorway, and the stair brought 3.7 each of PSTAIR-S/N and 1.0 each of PTHRESH-S/N.
+    # `length_ft` is the PLAN run of the path, so the two raked PSTAIR runs read ~1.9 LF
+    # light between them against the rail actually cut — flagged on the price row.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.3, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(36.3, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(42.7, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,
