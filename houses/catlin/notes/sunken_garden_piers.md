@@ -163,7 +163,7 @@ against `PT-SG-FCOL`'s 36".
 than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf. **Widening the bell
 to 36" would take it to 1,165 psf**, and is the obvious move if the balcony grows again; it
 is not taken now, because 0.81 against a presumptive allowable with no boring is a screening
-margin either way (§5). Two more 3" steps of `joist_cantilever_in` would reach roughly
+margin either way (§6). Two more 3" steps of `joist_cantilever_in` would reach roughly
 1,627 psf — still clear, and still the wrong place to spend the margin quietly.
 
 ---
@@ -344,7 +344,137 @@ authorities on one number: those footings are graded as `retaining_wall/*`.
 
 ---
 
-## 5. What this note does NOT do
+## 5. The bell as a SECTION — flexure and the two shears
+
+§3 asked whether the ground can carry the pressure. It never asked whether the **concrete**
+can, and that is half a footing check: soil pressure is a demand on the bell as much as on
+the soil, and a bell thin enough to punch through fails at a pressure the ground would have
+carried without complaint. Added to `engineering/spread_footing.py` on 2026-09-03
+(`BASIS_VERSION` 1 → 2); this section is its oracle, worked by hand in a separate pass.
+
+### 5a. Plain concrete, and that is legal
+
+Neither bell authors reinforcement, and neither needs to. **ACI 318-19 §14.1.4 permits plain
+concrete in a footing.** That is a different sentence from §14.1.5, which does not permit a
+plain concrete *column* at any stress — the reason `PT-SG-COL` would report INCOMPLETE if its
+cage went missing while its bell does not. So the question here is simply whether the plain
+section is enough.
+
+Three Code decisions carry the whole derivation, and each is easy to get wrong:
+
+- **The 12" round column becomes an equivalent SQUARE** of the same area (§13.2.7.3):
+  `a = sqrt(pi x 12^2 / 4) = 10.635"`, half-side **5.3175"**. Every critical section is
+  measured from that square's face.
+- **`h` is 10", not 12"** (§14.5.1.7). A plain footing cast against soil gives up 2" of its
+  thickness — the Code's allowance for an unformed bottom face poured against dirt. Flexural
+  capacity goes as `h²`, so skipping this overstates the section by **44%**.
+- **The bell's own weight is EXCLUDED**, unlike in §3. A footing does not punch itself: its
+  self-weight goes straight down into the soil directly beneath it, crosses no critical
+  perimeter and turns about no column face. §3 includes it because bearing is exactly the
+  question of what the soil feels; here it would inflate every demand by about a tenth.
+
+`f'c` is the presumptive **3,000 psi** — neither bell's `Footing` names an assembly, so
+there is no `ConcreteSpec` to read (see §6). `sqrt(3000) = 54.772`. `phi = 0.60` throughout,
+ACI Table 21.2.1.
+
+### 5b. Net pressure
+
+```
+                        PT-SG-COL          PT-SG-FCOL
+bell diameter               30"                36"
+bell area  pi R^2       706.86 in^2       1,017.88 in^2
+P_u (§2)                 10,480 lb           10,479 lb
+q_u = P_u / A            14.826 psi          10.295 psi   (2,135 / 1,483 psf)
+```
+
+### 5c. Two-way (punching) shear — ACI §14.5.5.1(b)
+
+Critical perimeter at `h/2` from the equivalent square's face, i.e. a square of half-side
+`5.3175 + 5.0 = 10.3175"`:
+
+```
+b_o = 8 x 10.3175                     =  82.54"
+area inside = (2 x 10.3175)^2         = 425.75 in^2
+
+V_u = q_u x (A_bell - 425.75)
+  COL   14.826 x (706.86 - 425.75)  =  14.826 x 281.11  =  4,168 lb
+  FCOL  10.295 x (1,017.88 - 425.75) =  10.295 x 592.13 =  6,096 lb
+
+V_n = (4/3 + 8/3beta) lambda sqrt(f'c) b_o h,  capped at 2.66 lambda sqrt(f'c) b_o h
+beta = 1.0 for a square, so the bracket is 4.0 and THE CAP GOVERNS.
+phi V_n = 0.60 x 2.66 x 54.772 x 82.54 x 10  =  72,150 lb        (both bells)
+
+  COL   4,168 / 72,150  =  d/c 0.058   OK
+  FCOL  6,096 / 72,150  =  d/c 0.084   OK
+```
+
+### 5d. One-way shear — ACI §14.5.5.1(a)
+
+Critical section at `h` from the column face, i.e. `5.3175 + 10 = 15.3175"` from the centre.
+
+**On `PT-SG-COL` that falls outside the footing** — a 30" bell has only 15" of radius — so
+there is no section to check. The record publishes the state at a zero demand rather than
+omitting it: a limit state silently absent reads as one nobody thought of.
+
+On `PT-SG-FCOL` (R = 18"):
+
+```
+half-chord = sqrt(18^2 - 15.3175^2) = sqrt(324 - 234.63) = 9.454"   ->  b = 18.91"
+segment beyond = R^2 acos(x/R) - x sqrt(R^2 - x^2)
+               = 324 x acos(0.85097) - 15.3175 x 9.454
+               = 324 x 0.55396 - 144.81  =  179.48 - 144.81  =  34.67 in^2
+V_u     = 10.295 x 34.67                        =    357 lb
+phi V_n = 0.60 x (4/3) x 54.772 x 18.91 x 10    =  8,285 lb
+                                                    d/c 0.043   OK
+```
+
+### 5e. Flexure at the column face — ACI §13.2.7.1 / §14.5.2.1(a)
+
+The critical section is the equivalent square's face, `x = 5.3175"` from the centre. The
+demand is the soil pressure on the circular segment beyond it, about that section:
+
+```
+segment area   A = R^2 acos(x/R) - x sqrt(R^2 - x^2)
+segment centroid, FROM THE CENTRE:  xbar = (2/3)(R^2 - x^2)^1.5 / A
+arm = xbar - x                     <- about the CUT, not the centre
+
+PT-SG-COL   R = 15"
+  sqrt(225 - 28.276) = 14.026 ;  acos(0.35450) = 1.20853 rad
+  A    = 225 x 1.20853 - 5.3175 x 14.026  =  271.92 - 74.58  =  197.34 in^2
+  xbar = (2/3)(196.72)^1.5 / 197.34 = (2/3)(2,759.2)/197.34  =    9.322"
+  arm  = 9.322 - 5.3175                                      =    4.005"
+  M_u  = 14.826 x 197.34 x 4.005                             = 11,718 lb-in
+  b    = 2 x 14.026 = 28.05"    S_m = b h^2/6 = 28.05 x 100/6 = 467.5 in^3
+  phi M_n = 0.60 x 5 x 54.772 x 467.5                        = 76,818 lb-in
+                                                                 d/c 0.153   OK
+
+PT-SG-FCOL  R = 18"
+  sqrt(324 - 28.276) = 17.196 ;  acos(0.29542) = 1.27078 rad
+  A    = 324 x 1.27078 - 5.3175 x 17.196  =  411.73 - 91.44  =  320.29 in^2
+  xbar = (2/3)(295.72)^1.5 / 320.29 = (2/3)(5,085.4)/320.29  =   10.585"
+  arm  = 10.585 - 5.3175                                     =    5.268"
+  M_u  = 10.295 x 320.29 x 5.268                             = 17,371 lb-in
+  b    = 2 x 17.196 = 34.39"    S_m = 34.39 x 100/6           = 573.2 in^3
+  phi M_n = 0.60 x 5 x 54.772 x 573.2                        = 94,187 lb-in
+                                                                 d/c 0.184   OK
+```
+
+### 5f. What this says
+
+**Bearing still governs both bells, and by a wide margin** — 0.81 and 0.58 against a worst
+section d/c of 0.18. The bells are thick relative to their projection (a 9.68" cantilever on
+an effective 10" section on `PT-SG-COL`), which is exactly the shape that makes flexure and
+shear irrelevant and soil the whole question.
+
+That is a useful negative result rather than a formality. It says the answer to a bearing
+problem here is **width, not thickness**: widening `PT-SG-COL`'s bell to 36" — the move §3c
+names — takes bearing from 0.81 to 0.58 and takes flexure only from 0.153 to 0.184, still
+nowhere near governing. A 36" bell at 12" thick is a sound section, and nobody has to
+re-check it after the fact.
+
+---
+
+## 6. What this note does NOT do
 
 - **No moment BEYOND the Code minimum.** §4e carries `M_2,min` and magnifies it, and shows
   it is inside the eccentricity §22.4.2's 0.80 cap already embeds. What is *not* carried is
