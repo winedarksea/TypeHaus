@@ -20,16 +20,27 @@ rate.
 
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
-| column | #3 | black | 73.9 LF | 27.8 lb | `PT-SG-COL`, `PR-BW-1..4` ties |
-| column | #3 | hdg-a767 | 113.8 LF | 42.8 lb | `PT-SG-FCOL`, `PT-SG-BR1/BR3/BF1/BF3` ties |
-| column | #5 | black | 116.0 LF | 121.0 lb | the same five, verticals |
-| column | #5 | hdg-a767 | 176.1 LF | 183.7 lb | the same five, verticals |
+| column | #3 | hdg-a767 | 187.6 LF | 70.5 lb | all ten cast columns, ties |
+| column | #5 | hdg-a767 | 292.1 LF | 304.7 lb | all ten cast columns, verticals |
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
 | foundation wall | #4 | hdg-a767 | 881.4 LF | 588.8 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 208.0 LF | 216.9 lb | the eight 8" basement runs |
 | foundation wall | #6 | hdg-a767 | 768.0 LF | 1,153.5 lb | `W-SG-*` verticals |
 | | | | | **4,171 lb** | **2.09 ton** |
+
+**Nine rows became seven on 2026-09-03, and not one pound moved.** `PIER_CONCRETE_12` was
+given a real `ConcreteSpec`, and `bar_coating` is a property of the POUR, so the 149 lb in
+`PT-SG-COL` and the four breezeway piers went from black to A767 with it. **Every bar in this
+house is now galvanized**, which is the 2026-09-02 owner call reaching the last exterior cage
+that black steel was still specified for.
+
+That is a durability result and not only a tidier table. Black and galvanized bar in
+electrical contact inside one pour is a dissimilar-metal couple — an anode, a cathode, and an
+electrolyte as soon as moisture reaches them — and the standard advice is to use one material
+throughout rather than to detail the isolation. The couple did not exist here yet, because the
+black cages happened to sit in unreinforced pours with nothing to lap to. It would have
+existed the day somebody authored a dowel.
 
 The derivation for a spaced bar is `length = area / spacing`, which is the whole of it: a
 bar every `s` inches across a plane of area `A` is `A/s` of bar whichever way it runs,
@@ -47,15 +58,18 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 column   PIER_CONCRETE_12                       0.82 cy
 column   SUNKEN_GARDEN_COLUMN_12                1.25
 footing  CATLIN_FOOTING_20                     10.46
+footing  CATLIN_PIER_BASE_12                    0.57
+footing  CATLIN_PORCH_FOOTING_84                5.71
 footing  CATLIN_RETAINING_FOOTING_96           16.79
 footing  FOOTING_FPSF_20                        1.73
+pad      CATLIN_PIER_BASE_12                    0.26
 slab     CATLIN_DECK_EPS_INT                   18.37
 slab     CATLIN_GARAGE_STEP_6                   0.17
 slab     CATLIN_GARDEN_SLAB                     5.75
 slab     CATLIN_SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
 slab     HP_PAD_ON_GRADE                        0.49
-                                     solids   75.10 cy
+                                     solids   81.64 cy
 
 SUNKEN_GARDEN_WALL                            30.21
 CATLIN_BASEMENT_8                             17.55
@@ -65,7 +79,7 @@ FOUNDATION_WALL_12_INT                         5.25
 the two garden curbs                           0.21
                                       walls   72.71 cy
 
-                                      TOTAL  147.81 cy
+                                      TOTAL  154.35 cy
 ```
 
 **Two things the filter tells you that a hand count would have hidden.**
@@ -74,17 +88,24 @@ the two garden curbs                           0.21
 one whose steel is billed at zero (§4 item 3). It is 12% of the concrete and it is exactly
 the hole.
 
-And the filter *excludes* about 6 cy of footings plus the four breezeway pads, because those
-pours name no assembly and so `assembly_structure_material` cannot confirm they are concrete.
-They are concrete. The exclusion is conservative for a lb/cy ratio — it shrinks the
-denominator and so flatters the number — and it is another reason §3's figure is a ceiling on
-how good the coverage is, not a floor.
+And **the denominator grew by 6.54 cy on 2026-09-03 without a cubic inch of concrete being
+added to the building.** This filter can only count a pour whose assembly confirms it is
+concrete, and three sets of real pours named no assembly at all: the two sunken-garden porch
+strips `FT-SG-W1/E1` (5.71 cy), the two belled pier footings (0.57), and the four breezeway
+pads (0.26). They now name `CATLIN_PORCH_FOOTING_84` and `CATLIN_PIER_BASE_12`, so they are
+counted — and **the rebar ratio in §3 got worse, 28.2 to 27.0 lb/cy, which is the honest
+direction.** What was found was more unreinforced concrete, not more steel. A gap that
+flatters a ratio by hiding from it is the worst kind.
+
+(Giving those 13 pours their mixes moved the estimate by **+$4.50** on a $15,867 footing
+line — per-group rounding as one group split into three — and changed no quantity anywhere.
+A specification change should cost nothing, and this one did.)
 
 ## 3. The test, and it FAILS
 
 ```
-billed          4,171 lb / 147.81 cy   =  28.2 lb/cy
-register ~5 t  10,000 lb / 147.81 cy   =  67.7 lb/cy
+billed          4,171 lb / 154.35 cy   =  27.0 lb/cy
+register ~5 t  10,000 lb / 154.35 cy   =  64.8 lb/cy
 ```
 
 At a black-bar material price of $1.05-1.35/lb, **4,171 lb is $4,380-5,630.** The allowance
@@ -100,8 +121,8 @@ billing 42% of the steel would make the estimate FALL by the difference — the 
 type drops from the BOM and the saving looks real when it is an artifact" hazard, arriving
 from the other direction and for about $6,000.
 
-28.2 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
-40-80 lb/cy; the register's 67.7 sits inside that and this house — with three 10'-tall
+27.0 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
+40-80 lb/cy; the register's 64.8 sits inside that and this house — with three 10'-tall
 retaining walls at `#6 @ 10"` both ways — has no business being below it.
 
 ## 4. Where the missing ~2.9 tons is
@@ -124,16 +145,29 @@ the model has nowhere to state it, or states it in a form nothing can read.
    be derived and was not guessed.
 4. **Dowels** — every wall-to-footing and column-to-wall lap. Deliberately not billed: a
    dowel's length is a lap into the pour below and nothing in this model carries it.
-5. **`FT-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. The bells
-   are graded as PLAIN concrete and pass, so this may be correct rather than missing —
-   `notes/sunken_garden_piers.md` §5.
+5. **`FT-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. All six
+   now name `CATLIN_PIER_BASE_12` and so have a mix, but no steel: the bells are graded as
+   PLAIN concrete and pass (`notes/sunken_garden_piers.md` §5), which ACI 318-19 §14.1.4
+   expressly permits in a footing. Correct rather than missing.
 6. **`FT-SG-W1`/`E1`** and the 26 house/garage strip footings are plain by design (IRC Table
-   R403.1), so they are genuinely zero and not a gap.
+   R403.1), so they are genuinely zero and not a gap. `FT-SG-W1/E1` gained an assembly on
+   2026-09-03 (`CATLIN_PORCH_FOOTING_84`) and remain deliberately unreinforced.
 
-**Not a gap, and worth saying so:** the slabs-on-grade carry no mesh any more. Fibre
-replaces it (`CATLIN_INTERIOR_MIX`, `CATLIN_EXPOSED_MIX`), and `[basis_notes] concrete`
-prices "wire mesh $0.20-0.50/SF" inside the $/cy rate. **Mesh is not bar**, it stays in the
-rate, and it must not be swept out with the rebar when the cut is finally made.
+**Not a gap, and worth saying so:** the slabs-on-grade carry no mesh any more. Fibre replaces
+it, and `[basis_notes] concrete` prices "wire mesh $0.20-0.50/SF" inside the $/cy rate.
+**Mesh is not bar**, it stays in the rate, and it must not be swept out with the rebar when
+the cut is finally made.
+
+**That sentence used to name the wrong mix, and the correction is a real one.** It read
+"(`CATLIN_INTERIOR_MIX`, `CATLIN_EXPOSED_MIX`)". `CATLIN_EXPOSED_MIX` carries MACRO-synthetic
+fibre at 4 lb/cy, which ACI 544.4R does recognise as a mesh replacement for drying-shrinkage
+and thermal crack control, so the garage and garden slabs were correctly described. The
+interior mix carried MICRO-monofilament at 1.5 lb/cy, which targets plastic shrinkage in the
+first hours, carries no post-crack residual and **replaces nothing** — `SL-B-FLOOR`, 14 CY of
+basement slab on grade, had neither mesh nor a fibre that does the job the mesh was deleted
+for. Split into `CATLIN_POLISHED_MIX` (micro, `SL-M-DECK`) and `CATLIN_INTERIOR_SLAB_MIX`
+(macro, `SL-B-FLOOR`) on 2026-09-03. Control joints are still required on that slab and are
+not modelled anywhere.
 
 ## 5. What has to happen before the cut
 

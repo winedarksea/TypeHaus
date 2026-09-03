@@ -64,7 +64,7 @@ _BREEZEWAY_ORACLE = {
     "dead_lb": 639.57, "live_lb": 126.91, "service_lb": 766.48, "factored_lb": 970.54,
     "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 187_011.0,
     "tie_spacing_in": 10.0,
-    "slenderness": 18.92, "delta_ns": 1.0006, "e_magnified_in": 0.9606, "e_capped_in": 1.20,
+    "slenderness": 18.92, "delta_ns": 1.0005, "e_magnified_in": 0.9604, "e_capped_in": 1.20,
 }
 _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 
@@ -83,8 +83,13 @@ _ORACLE = {
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
-        "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.024, "e_magnified_in": 0.983, "e_capped_in": 1.20,
+        # §4d: PIER_CONCRETE_12 names CATLIN_EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
+        # this column is no longer graded on the presumptive 3,000 its sibling still is.
+        # 187,011 -> 285,893 lb, and E_c goes as sqrt(f'c) so the magnifier eases with it.
+        # THE TWO COLUMNS ARE POURED FROM THE SAME 5,000 psi; the split is the unfinished
+        # migration of SUNKEN_GARDEN_COLUMN_12, not a difference in the concrete.
+        "capacity_lb": 285_893.0, "tie_spacing_in": 10.0,
+        "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
         "tributary_ft2": 116.97, "dead_lb": 2494.0, "live_lb": 4679.0,

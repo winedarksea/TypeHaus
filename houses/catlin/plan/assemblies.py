@@ -107,7 +107,24 @@ CATLIN_EXPOSED_MIX = ConcreteSpec(
     source="every exterior and salt-splash pour: ACI 318-19 Table 19.3.2.1 class F3 + C2 — w/cm 0.40, f'c 5,000, 6%+/-1.5 air — with ASTM A767 class 1 galvanized bar. Cover is authored per pour, because on a 12\" round column it costs moment and on a footing it is free",
 )
 
-CATLIN_INTERIOR_MIX = ConcreteSpec(
+# ** TWO INTERIOR MIXES, BECAUSE MICRO AND MACRO FIBRE ARE NOT THE SAME PURCHASE. ** These
+# were one mix until 2026-09-03, and that conflated two products answering two questions:
+#
+#   * MICRO-monofilament targets PLASTIC shrinkage — the first hours, before the concrete has
+#     any strength. It carries no post-crack residual, so it replaces NO steel and no mesh.
+#     It is the polishable one, which is why SL-M-DECK is poured from it
+#     (notes/mixed_deck_movement_joint.md, which has said "replaces no steel" all along).
+#   * MACRO-synthetic carries a measurable post-crack residual (ASTM C1609) and is what ACI
+#     544.4R recognises as a replacement for welded wire mesh against DRYING shrinkage and
+#     thermal movement. It is also visible at a finished surface, which is exactly why it
+#     cannot go in the floor above.
+#
+# One mix serving both meant SL-B-FLOOR — 14 CY of basement slab on grade — had nothing at all
+# controlling drying shrinkage: no mesh, and a fibre that does not do that job. The house
+# elsewhere claims "fibre replaces the mesh", and for CATLIN_EXPOSED_MIX's garage and garden
+# slabs that is true. It was not true here, and the fix is a second mix rather than a quieter
+# claim.
+CATLIN_POLISHED_MIX = ConcreteSpec(
     fc_psi=4000.0,
     w_cm_max=0.45,
     exposure_f="F0",
@@ -117,7 +134,33 @@ CATLIN_INTERIOR_MIX = ConcreteSpec(
     fiber=FiberSpec(kind="micro-synthetic", dose_pcy=1.5,
                     product="monofilament PP, 1/2\" - confirm the dose against the supplier TDS and the finisher before ordering"),
     max_aggregate=inch(0.75),
-    source="conditioned interior pours: no chloride, no freeze-thaw, so black bar and galvanizing would buy nothing. Micro-MONOFILAMENT fiber, not macro: this is the mix SL-M-DECK is polished from",
+    source="the polished deck cap SL-M-DECK: no chloride, no freeze-thaw, so black bar and galvanizing would buy nothing. Micro-MONOFILAMENT fibre, deliberately NOT macro — it targets plastic shrinkage, replaces no steel, and what little presents at the surface sits in the paste a cream polish removes (notes/mixed_deck_movement_joint.md)",
+)
+
+# ** NO ENTRAINED AIR, AND THAT IS NOT AN OMISSION. ** Both interior mixes leave air unset,
+# and a hard-trowelled floor is the one place where entrained air is actively WRONG. ACI
+# 302.1R §5.7.1: "Entrained air is not recommended for concrete to be given a smooth, dense,
+# hard-troweled finish because blistering and delamination may occur" — the entrained air
+# slows bleed water's rise, the trowel seals a surface over water still coming up, and the
+# risk climbs with every percent of air. At the 6% CATLIN_EXPOSED_MIX carries it is already
+# a bad bet.
+#
+# F0/W0/C0 is what makes omitting it safe: there is no freeze-thaw indoors to need the air
+# for, so the two requirements never collide. They WOULD collide on a hard-trowelled exterior
+# slab, and this house has none — the garage and garden slabs take the air and a broom or
+# float finish. `structural.concrete_mix_matches_exposure` agrees by construction, because F0
+# is not in its air-required set; nothing yet grades the converse, and a rule that says "an
+# F1-F3 pour must not be hard-trowelled" has nowhere to read the finish from today.
+CATLIN_INTERIOR_SLAB_MIX = ConcreteSpec(
+    fc_psi=4000.0,
+    w_cm_max=0.45,
+    exposure_f="F0",
+    exposure_w="W0",
+    exposure_c="C0",
+    bar_coating="black",
+    fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
+    max_aggregate=inch(0.75),
+    source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre CATLIN_EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here",
 )
 
 
@@ -743,7 +786,7 @@ CATLIN_SLAB_FLOOR = Assembly(
     tag="CATLIN_SLAB_FLOOR",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_INTERIOR_MIX),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_INTERIOR_SLAB_MIX),
         Layer(name="xps-below", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
@@ -786,7 +829,7 @@ CATLIN_DECK_EPS_INT = Assembly(
     tag="CATLIN_DECK_EPS_INT",
     layers=(
         Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.375),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_INTERIOR_MIX),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_POLISHED_MIX),
         Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(10.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # The form's own integral steel rib, which is what the ceiling screws to — the same
@@ -1224,11 +1267,32 @@ POST_KDAT = Assembly(
 # assembly is what puts `structure_material="concrete"` on the BOM row so the [concrete]
 # price table's material guard admits it, which is the difference between the pier billing
 # at ready-mix and the pier billing at whatever rate the bare "column" key happened to hold.
+# ** THE MIX HERE USED TO BE PROSE, AND THE PROSE DID NOT ADD UP. ** The source string below
+# said "4,000 psi ... ACI 318-19 class F2", and ACI Table 19.3.2.1 asks **4,500 psi** of class
+# F2. Nothing could see that while the numbers were sentences; `structural.
+# concrete_mix_matches_exposure` sees it the moment they are a `ConcreteSpec`, which is what
+# that check is for.
+#
+# Resolved by pouring these five from `CATLIN_EXPOSED_MIX` — F3/C2 at 5,000 — rather than by
+# minting a compliant fourth mix at F2/4,500. Two reasons, and the second is the real one:
+#   * these are 0.82 CY in total. A separate ticket for four fifths of a yard is a delivery
+#     charge and a batching risk to save nothing;
+#   * PT-SG-COL stands in the sunken garden, which is the salt-splash court `CATLIN_EXPOSED_MIX`
+#     exists for. Grading it F2 was always the generous reading of where it sits.
+# The four breezeway piers get a richer mix than their exposure needs. That is the price of
+# one ticket instead of two, and at this volume it is not a price worth arguing about.
+#
+# **This galvanizes their cages**, because `bar_coating` is a property of the pour: ~149 lb of
+# #5 and #3 moves from black to A767 in the takeoff. That is the 2026-09-02 owner call (hot-dip
+# house-wide) reaching the last exterior bar in the house that black steel was still specified
+# for, and it removes the one place where a black cage could ever have been lapped to
+# galvanized steel — a dissimilar-metal couple is a corrosion cell, and the cheapest time to
+# not have one is before it is detailed.
 PIER_CONCRETE_12 = Assembly(
     tag="PIER_CONCRETE_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
     # One of these five, PT-SG-COL, is the only pier in the set with WOOD landing on it: the
@@ -1238,7 +1302,7 @@ PIER_CONCRETE_12 = Assembly(
     # gusset angle rather than the wood-to-wood H-tie that used to be drawn here. The other
     # four take breezeway posts on ABU66SS standoff bases and need none of it.
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; 4,000 psi, 6.0-6.5% air (Minn. R. 1309.0402, ACI 318-19 class F2); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, a 1/2\"-1\" stainless or isolated hot-dip standoff under the KDAT soffit, and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
+    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; CATLIN_EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, a 1/2\"-1\" stainless or isolated hot-dip standoff under the KDAT soffit, and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
 )
 
 RAILING_DARK_METAL = Assembly(
@@ -1664,13 +1728,18 @@ SG_FROST_WING_XPS2 = Assembly(
 # should be answered on its own.
 # ** THE THREE INTERIOR 12" BEARING WALLS KEEP `library.FOUNDATION_WALL_12_INT`, WHICH
 # CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly
-# house-locally so it could name `CATLIN_INTERIOR_MIX` was written and then dropped: the
+# house-locally so it could name a house mix was written and then dropped: the
 # three walls' tag appears in `plan/transitions.py` condition keys
 # (`wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT` and the storey-stack rim), so
 # retagging them moves detail keys and the section-card goldens with them. Against that: the
 # walls are inside the conditioned envelope with soil on neither face, so there is no
 # chloride, no freeze-thaw, and black bar at the code-minimum mix is the right answer anyway.
 # The blast radius is real and the durability gain is nil.
+# Re-derived and kept on 2026-09-03, when the sweep that gave every other assembly-less
+# pour in this house a mix reached these three. Same answer, plus one new reason to be
+# comfortable with it: `structural.concrete_cover_meets_minimum` grades a pour's cover
+# only where a `ReinforcementSpec` says there is bar to cover, and these three carry
+# none, so the rule that would have cared is not being deprived of a subject.
 CATLIN_GARDEN_SLAB = Assembly(
     tag="CATLIN_GARDEN_SLAB",
     layers=(
@@ -1705,6 +1774,45 @@ CATLIN_FOOTING_20 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
     ),
     source="the ordinary 20\" x 8\" cast strip under the house and garage walls (IRC Table R403.1), poured against the bedding prep",
+)
+
+# The 12" cast bases under this house's round piers: the sunken garden's two belled footings
+# (FT-SG-COL, FT-SG-FCOL) and the four breezeway pads (PD-BW-1..4). One assembly for both
+# because they are one detail at two plan shapes — a plain, unreinforced 12" pour bearing at
+# frost depth, which is what puts them on the BURIED mix's F0 rather than the court's F3. The
+# bells carry 42" of true cover and the pads bottom at -6'-0"; neither ever freezes, and F0 is
+# earned by that and not assumed (see CATLIN_BURIED_MIX above).
+#
+# These six named no assembly at all until 2026-09-03. That is not a cosmetic gap: with no
+# assembly there is no `structure_material`, so `resolve/concrete.concrete_spec_for` returned
+# None, every calc fell back to the presumptive 3,000 psi, `structural.concrete_mix_matches_
+# exposure` could not see them, and the takeoff could not confirm they were concrete — about
+# 6 CY of real pour sitting outside both the durability report and the priced bill.
+CATLIN_PIER_BASE_12 = Assembly(
+    tag="CATLIN_PIER_BASE_12",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+    ),
+    source="the 12\" plain bases under the round piers — the sunken garden's two belled footings and the four breezeway pads, all bearing at or below frost depth (IRC R403.1.4); unreinforced by design and graded as plain concrete under ACI 318-19 §14.1.4, see notes/sunken_garden_piers.md §5",
+)
+
+# The two braced porch walls' strips, FT-SG-W1/E1. A separate type from
+# CATLIN_RETAINING_FOOTING_96 because they are a different footing: 84" wide against 96", and
+# 13" deep against 12" — the extra inch is the one params/sunken_garden.py takes to keep their
+# undersides level with the retaining strips' after the porch bearing rose.
+#
+# Same F3 mix as the three retaining strips beside them, for the same reason: every footing in
+# this court stands INSIDE the excavation, 8" under a garden floor that is itself 9' below
+# site grade, and is frost-protected by drained NFS stone rather than by depth. Concrete in
+# the freezing zone is F3 concrete however it got protected.
+CATLIN_PORCH_FOOTING_84 = Assembly(
+    tag="CATLIN_PORCH_FOOTING_84",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(13.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+    ),
+    source="the sunken-garden porch strips FT-SG-W1/E1 — 7'-0\" x 1'-1\", braced walls above rather than cantilevers, frost-protected on ASCE 32 soil replacement like the rest of the court",
 )
 
 FOOTING_FPSF_20 = Assembly(
@@ -3594,6 +3702,8 @@ ASSEMBLIES = [
     FOOTING_FPSF_20,
     CATLIN_FOOTING_20,
     CATLIN_RETAINING_FOOTING_96,
+    CATLIN_PORCH_FOOTING_84,
+    CATLIN_PIER_BASE_12,
     CATLIN_GARDEN_SLAB,
     CATLIN_GARAGE_STEP_6,
     GARAGE_ROOF,

@@ -146,6 +146,15 @@ class Pad(Element):
     #: and reports OK or OVER rather than INCOMPLETE.
     reinforcement: ReinforcementSpec | None = None
 
+    # What the pad is made of — the same field, and the same "unset stays plain concrete"
+    # default, that ``Footing`` above carries. A Pad had no way to name an assembly at all
+    # until 2026-09-03, which meant it had no way to name a MIX: ``resolve/concrete``
+    # reaches a ConcreteSpec through the assembly's structure layer, so every Pad in every
+    # house returned None, fell back to the presumptive f'c, and was invisible to
+    # ``structural.concrete_mix_matches_exposure`` no matter what the house authored. A pour
+    # this model cannot describe is a pour it cannot grade.
+    assembly: str | None = None
+
 
 
 class DrainTile(HausModel):

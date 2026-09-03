@@ -324,7 +324,11 @@ PADS = [
                  pt(ft(x + _PAD_HALF_FT), ft(y - _PAD_HALF_FT)),
                  pt(ft(x + _PAD_HALF_FT), ft(y + _PAD_HALF_FT)),
                  pt(ft(x - _PAD_HALF_FT), ft(y + _PAD_HALF_FT))),
-        thickness=ft(_PAD_THICKNESS_FT), bottom_elevation=ft(_PAD_BOTTOM))
+        thickness=ft(_PAD_THICKNESS_FT), bottom_elevation=ft(_PAD_BOTTOM),
+        # Bearing at -6'-0", which is frost depth: these never freeze, so the BURIED mix's
+        # F0 is earned rather than assumed. Shared with the sunken garden's two belled
+        # footings — one 12" plain pour at two plan shapes.
+        assembly="CATLIN_PIER_BASE_12")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 

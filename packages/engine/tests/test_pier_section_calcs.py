@@ -32,25 +32,29 @@ _ORACLE = {
         "bell_in": 30.0,
         "pressure_psi": 14.826,
         "punching_demand": 4168.0,
-        "punching_capacity": 72150.0,
+        "punching_capacity": 93150.0,
         # §5d: the critical section at h from the face lands 15.32" out on a 15" radius.
         "one_way_demand": 0.0,
         "flexure_demand": 11718.0,
-        "flexure_capacity": 76818.0,
+        "flexure_capacity": 99172.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
         "pressure_psi": 10.295,
         "punching_demand": 6096.0,
-        "punching_capacity": 72150.0,
+        "punching_capacity": 93150.0,
         "one_way_demand": 357.0,
-        "one_way_capacity": 8285.0,
+        "one_way_capacity": 10697.0,
         "flexure_demand": 17371.0,
-        "flexure_capacity": 94187.0,
+        "flexure_capacity": 121594.0,
     },
 }
 
-_PRESUMPTIVE_ROOT_FC = math.sqrt(3000.0)
+# §5a: both bells name CATLIN_PIER_BASE_12 -> CATLIN_BURIED_MIX as of 2026-09-03. Every
+# capacity in §5c-§5e goes as sqrt(f'c), so all of them are 29.1% larger than the figures this
+# oracle carried while the bells named no assembly and the engine substituted 3,000 psi. The
+# demands are unchanged: soil pressure does not care what the concrete is.
+_ROOT_FC = math.sqrt(5000.0)
 
 
 @pytest.fixture(scope="module")
@@ -132,9 +136,9 @@ def test_the_effective_thickness_gives_up_two_inches(records) -> None:
     assert PLAIN_SOIL_CAST_DEDUCTION_IN == 2.0
     state = _state(records["PT-SG-COL"], "flexure at the column face")
     # §5e: a 28.05" chord, and the 10" the deduction leaves of a 12" bell.
-    expected = PHI_PLAIN * 5.0 * _PRESUMPTIVE_ROOT_FC * 28.05 * 10.0 ** 2 / 6.0
+    expected = PHI_PLAIN * 5.0 * _ROOT_FC * 28.05 * 10.0 ** 2 / 6.0
     assert state.capacity == pytest.approx(expected, rel=0.001)
-    ungraded = PHI_PLAIN * 5.0 * _PRESUMPTIVE_ROOT_FC * 28.05 * 12.0 ** 2 / 6.0
+    ungraded = PHI_PLAIN * 5.0 * _ROOT_FC * 28.05 * 12.0 ** 2 / 6.0
     assert ungraded / expected == pytest.approx(1.44, rel=0.01)
 
 

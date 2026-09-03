@@ -305,7 +305,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   cover was *regex-scraped* out of a free-text cage string. `ConcreteSpec` /
   `FiberSpec` / `ReinforcementSpec` closed that, and the spec change followed on top.
   - **Fibre**: macro-synthetic house-wide; **micro-MONOFILAMENT PP at ~1.5 lb/cy in
-    `SL-M-DECK`**, which is the interesting half. `notes/mixed_deck_movement_joint.md` said
+    `SL-M-DECK`**, which is the interesting half. **Corrected 2026-09-03:** the two were one
+    `CATLIN_INTERIOR_MIX` serving both `SL-M-DECK` and `SL-B-FLOOR`, and the house claimed
+    "fibre replaces the mesh" of both. True of macro (ACI 544.4R); **false of micro-mono**,
+    which targets plastic shrinkage only and carries no post-crack residual — so 14 CY of
+    basement slab had neither mesh nor a fibre doing the mesh's job. Split into
+    `CATLIN_POLISHED_MIX` (micro, the deck) and `CATLIN_INTERIOR_SLAB_MIX` (macro, the slab).
+    Control joints on `SL-B-FLOOR` are still required and are modelled nowhere. `notes/mixed_deck_movement_joint.md` said
     "no fibres in the mix" and that stands against MACRO fibre (visible at a finished
     surface) and against steel (it rust-stains). Micro-mono answers a different question —
     plastic shrinkage in the first hours, a 55-70% reduction, exactly what a thin 4 5/8" cap
@@ -316,9 +322,36 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     names one gets it. Recorded as a DECISION, not a code requirement — ACI's C1 asks nothing
     of the bar beyond cover — so nobody later "corrects" a pour that omits it. Interior pours
     stay black: no chloride, no freeze-thaw, nothing bought.
-  - **3" cover**: taken on the footings, where ACI Table 20.5.1.3.1(a) asks for it anyway and
-    it is free. NOT taken on the 12" round columns, where it costs 30% of the bar circle and
-    therefore of the moment lever arm — see below.
+  - **3" cover**: taken on the footings, where ACI Table 20.5.1.3.1(a) asks for it anyway
+    and it is free, and **taken on all six sunken-garden stems on 2026-09-03, where it is
+    not** — `d` 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, stem d/c 0.81 -> 0.90.
+    `#6 @ 12"` stops working at 3" cover, so `#6 @ 10"` went from the comfortable choice to
+    the arithmetic minimum; `notes/sunken_garden_court_free_body.md` §6a is the trade, worked
+    by hand. Still NOT taken on the 12" round columns, where it costs 30% of the bar circle
+    and therefore of the moment lever arm — see below.
+  - **Two defects the sweep turned up, both now fixed.** (a) `ReinforcementSpec.cover` was
+    authored on six elements and **read by nothing** — every calc reached for
+    `ConcreteSpec.cover`, so the stems' 2" was inert (masked because the ACI table fallback
+    also returns 2" for a #6) and the basement walls silently took the buried mix's
+    cast-against-earth 3" onto a formed face. `resolve/concrete.cover_for` is the one
+    reduction now, and the schedule outranks the mix because cover belongs to a FACE and a
+    mix is one ticket serving many. (b) **Nothing graded cover against ACI at all** — a 3/4"
+    cover on a footing would have passed every rule in silence. `structural.
+    concrete_cover_meets_minimum` is Table 20.5.1.3.1, with the exposure condition derived
+    from authored classes and never from geometry.
+  - **13 pours that named no assembly now name one** (`CATLIN_PORCH_FOOTING_84`,
+    `CATLIN_PIER_BASE_12`, and `PIER_CONCRETE_12` gaining a real mix): 4 footings, 4
+    breezeway pads, 5 sonotube piers. Before this they had no `structure_material`, so no
+    `ConcreteSpec` could be reached, every calc fell back to the presumptive 3,000 psi, and
+    the durability rule could not see them. `Pad` grew an `assembly` field to make it
+    possible — it had none, in any house. The durability check now grades **80** pours where
+    it graded 67, and the whole estimate impact was **+$4.50** with no quantity change.
+    `PIER_CONCRETE_12`'s prose had specified "4,000 psi ... class F2", and ACI Table
+    19.3.2.1 asks 4,500 psi of class F2: **a mix that did not buy its own class**, invisible
+    while it was a sentence. It now pours from `CATLIN_EXPOSED_MIX`, which also galvanizes
+    its five cages — **every bar in the house is A767 now**, closing the one place a black
+    cage could have been lapped to galvanized steel (a dissimilar-metal couple is a
+    corrosion cell; the standard advice is one material throughout, not detailed isolation).
   - **Rebar inside the $/cy rates** is no longer "a rate note plus a plan of its own":
     `takeoff/reinforcement.py` bills the steel by the pound NOW, priced at nothing, so the
     tonnage can be read before any rate is cut; and `[rebar_inclusive]` makes the standing
@@ -331,10 +364,28 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     day the gate opens; `scripts/price_delta.py` is the one-command proof that nothing but
     the three intended sections moved.
   - **STILL OPEN**, and each is blocked on something specific:
-    - the two cast-column assemblies (`SUNKEN_GARDEN_COLUMN_12`, `PIER_CONCRETE_12`) still
-      read the presumptive f'c. Attaching their real mix re-oracles
-      `notes/balcony_moment_columns.md`, `notes/breezeway_piers.md` and
-      `test_pier_calcs.py`, which another session had open;
+    - **`SUNKEN_GARDEN_COLUMN_12` still reads the presumptive f'c**, alone now.
+      `PIER_CONCRETE_12` was migrated 2026-09-03 and `notes/sunken_garden_piers.md` /
+      `notes/breezeway_piers.md` re-oracled with it. The consequence is visible and ugly in
+      the register: `PT-SG-FCOL` grades at 3,000 psi and `PT-SG-COL` at 5,000, so the front
+      column reads *weaker* than the back one when both are poured from the same truck. It
+      is left because attaching the mix re-oracles `notes/balcony_moment_columns.md`, which
+      another session had open;
+    - **the schema still cannot say three things ACI ties to the classes this house claims**:
+      the water-soluble chloride-ion limit (C1 0.30% / C2 0.15% by mass of cement — the half
+      of class C that actually protects the bar), the cementitious material TYPE the S rows
+      require (and `exposure_s` is unset on every mix, deliberately, because no soil sulfate
+      test has been run), and the SCM caps for an F3 mix exposed to deicing chemicals.
+      `CATLIN_EXPOSED_MIX` sits exactly at the 25% fly-ash cap — correct, and by coincidence
+      rather than by a rule. ASR/aggregate reactivity (ASTM C1778) is unaddressed; the 25%
+      Class F fly ash is the standard mitigation, so the mix is probably right and nothing
+      records or grades it;
+    - **`ConcreteSpec` says nothing about chromate passivation.** ASTM A767 requires it
+      *unless the purchaser waives it*, and a waived passivation is the hydrogen-evolution
+      bond-loss case. Nothing in this house says "do not waive";
+    - **curing, cold-weather placement and slab joint layout are modelled nowhere.** For a
+      0.40 w/cm fly-ash mix in Minnesota those are the field items durability actually turns
+      on (ACI 308, ACI 306), and they live only in `Assembly.source` prose;
     - **3" cover on those columns has NOT been re-run through `deck_post._pm_point`**, and
       it must be rather than asserted: `PT-SG-BR1/BR3/BF1/BF3` are the balcony's entire
       lateral system, so the bar circle shrinking 30% is a moment question. The fallback

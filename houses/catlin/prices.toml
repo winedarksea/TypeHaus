@@ -1081,6 +1081,20 @@
 # SPLIT 2026-08-27: ready-mix $180-200/cy plus the wire mesh already named above
 # ($0.20-0.50/SF, $16-40/cy at 3.5"); placing, screeding and finishing are the residual, and
 # finishing is why a slab's labour half is wider than a footing's.
+#
+# AMENDED 2026-09-03: NO SLAB IN THIS HOUSE CARRIES MESH. Every one of them is fibre-
+# reinforced instead — macro-synthetic at 4 lb/cy in CATLIN_EXPOSED_MIX and
+# CATLIN_INTERIOR_SLAB_MIX, micro-monofilament at 1.5 lb/cy in CATLIN_POLISHED_MIX. The
+# material half is not being changed for it, and that is a judgement rather than an
+# oversight: macro-synthetic at 4 lb/cy runs about $8-12/cy, which sits INSIDE the $16-40/cy
+# of mesh it displaced, so the rate stays conservative and the swap is not a saving anyone
+# should book. What is corrected is the sentence — a rate that says it contains mesh, for
+# slabs that contain none, is a rate nobody can check.
+#
+# The fibre is NOT a [reinforcement] line and must not become one when the rebar back-out
+# opens that section (notes/rebar_backout.md §5). That section bills BAR by the pound. Fibre
+# is an admixture priced by the yard and it stays in this rate, exactly as the mesh it
+# replaced did.
 "slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 26.37 cy — SLAB-ON-GRADE ONLY, was merged $390-685
 # The heat-pump pad, SL-SG-HPPAD — 0.70 cy (was 0.36 until 2026-09-03, when the two
 # condensers turned to face SOUTH and the pad grew east to the SE corner and north to carry

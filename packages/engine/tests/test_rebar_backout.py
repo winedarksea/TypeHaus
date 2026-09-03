@@ -29,11 +29,14 @@ from typehaus.takeoff.reinforcement import reinforcement_takeoff
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 #: §1 of the note. Weight in lb, keyed (scope, bar, coating).
+# Seven rows, not nine: PIER_CONCRETE_12 gained a ConcreteSpec on 2026-09-03 and
+# `bar_coating` is a property of the POUR, so 149 lb of column steel went black -> A767 and
+# the two black rows folded into their galvanized siblings. No pound moved; every bar in this
+# house is galvanized now, which also removes the dissimilar-metal couple a black cage lapped
+# to galvanized dowels would have been.
 _SCHEDULE = {
-    ("column", "#3", ""): 27.8,
-    ("column", "#3", "hdg-a767"): 42.8,
-    ("column", "#5", ""): 121.0,
-    ("column", "#5", "hdg-a767"): 183.7,
+    ("column", "#3", "hdg-a767"): 70.5,
+    ("column", "#5", "hdg-a767"): 304.7,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
     ("foundation wall", "#4", "hdg-a767"): 588.8,
@@ -71,7 +74,9 @@ def test_the_backout_gate_is_still_CLOSED(rows) -> None:
     allowance register's $10,000-18,000. It does not: the model carries 2.09 of roughly 5
     tons, because the basement walls' horizontal steel is authored nowhere, `GARAGE_ICF_6`
     states a spacing with no bar size, and `SL-M-DECK`'s cap schedule cannot be derived from
-    a form whose rib spacing the model does not carry.
+    a form whose rib spacing the model does not carry. The RATIO got worse on 2026-09-03
+    (28.2 -> 27.0 lb/cy) when 6.5 cy of previously unclassifiable pours gained assemblies:
+    what that sweep found was more unreinforced concrete, not more steel.
 
     Cutting the full embedded rebar out of the $/cy rates while billing 42% of it would make
     the estimate FALL by about $6,000 and read as a saving. So the gate stays shut, and this
@@ -127,9 +132,9 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(147.81, rel=0.02), (
+    assert total_cy == pytest.approx(154.35, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
     total_lb = sum(r["weight_lb"] for r in reinforcement_takeoff(catlin_model))
-    assert total_lb / total_cy == pytest.approx(28.2, rel=0.03)
+    assert total_lb / total_cy == pytest.approx(27.0, rel=0.03)

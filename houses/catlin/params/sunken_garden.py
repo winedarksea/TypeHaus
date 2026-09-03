@@ -902,7 +902,12 @@ FOOTINGS = [
                        else SPEC.footing_width_in),
             offset=inch(_RETAINING_FOOTING_OFFSET_IN) if w.tag in _RETAINING else None,
             reinforcement=_RETAINING_FOOTING_MAT if w.tag in _RETAINING else None,
-            assembly="CATLIN_RETAINING_FOOTING_96" if w.tag in _RETAINING else None,
+            # Two footing types, and the branch is the same `_RETAINING` set that already
+            # decides width, offset and mat: the three cantilever strips are 96" x 12", the
+            # two braced porch strips 84" x 13". Both pour from CATLIN_EXPOSED_MIX — every
+            # footing in this court is inside the excavation and in the freezing zone.
+            assembly=("CATLIN_RETAINING_FOOTING_96" if w.tag in _RETAINING
+                      else "CATLIN_PORCH_FOOTING_84"),
             depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
@@ -920,12 +925,14 @@ FOOTINGS.append(
     Footing(uid="SGF199AAAA", tag="FT-SG-COL", under="PT-SG-COL",
             width=inch(_col_footing_width_in),
             depth=inch(SPEC.footing_thickness_in),
+            assembly="CATLIN_PIER_BASE_12",
             bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 FOOTINGS.append(
     Footing(uid="SGF198AAAA", tag="FT-SG-FCOL", under="PT-SG-FCOL",
             width=inch(_front_footing_width_in),
             depth=inch(SPEC.footing_thickness_in),
+            assembly="CATLIN_PIER_BASE_12",
             bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 

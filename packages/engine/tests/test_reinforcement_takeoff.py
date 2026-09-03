@@ -73,21 +73,29 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
     pour inherits it, which is what makes ``#5:hdg-a767`` a price key worth having. Every
     footing and wall row here is galvanized for exactly that reason: their pours state it.
 
-    **The columns are the exception, and it is a real one rather than an oversight.**
-    ``SUNKEN_GARDEN_COLUMN_12`` and ``PIER_CONCRETE_12`` carry no ``ConcreteSpec`` yet —
-    attaching one means giving them their real 5,000 psi F3+C2 mix, which re-oracles three
-    hand-worked notes. Until then the galvanizing on the five corner columns is an authored
-    fact with nowhere else to live, so it is stated per-bar via ``BarSpec.coating``, and the
-    breezeway piers (whose cage string claims no galvanizing) correctly read as black.
+    **The columns used to be the exception and are not one any more.** Until 2026-09-03
+    neither ``SUNKEN_GARDEN_COLUMN_12`` nor ``PIER_CONCRETE_12`` carried a ``ConcreteSpec``,
+    so the galvanizing on five of the ten cages was an authored fact with nowhere else to
+    live and was stated per-bar via ``BarSpec.coating`` — while the other five read black.
+    ``PIER_CONCRETE_12`` now names ``CATLIN_EXPOSED_MIX`` and its five inherit A767 from the
+    pour. ``SUNKEN_GARDEN_COLUMN_12`` still keeps its per-bar override (its mix is the
+    deferred half of that migration), which is why this asserts a UNIFORM result reached by
+    two different routes: the whole house is galvanized, and no scope carries both.
+
+    Uniformity is the assertion worth making rather than a coincidence to tolerate. Mixing
+    coatings inside one pour is specifying a corrosion cell, and the check that would notice
+    is a person reading this table.
     """
     by_scope = {}
     for row in rows:
         by_scope.setdefault(row["scope"], set()).add(row["coating"])
     assert by_scope["footing"] == {"hdg-a767"}
     assert by_scope["foundation wall"] == {"hdg-a767"}
-    # Columns carry both, per the exception above — and the split is the point, so it is
-    # asserted rather than tolerated.
-    assert by_scope["column"] == {"hdg-a767", ""}
+    assert by_scope["column"] == {"hdg-a767"}
+    assert set().union(*by_scope.values()) == {"hdg-a767"}, (
+        "a coating other than A767 has appeared. Every bar in this house is galvanized by "
+        "the 2026-09-02 owner call; a second coating is either a new decision or a pour "
+        "that lost its mix.")
 
 
 def test_the_bom_bills_only_what_the_house_authored(catlin_model) -> None:

@@ -77,6 +77,12 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                     bottom = top - element.thickness.meters
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, "pad", outline, bottom, top,
+                    # Carried for the same reason a Footing's is (see _resolve_footing): it
+                    # is how the pour reaches its mix. Without it `concrete_spec_for` gets
+                    # None on every Pad in every house, the takeoff cannot confirm the pour
+                    # is concrete, and `structural.concrete_mix_matches_exposure` has no
+                    # subject however carefully the house authored one.
+                    assembly=element.assembly,
                 ))
             elif isinstance(element, Soffit):
                 # A dropped ceiling is a framed box hanging under the ceiling plane — a

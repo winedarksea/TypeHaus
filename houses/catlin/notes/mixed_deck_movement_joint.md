@@ -137,7 +137,7 @@ surface, and this is an interior floor.
 The owner asked for fibre here anyway, wanting a floor that is *pretty enough for everyday
 use* rather than museum grade, and there is a middle path that gets both:
 
-**Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`CATLIN_INTERIOR_MIX`). It is
+**Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`CATLIN_POLISHED_MIX`). It is
 a different product answering a different question — it targets **plastic shrinkage**
 cracking in the first hours, a 55-70% reduction, which is exactly the surface cracking a
 thin 4 5/8" cap over EPS is prone to. Monofilament, not fibrillated. At the correct dosage

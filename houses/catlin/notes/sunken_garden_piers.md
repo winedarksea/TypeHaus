@@ -60,11 +60,21 @@ and its §2 geotechnical table is the one used here.
 
 Both columns are **10'-8 3/16" (128.1875")**, both are 12" round, and both are **one concrete
 STRUCTURE layer** — the assemblies state a thickness and a material and nothing else. They
-carry different assemblies for a reason that is not the section: `PIER_CONCRETE_12` is the
-4,000 psi F2 sonotube mix that also serves the four breezeway piers, and
-`SUNKEN_GARDEN_COLUMN_12` is the 5,000 psi F3+C2 galvanized-cage mix the balcony redesign
-introduced (`notes/balcony_moment_columns.md` §7). Aligning `PT-SG-COL` onto the better mix
-and retiring its exposed grout island is an open follow-up.
+carry different assemblies for a reason that is not the section — though as of 2026-09-03 it
+is no longer a reason about the concrete. `PIER_CONCRETE_12` now names `CATLIN_EXPOSED_MIX`,
+the same 5,000 psi F3+C2 galvanized-bar mix `SUNKEN_GARDEN_COLUMN_12` is specified from in
+prose. **What it named before was a mix that did not exist:** its source string said
+"4,000 psi ... ACI 318-19 class F2", and Table 19.3.2.1 asks 4,500 psi of class F2. Nothing
+could see that while the numbers were sentences.
+
+**The two assemblies now differ only in what the engine can READ, and that difference is
+live.** `PIER_CONCRETE_12` carries a `ConcreteSpec`; `SUNKEN_GARDEN_COLUMN_12` still carries
+only prose, so §4's calculations grade `PT-SG-FCOL` at the presumptive 3,000 psi while
+`PT-SG-COL` is graded at the 5,000 both are actually poured from. The front column therefore
+reads *weaker* than the back one, which is the opposite of the truth and is an artefact of
+the migration being unfinished rather than a finding. Attaching the mix to
+`SUNKEN_GARDEN_COLUMN_12` re-oracles `notes/balcony_moment_columns.md`, which is the reason
+it is a separate step. Retiring `PT-SG-COL`'s exposed grout island remains open.
 
 **BOTH columns carry a balcony pillar's share.** `PT-SG-BR2` stands on the porch deck 3"
 south of the back-beam line, and `PT-SG-BF2` stands on it 3" north of the front-beam line —
@@ -233,8 +243,8 @@ anyone reverting to a 20" round will re-derive them.
 
 The galvanizing and the 2" cover come with the balcony redesign's F3+C2 durability case and
 are specified for every cast column in this structure; see `notes/balcony_moment_columns.md`
-§7. `PT-SG-COL` keeps its 4,000 psi F2 sonotube mix and its exposed grout island for now —
-an open follow-up, not an oversight.
+§7. `PT-SG-COL` was aligned onto `CATLIN_EXPOSED_MIX` on 2026-09-03 (§2); its exposed grout
+island is still an open follow-up.
 
 Both cages are the **minimum the Code permits**, which is the answer the "cheapest concrete"
 brief asks for. There is no spare capacity being bought here — see §4d for how little of it
@@ -246,13 +256,26 @@ the load actually uses, and §4f for why that is not an argument for less steel.
 phi P_n,max = phi x 0.80 x [ 0.85 f'c (A_g - A_st) + f_y A_st ]
               §22.4.2.1 and Eq. 22.4.2.2; alpha = 0.80 for TIED (Table 22.4.2.1);
               phi = 0.65, compression-controlled tied (Table 21.2.2).
-              f'c = 3,000 psi (IRC Table R402.2), f_y = 60,000 psi.
+              f_y = 60,000 psi. f'c is now READ PER POUR, and the two differ — see §2.
 
-BOTH         0.85 x 3,000 x 111.86 = 285,236  +  60,000 x 1.24 =  74,400
+COL   f'c 5,000 (CATLIN_EXPOSED_MIX, via PIER_CONCRETE_12)
+             0.85 x 5,000 x 111.857 = 475,392  +  60,000 x 1.24 =  74,400
+             P_o = 549,792 lb
+             phi P_n,max = 0.65 x 0.80 x 549,792 = 285,893 lb
+             P_u = 10,419 lb                            ->  d/c 0.036
+
+FCOL  f'c 3,000 PRESUMPTIVE (SUNKEN_GARDEN_COLUMN_12 states no ConcreteSpec)
+             0.85 x 3,000 x 111.86 = 285,236  +  74,400
              P_o = 359,636 lb
              phi P_n,max = 0.65 x 0.80 x 359,636 = 187,011 lb
-             P_u = 10,419 lb  (COL) / 10,418 lb (FCOL)  ->  d/c 0.056
+             P_u = 10,418 lb                            ->  d/c 0.056
 ```
+
+**`PT-SG-FCOL`'s 187,011 is not this column's capacity; it is the capacity of the mix the
+model can prove.** Both are poured at 5,000, both would read 285,893, and the gap is the
+unfinished migration in §2 rather than anything about the concrete. Grading the front column
+on the lower number is the conservative direction and is left standing on purpose: an
+UNSTATED mix should cost the design something, or nobody ever states it.
 
 (`PT-SG-FCOL` at 20" round was `phi P_n,max` = 521,732 lb against P_u 13,117 lb, d/c 0.025.
 Shrinking it to 12" more than doubled its d/c and left it at a factor of eighteen.)
@@ -286,22 +309,26 @@ rather than assumed to have stayed benign.)
 So both get magnified (§6.6.4.4.4(a), §6.6.4.5.2):
 
 ```
-E_c = 57,000 sqrt(3,000)                      = 3,122,019 psi
-I_g = pi d^4 / 64                             = 1,017.9 in^4
-beta_dns = 1.2 D / P_u = 2,984 / 10,419       = 0.2864
-EI = 0.4 E_c I_g / (1 + beta_dns)             = 988.3e6 lb-in^2
-P_c = pi^2 EI / (k l_u)^2                     = 593,600 lb
-delta_ns = 1 / (1 - P_u / 0.75 P_c) = 1/(1 - 0.0234) = 1.024
+                                COL (5,000)      FCOL (3,000 presumptive)
+E_c = 57,000 sqrt(f'c)          4,030,509 psi     3,122,019 psi
+I_g = pi d^4 / 64                 1,017.9 in^4      1,017.9 in^4
+beta_dns = 1.2 D / P_u                 0.2864            0.2864
+EI = 0.4 E_c I_g / (1+beta)     1,275.7e6         988.3e6 lb-in^2
+P_c = pi^2 EI / (k l_u)^2         766,227 lb        593,600 lb
+delta_ns = 1/(1 - P_u/0.75 P_c)     1.0185            1.024
 ```
 
-**A 2.4% magnifier**, because the column is at 6% of its capacity. Now spend §4d's
+**A 1.9% magnifier on the back column and 2.4% on the front**, because both are at a few per
+cent of capacity. The split is `E_c`, which goes as `sqrt(f'c)`: a stiffer column magnifies
+less, so the pour that can prove its mix is rewarded twice — once in §4d's capacity and again
+here. Neither figure is near binding. Now spend §4d's
 eccentricity. §6.6.4.5.4 sets a minimum moment `M_2,min = P_u (0.6 + 0.03h)`, i.e. a minimum
 eccentricity of `0.6 + 0.03h`:
 
 ```
                           PT-SG-COL          PT-SG-FCOL
 e_min = 0.6 + 0.03h         0.960"              0.960"
-magnified by delta_ns       0.983"              0.983"
+magnified by delta_ns       0.978"              0.983"
 e already in the 0.80 cap   1.200"              1.200"
                             COVERED             COVERED
 ```
@@ -373,9 +400,16 @@ Three Code decisions carry the whole derivation, and each is easy to get wrong:
   perimeter and turns about no column face. §3 includes it because bearing is exactly the
   question of what the soil feels; here it would inflate every demand by about a tenth.
 
-`f'c` is the presumptive **3,000 psi** — neither bell's `Footing` names an assembly, so
-there is no `ConcreteSpec` to read (see §6). `sqrt(3000) = 54.772`. `phi = 0.60` throughout,
-ACI Table 21.2.1.
+`f'c` is **5,000 psi**. Both bells name `CATLIN_PIER_BASE_12` as of 2026-09-03 — the 12"
+plain pour shared with the four breezeway pads — which carries `CATLIN_BURIED_MIX`. Until
+then neither `Footing` named an assembly at all and every capacity below was worked at the
+presumptive 3,000; **each one in §5c-§5e is therefore 29.1% larger than the figure this note
+previously carried**, because every one of them goes as `sqrt(f'c)` and
+`sqrt(5000)/sqrt(3000) = 1.291`. The demands did not move: soil pressure does not care what
+the concrete is. `sqrt(5000) = 70.711`. `phi = 0.60` throughout, ACI Table 21.2.1.
+
+F0 rather than the court's F3 is earned, not inherited: these two bells carry 42" of true
+cover and do not freeze (§5a's levelling-course diagram, and `CATLIN_BURIED_MIX`'s own note).
 
 ### 5b. Net pressure
 
@@ -402,10 +436,10 @@ V_u = q_u x (A_bell - 425.75)
 
 V_n = (4/3 + 8/3beta) lambda sqrt(f'c) b_o h,  capped at 2.66 lambda sqrt(f'c) b_o h
 beta = 1.0 for a square, so the bracket is 4.0 and THE CAP GOVERNS.
-phi V_n = 0.60 x 2.66 x 54.772 x 82.54 x 10  =  72,150 lb        (both bells)
+phi V_n = 0.60 x 2.66 x 70.711 x 82.54 x 10  =  93,150 lb        (both bells)
 
-  COL   4,168 / 72,150  =  d/c 0.058   OK
-  FCOL  6,096 / 72,150  =  d/c 0.084   OK
+  COL   4,168 / 93,150  =  d/c 0.045   OK
+  FCOL  6,096 / 93,150  =  d/c 0.065   OK
 ```
 
 ### 5d. One-way shear — ACI §14.5.5.1(a)
@@ -424,8 +458,8 @@ segment beyond = R^2 acos(x/R) - x sqrt(R^2 - x^2)
                = 324 x acos(0.85097) - 15.3175 x 9.454
                = 324 x 0.55396 - 144.81  =  179.48 - 144.81  =  34.67 in^2
 V_u     = 10.295 x 34.67                        =    357 lb
-phi V_n = 0.60 x (4/3) x 54.772 x 18.91 x 10    =  8,285 lb
-                                                    d/c 0.043   OK
+phi V_n = 0.60 x (4/3) x 70.711 x 18.91 x 10    = 10,697 lb
+                                                    d/c 0.033   OK
 ```
 
 ### 5e. Flexure at the column face — ACI §13.2.7.1 / §14.5.2.1(a)
@@ -445,8 +479,8 @@ PT-SG-COL   R = 15"
   arm  = 9.322 - 5.3175                                      =    4.005"
   M_u  = 14.826 x 197.34 x 4.005                             = 11,718 lb-in
   b    = 2 x 14.026 = 28.05"    S_m = b h^2/6 = 28.05 x 100/6 = 467.5 in^3
-  phi M_n = 0.60 x 5 x 54.772 x 467.5                        = 76,818 lb-in
-                                                                 d/c 0.153   OK
+  phi M_n = 0.60 x 5 x 70.711 x 467.5                        = 99,172 lb-in
+                                                                 d/c 0.118   OK
 
 PT-SG-FCOL  R = 18"
   sqrt(324 - 28.276) = 17.196 ;  acos(0.29542) = 1.27078 rad
@@ -455,14 +489,17 @@ PT-SG-FCOL  R = 18"
   arm  = 10.585 - 5.3175                                     =    5.268"
   M_u  = 10.295 x 320.29 x 5.268                             = 17,371 lb-in
   b    = 2 x 17.196 = 34.39"    S_m = 34.39 x 100/6           = 573.2 in^3
-  phi M_n = 0.60 x 5 x 54.772 x 573.2                        = 94,187 lb-in
-                                                                 d/c 0.184   OK
+  phi M_n = 0.60 x 5 x 70.711 x 573.2                        = 121,594 lb-in
+                                                                 d/c 0.143   OK
 ```
 
 ### 5f. What this says
 
-**Bearing still governs both bells, and by a wide margin** — 0.81 and 0.58 against a worst
-section d/c of 0.18. The bells are thick relative to their projection (a 9.68" cantilever on
+**Bearing still governs both bells, and by a wider margin than before** — 0.81 and 0.58
+against a worst section d/c of 0.14, where the same comparison at the presumptive 3,000 psi
+read 0.18. Giving the bells their real mix moved the section states further from governing,
+which is the useful direction for a negative result to move: the conclusion below did not
+depend on the 29% it gained. The bells are thick relative to their projection (a 9.68" cantilever on
 an effective 10" section on `PT-SG-COL`), which is exactly the shape that makes flexure and
 shear irrelevant and soil the whole question.
 
@@ -512,7 +549,9 @@ re-check it after the fact.
   Table R402.2 was hardcoded for the whole engine; since 2026-09-03 a `ConcreteSpec` on the
   pour's assembly is read instead, and every limit state's prose says which of the two it
   used. `f_y` is still 60,000 psi Grade 60, authored in the cage string and assumed by the
-  calculation. MN Rules 1309.0402's **5,000 psi FOOTINGS row** is now stated for the strip
-  footings (`CATLIN_BURIED_MIX`); whether an augered pier BELL is a "footing" for that
-  amendment is still not a question this note answers, and the bells are poured from
-  `CATLIN_EXPOSED_MIX`'s 5,000 psi in any case, so the answer cannot bind.
+  calculation. MN Rules 1309.0402's **5,000 psi FOOTINGS row** is stated for the strip
+  footings and, since 2026-09-03, for the two bells as well (`CATLIN_PIER_BASE_12` ->
+  `CATLIN_BURIED_MIX`); whether an augered pier BELL is a "footing" for that amendment is
+  still not a question this note answers, and at 5,000 psi either way the answer cannot bind.
+  **The one pour still graded on the presumptive value is `SUNKEN_GARDEN_COLUMN_12`** — see
+  §2 and §4d.

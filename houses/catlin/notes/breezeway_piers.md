@@ -6,8 +6,17 @@ with itself is not verified (`engineering/__init__.py`). `tests/test_pier_calcs.
 the engine reproduces every number below.
 
 Same shape as `notes/sunken_garden_piers.md` §1–§5, and deliberately so: these are the same
-12" round section on the same presumptive f'c, so §4 and §5 are the same arithmetic with the
-same answer. What is different — and is the whole reason this note exists separately — is §3.
+12" round section out of the same assembly (`PIER_CONCRETE_12`), so §4 and §5 are the same
+arithmetic with the same answer. Since 2026-09-03 that assembly names a real mix —
+`CATLIN_EXPOSED_MIX`, 5,000 psi — instead of the presumptive 3,000 the engine used to
+substitute, and §4's capacity below moves with it.
+
+**These four get a richer mix than their exposure needs, and that is deliberate.** A
+breezeway pier is not the salt-splash court `CATLIN_EXPOSED_MIX` was written for. But
+`PIER_CONCRETE_12` also pours `PT-SG-COL`, which is; the five piers together are 0.82 CY;
+and the mix these four used to name — "4,000 psi, class F2" — was not a legal mix at all,
+because ACI Table 19.3.2.1 asks 4,500 psi of class F2. One ticket that is right beats two
+tickets one of which is wrong, at four fifths of a yard. What is different — and is the whole reason this note exists separately — is §3.
 
 **All four piers are identical.** Same height, same section, same tributary, same cage. Since
 2026-09-03 the two garage-end piers no longer stop a course lower to dodge the garage bottom
@@ -82,7 +91,7 @@ the register publishes:
 | Roof snow | `Site.ground_snow_load_psf` 50 × 16 ft² | 800, **200 per pier** |
 
 Factored that is 1.2(21) + 1.6(200) = **345 lb** on top of §2's 970.54, so a bounded factored
-demand is on the order of **1,320 lb**. Against §4's 187,011 lb capacity that is **d/c ≈
+demand is on the order of **1,320 lb**. Against §4's 285,893 lb capacity that is **d/c ≈
 0.007**. *The section is not the question and never was.* What the register declines to do is
 turn a bound into a number a reader would take at face value.
 
@@ -106,8 +115,13 @@ more bars to cut, bend and tie. Do not thin this to "save concrete": the 1% floo
 shrinkage and accidental-moment rule and is indifferent to §3's load question entirely.
 
 **Axial capacity, for the record even though no d/c is published:**
-φ α P_o = 0.65 × 0.80 × [0.85 × 3,000 × (113.097 − 1.24) + 60,000 × 1.24]
-= 0.52 × [285,236 + 74,400] = **187,011 lb**.
+φ α P_o = 0.65 × 0.80 × [0.85 × 5,000 × (113.097 − 1.24) + 60,000 × 1.24]
+= 0.52 × [475,392 + 74,400] = **285,893 lb**.
+
+(It was 187,011 lb while `PIER_CONCRETE_12` named no mix and the engine substituted IRC
+Table R402.2's presumptive 3,000 psi. Nothing about the pier changed; what changed is that
+the model can now say what is in it. §3's bound was a factor of 140 clear of the old number
+and is a factor of 216 clear of this one, so the conclusion is untouched either way.)
 
 ## §5 — Slenderness and minimum eccentricity
 
@@ -116,8 +130,8 @@ shrinkage and accidental-moment rule and is indifferent to §3's load question e
 | k | 1.0, non-sway (leaning-column assumption — see below) | |
 | k·l_u / r | 1.0 × 56.75 / 3.00 | **18.92** |
 | §6.2.5 non-sway floor | 34 − 12(M1/M2) ≥ 22, taken at **22** | 18.92 < 22 → **neglectable** |
-| δ_ns | computed anyway | **1.0006** |
-| e_min, §6.6.4.5.4 | 0.6 + 0.03(12) = 0.96", × δ_ns | **0.9606"** |
+| δ_ns | computed anyway | **1.0005** |
+| e_min, §6.6.4.5.4 | 0.6 + 0.03(12) = 0.96", × δ_ns | **0.9604"** |
 | cap, R22.4.2 | 0.10 h | **1.20"** → ratio 0.800 ✓ |
 
 **k = 1.0 rests on the same leaning-column assumption the balcony's does.** These four posts
