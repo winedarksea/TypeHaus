@@ -333,6 +333,14 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Deck and porch posts and their footings",
                        ("structural.deck_post_size", "structural.deck_footing_size"),
                        ("IRC R507.3", "IRC R507.4"), blocking=False),
+        # A post standing on FRAMING rather than on the ground. R507 sizes the section and
+        # the footing under it; what neither table publishes is the cross-grain bearing where
+        # a 6x6 lands on the flat of a joist, which is the limit state that actually governs
+        # there and is an NDS §3.10 calculation. Its own item, not folded into the one above:
+        # it cites a different document and it is a different joint.
+        PermitItemSpec("Posts bearing on framing (cross-grain bearing)",
+                       ("structural.deck_post_bearing",),
+                       ("AWC NDS 2018 §3.10", "IRC R507.1"), blocking=False),
         # Two lines added 2026-09-03 with the catlin balcony redesign, and both are here for
         # the same reason the item above is: R507's tables publish sawn lumber, and a member
         # the table has no row for is engineered work a plan reviewer has to be able to see

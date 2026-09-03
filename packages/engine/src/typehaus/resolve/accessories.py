@@ -422,6 +422,14 @@ _CONNECTOR_MARKER_IN = {
     # a marker wider than the thing it holds down, over a detail whose whole point is that
     # the penetration is small and countable.
     ConnectorKind.EQUIPMENT_ANCHOR: (0.50, 0.50, 2.00),
+    # A 3-1/2" square, 1" tall stack of stainless plates. Drawn at its real size because
+    # the whole point of the part is the GAP it holds open under the beam soffit: a 5" x 5"
+    # x 6" default box would fill that gap and hide the detail it exists to show.
+    ConnectorKind.BEARING_STANDOFF: (1.75, 1.75, 0.50),
+    # A DTT2Z-class tie: a ~3" wide, 5-1/2" tall strap body wrapping the post face. Taller
+    # and narrower than the default cube, which is the shape a reader needs to tell it from
+    # the post base it replaces.
+    ConnectorKind.TENSION_TIE: (1.50, 1.50, 2.75),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

@@ -131,7 +131,13 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
 # and a deck braced only by its columns' base fixity has no row anywhere). Both have a
 # calculation in `typehaus/engineering/` and both are `draft`; they leave this lane when a
 # licensed engineer stamps `deck_beam/*` and `deck_post/*` in engineering.toml.
-MAX_UNSEALED_ITEMS = {"mn-2024": 7}
+#
+# 7 -> 8 later the same day: "Posts bearing on framing (cross-grain bearing)". A 6x6 landing
+# on the flat of a joist is an NDS §3.10 calculation with no prescriptive table behind it,
+# and until `engineering/post_bearing.py` existed nothing in this engine graded it at all —
+# catlin's two centre balcony pillars were over on that limit state at 0 FAIL. It is `draft`
+# from the day it arrives and leaves this lane when `post_bearing/*` is stamped.
+MAX_UNSEALED_ITEMS = {"mn-2024": 8}
 
 
 def _engineered_labels(profile) -> set[str]:

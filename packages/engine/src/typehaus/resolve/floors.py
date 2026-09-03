@@ -333,10 +333,22 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
     actually is (out on the overhang, for the catlin porch). The blocks run to the adjacent
     joist line on each side, cut to the clear gap between member faces so the frame does not
     read as a clash in ``structural.member_interference``.
+
+    **Two reinforcements on ONE joist line share their plies.** catlin's porch is the case:
+    both centre balcony pillars stand at x = 18'-0", one on each beam line, and a sister runs
+    the whole joist, so the pack authored under the first is already under the second. Laying
+    each entry's plies independently put two members in one place — billed twice, drawn
+    twice — and computed the second entry's blocks against a bare joist, so they ran straight
+    through the sisters the first entry had laid (``structural.member_interference``, two
+    FAILs). ``laid`` is what makes the second entry see the first: it tops the cluster up to
+    the deepest ``plies`` any entry on that line asks for, and every entry's blocks are cut
+    against the finished cluster.
     """
     out: list[FramedMember] = []
     if not positions:
         return out
+    #: joist line index -> (cluster lo, cluster hi, sisters laid, the side they went)
+    laid: dict[int, tuple[float, float, int, float]] = {}
     for index, reinforcement in enumerate(system.reinforcements):
         at_x, at_y = reinforcement.at.xy_m
         perp_at, axis_at = (at_y, at_x) if along_x else (at_x, at_y)
@@ -348,24 +360,31 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
         # The extra plies go on the side the load is on, so the cluster straddles it rather
         # than leaving the post overhanging its own reinforcement. A load exactly on the
         # line is arbitrary; +1 keeps it deterministic.
-        sign = 1.0 if perp_at >= perp else -1.0
+        existing_lo, existing_hi, existing, existing_sign = laid.get(
+            line, (perp - ply_width / 2.0, perp + ply_width / 2.0, 0, 0.0))
+        # The first entry on a line picks the side (toward the load); later ones extend the
+        # pack that is already there rather than starting a second one on the other face.
+        sign = existing_sign or (1.0 if perp_at >= perp else -1.0)
         normal = (0.0, sign) if along_x else (sign, 0.0)
         if along_x:
             p0, p1 = (axis_lo, perp), (axis_hi, perp)
         else:
             p0, p1 = (perp, axis_lo), (perp, axis_hi)
-        for ply in range(plies - 1):
+        for ply in range(existing, plies - 1):
             s0, s1 = _shift(p0, p1, normal, (ply + 1) * ply_width)
             out.append(FramedMember(
                 system.uid, f"sister-{index}-{ply}", "sister_joist", member,
                 s0, s1, z0, z1, axis_hi - axis_lo,
             ))
+        # Outer faces of the finished cluster (authored joist + every ply on this line,
+        # this entry's and any earlier entry's).
+        sisters = max(existing, plies - 1)
+        spread = sign * sisters * ply_width
+        cluster_lo = min(existing_lo, perp - ply_width / 2.0 + min(0.0, spread))
+        cluster_hi = max(existing_hi, perp + ply_width / 2.0 + max(0.0, spread))
+        laid[line] = (cluster_lo, cluster_hi, sisters, sign)
         if not reinforcement.blocking:
             continue
-        # Outer faces of the finished cluster (authored joist + the plies just added).
-        spread = sign * (plies - 1) * ply_width
-        cluster_lo = perp - ply_width / 2.0 + min(0.0, spread)
-        cluster_hi = perp + ply_width / 2.0 + max(0.0, spread)
         # Blocks sit at the load, held a full member width inside the joist tips so they
         # clear the rim board riding on those tips.
         block_axis = min(max(axis_at, axis_lo + ply_width), axis_hi - ply_width)

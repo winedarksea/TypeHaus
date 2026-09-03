@@ -19,11 +19,13 @@
 >   face to that pillar's south face. BF2 moved north onto the porch deck, so this column
 >   seats two collinear beam ends and nothing else, and sits ON the beam axis. Its cage came
 >   down from (8) #6 to the same (4) #5 the other four cast columns carry.
-> * **`PT-SG-COL`'s tributary rose from 82.33 to 116.17 ft².** That is a FIX, not a change of
+> * **`PT-SG-COL`'s tributary rose from 82.33 to 120.83 ft².** That is a FIX, not a change of
 >   design: `PT-SG-BR2` has always stood on the porch deck 3" from the back-beam line, and
 >   `pier_basis` only handed load down post-to-post, so a third of the balcony was landing on
 >   this column and being counted nowhere. Both centre pillars now hand their share through
->   the deck's beams. Bearing rose from 1,245 to 1,603 psf and still clears.
+>   the deck's beams — and, since later the same day, that share is the centre beam's own
+>   reaction rather than a sixth of the deck (§2). Bearing rose from 1,245 to 1,651 psf and
+>   still clears.
 >
 > The four balcony corner columns `PT-SG-B{R,F}{1,3}` are the same product at the same cage
 > and are graded in **`notes/balcony_moment_columns.md`**, not here — they stand on wall tops
@@ -88,21 +90,37 @@ not exist for the deck-borne case until 2026-09-03.
 
 ## 2. Loads
 
-IRC Table R301.5 via R507.1: **40 psf live, 10 psf dead.** Tributary is the deck's plan area
-divided evenly among the posts its beams name — exact on a regular post grid, which this is,
-and printed on every record so a reviewer can disagree with it.
+IRC Table R301.5 via R507.1: **40 psf live, 10 psf dead.**
+
+**Tributary is BEAM-WEIGHTED as of 2026-09-03, not an even split among the posts.** The old
+rule was `deck area / post count`, which is exact only where every post carries the same bay,
+and neither of these decks is that. `FS-SG-DECK`'s centre beam runs the deck's full depth
+onto two posts while its two edge beams share four; `FS-SG-PORCH`'s four beams each run from
+a bearing WALL to one of these columns. The rule now is a beam's own strip — the joist span
+it carries, the same width `glulam_beam.py` puts under its 500 plf — times that beam's length,
+divided among the supports it names and kept where a support is a post. Each beam takes the
+FULL joist span, so overlapping strips are counted twice; that is the conservative direction
+and the number is printed on every record so a reviewer can disagree with it.
 
 | | `PT-SG-COL` | `PT-SG-FCOL` |
 |---|---|---|
-| own deck share, `FS-SG-PORCH` 164.67 ft² / 2 | 82.33 ft² | 82.33 ft² |
-| handed down by a centre pillar (`FS-SG-DECK` 207.83 / 6) | 34.64 ft² (BR2) | 34.64 ft² (BF2) |
-| **tributary** | **116.97 ft²** | **116.97 ft²** |
+| own deck share: 2 porch beams × 7.25' strip × 10.00' ÷ 2 supports each | 72.50 ft² | 72.50 ft² |
+| handed down by a centre pillar: `BM-SG-BLC`, 10.00' strip × 9.67' ÷ 2 | 48.33 ft² (BR2) | 48.33 ft² (BF2) |
+| **tributary** | **120.83 ft²** | **120.83 ft²** |
 | column self weight | 1,258 lb | 1,258 lb |
 | the pillar's own 6x6, 35 pcf | 67 lb | 66 lb |
-| **D** = trib×10 + self + carried | **2,495 lb** | **2,494 lb** |
-| **L** = trib×40 | **4,679 lb** | **4,679 lb** |
-| **service** D+L | **7,174 lb** | **7,173 lb** |
-| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,480 lb** | **10,479 lb** |
+| **D** = trib×10 + self + carried | **2,534 lb** | **2,532 lb** |
+| **L** = trib×40 | **4,833 lb** | **4,833 lb** |
+| **service** D+L | **7,367 lb** | **7,366 lb** |
+| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,774 lb** | **10,772 lb** |
+
+**What the change was worth, per column: 116.97 → 120.83 ft², +3.3%.** It moved in two
+directions at once and they nearly cancelled. The porch share FELL, 82.33 → 72.50, because
+each porch beam gives half its load to the foundation wall at its far end and the even split
+had been giving the column all of it. The balcony share ROSE, 34.64 → 48.33, because a
+sixth of the deck was never what a pillar under the centre beam carried. **The second is the
+one that matters**: it is the same error, seen from the pier end, that
+`post_bearing/PT-SG-BR2` found at the pillar end (`notes/centre_pillar_bearing.md`).
 
 **`FS-SG-DECK` went 203.00 → 207.83 ft² on 2026-09-03**, when `joist_cantilever_in` went
 6" → 9" so the balcony plank would drip clear of the 12" rounds' outer faces rather than
@@ -157,24 +175,26 @@ here would be reading a 42" section's allowable off a bedding one sixth as deep.
 q = (service + bell self weight) / bell area
 
 PT-SG-COL    bell 30" = 4.909 ft², 12" thick → 736 lb
-             (7,174 + 736) / 4.909  =  1,611 psf   vs 2,000   d/c 0.81   ✓
+             (7,367 + 736) / 4.909  =  1,651 psf   vs 2,000   d/c 0.83   ✓
 PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb
-             (7,173 + 1,060) / 7.069 =  1,165 psf  vs 2,000   d/c 0.58   ✓
+             (7,366 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
 ```
 
 Both clear, and **the two swapped places on 2026-09-03**. `PT-SG-FCOL` used to be the one to
 watch at d/c 0.74; it fell to 0.58 when the column shrank from 20" round to 12" and shed
-2,238 lb of its own concrete. `PT-SG-COL` rose from 0.62 to 0.80 when `PT-SG-BR2`'s
-share of the balcony was finally handed to it, and to **0.81** when the deck grew to 21'-6"
-later the same day. It is the pier with the least margin in this structure — on a 30" bell
-against `PT-SG-FCOL`'s 36".
+2,238 lb of its own concrete, and sits at 0.60 on the beam-weighted tributary. `PT-SG-COL`
+rose from 0.62 to 0.80 when `PT-SG-BR2`'s share of the balcony was finally handed to it, to
+0.81 when the deck grew to 21'-6" later the same day, and to **0.83** when that share stopped
+being a sixth of the deck and became the centre beam's own reaction. It is the pier with the
+least margin in this structure — on a 30" bell against `PT-SG-FCOL`'s 36".
 
 **Any growth in the balcony's loading lands here first, and that is now a live number rather
-than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf. **Widening the bell
-to 36" would take it to 1,165 psf**, and is the obvious move if the balcony grows again; it
-is not taken now, because 0.81 against a presumptive allowable with no boring is a screening
-margin either way (§6). Two more 3" steps of `joist_cantilever_in` would reach roughly
-1,627 psf — still clear, and still the wrong place to spend the margin quietly.
+than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf; the tributary fix
+cost it 40 psf. **Widening the bell to 36" would take it to 1,192 psf**, and is the obvious
+move if the balcony grows again; it is not taken now, because 0.83 against a presumptive
+allowable with no boring is a screening margin either way (§6). Two more 3" steps of
+`joist_cantilever_in` would reach roughly 1,667 psf — still clear, and still the wrong place
+to spend the margin quietly.
 
 ---
 
@@ -495,7 +515,7 @@ PT-SG-FCOL  R = 18"
 
 ### 5f. What this says
 
-**Bearing still governs both bells, and by a wider margin than before** — 0.81 and 0.58
+**Bearing still governs both bells, and by a wider margin than before** — 0.83 and 0.60
 against a worst section d/c of 0.14, where the same comparison at the presumptive 3,000 psi
 read 0.18. Giving the bells their real mix moved the section states further from governing,
 which is the useful direction for a negative result to move: the conclusion below did not
@@ -505,7 +525,7 @@ shear irrelevant and soil the whole question.
 
 That is a useful negative result rather than a formality. It says the answer to a bearing
 problem here is **width, not thickness**: widening `PT-SG-COL`'s bell to 36" — the move §3c
-names — takes bearing from 0.81 to 0.58 and takes flexure only from 0.153 to 0.184, still
+names — takes bearing from 0.83 to 0.60 and takes flexure only from 0.153 to 0.184, still
 nowhere near governing. A 36" bell at 12" thick is a sound section, and nobody has to
 re-check it after the fact.
 
@@ -538,10 +558,14 @@ re-check it after the fact.
   substantiate the use of higher values"* — which means a boring, not a table adjustment.
 - **No frost check** — `structural.frost_depth` owns that and passes both bells on 42" of
   true cover since 2026-08-29.
-- **The tributary rule is a division, not an analysis.** Deck area over post count is exact
-  on a regular grid. `FS-SG-PORCH` is two beam lines on two columns and two walls, so the
-  columns do not really take half the deck each — the walls take a share. **That makes these
-  numbers conservative**, and it is worth saying rather than quietly banking.
+- **The tributary rule is a distribution, not an analysis.** As of 2026-09-03 it is
+  beam-weighted rather than an even split, which answers the objection this bullet used to
+  raise — `FS-SG-PORCH`'s four beams run from a bearing WALL to a column, and the wall now
+  takes its half instead of the column taking all of it. What replaces the objection is a
+  smaller one in the other direction: every beam is given the FULL joist span as its strip,
+  so where two beams' strips overlap the deck is counted twice. **That leaves these numbers
+  conservative**, which is worth saying rather than quietly banking. A real analysis would
+  distribute by continuous-beam reactions at the joist level; nothing here does.
 - **No development, splice or dowel detail.** §4 sizes a cage; it does not lap it into the
   bell, hook it, or check the tie hooks and the bar's clear cover against §20.5.1.3. That is
   drawing work and it is not here.

@@ -30,26 +30,32 @@ import pytest
 _ORACLE = {
     "PT-SG-COL": {
         "bell_in": 30.0,
-        "pressure_psi": 14.826,
-        "punching_demand": 4168.0,
+        "pressure_psi": 15.242,
+        "punching_demand": 4284.0,
         "punching_capacity": 93150.0,
         # §5d: the critical section at h from the face lands 15.32" out on a 15" radius.
         "one_way_demand": 0.0,
-        "flexure_demand": 11718.0,
+        "flexure_demand": 12046.0,
         "flexure_capacity": 99172.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
-        "pressure_psi": 10.295,
-        "punching_demand": 6096.0,
+        "pressure_psi": 10.583,
+        "punching_demand": 6266.0,
         "punching_capacity": 93150.0,
-        "one_way_demand": 357.0,
+        "one_way_demand": 367.0,
         "one_way_capacity": 10697.0,
-        "flexure_demand": 17371.0,
+        "flexure_demand": 17854.0,
         "flexure_capacity": 121594.0,
     },
 }
 
+# REVISED 2026-09-03 (later the same day) for the beam-weighted tributary. Every DEMAND here
+# rose 2.8%, and by exactly the same factor on both piers, because every one of them is a net
+# soil pressure times a geometry that did not move: the tributary went 116.97 -> 120.83 ft²
+# when a deck beam's share stopped being "the deck area over its post count". No capacity
+# changed. See notes/sunken_garden_piers.md §2.
+#
 # §5a: both bells name CATLIN_PIER_BASE_12 -> CATLIN_BURIED_MIX as of 2026-09-03. Every
 # capacity in §5c-§5e goes as sqrt(f'c), so all of them are 29.1% larger than the figures this
 # oracle carried while the bells named no assembly and the engine substituted 3,000 psi. The

@@ -49,15 +49,31 @@ The deck `FS-BW-FLOOR` is the only load with a plan area anywhere in the model.
 | term | working | lb |
 |---|---|---|
 | Deck area | (9.7708 − 6.2292) × (40.4167 − 36.8333) = 3.541667 × 3.583333 | 12.691 ft² |
-| Tributary, per pier | 12.691 / 4 posts | **3.1727 ft²** |
-| Deck dead | 3.1727 × 10 psf (IRC R507.1) | 31.73 |
-| Deck live | 3.1727 × 40 psf | **126.91** |
+| `BM-BW-FW` strip × length | 3.541667' joist span × 3.583333' | 12.691 ft² |
+| its share to each of its 2 posts | 12.691 / 2 | 6.3455 ft² |
+| Tributary, per pier | one beam each, so one share each | **6.3455 ft²** |
+| Deck dead | 6.3455 × 10 psf (IRC R507.1) | 63.46 |
+| Deck live | 6.3455 × 40 psf | **253.82** |
 | 6x6 KDAT post above | (5.5² / 144) × (82.75 / 12) × 35 pcf | 50.70 |
 | Pier self weight | (113.097 / 144) × (56.75 / 12) × 150 pcf | 557.14 |
-| **D** | 31.73 + 50.70 + 557.14 | **639.57** |
-| **L** | | **126.91** |
-| Service | D + L | 766.48 |
-| **Factored** | 1.2(639.57) + 1.6(126.91) = 767.48 + 203.06 | **970.54** |
+| **D** | 63.46 + 50.70 + 557.14 | **671.30** |
+| **L** | | **253.82** |
+| Service | D + L | 925.12 |
+| **Factored** | 1.2(671.30) + 1.6(253.82) = 805.56 + 406.11 | **1,211.67** |
+
+**THE TRIBUTARY DOUBLED ON 2026-09-03, AND IT IS DELIBERATELY CONSERVATIVE.** It was
+`12.691 / 4 posts = 3.1727 ft²`, an even split, which is the right answer here — this deck
+*is* a regular four-post grid and each pier really does carry a quarter of it. The rule that
+replaced it weights by each BEAM's own strip, because the even split was badly wrong on the
+sunken garden's two decks (see `sunken_garden_piers.md` §2), and it gives every beam the FULL
+joist span as its strip. `FS-BW-FLOOR` is a single-bay deck on two beams, so the two strips
+cover the same 12.691 ft² twice and each pier is handed 6.3455 ft² where 3.1727 is the truth.
+
+That is a 2× over-count and it is written down rather than absorbed. It is kept because the
+alternative — a per-beam tributary width — would put this engine's post demand out of step
+with the line load `engineering/glulam_beam.py` publishes for the same beam, and because on a
+pier whose real question is §3 below it changes nothing: `structural.deck_footing_size` sizes
+these pads at 1.00 ft² required against 1.78 built, and §4's capacity is 235× the demand.
 
 The 6x6 uses its DRESSED 5.5" section and a conventional 35 pcf for wood, matching
 `pier_basis._round_size` and `handed_dead`. Its height 82.75" is `_POST_TOP − _PIER_TOP`.
@@ -71,8 +87,9 @@ roof sheet, and — through the H channels — the head of each 4'-0" × 8'-0" s
 **None of it has a plan area in the model.** The breezeway roof is neither a `Roof` nor a
 `FloorSystem` (`params/breezeway.py` explains why: `resolve/roof_geometry.py` accepts only
 Wall bearing refs, and a FloorSystem is pinned to a storey datum), so it is four `Beam`s and
-some sticks. `pier_basis._deck_tributaries` divides AREAS among posts, and there is no area
-here to divide. So `tributary_ft2 = 3.17` is an **under-count**, and
+some sticks. `pier_basis._deck_tributaries` distributes AREAS to posts, and there is no area
+here to distribute. So `tributary_ft2 = 6.35` is an **under-count** of the pier's real load
+despite being a 2× over-count of its deck share, and
 `deck_post._detailing_only` publishes the six load-independent detailing states and reports
 the axial one INCOMPLETE rather than printing a d/c against a demand it knows is short.
 
@@ -90,9 +107,9 @@ the register publishes:
 | **Unaccounted dead** | | **~82**, say **21 per pier** |
 | Roof snow | `Site.ground_snow_load_psf` 50 × 16 ft² | 800, **200 per pier** |
 
-Factored that is 1.2(21) + 1.6(200) = **345 lb** on top of §2's 970.54, so a bounded factored
-demand is on the order of **1,320 lb**. Against §4's 285,893 lb capacity that is **d/c ≈
-0.007**. *The section is not the question and never was.* What the register declines to do is
+Factored that is 1.2(21) + 1.6(200) = **345 lb** on top of §2's 1,211.67, so a bounded
+factored demand is on the order of **1,560 lb**. Against §4's 285,893 lb capacity that is **d/c ≈
+0.005**. *The section is not the question and never was.* What the register declines to do is
 turn a bound into a number a reader would take at face value.
 
 The remedy is upstream: give the roof a modelled area to divide, or have the engineer state

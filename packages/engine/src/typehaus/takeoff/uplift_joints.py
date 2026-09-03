@@ -117,6 +117,8 @@ def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
       joint that already has one;
     * a post with no ``supported_by`` has nothing declared to fasten a base to;
     * a concrete column is not a section this catalog stocks a wood base for;
+    * a post whose joint is already made another way — an authored ``POST_BASE`` *or* an
+      authored ``TENSION_TIE``;
     * a **squash block** — a post under ``blocking_max_height_ft`` — bears and does nothing
       else. Buying it a base would be the same error the tie-plate rule makes on a sill:
       hardware at a joint whose connection is already made another way.
@@ -125,7 +127,12 @@ def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     absent from the order.
     """
     stocked = catalogued_post_sizes()
-    covered = tags_covered_by(model, frozenset({ConnectorKind.POST_BASE}))
+    # A TENSION_TIE covers the joint too. A post bearing wood-on-wood does not take a
+    # stirrup — it is held DOWN to the framing instead — so a set that only knew POST_BASE
+    # would see no connector at PT-SG-BR2/BF2 and derive two ABU66 for joints that already
+    # have their part. Same set as ``checks/structural/uplift_path.py``'s; they must agree.
+    covered = tags_covered_by(
+        model, frozenset({ConnectorKind.POST_BASE, ConnectorKind.TENSION_TIE}))
     by_size: dict = {}
     for storey, post in _posts(model):
         if post.tag in covered or post.within_wall or not post.supported_by:
@@ -180,9 +187,12 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     This rule counts posts rather than bases because it is the JOINT that decides whether a
     bolt is needed. ``StructuralHardware.requires_role`` — the mechanism that already puts an
     S-5! clamp under every CanDuit ring — cannot express it: that field is a flat property of
-    the part, and it would bill a cast-in bolt for ``PT-SG-BR2``/``BF2``, whose ABU66SS stand
-    on the porch DECK. A base on framing is through-bolted or screwed to it, and those
-    fixings are inside the framing rate exactly as a joist hanger's nails are.
+    the part, and it would bill a cast-in bolt for any base landing on
+    FRAMING rather than on a pour. A base on framing is through-bolted or screwed to it, and
+    those fixings are inside the framing rate exactly as a joist hanger's nails are.
+    (``PT-SG-BR2``/``BF2``'s ABU66SS standing on the porch DECK were the worked example
+    until 2026-09-03, when both pillars went to wood-to-wood bearing with a ``TENSION_TIE``
+    and stopped taking a base at all. The rule they motivated is unchanged.)
 
     Both halves of the population are counted here: the ten bases catlin authors as
     ``Connector`` elements *and* the ones ``post_base_rows`` derives. They are one order.

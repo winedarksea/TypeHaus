@@ -92,6 +92,16 @@ not a standoff, and without one the KDAT soffit sits on concrete that wicks. Add
 must be stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel.
 This is at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
 
+**It is a MODELLED PART as of 2026-09-03, and it stopped being prose.** `SS316-SHIM-35`
+(`library/hardware.py`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316
+stainless, 3-1/2" square, stacked to the gap, no grout island under it, EPDM or HDPE where it
+meets an `HGAM10` — and six `CN-SG-STDF-*` connectors put one at every wood-on-concrete beam
+seat in the garden: the four balcony corner column tops and `PT-SG-COL`/`PT-SG-FCOL`. Until
+then it was a purchased part at a real joint with nothing in the BOM, nothing in 3D and
+nothing a reviewer could click; it is priced in `prices.toml` and drawn on S-101 now. The
+assembly `source` strings still describe the detail, but they name the part rather than
+inventing it a second time.
+
 **3. Sequencing — FIVE OF THE SEVEN caps go on before the joists do.** The balcony's three
 beams and the porch's back pair carry their joists on top; the porch's front pair is
 flush-framed with an open top. A cap over a
@@ -148,20 +158,26 @@ this deck has to satisfy it.**
 
   | | `BM-SG-BLW` / `BLE` | `BM-SG-BLC` |
   |---|---|---|
-  | back span | **7.33' = 88.0"** (was 93.25") | **6.75' = 81.0"** |
+  | back span | **7.33' = 88.0"** (was 93.25") | **7.00' = 84.0"** (was 81.0") |
   | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" | 20.0" |
-  | south overhang (front column axis → deck edge) | **8.0"** | 15.0" |
-  | R507.5.1 limit (back span / 4) | **22.0"** | **20.25"** |
-  | margin on the governing overhang | **2.0"** | **0.25"** |
+  | south overhang (front column axis → deck edge) | **8.0"** | 12.0" (was 15.0") |
+  | R507.5.1 limit (back span / 4) | **22.0"** | **21.0"** |
+  | margin on the governing overhang | **2.0"** | **1.0"** |
 
-  A quarter of an inch is not a margin, it is a coincidence, and two inches is not much
-  better. Re-check both by hand if the rear pillar row, `_y_front_pillar`, `PT-SG-BF2`'s 3"
-  offset, or the porch depth ever moves again — and note that on `BLC` the fix if it ever
-  goes over is to move BF2 SOUTH toward the beam axis, which lengthens the back span, not to
-  shorten the overhang (the overhang is the deck edge). **On `BLW`/`BLE` that escape is
-  gone**: BF1/BF3 cannot go south without putting the 12" rounds back out past the beam
-  ends, which is the ponding detail the move was made to kill. The lever there is the REAR
-  row, and moving it means moving the back-beam line.
+  **`BLC`'s row moved later on 2026-09-03, and the escape below is the move that was taken.**
+  `PT-SG-BF2` went the last 3" south onto the front beam axis, which lengthened the back span
+  and shortened the south overhang at the same time: the limit rose 20.25" → 21.0" while the
+  governing overhang stayed the 20" north one. **The margin went 0.25" → 1.0"** — still not
+  much, but no longer a coincidence. It was moved for the bearing (`notes/centre_pillar_
+  bearing.md`), and this is the second thing it bought.
+
+  An inch is not a margin either, and two inches is not much better. Re-check both by hand if
+  the rear pillar row, `_y_front_pillar`, `_BF2_NORTH_OF_FRONT_AXIS_IN` or the porch depth
+  ever moves again — and note that on `BLC` **the escape has now been spent**: BF2 is on the
+  beam axis, and there is no further south to go without hanging the post off the porch. **On
+  `BLW`/`BLE` it was gone already**: BF1/BF3 cannot go south without putting the 12" rounds
+  back out past the beam ends, which is the ponding detail the move was made to kill. The
+  lever on both is now the REAR row, and moving it means moving the back-beam line.
 
 **Two span knife-edges**, both found while checking whether a longer beam was possible. Neither
 is a finding today; both are one dimension change away from a red suite.

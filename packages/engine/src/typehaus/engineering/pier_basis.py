@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Any
 
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
@@ -183,12 +184,33 @@ def _round_size(size: str | None) -> tuple[float, bool] | None:
 
 
 def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
-    """``post tag -> tributary ft2``, over every ``service="deck"`` FloorSystem."""
+    """``post tag -> tributary ft2``, over every ``service="deck"`` FloorSystem.
+
+    Weighted by each BEAM's own strip of deck rather than divided evenly among the posts.
+    An even split is right only where every post carries the same bay, and catlin's balcony
+    is the counter-example: its centre beam runs the deck's full depth onto two posts while
+    the two edge beams share four, so the even split handed the centre pair two thirds of
+    their real share.
+
+    A beam's strip is the deck's joist span — the same width ``glulam_beam.py`` puts under
+    its 500 plf — times the beam's own node-to-node length, divided among the supports it names
+    (a bearing WALL takes its half like any other) and kept where that support is a post.
+    Each beam takes the full joist span, so overlapping strips are counted twice; that is the
+    conservative direction, and ``deck_post``'s record prints the number so a reviewer can
+    disagree with it. Where the strip or a beam length will not resolve, the even split
+    stands as the fallback.
+
+    A restatement of ``checks/structural/deck.py::_tributaries_ft2``, on the same terms as
+    the joist-span rule above: ``engineering`` may not import ``checks``, so if one moves,
+    move the other.
+    """
     from typehaus.model.floors import FloorSystem
     from typehaus.model.structure import Beam, Post
 
     out: dict[str, float] = {}
     resolved = {f.tag for f in ctx.model.floors}
+    nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
+             if e.element_kind == "Node"}
     for deck in ctx.plan.all_elements():
         if not isinstance(deck, FloorSystem) or deck.service != "deck":
             continue
@@ -198,21 +220,58 @@ def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
         if len(ring) < 3:
             continue
         area = abs(_shoelace(ring)) / (_M_PER_FT ** 2)
+        beams: list[Any] = []
         posts: list[str] = []
         for ref in deck.joists.bearing_refs:
             beam = ctx.plan.by_tag(ref)
             if not isinstance(beam, Beam):
                 continue
+            beams.append(beam)
             for bearing in beam.bearing_refs:
                 element = ctx.plan.by_tag(bearing)
                 if isinstance(element, Post) and element.tag not in posts:
                     posts.append(element.tag)
         if not posts:
             continue
-        share = area / len(posts)
+        weighted = _weighted_shares(ctx, deck, beams, nodes)
+        if weighted is None:
+            share = area / len(posts)
+            weighted = {tag: share for tag in posts}
         for tag in posts:
-            out[tag] = out.get(tag, 0.0) + share
+            out[tag] = out.get(tag, 0.0) + weighted.get(tag, 0.0)
     return out
+
+
+def _weighted_shares(ctx: EngineeringContext, deck: Any, beams: list[Any],
+                     nodes: dict[str, tuple[float, float]]) -> dict[str, float] | None:
+    """``post tag -> ft2`` from one deck, by beam strip x beam length. ``None`` if it will
+    not resolve and the even split has to stand in."""
+    # Imported, not restated: ``glulam_beam`` is a sibling in this same leaf package, and a
+    # third copy of the joist-span walk is a third thing to keep in step.
+    from typehaus.engineering.glulam_beam import _joist_span_ft
+    from typehaus.model.structure import Post
+
+    strip_ft = _joist_span_ft(ctx, deck)
+    if strip_ft is None:
+        return None
+    out: dict[str, float] = {}
+    for beam in beams:
+        p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+        if p0 is None or p1 is None:
+            return None
+        length_ft = math.dist(p0, p1) / _M_PER_FT
+        # Divided among ALL the beam's supports and then kept only where a support is a
+        # POST. A porch beam that runs from a column to a bearing WALL delivers half its
+        # load to each, and a split that counted only the posts would hand the column the
+        # wall's half as well.
+        supports = beam.bearing_refs or ()
+        if not supports:
+            return None
+        share = strip_ft * length_ft / len(supports)
+        for tag in supports:
+            if isinstance(ctx.plan.by_tag(tag), Post):
+                out[tag] = out.get(tag, 0.0) + share
+    return out or None
 
 
 def _unmodelled_beams(ctx: EngineeringContext) -> dict[str, tuple[str, ...]]:

@@ -566,13 +566,26 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-"ABU66SS" = { low = 150, high = 230 }  # 6 ea — 4 breezeway posts + the balcony's TWO centre pillars. It was 10 until 2026-09-03, when the four corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases
+"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to a DTT2Z below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
+# The part that replaced two of those, and a fifth of the price: a strap screwed to the post
+# and bolted through the joist pack, not a stainless stirrup. ZMAX (G185) rather than
+# stainless — it is bolted to KDAT rather than standing in run-off at grade, which is what
+# bought the ABU66SS its 316. PT-SG-BR2 and PT-SG-BF2. Range from single-piece retail
+# ($6-9 at Fasteners Plus / Connectors Only, widened for the DTT2Z-SDS2.5 variant that
+# ships with the longer screws).
+"DTT2Z" = { low = 6, high = 12 }  # 2 ea
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
 # prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
 "ABU44" = { low = 22, high = 40 }  # 2 ea
+# The shim pack under every wood beam soffit that lands on a pour — the four balcony corner
+# column tops and the two porch column tops. Modelled as a part since 2026-09-03; it was
+# prose inside two assembly `source` strings before that, bought on the job and priced
+# nowhere. 316 stainless plate, 3-1/2" square, stacked to the 1/2"-1" a cast top is finished
+# to; the range is a small stack of shims, not one plate.
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 6 ea
 # 16 ea -> 8 on 2026-08-30 (second pass). The four E-W braces' feet became FACE LAPS rather
 # than butt joints — see the KneeBrace.foot_lap block in params/sunken_garden.py — and a
 # lapped foot is bolted through the 1 1/2" brace and the whole 5 1/2" pillar behind it. That
@@ -689,7 +702,7 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
-"AB-058-10-SS" = { low = 12, high = 28 }  # 6 ea — one cast-in bolt per ABU66SS that lands on concrete. Was 10 before the four balcony corner bases went away with their pillars (2026-09-03)
+"AB-058-10-SS" = { low = 12, high = 28 }  # 6 ea — one cast-in bolt per POST BASE that lands on concrete, which is not the same set as the ABU66SS above: 4 breezeway ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one. Was 10 before the four balcony corner bases went away with their pillars (2026-09-03)
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on

@@ -79,22 +79,38 @@ leader keeps 1-1/2" clear. The extra concrete over four columns is about 0.3 cy.
 
 ### 2a. Gravity
 
-IRC R507.1 / Table R301.5: **40 psf live + 10 psf dead = 50 psf.** Deck plan area 21'-6" ×
-9'-8" = 207.83 ft², divided among the six posts its beams name = **34.64 ft² each.**
+IRC R507.1 / Table R301.5: **40 psf live + 10 psf dead = 50 psf.**
+
+**Beam-weighted since 2026-09-03, not an even six-way split.** It was `207.83 ft² / 6 posts
+= 34.64 ft² each`, which reads fair and is not: `BM-SG-BLC` runs the deck's full depth onto
+`PT-SG-BR2` and `PT-SG-BF2` alone, while `BM-SG-BLW` and `BM-SG-BLE` share four. The rule
+now gives each beam its own strip — the 10'-0" joist span it carries, the same width §5 puts
+under its 500 plf — times its own 9'-8" length, halved between the two posts it lands on:
 
 ```
-live   40 × 34.64 =  1,386 lb
-dead   10 × 34.64 + column self weight  =  1,408 lb
-factored (1.2D + 1.6L, ASCE 7-16 §2.3.1)  =  3,907 lb
+each beam:   10.00' strip × 9.667' length × 50 psf  =  4,833 lb
+per post:    4,833 / 2                              =  2,417 lb   (48.33 ft²)
+
+live   40 × 48.33 =  1,933 lb
+dead   10 × 48.33 + column self weight  =  1,564 lb
+factored (1.2D + 1.6L, ASCE 7-16 §2.3.1)  =  4,970 lb
 ```
+
+Every post here is on a two-post beam, so the four corners and the two centres come out the
+same 48.33 ft² — but they arrive at it for a reason rather than by division, and the two
+CENTRE pillars are where it mattered. Their real reactions are **not** equal: `BM-SG-BLC`
+overhangs 20" north of BR2 and 12" south of BF2, which levers 2,647 lb onto the rear pillar
+and 2,187 onto the front one. §5 of `notes/centre_pillar_bearing.md` works that split and
+grades the cross-grain bearing it lands on.
 
 **21'-6", not 21'-0", since 2026-09-03.** `joist_cantilever_in` went 6" → 9" so the plank
 and TR-SG-FASCIA's drip would clear the outer faces of the 12" rounds instead of landing on
 them, and 3" per side is the smallest step that keeps the deck width divisible by the
-AridDek main board's 6" (43 whole boards, no rip). Everything on this page that is per-post
-moved 2.4% with it, and nothing changed size: these columns run at d/c 0.02 in axial.
-**The one place a balcony area increase is not free is `PT-SG-COL`'s 30" bell** — the
-centre pillars hand their share down to it and it is at d/c 0.81 in bearing
+AridDek main board's 6" (43 whole boards, no rip). Nothing changed size for it: these columns
+run at d/c 0.02 in axial. Note that the beam-weighted rule above no longer reads the deck's
+plan area at all, so a width change reaches these posts only through the beams' own lengths.
+**The one place a balcony load increase is not free is `PT-SG-COL`'s 30" bell** — the
+centre pillars hand their share down to it and it is at d/c 0.83 in bearing
 (`notes/sunken_garden_piers.md` §3c).
 
 **No equipment dead load.** The two Gree condensers (330 lb the pair) left this deck on
@@ -184,13 +200,17 @@ magnification needs axial load to bite and there is almost none:
 ```
 E_c = 57,000 √3,000            = 3.12e6 psi
 I_g = π·12⁴/64                 = 1,018 in⁴
-β_dns = 1.2 D / P_u = 1.2×1,400/3,845 = 0.437
-EI = 0.4 E_c I_g /(1+β_dns)    = 8.84e8 lb-in²
-P_c = π² EI /(k·lu)²           = π² × 8.84e8 / (227.06)² = 1.69e5 lb
-δ  = 1/(1 − P_u/0.75 P_c) = 1/(1 − 3,845/126,900) = 1.031
+β_dns = 1.2 D / P_u = 1.2×1,564/4,971 = 0.378
+EI = 0.4 E_c I_g /(1+β_dns)    = 9.23e8 lb-in²
+P_c = π² EI /(k·lu)²           = π² × 9.23e8 / (227.06)² = 1.77e5 lb
+δ  = 1/(1 − P_u/0.75 P_c) = 1/(1 − 4,971/132,470) = 1.039
 ```
 
-**Magnified design moment M_u = 2,502 × 1.031 = 2,580 lb-ft.**
+**Magnified design moment M_u = 2,502 × 1.039 = 2,600 lb-ft.**
+
+(`P_u` is 4,971 lb rather than the 3,845 this section carried before 2026-09-03's
+beam-weighted tributary — see §2a. More axial makes the magnifier slightly larger and the
+section slightly stronger, and neither moves the verdict: the whole magnification is 4%.)
 
 ---
 
@@ -216,39 +236,43 @@ orientation of a four-bar cage, about 8% below the strong one. Deliberate: a rou
 built in a round tube and nothing on site orients the cage to the wind. Each bar then sits
 3.3125 × cos45° = **2.343"** from the section centre.
 
-**Strain compatibility, P-M interaction at P_u = 3,845 lb.** β₁ = 0.85 at 3,000 psi.
-Bisecting the neutral axis to satisfy φP_n = P_u lands at **c = 3.21"**, a = β₁c = 2.73":
+**Strain compatibility, P-M interaction at P_u = 4,971 lb.** β₁ = 0.85 at 3,000 psi.
+Bisecting the neutral axis to satisfy φP_n = P_u lands at **c = 3.236"**, a = β₁c = 2.751":
 
 ```
-concrete segment, depth a = 2.73" into a 12" circle
-  chord offset above centre  = 6 − 2.73          = 3.27"
-  A_seg = 36·acos(3.27/6) − 3.27·√(36−3.27²)     = 35.80 − 16.45 = 19.35 in²
-  ȳ_seg = (2/3)(36−3.27²)^1.5 / A_seg            = 4.385" above the centre
-  C_c   = 0.85 × 3,000 × 19.35                   = 49,340 lb   at +4.385"
+concrete segment, depth a = 2.751" into a 12" circle
+  chord offset above centre  = 6 − 2.751         = 3.249"
+  A_seg = 36·acos(3.249/6) − 3.249·√(36−3.249²)  = 35.95 − 16.39 = 19.56 in²
+  ȳ_seg = (2/3)(36−3.249²)^1.5 / A_seg           = 4.375" above the centre
+  C_c   = 0.85 × 3,000 × 19.56                   = 49,870 lb   at +4.375"
 
 tension pair, offset −2.343" (depth from compression fibre 8.343")
-  ε = 0.003 (3.21 − 8.343)/3.21 = −0.00480       yielded
+  ε = 0.003 (3.236 − 8.343)/3.236 = −0.00473     yielded
   F = −60,000 × 0.62                             = −37,200 lb  at −2.343"
 
 compression-side pair, offset +2.343" (depth 3.657" > a, no concrete deduction)
-  ε = 0.003 (3.21 − 3.657)/3.21 = −0.000418
-  F = −29e6 × 0.000418 × 0.62                    =  −7,510 lb  at +2.343"
+  ε = 0.003 (3.236 − 3.657)/3.236 = −0.000390
+  F = −29e6 × 0.000390 × 0.62                    =  −7,020 lb  at +2.343"
 
-P_n = 49,340 − 37,200 − 7,510                    =   4,630 lb
-M_n = 49,340(4.385) + (−37,200)(−2.343) + (−7,510)(2.343)
-    = 216,360 + 87,160 − 17,600 = 285,920 lb-in  =  23,830 lb-ft
-ε_t = 0.00480  →  φ = 0.88   (Table 21.2.2, transition on ε_ty = 0.00207)
-φP_n = 4,070 lb ≈ P_u ✓        φM_n = 0.88 × 23,830  =  20,970 lb-ft
+P_n = 49,870 − 37,200 − 7,020                    =   5,650 lb
+M_n = 49,870(4.375) + (−37,200)(−2.343) + (−7,020)(2.343)
+    = 218,180 + 87,160 − 16,440 = 288,900 lb-in  =  24,080 lb-ft
+ε_t = 0.00473  →  φ = 0.877  (Table 21.2.2, transition on ε_ty = 0.00207)
+φP_n = 4,955 lb ≈ P_u ✓        φM_n = 0.877 × 24,080 =  21,120 lb-ft
 ```
+
+`engineering/deck_post.py` reports **20,995 lb-ft** for the same section and load. The 0.6%
+is the bisection tolerance and the φ transition rounding, not a disagreement — and at d/c
+0.12 nothing in the verdict below turns on it.
 
 ### The verdict
 
 | case | demand | φM_n | d/c |
 | --- | ---: | ---: | ---: |
-| wind, E-W | 1,388 lb-ft | 20,900 | **0.07** |
-| guard, R301.5, unshared | 2,502 lb-ft | 20,900 | **0.12** |
-| guard magnified, δ 1.031 | 2,580 lb-ft | 20,900 | **0.12** |
-| axial, §22.4.2.1 | 3,845 lb | 187,000 lb | **0.02** |
+| wind, E-W | 1,388 lb-ft | 21,000 | **0.07** |
+| guard, R301.5, unshared | 2,502 lb-ft | 21,000 | **0.12** |
+| guard magnified, δ 1.039 | 2,600 lb-ft | 21,000 | **0.12** |
+| axial, §22.4.2.1 | 4,971 lb | 187,000 lb | **0.03** |
 
 **Bending governs and the guard governs the bending, at an eighth of capacity.** The column
 is not sized by any of these — it is sized by the 2" of cover the durability case asked for

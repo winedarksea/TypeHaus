@@ -158,21 +158,24 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   section has to be re-checked against it. Also in
   `houses/catlin/notes/beam_water_protection.md`.
 
-- **Widen `structural.landing_post_bearing` past stair landings.** **The premise changed on
-  2026-09-03 and the item got MORE important, not less.** It used to be the rule that would
-  confirm what the 2026-08-29 change bought — `PT-SG-BF2` bearing on concrete rather than
-  through a 2x8. BF2 moved back onto the porch deck when `PT-SG-FCOL` shrank to 12", so
-  **both** centre pillars now bear cross-grain through one 1 1/2" ply (~315 psi under the
-  base, ~385 psi where that joist crosses the beam, against an Fc-perp of 425 with no
-  duration factor), and both are answered by authored squash blocks that nothing grades.
-  The rule still cannot see either joint, because it is scoped to stair landing posts only. Nothing else in the model grades cross-grain bearing under a
-  post, which is why `PT-SG-BR2` stood on a single joist ply for a day with 0 FAIL and why
-  its squash blocks are authored rather than derived. **Not a one-line scope widening:**
-  `_bearing_element_under` has to learn about a FloorSystem's blocking members and its sheet
-  thickness first, or turning it on adds ~10 FAILs to a house that has none — the eight
-  heat-pump stand legs, `PT-SG-BR2` and `PT-SG-BF2` — every one of them a false report about
-  a joint that is answered. The four balcony corner pillars left this list entirely: they are
-  cast concrete on cast concrete now and have no cross-grain bearing to grade.
+- ~~**Widen `structural.landing_post_bearing` past stair landings.**~~ **DONE 2026-09-03, by
+  a NEW rule rather than by widening that one.** `structural.deck_post_bearing` delegates to
+  `engineering/post_bearing.py`, which grades every authored `Post` whose `supported_by`
+  names a `FloorSystem` against NDS §3.10 — two limit states per post, the end grain on the
+  joist top and the joists' flat on the beam under them. Oracled by
+  `notes/centre_pillar_bearing.md`, on the mn-2024 permit checklist, `draft`.
+
+  **The prose in this entry was wrong in a way worth keeping.** It graded the joint against a
+  DRY Fc-perp of 425 psi; the frame is outdoors and NDS Table 4.3.1's `C_M` of 0.67 takes it
+  to **285**. And it divided the balcony six ways where `BM-SG-BLC` runs onto two posts. Both
+  centre pillars were over — `PT-SG-BF2` at **d/c 2.36** — at 0 FAIL. Three plies of sister
+  under each and BF2 onto the front beam axis closed it (0.42 and 0.76).
+
+  `landing_post_bearing` itself is unchanged and still scoped to resolver-generated stair
+  landing posts; the two rules do not overlap, and `_bearing_element_under` still cannot see
+  a FloorSystem's blocking or its sheet thickness. **What is still open** is the eight
+  heat-pump stand legs: they stand on `SL-SG-HPPAD`, a slab, so neither rule reaches them —
+  and their anchors, not their bearing, are what governs.
 
 - ~~**Verify the PWT treated LVL lead — one phone call.**~~ **ANSWERED 2026-09-03, and the
   answer was a different product.** `notes/beam_water_protection.md` recorded that the real
@@ -271,11 +274,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     `pier_basis._piers_below` is what makes the promise true, and it did not exist for the
     deck-borne case until 2026-09-03;
   - **two PASS** — `spread_footing/PT-SG-COL` and `/PT-SG-FCOL` compute bearing on the belled
-    piers: **1,603 and 1,159 psf** against IBC Table 1806.2's presumptive 2,000 for this
+    piers: **1,651 and 1,192 psf** against IBC Table 1806.2's presumptive 2,000 for this
     site's GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`.
     The two swapped places on 2026-09-03: FCOL fell from 1,477 when its column shrank from
     20" round to 12", and COL rose from 1,245 when `PT-SG-BR2`'s share of the balcony was
-    finally handed to it. COL is now the pier with the least margin in this structure;
+    finally handed to it, and again when that share stopped being a sixth of the deck and
+    became `BM-SG-BLC`'s own reaction. COL is the pier with the least margin in this
+    structure;
   - **four more, and they are BENDING** — `deck_post/PT-SG-B{R,F}{1,3}`, the balcony's corner
     columns, graded on base moment rather than on axial load because they are that deck's
     entire lateral system. `engineering/deck_post.py::_moment_column`, oracled by

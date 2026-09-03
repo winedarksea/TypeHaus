@@ -48,10 +48,12 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_MUDSILL_ANCHOR,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
     ROLE_PIPE_CLAMP,
+    ROLE_BEARING_STANDOFF,
     ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
     ROLE_POST_CAP,
+    ROLE_POST_TENSION_TIE,
     ROLE_PV_SEAM_CLAMP,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SILL_ANCHOR_BOLT,
@@ -407,6 +409,65 @@ ABU66SS_POST_BASE = StructuralHardware(
                   "citing ESR-1622 for this part are citing a report that does not cover it. "
                   "No allowable load is recorded because none is published; a stainless "
                   "allowable has to come from Simpson directly, not from the ABU66 row"),
+    ),
+)
+
+#: ICC-ES ESR-2330, Table 4, read 2026-09-03. Note the number: the DTT2's report is **2330,
+#: not 2320** — ESR-2320 is Simpson's take-up device report (CTUD/TUD/ATUD/RTUD/TUW) and has
+#: no DTT in it at all. That was worth checking rather than copying.
+_ESR_2330 = ("ICC-ES ESR-2330 (Simpson Strong-Tie holdowns), Table 4, read 2026-09-03")
+
+# The tie that holds a wood post DOWN to the framing it stands on — the part that replaced
+# the ABU66SS at PT-SG-BR2 and PT-SG-BF2 on 2026-09-03, when both centre pillars stopped
+# standing on concrete.
+#
+# **Why a different part rather than the same base in a different place.** Every published
+# number an ABU has is measured with the stirrup bearing on concrete through a 5/8" cast-in
+# anchor, and ESR-1622 §5.6 puts that anchor and its footing outside its own scope. On a deck
+# there is no pour, no cast-in bolt and no basis for the table. A DTT2 is the joint Simpson
+# actually publishes for a post on framing: SDS screws into the post, a 1/2" rod or bolt
+# through the joist below.
+#
+# **-Z IS COVERED, unlike the ABU66SS.** ESR-2330 §3.2.1, verbatim: "Model numbers shown in
+# this report do not list the -Z or -HDG suffix, but the information shown applies." So a
+# DTT2Z is a DTT2 with G185 zinc, and Table 4's numbers are its numbers — which is exactly
+# the sentence that could NOT be found for the stainless ABU, and the reason that record
+# carries no load at all. Two parts, two readings, two different answers.
+#
+# **The species column, and it bites here.** §3.2.2 requires a wood member of minimum
+# specific gravity 0.50. catlin frames in SPF at 0.42. So the 1,825 lb below is copied
+# faithfully and does NOT apply to this house's lumber as it stands — it is recorded with
+# the condition attached rather than silently used, per this module's rule 3. §4.1 adds the
+# second condition: the table is for "continuously dry interior conditions", and an open deck
+# frame takes the NDS wet-service C_M off it.
+DTT2Z_POST_TENSION_TIE = StructuralHardware(
+    tag="simpson-dtt2z-post-tension-tie",
+    name="DTT2Z deck tension tie (6x6), G185 ZMAX",
+    role=ROLE_POST_TENSION_TIE,
+    manufacturer=_SIMPSON,
+    model="DTT2Z",
+    fits_nominal=("6x6",),
+    source="Simpson Strong-Tie DTT2Z deck tension tie (strongtie.com/dtt) — a No. 14 gage "
+           "formed steel body screwed to the post with (8) SDS 1/4 in x 1-1/2 in and bolted "
+           "through the framing under it with a 1/2 in rod and the flat plate washer the "
+           "part ships with. Specified here because both centre balcony pillars bear on the "
+           "porch DECK, where a standoff post base has no pour to stand on and no published "
+           "value that survives reading its own report",
+    allowable=AllowableLoads(
+        uplift_lb=1825.0,
+        load_duration_factor=1.0,
+        species="sawn or engineered lumber of specific gravity >= 0.50 (§3.2.2) — "
+                "NOT SPF at 0.42, which this report does not publish a value for",
+        fasteners="(8) SDS 1/4 in x 1-1/2 in into the wood member, 1/2 in dia. anchor "
+                  "bolt/rod through the seat with the supplied F844 plate washer",
+        citation=(_ESR_2330 + ": 1,825 lbf allowable tension at a 1.5 in member thickness "
+                  "(the same at C_D 1.0 and 1.6), 2,000 lbf at C_D 1.0 / 2,145 lbf at "
+                  "C_D 1.6 at 3.0 in — the 1.5 in row is recorded as the conservative one. "
+                  "TWO CONDITIONS RIDE WITH IT and neither is met as catlin frames today: "
+                  "§3.2.2 requires SG >= 0.50 and this house is SPF at 0.42, and §4.1 "
+                  "tabulates for continuously dry interior service, so an open deck takes "
+                  "the NDS wet-service C_M off the number. Anchorage to the framing is "
+                  "§4.1.3's, not the table's"),
     ),
 )
 
@@ -882,6 +943,41 @@ DECK_EQUIPMENT_ANCHOR = StructuralHardware(
            "2x8 blocking",
 )
 
+# The shim pack under a wood beam soffit where it lands on a pour. Modelled as a part since
+# 2026-09-03; before that it existed only as prose inside SUNKEN_GARDEN_COLUMN_12.source and
+# PIER_CONCRETE_12.source — a real purchased item at a real joint, with nothing in the BOM,
+# nothing in 3D and nothing a reviewer could click.
+#
+# * **It holds a GAP, and the gap is the point.** IRC R317.1.4 wants a wood member on
+#   concrete held clear of it; a beam sitting flat on a wash ponds against its own end grain.
+#   1/2"-1" is the range the column tops are cast to, so the pack is shimmed to suit rather
+#   than being one thickness.
+# * **NO GROUT ISLAND under it.** An exposed non-shrink cementitious island is a 10-20 year
+#   element carrying a 100-year member, and it re-wets the soffit it was meant to lift. Where
+#   a levelling bed is unavoidable it is EPOXY grout confined under the plate — that sentence
+#   used to live in an assembly ``source`` and belongs on the part.
+# * **316 stainless, or HDG with an isolator.** These sit under copper-treated KDAT and under
+#   treated glulam, both of which eat plain steel. Where the pack meets an HGAM10 gusset an
+#   EPDM or HDPE isolator goes between them.
+#
+# Deliberately NOT a post base and not a bearing plate: it is selected by the gap and the
+# alloy, not by a post section, and ``hardware_for_role`` holds one part per role.
+BEARING_STANDOFF_SHIM = StructuralHardware(
+    tag="stainless-beam-bearing-standoff-shim",
+    name="3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in",
+    role=ROLE_BEARING_STANDOFF,
+    manufacturer="generic",
+    model="SS316-SHIM-35",
+    source="generic 316 stainless plate shims, 3-1/2 in square, stacked to the 1/2 in-1 in "
+           "gap a cast column top is finished to — no manufacturer system is specified, so "
+           "this record is deliberately generic, as SS316-LAG-38x4-EPDM and SS316-WEDGE-38x3 "
+           "are. INSTALLATION is most of what it is: set on the cast wash under the beam "
+           "footprint with NO grout island (epoxy grout confined under the plate if a "
+           "levelling bed proves unavoidable, never a cementitious one), an EPDM or HDPE "
+           "isolator where the pack meets an HGAM10 gusset, and the stack shimmed so the "
+           "soffit stands clear of the pour rather than bedded on it",
+)
+
 # The ground-pad twin of the part above, and a much simpler joint: an equipment stand
 # standing on a 4" concrete pad at grade, wedge-anchored into it.
 #
@@ -980,6 +1076,7 @@ STRUCTURAL_HARDWARE: tuple = (
     CS16_COIL_STRAP,
     ABU_POST_BASE,
     ABU44_POST_BASE,
+    DTT2Z_POST_TENSION_TIE,
     POST_BASE_ANCHOR_BOLT,
     PC6Z_POST_CAP,
     CCQ46SDS_POST_CAP,
@@ -998,6 +1095,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LAPPED_BRACE_BOLT,
     POLY_PANEL_FASTENER,
     DECK_EQUIPMENT_ANCHOR,
+    BEARING_STANDOFF_SHIM,
     EQUIPMENT_PAD_ANCHOR,
     EXPOSED_FASTENER_PANEL_SCREW,
     THROUGH_PANEL_PIPE_STRAP,

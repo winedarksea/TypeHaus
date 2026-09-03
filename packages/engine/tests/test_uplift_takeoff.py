@@ -32,12 +32,19 @@ RULES = CONFIG.uplift
 #:
 #: Six, not ten, since 2026-09-03: the balcony's four CORNER pillars became 12" cast
 #: concrete columns fixed at their bases and doweled into the wall tops under them, and
-#: concrete-on-concrete takes no post base at all. Only the two centre pillars are still
-#: wood on a standoff. See ``houses/catlin/notes/balcony_moment_columns.md``.
+#: concrete-on-concrete takes no post base at all. Then FOUR later the same day, when the
+#: two CENTRE pillars went from an ABU66SS to a DTT2Z tension tie — an ABU has no published
+#: value bearing on framing, and the R317.1.4 standoff it was cited for governs wood on
+#: CONCRETE. See ``houses/catlin/notes/balcony_moment_columns.md``.
 AUTHORED_POST_BASES = {
-    "PT-SG-BR2", "PT-SG-BF2",
     "PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4",
 }
+
+#: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
+#: as ``post_base_rows`` is concerned — a post whose joint is already made must not be bought
+#: a base — and the whole reason that rule reads both kinds is that these two would otherwise
+#: derive two phantom ABU66.
+AUTHORED_TENSION_TIES = {"PT-SG-BR2", "PT-SG-BF2"}
 
 #: The four breezeway roof-beam-to-post joints already strapped with a KBS1Z by hand.
 AUTHORED_POST_BEAM_STRAPS = {"BM-BW-RW", "BM-BW-RE"}
@@ -180,7 +187,7 @@ def test_a_beam_that_bears_everywhere_is_tied_at_a_pitch_not_at_its_ends(rows) -
 
 
 def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> None:
-    """Ten posts already carry a hand-authored ABU66SS; none may be bought twice.
+    """Every post whose joint is already made by hand; none may be bought a base twice.
 
     Until 2026-08-28 this asserted an EMPTY list, because every 6x6 that declared a bearing
     was authored and the three 4x4s declared none. The stairwell posts now declare theirs
@@ -194,22 +201,25 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
 
     authored = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.POST_BASE}))
     assert authored >= AUTHORED_POST_BASES, "the fixture's authored bases moved"
+    tied = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.TENSION_TIE}))
+    assert tied >= AUTHORED_TENSION_TIES, "the fixture's authored tension ties moved"
     rows = post_base_rows(catlin_model_ro, RULES)
     assert [row["part_number"] for row in rows] == ["ABU44"], (
-        "an ABU66SS row means the Connector.connects guard stopped matching and the six "
-        "authored bases are being bought a second time")
+        "an ABU66SS row means either the Connector.connects guard stopped matching, or "
+        "TENSION_TIE fell out of the covered set and the two centre pillars are being "
+        "bought a base they do not take")
     assert rows[0]["count"] == 2
-    for tag in AUTHORED_POST_BASES:
+    for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
         assert tag not in rows[0]["basis"]
     # And the nine really are all of them, so what is NOT in the row above is coverage
-    # rather than silence: six authored, two derived, one squash block. The four balcony
-    # corner columns are absent because they are no longer WOOD — the filter below is on
-    # section, and a "12 round" is not a 6x6.
+    # rather than silence: four authored bases, two authored ties, two derived, one squash
+    # block. The four balcony corner columns are absent because they are no longer WOOD —
+    # the filter below is on section, and a "12 round" is not a 6x6.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by and not e.within_wall
             and e.size in {"6x6", "4x4"}}
-    assert wood == AUTHORED_POST_BASES | {"P-M-STRWELL-S", "P-M-STRWELL-N",
-                                          "P-M-STRLAND-SE"}
+    assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
+        "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:

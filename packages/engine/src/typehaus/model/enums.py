@@ -456,6 +456,18 @@ class ConnectorKind(Enum):
     # that does not exist. See ROLE_DECK_EQUIPMENT_ANCHOR in takeoff/hardware_catalog.py for
     # the same split on the catalog side, and library/hardware.py for the part.
     EQUIPMENT_ANCHOR = "equipment_anchor"  # gasketed through-deck equipment fastener
+    # The shim pack that holds a wood beam soffit clear of the pour it lands on. Not a
+    # POST_BASE: a base is a formed stirrup selected by the post SECTION, bought and
+    # inspected as a bracket. This is a stack of plates selected by the GAP and the alloy,
+    # and it is what makes an R317.1.4 standoff a countable part instead of a sentence in
+    # an assembly's ``source``. See ROLE_BEARING_STANDOFF in takeoff/hardware_catalog.py.
+    BEARING_STANDOFF = "bearing_standoff"  # stainless/HDG shim pack under a beam seat
+    # A post held DOWN to the framing it stands on. Deliberately neither of its neighbours:
+    # HOLD_DOWN is a strap tying a beam to a post it runs PAST (and ``_POST_TOP_KINDS``
+    # already claims it), and POST_BASE is a stirrup on CONCRETE. A wood post bearing
+    # directly on a wood beam is a third joint, and the tie that makes it is a different
+    # part with a different rating.
+    TENSION_TIE = "tension_tie"            # post-to-framing tension tie (e.g. Simpson DTT2Z)
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
     # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
     # panel, on a standoff block, rather than by gripping a seam. Its own kind because the

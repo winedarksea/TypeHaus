@@ -70,6 +70,18 @@ ROLE_MASONRY_GUSSET_ANGLE = "masonry_gusset_angle"
 # while a cap seats the beam and takes uplift in one part. Both serve a post/beam joint and
 # ``hardware_for_role`` holds exactly one product per role, so they cannot share.
 ROLE_POST_CAP = "post_cap"
+# A post held DOWN to the FRAMING it stands on. Its own role and deliberately not
+# ROLE_POST_BASE: a base is a formed stirrup that a post sits INSIDE, selected by the post
+# section and rated bearing on concrete through a cast-in anchor. This part is a strap
+# screwed to the post face and bolted through the joist under it — different joint, different
+# published table, different price. Nor is it ROLE_BEAM_HOLD_DOWN, which ties a beam down to
+# a post: that is the joint at the OTHER end of the same member.
+ROLE_POST_TENSION_TIE = "post_tension_tie"
+# The shim pack that holds a wood beam soffit clear of the pour it lands on. Not a post base
+# and not a bearing plate: it is selected by the GAP it has to hold and the alloy it has to
+# hold it in, and it is the part that makes an R317.1.4 standoff countable instead of a
+# sentence in an assembly's ``source``. See ConnectorKind.BEARING_STANDOFF.
+ROLE_BEARING_STANDOFF = "bearing_standoff"
 # Plate-to-plate / plate-to-rim lateral tie. The SP tie and the H tie above both resist
 # UPLIFT at a stud or a rafter; this one resists the horizontal shear that walks a plate off
 # its band, which is a different joint with a different part and no size ladder.

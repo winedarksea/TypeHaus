@@ -17,6 +17,7 @@ bearing value, or an unresolvable bearing chain reports UNKNOWN, never a silent 
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from typehaus.checks._authoring import engineered as _engineered
@@ -350,14 +351,68 @@ def _deck_posts(ctx: CheckContext, deck: _Deck) -> list[Post]:
     return list(seen.values())
 
 
-def _tributary_ft2(deck: _Deck, post_count: int) -> float | None:
-    """Deck area divided evenly among its posts. The deck is a regular post grid, so this is
-    the tributary area exactly; it would be an approximation on an irregular one, which is
-    why the finding prints it."""
-    area = deck.area_ft2
-    if area is None or post_count <= 0:
+def _beam_length_ft(ctx: CheckContext, beam: Beam) -> float | None:
+    """A beam's full node-to-node length, cantilever tips included.
+
+    Not ``_beam_span_ft``: what a beam delivers to its posts is everything standing on it,
+    and an overhang past the end bearing is part of that load even though it is not span.
+    """
+    nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
+             if e.element_kind == "Node"}
+    p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+    if p0 is None or p1 is None:
         return None
-    return area / post_count
+    return math.dist(p0, p1) / _M_PER_FT
+
+
+def _tributaries_ft2(ctx: CheckContext, deck: _Deck) -> dict[str, float] | None:
+    """``post tag -> tributary ft2``, weighted by the strip of deck each BEAM carries.
+
+    An equal ``area / len(posts)`` split is right only on a regular grid with one post per
+    bay corner, and catlin's balcony is not that: its centre beam runs the full depth of the
+    deck onto two posts while the two edge beams share four, so the even split under-reported
+    the centre pair by about a half. That mattered — those two are the pillars whose bearing
+    ``engineering/post_bearing.py`` now grades, and a tributary that is 2/3 of the truth is a
+    demand that is 2/3 of the truth.
+
+    The weighting reuses the strip that already exists rather than opening a fourth opinion
+    about deck loads: ``joist_span_ft`` is the width of deck a beam carries — the same figure
+    ``engineering/glulam_beam.py`` puts under its 500 plf — so a beam's share of the deck is
+    that strip times its own length, divided among the supports it names and kept where
+    that support is a post. Each beam takes the
+    FULL joist span, which double-counts where two beams' strips overlap; that is the
+    conservative direction and it is the same over-count ``glulam_beam``'s record prints and
+    invites a reviewer to disagree with.
+
+    The even split survives as the fallback for a deck with no resolvable strip or a beam
+    with no resolvable length, so nothing that graded before stops grading.
+    """
+    posts = _deck_posts(ctx, deck)
+    area = deck.area_ft2
+    if not posts:
+        return None
+    fallback = ({p.tag: area / len(posts) for p in posts}
+                if area is not None else None)
+    strip_ft = deck.joist_span_ft
+    if strip_ft is None:
+        return fallback
+    out: dict[str, float] = {p.tag: 0.0 for p in posts}
+    for beam in _deck_beams(ctx, deck):
+        length_ft = _beam_length_ft(ctx, beam)
+        if length_ft is None:
+            return fallback
+        # Divided among ALL the beam's supports and then kept only where a support is a
+        # POST. A porch beam that runs from a column to a bearing WALL delivers half its
+        # load to each, and a split that counted only the posts would hand the column the
+        # wall's half as well.
+        supports = beam.bearing_refs or ()
+        if not supports:
+            return fallback
+        share = strip_ft * length_ft / len(supports)
+        for tag in supports:
+            if isinstance(ctx.plan.by_tag(tag), Post):
+                out[tag] = out.get(tag, 0.0) + share
+    return out
 
 
 @check(Tier.STRUCTURAL, "structural.deck_post_size")
@@ -374,13 +429,14 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
                                 f"deck {deck.tag} resolves to no supporting posts",
                                 (deck.tag,)))
             continue
-        tributary = _tributary_ft2(deck, len(posts))
-        if tributary is None:
+        tributaries = _tributaries_ft2(ctx, deck)
+        if tributaries is None:
             out.append(_unknown("structural.deck_post_size",
                                 f"deck {deck.tag} has no outline to derive tributary area from",
                                 (deck.tag,)))
             continue
         for post in posts:
+            tributary = tributaries.get(post.tag, 0.0)
             solid = next((s for s in ctx.model.solids if s.tag == post.tag), None)
             if solid is None:
                 out.append(_unknown("structural.deck_post_size",
@@ -419,6 +475,46 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
                     f"tributary", (deck.tag, post.tag), Result.PASS,
                 ))
     return out
+
+
+@check(Tier.STRUCTURAL, "structural.deck_post_bearing")
+def deck_post_bearing(ctx: CheckContext) -> list[Finding]:
+    """A post standing on FRAMING vs. NDS §3.10 — compression perpendicular to grain.
+
+    The gap this closes: ``structural.deck_post_size`` grades a post's SECTION and R507.4's
+    height limit, ``structural.deck_footing_size`` grades what is under it *on the ground*,
+    and neither has anything to say about a 6x6 landing on the flat of a 2x8. Cross-grain
+    bearing is the limit state that actually governs there, and ``landing_post_bearing`` —
+    the rule that says so elsewhere — is scoped to resolver-generated stair landing posts
+    and never sees an authored ``Post``. Until 2026-09-03 catlin's two centre balcony
+    pillars were over on that limit state at 0 FAIL.
+
+    Delegated rather than tabulated: there is no prescriptive table for it. NDS §3.10 is a
+    calculation, so it is an engineered item (decision #65) and the record carries the
+    numbers a reviewer can disagree with.
+    """
+    posts = [e for e in ctx.plan.all_elements() if isinstance(e, Post)]
+    floors = {e.tag for e in ctx.plan.all_elements() if isinstance(e, FloorSystem)}
+    on_framing = [p for p in posts
+                  if p.supported_by in floors and not p.within_wall]
+    if not on_framing:
+        # Earned, not assumed: there ARE posts here and not one of them stands on a floor
+        # system — every one is on a pad, a footing, a wall or inside one. A house with no
+        # post at all is the same statement one step weaker, and both are the absence this
+        # rule governs rather than a rule that quietly found nothing to do.
+        return [not_applicable(
+            "structural.deck_post_bearing",
+            f"no post in this plan stands on a floor system ({len(posts)} post(s) resolve, "
+            f"all of them on a pad, a footing, a wall, or inside one) — NDS §3.10's "
+            f"cross-grain bearing has no wood-on-wood post joint to grade",
+            (), code="AWC NDS 2018 §3.10")]
+    return [_engineered(
+        ctx, "structural.deck_post_bearing", item_id("post_bearing", post.tag),
+        f"post {post.tag} ({post.size}) stands on {post.supported_by}, framing rather than "
+        f"a pour — what it bears through is joist stock across the grain, which no "
+        f"prescriptive table publishes",
+        (post.tag, post.supported_by), code="AWC NDS 2018 §3.10")
+        for post in sorted(on_framing, key=lambda p: p.tag)]
 
 
 #: How far a ``supported_by`` chain is followed before it is treated as a loop. A post on a
@@ -500,8 +596,9 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             "structural.deck_footing_size",
             f"post {post.tag} bears on {bearing.tag}, a floor system ({where}) — it is a "
             f"post on a deck, not a post on the ground, so IRC R507.3.1 has no footing to "
-            f"size. What carries it is graded by structural.cantilever_point_load and by "
-            f"the joist span checks",
+            f"size. What carries it is graded by structural.deck_post_bearing (the "
+            f"cross-grain bearing at the joint itself), by structural.cantilever_point_load "
+            f"and by the joist span checks",
             (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
     if isinstance(bearing, Footing):
         return _engineered(
@@ -540,16 +637,19 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for deck in decks:
         posts = _deck_posts(ctx, deck)
-        tributary = _tributary_ft2(deck, len(posts))
-        if tributary is None:
+        tributaries = _tributaries_ft2(ctx, deck)
+        if tributaries is None:
             out.append(_unknown("structural.deck_footing_size",
                                 f"deck {deck.tag} has no tributary area to size footings from",
                                 (deck.tag,)))
             continue
-        required = required_footing_area_ft2(tributary, soil_psf)
         minimum = (MIN_DECK_FOOTING_SIDE_IN / 12.0) ** 2
-        required = max(required, minimum)
         for post in posts:
+            # Per post, not per deck: the beam-weighted split gives the centre pair half
+            # again the share of the corners, and one pad size for all of them would either
+            # under-size those two or over-size the other four.
+            tributary = tributaries.get(post.tag, 0.0)
+            required = max(required_footing_area_ft2(tributary, soil_psf), minimum)
             bearing, chain = _bearing_of(ctx, post)
             if not isinstance(bearing, Pad):
                 out.append(_not_a_pad(ctx, deck, post, bearing, chain))

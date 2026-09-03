@@ -1650,17 +1650,27 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **The beam seat is CAST TO LINE, with no grout island.** An exposed non-shrink grout
     island is a 10-20 year element, not air-entrained and sitting at the wettest point on the
     column. Cast the top to line under the beam footprint, screed the >=15 degree wash and
-    drip lip around it, and take tolerance in the 1/2"-1" stainless standoff's shim pack. An
-    HGAM10 gusset holds the beam down, Titen Turbo at ~3-3/4" edge on the 12" round.
+    drip lip around it, and take tolerance in the `SS316-SHIM-35` standoff shim pack —
+    a modelled, priced part at `CN-SG-STDF-*` since 2026-09-03, one per wood-on-concrete beam
+    seat. An HGAM10 gusset holds the beam down, Titen Turbo at ~3-3/4" edge on the 12" round.
     `PIER_CONCRETE_12` still carries a grout island at `PT-SG-COL`; aligning it is a
     follow-up, not an oversight.
-  - **The two CENTRE pillars stay wood 6x6** on pinned ABU66SS bases, both bearing through
-    the porch decking with a 4"-square plank cut-out and squash blocks under each — Trex says
-    plainly that composite decking bears nothing. `PT-SG-BF2` moved north onto the deck, 3"
-    inside the front beam axis (the mirror of BR2's 3" inside the back one), which is what
-    let `PT-SG-FCOL` shrink from a 20" round to a 12" one. A `CCQ46SDS2.5` column cap closes
-    the uplift path at each — a 3-1/2" beam on a 6x6 is the unequal-width case the PC6Z is
-    not published for.
+  - **The two CENTRE pillars stay wood 6x6**, bearing DIRECTLY on the porch framing through
+    a 4"-square plank cut-out — Trex says plainly that composite decking bears nothing — on a
+    **3-ply bearing pack** (the authored joist plus two full-length sisters) with squash
+    blocks at the beam line. `PT-SG-BF2` moved north onto the deck, which is what let
+    `PT-SG-FCOL` shrink from a 20" round to a 12" one, and then the last 3" onto the front
+    beam axis itself, where it doubles as the `RL-SG-PORCH` south-leg guard post at x 18'-0".
+    A `CCQ46SDS2.5` column cap closes the uplift path at each — a 3-1/2" beam on a 6x6 is
+    the unequal-width case the PC6Z is not published for.
+  - **No standoff post base at either.** The `ABU66SS` went on 2026-09-03: every published
+    value an ABU has is measured bearing on CONCRETE through a 5/8" cast-in anchor
+    (ESR-1622 §5.6 puts even that anchor outside its own scope), and the 1" standoff was
+    cited to IRC R317.1.4, which governs wood on concrete. Neither pillar has stood on
+    concrete since. A **`DTT2Z`** deck tension tie holds each down instead. The bearing that
+    replaced it is graded: `haus engineering --item post_bearing/PT-SG-BR2`, oracled in
+    `notes/centre_pillar_bearing.md` — at `plies=1` and against a DRY Fc-perp both pillars
+    were over, at 0 FAIL, until that calculation existed.
   - **The three beams are treated SYP glulam, 3-1/2" x 11-7/8"** (24F-V5M1/SP, Anthony Power
     Preserved / Boise Cascade), clear-finished rather than painted, with no ply seam to hold
     water. Author the size DECIMALLY — `"3.5x11.875"` — or `_RE_NOMINAL` catches a

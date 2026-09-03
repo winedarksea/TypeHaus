@@ -127,18 +127,34 @@ def test_every_pillar_top_lands_on_the_same_beam_soffit(catlin_model) -> None:
                - next(iter(front.values())).z1_m - 2 * INCH) < 1e-9
 
 
-def test_only_the_two_wood_pillars_take_a_post_base(catlin_model) -> None:
-    """Six ABU66SS until 2026-09-03, two now — and the four that went are the point.
+def test_only_the_two_wood_pillars_take_a_base_and_it_is_a_tension_tie(catlin_model) -> None:
+    """Six ABU66SS until 2026-09-03, then two, and now two DTT2Z — the part changed too.
 
     A 12" cast column standing on a 12" cast wall is joined by a lapped doweled splice made
     in the pour. Authoring a standoff base there would bill four stainless bases that do not
     exist AND claim a pinned joint, which is the opposite of the fixed one the whole
-    braceless design turns on.
+    braceless design turns on. That is why there are two and not six.
+
+    ** WHY THE REMAINING TWO ARE NOT ABUs. ** Every published value an ABU has is measured
+    with the stirrup bearing on CONCRETE through a 5/8" cast-in anchor, and ESR-1622 §5.6
+    puts even that anchor outside its own scope. Both these pillars bear on the porch
+    FRAMING, where there is no pour, no cast-in bolt and no basis for the table — and the
+    R317.1.4 standoff the 1" gap was cited to governs wood on CONCRETE, which this is not.
+    A DTT2Z is the joint Simpson publishes for a post on framing.
+
+    The kind moves with the part, and it has to: ``ConnectorKind.TENSION_TIE`` is what
+    ``takeoff/uplift_joints.py`` and ``checks/structural/uplift_path.py`` read to know this
+    joint is made. Leaving it POST_BASE would have kept two rows of the wrong part number in
+    the BOM; dropping it without adding the new kind to those two rules would have derived
+    two phantom ABU66 and reported both pillars UNKNOWN.
     """
+    from typehaus.model.enums import ConnectorKind
+
     bases = [el for el in catlin_model.plan.all_elements()
              if el.element_kind == "Connector" and el.tag.startswith("CN-SG-BASE-")]
     assert len(bases) == 2
-    assert {b.size for b in bases} == {"ABU66SS"}
+    assert {b.size for b in bases} == {"DTT2Z"}
+    assert {b.kind for b in bases} == {ConnectorKind.TENSION_TIE}
     for base in bases:
         pillar = _solid(catlin_model, base.connects[0])
         assert abs(base.elevation.meters - pillar.z0_m) < 1e-9, base.tag
@@ -192,24 +208,33 @@ def test_the_corner_columns_are_flush_with_both_faces_of_the_wall_they_stand_on(
 def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_model) -> None:
     """The load path the two CENTRE pillars actually stand on, asserted directly.
 
-    Each sits 3" inside its own beam line, over the beams that run to their cast columns —
-    no cantilever. Each still bears CROSS-GRAIN: a 6x6 on one 1 1/2" ply is ~315 psi against
-    an Fc-perp of 425, so squash blocks are here — but with ``plies=1``, which lays
-    ``range(plies - 1)`` sisters, i.e. NONE. Blocking without sistering is the whole
-    distinction, and it is what keeps ``test_no_catlin_deck_sisters_a_joist`` green.
+    Both stand over a BEARING rather than over a joist tip — BR2 3" south of the back-beam
+    line, BF2 on the front-beam axis — so neither is on a cantilever and
+    ``structural.cantilever_point_load`` is silent about them honestly.
 
-    The 3" is not slop either. The band in ``checks/structural/cantilever.py`` is closed at
-    the bearing line, so a pillar landed exactly on it still reads as inside the overhang
-    and reports a 0" one — a finding about a joint that does not exist. It is also the
-    minimum that keeps BF2's 5 1/2" post on the deck, whose outline ends on the front beam
-    axis, and what keeps its base off TR-SG-CAP-FRW/FRE and the butyl under it.
+    ** WHAT THEY BEAR THROUGH IS THREE PLIES, NOT ONE. ** Each is a 6x6 crossing the grain
+    of a 2x8, and ``engineering/post_bearing.py`` computes what that costs: through ONE ply,
+    BM-SG-BLC's real reactions bear at 311 and 380 psi against a WET Fc-perp of 285 — not
+    the dry 425 this docstring used to quote at the same joint whose glulam has been graded
+    wet all along. Two sisters take it to 107 and 131 psi. The blocks are still here and
+    still answer rollover; what changed is that bearing is now answered too, by a member
+    rather than by a hope.
+
+    ** BF2 IS ON THE AXIS AND THAT COSTS IT HALF ITS BASE. ** The porch outline ends on the
+    front beam axis, so half its 5-1/2" footprint is over the deck edge with no joist under
+    it — which is why ``_post_on_field_in`` clips the bearing length to the joist field
+    instead of crediting the whole section, and why that state comes back at d/c 0.62 rather
+    than 0.29. The move is what puts the pillar over the beam its joists END on (2-1/4" of
+    bearing, the porch's tightest plane) and what makes it the RL-SG-PORCH guard post at
+    x = 18'-0".
     """
     floor = _floor(catlin_model, "FS-SG-PORCH")
-    assert [m for m in floor.members if m.category == "sister_joist"] == []
+    # Two sisters, from ONE shared cluster: both pillars are on the same joist line and both
+    # ask for plies=3, and ``_reinforcement_members`` tops the line up rather than laying a
+    # second coincident pair. See test_joist_reinforcement.py, which owns both counts.
+    assert len([m for m in floor.members if m.category == "sister_joist"]) == 2
     blocks = [m for m in floor.members if m.category == "blocking"]
-    # Two under each centre pillar, plus two under each of the porch guard's three
-    # south-leg posts — see test_joist_reinforcement.py, which owns that count.
-    assert len(blocks) == 10, len(blocks)
+    assert len(blocks) == 8, len(blocks)
 
     porch_deck_top = _porch_deck_top(catlin_model)
     for tag in DECK_BORNE_PILLAR_TAGS:
@@ -219,12 +244,12 @@ def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_mode
     br2_y = catlin_model.plan.by_tag("PT-SG-BR2").position.xy_m[1]
     assert br2_y < back_beam_y < joist_tip
 
-    # 3" inside each beam line, mirrored about the deck.
+    # BR2 is 3" south of the back-beam line; BF2 is ON the front one, over PT-SG-FCOL.
     column_y = catlin_model.plan.by_tag("PT-SG-COL").position.xy_m[1]
     assert (column_y - br2_y) == pytest.approx(3 * INCH, abs=1e-9)
     fcol_y = catlin_model.plan.by_tag("PT-SG-FCOL").position.xy_m[1]
     bf2_y = catlin_model.plan.by_tag("PT-SG-BF2").position.xy_m[1]
-    assert (bf2_y - fcol_y) == pytest.approx(3 * INCH, abs=1e-9)
+    assert bf2_y == pytest.approx(fcol_y, abs=1e-9)
 
 
 def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(

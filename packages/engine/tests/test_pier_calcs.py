@@ -58,10 +58,17 @@ _STRUCT_SHORT_BAR_SOURCE = 'BarSpec(role="vertical", bar=4, count=3, coating="hd
 # §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
 # section, tributary and cage — so one row covers them.
 _BW_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
+# REVISED 2026-09-03: the tributary DOUBLED, 3.1727 -> 6.3455 ft², when the split went
+# beam-weighted. FS-BW-FLOOR is a single-bay deck on two beams, and each of them is an EDGE
+# beam given the FULL joist span as its strip — so the two strips cover the deck twice. That
+# is the conservative direction and it is the same over-count `glulam_beam.py` prints on its
+# own record; on a pier bearing 1.78 ft² against a required 1.00 it changes nothing that
+# matters, which is why the simpler rule is kept rather than opening a fourth opinion about
+# deck loads. §2 of the note carries both numbers.
 _BREEZEWAY_ORACLE = {
     "height_in": 56.75, "gross_in2": 113.097, "h_over_d": 4.73,
-    "tributary_ft2": 3.1727, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
-    "dead_lb": 639.57, "live_lb": 126.91, "service_lb": 766.48, "factored_lb": 970.54,
+    "tributary_ft2": 6.3455, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
+    "dead_lb": 671.30, "live_lb": 253.82, "service_lb": 925.12, "factored_lb": 1211.67,
     "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 187_011.0,
     "tie_spacing_in": 10.0,
     "slenderness": 18.92, "delta_ns": 1.0005, "e_magnified_in": 0.9604, "e_capped_in": 1.20,
@@ -71,15 +78,18 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # §2 and §3c of the note. Both piers are 12" round and carry the same cage since
 # 2026-09-03, so the two rows agree on everything but the bell and a pound of pillar.
 #
-# The tributary is 116.97 ft², not 116.17: each takes half of FS-SG-PORCH (82.33) plus the
-# sixth of FS-SG-DECK its centre pillar hands down, and FS-SG-DECK went 203.00 -> 207.83
-# ft² on 2026-09-03 when `joist_cantilever_in` went 6" -> 9". PT-SG-COL's bearing d/c is
-# what feels it — 0.80 -> 0.81 on a 30" bell, the least margin in this structure.
+# The tributary is 120.83 ft², and it is BEAM-WEIGHTED as of 2026-09-03: each column takes
+# half of each porch beam that lands on it (72.50 ft², the bearing WALL at the beam's far end
+# taking the other half) plus half of BM-SG-BLC, handed down by its centre pillar (48.33 ft²).
+# It was 116.97 under the old `deck area / post count`, and the two errors that rule made
+# nearly cancelled: the porch share was 10 ft² too high and the balcony share 14 too low.
+# PT-SG-COL's bearing d/c is what feels it — 0.81 -> 0.83 on a 30" bell, the least margin in
+# this structure.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 116.97, "dead_lb": 2495.0, "live_lb": 4679.0,
-        "service_lb": 7174.0, "factored_lb": 10_480.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1611.0,
+        "tributary_ft2": 120.83, "dead_lb": 2534.0, "live_lb": 4833.0,
+        "service_lb": 7367.0, "factored_lb": 10_774.0,
+        "bell_area_ft2": 4.909, "bearing_psf": 1651.0,
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
@@ -92,13 +102,13 @@ _ORACLE = {
         "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 116.97, "dead_lb": 2494.0, "live_lb": 4679.0,
-        "service_lb": 7173.0, "factored_lb": 10_479.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1165.0,
+        "tributary_ft2": 120.83, "dead_lb": 2532.0, "live_lb": 4833.0,
+        "service_lb": 7366.0, "factored_lb": 10_772.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.024, "e_magnified_in": 0.983, "e_capped_in": 1.20,
+        "slenderness": 42.7, "delta_ns": 1.025, "e_magnified_in": 0.984, "e_capped_in": 1.20,
     },
 }
 
@@ -268,14 +278,18 @@ def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> N
     """`structural.deck_footing_size` reports N/A on both centre pillars and says their share
     is picked up here. **That sentence is a promise, and this is the only thing keeping it.**
 
-    PT-SG-BR2 and PT-SG-BF2 each stand on the porch DECK, 3" from a beam line, and each
-    carries a third of the balcony. Until 2026-09-03 ``pier_basis`` handed load down only
-    post-to-post, so a pillar on a FloorSystem handed nothing and PT-SG-COL was graded on
-    82.33 ft2 with a third of a balcony landing on it uncounted. Both now hand their share
-    through the deck's beams to the column under them.
+    PT-SG-BR2 and PT-SG-BF2 each stand on the porch DECK and each carries the middle of the
+    balcony. Until 2026-09-03 ``pier_basis`` handed load down only post-to-post, so a pillar
+    on a FloorSystem handed nothing and PT-SG-COL was graded on 82.33 ft2 with a third of a
+    balcony landing on it uncounted. Both now hand their share through the deck's beams to
+    the column under them.
+
+    And the share itself is the BEAM's, not a fraction of the deck: BM-SG-BLC runs the
+    balcony's full depth onto these two pillars alone while the two edge beams share four
+    posts, so a sixth of the deck was never what either pillar carried.
     """
-    own_porch_share = 82.33          # FS-SG-PORCH 164.67 ft2 over its two columns
-    balcony_share = 34.64            # FS-SG-DECK 207.83 ft2 over its six pillars
+    own_porch_share = 72.50          # 2 porch beams x 7.25' strip x 10.00' over 2 supports
+    balcony_share = 48.33            # BM-SG-BLC, 10.00' strip x 9.67' over its 2 posts
     for tag in ("PT-SG-COL", "PT-SG-FCOL"):
         pier = piers[tag]
         assert pier.tributary_ft2 == pytest.approx(own_porch_share + balcony_share, abs=0.02)
@@ -513,7 +527,7 @@ def test_the_two_tributary_rules_agree(catlin_plan) -> None:
     """
     from _helpers import check_context
 
-    from typehaus.checks.structural.deck import _deck_posts, _decks, _tributary_ft2
+    from typehaus.checks.structural.deck import _decks, _tributaries_ft2
     from typehaus.engineering.pier_basis import _deck_tributaries
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.resolve import resolve
@@ -524,12 +538,14 @@ def test_the_two_tributary_rules_agree(catlin_plan) -> None:
     ctx = check_context(plan=catlin_plan)
     theirs: dict[str, float] = {}
     for deck in _decks(ctx):
-        posts = _deck_posts(ctx, deck)
-        share = _tributary_ft2(deck, len(posts))
-        for post in posts:
-            theirs[post.tag] = theirs.get(post.tag, 0.0) + share
+        for tag, share in (_tributaries_ft2(ctx, deck) or {}).items():
+            theirs[tag] = theirs.get(tag, 0.0) + share
 
     assert set(mine) == set(theirs)
+    # And it is the BEAM-WEIGHTED answer both are giving, not the even split they used to
+    # agree on: BM-SG-BLC hands its two pillars half its own strip each, which is half again
+    # what a sixth of the balcony would have been.
+    assert mine["PT-SG-BR2"] == pytest.approx(48.33, abs=0.02)
     for tag, value in theirs.items():
         assert mine[tag] == pytest.approx(value, rel=1e-9), tag
 
@@ -701,7 +717,7 @@ def test_the_centre_glulam_spans_less_than_its_neighbours(results) -> None:
              for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")}
     assert spans["BM-SG-BLW"] == pytest.approx(7.333, abs=0.01)
     assert spans["BM-SG-BLE"] == pytest.approx(7.333, abs=0.01)
-    assert spans["BM-SG-BLC"] == pytest.approx(6.75, abs=0.01)
+    assert spans["BM-SG-BLC"] == pytest.approx(7.0, abs=0.01)
     # The rear overhang is 20.0" on all three, so every back span has to carry it.
     for tag, span_ft in spans.items():
         assert 20.0 <= span_ft * 12.0 / 4.0, tag

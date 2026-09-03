@@ -281,7 +281,13 @@ def _post_links(ctx: CheckContext) -> list:
     # bearing", which is exactly backwards for a leg whose governing load is uplift.
     anchored = tags_covered_by(ctx.model, frozenset({ConnectorKind.EQUIPMENT_ANCHOR}))
     stirruped = tags_covered_by(ctx.model, frozenset({ConnectorKind.POST_BASE}))
-    based = stirruped | anchored
+    # And a third, for the same reason: a wood post bearing directly on a wood BEAM takes
+    # neither a stirrup nor a gasketed lag — it is held down to the framing by a tension
+    # tie. Without this set PT-SG-BR2/BF2 fall past to ``is_squash_block`` and out to
+    # ``not_evaluable``, and ``haus print --sealed`` gates on an UNKNOWN at a joint that in
+    # fact has its part.
+    tied = tags_covered_by(ctx.model, frozenset({ConnectorKind.TENSION_TIE}))
+    based = stirruped | anchored | tied
     topped = authored_joints(ctx.model, _POST_TOP_KINDS)
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
 
@@ -309,10 +315,14 @@ def _post_links(ctx: CheckContext) -> list:
             # gasketed lag would be the same misreport in prose that the shared
             # ``ConnectorKind`` was in the BOM. A post named by both keeps the base, which
             # is the stronger claim about the joint.
+            if tag in stirruped:
+                how = "an authored post base"
+            elif tag in anchored:
+                how = "an authored equipment anchor"
+            else:
+                how = "an authored tension tie"
             links.append(Link(
-                f"post {tag} to {post.supported_by or 'its bearing'}", (tag,),
-                "an authored equipment anchor"
-                if tag in anchored and tag not in stirruped else "an authored post base"))
+                f"post {tag} to {post.supported_by or 'its bearing'}", (tag,), how))
         elif is_squash_block(post, _RULES):
             # Short enough that it is blocking, not a column (see blocking_max_height_ft).
             # Its joint IS the bearing, so it is covered rather than un-gradeable — the

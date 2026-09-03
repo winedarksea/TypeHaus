@@ -26,6 +26,7 @@ from __future__ import annotations
 from typehaus.engineering import (
     deck_post,  # noqa: F401  (registration)
     glulam_beam,  # noqa: F401  (registration)
+    post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
     spread_footing,  # noqa: F401  (registration)
