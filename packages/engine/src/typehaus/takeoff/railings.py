@@ -119,9 +119,20 @@ def _top_rail_length_ft(model: ResolvedModel, tag: str) -> float:
 
 
 def _infill_solids(model: ResolvedModel, tag: str) -> list:
+    """This railing's infill solids, and NOT the ones belonging to a railing whose tag
+    extends this one's.
+
+    An infill solid is tagged ``{railing}-{PART}{n}``, so the remainder past the prefix is a
+    single segment with no further hyphen in it. Testing the prefix alone is not enough and
+    was wrong on the landed house: ``RL-SG-PORCH-NE-BAL3`` starts with ``RL-SG-PORCH-``, so
+    splitting the porch guard around the stair doorway on 2026-09-04 billed the stub's twelve
+    balusters twice — once under each railing — and the bill went to 271 pickets against 259
+    drawn. ``_by_part`` above does not need this because the part name follows the hyphen
+    immediately and anchors the match; this one has no part name to anchor on.
+    """
     return [s for s in model.solids
             if s.category in (RAILING_INFILL_CATEGORY, RAILING_GLASS_CATEGORY)
-            and s.tag.startswith(f"{tag}-")]
+            and s.tag.startswith(f"{tag}-") and "-" not in s.tag[len(tag) + 1:]]
 
 
 def _infill_quantities(model: ResolvedModel, element: Railing) -> dict[str, object]:

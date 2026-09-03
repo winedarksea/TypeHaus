@@ -41,10 +41,13 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # RL-A-STAIR guards the attic *deck* edge on that same plan line; the flight below it is
     # unguarded over a 30"-120" fall into RM-S-STUDY2, and R312.1 is graded against
     # floor-opening edges rather than this one.
-    # Fourteen authored railings since 2026-09-03: ST-SG-PORCH, the porch's stair to grade,
-    # brought RL-SG-PSTAIR-S/N (raked guard-handrails, one each side) and RL-SG-PTHRESH-S/N
-    # (the level cheeks that return RL-SG-PORCH across the wall top at its head).
-    assert sum(int(row["count"]) for row in rows) == 17
+    # ST-SG-PORCH, the porch's stair to grade, brought RL-SG-PSTAIR-S/N (raked
+    # guard-handrails, one each side) and RL-SG-PTHRESH-S/N (the level cheeks that return
+    # RL-SG-PORCH across the wall top at its head) on 2026-09-03. The eighteenth is
+    # RL-SG-PORCH-NE, added 2026-09-04 when the flight moved to the MIDDLE of the porch's
+    # east edge: an opening at the end of a run is one path point, an opening in the middle
+    # of one is two elements.
+    assert sum(int(row["count"]) for row in rows) == 18
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
@@ -56,9 +59,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # (its west and east legs land on 12" concrete wall tops and buy no bracket kit), and
     # the fascia type is the balcony's alone.
     #
-    # The surface product went 36.3 -> 42.7 LF the same day and over five runs, not one:
-    # RL-SG-PORCH LOST 3.0 (33.3) when its east leg stopped short to open ST-SG-PORCH's
-    # doorway, and the stair brought 3.7 each of PSTAIR-S/N and 1.0 each of PTHRESH-S/N.
+    # The surface product went 36.3 -> 42.7 LF on 2026-09-03 and over five runs, not one:
+    # RL-SG-PORCH LOST 3.0 (33.3) when its east leg opened for ST-SG-PORCH, and the stair
+    # brought 3.7 each of PSTAIR-S/N and 1.0 each of PTHRESH-S/N. Splitting that leg on
+    # 2026-09-04 moved 5.2 LF from RL-SG-PORCH to RL-SG-PORCH-NE and changed the TOTAL by
+    # nothing: the doorway is 3'-0" wherever it sits in the run. Six runs now, still 42.7.
     # `length_ft` is the PLAN run of the path, so the two raked PSTAIR runs read ~1.9 LF
     # light between them against the rail actually cut — flagged on the price row.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.3, abs=0.1)

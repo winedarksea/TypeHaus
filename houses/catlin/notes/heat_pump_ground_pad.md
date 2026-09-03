@@ -32,21 +32,26 @@ On the ground all six disappear at once, and what replaces them is a pad and eig
 anchors. The balcony returns to **zero deck penetrations**, which is what it was designed
 as.
 
-## The pocket, and why the row faces south
+## The pocket, the row, and the flight
 
 The yard pocket immediately east of the porch, bounded:
 
 | | |
 |---|---|
 | west | `W-SG-E1`, the porch's east wall — faces x 27'-6" / 28'-6", top 0'-0", y -11'-0"..-0'-10" |
-| north | the house's south wall, cladding face y ≈ -0'-5" |
+| north | the house's south wall, cladding face y -0'-7 1/4" |
 | south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top +0'-6", spanning **x 29'-0"..32'-0" only** |
 | east | **open side yard**, out to the EAST (SIDE) setback line at x 58'-0" |
 
 The house is **gable-ended** here, so nothing sheds off the roof onto the units. The
 basement wall behind is `W-B-S4`, which has no windows. The only neighbour in the pocket is
 `TR-SG-LEADER-SE` at (28'-9", -10'-6"), discharging at +1'-0" into the terrace slot, well
-south of the pad. Nothing was authored in `plan/site.py` inside it.
+south of everything here. Nothing was authored in `plan/site.py` inside it.
+
+**The pocket now holds two things and they are laid out around each other**: the condenser
+row against the house across the north strip, and `ST-SG-PORCH` — the porch's only way down
+to grade — across the south. The stair is the reason the siting was revisited at all, and it
+took three passes in three days to land.
 
 ### Why the 99" figure did not bind (2026-09-03)
 
@@ -56,129 +61,150 @@ needs 99" of the pocket's 90"". **The 99" was right and the 90" was not.** The 9
 the row had to end at the house's east face, x 36'-0". It does not: east of the SE corner is
 open side yard, and `plan/site.py`'s parcel runs x -32..68 with `SetbackSpec(edge=1,
 distance=ft(10))`, putting the east side setback line at **x 58'-0"**. Letting one cabinet
-stand 7 1/5" past the corner — with 21'-5" still to the setback — is what makes the whole
-layout fit.
+stand past the corner — with 19'-5" still to the setback — is what makes the layout fit.
 
-So both units now stand **side by side in one east-west row across the pocket's south half,
-discharging south into open yard**, and the pocket's north strip is free for `ST-SG-PORCH`,
-the porch's stair to grade (`notes/porch_stair.md`). That stair is the reason the layout was
-revisited at all: the porch had no way down, and a 36" flight plus two cabinets in one
-north-south row wants 3'-0" + 12" + 3'-3" + 12" + 3'-4" = **11'-7"** of the 9'-6" of usable
-y. Turned, the row is 8'-4" of x and the flight is 3'-0" of y, and neither is fighting the
-other for the same feet.
+Both units therefore stand **side by side in one east-west row, discharging south**. That
+part has not changed since.
 
-**Stacking the two units was considered first and does not work at this size.** The cabinets
-are 37 13/16" (`FXU24`) and 32 33/64" (`MUL30`) tall — three-foot boxes, not the ~21" units
-a dual-level stand is built for; the linked Vevor dual-level stand is 35.43" *overall* and
-rated 9,000–18,000 Btu, so its upper rail sits below the height of either cabinet. Gree's
-outdoor clearance diagram calls for 500 mm (19.7") above a unit to any cover, so a compliant
-stack is 18" + 32 1/2" + 19.7", putting HP1's base at 5'-10" and its top at **9'-0"** above
-the pad; nested with no gap it is still ~7'-6" and the lower unit has no top clearance at
-all. 187 lb at a 4'-4" centre of gravity on a 4" unreinforced pad also turns the anchorage
-into a sealed `equipment_anchorage` item, which the ground move had just retired.
-**A stacked allowance for these two models could not be sourced** — greecomfort.com and its
-mirrors return 403 — so the 19.7" is the general Gree installation figure, not the FXU24's
-or the MUL30's own sheet, and that gap is recorded rather than papered over. The line-set
-argument for stacking does not survive arithmetic either: raising HP1 34" saves ~2.8 ft of
-a 40 ft run and 2.8 ft of a 21 ft rise, against limits of 164 ft and 49 ft.
+### Why the row is against the house and not across the south half (2026-09-04)
+
+For one day it was the other way round: the row across the pocket's south half, the flight
+in the north strip along the house. **`PT-SG-BR3` is why that could not stay.**
+
+`ST-SG-PORCH` springs from `W-SG-E1`'s top, and that top is a 12" wall carrying two **12"
+round** cast columns — `PT-SG-BR3` at y -3'-0"..-2'-0" and `PT-SG-BF3` at
+y -10'-9 1/4"..-9'-9 1/4". A 12" round on a 12" wall is flush with both faces, so each one
+fills the wall top edge to edge and the top is walkable only **between** them:
+y -9'-9 1/4"..-3'-0", six foot nine. A row in the south half sits inside exactly that window,
+and the flight in the north strip put its 3'-0" threshold across `PT-SG-BR3` — 10" of
+passage on one side of the column, 14" on the other.
+
+**Nothing in the engine reported it, and the reason is worth keeping.** The threshold board
+is 3 sf of trim over concrete, deliberately not modelled (see `notes/porch_stair.md`), so
+there was no element to overlap. And the flight itself starts at the wall's *east* face,
+x 28'-6", which is *exactly* `PT-SG-BR3`'s east face — the two solids are tangent, not
+overlapping, so `structural.member_interference` had nothing to say either. A stair whose
+head lands on a wall TOP has to be read against what stands on that top. Recorded in
+`plans/TODO.md`.
+
+So the row and the flight swapped halves. What that swap costs and buys is below, and the
+short version is that it buys the stair and the line sets and it costs the backs.
 
 ### The row as built
 
 | | centre | cabinet W x D | extent |
 |---|---|---|---|
-| `EQ-M-HP2-OD` | (30'-8 1/10", -5'-10 4/5") | 40 5/32 x 16 13/16 | x 29'-0"..32'-4 1/5", y -5'-2 2/5"..-6'-7 1/5" |
-| `EQ-M-HP1-OD` | (34'-11 7/10", -5'-7 1/4") | 39 x 14 9/16 | x 33'-4 1/5"..36'-7 1/5", y -5'-0"..-6'-2 1/2" |
+| `EQ-M-HP2-OD` | (30'-8 3/32", -1'-9 21/32") | 40 5/32 x 16 13/16 | x 29'-0"..32'-4 5/32", y -1'-1 1/4"..-2'-6 1/16" |
+| `EQ-M-HP1-OD` | (34'-11 21/32", -1'-8 17/32") | 39 x 14 9/16 | x 33'-4 5/32"..36'-7 1/6", y -1'-1 1/4"..-2'-3 13/16" |
 
-`rotation` goes from `deg(90)` to `deg(0)` on both — the long axis runs in **x** now, so the
-discharge face reads south. HP2 is the west unit; HP1 stands 7 1/5" past the house's SE
-corner. The stand leg patterns in `params/sunken_garden.py::_HP_STAND_AT` transpose with the
-cabinets: the **width** pitch is in x and the **depth** pitch in y, the reverse of before.
+`rotation` is `deg(0)` on both and has been since 2026-09-03 — the long axis runs in **x**,
+so the discharge face reads south. HP2 is the west unit, 6" off `W-SG-E1`; HP1 stands
+7 1/6" past the house's SE corner. The stand leg patterns in
+`params/sunken_garden.py::_HP_STAND_AT` follow the cabinets: the **width** pitch is in x and
+the **depth** pitch in y.
 
-### Why not the mirror of this — units north, stair south
+### The row is tucked as far west as it goes, and that was an owner call
 
-It reads like the tidier option: equipment by the back door, the porch's south half clear,
-and the units 1'-9" from the band penetration instead of 5'-0". Three things rule it out,
-and all three are constraints rather than preferences.
+**It cannot tuck all the way.** 40 5/32" + 12" + 39" is **7'-7 1/6"**, and the porch wall to
+the SE corner is **7'-6"**. One cabinet oversails by 7 1/6" in any tucked arrangement; the
+only question is which and by how much.
 
-- **Nowhere for the disconnects.** The cabinets would occupy the house's south face from
-  x 28'-10" to 36'-5" at exactly the height a disconnect wants, leaving only `W-SG-E1`'s east
-  face — 34" of exposed concrete whose own 36" working space falls inside the units' back
-  clearance.
-- **The flight would stand in the discharge plume.** HP1's 40" clear zone would end at
-  y -5'-3" and the stair would start at -5'-6": several hundred cfm of air 15–20 °F below
-  ambient across a flight in heating, and defrost meltwater onto the treads in a Minnesota
-  winter. Stair-north puts the flight on the units' **inlet** side — ambient air, no plume,
-  no water.
-- **Both casings 4"–6" off the house wall**, directly under `WIN-M-LIV-S1` and
-  `WIN-S-STUDY2` (both x 31'-5"..33'-11") — structure-borne coupling plus a discharge stream
-  up the cladding to the sill. That is the same objection that ruled out a row at the SE
-  corner in the first place.
+It sat 2'-4" further east for part of 2026-09-04, at x 31'-0", which left a 30" band of the
+house's south face free for the two disconnects at NEC 110.26(A) working space. **The owner
+took the tuck instead** (2026-09-04): a condenser standing behind the SE corner is shadowed
+by the house's own mass down the whole east side yard, where one out past the corner
+radiates into it. The price is a louder living room — both cabinets are now under
+`WIN-M-LIV-S1` — and the disconnects, which had to leave the house entirely (below).
 
-Secondary, and each true on its own: shovelling the stair would mean working inside the
-discharge and piling spoil where the 24"/40" clearances are; the pad would have to cover both
-the north and south bands (an L, or ~68 sf against 57); `RL-SG-PORCH` would need splitting
-into two `Railing`s around a 12" stub at the SE corner instead of one path point moving; and
-`D-M-BALC` is at the porch's **north** edge, so a north stair is ~7' from the door against
-~12' across the porch.
+### What the swap and the tuck cost, stated plainly
 
-The one real cost of stair-north is that the machines sit beside the porch's seating half
-rather than by its door.
+Three things were held against a row on this side on 2026-09-02, and each has an answer or
+a price now:
+
+- **Nowhere for the disconnects.** True, and paid rather than solved. They are on
+  `W-SG-E1`'s east face at 2'-2" above grade instead of the house's at 6'-4". See
+  **Electrical** below.
+- **The flight in the discharge plume.** Answered, and it is the swap's main prize. HP2's
+  discharge face is y -2'-6 1/16" and the flight's north side is -6'-0" — **3'-6" of clear
+  yard against a published 24"** — and HP1's 40" zone is east of the flight's x entirely.
+  The flight is not downwind of either machine in heating, and defrost meltwater drips at
+  the cabinet base onto its own pad 2'-8" away from the treads.
+- **Both casings 4"–6" off the house wall, under `WIN-M-LIV-S1`.** True, and taken. Both
+  backs are at 6" — HP2's published minimum, HP1's is 4". This is the one objection that is
+  neither answered nor priced, only accepted, and it is a **sound** judgement rather than a
+  code one. What softens it: the discharge faces *away* from the wall, so there is no stream
+  up the cladding to the sill, and the 12" service gap between the two cabinets falls at
+  x 32'-4"..33'-4", under the middle of that window. If it turns out to matter in use, the
+  move that touches no clearance is an absorptive facing inside the cabinets' back gap.
 
 ## Clearances, against the submittals (fetched 2026-09-02)
 
 Each cabinet's published requirement belongs to a *face*, and the faces moved with the
-rotation: HP1's discharge went east→south, its back west→north, its service side
-south→west, its far end north→east, and HP2's the same quarter-turn.
+2026-09-03 rotation: HP1's discharge went east→south, its back west→north, its service side
+south→west, its far end north→east, and HP2's the same quarter-turn. The 2026-09-04 swap
+moved the cabinets but not their facings, so this is the same table with new numbers.
 
 | | required | provided |
 |---|---|---|
-| HP1 discharge (S) | 40" | open yard — the 40" zone reaches y -9'-6 1/2" and `W-RG-EAST-BALCONY` stops at x 32'-0", so there is nothing in front of it at all |
+| HP1 discharge (S) | 40" | open yard — the 40" zone reaches y -5'-7 13/16", and the nearest thing south of it is `SL-SG-STAIRPAD`'s north edge at -6'-0", 2 1/2" further on and 4" lower |
 | HP1 service side (W) | 12" | 12.0" to HP2's east end |
-| HP1 back (N) | 4" | **55.0"** to the house cladding, nothing in between |
+| HP1 back (N) | 4" | **6.0"** to the house cladding |
 | HP1 east end | 4" | ~21'-5" of open side yard to the setback line |
-| HP2 discharge (S) | 24" | **46 4/5"** to the `W-RG-EAST-BALCONY` apron, whose top (+0'-6") is below the middle of the cabinet; 46 9/10" to `TR-SG-LEADER-SE` |
+| HP2 discharge (S) | 24" | **41 15/16"** to `ST-SG-PORCH`'s north rail, with nothing at all in between |
 | HP2 service side (E) | 12" | 12.0" to HP1's west end |
-| HP2 back (N) | 6" | **16 2/5"** to `RL-SG-PSTAIR-S`, the stair's south guard; 57 3/8" to the house cladding past it |
+| HP2 back (N) | 6" | **6.0"**, the published minimum |
 | HP2 west end | — | 6.0" to `W-SG-E1`'s east face |
 
-**Every clearance gained slack except the one between the two units.** HP2's back was at the
-published 6" minimum and is now 16 2/5"; HP1's back was 5.9" and is now 55". The 12" service
-gap is the only figure still at its minimum, and it is the one the row is laid out from:
-**moving either cabinet in x breaks it**, and the stand legs are derived from these centres
-and would have to move with it.
+**Three figures sit at a minimum now, where the 2026-09-03 layout had one.** The 12" service
+gap between the units is unchanged and is still what the row is laid out from — moving either
+cabinet in x breaks it, and the eight stand legs derive from these centres and would move
+with it. The two new ones are **both backs at 6"**, which is what tucking against the house
+costs: HP1 has 2" of slack there against its published 4" and HP2 has none. The clearance
+that actually governs performance went the other way — HP2's discharge from 16 2/5" to
+41 15/16", and HP1's onto open ground.
 
-## The pad
+## The pads — two of them
 
-`SL-SG-HPPAD`, assembly `HP_PAD_ON_GRADE`: 4" unreinforced concrete on 4" of open-graded
-stone, x 28'-6"..36'-9" by y -7'-6"..-0'-7 1/5" — **56.9 sf, 0.70 cy** (it was 29.4 sf /
-0.36 cy until 2026-09-03) — with an isolation joint where it meets `W-SG-E1`. Top at
-**-2'-8"**, two inches proud of the -2'-10" site grade, falling 2 1/2" over the ~6'-11" the
-grading check measures to its far (south-east) corner, which lands 1/2" below grade so the
-sheet leaves onto gravel instead of ponding at a lip. The `Slab` is modelled flat at its
-high edge; the fall is authored as the `ImperviousSurface` "hp pad" in `plan/site.py`, where
-`code.R401_3_impervious` reads it (**3.0%** against the 2% required).
+`SL-SG-HPPAD` and `SL-SG-STAIRPAD`, both on assembly `HP_PAD_ON_GRADE`: 4" unreinforced
+concrete on 4" of open-graded stone, both topped at **-2'-8"**, two inches proud of the
+-2'-10" site grade — Gree's "install 2 in above the expected snow line", and the first two
+of the ~20" the 18" stands then add.
 
-**Why it reaches the porch wall, and why it reaches the SE corner.** The west edge is
-`W-SG-E1`'s east face because that is where `ST-SG-PORCH`'s stringers land and where its
-step-off begins; the north strip up to y -0'-7 1/5" is the flight and that step-off; the east
-edge runs 2" past HP1's cabinet, which puts it 9" past the house's SE corner and still 21'
-inside the setback. It is **one pour rather than a pad plus a separate stair footing**: at
-two thirds of a yard the second form costs more than the concrete it would save. The south
-edge came *in* by 18" at the same time — the old row ran to y -9'-0" and nothing stands
-there now.
+| | extent | area | volume |
+|---|---|---|---|
+| `SL-SG-HPPAD` | x 29'-0"..36'-10", y -3'-4"..-0'-10" | 19.6 sf | 0.24 cy |
+| `SL-SG-STAIRPAD` | x 28'-6"..35'-3", y -9'-0"..-6'-0" | 20.3 sf | 0.25 cy |
 
-The feet still decide the edges as much as the cabinets do: HP1's published foot pattern is
-15 9/16" across the depth against a 14 9/16" cabinet, so its leg lines sit half an inch
-outside the cabinet's own faces on that axis — which is now the **y** axis, and the pad
-clears them by a foot and a half in both directions.
+**39.8 sf and 0.49 cy together**, against 56.9 sf / 0.70 cy for the single pour of
+2026-09-03 and 29.4 sf / 0.36 cy for the original equipment-only pad. Each falls 2.5% away
+from the house, authored as an `ImperviousSurface` in `plan/site.py` where
+`code.R401_3_impervious` reads it against R401.3's 2%; the `Slab`s are modelled flat at their
+high edge, because the fall is a finishing fact.
+
+**Two pours rather than one L.** They are 2'-8" apart in y, and the smallest rectangle
+covering both is 94 sf — 54 sf of concrete poured to serve nothing, in order to save one
+form. At 20 sf apiece the second form is the cheaper half. The 2026-09-03 note argued the
+opposite and was right at the time, when the flight and the cabinets shared one band.
+
+**What decides each edge.** `SL-SG-STAIRPAD`'s west edge is `W-SG-E1`'s east face, where the
+stringers foot; the flight covers x 28'-6"..32'-2"; and the 3'-1" east of that is R311.7.6's
+bottom landing, which wants 36" in the direction of travel and gets 37".
+`SL-SG-HPPAD`'s west edge is HP2's own cabinet face and its east edge runs 2 3/4" past
+HP1's. Its **north** edge stops 3" short of the house cladding rather than butting it: a pad
+that never touches the house has no isolation joint to detail, and the 3" gap drops the
+wall's runoff into gravel instead of against a lip. The feet decide that edge as much as the
+cabinets do — both published foot patterns are *wider than the casing across the depth*
+(15 9/16" of feet under a 14 9/16" cabinet), so the north legs stand half an inch proud of
+the north face and the pad clears them by 2 3/4", not 3 1/4".
 
 **No XPS, no vapour retarder, no frost footing**, and all three omissions are deliberate.
-Nothing above the pad is conditioned, so there is no heat to break; a retarder under an
+Nothing above either pad is conditioned, so there is no heat to break; a retarder under an
 exterior pad only traps the water that arrives from the top. And an equipment pad is not a
 foundation: it carries 333 lb of cabinet on eight legs, it is free to move with the ground,
 and a pad that lifts an inch in February and settles back in April has done nothing a line
 set cannot absorb. A frost-depth footing under a mini-split is a foundation for a 333 lb
-building.
+building. The stair pad is the same call for the same reason — a flight of five risers that
+heaves an inch is still a flight of five risers.
 
 ## Stands and anchors
 
@@ -237,32 +263,30 @@ those terms since it was authored.
 
 60 dBA (HP1) and 58 dBA (HP2) at the manufacturer's rating distance.
 
-**Turning the row south is the quietest of the arrangements considered, for three reasons
-rather than one.**
+**The 2026-09-03 turn is still the biggest single improvement, and the 2026-09-04 tuck gives
+part of it back on purpose.** Facing east, both cabinets discharged into the pocket's own
+north and west faces, which returned the stream **east and up** — and up meant
+`WIN-M-LIV-S1` (x 31'-5"..33'-11") and `WIN-S-STUDY2` above it. Facing south they discharge
+into open ground: `W-RG-EAST-BALCONY` spans only x 29'-0"..32'-0" and tops out at +0'-6",
+below the middle of either cabinet. That has not changed.
 
-- **The compressors left the walls.** Facing east they backed onto `W-SG-E1` at 5.9" and
-  6.0"; they now stand **4'-7" (HP1) and 4'-9 3/8" (HP2) south of the house cladding** with
-  nothing behind them at all. Neither casing is close enough to excite the wall it used to
-  sit against.
-- **The discharge turns into open yard.** Facing east it went into the pocket's own faces,
-  which returned it **east and up** — and up meant `WIN-M-LIV-S1` (x 31'-5"..33'-11") and
-  `WIN-S-STUDY2` above it. South is open ground: `W-RG-EAST-BALCONY` spans only x 29'-0"..
-  32'-0" and tops out at +0'-6", below the middle of either cabinet, so HP1 faces nothing
-  and HP2 faces a low wall 46 4/5" away against a 24" requirement.
-- **The louder unit moved furthest.** HP1 at 60 dBA is now 5'-2" out from the wall and 5'-0"
-  east of the windows above, instead of tucked under them.
+What the tuck changed is the **casings**, and it is a real trade rather than a wash:
 
-**No mitigation is modelled, and none is proposed** — on paper there is nothing left to
-mitigate. If it turns out to matter in use, a slatted or absorptive facing on the apron's
-**north** face is the move that touches no clearance; a screen anywhere else in the pocket
-takes either the 12" service gap or the stair.
+- **Both compressors are now 6" off the house wall**, directly under the living room's south
+  window, where the 2026-09-03 layout stood them 4'-7" and 4'-9 3/8" out with nothing behind
+  them. This is the cost, and it is paid to the living room.
+- **Both are behind the SE corner instead of past it.** HP1's east end is 7 1/6" beyond
+  x 36'-0" rather than 2'-10", so the house's own mass shadows the east side yard. That is
+  what the cost was paid *for* (owner, 2026-09-04), and it is the elevation people stand on.
+- **The discharge still faces away from the wall**, so what couples to the cladding is
+  casing radiation and compressor structure-borne energy, not a stream up to the sill. The
+  stands sit on their own pad with the ordinary neoprene grommets, not on the house.
 
-**How far east the row sits is a live dial, not a settled number.** It is drawn tucked
-against the porch wall — HP2's west end 6" off `W-SG-E1` — because that is shortest for HP2's
-three ports, which are the runs with the routing constraint. Sliding the whole row east buys
-porch quiet and costs about a foot of line set per foot moved, plus some of the tucked-in
-look. The east side yard has 21'-5" of room for it; the 12" service gap and the eight stand
-legs move as one piece if it ever does.
+**No mitigation is modelled, and one is now worth naming.** If it matters in use, the move
+that touches no clearance is an absorptive facing on the house wall *inside* the cabinets'
+6" back gap — the one surface in this arrangement that is both close enough to matter and
+free of any published clearance. A screen anywhere else takes the 12" service gap, the
+discharge, or the stair.
 
 ## Line sets — routes, lengths, limits
 
@@ -273,11 +297,14 @@ in `prices.toml`, which grew ~50 LF for the move to grade and ~8 LF more for the
 turn, and is not re-priced (at $26–49/LF the added footage is inside its own spread, and the
 number was always a lump).
 
-**The turn cost HP2 nothing and HP1 about 8 LF.** HP2 barely moved — +1'-0" east and
-+1'-0" north — so its three runs are unchanged. HP1 moved +5'-4" east and +3'-0" south, all
-of it outdoors, on the pad, before the band penetration. No layout that also fits the stair
-makes the line sets *shorter*: the pre-turn position was already the closest to the band
-penetration at x 30'-6".
+**The 2026-09-04 swap is the only change that made these SHORTER, and it is why the owner
+noticed the arrangement was wrong.** The 2026-09-03 turn cost HP1 about 8 LF of outdoor run.
+Crossing the pocket gives most of it back and improves the geometry as well as the length:
+both cabinets now stand **1'-9" from the band penetration at x 30'-6", on the same wall they
+enter**, so each system leaves the casing, crosses a foot and a half of gravel and goes
+straight in. The 2026-09-03 layout ran 5'-0" of east-west line along the pad first, and the
+2026-09-02 one ran it under what is now the stair. Call it 3-4 ft back per system; the
+allowance is a lump and is not re-priced for it either way.
 
 Gree's published limits, from the same submittals:
 
@@ -304,50 +331,81 @@ at x 34'-8", leaving a **13 1/4" clear bay at x 33'-6 3/4"..34'-8"** that lines 
 floor (the corner bay beyond it is only 7 3/4" clear and carries the corner strapping, so it
 is not the one). It would put HP1's riser 10" from its own cabinet — but it would also want
 its **own band penetration**, and one more hole through the band and its flashing is not
-worth ~4' out of 124 ft of unused line-set slack. Recorded as verified-and-available in case
-a later move makes it the cheaper answer.
+worth ~4' out of 128 ft of unused line-set slack. Recorded as verified-and-available in case
+a later move makes it the cheaper answer. The 2026-09-04 tuck moved HP1's cabinet **west**,
+to x 33'-4 5/32"..36'-7 1/6", so this bay now sits behind the cabinet's own west half rather
+than off its end — closer still, and the argument against taking it is unchanged.
 
-- **HP1** (3/8–3/4): east-west along the pad to the single band penetration, then up the
+- **HP1** (3/8–3/4): 1'-9" north out of the casing to the single band penetration — no
+  east-west leg along the pad at all since 2026-09-04 — then up the
   `W-M-S2` / `W-S-S2` stud bay at x ≈ 29'–30' as before, clear of
   `WIN-M-LIV-S1` (31'-5"..33'-11"), `WIN-S-STUDY1` (27'-4"), `WIN-S-STUDY2` (32'-8") and
   `D-S-DECK-E` (18'-10"..23'-10"); neither wall is braced, so the bay is available. Through
   the main top plates, the second-floor band and the second top plates into `FS-ATTIC`'s
   first bay (y 0"..16", joists in x), then 5'-0" west into `SF-S-HP1`'s east end at
-  x 24'-9". About **40 ft of line and 21 ft of rise against 164 ft and 49 ft** — comfortable
-  on both, and about +3 oz of R32 over the 31 ft precharge.
+  x 24'-9". About **36 ft of line and 21 ft of rise against 164 ft and 49 ft** — comfortable
+  on both, and about +2 oz of R32 over the 31 ft precharge.
 
 ## Electrical
 
-`ED-M-HP1-DISC` and `ED-M-HP2-DISC` moved from the second-storey south wall down to
-`W-M-S2`'s exterior face on 2026-09-02, centres 1 5/8" off the cladding for the can's true
-3 1/4" depth (the `ED-M-HP3-DISC` convention). A disconnect one storey above the machine it
-kills is not within sight of it in any sense NEC 440.14 means, so that was not optional once
-the units came down. `CKT-HP1` and `CKT-HP2` carry no route, so nothing changed in
-`plan/circuits.py`.
+`ED-M-HP1-DISC` and `ED-M-HP2-DISC` came down from the second-storey south wall on
+2026-09-02 with the units they kill — a disconnect one storey above its machine is not within
+sight of it in any sense NEC 440.14 means. They then moved twice more, and the last move took
+them off the house.
 
-**They moved again on 2026-09-03, from x 30'-0" / 35'-0" at 5'-0" to x 34'-3 1/2" /
-35'-7" at 3'-6", and both moves are code rather than taste.**
+**2026-09-03, on `W-M-S2` still: x 30'-0" / 35'-0" at 5'-0" → x 34'-3 1/2" / 35'-7" at
+3'-6".** Two code reasons, neither visible in any check:
 
-- **NEC 110.26(A) working space cannot be a stairway.** `ST-SG-PORCH` now runs x 28'-6"..
-  32'-2", straight under the old x 30'-0" station. East of `WIN-M-LIV-S1`'s rough opening
-  (x 31'-5"..33'-11") the 36" working depth falls over the flight's **level step-off**
-  instead, which is a floor you can stand on.
-- **NEC 404.8(A) caps an operating handle at 6'-7" above the standing surface.** These are
-  on a MAIN-floor wall but are operated from grade at -2'-10", and `Mount.elevation` is
+- **NEC 110.26(A) working space cannot be a stairway**, and the flight then ran under the
+  old x 30'-0" station.
+- **NEC 404.8(A) caps an operating handle at 6'-7" above the standing surface.** These are on
+  a MAIN-floor wall but are operated from grade at -2'-10", and `Mount.elevation` is
   storey-relative, so `ft(5)` put the handles **7'-10"** above the ground you reach them
   from — nearly a foot past the limit, and nothing in the engine was measuring it. 3'-6"
   reads 6'-4" from grade.
 
-Both remain within sight of both units and clear of either unit's own 110.26 working space,
-which is the pad in front of it.
+**2026-09-04, off the house: `W-SG-E1`'s east face at (28'-7 5/8", -3'-6") and
+(28'-7 5/8", -4'-6"), at -0'-8".** 1 5/8" off the concrete for the can's true 3 1/4" depth
+(the `ED-M-HP3-DISC` convention), turned `deg(90)` so the depth runs in x against an east
+face.
+
+**The tuck evicted them and 110.26(A)(3) is why there was no appeal.** With the cabinets
+against the house from x 29'-0" east, `W-M-S2`'s exterior face is casing from the porch wall
+to past the corner; the 6" left at x 28'-6"..29'-0" is not the 30" 110.26(A)(2) wants. And
+height does not rescue it — **(A)(3) measures the clear space from the grade up**, so a 3'-4"
+cabinet standing 6" off the wall consumes the working space whatever the handle height is.
+The row at x 31'-0" left a compliant 30" band and the owner traded it away knowingly.
+
+**The 42" between the cabinets and the flight is the only stretch left, and it fits.**
+`W-SG-E1`'s east face is clear from HP2's south face at y -2'-6 1/16" to `ST-SG-PORCH`'s
+north side at -6'-0". Two 12" cans at -3'-6" and -4'-6" are 24" of equipment; the 30" space
+they share spans y -3'-0"..-5'-6", leaving 6" to the cabinets and 6" to the stair, over 36"
+of depth (x 28'-6"..31'-6") with nothing in it. Within sight of both units at 1'-9" — 440.14
+asks for sight, and here it is nearly reach as well.
+
+**The mount drops to -0'-8", and access is fine.** This wall tops out at 0'-0", so there is
+no 3'-6" to hang from; -0'-8" puts the handles **2'-2" above grade**, well inside 404.8(A)'s
+6'-7". Readily accessible standing on the pocket grade beside the units, which is the access
+440.14 turns on, and reachable a second way over the porch guard from the deck 8" above them
+(owner, 2026-09-04) — a convenience, not the compliance path.
+
+**What the low mount does cost is exposure.** These 3R cans now sit in the splash and the
+plough line where the `W-M-S2` position had them at 6'-4" and dry. Specify them
+stainless-hinged and gasketed, and take the knockouts on the **bottom** so nothing drains
+into the enclosure. That is a durability call the model cannot carry and the drawings must.
+
+`CKT-HP1` and `CKT-HP2` carry no route, so nothing in `plan/circuits.py` changed through any
+of this.
 
 ## What is not modelled
 
 - **The line sets and their sleeve** — above; the sleeve because no framed-wall sleeve type
   exists, the line sets because no refrigerant `PipeRun` system does.
 - **The stands' cross-rails** — in `column:EQUIP_STAND_ALUM`'s price row, not in geometry.
-- **The pad's fall** — the `Slab` is flat at its high edge; the fall is the
-  `ImperviousSurface`.
+- **Both pads' fall** — each `Slab` is flat at its high edge; the fall is the
+  `ImperviousSurface` in `plan/site.py`.
+- **The disconnects' exposure detail** — gasketing, hinge material and bottom knockouts, all
+  of which the -0'-8" mount makes matter and none of which the model has a field for.
 - **A stacked allowance for the FXU24 / MUL30.** Every Gree PDF mirror returned 403; the
   19.7" figure above is the general Gree installation diagram, not these two models' own
   sheets. It does not change the answer — the cabinets are too tall for any dual-level stand

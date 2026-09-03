@@ -1941,12 +1941,19 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
     from shapely.geometry import Polygon
     from shapely.ops import unary_union
 
-    walls: dict[str, list] = {}
+    # Every wall, not the device's own storey's walls. A wall is filed on the storey that
+    # BUILDS it, and an exterior device is filed on the storey that POWERS it; the two part
+    # company the moment something hangs on a garden or foundation wall from the floor above.
+    # ED-M-HP1/2-DISC and ED-M-STAIR-LT hang on W-SG-E1, which is filed on `basement` because
+    # it is poured with the sunken garden and tops out at 0'-0" — a storey-keyed search
+    # reported all three as floating three feet off a wall they are bolted to. `z` is the
+    # question that actually disambiguates, and it is asked below.
+    walls: list = []
     for wall in catlin_model.walls:
         parts = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
         parts = [p for p in parts if p.is_valid and p.area > 1e-9]
         if parts:
-            walls.setdefault(wall.storey, []).append((unary_union(parts), wall.z0_m, wall.z1_m))
+            walls.append((unary_union(parts), wall.z0_m, wall.z1_m))
 
     offenders = []
     for item in catlin_model.canvas_objects:
@@ -1957,7 +1964,7 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
             continue
         body = Polygon(item.footprint)
         best = None
-        for solid, z0, z1 in walls.get(item.storey, []):
+        for solid, z0, z1 in walls:
             if z1 <= item.z_m + 1e-6 or z0 >= item.z_m + 1e-6:
                 continue  # this wall is not there at the height the device hangs
             overlap = solid.intersection(body).area

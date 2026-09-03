@@ -169,15 +169,16 @@ class SunkenGardenSpec:
     # `_y_ax_front`, which is also the balcony's front pillar line — so PT-SG-BF1/BF3 would
     # straddle the joint, half over each wall, forcing the bearing map to pick one (the
     # retaining wall's +6" curb rather than the porch wall carrying the rest of the frame).
-    # It clears the 5 1/2" pillar's south face by 3 3/8" — the side cover a square post base
-    # wants — and leaves the front-beam pockets (CN-SG-HGR-FW/FE, on `_y_ax_front`) well in
-    # from the end of the wall instead of right at it.
+    # It clears the 12" round's south face (y -10'-4") by 8" and leaves the front-beam
+    # pockets (CN-SG-HGR-FW/FE, on `_y_ax_front`) well in from the end of the wall instead
+    # of right at it. That was 3 3/8" to a 5 1/2" square post base before the corners became
+    # cast rounds and the row came north; the 18" is unchanged and now has slack.
     #
-    # 18", not 6": the balcony's front pillar row sits at `_y_balcony_front`, 12" south of
-    # the porch's front edge, so the extension must reach past it or PT-SG-BF1/BF3 would run
-    # off the south end of W-SG-W1/E1 onto W-SG-W2/E2 — the +6" curb, `lateral_support=
-    # "unsupported"` R404.4 engineered walls. The extension follows the pillars. W-SG-W2/E2
-    # shorten by 12" and their footings follow.
+    # 18", not 6": the balcony's front pillar row sits 4" south of the porch's front edge
+    # (`_y_front_pillar`), and it is a 12" round, so the extension must reach past it or
+    # PT-SG-BF1/BF3 would run off the south end of W-SG-W1/E1 onto W-SG-W2/E2 — the +6" curb,
+    # `lateral_support="unsupported"` R404.4 engineered walls. The extension follows the
+    # pillars. W-SG-W2/E2 shorten by 12" and their footings follow.
     side_wall_south_extension_in: float = 18.0
     # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
     # cantilever: the south end hangs flush *in* the front beams (nothing to oversail) and
@@ -1060,14 +1061,14 @@ HP_PAD = Slab(
 # `test_catlin_outdoor_structures.py` is what holds the two together now that the deck check
 # no longer does.
 _HP_STAND_AT = (
-    ("A", 1, 34.971667 - 29.75 / 24.0, -1.710938 - 15.5625 / 24.0),
-    ("A", 2, 34.971667 - 29.75 / 24.0, -1.710938 + 15.5625 / 24.0),
-    ("A", 3, 34.971667 + 29.75 / 24.0, -1.710938 - 15.5625 / 24.0),
-    ("A", 4, 34.971667 + 29.75 / 24.0, -1.710938 + 15.5625 / 24.0),
-    ("B", 1, 30.673333 - 25.0 / 24.0, -1.804583 - 15.59375 / 24.0),
-    ("B", 2, 30.673333 - 25.0 / 24.0, -1.804583 + 15.59375 / 24.0),
-    ("B", 3, 30.673333 + 25.0 / 24.0, -1.804583 - 15.59375 / 24.0),
-    ("B", 4, 30.673333 + 25.0 / 24.0, -1.804583 + 15.59375 / 24.0),
+    ("A", 1, 34.97166667 - 29.75 / 24.0, -1.7109375 - 15.5625 / 24.0),
+    ("A", 2, 34.97166667 - 29.75 / 24.0, -1.7109375 + 15.5625 / 24.0),
+    ("A", 3, 34.97166667 + 29.75 / 24.0, -1.7109375 - 15.5625 / 24.0),
+    ("A", 4, 34.97166667 + 29.75 / 24.0, -1.7109375 + 15.5625 / 24.0),
+    ("B", 1, 30.67333333 - 25.0 / 24.0, -1.80458333 - 15.59375 / 24.0),
+    ("B", 2, 30.67333333 - 25.0 / 24.0, -1.80458333 + 15.59375 / 24.0),
+    ("B", 3, 30.67333333 + 25.0 / 24.0, -1.80458333 - 15.59375 / 24.0),
+    ("B", 4, 30.67333333 + 25.0 / 24.0, -1.80458333 + 15.59375 / 24.0),
 )
 #: 18", against the 12" the balcony stands carried. The owner's 12" was a balcony number —
 #: a deck swept by wind keeps its snow depth low in a way ground never does. At grade the
@@ -1276,6 +1277,15 @@ _PORCH_STAIR_X1 = _PORCH_STAIR_X0 + 4 * 11.0 / 12.0  # 32.167' — four 11" trea
 _PORCH_STAIR_Y0 = -6.0   # the flight's NORTH side, and the opening's north edge
 _PORCH_STAIR_Y1 = -9.0   # its SOUTH side — a 36" flight
 
+# ** THE TWO FRONT CORNERS HAVE NO BASEPLATE — THEY DIE INTO PT-SG-BF1 / BF3. ** The path's
+# two front vertices are at (`_x_in_w` / `_x_in_e`, `_y_ax_front`), which is the west/east
+# tangent of the two 12" cast rounds in x, and the rounds came 5 1/4" north on 2026-09-03
+# (see `_y_front_pillar`) to get the balcony beams cantilevered over their tops. The
+# modelled 1 1/2" post still clears the round by 3/4", so nothing here fails — but a real
+# 5x5 surface baseplate at those two stations lands inside the concrete. **Set no baseplate
+# at the two front corners; land the rail ends on the columns**, Titen Turbo at >=3" edge
+# distance, the same fastener and edge rule the HGAM10 beam seat above uses. The engine
+# models no baseplate and will never ask about this.
 _PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
                      pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_PORCH_STAIR_Y1)))
 PORCH_GUARD = Railing(
@@ -1519,32 +1529,77 @@ _WALL_UNDER_PILLAR = {
 # would drop the lookup to.
 _REAR_PILLAR_SOUTH_OF_COL_IN = 3.0
 _y_rear_pillar = _y_col - _REAR_PILLAR_SOUTH_OF_COL_IN / 12.0  # -2.5'
-_pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
+# Half the cast round, read off SPEC rather than written down, so the front row's offset
+# cannot drift from the member standing on it. "12 round" -> 6.0.
+_corner_column_radius_in = float(SPEC.corner_column_size.split()[0]) / 2.0
+# How far the balcony beams oversail that face. 2" is a drip, not a structural number.
+_FRONT_COLUMN_CANTILEVER_IN = 2.0
 
-# The FRONT row stands 2 3/4" north of `_y_balcony_front`, and the rear row does not, and
-# the asymmetry is a weather detail rather than a structural one.
+# The FRONT row stands 8" north of `_y_balcony_front`, and the rear row does not, and the
+# asymmetry is a weather detail rather than a structural one.
 #
 # BM-SG-BLW/BLC/BLE END on the front pillar line — N-SGB-SW/SC/SE are the beams' south
 # nodes. A beam that stops on its post's AXIS covers the north half of that post's top and
-# leaves the south half, 2 3/4" of end grain across the full 5 1/2", open to the sky. That
-# is the classic exposed-post-top detail: water sits in the re-entrant corner against the
-# beam face, wicks down the end grain, and no amount of paint on a 6x6 keeps it out for
-# thirty years. Nobody frames it that way. The beam gets pushed out flush with the post's
-# south face, so the post top is roofed by the member it carries.
+# leaves the south half open to the sky. That is the classic exposed-post-top detail: water
+# sits in the re-entrant corner against the beam face, wicks down the end grain, and on the
+# 12" cast rounds it also ponds on the crescent of concrete south of the beam. The beam
+# gets pushed out PAST the column's south face instead, so the top is roofed by the member
+# it carries and the beam end drips into air.
 #
-# Modelled the other way round — the beam ends stay put on `_y_balcony_front` (they are the
-# deck edge, the fascia line and the gutter line, none of which should move) and the POSTS
-# come north by half their own width. Same joint, and it keeps every dimension that a
-# drawing would carry off the deck edge.
+# ** 2026-09-03: THE ROW CAME 5 1/4" FURTHER NORTH, AND THE OFFSET IS NOW THE ROUND'S. **
+# This was `_balcony_front + 2 3/4"` — half of the 5 1/2" actual 6x6 — which had been right
+# while the front corners were wood posts and went stale the day they became 12" cast
+# rounds. A 6" radius on a 2 3/4" offset puts the column's south face at -10'-9 1/4", 3 1/4"
+# SOUTH of the beam end: the beam no longer roofed the top at all, it sat on the north half
+# of a shelf that collected water against its own end grain and against the HGAM10.
+#
+# The offset is therefore derived from the member that stands here — half the round, plus a
+# deliberate 2" of beam past the face:
+#
+#     axis     = _y_balcony_front + (6" + 2")     = -9'-10"
+#     column   = -10'-4" .. -9'-4"
+#     beam end = -10'-6"  ->  2" of glulam cantilevered past the column's south face
+#
+# ** ONLY PT-SG-BF1 AND BF3 READ THIS. ** PT-SG-BF2 is a wood 6x6 and takes `_y_bf2` below.
+# Its beam BM-SG-BLC has cantilevered 15" past it since BF2 moved onto the porch deck, so
+# the centre bay has never had this problem.
+#
+# ** WHAT IT COSTS, AND IT IS NOT THE STAIR. ** PORCH_STAIR's south side is -9'-0", so the
+# column's north face keeps 4" — tight, and the reason `_PORCH_STAIR_Y1` is a shared
+# constant. The binding constraint is RL-SG-PORCH's corner post: it stands at (`_x_in_e` /
+# `_x_in_w`, `_y_ax_front`), tangent to the round in x already, and at 5 1/4" north the
+# modelled 1 1/2" post clears the column by 3/4" but a real 5x5 surface baseplate lands
+# INSIDE the 12" round. **The guard's two front corners die into the columns**: the south
+# leg's rail ends and the east/west legs' land on the concrete with the same Titen Turbo at
+# >=3" edge distance the HGAM10 uses, and no baseplate is set at those two stations. The
+# engine cannot see a baseplate, so nothing will fail if this is forgotten — it is written
+# here and in PORCH_GUARD's own comment, and on RAILING_DARK_METAL in prices.toml.
+#
+# ** AND IT SPENDS 2" OF THE BEAMS' NORTH OVERHANG. ** The back span shortens with the row:
+#
+#     back span      = _y_rear_pillar - axis = -2.5 - (-9.8333) = 7.333' = 88"  (was 96")
+#     north overhang = _y_in_n - _y_rear_pillar                 = 20"      (unchanged)
+#     R507.5.1 limit = back span / 4                            = 22"      (was 24")
+#
+# 20" against 22" still passes, with 2" left rather than 4". Nothing checks it (checks/
+# structural/deck.py grades beam SPAN only) — that missing check is the open item in
+# notes/beam_water_protection.md. The south overhang is the new 8" against the same 22".
+# **The row cannot go north again without moving PT-SG-BR1/2/3 with it.**
+#
+# Modelled the other way round from how it builds — the beam ends stay put on
+# `_y_balcony_front` (they are the deck edge, the fascia line and the gutter line, none of
+# which should move) and the COLUMNS come north. Same joint, and it keeps every dimension
+# that a drawing would carry off the deck edge.
 #
 # The rear row needs none of this: at `_y_rear_pillar` the beams run 20" further north to
 # `_y_in_n`, so PT-SG-BR1/2/3 are mid-span under a continuous member and their tops are
 # already covered. Only a post at a beam's END has this problem.
 #
-# What moves with the row, because it is the row: the two centre pillars' bases. What does
+# What moves with the row, because it is the row: the two corner columns' bases. What does
 # NOT move: the beam ends themselves, `_DECK_OUTLINE`, the guard, fascia, drip and gutter
 # paths, and `BALCONY_FRONT_AXIS_Y_FT` — the published contract raised_garden.py reads.
-_y_front_pillar = _y_balcony_front + _pillar_face_ft  # -10.270833'
+_y_front_pillar = _y_balcony_front + (
+    _corner_column_radius_in + _FRONT_COLUMN_CANTILEVER_IN) / 12.0  # -9.833333'
 _PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
                 ("F", _y_front_pillar, ft(0)))
 # PT-SG-BF2 moves NORTH onto the porch deck, 3" inside the front beam axis — the exact

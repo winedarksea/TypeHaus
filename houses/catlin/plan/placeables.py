@@ -767,8 +767,23 @@ MAIN_PLACEABLES = [
 
     # --- porch curtain rods --------------------------------------
     # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,
-    # BF2..BF3), front row at y=-9'-6" on 10'-0" centres: 9'-6 1/2" clear between 6x6 faces,
-    # which is why the type is 114" (half an inch of clearance).
+    # BF2..BF3) on 10'-0" centres. The type is 114" in a 120" bay — a quarter inch of
+    # bracket clearance each side, which is what the structure offers and why the U-rod was
+    # rejected (plan/furniture_types.py).
+    #
+    # ** y IS -9'-1", NOT THE -9'-6" GUARD LINE, AND THAT IS PT-SG-BF1/BF3 (2026-09-03). **
+    # The two front CORNERS are 12" cast rounds now, and they came 5 1/4" north that day so
+    # the balcony beams cantilever over their tops (`_y_front_pillar`, params/
+    # sunken_garden.py). They span y -10'-4"..-9'-4", which swallowed the -9'-6" line: the
+    # bare rod at x 8'-3" would have run 1" INSIDE BF1's concrete, and the 6"-deep type
+    # footprint deeper still. Nothing would have said so — a Furniture overlapping a column
+    # is not `structural.member_interference`'s business and the model reported 0 FAIL with
+    # the rod buried.
+    #
+    # -9'-1" clears the round by 3/4" at both ends, keeps the 1/4" to PT-SG-BF2 (a 6x6, and
+    # it did not move), and still hangs under the 2x8 balcony joist field. The curtain now
+    # falls 5" inboard of the 42" guard rather than over it, which is the better place for
+    # it. It cannot go back south without the rounds going back south.
     # Filed on `main` not `second` because Mount.elevation reads off the floor of the storey
     # it is filed on and only the main datum gives the right height: 8'-6" lands 1 1/2" under
     # the balcony beam soffit (8'-7 1/2") it hangs from.
@@ -778,10 +793,10 @@ MAIN_PLACEABLES = [
     # unaffected: `Mount.elevation` falls back to the storey datum, and RM-M-BED's floor IS
     # the main datum (0"), so 8'-6" resolves to the same absolute height it always did.
     Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
-              position=pt(ft(13), ft(-9.5)),
+              position=pt(ft(13), ft(-9, -1)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
     Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114",
-              position=pt(ft(23), ft(-9.5)),
+              position=pt(ft(23), ft(-9, -1)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
     # The two SIDE bays — the porch was curtained on its front edge only and open
     # on both flanks, which is three quarters of a wind break. Four bay panels rather than one

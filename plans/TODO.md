@@ -681,7 +681,25 @@ the future.
   either way — with the opening, without it, and with a 12'-0" opening it has never seen.
   The guard return at the opening is on the author (`PORCH_STAIR_THRESHOLD_RAILS` is that
   return, and `notes/porch_stair.md` says so). The fix is the same shape as the slab-edge
-  rule: grade the guard's COVERAGE of each edge, not its distance from it.
+  rule: grade the guard's COVERAGE of each edge, not its distance from it. **Confirmed
+  worse on 2026-09-04**: the flight moved to the middle of that leg, `RL-SG-PORCH` split into
+  itself plus `RL-SG-PORCH-NE`, and the check still reports PASS — now with the two pieces
+  straddling a hole it cannot see at all.
+- **A stair whose head lands on a WALL TOP is graded against nothing that stands on that
+  top** (2026-09-04). `ST-SG-PORCH` springs from `W-SG-E1`'s top and crosses 12" of it as a
+  threshold. Drawn in the pocket's north strip, that threshold ran straight through
+  `PT-SG-BR3` — a 12" ROUND column on a 12" wall, so it filled the top edge to edge and left
+  10" of passage one side and 14" the other. **Zero findings.** Two things have to be true at
+  once for a check to catch it and neither is: the threshold board is 3 sf of trim over
+  concrete with nothing to frame, so it is deliberately not an element and there was nothing
+  to overlap; and the flight itself starts at the wall's east face, x 28'-6", which is
+  *exactly* the column's east face, so the two solids are tangent and
+  `structural.member_interference` reports no interference because there is none. The stair
+  moved to y -9'-0"..-6'-0" between the two columns instead. The rule that would close it:
+  for any stair whose top landing is a wall top rather than a `FloorSystem`, project the
+  landing's plan rectangle and grade the CLEAR WIDTH left by every solid standing on that
+  wall, against R311.7.1's 36". It is the same missing idea as the two items above — the
+  engine grades distances and overlaps, and what these three want is *coverage*.
 - **`W-SG-W2`/`E2`/`S` are screened and DO NOT reach R404.4's 1.5 against sliding**
   (2026-08-30). Two things landed that day, and the first is why the second matters.
   **(a) The retained height was understated by 3'-4".** `structural.foundation_unbalanced_fill`

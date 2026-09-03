@@ -246,12 +246,16 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
     asserted so here: at ``_y_rear_pillar`` the beams run 20" further north, so BR1/2/3 are
     mid-span under a continuous member and already covered.
 
-    **The row did NOT move when the corners became 12" columns**, and that is a decision
-    rather than an oversight. A 12" round centred on the same line runs 3 1/4" PAST the beam
-    end, so the beam no longer roofs it — but what is exposed there is a concrete top with
-    the assembly's >=15 degree wash and drip lip, not the end grain the 2 3/4" offset was
-    written for. Re-solving the row would move the deck edge, the fascia, the drip, the
-    gutter and ``BALCONY_FRONT_AXIS_Y_FT`` to fix a problem the material no longer has.
+    **The row DID move when the corners became 12" columns — 5 1/4" north, and the offset
+    is the round's radius now, not half a 6x6.** For one day it stayed on the wood post's
+    2 3/4", which put a 6" radius 3 1/4" PAST the beam end: the beam roofed nothing and sat
+    on the north half of a concrete shelf that collected water against its own end grain
+    and against the HGAM10 seat. The offset is ``radius + 2"`` instead, so the glulam
+    cantilevers 2" past the column's south face and drips into air.
+
+    The 2" is a weather number, and what it costs is written down at ``_y_front_pillar``:
+    RL-SG-PORCH's two front corner posts lose their baseplates and land on the columns, and
+    the beams' 20" north overhang now sits against an R507.5.1 limit of 22" rather than 24".
     """
     # PT-SG-BF2 is exempt now for the REAR row's reason rather than the front row's: it
     # moved 15" north onto the porch deck on 2026-09-03, so BM-SG-BLC runs past it to the
@@ -259,12 +263,12 @@ def test_the_front_pillar_tops_are_roofed_by_the_beams_that_land_on_them(
     bf2 = _solid(catlin_model, "PT-SG-BF2")
     blc = _solid(catlin_model, "BM-SG-BLC")
     assert min(p[1] for p in blc.outline) < min(p[1] for p in bf2.outline)
-    # The two front CORNERS are concrete and oversail their beam ends instead.
+    # The two front CORNERS are 12" rounds, and their beams cantilever 2" past them.
     for tag, beam_tag in (("PT-SG-BF1", "BM-SG-BLW"), ("PT-SG-BF3", "BM-SG-BLE")):
         column_south = min(p[1] for p in _solid(catlin_model, tag).outline)
         beam_south = min(p[1] for p in _solid(catlin_model, beam_tag).outline)
-        assert column_south < beam_south, tag
-        assert beam_south - column_south == pytest.approx(3.25 * INCH, abs=1e-3), tag
+        assert beam_south < column_south, tag
+        assert column_south - beam_south == pytest.approx(2.0 * INCH, abs=1e-3), tag
     # The rear row is exempt: the beams run 20" further north past it.
     for tag, beam_tag in (("PT-SG-BR1", "BM-SG-BLW"), ("PT-SG-BR3", "BM-SG-BLE")):
         post = _solid(catlin_model, tag)
@@ -790,38 +794,56 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
     legs = {s.tag: s for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")}
     for tag, (key, width_in, depth_in) in pattern.items():
         cx, cy = units[tag].position.xy_m
-        want = {(round(cx + sx * width_in * INCH / 2.0, 6),
-                 round(cy + sy * depth_in * INCH / 2.0, 6))
-                for sx in (-1, 1) for sy in (-1, 1)}
-        got = set()
+        # Matched within a thousandth of an inch rather than by rounding both sides to six
+        # decimal places and comparing sets: a leg centre that lands on a half-microm etre
+        # boundary (HP1's south pair does, at -2.359375') flips that rounding and fails a
+        # test about foot patterns for reasons that have nothing to do with foot patterns.
+        want = [(cx + sx * width_in * INCH / 2.0, cy + sy * depth_in * INCH / 2.0)
+                for sx in (-1, 1) for sy in (-1, 1)]
+        got = []
         for index in range(1, 5):
             leg = legs[f"PT-SG-HP{key}{index}"]
             ring = Polygon(leg.outline)
-            got.add((round(ring.centroid.x, 6), round(ring.centroid.y, 6)))
+            got.append((ring.centroid.x, ring.centroid.y))
             assert pad.contains(ring), f"PT-SG-HP{key}{index} overhangs the pad"
-        assert got == want, tag
+        tol = 0.001 * INCH
+        for hole in want:
+            assert any(abs(g[0] - hole[0]) < tol and abs(g[1] - hole[1]) < tol
+                       for g in got), (tag, hole)
+        assert len(got) == len(want)
 
 
 # ---------------------------------------------------------------------------------------
-# The 2026-09-03 turn, and the stair it made room for.
+# The 2026-09-03 turn, and the 2026-09-04 swap.
 #
-# Both cabinets face SOUTH now (`rotation=deg(0)`), side by side in one east-west row across
-# the pocket's south half, and the pocket's north strip carries ST-SG-PORCH — the porch's
-# only way down to grade. The two facts are one change: a 36" flight plus two cabinets in one
-# north-south row wants 11'-7" of the 9'-6" of usable y, and turned they do not compete.
-# notes/porch_stair.md and notes/heat_pump_ground_pad.md.
+# Both cabinets face SOUTH (`rotation=deg(0)`), side by side in one east-west row. The row
+# ran across the pocket's SOUTH half for a day, with ST-SG-PORCH in the north strip; on
+# 2026-09-04 the two swapped halves, because the flight springs from W-SG-E1's top and that
+# top is walkable only between its two 12" round columns — y -9'-9"..-3'-0", which is exactly
+# where the row stood. Nothing reported it: the threshold board is trim rather than an
+# element, and PT-SG-BR3's east face is EXACTLY tangent to the stair's head at x 28'-6", so
+# no solid overlapped. notes/porch_stair.md and notes/heat_pump_ground_pad.md.
+#
+# The row's x is unchanged by the swap and asserted below at both ends — tucked as far west
+# as 40 5/32" + 12" + 39" allows.
 # ---------------------------------------------------------------------------------------
-_PAD_X = (28.5, 36.75)
-_PAD_Y = (-7.5, -0.6)
+_PAD_X = (29.0, 36.833333)
+_PAD_Y = (-3.333333, -0.833333)
+_STAIR_PAD_X = (28.5, 35.25)
+_STAIR_PAD_Y = (-9.0, -6.0)
 
 
-def test_the_pad_grew_to_carry_the_flight_and_the_turned_row(catlin_model) -> None:
-    """56.9 sf / 0.70 cy, x 28'-6"..36'-9" by y -7'-6"..-0'-7 1/5" (was 29.4 sf / 0.36 cy).
+def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
+    """19.6 sf / 0.24 cy, x 29'-0"..36'-10" by y -3'-4"..-0'-10".
 
-    One pour rather than a pad plus a separate stair footing: the west edge is where the
-    stringers land, the north strip is the flight and its level step-off, and the east edge
-    runs 2" past HP1's cabinet — 9" past the house's SE corner and still 21' inside the east
-    setback line. `prices.toml`'s qualified `slab:HP_PAD_ON_GRADE` row is keyed to the 0.70.
+    It was 56.9 sf / 0.70 cy for a day, when one pour had to reach both the cabinets and a
+    flight in the same band. They are 2'-8" apart in y now, and a rectangle spanning both
+    would be 94 sf of concrete to serve 40 — so the flight took its own pour (SL-SG-STAIRPAD)
+    and this one shrank to the row. `prices.toml`'s qualified `slab:HP_PAD_ON_GRADE` row is
+    keyed to the pair's 0.49 cy.
+
+    The north edge stops 3" short of the cladding rather than butting it: no isolation joint
+    to detail, and the wall's runoff lands in gravel instead of against a lip.
     """
     from shapely.geometry import Polygon
 
@@ -830,8 +852,38 @@ def test_the_pad_grew_to_carry_the_flight_and_the_turned_row(catlin_model) -> No
     assert (x0 / FT, x1 / FT) == pytest.approx(_PAD_X)
     assert (y0 / FT, y1 / FT) == pytest.approx(_PAD_Y)
     area_sf = pad.area / (FT * FT)
-    assert area_sf == pytest.approx(56.925, abs=0.05)
-    assert area_sf * (4.0 / 12.0) / 27.0 == pytest.approx(0.70, abs=0.005)
+    assert area_sf == pytest.approx(19.583, abs=0.05)
+    assert area_sf * (4.0 / 12.0) / 27.0 == pytest.approx(0.242, abs=0.005)
+
+
+def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> None:
+    """SL-SG-STAIRPAD, 20.3 sf / 0.25 cy, x 28'-6"..35'-3" by y -9'-0"..-6'-0".
+
+    Its west edge is W-SG-E1's east face where the stringers foot; the flight covers x
+    28'-6"..32'-2"; and what is left east of that is R311.7.6's bottom landing, which wants
+    36" in the direction of travel. The two pads must not touch — a single pour spanning the
+    2'-8" between them is 94 sf to serve 40 — and they must share a top, or the flight's
+    authored base is not the surface it lands on.
+    """
+    from shapely.geometry import Polygon
+
+    pad = Polygon(_solid(catlin_model, "SL-SG-STAIRPAD").outline)
+    x0, y0, x1, y1 = pad.bounds
+    assert (x0 / FT, x1 / FT) == pytest.approx(_STAIR_PAD_X)
+    assert (y0 / FT, y1 / FT) == pytest.approx(_STAIR_PAD_Y)
+    area_sf = pad.area / (FT * FT)
+    assert area_sf == pytest.approx(20.25, abs=0.05)
+    # 37" of landing east of the bottom riser, against R311.7.6's 36".
+    assert (_STAIR_PAD_X[1] - (28.5 + 4 * 11.0 / 12.0)) * 12.0 >= 36.0
+    # Separate pours, and the gap is the point.
+    equipment = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
+    assert not pad.intersects(equipment)
+    assert equipment.distance(pad) / FT == pytest.approx(2.667, abs=0.01)
+    slabs = {e.tag: e for st in catlin_model.plan.storeys
+             for e in catlin_model.plan.storey_elements(st.tag)
+             if getattr(e, "tag", "") in ("SL-SG-STAIRPAD", "SL-SG-HPPAD")}
+    assert (slabs["SL-SG-STAIRPAD"].top_elevation.meters
+            == slabs["SL-SG-HPPAD"].top_elevation.meters)
 
 
 def test_both_condensers_face_south_square_to_the_plan(catlin_model) -> None:
@@ -878,22 +930,25 @@ def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_mod
         assert tread.length_m / FT == pytest.approx(3.0)
     stringers = [m for m in stair.members if m.category == "stringer"]
     assert len(stringers) == 2
-    # It lands on the pad it shares with the condensers, not beside it.
+    # It lands on its own pad, not beside it — and not on the condensers', which since
+    # 2026-09-04 is a separate pour 2'-8" north.
     from shapely.geometry import Polygon
 
-    pad = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
+    pad = Polygon(_solid(catlin_model, "SL-SG-STAIRPAD").outline)
     assert pad.contains(Polygon(stair.outline).buffer(-0.01))
+    assert not Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline).intersects(
+        Polygon(stair.outline))
 
 
 def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catlin_model
                                                                             ) -> None:
     """Two raked guard-handrails on the flight, two level cheeks on the threshold, and
-    RL-SG-PORCH 3'-0" shorter with its east leg terminating at y -3'-10".
+    RL-SG-PORCH's east leg opened 3'-0" in its MIDDLE with RL-SG-PORCH-NE carrying the stub.
 
     Nothing in the engine asks for the threshold pair — R312.1.1 measures the FLIGHT, whose
     top tread is only 26.4" over the pad, and `code.R312_1_guard_height` cannot see a guard
-    opening at the END of a deck edge at all (plans/TODO.md). They are the author's guard
-    return, so they are asserted here or they are nothing.
+    opening in a deck edge at all, at the end or in the middle (plans/TODO.md). They are the
+    author's guard return, so they are asserted here or they are nothing.
     """
     rails = {e.tag: e for s in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(s.tag)
@@ -909,6 +964,18 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
         rail = rails[tag]
         assert rail.serves_stair is None, tag  # level on the wall top, never raked
         assert [round(p.xy_m[0] / FT, 4) for p in rail.path] == [27.5, 28.5], tag
+    # ** THE OPENING IS IN THE MIDDLE OF THE EAST LEG, SO IT TAKES TWO ELEMENTS. ** A `path`
+    # cannot carry a hole. RL-SG-PORCH runs up the east edge and stops at the flight's south
+    # side; RL-SG-PORCH-NE picks up at its north side and runs to the porch's north edge.
     porch = rails["RL-SG-PORCH"]
-    assert round(porch.path[-1].xy_m[1] / FT, 4) == pytest.approx(-3.8333, abs=1e-3)
-    assert round(porch.path[-1].xy_m[0] / FT, 4) == pytest.approx(27.5)
+    assert porch.path[-1].xy_m[1] / FT == pytest.approx(-9.0, abs=1e-3)
+    assert porch.path[-1].xy_m[0] / FT == pytest.approx(27.5)
+    stub = rails["RL-SG-PORCH-NE"]
+    assert [round(p.xy_m[0] / FT, 4) for p in stub.path] == [27.5, 27.5]
+    assert stub.path[0].xy_m[1] / FT == pytest.approx(-6.0, abs=1e-3)
+    # Same product, same mount, same height — it is one run of guard with a doorway in it.
+    assert stub.type_ref == porch.type_ref and stub.mount == porch.mount
+    assert stub.height.inches == pytest.approx(porch.height.inches)
+    # The doorway is exactly the flight's 36", and the two pieces do not overlap it.
+    assert (stub.path[0].xy_m[1] - porch.path[-1].xy_m[1]) / FT == pytest.approx(3.0,
+                                                                                abs=1e-3)

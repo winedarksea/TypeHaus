@@ -659,7 +659,13 @@ MAIN_LIGHTING = [
     # that is a hazard, not a light. It sits south rather than north because the north end of
     # this wall face is the two condenser disconnects and their NEC 110.26(A) working space
     # (plan/electrical.py) — a luminaire projecting 5" into that space is the same objection
-    # from the other side. Six inches clear of PT-SG-BF3 at the far end.
+    # from the other side.
+    #
+    # PT-SG-BF3 at the far end: the round came 5 1/4" north on 2026-09-03 and now reaches
+    # y -9'-4", one inch south of this fitting. It is not a clash from either direction.
+    # In PLAN the 12" round is tangent to this wall face at y -9'-10", not here, so the
+    # nearest concrete is 5" away; in ELEVATION the column starts at the wall top and this
+    # fitting hangs 8" below it. Both numbers move if `_y_front_pillar` moves again.
     #
     # ** -0'-8" IS A STEP LIGHT, AND THAT IS THE POINT. ** W-SG-E1's top is 0'-0", so this
     # face has no 7'-0" to mount at; 8" below the top puts the fitting 2'-2" over the pad,

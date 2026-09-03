@@ -130,16 +130,21 @@ def test_service_upgrade_devices_are_present(catlin_model):
 
 
 def test_the_two_condenser_disconnects_clear_the_stair_and_reach_from_grade(catlin_model):
-    """ED-M-HP1-DISC / ED-M-HP2-DISC at x 34'-3 1/2" and 35'-7", both at 3'-6" (2026-09-03).
+    """ED-M-HP1-DISC / ED-M-HP2-DISC on W-SG-E1's east face, y -3'-6" / -4'-6" (2026-09-04).
 
-    Two code constraints put them there, and neither is visible in any check:
+    They were on W-M-S2 until the condenser row was tucked west behind the SE corner, which
+    left that elevation cabinet from x 29'-0" east. Three things put them where they are, and
+    none of them is visible in any check:
 
-    * **NEC 110.26(A) working space cannot be a stairway.** ST-SG-PORCH runs x 28'-6"..32'-2"
-      under the old x 30'-0" station. East of WIN-M-LIV-S1 (x 31'-5"..33'-11") the 36"
-      working depth falls over the flight's level step-off instead.
+    * **NEC 110.26(A)(3) measures working space from the GRADE up**, so height cannot rescue
+      a disconnect with a 3'-4" cabinet standing 6" in front of it — the row's own back
+      clearance is inside the 36" depth all the way down.
+    * **The 42" of W-SG-E1 between the cabinets and the flight is the only stretch left.**
+      Two 12" cans at -3'-6" and -4'-6" are 24" of equipment sharing a 30" space that spans
+      y -3'-0"..-5'-6", 6" clear of HP2's south face and 6" clear of the stair.
     * **NEC 404.8(A) caps an operating handle at 6'-7" above the standing surface.**
-      ``Mount.elevation`` is storey-relative, so ft(5) on a main-floor wall put these handles
-      7'-10" above the -2'-10" grade they are operated from. 3'-6" reads 6'-4".
+      ``Mount.elevation`` is storey-relative, so the -0'-8" authored on `main` reads 2'-2"
+      above the -2'-10" grade these are actually worked from.
 
     notes/porch_stair.md and notes/heat_pump_ground_pad.md.
     """
@@ -147,23 +152,52 @@ def test_the_two_condenser_disconnects_clear_the_stair_and_reach_from_grade(catl
                for element in catlin_model.plan.storey_elements(storey.tag)
                if element.element_kind == "ElectricalDevice"}
     grade_ft = catlin_model.plan.project.site.grade.meters / 0.3048
-    for tag, want_x in (("ED-M-HP1-DISC", 34.0 + 3.5 / 12.0),
-                        ("ED-M-HP2-DISC", 35.0 + 7.0 / 12.0)):
+    # W-SG-E1's east face is x 28'-6"; ED-T-DISCONNECT-3R is a 3 1/4" can, so its centre
+    # belongs 1 5/8" off it. A footprint is CENTRED on the authored point.
+    want_x = 28.5 + 1.625 / 12.0
+    for tag, want_y in (("ED-M-HP1-DISC", -3.5), ("ED-M-HP2-DISC", -4.5)):
         device = devices[tag]
-        assert device.position.xy_m[0] / 0.3048 == pytest.approx(want_x), tag
-        # Clear of the flight in x, so no part of the 36" working depth is over a tread.
-        assert device.position.xy_m[0] / 0.3048 > 32.0 + 2.0 / 12.0, tag
-        assert device.mount.elevation.inches == pytest.approx(42.0), tag
-        # main's datum is 0'-0"; the standing surface is grade.
-        assert (device.mount.elevation.inches / 12.0 - grade_ft) * 12.0 <= 79.0, tag
+        x_ft, y_ft = (c / 0.3048 for c in device.position.xy_m)
+        assert x_ft == pytest.approx(want_x), tag
+        assert y_ft == pytest.approx(want_y), tag
+        assert device.mount.elevation.inches == pytest.approx(-8.0), tag
+        # main's datum is 0'-0"; the standing surface is grade. Above it, and well under
+        # 404.8(A)'s 6'-7".
+        reach_in = (device.mount.elevation.inches / 12.0 - grade_ft) * 12.0
+        assert 0.0 < reach_in <= 79.0, tag
+    # ** THE 30" HAS TO FIT, AND THAT IS AN ARITHMETIC CLAIM ABOUT THE WHOLE STRETCH. **
+    # 110.26(A)(2) wants 30" of clear width in front of the pair; it does not require the 30"
+    # to be centred on either can, so the test is that a 30" window holding both cans fits
+    # between HP2's south face and the flight's north side.
+    hp2 = next(e for storey in catlin_model.plan.storeys
+               for e in catlin_model.plan.storey_elements(storey.tag)
+               if getattr(e, "tag", None) == "EQ-M-HP2-OD")
+    hp2_south = hp2.position.xy_m[1] / 0.3048 - hp2.footprint[1].inches / 24.0
+    assert hp2_south == pytest.approx(-2.505, abs=0.01)
+    stair = next(e for storey in catlin_model.plan.storeys
+                 for e in catlin_model.plan.storey_elements(storey.tag)
+                 if getattr(e, "tag", None) == "ST-SG-PORCH")
+    stair_north = stair.start.xy_m[1] / 0.3048 + stair.width.inches / 12.0
+    assert stair_north == pytest.approx(-6.0)
+    free = hp2_south - stair_north                       # 42", the whole clear stretch
+    assert free >= 2.5, f"only {free * 12:.1f}in of wall for a 30in working space"
+    # The two cans occupy y -3'-0"..-5'-0"; 30" around them lands inside that stretch with
+    # 3" to give at each end.
+    cans_n, cans_s = -3.5 + 0.5, -4.5 - 0.5
+    assert cans_n < hp2_south and cans_s > stair_north
+    assert (free - (cans_n - cans_s)) / 2.0 >= (2.5 - (cans_n - cans_s)) / 2.0
 
 
 def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
-    """ED-M-STAIR-LT, on W-M-S2's exterior face over the head of ST-SG-PORCH.
+    """ED-M-STAIR-LT, on W-SG-E1's east face beside the head of ST-SG-PORCH.
 
     ``code.R303_8_exterior_stairway_illumination`` looks for a luminaire within 4'-0" of the
     flight's plan outline on its ``to_storey``, and nothing already authored reached:
-    ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x 18'-0", ten feet west.
+    ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x 18'-0", ten feet west. It hung on
+    W-M-S2 for a day; when the flight moved to the pocket's south half on 2026-09-04 the
+    house wall fell 5'-2" away from it, so the light followed the stair onto the porch wall.
+    It sits SOUTH of the flight, not north: north is the two disconnects and their NEC
+    110.26(A) working space, and a 5" body projecting into that is the same objection.
 
     ED-T-LT-SCONCE-EXT rather than a new type, deliberately — a LuminaireType with no
     prices.toml row is silently DROPPED from the takeoff, so minting one would have bought a
@@ -178,8 +212,14 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.type_ref == "ED-T-LT-SCONCE-EXT"
     assert light.room is None
     assert "ED-M-PORCH-FLOOD-SW" in light.controlled_by
-    x_ft = light.position.xy_m[0] / 0.3048
+    x_ft, y_ft = (c / 0.3048 for c in light.position.xy_m)
+    assert x_ft == pytest.approx(28.5 + 2.5 / 12.0)   # 5" body, back on the x 28'-6" face
+    # Inside R303.8's 4'-0" reach of the flight (x 28'-6"..32'-2", y -9'-0"..-6'-0") on both
+    # axes, and clear of the walking surface rather than standing in it.
     assert 28.5 - 4.0 <= x_ft <= (32.0 + 2.0 / 12.0) + 4.0
+    assert -9.0 - 4.0 <= y_ft <= -6.0 + 4.0
+    assert y_ft < -9.0, "the body must stand clear of the treads, not in them"
+    assert light.mount.elevation.inches == pytest.approx(-8.0)
 
 
 def test_garage_now_has_an_electrical_sheet(catlin_model):
