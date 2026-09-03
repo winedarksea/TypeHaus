@@ -145,3 +145,27 @@ def test_the_scanner_identity_moves_with_the_lint_rules(monkeypatch):
 
     monkeypatch.setattr(dialect, "__file__", str(Path(dialect.__file__).with_name("provenance.py")))
     assert loader._scanner_identity() != before
+
+
+def test_the_scanner_identity_moves_with_the_constructor_allowlist(monkeypatch):
+    """Registering a new model type must discard the cache — and once did not.
+
+    ``dialect.lint_source`` rejects any call whose name is not in
+    ``model.registry.constructor_names()``, but the identity hashed only ``dialect.py`` and
+    ``provenance.py``. So adding ``ConcreteSpec`` to the registry changed what the linter
+    accepts WITHOUT changing this identity, and the cache went on serving
+    ``'ConcreteSpec' is not a registered element/quantity/library constructor`` against
+    source that was by then perfectly legal.
+
+    What made it expensive to diagnose: ``haus build --inspect`` lints fresh and passed on
+    the very same file, while ``haus check`` failed on it, with correct line numbers.
+    """
+    from typehaus.model.registry import _CONSTRUCTORS
+
+    before = loader._scanner_identity()
+    _CONSTRUCTORS["_TestOnlySpec"] = object
+    try:
+        assert loader._scanner_identity() != before
+    finally:
+        del _CONSTRUCTORS["_TestOnlySpec"]
+    assert loader._scanner_identity() == before

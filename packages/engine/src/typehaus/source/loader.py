@@ -140,16 +140,30 @@ ScanEntry = tuple[str, list[Finding], list[tuple[str, SourceLoc]]]
 
 
 def _scanner_identity() -> str:
-    """Engine version + a hash of the modules whose output is being cached.
+    """Engine version + a hash of the modules whose output is being cached, AND of the
+    constructor allowlist those modules lint against.
 
     Version alone is too coarse during development, where the engine version does not move
     between edits to ``dialect.py``; the source hash is what actually invalidates a cache
     written by yesterday's lint rules.
+
+    **The allowlist has to be in here too, and leaving it out is a real bug that bit.**
+    ``dialect.lint_source`` rejects any call whose name is not in
+    ``model.registry.constructor_names()``, and that set is populated by ``model/*.py`` —
+    files this hash did not cover. So registering a NEW constructor (``ConcreteSpec``, say)
+    changed what the linter accepts without changing this identity, and a cache written
+    before the registration went on serving "'ConcreteSpec' is not a registered
+    element/quantity/library constructor" against source that was by then perfectly legal.
+    It presents as a house that fails to load while ``haus build --inspect`` on the very
+    same file passes, which is about as confusing as a cache bug gets. The fix is one line
+    and the cost is a sha256 over a few hundred short names.
     """
-    from typehaus import _meta
+    from typehaus import _meta, model  # noqa: F401 - the import POPULATES the registry
+    from typehaus.model.registry import constructor_names
     from typehaus.source import dialect, provenance
 
     h = hashlib.sha256(_meta.engine_version().encode())
+    h.update(",".join(sorted(constructor_names())).encode())
     for module in (dialect, provenance):
         source = getattr(module, "__file__", None)
         if source is None:  # pragma: no cover - namespace/zip import
