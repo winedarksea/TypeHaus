@@ -179,6 +179,7 @@ design on that same claim (`structural.frost_depth`, ASCE 32 soil replacement, 2
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
 | stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
 | footing reinforcement | **`#6 @ 10" o.c.` transverse, top AND bottom**, 3" cover — sized in §7; `#4 @ 18"` longitudinal |
+| mix | **`CATLIN_EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar, macro-synthetic fibre |
 
 ### Why the footing grew INBOARD and not symmetrically
 
@@ -339,7 +340,7 @@ f   = 11,151 × 12 / 288                   = 465 psi           (service flexural
 **Plain**, ACI 318 §14.5.2, φ = 0.60 (Table 21.2.1):
 
 ```
-φMn = 0.60 × 5√3,000 × 288 / 12           = 3,944 ft-lb/ft    d/c = 4.52   ✗
+φMn = 0.60 × 5√5,000 × 288 / 12           = 5,091 ft-lb/ft    d/c = 3.50   ✗
 ```
 
 **And "4.52 over" understates it.** ACI 318 R22.6.3 says the plain-concrete wall provisions
@@ -357,24 +358,38 @@ also IRC Table R404.1.2(8) footnote i's outside-face figure for bars larger than
 
 | schedule | Aₛ in²/ft | d in | a in | φMn ft-lb/ft | d/c | |
 |---|---|---|---|---|---|---|
-| `#6 @ 16"` | 0.330 | 9.625 | 0.647 | 13,813 | 1.29 | ✗ |
-| `#5 @ 10"` | 0.372 | 9.688 | 0.729 | 15,606 | 1.14 | ✗ |
-| `#6 @ 12"` | 0.440 | 9.625 | 0.863 | 18,203 | 0.98 | ✓ but 2% |
-| **`#6 @ 10"`** | **0.528** | **9.625** | **1.035** | **21,639** | **0.82** | **✓ selected** |
-| `#6 @ 8"` | 0.660 | 9.625 | 1.294 | 26,664 | 0.67 | ✓ more than needed |
+| `#6 @ 16"` | 0.330 | 9.625 | 0.388 | 14,005 | 1.27 | ✗ |
+| `#5 @ 10"` | 0.372 | 9.688 | 0.438 | 15,746 | 1.13 | ✗ |
+| `#6 @ 12"` | 0.440 | 9.625 | 0.518 | 18,545 | 0.96 | ✓ but 4% |
+| **`#6 @ 10"`** | **0.528** | **9.625** | **0.621** | **22,131** | **0.81** | **✓ selected** |
+| `#6 @ 8"` | 0.660 | 9.625 | 0.777 | 27,433 | 0.65 | ✓ more than needed |
 
-`#6 @ 12"` is the arithmetic minimum and 2% is not a margin for a screening on presumptive
-values. `#6 @ 8"` buys nothing this design needs. **`#6 @ 10" o.c.` is the selection.**
+`#6 @ 12"` is the arithmetic minimum and 4% is not a margin for a screening on presumptive
+soil values. `#6 @ 8"` buys nothing this design needs. **`#6 @ 10" o.c.` is the selection.**
+
+**These numbers moved on 2026-09-03, and the selection did not.** The table was worked at
+IRC Table R402.2's presumptive 3,000 psi, because until `ConcreteSpec` existed there was
+nowhere for a pour to state a mix and the engine hardcoded that value for every concrete
+calc it ran. `SUNKEN_GARDEN_WALL` now states the 5,000 psi F3+C2 mix it is actually poured
+from, `stem_flexure` reads it, and every capacity above rose 2-3%. **The choice is unchanged
+and so is the reason for it** — the margin at `#6 @ 12"` went 2% to 4%, which is still not a
+margin.
 
 Checked alongside:
 
-* **tension-controlled**, so φ = 0.90 is the right factor: `c = a/0.85 = 1.22"`,
-  `εt = 0.003 (9.625 − 1.22)/1.22 = 0.0207`, far past 0.005.
+* **tension-controlled**, so φ = 0.90 is the right factor. `β1` is **0.80** at 5,000 psi,
+  not 0.85 — ACI 318-19 Table 22.2.2.4.3 steps it down 0.05 per 1,000 psi above 4,000, and
+  taking 0.85 here is the standard slip. `c = a/β1 = 0.621/0.80 = 0.777"`,
+  `εt = 0.003 (9.625 − 0.777)/0.777 = 0.0342`, far past 0.005.
 * **minimum reinforcement**, ACI 318-19 §11.6.1: ρl ≥ 0.0015 for bars larger than #5 →
-  0.216 in²/ft. And §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, which
-  this wall is: `Vu = 1.6 × 3,226 = 5,162 lb/ft` against `0.5 φVc = 0.5 × 0.75 × 2√3,000 ×
-  12 × 9.625 = 4,745 lb/ft`. **0.528 clears the stricter figure.**
-* **one-way shear** at the base: `φVc = 9,489 lb/ft` against `Vu = 5,162 lb/ft`, d/c 0.54 ✓.
+  0.216 in²/ft. §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, and **at
+  5,000 psi this wall is no longer that wall**: `Vu = 1.6 × 3,226 = 5,162 lb/ft` against
+  `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 9.625 = 6,126 lb/ft`. It was over that line at
+  3,000 psi (4,745) and is under it now. **0.528 clears both figures either way**, so the
+  selection never depended on which side of §11.6.2 the wall fell — worth stating, because
+  a reader comparing this note to its earlier revision will find the clause changed sides.
+* **one-way shear** at the base: `φVc = 12,251 lb/ft` against `Vu = 5,162 lb/ft`,
+  d/c 0.42 ✓.
 
 **Authoring reinforcement makes the SECTION work. It does not make the DETAILING anything
 this engine has looked at** — bar development into the footing, the corner cold joints, the
@@ -393,7 +408,8 @@ unreinforced.
 
 Added to `engineering/retaining_basis.py::footing_states` on 2026-09-03. Same case as §4
 and §6 throughout — **at-rest, 110 pcf**, because grading the footing on a different load
-case from the stem it holds up would be two designs of one wall.
+case from the stem it holds up would be two designs of one wall. And the same mix: f'c
+**5,000 psi**, `CATLIN_EXPOSED_MIX` (§3), so `√f'c = 70.711`.
 
 ### 7a. The pressure diagram
 
@@ -430,12 +446,14 @@ into a trench. Capacity goes as `h²`, so skipping that overstates the section b
 
 ```
 Sm  = 12 x 10²/6                              = 200 in³/ft
-φMn = 0.60 x 5√3,000 x 200 / 12               = 2,739 ft-lb/ft     d/c = 5.18   ✗
+φMn = 0.60 x 5√5,000 x 200 / 12               = 3,536 ft-lb/ft     d/c = 4.01   ✗
 ```
 
-**Five times over.** ACI §14.1.4 does permit a plain concrete footing — unlike §14.1.5 for a
+**Four times over.** ACI §14.1.4 does permit a plain concrete footing — unlike §14.1.5 for a
 column — so unlike the stem in §6 this is not a section *outside* the Code. It is simply a
-section that does not work.
+section that does not work. (It was **5.18** while the calculation read the presumptive
+3,000 psi; stating the real mix bought 29% of capacity and did not come close to closing a
+factor of five.)
 
 ### 7c. Heel flexure
 
@@ -449,7 +467,7 @@ soil on heel   3.000 x 10.3698 x 110          = 3,422.0 lb   arm 1.500' = 5,133.
 concrete       3.000 x 1.000 x 150            =   450.0 lb   arm 1.500' =   675.0
                                                   M service             = 5,808.0 ft-lb/ft
 Mu = 1.6 x 5,808.0                                                      = 9,293   ft-lb/ft
-φMn (plain, as above)                         = 2,739 ft-lb/ft     d/c = 3.39   ✗
+φMn (plain, as above)                         = 3,536 ft-lb/ft     d/c = 2.63   ✗
 ```
 
 ### 7d. One-way shear on the toe
@@ -460,12 +478,15 @@ PLAIN: critical section at h = 10" from the stem face (§14.5.5.2(a)),
 q at 3.167'  = 1,275.2 - 125.75 x 3.167                        =   877.0 psf
 V service    = ½(1,275.2 + 877.0) x 3.167                      = 3,407.9 lb/ft
 Vu           = 1.6 x 3,407.9                                   = 5,452   lb/ft
-φVn = 0.60 x (4/3)√3,000 x 12 x 10                             = 5,258   lb/ft
-                                                                   d/c = 1.04  ✗
+φVn = 0.60 x (4/3)√5,000 x 12 x 10                             = 6,788   lb/ft
+                                                                   d/c = 0.80  ✓
 ```
 
-Marginal, and marginal on the same plain section that is already 5.18 over in flexure —
-so it does not change the conclusion, only confirms it.
+**And this one PASSES as plain — at 5,000 psi.** At the presumptive 3,000 it was 5,258 lb/ft
+and d/c 1.04, marginally over. It is worth writing down which way that cuts: shear was never
+the binding question here, and a reader who saw only the shear row change sides might
+conclude the mix fixed the footing. It did not. **Flexure is still four times over**, and
+that is the row that decides whether this footing needs steel.
 
 ### 7e. The steel, and why it is the stem's bar
 
@@ -480,11 +501,11 @@ is applied *before* sizing, not bolted onto a `d` derived against something loos
 ```
 As    = 0.44 x 12/10                                    =  0.528 in²/ft
 d     = 12 - 3.000 - 0.750/2                            =  8.625 in
-a     = 0.528 x 60,000 / (0.85 x 3,000 x 12)            =  1.035 in
-φMn   = 0.90 x 0.528 x 60,000 x (8.625 - 0.518) / 12    = 19,264 ft-lb/ft
+a     = 0.528 x 60,000 / (0.85 x 5,000 x 12)            =  0.621 in
+φMn   = 0.90 x 0.528 x 60,000 x (8.625 - 0.311) / 12    = 19,755 ft-lb/ft
 
-  toe flexure    14,176 / 19,264                                d/c = 0.74   ✓
-  heel flexure    9,293 / 19,264                                d/c = 0.48   ✓
+  toe flexure    14,176 / 19,755                                d/c = 0.72   ✓
+  heel flexure    9,293 / 19,755                                d/c = 0.47   ✓
 ```
 
 Shear re-runs on the reinforced section — critical at `d` rather than `h`, ACI §22.5.5.1,
@@ -494,8 +515,8 @@ Shear re-runs on the reinforced section — critical at `d` rather than `h`, ACI
 cut at d = 8.625" from the face, i.e. 3.281' from the tip
 q at 3.281'  = 1,275.2 - 125.75 x 3.281                        =   862.6 psf
 Vu = 1.6 x ½(1,275.2 + 862.6) x 3.281                          = 5,612   lb/ft
-φVc = 0.75 x 2√3,000 x 12 x 8.625                              = 8,503   lb/ft
-                                                                   d/c = 0.66  ✓
+φVc = 0.75 x 2√5,000 x 12 x 8.625                              = 10,978  lb/ft
+                                                                   d/c = 0.51  ✓
 ```
 
 `bottom-y` `#4 @ 18"` longitudinal distribution steel is authored alongside. It carries no

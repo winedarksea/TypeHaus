@@ -806,7 +806,7 @@ SUNKEN_GARDEN_WALL = Assembly(
     tag="SUNKEN_GARDEN_WALL",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin-house sunken_garden_retaining_wall_detail.py",

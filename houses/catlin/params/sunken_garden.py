@@ -785,13 +785,13 @@ _RETAINING_FOOTING_OFFSET_IN = 6.0
 # `_RET_REBAR` above is the STEM's steel, and until `engineering/retaining_basis.py` grew
 # `footing_states` nothing in this repo ever asked what the FOOTING carried. It carries a
 # lot: 1,275 psf of bearing pressure on a 4'-0" cantilever is 14,176 ft-lb/ft factored, and
-# a 12" PLAIN strip is good for 2,739 — **d/c 5.18**. The heel is 3.39 over and one-way
-# shear 1.04 over on the same plain section. That was a real gap in the design, not a
-# reporting artifact, and `notes/sunken_garden_court_free_body.md` §7 is its oracle.
+# a 12" PLAIN strip is good for 3,536 — **d/c 4.01**, with the heel 2.63 over. That was a
+# real gap in the design, not a reporting artifact, and
+# `notes/sunken_garden_court_free_body.md` §7 is its oracle.
 #
 # `#6 @ 10"` both faces is the answer, and it is deliberately the SAME bar and spacing the
 # stem already uses: one bar size on this pour is one bundle to order, one bender's setup
-# and one thing for an inspector to count. Bottom (toe) 0.74, top (heel) 0.48, shear 0.66.
+# and one thing for an inspector to count. Bottom (toe) 0.72, top (heel) 0.47, shear 0.51.
 #
 # 3" cover is ACI 318-19 Table 20.5.1.3.1(a) — cast against and permanently in contact with
 # ground — and it is the cover this whole footing is designed on, not a durability upgrade

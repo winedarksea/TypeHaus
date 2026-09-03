@@ -28,14 +28,18 @@ import pytest
 _TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 4.0, 3.0, 8.0, 1.0
 _Q_TOE, _Q_HEEL = 1275.2, 269.2
 
+#: `SUNKEN_GARDEN_WALL` states `CATLIN_EXPOSED_MIX`, so every capacity below is on the
+#: 5,000 psi the pour SPECIFIES, not the presumptive 3,000 the engine used to assume.
+_FC_PSI = 5000.0
+
 _ORACLE = {
-    "toe flexure": (14176.0, 19264.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
-    "heel flexure": (9293.0, 19264.0),
-    "footing one-way shear": (5612.0, 8503.0),  # lb/ft, reinforced branch at d
+    "toe flexure": (14176.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
+    "heel flexure": (9293.0, 19755.0),
+    "footing one-way shear": (5612.0, 10978.0),  # lb/ft, reinforced branch at d
 }
 #: §7b/§7c/§7d as the PLAIN section the house had before 2026-09-03.
-_PLAIN_CAPACITY = 2739.0
-_PLAIN_SHEAR = (5452.0, 5258.0)
+_PLAIN_CAPACITY = 3536.0
+_PLAIN_SHEAR = (5452.0, 6788.0)
 
 _WALLS = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 
@@ -111,34 +115,38 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     bare = _Geometry(**{**geometry.__dict__, "footing_reinforcement": None})
     toe = _state(footing_states(bare, case), "toe flexure")
     assert toe.capacity == pytest.approx(_PLAIN_CAPACITY, rel=0.002)
-    assert toe.demand / toe.capacity == pytest.approx(5.18, rel=0.01)
+    assert toe.demand / toe.capacity == pytest.approx(4.01, rel=0.01)
     assert not toe.ok
 
     heel = _state(footing_states(bare, case), "heel flexure")
-    assert heel.demand / heel.capacity == pytest.approx(3.39, rel=0.01)
+    assert heel.demand / heel.capacity == pytest.approx(2.63, rel=0.01)
     assert not heel.ok
 
+    # SHEAR, by contrast, PASSES as plain once the real 5,000 psi mix is read (it was 1.04
+    # over at the presumptive 3,000). Pinned deliberately: a reader who saw only this row
+    # change sides might conclude the mix fixed the footing. It did not — flexure above is
+    # still four times over, and flexure is the row that decides whether steel is needed.
     shear = _state(footing_states(bare, case), "footing one-way shear")
     assert (shear.demand, shear.capacity) == (
         pytest.approx(_PLAIN_SHEAR[0], rel=0.002), pytest.approx(_PLAIN_SHEAR[1], rel=0.002))
-    assert not shear.ok
+    assert shear.ok
 
 
 def test_the_plain_branch_gives_up_two_inches_of_its_thickness(geometry_and_case) -> None:
     """ACI 318-19 §14.5.1.7. Capacity goes as ``h**2``, so this is a 44% error if lost."""
     from typehaus.engineering.retaining_basis import (
         _PLAIN_SOIL_CAST_DEDUCTION_IN,
-        PRESUMPTIVE_FC_PSI,
         _Geometry,
         footing_states,
     )
 
     assert _PLAIN_SOIL_CAST_DEDUCTION_IN == 2.0
     geometry, case = geometry_and_case
+    assert geometry.specified_fc_psi == pytest.approx(_FC_PSI)
     bare = _Geometry(**{**geometry.__dict__, "footing_reinforcement": None})
     toe = _state(footing_states(bare, case), "toe flexure")
-    on_ten = 0.60 * 5.0 * PRESUMPTIVE_FC_PSI ** 0.5 * (12.0 * 10.0 ** 2 / 6.0) / 12.0
-    on_twelve = 0.60 * 5.0 * PRESUMPTIVE_FC_PSI ** 0.5 * (12.0 * 12.0 ** 2 / 6.0) / 12.0
+    on_ten = 0.60 * 5.0 * _FC_PSI ** 0.5 * (12.0 * 10.0 ** 2 / 6.0) / 12.0
+    on_twelve = 0.60 * 5.0 * _FC_PSI ** 0.5 * (12.0 * 12.0 ** 2 / 6.0) / 12.0
     assert toe.capacity == pytest.approx(on_ten, rel=0.001)
     assert on_twelve / on_ten == pytest.approx(1.44, rel=0.01)
 
