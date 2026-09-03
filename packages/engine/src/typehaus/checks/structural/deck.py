@@ -357,8 +357,8 @@ def _beam_length_ft(ctx: CheckContext, beam: Beam) -> float | None:
     Not ``_beam_span_ft``: what a beam delivers to its posts is everything standing on it,
     and an overhang past the end bearing is part of that load even though it is not span.
     """
-    nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
-             if e.element_kind == "Node"}
+    nodes = {e.tag: e.position.xy_m  # type: ignore[attr-defined]
+             for e in ctx.plan.all_elements() if e.element_kind == "Node"}
     p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
     if p0 is None or p1 is None:
         return None
@@ -513,7 +513,7 @@ def deck_post_bearing(ctx: CheckContext) -> list[Finding]:
         f"post {post.tag} ({post.size}) stands on {post.supported_by}, framing rather than "
         f"a pour — what it bears through is joist stock across the grain, which no "
         f"prescriptive table publishes",
-        (post.tag, post.supported_by), code="AWC NDS 2018 §3.10")
+        (post.tag, post.supported_by or ""), code="AWC NDS 2018 §3.10")
         for post in sorted(on_framing, key=lambda p: p.tag)]
 
 

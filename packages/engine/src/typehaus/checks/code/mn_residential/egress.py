@@ -194,7 +194,13 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
             out.append(_unknown(cid, f"{opening.tag} has a degenerate host-wall axis",
                                 (opening.tag,), code))
             continue
-        threshold = storey.elevation.meters + opening.sill_m
+        # ``sill_m`` is measured up from the host wall's FRAMING base, which is what
+        # ``base_ref_z_m`` answers — never the storey datum and never ``z0_m`` (a wall
+        # extended down over the rim starts 13 7/16" under its own floor). The two agree
+        # for an ordinary wall and differ by exactly the curb for a framed wall standing
+        # on one (``Wall.base_elevation``): reading the storey put D-B-PATIO's threshold
+        # 7 1/4" low and reported its step down into the sunken garden as 0.0".
+        threshold = wall.base_ref_z_m + opening.sill_m
         covered = [(name, top) for name, poly, top in surfaces
                    if threshold - _MAX_NONREQUIRED_STEP_DOWN.meters - 1e-6 <= top
                    <= threshold + 0.05

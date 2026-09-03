@@ -30,6 +30,7 @@ from __future__ import annotations
 
 from typehaus.takeoff.hardware_catalog import (
     ROLE_BEAM_HOLD_DOWN,
+    ROLE_BEARING_STANDOFF,
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
@@ -48,7 +49,6 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_MUDSILL_ANCHOR,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
     ROLE_PIPE_CLAMP,
-    ROLE_BEARING_STANDOFF,
     ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
@@ -415,59 +415,90 @@ ABU66SS_POST_BASE = StructuralHardware(
 #: ICC-ES ESR-2330, Table 4, read 2026-09-03. Note the number: the DTT2's report is **2330,
 #: not 2320** — ESR-2320 is Simpson's take-up device report (CTUD/TUD/ATUD/RTUD/TUW) and has
 #: no DTT in it at all. That was worth checking rather than copying.
-_ESR_2330 = ("ICC-ES ESR-2330 (Simpson Strong-Tie holdowns), Table 4, read 2026-09-03")
-
-# The tie that holds a wood post DOWN to the framing it stands on — the part that replaced
-# the ABU66SS at PT-SG-BR2 and PT-SG-BF2 on 2026-09-03, when both centre pillars stopped
-# standing on concrete.
+# The connector that holds a wood post DOWN to the framing it stands on, at PT-SG-BR2 and
+# PT-SG-BF2 — a CCQ column cap installed INVERTED, so its U-channel sits over the 3-ply
+# joist pack and its straps rise onto the 6x6.
 #
-# **Why a different part rather than the same base in a different place.** Every published
-# number an ABU has is measured with the stirrup bearing on concrete through a 5/8" cast-in
-# anchor, and ESR-1622 §5.6 puts that anchor and its footing outside its own scope. On a deck
-# there is no pour, no cast-in bolt and no basis for the table. A DTT2 is the joint Simpson
-# actually publishes for a post on framing: SDS screws into the post, a 1/2" rod or bolt
-# through the joist below.
+# ** WHY NOT THE ABU66SS THAT WAS HERE. ** Every published number an ABU has is measured with
+# the stirrup bearing on concrete through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts that
+# anchor and its footing outside its own scope. On a deck there is no pour, no cast-in bolt
+# and no basis for the table. The reason for the standoff went with it: the 1" gap answered
+# IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE. Wood on wood is not
+# that condition.
 #
-# **-Z IS COVERED, unlike the ABU66SS.** ESR-2330 §3.2.1, verbatim: "Model numbers shown in
-# this report do not list the -Z or -HDG suffix, but the information shown applies." So a
-# DTT2Z is a DTT2 with G185 zinc, and Table 4's numbers are its numbers — which is exactly
-# the sentence that could NOT be found for the stainless ABU, and the reason that record
-# carries no load at all. Two parts, two readings, two different answers.
+# ** WHY NOT THE DTT2Z THAT REPLACED IT (2026-09-03, superseded the same day). ** A DTT2 is a
+# joint Simpson do publish for a post on framing, and ESR-2330 §3.2.1 does cover the -Z
+# suffix — the sentence that could not be found for the stainless ABU. But it is a one-sided
+# hold-down: eccentric on a 6x6, it needs a 1/2" rod driven through the joist pack to a nut
+# in the beam bay below, and it contributes no lateral restraint at a base that is pinned by
+# design. ESR-2330 §3.2.2 also requires SG >= 0.50, which was the real objection and which
+# ESR-2604 turns out to share — see below. Retired without ever being built.
 #
-# **The species column, and it bites here.** §3.2.2 requires a wood member of minimum
-# specific gravity 0.50. catlin frames in SPF at 0.42. So the 1,825 lb below is copied
-# faithfully and does NOT apply to this house's lumber as it stands — it is recorded with
-# the condition attached rather than silently used, per this module's rule 3. §4.1 adds the
-# second condition: the table is for "continuously dry interior conditions", and an open deck
-# frame takes the NDS wet-service C_M off it.
-DTT2Z_POST_TENSION_TIE = StructuralHardware(
-    tag="simpson-dtt2z-post-tension-tie",
-    name="DTT2Z deck tension tie (6x6), G185 ZMAX",
+# ** WHY THIS PART FITS AND THE OBVIOUS ONES DO NOT. ** ESR-2604 names a CCQ by its two
+# widths, CCQ<W1 for beam><W2 for post>. Inverted, W1 is the channel that must straddle the
+# member BELOW and W2 the straps that must grip the member ABOVE. Here that is a 4-1/2"
+# three-ply 2x8 pack below and a 5-1/2" 6x6 above, so the part must be W1 4-5/8 / W2 5-1/2 —
+# CCQ4.62-5.50SDS, and Simpson's "4.62" width IS the three-ply 2x width. A CCQ46 inverted
+# would put a 3-5/8" channel over a 4-1/2" pack and does not fit; a CC66 inverted leaves 1"
+# of slop in the channel.
+#
+# ** THE LOAD PATH IS STILL WOOD TO WOOD. ** Inverted, the channel's floor plate lies on top
+# of the pack and the post stands on it: 7 gage steel in direct bearing, a bearing plate and
+# not a standoff. ``engineering/post_bearing.py`` conservatively IGNORES the plate and grades
+# the post's own footprint straight onto the joists, so the plate is spare capacity rather
+# than a term in the calc — see notes/centre_pillar_bearing.md §3a.
+#
+# ** TWO CONDITIONS, AND ONE OF THEM IS WHY THE PILLARS CHANGED SPECIES. ** ESR-2604 §3.2.2
+# requires sawn or engineered lumber of minimum specific gravity 0.50 at a maximum moisture
+# content of 19 percent, and it governs EVERY connector in that report — the CCQ46SDS2.5 cap
+# already at the top of these same two posts included. catlin framed in SPF at 0.42, so no
+# cap or base at this joint had a published value at all. That is why PT-SG-BR2/BF2 are
+# specified DF-L (SG 0.50) rather than SPF as of 2026-09-03; see POST_WHITE_PAINT_DF in
+# houses/catlin/plan/assemblies.py. The moisture-content half is NOT met and cannot be — an
+# open deck frame is not "continuously dry" — so it is recorded here with the condition
+# attached rather than silently used, per this module's rule 3.
+#
+# ** AND THE ORIENTATION IS OUTSIDE THE REPORT'S FIGURES. ** ESR-2604 contains no inverted
+# installation, no orientation clause and no base-side table; Simpson illustrate the
+# configuration in their own product literature, but that is not the evaluation report. The
+# mechanism is orientation-independent (uplift is tension in the straps and their screws
+# either way), which is the argument for it — but it is an argument, and it belongs to the
+# engineer of record, not to this catalog.
+CCQ462_550_POST_TENSION_TIE = StructuralHardware(
+    tag="simpson-ccq462-550-inverted-post-tension-tie",
+    name="CCQ4.62-5.50SDS column cap, inverted as a 6x6 post base on a 3-ply",
     role=ROLE_POST_TENSION_TIE,
     manufacturer=_SIMPSON,
-    model="DTT2Z",
+    model="CCQ4.62-5.50SDS",
     fits_nominal=("6x6",),
-    source="Simpson Strong-Tie DTT2Z deck tension tie (strongtie.com/dtt) — a No. 14 gage "
-           "formed steel body screwed to the post with (8) SDS 1/4 in x 1-1/2 in and bolted "
-           "through the framing under it with a 1/2 in rod and the flat plate washer the "
-           "part ships with. Specified here because both centre balcony pillars bear on the "
-           "porch DECK, where a standoff post base has no pour to stand on and no published "
-           "value that survives reading its own report",
+    source="Simpson Strong-Tie CCQ column cap (strongtie.com/ccq) — No. 7 gage straps "
+           "factory welded to a No. 7 gage U-channel, supplied with 1/4 in x 2-1/2 in SDS "
+           "Heavy-Duty Connector screws. Specified here INVERTED, channel down over the "
+           "three-ply joist pack and straps up onto the 6x6, because both centre balcony "
+           "pillars bear on the porch deck framing where a standoff post base has no pour "
+           "to stand on. Same report, same screw and same family as the CCQ46SDS2.5 cap at "
+           "the other end of the same two posts",
     allowable=AllowableLoads(
-        uplift_lb=1825.0,
-        load_duration_factor=1.0,
-        species="sawn or engineered lumber of specific gravity >= 0.50 (§3.2.2) — "
-                "NOT SPF at 0.42, which this report does not publish a value for",
-        fasteners="(8) SDS 1/4 in x 1-1/2 in into the wood member, 1/2 in dia. anchor "
-                  "bolt/rod through the seat with the supplied F844 plate washer",
-        citation=(_ESR_2330 + ": 1,825 lbf allowable tension at a 1.5 in member thickness "
-                  "(the same at C_D 1.0 and 1.6), 2,000 lbf at C_D 1.0 / 2,145 lbf at "
-                  "C_D 1.6 at 3.0 in — the 1.5 in row is recorded as the conservative one. "
-                  "TWO CONDITIONS RIDE WITH IT and neither is met as catlin frames today: "
-                  "§3.2.2 requires SG >= 0.50 and this house is SPF at 0.42, and §4.1 "
-                  "tabulates for continuously dry interior service, so an open deck takes "
-                  "the NDS wet-service C_M off the number. Anchorage to the framing is "
-                  "§4.1.3's, not the table's"),
+        uplift_lb=6_785.0,
+        load_duration_factor=1.6,
+        species="DF-L, SG 0.50 — specified for these two pillars to meet §3.2.2; the "
+                "19 percent moisture-content half of that clause is NOT met",
+        fasteners="factory-supplied 1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws, "
+                  "16 into the member in the U-channel (inverted, the joist pack) and 14 "
+                  "into the member in the straps (the 6x6)",
+        citation=("ICC-ES ESR-2604 (Simpson Strong-Tie column caps and post caps), "
+                  "Table 2, CCQ4.62-5.50SDS row — read 2026-09-03. Uplift 6,785 lbf at "
+                  "C_D 1.6 (already carries the wind/seismic increase; no further duration "
+                  "increase applies), download 30,940 lbf at C_D 1.0. Table 2 publishes NO "
+                  "LATERAL VALUE for the CCQ series — lateral is tabulated only for the "
+                  "AC/ACE/ACH, LPC, PC/EPC and BC/BCS caps of Tables 3-6 — so "
+                  "``lateral_f1_lb`` is left None here rather than invented, and any "
+                  "lateral demand at this base needs a different part or an engineered "
+                  "detail. TWO CONDITIONS RIDE WITH THE NUMBER: §3.2.2's SG >= 0.50 is met "
+                  "only because these two pillars are specified DF-L rather than the "
+                  "house's SPF, and its 19 percent maximum moisture content is not met by "
+                  "an open deck frame at all. The INVERTED orientation is not evaluated in "
+                  "this report."),
     ),
 )
 
@@ -550,8 +581,12 @@ PC6Z_POST_CAP = StructuralHardware(
 # the beam seat sized to the member rather than to the post.
 #
 # It is what closes ``checks/structural/uplift_path``'s post-to-beam leg at those two joints:
-# both stand on pinned ABU66SS bases through the porch decking, so unlike the cast columns
-# there is no doweled lap in a pour to hold the beam down, and the cap is the hold-down.
+# both centre pillars bear on the porch FRAMING (since 2026-09-03 — see
+# params/sunken_garden.py and engineering/post_bearing.py), so unlike the cast columns there
+# is no doweled lap in a pour to hold the beam down, and the cap is the hold-down.
+#
+# ** READ THE SPECIES CONDITION BELOW BEFORE QUOTING THIS PART'S NUMBER. ** ESR-2604 §3.2.2
+# governs every connector in this report, and it is not met by catlin's frame.
 CCQ46SDS_POST_CAP = StructuralHardware(
     tag="simpson-ccq46sds25-column-cap",
     name="CCQ46SDS2.5 column cap (4x beam on 6x6 post)",
@@ -563,20 +598,36 @@ CCQ46SDS_POST_CAP = StructuralHardware(
            "seating a nominal 4x (3-1/2 in) beam on a 6x6 post, factory-supplied with "
            "1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws; selected over the PC6Z "
            "because that cap is published for equal post and beam widths",
-    # ICC-ES ESR-2604 (Simpson column caps and bases). The DF/SP column is what the report
-    # leads with; the SPF/HF column is what this joint gets, because the POST is a 6x6 SPF
-    # and the fasteners into it are what the value is limited by.
+    # ICC-ES ESR-2604 Table 2, CCQ46SDS2.5 row, re-read 2026-09-03 against the PDF.
+    #
+    # ** THE NUMBERS HERE WERE WRONG UNTIL THAT RE-READ. ** This record carried 3,285 lbf
+    # uplift and 1,670 lbf lateral, attributed to an "SPF/HF column" of the CCQ table.
+    # Table 2 HAS NO SPECIES COLUMNS — its four load columns are CCQ/ECCQ uplift and
+    # CCQ/ECCQ download — and it publishes NO LATERAL VALUE FOR THE CCQ SERIES AT ALL
+    # (lateral is tabulated only for the AC/ACE/ACH, LPC, PC/EPC and BC/BCS caps, Tables
+    # 3-6). Neither 3,285 nor 1,670 appears anywhere in the report. ``lateral_f1_lb`` is
+    # left None deliberately: absence is the fact, per AllowableLoads' own docstring.
     allowable=AllowableLoads(
-        uplift_lb=3_285.0,
-        lateral_f1_lb=1_670.0,
+        uplift_lb=6_785.0,
         load_duration_factor=1.6,
-        species="SPF/HF (SG 0.42)",
+        species="NOT MET BY THIS HOUSE — see citation; the table is not species-indexed",
         fasteners="factory-supplied 1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws, "
-                  "16 to the post and 8 to the beam",
-        citation=("ICC-ES ESR-2604 (Simpson Strong-Tie column caps/bases), CCQ table, "
-                  "CCQ46SDS2.5 row, SPF/HF column — read 2026-09-03. Uplift already "
-                  "carries the wind/seismic increase; no further duration increase "
-                  "applies to it."),
+                  "16 into the BEAM and 14 into the POST (Table 2's own two columns; "
+                  "this record previously said 16 and 8)",
+        citation=("ICC-ES ESR-2604 (Simpson Strong-Tie column caps and post caps), "
+                  "Table 2, CCQ46SDS2.5 row — read 2026-09-03. Uplift 6,785 lbf at "
+                  "C_D 1.6 (already carries the wind/seismic increase; no further "
+                  "duration increase applies), download 24,065 lbf at C_D 1.0. "
+                  "THE CONDITION THAT RIDES WITH IT, and it is not met as catlin frames "
+                  "today: §3.2.2 requires the wood members to be sawn or engineered "
+                  "lumber of specific gravity >= 0.50 at a maximum moisture content of "
+                  "19 percent, and these pillars are SPF at 0.42 standing open to the "
+                  "weather. The report carries no reduction factor to SPF for this "
+                  "series, so there is no published value for the joint as built — the "
+                  "same gap ESR-1622 leaves for the ABU66SS above. Note also that "
+                  "ESR-2604 says nothing about installing a CCQ inverted, so the "
+                  "cap-at-the-top orientation used here is the tabulated one and any "
+                  "base-side use of this family would be outside the report's figures."),
     ),
 )
 
@@ -1076,7 +1127,7 @@ STRUCTURAL_HARDWARE: tuple = (
     CS16_COIL_STRAP,
     ABU_POST_BASE,
     ABU44_POST_BASE,
-    DTT2Z_POST_TENSION_TIE,
+    CCQ462_550_POST_TENSION_TIE,
     POST_BASE_ANCHOR_BOLT,
     PC6Z_POST_CAP,
     CCQ46SDS_POST_CAP,

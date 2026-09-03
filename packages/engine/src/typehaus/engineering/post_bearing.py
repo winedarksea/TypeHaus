@@ -118,8 +118,8 @@ def _section_in(size: str | None) -> tuple[float, float] | None:
 
 
 def _node_xy(ctx: EngineeringContext) -> dict[str, tuple[float, float]]:
-    return {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
-            if e.element_kind == "Node"}
+    return {e.tag: e.position.xy_m  # type: ignore[attr-defined]
+            for e in ctx.plan.all_elements() if e.element_kind == "Node"}
 
 
 def _beam_reaction_lb(ctx: EngineeringContext, beam: Any, post: Any,

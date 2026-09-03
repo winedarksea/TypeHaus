@@ -153,3 +153,30 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
         f"R311.3.1 allows {MAX_NONREQUIRED_STEP_DOWN_IN}\" for a door that is not the "
         "required egress door"
     )
+
+
+def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan):
+    """`code.R311_3_exterior_landing` must SEE the curb the test above measures.
+
+    It did not. The check read `storey.elevation + sill_m`, but `sill_m` is stated up from
+    the host wall's framing base (`ResolvedWall.base_ref_z_m`), and W-B-S3-FR stands on the
+    7 1/4" garden curb (`Wall.base_elevation`). So the one door in this house with a raised
+    threshold was reported as landing "0.0\" below the threshold" — flush — and the entire
+    flood-threshold decision above was invisible to the check that owns R311.3.1's
+    allowance. It was invisible in both directions: a court floor dropped another riser
+    would still have read 0.0\". The test above pins the geometry; this one pins that the
+    check can see it.
+    """
+    from typehaus.checks import build_context
+    from typehaus.checks.code.mn_residential.egress import exterior_door_landing
+
+    ctx, _findings = build_context(catlin_plan)
+    finding = next(f for f in exterior_door_landing(ctx) if PATIO_DOOR in f.message)
+
+    door = next(o for o in ctx.model.openings if o.tag == PATIO_DOOR)
+    wall = next(w for w in ctx.model.walls if w.tag == door.host_wall)
+    garden = next(s for s in ctx.model.solids if s.tag == GARDEN_FLOOR)
+    expected = ((wall.base_ref_z_m + door.sill_m) - garden.z1_m) / INCH
+
+    assert expected > 1.0, "the curb is the point of this test; it has gone flush"
+    assert f"{expected:.1f}\"" in finding.message, finding.message

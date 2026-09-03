@@ -1134,6 +1134,20 @@ EQUIP_STAND_ALUM = Assembly(
 )
 
 
+# The two CENTRE pillars, split off POST_WHITE_PAINT on 2026-09-03 for one reason: species.
+# POST_WHITE_PAINT stays on the two interior stairwell posts (P-M-STRWELL-N/S), which carry
+# no rated connector and have no reason to change stock. Same 5.5" body, same white, same
+# section — only the lumber under the paint differs. See post-df-paint-white above.
+POST_WHITE_PAINT_DF = Assembly(
+    tag="POST_WHITE_PAINT_DF",
+    layers=(
+        Layer(name="post-df-paint-white", material_ref="post-df-paint-white",
+              thickness=inch(5.5), function=LayerFunction.STRUCTURE),
+    ),
+    # (single literal: the editable dialect forbids concatenated strings)
+    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2 conditions every cap and base in that report on SG >= 0.50 at 19% maximum moisture content, and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the inverted CCQ4.62-5.50SDS base under them had any published value; the moisture half of that clause is still not met by an open deck frame and rides on the seal. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a 4\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material); the inverted cap's U-channel floor plate lies on the pack and the post stands on that plate, which is a bearing plate and not a standoff, so the joint is still wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
+)
+
 # Guards were split off POST_WHITE_PAINT (they shared it with the balcony's
 # 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
 # Metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
@@ -3313,6 +3327,18 @@ MATERIALS = [
     Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
              density=500.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
              source="balcony 6x6 pillars, exterior white paint; painted softwood ~1 perm-in"),
+    # The two CENTRE balcony pillars only, and the species is the whole point of the tag.
+    # Every Simpson cap and base in ICC-ES ESR-2604 is conditioned by §3.2.2 on wood of
+    # specific gravity >= 0.50; SPF is 0.42, so while these pillars were SPF neither the
+    # CCQ46SDS2.5 cap at their tops nor anything at their bases had a published value.
+    # DF-L at 0.50 is the cheapest thing that fixes that, and it fixes both ends at once.
+    # NOT `species=`: that field admits a material to the species-split `wood_surfaces`
+    # takeoff (model/materials.py), which is a millwork road this structural post has no
+    # business on. Denser and therefore slightly less insulating than the SPF it replaces,
+    # which matters to nothing here — an open-air pillar is in no envelope assembly.
+    Material(tag="post-df-paint-white", name="White-painted DF-L (SG 0.50)", r_per_inch=1.00,
+             density=530.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
+             source="balcony centre 6x6 pillars PT-SG-BR2/BF2, exterior white paint over Douglas Fir-Larch specified at specific gravity 0.50 so ESR-2604 §3.2.2 is met at both the CCQ46SDS2.5 cap above and the inverted CCQ4.62-5.50SDS base below; painted softwood ~1 perm-in"),
     # retaining-block (raised garden outer face), polycarbonate-multiwall (breezeway
     # glazing) and aluminum-extrusion (breezeway glazing trim) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
@@ -3681,6 +3707,7 @@ ASSEMBLIES = [
     BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
+    POST_WHITE_PAINT_DF,
     EQUIP_STAND_ALUM,
     ELM_TIMBER,
     BEAM_LVL,

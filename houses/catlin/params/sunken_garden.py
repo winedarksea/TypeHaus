@@ -105,11 +105,12 @@ class SunkenGardenSpec:
     # all four at once.
     porch_front_edge_offset_in: float = 8.0
     # How far south of the porch's front BEAM plane the balcony's front pillar row stands.
-    # Landing the row on the beam plane itself would make PT-SG-BF2 a 6x6 bearing through
-    # one 2x8 porch joist onto BM-SG-FRW/FRE — ~315 psi of cross-grain bearing at the base
-    # and ~385 psi where the joist crosses the beam, against an Fc-perp of 425 psi (SPF).
-    # Moving the row out puts BF2 straight onto the concrete column instead (~105 psi), and
-    # the balcony gains a 12" drip overhang past the porch floor.
+    # This is about BF1/BF3 only — the CORNER pillars. PT-SG-BF2 reads `_y_bf2` and stands
+    # on the front beam axis, bearing on the porch's 3-ply joist pack; what that costs is
+    # computed by `engineering/post_bearing.py` and worked by hand in
+    # notes/centre_pillar_bearing.md, not estimated here.
+    # The overhang itself is a weather detail: the balcony gains a 12" drip past the porch
+    # floor, so the deck edge sheds clear of the beam and column tops below it.
     balcony_front_overhang_ft: float = 1.0
     footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
     footing_thickness_in: float = 12.0
@@ -132,7 +133,14 @@ class SunkenGardenSpec:
     # 109.4375" is ``params/main_deck.BASEMENT_DATUM``; this module may import, but it is one
     # house-wide number transcribed rather than a second derivation, and
     # ``integrity.basement_bearing_seat`` checks the two agree. ``SL-SG-FLOOR`` and
-    # ``SL-B-FLOOR`` top out on exactly the same plane, which IS the walkout at D-B-PATIO.
+    # ``SL-B-FLOOR`` top out on exactly the same plane — but that plane is NOT the walkout
+    # at D-B-PATIO, and reading it as one is how you talk yourself into moving this court.
+    # W-B-S2/W-B-S3 are 7 1/4" curbs (``storeys/basement.py``); W-B-S3-FR stands on one at
+    # ``base_elevation=inch(-102.1875)`` and carries the door at ``sill_height=inch(0)``.
+    # **The threshold is already 7 1/4" above this floor** — that step IS the flood
+    # threshold, it is pinned by ``test_the_flood_threshold_stays_under_one_riser_of_step_down``
+    # and it has only 1/2" of R311.3.1 left, so the court floor cannot drop without the
+    # door getting a step of its own.
     #
     # The retained height on W-SG-E2/S/W2 is 7.09', well past the 48" that sends R404.1.1 to
     # an engineered design, so those three walls stay engineered and
@@ -224,7 +232,8 @@ class SunkenGardenSpec:
     # The four CORNER pillars are 12" round reinforced concrete columns, FIXED at the base,
     # and they are the balcony's entire lateral system — the eight knee braces and two E-W
     # brace rails they replaced are deleted (2026-09-03). The two CENTRE pillars stay wood
-    # 6x6 on pinned ABU66SS bases, leaning columns tied in by the deck diaphragm.
+    # 6x6 bearing directly on the porch framing with a DTT2Z tension tie holding each down —
+    # leaning columns, tied in by the deck diaphragm.
     #
     # 12" is what 2" of cover needs (a 6-5/8" bar circle on a #5 cage inside #3 ties), which
     # is the hundred-year number rather than ACI's 1-1/2" minimum. It is also the same tube
@@ -1796,7 +1805,7 @@ _PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
 # 285 — d/c 2.36, the worst number in the garden frame, and nothing in the model saw it
 # until that calc existed. On the axis the post is over the bearing itself, the joist ply
 # pack takes the load into the beam it already lands on, and the same limit state comes back
-# at d/c 0.79.
+# at d/c 0.76.
 #
 # ** IT ALSO MAKES THE PILLAR A GUARD POST. ** x = 18'-0" is an RL-SG-PORCH south-leg post
 # station, and at the axis the pillar coincides with it exactly. The guard's rails frame
@@ -1813,8 +1822,9 @@ _y_bf2 = _y_ax_front + _BF2_NORTH_OF_FRONT_AXIS_IN / 12.0
 # base (doweled into the 12" wall tops of W-SG-W1/E1, whose axis they stand on, so the round
 # is flush with both wall faces) are the balcony's entire lateral system, which is what let
 # the eight knee braces and two E-W brace rails be deleted outright. The centres stay wood
-# 6x6 on pinned ABU66SS bases — leaning columns, tied in by the deck diaphragm — because
-# nothing asks them to carry moment and a 6x6 is a third the cost of a formed column.
+# 6x6 bearing wood-on-wood with a DTT2Z tension tie — leaning columns, tied in by the deck
+# diaphragm — because nothing asks them to carry moment and a 6x6 is a third the cost of a
+# formed column.
 #
 # Same tags and same uids throughout: these are the same six elements, re-sized.
 _CORNER_PILLAR_INDICES = (1, 3)
@@ -1862,10 +1872,10 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
 #
 # A field detail the model has no field for, so it lives here and in POST_WHITE_PAINT's
 # ``source``: **cut a 4"-square hole through the composite plank at PT-SG-BR2 and at
-# PT-SG-BF2 so each ABU66SS bears on the framing below, not on the plank.** Trex's own
+# PT-SG-BF2 so each POST bears on the 3-ply joist pack below, not on the plank.** Trex's own
 # specification says composite decking "cannot be used as structural material; any load
 # bearing area will need to be framed and supported before the composite material can be
-# attached". Strength is not the issue — the base spreads ~50 psi on the plank. The two
+# attached". Strength is not the issue — a 6x6 spreads ~85 psi on the plank. The two
 # that are:
 #   * CREEP. Sustained load at the 140-160 degF summer surface temperature of a dark
 #     composite plank settles these two pillars relative to the four that bear on concrete,
@@ -1874,13 +1884,15 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
 #   * REPLACEABILITY. The plank is a wear layer. You cannot pull a board out from under a
 #     6x6 carrying a third of a balcony without shoring the balcony first.
 #
-# **BF2's 3" is also what keeps it off the beam cap.** At the front beam AXIS the pillar
-# would land square on TR-SG-CAP-FRW/FRE; 3" north it bears on the joists behind the cap's
-# north turn-down. That rule is not decorative — a 304-stainless base bearing on 0.019"
-# aluminium coil in a wet exterior location pits the aluminium (it is anodic), and
-# anchoring through it penetrates the butyl tape that IS the dielectric between that coil
-# and the copper-treated KDAT. A base that ever does cross a cap needs an EPDM or HDPE
-# isolator pad and a written detail.
+# **BF2 NOW LANDS ON THE BEAM CAP, AND THAT NEEDS THE ISOLATOR.** Its 3" offset used to keep
+# it north of TR-SG-CAP-FRW/FRE's north turn-down; on the beam axis it sits square on the cap.
+# The hazard is unchanged and so is the answer this comment has always carried: a stainless
+# part bearing on 0.019" aluminium coil in a wet exterior location pits the coil (it is
+# anodic), and anchoring through it penetrates the butyl tape that IS the dielectric between
+# that coil and the copper-treated KDAT. **An EPDM or HDPE isolator pad goes under the DTT2Z's
+# seat and its rod penetration is sealed**, which is the written detail the old rule said such
+# a crossing would need. It was answered rather than avoided — see
+# `_BF2_NORTH_OF_FRONT_AXIS_IN` for why the crossing is worth making.
 
 SECOND_NODES = [
     Node(uid="SGNB01AAAA", tag="N-SGB-NW", position=pt(ft(_x_ax_w), ft(_y_in_n))),
