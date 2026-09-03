@@ -214,3 +214,24 @@ def test_catlin_is_clean(catlin_plan) -> None:
     assert not [f for f in findings if f.result is Result.FAIL], \
         [f.message for f in findings if f.result is Result.FAIL]
     assert any(f.result is Result.PASS for f in findings)
+
+
+def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model) -> None:
+    """§6a of ``notes/sunken_garden_court_free_body.md``, both halves.
+
+    The 3" is a durability decision above the 2" Code minimum, and it is paid for in section:
+    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.81 -> 0.90. Pinned because a
+    later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 11% of capacity
+    back and put the note's whole selection table out of date — `#6 @ 12"` does not carry
+    this moment at 3" cover, and did at 2".
+    """
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+
+    results = EngineeringResults(EngineeringContext(
+        plan=catlin_plan, model=catlin_model, soil_class="GM"))
+    for tag in ("W-SG-W2", "W-SG-E2", "W-SG-S"):
+        stem = next(s for s in results[f"retaining_wall/{tag}"].limit_states
+                    if s.name == "stem flexure")
+        assert 'cover 3.00"' in stem.citation, stem.citation
+        assert stem.capacity == pytest.approx(19_755, rel=0.002)
+        assert stem.ratio == pytest.approx(0.903, abs=0.005)

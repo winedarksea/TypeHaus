@@ -405,8 +405,8 @@ _CAST_COLUMN_CAGE_HDG = ReinforcementSpec(
 # diaphragm at the head and no cantilever to carry.
 _BRACED_STEM_STEEL = ReinforcementSpec(
     bars=(BarSpec(role="vertical", bar=6, spacing=inch(38.0)),),
-    cover=inch(2.0),
-    source="IRC Table R404.1.2(8), braced top and bottom; verbatim from the string beside it",
+    cover=inch(3.0),
+    source="IRC Table R404.1.2(8), braced top and bottom; 3\" cover with the rest of the court (see _RET_STEM_STEEL)",
 )
 
 _RET_REBAR = '#6 @ 10" o.c.'
@@ -417,7 +417,20 @@ _RET_STEM_STEEL = ReinforcementSpec(
         BarSpec(role="horizontal", bar=4, spacing=inch(8.0),
                 note="ACI 318-19 §11.6.1 temperature and shrinkage, both faces"),
     ),
-    cover=inch(2.0),
+    # ** 3", AND IT IS BOUGHT WITH SECTION RATHER THAN FOUND LYING AROUND. **
+    # ACI 318-19 Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather, and
+    # `structural.concrete_cover_meets_minimum` grades against that. This is 3" — a
+    # durability decision, not a code one, and the reason is class C2: these six walls take
+    # deicing salt off the drive above and hold it against their faces in a court that
+    # cannot drain to daylight. Cover is the only term in the whole chloride problem that
+    # buys DISTANCE; every other lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
+    #
+    # It costs 1" straight off `d`, which is ~11% of the stem's flexural capacity: the
+    # #6 @ 10" section goes from d/c 0.81 to 0.90 (notes/sunken_garden_court_free_body.md
+    # §6). That is a real spend of margin and it is why this number is authored on the
+    # SCHEDULE and not on the mix — the mix pours the footings too, and a 3" default there
+    # is free where here it is not.
+    cover=inch(3.0),
     lap_class="B",
     source="sized in notes/sunken_garden_court_free_body.md §6",
 )

@@ -353,21 +353,56 @@ outside the Code.**
 
 **Reinforced**, ACI 318 §22.3, φ = 0.90. Steel on the **retained** face — that is where the
 cantilever puts the tension, and putting it on the wrong face is the classic way a correctly
-sized wall falls over. Cover 2" (ACI Table 20.5.1.3.1, earth and weather, #6 and larger;
-also IRC Table R404.1.2(8) footnote i's outside-face figure for bars larger than #5):
+sized wall falls over. Cover **3"**, which is not the Code minimum and is the point: ACI
+Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather (as does IRC Table
+R404.1.2(8) footnote i for bars larger than #5), and `structural.concrete_cover_meets_minimum`
+grades against that 2". The extra inch is bought for class **C2** — see §6a.
 
 | schedule | Aₛ in²/ft | d in | a in | φMn ft-lb/ft | d/c | |
 |---|---|---|---|---|---|---|
-| `#6 @ 16"` | 0.330 | 9.625 | 0.388 | 14,005 | 1.27 | ✗ |
-| `#5 @ 10"` | 0.372 | 9.688 | 0.438 | 15,746 | 1.13 | ✗ |
-| `#6 @ 12"` | 0.440 | 9.625 | 0.518 | 18,545 | 0.96 | ✓ but 4% |
-| **`#6 @ 10"`** | **0.528** | **9.625** | **0.621** | **22,131** | **0.81** | **✓ selected** |
-| `#6 @ 8"` | 0.660 | 9.625 | 0.777 | 27,433 | 0.65 | ✓ more than needed |
+| `#6 @ 16"` | 0.330 | 8.625 | 0.388 | 12,520 | 1.43 | ✗ |
+| `#5 @ 10"` | 0.372 | 8.688 | 0.438 | 14,177 | 1.26 | ✗ |
+| `#6 @ 12"` | 0.440 | 8.625 | 0.518 | 16,565 | 1.08 | ✗ |
+| **`#6 @ 10"`** | **0.528** | **8.625** | **0.621** | **19,755** | **0.90** | **✓ selected** |
+| `#6 @ 8"` | 0.660 | 8.625 | 0.776 | 24,463 | 0.73 | ✓ more than needed |
 
-`#6 @ 12"` is the arithmetic minimum and 4% is not a margin for a screening on presumptive
-soil values. `#6 @ 8"` buys nothing this design needs. **`#6 @ 10" o.c.` is the selection.**
+**`#6 @ 10" o.c.` is the selection, and at 3" cover it is now the arithmetic minimum rather
+than one step above it.** `#6 @ 12"` carried a 4% margin at 2" cover and does not carry the
+moment at all at 3" — the one row in this table that changed sides. `#6 @ 8"` buys nothing
+this design needs.
 
-**These numbers moved on 2026-09-03, and the selection did not.** The table was worked at
+### 6a. What the third inch costs, and why it is spent anyway
+
+Cover comes straight off `d`, so this is not a free durability upgrade — it is a purchase,
+and the price is legible: `d` 9.625" → 8.625", φMn 22,131 → 19,755 ft-lb/ft, **d/c 0.81 →
+0.90**. An 11% capacity write-down on the same steel.
+
+It is spent because cover is the only term in the chloride problem that buys **distance**.
+Every other lever this wall pulls buys *time* against a front that is still advancing —
+w/cm 0.40 slows diffusion, the 25% Class F fly ash refines the pore structure, the ASTM A767
+galvanizing raises the chloride threshold the bar can tolerate. Cover is what sets how far
+the front has to travel before any of that matters, and it is the one term that cannot be
+added later. These six walls are class **C2**: they take deicing salt off the drive above,
+and they hold it in a court that has no grade to drain to — the water leaves through
+`DRW-SG-MAIN` or it sits there.
+
+The wall still passes at 0.90, and the structure's governing limit state is unchanged: base
+restraint at FS 1.58, d/c 0.95 (§4). Nothing about this trade moves the number that governs.
+
+It is authored on the **schedule** (`_RET_STEM_STEEL.cover`) and not on the mix, and that
+distinction is load-bearing. `CATLIN_EXPOSED_MIX` pours the footings under these walls too,
+where 3" is the Code figure and free; on the stem it costs 11%. One mix, two faces, two
+covers — which is exactly why `resolve/concrete.cover_for` reads the element's schedule
+before its mix.
+
+**This table has been re-worked twice on 2026-09-03, and the selection survived both.**
+First at 5,000 psi instead of 3,000, then at 3" cover instead of 2". The two pull opposite
+ways — the mix added 2-3% of capacity, the cover took 11% back — and `#6 @ 10"` is the answer
+to all three versions of the question. What did change is its standing: it used to be the
+comfortable choice above a working `#6 @ 12"`, and it is now the only schedule below `#6 @ 8"`
+that carries the moment.
+
+The mix half of that, for the record. The table was originally worked at
 IRC Table R402.2's presumptive 3,000 psi, because until `ConcreteSpec` existed there was
 nowhere for a pour to state a mix and the engine hardcoded that value for every concrete
 calc it ran. `SUNKEN_GARDEN_WALL` now states the 5,000 psi F3+C2 mix it is actually poured
@@ -380,16 +415,17 @@ Checked alongside:
 * **tension-controlled**, so φ = 0.90 is the right factor. `β1` is **0.80** at 5,000 psi,
   not 0.85 — ACI 318-19 Table 22.2.2.4.3 steps it down 0.05 per 1,000 psi above 4,000, and
   taking 0.85 here is the standard slip. `c = a/β1 = 0.621/0.80 = 0.777"`,
-  `εt = 0.003 (9.625 − 0.777)/0.777 = 0.0342`, far past 0.005.
+  `εt = 0.003 (8.625 − 0.777)/0.777 = 0.0303`, far past 0.005.
 * **minimum reinforcement**, ACI 318-19 §11.6.1: ρl ≥ 0.0015 for bars larger than #5 →
-  0.216 in²/ft. §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, and **at
-  5,000 psi this wall is no longer that wall**: `Vu = 1.6 × 3,226 = 5,162 lb/ft` against
-  `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 9.625 = 6,126 lb/ft`. It was over that line at
-  3,000 psi (4,745) and is under it now. **0.528 clears both figures either way**, so the
-  selection never depended on which side of §11.6.2 the wall fell — worth stating, because
-  a reader comparing this note to its earlier revision will find the clause changed sides.
-* **one-way shear** at the base: `φVc = 12,251 lb/ft` against `Vu = 5,162 lb/ft`,
-  d/c 0.42 ✓.
+  0.216 in²/ft. This is a fraction of the GROSS section and so does not move with cover.
+  §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, and this wall is still
+  under that line — but by much less than it was: `Vu = 1.6 × 3,226 = 5,162 lb/ft` against
+  `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 8.625 = 5,489 lb/ft`, a 6% margin where 2" cover
+  gave 19%. **0.528 clears both figures either way**, so the selection has never depended on
+  which side of §11.6.2 the wall falls — worth stating twice over, because a reader comparing
+  revisions of this note will find the clause changing sides on both f'c and cover.
+* **one-way shear** at the base: `φVc = 10,978 lb/ft` against `Vu = 5,162 lb/ft`,
+  d/c 0.47 ✓.
 
 **Authoring reinforcement makes the SECTION work. It does not make the DETAILING anything
 this engine has looked at** — bar development into the footing, the corner cold joints, the
