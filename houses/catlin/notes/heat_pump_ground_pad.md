@@ -1,7 +1,9 @@
 # Heat pumps on a ground pad — siting, pad, stands, line sets
 
 Model: `params/sunken_garden.py` (`HP_PAD`, `_HP_STAND_AT`, `HP_STAND_LEGS`,
-`HP_STAND_ANCHORS`), `plan/electrical.py` (the two units and their disconnects),
+`HP_STAND_ANCHORS`) for the pocket pair and `params/hp3_pad.py` for system 3's north-side
+pad (added 2026-09-04 — see the section on it), `plan/electrical.py` (all three units and
+their disconnects),
 `plan/assemblies.py` (`HP_PAD_ON_GRADE`, `EQUIP_STAND_ALUM`), `plan/site.py` (the pad's
 fall). Supersedes `notes/heat_pump_deck_mounting.md`, which is kept because the rule it
 established — decision #64, a fastener through a waterproof deck lands in a sacrificial
@@ -163,7 +165,7 @@ costs: HP1 has 2" of slack there against its published 4" and HP2 has none. The 
 that actually governs performance went the other way — HP2's discharge from 16 2/5" to
 41 15/16", and HP1's onto open ground.
 
-## The pads — two of them
+## The pads — two in the pocket (and a third on the north side, below)
 
 `SL-SG-HPPAD` and `SL-SG-STAIRPAD`, both on assembly `HP_PAD_ON_GRADE`: 4" unreinforced
 concrete on 4" of open-graded stone, both topped at **-2'-8"**, two inches proud of the
@@ -258,6 +260,101 @@ the open question the deck note left ("verify availability with Gree"). Defrost 
 drips onto the pad and runs east onto gravel: no drain pan, no piped condensate, no heater
 cable, no `pan_drain_ref`. `EQ-M-HP3-OD` has stood at grade on the north side on exactly
 those terms since it was authored.
+
+## System 3, and the pad it did not have (2026-09-04)
+
+`EQ-M-HP3-OD` (Gree Sapphire R32 9k, 78 lb) has stood at grade on the north side since it
+was authored, and the paragraph above says so — "on exactly those terms". **It was standing
+on nothing.** No pad, no stand, and no `mount.elevation` at all, so a `FLOOR` mount put the
+cabinet's base on the `main` datum at 0'-0" — 2'-10" in the air over bare soil. Nothing
+reported it: `mep.deck_equipment_support_coverage` sees no deck equipment in this house any
+more, and no check asks what a floor-mounted exterior machine bears on. It is now
+`params/hp3_pad.py`, and `test_catlin_outdoor_structures.py` holds it to the same pad top
+and stand height as the pocket pair, so all three cabinets' bases are one number: -2'-8"
+plus 18" is -1'-2".
+
+Three other figures on that element were stale rather than chosen, and giving it a pad is
+what surfaced them.
+
+| | was | is | why |
+|---|---|---|---|
+| `footprint` | 31 x 13 | 34 3/8 x 14 51/64 | the outline the TYPE record shed on 2026-08-31 when the SAP09 submittal replaced a placeholder. The **type's** footprint is what geometry reads (`resolve/placeables.py::_local_footprint` prefers it), so the plan has been drawing the true cabinet while every comment said 31 x 13. Restated, not changed |
+| `rotation` | absent = `deg(0)` | `deg(180)` | `deg(0)` is the convention HP1/HP2 use to face **south**: local -y is the discharge. Here it aimed the fan at a house wall 1 15/16" away |
+| `position` | (3.44566 m, 11.3941 m) | (11'-5 3/16", 37'-10 41/64") | derived instead of authored: west face on the round foot at x 10'-0", back face 8" off the cladding. A 4 1/16" move north and 1 9/16" east |
+
+### The slot, and what fits in it
+
+| | |
+|---|---|
+| south | the house's north cladding face, y 36'-7 1/4" (`_WALL_OUTBOARD_IN` off the y=36' sheathing line) |
+| north | the garage's south cladding face, y 40'-7 3/4" (`params/breezeway.py::_GARAGE_CLADDING_Y`) |
+| west | `D-M-ENTRY`, near jamb x 9'-6", and the R311.3 landing that door owes (x 6'-6"..9'-6") |
+| east | open, out to the front walk at x 14'-0" |
+
+**48 1/2" of slot and a 14 51/64" cabinet leaves 33 3/4" to split between the back and the
+discharge.** It is split 8" / 25 11/16". Neither figure is a published minimum for this
+chassis — **Gree's clearance diagram for the SAP09 could not be sourced**, the same 403 wall
+this note hit for the FXU24/MUL30 stacking allowance — so the 8" is HP2's published 6" plus
+two, taken because the slot has the room and because the pad's south edge then clears the
+legs by 2 5/8" instead of a scant half inch. The discharge gets the rest.
+
+**The discharge faces the garage, and that is a wall too.** A stream crossing 25 11/16" at a
+parallel wall recirculates to some degree, and there is no arrangement in a 4' slot that
+avoids it; what the turn buys is 25 11/16" instead of 1 15/16", and a slot open at both ends
+for the return. Facing the house instead would have put the plume under `WIN-M-MUD` and
+beside the entry door. If it matters in use the move is the same one the pocket pair have
+named: an absorptive facing on the surface the stream lands on.
+
+### The pad
+
+`SL-M-HP3PAD`, on `HP_PAD_ON_GRADE` like both pocket pads: x 9'-9"..13'-1", y 36'-10
+1/4"..38'-11" — **6.9 sf, 0.08 cy at 4"**, topped at -2'-8". Its **south** edge stops 3"
+short of the house cladding, the convention `SL-SG-HPPAD` set (no isolation joint to detail,
+and the wall's runoff lands in gravel). Its **north** edge is not that convention against
+the garage: it stops 20 3/4" short, because the pad is sized to the stand rather than to the
+slot, and that 20 3/4" is the way through. It falls 1" from the south-west corner to the
+north-east — away from the house, toward the open east end — authored as an
+`ImperviousSurface` in `plan/site.py` where `code.R401_3_impervious` reads it. North would
+have been the garage stem, which is what the front walk's own note declines to drain into.
+
+No XPS, no vapour retarder, no frost footing, for the pocket pads' reasons exactly. The
+energy check had to be told about it: `checks/code/mn_energy.py`'s
+`_FREESTANDING_SLAB_PREFIXES` is a naming convention, `SL-M-` is the house's own storey key,
+and this pad graded as a conditioned slab edge at R-1.2 against R-10 until it was named
+there in full.
+
+### The stand — and the one departure from the pocket pair
+
+Four 2" aluminium legs (`PT-M-HP3-L1..4`), 18", on `EQUIP_STAND_ALUM`, one
+`SS316-WEDGE-38x3` anchor each (`CN-M-HP3-A1..4`). Twelve anchors in the house now, not
+eight.
+
+**The legs are NOT the feet here, and that is deliberate.** The pocket stands put a leg
+directly under each published foot hole, which the note above calls the whole simplification
+the move to grade bought. It is available there because Gree publishes a foot pattern for
+the FXU24 (29 3/4 x 15 9/16) and the MUL30 (25 x 15 19/32). **No mounting-hole drawing for
+the SAP09 chassis could be sourced**, so a leg on an invented pitch would be asserting a
+dimension nobody read.
+
+So this stand is specified the way it is actually bought: **two rails running the depth way
+at 26" centres, 17 1/2" long, and the cabinet's own feet bolt to the rails wherever its
+pitch puts them.** The four legs are the rails' ends. 17 1/2" is chosen against the two
+patterns that *are* published — both ~15 9/16" across the depth, an inch **wider** than the
+FXU24's own casing — so a rail sized to this cabinet's 14 51/64" could have missed its feet
+outboard on both sides. Whatever the SAP09's pitch turns out to be, it lands on the rail.
+Every leg's full 2" section is on the pad, by 2 5/8" at the tightest.
+
+### Still open on system 3
+
+**`ED-M-HP3-DISC` has the NEC 404.8(A) defect this note recorded and fixed for the other
+two, and it is NOT fixed here.** It hangs on `W-M-N2`'s exterior face at `ft(5)`, and
+`Mount.elevation` is storey-relative on a main-floor wall that is reached from grade at
+-2'-10" — so the handle is **7'-10" above the ground you operate it from**, against
+404.8(A)'s 6'-7". That is the same arithmetic that moved `ED-M-HP1-DISC` and
+`ED-M-HP2-DISC` down to 3'-6" on 2026-09-03, and nothing in the engine measures it. It is
+left as found rather than fixed in the same pass, because dropping it is a siting decision
+about the entry door's wall and not part of giving the machine a pad.
+
 
 ## Sound
 

@@ -996,3 +996,139 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
     # The doorway is exactly the flight's 36", and the two pieces do not overlap it.
     assert (stub.path[0].xy_m[1] - porch.path[-1].xy_m[1]) / FT == pytest.approx(3.0,
                                                                                 abs=1e-3)
+
+
+# ---------------------------------------------------------------------------------------
+# EQ-M-HP3-OD's pad and stand, north side (params/hp3_pad.py, added 2026-09-04)
+# ---------------------------------------------------------------------------------------
+# System 3's condenser has stood at grade since it was authored, and had nothing to stand
+# ON: no pad, no stand, and no ``mount.elevation``, so a FLOOR mount put its base on the
+# `main` datum — 2'-10" over bare soil. Nothing reported it, and that is the point of these
+# tests: ``mep.deck_equipment_support_coverage`` sees no deck equipment in this house any
+# more, and no check asks what a FLOOR-mounted exterior machine bears on. The coupling is
+# the same one SL-SG-HPPAD has, written across two modules that cannot import each other.
+_HP3_PAD = "SL-M-HP3PAD"
+_HP3_CAB_W_IN, _HP3_CAB_D_IN = 34.375, 14.796875
+_HP3_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
+_HP3_GARAGE_CLADDING_Y_IN = 40 * 12 + 7.75  # params/breezeway.py::_GARAGE_CLADDING_Y
+
+
+def test_hp3_stands_on_a_pad_at_the_same_top_and_height_as_the_pocket_pair(catlin_model
+                                                                          ) -> None:
+    """One pad top and one stand height across all three outdoor units.
+
+    -2'-8" + 18" = -1'-2", and every cabinet carries ``inch(-14)``. A third pad poured to
+    some other top would be invisible in the model and obvious on site.
+    """
+    pad = _solid(catlin_model, _HP3_PAD)
+    assert pad.category == "slab"
+    assert pad.z1_m / FT == pytest.approx(_HP_PAD_TOP_FT)
+    assert (pad.z1_m - pad.z0_m) / INCH == pytest.approx(4.0)
+    site_grade = catlin_model.plan.project.site.grade.meters
+    assert (pad.z1_m - site_grade) / INCH == pytest.approx(2.0)
+
+    legs = [s for s in catlin_model.solids if s.tag.startswith("PT-M-HP3-L")]
+    assert len(legs) == 4, [s.tag for s in legs]
+    for leg in legs:
+        assert leg.z0_m == pytest.approx(pad.z1_m), leg.tag
+        assert (leg.z1_m - leg.z0_m) / INCH == pytest.approx(_HP_STAND_IN), leg.tag
+        assert leg.assembly == "EQUIP_STAND_ALUM", leg.tag
+
+    storeys = {s.tag: s for s in catlin_model.plan.storeys}
+    unit = next(e for s in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(s.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP3-OD")
+    base = resolved_mount_elevation(storeys["main"], unit)
+    assert base == pytest.approx(max(leg.z1_m for leg in legs))
+    assert base / FT == pytest.approx(-1 - 2 / 12.0)
+    # Grade units drip onto their own pad, like the pocket pair.
+    assert not getattr(unit, "drain_pan", False)
+    assert getattr(unit, "pan_drain_ref", None) is None
+
+
+def test_hp3s_four_anchors_name_their_leg_and_the_pad(catlin_model) -> None:
+    """Same part and the same pairing as the eight in the pocket: an anchor naming a leg
+    but not the slab it is set into describes a fastener into nothing."""
+    anchors = [e for s in catlin_model.plan.storeys
+               for e in catlin_model.plan.storey_elements(s.tag)
+               if getattr(e, "tag", "").startswith("CN-M-HP3-A")]
+    assert len(anchors) == 4, [e.tag for e in anchors]
+    legs = {s.tag for s in catlin_model.solids if s.tag.startswith("PT-M-HP3-L")}
+    for anchor in anchors:
+        assert anchor.kind.value == "equipment_anchor", anchor.tag
+        assert anchor.size == "SS316-WEDGE-38x3", anchor.tag
+        assert _HP3_PAD in anchor.connects, anchor.tag
+        assert legs & set(anchor.connects), anchor.tag
+        assert anchor.elevation.meters / FT == pytest.approx(_HP_PAD_TOP_FT), anchor.tag
+
+
+def test_hp3s_stand_is_a_rail_pair_that_lands_wholly_on_its_pad(catlin_model) -> None:
+    """The one departure from SL-SG-HPPAD, and it is deliberate.
+
+    The pocket stands put a leg under each PUBLISHED foot hole, because Gree gives a foot
+    pattern for the FXU24 and the MUL30. No mounting-hole drawing for the SAP09 chassis
+    could be sourced, so this stand is specified the way it is bought: two 17 1/2" rails
+    running the DEPTH way at 26" centres, the cabinet's own feet bolting to them wherever
+    its pitch puts them. 17 1/2" is set against the two patterns that ARE published — both
+    ~15 9/16" across the depth, an inch wider than the FXU24's own casing — so a rail sized
+    to this cabinet's 14 51/64" could have missed its feet outboard on both sides.
+
+    What is asserted here is the geometry that has to hold whatever the pitch is: four legs
+    on one symmetric rectangle centred on the cabinet, longer across the depth than the
+    cabinet is deep, and every leg's full 2" section ON the pad.
+    """
+    from shapely.geometry import Polygon
+
+    unit = next(e for s in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(s.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP3-OD")
+    cx, cy = unit.position.xy_m
+    pad = Polygon(_solid(catlin_model, _HP3_PAD).outline)
+    legs = {s.tag: Polygon(s.outline) for s in catlin_model.solids
+            if s.tag.startswith("PT-M-HP3-L")}
+    want = {(cx + sx * 26.0 * INCH / 2.0, cy + sy * 17.5 * INCH / 2.0)
+            for sx in (-1, 1) for sy in (-1, 1)}
+    tol = 0.001 * INCH
+    for tag, ring in legs.items():
+        assert pad.contains(ring), f"{tag} overhangs the pad"
+        got = (ring.centroid.x, ring.centroid.y)
+        assert any(abs(got[0] - w[0]) < tol and abs(got[1] - w[1]) < tol for w in want), tag
+    assert len(legs) == len(want)
+    # The rails span more than the cabinet's own depth, which is the whole reason for them.
+    assert 17.5 > _HP3_CAB_D_IN
+
+
+def test_hp3s_cabinet_faces_the_slot_and_clears_both_walls(catlin_model) -> None:
+    """Rotation and back clearance, which moved together on 2026-09-04.
+
+    ``rotation`` was absent — deg(0), the same convention HP1/HP2 use to discharge SOUTH —
+    which aimed this fan at a house wall 1 15/16" away. deg(180) turns the discharge north
+    across the 4'-0 1/2" slot and puts the back, the side the lineset leaves on, against the
+    wall it punches through. The cabinet's own extent is the TYPE's 34 3/8 x 14 51/64
+    (resolve/placeables.py prefers the type's footprint), not the 31 x 13 the element
+    carried; the element now restates the type rather than contradicting it.
+    """
+    unit = next(e for s in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(s.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP3-OD")
+    assert unit.rotation.degrees == pytest.approx(180.0)
+    assert unit.footprint[0].inches == pytest.approx(_HP3_CAB_W_IN)
+    assert unit.footprint[1].inches == pytest.approx(_HP3_CAB_D_IN)
+    cx_in, cy_in = (v / INCH for v in unit.position.xy_m)
+    # 8" of back clearance to the house cladding; the discharge reads 25 11/16" of clear
+    # slot to the garage's. Neither is a published minimum for this chassis — Gree's
+    # clearance sheet could not be sourced — but both exceed HP2's published 6" back.
+    assert (cy_in - _HP3_CAB_D_IN / 2.0) - _HP3_CLADDING_Y_IN == pytest.approx(8.0)
+    assert _HP3_GARAGE_CLADDING_Y_IN - (cy_in + _HP3_CAB_D_IN / 2.0) > 24.0
+    # West face on the round foot at x 10'-0", 6" clear of D-M-ENTRY's near jamb at 9'-6"
+    # and clear of that door's R311.3 landing entirely.
+    assert cx_in - _HP3_CAB_W_IN / 2.0 == pytest.approx(120.0)
+    # And the whole cabinet stands over its pad.
+    from shapely.geometry import box
+
+    pad = _solid(catlin_model, _HP3_PAD).outline
+    xs = [p[0] / INCH for p in pad]
+    ys = [p[1] / INCH for p in pad]
+    assert box(min(xs), min(ys), max(xs), max(ys)).contains(
+        box(cx_in - _HP3_CAB_W_IN / 2.0, cy_in - _HP3_CAB_D_IN / 2.0,
+            cx_in + _HP3_CAB_W_IN / 2.0, cy_in + _HP3_CAB_D_IN / 2.0))

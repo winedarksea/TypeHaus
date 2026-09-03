@@ -24,8 +24,8 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DOOR_TYPES,
                      STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
 
-from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
-                    second_deck, solar, sunken_garden)
+from params import (breezeway, foundations, hp3_pad, main_deck, raised_garden,
+                    roof_trim, second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, circuits, electrical, electrical_attic,
                   fixture_types, fixtures, furniture_types, lighting, lighting_attic,
                   lighting_types, mep, millwork, placeables, products, railing_types,
@@ -156,6 +156,8 @@ PLAN = (
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
          *sunken_garden.MAIN_ELEMENTS,
          *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         # EQ-M-HP3-OD's pad and stand, in the slot north of the house (params/hp3_pad.py).
+         *hp3_pad.MAIN_ELEMENTS,
          # The four wall corners where the north/south board & batten meets the east/west
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.

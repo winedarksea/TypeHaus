@@ -813,8 +813,10 @@
 # 2026-08-31), a non-penetrating fixing has nothing left to protect. Both strapped runs are
 # on PBR walls and neither moved.
 "SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 3 ea — vent riser
-# RESEARCHED 2026-09-02 — the eight wedge anchors holding the two heat-pump ground stands
-# down to SL-SG-HPPAD (params/sunken_garden.py::HP_STAND_ANCHORS). A 3/8" x 3" 316 stainless
+# RESEARCHED 2026-09-02 — the twelve wedge anchors holding the three heat-pump ground stands
+# down to their pads: eight to SL-SG-HPPAD (params/sunken_garden.py::HP_STAND_ANCHORS) and,
+# since 2026-09-04, four to SL-M-HP3PAD (params/hp3_pad.py::HP3_STAND_ANCHORS), the north-
+# side pad EQ-M-HP3-OD never had. A 3/8" x 3" 316 stainless
 # wedge anchor is a fastener-supply item, not a Simpson part: 316 wedge anchors in this size
 # run roughly $3-6 each in small quantities. Priced at the top of that because eight pieces
 # is below anybody's price break, and because the whole point of the row is that these are
@@ -1108,7 +1110,7 @@
 # no frost footing under it: an equipment pad that heaves an inch in February and comes back
 # in April has done nothing a line set cannot absorb — see
 # plan/assemblies.py::HP_PAD_ON_GRADE. The rate is unchanged; only the quantity moved.
-"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 350, high = 800 } }  # 0.49 cy over TWO pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25) — short-load or bagged; NOT the bulk slab-on-grade rate. It was 0.70 in one pour for a day; the row and the flight swapped halves of the pocket on 2026-09-04 and they are now 2'-8" apart, so a rectangle covering both would be 94 sf to serve 40. The rate carries the second form: at this size two 20 sf forms and one short load cost about what one 57 sf form did, and the concrete saved is real
+"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 480, high = 1050 } }  # 0.58 cy over THREE pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25 + SL-M-HP3PAD 0.08). ** THE LABOUR BAND ROSE 2026-09-04, THE MATERIAL BAND DID NOT. ** SL-M-HP3PAD is 6.9 sf — 0.08 cy of concrete and a whole third form, in a different part of the site from the other two, and a $/cy lump that only followed the volume would have priced that form at $30-70. The band is set so three pours cost about $105-210 more in labour than two, which is one more small form and one more trowel visit; the concrete still costs what short-load concrete costs. Superseded text, for the record: 0.49 cy over TWO pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25) — short-load or bagged; NOT the bulk slab-on-grade rate. It was 0.70 in one pour for a day; the row and the flight swapped halves of the pocket on 2026-09-04 and they are now 2'-8" apart, so a rectangle covering both would be 94 sf to serve 40. The rate carries the second form: at this size two 20 sf forms and one short load cost about what one 57 sf form did, and the concrete saved is real
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -1309,7 +1311,7 @@
 # ** THE CROSS-RAILS ARE IN THIS ROW AND ARE NOT MODELLED GEOMETRY. ** Only the legs resolve
 # as solids. Pricing the legs alone would buy half a stand.
 # -> material $300-800 and labour $150-400 over 0.01 cy.
-"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.01 cy = 8 legs + 2 sets of cross-rails, $300-800 mat + $150-400 lab for the pair
+"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.02 cy = 12 legs + 3 sets of cross-rails since 2026-09-04, when EQ-M-HP3-OD got the stand it never had (params/hp3_pad.py). The rate is per-cy and the three stands are the same 2" x 18" leg, so it scales honestly: about $450-1,200 mat + $225-600 lab for all three, against $300-800 + $150-400 for the pair
 #
 # WHITE-PAINTED GARDEN FRAME — 37.3 LF over four members, 0.49 cy. Every stick of the garden's
 # frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0")

@@ -229,6 +229,21 @@ SITE = Site(
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
         ),
+        # SL-M-HP3PAD, the north-side equipment pad under EQ-M-HP3-OD (params/hp3_pad.py),
+        # x 9'-9"..13'-1" by y 36'-10 1/4"..38'-11" — 6.9 sf, the smallest of the three and
+        # the only one in the slot between the house and the garage. Same top, -2'-8", 2"
+        # proud of grade. It falls 1" from its SOUTH-WEST corner to its NORTH-EAST one,
+        # which is away from the house and toward the open east end of the slot: the front
+        # walk's note two entries up is the reason it is not a straight north fall, since
+        # north is the garage stem, and a straight east fall would leave R401.3 grading a
+        # pad that does not shed away from the wall it abuts.
+        ImperviousSurface(
+            label="hp3 pad",
+            outline=(pt(ft(9, 9), ft(36, 10.25)), pt(ft(13, 1), ft(36, 10.25)),
+                     pt(ft(13, 1), ft(38, 11)), pt(ft(9, 9), ft(38, 11))),
+            near_elevation=ft(-2, -8),
+            far_elevation=ft(-2, -9),
+        ),
         # SL-SG-STAIRPAD, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
         # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is
         # the only thing that reaches it at all; it falls 2" EAST over its 6'-9" run, 2.5%,

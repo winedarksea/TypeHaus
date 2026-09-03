@@ -766,10 +766,42 @@ MAIN_EQUIPMENT = [
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 3's outdoor unit: north side beside the mudroom door, under ED-M-HP3-DISC, for
     # the short lineset run to the head over the stairs — a straight punch through W-M-N2:
-    # the unit (x 10'-0"..12'-7") sits directly opposite EQ-M-HP3-STAIR (x 10'-6"..13'-3")
-    # on that wall's inside face.
+    # the unit (x 10'-0"..12'-10 3/8") sits directly opposite EQ-M-HP3-STAIR (x 10'-6"..
+    # 13'-3") on that wall's inside face.
+    #
+    # ** IT NOW STANDS ON SOMETHING (2026-09-04). ** `params/hp3_pad.py` carries SL-M-HP3PAD
+    # and PT-M-HP3-L1..4 / CN-M-HP3-A1..4, and `mount.elevation` is the other half of that
+    # coupling exactly as it is on HP1/HP2: a FLOOR mount measures from the storey datum,
+    # `main` is 0'-0", the pad tops out at -2'-8" and the stand is 18", so the cabinet's base
+    # is at -1'-2" and all three outdoor units share one number. It carried NO mount at all
+    # until now, which put this cabinet's base on the main datum — 2'-10" in the air over
+    # bare soil, with no pad, no stand and nothing under it. Nothing reported that:
+    # `mep.deck_equipment_support_coverage` sees no deck equipment in this house any more,
+    # and no check asks what a FLOOR-mounted exterior machine is standing on.
+    # `test_catlin_outdoor_structures.py` is what holds the two files together.
+    #
+    # ** THREE OTHER FIGURES MOVED WITH IT, AND ALL THREE WERE STALE RATHER THAN CHOSEN. **
+    #  - `footprint` was (31, 13) — the outline the TYPE record shed on 2026-08-31 when the
+    #    SAP09 submittal replaced a placeholder. The type's footprint is what geometry reads
+    #    (resolve/placeables.py `_local_footprint` prefers it), so the plan has been drawing
+    #    34 3/8 x 14 51/64 while every comment said 31 x 13. Restated, not changed.
+    #  - `rotation` was absent, i.e. deg(0), which is the same convention HP1/HP2 use to
+    #    face SOUTH — local -y is the discharge. Here that aimed the fan at the house wall
+    #    two inches away. deg(180) turns the discharge NORTH across the slot, 25 11/16" of
+    #    clear air to the garage cladding, and puts the back — the side the lineset leaves
+    #    on — against the wall it punches through.
+    #  - `position` was (3.44566 m, 11.3941 m), which with the real cabinet left 1 15/16"
+    #    behind it. It is now derived: west face on the round foot at x 10'-0" (6" clear of
+    #    D-M-ENTRY's near jamb, and clear of that door's R311.3 landing), back face 8" off
+    #    the cladding at y 36'-7 1/4". That is a 4 1/16" move north and 1 9/16" east.
+    #    The same pair is written in params/hp3_pad.py, which this module cannot import.
+    #
+    # No `drain_pan` / `pan_drain_ref`, as before and as on HP1/HP2: defrost meltwater off a
+    # unit at grade drips onto its own pad.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(m(3.44566), m(11.3941)), footprint=(inch(31), inch(13)),
+              position=pt(ft(11, 5.1875), ft(37, 10.6484375)),
+              footprint=(inch(34.375), inch(14.796875)), rotation=deg(180),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
     # --- System 2's main-floor heads: high on the south wall either side of the centre wall
     # at x=18', backs south, blowing north. Neither carries `circuit` — power comes off the

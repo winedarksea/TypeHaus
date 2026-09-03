@@ -98,6 +98,13 @@ _FREESTANDING_SLAB_PREFIXES = (
     # joists over open air between two structures, filed on "main" because that is the datum
     # its joists top out at — no more a thermal-envelope slab than the porch deck above.
     "SL-BW-",
+    # The north-side heat-pump equipment pad (catlin's SL-M-HP3PAD, params/hp3_pad.py). It
+    # is filed on "main" because that is the plan frame, but it is a 6.9 sf pour on grade in
+    # the yard slot carrying an outdoor condenser on 18" legs — nothing above it is
+    # conditioned, and there is no envelope for an R-10 slab edge to belong to. Named in
+    # full rather than by a family prefix: it is one pad, not a zone, and "SL-M-" is the
+    # house's own storey key.
+    "SL-M-HP3PAD",
 )
 
 
