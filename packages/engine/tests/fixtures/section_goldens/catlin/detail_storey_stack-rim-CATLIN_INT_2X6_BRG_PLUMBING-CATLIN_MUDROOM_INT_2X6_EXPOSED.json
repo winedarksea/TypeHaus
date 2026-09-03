@@ -543,6 +543,62 @@
       "node": "polyline",
       "points": [
         [
+          107.28248031496064,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.75
+        ],
+        [
+          107.28248031496064,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          107.28248031496064,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.75
+        ],
+        [
+          107.28248031496064,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           117.12500000000001,
           106.50000000000001
         ],

@@ -9143,6 +9143,230 @@
       "node": "polyline",
       "points": [
         [
+          0.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ],
+        [
+          0.0,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ],
+        [
+          0.0,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          0.5,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          0.5,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF603AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          431.50000000000006,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.5,
+          240.0
+        ],
+        [
+          431.50000000000006,
+          240.0
+        ],
+        [
+          431.50000000000006,
+          240.75
+        ],
+        [
+          0.5,
+          240.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          240.0
+        ],
+        [
+          431.50000000000006,
+          240.0
+        ],
+        [
+          431.50000000000006,
+          240.75
+        ],
+        [
+          0.5,
+          240.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-underlayment-sanded"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           214.25000000000003,
           347.00000000000006
         ],

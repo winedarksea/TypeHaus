@@ -1114,18 +1114,21 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     """A deck that encloses no walls has to draw its own outline, or the plan slice shows
     empty air where a walking surface is.
 
-    Two of the three exterior decks are FloorSystems — the porch and the balcony — so
-    neither is a Slab and neither would be drawn by reading ``model.solids`` alone.
-    ``_emit_slabs`` reads ``model.floors`` too, and the tag on the
-    polyline is the floor system's. The breezeway is the third and stays a Slab, for the
-    reason params/breezeway.py gives: its plank oversails its joist field onto two door
-    thresholds, and a floor system's sheet cannot. It draws from ``model.solids``, so this
-    covers both paths."""
+    **All three exterior decks are FloorSystems now** — the porch, the balcony and, since
+    2026-09-03, the breezeway. None is a Slab, so none would be drawn by reading
+    ``model.solids`` alone; ``_emit_slabs`` reads ``model.floors`` too, and the tag on the
+    polyline is the floor system's.
+
+    The breezeway was the holdout, and what let it convert is
+    ``FloorSystem.subfloor_outline``: its plank oversails its joist field 2 3/4" onto two door
+    thresholds, which a derived sheet cannot express. The Slab path is still live and still
+    covered — the garden floor and the garage slab both draw from ``model.solids`` — but no
+    exterior WALKING deck uses it any more."""
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.scene import Polyline
 
     for storey, tag in (("second", "FS-SG-DECK"), ("main", "FS-SG-PORCH"),
-                        ("main", "SL-BW-DECK")):
+                        ("main", "FS-BW-FLOOR")):
         outlines = [node for node in build_floorplan(catlin_model, storey).nodes
                     if isinstance(node, Polyline) and getattr(node, "tag", None) == tag]
         assert len(outlines) == 1, (storey, tag)

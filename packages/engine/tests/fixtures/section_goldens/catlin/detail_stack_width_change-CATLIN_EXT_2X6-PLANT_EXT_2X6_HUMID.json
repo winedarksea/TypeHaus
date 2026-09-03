@@ -1615,6 +1615,118 @@
       "node": "polyline",
       "points": [
         [
+          -17.092519685039367,
+          120.0
+        ],
+        [
+          -10.0,
+          120.0
+        ],
+        [
+          -10.0,
+          121.50000000000001
+        ],
+        [
+          -17.092519685039367,
+          121.50000000000001
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGFS02AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -17.092519685039367,
+          120.0
+        ],
+        [
+          -10.0,
+          120.0
+        ],
+        [
+          -10.0,
+          121.50000000000001
+        ],
+        [
+          -17.092519685039367,
+          121.50000000000001
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "aluminum-deck"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.0,
+          120.0
+        ],
+        [
+          16.47751968503937,
+          120.0
+        ],
+        [
+          16.47751968503937,
+          120.75
+        ],
+        [
+          0.0,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          120.0
+        ],
+        [
+          16.47751968503937,
+          120.0
+        ],
+        [
+          16.47751968503937,
+          120.75
+        ],
+        [
+          0.0,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           106.50000000000001
         ],

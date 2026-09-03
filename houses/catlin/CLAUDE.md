@@ -1280,19 +1280,30 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   room and the workshop each gained 4" of clear (the model still reports the old number —
   `clear_face` is inset from the wall axis, which did not move). See
   `notes/basement_to_framed_wall_detail.md`.
-- **Every exterior deck's plank is the floor system's own sheet, with ONE exception.**
-  `FS-SG-PORCH` (composite, 3bf2f48) and `FS-SG-DECK` (aluminium) carry their
-  boards as `subfloor=DeckLayer(...)`; the `SL-SG-PORCH` and `SL-SG-DECK` slabs that used to
-  stand beside the framing are gone, and both planks bill by the square foot in
-  `[sheet_goods]` instead of by the cubic yard out of a table named `[concrete]`. The
-  balcony converted term for term because its joists cantilever 6" and the deleted slab's
-  outline *was* that cantilever.
-  **`SL-BW-DECK` stays a Slab and must not be "finished".** The breezeway plank oversails
-  its joist rim 2 3/4" at each end onto D-M-ENTRY's and D-G-SERVICE's thresholds, and a
-  floor system's sheet is exactly its joist field (`resolve/floors.py`). Converting it
-  either FAILS `code.R311_3_exterior_landing` on both doors or lays a joist through
-  `PT-BW-1..4`. It was tried and reverted; the reasoning is in
-  `params/breezeway.py`.
+- **Every exterior deck's plank is the floor system's own sheet. There is no longer an
+  exception.** `FS-SG-PORCH` (composite, 3bf2f48), `FS-SG-DECK` (aluminium) and — since
+  2026-09-03 — `FS-BW-FLOOR` (composite) all carry their boards as `subfloor=DeckLayer(...)`;
+  the `SL-SG-PORCH`, `SL-SG-DECK` and `SL-BW-DECK` slabs that used to stand beside the
+  framing are gone, and all three planks bill by the square foot in `[sheet_goods]` instead
+  of by the cubic yard out of a table named `[concrete]`. The balcony converted term for term
+  because its joists cantilever 6" and the deleted slab's outline *was* that cantilever.
+  - **The breezeway needed an engine change, and it is one field.** Its plank oversails the
+    joist rim 2 3/4" at each end onto `D-M-ENTRY`'s and `D-G-SERVICE`'s thresholds, and a
+    floor system's sheet used to be exactly its joist field (`resolve/floors.py`) — so
+    converting it either FAILED `code.R311_3_exterior_landing` on both doors or laid a joist
+    through `PT-BW-1..4`. `JoistSpec.cantilever*` cannot help: a bearing line is a span
+    boundary, so a cantilever is a joist-AXIS quantity and this oversail is on the
+    perpendicular one. **`FloorSystem.subfloor_outline`** is an authored sheet polygon that
+    replaces the derived corners and touches nothing else — not the joist solver, not
+    `deck_voids`, not the elevations.
+  - **Bound it.** `structural.subfloor_oversail` grades an authored sheet against
+    `[framing] bearing_plan_tolerance_in` (8"), because past that the uplift pass finds
+    neither a derived tie nor a hanger and FAILs every member under the deck, reported
+    nowhere near the deck. The breezeway's worst edge is 3 5/8".
+  - **The take-off had to move with it.** `sheet_goods_takeoff` computed area from the
+    bounding box of `floor.members`, so a wider sheet would have drawn wide, passed R311.3
+    and still billed the joist field. The subfloor reads `deck_outline` now; `ceiling_below`
+    keeps the framed extent, because a ceiling is nailed to the joists.
 - **THE GARAGE WALL WAS REBUILT, and four decisions moved at once.**
   `GARAGE_WALL_2X6` was 2x6 @16" o.c. with **empty bays** and 1.5" Zip-R doing the whole
   thermal job (owner's choice), clad in a 26 ga concealed **nail strip**. It is now

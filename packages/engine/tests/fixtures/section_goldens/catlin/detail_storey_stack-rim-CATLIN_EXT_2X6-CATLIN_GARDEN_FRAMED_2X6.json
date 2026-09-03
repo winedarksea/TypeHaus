@@ -1659,6 +1659,118 @@
       "node": "polyline",
       "points": [
         [
+          -13.892519685039371,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -13.892519685039371,
+          1.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -13.892519685039371,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -13.892519685039371,
+          1.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          16.46751968503937,
+          0.0
+        ],
+        [
+          16.46751968503937,
+          0.7499999999999999
+        ],
+        [
+          0.0,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS02AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          16.46751968503937,
+          0.0
+        ],
+        [
+          16.46751968503937,
+          0.7499999999999999
+        ],
+        [
+          0.0,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           -14.937499999999998
         ],

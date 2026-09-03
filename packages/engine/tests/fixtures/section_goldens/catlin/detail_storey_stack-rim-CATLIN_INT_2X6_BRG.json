@@ -567,6 +567,118 @@
       "node": "polyline",
       "points": [
         [
+          202.77248031496066,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          202.77248031496066,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          202.77248031496066,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          202.77248031496066,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          229.2275196850394,
+          120.0
+        ],
+        [
+          229.2275196850394,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF603AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          229.2275196850394,
+          120.0
+        ],
+        [
+          229.2275196850394,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           213.25,
           106.50000000000001
         ],

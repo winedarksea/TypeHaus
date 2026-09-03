@@ -68,6 +68,29 @@ def emit_framing_cuts(b, model, hosts, plane, crop, representative_roles=()) -> 
                                     part.catalog)
 
 
+def emit_floor_deck_cuts(b, model, plane, crop) -> None:
+    """The subfloor SHEET each floor carries, cut like any other body.
+
+    ``emit_framing_cuts`` reaches ``<uid>::framing`` and a floor's deck is a separate IR
+    element on the floor's own uid, so the sheet was drawn by nothing: every section in the
+    house showed joists with bare air on top of them. It only became visible when the
+    breezeway's walking surface stopped being a ``Slab`` — a Slab is a solid and solids are
+    cut — and its detail lost the plank it is a detail of.
+    """
+    from typehaus.resolve.geometry_slice import slice_part
+
+    for floor in model.floors:
+        if _host_is_far(floor, plane, crop):
+            continue
+        element = model.geometry.by_uid(floor.uid)
+        if element is None:
+            continue
+        for part in element.parts:
+            if part.catalog is None:
+                continue
+            _emit_part_profiles(b, slice_part(part, plane), crop, floor.uid, part.catalog)
+
+
 # How far a framing member may reach past its host's own plan outline: the wall→roof closure
 # bands and the derived trim stand outboard of the wall they continue, and a rafter tail past
 # the roof footprint. Generous on purpose — this is a *reject*, and a wrong reject silently
@@ -225,6 +248,10 @@ def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
     """
     from typehaus.resolve.framing.profiles import cross_section
 
+    # A deck SHEET has no lumber profile at all — it is a thickness, not a section — so this
+    # is reached with None the moment a non-member body comes through the same path.
+    if not profile:
+        return []
     section = cross_section(profile)
     if section.shape not in ("i_joist", "floor_truss") or section.flange_thickness_m is None:
         return []

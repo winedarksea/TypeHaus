@@ -1316,62 +1316,6 @@
       "points": [
         [
           439.25,
-          0.0
-        ],
-        [
-          449.09251968503946,
-          0.0
-        ],
-        [
-          449.09251968503946,
-          1.0
-        ],
-        [
-          439.25,
-          1.0
-        ]
-      ],
-      "layer": "A-SLAB",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWSL01AAAA",
-      "tag": "SL-BW-DECK"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          439.25,
-          0.0
-        ],
-        [
-          449.09251968503946,
-          0.0
-        ],
-        [
-          449.09251968503946,
-          1.0
-        ],
-        [
-          439.25,
-          1.0
-        ]
-      ],
-      "pattern": "composite-deck",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "composite-deck"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          439.25,
           88.75000000000001
         ],
         [
@@ -1893,6 +1837,118 @@
       "closed": false,
       "uid": "CMFS03AAAA",
       "tag": "joist-0-011-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          439.25,
+          0.0
+        ],
+        [
+          449.09251968503946,
+          0.0
+        ],
+        [
+          449.09251968503946,
+          1.0
+        ],
+        [
+          439.25,
+          1.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          439.25,
+          0.0
+        ],
+        [
+          449.09251968503946,
+          0.0
+        ],
+        [
+          449.09251968503946,
+          1.0
+        ],
+        [
+          439.25,
+          1.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          415.5224803149607,
+          0.0
+        ],
+        [
+          432.0,
+          0.0
+        ],
+        [
+          432.0,
+          0.7499999999999999
+        ],
+        [
+          415.5224803149607,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          415.5224803149607,
+          0.0
+        ],
+        [
+          432.0,
+          0.0
+        ],
+        [
+          432.0,
+          0.7499999999999999
+        ],
+        [
+          415.5224803149607,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
     },
     {
       "space": "model",

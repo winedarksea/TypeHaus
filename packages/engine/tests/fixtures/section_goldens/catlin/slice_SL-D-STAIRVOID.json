@@ -2799,6 +2799,286 @@
       "node": "polyline",
       "points": [
         [
+          72.00000000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.75
+        ],
+        [
+          72.00000000000001,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          72.00000000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.0
+        ],
+        [
+          123.37500000000001,
+          120.75
+        ],
+        [
+          72.00000000000001,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          212.625,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          212.625,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          212.625,
+          120.0
+        ],
+        [
+          216.0,
+          120.0
+        ],
+        [
+          216.0,
+          120.75
+        ],
+        [
+          212.625,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          264.0,
+          120.0
+        ],
+        [
+          264.0,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSF603AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          120.0
+        ],
+        [
+          264.0,
+          120.0
+        ],
+        [
+          264.0,
+          120.75
+        ],
+        [
+          216.0,
+          120.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          72.00000000000001,
+          240.0
+        ],
+        [
+          120.0,
+          240.0
+        ],
+        [
+          120.0,
+          240.75
+        ],
+        [
+          72.00000000000001,
+          240.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          72.00000000000001,
+          240.0
+        ],
+        [
+          120.0,
+          240.0
+        ],
+        [
+          120.0,
+          240.75
+        ],
+        [
+          72.00000000000001,
+          240.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-underlayment-sanded"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          240.0
+        ],
+        [
+          264.0,
+          240.0
+        ],
+        [
+          264.0,
+          240.75
+        ],
+        [
+          216.0,
+          240.75
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          240.0
+        ],
+        [
+          264.0,
+          240.0
+        ],
+        [
+          264.0,
+          240.75
+        ],
+        [
+          216.0,
+          240.75
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-underlayment-sanded"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           213.25,
           106.50000000000001
         ],

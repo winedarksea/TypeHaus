@@ -34,7 +34,11 @@ from typehaus.emit.draw.section_labels import (
     roof_layer_ladder,
     wall_layer_ladder,
 )
-from typehaus.emit.draw.section_members import _emit_member_cuts, emit_framing_cuts
+from typehaus.emit.draw.section_members import (
+    _emit_member_cuts,
+    emit_floor_deck_cuts,
+    emit_framing_cuts,
+)
 from typehaus.model.enums import SliceKind
 from typehaus.model.views import Slice
 from typehaus.quantities import M_PER_IN, m, pt
@@ -94,6 +98,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
         _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels, scale)
 
     emit_framing_cuts(b, model, model.floors, plane, crop)
+    # ...and the sheet those joists carry, which no pass drew until 2026-09-03.
+    emit_floor_deck_cuts(b, model, plane, crop)
 
     # Framing members are the whole content of some details — every post, beam, rafter and
     # joist of a freestanding structure. Gating them on a JointPlan meant an *authored*

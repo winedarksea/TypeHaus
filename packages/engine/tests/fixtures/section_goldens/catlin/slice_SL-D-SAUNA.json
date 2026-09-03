@@ -827,6 +827,118 @@
       "node": "polyline",
       "points": [
         [
+          108.00000000000001,
+          0.0
+        ],
+        [
+          216.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ],
+        [
+          108.00000000000001,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          108.00000000000001,
+          0.0
+        ],
+        [
+          216.0,
+          0.0
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ],
+        [
+          108.00000000000001,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          0.0
+        ],
+        [
+          234.0,
+          0.0
+        ],
+        [
+          234.0,
+          0.7499999999999999
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS02AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          0.0
+        ],
+        [
+          234.0,
+          0.0
+        ],
+        [
+          234.0,
+          0.7499999999999999
+        ],
+        [
+          216.0,
+          0.7499999999999999
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           213.25,
           -109.4375
         ],
