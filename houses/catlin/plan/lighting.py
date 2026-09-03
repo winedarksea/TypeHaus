@@ -639,18 +639,37 @@ MAIN_LIGHTING = [
     # landing of an exterior stair, and `code.R303_8_exterior_stairway_illumination` looks
     # for one within 4'-0" of the flight's plan outline on its `to_storey`. Nothing already
     # authored reaches: ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x=18'-0", ten feet
-    # west of the flight's x 28'-6"..32'-2".
+    # west of the flight's x 28'-6"..32'-2" and further still from its y -9'-0"..-6'-0".
     #
-    # On W-M-S2's exterior face at the head of the flight, 7'-0" up (storey-relative, so
-    # 9'-10" over the pad the flight lands on). NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT
-    # precedent — that absence is how `electrical.wet_location` and
-    # `advisory.dark_sky_lighting` know a device is outside.
+    # ** IT LEFT THE HOUSE WALL ON 2026-09-04. ** It hung on W-M-S2 at (30'-0", -0'-9 3/4")
+    # while the flight ran along the house. The flight is now in the pocket's south half, so
+    # the nearest point of W-M-S2 is 5'-2" from it and the 4'-0" reach above is not a figure
+    # to argue with — R303.8 would report a stair with no light, correctly.
     #
-    # y = -0'-9 3/4" puts the fitting's BACK on the cladding face at -0'-7 1/4". A device
-    # footprint is CENTRED on its authored position, and ED-T-LT-SCONCE-EXT is a 5" deep
-    # body, so the position owes the face half of that — the ED-G-EXT-LT convention, and NOT
-    # the -0'-8 7/8" the two disconnects beside it use: those are 3 1/4" cans and the offset
-    # that suits them buries this one an inch into the studs.
+    # So it moved onto **W-SG-E1's east face at the head of the flight**, which is the top
+    # landing itself rather than a wall six feet away from it. x 28'-8 1/2" puts the 5" body's
+    # BACK on that face at x 28'-6" (a device footprint is CENTRED on its position, so the
+    # position owes the face half the depth — the ED-G-EXT-LT convention, and NOT the 1 5/8"
+    # the two disconnects use: those are 3 1/4" cans and their offset buries this one an inch
+    # into the concrete). `rotation=deg(90)` turns the body's depth onto x so it stands off an
+    # east face, the ED-M-LIVING-KFZ1 convention.
+    #
+    # y is -9'-3", three inches SOUTH of the flight rather than beside it: the body stands 5"
+    # proud of a face the treads run right up to, and at shin height in the middle of a stair
+    # that is a hazard, not a light. It sits south rather than north because the north end of
+    # this wall face is the two condenser disconnects and their NEC 110.26(A) working space
+    # (plan/electrical.py) — a luminaire projecting 5" into that space is the same objection
+    # from the other side. Six inches clear of PT-SG-BF3 at the far end.
+    #
+    # ** -0'-8" IS A STEP LIGHT, AND THAT IS THE POINT. ** W-SG-E1's top is 0'-0", so this
+    # face has no 7'-0" to mount at; 8" below the top puts the fitting 2'-2" over the pad,
+    # washing the treads from beside them instead of throwing a shadow of the user down the
+    # flight. It clears the 18"-24" cold-climate snow band the stands are sized against. The
+    # fitting is unchanged and so is the circuit — this is the same wet-rated full-cutoff
+    # luminaire on the same switch leg, on a different wall.
+    #
+    # NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT precedent — that absence is how
+    # `electrical.wet_location` and `advisory.dark_sky_lighting` know a device is outside.
     #
     # ED-T-LT-SCONCE-EXT rather than a new full-cutoff downlight type: it is the same
     # full-cutoff wet-rated exterior fitting as ED-G-EXT-LT, and it is already priced. A
@@ -661,10 +680,10 @@ MAIN_LIGHTING = [
     # wants the exterior light switched from inside, that switch already is, and the flood
     # and the stair light are wanted on the same errand.
     ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(30), ft(0, -9.75)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(180),
+                     position=pt(ft(28, 8.5), ft(-9, -3)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(90),
                      controlled_by=("ED-M-PORCH-FLOOD-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
 ]
 
 # --- Second storey --------------------------------------------------------------------

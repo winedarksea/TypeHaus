@@ -572,16 +572,44 @@ MAIN_DEVICES = [
     # ** TWO THINGS MOVED THEM ON 2026-09-03, and both are code, not taste. ** They stood at
     # x=30'-0" and x=35'-0" at ft(5).
     #
-    #   * NEC 110.26(A) working space cannot be a stairway, and ST-SG-PORCH now runs from
-    #     x 28'-6" to 32'-2" straight under the old x=30' station. East of x 33'-11" the 36"
-    #     working depth falls over the flight's LEVEL step-off instead.
+    #   * NEC 110.26(A) working space cannot be a stairway, and ST-SG-PORCH ran straight
+    #     under the old x=30' station while the flight was in the pocket's north strip.
     #   * NEC 404.8(A) caps an operating handle at 6'-7" above the standing surface. These
     #     are on a MAIN-floor wall but are operated from grade at -2'-10", so ft(5) put the
     #     handles 7'-10" up — nearly a foot past the limit, and nothing was measuring it
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
     #
-    # Both stay clear of either condenser's own 110.26 working space, which is the pad in
-    # front of them, and both are now north of the units rather than over them.
+    # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They are on W-SG-E1's EAST
+    # face now, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6"), 1 5/8" off the concrete for
+    # the can's 3 1/4" depth and turned `deg(90)` so the depth runs in x against an east face
+    # (the ED-M-LIVING-KFZ1 convention).
+    #
+    # **The row is what evicted them, and 110.26(A)(3) is why there was no appeal.** With the
+    # condensers tucked against the house from x 29'-0" to 36'-7" — the owner's call on
+    # 2026-09-04, buying a quieter east side yard at the price of a louder living room —
+    # W-M-S2's exterior face is cabinet from the porch wall to past the corner, and the 6"
+    # left at x 28'-6"..29'-0" is not the 30" 110.26(A)(2) wants. Height does not rescue it:
+    # (A)(3) measures the clear space **from the grade up**, so a 3'-4" cabinet standing 6"
+    # off the wall consumes the whole working space however high the handle is hung.
+    #
+    # ** THE 42" BETWEEN THE CABINETS AND THE FLIGHT IS THE ONLY PLACE LEFT, AND IT FITS. **
+    # W-SG-E1's east face is clear from HP2's south face at y -2'-6" to ST-SG-PORCH's north
+    # side at -6'-0". Two 12" cans at -3'-6" and -4'-6" are 24" of equipment; the 30" space
+    # they share spans y -3'-0"..-5'-6", which leaves 6" to the cabinets and 6" to the stair,
+    # over 36" of depth (x 28'-6"..31'-6") with nothing in it. Within sight of both units,
+    # 1'-9" away — 440.14 asks for sight, and here it is nearly reach as well.
+    #
+    # ** THE MOUNT DROPS TO -0'-8", AND ACCESS IS FINE. ** This wall tops out at 0'-0", so
+    # there is no 3'-6" to hang from; -0'-8" puts the handles 2'-2" above grade, against
+    # 404.8(A)'s 6'-7" ceiling and well inside it. Readily accessible standing on the pocket
+    # grade beside the units, which is the access 440.14 turns on, and reachable a second way
+    # over the porch guard from the deck 8" above them (owner, 2026-09-04) — a convenience,
+    # not the compliance path.
+    #
+    # What the low mount does cost is exposure: these 3R cans now sit in the splash and the
+    # plough line where the W-M-S2 position had them at 6'-4" and dry. Specify them
+    # stainless-hinged and gasketed, and take the knockouts on the BOTTOM so nothing drains
+    # into the enclosure.
     #
     # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
     # cladding face. Same correction on ED-M-HP3-DISC below and on ED-B-SPA-DISC.
@@ -591,11 +619,11 @@ MAIN_DEVICES = [
     # down with them, because a disconnect one storey above the machine it kills is not
     # within sight of it in any sense 440.14 means.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(34, 3.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)), room=None),
+                     position=pt(ft(28, 7.625), ft(-3, -6)), type_ref="ED-T-DISCONNECT-3R", rotation=deg(90),
+                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8)), room=None),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(35, 7), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6)), room=None),
+                     position=pt(ft(28, 7.625), ft(-4, -6)), type_ref="ED-T-DISCONNECT-3R", rotation=deg(90),
+                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8)), room=None),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway.
@@ -681,21 +709,38 @@ MAIN_EQUIPMENT = [
     # The pocket east of the porch is the site: bounded west by W-SG-E1 (face x=28'-6"),
     # north by the house, south by the W-RG-EAST-BALCONY apron, and open east to the yard.
     #
-    # ** THEY FACE SOUTH, SIDE BY SIDE, ACROSS THE POCKET'S SOUTH HALF (2026-09-03). ** They
-    # stood in a north-south row against the porch wall facing EAST, because the 2026-09-02
-    # siting read the pocket as 90" of usable y and a south-facing row as wanting 99". That
-    # 99" figure was right and the 90" was not: it assumed the row had to end at the house's
-    # east face, x 36'-0", and east of the SE corner is open side yard out to a setback line
-    # at x 58'-0". Letting HP1 stand 7" past the corner is what unlocks the layout, and what
-    # it buys is the pocket's whole north strip for ST-SG-PORCH, the porch's stair to grade.
+    # ** THEY FACE SOUTH, SIDE BY SIDE, ALONG THE HOUSE (2026-09-04). ** They stood in a
+    # north-south row against the porch wall facing EAST until 2026-09-03, then for one day
+    # in an east-west row across the pocket's SOUTH half. Both earlier layouts are dead for
+    # the same reason: ST-SG-PORCH springs from W-SG-E1's top, that top is walkable only
+    # between its two 12" round columns (y -9'-9"..-3'-0"), and a row anywhere in the
+    # pocket's south half stands inside exactly that window.
     #
-    # `rotation=deg(0)` — the long axis runs in x now, so both discharge faces read SOUTH,
-    # into open yard, instead of east into the pocket's own north and west faces (which
-    # returned it up at WIN-M-LIV-S1 and WIN-S-STUDY2). Every clearance gains slack: HP2's
-    # back goes from 6" — the published minimum — to 16 2/5" off the flight's south rail, its
-    # west end keeps 6" to the porch wall, the 12" service gap between the two is now the only
-    # figure at a minimum, and both compressors sit 4'-7" south of the house wall instead of
-    # 6"-7" off it. Clearances and the sound reasoning: notes/heat_pump_ground_pad.md.
+    # So the row and the flight swapped halves. `rotation=deg(0)` is unchanged and still
+    # right — the long axis runs in x, both discharge faces read SOUTH into open yard rather
+    # than east into the pocket's own faces (which returned it up at WIN-M-LIV-S1 and
+    # WIN-S-STUDY2) — and the whole change is the two centres.
+    #
+    # ** WHAT THE SWAP COSTS AND WHAT IT BUYS. ** It buys the flight: 3'-8" of clear yard
+    # between HP2's discharge face and the stair's north rail, against a published 24", and
+    # HP1's 40" zone is east of the flight entirely. It buys the line sets, which now run
+    # 1'-6" north into the band penetration instead of 5' west along a pad. It costs the
+    # backs: both cabinets sit at 6" off the cladding — HP2's published minimum, HP1's is 4"
+    # — directly under WIN-M-LIV-S1, which is the objection that ruled a row here out on
+    # 2026-09-02 and is now simply taken. It is a sound judgement, not a code one, and
+    # notes/heat_pump_ground_pad.md argues it rather than burying it.
+    #
+    # ** THE ROW IS TUCKED AS FAR WEST AS IT GOES (owner, 2026-09-04). ** It sat at x 31'-0"
+    # for part of that day, which left a 30" band of house wall for the disconnects and put
+    # HP1's east end 2'-10" past the SE corner. The owner traded it: tucking the row behind
+    # the corner shadows the whole east side yard with the house's own mass, at the price of
+    # a noisier living room, and that is the elevation people stand on. **It cannot tuck all
+    # the way** — 40 5/32" + 12" + 39" is 7'-7 1/6" and the porch wall to the corner is
+    # 7'-6" — so HP1 still oversails by 7 1/6", with 19'-5" to the setback beyond it.
+    #
+    # Two figures are now at their minimum and neither cabinet moves in x alone: the 12"
+    # service gap between them, and HP2's 6" to W-SG-E1. The eight stand legs in
+    # params/sunken_garden.py are derived from these centres and move with them.
     #
     # ** THE PAD AND THE STANDS ARE IN params/sunken_garden.py (SL-SG-HPPAD, PT-SG-HP*,
     # CN-SG-HP*), AND THE TWO FILES CANNOT IMPORT EACH OTHER. ** The leg positions there are
@@ -710,11 +755,11 @@ MAIN_EQUIPMENT = [
     # meltwater off a unit at grade drips onto its own pad and runs east onto gravel. The
     # piped, heat-traced condensate runs the balcony needed are deleted.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(34, 11.7), ft(-5, -7.25)), footprint=(inch(39), inch(14.5625)),
+              position=pt(ft(34, 11.66), ft(-1, -8.53125)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(30, 8.1), ft(-5, -10.8)), footprint=(inch(40.16), inch(16.81)),
+              position=pt(ft(30, 8.08), ft(-1, -9.655)), footprint=(inch(40.16), inch(16.81)),
               rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 3's outdoor unit: north side beside the mudroom door, under ED-M-HP3-DISC, for

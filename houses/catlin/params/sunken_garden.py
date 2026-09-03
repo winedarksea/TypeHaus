@@ -986,21 +986,47 @@ FROST_WINGS = [
 # ** THE POCKET DOES NOT STOP AT THE HOUSE'S EAST FACE. ** The 2026-09-02 siting read the
 # yard as 90" of usable y bounded east by x 36'-0", and concluded a row facing SOUTH did not
 # fit. It does: east of the SE corner is open side yard and the EAST (SIDE) setback line is
-# x 58'-0" (`plan/site.py`), 21'-5" away, so letting one cabinet stand 7" past the corner
-# costs nothing. Both units face SOUTH in one east-west row across the pocket's south half
-# (2026-09-03), which frees the north strip for the porch stair, PORCH_STAIR below.
+# x 58'-0" (`plan/site.py`), 19'-5" away, so letting a cabinet stand past the corner costs
+# nothing. Both units face SOUTH in one east-west row (2026-09-03).
 #
-# ** THE PAD BUTTS THE PORCH WALL, WITH AN ISOLATION JOINT, AND REACHES THE SE CORNER. **
-# x 28'-6"..36'-9", y -7'-6"..-0'-7 1/5" — 56.9 sf, 0.70 cy at 4". The west edge is the
-# porch wall's east face because that is where PORCH_STAIR's stringers land; the north strip
-# up to -0'-7 1/5" is the flight and the level step-off east of it; and the east edge runs
-# 2" past HP1's cabinet, which is 9" past the house's SE corner and still 21' inside the
-# setback. It is one pour rather than a pad plus a separate stair footing: at two thirds of
-# a yard the second form costs more than the concrete it saves.
-_HP_PAD_X0, _HP_PAD_X1 = 28.5, 36.75
-_HP_PAD_Y0, _HP_PAD_Y1 = -7.5, -0.6
+# ** THE ROW IS AGAINST THE HOUSE AND THE FLIGHT IS SOUTH OF IT (2026-09-04). ** It was the
+# other way round for one day, and PT-SG-BR3 is why it could not stay: the flight springs
+# from W-SG-E1's top, and that top is a 12" wall carrying two 12" ROUND columns, so it is
+# walkable only between them — y -9'-9"..-3'-0". A row in the pocket's south half sits
+# inside exactly that window. Nothing reported it, because the threshold board is trim
+# rather than an element and the column's east face is EXACTLY tangent to the stair's head
+# at x 28'-6": no solid overlapped, and the check that would have cared cannot see a
+# walking surface that was never modelled. The rule this hands forward is in
+# plans/TODO.md — a stair whose head lands on a wall TOP has to be read against what stands
+# on that top, and no check does that yet.
+#
+# ** TWO PADS NOW, NOT ONE. ** The single pour was right while the flight and the cabinets
+# shared a band; they are 2'-8" apart in y now, and a rectangle spanning both would be 94 sf
+# of concrete to serve 40. HP_PAD carries the row, STAIR_PAD (down with PORCH_STAIR) carries
+# the flight and its landing, and between them they are 39.8 sf / 0.49 cy against the one
+# pad's 56.9 / 0.70. Two forms for less concrete and less hardscape is the trade, and at
+# this size the forms are the cheaper half.
+#
+# ** HP_PAD: x 29'-0"..36'-10", y -3'-4"..-0'-10" — 19.6 sf, 0.24 cy at 4". ** The north
+# edge stops 3" short of the cladding rather than butting it: there is no isolation joint to
+# detail if the pad never touches the house, and a 3" gap sheds the wall's runoff into
+# gravel instead of against a lip. The west edge is HP2's own cabinet face, 6" clear of
+# W-SG-E1 — the row is tucked as far west as 40 5/32" + 12" + 39" allows (owner, 2026-09-04:
+# a condenser behind the SE corner is quieter down the whole east side yard than one out
+# past it, and the living room takes the difference). It does not tuck all the way; the row
+# is 7'-7 1/6" and the porch wall to the corner is 7'-6", so HP1 oversails by 7 1/6" with
+# 19'-5" to the setback. The east edge runs 2 3/4" past HP1's cabinet.
+#
+# ** THE DISCONNECTS PAID FOR THE TUCK. ** At x 31'-0" the row left a 30" band of the house's
+# south face for them at NEC 110.26(A) working space; tucked, it does not, and they hang on
+# W-SG-E1's east face at 2'-2" above grade instead of the house's at 6'-4". plan/electrical.py
+# argues that trade where it is made.
+_HP_PAD_X0, _HP_PAD_X1 = 29.0, 36.833333
+_HP_PAD_Y0, _HP_PAD_Y1 = -3.333333, -0.833333
 #: Two inches proud of the -2'-10" site grade — Gree's "install 2 in above the expected snow
-#: line", and the first two of the ~20" the 18" stands on top of it then add.
+#: line", and the first two of the ~20" the 18" stands on top of it then add. STAIR_PAD is
+#: poured to the same top, so the flight's authored base and the cabinets' base are one
+#: number and cannot drift apart.
 _HP_PAD_TOP = ft(-2, -8)
 
 HP_PAD = Slab(
@@ -1022,19 +1048,26 @@ HP_PAD = Slab(
 # Both cabinets sit SQUARE to the plan (`rotation=deg(0)`, discharge facing south) since
 # 2026-09-03 — they were rotated 90 degrees and facing east before that. The long axis runs
 # in x now, so the WIDTH pitch is in x and the DEPTH pitch in y, and the four leg patterns
-# transpose with them. The centres are the units' own, authored in plan/electrical.py — the
-# two files cannot import each other, so a unit that moves must move here too.
+# transpose with them. The rotation did NOT change on 2026-09-04; only the centres did, when
+# the row crossed the pocket to sit against the house and the flight took the south half.
+# The centres are the units' own, authored in plan/electrical.py — the two files cannot
+# import each other, so a unit that moves must move here too.
+#
+# The published foot pattern is WIDER than the cabinet across the depth on both units
+# (15 9/16" of feet under a 14 9/16" casing), so the north legs stand half an inch PROUD of
+# the north face — 2 3/4" from the pad edge, not 3 1/4". That half inch is why the pad's
+# north edge is a derived number rather than "the cabinet line plus a bit".
 # `test_catlin_outdoor_structures.py` is what holds the two together now that the deck check
 # no longer does.
 _HP_STAND_AT = (
-    ("A", 1, 34.975 - 29.75 / 24.0, -5.604167 - 15.5625 / 24.0),
-    ("A", 2, 34.975 - 29.75 / 24.0, -5.604167 + 15.5625 / 24.0),
-    ("A", 3, 34.975 + 29.75 / 24.0, -5.604167 - 15.5625 / 24.0),
-    ("A", 4, 34.975 + 29.75 / 24.0, -5.604167 + 15.5625 / 24.0),
-    ("B", 1, 30.675 - 25.0 / 24.0, -5.9 - 15.59375 / 24.0),
-    ("B", 2, 30.675 - 25.0 / 24.0, -5.9 + 15.59375 / 24.0),
-    ("B", 3, 30.675 + 25.0 / 24.0, -5.9 - 15.59375 / 24.0),
-    ("B", 4, 30.675 + 25.0 / 24.0, -5.9 + 15.59375 / 24.0),
+    ("A", 1, 34.971667 - 29.75 / 24.0, -1.710938 - 15.5625 / 24.0),
+    ("A", 2, 34.971667 - 29.75 / 24.0, -1.710938 + 15.5625 / 24.0),
+    ("A", 3, 34.971667 + 29.75 / 24.0, -1.710938 - 15.5625 / 24.0),
+    ("A", 4, 34.971667 + 29.75 / 24.0, -1.710938 + 15.5625 / 24.0),
+    ("B", 1, 30.673333 - 25.0 / 24.0, -1.804583 - 15.59375 / 24.0),
+    ("B", 2, 30.673333 - 25.0 / 24.0, -1.804583 + 15.59375 / 24.0),
+    ("B", 3, 30.673333 + 25.0 / 24.0, -1.804583 - 15.59375 / 24.0),
+    ("B", 4, 30.673333 + 25.0 / 24.0, -1.804583 + 15.59375 / 24.0),
 )
 #: 18", against the 12" the balcony stands carried. The owner's 12" was a balcony number —
 #: a deck swept by wind keeps its snow depth low in a way ground never does. At grade the
@@ -1209,26 +1242,39 @@ _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_fro
 # on a different plane — 12" south of this one — so the two guards read as two edges rather
 # than one.
 #
-# ** THE EAST LEG STOPS 3'-0" SHORT (2026-09-03). ** PORCH_STAIR comes off the porch's east
-# edge into the yard pocket, and the guard has to open for it. The opening is at the END of
-# the leg — from the porch's own north edge line `_y_in_n`, where the leg already terminated,
-# south to `_PORCH_STAIR_Y1` — so the path just gets its last point moved. No split into two
-# Railings, no degenerate stub at the corner.
+# ** THE EAST LEG OPENS 3'-0" IN ITS MIDDLE, AND THAT COSTS A SECOND RAILING (2026-09-04). **
+# PORCH_STAIR comes off the porch's east edge into the yard pocket and the guard has to open
+# for it. For one day the opening was at the leg's north END and the path just got its last
+# point moved; the flight then had to move south of the condenser row (see PT-SG-BR3, up at
+# HP_PAD), and an opening in the MIDDLE of a run is not something one `path` can say. So the
+# leg is two elements: PORCH_GUARD carries the west leg, the south leg and the east leg up
+# to the flight's south side, and PORCH_GUARD_NE carries the 5'-2" stub from the flight's
+# north side to the porch's north edge. Same uid on the long one — it is the same element,
+# shortened — and one new uid for the stub.
 #
 # ** NOTHING IN THE ENGINE WILL ASK ABOUT THE OPENING. ** `code.R312_1_guard_height` tests a
 # guard against a deck edge with a plain LineString distance from the edge SEGMENT
-# (`_railing_runs_edge`, checks/code/mn_residential/fall_protection.py), and the east edge's
-# midpoint stays guarded, so a 3'-0" gap at its north end reports PASS either way. The guard
-# return at the opening is on the author. Recorded in plans/TODO.md, same shape as the
+# (`_railing_runs_edge`, checks/code/mn_residential/fall_protection.py). Splitting the run
+# has not made that better: the two pieces together still cover the segment's midpoint, so
+# the 3'-0" gap reports PASS either way, and it would report PASS if the gap were 9'. The
+# guard return at the opening is on the author. Recorded in plans/TODO.md, same shape as the
 # SL-G-STEP-0 gap already there.
 #
-# The three constants are shared with the stair and its rails below precisely so the three
-# cannot drift: the opening's south edge, the flight's south side and the south rail are one
-# line, and the opening's north edge, the flight's north side and the north rail are another.
+# The four constants are shared with the stair, its pad and its rails below precisely so
+# they cannot drift: the opening's south edge, the flight's south side, the south rail and
+# the stair pad's south edge are one line, and the opening's north edge, the flight's north
+# side and the north rail are another.
+#
+# ** WHY y -6'-0"..-9'-0" AND NOT SOMEWHERE ELSE ON THE WALL. ** W-SG-E1's top is walkable
+# only between its two 12" round columns — PT-SG-BR3 (y -3'-0"..-2'-0") and PT-SG-BF3
+# (y -10'-9 1/4"..-9'-9 1/4") — which leaves 6'-9 1/4". Inside that, the flight is pushed as
+# far south as the discharge wants and no further: -6'-0" is 3'-8" clear of HP2's cabinet
+# face against its published 24", and -9'-0" leaves 9 1/4" to BF3 for the south rail's
+# baseplates. Sliding it north crowds the machines; sliding it south crowds the column.
 _PORCH_STAIR_X0 = _x_in_e + 1.0  # 28.5' — W-SG-E1's east face, where the stringers land
 _PORCH_STAIR_X1 = _PORCH_STAIR_X0 + 4 * 11.0 / 12.0  # 32.167' — four 11" treads east of it
-_PORCH_STAIR_Y0 = _y_in_n  # -0.833', the porch's own north edge line
-_PORCH_STAIR_Y1 = _PORCH_STAIR_Y0 - 3.0  # -3.833', a 36" flight
+_PORCH_STAIR_Y0 = -6.0   # the flight's NORTH side, and the opening's north edge
+_PORCH_STAIR_Y1 = -9.0   # its SOUTH side — a 36" flight
 
 _PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
                      pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_PORCH_STAIR_Y1)))
@@ -1240,6 +1286,20 @@ PORCH_GUARD = Railing(
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="surface",
     assembly="RAILING_DARK_METAL",
     # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap.
+    infill="balusters", baluster_spacing=inch(4))
+
+# The north stub of the east leg, from the flight's north side to the porch's north edge —
+# 5'-2" over W-SG-E1's top, everything about it identical to PORCH_GUARD but its path. It is
+# a separate element only because a `path` cannot carry a hole; it is bought, built and
+# billed as part of the same run, which is why it shares the type_ref and the assembly.
+PORCH_GUARD_NE = Railing(
+    uid="SGRA07AAAA", tag="RL-SG-PORCH-NE", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
+    path=(pt(ft(_x_in_e), ft(_PORCH_STAIR_Y0)), pt(ft(_x_in_e), ft(_y_in_n))),
+    kind=RailingKind.METAL_SURFACE_MOUNT,
+    height=ft(SPEC.railing_height_ft),
+    base_elevation=_porch_walking_surface,
+    post_spacing=inch(60), post_size="2x2", rail_count=2, mount="surface",
+    assembly="RAILING_DARK_METAL",
     infill="balusters", baluster_spacing=inch(4))
 
 # The south leg's post stations, in feet — the run over BM-SG-FRW/FRE that has no wall top
@@ -1259,14 +1319,14 @@ _y_porch_guard_block = _y_ax_front + 3.0 / 12.0
 # ============================================================================
 # The porch floor is at 0'-0" and grade east of it at -2'-10"; until now the only way onto
 # the porch was D-M-BALC, the French pair at x 21'-4". The flight goes east off the porch's
-# east edge into the yard pocket, landing on SL-SG-HPPAD, whose north strip was widened to
-# take it. See notes/porch_stair.md.
+# east edge into the yard pocket, from the clear stretch of W-SG-E1's top between its two
+# columns, landing on STAIR_PAD below. See notes/porch_stair.md.
 #
 # 5 risers at 6 3/5", 4 treads at 11" and NO nosing, 36" wide, KDAT — the ST-G-SERVICE
 # pattern (plan/storeys/garage.py), which is the same 0'-0"-to-grade five-riser flight and is
 # already priced and tested. `start` is the FOOT, on the pad at the east end; the flight
-# climbs west (`run_reversed`) to the wall top, and `width` runs +y from `start`, so the two
-# y constants above are the flight's south and north sides in that order.
+# climbs west (`run_reversed`) to the wall top, and `width` runs +y from `start`, so
+# `_PORCH_STAIR_Y1` is the south side and `_PORCH_STAIR_Y0` the north, in that order.
 #
 # ** BOTH ELEVATIONS ARE STATED, because neither is a storey datum. ** `from_storey` and
 # `to_storey` are both `main` — this is a step-down within one storey, the case
@@ -1283,9 +1343,33 @@ _y_porch_guard_block = _y_ax_front + 3.0 / 12.0
 # MODELLED, it is priced with the plank in prices.toml [framing] and written down in
 # notes/porch_stair.md — the same call the framed-wall line-set sleeve got.
 #
+# ** AND AN UNMODELLED THRESHOLD IS WHY THE FIRST TRY LANDED ON A COLUMN. ** Drawn against
+# the pocket's north strip, this board ran straight through PT-SG-BR3 — a 12" round on a 12"
+# wall, so it filled the top edge to edge and left 10" of passage one side and 14" the other.
+# Nothing failed: the column's east face is exactly tangent to the stair's head at x 28'-6",
+# so no solid overlapped, and the board that would have overlapped is trim. Read the wall
+# top's occupants by hand before moving this flight along it.
+#
 # The stringers bear on that wall top at the head and on the pad at the foot. No
 # `bearing_refs`: the flight hosts itself between two solids, and a tag there that names no
 # wall on `from_storey` is an `integrity.stair_bearing` error rather than a permission.
+#
+# ** STAIR_PAD: x 28'-6"..35'-3", y -9'-0"..-6'-0" — 20.3 sf, 0.25 cy at 4". ** Its own pour,
+# poured to `_HP_PAD_TOP` so the flight's authored base is the pad it actually lands on. The
+# west edge is W-SG-E1's east face, where the stringers foot; the flight itself covers x
+# 28'-6"..32'-2"; and the 3'-1" east of that is R311.7.6's bottom landing, which wants 36"
+# in the direction of travel and gets 37". It is 2'-8" clear of HP_PAD in y, so the two are
+# separate rectangles and not one L — a single pour spanning both would be 94 sf to serve 40.
+_STAIR_PAD_X1 = _PORCH_STAIR_X1 + 37.0 / 12.0  # 35.25' — 37" of landing past the bottom riser
+
+STAIR_PAD = Slab(
+    uid="SGSPADAAAA", tag="SL-SG-STAIRPAD", assembly="HP_PAD_ON_GRADE",
+    outline=(pt(ft(_PORCH_STAIR_X0), ft(_PORCH_STAIR_Y1)),
+             pt(ft(_STAIR_PAD_X1), ft(_PORCH_STAIR_Y1)),
+             pt(ft(_STAIR_PAD_X1), ft(_PORCH_STAIR_Y0)),
+             pt(ft(_PORCH_STAIR_X0), ft(_PORCH_STAIR_Y0))),
+    thickness=inch(4.0), top_elevation=_HP_PAD_TOP)
+
 PORCH_STAIR = Stair(
     uid="SGST01AAAA", tag="ST-SG-PORCH",
     from_storey="main", to_storey="main",
@@ -1301,9 +1385,11 @@ PORCH_STAIR = Stair(
 # answers both, which is what `role="guard_and_handrail"` says. 36" clears R312.1.2's 34"
 # stair minimum measured off the nosing line, and R311.7.8.1's 34"-38" for the rail top.
 #
-# The NORTH side needs its own guard even though W-M-S2 stands 5" away: that wall's band
-# starts at 0'-0" and every nosing but the last runs below it, so `code.R312_1_1_stair_open_side`
-# — which asks whether a wall's own z band brackets the nosing — will not credit it.
+# BOTH sides are open yard now — the flight sits in the middle of the pocket, 5'-2" south of
+# the house and 1'-6" north of the W-RG-EAST-BALCONY apron — so neither side has a wall that
+# `code.R312_1_1_stair_open_side` could credit even in principle. While the flight ran along
+# the house this same pair was authored for a subtler reason (W-M-S2's band starts at 0'-0"
+# and every nosing but the last runs below it), and the pair is unchanged.
 #
 # A 36" tread past two 1 1/2" sections leaves 33" clear against R311.7.1's 27" for two rails.
 #
@@ -2155,10 +2241,12 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # ties and the four corner beam-seat gussets), so main takes them whole. With the knee
 # braces retired there is no second-storey hardware at all.
-MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,
+MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS,
+                 PORCH_GUARD, PORCH_GUARD_NE,
                  *CONNECTORS, *PORCH_BEAM_CAPS,
                  HP_PAD, *HP_STAND_LEGS, *HP_STAND_ANCHORS,
-                 PORCH_STAIR, *PORCH_STAIR_RAILS, *PORCH_STAIR_THRESHOLD_RAILS]
+                 STAIR_PAD, PORCH_STAIR, *PORCH_STAIR_RAILS,
+                 *PORCH_STAIR_THRESHOLD_RAILS]
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,

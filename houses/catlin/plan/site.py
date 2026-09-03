@@ -210,23 +210,35 @@ SITE = Site(
             near_elevation=ft(-2, -11),  # -1" below grade at the foundation
             far_elevation=ft(-3, -2),  # -4" below grade at the 6' outer edge (4.2% away)
         ),
-        # The heat-pump pad in the pocket east of the porch (SL-SG-HPPAD, authored in
-        # params/sunken_garden.py). It grew east and lost its southern strip on 2026-09-03
-        # when the two condensers turned to face south and ST-SG-PORCH took the north band:
-        # x 28'-6"..36'-9", y -7'-6"..-0'-7 1/5", 56.9 sf.
+        # The two pads in the pocket east of the porch, both authored in
+        # params/sunken_garden.py. They were one 56.9 sf pour for a day; on 2026-09-04 the
+        # condenser row crossed to the house side and ST-SG-PORCH took the south half, and a
+        # rectangle spanning both would have been 94 sf of concrete to serve 40. Both tops
+        # are -2'-8", 2" PROUD of the -2'-10" grade — Gree's "install 2 in above the expected
+        # snow line" — and both fall away from the house. The Slabs are modelled flat at
+        # their high edge; the fall is a finishing fact and lives here, where
+        # code.R401_3_impervious can read it.
         #
-        # Its top is 2" PROUD of grade at the house — Gree's "install 2 in above the expected
-        # snow line" — and falls 2 1/2" over the ~6'-11" the check measures to its far
-        # (south-east) corner, which lands 1/2" below the -2'-10" grade so the sheet leaves
-        # onto gravel rather than ponding at a lip. That is 3.0% against R401.3's 2%. The
-        # Slab is modelled flat at its high edge; the fall is a finishing fact and lives
-        # here, where code.R401_3_impervious can read it.
+        # SL-SG-HPPAD, x 29'-0"..36'-10" by y -3'-4"..-0'-10" — 19.6 sf. It falls 3/4" south
+        # over 2'-6", 2.5% against R401.3's 2%, and its far edge lands 1/2" below grade so
+        # the sheet leaves onto gravel rather than ponding at a lip.
         ImperviousSurface(
             label="hp pad",
-            outline=(pt(ft(28, 6), ft(-7, -6)), pt(ft(36, 9), ft(-7, -6)),
-                     pt(ft(36, 9), ft(0, -7.2)), pt(ft(28, 6), ft(0, -7.2))),
+            outline=(pt(ft(29), ft(-3, -4)), pt(ft(36, 10), ft(-3, -4)),
+                     pt(ft(36, 10), ft(0, -10)), pt(ft(29), ft(0, -10))),
             near_elevation=ft(-2, -8),
-            far_elevation=ft(-2, -10.5),
+            far_elevation=ft(-2, -8.75),
+        ),
+        # SL-SG-STAIRPAD, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
+        # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is
+        # the only thing that reaches it at all; it falls 2" EAST over its 6'-9" run, 2.5%,
+        # carrying meltwater off the treads away from the porch wall rather than along it.
+        ImperviousSurface(
+            label="porch stair pad",
+            outline=(pt(ft(28, 6), ft(-9)), pt(ft(35, 3), ft(-9)),
+                     pt(ft(35, 3), ft(-6)), pt(ft(28, 6), ft(-6))),
+            near_elevation=ft(-2, -8),
+            far_elevation=ft(-2, -10),
         ),
     ),
     # ``UtilityLine.depth`` is a bury depth *below finished grade* (emit/ifc/site.py reads
