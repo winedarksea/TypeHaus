@@ -228,6 +228,19 @@
 # these joists hang off the ridge on LSSR hangers, so ForteWEB owns the last word. The
 # fallback if it says no is a TJI 210 at 19.2" o.c. (2'-6" of margin, ~200 LF saved).
 "11.875 TJI 230" = { material = { low = 4.2, high = 6.6 }, labour = { low = 0.9, high = 1.9 } }  # 760 LF — RF-HOUSE rafters, 38 pc x 20'
+# THE RAFTERS' WEB STIFFENERS, 2026-09-02 — and they are PLYWOOD, not the 2x4 this row
+# replaced. A stiffener fills the joist's own web cavity, which on a TJI 230 is
+# (2 5/16" flange - 3/8" web) / 2 = 15/16" a side: a 1 1/2" stick does not go in there at
+# all. 23/32" CDX both sides per Weyerhaeuser TJ-9000, ripped 4" wide because CSG-TJUS25
+# conditions the LSSR hanger on stiffeners "4" wide and attached with (4) nails each side".
+# ONE MODELLED MEMBER PER RAFTER END IS THE PAIR, so both numbers below are for two pieces:
+#   material — 2 x a 4" rip = 0.67 SF per LF of member, at the $45-65/sheet ($1.41-2.03/SF)
+#     23/32 CDX the "plywood-subfloor" row in [sheet_goods] is basised on, plus rip waste.
+#   labour — this is PIECEWORK, not run footage, and the rate looks high by the foot for
+#     that reason: each end is two blocks cut to the 6:12 bevel and 8 nails, 4-7 minutes of
+#     a framer at $55-85/hr loaded. 76 ends, so $280-600 all in.
+# CONFIDENCE: MEDIUM on labour (a time estimate, not a quote), HIGH on material.
+"4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # 76 LF — 76 pairs at both rafter ends
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
 # delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
 # I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
@@ -300,7 +313,7 @@
 # course and jamb post, 571 LF of block-1, 192 LF of inner head/sill course, and the SPF
 # offcuts that went with them — and hands nothing back, because everything outboard of the
 # sheathing is KDAT now. This is the single largest material line change in the wall.
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6272 LF — SPF, ordinary framing only
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6192 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above)
 # 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
 # (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
 # `resilient-channel` and it is deliberately the same number — single-leg RC-1 in 12' sticks,

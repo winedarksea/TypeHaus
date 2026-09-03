@@ -84,9 +84,9 @@ rather than by a plumb cut should be 5 1/4" and take the full 2 1/2" nails.
 
 | part | count | rule |
 |---|---|---|
-| LSSR sloped/skewable hanger | 56 — one per rafter end | derived, `takeoff/hangers.py` |
-| beveled web stiffener, both sides | 56 at the ridge (+56 at the eave) | derived, `resolve/framing/roof.py` |
-| LSTA24 strap over the peak | 28 — one per opposing **pair** | derived, `takeoff/hangers.py` |
+| LSSR sloped/skewable hanger | 38 — one per rafter end | derived, `takeoff/hangers.py` |
+| beveled web stiffener pair, 23/32" ply x 4" | 38 at the ridge (+38 at the eave) | derived, `resolve/framing/roof.py` |
+| LSTA24 strap over the peak | 19 — one per opposing **pair** | derived, `takeoff/hangers.py` |
 | H2.5A, beam to top plate | 10 — 4' o.c. plus both ends | derived, `takeoff/uplift.py` |
 | SDW22 3 3/4" ply screws | 4 per hanger, one face | spec, not modelled |
 
@@ -100,12 +100,18 @@ hanger-at-a-ridge-beam detail, required above 3:12, and 4:12 is above 3:12 — c
 "LSTA24 (Simpson or USP) strap with twelve 10d (0.148" x 1 1/2") nails", 2 3/8" minimum end
 distance. APA EWS D710 detail 10c asks for the same from 1/4:12. The hanger carries a
 rafter's weight down into the beam and does nothing across the peak; the strap is what makes
-the two slopes one structure. The house had 56 hangers and no straps until this note.
+the two slopes one structure. The house had a hanger per rafter and no straps until this note.
 
 **Beveled web stiffeners, both sides, cut to the roof slope**, per Weyerhaeuser H5/H5S and
-D710 10c. The house modelled 56 of them at the eave and none at the ridge for the same
-period. They sit *inboard* of the plumb cut, filling the joist's own web cavity with their
-outer face flush to it — which is also where the model now draws them.
+D710 10c. The house modelled them at the eave and none at the ridge for the same period.
+They sit *inboard* of the plumb cut, filling the joist's own web cavity with their outer
+face flush to it — which is also where the model now draws them.
+
+**They are PLYWOOD** — 23/32" CDX each side, ripped **4" wide** for the LSSR's "(4) nails
+each side". The cavity a stiffener fills is (2 5/16" flange - 3/8" web) / 2 = **15/16" a
+side**, so the 2x4 the model billed until 2026-09-02 was not a material error only: a 1 1/2"
+stick does not physically go in. One modelled member per rafter end stands for the pair;
+`prices.toml`'s `4x1.4375 stiffener panel` row prices it as two pieces.
 
 ## 4. Ply stitching, and the two sticks
 

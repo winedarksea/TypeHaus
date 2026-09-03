@@ -68,6 +68,10 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # tried before the generic "*panel*" catch-all below (first-match-wins), which would
     # otherwise file it as 08 80 00 Glazing alongside window/door panel infill.
     ("framing", "* corner panel", CostCode("2100", "06 16 00", "walls")),
+    # I-joist web stiffeners: a plywood rip that the framer cuts and nails with the roof,
+    # not trim and not glazing. Same account as the joist it reinforces, ahead of the
+    # "*panel*" catch-all for the same reason the corner box above is.
+    ("framing", "* stiffener panel", CostCode("2000", "06 17 00", "framing")),
     ("framing", "*panel*", CostCode("2400", "08 80 00", "openings")),
     # Sheet goods: roof and wall sheathing bill to the same account as the framing they
     # skin, insulated sheathing to insulation.

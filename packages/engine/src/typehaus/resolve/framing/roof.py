@@ -33,7 +33,7 @@ from typehaus.model.enums import ConditionKind, LayerFunction
 from typehaus.model.spatial import Roof
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, panel_profile
 from typehaus.resolve.framing.roof_gable import (
     build_truss_layout,
     gable_end_members,
@@ -58,8 +58,24 @@ _SUPPORT_GAP_TOL_M = inch(16.0).meters
 # plate the rafter bears on. The reference's 1.17" notch depth is not a second constant —
 # it is this run times the rafter's slope, and stating it twice is how the two drifted.
 _SEAT_LEN_M = inch(3.5).meters
-#: The beveled web stiffener stock, at both ends of an I-joist rafter.
-_STIFFENER_PROFILE = "2x4"
+#: The beveled web stiffener stock, at both ends of an I-joist rafter: **plywood, not
+#: lumber**. A stiffener fills the joist's own web cavity, and on the TJI 230 that cavity is
+#: (2 5/16" flange - 3/8" web) / 2 = 15/16" per side — a 1 1/2" 2x4 does not physically go in
+#: there, whatever else is wrong with billing sheet goods as SPF. Weyerhaeuser TJ-9000 wants
+#: 23/32" ply each side; the WIDTH is 4" because Simpson/Weyerhaeuser CSG-TJUS25 conditions
+#: the LSSR on stiffeners "4" wide and attached with (4) nails each side" (notes/
+#: ridge_beam_detail.md §3), and the eave end takes the same piece rather than a second size.
+#:
+#: One member per rafter END stands for the PAIR, which is why the thickness is 2 x 23/32"
+#: and not 23/32": the pair straddles a 3/8" web, so a single block on the rafter's own line
+#: is within 1/4" of where the two plies actually are — the same simplification the 2x4 made,
+#: at the right material and the right count. ``prices.toml`` prices this row as the pair.
+_STIFFENER_PROFILE = panel_profile(4.0, 2 * 0.71875, "stiffener")
+#: …and it is named as a sheet good, not left to the category palette. ``FramedMember.material``
+#: is what makes the ridge detail hatch this block as plywood instead of as lumber, and what
+#: puts the product in the BOM key — the whole point of the 2026-09-02 correction is that a
+#: framer reading the detail must not cut a 2x4 for it.
+_STIFFENER_MATERIAL = "struct-1-plywood"
 
 
 def frame_roofs(model: ResolvedModel) -> list[Finding]:
@@ -244,10 +260,12 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...],
         # disagree; ask the profile table, which is the answer both sides want.
         if cross_section(rafter.profile).shape != "i_joist":
             continue
+        axis = _rafter_axis(rafter)
         stiffeners.append(FramedMember(
             rafter.parent_uid, f"{rafter.child_key}-eave-stiffener", "bearing_stiffener",
             _STIFFENER_PROFILE, rafter.p0, rafter.p0, rafter.z0_m, rafter.z1_m,
-            rafter.z1_m - rafter.z0_m, connection="eave:beveled-web-stiffener",
+            rafter.z1_m - rafter.z0_m, connection="eave:beveled-web-stiffener", orient=axis,
+            material=_STIFFENER_MATERIAL,
         ))
         if not hung_at_ridge:
             continue
@@ -258,9 +276,24 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...],
         stiffeners.append(FramedMember(
             rafter.parent_uid, f"{rafter.child_key}-ridge-stiffener", "bearing_stiffener",
             _STIFFENER_PROFILE, *(_stiffener_station(rafter),) * 2, z0, z1, z1 - z0,
-            connection="ridge:beveled-web-stiffener",
+            connection="ridge:beveled-web-stiffener", orient=axis,
+            material=_STIFFENER_MATERIAL,
         ))
     return tuple(stiffeners)
+
+
+def _rafter_axis(rafter: FramedMember) -> tuple[float, float]:
+    """The rafter's plan direction — the axis an upright member's WIDTH is laid along.
+
+    A stiffener is a 4"-wide plate in the plane of the joist's web, so its wide face runs
+    *up the rafter*. Left to the ``orient=None`` default it would be drawn along +x for
+    every rafter on the plan, which is the web plane only for the rafters that happen to
+    run east-west.
+    """
+    (x0, y0), (x1, y1) = rafter.p0, rafter.p1
+    dx, dy = x1 - x0, y1 - y0
+    run = math.hypot(dx, dy)
+    return (1.0, 0.0) if run < 1e-9 else (dx / run, dy / run)
 
 
 def _stiffener_station(rafter: FramedMember) -> tuple[float, float]:

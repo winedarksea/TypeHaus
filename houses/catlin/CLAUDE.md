@@ -756,8 +756,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     which means a SHORTER header nail has to reach the schedule. A ridge sized by bending
     rather than by a plumb cut wants 5 1/4" and the full nail.
   - **The peak carries hardware the eave already had.** Beveled web stiffeners both sides at
-    the ridge (56, derived) and an
-    LSTA24 over the top per pair (28), which Weyerhaeuser's H5S makes mandatory above 3:12.
+    the ridge (38, derived — **23/32" ply ripped 4" wide, not a 2x4**: the cavity between web
+    and flange is 15/16" a side and a stick does not go in it) and an
+    LSTA24 over the top per pair (19), which Weyerhaeuser's H5S makes mandatory above 3:12.
     Plus 10 H2.5A tying the beam to its plate at 4' o.c. — that joint had NO connector and no
     uplift-path link at all, because `uplift.py` walks the roof's own `bearing_refs` (the
     eave line — the knee walls then, the rafter plates now) and `uplift_path.py` skips a
