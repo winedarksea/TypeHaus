@@ -116,7 +116,7 @@ from typehaus import (
 )
 
 from params.foundations import SITE_GRADE
-from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
+from plan.storeys.garage import GARAGE_Y_SOUTH
 
 # ============================================================================
 # Plan geometry — every number here is derived, never repeated.
@@ -157,11 +157,68 @@ _PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
 #: where it stands to the half inch. See plan/storeys/garage.py::GARAGE_Y_SOUTH.
 _REVEAL_FT = _CLEAR_GAP_FT - _PANEL_FT  # 0.04167' = 1/2"
 
-# N-S: post outer faces snug to the house cladding and the garage cladding — the
-# most-proud face at each end is what a post has to clear.
+# N-S: the FRAME line — the deck edge, the beam ends, the rafter stations. Snug to the
+# house cladding and the garage cladding, since the most-proud face at each end is what the
+# structure has to clear. This is where the posts used to stand as well; see below.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
-_POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.8333'
-_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.4167'
+_FRAME_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.8333'
+_FRAME_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.4167'
+
+# ---------------------------------------------------------------------------
+# **The posts do NOT stand on the frame line. The foundations would not fit.**
+#
+# A pier pad under the frame line lands inside the building it is beside. Both ends, and
+# neither was visible to any rule in the engine — `structural.member_interference` excludes
+# slab/footing/pad solids on purpose (a beam legitimately bears into concrete) and a
+# FoundationWall contributes no framed members, so concrete against concrete was ungraded.
+# With 2'-0" pads on the frame line the numbers were:
+#
+#   PD-BW-1/2 -> W-B-N*  house basement wall   6 1/16" of plan overlap, the pad's full 12"
+#                                              of thickness inside the wall's own band
+#   PD-BW-3/4 -> W-GF-S* garage ICF stem       8 3/8" of plan overlap, likewise
+#   PR-BW-3/4 -> W-GF-S* garage ICF stem       1 5/8" over 4'-0" of shared height
+#
+# `structural.concrete_interference` grades it now, and this is the fix it asked for:
+# **shrink the pads to their real load and move the posts inboard**, letting the two floor
+# beams and the two roof beams cantilever the remainder out to the frame line. Nothing above
+# the beams moves — the enclosure, the deck, the sheets and the rafters are all measured off
+# the frame line, and the frame line is untouched.
+#
+# The band a pad may live in is measured at PAD DEPTH, not at grade:
+#   * house side — the basement wall's outboard XPS face, y = 36' sheathing plane +
+#     CATLIN_BASEMENT_8's 4.05" of damp-proof + 2x 2" XPS (plan/assemblies.py). The
+#     protection panel outboard of it stops 6" below grade, ~3' above these pads, so it is
+#     not what a pad has to clear.
+#   * garage side — the ICF stem's outboard EPS face, which is the node line itself
+#     (`_GARAGE_STEM_Y`). Its coil-gap/coil-ext layers stop at -3'-0", also above the pads.
+_HOUSE_FOUNDATION_Y = 36.0 + 4.05 / 12.0  # 36.3375'
+_PAD_BAND_FT = _GARAGE_STEM_Y - _HOUSE_FOUNDATION_Y  # 4.38125' = 4'-4 9/16"
+
+# **The pads were enormously oversized.** `structural.deck_footing_size` graded the 2'-0"
+# square pads at 4.00 ft2 against an IRC R507.3.1 requirement of 1.00 ft2 — and that 1.00 is
+# already the 12" minimum side, not the load: 3.2 ft2 tributary at 50 psf on 1500 psf soil
+# needs 0.11 ft2. 1'-4" is the size chosen: 1.78 ft2, comfortably over both the load and the
+# 12" minimum, and 2" of ledge all round the 12" round pier it carries.
+_PAD_SIDE_FT = 16.0 / 12.0
+_PAD_HALF_FT = _PAD_SIDE_FT / 2.0
+_FORM_CLEAR_FT = 2.0 / 12.0  # working room between a pad edge and the wall it stands beside
+
+# The widest post spacing the band will take, and then the round number just inside it.
+# Wider is better — every inch of spacing is an inch off the cantilevers — so this is at the
+# practical maximum rather than picked for looks.
+_POST_SPACING_MAX_FT = _PAD_BAND_FT - 2.0 * (_PAD_HALF_FT + _FORM_CLEAR_FT)  # 2.7146'
+_POST_SPACING_FT = 2.0 + 8.0 / 12.0  # 2'-8"
+_POST_MID_Y = (_HOUSE_FOUNDATION_Y + _GARAGE_STEM_Y) / 2.0  # 38.5281', the band's centre
+_POST_Y0 = _POST_MID_Y - _POST_SPACING_FT / 2.0  # 37.1948'
+_POST_Y1 = _POST_MID_Y + _POST_SPACING_FT / 2.0  # 39.8615'
+# The beams cantilever the rest: 0.3615' (4 11/32") at the house end and 0.5552' (6 21/32")
+# at the garage, against IRC R507.5.2's ceiling of a quarter of the 2.6667' actual beam span
+# = 0.6667'. Both clear; the north one uses 83% of its allowance.
+#
+# The two are UNEQUAL, and centring the posts on the frame line instead would even them at
+# 0.4583" each — but the band is not centred on the frame line. Its centre sits 3 1/2" south
+# of the frame's, so an evenly-cantilevered pair leaves only 1 1/8" of forming clearance at
+# the garage end. The band is the binding constraint, so the band is what this is centred on.
 
 # The glazing runs from the house cladding north and stops one panel later — so the reveal
 # lands at the garage end rather than at the house, where the door is. The sheet's N-S
@@ -189,13 +246,21 @@ _ROOF_X0, _ROOF_X1 = _GLAZING_X0, _GLAZING_X1
 
 _POST_XY = [(_POST_X0, _POST_Y0), (_POST_X1, _POST_Y0),
             (_POST_X0, _POST_Y1), (_POST_X1, _POST_Y1)]
+# Where the frame lands: beam ends, rafter stations, deck corners.
+_FRAME_XY = [(_POST_X0, _FRAME_Y0), (_POST_X1, _FRAME_Y0),
+             (_POST_X0, _FRAME_Y1), (_POST_X1, _FRAME_Y1)]
 
 # Where SL-D-BREEZEWAY cuts (plan/views.py). Published rather than re-typed there because
-# the whole point of the station is that it lands on the *south frame line*: pad, pier, post,
-# both floor beams, the first joist, both roof beams, the first rafter, the deck, both
-# standing sheets and the roof sheets are all crossed by one plane at this y. Any other
-# station misses the foundation or misses the frame.
-DETAIL_CUT_Y_FT = _POST_Y0
+# the station is chosen, not rounded to: the *south frame line* crosses the whole stack —
+# the pad, the pier, both floor beams, the first joist, both roof beams, the first rafter
+# and its two wedges, the deck, both standing sheets and the roof sheet.
+#
+# It no longer crosses the 6x6 POST, and it cannot: the posts moved 4 11/32" inboard so
+# their pads would fit between the two buildings (see the post-line block above), while the
+# joists and rafters stayed on the frame line where the sheets need bearing. No plane
+# crosses both any more. This one is still the right one — the pier and pad it does cross
+# are the ones under the post 4" away, and the post's section is on the framing plan.
+DETAIL_CUT_Y_FT = _FRAME_Y0
 
 # ============================================================================
 # Vertical stack (project-frame absolute; +Z up, 0'-0" is the main-floor datum).
@@ -253,8 +318,10 @@ _POST_TOP = _ROOF_BEAM_TOP - _JOIST_DEPTH_FT  # 6.2917' = +6'-3 1/2", the roof-b
 # them, so their IFC GlobalIds (uuid5 over the uid) survive this rewrite.
 PADS = [
     Pad(uid=f"CP{i}00AAAAA", tag=f"PD-BW-{i}",
-        outline=(pt(ft(x - 1), ft(y - 1)), pt(ft(x + 1), ft(y - 1)),
-                 pt(ft(x + 1), ft(y + 1)), pt(ft(x - 1), ft(y + 1))),
+        outline=(pt(ft(x - _PAD_HALF_FT), ft(y - _PAD_HALF_FT)),
+                 pt(ft(x + _PAD_HALF_FT), ft(y - _PAD_HALF_FT)),
+                 pt(ft(x + _PAD_HALF_FT), ft(y + _PAD_HALF_FT)),
+                 pt(ft(x - _PAD_HALF_FT), ft(y + _PAD_HALF_FT))),
         thickness=ft(_PAD_THICKNESS_FT), bottom_elevation=ft(_PAD_BOTTOM))
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
@@ -263,18 +330,14 @@ PADS = [
 # soffit. The 6x6 above is ground-contact rated anyway (the brief), but a post standing in
 # soil rots from the end grain first whatever its treatment.
 #
-# The two garage-end piers stop one course lower, at the ICF stem top, and their posts run
-# down to meet them. A 12" round is 6 1/2" fatter than the 5 1/2" post it carries, so it
-# spills 3 1/4" past the post's north face — harmless while clear of the garage's wood wall,
-# and not harmless now: W-G-S's bottom plate sits at -0'-8", three quarters of an inch under
-# the -0'-7 1/4" floor-beam soffit these piers top out at, and concrete and plate wanted the
-# same band (structural.member_interference). The post is
-# exactly as wide as the cladding is proud of the stem, so it passes where the pier cannot.
-# Nothing in plan moves: the enclosure, the deck and the uncut sheets are all measured off
-# the post lines, and the post lines are untouched.
-_GARAGE_STEM_TOP = _GRADE_FT + GARAGE_STEM_REVEAL.feet  # -0'-8"
-_PIER_TOPS = [_PIER_TOP, _PIER_TOP,
-              min(_PIER_TOP, _GARAGE_STEM_TOP), min(_PIER_TOP, _GARAGE_STEM_TOP)]
+# **All four piers now top out on one plane.** The two garage-end ones used to stop a course
+# lower, at the ICF stem top, because a 12" round is 6 1/2" fatter than the 5 1/2" post it
+# carries and spilled 3 1/4" past the post's north face into W-G-S's bottom plate at -0'-8"
+# (structural.member_interference). Moving the posts inboard off the frame line put the pier
+# faces 4 5/16" clear of the stem line, so the special case has nothing left to dodge —
+# `member_interference` and `concrete_interference` are both what prove that, not this
+# comment.
+_PIER_TOPS = [_PIER_TOP] * 4
 
 PIERS = [
     Post(uid=f"BWPR{i}AAAAA", tag=f"PR-BW-{i}", position=pt(ft(x), ft(y)),
@@ -294,22 +357,22 @@ POSTS = [
 # Deck: two N-S floor beams bolted to the post faces, E-W joists flush between them.
 # ============================================================================
 _BEAM_NODES = [
-    ("BWN01AAAAA", "N-BW-FSW", _POST_X0, _POST_Y0),
-    ("BWN02AAAAA", "N-BW-FSE", _POST_X1, _POST_Y0),
-    ("BWN03AAAAA", "N-BW-FNW", _POST_X0, _POST_Y1),
-    ("BWN04AAAAA", "N-BW-FNE", _POST_X1, _POST_Y1),
+    ("BWN01AAAAA", "N-BW-FSW", _POST_X0, _FRAME_Y0),
+    ("BWN02AAAAA", "N-BW-FSE", _POST_X1, _FRAME_Y0),
+    ("BWN03AAAAA", "N-BW-FNW", _POST_X0, _FRAME_Y1),
+    ("BWN04AAAAA", "N-BW-FNE", _POST_X1, _FRAME_Y1),
 ]
 # The roof beams sit on the same two plan lines but on their own nodes: one node cannot
 # carry two elevations, and the joint-detection pass reads node identity.
 _ROOF_NODES = [
-    ("BWN11AAAAA", "N-BW-RSW", _POST_X0, _POST_Y0),
-    ("BWN12AAAAA", "N-BW-RSE", _POST_X1, _POST_Y0),
-    ("BWN13AAAAA", "N-BW-RNW", _POST_X0, _POST_Y1),
-    ("BWN14AAAAA", "N-BW-RNE", _POST_X1, _POST_Y1),
+    ("BWN11AAAAA", "N-BW-RSW", _POST_X0, _FRAME_Y0),
+    ("BWN12AAAAA", "N-BW-RSE", _POST_X1, _FRAME_Y0),
+    ("BWN13AAAAA", "N-BW-RNW", _POST_X0, _FRAME_Y1),
+    ("BWN14AAAAA", "N-BW-RNE", _POST_X1, _FRAME_Y1),
 ]
 # Rafter ends run out to the roof envelope, which is now the post *outer face* — 2 3/4" past
 # each post centre — so the rafter, the sheet and the H channel all die on one plane.
-_RAFTER_Y = [_POST_Y0, (_POST_Y0 + _POST_Y1) / 2.0, _POST_Y1]
+_RAFTER_Y = [_FRAME_Y0, (_FRAME_Y0 + _FRAME_Y1) / 2.0, _FRAME_Y1]
 _RAFTER_NODES = [
     (f"BWN2{i}{side}AAAA", f"N-BW-R{i}{side}", x, y)
     for i, y in enumerate(_RAFTER_Y, start=1)
@@ -332,8 +395,8 @@ FLOOR_BEAMS = [
          bearing_refs=("PT-BW-2", "PT-BW-4")),
 ]
 
-_DECK_OUTLINE = (pt(ft(_POST_X0), ft(_POST_Y0)), pt(ft(_POST_X1), ft(_POST_Y0)),
-                 pt(ft(_POST_X1), ft(_POST_Y1)), pt(ft(_POST_X0), ft(_POST_Y1)))
+_DECK_OUTLINE = (pt(ft(_POST_X0), ft(_FRAME_Y0)), pt(ft(_POST_X1), ft(_FRAME_Y0)),
+                 pt(ft(_POST_X1), ft(_FRAME_Y1)), pt(ft(_POST_X0), ft(_FRAME_Y1)))
 
 # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
 # 40-psf floor table — see checks/structural/deck.py.

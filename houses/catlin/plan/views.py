@@ -55,16 +55,24 @@ DETAIL_SLICES = [
          crop=(pt(m(8.4), m(2.7)), pt(m(11.3), m(5.8)))),
     # Breezeway cross section — the one detail that captures the whole enclosure. Cut
     # transversely (direction="x", so the plane is x-z) on the breezeway's *south frame
-    # line*, which is the only station that crosses the entire stack at once: pad, pier,
-    # 6x6 post, both floor beams, a joist, the decking, both standing polycarbonate sheets,
-    # both roof beams, a rafter, and the roof sheet with its crown. The crop runs from below
-    # the frost-depth pads (-4') to above the crown (+8'-6"), and 1'-0" past the 4'-0"
-    # glazing envelope (x = 2'-6" to 6'-6") on each side, which also takes in the 2'-square
-    # pads under the posts.
+    # line* (``DETAIL_CUT_Y_FT``, published by params/breezeway.py rather than typed here):
+    # pad, pier, both floor beams, a joist, the decking, both standing polycarbonate sheets,
+    # both roof beams, a rafter and its two drainage wedges, and the roof sheet.
+    #
+    # It does NOT cross the 6x6 post, and no station can cross both any more: the posts sit
+    # 4 11/32" inboard of this line so their pier pads clear the two buildings' foundations,
+    # while the joists and rafters stay on the frame line where the sheets need bearing.
+    # See the post-line block in params/breezeway.py.
+    #
+    # The crop runs from below the frost-depth pads (-4') to above the crown (+8'-6"), and
+    # 1'-0" past the 4'-0" glazing envelope (x = 6'-0" to 10'-0") on each side. **It was
+    # x = 1'-6"..7'-6" until 2026-09-03** — the same 3'-6" of stale arithmetic the module
+    # docstring carried, from when the enclosure was centred on x = 4'-6". The drawing was
+    # cropping off the east half of its own subject.
     Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
          title="Breezeway cross section",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
-         crop=(pt(ft(1, 6), ft(-4)), pt(ft(7, 6), ft(8, 6))),
+         crop=(pt(ft(5), ft(-4)), pt(ft(11), ft(8, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # ** THE DRAWING THAT PROVES THE ATTIC CHANGE, AND THE ONE THAT WOULD CATCH IT COMING
     # UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the stair
