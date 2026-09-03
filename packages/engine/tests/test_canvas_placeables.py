@@ -369,14 +369,25 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
                   if getattr(product, "form", None) is not None}
     placed = [item for item in model.canvas_objects if item.type_ref in luminaires]
     assert len(placed) > 50
-    assert all(above_floor(item.tag) > 0.05 for item in placed)
+    # ** ONE FIXTURE IS LEGITIMATELY BELOW ITS STOREY DATUM, AND IT IS NOT A FALL. **
+    # ED-M-STAIR-LT is a step light on W-SG-E1's east face, lighting the head of
+    # ST-SG-PORCH. That wall's TOP is 0'-0" — the `main` datum itself — so every point on the
+    # face it hangs on is below the floor this arithmetic measures from, and its authored
+    # elevation is a negative number on purpose. Asserted against what it was authored as,
+    # rather than excused, so the heuristic below stays sharp for the other fifty-odd.
+    below_datum = {"ED-M-STAIR-LT": -ft(0, 8).meters}
+    for tag, want in below_datum.items():
+        assert above_floor(tag) == pytest.approx(want, abs=1e-6), tag
+    assert all(above_floor(item.tag) > 0.05 for item in placed
+               if item.tag not in below_datum)
     # The 0.5 m line is the "did it fall to the floor" heuristic, and exactly one fixture is
     # legitimately below it: ED-M-PANTRY-LT, RM-M-PANTRY's 6'-0" vertical WALL slot, whose
     # authored base is 1'-6" so the lit line runs 1'-6"..7'-6" past every shelf edge.
     # ``resolved_mount_elevation`` returns the BASE of a body and LuminaireType.height
     # measures up from it, so a low z_m here is the fixture working, not falling. Naming it
     # keeps the heuristic sharp for the other fifty-odd.
-    low = {item.tag for item in placed if above_floor(item.tag) <= 0.5}
+    low = {item.tag for item in placed
+           if above_floor(item.tag) <= 0.5 and item.tag not in below_datum}
     assert low == {"ED-M-PANTRY-LT"}, sorted(low)
     # ...and it is 1'-6" off the floor it STANDS on, which is the point of the paragraph
     # below: RM-M-PANTRY sits on SL-M-DECK like RM-M-LIVING, so its floor is 15/16" above

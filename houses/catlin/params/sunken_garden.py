@@ -1515,18 +1515,25 @@ _WALL_UNDER_PILLAR = {
 # rear counter-flashing, all keyed to ``_y_in_n``. So the three balcony beams keep their
 # full length and gain a north cantilever past the rear pillars:
 #
-#     back span   = _y_rear_pillar - _y_balcony_front = -2.5 - (-10.5) = 8.00' = 96"
+#     back span   = _y_rear_pillar - _y_front_pillar = -2.5 - (-9.833) = 7.33' = 88"
 #     overhang    = _y_in_n - _y_rear_pillar         = -0.833 - (-2.5) = 1.667' = 20.0"
-#     R507.5.1 limit = back span / 4                 = 96" / 4         = 24.0"  -> OK by 4"
+#     R507.5.1 limit = back span / 4                 = 88" / 4         = 22.0"  -> OK by 2"
+#
+# ** THE BACK SPAN IS THE FRONT ROW'S TO SPEND, AND 8" OF IT IS GONE. ** It was 96" while
+# the front row sat on `_y_balcony_front` itself; the row came 8" north so the beams would
+# cantilever over the 12" rounds (`_y_front_pillar`), and the limit fell 24" -> 22" against
+# an overhang that did not move. **The front row cannot go north again without taking
+# PT-SG-BR1/2/3 north with it**, and at that point `_WALL_UNDER_PILLAR` and the back-beam
+# line come into it.
 #
 # That arithmetic is written down because nothing checks it: checks/structural/deck.py
 # grades beam *span* only and has no beam-cantilever rule, so this overhang would pass
-# silently either way. See notes/beam_water_protection.md, which carries the missing check
-# as an open item. IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at
-# FS-SG-DECK's 10.00' (limit 9.17' for a 3-2x12), so what this buys is margin: the three
-# balcony beams are at 8.00' against 9.17' span, 14" of headroom. At 8.00' these beams pass
-# even on the 12' row (8.33'), which is what any further increase in the deck's joist span
-# would drop the lookup to.
+# silently either way — and so would the 8" one at the south end, against the same 22".
+# See notes/beam_water_protection.md, which carries the missing check as an open item.
+# IRC Table R507.5(1) is keyed on the JOIST span, which is unchanged at FS-SG-DECK's 10.00'
+# (limit 9.17' for a 3-2x12), so what this buys is margin: the three balcony beams are at
+# 7.33' against 9.17' span, 22" of headroom. They pass even on the 12' row (8.33'), which is
+# what any further increase in the deck's joist span would drop the lookup to.
 _REAR_PILLAR_SOUTH_OF_COL_IN = 3.0
 _y_rear_pillar = _y_col - _REAR_PILLAR_SOUTH_OF_COL_IN / 12.0  # -2.5'
 # Half the cast round, read off SPEC rather than written down, so the front row's offset

@@ -271,12 +271,15 @@ not turn on it either way.
 clear-finished. They replaced three site-built 3-ply KDAT 2x12s. IRC Table R507.5(1)
 publishes sawn plies only, so these are engineered items under `deck_beam/BM-SG-BL*`.
 
-**Spans.** BM-SG-BLW and BLE run corner column to corner column at **7.77'**. BM-SG-BLC runs
-PT-SG-BR2 to PT-SG-BF2 at **6.75'** — its back span shortened when BF2 moved north onto the
-porch deck (see §6), which leaves a rear overhang of 20.0" against R507.5.1's quarter-span
-limit of 20.25" and a south cantilever of 15". **Legal, by a quarter of an inch, and nothing
-in the engine checks a beam overhang** — `checks/structural/deck.py` grades beam SPAN only —
-so it is written down here instead.
+**Spans.** BM-SG-BLW and BLE run corner column to corner column at **7.33'** — shortened
+from 7.77' when PT-SG-BF1/BF3 came 5-1/4" north so the beams would cantilever clear of the
+12" rounds' tops (see §6). That leaves a rear overhang of 20.0" and a south cantilever of
+8.0" against R507.5.1's quarter-span limit of **22.0"**. BM-SG-BLC runs PT-SG-BR2 to
+PT-SG-BF2 at **6.75'** — its back span shortened when BF2 moved north onto the porch deck
+(see §6), which leaves a rear overhang of 20.0" against a limit of 20.25" and a south
+cantilever of 15". **Both are legal, one by a quarter of an inch, and nothing in the engine
+checks a beam overhang** — `checks/structural/deck.py` grades beam SPAN only — so it is
+written down here instead.
 
 **Wet service is applied, and it is the difference between this and a supplier's span
 table.** AWC NDS 2018 Table 5.3.1: C_M = 0.80 on F_b, 0.875 on F_v, 0.53 on F_c⊥, 0.833 on E.
@@ -289,21 +292,21 @@ C_L and C_V, so C_V governs.
 w = 50 psf × 10.00' joist span                     = 500 plf
 S = 3.5 × 11.875²/6 = 82.24 in³   I = 488.4 in⁴
 
-BM-SG-BLW / BLE, L = 7.77'
-  M   = 500 × 7.77²/8 = 3,773 lb-ft = 45,280 lb-in
-  f_b = 45,280 / 82.24 = 551 psi     vs F_b' = 2,400 × 0.80 = 1,920 psi   d/c 0.29
-  V at d: 500 (7.77/2 − 0.99) = 1,448 lb
-  f_v = 1.5 × 1,448 / 41.56 = 52 psi vs F_v' = 300 × 0.875 = 263 psi      d/c 0.20
-  bearing: R = 1,943 lb over 3.5" × 3" (R507.6 on concrete) = 185 psi
-                                     vs F_c⊥' = 740 × 0.53 = 392 psi      d/c 0.47
-  Δ_live = 5 (400/12) 93.25⁴ / (384 × 1.499e6 × 488.4) = 0.045"
-                                     vs L/360 = 0.259"                    d/c 0.17
+BM-SG-BLW / BLE, L = 7.33' = 88.0"
+  M   = 500 × 7.33²/8 = 3,361 lb-ft = 40,333 lb-in
+  f_b = 40,333 / 82.24 = 490 psi     vs F_b' = 2,400 × 0.80 = 1,920 psi   d/c 0.26
+  V at d: 500 (7.33/2 − 0.99) = 1,338 lb
+  f_v = 1.5 × 1,338 / 41.56 = 48 psi vs F_v' = 300 × 0.875 = 263 psi      d/c 0.18
+  bearing: R = 1,833 lb over 3.5" × 3" (R507.6 on concrete) = 175 psi
+                                     vs F_c⊥' = 740 × 0.53 = 392 psi      d/c 0.45
+  Δ_live = 5 (400/12) 88.0⁴ / (384 × 1.499e6 × 488.4) = 0.036"
+                                     vs L/360 = 0.244"                    d/c 0.15
 
 BM-SG-BLC, L = 6.75'  — every ratio lower; bearing governs at d/c 0.41
 ```
 
 **Bearing governs, at under half.** 11-7/8" over the slimmer 9-1/2" option is the owner's
-planter margin — 9-1/2" would run about 48% in bending against 31% here — and is a decision,
+planter margin — 9-1/2" would run about 41% in bending against 26% here — and is a decision,
 not a calculation. Recorded so nobody "optimises" the depth back out.
 
 Black locust for the two centre pillars remains an option (IRC R202 naturally durable; mill
@@ -327,9 +330,31 @@ south of the beams, north face flush with the rim line — fits a 12" only at 4.
 distance against ESR-1622's 4-5/8" minimum, with the beam ends bearing at the circle's
 tangent.
 
-**The front row stays on one line.** A 12" column's top runs 3-1/4" past the beam end there.
-That is a concrete top with the assembly's ≥15° wash and drip lip, not the exposed end grain
-the old 2-3/4" wood offset was written for, so the row is not re-solved.
+**PT-SG-BF1 and BF3 came 5-1/4" north, and the front row's offset is now the round's.** It
+had been `_y_balcony_front + 2-3/4"`, half the actual 6x6, which was right for a wood post
+and went stale the day the corners became 12" rounds: a 6" radius on a 2-3/4" offset put the
+column's south face 3-1/4" PAST the beam end. The wash and drip lip cast into that top are
+real, but they do not answer the joint they were then asked to answer — the beam sat on the
+north half of a shelf, with a re-entrant corner holding water against its own end grain and
+against the HGAM10 seat. The offset is **radius + 2"** instead, so the glulam cantilevers 2"
+past the column face and drips into air.
+
+Three things it costs, none of them structural:
+
+- **8" of back span**, 93.25" → 88.0", which takes R507.5.1's overhang limit from 23.3" to
+  22.0" against an unmoved 20" rear overhang (§5). The row cannot go north again without
+  taking PT-SG-BR1/2/3 with it.
+- **RL-SG-PORCH's two front corner posts.** They stand at the rounds' west/east tangent in
+  x; the modelled 1-1/2" post still clears by 3/4", but a real 5x5 surface baseplate lands
+  inside the concrete. The guard's front corners **die into the columns** — rail ends on the
+  concrete, Titen Turbo at ≥3" edge distance, no baseplate at those two stations. The engine
+  models no baseplate and will never ask.
+- **The two front curtain rods**, which moved from y −9'-6" to −9'-1" (`plan/placeables.py`).
+  At −9'-6" the bare rod would have run 1" inside BF1's concrete, silently: a Furniture
+  overlapping a column is nobody's check.
+
+PT-SG-BF2 is unaffected — a 6x6 on its own line, with BM-SG-BLC cantilevering 15" past it
+since it moved onto the deck.
 
 ---
 

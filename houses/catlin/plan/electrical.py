@@ -619,11 +619,13 @@ MAIN_DEVICES = [
     # down with them, because a disconnect one storey above the machine it kills is not
     # within sight of it in any sense 440.14 means.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(28, 7.625), ft(-3, -6)), type_ref="ED-T-DISCONNECT-3R", rotation=deg(90),
-                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8)), room=None),
+                     position=pt(ft(28, 7.625), ft(-3, -6)), rotation=deg(90),
+                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(28, 7.625), ft(-4, -6)), type_ref="ED-T-DISCONNECT-3R", rotation=deg(90),
-                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8)), room=None),
+                     position=pt(ft(28, 7.625), ft(-4, -6)), rotation=deg(90),
+                     type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway.

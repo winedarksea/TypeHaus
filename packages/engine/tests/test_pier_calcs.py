@@ -664,21 +664,24 @@ def test_the_glulam_beams_are_engineered_and_check_out(tag, results) -> None:
 
 
 def test_the_centre_glulam_spans_less_than_its_neighbours(results) -> None:
-    """§5 — BM-SG-BLC's back span fell to 6'-9" when PT-SG-BF2 came north onto the deck.
+    """§5 — every balcony back span is shorter than the bay it sits in, and each for a reason.
 
-    That is the one dimension the balcony redesign moved that a reader would not predict,
-    and it is what leaves the rear overhang at 20.0" against R507.5.1's quarter-span limit
-    of 20.25". **Nothing in the engine checks a beam overhang** — `checks/structural/deck.py`
-    grades beam SPAN only — so the quarter inch lives in the note and this pins the span it
-    is computed from.
+    BM-SG-BLC fell to 6'-9" when PT-SG-BF2 came north onto the deck; BLW and BLE fell to
+    7'-4" when PT-SG-BF1/BF3 came 5-1/4" north so the beams would cantilever 2" clear of the
+    12" rounds' tops. Neither is a dimension a reader would predict, and both are spent
+    straight out of R507.5.1's quarter-span overhang limit against a 20" rear overhang that
+    has not moved: 20.25" on BLC, 22.0" on BLW/BLE. **Nothing in the engine checks a beam
+    overhang** — `checks/structural/deck.py` grades beam SPAN only — so those margins live in
+    notes/balcony_moment_columns.md §5 and this pins the spans they are computed from.
     """
     spans = {tag: {q.name: q.value for q in results[f"deck_beam/{tag}"].inputs}["clear_span"]
              for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")}
-    assert spans["BM-SG-BLW"] == pytest.approx(7.771, abs=0.01)
-    assert spans["BM-SG-BLE"] == pytest.approx(7.771, abs=0.01)
+    assert spans["BM-SG-BLW"] == pytest.approx(7.333, abs=0.01)
+    assert spans["BM-SG-BLE"] == pytest.approx(7.333, abs=0.01)
     assert spans["BM-SG-BLC"] == pytest.approx(6.75, abs=0.01)
-    back_span_in = spans["BM-SG-BLC"] * 12.0
-    assert 20.0 <= back_span_in / 4.0
+    # The rear overhang is 20.0" on all three, so every back span has to carry it.
+    for tag, span_ft in spans.items():
+        assert 20.0 <= span_ft * 12.0 / 4.0, tag
 
 
 def test_wet_service_is_applied_to_the_glulam(results) -> None:

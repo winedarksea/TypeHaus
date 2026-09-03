@@ -138,24 +138,30 @@ this deck has to satisfy it.**
   consultant here is the snow envelope and the `FT-SG-*` frost design.
 - **There is no beam-cantilever check** (`checks/structural/deck.py` grades span only), so
   an overhang on a beam passes silently rather than being graded against R507.5.1's
-  quarter-of-back-span limit. **This is live, not hypothetical, and it got TIGHTER on
-  2026-09-03.** `PT-SG-BF2` moved 15" north onto the porch deck when `PT-SG-FCOL` shrank to
-  a 12" round, which shortened `BM-SG-BLC`'s back span by that much without moving its north
-  overhang at all. The arithmetic is checked by hand in `notes/balcony_moment_columns.md` §5
-  and beside `_y_rear_pillar` in `params/sunken_garden.py`, because nothing in the engine
-  checks it:
+  quarter-of-back-span limit. **This is live, not hypothetical, and it got TIGHTER twice on
+  2026-09-03.** First `PT-SG-BF2` moved 15" north onto the porch deck when `PT-SG-FCOL`
+  shrank to a 12" round; then `PT-SG-BF1`/`BF3` moved 5 1/4" north so their beams would
+  cantilever clear of the cast rounds' tops (`_y_front_pillar`). Both shortened a back span
+  without moving the north overhang at all. The arithmetic is checked by hand in
+  `notes/balcony_moment_columns.md` §5 and beside `_y_rear_pillar` in
+  `params/sunken_garden.py`, because nothing in the engine checks it:
 
   | | `BM-SG-BLW` / `BLE` | `BM-SG-BLC` |
   |---|---|---|
-  | back span | 7.77' = 93.25" | **6.75' = 81.0"** |
+  | back span | **7.33' = 88.0"** (was 93.25") | **6.75' = 81.0"** |
   | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" | 20.0" |
-  | R507.5.1 limit (back span / 4) | 23.3" | **20.25"** |
-  | margin | 3.3" | **0.25"** |
+  | south overhang (front column axis → deck edge) | **8.0"** | 15.0" |
+  | R507.5.1 limit (back span / 4) | **22.0"** | **20.25"** |
+  | margin on the governing overhang | **2.0"** | **0.25"** |
 
-  A quarter of an inch is not a margin, it is a coincidence. Re-check `BM-SG-BLC` by hand if
-  the rear pillar row, `PT-SG-BF2`'s 3" offset, or the porch depth ever moves again — and
-  note that the fix if it ever goes over is to move BF2 SOUTH toward the beam axis, which
-  lengthens the back span, not to shorten the overhang (the overhang is the deck edge).
+  A quarter of an inch is not a margin, it is a coincidence, and two inches is not much
+  better. Re-check both by hand if the rear pillar row, `_y_front_pillar`, `PT-SG-BF2`'s 3"
+  offset, or the porch depth ever moves again — and note that on `BLC` the fix if it ever
+  goes over is to move BF2 SOUTH toward the beam axis, which lengthens the back span, not to
+  shorten the overhang (the overhang is the deck edge). **On `BLW`/`BLE` that escape is
+  gone**: BF1/BF3 cannot go south without putting the 12" rounds back out past the beam
+  ends, which is the ponding detail the move was made to kill. The lever there is the REAR
+  row, and moving it means moving the back-beam line.
 
 **Two span knife-edges**, both found while checking whether a longer beam was possible. Neither
 is a finding today; both are one dimension change away from a red suite.
