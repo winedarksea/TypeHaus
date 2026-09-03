@@ -36,15 +36,26 @@ eleven beams and girts. Two SKUs, and the split matters:
 
 | Members | Width | Tag |
 |---|---|---|
-| Joists, rims, blocking, the four single-ply 2x12 girts | 1.25"–1.5" | `butyl-tape` |
-| The seven 3-ply 2x12 beams | **4.5"** | `butyl-tape-beam` |
+| Joists, rims, blocking | 1.25"–1.5" | `butyl-tape` |
+| The four 3-ply 2x12 PORCH beams | **4.5"** | `butyl-tape-beam` |
+| The three BALCONY glulams | **3.5"** | `butyl-tape-beam` |
 
 A 3-2x12 is 4 1/2" across. The common 1 5/8" joist roll and even the 3 1/8" "double joist"
 roll leave both ply seams — the entire point — uncovered under a roll that looks like it did
 the job. The BOM carries each row's member width, read off `cross_section`, so a beam that
 gains a ply re-orders wider tape instead of silently under-covering.
 
-**2. Formed aluminium cap, on the seven built-up beams only.** `TR-SG-CAP-*`, 66 LF. The
+**The balcony's three beams became treated GLULAM on 2026-09-03** (3-1/2" x 11-7/8",
+24F-V5M1/SP; `notes/balcony_moment_columns.md` §5), which removes six of this note's
+fourteen ply seams outright — a glulam arrives as one member. They keep the wide roll all
+the same, at their own 3-1/2" width: an exposed framing top in weather wants a bonded
+membrane whatever the member is made of, and 3-1/2" still rules out the 3 1/8" roll. The
+seam argument now applies to the four PORCH beams only, and the same trade is available
+there for the same money — it was not taken because nothing about the porch forced it.
+
+**2. Formed aluminium cap, on all seven garden beams.** `TR-SG-CAP-*`, 69 LF over two
+widths since the balcony's three went to glulam: 40 LF of 5 1/2" cap on the porch's
+4 1/2" ply beams and 29 LF of 4 1/2" cap on the balcony's 3 1/2" glulams. The
 cap laps 1/2" past each beam face and turns down 1 1/2"; `thickness` is derived from
 `SPEC.back_beam` / `SPEC.balcony_beam`, not written down.
 
@@ -58,13 +69,16 @@ plank laid straight onto copper-treated pine, and the tape is what separates the
 `FS-SG-PORCH` the tape is doing the ordinary job instead — the composite plank above it is
 **gapped**, so rain reaches the framing tops directly, on a deck that is a roof over a porch.
 
-**2a. The pillar tops were never covered here.** This note is exhaustive about beam tops and
-says nothing about the six pillar tops under them. A 6x6 tops out 5.5" square and the
-3-2x12 on it is 4.5" wide, so every one of the six leaves **1/2" of exposed upward end grain
-on its east and west faces, directly under a beam whose faces shed onto it**. Six joints,
-upward end grain, in the weather, on 51.4 LF of the most expensive-per-LF wood in the
-structure — the six painted pillars cost more than both cast columns and all four porch
-beams combined, and they are the only elements carrying a recurring repaint cost against a
+**2a. The pillar tops were never covered here — and four of the six joints are gone.**
+This note is exhaustive about beam tops and said nothing about the six pillar tops under
+them. A 6x6 tops out 5.5" square and the beam on it is narrower, so each one leaves exposed
+upward end grain on its east and west faces, directly under a beam whose faces shed onto it.
+**Since 2026-09-03 only the TWO centre pillars are wood**; the four corners are cast concrete
+with a screeded wash and a drip lip, which is a better answer to the same problem than any
+bevel. The exposure at the two that remain is worse per joint, not better: a 3-1/2" glulam on
+a 5-1/2" post leaves **1" of end grain** each side against the 3-2x12's 1/2". Two joints,
+upward end grain, in the weather, on ~24 LF of the most expensive-per-LF wood in the
+structure, and the only elements left here carrying a recurring repaint cost against a
 100-year brief. The answer is a chamfer or bevel on the exposed rim, or a small formed drip
 under the beam seat, and sealing the cut before the pillar is stood: $0–120, and the highest
 durability-per-dollar item in the whole porch. Recorded in `POST_WHITE_PAINT.source`.
@@ -78,9 +92,9 @@ not a standoff, and without one the KDAT soffit sits on concrete that wicks. Add
 must be stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel.
 This is at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
 
-**3. Sequencing — ALL SEVEN caps go on before the joists do.** The balcony's three beams and
-the porch's back pair carry their joists on top; the porch's front pair is flush-framed with
-an open top, putting `PT-SG-FCOL`'s top, and `PT-SG-BF2` with it, on concrete. A cap over a
+**3. Sequencing — FIVE OF THE SEVEN caps go on before the joists do.** The balcony's three
+beams and the porch's back pair carry their joists on top; the porch's front pair is
+flush-framed with an open top. A cap over a
 beam that will be joisted has to be laid while
 the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
 a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole
@@ -114,24 +128,34 @@ this deck has to satisfy it.**
 
 - **`structural.deck_beam_span` grades a roof deck against a deck table.** AWC DCA6 does not
   cover a deck that is also a roof and its snow envelope stops at 40 psf against the Twin
-  Cities' ~50 psf ground snow. The knee braces are outside every prescriptive table. This
-  belongs on the same consultant scope as the E-W bracing and the `FT-SG-*` frost design.
+  Cities' ~50 psf ground snow. Still true of the four PORCH beams, which pass the table
+  prescriptively. The three BALCONY beams left the table entirely on 2026-09-03 and are
+  graded as `deck_beam/BM-SG-BL*` by `engineering/glulam_beam.py` — on NDS bending, shear,
+  bearing and deflection with wet-service factors, which is a real design rather than a
+  table lookup, though it still takes 50 psf and inherits this same snow question. The knee
+  braces that were also outside every prescriptive table are gone; four fixed cast columns
+  carry the lateral system and are graded as `deck_post/PT-SG-B*`. What is left for the
+  consultant here is the snow envelope and the `FT-SG-*` frost design.
 - **There is no beam-cantilever check** (`checks/structural/deck.py` grades span only), so
   an overhang on a beam passes silently rather than being graded against R507.5.1's
-  quarter-of-back-span limit. **This is live, not hypothetical.** The rear balcony pillar
-  row sits on the back-beam line, leaving the three balcony beams with a real north
-  overhang, and the arithmetic is checked by hand in `params/sunken_garden.py`
-  beside `_y_rear_pillar` because nothing in the engine checks it:
+  quarter-of-back-span limit. **This is live, not hypothetical, and it got TIGHTER on
+  2026-09-03.** `PT-SG-BF2` moved 15" north onto the porch deck when `PT-SG-FCOL` shrank to
+  a 12" round, which shortened `BM-SG-BLC`'s back span by that much without moving its north
+  overhang at all. The arithmetic is checked by hand in `notes/balcony_moment_columns.md` §5
+  and beside `_y_rear_pillar` in `params/sunken_garden.py`, because nothing in the engine
+  checks it:
 
-  | | |
-  |---|---|
-  | back span (`_y_rear_pillar` → `_y_ax_front`) | 7.00' = 84" |
-  | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" |
-  | R507.5.1 limit (back span / 4) | 21.0" |
-  | margin | 1.0" |
+  | | `BM-SG-BLW` / `BLE` | `BM-SG-BLC` |
+  |---|---|---|
+  | back span | 7.77' = 93.25" | **6.75' = 81.0"** |
+  | north overhang (`_y_rear_pillar` → `_y_in_n`) | 20.0" | 20.0" |
+  | R507.5.1 limit (back span / 4) | 23.3" | **20.25"** |
+  | margin | 3.3" | **0.25"** |
 
-  A 1" margin is thin enough that it has to be re-checked by hand if either the rear pillar
-  row or the porch depth ever moves again.
+  A quarter of an inch is not a margin, it is a coincidence. Re-check `BM-SG-BLC` by hand if
+  the rear pillar row, `PT-SG-BF2`'s 3" offset, or the porch depth ever moves again — and
+  note that the fix if it ever goes over is to move BF2 SOUTH toward the beam axis, which
+  lengthens the back span, not to shorten the overhang (the overhang is the deck edge).
 
 **Two span knife-edges**, both found while checking whether a longer beam was possible. Neither
 is a finding today; both are one dimension change away from a red suite.
@@ -143,13 +167,16 @@ sliding.
   8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
   8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**
   at once. The 9" of headroom is the distance from 7.25' to 8.00'.
-- **Balcony.** `FS-SG-DECK`'s joist span is *exactly* 10.00', reading the 10' row (9.17').
-  Any increase at all drops it to the 12' row (8.33'). Against the beam span of 7.00' there
-  is 16" of room even after the step down.
-- **PWT treated LVL may exist after all.** `params/sunken_garden.py` rejects treated
-  engineered beams on the grounds that only Parallam Plus PSL is made treated, in depths that
-  exclude 11 1/4". Pro Deck Supply (Minneapolis) appears to list PWT treated LVL 1 3/4" x
-  11 7/8" at $223.20/12'. Two plies over the three balcony beams is ~$970 against ~$242–413
-  for the 3-2x12s — a ~$550–725 delta that *removes* the seams instead of taping them. **Not
-  verified; one phone call.** If it holds, `params/sunken_garden.py`'s rejection note needs
-  rewriting.
+- ~~**Balcony.**~~ **OFF THE TABLE 2026-09-03.** The three balcony beams are glulam and have
+  no row in Table R507.5(1) at all, so there is no lookup for a joist span to step. They are
+  engineered items instead; the cliff cannot reach them.
+- ~~**PWT treated LVL may exist after all.**~~ **ANSWERED, by a different product.** The
+  lead was an unverified Pro Deck Supply listing for PWT treated LVL 1 3/4" x 11 7/8" at
+  $223.20/12', two plies over the three balcony beams for ~$970 against ~$242–413 for the
+  3-2x12s. What was bought instead is **treated SYP structural glulam, 3-1/2" x 11-7/8",
+  24F-V5M1/SP** (Anthony Power Preserved / Boise Cascade, ~$35/LF through Lakeville): one
+  manufactured member with published engineered values, a stocked product rather than a
+  listing, and no ply seam at all. `params/sunken_garden.py`'s rejection note was about
+  **Parallam Plus PSL depths** and said nothing about glulam; it has been rewritten on
+  `SPEC.balcony_beam`. The four PORCH beams are still 3-ply KDAT and the same trade is
+  still open for them.

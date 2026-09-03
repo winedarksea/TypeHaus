@@ -50,15 +50,21 @@ the ratio, which is what a reader acts on.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
 
-from typehaus.checks._authoring import passed, structural_advisory
+from typehaus.checks._authoring import engineered, passed, structural_advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural._asce_29_3_table import (
     GUST_EFFECT_RIGID,
     MAX_VERIFIED_CASE_AB,
     force_coefficient,
 )
+from typehaus.engineering.balcony_wind import (
+    Demand,
+    ground_below_ft,
+    nearest,
+    solid_bands,
+)
+from typehaus.engineering.item import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.structure import KneeBrace, Post, Railing
 from typehaus.model.trim import Fascia
@@ -68,51 +74,19 @@ from typehaus.wind import ASD_WIND_FACTOR, velocity_pressure_psf, wind_basis
 _CID = "structural.lateral_racking"
 _FT = 0.3048
 
-#: Deck plank thickness contributes to the solid edge band. Read off the fascia's own top
-#: elevation vs. the deck it faces would be better; the fascia's `depth` already covers the
-#: joist ends and the plank edge, so nothing is added for the plank here — it would be
-#: double counting. Recorded as a constant of zero so the decision is visible, not implied.
-_PLANK_BAND_FT = 0.0
-
-
-@dataclass(frozen=True)
-class Band:
-    """One horizontal strip of solid area the wind sees, and where it came from."""
-
-    label: str
-    depth_ft: float       # vertical dimension of the strip
-    length_ft: float      # its plan run, perpendicular to the wind
-    source: str           # the element tag it was derived from
-
-    @property
-    def area_sf(self) -> float:
-        return self.depth_ft * self.length_ft
-
-
-@dataclass(frozen=True)
-class Demand:
-    """The wind demand on one braced structure in one plan direction."""
-
-    axis: str             # "x" (E-W wind) | "y" (N-S wind)
-    q_h_psf: float
-    height_ft: float      # top of the appurtenance above the ground beneath it
-    bands: tuple[Band, ...]
-    braces: tuple[KneeBrace, ...]
-
-    @property
-    def area_sf(self) -> float:
-        return sum(b.area_sf for b in self.bands)
-
-    def storey_shear_lb(self, c_f: float) -> float:
-        """ASD storey shear at a given force coefficient: 0.6 · q_h · G · C_f · A_s."""
-        return ASD_WIND_FACTOR * self.q_h_psf * GUST_EFFECT_RIGID * c_f * self.area_sf
-
-
-# --- geometry ---------------------------------------------------------------------------
-
 
 def _ft(length) -> float:
     return length.meters / _FT
+
+
+# --- geometry ---------------------------------------------------------------------------
+#
+# ``Band``, ``Demand``, the solid-area walk, the ground datum and the nearest-element search
+# were hoisted into ``engineering/balcony_wind.py`` on 2026-09-03, when the balcony's
+# lateral system became four fixed concrete columns and ``engineering/deck_post.py`` needed
+# the same wind demand this check computes. They are imported back rather than reimplemented
+# **so this check's numbers cannot move**: ``tests/test_lateral_racking.py`` pins the band
+# areas and the critical coefficients on the landed house.
 
 
 def _brace_axial_per_unit_shear(post_height_ft: float, leg_ft: float) -> float | None:
@@ -135,106 +109,6 @@ def _brace_axial_per_unit_shear(post_height_ft: float, leg_ft: float) -> float |
     return post_height_ft * math.sqrt(2.0) / lever
 
 
-def _solid_bands(ctx: CheckContext, axis: str, all_braces, fascia) -> tuple[Band, ...]:
-    """The solid strips this deck presents to wind blowing along ``axis``.
-
-    Derived, never authored. The fascia gives its own depth and the extent of the deck it
-    wraps; the braces' ``connects`` name the members they rise into, and each one's section
-    depth is another strip. A reader who deepens the fascia or retypes a rail moves the
-    demand, which is the whole point of deriving rather than authoring an area.
-
-    **The members are gathered from every brace, not from this direction's braces.** That
-    reads backwards and is the correction to the obvious version: what presents a face to
-    wind along ``x`` is the members running along ``y``, and those are exactly the ones the
-    *other* direction's braces rise into. Scoping the search to this axis's own braces finds
-    only members running along the wind, whose ends present nothing, and silently drops every
-    rail and beam from the area — leaving the fascia to carry a demand it is not alone in.
-    """
-    tags = {t for brace in all_braces for t in brace.connects}
-    bands: list[Band] = []
-
-    if fascia is not None:
-        xs = [p.xy_m[0] / _FT for p in fascia.path]
-        ys = [p.xy_m[1] / _FT for p in fascia.path]
-        # Wind along y meets the deck's E-W run; wind along x meets its N-S run.
-        run = (max(xs) - min(xs)) if axis == "y" else (max(ys) - min(ys))
-        bands.append(Band("fascia + deck edge", _ft(fascia.depth) + _PLANK_BAND_FT,
-                          run, fascia.tag))
-
-    # The rail or beam each brace rises into. Counted once per distinct member, at the
-    # member's own length, because two braces on one continuous rail do not present the
-    # strip twice.
-    seen: set[str] = set()
-    for tag in sorted(tags):
-        element = ctx.plan.by_tag(tag)
-        if element is None or tag in seen or isinstance(element, Post):
-            continue
-        depth = _member_depth_ft(ctx, tag)
-        length = _member_length_ft(ctx, element)
-        if depth is None or length is None:
-            continue
-        # Only members running perpendicular to the wind present their face to it.
-        if _runs_along(ctx, element) == axis:
-            continue
-        seen.add(tag)
-        bands.append(Band(f"{tag} section depth", depth, length, tag))
-    return tuple(bands)
-
-
-def _node_xy(ctx: CheckContext, tag: str):
-    element = ctx.plan.by_tag(tag) if tag else None
-    position = getattr(element, "position", None)
-    return position.xy_m if position is not None else None
-
-
-def _member_length_ft(ctx: CheckContext, element) -> float | None:
-    start = _node_xy(ctx, getattr(element, "start_node", "") or "")
-    end = _node_xy(ctx, getattr(element, "end_node", "") or "")
-    if start is None or end is None:
-        return None
-    return math.dist(start, end) / _FT
-
-
-def _runs_along(ctx: CheckContext, element) -> str | None:
-    start = _node_xy(ctx, getattr(element, "start_node", "") or "")
-    end = _node_xy(ctx, getattr(element, "end_node", "") or "")
-    if start is None or end is None:
-        return None
-    return "x" if abs(end[0] - start[0]) >= abs(end[1] - start[1]) else "y"
-
-
-def _member_depth_ft(ctx: CheckContext, tag: str) -> float | None:
-    """A beam's section depth, from its authored nominal size.
-
-    The dressed depth, not the nominal one: a "2x8" rail presents 7.25 inches to the wind,
-    not 8. ``cross_section`` is the same resolver the framing solver uses, so this cannot
-    drift from the member that actually gets built.
-    """
-    size = getattr(ctx.plan.by_tag(tag), "size", None)
-    if not size:
-        return None
-    from typehaus.resolve.framing.profiles import cross_section
-
-    try:
-        return cross_section(size).depth_m / _FT
-    except (KeyError, ValueError):
-        return None
-
-
-def _ground_below_ft(ctx: CheckContext) -> float:
-    """The elevation of the ground under this structure, in the project frame.
-
-    The sunken garden floor, not the site grade: this deck stands over an excavation, and
-    z in ASCE 7's K_z is height above the ground *there*. Taking the site grade would shorten
-    z by six feet and understate q_h, which is the wrong direction to be wrong in.
-    """
-    site = ctx.plan.project.site
-    candidates = [_ft(spot.elevation) for spot in site.spot_elevations]
-    if site.grade is not None:
-        candidates.append(_ft(site.grade))
-    return min(candidates) if candidates else 0.0
-
-
 # --- the check ----------------------------------------------------------------------------
 
 
@@ -243,7 +117,7 @@ def lateral_racking(ctx: CheckContext) -> list[Finding]:
     """One finding per braced direction, plus one for the unbraced posts and one for the rail."""
     braces = [e for e in ctx.plan.all_elements() if isinstance(e, KneeBrace)]
     if not braces:
-        return []
+        return _grade_moment_columns(ctx)
 
     basis = wind_basis(ctx.plan.project.site)
     tags = tuple(sorted(b.tag for b in braces))
@@ -256,10 +130,10 @@ def lateral_racking(ctx: CheckContext) -> list[Finding]:
             tags, Result.UNKNOWN,
             "author Site.design_wind_speed_mph, wind_exposure and risk_category")]
 
-    ground_ft = _ground_below_ft(ctx)
+    ground_ft = ground_below_ft(ctx.plan)
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
-    fascia = _nearest(ctx, braces, Fascia)
-    guard = _nearest(ctx, braces, Railing)
+    fascia = nearest(ctx.plan, braces, Fascia)
+    guard = nearest(ctx.plan, braces, Railing)
     # h is the height to the top of the whole appurtenance (§29.3 evaluates q at h). The
     # guard is the top of it even though the guard itself contributes no solid area — a
     # porous rail still sets where the structure ends, and taking the deck instead would
@@ -274,46 +148,21 @@ def lateral_racking(ctx: CheckContext) -> list[Finding]:
         here = tuple(b for b in braces if b.axis == axis)
         if not here:
             continue
+        # Every brace's ``connects``, not just this direction's — see ``solid_bands``.
+        member_tags = {t for brace in braces for t in brace.connects}
         demand = Demand(axis=axis, q_h_psf=q_h, height_ft=height_ft,
-                        bands=_solid_bands(ctx, axis, braces, fascia), braces=here)
+                        bands=solid_bands(ctx.plan, axis, member_tags, fascia),
+                        members=here)
         out.extend(_grade_direction(demand, posts, basis))
 
     out.extend(_grade_unbraced_posts(ctx, braces, posts))
     return out
 
 
-def _nearest(ctx: CheckContext, braces, kind):
-    """The element of ``kind`` whose plan path actually belongs to this braced structure.
-
-    A whole-plan ``next(... isinstance(e, kind) ...)`` is wrong and quietly so: catlin has
-    thirteen ``Railing`` elements, and the first one found is a stair-head guard on the main
-    floor. Reading its base elevation as the balcony's top put the appurtenance height at
-    12.8' instead of 23.0' and understated q_h by 12 %. Nothing about the finding text would
-    have looked wrong. So the element is chosen by proximity to the braces it is supposed to
-    describe, which is the only relationship that holds when the plan grows.
-    """
-    xs = [b.position.xy_m[0] for b in braces]
-    ys = [b.position.xy_m[1] for b in braces]
-    cx, cy = (sum(xs) / len(xs), sum(ys) / len(ys))
-    best, best_d = None, None
-    for element in ctx.plan.all_elements():
-        if not isinstance(element, kind):
-            continue
-        path = getattr(element, "path", ())
-        if len(path) < 3:
-            continue
-        px = sum(p.xy_m[0] for p in path) / len(path)
-        py = sum(p.xy_m[1] for p in path) / len(path)
-        d = math.dist((px, py), (cx, cy))
-        if best_d is None or d < best_d:
-            best, best_d = element, d
-    return best
-
-
 def _grade_direction(demand: Demand, posts, basis) -> list[Finding]:
     """Demand-to-capacity for every brace resisting wind along one axis."""
     axis_name = "E-W" if demand.axis == "x" else "N-S"
-    tags = tuple(sorted(b.tag for b in demand.braces))
+    tags = tuple(sorted(b.tag for b in demand.members))
     if demand.area_sf <= 0:
         return [structural_advisory(
             _CID, f"{axis_name} bracing: no solid projected area could be derived from the "
@@ -324,7 +173,7 @@ def _grade_direction(demand: Demand, posts, basis) -> list[Finding]:
     band_text = "; ".join(f"{b.label} {b.depth_ft * 12:.1f}\" x {b.length_ft:.1f}' "
                           f"= {b.area_sf:.1f} sf ({b.source})" for b in demand.bands)
     out: list[Finding] = []
-    for brace in sorted(demand.braces, key=lambda b: b.tag):
+    for brace in sorted(demand.members, key=lambda b: b.tag):
         out.append(_grade_brace(brace, demand, axis_name, band_text, posts, basis))
     return out
 
@@ -355,7 +204,7 @@ def _grade_brace(brace: KneeBrace, demand: Demand, axis_name: str, band_text: st
                   f"{post_h:.2f}' post, so the knee-brace free body degenerates",
             tags, Result.UNKNOWN, "shorten the brace leg relative to the post height")
 
-    n_braces = len(demand.braces)
+    n_braces = len(demand.members)
     # By role as well as by model: the KBS1Z is catalogued twice, once as a beam-to-post
     # cap and once as a knee-brace stabilizer, and the two carry different rows of
     # ER-280 Table 7. This joint is a knee brace, so it must read the knee-brace row.
@@ -448,6 +297,101 @@ def _table_ratios(demand: Demand) -> tuple[float, float]:
     s = sum(b.depth_ft for b in demand.bands) or 1.0
     b = max((band.length_ft for band in demand.bands), default=0.0)
     return (b / s, s / demand.height_ft)
+
+
+def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
+    """A freestanding deck with NO knee brace at all: is it braced by fixed columns instead?
+
+    Added 2026-09-03, when catlin's balcony traded eight knee braces for four cast concrete
+    columns fixed at the base. Returning ``[]`` for that structure would have been the worst
+    possible answer — the check that exists precisely because this deck has no shear walls
+    going silent on the day its whole lateral system changed — but it is also exactly what
+    the brace-shaped code above did.
+
+    **The finding is ENGINEERED, not computed here.** A fixed-base column's lateral
+    adequacy is a base moment against a section's phiMn, and that is
+    ``engineering/deck_post.py``'s arithmetic, keyed on the same ``deck_post/<tag>`` item the
+    axial check already uses. One design, one stamp, two checks — the pattern
+    ``structural.frost_depth`` and ``structural.foundation_unbalanced_fill`` share on a
+    retaining wall. It is **not** ``defer``red, because unlike frost depth this check's own
+    subject IS one of the limit states that calculation grades.
+
+    **The no-braces-no-columns case still returns ``[]``.** A deck on wood posts with
+    neither braces nor a moment base is a different (and worse) finding, and inventing it
+    here would put this check in the business of grading structures it was never scoped to.
+
+    **A deck with a WALL under any of its beams is skipped, and that gate is load-bearing.**
+    catlin's porch deck lands its four beams into W-SG-W1/E1, two 12" concrete retaining
+    walls — it is braced by shear walls in both directions and has no lateral question at
+    all. Without the gate the two porch columns would each be reported as "the lateral
+    system", which is a false claim about a real structure, and one that would then read as
+    a PASS the moment their axial record came back OK.
+    """
+    from typehaus.model.floors import FloorSystem
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
+    out: list[Finding] = []
+    for deck in sorted((e for e in ctx.plan.all_elements()
+                        if isinstance(e, FloorSystem) and e.service == "deck"),
+                       key=lambda d: d.tag):
+        if _bears_on_a_wall(ctx, deck):
+            continue
+        for tag in sorted(_deck_bearing_posts(ctx, deck)):
+            post = posts.get(tag)
+            if post is None:
+                continue
+            if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
+                continue
+            out.append(engineered(
+                ctx, _CID, item_id("deck_post", tag),
+                f"deck {deck.tag} carries no knee brace and no shear wall: its lateral "
+                f"system is the cast concrete column {tag}, fixed at its base. A fixed-base "
+                f"column resists storey shear by BENDING, which no prescriptive table in "
+                f"IRC R507 grades",
+                (deck.tag, tag),
+                fix=f"seal `deck_post/{tag}` in engineering.toml"))
+    return out
+
+
+def _bears_on_a_wall(ctx: CheckContext, deck) -> bool:
+    """Does any beam under this deck land in a wall? Then the deck is not freestanding.
+
+    A shear wall under a deck edge answers the lateral question outright, and this check
+    has nothing to add to it. Cheap and structural: a beam whose ``bearing_refs`` names a
+    ``Wall`` is hung into masonry or concrete, which is a fixed support in both directions.
+    """
+    from typehaus.model.elements import Wall
+    from typehaus.model.structure import Beam
+
+    for ref in deck.joists.bearing_refs or ():
+        beam = ctx.plan.by_tag(ref)
+        if not isinstance(beam, Beam):
+            continue
+        if any(isinstance(ctx.plan.by_tag(b), Wall) for b in beam.bearing_refs or ()):
+            return True
+    return False
+
+
+def _deck_bearing_posts(ctx: CheckContext, deck) -> set[str]:
+    """The posts under a deck, through the beams its joists bear on.
+
+    Same walk ``engineering/pier_basis._deck_tributaries`` makes, and for the same reason:
+    a deck names beams, and beams name the posts. Restated rather than imported because
+    ``engineering`` may not import ``checks`` and the dependency the other way would drag a
+    tributary calculation into a lateral check that has no use for one.
+    """
+    from typehaus.model.structure import Beam
+
+    out: set[str] = set()
+    for ref in deck.joists.bearing_refs or ():
+        beam = ctx.plan.by_tag(ref)
+        if not isinstance(beam, Beam):
+            continue
+        for bearing in beam.bearing_refs or ():
+            if isinstance(ctx.plan.by_tag(bearing), Post):
+                out.add(bearing)
+    return out
 
 
 def _grade_unbraced_posts(ctx: CheckContext, braces, posts) -> list[Finding]:

@@ -47,9 +47,14 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
-    # 76.6, not 74.6: RL-SG-BALCONY's two side legs each run 12" longer, since the balcony's
-    # front plane sits south of the porch's. RL-SG-PORCH is unchanged.
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(76.6, abs=0.1)
+    # 40.3, not 38.3: RL-SG-BALCONY's two side legs each run 12" longer, since the balcony's
+    # front plane sits south of the porch's. RL-SG-PORCH is unchanged at 36.3.
+    #
+    # Split in two on 2026-09-03: RL-SG-PORCH became a SURFACE guard on its own type_ref
+    # (its west and east legs land on 12" concrete wall tops and buy no bracket kit), and
+    # the fascia type is the balcony's alone. The two still total what the one did.
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.3, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(36.3, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,

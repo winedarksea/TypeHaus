@@ -1,3 +1,29 @@
+> # ⛔ SUPERSEDED 2026-09-02
+>
+> **This design is not built.** The balcony's eight knee braces and two E-W brace rails were
+> deleted on 2026-09-03; its four corner pillars became 12" round reinforced-concrete columns
+> **fixed at their bases**, doweled into the wall tops of W-SG-W1/E1, and those four columns
+> are now the entire lateral system in both plan directions.
+>
+> **Read `notes/balcony_moment_columns.md` instead.** It carries the design that IS built:
+> the wind and guard base moments, the P-M interaction on the round section worked term by
+> term, the slenderness at k = 2.1, the class B dowel lap, and the durability case (class
+> F3 + C2 mix, galvanized bar, 2" cover) that decided the diameter.
+>
+> **Why this one lost.** Every one of its joints came back UNKNOWN — the four E-W brace feet
+> were lapped bolt groups with no product rating at all — and the owner asked for a more
+> durable structure with a clean open look. No catalog metal moment base could replace the
+> braces: the only stock base with a published base moment is Simpson's MPB66Z, for a WOOD
+> post, needing 5" of side cover and capped at 2,610 lb-ft wet, which is below the guard
+> load case.
+>
+> **This file is kept, and is not printed.** Three things in it are still live and are
+> reused rather than re-derived: §1's design wind basis (MN Rules 1309.0301, V_ult 115,
+> Exposure B), §3's account of why ASCE 7-16 Fig. 29.3-1's C_f could not be sourced and what
+> the Case A/B ceiling of 1.80 means, and §4a's KBS1Z-over-APVKB45-6 finding, which is why
+> `ROLE_KNEE_BRACE` resolves to a part with a published allowable for any house that ever
+> authors a `KneeBrace` again.
+
 # The balcony's lateral bracing — engineering basis for an engineer's review and stamp
 
 **House:** catlin, Ramsey County, Minnesota (Minnesota Residential Code 2020, adopting the

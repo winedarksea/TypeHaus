@@ -711,56 +711,67 @@ SUNKEN_GARDEN_WALL = Assembly(
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
-# PT-SG-FCOL, the 20" ROUND cast column carrying the porch's front beams (it replaced a
-# 16" arched cross-wall and a 42" masonry parapet, and was itself a 16" SQUARE, then a 16"
-# round, before growing to 20" to take on a second beam's bearing — see below).
+# The FIVE 12" round cast columns of the garden frame: PT-SG-FCOL (carrying the porch's
+# two front beams) and the four balcony corner columns PT-SG-BR1/BR3/BF1/BF3, which
+# replaced painted 6x6 wood pillars on pinned standoff bases in 2026-09-03's redesign.
+# One assembly serves all five because they are one product — the same tube, the same mix,
+# the same cage and the same top detail — and a second tag saying the same thing twice is
+# a second place for the mix to drift.
 #
-# **Why it stopped being square.** The square was chosen for connector side cover — a
-# CBSQ66 wants 3" and an MPB66Z 5", and a centred 6" plate leaves 5.00" at its corners in a
-# 16" square against 3.76" in a 16" round. Costed out, that cover was being bought at a
-# steep rate: a square column is formed in built panels with chamfer strips, struck with a
-# wash, and rubbed and patched after strip, which is $478-1,327 here against $304-633 for a
-# disposable fibre tube of the same height. And nothing at this column's top is bolted to
-# it — two 3-2x12 beams land on the pour and an authored HGAM10 masonry gusset angle
-# (CN-SG-TIE-FCOL) holds them down — so the cover was reserved for the MPB66Z moment base
-# that plans/TODO.md weighs and has never specified. That option is now foreclosed at this
-# column, deliberately and with the money written down; see notes/uplift_load_path.md. An
-# 18" or 20" tube would have kept it AND still beaten the square, and is the revert if the
-# lateral design ever wants it.
+# **THE FOUR CORNERS ARE THE BALCONY'S ENTIRE LATERAL SYSTEM.** They are FIXED at the base
+# — doweled into the 12" wall tops of W-SG-W1/E1 — and the eight knee braces and two brace
+# rails that used to do this job are gone with them. That is why the cage is not optional
+# trim: see notes/balcony_moment_columns.md, which works the base moment by hand.
 #
-# What the round keeps: the >=15 degree top wash with its drip lip, the grout island under
-# the beam bearing, the mix, the finish and the repellent. What it drops is only what a
-# tube makes meaningless — the chamfered arrises and the rubbing after strip.
+# **Why 12", and not the 10" first drafted or the 20" this replaced.** Cover, in one word.
+# ACI 318-19 §20.5.1.3's 1-1/2" is a code minimum and not a hundred-year number; MnDOT uses
+# 2.5-3" in the same salt regime. 2" of cover on a #5 cage inside #3 ties needs a 6-5/8"
+# bar circle, and that needs a 12" round. 12" also drops klu/r and buys the beam seat its
+# edge distance for nothing: an HGAM10's Titen Turbo lands at ~3-3/4" from the face where a
+# 10" round left 2-3/4" against Simpson's 1-1/2" minimum. Centred on a 12" wall the round
+# is flush with BOTH wall faces — no ledge to pond on, no interference with BF3's east
+# leader, which keeps 1-1/2" clear.
 #
-# The assembly is required, not cosmetic — but for a different reason now that the section
-# reads "16 round". ``emit/draw/section.py::_solid_material`` would hatch it correctly on
-# the size string alone; what the assembly does is put ``structure_material="concrete"`` on
-# the BOM row so the [concrete] price table's material guard admits it, the same job
-# PIER_CONCRETE_12 does for the five 12" tubes.
+# **Exposure is F3 + C2, not the F2 the 20" column carried.** Deicing salt reaches the
+# porch below and planter runoff reaches the balcony above, which is external chloride on
+# a freeze-thaw member: w/cm <= 0.40, f'c >= 5,000 psi, 6% +/-1.5 air, SCM caps per
+# §19.3.3.4. IRC R402.2 asks the same of a salt-exposed porch. Do not reuse the 20"
+# column's 4,000 psi / w/cm 0.45 mix here.
 #
-# The tag names the size, and that is not optional. The column became a 20" round when it
-# took on PT-SG-BF2's bearing as well as the two front beams' (see
-# params/sunken_garden.py::FRONT_COLUMN), and an assembly tag that says 16 while the
-# section says 20 is a wrong quantity, not a stale label. The prices.toml key moves with it:
-# an UNPRICED type is silently dropped from the BOM, so leaving the old key would make the
-# takeoff total FALL and the "saving" would be an artifact of the missing row.
-SUNKEN_GARDEN_COLUMN_20 = Assembly(
-    tag="SUNKEN_GARDEN_COLUMN_20",
+# **Galvanized bar, not epoxy and not stainless** (owner, 2026-09-02). Epoxy delaminates;
+# stainless buys a century independent of cover but at 4-6x and with an austenitic thermal
+# coefficient (~16e-6/C) that fights concrete's ~10-12e-6. HDG bar (ASTM A767 class 1,
+# chromate-passivated, or A1094 continuous) already sacrifices zinc at any coating break.
+#
+# **NO GROUT ISLAND.** An exposed non-shrink grout island is a 10-20 year element — not
+# air-entrained, and sitting at the wettest point on the column. The top is cast to line
+# under the beam footprint with the wash screeded around it, and tolerance is taken up in
+# the stainless standoff's shim pack. If a levelling bed proves unavoidable it is an EPOXY
+# grout confined under the standoff plate, never a cementitious island with exposed
+# shoulders. PIER_CONCRETE_12 still carries its island at PT-SG-COL; aligning that one is
+# a follow-up, not a silent edit here.
+#
+# The assembly is required, not cosmetic: ``emit/draw/section.py::_solid_material`` would
+# hatch a "12 round" correctly on the size string alone, but what the assembly does is put
+# ``structure_material="concrete"`` on the BOM row so the [concrete] price table's material
+# guard admits it — the same job PIER_CONCRETE_12 does for the five 12" sonotubes. It is a
+# SEPARATE tag from PIER_CONCRETE_12 at the same diameter because the mix, the cage and the
+# seat are all different; billing them from one row would price an F3/C2 galvanized column
+# at a sonotube's rate.
+SUNKEN_GARDEN_COLUMN_12 = Assembly(
+    tag="SUNKEN_GARDEN_COLUMN_12",
     layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(20.0),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE),
     ),
     interfaces=(_CONCRETE_BEARING,),
     # (single literal: the editable dialect forbids concatenated strings)
-    # The 1/2"-1" STANDOFF is BESIDE the grout island and not instead of it: a grout
-    # island is a levelling bed and it still leaves the beam soffit in contact with
-    # concrete that wicks. AITC/WoodWorks call for a bearing plate or shim holding exposed
-    # wood clear of the pour so the joint drains and dries. It must be STAINLESS, or hot-dip
-    # with an isolator — this beam is copper-treated KDAT and will corrode plain steel. The
-    # standoff is at the beam SOFFIT, so it does not touch the cap-and-butyl-tape order at
-    # the beam TOP (TR-SG-CAP-FRW/FRE); those are two different joints on the same member.
-    # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house porch front column — 20\" round cast concrete in a disposable fibre form, stripped to the form line; >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\") with a 1/2\"-1\" stainless or isolated hot-dip standoff plate over it so the KDAT soffit never touches the pour (AITC/WoodWorks); beam held down by an HGAM10 masonry gusset angle, #14 screws to the wood and Titen Turbo to the concrete at >=1-1/2\" edge distance; 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
+    # The 1/2"-1" STANDOFF is what holds exposed wood clear of the pour so the joint drains
+    # and dries (AITC/WoodWorks). It must be STAINLESS, or hot-dip with an isolator — these
+    # beams are treated glulam and will corrode plain steel. The standoff is at the beam
+    # SOFFIT, so it does not touch the cap-and-butyl-tape order at the beam TOP
+    # (TR-SG-CAP-*); those are two different joints on the same member.
+    source="catlin-house garden columns (PT-SG-FCOL + the four balcony corners PT-SG-BR1/BR3/BF1/BF3) — 12\" round cast concrete, FIXED at the base: (4) #5 hot-dip galvanized verticals (ASTM A767 cl. 1 or A1094) with #3 galvanized ties @ 10\" o.c. at 2\" cover, lapped class B ~30\" onto (4) #5 galvanized dowels cast with the wall pour below; wall-top cold joint roughened to 1/4\" amplitude with laitance removed and a bentonite or crystalline waterstop strip set inside the dowel circle (it is the wettest, saltiest elevation on the column and a documented chloride path); Sonotube Finish Free form seated in a plywood saddle collar screwed to the wall FACES (a flush tube leaves no wall top to anchor a collar to) and kicked to the porch framing, stripped to the form line; 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air at 3/4\" or 3/8\" aggregate with SCM caps per ACI 318-19 §19.3.3.4 (class F3 + C2 — deicing salt below and planter runoff above; IRC R402.2), air verified at the point of placement, 12-18\" lifts vibrated in the core and never on the cage; top CAST TO LINE under the beam footprint with a >=15 degree wash and >=1\" drip lip screeded around it (BIA Tech Note 36A) and NO grout island — tolerance taken in a 1/2\"-1\" stainless standoff shim pack, or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 masonry gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round; broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); wet-cure 7 days protected from freezing to 3,600 psi (ACI 306); silane/siloxane repellent at 28 days, re-applied ~10-yearly; optional mineral paint to match the white centre posts",
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
@@ -1065,6 +1076,30 @@ BEAM_WHITE_PAINT = Assembly(
               function=LayerFunction.STRUCTURE),
     ),
     source="catlin-house sunken-garden exposed frame — KDAT 2x plies, white-painted to match the pillars: BM-SG-FRW/FRE and BM-SG-BLW/BLE (3-2x12)",
+)
+
+# The balcony's three beams BM-SG-BLW/BLC/BLE — treated SYP structural glulam, 3-1/2" x
+# 11-7/8" (Anthony Power Preserved / Boise 24F-V5M1/SP, stocked through Boise Cascade
+# Lakeville), clear-finished rather than painted. They replaced three site-built 3-ply KDAT
+# 2x12s in 2026-09-03's balcony redesign.
+#
+# **One layer at the full 3-1/2", not a ply.** BEAM_KDAT and BEAM_WHITE_PAINT author ONE
+# PLY and let ``Beam.size``'s ply count build the section up, because that is how a
+# site-built beam is bought. A glulam is not built up: it arrives as one member, and its
+# size string ("3.5x11.875") is a true section rather than a ply count, so the layer here
+# is the whole width. Author it as a 1-1/2" ply and the takeoff bills 43% of a beam.
+#
+# 11-7/8" over the slimmer 9-1/2" is the owner's planter margin (~31% bending against ~48%);
+# notes/balcony_moment_columns.md records both. Clear-finished, not white: these are the
+# one member in the garden frame bought as a manufactured product, and a glulam's laminations
+# are what it looks like.
+BEAM_GLULAM_TREATED = Assembly(
+    tag="BEAM_GLULAM_TREATED",
+    layers=(
+        Layer(name="glulam", material_ref="glulam-treated", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house balcony beams BM-SG-BLW/BLC/BLE — preservative-treated southern yellow pine structural glulam, 3-1/2\" x 11-7/8\" 24F-V5M1/SP (Anthony Power Preserved / Boise Cascade), wet-service factors applied; clear penetrating finish, not painted; bears on 12\" cast columns through a stainless standoff with an HGAM10 gusset, and carries the same butyl top tape and formed aluminium cap as the rest of the garden frame",
 )
 
 # The breezeway's four 6x6 posts. NOT POST_WHITE_PAINT: that assembly is white-painted and
@@ -3348,7 +3383,7 @@ ASSEMBLIES = [
     CATLIN_DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
-    SUNKEN_GARDEN_COLUMN_20,
+    SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
@@ -3361,6 +3396,7 @@ ASSEMBLIES = [
     BEAM_LVL,
     BEAM_KDAT,
     BEAM_WHITE_PAINT,
+    BEAM_GLULAM_TREATED,
     POST_KDAT,
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,

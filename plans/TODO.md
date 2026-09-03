@@ -93,134 +93,50 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   limit for this district is. If a limit is close, the levers are the attic's 11' ceiling
   and the 4:12 ridge, not the lift.
 
-- **What braces the porch and balcony east-west, now that the arch is gone?**
-  (raised 2026-08-18, and the one item on this list that the arch swap *created*.)
-  **HALF-CLOSED 2026-08-30, and read which half.** `W-SG-ARCH` is back on the same node pair
-  as a buried grade beam, so the FOUNDATION has an E-W element again and the retaining walls'
-  loop is closed — that is what took catlin back to 0 FAIL. But the beam is entirely **below
-  the garden floor**: it braces the concrete box, and it does nothing for the porch deck or
-  the balcony one and two storeys above it, which is what this item was actually about. The
-  masonry the pillars were grouted into is still gone and still is not coming back. Everything
-  below stays live for the structure above -9'-1 7/16".
-  Removing
-  `W-SG-ARCH` and the three `W-SG-RAIL-*` parapets removed the structure's only E-W shear
-  element: the two side walls run N-S and brace that direction only, and the masonry the
-  balcony pillars were grouted into was the de facto fixity for five of the six. Simpson say
-  so themselves — ESR-1622/ESR-3050: *"post bases do not provide adequate resistance to
-  prevent members from rotating about the base"*, and they are *"not recommended for
-  non-top-supported installations (such as … guard rails)."* Nothing is authored for this and
-  **nothing should be until it is decided** — a number invented in the model is worse than an
-  open question.
+- ~~**What braces the porch and balcony east-west, now that the arch is gone?**~~
+  **CLOSED 2026-09-03. The answer is four fixed concrete columns, and every option below
+  lost.** (Raised 2026-08-18; the longest-running item on this list.)
 
-  **2026-08-30: the model now carries a design wind speed, and this entry stays open.**
-  `plan/site.py` authors `design_wind_speed_mph=115.0`, `wind_exposure="B"`,
-  `risk_category="II"` — MN Rules 1309.0301's amendment to IRC Table R301.2(1), which is
-  statewide, plus a site-specific exposure per R301.2.1.4. That removes the input whose
-  absence every `structural.uplift_load_path` finding used to name, and it is the input a
-  demand calculation needs. It is **not** a lateral design and does not close anything below:
-  a speed is not a pressure, a pressure is not a storey shear, and a storey shear is not a
-  distribution to elements. What it does mean is that the "cheapest option" bullet's
-  parenthetical — that nobody can even check whether the two centre pillars need bracing — is
-  no longer true, and `structural.lateral_racking` now reports a computed demand-to-capacity
-  ratio per braced bay. Read that check's findings and
-  `houses/catlin/notes/balcony_lateral_bracing_design.md` before re-litigating any bullet
-  here; the doctrine at the head of this item is unchanged.
+  The balcony's four CORNER pillars are now **12" round reinforced-concrete columns fixed at
+  their bases**, doweled into the wall tops of `W-SG-W1`/`E1`, and those four columns are the
+  entire lateral system in both plan directions. The eight knee braces and both E-W brace
+  rails are **deleted**. The two centre pillars stay wood 6x6 on pinned `ABU66SS` bases,
+  leaning columns tied in by the deck diaphragm — which is the one claim here that is still
+  a claim. `houses/catlin/notes/balcony_moment_columns.md` is the design: base moments from
+  wind and from R301.5's guard load, the P-M interaction on the round section worked term by
+  term, slenderness at k = 2.1 against §6.2.5's sway limit, and the class B dowel lap.
+  `structural.lateral_racking` names each column and delegates to `deck_post/<tag>`; both are
+  on the permit checklist as "Freestanding deck lateral resistance".
 
-  **2026-08-30: the balcony's E-W COLLECTOR is decided; the engineered-lateral question
-  below is not.** The four E-W girts (the horizontal members the corner knee braces rose
-  into) are retired for two continuous 2x8 "brace rails," one per pillar row, face-bolted
-  to the inboard face of all three posts in that row rather than seated on their tops
-  (`houses/catlin/params/sunken_garden.py::SPEC.balcony_brace_rail`). This is deliberately
-  **lateral-capacity-neutral** — same four corner posts braced, same two directions each,
-  same 2x6 `APVKB45-6` braces, same 3' leg; only what the E-W braces land on changed (a 2x8
-  rail instead of a 2x12 girt segment) — so it does not answer, and does not presume an
-  answer to, any option below. What it does do: it removes a bookkeeping fiction (a girt
-  claiming `bearing_refs` on the two centre pillars it only incidentally lapped 0.5"x1.5"
-  of, which billed 8 phantom `KBS1Z` uplift straps at joints that were not real beam-on-post
-  bearing), and it ties the two centre pillars into the braced end bays through the rail's
-  own continuity — which is what lets leaving them unbraced (Option 1 below) stay
-  defensible, on a narrower rationale than before: "the rail already reaches them," not
-  "thrust would hit `PT-SG-BR2`" (already false since 2026-08-28). What is genuinely still
-  open, narrower than before: what a licensed lateral design would actually spec for the
-  RAIL/BOLT connection itself — the 2 x 1/2" HDG through-bolts per post (12 total) are an
-  *assumed*, not an engineered, schedule, pending real numbers.
+  **How the three options closed:**
+  - **Extend the knee-brace rule to the centre pillars** — moot. There is no knee brace left
+    to extend, and the members the rule braced against are gone with it.
+  - **A moment base at the four corner pillars (`MPB66Z`)** — **FORECLOSED, on capacity and
+    not on cover.** The cover arithmetic that ran through three section shapes in this entry
+    (16" square, 16" round, 20" round) never got to be the deciding factor: ESR-3050 Table
+    A's wet-service cap is **2,610 lb-ft**, and the guard case alone is **2,502 lb-ft** on
+    one column before any wind, with nothing between them. It also wants 5" of side cover —
+    about 16" of concrete, cast in — which neither a 12" round nor a 12" wall top has. Every
+    number quoted in the struck-through text below is stale twice over: `PT-SG-FCOL` is a
+    **12" round** now, and the four pillars this bullet was written about are the columns.
+  - **An engineer's lateral design** — **still the answer, and now it has something to
+    stamp.** What changed is that the ask is no longer "please design a lateral system": it
+    is "please check and seal `deck_post/PT-SG-B{R,F}{1,3}`", a computed design with a
+    hand-worked oracle beside it. The screening list at §9 of that note is what a reviewer
+    should look at first: base fixity itself (the wall top's own capacity to receive the
+    moment, and the foundation's rotational stiffness), column shear, and the diaphragm claim
+    that delivers storey shear to four corners rather than six posts.
 
-  **The porch's own E-W bracing is a separate question and this change does not touch it.**
-  The porch bears directly on the two concrete side walls (`W-SG-W1`/`E1`) rather than on
-  post bases, so its E-W lateral path is a concrete/geotech question — wall reinforcement,
-  footing width, whatever a lateral design calls for there — not a framing-collector
-  question the way the balcony's was. It stays open, undiscussed by anything above.
+  **The porch's own E-W path was never this question and is now answered by inspection.**
+  `FS-SG-PORCH` lands its four beams in `W-SG-W1`/`E1`, two 12" concrete retaining walls — it
+  is braced by shear walls in both directions. `structural.lateral_racking` skips it
+  explicitly for that reason (`_bears_on_a_wall`), because without the gate its two cast
+  columns would each be reported as "the lateral system", which is a false claim about a real
+  structure.
 
-  The options, in ascending cost:
-  - **Extend the knee-brace rule to the centre pillars.** DCA6-2015 p.10 wants a brace on any
-    post over 2'-0"; `PT-SG-BR2`/`BF2` are deliberately left as leaning columns today
-    (`params/sunken_garden.py`, KNEE_BRACES). **The stated reason for that is gone as of
-    2026-08-28**, and this entry has to say so: the objection was that bracing them pushes
-    thrust into `PT-SG-BR2`, the one pillar standing on the *cantilevered tip* of the porch
-    joists. The rear pillar row has since moved onto the back-beam line, so `PT-SG-BR2` now
-    lands over `PT-SG-COL` on a full stack to concrete, and `PT-SG-BF2` always did over
-    `PT-SG-FCOL`. Both centre pillars are over a beam-and-column line now. That makes this
-    the cheapest option on the list at **$120-250** and removes the reason it was rejected —
-    it does **not** make it the answer. **Do not author bracing here.** The lateral design
-    stays the consultant's call, per the doctrine at the head of this item: a number invented
-    in the model is worse than an open question. What changed is the premise, not the verdict.
-  - **A moment base at the four corner pillars.** `MPB66Z`, ESR-3050 Table 11: 2,680 lb-ft
-    unreinforced — but it needs **5" of side cover**, and *no column in this structure has
-    it any more*. `PT-SG-FCOL` did while it was a 16" square (5.00" at a centred 6" plate's
-    corners); it went to a **16" round on 2026-08-28**, which leaves 3.76", because the
-    square was costing $478-1,327 against $304-633 for a fibre tube and nothing was bolted
-    to its top. That was a deliberate trade with this option written down as its price —
-    see `houses/catlin/notes/uplift_load_path.md` and `plan/assemblies.py`. It is also a
-    cheap revert: an **18" tube gives 4.76" at $335-705** and a **20" gives 5.76" at
-    $369-781**, so the cover comes back for *less* than the square cost, not more. The four
-    pillars that actually want the base bear on 12" concrete wall tops and were never
-    covered either, so this option always needed a pour change somewhere.
-
-    **Correction 2026-08-28: the "18"/20" revert" above is cheaper than it looks only in
-    concrete, and this entry understated it.** `SPEC.front_column_size_in` fed
-    `_y_ax_front = _y_in_n - porch_clear_depth_ft - front_column_size_in/24`, so widening
-    the column moved the balcony's front pillar row, the deck outline, `RL-SG-BALCONY`, the
-    gutter and leader line, and another module's geometry through
-    `PORCH_FRONT_AXIS_Y_FT`.
-
-    **Superseded 2026-08-29 on both halves, and the numbers here are now stale.**
-    (a) The coupling is gone: `porch_front_edge_offset_in` holds the beam plane at -9.5'
-    and the column's diameter no longer says anything about it, precisely because the
-    column stopped being centred on that plane. (b) `PT-SG-FCOL` **is a 20" round now**,
-    for an unrelated reason — it became the shared bearing for the two front beams AND
-    `PT-SG-BF2` when the balcony's front row moved 12" south — so the 5.76" of side cover
-    arrived as a side effect and the "$369-781 revert" price is not what it cost. The
-    installed line is `$478-967` (10.08 LF of 20" tube; see `prices.toml`), and the step
-    over the 16" was ~`$85-150`, already spent. **What has NOT changed is the verdict:**
-    the four pillars that actually want an MPB66Z are the corner ones on 12" concrete wall
-    tops, and they are still not covered. Re-do the side-cover arithmetic against 20"
-    before quoting any number in this bullet.
-
-    **2026-08-30, one number to be careful with.** The 5.76" above is a plate centred on
-    the *column*. The one base that actually sits on `PT-SG-FCOL` is `CN-SG-BASE-F2`, under
-    `PT-SG-BF2`, and that post is 4 3/8" off the column axis — so its plate corners have
-    ~2.0" of cover, not 5.76". (It was ~1.6" before the front pillar row came 2 3/4" north
-    the same day.) An `ABU66SS` is a pinned base and asks for edge distance at the anchor,
-    which is 5 5/8" and fine. An `MPB66Z` there would not be, and never was.
-
-  - **An engineer's lateral design.** The honest answer, and the same consultant the two
-    side walls below already need. **Narrower since 2026-08-30**: with the MPB66Z option
-    closed and the balcony's E-W collector now a capacity-neutral construction detail (the
-    brace-rail redesign above), what specifically needs a licensed number is the rail/bolt
-    connection — the 2 x 1/2" HDG through-bolts per post assumed in
-    `params/sunken_garden.py` — plus whatever, if anything, the consultant wants at the two
-    still-unbraced centre pillars. The porch's own E-W path (see above) is a separate ask
-    to the same consultant, not folded into this one.
-
-    **2026-08-30, second pass: the bolt question got bigger, not smaller.** The four E-W
-    braces' feet were re-read and found unbuildable — coplanar with the rail, they had been
-    detailed as if they butted the pillar, and resolved onto the pillar's *corner* with zero
-    contact area. They are face laps now (`KneeBrace.plane_offset` / `.foot_lap`), lapping
-    5 1/2" across the pillar's inboard face on two 1/2" x 8" HDG bolts. So the assumed bolt
-    schedule this bullet already flags is no longer only the rail's: on those four braces it
-    is the **entire connection at that end**, with no strap beside it and no bearing behind
-    it. `notes/balcony_lateral_bracing_design.md` §4a records the geometry and §5 the two
-    NDS yield modes it works and the four it does not. Nothing about the demand moved.
+  **The doctrine at the head of this item held all the way through and is worth keeping:**
+  nothing was authored for the lateral system until it was decided, and what is authored now
+  is a section and a cage with a calculation behind them, not a number invented in the model.
 
 - **Two porch/balcony span knife-edges, written down 2026-08-28.** Neither is a finding
   today and neither had been recorded anywhere before. `structural.deck_beam_span` looks IRC
@@ -231,36 +147,49 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
     8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**.
     Deepening the porch, or moving the back-beam line north, is what would do it.
-  - **Balcony: retired, and worth keeping visible.** `FS-SG-DECK`'s joist span is *exactly*
-    10.00', reading the 10' row (9.17'). Any increase drops it to the 12' row (8.33'). Until
-    2026-08-28 the balcony beams spanned 8.667' and that step would have failed all three;
-    moving the rear pillar row onto the back-beam line took the span to 7.00'. The front row
-    then moved 12" south on 2026-08-29 and gave 12" of that back — **the back span is 8.00'
-    now**, which still clears the 12' row (8.33') by 4". The knife-edge is gone, the cliff is
-    not, and the margin is a third of what it was a day earlier.
-  Anything that changes a beam section here — including the PWT LVL lead below — has to be
-  re-checked against both. Also in `houses/catlin/notes/beam_water_protection.md`.
+  - ~~**Balcony: retired, and worth keeping visible.**~~ **OFF THE TABLE 2026-09-03: the
+    three balcony beams are treated GLULAM and have no row in Table R507.5(1) at all.** They
+    are engineered items now (`deck_beam/BM-SG-BL*`, `engineering/glulam_beam.py`, oracled by
+    `notes/balcony_moment_columns.md` §5), graded on NDS bending, shear, bearing and
+    deflection with AWC Table 5.3.1's wet-service factors applied. Bearing governs at under
+    half. A joist-span cliff cannot reach them, because there is no lookup to step.
+  The porch half above is unchanged and still live. Anything that changes a PORCH beam
+  section has to be re-checked against it. Also in
+  `houses/catlin/notes/beam_water_protection.md`.
 
-- **Widen `structural.landing_post_bearing` past stair landings.** It is the rule that
-  would *positively confirm* what the 2026-08-29 change bought — `PT-SG-BF2` bearing on
-  concrete rather than through a 2x8 — and it cannot see the joint, because it is scoped to
-  stair landing posts only. Nothing else in the model grades cross-grain bearing under a
+- **Widen `structural.landing_post_bearing` past stair landings.** **The premise changed on
+  2026-09-03 and the item got MORE important, not less.** It used to be the rule that would
+  confirm what the 2026-08-29 change bought — `PT-SG-BF2` bearing on concrete rather than
+  through a 2x8. BF2 moved back onto the porch deck when `PT-SG-FCOL` shrank to 12", so
+  **both** centre pillars now bear cross-grain through one 1 1/2" ply (~315 psi under the
+  base, ~385 psi where that joist crosses the beam, against an Fc-perp of 425 with no
+  duration factor), and both are answered by authored squash blocks that nothing grades.
+  The rule still cannot see either joint, because it is scoped to stair landing posts only. Nothing else in the model grades cross-grain bearing under a
   post, which is why `PT-SG-BR2` stood on a single joist ply for a day with 0 FAIL and why
   its squash blocks are authored rather than derived. **Not a one-line scope widening:**
   `_bearing_element_under` has to learn about a FloorSystem's blocking members and its sheet
   thickness first, or turning it on adds ~10 FAILs to a house that has none — the eight
   heat-pump stand legs, `PT-SG-BR2` and `PT-SG-BF2` — every one of them a false report about
-  a joint that is answered.
+  a joint that is answered. The four balcony corner pillars left this list entirely: they are
+  cast concrete on cast concrete now and have no cross-grain bearing to grade.
 
-- **Verify the PWT treated LVL lead — one phone call.** `notes/beam_water_protection.md`
-  records that the real durability defect in these beams is **fourteen site-built ply seams**
-  that hold water and grit and freeze ~100×/year, and an *unverified* Pro Deck Supply
-  (Minneapolis) listing for PWT treated LVL 1¾" × 11⅞" at $223.20/12'. Two plies over the
-  three balcony beams is ≈ $970 against ~$242-413 for the 3-2x12s: a **~$550-725 delta that
-  removes the seams rather than taping them**. If it holds, the "Treated LVL is not a
-  product" answer immediately below — and the 2026-08-23 note that carries it in
-  `params/sunken_garden.py` — needs rewriting, because it was about Parallam Plus PSL depths
-  and says nothing about LVL. Not verified; nothing should move until it is.
+- ~~**Verify the PWT treated LVL lead — one phone call.**~~ **ANSWERED 2026-09-03, and the
+  answer was a different product.** `notes/beam_water_protection.md` recorded that the real
+  durability defect in these beams is **fourteen site-built ply seams** that hold water and
+  grit and freeze ~100x/year, and chased an unverified Pro Deck Supply listing for PWT
+  treated LVL. The three BALCONY beams are now **treated SYP structural glulam, 3-1/2" x
+  11-7/8", 24F-V5M1/SP** (Anthony Power Preserved / Boise Cascade, ~$35/LF through
+  Lakeville) — one manufactured member with published engineered values, no ply seam at all,
+  and a stocked product rather than a listing nobody had called about. `BEAM_GLULAM_TREATED`
+  in `plan/assemblies.py`; the material is `glulam-treated` in `library/materials.py`; the
+  design is `notes/balcony_moment_columns.md` §5.
+
+  **Two things this does NOT close.** (a) The **four porch beams** are still 3-ply KDAT 2x12
+  with eight seams between them, taped and capped, and the same trade is available there for
+  the same reasons — it was not taken because nothing about the porch redesign forced the
+  question. (b) The 2026-08-23 note in `params/sunken_garden.py` that says "treated LVL is
+  not a product" was about **Parallam Plus PSL depths** and said nothing about LVL or about
+  glulam; it has been rewritten where it sat, on `SPEC.balcony_beam`.
 
 - **2D-edit sync — fix design proposed** (investigated 2026-08-02). Root cause confirmed: a
   PatchOp rewrites one constructor; derived data recomputes, authored cross-references
@@ -333,26 +262,50 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `Pad` and nothing else, so it reported "does not bear on a resolvable Pad" — a sentence
   about its own reach — and minted `spread_footing/<post>` items for footings that do not
   exist. Now:
-  - **six earned N/A** — four balcony pillars on `W-SG-W1`/`E1` (foundation walls with their
-    own strip footings), `PT-SG-BR2` on `FS-SG-PORCH` (a post on a deck is not a post on the
-    ground), `PT-SG-BF2` on `PT-SG-FCOL` (its load leaves through that column, and that
-    column's own item picks up the share);
+  - **six earned N/A** — four balcony corner pillars on `W-SG-W1`/`E1` (foundation walls
+    with their own strip footings), and both centre pillars on `FS-SG-PORCH` (a post on a
+    deck is not a post on the ground; `PT-SG-BF2` was on `PT-SG-FCOL`'s top from 2026-08-29
+    until it came north onto the deck on 2026-09-03). Either way the load leaves through the
+    column beside it, and that column's own item picks up the share —
+    `pier_basis._piers_below` is what makes the promise true, and it did not exist for the
+    deck-borne case until 2026-09-03;
   - **two PASS** — `spread_footing/PT-SG-COL` and `/PT-SG-FCOL` compute bearing on the belled
-    piers: 1,245 and 1,477 psf against IBC Table 1806.2's presumptive 2,000 for this site's
-    GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`;
+    piers: **1,603 and 1,159 psf** against IBC Table 1806.2's presumptive 2,000 for this
+    site's GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`.
+    The two swapped places on 2026-09-03: FCOL fell from 1,477 when its column shrank from
+    20" round to 12", and COL rose from 1,245 when `PT-SG-BR2`'s share of the balcony was
+    finally handed to it. COL is now the pier with the least margin in this structure;
+  - **four more, and they are BENDING** — `deck_post/PT-SG-B{R,F}{1,3}`, the balcony's corner
+    columns, graded on base moment rather than on axial load because they are that deck's
+    entire lateral system. `engineering/deck_post.py::_moment_column`, oracled by
+    `notes/balcony_moment_columns.md`. `spread_footing` deliberately declines them
+    (`_Pier.shared_wall_footing`): they stand on a wall's strip footing, which
+    `structural.foundation_unbalanced_fill` already grades as `retaining_wall/<tag>`;
   - **two more PASS, as of 2026-08-30** — `deck_post/PT-SG-COL` and `/PT-SG-FCOL`. They were
     UNKNOWN because ACI 318-19 §14.1.5 does not permit a plain concrete COLUMN at any stress
     and `Post` had no field to state a cage in. **It has one now** (`vertical_reinforcement`,
-    the decision below, answered YES), the two piers author `(4) #5` and `(8) #6` with #3
-    ties, and the record grades seven limit states: the §22.4.2 axial cap, §10.6.1.1's 1%
+    the decision below, answered YES), and the record grades seven limit states: the §22.4.2 axial cap, §10.6.1.1's 1%
     floor and 8% ceiling, §10.7.3.1(b)'s four-bar minimum, §25.7.2's tie size and spacing,
-    and the §6.6.4.5.4 minimum eccentricity magnified per §6.6.4.5.2. **The cages are the
-    Code minimum and the axial d/c is 0.042 and 0.025** — the steel is there for creep,
-    shrinkage and the accidental moment, not for strength, which is exactly why it cannot be
-    value-engineered out. `notes/sunken_garden_piers.md` §4 is the oracle.
-  (`deck_beam_span` itself is fully green: two genuine R507.5(1) overspans closed 2026-07-31
-  by going engineered, and the balcony three closed 2026-08-23 prescriptively.)
--Spec fiber in concrete almost everywhere. Also galvanized rebar.
+    and the §6.6.4.5.4 minimum eccentricity magnified per §6.6.4.5.2. Both piers carry
+    `(4) #5` with #3 ties at 10" — FCOL came down from `(8) #6` at 12" when it shrank to a
+    12" round on 2026-09-03. **The cages are the Code minimum and the axial d/c is 0.056** —
+    the steel is there for creep, shrinkage and the accidental moment, not for strength,
+    which is exactly why it cannot be value-engineered out. `notes/sunken_garden_piers.md`
+    §4 is the oracle.
+  (`deck_beam_span` is green too, and by both routes: two genuine R507.5(1) overspans closed
+  2026-07-31 by going engineered, the porch four pass the table prescriptively, and the
+  balcony three went ENGINEERED on 2026-09-03 when they became glulam — a section the table
+  publishes no row for. `engineering/glulam_beam.py`.)
+- **Spec fiber in concrete almost everywhere. Also galvanized rebar.** The galvanized half
+  is PARTLY DONE: the owner settled it on 2026-09-02 (hot-dip, ASTM A767 cl. 1 or A1094 —
+  epoxy delaminates, stainless costs 4-6x and fights the concrete thermally), and the five
+  sunken-garden cast columns and their dowels are specified galvanized in
+  `SUNKEN_GARDEN_COLUMN_12`. **House-wide is still open**, and so are the Sika/Vector
+  Galvashield XPX embedded zinc anodes (330 g zinc, 20+ yr, ~$1,400/box of 20) weighed for
+  the salt-splash sunken-garden walls. Note that rebar rides INSIDE the $/cy rates
+  (`prices.toml` `[basis_notes]`), so a house-wide switch is a rate note plus a plan of its
+  own, not an element edit. `notes/balcony_moment_columns.md` §7 has the reasoning. Fiber is
+  untouched.
 - **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
   by the two piers above, and answered the same day.) The alternative — closing both items in
   `engineering.toml` with the engineer's cage schedule and leaving the model silent — works

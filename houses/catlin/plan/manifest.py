@@ -28,8 +28,8 @@ from params import (breezeway, foundations, main_deck, raised_garden, roof_trim,
                     second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, circuits, electrical, electrical_attic,
                   fixture_types, fixtures, furniture_types, lighting, lighting_attic,
-                  lighting_types, mep, millwork, placeables, products, site, transitions,
-                  views, wind_clamps)
+                  lighting_types, mep, millwork, placeables, products, railing_types,
+                  site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
 format_version = 1
@@ -54,7 +54,10 @@ _library = Library(
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
                      *furniture_types.FURNITURE_TYPES),
-    railing_types=STARTER_RAILING_TYPES,
+    # The library's fascia guard plus the house's own surface-mounted one — the porch
+    # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
+    # different order at a different rate. Tags are disjoint.
+    railing_types=(*STARTER_RAILING_TYPES, *railing_types.RAILING_TYPES),
     # The library's plumbing catalog is a planning ALLOWANCE (its own header says final
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the

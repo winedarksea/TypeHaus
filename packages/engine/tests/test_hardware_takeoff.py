@@ -382,29 +382,40 @@ def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> Non
 # --- knee braces, ties, straps, catalog ----------------------------------------------
 
 
-def test_each_modeled_knee_brace_takes_two_connectors_one_per_end(catlin_model) -> None:
+def test_each_modeled_knee_brace_takes_two_connectors_one_per_end() -> None:
     """Two KBS1Z per brace the plan models — no per-JOINT multiplier the plan cannot see.
 
     The multiplier is a property of the HARDWARE, not of the braced *joint*: Simpson's
     KBS1Z installation is one connector at each end of the brace, and the F1 the code
     report publishes is measured through that pair, so billing one would order half the
-    connection the capacity assumes. Every balcony pillar is a beam end, so a per-joint
-    rule would double-bill.
+    connection the capacity assumes. A post carrying two braces is one post and two braces,
+    so a per-joint rule would double-bill.
 
-    `APVKB45-6`, Simpson's Outdoor Accents Avant decorative knee brace, has no published
-    allowable load in any code report — IAPMO UES ER-102's AP-series index does not list
-    it and ER-280 has no table for it. On catlin those braces are the entire lateral
-    system of a freestanding deck at storey height."""
+    **This reads catlin no longer.** The reference house's eight balcony braces were deleted
+    on 2026-09-03 when four cast concrete columns fixed at their bases became that deck's
+    lateral system (``houses/catlin/notes/balcony_moment_columns.md``), so the rule is
+    pinned against the config it lives in rather than against a house that happens to
+    exercise it. ``knee_brace_rows`` returning nothing on a plan with no brace is the other
+    half of the same contract and is asserted below.
+    """
+    from typehaus.takeoff.hardware_catalog import hardware_for_role
+
+    assert CONFIG.knee_braces.braces_per_location == 2
+    # And the role still resolves to the rated part, so the two-per-brace rule is buying
+    # two of something with a published F1 rather than two of anything.
+    assert hardware_for_role(ROLE_KNEE_BRACE).model == "KBS1Z"
+
+
+def test_a_plan_with_no_knee_brace_bills_no_knee_brace(catlin_model) -> None:
+    """The derived row must not survive its braces. catlin has none since 2026-09-03, and a
+    row appearing here would be eight braces' worth of hardware ordered for nothing."""
     from typehaus.model.structure import KneeBrace
 
     braces = [element for storey in catlin_model.plan.storeys
               for element in catlin_model.plan.storey_elements(storey.tag)
               if isinstance(element, KneeBrace)]
-    row = knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]
-    assert row["part_number"] == "KBS1Z"
-    assert CONFIG.knee_braces.braces_per_location == 2
-    assert row["count"] == 2 * len(braces)
-    assert row["role"] == ROLE_KNEE_BRACE
+    assert braces == []
+    assert knee_brace_rows(catlin_model, CONFIG.knee_braces) == []
 
 
 def test_the_knee_brace_role_serves_a_part_with_a_published_capacity() -> None:
@@ -419,28 +430,40 @@ def test_the_knee_brace_role_serves_a_part_with_a_published_capacity() -> None:
     assert item.allowable.lateral_f1_lb == 540.0   # ER-280 Table 7, type 2, 45 deg, SPF/HF
 
 
-def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_model) -> None:
-    """The freestanding balcony's whole lateral system, and the take-off that follows it.
+def test_the_balcony_is_braced_by_four_fixed_columns_and_no_braces(catlin_model) -> None:
+    """The freestanding balcony's whole lateral system, and the hardware that follows it.
 
-    Four corner pillars x two directions = eight braces. The two centre pillars are
-    deliberately unbraced leaning columns — bracing them would push thrust into PT-SG-BR2,
-    the one pillar bearing on the porch decking rather than on grouted masonry."""
-    from typehaus.model.structure import KneeBrace
+    It was eight knee braces — four corner pillars x two plan directions — until
+    2026-09-03. It is now four 12" cast concrete columns FIXED at their bases, doweled into
+    the wall tops they stand on, and the joint that carries the moment is a lapped splice
+    made in the pour rather than a connector. So there is no brace hardware, no standoff
+    base at those four posts, and no cast-in anchor under them: what a connector schedule
+    can say about a doweled lap is nothing, and billing one would be a fiction.
 
-    braces = {element.tag: element for storey in catlin_model.plan.storeys
-              for element in catlin_model.plan.storey_elements(storey.tag)
-              if isinstance(element, KneeBrace)}
-    assert set(braces) == {
-        "KB-SG-R1-NS", "KB-SG-R1-EW", "KB-SG-R3-NS", "KB-SG-R3-EW",
-        "KB-SG-F1-NS", "KB-SG-F1-EW", "KB-SG-F3-NS", "KB-SG-F3-EW",
-    }
-    assert {b.axis for b in braces.values() if b.tag.endswith("-NS")} == {"y"}
-    assert {b.axis for b in braces.values() if b.tag.endswith("-EW")} == {"x"}
-    # Every brace names the post it stiffens *and* the member it reaches, so the connector
-    # schedule can key the joint.
-    assert all(len(b.connects) == 2 for b in braces.values())
-    # Two KBS1Z per brace, one at each end — see the test above.
-    assert knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]["count"] == 16
+    The two centre pillars stay wood on pinned ABU66SS bases and keep their hardware —
+    including the CCQ46SDS2.5 column caps that close the post-to-beam uplift leg where
+    there is no pour to hold the beam down.
+    """
+    from typehaus.model.structure import KneeBrace, Post
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    elements = [element for storey in catlin_model.plan.storeys
+                for element in catlin_model.plan.storey_elements(storey.tag)]
+    assert not [e for e in elements if isinstance(e, KneeBrace)]
+
+    pillars = {e.tag: e for e in elements
+               if isinstance(e, Post) and e.tag.startswith("PT-SG-B")}
+    corners = {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
+    centres = {"PT-SG-BR2", "PT-SG-BF2"}
+    assert set(pillars) == corners | centres
+    for tag in corners:
+        assert assembly_structure_material(
+            catlin_model.plan, pillars[tag].assembly) == "concrete"
+        assert pillars[tag].size == "12 round"
+        assert pillars[tag].vertical_reinforcement
+    for tag in centres:
+        assert pillars[tag].size == "6x6"
+        assert pillars[tag].vertical_reinforcement is None
 
 
 def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:

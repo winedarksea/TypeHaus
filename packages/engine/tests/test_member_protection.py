@@ -18,13 +18,16 @@ import pytest
 
 from typehaus.takeoff.member_protection import member_protection_takeoff
 
-#: Every sunken-garden beam that is three plies of 2x12, and so wants the wide roll.
-BUILT_UP_BEAMS = {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE",
-                  "BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
-#: The two single-ply 2x8 E-W brace rails. Taped for an exposed top, not for a seam —
-#: narrow roll, same as the 2x12 girts they replaced (a 2x8 on edge presents the same 1.5"
-#: top).
-RAILS = {"BM-SG-RAIL-R", "BM-SG-RAIL-F"}
+#: The porch's four 3-ply 2x12s — 4 1/2" across, and the members this section was written
+#: for: a site-built beam with two open ply seams running its whole length.
+PLY_BEAMS = {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"}
+#: The balcony's three beams, treated structural glulam at 3 1/2" since 2026-09-03. They
+#: have NO ply seam — a glulam arrives as one member — but they still take the wide roll,
+#: because the common "double joist" roll is 3 1/8" and would leave a 3 1/2" top uncovered
+#: at both arrises. Same SKU, different width, and the BOM's width column is what says so.
+GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
+#: Every beam on the wide roll, whatever its width.
+BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS
 
 
 @pytest.fixture(scope="module")
@@ -35,31 +38,41 @@ def rows(catlin_model_ro):
 def test_only_authored_members_are_taped(rows):
     """The section derives nothing. Untaped framing — the whole house — must not appear."""
     taped = {tag for row in rows for tag in row["tags"]}
-    assert taped == BUILT_UP_BEAMS | RAILS | {"FS-SG-PORCH", "FS-SG-DECK"}
+    assert taped == BUILT_UP_BEAMS | {"FS-SG-PORCH", "FS-SG-DECK"}
 
 
-def test_built_up_beams_take_the_wide_roll(rows):
-    """The 4 1/2" beams and the 1 1/2" rails must not land on one row, or one order."""
+def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):
+    """Two widths on the wide SKU, and they must not collapse onto one row, or one order.
+
+    The width is read off each member's own section, so the porch's 4 1/2" ply beams and the
+    balcony's 3 1/2" glulams land on two rows of the same material. A single row would buy
+    one roll width for both and leave whichever is wider under-covered.
+    """
     by_tag = {tag: row for row in rows for tag in row["tags"]}
-    for tag in BUILT_UP_BEAMS:
+    for tag in PLY_BEAMS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(4.5), tag
-    for tag in RAILS:
-        assert by_tag[tag]["material"] == "butyl-tape", tag
-        assert by_tag[tag]["width_in"] == pytest.approx(1.5), tag
+    for tag in GLULAM_BEAMS:
+        assert by_tag[tag]["material"] == "butyl-tape-beam", tag
+        assert by_tag[tag]["width_in"] == pytest.approx(3.5), tag
 
 
 def test_beam_length_is_the_axis_length(rows):
-    """Taken off the beam's two nodes, exactly as ``_resolve_beam`` takes it. The three
-    balcony beams span 9'-8" node to node. A cap or a tape run measured off anything else —
-    the deck outline, the solid's bounding box — drifts the moment the beam's bearing moves,
-    which is the failure this pins.
+    """Taken off the beam's two nodes, exactly as ``_resolve_beam`` takes it. A cap or a tape
+    run measured off anything else — the deck outline, the solid's bounding box — drifts the
+    moment the beam's bearing moves, which is the failure this pins.
     """
-    beam_rows = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
-    assert len(beam_rows) == 1
-    # 3 balcony beams at 9.667' + 2 back beams at 10' + 2 front beams at 10' = 69.0'
-    assert beam_rows[0]["length_ft"] == pytest.approx(69.0, abs=0.1)
-    assert beam_rows[0]["count"] == 7
+    wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
+    assert len(wide) == 1
+    # 2 back beams at 10' + 2 front beams at 10' = 40.0'
+    assert wide[0]["length_ft"] == pytest.approx(40.0, abs=0.1)
+    assert wide[0]["count"] == 4
+
+    glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]
+    assert len(glulam) == 1
+    # 3 balcony beams at 9'-8" node to node = 29.0'
+    assert glulam[0]["length_ft"] == pytest.approx(29.0, abs=0.1)
+    assert glulam[0]["count"] == 3
 
 
 def test_deck_rows_follow_the_joist_field(rows):

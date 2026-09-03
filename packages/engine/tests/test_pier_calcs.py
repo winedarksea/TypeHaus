@@ -27,14 +27,22 @@ import pytest
 
 from typehaus.engineering.item import Status
 
-# The two cages, as `params/sunken_garden.py` authors them (§4c of the note).
+# The cages, as `params/sunken_garden.py` authors them (§4c of the note).
+#
+# Since 2026-09-03 every cast column in the sunken garden carries the SAME cage: PT-SG-FCOL
+# came down from 20" round / (8) #6 to 12" round / (4) #5 when PT-SG-BF2 stopped standing on
+# its top, and the four balcony corner columns arrived at the same section. PT-SG-COL's cage
+# is authored as a literal; the other five read `SPEC.corner_column_cage`, which adds the
+# cover and the galvanizing the durability case asks for. Two strings, one section.
 _COL_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
-_FCOL_CAGE = '(8) #6 vertical, #3 ties @ 12" o.c.'
+_FCOL_CAGE = ('(4) #5 vertical, #3 ties @ 10" o.c., 2" cover, '
+              'hot-dip galvanized (ASTM A767 cl. 1 or A1094)')
 _COL_CAGE_SOURCE = "vertical_reinforcement='" + _COL_CAGE + "',"
-_FCOL_CAGE_SOURCE = "vertical_reinforcement='" + _FCOL_CAGE + "',"
 _UNREADABLE_CAGE_SOURCE = "vertical_reinforcement='rebar per engineer',"
-_FCOL_SHORT_CAGE_SOURCE = (
-    "vertical_reinforcement='" + _FCOL_CAGE.replace("(8)", "(6)") + "',")
+# The SPEC field the five 12" columns share. Mutating it moves all five at once, which is
+# what `test_an_under_minimum_cage_is_over_not_ok` wants.
+_SPEC_CAGE_SOURCE = "corner_column_cage: str = ('(4) #5 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
+_SPEC_SHORT_CAGE_SOURCE = "corner_column_cage: str = ('(3) #4 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
 
 # §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
 # section, tributary and cage — so one row covers them.
@@ -49,28 +57,46 @@ _BREEZEWAY_ORACLE = {
 }
 _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 
-# §2 and §3c of the note.
+# §2 and §3c of the note. Both piers are 12" round and carry the same cage since
+# 2026-09-03, so the two rows agree on everything but the bell and a pound of pillar.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 82.33, "dead_lb": 2082.0, "live_lb": 3293.0,
-        "service_lb": 5375.0, "factored_lb": 7768.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1245.0,
+        "tributary_ft2": 116.17, "dead_lb": 2487.0, "live_lb": 4647.0,
+        "service_lb": 7134.0, "factored_lb": 10_419.0,
+        "bell_area_ft2": 4.909, "bearing_psf": 1603.0,
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
         "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.018, "e_magnified_in": 0.978, "e_capped_in": 1.20,
+        "slenderness": 42.7, "delta_ns": 1.024, "e_magnified_in": 0.983, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 116.17, "dead_lb": 4735.0, "live_lb": 4647.0,
-        "service_lb": 9382.0, "factored_lb": 13_117.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1477.0,
-        "gross_in2": 314.2, "h_over_d": 6.4, "min_steel_in2": 3.142,
-        "cage": _FCOL_CAGE, "bars": 8, "steel_in2": 3.52,
-        "capacity_lb": 521_732.0, "tie_spacing_in": 12.0,
-        "slenderness": 25.6, "delta_ns": 1.004, "e_magnified_in": 1.205, "e_capped_in": 2.00,
+        "tributary_ft2": 116.17, "dead_lb": 2486.0, "live_lb": 4647.0,
+        "service_lb": 7132.0, "factored_lb": 10_418.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1159.0,
+        "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
+        "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
+        "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
+        "slenderness": 42.7, "delta_ns": 1.024, "e_magnified_in": 0.983, "e_capped_in": 1.20,
     },
 }
+
+# The four balcony corner columns — same section, same cage, and a different question.
+# `notes/balcony_moment_columns.md` is their oracle: they stand on the 12" tops of
+# W-SG-W1/E1 rather than on their own belled piers, and what governs them is BENDING at a
+# fixed base, not bearing. §4 and §5 of that note.
+_CORNER_PIERS = ("PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
+_CORNER_ORACLE = {
+    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1388.4, "guard_lb_ft": 2502.1},
+    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1388.4, "guard_lb_ft": 2502.1},
+    # The rear row runs 2" proud for the deck's drainage crown.
+    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1414.1, "guard_lb_ft": 2535.4},
+    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1414.1, "guard_lb_ft": 2535.4},
+}
+#: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
+_CORNER_PHI_MN_LB_FT = 20_900.0
+#: §7: ld = (60,000 / (25 sqrt(3,000))) x 0.625 = 27.4", x 1.3 for a class B splice.
+_CLASS_B_LAP_IN = 35.6
 
 _PRESUMPTIVE_ALLOWABLE_PSF = 2000.0
 
@@ -120,9 +146,16 @@ def piers(catlin_plan):
 
 
 def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
-    """Two belled piers and four pad-borne ones. A post on a wall, on a floor or on a WOOD
-    post is somebody else's rule, and so is a wood post on anything."""
-    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_BREEZEWAY_PIERS}
+    """Two belled piers, four pad-borne ones, and four standing on a concrete wall top.
+
+    A post on a FLOOR or on a WOOD post is somebody else's rule, and so is a wood post on
+    anything. The wall case joined this module on 2026-09-03: the four balcony corner
+    columns are exactly the member it grades and had no ``Footing`` of their own, so they
+    fell out of the enumeration entirely and the check that named them reported "an
+    engineer's design governs, and this engine computes none" about a column the engine
+    could compute perfectly well.
+    """
+    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_CORNER_PIERS, *_BREEZEWAY_PIERS}
 
 
 def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
@@ -210,19 +243,22 @@ def test_the_load_path_reproduces_the_note(tag, piers) -> None:
     assert pier.gross_area_in2 == pytest.approx(want["gross_in2"], rel=0.001)
 
 
-def test_the_front_column_carries_the_pillar_standing_on_it(piers) -> None:
-    """`structural.deck_footing_size` reports N/A on PT-SG-BF2 and says its share is picked
-    up here. **That sentence is a promise, and this is the only thing keeping it.**
+def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> None:
+    """`structural.deck_footing_size` reports N/A on both centre pillars and says their share
+    is picked up here. **That sentence is a promise, and this is the only thing keeping it.**
 
-    PT-SG-BF2 bears on PT-SG-FCOL's top rather than on the porch framing, which is why that
-    column is 20" and not 16". If the hand-down were dropped, the front pier would be graded
-    on 82.33 ft2 like the back one and the balcony's share would be carried by nothing.
+    PT-SG-BR2 and PT-SG-BF2 each stand on the porch DECK, 3" from a beam line, and each
+    carries a third of the balcony. Until 2026-09-03 ``pier_basis`` handed load down only
+    post-to-post, so a pillar on a FloorSystem handed nothing and PT-SG-COL was graded on
+    82.33 ft2 with a third of a balcony landing on it uncounted. Both now hand their share
+    through the deck's beams to the column under them.
     """
-    back, front = piers["PT-SG-COL"], piers["PT-SG-FCOL"]
-    assert back.tributary_ft2 == pytest.approx(82.33, abs=0.02)
-    # 203.00 ft2 of balcony over six pillars = 33.83, and exactly one of them lands here.
-    assert front.tributary_ft2 - back.tributary_ft2 == pytest.approx(33.83, abs=0.02)
-    assert front.carried_dead_lb > 0.0
+    own_porch_share = 82.33          # FS-SG-PORCH 164.67 ft2 over its two columns
+    balcony_share = 33.83            # FS-SG-DECK 203.00 ft2 over its six pillars
+    for tag in ("PT-SG-COL", "PT-SG-FCOL"):
+        pier = piers[tag]
+        assert pier.tributary_ft2 == pytest.approx(own_porch_share + balcony_share, abs=0.02)
+        assert pier.carried_dead_lb > 0.0, "the pillar's own 6x6 rides down with its share"
 
 
 def test_the_bell_is_read_as_a_circle_not_the_resolved_square(piers, catlin_model) -> None:
@@ -278,7 +314,7 @@ def test_the_cage_reproduces_the_hand_worked_design(tag, results, piers) -> None
     assert state.demand == pytest.approx(want["factored_lb"], abs=5.0)
     assert state.capacity == pytest.approx(want["capacity_lb"], rel=0.002)
     # The section is enormous for the load; the cage is NOT there for strength.
-    assert state.demand / state.capacity < 0.05
+    assert state.demand / state.capacity < 0.10
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
@@ -286,7 +322,7 @@ def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, results) -> Non
     """§4b/§4c — the 1% floor is what sizes these cages, and both clear it by ~10%.
 
     **This is the assertion that stops a well-meant "save concrete" edit.** The columns run
-    at d/c 0.04; nothing about the load justifies less steel, because ACI 318-19 §10.6.1.1's
+    at d/c 0.06; nothing about the load justifies less steel, because ACI 318-19 §10.6.1.1's
     floor covers creep, shrinkage and the accidental moment and is indifferent to loading.
     """
     want = _ORACLE[tag]
@@ -326,9 +362,11 @@ def test_the_ties_are_at_the_25_7_2_2_maximum(tag, results) -> None:
 def test_slenderness_is_carried_and_the_minimum_eccentricity_is_covered(tag, results) -> None:
     """§4e — the argument that lets one axial comparison be the whole check.
 
-    The 12" column is past §6.2.5's non-sway floor of 34 and the 20" is not, but both end in
-    the same place: the magnified minimum eccentricity is INSIDE the 0.10h that R22.4.2 says
-    the 0.80 axial cap already carries, so no interaction diagram is needed.
+    Both are past §6.2.5's non-sway floor of 34 (PT-SG-FCOL was at 25.6 and neglectable
+    outright while it was a 20" round — shrinking a column is the one edit that makes
+    slenderness appear), and both end in the same place: the magnified minimum eccentricity
+    is INSIDE the 0.10h that R22.4.2 says the 0.80 axial cap already carries, so no
+    interaction diagram is needed.
     """
     want = _ORACLE[tag]
     record = results[f"deck_post/{tag}"]
@@ -377,12 +415,17 @@ def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
 
 
 def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
-    """6-#6 in the 20" column: 2.64 in2 against a 3.142 in2 floor — the §4c trap, which
-    looks like a sensible cage and is 16% short of legal."""
+    """(3) #4 in a 12" column: 0.60 in2 against a 1.131 in2 floor — under on BOTH counts.
+
+    It is short of §10.6.1.1's 1% floor and short of §10.7.3.1(b)'s four bars within
+    circular ties, which is the pair of limits a "save some steel" edit trips together. The
+    §4c trap it replaces was 6-#6 in the retired 20" round: 2.64 in2 against 3.142, a cage
+    that looks perfectly sensible and is 16% short of legal.
+    """
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_FCOL_CAGE_SOURCE, _FCOL_SHORT_CAGE_SOURCE)])
+    plan = _mutated(tmp_path, [(_SPEC_CAGE_SOURCE, _SPEC_SHORT_CAGE_SOURCE)])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 
@@ -390,12 +433,22 @@ def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
     assert record.status is Status.OVER, record.summary
     steel = next(s for s in record.limit_states if s.name == "longitudinal steel")
     assert not steel.ok
-    assert steel.capacity == pytest.approx(2.64, abs=0.005)
+    assert steel.capacity == pytest.approx(0.60, abs=0.005)
+    count = next(s for s in record.limit_states if s.name == "bar count")
+    assert not count.ok
+    # And it takes the four corner columns with it — one SPEC field feeds all five.
+    for tag in _CORNER_PIERS:
+        assert results[f"deck_post/{tag}"].status is Status.OVER
 
 
 @pytest.mark.parametrize("spec,expected", [
     (_COL_CAGE, (4, 5, 3, 10.0)),
-    (_FCOL_CAGE, (8, 6, 3, 12.0)),
+    (_FCOL_CAGE, (4, 5, 3, 10.0)),
+    ('(8) #6 vertical, #3 ties @ 12" o.c.', (8, 6, 3, 12.0)),
+    # The trap the SPEC field's own comment warns about: an adjective wedged between the
+    # tie bar and the word "ties" makes the whole string unreadable, which reads as NO
+    # STEEL and reports INCOMPLETE rather than failing loudly.
+    ('(4) #5 galvanized vertical, #3 galvanized ties @ 10" o.c.', None),
     ("8-#6 vertical with #3 ties @ 12 in. o.c.", (8, 6, 3, 12.0)),
     ("4 #5 verticals, #4 TIES @ 9.5 in o.c.", (4, 5, 4, 9.5)),
     ("rebar per engineer", None),
@@ -456,3 +509,195 @@ def test_the_two_tributary_rules_agree(catlin_plan) -> None:
     assert set(mine) == set(theirs)
     for tag, value in theirs.items():
         assert mine[tag] == pytest.approx(value, rel=1e-9), tag
+
+
+# ---------------------------------------------------------------------------------------
+# The four balcony corner columns, and the three glulam beams over them.
+# Oracle: houses/catlin/notes/balcony_moment_columns.md, hand-worked in a separate pass.
+# ---------------------------------------------------------------------------------------
+
+
+def test_a_column_on_a_wall_top_takes_that_walls_strip_footing(piers) -> None:
+    """The load path is real; the footing is not this pier's to grade.
+
+    A cast column standing on a concrete FoundationWall is carried by that wall's continuous
+    strip footing, and ``cast_piers`` records it — but ``shared_wall_footing`` is what keeps
+    ``engineering/spread_footing.py`` off it. A strip footing under a wall already has an
+    authority (``structural.foundation_unbalanced_fill``, as ``retaining_wall/<tag>``), and a
+    second engineered record computing a point pressure on the same concrete would be the
+    weaker of two answers to one question.
+    """
+    for tag in _CORNER_PIERS:
+        pier = piers[tag]
+        assert pier.footing_tag in {"FT-SG-W1", "FT-SG-E1"}
+        assert pier.shared_wall_footing is True
+    for tag in ("PT-SG-COL", "PT-SG-FCOL"):
+        assert piers[tag].shared_wall_footing is False
+
+
+def test_no_engineered_bearing_record_on_a_shared_wall_footing(results) -> None:
+    """The other half of the rule above — and the half a regression would show up in."""
+    for tag in _CORNER_PIERS:
+        assert f"spread_footing/{tag}" not in results
+
+
+@pytest.mark.parametrize("tag", _CORNER_PIERS)
+def test_the_corner_columns_are_the_decks_lateral_system(tag, piers) -> None:
+    """§0 and §2 of the note. No knee brace anywhere in the plan and no beam in a wall, so
+    the base moment is real and ``deck_post`` must grade bending."""
+    pier = piers[tag]
+    assert pier.lateral_system is True
+    assert pier.height_in == pytest.approx(_CORNER_ORACLE[tag]["height_in"], abs=0.01)
+    # The two porch columns land their beams in W-SG-W1/E1 — braced by shear walls, no
+    # column moment, and the finding that claimed otherwise is the regression this pins.
+    for other in ("PT-SG-COL", "PT-SG-FCOL"):
+        assert piers[other].lateral_system is False
+
+
+@pytest.mark.parametrize("tag", _CORNER_PIERS)
+def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
+    """§2b and §2c, term by term.
+
+    Wind is the E-W case at the Fig. 29.3-1 Case A/B ceiling (C_f 1.80), because the figure
+    itself is copyrighted and this repository holds three cells of it — spending the
+    coefficient conservatively rather than leaving it open. The guard is R301.5's 200 lb at
+    the guard top, taken WHOLLY on one column: halving it across the two that bound an end
+    bay is a diaphragm claim this module has no standing to make.
+    """
+    want = _CORNER_ORACLE[tag]
+    pier = piers[tag]
+    assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_lb_ft"], abs=1.0)
+    assert pier.guard_base_moment_lb_ft == pytest.approx(want["guard_lb_ft"], abs=1.0)
+    # 200 lb x (the column + the 3'-6" guard). If this ever stops being an exact multiple
+    # of 200, the lever arm has silently changed.
+    lever_ft = want["guard_lb_ft"] / 200.0
+    assert lever_ft == pytest.approx(want["height_in"] / 12.0 + 3.5, abs=0.01)
+    # The guard governs, which is the whole reason it is computed at all.
+    assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
+
+
+@pytest.mark.parametrize("tag", _CORNER_PIERS)
+def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) -> None:
+    """§4's table. Bending governs, the section is at an eighth of it, and the AXIAL state
+    — the only thing every other record in this module grades — is not what sizes it."""
+    record = results[f"deck_post/{tag}"]
+    assert record.status is Status.OK, record.summary
+    assert not record.missing
+    states = {state.name: state for state in record.limit_states}
+    assert set(states) >= {"bending at base, wind", "bending at base, guard",
+                           "magnified moment (sway)", "dowel lap, class B",
+                           "axial, tied column"}
+    assert all(state.ok for state in record.limit_states)
+
+    for name in ("bending at base, wind", "bending at base, guard"):
+        assert states[name].capacity == pytest.approx(_CORNER_PHI_MN_LB_FT, rel=0.01)
+    guard = states["bending at base, guard"]
+    assert guard.demand / guard.capacity == pytest.approx(0.12, abs=0.01)
+    axial = states["axial, tied column"]
+    assert axial.demand / axial.capacity < 0.03, "axial is not what governs, and never was"
+
+    # Magnification is real (k*lu/r 76, past §6.2.5's SWAY limit of 22) and nearly nothing,
+    # because P-delta needs P to bite and P is ~2% of capacity.
+    magnified = states["magnified moment (sway)"]
+    assert 1.02 < magnified.demand / guard.demand < 1.05
+
+
+@pytest.mark.parametrize("tag", _CORNER_PIERS)
+def test_the_cantilever_uses_k_2_1_and_the_sway_threshold(tag, results) -> None:
+    """The single most consequential line in the record, and the easiest to lose.
+
+    Every other pier here is a LEANING column: ``_slenderness`` takes k = 1.0 and measures
+    against §6.2.5's non-sway floor of 34, because ``structural.lateral_racking`` hands its
+    storey shear to a braced bay. These four have no braced bay to hand it to. k is 2.1
+    (Table R6.2.5, fixed base / free top, not the ideal 2.0) and the threshold is the SWAY
+    limit of 22.
+    """
+    from typehaus.engineering.deck_post import CANTILEVER_EFFECTIVE_LENGTH_FACTOR
+
+    assert CANTILEVER_EFFECTIVE_LENGTH_FACTOR == 2.1
+    citation = next(s for s in results[f"deck_post/{tag}"].limit_states
+                    if s.name == "magnified moment (sway)").citation
+    assert "k 2.1" in citation
+    assert "SWAY limit of 22" in citation
+
+
+@pytest.mark.parametrize("tag", _CORNER_PIERS)
+def test_the_dowel_lap_reads_the_galvanized_row_not_the_epoxy_one(tag, results) -> None:
+    """§7. ACI 318-19 §25.4.2.5 gives zinc-coated bar psi_e = 1.0; it is EPOXY that takes
+    1.2-1.5. Reading the epoxy row for a galvanized bar lengthens every lap by half."""
+    record = results[f"deck_post/{tag}"]
+    lap = next(s for s in record.limit_states if s.name == "dowel lap, class B")
+    assert lap.demand == pytest.approx(_CLASS_B_LAP_IN, abs=0.2)
+    assert lap.ok, "the lap does not fit inside the column it is lapped into"
+    note = next(n for n in record.notes if n.startswith("DOWELS"))
+    assert "GALVANIZED" in note and "1.0" in note
+
+
+def test_the_cover_is_read_off_the_authored_cage_not_the_code_minimum(results) -> None:
+    """2" of cover shortens the lever arm, and grading on ACI's 1-1/2" would quietly credit
+    a capacity the drawing does not build. The house says 2"; the record must use 2"."""
+    quantities = {q.name: q.value for q in results["deck_post/PT-SG-BF1"].inputs}
+    assert quantities["cover"] == pytest.approx(2.0)
+
+
+@pytest.mark.parametrize("tag", ["BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"])
+def test_the_glulam_beams_are_engineered_and_check_out(tag, results) -> None:
+    """§5 of the note. IRC Table R507.5(1) publishes sawn plies, so a glulam is delegated.
+
+    Bearing governs — 3" on concrete against a wet-service F_c-perp of 392 psi — and it
+    governs at under half. Nothing here is span-driven: 11-7/8" over the slimmer 9-1/2"
+    option is the owner's planter margin, which is a decision and not a calculation.
+    """
+    record = results[f"deck_beam/{tag}"]
+    assert record.status is Status.OK, record.summary
+    states = {state.name: state for state in record.limit_states}
+    assert set(states) == {"bending", "shear parallel to grain",
+                           "bearing, compression perpendicular", "live-load deflection"}
+    assert all(state.ok for state in record.limit_states)
+    assert states["bending"].capacity == pytest.approx(1920.0, abs=1.0)   # 2,400 x C_M 0.80
+    assert states["shear parallel to grain"].capacity == pytest.approx(262.5, abs=0.5)
+    assert states["bearing, compression perpendicular"].capacity == pytest.approx(392.2,
+                                                                                  abs=0.5)
+    worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
+    assert worst.name == "bearing, compression perpendicular"
+    assert worst.demand / worst.capacity < 0.5
+
+
+def test_the_centre_glulam_spans_less_than_its_neighbours(results) -> None:
+    """§5 — BM-SG-BLC's back span fell to 6'-9" when PT-SG-BF2 came north onto the deck.
+
+    That is the one dimension the balcony redesign moved that a reader would not predict,
+    and it is what leaves the rear overhang at 20.0" against R507.5.1's quarter-span limit
+    of 20.25". **Nothing in the engine checks a beam overhang** — `checks/structural/deck.py`
+    grades beam SPAN only — so the quarter inch lives in the note and this pins the span it
+    is computed from.
+    """
+    spans = {tag: {q.name: q.value for q in results[f"deck_beam/{tag}"].inputs}["clear_span"]
+             for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")}
+    assert spans["BM-SG-BLW"] == pytest.approx(7.771, abs=0.01)
+    assert spans["BM-SG-BLE"] == pytest.approx(7.771, abs=0.01)
+    assert spans["BM-SG-BLC"] == pytest.approx(6.75, abs=0.01)
+    back_span_in = spans["BM-SG-BLC"] * 12.0
+    assert 20.0 <= back_span_in / 4.0
+
+
+def test_wet_service_is_applied_to_the_glulam(results) -> None:
+    """The single most common way to overstate one of these by a quarter.
+
+    AWC NDS Table 5.3.1: C_M is 0.80 on F_b and 0.833 on E for a glulam in weather. A
+    supplier's span table is quoted DRY, and a check that used the dry values would clear
+    this beam by a margin that does not exist outdoors.
+    """
+    from typehaus.engineering.glulam_beam import GLULAM_E_PSI, GLULAM_FB_PSI, WET_E, WET_FB
+
+    quantities = {q.name: q.value for q in results["deck_beam/BM-SG-BLC"].inputs}
+    assert quantities["Fb_adjusted"] == pytest.approx(GLULAM_FB_PSI * WET_FB, abs=1.0)
+    assert quantities["E_adjusted"] == pytest.approx(GLULAM_E_PSI * WET_E, abs=100.0)
+    assert quantities["Fb_adjusted"] < GLULAM_FB_PSI
+
+
+def test_only_off_table_deck_beams_reach_the_glulam_calc(results) -> None:
+    """A beam IRC Table R507.5(1) publishes is graded there, prescriptively. Minting a
+    second engineered record for it would be two authorities on one span."""
+    beams = {key.split("/", 1)[1] for key in results if key.startswith("deck_beam/")}
+    assert beams == {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}

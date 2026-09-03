@@ -5,9 +5,11 @@ line nearest an authored load point up to the ply count and block it out to the 
 side.
 
 It was built for a cantilevered balcony pillar bearing on the free end of a single joist —
-a condition catlin no longer has. **No house drives it.** The synthetic fixtures below are
-the whole coverage, and the catlin test at the bottom pins the absence so the feature
-cannot quietly come back unnoticed.
+a condition catlin no longer has. **No house drives the SISTERING half of it**: every
+reinforcement the reference house authors is ``plies=1``, which lays blocks and no sisters,
+because what those joints need is a bearing or roll block rather than a stiffened joist. The
+synthetic fixtures below are the whole coverage for the plies; the two catlin tests at the
+bottom pin what the house does author, and that every station of it actually lands.
 
 These lock the three things the geometry has to get right, because each one is a way the
 reinforcement can look present and do nothing:
@@ -212,27 +214,50 @@ def test_no_catlin_deck_sisters_a_joist(catlin_model):
         ("11.875 I-joist", "sister_joist")]
 
 
-def test_the_balcony_deck_carries_no_blocking_and_the_porch_still_does(catlin_model):
-    """``FS-SG-DECK`` hosts nothing that needs drilling, and that is the whole point of it.
+def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
+    """Every block on these two decks answers a named joint, and nothing else does.
 
-    Eight through-deck anchors used to hold the two condensers' stands down, on sixteen
-    sacrificial blocks laid by four ``JoistReinforcement``s — a fastener through this deck's
-    waterproof plane had to be hosted by a member that could be cut out and replaced from the
-    porch below (plans/01-decisions.md #64). Both units moved to a ground pad east of the
-    porch on 2026-09-02 (``houses/catlin/notes/heat_pump_ground_pad.md``), so the stand, the
-    blocking and the eight holes went with them. **Zero is asserted rather than assumed**:
-    blocking that reappears here means something is being bolted through a roof again, and
-    the rule says that has to be authored deliberately.
+    ``FS-SG-DECK`` hosted sixteen sacrificial blocks under two heat-pump stands until
+    2026-09-02, when both units moved to a ground pad east of the porch
+    (``houses/catlin/notes/heat_pump_ground_pad.md``) and the stands, the blocking and the
+    eight through-deck anchors went with them. It carries FOUR now, one under each of
+    RL-SG-BALCONY's south-leg guard posts: that guard stays fascia-mounted precisely
+    because this plank is the porch roof and carries no penetrations, and a fascia bracket
+    through-bolts the rim, which then needs something behind it so it cannot roll under
+    R301.5's 200 lb at 42". **The west and east legs get none** — the joists run E-W, so
+    those legs stand over the joist TIPS and bolt into the joists themselves.
 
-    ``FS-SG-PORCH`` carries exactly TWO — the squash blocks under PT-SG-BR2, the one balcony
-    pillar still bearing through a porch joist. Same ``plies=1`` idiom, and for a related
-    reason: what that joint needs is a bearing host, not a stiffened joist. It is asserted
-    here so the deck's zero cannot be mistaken for a resolver that stopped emitting blocks.
+    ``FS-SG-PORCH`` carries TEN: a pair under each centre balcony pillar (PT-SG-BR2, and
+    PT-SG-BF2 since it came north off PT-SG-FCOL's top on 2026-09-03), and a pair under
+    each of RL-SG-PORCH's three south-leg guard posts, which is the one leg of that guard
+    with no concrete wall top under it.
+
+    ``plies=1`` throughout, so nothing is sistered — what these joints need is a bearing and
+    roll block, not a stiffened joist.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert deck_blocks == [], [m.tag for m in deck_blocks]
+    assert len(deck_blocks) == 4, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
-    assert len(porch_blocks) == 2, len(porch_blocks)
-    assert [m for m in by_tag["FS-SG-PORCH"].members
-            if m.category == "sister_joist"] == [], "plies=1 must sister nothing"
+    assert len(porch_blocks) == 10, len(porch_blocks)
+    for tag in ("FS-SG-DECK", "FS-SG-PORCH"):
+        assert [m for m in by_tag[tag].members
+                if m.category == "sister_joist"] == [], "plies=1 must sister nothing"
+
+
+def test_a_guard_block_authored_on_the_deck_edge_would_be_dropped(catlin_model):
+    """The trap ``_GUARD_BLOCK_INSET_FT`` exists for, pinned so nobody removes the inset.
+
+    A guard's ``path`` is the deck EDGE. A ``JoistReinforcement`` authored exactly there
+    falls outside the joist field the resolver lays blocks in and is silently dropped — the
+    model would show a guard with backing at some posts and none at others, at 0 FAIL. Every
+    authored station must therefore sit strictly inside the joist field's own extent.
+    """
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
+    joists = [m for m in deck.members if m.category == "joist"]
+    ys = [p[1] for m in joists for p in (m.p0, m.p1)]
+    authored = [e for e in catlin_model.plan.all_elements()
+                if getattr(e, "tag", "") == "FS-SG-DECK"][0].reinforcements
+    assert authored
+    for reinforcement in authored:
+        assert min(ys) < reinforcement.at.xy_m[1] < max(ys), reinforcement.at.xy_m

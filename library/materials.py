@@ -56,6 +56,19 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "~0.42), and R/inch falls as density rises, so it sits below the "
                     "df-select-s4s 0.99-1.06 band already authored in catlin; "
                     f"permeability shares the softwood midpoint used for spf ({_UAF})"),
+    # Treated structural glulam — the balcony's three beams (Anthony Power Preserved /
+    # Boise 24F-V5M1/SP, southern yellow pine laminations, preservative-treated after
+    # lay-up and clear-finished). A separate tag from ``kdat``: it is a manufactured
+    # member with published engineered values, not sawn stock built up in plies, and a
+    # takeoff that priced it as 2x KDAT would under-bill it by half.
+    #
+    # NO ``perm_rating``: none is published for a treated glulam lay-up, and this member
+    # never sits in a vapour stack (Glaser reports UNKNOWN rather than a guess).
+    Material(tag="glulam-treated", name="Preservative-treated SYP structural glulam",
+             r_per_inch=0.95, density=560.0, hatch="lumber", color="#c8a877",
+             source="SYP glulam laminations at ~35 pcf oven-dry (560 kg/m3), the AWC "
+                    "NDS Supplement value for the group; R/inch shares the kdat SYP "
+                    "figure, since the laminations are the same species"),
     Material(tag="osb", name="OSB sheathing", r_per_inch=1.25, density=650.0,
              perm_rating=0.4, hatch="osb", color="#c9a86a",
              source=f"{_APA}: OSB 7/16\" 0.91, 15/32-1/2\" 0.70, 19/32-5/8\" 0.72, "

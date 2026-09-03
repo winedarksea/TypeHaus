@@ -27,12 +27,14 @@ _EXPECTED = {
     "PT-SG-BF1": (Result.NOT_APPLICABLE, "W-SG-W1"),
     "PT-SG-BR3": (Result.NOT_APPLICABLE, "W-SG-E1"),
     "PT-SG-BF3": (Result.NOT_APPLICABLE, "W-SG-E1"),
-    # A post on a deck is not a post on the ground.
+    # A post on a deck is not a post on the ground. BOTH centre pillars since 2026-09-03:
+    # PT-SG-BF2 stood on PT-SG-FCOL's TOP until then, and came north onto the porch framing
+    # when that column shrank to 12" — the exact mirror of BR2, 3" inside its beam line.
+    # Either way, minting `spread_footing/PT-SG-BF2` would name a footing that does not
+    # exist; what carries the load is graded on the column under the beam it lands in, and
+    # `engineering/pier_basis._piers_below` is what hands it there.
     "PT-SG-BR2": (Result.NOT_APPLICABLE, "FS-SG-PORCH"),
-    # A post on another post hands its load over at that joint. Minting
-    # `spread_footing/PT-SG-BF2` would name a footing that does not exist and ask for the
-    # same bell to be designed twice.
-    "PT-SG-BF2": (Result.NOT_APPLICABLE, "PT-SG-FCOL"),
+    "PT-SG-BF2": (Result.NOT_APPLICABLE, "FS-SG-PORCH"),
     # These two DO bear on soil through their own belled piers. R507.3 has no row for a
     # 30"/36" bell, so they are real engineered items and must stay so.
     "PT-SG-COL": (Result.UNKNOWN, "FT-SG-COL"),
@@ -53,8 +55,9 @@ def findings(catlin_plan):
 def test_each_post_is_graded_by_what_it_actually_bears_on(post, findings) -> None:
     want_result, want_evidence = _EXPECTED[post]
     # ``element_tags`` is ``(deck, post, evidence)``, so the SUBJECT is index 1. A post can
-    # legitimately appear in a second finding as another post's evidence — PT-SG-FCOL is
-    # named by PT-SG-BF2's N/A — and matching on mere membership would collide there.
+    # legitimately appear in a second finding as another post's evidence — a wall or a deck
+    # is named by every pillar standing on it — and matching on mere membership would
+    # collide there.
     mine = [f for f in findings if len(f.element_tags) > 1 and f.element_tags[1] == post]
     assert len(mine) == 1, [f.message for f in mine]
     finding = mine[0]

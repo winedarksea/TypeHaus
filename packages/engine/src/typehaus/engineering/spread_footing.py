@@ -50,8 +50,18 @@ def _piers_on_their_own_footing(ctx: EngineeringContext) -> list[_Pier]:
     that one would put two authorities on one number and gain nothing — the table publishes
     the flat-pad case, which is exactly what a pad is. What has no row is the augered BELL,
     and a bell arrives as a ``Footing``.
+
+    ``shared_wall_footing`` is excluded for the identical reason at the other end of the
+    scale. Since 2026-09-03 ``cast_piers`` also yields a column standing on a concrete
+    foundation WALL, carried by that wall's continuous strip footing — catlin's four balcony
+    corner columns on W-SG-W1/E1. That footing already has an authority:
+    ``structural.foundation_unbalanced_fill`` grades it as ``retaining_wall/<tag>``, on the
+    wall's own bearing, sliding and overturning. Computing a point pressure on the same
+    concrete from this side would be a second answer to one question, and the weaker of the
+    two — a strip footing under a wall does not bear like an isolated pad under a post.
     """
-    return [pier for pier in cast_piers(ctx) if pier.footing_tag]
+    return [pier for pier in cast_piers(ctx)
+            if pier.footing_tag and not pier.shared_wall_footing]
 
 
 @keys(KIND)

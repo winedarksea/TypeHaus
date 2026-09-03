@@ -553,7 +553,7 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-"ABU66SS" = { low = 150, high = 230 }  # 10 ea
+"ABU66SS" = { low = 150, high = 230 }  # 6 ea — 4 breezeway posts + the balcony's TWO centre pillars. It was 10 until 2026-09-03, when the four corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
@@ -604,7 +604,14 @@
 # quoted number the next time this table is refreshed against a supplier list. Material only,
 # like every row here; the driving is inside the framing rate. The Titen Turbo screws are a
 # concrete anchor bought with the angle and are inside this range.
-"HGAM10" = { low = 5.0, high = 20.0 }  # 2 ea — both authored
+"HGAM10" = { low = 5.0, high = 20.0 }  # 6 ea, all authored — the two porch beam-on-column ties (CN-SG-TIE-COL/-FCOL) plus, since 2026-09-03, the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3)
+# The two CENTRE balcony pillars' post caps. A 3-1/2" glulam landing on a 6x6 is a CCQ, not
+# the PC6Z: that cap is published for EQUAL post and beam widths. The other four columns are
+# cast concrete and take the HGAM10 above, so this is 2 ea and will stay 2 ea. HDG rather
+# than ZMAX because it stands in the weather over a sunken garden with no enclosure above
+# it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
+# (they ship with the connector, which is why there is no separate fastener row).
+"CCQ46SDS2.5" = { low = 140, high = 200 }  # 2 ea — both authored (CN-SG-CAP-R2/-F2)
 # HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
 # not what the plan calls for.
 "HUCQ" = { low = 45, high = 95 }  # 4 ea
@@ -634,7 +641,7 @@
 # end" — and the F1 the code report publishes is measured through that pair). Net material
 # effect is a SAVING: 16 KBS1Z at $3.50-6.50 is $56-104 against the 8 APVKB45-6 at
 # $22-45 they replace, $176-360. The stronger, rated part is the cheaper one here.
-"KBS1Z" = { low = 3.5, high = 6.5 }  # 30 ea — 4 authored (breezeway roof beams) + 26 derived
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 8 ea — the breezeway's, derived only. It was 30 while the balcony carried eight knee braces at two straps each; those braces were deleted 2026-09-03 when four fixed concrete columns became the lateral system. The row stays: the part is a live engine feature and the breezeway uses it
 # Lateral tie plate at the bottom plate of a framed wall standing on a framed floor
 # band. NOT on a wall standing on concrete: that plate is a sill and its MASA anchors
 # already make the connection, so the takeoff excludes it rather than paying twice.
@@ -669,7 +676,7 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
-"AB-058-10-SS" = { low = 12, high = 28 }  # 10 ea — 8 authored bases + 2 derived
+"AB-058-10-SS" = { low = 12, high = 28 }  # 6 ea — one cast-in bolt per ABU66SS that lands on concrete. Was 10 before the four balcony corner bases went away with their pillars (2026-09-03)
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
@@ -967,10 +974,26 @@
 # [concrete] table pays in, so they are those totals over the 0.79 cy the BOM resolves (the
 # faceted circle bills a hair under the true 0.0808 cy/LF).
 #
-# The side cover comes back as a side effect: a 20" round leaves 5.76" at a centred 6"
-# plate's corners, MORE than the 16" square had. plans/TODO.md's MPB66Z arithmetic for this
-# column is stale for it. See plan/assemblies.py and notes/uplift_load_path.md.
-"column:SUNKEN_GARDEN_COLUMN_20" = { material = { low = 400, high = 741 }, labour = { low = 268, high = 600 } }  # 0.79 cy = 10.08 LF — PT-SG-FCOL; material re-struck 2026-08-30 for the (8) #6 cage
+# **SUNKEN_GARDEN_COLUMN_20 IS RETIRED** (2026-09-03), with the 20" column it named. Its
+# key is gone rather than left behind: an unpriced type is silently DROPPED from the BOM,
+# so a stale key does nothing, but a key with no type is a row an estimator matches nothing
+# against and reads as an omission. The five cast columns of this structure are one product
+# now — see the row below.
+#
+# PT-SG-FCOL (~10.1 LF) plus the four balcony corner columns PT-SG-BR1/BR3/BF1/BF3 (8'-5"
+# each, ~36 LF), all 12" round on SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate
+# below**, and the difference is the whole reason it is a separate key:
+#   * the MIX is class F3 + C2 — 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air with SCM caps —
+#     against the piers' 4,000 psi F2, roughly +$25-45/cy on ready-mix;
+#   * the CAGE is hot-dip galvanized (ASTM A767 cl. 1), about +$0.30/lb over black bar, and
+#     it is a (4) #5 vertical + #3 tie cage at 2" cover with ~30" class B dowels lapped in;
+#   * the four balcony tubes are FREE-STANDING 8'-5" columns seated in a plywood saddle
+#     collar screwed to a wall face and kicked to the porch framing, which is a two-person
+#     day of forming for four columns rather than dropping a tube in a hole;
+#   * a waterstop strip at the wall-top cold joint, and silane at 28 days.
+# ~$60-110/LF installed against the piers' $31-62 covers all of that. PLACEHOLDER pending a
+# concrete quote — the cage and the mix are the two lines to ask about by name.
+"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.25 cy = ~46 LF over five columns (PT-SG-FCOL + the four balcony corners) = $60-111/LF installed
 # The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
 # the garden back-beam midspan, 29.6 LF between them. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and
@@ -1238,7 +1261,7 @@
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.40 cy = 51.4 LF
+"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.19 cy = ~24 LF — the balcony's TWO centre 6x6 pillars and the stairwell posts. Was 0.40 cy / 51.4 LF while all six pillars were wood (2026-09-03)
 # RESEARCHED 2026-08-28, RE-BASED 2026-09-02 for the move to grade — the two heat-pump ground
 # stands' legs, 8 of them, 0.01 cy. THE YARD IS A NONSENSE UNIT HERE AND THE RATE SAYS SO:
 # eight 2" square aluminium legs 18" long is a third of a cubic foot, so any $/cy that lands on a real number for this row is
@@ -1280,7 +1303,7 @@
 # -> material $315-537 and labour $199-433, i.e. $514-970 over 0.49 cy. The paint is still
 # most of the labour and roughly a tenth of the material: a finish line item wearing a
 # beam's clothes, now over four members instead of six.
-"beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.49 cy = 37.3 LF
+"beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.26 cy = ~20 LF — the porch front pair BM-SG-FRW/FRE only. The balcony's west and east beams left this row on 2026-09-03 for BEAM_GLULAM_TREATED, clear-finished
 #
 # FRAMED DUCT SOFFITS — THREE of them now, and the basis moved from LF to SF of board on
 # 2026-08-31 because a cubic-yard rate calibrated on one section shape stops meaning anything
@@ -3013,7 +3036,23 @@
 # $425-728 over 0.56 cy: the rails are thinner than the girts they replace (2x8 vs 2x12) but
 # run the full row instead of half of it, so the volume and the dollar range both move a
 # little, in opposite directions from what either fact alone would suggest.
-"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.59 cy = 94.9 LF
+# The balcony's three beams left BEAM_KDAT on 2026-09-03 for treated SYP structural glulam
+# (BEAM_GLULAM_TREATED, 3-1/2" x 11-7/8", 24F-V5M1/SP). That is a different product bought a
+# different way — one manufactured member by the lineal foot, not three 2x12 plies and a
+# nail schedule — so it takes its own row and the KDAT row above shrank by it.
+#
+# ~$35/LF material is the Anthony Power Preserved / Boise Cascade band for a treated 3-1/2"
+# x 11-7/8" through a Lakeville yard; the low end is an untreated-glulam quote plus the
+# treatment premium, the high end allows for the 24F balanced layup and a short-length
+# surcharge. Labour is LOWER than the built-up beam it replaced, and deliberately so: a
+# glulam is set once by two people and a strap, where a 3-ply site-built beam is three
+# lifts, a nail pattern and a cap over the seams.
+#
+# PLACEHOLDER pending a lumber quote. Ask for it by combination (24F-V5M1/SP) and by
+# treatment, not by "4x12 glulam" — the untreated price is a third less and the two get
+# quoted against each other constantly.
+"beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.31 cy = ~29 LF over BM-SG-BLW/BLC/BLE = $30-41/LF material, $12-20/LF to set
+"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.37 cy = ~60 LF. Was 0.59 cy / 94.9 LF: the balcony's centre beam went to glulam and its two E-W brace rails were deleted outright, both on 2026-09-03
 #
 # COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
 # mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
@@ -3720,13 +3759,26 @@
 # feet billed here; that understatement is deliberate (see takeoff/railings.py) and is
 # worth remembering when reading their line totals.
 #
-#   RAILING-EXT-ALUMINUM-FASCIA  74.6 LF over two guards, both fascia-mounted: the balcony's
-#                                (38.3 LF) and the porch's (36.3 LF, RL-SG-PORCH, which
-#                                replaced the masonry parapet on 2026-08-18).
-#                                Trex Signature per the owner: a 6' x 36" aluminium rail
-#                                kit is $129-259 at Lowe's ($21.50-43/LF) and the posts are
-#                                separate at roughly $70-110 each, ~$12-18/LF at 6' o.c.
-#                                Installed comparables are $60-100/LF, which brackets this.
+#   RAILING-EXT-ALUMINUM-FASCIA  40.3 LF — the BALCONY guard alone (RL-SG-BALCONY) since
+#                                2026-09-03, when the porch's went to surface mount below.
+#   RAILING-EXT-ALUMINUM-SURFACE 36.3 LF — the PORCH guard (RL-SG-PORCH, which replaced the
+#                                masonry parapet on 2026-08-18).
+#
+#   ** THE PRODUCT IS WILLIAMS ARCHITECTURAL PRODUCTS, NOT TREX SIGNATURE ** (2026-09-02).
+#   Williams (Menards; made in Eagan MN at the Ultralox factory) is ICC-ES ESR-3485 listed
+#   at 42" with the same 6063/6005A alloys and an AAMA-grade powder coat, at ~$30-45/LF
+#   material against Signature's $72-98. Signature's premium buys sightline, not life, and
+#   this is a black rail on a garden elevation where sightline is not what is being bought.
+#   Fortress Al13 Home is the alternate at a comparable rate and the same listing class. A
+#   China import lands at $45-60/LF after Section 232 (50%) + 301 (25%), carries no
+#   evaluation report, and is rejected on the report rather than the price. ESR-3485's
+#   maximum post spacing at 42" is 91.3"; the model's 60" complies with room to spare.
+#
+#   ** THE TWO MOUNTS ARE PRICED SEPARATELY BECAUSE THEY ARE DIFFERENT ORDERS. ** A fascia
+#   guard is bought with a bracket kit at every post and through-bolts; a surface guard is
+#   bought with its post welded to a baseplate and four anchors. Grouping them under one
+#   type_ref would bill fascia brackets on a concrete wall top where none exist and average
+#   two labour rates that differ by the fascia premium.
 #   RAILING-INT-STAIR-GUARD      23.0 LF over three flights, assembly RAILING_DARK_METAL.
 #                                Interior dark-metal guard, materials.
 #   (untyped railing)            30.0 LF of untyped handrails (RL-*-HANDRAIL). They carry
@@ -3737,11 +3789,13 @@
 #                                takeoff stopped emitting a raw null here — the group key
 #                                the reader saw and the key the estimator matched on were
 #                                two different strings.)
-# Sources: lowes.com Trex Signature 6' rail kits, decksdirect.com Signature component
-# pricing, homeadvisor.com 2026 deck railing replacement, trex.com Signature product page.
+# Sources: ICC-ES ESR-3485 (Williams Architectural Products aluminium guards), menards.com
+# Williams rail and post pricing, Ultralox fascia-mount installation instructions,
+# fortressbp.com Al13 Home component pricing, homeadvisor.com 2026 deck railing replacement.
 # $/LF of guard line, by railing product type
 "(untyped railing)" = { material = { low = 25, high = 60 }, labour = { low = 18, high = 35 } }  # 30 LF — untyped handrails, placeholder. DOUBLE-COUNT CHECK: if one of these is top-mounted on the stair guard, its labour is already inside RAILING-INT-STAIR-GUARD
-"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 55, high = 80 }, labour = { low = 35, high = 55 } }  # 74.6 LF — Trex Signature. Material raised: Signature is the PREMIUM line and $38-70 was the generic-aluminium band. Fascia-mount labour carries a 25-40% premium over surface-mount (through-bolting into rim backing, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post, which no $/LF rail price carries
+"RAILING-EXT-ALUMINUM-FASCIA" = { material = { low = 30, high = 45 }, labour = { low = 35, high = 55 } }  # 40.3 LF — RL-SG-BALCONY only. Williams ESR-3485 / Fortress Al13 Home; material dropped from 55-80 when the product left Trex Signature on 2026-09-02. Fascia-mount labour keeps its 25-40% premium over surface mount (through-bolting into rim blocking, cantilevered 200 lb load). NOT INCLUDED: fascia-mount bracket kits at $40-60 per post and their four 5/16" x 4" through-bolts each, ~8 posts at 60" o.c., which no $/LF rail price carries
+"RAILING-EXT-ALUMINUM-SURFACE" = { material = { low = 30, high = 45 }, labour = { low = 25, high = 40 } }  # 36.3 LF — RL-SG-PORCH, ~8 posts at 60" o.c. Same rail, same alloy, same listing; the post arrives welded to a 5x5 baseplate, so the bracket kit the fascia row excludes is INSIDE this material rate and there is nothing to add per post. Labour is lower for the same reason: no through-bolting from underneath. NOT INCLUDED: the four 1/4" x 3" concrete anchors per post on the west/east legs, and the ~5 solid blocks under the south leg where there is no wall top — both are in [framing]
 "RAILING-INT-STAIR-GUARD" = { material = { low = 40, high = 90 }, labour = { low = 50, high = 85 } }  # 23 LF — priced as a COMPONENT system. Do not stack the two models: a shop-welded steel guard is material $150-250 + labour $30-60 (the fabrication hours ride inside the material and site labour DROPS, because you are setting finished panels). At 23 LF this is really a $1,700-2,600 minimum-charge lump either way
 
 [drainage]

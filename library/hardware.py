@@ -482,6 +482,43 @@ PC6Z_POST_CAP = StructuralHardware(
            "beam widths, which is the condition it is selected for here",
 )
 
+# A 3-1/2" beam landing on a 6x6 post — the catlin balcony's two CENTRE pillars, where the
+# other four columns are cast concrete and take an HGAM10 masonry gusset instead. NOT the
+# PC6Z above: that cap is published for EQUAL post and beam widths, and a 3-1/2" glulam on a
+# 5-1/2" post is not that joint. The CCQ is the column cap made for the unequal case, with
+# the beam seat sized to the member rather than to the post.
+#
+# It is what closes ``checks/structural/uplift_path``'s post-to-beam leg at those two joints:
+# both stand on pinned ABU66SS bases through the porch decking, so unlike the cast columns
+# there is no doweled lap in a pour to hold the beam down, and the cap is the hold-down.
+CCQ46SDS_POST_CAP = StructuralHardware(
+    tag="simpson-ccq46sds25-column-cap",
+    name="CCQ46SDS2.5 column cap (4x beam on 6x6 post)",
+    role=ROLE_POST_CAP,
+    manufacturer=_SIMPSON,
+    model="CCQ46SDS2.5",
+    fits_nominal=("6x6",),
+    source="Simpson Strong-Tie CCQ column cap (strongtie.com/ccq) — the SDS-screw CCQ "
+           "seating a nominal 4x (3-1/2 in) beam on a 6x6 post, factory-supplied with "
+           "1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws; selected over the PC6Z "
+           "because that cap is published for equal post and beam widths",
+    # ICC-ES ESR-2604 (Simpson column caps and bases). The DF/SP column is what the report
+    # leads with; the SPF/HF column is what this joint gets, because the POST is a 6x6 SPF
+    # and the fasteners into it are what the value is limited by.
+    allowable=AllowableLoads(
+        uplift_lb=3_285.0,
+        lateral_f1_lb=1_670.0,
+        load_duration_factor=1.6,
+        species="SPF/HF (SG 0.42)",
+        fasteners="factory-supplied 1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws, "
+                  "16 to the post and 8 to the beam",
+        citation=("ICC-ES ESR-2604 (Simpson Strong-Tie column caps/bases), CCQ table, "
+                  "CCQ46SDS2.5 row, SPF/HF column — read 2026-09-03. Uplift already "
+                  "carries the wind/seismic increase; no further duration increase "
+                  "applies to it."),
+    ),
+)
+
 LTP4_LATERAL_TIE_PLATE = StructuralHardware(
     tag="simpson-ltp4-lateral-tie-plate",
     name="LTP4 lateral tie plate",
@@ -945,6 +982,7 @@ STRUCTURAL_HARDWARE: tuple = (
     ABU44_POST_BASE,
     POST_BASE_ANCHOR_BOLT,
     PC6Z_POST_CAP,
+    CCQ46SDS_POST_CAP,
     LTP4_LATERAL_TIE_PLATE,
     SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,

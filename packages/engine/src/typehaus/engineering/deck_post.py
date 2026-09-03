@@ -49,8 +49,9 @@ KIND = "deck_post"
 #: reporting a bare INCOMPLETE and started grading a reinforced column; to "3" when
 #: ``_detailing_only`` arrived and a pier whose axial demand the model cannot state stopped
 #: publishing a d/c against an under-count and started publishing the six detailing limits
-#: with the axial one named as missing.
-BASIS_VERSION = "3"
+#: with the axial one named as missing; to "4" when ``_moment_column`` arrived and a column
+#: that IS a deck's lateral system started being graded in BENDING at its base.
+BASIS_VERSION = "4"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -213,6 +214,8 @@ def _one(pier: _Pier) -> EngineeringRecord:
         return _plain_pedestal(pier, area, ratio, shape, demand, common)
     if cage is None:
         return _unreinforced_column(pier, area, ratio, shape, demand, minimum_steel, common)
+    if pier.lateral_system and cage is not None and not pier.unmodelled_load:
+        return _moment_column(pier, area, ratio, shape, demand, minimum_steel, cage, common)
     if pier.unmodelled_load:
         # The demand is an under-count and this module knows by how little it can say.
         # Grading the six LOAD-INDEPENDENT detailing limits is real work and is published;
@@ -260,6 +263,288 @@ def _detailing_states(pier: _Pier, area: float, minimum_steel: float,
                    f"{magnifier:.3f}, against the {TIED_EMBEDDED_ECCENTRICITY_RATIO:.2f}h "
                    f"R22.4.2 says the {TIED_AXIAL_CAP:.2f} cap already carries"),
     )
+
+
+
+# --- flexure, for a column that is somebody's lateral system ------------------------------
+
+#: ACI 318-19 Table 22.2.2.4.3 — the equivalent rectangular stress block depth factor.
+#: 0.85 to 4,000 psi, then 0.05 off per 1,000 psi, floored at 0.65.
+def _beta_1(fc_psi: float) -> float:
+    return min(0.85, max(0.65, 0.85 - 0.05 * (fc_psi - 4000.0) / 1000.0))
+
+
+#: ACI 318-19 §20.2.2.2 — the modulus of elasticity of non-prestressed bars.
+STEEL_MODULUS_PSI = 29_000_000.0
+#: ACI 318-19 §22.2.2.1 — the concrete strain at the extreme compression fibre at nominal.
+CONCRETE_ULTIMATE_STRAIN = 0.003
+#: ACI 318-19 Table 21.2.2 — phi runs 0.65 (compression-controlled) to 0.90
+#: (tension-controlled) between the compression-controlled strain limit and
+#: ``epsilon_ty + 0.003``. For Grade 60, ``epsilon_ty`` is 60/29,000 = 0.00207.
+PHI_TENSION_CONTROLLED = 0.90
+
+#: ACI 318-19 §6.2.5 / §6.6.4.4.4 — the effective length factor for a column FIXED at its
+#: base and free at its top. Theoretically 2.0; §R6.2.5's Table R6.2.5 recommends 2.1 for
+#: the real, non-ideal fixity a doweled lap into a wall provides, and 2.1 is what is used.
+CANTILEVER_EFFECTIVE_LENGTH_FACTOR = 2.1
+
+
+def _segment(radius_in: float, depth_in: float) -> tuple[float, float]:
+    """A circular segment of height ``depth_in`` measured down from the top of the circle.
+
+    Returns ``(area in2, centroid above the circle's centre in inches)``. This is the
+    compression block on a round column: ACI's stress block is rectangular in DEPTH, not in
+    plan, so on a circle it cuts a segment rather than a rectangle, and using ``b*a`` with
+    any single width is the classic way to get a round column's Mn wrong.
+    """
+    if depth_in <= 0.0:
+        return (0.0, 0.0)
+    if depth_in >= 2.0 * radius_in:
+        return (math.pi * radius_in ** 2, 0.0)
+    offset = radius_in - depth_in                       # chord's distance above the centre
+    half_chord2 = max(radius_in ** 2 - offset ** 2, 0.0)
+    area = radius_in ** 2 * math.acos(offset / radius_in) - offset * math.sqrt(half_chord2)
+    if area <= 0.0:
+        return (0.0, 0.0)
+    centroid = (2.0 / 3.0) * half_chord2 ** 1.5 / area
+    return (area, centroid)
+
+
+def _bar_offsets(pier: _Pier, cage: _Cage, cover_in: float) -> tuple[float, ...]:
+    """Each bar's distance ABOVE the section centre, along the bending axis.
+
+    The cage is laid out evenly around a bar circle whose radius is the column radius less
+    the cover, the tie and half a bar. The layout is then ROTATED so that no bar sits on the
+    extreme compression or tension fibre — for four bars that puts them at +/-45 degrees,
+    which is the WEAK orientation of a four-bar cage and about 8% below the strong one. It
+    is taken deliberately: a round column is built in a round tube and nothing on site
+    orients the cage to the wind.
+    """
+    radius = pier.diameter_in / 2.0 - cover_in - cage.tie_diameter_in - cage.bar_diameter_in / 2.0
+    radius = max(radius, 0.0)
+    step = 2.0 * math.pi / cage.count
+    start = step / 2.0
+    return tuple(radius * math.cos(start + index * step) for index in range(cage.count))
+
+
+def _phi(strain: float) -> float:
+    """ACI 318-19 Table 21.2.2, the transition on the extreme tension bar's strain."""
+    yield_strain = REINFORCEMENT_FY_PSI / STEEL_MODULUS_PSI
+    if strain <= yield_strain:
+        return PHI_COMPRESSION_TIED
+    if strain >= yield_strain + 0.003:
+        return PHI_TENSION_CONTROLLED
+    span = PHI_TENSION_CONTROLLED - PHI_COMPRESSION_TIED
+    return PHI_COMPRESSION_TIED + span * (strain - yield_strain) / 0.003
+
+
+def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
+              axial_lb: float) -> tuple[float, float, float]:
+    """``(phi*Mn in lb-ft, phi, the neutral-axis depth c in inches)`` at a given ``Pu``.
+
+    Straight strain compatibility on the round section: bisect the neutral-axis depth until
+    ``phi*Pn`` equals the factored axial load, then report ``phi*Mn`` at that same ``c``.
+    That is the point on the P-M interaction diagram the column is actually being asked to
+    reach, rather than the pure-flexure intercept — which on a column carrying any axial
+    load at all is the conservative answer by a wide margin, since axial compression
+    *increases* a lightly loaded column's moment capacity up to the balance point.
+    """
+    radius = pier.diameter_in / 2.0
+    beta = _beta_1(PRESUMPTIVE_FC_PSI)
+    offsets = _bar_offsets(pier, cage, cover_in)
+    bar_area = _BAR[cage.bar][0]
+
+    def state(c: float) -> tuple[float, float, float]:
+        area, centroid = _segment(radius, min(beta * c, 2.0 * radius))
+        force = 0.85 * PRESUMPTIVE_FC_PSI * area
+        moment = force * centroid
+        worst_tension = 0.0
+        for offset in offsets:
+            depth = radius - offset                      # from the extreme compression fibre
+            strain = CONCRETE_ULTIMATE_STRAIN * (c - depth) / c
+            stress = max(-REINFORCEMENT_FY_PSI,
+                         min(REINFORCEMENT_FY_PSI, STEEL_MODULUS_PSI * strain))
+            # A bar inside the stress block displaces concrete that is already counted.
+            if depth <= beta * c:
+                stress -= 0.85 * PRESUMPTIVE_FC_PSI
+            force += stress * bar_area
+            moment += stress * bar_area * offset
+            worst_tension = min(worst_tension, strain)
+        return (force, moment, -worst_tension)
+
+    low, high = 0.05 * pier.diameter_in, 4.0 * pier.diameter_in
+    for _ in range(80):
+        mid = 0.5 * (low + high)
+        force, _moment, tension = state(mid)
+        if _phi(tension) * force < axial_lb:
+            low = mid
+        else:
+            high = mid
+    c = 0.5 * (low + high)
+    _force, moment, tension = state(c)
+    phi = _phi(tension)
+    return (phi * moment / 12.0, phi, c)
+
+
+def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
+    """``(k*lu/r, delta)`` for a cantilever column, ACI 318-19 §6.6.4.
+
+    ``k`` is ``CANTILEVER_EFFECTIVE_LENGTH_FACTOR``, not ``_slenderness``'s 1.0, and the
+    difference is the whole point of this record: ``_slenderness`` designs a LEANING column
+    that sheds its P-delta to a braced bay, and this column has no braced bay to shed it to.
+    The threshold it is measured against is §6.2.5's SWAY limit of 22, not the non-sway 34.
+    """
+    radius_of_gyration = pier.diameter_in / 4.0
+    slenderness = CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in / radius_of_gyration
+    modulus = 57_000.0 * math.sqrt(PRESUMPTIVE_FC_PSI)
+    inertia = math.pi * pier.diameter_in ** 4 / 64.0
+    sustained = (1.2 * pier.dead_lb / pier.factored_lb) if pier.factored_lb else 0.0
+    stiffness = 0.4 * modulus * inertia / (1.0 + sustained)
+    effective = CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in
+    critical = math.pi ** 2 * stiffness / effective ** 2
+    magnifier = max(1.0 / (1.0 - axial_lb / (0.75 * critical)), 1.0) if critical > 0 else 1.0
+    return (slenderness, magnifier)
+
+
+def _class_b_lap_in(cage: _Cage) -> float:
+    """ACI 318-19 §25.4.2.4 development, §25.5.2.1 class B splice, for a #6 or smaller bar.
+
+    ``ld = (fy psi_t psi_e psi_s / (25 lambda sqrt(f'c))) db`` with every factor 1.0 —
+    bottom-cast (psi_t 1.0), UNCOATED (psi_e 1.0), and see below, normalweight (lambda 1.0).
+    A class B lap is 1.3 ld, and every bar at a column base is spliced at the same section,
+    which is what makes it class B rather than class A.
+
+    **psi_e is 1.0 even though these bars are galvanized**, and that is not an oversight:
+    ACI 318-19's coating factor is written for EPOXY, and §25.4.2.5's zinc-coated (galvanized)
+    reinforcement row carries psi_e = 1.0. Zinc does not debond the way epoxy does.
+    """
+    length = (REINFORCEMENT_FY_PSI / (25.0 * math.sqrt(PRESUMPTIVE_FC_PSI))) \
+        * cage.bar_diameter_in
+    return 1.3 * length
+
+
+def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,
+                   minimum_steel: float, cage: _Cage,
+                   common: tuple[str, ...]) -> EngineeringRecord:
+    """A cast column that IS its deck's lateral system: graded in BENDING as well as axially.
+
+    Every other record in this module grades a leaning column — one whose storey shear goes
+    somewhere else, so the section only ever sees axial load and ACI's minimum eccentricity.
+    This one has nowhere to send it. ``pier_basis._base_moments`` derives what arrives at the
+    base (wind on the deck at the Fig. 29.3-1 Case A/B ceiling, and the R301.5 guard load
+    taken wholly on one column), and the section is checked against the P-M interaction
+    point at its own factored axial load rather than against the axial cap alone.
+
+    The six detailing limits are unchanged and still published: a bending column is subject
+    to every one of them and to more besides.
+
+    **Oracle.** ``houses/catlin/notes/balcony_moment_columns.md``, hand-worked in a separate
+    pass; ``tests/test_pier_calcs.py`` reproduces it.
+    """
+    steel = cage.area_in2
+    capacity = _capacity(area, steel)
+    cover_in = _authored_cover_in(pier.vertical_reinforcement)
+    phi_mn, phi, neutral_axis = _pm_point(pier, cage, cover_in, demand)
+    slenderness, magnifier = _sway_magnifier(pier, demand)
+    governing = max(pier.wind_base_moment_lb_ft, pier.guard_base_moment_lb_ft)
+    lap = _class_b_lap_in(cage)
+
+    states = (
+        LimitState("axial, tied column", demand, capacity, "lb",
+                   f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
+                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — f'c "
+                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi, fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+        LimitState("bending at base, wind", pier.wind_base_moment_lb_ft, phi_mn, "lb-ft",
+                   f"ACI 318-19 §22.4 P-M interaction at Pu {demand:,.0f} lb, phi "
+                   f"{phi:.2f}, c {neutral_axis:.2f}\" — ASCE 7-16 §29.3 storey shear at "
+                   f"0.6W (§2.4.1)"),
+        LimitState("bending at base, guard", pier.guard_base_moment_lb_ft, phi_mn, "lb-ft",
+                   "IRC R301.5 — a 200 lb concentrated load in any direction at the top of "
+                   "the guard, taken wholly on this column rather than shared"),
+        LimitState("magnified moment (sway)", governing * magnifier, phi_mn, "lb-ft",
+                   f"ACI 318-19 §6.6.4.5.2 delta {magnifier:.3f} at k "
+                   f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:.1f}, k*lu/r {slenderness:.0f} "
+                   f"against §6.2.5's SWAY limit of {SWAY_SLENDERNESS_LIMIT:.0f}"),
+        LimitState("dowel lap, class B", lap, pier.height_in, "in",
+                   "ACI 318-19 §25.4.2.4 development x §25.5.2.1's 1.3 for a class B "
+                   "splice with every bar spliced at one section; graded against the "
+                   "column's own height, which is the only bound this model holds on how "
+                   "much lap can physically exist. The AUTHORED lap is in the assembly's "
+                   "source and on the drawing"),
+        *_detailing_states(pier, area, minimum_steel, cage),
+    )
+    over = any(not state.ok for state in states)
+    which = "the guard load" if pier.guard_base_moment_lb_ft >= pier.wind_base_moment_lb_ft \
+        else "wind"
+    notes = common + (
+        f"CAGE: {pier.vertical_reinforcement} — As {steel:.2f} in2, rho "
+        f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
+        f"{COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag requires. This is the MINIMUM cage the Code "
+        f"permits, not a chosen margin.",
+        f"LATERAL: {pier.moment_basis}.",
+        f"BENDING GOVERNS, and {which} governs the bending: {governing:,.0f} lb-ft against "
+        f"phi*Mn {phi_mn:,.0f} lb-ft at this column's own axial load, d/c "
+        f"{governing / phi_mn:.2f} before magnification and "
+        f"{governing * magnifier / phi_mn:.2f} after. The AXIAL comparison — "
+        f"{demand:,.0f} lb against {capacity:,.0f} lb, d/c {demand / capacity:.3f} — is not "
+        f"what sizes this column and never was.",
+        f"SLENDERNESS: k*lu/r = {slenderness:.0f} at k "
+        f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:.1f}, past §6.2.5's sway limit of "
+        f"{SWAY_SLENDERNESS_LIMIT:.0f}, so the moment is magnified above. The magnifier is "
+        f"{magnifier:.3f} — near unity, because the axial load is about "
+        f"{100.0 * demand / capacity:.0f}% of capacity and P-delta needs P to bite.",
+        f"DOWELS: a class B lap of {lap:.0f}\" on #{cage.bar} bars, cast with the wall pour "
+        f"below and lapped into the column's own cage. psi_e is 1.0 for GALVANIZED bar "
+        f"(ACI 318-19 §25.4.2.5); it is epoxy coating that takes 1.2-1.5, and reading the "
+        f"epoxy row for a galvanized bar would lengthen every lap in this house by half.",
+        f"f'c IS THE PRESUMPTIVE {PRESUMPTIVE_FC_PSI:,.0f} psi, not the mix the assembly "
+        f"specifies. This model carries no strength on an Assembly, so every concrete calc "
+        f"in this engine reads one presumptive value. Where a house specifies more — the "
+        f"catlin garden columns are a 5,000 psi class F3+C2 mix for durability — the "
+        f"capacity above is understated, which is the safe direction. It is named here so "
+        f"nobody reconciles this record against the drawing and concludes one of them is "
+        f"wrong.",
+        "SCREENING: the base is taken as FIXED, which the doweled lap into the wall top is "
+        "detailed to deliver and which no calculation here proves; shear in the column is "
+        "not graded (the section is enormous relative to a few hundred pounds, but 'enormous' "
+        "is a judgement); and torsion, the wall-top joint's own capacity and the foundation's "
+        "rotational stiffness are all outside it. A stamped design is what closes those.",
+    )
+    return EngineeringRecord(
+        item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
+        basis_version=BASIS_VERSION, basis=BASIS,
+        status=Status.OVER if over else Status.OK,
+        summary=(f"{pier.tag}: a {pier.diameter_in:.0f}\" {shape} tied COLUMN (h/d "
+                 f"{ratio:.1f}) FIXED at its base and carrying its deck's whole lateral "
+                 f"system — {pier.vertical_reinforcement}, at d/c "
+                 f"{governing * magnifier / phi_mn:.2f} in bending on {which}"),
+        inputs=_inputs(pier, area, steel, cage) + (
+            Quantity("wind_base_moment", pier.wind_base_moment_lb_ft, "lb-ft", 1.0),
+            Quantity("guard_base_moment", pier.guard_base_moment_lb_ft, "lb-ft", 1.0),
+            Quantity("phi_Mn", phi_mn, "lb-ft", 1.0),
+            Quantity("cover", cover_in, "in", 0.125),
+        ),
+        limit_states=states, notes=notes, element_tags=(pier.tag,))
+
+
+#: ACI 318-19 §20.5.1.3(a) — cast against and permanently in contact with ground is 3"; a
+#: column exposed to weather takes 1-1/2". Used only when the house authors no cover.
+DEFAULT_COVER_IN = 1.5
+
+
+def _authored_cover_in(spec: str | None) -> float:
+    """The cover the house wrote into ``Post.vertical_reinforcement``, or the Code minimum.
+
+    The field is free text for a drawing, so this reads a ``2" cover`` fragment out of it
+    the same way ``parse_cage`` reads the four numbers that carry meaning. Cover changes the
+    bar circle and therefore the lever arm, so a house that specifies 2" for durability
+    should be graded on 2" and not quietly credited with 1-1/2"'s longer arm.
+    """
+    if not spec:
+        return DEFAULT_COVER_IN
+    found = re.search(r"([0-9]+(?:\.[0-9]+)?)\s*(?:\"|in\b|inch)\s*cover", spec,
+                      re.IGNORECASE)
+    return float(found.group(1)) if found else DEFAULT_COVER_IN
 
 
 def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_steel: float,

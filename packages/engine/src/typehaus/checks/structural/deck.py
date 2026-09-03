@@ -304,10 +304,16 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
                 continue
             limit = deck_beam_span_limit(beam.size, joist_span_ft)
             if limit is None:
-                out.append(_unknown("structural.deck_beam_span",
-                                    f"no IRC Table R507.5(1) row for a {beam.size} carrying "
-                                    f"a {joist_span_ft:.2f}' joist span",
-                                    (deck.tag, beam.tag)))
+                # Off the end of R507.5(1) — a glulam, an LVL, or a joist span the table
+                # stops short of. Same reasoning as ``deck_post_size``'s round-column branch
+                # below: the table not publishing a row is not the same as the beam being
+                # wrong, and it is not something an author can fix by editing the model. It
+                # is a beam design, so it is delegated as one (decision #65).
+                out.append(_engineered(
+                    ctx, "structural.deck_beam_span", item_id("deck_beam", beam.tag),
+                    f"no IRC Table R507.5(1) row for a {beam.size} carrying "
+                    f"a {joist_span_ft:.2f}' joist span",
+                    (deck.tag, beam.tag), code="IRC R507.5(1)"))
                 continue
             allowable, tabulated = limit
             carried = (f"a {tabulated:.0f}' joist span"

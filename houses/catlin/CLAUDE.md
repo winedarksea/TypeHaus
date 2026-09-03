@@ -1619,8 +1619,75 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     dark surface leaves the shader well above its albedo — `#3a3d40` arrived near `#525252`
     and read as generic grey. Author under the tone you want on screen.
   - Guards are `RAILING_DARK_METAL`, split off `POST_WHITE_PAINT` for this. The balcony's
-    six 6x6 pillars and its knee braces still use `POST_WHITE_PAINT` and stay white — that
-    shared assembly is why they must not be recoloured together.
+    **two** remaining 6x6 pillars and the stairwell posts still use `POST_WHITE_PAINT` and
+    stay white — that shared assembly is why they must not be recoloured together. It was
+    six pillars and eight knee braces until 2026-09-03; the four corners are cast concrete
+    now and the braces are gone (see the balcony structure passage below).
+- **The balcony's structure: four cast columns, two wood posts, three glulam beams**
+  (2026-09-03; `houses/catlin/notes/balcony_moment_columns.md` is the design, and it
+  supersedes `balcony_lateral_bracing_design.md`).
+  - **The four CORNER pillars are 12" round reinforced concrete, FIXED at the base**, doweled
+    into the 12" wall tops of `W-SG-W1`/`E1` they stand on, and **they are the balcony's
+    entire lateral system in both plan directions.** The eight 2x6 knee braces and two E-W
+    brace rails they replaced are deleted outright. This was the longest-running open item in
+    `plans/TODO.md`, and it closed against metal rather than for concrete: **no catalog metal
+    moment base survived.** The only stock base with a published base moment is Simpson's
+    MPB66Z, for a WOOD post, and its wet-service cap (2,610 lb-ft, ESR-3050 Table A) is
+    *below* the 2,502 lb-ft R301.5 guard case on one column before any wind.
+  - **12", not 10", and cover is the whole reason.** ACI 318-19 §20.5.1.3's 1-1/2" is a code
+    minimum, not a hundred-year number; MnDOT uses 2.5-3" in the same deicing regime. 2" of
+    cover on a #5 cage inside #3 ties needs a 6-5/8" bar circle, which needs 12". Centred on
+    a 12" wall the round is flush with BOTH faces — no ledge to pond on, and BF3's 3" east
+    leader keeps 1-1/2" clear. One assembly, `SUNKEN_GARDEN_COLUMN_12`, serves all five cast
+    columns in this structure; `SUNKEN_GARDEN_COLUMN_20` is retired with the 20" round.
+  - **Exposure is class F3 + C2, not F2**, and the mix must not be reused from the retired
+    20" column: deicing salt below and planter runoff above is external chloride on a
+    freeze-thaw member. w/cm <= 0.40, f'c >= 5,000 psi, 6% +/-1.5 air. Bar is **hot-dip
+    galvanized** (ASTM A767 cl. 1 or A1094) — the owner's call over epoxy (delaminates) and
+    stainless (4-6x, and an austenitic thermal coefficient that fights the concrete).
+  - **The beam seat is CAST TO LINE, with no grout island.** An exposed non-shrink grout
+    island is a 10-20 year element, not air-entrained and sitting at the wettest point on the
+    column. Cast the top to line under the beam footprint, screed the >=15 degree wash and
+    drip lip around it, and take tolerance in the 1/2"-1" stainless standoff's shim pack. An
+    HGAM10 gusset holds the beam down, Titen Turbo at ~3-3/4" edge on the 12" round.
+    `PIER_CONCRETE_12` still carries a grout island at `PT-SG-COL`; aligning it is a
+    follow-up, not an oversight.
+  - **The two CENTRE pillars stay wood 6x6** on pinned ABU66SS bases, both bearing through
+    the porch decking with a 4"-square plank cut-out and squash blocks under each — Trex says
+    plainly that composite decking bears nothing. `PT-SG-BF2` moved north onto the deck, 3"
+    inside the front beam axis (the mirror of BR2's 3" inside the back one), which is what
+    let `PT-SG-FCOL` shrink from a 20" round to a 12" one. A `CCQ46SDS2.5` column cap closes
+    the uplift path at each — a 3-1/2" beam on a 6x6 is the unequal-width case the PC6Z is
+    not published for.
+  - **The three beams are treated SYP glulam, 3-1/2" x 11-7/8"** (24F-V5M1/SP, Anthony Power
+    Preserved / Boise Cascade), clear-finished rather than painted, with no ply seam to hold
+    water. Author the size DECIMALLY — `"3.5x11.875"` — or `_RE_NOMINAL` catches a
+    nominal-looking string and silently resolves 1-1/4" of depth away. They are engineered
+    items (`deck_beam/BM-SG-BL*`): R507.5(1) publishes sawn plies only.
+  - **The front row did NOT move when the corners changed.** A 12" column's top runs 3-1/4"
+    past the beam end there, and that is a concrete top with a wash and a drip lip, not the
+    exposed end grain the 2-3/4" offset was written for. Re-solving the row would move the
+    deck edge, the fascia, the drip, the gutter and `BALCONY_FRONT_AXIS_Y_FT`.
+  - **The fallback, written down:** New Castle Steel's stock HDG 6x6x3/16" post with a welded
+    base plate (~$458/10') if forming and caging four tall tubes proves too much labour. Its
+    base still needs a fabricated saddle on a 12" wall top, which is a shop drawing nobody
+    has made.
+- **Both guards are Williams Architectural Products, ICC-ES ESR-3485, 42" black** (Menards;
+  Eagan MN, the Ultralox factory), with Fortress Al13 Home as the alternate — the same alloys
+  and coating as Trex Signature at ~$30-45/LF material against $72-98. **The two mounts
+  split, and the substrate decides it:**
+  - `RL-SG-PORCH` is **surface**-mounted on its own house-local `RAILING-EXT-ALUMINUM-SURFACE`
+    type: its west and east legs run along 12" concrete wall tops, which take ESR-3485's four
+    1/4" x 3" baseplate anchors directly and buy no bracket kit. Its SOUTH leg has no wall
+    under it, so those posts bolt through the plank into blocking in the joist bay north of
+    the beam — **never through TR-SG-CAP-FRW/FRE and its butyl**, which is the dielectric
+    between an aluminium cap and copper-treated framing.
+  - `RL-SG-BALCONY` stays **fascia**-mounted, and that is a roofing decision. `FS-SG-DECK`'s
+    aluminium plank is the porch roof and has carried NO penetrations since the heat pumps
+    went to grade; surface posts would put ~36 holes through the only waterproof plane here.
+    Brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own instructions
+    (four 5/16" x 4" bolts, nuts on the rim's inside face), landing in rim blocking authored
+    in `FS-SG-DECK.reinforcements`.
 - **The sunken garden's veneer is the Ishtar Gate.** `W-B-BRICK` was one flat
   field of `glazed-green-brick` (`#1b4332`); the green was liked on its own but did not sit
   with white standing seam and `#1c1f24` trim. It now reads after the Ishtar Gate of

@@ -333,6 +333,23 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Deck and porch posts and their footings",
                        ("structural.deck_post_size", "structural.deck_footing_size"),
                        ("IRC R507.3", "IRC R507.4"), blocking=False),
+        # Two lines added 2026-09-03 with the catlin balcony redesign, and both are here for
+        # the same reason the item above is: R507's tables publish sawn lumber, and a member
+        # the table has no row for is engineered work a plan reviewer has to be able to see
+        # on the checklist.
+        #
+        # `structural.deck_beam_span` reaches this when a deck beam is a glulam, an LVL or
+        # any section outside Table R507.5(1)'s 2x8-2x12 plies.
+        PermitItemSpec("Deck beams outside the beam span table",
+                       ("structural.deck_beam_span",),
+                       ("IRC R507.5",), blocking=False),
+        # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
+        # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
+        # and a braceless deck at storey height is exactly the thing a reviewer should be
+        # told is an engineer's.
+        PermitItemSpec("Freestanding deck lateral resistance",
+                       ("structural.lateral_racking",),
+                       ("IRC R301.1.3", "IRC R507.9"), blocking=False),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

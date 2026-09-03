@@ -150,6 +150,10 @@ const DETAIL_FILL: Record<string, string> = {
   // wall whose whole point is which stick is treated. Greener and greyer than `spf` so the
   // two woods are told apart. Mirrors emit/draw/palette.py DETAIL_FILL.
   kdat: "#b7ad7a",
+  // Treated structural glulam — the balcony beams. Warmer and lighter than `kdat`: a
+  // glulam is a manufactured member with visible laminations and a clear finish, not a
+  // green-cast treated stick. Mirrors emit/draw/palette.py DETAIL_FILL.
+  "glulam-treated": "#c8a877",
   // The roof stack, which is the eave detail's whole subject and drew as four near-white
   // boxes in the app. The two membranes are DELIBERATELY different inks: the deck vapour
   // barrier is vapour-TIGHT and the field underlayment must stay vapour-OPEN, and a detail

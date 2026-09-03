@@ -21,11 +21,11 @@ wall that moves takes its hardware with it.
 |---|---|---|---|
 | Rafter / truss heel on its bearing wall | H2.5A | 56 + 34 | one per seated end |
 | Floor joist on its bearing line | H2.5A | 258 | one per bearing joint (a lap is one joint) |
-| Beam landing on a wood post | KBS1Z | 18 | one per beam end |
+| Beam landing on a wood post | KBS1Z | 8 | one per beam end |
 | Bottom plate of a framed wall on a framed floor band | LTP4 | 108 | 4' o.c., min 2 per wall |
 | Across the floor band where framed walls stack | CS16 | 72 straps (2 coils) | 8 at the corners + 64 along the runs at 4' o.c. |
 | Wood post standing on concrete | ABU44 | 2 | one per 4x4 that declares a bearing |
-| Cast-in bolt under a post base landing on concrete | AB-058-10-SS | 10 | one per base, authored or derived |
+| Cast-in bolt under a post base landing on concrete | AB-058-10-SS | 6 | one per base, authored or derived |
 
 Roughly **$590–1,160 of material** on a house whose hardware line was already $11.9k, plus
 **$120–280** for the ten post-base anchors and **$44–80** for the two ABU44s the second pass
@@ -138,10 +138,17 @@ rather than split into a second product for one role.
 The derived rules skip any joint an authored `Connector` already names — that guard is what
 keeps the sunken garden's and the breezeway's twenty connectors from being bought twice.
 
-- 6 × ABU66SS under the balcony pillars, 4 × under the breezeway posts (`params/`)
+- 2 × ABU66SS under the balcony's two WOOD centre pillars, 4 × under the breezeway posts
+  (`params/`). It was 6 until 2026-09-03: the four corner pillars became 12" cast concrete
+  columns doweled into the wall tops under them, and concrete on concrete is a lapped
+  splice made in the pour, not a connector. See `notes/balcony_moment_columns.md`.
 - 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
-- 2 × HGAM10 masonry gusset angles at the two cast columns (`H2.5A` until 2026-08-28)
+- 6 × HGAM10 masonry gusset angles at the cast-column beam seats — the two porch columns
+  (`H2.5A` until 2026-08-28) plus, since 2026-09-03, the four balcony corner columns
+- 2 × CCQ46SDS2.5 column caps at the two wood centre pillars (ESR-2604). A 3-1/2" glulam on
+  a 6x6 is the UNEQUAL-width case the PC6Z is not published for, and these are what close
+  the post-to-beam leg at the only two balcony joints with no pour to hold the beam down.
 - 4 × STHD holdowns at the exterior door jambs (main storey)
 
 ## What the model still cannot answer
@@ -151,21 +158,29 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
 
 - **The six cast columns** on their cast footings — see the second-pass section above. The
   joint is a doweled lap, priced inside the pier rate, and there is no connector to name.
-- **A lateral system for the porch and balcony.** `plans/TODO.md` carries this as an open
-  question and it is *not* an uplift item, but it is the one thing that would put new
-  hardware on `PT-SG-FCOL`. Today nothing bolts to that column: two beams land on its top and
-  an authored HGAM10 gusset angle on the bearing plane holds them down. The MPB66Z moment base the TODO
-  weighs is the only detail that would want the 5" of side cover the old 16" square section was
-  chosen for, and it is not specified. Worth knowing before anyone reshapes that column, and
-  The 16" round section left 3.76" and forecloses the MPB66Z there — priced, not overlooked,
-  since a square section cost $478-1,327 against $304-633 for a fibre tube of the same
-  height. The column is 20" round now, because it became the shared bearing for the two
-  front beams AND `PT-SG-BF2` when the balcony's front pillar row moved 12" south, and 16"
-  and 18" have no solution at that overhang. So the side cover came back as a side effect: a 20"
-  round gives **5.76"** at a centred 6" plate's corners, more than the square had, on a
-  $478-967 fibre tube. The option is open again; nothing is bolted to the column that uses
-  it, and the four pillars that actually want an MPB66Z are still the corner ones on 12"
-  concrete wall tops.
+- **A lateral system for the porch and balcony — SETTLED 2026-09-03, and the MPB66Z is
+  foreclosed.** This was `plans/TODO.md`'s longest-running open question, and it is closed
+  the other way: the balcony's four corner pillars became **12" round reinforced concrete
+  columns fixed at their bases**, doweled into the wall tops of W-SG-W1/E1, and those four
+  columns ARE the lateral system in both plan directions. The eight knee braces and two
+  brace rails are deleted. See `notes/balcony_moment_columns.md`, which works the base
+  moments, the P-M interaction and the class B dowel lap by hand.
+
+  **No catalog metal moment base survived the search**, which is why the answer is concrete
+  and not steel. The only stock base with a published base moment is Simpson's MPB66Z, for a
+  WOOD post; it needs 5" of side cover — about 16" of concrete, cast in — and its
+  wet-service cap of 2,610 lb-ft (ESR-3050 Table A) is **below** the 2,502 lb-ft guard case
+  §2c of that note computes, before any wind. It cannot go in a 12" round or on a 12" wall
+  top as published, and the four pillars that used to be the candidates for one are now the
+  columns themselves.
+
+  **Nothing bolts to any of the six cast columns.** Beams land on their tops and an authored
+  HGAM10 gusset angle on the bearing plane holds them down — six of those now, two at the
+  porch and four at the balcony seats. The side-cover arithmetic that ran through three
+  section shapes here (16" square at $478-1,327 against $304-633 for a fibre tube, then 16"
+  round at 3.76" of cover, then 20" round at 5.76") is **retired with the question it was
+  serving**: `PT-SG-FCOL` is a 12" round like the rest, sized by the 2" of cover its cage
+  needs rather than by a connector plate nobody is specifying.
 - **The SKU at the two beam-on-column bearings.**
   `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` sit on the bearing plane (the beam soffit = the
   column top) and were authored `H2.5A`, which `structural.uplift_load_path` accepted as
@@ -220,6 +235,7 @@ usually cheaper:
 | HGAM10 | — (masonry angle family) | wood beam down to a cast column top |
 | LTP4 | TP37 class | plate to band |
 | KBS1Z | — (use the strap tie family) | beam to post |
+| CCQ46SDS2.5 | — (column cap family) | 4x beam seated on a 6x6 post |
 | ABU66 / ABU44 | ABU-equivalent standoff base | post to pier |
 | AB-058-10-SS | any 5/8 in cast-in anchor + nut/washer | post base to concrete |
 | MASA | MA-series mudsill anchor | sill to concrete |
@@ -232,5 +248,5 @@ number under the Simpson key. Changing the catalog would mean two products per r
 
 Anything added at a KDAT beam top has to respect `beam_water_protection.md` §2: AWC DCA6, no
 aluminium against copper-treated lumber, and the formed caps are bedded **on** the butyl tape.
-The 18 derived KBS1Z straps land on the pillar faces, not the beam tops, so they do not
+The 8 derived KBS1Z straps land on the post faces, not the beam tops, so they do not
 disturb that order — but a future cap or seat at a beam top would.

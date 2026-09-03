@@ -109,7 +109,14 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # `MAX_UNSEALED_ITEMS` fell 6 -> 5 in the same move — the pair of numbers only makes sense
 # read together. The item is a real staging line for any house that DOES put equipment on a
 # deck, which is why it is staged rather than deleted.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 22}
+#
+# RAISED 22 -> 24 on 2026-09-03 with the catlin balcony redesign, and both new lines are
+# staged for the ordinary reason: the rules are newly encoded. "Deck beams outside the beam
+# span table" and "Freestanding deck lateral resistance" are the two engineered items that
+# arrived when the balcony's three beams became glulam and its eight knee braces became four
+# fixed cast columns. `MAX_UNSEALED_ITEMS` rose 5 -> 7 in the same move — the pair of numbers
+# only makes sense read together.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
@@ -118,7 +125,13 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2024": 22}
 # Pooling them would let either one hide behind the other's excuse.
 #
 # Both pins are ratchets. Lower one when an item flips; raising either needs a reason.
-MAX_UNSEALED_ITEMS = {"mn-2024": 5}
+#
+# RAISED 5 -> 7 on 2026-09-03: `structural.deck_beam_span` and `structural.lateral_racking`
+# both now report ENGINEERED findings on catlin (a glulam has no row in IRC Table R507.5(1),
+# and a deck braced only by its columns' base fixity has no row anywhere). Both have a
+# calculation in `typehaus/engineering/` and both are `draft`; they leave this lane when a
+# licensed engineer stamps `deck_beam/*` and `deck_post/*` in engineering.toml.
+MAX_UNSEALED_ITEMS = {"mn-2024": 7}
 
 
 def _engineered_labels(profile) -> set[str]:

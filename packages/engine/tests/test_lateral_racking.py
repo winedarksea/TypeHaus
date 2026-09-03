@@ -162,12 +162,7 @@ def test_a_brace_naming_no_resolvable_post_is_unknown_not_silent():
 
 @pytest.fixture(scope="module")
 def catlin_findings(catlin_model):
-    from typehaus.checks.registry import CheckContext, FramingPreferences, Preferences
-
-    del FramingPreferences, Preferences
-    ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
-                       preferences=_catlin_preferences(), profile=_catlin_profile())
-    return lateral_racking(ctx)
+    return _findings_for(catlin_model)
 
 
 def _catlin_preferences():
@@ -182,72 +177,84 @@ def _catlin_profile():
     return MN_2024
 
 
-def test_catlin_grades_all_eight_braces_plus_the_unbraced_posts(catlin_findings):
-    brace_findings = [f for f in catlin_findings
-                      if any(t.startswith("KB-SG-") for t in f.element_tags)]
-    assert len(brace_findings) == 8
+def test_catlin_has_no_knee_brace_left_and_the_check_does_not_go_silent(catlin_findings):
+    """The regression this file most needed guarding against, and it very nearly happened.
+
+    catlin's balcony traded eight knee braces for four 12" cast concrete columns fixed at
+    their bases on 2026-09-03 (``houses/catlin/notes/balcony_moment_columns.md``). The
+    brace-shaped code at the top of ``lateral_racking`` returned ``[]`` for a plan with no
+    ``KneeBrace`` in it — so the one check that exists because this deck has no shear walls
+    would have gone completely quiet on the day its entire lateral system changed.
+
+    It now names each corner column and delegates to ``deck_post/<tag>``: one design, one
+    stamp, two checks, the same pattern ``structural.frost_depth`` shares with
+    ``structural.foundation_unbalanced_fill`` on a retaining wall.
+    """
+    from typehaus.model.structure import KneeBrace
+
+    assert not [f for f in catlin_findings
+                if any(t.startswith("KB-SG-") for t in f.element_tags)]
+    assert catlin_findings, "the check went silent on a braceless freestanding deck"
+    columns = {t for f in catlin_findings for t in f.element_tags if t.startswith("PT-SG-B")}
+    assert columns == {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
+    assert all("deck_post/" in (f.engineering_item or "") for f in catlin_findings)
+    del KneeBrace
 
 
 def test_catlin_has_no_fail_here(catlin_findings):
+    """PASS, not UNKNOWN, and that is a change worth reading twice.
+
+    While the lateral system was eight knee braces every finding here was UNKNOWN: the
+    connector allowables were published but ``C_f`` was not, so the check inverted and
+    reported a critical coefficient rather than a verdict. The four columns are graded by
+    ``engineering/deck_post.py`` instead, which spends ``C_f`` at the Fig. 29.3-1 Case A/B
+    ceiling and produces a real d/c — so ``engineered()`` returns the calculation's own
+    result. It is still a DRAFT and still unsealed; ``haus print --sealed`` is the gate that
+    says so.
+    """
     assert all(f.result is not Result.FAIL for f in catlin_findings)
-    assert all(f.result is Result.UNKNOWN for f in catlin_findings)
+    assert all(f.result is Result.PASS for f in catlin_findings)
 
 
-def test_catlin_measures_the_appurtenance_from_the_sunken_garden_floor(catlin_findings):
-    """23.0', not 12.8'.
+def test_a_deck_hung_in_a_shear_wall_is_not_reported_as_column_braced(catlin_model):
+    """FS-SG-PORCH lands its four beams in W-SG-W1/E1 — two 12" concrete retaining walls.
 
-    The balcony's guard tops out at +13'-1 1/2" and the garden floor it stands over is at
-    -9'-4". Reading any other Railing in the plan — a stair-head guard on the main floor,
-    say — gives 12.8' and understates q_h by 12 % while every word of the finding still looks
-    right. This is the assertion that catches it.
+    It is braced by shear walls in both directions and has no lateral question at all.
+    Without the gate, its two cast columns would each be reported as "the lateral system",
+    which is a false claim about a real structure — and one that would read as a PASS the
+    moment their axial record came back OK.
     """
-    message = catlin_findings[0].message
-    assert "23.0' above the ground beneath" in message
-    assert "q_h 18.7 psf" in message
+    named = {t for f in _findings_for(catlin_model) for t in f.element_tags}
+    assert "FS-SG-PORCH" not in named
+    assert "PT-SG-COL" not in named and "PT-SG-FCOL" not in named
+    assert "FS-SG-DECK" in named
 
 
-def test_catlin_derives_the_beams_into_the_projected_area_not_just_the_fascia(catlin_findings):
-    """The bands must include the members the braces rise into, not only the fascia.
+def _findings_for(catlin_model):
+    """The check, with the ENGINEERING SUITE wired in.
 
-    Scoping the member search to one direction's own braces finds only members running
-    *along* the wind, which present their ends and nothing else — dropping every beam and
-    rail from A_s and understating the demand by roughly two thirds.
+    A bare ``CheckContext`` leaves ``ctx.engineering`` empty, and ``engineered()`` then
+    reports "no calc registered for the kind" — an UNKNOWN that looks exactly like a real
+    one. Since every finding this check now produces is a delegation, a fixture without the
+    suite would assert nothing about the arithmetic behind them.
     """
-    ew = next(f for f in catlin_findings if "E-W wind" in f.message)
-    ns = next(f for f in catlin_findings if "N-S wind" in f.message)
-    assert "BM-SG-BLW section depth" in ew.message and "25.4 sf" in ew.message
-    assert "BM-SG-RAIL-R section depth" in ns.message
-    # N-S sees the 21' face, E-W the 9.7' one, so the N-S demand must be the larger.
-    assert "39.9 sf" in ns.message
+    from typehaus.checks.registry import CheckContext
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+
+    engineering = EngineeringResults(EngineeringContext(
+        plan=catlin_model.plan, model=catlin_model, soil_class="GM"))
+    return lateral_racking(CheckContext(
+        plan=catlin_model.plan, model=catlin_model,
+        preferences=_catlin_preferences(), profile=_catlin_profile(),
+        engineering=engineering))
 
 
-def test_every_catlin_brace_clears_the_whole_force_coefficient_table(catlin_findings):
-    """The landed engineering result, pinned.
-
-    All eight braces reach their KBS1Z allowable only above C_f 2.69, and the largest
-    coefficient ASCE 7-16 Fig. 29.3-1 Cases A and B are known to produce is 1.80. So the
-    bracing is adequate for *every* value the table can hold, and the one input this
-    repository could not source cannot change the answer. If a geometry change makes this
-    test fail, the balcony's lateral system got worse and somebody needs to know.
-    """
-    brace_findings = [f for f in catlin_findings
-                      if any(t.startswith("KB-SG-") for t in f.element_tags)]
-    assert len(brace_findings) == 8
-    for finding in brace_findings:
-        assert "clears for every value" in finding.message, finding.message
-        assert "reaches its allowable" not in finding.message
-
-
-def test_catlin_names_the_two_centre_pillars_and_not_the_heat_pump_legs(catlin_findings):
-    """The unbraced-post finding is about columns, and the stand legs are not columns.
-
-    Eight ``PT-SG-HP*`` aluminium legs stand 18" tall on SL-SG-HPPAD, the heat-pump pad east
-    of the porch. Listing them buries the pillars the finding exists to raise in six that are
-    irrelevant to it. They were 12" legs inside the balcony footprint until 2026-09-02
-    (houses/catlin/notes/heat_pump_ground_pad.md); the height floor excluded them then and
-    excludes them now, which is the property this pins.
-    """
-    lonely = next(f for f in catlin_findings if "carry no knee brace" in f.message)
-    assert "PT-SG-BR2" in f"{lonely.element_tags}"
-    assert "PT-SG-BF2" in f"{lonely.element_tags}"
-    assert not any(t.startswith("PT-SG-HP") for t in lonely.element_tags)
+def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings):
+    """The finding says what is engineered and names the item a seal can cover — it does not
+    try to be the calculation. A base moment against a section's phi*Mn is
+    ``engineering/deck_post.py``'s arithmetic, and duplicating it here would be two
+    authorities on one number."""
+    for finding in catlin_findings:
+        assert "fixed at its base" in finding.message
+        assert "no knee brace and no shear wall" in finding.message
+        assert finding.engineering_item.startswith("deck_post/PT-SG-B")

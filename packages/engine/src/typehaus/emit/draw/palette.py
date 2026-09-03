@@ -162,6 +162,10 @@ DETAIL_FILL: dict[str, str] = {
     # whose whole point is which stick is treated and which is not. Greener and greyer than
     # ``spf`` so the two woods are told apart at a glance, which is the distinction.
     "kdat": "#b7ad7a",
+    # Treated structural glulam — the balcony beams. Warmer and lighter than ``kdat``: a
+    # glulam is a manufactured member with visible laminations and a clear finish, not a
+    # green-cast treated stick, and the two stand side by side in the garden's section.
+    "glulam-treated": "#c8a877",
     "rubber": "#3a3a3a",
     "glass": "#bee3f8",
     "gutter": "#8b8b8b",
@@ -223,6 +227,7 @@ DETAIL_HATCH: dict[str, str] = {
     "board-batten-24": "metal",
     "metal-dark-exterior": "metal",
     "kdat": "lumber",
+    "glulam-treated": "lumber",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",

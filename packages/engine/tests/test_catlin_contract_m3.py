@@ -1687,11 +1687,16 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
 
 def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     """Freestanding porch/balcony redesign: no north or front wall, two 12" side walls, a
-    column + two beams on each open porch edge, a metal porch guard, six 6x6 pillars +
+    column + two beams on each open porch edge, a metal porch guard, six balcony pillars +
     three balcony beams, and a 19x28 garden.
 
-    The porch's south edge is a 20" round cast column and two DROPPED beams — the same
+    The porch's south edge is a 12" round cast column and two DROPPED beams — the same
     detail the north edge has carried all along — with RL-SG-PORCH in place of a parapet.
+
+    **The balcony's six pillars are no longer six of a kind** (2026-09-03): the four corners
+    are 12" cast concrete columns fixed at their bases and the two centres stay wood 6x6.
+    The eight knee braces and two E-W brace rails they replaced are gone. See
+    ``houses/catlin/notes/balcony_moment_columns.md``.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
     # 6 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and W-SG-ARCH.
@@ -1716,33 +1721,40 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.
-    # The front column is a round fibre tube, cheaper than built panels for the same height,
-    # sized to 20" because it is the SHARED bearing for the two front beams and PT-SG-BF2
-    # (params/sunken_garden.py has the sizing table; 16" and 18" have no solution at the
-    # balcony's 12" overhang). The width assertions below track the diameter because the
-    # bounding box is the diameter on both axes; they are here to catch a nominal spelling
-    # like "20x20" silently resolving to a 1.5x5.5 stud through ``_RE_NOMINAL``.
+    # The front column is a round fibre tube, cheaper than built panels for the same height.
+    # It was 20" while PT-SG-BF2 stood on its top and one pour had to span from the beams'
+    # north face to that pillar's south face; BF2 moved north onto the porch deck on
+    # 2026-09-03, so it seats two collinear beam ends and is 12" — the same tube, mix and
+    # cage as the four balcony corner columns. The width assertions below track the diameter
+    # because the bounding box is the diameter on both axes; they are here to catch a
+    # nominal spelling like "12x12" silently resolving to a 1.5x5.5 stud through
+    # ``_RE_NOMINAL``.
     front = next(s for s in catlin_model.solids if s.tag == "PT-SG-FCOL")
-    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_20"
+    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_12"
     xs = [p[0] for p in front.outline]
     ys = [p[1] for p in front.outline]
-    assert max(xs) - min(xs) == pytest.approx(inch(20).meters, rel=1e-3)
-    assert max(ys) - min(ys) == pytest.approx(inch(20).meters, rel=1e-3)
+    assert max(xs) - min(xs) == pytest.approx(inch(12).meters, rel=1e-3)
+    assert max(ys) - min(ys) == pytest.approx(inch(12).meters, rel=1e-3)
     assert len(front.outline) > 8, "a round column is a polygonised circle, not a rectangle"
     front_beams = {b.tag: b for b in catlin_model.solids
                    if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
     assert len(front_beams) == 2
     # DROPPED, not flush: the joists bear on top, so these two top out a porch-joist depth
-    # (7 1/4") below the 0' datum exactly as the back pair do, and the
-    # column stops at their soffit — which keeps the pour clear of the 16"-o.c. joist band
-    # above it AND is what puts PT-SG-BF2 on concrete instead of on a 2x8.
+    # (7 1/4") below the 0' datum exactly as the back pair do, and the column stops at their
+    # soffit — which keeps the pour clear of the 16"-o.c. joist band above it.
     assert all(b.z1_m == pytest.approx(inch(-7.25).meters) for b in front_beams.values())
     assert front.z1_m == pytest.approx(min(b.z0_m for b in front_beams.values()))
     assert front.z1_m == pytest.approx(inch(-18.5).meters)
 
     # The porch guard is a Railing now, matching RL-SG-BALCONY one storey up.
+    # SURFACE-mounted since 2026-09-03, on its own house-local type: its west and east legs
+    # run along 12" concrete wall tops, which take ESR-3485's baseplate anchors directly and
+    # buy no fascia bracket kit. RL-SG-BALCONY stays fascia-mounted, because its deck is a
+    # waterproof plane over occupied space.
     guard = catlin_model.plan.by_tag("RL-SG-PORCH")
-    assert guard.type_ref == "RAILING-EXT-ALUMINUM-FASCIA"
+    assert guard.type_ref == "RAILING-EXT-ALUMINUM-SURFACE"
+    assert guard.mount == "surface"
+    assert catlin_model.plan.by_tag("RL-SG-BALCONY").mount == "fascia"
     assert guard.height.inches == pytest.approx(42.0)
     assert len(guard.path) == 4  # west / south / east; the north edge is the house gap
 
@@ -1757,15 +1769,23 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
                 for el in catlin_model.plan.storey_elements(tag)]
     posts = {el.tag for el in elements if el.element_kind == "Post" and el.tag.startswith("PT-SG-")}
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
-    assert {"PT-SG-COL", "PT-SG-FCOL"} <= posts  # sonotube + front square column
-    assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
-    # 2 LVL back beams + 2 LVL front beams + 3 double-2x10 N-S balcony beams + 2 continuous
-    # E-W brace rails (one per pillar row, face-bolted to all three posts in it; the rails
-    # give the freestanding balcony a member to brace against in its second principal
-    # direction).
-    assert len(beams) == 9
+    assert {"PT-SG-COL", "PT-SG-FCOL"} <= posts  # the two porch columns, both 12" round
+    pillars = {t for t in posts if t.startswith("PT-SG-B") and not t.startswith("PT-SG-HP")}
+    assert len(pillars) == 6
+    # 2 KDAT back beams + 2 KDAT front beams + 3 treated-glulam N-S balcony beams. **Nine
+    # until 2026-09-03**: the two continuous E-W brace rails were the freestanding balcony's
+    # second-direction lateral member and went with the knee braces when four fixed cast
+    # columns took over that job.
+    assert len(beams) == 7
     assert {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"} <= beams
-    assert {"BM-SG-RAIL-R", "BM-SG-RAIL-F"} <= beams
+    assert not [t for t in beams if t.startswith("BM-SG-RAIL-")]
+    assert {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"} <= beams
+    for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"):
+        beam = catlin_model.plan.by_tag(tag)
+        # The DECIMAL spelling is the parser's tell: a nominal-looking "4x12" matches
+        # ``_RE_NOMINAL`` and silently becomes 3 1/2" x 11 1/4".
+        assert beam.size == "3.5x11.875", tag
+        assert beam.assembly == "BEAM_GLULAM_TREATED", tag
 
     # Both exterior decks carry their walking surface, and both do it the same way: the
     # plank is the floor system's own deck sheet, so the surface follows the framing instead

@@ -29,8 +29,13 @@ RULES = CONFIG.uplift
 #: Every wood post the sunken garden and the breezeway already author an ABU66SS base under.
 #: They are the whole of catlin's post-base scope, which is why ``post_base_rows`` derives
 #: nothing: the derived rule is the guard against the *next* post being forgotten.
+#:
+#: Six, not ten, since 2026-09-03: the balcony's four CORNER pillars became 12" cast
+#: concrete columns fixed at their bases and doweled into the wall tops under them, and
+#: concrete-on-concrete takes no post base at all. Only the two centre pillars are still
+#: wood on a standoff. See ``houses/catlin/notes/balcony_moment_columns.md``.
 AUTHORED_POST_BASES = {
-    "PT-SG-BR1", "PT-SG-BF1", "PT-SG-BR2", "PT-SG-BF2", "PT-SG-BR3", "PT-SG-BF3",
+    "PT-SG-BR2", "PT-SG-BF2",
     "PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4",
 }
 
@@ -191,13 +196,15 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     assert authored >= AUTHORED_POST_BASES, "the fixture's authored bases moved"
     rows = post_base_rows(catlin_model_ro, RULES)
     assert [row["part_number"] for row in rows] == ["ABU44"], (
-        "an ABU66SS row means the Connector.connects guard stopped matching and the ten "
+        "an ABU66SS row means the Connector.connects guard stopped matching and the six "
         "authored bases are being bought a second time")
     assert rows[0]["count"] == 2
     for tag in AUTHORED_POST_BASES:
         assert tag not in rows[0]["basis"]
-    # And the twelve really are all of them, so what is NOT in the row above is coverage
-    # rather than silence: ten authored, two derived, one squash block.
+    # And the nine really are all of them, so what is NOT in the row above is coverage
+    # rather than silence: six authored, two derived, one squash block. The four balcony
+    # corner columns are absent because they are no longer WOOD — the filter below is on
+    # section, and a "12 round" is not a 6x6.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by and not e.within_wall
             and e.size in {"6x6", "4x4"}}
@@ -229,16 +236,17 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
 def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
-    Eleven of catlin's twelve bases land on concrete — four breezeway piers, four
-    sunken-garden wall tops, two on the basement slab, and since 2026-08-29 PT-SG-BF2 on
-    PT-SG-FCOL's top — and each needs one cast-in anchor. Only PT-SG-BR2 is left standing on
-    framing.
+    Six of catlin's eight bases land on concrete — four breezeway piers and two on the
+    basement slab — and each needs one cast-in anchor. **Both** sunken-garden bases are now
+    on framing: PT-SG-BF2 joined PT-SG-BR2 on the porch deck on 2026-09-03 when it came off
+    PT-SG-FCOL's top, and the four wall-top bases went away entirely with the pillars that
+    became cast columns.
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    assert row["count"] == 11
+    assert row["count"] == 6
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
@@ -258,9 +266,10 @@ def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro
 
     basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
     assert "PT-SG-BR2" not in basis, "PT-SG-BR2 stands on the porch deck"
-    # Its opposite number left this test on 2026-08-29: PT-SG-BF2 bears on PT-SG-FCOL, a
-    # cast column, so it DOES want the cast-in bolt and is counted above.
-    assert "PT-SG-BF2" in basis, "PT-SG-BF2 bears on a cast column"
+    # Its opposite number left this test on 2026-08-29 when it stood on PT-SG-FCOL's top,
+    # and came back on 2026-09-03 when it moved north onto the porch deck — 3" inside the
+    # front beam axis, the exact mirror of BR2. Both centre pillars bear on framing now.
+    assert "PT-SG-BF2" not in basis, "PT-SG-BF2 stands on the porch deck too"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
 
@@ -269,14 +278,16 @@ def test_authored_post_beam_straps_are_not_derived_a_second_time(catlin_model_ro
     row = post_beam_strap_rows(catlin_model_ro, RULES)[0]
     for beam in AUTHORED_POST_BEAM_STRAPS:
         assert beam not in row["basis"], f"{beam} is authored a KBS1Z and was derived again"
-    # What is left is the sunken garden, which authors none (three balcony beams, each
-    # landing on two of the six pillars = 6 — the two E-W brace rails that used to add
-    # eight more of these dropped out 2026-08-30: they carry ``bearing_refs=()``, since the
-    # "collision" at the centre posts was a bookkeeping fiction and not real beam-on-post
-    # bearing), plus the breezeway's two FLOOR beams on four posts (4) — those share their
+    # What is left is the breezeway's two FLOOR beams on four posts (4) — those share their
     # posts with the strapped roof beams, which is exactly why the guard has to key on the
     # tag PAIR and not on the post alone.
-    assert row["count"] == 10
+    #
+    # The sunken garden contributed six of these (three balcony beams, each landing on two
+    # of the six pillars) until 2026-09-03. All six joints are now AUTHORED: an HGAM10
+    # masonry gusset at each of the four cast-column seats, and a CCQ46SDS2.5 column cap at
+    # each of the two wood centre pillars. The two E-W brace rails that used to add eight
+    # more dropped out on 2026-08-30 and were deleted outright with the braces.
+    assert row["count"] == 4
     assert row["part_number"] == "KBS1Z"
 
 

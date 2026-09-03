@@ -192,7 +192,11 @@ ALLOWANCE_KEY_FIELD = "item"
 #: double-counted. A bare-category row is still filtered.
 MATERIAL_ONLY: dict[str, frozenset[str | None]] = {
     "concrete": frozenset({"concrete", None}),
-    "timber": frozenset({"lvl", "lsl", "kdat"}),
+    # ``glulam-treated`` joins the three since 2026-09-03: the balcony beams are a
+    # manufactured member bought by the lineal foot out of [timber], and without the
+    # entry the material guard drops them from the bill entirely — which makes the
+    # total FALL and reads as a saving.
+    "timber": frozenset({"lvl", "lsl", "kdat", "glulam-treated"}),
 }
 
 

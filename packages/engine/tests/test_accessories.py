@@ -88,51 +88,142 @@ def test_catlin_resolves_all_accessory_categories(catlin_model) -> None:
         assert _solids(catlin_model, category), f"no {category} solids resolved"
 
 
-def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
+# ---------------------------------------------------------------------------------------
+# KneeBrace, on a synthetic frame.
+#
+# These read catlin's balcony until 2026-09-03, when that balcony's eight braces and two
+# brace rails were deleted — four cast concrete columns fixed at their bases became its
+# lateral system (``houses/catlin/notes/balcony_moment_columns.md``). ``KneeBrace`` is a
+# live engine feature with no house exercising it, which is exactly when a synthetic
+# fixture earns its keep: the geometry below is a two-post, one-beam frame built to be the
+# smallest thing that can carry a brace, so what these assert is the RESOLVER's rule rather
+# than one house's dimensions.
+# ---------------------------------------------------------------------------------------
+
+_BRACE_SOFFIT_FT = 8.0
+_BRACE_LEG_FT = 3.0
+_BRACE_POST_FACE_FT = 2.75 / 12.0     # half a 6x6's 5 1/2"
+_BRACE_FOOT_LAP_IN = 5.5
+
+
+def _braced_frame(*, plane_offset=None, foot_lap=None):
+    """Two 6x6 posts, one beam over them, and a 45-degree brace into the west post.
+
+    Deliberately minimal — no deck, no walls, no storey above — because everything this
+    file asserts about a brace is a function of the brace, its post and its soffit.
+    """
+    from typehaus.model import (
+        Assembly,
+        Beam,
+        Building,
+        KneeBrace,
+        Layer,
+        LayerFunction,
+        Library,
+        Material,
+        Node,
+        PlanModel,
+        Post,
+        Project,
+        Site,
+        Storey,
+        degF,
+    )
+    from typehaus.resolve import resolve
+
+    materials = (
+        Material(tag="spf", name="SPF framing", r_per_inch=1.25, perm_rating=2.9),
+        Material(tag="post-paint-white", name="White-painted post", r_per_inch=1.25),
+    )
+    assemblies = (
+        Assembly(tag="POST_PAINT", layers=(
+            Layer(name="post", material_ref="post-paint-white", thickness=inch(5.5),
+                  function=LayerFunction.STRUCTURE),)),
+        Assembly(tag="BEAM", layers=(
+            Layer(name="beam", material_ref="spf", thickness=inch(1.5),
+                  function=LayerFunction.STRUCTURE),)),
+    )
+    project = Project(name="KB", project_uuid="00000000-0000-4000-8000-0000000000b1",
+                      site=Site(lat=44.9, lon=-93.2, elevation=ft(830),
+                                design_temp_heating=degF(-15), design_temp_cooling=degF(90)),
+                      building=Building(name="KB"))
+    storey = Storey(uid="ST000000b1", tag="second", elevation=ft(10),
+                    default_ceiling_height=ft(9))
+    elements = [
+        Node(uid="KBN00000W1", tag="N-KB-N", position=pt(ft(0), ft(0))),
+        Node(uid="KBN00000E1", tag="N-KB-S", position=pt(ft(0), ft(-10))),
+        Post(uid="KBP00000N1", tag="PT-KB-N", position=pt(ft(0), ft(0)), size="6x6",
+             height=ft(_BRACE_SOFFIT_FT), assembly="POST_PAINT"),
+        Post(uid="KBP00000S1", tag="PT-KB-S", position=pt(ft(0), ft(-10)), size="6x6",
+             height=ft(_BRACE_SOFFIT_FT), assembly="POST_PAINT"),
+        Beam(uid="KBB00000B1", tag="BM-KB", start_node="N-KB-N", end_node="N-KB-S",
+             size="3-2x12", assembly="BEAM", top_elevation=ft(_BRACE_SOFFIT_FT + 11.25 / 12),
+             bearing_refs=("PT-KB-N", "PT-KB-S")),
+        KneeBrace(
+            uid="KBK00000B1", tag="KB-KB-N", position=pt(ft(0), ft(0)),
+            soffit_elevation=ft(_BRACE_SOFFIT_FT), leg=ft(_BRACE_LEG_FT),
+            axis="y", direction=-1, member="2x6", post_size="6x6",
+            assembly="POST_PAINT", connector="KBS1Z",
+            connects=("PT-KB-N", "BM-KB"),
+            **({"plane_offset": plane_offset} if plane_offset is not None else {}),
+            **({"foot_lap": foot_lap} if foot_lap is not None else {}),
+        ),
+    ]
+    plan = PlanModel(project=project,
+                     library=Library(materials=materials, assemblies=assemblies),
+                     storeys=(storey,), elements={"second": tuple(elements)})
+    model, _ = resolve(plan)
+    return model
+
+
+@pytest.fixture(scope="module")
+def braced_model():
+    return _braced_frame()
+
+
+def test_knee_brace_resolves_to_a_raked_wood_member(braced_model) -> None:
     """The brace is a stick of lumber, not a marker: a raked member on a 45-degree run.
 
     ``ResolvedSolid`` only extrudes a plan outline vertically, so modelling the diagonal as
     a solid would mean a stack of bands — and the solids take-off would bill each band as
     its own piece of structure. A ``FramedMember`` rakes natively and lands in the cut list.
     """
-    brace = next(b for b in catlin_model.braces if b.tag == "KB-SG-F1-NS")
+    brace = next(b for b in braced_model.braces if b.tag == "KB-KB-N")
     member, = brace.members
     assert member.category == "brace"
     assert member.profile == "2x6"
     assert member.z0_end_m is not None and member.z1_end_m is not None
     # A 45-degree brace rises exactly as far as it runs.
     leg = math.hypot(member.p1[0] - member.p0[0], member.p1[1] - member.p0[1])
-    assert leg == pytest.approx(3 * FT)
+    assert leg == pytest.approx(_BRACE_LEG_FT * FT)
     assert member.z1_end_m - member.z1_m == pytest.approx(leg)
     assert member.length_m == pytest.approx(leg * math.sqrt(2))
-    # It lands on the beam soffit, and leaves from the post face rather than its centre —
-    # an end buried in the column reads as a member clash.
-    assert member.z1_end_m == pytest.approx(8.4583333 * FT)
-    # -10.270833', not -9.5': the balcony's front pillar row sits 12" south of PT-SG-FCOL's
-    # bearing line, and the beam ends — pinned at -10.5' — land 2 3/4" back north so they roof
-    # the post tops instead of stopping on their axes. The brace follows its post; the plane
-    # the porch's own beams sit on never moved at all.
-    post_centre_y = (-10.5 + 2.75 / 12.0) * FT
-    assert abs(member.p0[1] - post_centre_y) == pytest.approx(2.75 * 0.0254)
+    # It lands on the authored soffit, and leaves from the post FACE rather than its centre
+    # — an end buried in the column reads as a member clash.
+    assert member.z1_end_m == pytest.approx(_BRACE_SOFFIT_FT * FT)
+    assert abs(member.p0[1] - 0.0) == pytest.approx(_BRACE_POST_FACE_FT * FT)
+    # Every brace is in the framing cut list, so a framer orders the lumber.
+    assert [m for m in braced_model.all_members() if m.category == "brace"]
 
 
-def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> None:
+def test_knee_brace_hardware_resolves_as_a_band_at_each_end(braced_model) -> None:
     """The connector reads at BOTH joints — a band hugging the member's z-band at the
-    beam/rail end and another at the post end — instead of the single floating marker box
-    the old spelling drew.
+    beam end and another at the post end — instead of the single floating marker box the
+    old spelling drew.
 
     The part is `KBS1Z` — the Outdoor Accents `APVKB45-6` alternative has no published
-    allowable load in any code report. One connector per end is Simpson's own
-    installation for a 2x brace into a wider member, so the geometry the resolver draws and
-    the count `knee_brace_rows` bills now agree — two bands, two pieces."""
-    member = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
-    solids = {s.tag: s for s in catlin_model.solids}
-    top = solids["KB-SG-R1-NS-KBS1Z-TOP"]
-    bottom = solids["KB-SG-R1-NS-KBS1Z-BOT"]
+    allowable load in any code report. One connector per end is Simpson's own installation
+    for a 2x brace into a wider member, so the geometry the resolver draws and the count
+    `knee_brace_rows` bills agree: two bands, two pieces.
+    """
+    member = next(b for b in braced_model.braces if b.tag == "KB-KB-N").members[0]
+    solids = {s.tag: s for s in braced_model.solids}
+    top = solids["KB-KB-N-KBS1Z-TOP"]
+    bottom = solids["KB-KB-N-KBS1Z-BOT"]
     assert top.category == bottom.category == "connector"
-    soffit = 8.4583333 * FT  # the pillar-top plane, 2" down since the 3-2x12 beams
-    assert top.z1_m == pytest.approx(soffit)
-    assert bottom.z1_m == pytest.approx(soffit - 3 * FT)  # down the 3' leg, at the post
+    assert top.z1_m == pytest.approx(_BRACE_SOFFIT_FT * FT)
+    # down the 3' leg, at the post
+    assert bottom.z1_m == pytest.approx((_BRACE_SOFFIT_FT - _BRACE_LEG_FT) * FT)
     # Each band spans exactly the end-grain z-band of the wood it wraps.
     assert top.z1_m - top.z0_m == pytest.approx(member.z1_m - member.z0_m)
     assert bottom.z1_m - bottom.z0_m == pytest.approx(member.z1_m - member.z0_m)
@@ -140,59 +231,33 @@ def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> Non
     assert not any(tag.endswith("-CONN") for tag in solids)
 
 
-def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None:
-    """The N-S brace rises to the beam soffit; the E-W brace rises to the rail's own (lower)
-    soffit, since the rail hangs face-bolted below the pillar-top plane rather than riding on
-    it. The two braces at a corner land on different planes deliberately — the brace still
-    carries its own soffit rather than deriving one from its storey, and there is no reason
-    for the two to agree."""
-    ns = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
-    ew = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-EW").members[0]
-    # 8.458': the beams are 3-2x12, not 3-2x10, to clear IRC Table R507.5(1), and the
-    # pillar-top band sits 2" lower for it.
-    assert ns.z1_end_m == pytest.approx(8.4583333 * FT)  # N-S beam soffit
-    assert ew.z1_end_m == pytest.approx(7.8541667 * FT)  # rail soffit — below the beams' now
-    # Both feet stay above the pillar base and clear of the porch railing top (3.583'). The
-    # E-W foot sits lower than the N-S one by 1'-0 3/4" and both parts of that gap are
-    # deliberate: 7 1/4" because it rises to a rail soffit a rail depth below the beams', and
-    # 5 1/2" more because its foot LAPS the pillar face rather than butting it
-    # (KneeBrace.foot_lap — the brace is in the rail's plane and has no pillar in front of
-    # its end to bear on). At 45 degrees a longer run is a lower foot.
-    assert ew.z0_m == pytest.approx(ns.z0_m - (7.25 + 5.5) / 12 * FT)
-    assert min(ns.z0_m, ew.z0_m) > 3.583 * FT
-    # Every brace is in the framing cut list, so a framer orders the lumber.
-    braced = [m for m in catlin_model.all_members() if m.category == "brace"]
-    assert len(braced) == 8
+def test_a_lapped_foot_starts_lower_than_a_butted_one() -> None:
+    """``foot_lap`` runs the foot ACROSS the post face instead of butting its end to it.
 
-
-def test_the_balcony_brace_rails_hang_clear_of_the_pillar_tops(catlin_model) -> None:
-    """``Beam.top_elevation`` places the rails, and perturbs nothing that derives its own.
-
-    The N-S beams get their drop from the deck joists that bear on them; the rails carry no
-    joists either, so without an authored top they would hang from the storey datum and
-    collide with the deck. Unlike the girts they replace, a rail does not ride ON the
-    pillar tops — it is face-bolted to the posts' inboard face, below the pillar-top plane,
-    so its plan outline is DISJOINT from every pillar's rather than overlapping it.
+    The case it exists for: a brace coplanar with a face-bolted rail has no post material in
+    front of its end to bear on, so the foot laps the face and through-bolts there. At 45
+    degrees a longer run is a lower foot, by exactly the lap — which is the property a
+    reader would otherwise have to take on faith from the geometry.
     """
-    solids = {s.tag: s for s in catlin_model.solids}
-    for tag in ("BM-SG-RAIL-R", "BM-SG-RAIL-F"):
-        assert solids[tag].z1_m == pytest.approx(8.4583333 * FT)  # bolted at the pillar tops
-        assert solids[tag].z0_m == pytest.approx(7.8541667 * FT)  # 2x8, hanging below them
-        xs = [p[0] for p in solids[tag].outline]
-        assert max(xs) - min(xs) == pytest.approx(20 * FT)  # one stocked stick, no splice
-    # Face-bolted, not seated: a rail's plan outline never overlaps any pillar's.
-    for pillar_tag in ("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3"):
-        rail_ys = [p[1] for p in solids["BM-SG-RAIL-R"].outline]
-        pillar_ys = [p[1] for p in solids[pillar_tag].outline]
-        assert max(rail_ys) <= min(pillar_ys) + 1e-9
-    for pillar_tag in ("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3"):
-        rail_ys = [p[1] for p in solids["BM-SG-RAIL-F"].outline]
-        pillar_ys = [p[1] for p in solids[pillar_tag].outline]
-        assert min(rail_ys) >= max(pillar_ys) - 1e-9
-    # The rails name no pillars for the schedule, so the pillars keep the heights the deck
-    # joists gave them (the rear row 2" high for drainage).
-    assert solids["PT-SG-BF1"].z1_m == pytest.approx(8.4583333 * FT)
-    assert solids["PT-SG-BR1"].z1_m == pytest.approx(8.625 * FT)
+    butted = _braced_frame().braces[0].members[0]
+    lapped = _braced_frame(plane_offset=ft(0.5),
+                           foot_lap=inch(_BRACE_FOOT_LAP_IN)).braces[0].members[0]
+    assert lapped.z0_m == pytest.approx(butted.z0_m - _BRACE_FOOT_LAP_IN / 12.0 * FT)
+    assert lapped.length_m > butted.length_m
+
+
+def test_knee_brace_member_carries_its_assembly_material(braced_model) -> None:
+    """``KneeBrace.assembly`` reduces to its structure layer's material on the resolved
+    member (the IR slot both emitters read), and the glTF palette resolves that ref to the
+    authored finish rather than the bare "brace" category lumber."""
+    from typehaus.emit.gltf.palette import _hex_rgba, _material_finish_color
+
+    for brace in braced_model.braces:
+        if brace.kind != "brace":
+            continue
+        assert brace.members[0].material == "post-paint-white", brace.tag
+    assert (_material_finish_color("post-paint-white", "brace")
+            == _hex_rgba("#f4f2ee"))
 
 
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
@@ -516,22 +581,6 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
     # infill is still drawn, in its own categories, rather than having quietly gone missing.
     assert [s for s in catlin_model.solids
             if s.category in ("railing_infill", "railing_glass")]
-
-
-def test_knee_brace_member_carries_its_paint_material(catlin_model) -> None:
-    """``KneeBrace.assembly`` reduces to its structure layer's material on the resolved
-    member (the IR slot both emitters read), and the glTF palette resolves that ref to
-    the authored white rather than the bare "brace" category lumber."""
-    from typehaus.emit.gltf.palette import _hex_rgba, _material_finish_color
-
-    # ``model.braces`` hosts wedges too (a drainage wedge is BEAM_KDAT, not paint), so this
-    # is scoped to the knee braces it is about.
-    for brace in catlin_model.braces:
-        if brace.kind != "brace":
-            continue
-        assert brace.members[0].material == "post-paint-white", brace.tag
-    assert (_material_finish_color("post-paint-white", "brace")
-            == _hex_rgba("#f4f2ee"))
 
 
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
