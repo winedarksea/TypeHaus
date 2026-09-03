@@ -44,6 +44,17 @@ _UNREADABLE_CAGE_SOURCE = "vertical_reinforcement='rebar per engineer',"
 _SPEC_CAGE_SOURCE = "corner_column_cage: str = ('(4) #5 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
 _SPEC_SHORT_CAGE_SOURCE = "corner_column_cage: str = ('(3) #4 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
 
+# ** SINCE 2026-09-03 A CAGE IS AUTHORED TWICE AND THE STRUCT GOVERNS. **
+# `deck_post.cage_for` reads the structured `ReinforcementSpec` where one exists and does not
+# call `parse_cage` at all — so mutating only the free-text string above is now INERT, and
+# the three "break it on purpose" tests below would have passed while testing nothing. Each
+# mutation therefore has to move both spellings. That is the same fact
+# `integrity.reinforcement_spec_agrees` polices in the house: two spellings, one steel.
+_STRUCT_CAGE_SOURCE = "reinforcement=_CAST_COLUMN_CAGE,"
+_STRUCT_CAGE_HDG_SOURCE = "reinforcement=_CAST_COLUMN_CAGE_HDG,"
+_STRUCT_BAR_SOURCE = 'BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),'
+_STRUCT_SHORT_BAR_SOURCE = 'BarSpec(role="vertical", bar=4, count=3, coating="hdg-a767"),'
+
 # §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
 # section, tributary and cage — so one row covers them.
 _BW_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
@@ -59,11 +70,16 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 
 # §2 and §3c of the note. Both piers are 12" round and carry the same cage since
 # 2026-09-03, so the two rows agree on everything but the bell and a pound of pillar.
+#
+# The tributary is 116.97 ft², not 116.17: each takes half of FS-SG-PORCH (82.33) plus the
+# sixth of FS-SG-DECK its centre pillar hands down, and FS-SG-DECK went 203.00 -> 207.83
+# ft² on 2026-09-03 when `joist_cantilever_in` went 6" -> 9". PT-SG-COL's bearing d/c is
+# what feels it — 0.80 -> 0.81 on a 30" bell, the least margin in this structure.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 116.17, "dead_lb": 2487.0, "live_lb": 4647.0,
-        "service_lb": 7134.0, "factored_lb": 10_419.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1603.0,
+        "tributary_ft2": 116.97, "dead_lb": 2495.0, "live_lb": 4679.0,
+        "service_lb": 7174.0, "factored_lb": 10_480.0,
+        "bell_area_ft2": 4.909, "bearing_psf": 1611.0,
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
@@ -71,9 +87,9 @@ _ORACLE = {
         "slenderness": 42.7, "delta_ns": 1.024, "e_magnified_in": 0.983, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 116.17, "dead_lb": 2486.0, "live_lb": 4647.0,
-        "service_lb": 7132.0, "factored_lb": 10_418.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1159.0,
+        "tributary_ft2": 116.97, "dead_lb": 2494.0, "live_lb": 4679.0,
+        "service_lb": 7173.0, "factored_lb": 10_479.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1165.0,
         "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
@@ -254,7 +270,7 @@ def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> N
     through the deck's beams to the column under them.
     """
     own_porch_share = 82.33          # FS-SG-PORCH 164.67 ft2 over its two columns
-    balcony_share = 33.83            # FS-SG-DECK 203.00 ft2 over its six pillars
+    balcony_share = 34.64            # FS-SG-DECK 207.83 ft2 over its six pillars
     for tag in ("PT-SG-COL", "PT-SG-FCOL"):
         pier = piers[tag]
         assert pier.tributary_ft2 == pytest.approx(own_porch_share + balcony_share, abs=0.02)
@@ -391,7 +407,7 @@ def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> No
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, "")])
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, ""), (_STRUCT_CAGE_SOURCE, "")])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 
@@ -408,7 +424,8 @@ def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE)])
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE),
+                               (_STRUCT_CAGE_SOURCE, "")])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
     assert results["deck_post/PT-SG-COL"].status is Status.INCOMPLETE
@@ -425,7 +442,8 @@ def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_SPEC_CAGE_SOURCE, _SPEC_SHORT_CAGE_SOURCE)])
+    plan = _mutated(tmp_path, [(_SPEC_CAGE_SOURCE, _SPEC_SHORT_CAGE_SOURCE),
+                               (_STRUCT_BAR_SOURCE, _STRUCT_SHORT_BAR_SOURCE)])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 

@@ -66,13 +66,28 @@ def test_weight_is_the_astm_unit_mass(rows) -> None:
 
 
 def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
-    """A coating is a property of the bar you BUY for a pour, not of a role within it.
+    """A coating is normally a property of the bar you BUY for a pour, not of a role in it.
 
     You do not order galvanized verticals and black ties for one cage — a house that tried
     would be specifying a corrosion cell. So it lives on ``ConcreteSpec`` and every row of a
-    pour inherits it, which is also what makes ``#5:hdg-a767`` a price key worth having.
+    pour inherits it, which is what makes ``#5:hdg-a767`` a price key worth having. Every
+    footing and wall row here is galvanized for exactly that reason: their pours state it.
+
+    **The columns are the exception, and it is a real one rather than an oversight.**
+    ``SUNKEN_GARDEN_COLUMN_12`` and ``PIER_CONCRETE_12`` carry no ``ConcreteSpec`` yet —
+    attaching one means giving them their real 5,000 psi F3+C2 mix, which re-oracles three
+    hand-worked notes. Until then the galvanizing on the five corner columns is an authored
+    fact with nowhere else to live, so it is stated per-bar via ``BarSpec.coating``, and the
+    breezeway piers (whose cage string claims no galvanizing) correctly read as black.
     """
-    assert {row["coating"] for row in rows} == {"hdg-a767"}
+    by_scope = {}
+    for row in rows:
+        by_scope.setdefault(row["scope"], set()).add(row["coating"])
+    assert by_scope["footing"] == {"hdg-a767"}
+    assert by_scope["foundation wall"] == {"hdg-a767"}
+    # Columns carry both, per the exception above — and the split is the point, so it is
+    # asserted rather than tolerated.
+    assert by_scope["column"] == {"hdg-a767", ""}
 
 
 def test_the_bom_bills_only_what_the_house_authored(catlin_model) -> None:

@@ -97,6 +97,7 @@ surface is 1" above that threshold, inside R311.3.1's 1 1/2".
 from __future__ import annotations
 
 from typehaus import (
+    BarSpec,
     Beam,
     Connector,
     ConnectorKind,
@@ -108,6 +109,7 @@ from typehaus import (
     Node,
     Pad,
     Post,
+    ReinforcementSpec,
     TrimKind,
     Wedge,
     ft,
@@ -360,11 +362,25 @@ _PIER_TOPS = [_PIER_TOP] * 4
 # rather than publishing a d/c against a demand it knows is short.
 # Oracle: notes/breezeway_piers.md. Do not thin it to "save concrete".
 _PIER_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
+# The same cage, structured — see params/sunken_garden.py's `_CAST_COLUMN_CAGE` for why both
+# spellings are kept and which one governs. Restated here rather than imported because these
+# four piers are a different structure that happens to share a section, and a shared constant
+# would silently move all nine columns the day one of them changed.
+_PIER_CAGE_STEEL = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="verbatim from the cage string beside it; notes/breezeway_piers.md",
+)
 
 PIERS = [
     Post(uid=f"BWPR{i}AAAAA", tag=f"PR-BW-{i}", position=pt(ft(x), ft(y)),
          size="12 round", height=ft(_PIER_TOPS[i - 1] - _PAD_TOP),
          assembly="PIER_CONCRETE_12", vertical_reinforcement=_PIER_CAGE,
+         reinforcement=_PIER_CAGE_STEEL,
          supported_by=f"PD-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]

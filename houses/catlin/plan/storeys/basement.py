@@ -9,6 +9,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Arch,
+    BarSpec,
     ControlLayer,
     Door,
     FloorOpening,
@@ -20,6 +21,7 @@ from typehaus import (
     Node,
     Occupancy,
     PanelingSpan,
+    ReinforcementSpec,
     Room,
     RoughOpening,
     Slab,
@@ -151,6 +153,24 @@ NODES = [
          open_end=True),
 ]
 
+# The 8" perimeter's vertical steel, structured — the same `#5 @ 41" o.c.` the string
+# beside it states, and IRC Table R404.1.2(8) is still where it comes from. Both spellings
+# are kept: the string prints on the drawing, the struct is what `stem_flexure` grades and
+# what `takeoff/reinforcement.py` bills, and `integrity.reinforcement_spec_agrees` raises an
+# ERROR if they ever drift apart.
+#
+# ** VERTICAL ONLY, AND THAT IS A 1:1 MIGRATION RATHER THAN A DESIGN. ** These walls have
+# horizontal temperature-and-shrinkage steel in reality and this house has never stated any,
+# so none is invented here: adding a schedule nobody authored would put tonnage into the
+# estimate on my judgement instead of on a decision. The gap is named in
+# `notes/rebar_backout.md`, where it is part of why the billed tonnage falls short of the
+# allowance register's ~5 tons.
+_B8_STEEL = ReinforcementSpec(
+    bars=(BarSpec(role="vertical", bar=5, spacing=inch(41.0)),),
+    cover=inch(2.0),
+    source="IRC Table R404.1.2(8); verbatim from the vertical_reinforcement string beside it",
+)
+
 WALLS = [
     # Perimeter foundation walls (8" or 12" + exterior XPS), CCW from SW corner.
     #
@@ -251,13 +271,15 @@ WALLS = [
     # 37 SF of panel over 16.83 LF instead of 106 SF of parge over a face that is under the
     # dirt. The court segments are not banded at all; they are bare XPS in a brick cavity.
     # See plan/assemblies.py for the whole stucco retirement.
+
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
                    end_node="N-B-S1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     # The sauna's south side. W-B-S1 takes the buried wall's own stack and W-B-S3 the bare
     # curb — they bound the workshop and the patio side — but this one segment is a room face
     # in a WET room, so it carries the liner variant of the curb (SAUNA_LINER_ON_GARDEN_CURB):
@@ -346,7 +368,8 @@ WALLS = [
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
                    end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
@@ -362,13 +385,15 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
                    end_node="N-B-N2", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     # Split at N-B-ESS-N (x=6'-0") on 2026-08-23 so the ESS closet's west partition has a
     # node to tee into — `integrity.wall_loop_open` wants two edges at every node, and a
     # partition dying against the middle of an unsplit wall has one. Both halves keep
@@ -381,25 +406,29 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     FoundationWall(uid="HEX0ZDQZEN", tag="W-B-N4", start_node="N-B-ESS-N",
                    end_node="N-B-NW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
                    end_node="N-B-W1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
                    end_node="N-B-SW", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.'),
+                   vertical_reinforcement='#5 @ 41" o.c.',
+                   reinforcement=_B8_STEEL),
     # Center cross walls (12" concrete) — the 18' bearing grid. Every wall from here down is
     # an *interior* cross wall with soil on neither side, so `unbalanced_fill=ft(0)` says so
     # explicitly — without it `structural.foundation_unbalanced_fill` would read these as

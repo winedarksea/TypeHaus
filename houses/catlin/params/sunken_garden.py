@@ -363,6 +363,52 @@ _grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
 # horizontal steel was never stated in the string and is stated here: ACI 318-19 §11.6.1
 # asks 0.0020 of the gross section for #5 and smaller, i.e. 0.288 in2/ft on a 12" wall,
 # and `#4 @ 8"` is 0.300.
+# The five cast columns' cage, structured — the same four bars and #3 ties @ 10" the string
+# states. Both spellings are kept: the string prints on the drawing and holds the prose the
+# struct cannot (the galvanizing callout), the struct is what `deck_post.cage_for` grades and
+# what `takeoff/reinforcement.py` bills, and `integrity.reinforcement_spec_agrees` raises an
+# ERROR if they drift apart. A COUNT and not a spacing, because ACI 318-19 §10.6.1.1 bounds a
+# column's steel by 0.01Ag and §10.7.3.1(b) sets its floor at four bars within circular ties,
+# and neither question can be asked of a spacing.
+_CAST_COLUMN_CAGE = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="verbatim from the cage string beside it; notes/sunken_garden_piers.md §4",
+)
+
+# ** THE SAME CAGE, GALVANIZED — AND THE COATING IS ON THE BARS RATHER THAN ON THE MIX. **
+# A coating normally belongs to the pour (`ConcreteSpec.bar_coating`), because it is a
+# property of the bar you buy for a pour and not of a role within it. It is stated per-bar
+# here for a reason worth writing down: `SUNKEN_GARDEN_COLUMN_12` does not yet carry a
+# `ConcreteSpec` at all — attaching one means giving it the real 5,000 psi F3+C2 mix, which
+# re-oracles `notes/balcony_moment_columns.md`, `notes/breezeway_piers.md` and
+# `test_pier_calcs.py`. Until that happens the galvanizing is an authored fact with nowhere
+# else to live, and leaving it unsaid would under-report the house's galvanized tonnage in
+# the estimate. Move it to the mix when the mix lands.
+_CAST_COLUMN_CAGE_HDG = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0), coating="hdg-a767"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="verbatim from SPEC.corner_column_cage, including its ASTM A767 cl. 1 callout",
+)
+
+# The two BRACED porch walls' vertical steel, structured. `#6 @ 38"` is IRC Table
+# R404.1.2(8) for a 12" wall braced top and bottom — a different row and a much lighter
+# schedule than the three retaining runs' `#6 @ 10"`, because these two have a floor
+# diaphragm at the head and no cantilever to carry.
+_BRACED_STEM_STEEL = ReinforcementSpec(
+    bars=(BarSpec(role="vertical", bar=6, spacing=inch(38.0)),),
+    cover=inch(2.0),
+    source="IRC Table R404.1.2(8), braced top and bottom; verbatim from the string beside it",
+)
+
 _RET_REBAR = '#6 @ 10" o.c.'
 _RET_STEM_STEEL = ReinforcementSpec(
     bars=(
@@ -453,7 +499,8 @@ WALLS = [
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 38" o.c.'),
+                   vertical_reinforcement='#6 @ 38" o.c.',
+                   reinforcement=_BRACED_STEM_STEEL),
     # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
     # the same way around the garden. Retiring the arched cross-wall broke this component's
     # only closed loop — the five survivors are now one open chain NW→MW→SW→SE→ME→NE, whose
@@ -467,7 +514,8 @@ WALLS = [
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 38" o.c.'),
+                   vertical_reinforcement='#6 @ 38" o.c.',
+                   reinforcement=_BRACED_STEM_STEEL),
     # ============================================================================
     # W-SG-ARCH IS A BURIED GRADE BEAM — NOT AN ARCH.
     # ============================================================================
@@ -685,6 +733,7 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               # 1% floor is a creep/shrinkage/accidental-moment rule, indifferent to load.
               # See notes/sunken_garden_piers.md §4. Do not thin it to "save concrete".
               vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+              reinforcement=_CAST_COLUMN_CAGE,
               supported_by="FT-SG-COL")
 
 # The front column: a 12" round cast-concrete column on its own belled footing. Its top is
@@ -752,6 +801,7 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
                     # within circular ties, so the count cannot come down either. Check any
                     # substitution against 1.131 in2 AND against four bars.
                     vertical_reinforcement=SPEC.corner_column_cage,
+                    reinforcement=_CAST_COLUMN_CAGE_HDG,
                     assembly="SUNKEN_GARDEN_COLUMN_12")
 
 # Wall footing uids are a literal map keyed on the wall tag, not ``enumerate(WALLS)``.
@@ -1734,6 +1784,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_bears_on,
                             vertical_reinforcement=(SPEC.corner_column_cage
                                                     if _is_corner else None),
+                            reinforcement=(_CAST_COLUMN_CAGE_HDG if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
                                       else "POST_WHITE_PAINT")))
 
