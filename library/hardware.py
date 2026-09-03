@@ -35,6 +35,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_DECK_EQUIPMENT_ANCHOR,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
+    ROLE_EQUIPMENT_PAD_ANCHOR,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
@@ -844,6 +845,32 @@ DECK_EQUIPMENT_ANCHOR = StructuralHardware(
            "2x8 blocking",
 )
 
+# The ground-pad twin of the part above, and a much simpler joint: an equipment stand
+# standing on a 4" concrete pad at grade, wedge-anchored into it.
+#
+# * **3/8" x 3", so it fits the pour.** A 3/8" wedge anchor wants ~1 1/2"-2" of embedment;
+#   3" of length leaves that in a 4" slab with the stand's base plate and a nut on top, and
+#   does not reach the capillary break under it.
+# * **316 stainless, not 304 and not galvanised.** The stand is aluminium, the pad is at
+#   grade in a de-iced climate, and the anchor sits in the splash zone the whole winter.
+#   316 in aluminium is the same non-couple 316 in an aluminium plank was.
+# * **No sealing washer, and that is the difference.** ``DECK_EQUIPMENT_ANCHOR`` is chosen
+#   for its seal because it pierces a roof. Nothing is below this one but stone, so it is
+#   selected for embedment and alloy alone.
+EQUIPMENT_PAD_ANCHOR = StructuralHardware(
+    tag="stainless-equipment-pad-wedge-anchor",
+    name="3/8 in x 3 in 316 stainless wedge anchor, into a concrete equipment pad",
+    role=ROLE_EQUIPMENT_PAD_ANCHOR,
+    manufacturer="generic",
+    model="SS316-WEDGE-38x3",
+    source="generic 316 stainless 3/8 in x 3 in wedge (expansion) anchor for a mechanical "
+           "stand's base plate into a 4 in slab-on-grade; no single manufacturer system is "
+           "specified, so this record is deliberately generic. INSTALLATION: drill 3/8 in "
+           "to depth in cured concrete, blow the hole clean, drive the anchor to the mark "
+           "and torque the nut to the manufacturer's value — an under-torqued wedge has not "
+           "set and an over-torqued one has spun its cone",
+)
+
 # PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a
 # panel rib without penetration and takes the module frame directly (no rails). Distinct
 # model string so ``Connector(size="S-5-PVKIT")`` bills this kit, not the plain clamp.
@@ -933,6 +960,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LAPPED_BRACE_BOLT,
     POLY_PANEL_FASTENER,
     DECK_EQUIPMENT_ANCHOR,
+    EQUIPMENT_PAD_ANCHOR,
     EXPOSED_FASTENER_PANEL_SCREW,
     THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,

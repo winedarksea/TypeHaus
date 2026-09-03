@@ -108,8 +108,14 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # of XPS, `role="band"` assemblies with no structure in them at all. They are slabs
     # only because a horizontal band of foam has no other element kind to be, and they are
     # not pours.
+    #
+    # SL-SG-HPPAD is the third exception and, like SL-G-STEP-0, a real thickness rather than a
+    # rounded one: a 4" unreinforced equipment pad for the two heat pumps that moved off the
+    # balcony on 2026-09-02 (houses/catlin/notes/heat_pump_ground_pad.md). It is asserted by
+    # name here so the exemption cannot quietly cover a fourth slab.
+    assert poured["SL-SG-HPPAD"] == '4"'
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
-               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-"))), poured
+               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-", "SL-SG-HPPAD"))), poured
     assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
     assert [tag for tag in poured if tag.startswith("SL-G-STEP-")] == ["SL-G-STEP-0"]
     assert {poured[tag] for tag in poured if tag.startswith("SL-SG-FROST-")} == {'1"', '2"'}

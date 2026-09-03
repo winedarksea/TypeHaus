@@ -30,13 +30,16 @@ fully covered unit is reported UNKNOWN, exactly as that check reports a covered 
 the same reason: "there is an anchor here" is a different claim from "this anchor holds", and
 folding the first into a PASS would retire a question an engineer still has to answer.
 
-An **uncovered** unit is a FAIL. No anchor at all is not a judgement call.
+An **uncovered** unit is a FAIL. No anchor at all is not a judgement call. And a house
+with no deck equipment at all reports **N/A**, never silence: the decks were searched
+and found empty, which is a verdict, not an absence of one.
 """
 
 from __future__ import annotations
 
 from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import engineered as _engineered
+from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
@@ -108,7 +111,8 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
     """Equipment on an exterior deck is anchored, anchored into blocking, and drained."""
     by_storey = _decks_by_storey(ctx)
     if not by_storey:
-        return []  # no exterior deck — nothing to stand on; not an unknown
+        return [_na(_CID, "this building has no exterior deck for equipment to stand on: no "
+                          "FloorSystem carries service=\"deck\"")]
 
     connectors = [e for e in ctx.plan.all_elements() if isinstance(e, Connector)]
     runs = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, PipeRun)}
@@ -139,6 +143,19 @@ def deck_equipment_support(ctx: CheckContext) -> list[Finding]:
             out.extend(_grade_unit(unit, here, connectors, runs, beams, nodes,
                                    blocking.get(here, []), joists.get(here, []),
                                    ctx.plan.project.site))
+    # ** AN EMPTY POPULATION IS A VERDICT HERE, NOT SILENCE. ** The decks exist and were
+    # searched; no Equipment stands inside any of their outlines. That is positive evidence
+    # of absence — the condition this rule governs is not present — and `Result` requires it
+    # to be earned exactly that way (plans/01-decisions.md #65). Returning `[]` instead left
+    # the permit item reading "no evaluable model input", i.e. nobody looked, which is a
+    # different and false claim. Catlin is the case: both condensers moved to a ground pad on
+    # 2026-09-02 and its balcony is deliberately equipment-free.
+    if not out:
+        decks = sorted(d.tag for ds in by_storey.values() for d in ds)
+        return [_na(_CID,
+                    f"no equipment stands on any exterior deck: {len(decks)} deck(s) "
+                    f"({', '.join(decks)}) searched and none carries an Equipment element",
+                    tuple(decks))]
     return out
 
 
@@ -315,8 +332,16 @@ def deck_equipment_anchorage_capacity(ctx: CheckContext) -> list[Finding]:
     """
     from typehaus.engineering import item_id
 
+    units = sorted(_graded_units(ctx), key=lambda e: e.tag)
+    if not units:
+        # No unit stands on a deck, so there is no deck anchorage to design. Earned from the
+        # coverage rule's own population rather than re-derived — see ``_graded_units``.
+        return [_na("mep.deck_equipment_anchorage_capacity",
+                    "no equipment stands on an exterior deck, so no deck anchorage exists "
+                    "to be designed", (), code="IRC M1401.4")]
+
     out: list[Finding] = []
-    for unit in sorted(_graded_units(ctx), key=lambda e: e.tag):
+    for unit in units:
         out.append(_engineered(
             ctx, "mep.deck_equipment_anchorage_capacity",
             item_id(_ANCHORAGE_KIND, unit.tag),
@@ -339,6 +364,6 @@ def _graded_units(ctx: CheckContext) -> list:
     warns about for its inputs.
     """
     tags = {finding.element_tags[0] for finding in deck_equipment_support(ctx)
-            if finding.element_tags}
+            if finding.element_tags and finding.result is not Result.NOT_APPLICABLE}
     return [e for e in ctx.plan.all_elements()
             if isinstance(e, Equipment) and e.tag in tags]

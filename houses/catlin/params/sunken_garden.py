@@ -939,6 +939,96 @@ FROST_WINGS = [
 ]
 
 # ============================================================================
+# Heat-pump equipment pad, in the yard pocket east of the porch.
+# ============================================================================
+# EQ-M-HP1-OD and EQ-M-HP2-OD (authored in plan/electrical.py) stood on FS-SG-DECK at +10'
+# until 2026-09-02. They stand on the ground now, and the whole detail this file used to
+# carry — eight lags through a watertight plank, sixteen sacrificial blocks, four
+# reinforcements, two traced condensate runs — went with them. See
+# notes/heat_pump_ground_pad.md; notes/heat_pump_deck_mounting.md is SUPERSEDED and kept
+# for the reasoning, because the balcony rule (decision #64) still governs any future deck.
+#
+# ** THE POCKET IS THE SITE, AND IT WAS ALREADY EMPTY. ** West is the porch's east wall
+# W-SG-E1 (faces x 27'-6"/28'-6", top 0'-0"); north is the house's south wall; south is the
+# W-RG-EAST-BALCONY apron return at y = -10'-6"; east is open yard to x 36'. The house is
+# gable-ended here, so nothing sheds onto it, and the only neighbour is TR-SG-LEADER-SE at
+# (28'-9", -10'-6"), well south of the pad.
+#
+# ** THE PAD BUTTS THE PORCH WALL, WITH AN ISOLATION JOINT. ** x 28'-6"..32'-0" rather than
+# the 29'-0" west edge the siting first proposed, and it is the FEET that decided it: HP1's
+# published foot pattern is 15 9/16" across the depth against a 14 9/16" cabinet, so its
+# west leg line sits half an inch WEST of the cabinet's own back face. A pad drawn to the
+# cabinets would have left that leg overhanging by 3/8". Six inches of extra pour is the
+# cheap answer; moving the units east into the pocket to save it is not.
+_HP_PAD_X0, _HP_PAD_X1 = 28.5, 32.0
+_HP_PAD_Y0, _HP_PAD_Y1 = -9.0, -0.6
+#: Two inches proud of the -2'-10" site grade — Gree's "install 2 in above the expected snow
+#: line", and the first two of the ~20" the 18" stands on top of it then add.
+_HP_PAD_TOP = ft(-2, -8)
+
+HP_PAD = Slab(
+    uid="SGHPADAAAA", tag="SL-SG-HPPAD", assembly="HP_PAD_ON_GRADE",
+    outline=(pt(ft(_HP_PAD_X0), ft(_HP_PAD_Y0)), pt(ft(_HP_PAD_X1), ft(_HP_PAD_Y0)),
+             pt(ft(_HP_PAD_X1), ft(_HP_PAD_Y1)), pt(ft(_HP_PAD_X0), ft(_HP_PAD_Y1))),
+    thickness=inch(4.0), top_elevation=_HP_PAD_TOP)
+
+# ** ON A PAD THE LEGS ARE THE FEET. ** This is the one thing the move to grade simplifies
+# outright. On the balcony the leg positions belonged to the DECK — bay centres, six inches
+# off every beam axis — and the cabinets' own foot patterns could not be honoured at the
+# same time, so each stand needed a frame that spanned two different grids (decision #64).
+# A flat slab has no grid, so each leg stands directly under a published foot hole and the
+# rails carry no cantilever at all. Gree's patterns, width x depth, from the submittals:
+#
+#   EQ-M-HP1-OD  FXU24HP230V1R32AO   29 3/4"  x 15 9/16"   187.4 lb
+#   EQ-M-HP2-OD  MUL30HP230V1R32AO   25"      x 15 19/32"  145.5 lb
+#
+# Both cabinets are rotated 90 degrees (long axis along y, discharge facing east), so the
+# WIDTH pitch runs in y and the DEPTH pitch in x. The centres are the units' own, authored
+# in plan/electrical.py — the two files cannot import each other, so a unit that moves must
+# move here too. `test_catlin_outdoor_structures.py` is what holds the two together now that
+# the deck check no longer does.
+_HP_STAND_AT = (
+    ("A", 1, 29.6 - 15.5625 / 24.0, -2.6 - 29.75 / 24.0),
+    ("A", 2, 29.6 - 15.5625 / 24.0, -2.6 + 29.75 / 24.0),
+    ("A", 3, 29.6 + 15.5625 / 24.0, -2.6 - 29.75 / 24.0),
+    ("A", 4, 29.6 + 15.5625 / 24.0, -2.6 + 29.75 / 24.0),
+    ("B", 1, 29.7 - 15.59375 / 24.0, -6.9 - 25.0 / 24.0),
+    ("B", 2, 29.7 - 15.59375 / 24.0, -6.9 + 25.0 / 24.0),
+    ("B", 3, 29.7 + 15.59375 / 24.0, -6.9 - 25.0 / 24.0),
+    ("B", 4, 29.7 + 15.59375 / 24.0, -6.9 + 25.0 / 24.0),
+)
+#: 18", against the 12" the balcony stands carried. The owner's 12" was a balcony number —
+#: a deck swept by wind keeps its snow depth low in a way ground never does. At grade the
+#: cold-climate guidance (18"-24") applies as written, and 18" puts the coil bottom about
+#: 20" above grade, past both the drift and Gree's own 2"-above-the-snow-line rule.
+_HP_STAND_HEIGHT_IN = 18.0
+
+# ``supported_by`` naming the pad is what stands these up FROM its top rather than hanging
+# them below the storey datum: ``_resolve_post`` (resolve/envelope.py) reads any tag in
+# ``solid_top``, and a Slab is in that map as one of ``model.solids``. Filed on `main` with
+# the pad, so "main + 18\" above a -2'-8" pad top" is the base the units then sit on.
+HP_STAND_LEGS = [
+    Post(uid=f"SGHP{_hk}{_hi}AAAA", tag=f"PT-SG-HP{_hk}{_hi}",
+         position=pt(ft(_hx), ft(_hy)), size="2.0x2.0",
+         height=inch(_HP_STAND_HEIGHT_IN),
+         supported_by="SL-SG-HPPAD", assembly="EQUIP_STAND_ALUM")
+    for _hk, _hi, _hx, _hy in _HP_STAND_AT
+]
+# One wedge anchor per leg, at the pad top — the plane the base plate bears on and the plane
+# the anchor is set through. ``EQUIPMENT_ANCHOR`` for the same reason it always was: the
+# part is selected by the joint, not by the section above it, and filing it as a post base
+# would print a 3/8" wedge anchor's part number under "modeled post base connector(s)".
+# The part is ``SS316-WEDGE-38x3`` in library/hardware.py — 316 because an aluminium leg on
+# a de-iced pad at grade is in the splash zone all winter.
+HP_STAND_ANCHORS = [
+    Connector(uid=f"SGHC{_hk}{_hi}AAAA", tag=f"CN-SG-HP{_hk}{_hi}",
+              kind=ConnectorKind.EQUIPMENT_ANCHOR, position=pt(ft(_hx), ft(_hy)),
+              elevation=_HP_PAD_TOP, size="SS316-WEDGE-38x3",
+              connects=(f"PT-SG-HP{_hk}{_hi}", "SL-SG-HPPAD"))
+    for _hk, _hi, _hx, _hy in _HP_STAND_AT
+]
+
+# ============================================================================
 # Main (porch, 0'): back + front beams on their columns, composite deck.
 # ============================================================================
 # The back-beam line rides at the column's south-offset (``_y_col``), not on the deck's
@@ -1380,120 +1470,6 @@ PORCH_JOISTS = FloorSystem(
 # `resolve/floors.py` draws the deck sheet bearing-line to bearing-line PLUS both
 # cantilevers, by the joists' perpendicular extent — _x_ax_w - 6" to _x_ax_e + 6" by the
 # balcony's front plane to _y_in_n.
-# ============================================================================
-# Heat-pump stands on the balcony deck.
-# ============================================================================
-# EQ-M-HP1-OD and EQ-M-HP2-OD (authored in plan/electrical.py) stand on this deck, 12" clear
-# of the plank on a small aluminium frame. The frame has to be BOLTED DOWN — Gree's service
-# manual §8.6 requires the foot holes fixed and the support rated to four times unit weight,
-# and IRC M1401.4 makes a manufacturer instruction mandatory — so eight fasteners pass
-# through a watertight plank that is also the roof of an occupied porch. Everything below is
-# about where those eight holes land.
-#
-# ** THE ANCHORS LAND IN BLOCKING, NEVER IN A JOIST AND NEVER IN A BEAM. ** That is the whole
-# rule, and it is the opposite of the instinct. Both units sit within an inch of the rear
-# pillar line, so a 3-ply beam directly over a pillar and its footing is right there and is
-# the stiffest thing on the deck. It is also the one member here that cannot be replaced, it
-# carries `TR-SG-CAP-BL*` and the butyl under it, and its ply seams are exactly the wet joint
-# `notes/beam_water_protection.md` exists to close. A fastener that penetrates the waterproof
-# plane goes into something we can cut out from below and put back. Blocking is that thing.
-#
-# ** THE ANCHORS SIT AT BAY CENTRES, AND THE REINFORCEMENT SITS ON THE JOIST LINE. **
-# ``_reinforcement_members`` (resolve/floors.py) snaps each reinforcement to the NEAREST
-# joist line and lays one block in the bay either side of it, at the load's own x. So the
-# reinforcement and the anchor are deliberately NOT the same point: put the reinforcement on
-# a joist line and it hands you two blocks, one either side; put an anchor at the centre of
-# each of those blocks and both holes are 8" from any joist. Authoring a reinforcement AT
-# each anchor instead costs twice the reinforcements for the same eight holes, and where two
-# of them straddle one bay it emits the same block twice, at the same x, and bills the
-# lumber and the butyl for both.
-#
-# ** THE JOIST GRID IS LAID OUT FROM THE DECK'S SOUTH RIM. ** The lines fall at -0'-10"
-# (north rim), -1'-2", -2'-6", -3'-10", -5'-2", -6'-6", -7'-10", -9'-2", -10'-6" (south
-# rim), because 12" is not a whole number of 16" bays. One reinforcement per x-line at
-# y = -2'-6" therefore blocks the bays -1'-2"..-2'-6" and -2'-6"..-3'-10", and the two
-# anchors go at their centres, -1'-10" and -3'-2", to stay centred over the units' own legs
-# (params/../plan/electrical.py) — a bay centre is not adjustable, so the cabinet is what
-# gives. Nothing here can be left on a remembered number: ``mep.deck_equipment_support``
-# measures every anchor against the RESOLVED joist lines.
-#
-# The first cut of this put every anchor 3" off a joist line — inside the bay, but with only
-# 2 1/4" of clear to the joist face, which is not room for a sealed base plate and is one
-# layout error from the joist itself. Nothing caught it, because
-# ``mep.deck_equipment_support`` tested only that the anchor fell inside a BLOCK's bounding
-# box — and a block spans the full bay, so an anchor sitting on a joist line is inside it
-# too. The check now measures the distance to the joist lines directly. Both mistakes were
-# the same mistake: proving a host exists is not proving the anchor found it.
-#
-# ** AND CLEAR OF THE THREE BEAM BANDS. ** A 3-2x12 is 4 1/2" wide, so BM-SG-BLW/BLC/BLE
-# occupy x 7'-9 3/4"..8'-2 1/4", 17'-9 3/4"..18'-2 1/4" and 27'-9 3/4"..28'-2 1/4". Six
-# inches from a beam AXIS is the floor, not four: the first cut put three legs 4" off a
-# centreline, which is 1 3/4" of clear to the face of a 3-ply, and the check failed them. A
-# base plate that has to seal against the plank needs room for the plate and its butyl
-# gasket, and a plate lapping onto the beam puts the next fastener back where this whole
-# detail is trying not to be.
-#
-# ** THE LEGS ARE NOT UNDER THE FEET, AND THE FRAME IS WHAT RECONCILES THEM. ** These are the
-# numbers this file got wrong for a day, so they are written out. Gree publishes a foot-hole
-# pattern per capacity, and it is not adjustable in the depth direction — the cast foot's
-# obround slot runs the WIDTH way, so width has about 1/4" of travel and depth has none:
-#
-#   EQ-M-HP1-OD  FXU24HP230V1R32AO   feet 29 3/4"  (width) x 15 9/16"  (depth)  187.4 lb
-#   EQ-M-HP2-OD  MUL30HP230V1R32AO   feet 25"      (width) x 15 19/32" (depth)  145.5 lb
-#
-# ** THE LEGS FOLLOW THE DEPTH PITCH, NOT THE WIDTH PITCH. ** The depth pitch is what the
-# legs follow (see below); the width pitch is what the frame's rails have to reach, and it
-# does not fit the deck's grid at all.
-#
-# The legs below are on NEITHER of those patterns, and that is correct rather than sloppy:
-# leg positions are decided by the deck (bay centres, beam clearance) and foot positions by
-# the cabinet, and the two cannot both be satisfied by one set of points — HP1's west foot
-# line lands on BM-SG-BLW. The frame is the part that spans between them, so it is sized to
-# reach the feet and land on the legs, and each frame's real size is recorded on
-# ``EQUIP_STAND_ALUM`` in plan/assemblies.py:
-#
-#   HP1 frame 15 9/16" (depth) x 29 3/4" (width) — legs 15 9/16" x 16", feet 6 7/8" outboard
-#   HP2 frame 24"      (depth) x 25"     (width) — legs 24" x 16", feet inboard of the legs
-#
-# ** WHY THE Y SPACING STAYS 16" WHEN HP1'S FEET WENT TO 29 3/4". ** ``_HP_STAND_LEG_Y`` is
-# not a free number: the legs land at the centres of the two bays either side of the
-# y = -2'-10" joist line, which at 16" o.c. joists puts them 16" apart and nowhere else. The
-# only other pair symmetric about the units' centreline is -0'-6"/-4'-6", 48" apart, wider
-# than either cabinet. So HP1's feet sit 6 7/8" OUTBOARD of its legs, and the frame's width
-# rails carry that overhang.
-#
-# A 12" leg spacing is SHORTER than either foot pattern: HP2's feet would miss a 12"-spaced
-# pair of rails outright.
-#
-# Both units are centred over their own legs, not over an eccentric frame under a
-# bolted-down cabinet.
-#
-# ** THE WIND CALC IS NOT RE-DERIVED HERE, AND THAT IS DELIBERATE. ** HP1's outdoor unit goes
-# 92.6 -> 187.4 lb while its projected area grows ~50% (980 -> 1,475 in^2) with the centroid
-# about 12" higher. Both sides of the overturning and sliding check in
-# notes/heat_pump_deck_mounting.md move, in opposite directions — more weight resisting, more
-# sail area driving. That note is already UNSEALED (`equipment_anchorage/EQ-M-HP1-OD` in the
-# engineering register is UNKNOWN), so this change does not turn a sealed number into a wrong
-# one; it does mean the note's arithmetic is now stale as well as unsealed. Flagged, not
-# guessed.
-_HP_STAND_LEG_X = {"A": (102.21875 / 12.0, 117.78125 / 12.0),  # EQ-M-HP1-OD, on x = 9'-2"
-                   "B": (198.0 / 12.0, 222.0 / 12.0)}   # EQ-M-HP2-OD, centred on x = 17'-6"
-# Bay centres, 8" clear of the joist lines either side, symmetric about y = -2'-6" — which
-# is both the units' own centreline and the joist line the reinforcements sit on.
-_HP_STAND_LEG_Y = (-22.0 / 12.0, -38.0 / 12.0)
-#: The joist line each frame's two blocks straddle. One reinforcement per x-line, here.
-_HP_BLOCK_LINE_Y = -30.0 / 12.0
-_HP_STAND_HEIGHT_IN = 12.0
-# Which unit each frame carries, for the reinforcement `source` and the check's cross-ref.
-_HP_STAND_UNIT = {"A": "EQ-M-HP1-OD", "B": "EQ-M-HP2-OD"}
-_HP_STAND_AT = tuple(
-    (key, index, x, y)
-    for key in ("A", "B")
-    for index, (x, y) in enumerate(
-        ((lx, ly) for lx in _HP_STAND_LEG_X[key] for ly in _HP_STAND_LEG_Y), start=1))
-#: One reinforcement per (unit, x-line) — four, not eight. See the block comment above.
-_HP_BLOCK_AT = tuple((key, x) for key in ("A", "B") for x in _HP_STAND_LEG_X[key])
-
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
@@ -1513,25 +1489,6 @@ BALCONY_JOISTS = FloorSystem(
     # straight onto copper-treated pine, which AWC DCA6 warns against outright. The tape is
     # the dielectric. That it also keeps the fastener penetrations sealed is the bonus.
     top_protection=_BEAM_TAPE,
-    # One block per heat-pump stand leg — the sacrificial member every anchor lands in, and
-    # the reason the eight penetrations are survivable. FOUR reinforcements make those eight
-    # blocks, not eight: each sits ON the y = -2'-10" joist line and lays a block in the bay
-    # either side, and the anchors go at those blocks' centres. See ``_HP_BLOCK_AT`` above
-    # for why authoring one per anchor instead double-emits a block.
-    # ``plies=1`` is load-bearing: it makes
-    # ``_reinforcement_members`` lay ZERO sister joists (``range(plies - 1)`` is empty) and
-    # only the two blocks, because what this needs is a fastener host, not a stiffened joist.
-    # The blocks inherit ``top_protection`` above — "blocking" is in
-    # ``takeoff/member_protection._TAPED_CATEGORIES`` — so each one tapes and bills itself
-    # with no further wiring, and the butyl is under the base plate by construction.
-    reinforcements=tuple(
-        JoistReinforcement(
-            at=pt(ft(_hx), ft(_HP_BLOCK_LINE_Y)), plies=1, member=SPEC.balcony_joist,
-            source=f"anchor host for the {_HP_STAND_UNIT[_hk]} stand's x={_hx * 12:.0f}in "
-                   f"leg pair — one block either side of this joist line, an anchor at the "
-                   f"centre of each. Sacrificial: replaceable from the porch below without "
-                   f"touching a joist or a beam")
-        for _hk, _hx in _HP_BLOCK_AT),
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
@@ -1936,53 +1893,6 @@ PORCH_BEAM_CAPS = [c for c in BEAM_CAPS if c.host_ref in
 BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 
 # ============================================================================
-# The heat-pump stands themselves — legs and through-deck anchors.
-# ============================================================================
-# Geometry, and the reasoning for every coordinate, is at ``_HP_STAND_AT`` above; the
-# blocking each anchor lands in is on ``FS-SG-DECK.reinforcements``. This block is only the
-# metal.
-#
-# Twelve inches, an owner decision, against the 18"-24" a cold-climate guide
-# would ask for. The trade is recorded rather than argued: the guidance is written for a
-# unit at grade, and this balcony is swept by wind that keeps its snow depth low in a way a
-# ground-level stand cannot rely on. What 12" already buys, and what the taller number was
-# mostly for anyway, is airflow: a 12" stand under a 32"/34" cabinet puts the coil at
-# 44"/46", clear of the 42" guard, so neither unit sits in the stagnation pocket behind it.
-#
-# The legs are aluminium and that is not a finish choice — see ``EQUIP_STAND_ALUM`` in
-# plan/assemblies.py. They stand on an aluminium plank and are lagged through it into
-# copper-treated blocking, which is the one place in this structure where three metals and a
-# treated wood meet. Aluminium on aluminium is no couple; the butyl under each base plate is
-# what keeps the stand off the KDAT; the lag is 316 stainless for the same reason.
-_hp_stand_height = inch(_HP_STAND_HEIGHT_IN)
-HP_STAND_LEGS = [
-    Post(uid=f"SGHP{_hk}{_hi}AAAA", tag=f"PT-SG-HP{_hk}{_hi}",
-         position=pt(ft(_hx), ft(_hy)), size="2.0x2.0", height=_hp_stand_height,
-         supported_by="FS-SG-DECK", assembly="EQUIP_STAND_ALUM")
-    for _hk, _hi, _hx, _hy in _HP_STAND_AT
-]
-# One anchor per leg, at the walking surface — the plank's top, which is the plane the base
-# plate is bedded on and the plane the lag crosses. NOT ``_deck_top``: that is the joist
-# tops, 1 1/2" of plank below where this connection actually happens.
-#
-# ``connects`` names the BLOCKING's host deck rather than a joist or a beam, which is the
-# whole point of the detail and is what ``mep.deck_equipment_support`` reads.
-#
-# ``EQUIPMENT_ANCHOR``, not ``POST_BASE``: a post base is a formed stirrup you set the post
-# into, and what is actually here is a 3/8" lag through a bonded washer, chosen for its seal
-# and its alloy rather than for the section above it. Filing it as a post base would print
-# "8 modeled post base connector(s)" in the BOM against a lag screw's part number, three
-# lines under ten real ABU66SS — nobody could order from that and no framer could build it.
-# The part is ``SS316-LAG-38x4-EPDM`` in library/hardware.py.
-HP_STAND_ANCHORS = [
-    Connector(uid=f"SGHC{_hk}{_hi}AAAA", tag=f"CN-SG-HP{_hk}{_hi}",
-              kind=ConnectorKind.EQUIPMENT_ANCHOR, position=pt(ft(_hx), ft(_hy)),
-              elevation=_deck_walking_surface, size="SS316-LAG-38x4-EPDM",
-              connects=(f"PT-SG-HP{_hk}{_hi}", "FS-SG-DECK"))
-    for _hk, _hi, _hx, _hy in _HP_STAND_AT
-]
-
-# ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
@@ -1990,8 +1900,9 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, PORCH_GUARD,
-                 *CONNECTORS, *PORCH_BEAM_CAPS]
+                 *CONNECTORS, *PORCH_BEAM_CAPS,
+                 HP_PAD, *HP_STAND_LEGS, *HP_STAND_ANCHORS]
 SECOND_ELEMENTS = [*SECOND_NODES, *RAIL_NODES, *BALCONY_BEAMS, *BALCONY_RAILS, *PILLARS,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,
-                   *BALCONY_BEAM_CAPS, *HP_STAND_LEGS, *HP_STAND_ANCHORS]
+                   *BALCONY_BEAM_CAPS]

@@ -584,3 +584,132 @@ def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
     span = [p[1] for p in trough.outline]
     drop = [p[1] for p in turn_down.outline]
     assert min(span) < min(drop) and max(drop) < max(span)
+
+
+# --- the heat-pump ground pad, east of the porch --------------------------------------
+#
+# Both condensers stood on FS-SG-DECK at +10' until 2026-09-02 and now stand on a poured pad
+# in the yard pocket east of the porch (houses/catlin/notes/heat_pump_ground_pad.md). What
+# used to hold this together was ``mep.deck_equipment_support_coverage``, which read the
+# stand and the cabinets and reconciled a dimension written in two modules that cannot import
+# each other. Nothing stands on a deck now, so that check grades an empty population here and
+# these tests take over the coupling: the pad's top, the legs' bearing on it, the anchors'
+# host, and the cabinets' own base all have to agree, and they are authored in two files.
+_HP_PAD_TOP_FT = -2 - 8 / 12.0
+_HP_STAND_IN = 18.0
+_HP_UNITS = ("EQ-M-HP1-OD", "EQ-M-HP2-OD")
+
+
+def test_the_heat_pump_pad_tops_out_two_inches_proud_of_grade(catlin_model) -> None:
+    """``SL-SG-HPPAD`` is a 4" pour whose top is ABOVE the site plane, not level with it.
+
+    -2'-8" against a -2'-10" grade. The two inches are Gree's own instruction ("install 2 in
+    above the expected snow line") and they are the first two of the ~20" the 18" stands then
+    make up. A pad authored without ``top_elevation`` would hang its thickness below the
+    `main` datum instead — 0'-0" to -0'-4", nearly three feet in the air.
+    """
+    pad = _solid(catlin_model, "SL-SG-HPPAD")
+    assert pad.category == "slab"
+    assert pad.z1_m / FT == pytest.approx(_HP_PAD_TOP_FT)
+    assert (pad.z1_m - pad.z0_m) / INCH == pytest.approx(4.0)
+    site_grade = catlin_model.plan.project.site.grade.meters
+    assert pad.z1_m > site_grade
+    assert (pad.z1_m - site_grade) / INCH == pytest.approx(2.0)
+
+
+def test_the_eight_stand_legs_stand_UP_from_the_pad_top(catlin_model) -> None:
+    """``supported_by="SL-SG-HPPAD"`` is what makes a post rise from a support.
+
+    ``_resolve_post`` (resolve/envelope.py) bears a post on any tag in ``solid_top``, which
+    holds every resolved solid, so a Slab is a legal support. Without it the legs would hang
+    their height BELOW the `main` datum — tops at 0'-0", bottoms at -1'-6", floating a foot
+    above a pad they are supposed to be bolted to.
+    """
+    legs = [s for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")]
+    assert len(legs) == 8, [s.tag for s in legs]
+    pad_top = _solid(catlin_model, "SL-SG-HPPAD").z1_m
+    for leg in legs:
+        assert leg.z0_m == pytest.approx(pad_top), leg.tag
+        assert (leg.z1_m - leg.z0_m) / INCH == pytest.approx(_HP_STAND_IN), leg.tag
+        assert leg.assembly == "EQUIP_STAND_ALUM", leg.tag
+
+
+def test_every_stand_anchor_names_the_pad_and_sits_on_its_top(catlin_model) -> None:
+    """One wedge anchor per leg, connecting that leg to the slab it is set into.
+
+    The pair matters as much as the count: an anchor naming a leg but not the pad describes a
+    fastener into nothing, and the plan (not the resolved model) is where that claim lives.
+    """
+    anchors = [e for s in catlin_model.plan.storeys
+               for e in catlin_model.plan.storey_elements(s.tag)
+               if getattr(e, "tag", "").startswith("CN-SG-HP")]
+    assert len(anchors) == 8, [e.tag for e in anchors]
+    legs = {s.tag for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")}
+    for anchor in anchors:
+        assert anchor.kind.value == "equipment_anchor", anchor.tag
+        assert anchor.size == "SS316-WEDGE-38x3", anchor.tag
+        assert "SL-SG-HPPAD" in anchor.connects, anchor.tag
+        assert legs & set(anchor.connects), anchor.tag
+        assert anchor.elevation.meters / FT == pytest.approx(_HP_PAD_TOP_FT), anchor.tag
+
+
+def test_both_condensers_sit_on_the_stands_rather_than_beside_them(catlin_model) -> None:
+    """The cabinets' base and the legs' tops are one plane written in two files.
+
+    ``mount.elevation`` is authored in plan/electrical.py and measures from the `main` datum;
+    the pad top and the stand height are authored in params/sunken_garden.py. -2'-8" + 18"
+    = -1'-2", and the units carry inch(-14). Nothing but this reconciles them — the two
+    modules cannot import each other, and the check that used to do it sees no deck
+    equipment any more.
+    """
+    storeys = {s.tag: s for s in catlin_model.plan.storeys}
+    units = {e.tag: (s, e) for s in catlin_model.plan.storeys
+             for e in catlin_model.plan.storey_elements(s.tag)
+             if getattr(e, "tag", "") in _HP_UNITS}
+    assert set(units) == set(_HP_UNITS), sorted(units)
+    leg_top = max(s.z1_m for s in catlin_model.solids if s.tag.startswith("PT-SG-HP"))
+    for tag, (storey, unit) in units.items():
+        assert storey.tag == "main", (tag, storey.tag)
+        base = resolved_mount_elevation(storeys[storey.tag], unit)
+        assert base == pytest.approx(leg_top), tag
+        assert base / FT == pytest.approx(-1 - 2 / 12.0), tag
+        # Ground units drip onto their own pad: no pan, no piped condensate, no heat trace.
+        assert not getattr(unit, "drain_pan", False), tag
+        assert getattr(unit, "pan_drain_ref", None) is None, tag
+
+
+def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin_model
+                                                                          ) -> None:
+    """On a pad the legs ARE the feet, which is the whole simplification the move bought.
+
+    On the balcony the legs answered to the deck (bay centres, six inches off a beam axis)
+    and the feet to the cabinet, and the two could not coincide — decision #64. A flat slab
+    has no grid, so each leg sits directly under a published foot hole: Gree's patterns are
+    29 3/4" x 15 9/16" (FXU24, HP1) and 25" x 15 19/32" (MUL30, HP2), width x depth, and both
+    cabinets are rotated 90 degrees so the width pitch runs in y.
+
+    And every leg's full 2" section must land ON the pad. HP1's depth pattern is an inch
+    WIDER than its cabinet, so its west leg line sits outboard of the cabinet's own back
+    face — the reason the pad reaches all the way to W-SG-E1 instead of stopping under the
+    units.
+    """
+    from shapely.geometry import Polygon
+
+    pattern = {"EQ-M-HP1-OD": ("A", 29.75, 15.5625), "EQ-M-HP2-OD": ("B", 25.0, 15.59375)}
+    units = {e.tag: e for s in catlin_model.plan.storeys
+             for e in catlin_model.plan.storey_elements(s.tag)
+             if getattr(e, "tag", "") in _HP_UNITS}
+    pad = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
+    legs = {s.tag: s for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")}
+    for tag, (key, width_in, depth_in) in pattern.items():
+        cx, cy = units[tag].position.xy_m
+        want = {(round(cx + sx * depth_in * INCH / 2.0, 6),
+                 round(cy + sy * width_in * INCH / 2.0, 6))
+                for sx in (-1, 1) for sy in (-1, 1)}
+        got = set()
+        for index in range(1, 5):
+            leg = legs[f"PT-SG-HP{key}{index}"]
+            ring = Polygon(leg.outline)
+            got.add((round(ring.centroid.x, 6), round(ring.centroid.y, 6)))
+            assert pad.contains(ring), f"PT-SG-HP{key}{index} overhangs the pad"
+        assert got == want, tag

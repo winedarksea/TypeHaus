@@ -779,16 +779,19 @@
 # 2026-08-31), a non-penetrating fixing has nothing left to protect. Both strapped runs are
 # on PBR walls and neither moved.
 "SS316-STANDOFF-STRAP #11" = { low = 2.5, high = 4.5 }  # 3 ea — vent riser
-# RESEARCHED 2026-08-28 — the eight through-deck anchors under the two balcony heat-pump
-# stands (params/sunken_garden.py::HP_STAND_ANCHORS). A 3/8" x 4" 316 stainless hex lag with a
-# bonded EPDM washer is a fastener-supply item, not a Simpson part: 316 lags in this size run
-# roughly $3-6 each in small quantities and the bonded washer adds $0.25-0.60. Priced at the
-# top of that because eight pieces is below anybody's price break, and because the whole point
-# of the row is that these are NOT the cheap galvanised equivalent — they pass through
-# copper-treated KDAT blocking under an aluminium stand on an aluminium plank.
-# The butyl gasket under each base plate is NOT here: it comes off the same roll as
-# [member_protection] "butyl-tape-beam" and would be a second bill for one product.
-"SS316-LAG-38x4-EPDM" = { low = 4, high = 8 }  # 8 ea
+# RESEARCHED 2026-09-02 — the eight wedge anchors holding the two heat-pump ground stands
+# down to SL-SG-HPPAD (params/sunken_garden.py::HP_STAND_ANCHORS). A 3/8" x 3" 316 stainless
+# wedge anchor is a fastener-supply item, not a Simpson part: 316 wedge anchors in this size
+# run roughly $3-6 each in small quantities. Priced at the top of that because eight pieces
+# is below anybody's price break, and because the whole point of the row is that these are
+# NOT the galvanised equivalent — an aluminium leg on a pad at grade sits in the splash and
+# the road salt every winter.
+#
+# It REPLACES "SS316-LAG-38x4-EPDM" ($4-8, 8 ea), the through-deck lag this house needed
+# while both condensers stood on FS-SG-DECK. Nothing is bolted through that plank now, so
+# the deck anchor's row went with the stand — the part survives in library/hardware.py for
+# any house that does put equipment on a dry-below deck.
+"SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 8 ea
 "SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
 # NOT TAKEN as of 2026-08-31 — 0 ea, and it falls out on its own: `takeoff/fasteners.py`
 # derives the length and the count from the stack, and there is no longer a nailbase to screw
@@ -1022,6 +1025,15 @@
 # ($0.20-0.50/SF, $16-40/cy at 3.5"); placing, screeding and finishing are the residual, and
 # finishing is why a slab's labour half is wider than a footing's.
 "slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 26.37 cy — SLAB-ON-GRADE ONLY, was merged $390-685
+# The heat-pump pad, SL-SG-HPPAD — 0.36 cy, and QUALIFIED because a third of a yard is not
+# the same product as the 26 yards above it. You cannot buy 0.36 cy of ready-mix: it is
+# either fifteen 80 lb bags mixed on site or a short-load charge that costs more than the
+# concrete. Either way the $/cy is two to three times the bulk rate, and the labour is the
+# forming, the 2 1/2" of fall and the trowel finish on a pad whose whole area is smaller
+# than one truck's washout. Unreinforced (the model authors no rebar here) and no frost
+# footing under it: an equipment pad that heaves an inch in February and comes back in April
+# has done nothing a line set cannot absorb — see plan/assemblies.py::HP_PAD_ON_GRADE.
+"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 350, high = 800 } }  # 0.36 cy — short-load or bagged; NOT the bulk slab-on-grade rate
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -1206,21 +1218,23 @@
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
 "column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.40 cy = 51.4 LF
-# RESEARCHED 2026-08-28 — the two balcony heat-pump stands' legs, 8 of them, 0.01 cy. THE
-# YARD IS A NONSENSE UNIT HERE AND THE RATE SAYS SO: eight 2" square aluminium legs a foot
-# long is a fifth of a cubic foot, so any $/cy that lands on a real number for this row is
+# RESEARCHED 2026-08-28, RE-BASED 2026-09-02 for the move to grade — the two heat-pump ground
+# stands' legs, 8 of them, 0.01 cy. THE YARD IS A NONSENSE UNIT HERE AND THE RATE SAYS SO:
+# eight 2" square aluminium legs 18" long is a third of a cubic foot, so any $/cy that lands on a real number for this row is
 # going to look enormous. It is built the way the [timber] header builds its rows — from a
 # real per-item price, divided by the modelled volume, with both numbers written down.
 #
-# A fabricated aluminium mini-split stand of this size (12" clear, ~24" x 32" frame, four legs
-# and two cross-rails) is $150-400 apiece bought or shop-made; two of them is $300-800. Labour
-# is setting, levelling and shimming ~3/4" of deck fall out of each frame, plus driving the
-# eight anchors and bedding their plates: $200-500 for the pair.
+# A fabricated aluminium mini-split ground stand of this size (18" clear, four legs and two
+# cross-rails on the unit's own foot pattern) is $150-400 apiece bought or shop-made; two of
+# them is $300-800. Labour is setting, levelling and shimming them plumb on the pad, plus
+# drilling and torquing the eight wedge anchors: $150-400 for the pair. Lower than the
+# balcony version this replaces ($200-500) — there is no deck fall to shim out and no butyl
+# bed under a base plate, because nothing here is a waterproof plane.
 #
 # ** THE CROSS-RAILS ARE IN THIS ROW AND ARE NOT MODELLED GEOMETRY. ** Only the legs resolve
 # as solids. Pricing the legs alone would buy half a stand.
-# -> material $300-800 and labour $200-500 over 0.01 cy.
-"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 20000, high = 50000 } }  # 0.01 cy = 8 legs + 2 sets of cross-rails, $300-800 mat + $200-500 lab for the pair
+# -> material $300-800 and labour $150-400 over 0.01 cy.
+"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.01 cy = 8 legs + 2 sets of cross-rails, $300-800 mat + $150-400 lab for the pair
 #
 # WHITE-PAINTED GARDEN FRAME — 37.3 LF over four members, 0.49 cy. Every stick of the garden's
 # frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0")
@@ -3636,27 +3650,6 @@
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # 21 LF — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate
 
-[freeze_protection]
-# RESEARCHED 2026-08-28 — [low, high] $/LF of RUN traced, by spec. New section and new BOM
-# table (takeoff/mep.py::freeze_protection_takeoff), the electrical twin of [pipe_insulation].
-#
-# Two balcony condensate lines, 10.8 LF between them. Tiny, and it is in the estimate anyway
-# because the thing it protects is not: an untraced defrost line on an exposed deck is full of
-# ice by midwinter, and the meltwater goes back onto a walking surface two doors open onto and
-# then into a box gutter over an occupied porch. This is the cheapest line item in the file
-# that prevents a real failure.
-#
-# Basis: self-regulating heater cable is $4-9/LF for 3-6 W/ft residential cable at 120 V;
-# a plug-in or hard-wired thermostat/controller is $40-120 and is spread over the run here
-# because 10.8 feet cannot carry a line item of its own. Labour is spiralling the cable,
-# taping it and landing it on a circuit: $3-7/LF at this length, which is mostly the trip.
-# ** THE LEADER IS NOT IN THIS NUMBER. ** TR-SG-LEADER-SE is a `Downspout`, not a `PipeRun`,
-# so the cable this house actually needs down the 3" leader has nothing to hang off in the
-# model and is carried in notes/heat_pump_deck_mounting.md instead. Add ~12 LF when quoting.
-# CONFIDENCE: MEDIUM on the cable, LOW on the labour at this trivial length.
-# $/LF of traced run, by spec
-"5 W/ft self-regulating, 120 V" = { material = { low = 8, high = 18 }, labour = { low = 3, high = 7 } }  # 10.8 LF — PR-S-HP1-COND + PR-S-HP2-COND; material carries a share of the controller
-
 [member_protection]
 # RESEARCHED 2026-08-27 — [low, high] $/LF of MEMBER covered, by material tag. New section,
 # and new BOM table behind it (takeoff/member_protection.py): self-adhered butyl over the
@@ -4433,7 +4426,12 @@ envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 plumbing-municipal-water-sewer-and-sac = { low = 6000, high = 18000 }
 # Includes temporary construction power.
 electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
-# 5 pairings, ~145 LF. Entirely absent today. NOT DRIVEN (2026-08-27): `pipe_runs` carries
+# 5 pairings, ~195 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
+# condensers moved to a ground pad east of the porch: HP1 now runs ~40 ft up the W-M-S2 /
+# W-S-S2 stud bay into FS-ATTIC, and HP2's three ports ~25-30 ft each through the main-floor
+# band. Routes and lengths against Gree's published limits are in
+# notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: at $26-49/LF the
+# added footage is inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries
 # drain, vent, water_cold and water_hot and no refrigerant system, so there is no line-set
 # length to read. This is a MODELLING gap, not a pricing one — the day a refrigerant
 # `PipeRun` exists, this becomes `pipe_runs.length_ft[system=refrigerant]` at ~$26-49/LF.
@@ -4695,7 +4693,6 @@ wall_structure       = 0.05   # same, plus block breakage on RETAINING_BLOCK_12
 footing_bedding      = 0.10   # aggregate compacts and is lost into the subgrade
 envelope_layers      = 0.10   # board cuts, membrane laps, and the offcut at every opening
 edge_trim            = 0.10   # trim is cut from stock lengths and the drop is not reusable
-freeze_protection    = 0.05   # cable is cut from a reel and the tails are short; the controller is a piece, not a length
 member_protection    = 0.10   # tape comes in 50' rolls and the tail of one is not the start of the next; laps eat a little more
 pipe_insulation      = 0.10   # split sleeve cut to fittings
 construction_returns = 0.10   # short pieces cut from stock: sill, channel, blocking
@@ -4834,7 +4831,6 @@ plumbing_specialties = "material"
 install_parts        = "material"
 pipe_insulation      = "material"
 edge_trim            = "material"
-freeze_protection    = "material"
 member_protection    = "material"
 wall_structure       = "installed"
 timber               = "material"
@@ -4863,7 +4859,6 @@ solar_modules   = "$/W DC installed, split 65/35 on the industry norm. Modules, 
 data_raceways   = "material plus installed labour, $/LF of EMPTY PIPE. It is not the drops: cable, boxes, jacks and termination are the driven electrical-structured-low-voltage-drops allowance. Disjoint from [conduit] by construction — conduit_takeoff and data_raceway_takeoff partition model.conduits on service"
 ducts           = "material plus installed labour, UN-BLENDED 2026-08-27 by qualifying on `material` and 2026-08-30 by qualifying on `diameter_in` as well: `supply:semi_rigid:3.0` is the 75 mm radial, `supply:semi_rigid:6.0` the 6-inch riser, and a bare `supply` the 14x8 galvanized trunk, which the model leaves unnamed. Lookups fall back through the shorter keys, so the `material`-only and bare rows still price anything the finer rows do not name. The 08-27 blend it replaces was a sheet-metal rate carried over the radial pass, so the section fell rather than rose; the 08-30 diameter split is rate-neutral on today's mix and exists so it stays right when the mix moves"
 edge_trim       = "material plus installed labour. Two rows, drip_flashing and ridge_cap, are commonly inside a roofer's price — check for a double count against any roofing bid"
-freeze_protection = "material plus installed labour, and the material half carries a share of the thermostat/controller because 10.8 LF cannot support a line item of its own. Excludes the cable down TR-SG-LEADER-SE, which is a Downspout and not a PipeRun — see notes/heat_pump_deck_mounting.md"
 member_protection = "material plus installed labour. Applied by the framer WITH the framing, not by a trade on a return visit — five of the seven capped beams carry joists on top, so the tape and the cap over it go on before the deck frames or not at all"
 railings        = "material plus installed labour. RAILING-INT-STAIR-GUARD is priced as a COMPONENT system; a shop-welded guard moves cost from labour into material and the two models must not be stacked"
 drainage        = "material plus installed labour, BLENDED over two products that differ 3x (seamless K-style vs fabricated box gutter). Seamless is roll-formed on site, so its own split is inseparable and every quote will come back merged"

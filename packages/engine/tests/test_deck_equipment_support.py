@@ -215,9 +215,33 @@ def test_matches_the_deck_on_the_units_own_storey():
     assert "FS-T-PORCH" not in finding.message
 
 
-def test_no_deck_is_silence_not_an_unknown():
+def test_no_deck_is_a_verdict_not_silence():
+    """A house with no exterior deck reports N/A, and never an UNKNOWN or an empty list.
+
+    ``Result.NOT_APPLICABLE`` must be EARNED from positive evidence of absence
+    (plans/01-decisions.md #65), and "no FloorSystem in this plan carries service=deck" is
+    exactly that. Returning ``[]`` instead reads downstream as "no evaluable model input" —
+    nobody looked — which is a different and false claim about a search that did run.
+    """
     ctx = _ctx([_unit()], blocks=[])
-    assert deck_equipment_support(ctx) == []
+    finding = _one(deck_equipment_support(ctx))
+    assert finding.result is Result.NOT_APPLICABLE
+    assert "no exterior deck" in finding.message
+
+
+def test_decks_with_no_equipment_on_them_are_also_a_verdict():
+    """Same rule, the other way absence arrives: the decks exist and are empty.
+
+    This is catlin's own case since 2026-09-02 — both condensers moved to a ground pad and
+    the balcony is deliberately equipment-free
+    (``houses/catlin/notes/heat_pump_ground_pad.md``). The finding must name the decks it
+    searched, so "nothing found" is distinguishable from "nothing looked at".
+    """
+    ctx = _ctx([_deck()], blocks=[])
+    finding = _one(deck_equipment_support(ctx))
+    assert finding.result is Result.NOT_APPLICABLE
+    assert "FS-T-DECK" in finding.message
+    assert "FS-T-DECK" in finding.element_tags
 
 
 # --- the two holes the check had, and the geometry each one hid ------------------------

@@ -51,6 +51,11 @@ ROLE_POST_BASE_ANCHOR = "post_base_anchor"
 #: deck. Its own role rather than a ``post_base`` variant, because what it is selected
 #: for is the SEAL and the alloy, not the post section — see library/hardware.py.
 ROLE_DECK_EQUIPMENT_ANCHOR = "deck_equipment_anchor"
+#: The wedge anchor holding a ground-mounted equipment stand down to its concrete pad.
+#: Its own role rather than a second product on ROLE_DECK_EQUIPMENT_ANCHOR — that part is
+#: selected for a SEAL through a waterproof plane, this one for embedment in concrete, and
+#: ``hardware_for_role`` holds exactly one product per role.
+ROLE_EQUIPMENT_PAD_ANCHOR = "equipment_pad_anchor"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 # A wood member held down to CONCRETE or masonry by a gusset angle — one leg screwed into
 # the wood, the other anchored with a concrete screw. Its own role and not a second product

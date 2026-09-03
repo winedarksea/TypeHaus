@@ -101,7 +101,15 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # liner and a wood structural panel because the catalog has no field to classify them. That
 # is a missing datum, not a missing barrier — a real gap, and exactly the thing N/A must
 # never be used to paper over. Flipping it needs the wood-structural-panel field first.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 21}
+# RAISED 21 -> 22 on 2026-09-02, and the reason is that an item LEFT the engineered lane
+# rather than that anything regressed. "Deck equipment anchorage capacity" was counted as
+# engineered because catlin had two condensers bolted to its balcony; both moved to a ground
+# pad (houses/catlin/notes/heat_pump_ground_pad.md), so the reference house has no deck
+# anchorage to design and the item now grades NOT_APPLICABLE here instead of ENGINEERED.
+# `MAX_UNSEALED_ITEMS` fell 6 -> 5 in the same move — the pair of numbers only makes sense
+# read together. The item is a real staging line for any house that DOES put equipment on a
+# deck, which is why it is staged rather than deleted.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 22}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
@@ -110,7 +118,7 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2024": 21}
 # Pooling them would let either one hide behind the other's excuse.
 #
 # Both pins are ratchets. Lower one when an item flips; raising either needs a reason.
-MAX_UNSEALED_ITEMS = {"mn-2024": 6}
+MAX_UNSEALED_ITEMS = {"mn-2024": 5}
 
 
 def _engineered_labels(profile) -> set[str]:

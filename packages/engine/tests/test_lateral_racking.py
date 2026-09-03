@@ -241,8 +241,11 @@ def test_every_catlin_brace_clears_the_whole_force_coefficient_table(catlin_find
 def test_catlin_names_the_two_centre_pillars_and_not_the_heat_pump_legs(catlin_findings):
     """The unbraced-post finding is about columns, and the stand legs are not columns.
 
-    Twelve ``PT-SG-HP*`` aluminium legs sit inside the balcony footprint at 12" tall. Listing
-    them buries the two pillars the finding exists to raise in ten that are irrelevant to it.
+    Eight ``PT-SG-HP*`` aluminium legs stand 18" tall on SL-SG-HPPAD, the heat-pump pad east
+    of the porch. Listing them buries the pillars the finding exists to raise in six that are
+    irrelevant to it. They were 12" legs inside the balcony footprint until 2026-09-02
+    (houses/catlin/notes/heat_pump_ground_pad.md); the height floor excluded them then and
+    excludes them now, which is the property this pins.
     """
     lonely = next(f for f in catlin_findings if "carry no knee brace" in f.message)
     assert "PT-SG-BR2" in f"{lonely.element_tags}"

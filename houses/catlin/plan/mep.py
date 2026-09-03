@@ -95,10 +95,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_venting.VENT_BRANCHES_SECOND,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
-                   *mep_supply_devices.SUPPLY_DEVICES_SECOND,
-                   # The two balcony condensers' defrost lines — filed on
-                   # `second` because the deck they cross IS this storey's datum.
-                   *mep_drainage.HP_CONDENSATE]
+                   *mep_supply_devices.SUPPLY_DEVICES_SECOND]
 ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   # STUDIO_SUPPLY and STUDIO_DRAINS are NOT here — both are filed on `main`
                   # with the rest of the project-frame plumbing (see MAIN_ELEMENTS). Only the

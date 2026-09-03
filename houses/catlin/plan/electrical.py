@@ -565,9 +565,28 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(29, 9.25)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
+    # NEC 440.14 disconnects for the two ground-mounted condensers, on W-M-S2's exterior
+    # face beside the units they kill: HP1's at x=30'-0" opposite its own cabinet, HP2's at
+    # x=35'-0" (its unit is 5' west in plain sight — 440.14 asks for sight, not reach).
+    # Both clear of WIN-M-LIV-S1's rough opening at x 31'-5"..33'-11", and both clear of
+    # either condenser's own 110.26 working space, which is the pad in front of them.
+    #
+    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
+    # cladding face. Same correction on ED-M-HP3-DISC below and on ED-B-SPA-DISC.
+    #
+    # These were on the SECOND storey until 2026-09-02, beside condensers that stood on the
+    # balcony (notes/heat_pump_ground_pad.md). The units came down; the disconnects came
+    # down with them, because a disconnect one storey above the machine it kills is not
+    # within sight of it in any sense 440.14 means.
+    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(30, 0), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
+    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(35, 0), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
-    # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
+    # of the breezeway.
     # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
@@ -639,6 +658,41 @@ MAIN_EQUIPMENT = [
     # --- Outdoor units. `zone_rooms` is empty on all three — a condenser's zone is the union
     # of its indoor units' rooms, named via each head's `outdoor_ref`. Refrigerant linesets
     # are deliberately not modeled (the outdoor_ref pairing IS the record, plans/TODO.md).
+    # ** SYSTEMS 1 AND 2 STAND ON THE GROUND, NOT ON THE BALCONY. ** Moved 2026-09-02
+    # (notes/heat_pump_ground_pad.md, which carries the clearances, the line-set routes and
+    # the sound reasoning). They stood on FS-SG-DECK at +10' — the watertight aluminium roof
+    # of an occupied porch — on a lagged aluminium stand that cost eight through-plank
+    # penetrations, sixteen sacrificial blocks, two traced condensate runs, and a standing
+    # "never soffit this deck" constraint, all of it over the master bedroom's south
+    # windows and reachable for replacement only by a French door or a crane.
+    #
+    # The pocket east of the porch is the site: bounded west by W-SG-E1 (face x=28'-6"),
+    # north by the house, south by the W-RG-EAST-BALCONY apron, and open east to the yard.
+    # Both stand in a row against the porch wall FACING EAST — a row against the house
+    # facing south wants 99" of pocket and there are 90" — with a 12" service gap between
+    # them, 7" to the cladding at the north end and 1'-11" to TR-SG-LEADER-SE at the south.
+    # `rotation=deg(90)` is unchanged and is what puts the long axis along y.
+    #
+    # ** THE PAD AND THE STANDS ARE IN params/sunken_garden.py (SL-SG-HPPAD, PT-SG-HP*,
+    # CN-SG-HP*), AND THE TWO FILES CANNOT IMPORT EACH OTHER. ** The leg positions there are
+    # these two centres plus each unit's published foot pattern, so a unit that moves must
+    # move in both files. `mount.elevation` is the other half of the coupling: a FLOOR mount
+    # measures from the storey datum, `main` is 0'-0", the pad tops out at -2'-8" and the
+    # stands are 18", so the cabinets' base is at -1'-2". `test_catlin_outdoor_structures.py`
+    # holds all of it together now that `mep.deck_equipment_support_coverage` — which used
+    # to — sees no deck equipment at all.
+    #
+    # No `drain_pan` / `pan_drain_ref` on either, matching EQ-M-HP3-OD below: defrost
+    # meltwater off a unit at grade drips onto its own pad and runs east onto gravel. The
+    # piped, heat-traced condensate runs the balcony needed are deleted.
+    Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(29, 7.2), ft(-2, -7.2)), footprint=(inch(39), inch(14.5625)),
+              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
+              type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
+    Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(29, 8.4), ft(-6, -10.8)), footprint=(inch(40.16), inch(16.81)),
+              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
+              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 3's outdoor unit: north side beside the mudroom door, under ED-M-HP3-DISC, for
     # the short lineset run to the head over the stairs — a straight punch through W-M-N2:
     # the unit (x 10'-0"..12'-7") sits directly opposite EQ-M-HP3-STAIR (x 10'-6"..13'-3")
@@ -695,26 +749,6 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
-    # NEC 440.14 disconnects for the two balcony condensers, second-storey south wall
-    # within sight of their units, clear of any condenser's 110.26 working space: HP1's
-    # box between the plant windows, HP2's east of D-S-DECK-E (its unit sits 7' away in
-    # plain sight — 440.14 needs sight, not reach). Both on the wall's exterior face.
-    #
-    # ED-T-DISCONNECT-3R is a 3 1/4"-deep can, so its centre belongs 1 5/8" off the
-    # cladding face. Same correction on ED-M-HP3-DISC and ED-B-SPA-DISC.
-    #
-    # **Both stand beside the units they kill**, which is what NEC 440.14 asks of them:
-    # they sit 7 1/4" off HP1-OD's west edge and on HP2-OD's east edge respectively. y
-    # stays at -8 7/8": that is the 3 1/4" case's back edge exactly on W-S-S1/W-S-S2's
-    # cladding face at y=-7 1/4" (`test_wall_mounted_devices_resolve_against_a_wall_face`).
-    # ED-M-HP2-DISC straddles the W-S-S1/W-S-S2 break at x=18'-0" — collinear walls with
-    # the W-S-C1 tee's framing behind the joint, so the backing is there.
-    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(7, 1.5), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
-    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(18, 0.25), ft(0, -8.875)), type_ref="ED-T-DISCONNECT-3R",
-                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
@@ -753,55 +787,6 @@ SECOND_DEVICES = [
 ]
 
 SECOND_EQUIPMENT = [
-    # Vireo (System 1) and Multi Ultra (System 2) condensers share the upper balcony, not the
-    # main-level porch — kept in SECOND_ELEMENTS so the 3D model uses the balcony's 10'
-    # datum, not grade.
-    # End-on (16" of x each) lets two doors and two condensers share the 21' deck: HP1 at
-    # x 8'-0"..9'-4" (below WIN-S-PLANT2's sill, so no glass conflict), HP2 in the 2'-8" gap
-    # between the French doors at x 16'-10"..18'-2", clear of both leaf sweeps. Both keep
-    # 1'-0" standoff from the wall for the linesets.
-    #
-    # BOTH STAND 12" CLEAR OF THE PLANK, on the aluminium frames authored as
-    # PT-SG-HPA1..4 / PT-SG-HPB1..4 in params/sunken_garden.py, bolted down through the deck
-    # into blocking. Three facts about that, none of which is visible from this file:
-    #
-    #  * The stand is REQUIRED, not a nicety. Gree's service manual §8.6 says to fix the foot
-    #    holes with bolts onto a support rated to four times unit weight, and IRC M1401.4
-    #    makes a manufacturer instruction mandatory. A condenser at +10' on an open deck also
-    #    overturns and slides long before its own weight holds it.
-    #  * The stand's legs DO NOT sit under the cabinets' own feet. They are placed to land in
-    #    joist bays clear of the three balcony beams, because the anchors must reach
-    #    sacrificial blocking rather than a beam or a joist — see `_HP_STAND_AT`.
-    #  * 12" is the owner's number against a guide's 18"-24". It still clears the 42" guard
-    #    once the cabinet is on it (12 + 32/34 = 44"/46"), which is what the airflow needed.
-    #
-    # ``mount.elevation`` is the whole height change: `resolved_mount_elevation` returns
-    # floor + elevation for a FLOOR mount. THE TWO NUMBERS ARE COUPLED — this and
-    # `_HP_STAND_HEIGHT_IN` in params/sunken_garden.py describe one dimension in two modules
-    # that cannot import each other. `mep.deck_equipment_support` is what holds them
-    # together; do not change one without the other.
-    #
-    # ** 13 1/2", NOT 12", AND THE 1 1/2" IS THE PLANK. ** A FLOOR mount measures from the
-    # storey datum, and on `second` that datum is FS-SG-DECK's JOIST TOPS at 10'-0". The
-    # stand does not stand there — it stands on the aluminium plank laid over them, 1 1/2"
-    # higher, which is also where its base plate is bedded and where the lag crosses the
-    # waterproof plane. Authoring 12" here put both cabinets 1 1/2" below the tops of their
-    # own legs. This is the same trap the porch beam hangers fell into at `_porch_top`.
-    #
-    # `drain_pan`/`pan_drain_ref`: a cold-climate heat pump in heating mode sheds defrost
-    # meltwater all winter, and this one does it over an occupied porch. Left to run onto the
-    # deck it sheets 8'-8" of bare aluminium to the drip edge and refreezes on the way, on a
-    # surface two doors open onto, then ices the box gutter and plugs the 3" leader.
-    Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(9, 2), ft(-2, -6)), footprint=(inch(39), inch(14.5625)),
-              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
-              drain_pan=True, pan_drain_ref="PR-S-HP1-COND",
-              type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
-    Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(17, 6), ft(-2, -6)), footprint=(inch(40.16), inch(16.81)),
-              rotation=deg(90), mount=Mount(kind=MountKind.FLOOR, elevation=inch(13.5)),
-              drain_pan=True, pan_drain_ref="PR-S-HP2-COND",
-              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 1's concealed ducted AH — inside SF-S-HP1, the wide bulkhead in RM-S-STUDY2's
     # ceiling (plan/storeys/second.py). Own branch circuit (CKT-HP1-AH) since a ducted unit's
     # blower is fed at the unit, unlike a multi's heads.

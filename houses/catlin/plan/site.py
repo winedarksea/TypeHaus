@@ -210,6 +210,19 @@ SITE = Site(
             near_elevation=ft(-2, -11),  # -1" below grade at the foundation
             far_elevation=ft(-3, -2),  # -4" below grade at the 6' outer edge (4.2% away)
         ),
+        # The heat-pump pad in the pocket east of the porch (SL-SG-HPPAD, authored in
+        # params/sunken_garden.py). Its top is 2" PROUD of grade at the porch wall — Gree's
+        # "install 2 in above the expected snow line" — and falls 2 1/2" over the 8'-4" to
+        # its east edge, which lands 1/2" below grade so the sheet leaves onto gravel rather
+        # than ponding at a lip. The Slab is modelled flat at its high edge; the fall is a
+        # finishing fact and lives here, where code.R401_3_impervious can read it.
+        ImperviousSurface(
+            label="hp pad",
+            outline=(pt(ft(28, 6), ft(-9)), pt(ft(32), ft(-9)),
+                     pt(ft(32), ft(0, -7.2)), pt(ft(28, 6), ft(0, -7.2))),
+            near_elevation=ft(-2, -8),
+            far_elevation=ft(-2, -10.5),
+        ),
     ),
     # ``UtilityLine.depth`` is a bury depth *below finished grade* (emit/ifc/site.py reads
     # it as ``grade_z - depth``), so these three follow grade down on their own and want no

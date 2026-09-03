@@ -461,10 +461,10 @@ def _grade_unbraced_posts(ctx: CheckContext, braces, posts) -> list[Finding]:
     """
     braced = {t for brace in braces for t in brace.connects}
     # The shortest braced post sets the bar. Below roughly half of it a "post" is not a
-    # storey column at all — catlin's twelve ``PT-SG-HP*`` are 12"-tall aluminium stand legs
-    # under the heat pumps, sitting inside the balcony footprint and answering to
-    # ``mep.deck_equipment_support``, not to a lateral system. Listing them here would bury
-    # the two pillars this finding exists to name in ten that are not columns.
+    # storey column at all — catlin's eight ``PT-SG-HP*`` are 18"-tall aluminium stand legs
+    # under the two heat pumps, standing on their own pad beside the porch and answering to
+    # the manufacturer's bolt-down instruction, not to a lateral system. Listing them here
+    # would bury the pillars this finding exists to name in six that are not columns.
     braced_heights = [_ft(posts[t].height) for t in braced
                       if t in posts and getattr(posts[t], "height", None) is not None]
     floor = 0.5 * min(braced_heights) if braced_heights else 0.0

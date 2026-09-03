@@ -957,13 +957,11 @@ POST_WHITE_PAINT = Assembly(
     source="catlin-house balcony 6x6 pillars — white-painted finish; chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of every pillar top by the narrower beam over it, and seal the cut before standing; at the two centre pillars cut a 4\" square through the composite porch plank so the post base bears on framing, not on decking (Trex: composite decking is not structural material)",
 )
 
-# The two balcony heat-pump stands. Mill-finish extruded aluminium, and the
-# alloy is the point rather than a preference: the stand lands on `FS-SG-DECK`'s aluminium
-# plank and is lagged through it into KDAT blocking, so it sits in the middle of the one
-# galvanic problem this whole structure has. Aluminium on aluminium is no couple at all;
-# the butyl under the base plate is what separates the stand from the copper-treated wood
-# below, exactly as it separates the plank from the joists (see notes/beam_water_protection.md).
-# A galvanised or plain-steel stand would have re-introduced the couple the tape exists to break.
+# The two heat-pump ground stands. Mill-finish extruded aluminium, and the alloy is a
+# corrosion choice rather than a preference: an 18" stand on a pad at grade stands in the
+# splash and the plough line all winter, and aluminium with a 316 stainless anchor through
+# it is the pair that does not couple. Galvanised steel legs on a de-iced pad are the ones
+# that go first.
 #
 # 2" square section, authored as "2.0x2.0" and NOT "2x2": a bare nominal string is matched by
 # `_RE_NOMINAL` in resolve/framing/profiles.py and would silently resolve to a 1.5x1.5 stick
@@ -974,8 +972,9 @@ EQUIP_STAND_ALUM = Assembly(
         Layer(name="equip-stand-alum", material_ref="aluminum-extrusion", thickness=inch(2.0),
               function=LayerFunction.STRUCTURE),
     ),
-    source="catlin-house balcony heat-pump stands — 2\" mill-finish extruded aluminium legs and cross-rails under EQ-M-HP1-OD/EQ-M-HP2-OD, 12\" clear above FS-SG-DECK; aluminium on aluminium so the plank and the stand are not a galvanic couple, with butyl under every base plate between the stand and the KDAT blocking. TWO FRAMES, TWO SIZES, and neither equals its leg spacing: HP1 is 15 9/16 in (depth) x 29 3/4 in (width) and HP2 is 24 in x 25 in, each sized to Gree's published foot-hole pattern for that capacity (FXU24HP230V1R32AO 29 3/4 x 15 9/16; MUL30HP230V1R32AO 25 x 15 19/32). HP1's frame grew on 2026-08-31 with the FLEXX Ultra retype — it was 14 5/8 x 22 7/16 for the VIR24HP230V1R32AO — and its 29 3/4 in width rails now cantilever the feet 6 7/8 in outboard of the legs, because the legs sit at the two bay centres either side of the y = -2 ft 10 in joist line and 16 in is the only spacing that grid offers. The legs are on the DECK's grid instead — bay centres, 6 in off every beam axis — because HP1's west foot line lands on BM-SG-BLW and so cannot also be a leg line. The frame is what spans between the two, which makes the rails under the feet continuous and lands the deck-facing members only on the eight legs. The depth-direction spacing has NO adjustment: the cast foot's obround slot runs the WIDTH way, about 1/4 in of travel there and none across the depth",
+    source="catlin-house heat-pump ground stands — 2\" mill-finish extruded aluminium legs and cross-rails under EQ-M-HP1-OD/EQ-M-HP2-OD, 18\" clear above SL-SG-HPPAD, wedge-anchored to the pad with SS316-WEDGE-38x3. TWO FRAMES, TWO SIZES, and each is its unit's own published foot-hole pattern because on a pad the legs CAN sit under the feet: HP1 is 29 3/4 in (width) x 15 9/16 in (depth) for the FXU24HP230V1R32AO and HP2 is 25 in x 15 19/32 in for the MUL30HP230V1R32AO. That is the whole simplification the move to grade bought — on the balcony the legs answered to the deck's joist bays and beam lines and the frame had to span between two grids (see plans/01-decisions.md #64); here the only host is a flat slab, so leg = foot and the rails carry no cantilever. 18 in puts the coil bottom about 20 in above grade, well past Gree's \"install 2 in above the expected snow line\" and past the drifted depth a stand at grade in this climate has to clear. The depth-direction spacing still has NO adjustment: the cast foot's obround slot runs the WIDTH way, about 1/4 in of travel there and none across the depth",
 )
+
 
 # Guards were split off POST_WHITE_PAINT (they shared it with the balcony's
 # 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
@@ -1616,6 +1615,36 @@ GARAGE_SLAB_ON_GRADE = Assembly(
               function=LayerFunction.SHEATHING),
     ),
     source="catlin-house detached garage floor — 1\" below-slab XPS at 40 psi (ASTM C578 Type VI; vehicle wheel loads) over a 10-mil ASTM E1745 Class A vapour retarder on a 4\" open-graded capillary break (IRC R506.2.2); 3\" until 2026-08-31",
+)
+
+
+# The heat-pump equipment pad in the yard pocket east of the porch, SL-SG-HPPAD.
+#
+# GARAGE_SLAB_ON_GRADE minus the XPS and the vapour retarder, and both omissions are the
+# point rather than a saving. Nothing above this slab is conditioned, so there is no heat
+# to break and no floor to keep dry — a retarder under an exterior pad traps the water that
+# gets in from the top and has nowhere to send it. What survives is the part that matters
+# outdoors: 4" of open-graded stone so the pad drains and does not sit on a frost-susceptible
+# clay lens and heave the units out of level.
+#
+# UNREINFORCED AND UNFROSTED, deliberately. This is not a foundation: it carries 333 lb of
+# cabinet on eight legs, it is free to move with the ground, and an equipment pad that lifts
+# an inch in February and comes back in April has done nothing a line set cannot absorb. A
+# frost-depth footing under a mini-split is a foundation for a 333 lb building.
+#
+# The top is at -2'-8", two inches PROUD of the -2'-10" site grade, which is the one
+# dimension here taken from the manufacturer: Gree's outdoor-unit instruction says to
+# "install 2 in above the expected snow line", and the pad's own freeboard is the first two
+# of the 20" that EQUIP_STAND_ALUM's 18" legs then add.
+HP_PAD_ON_GRADE = Assembly(
+    tag="HP_PAD_ON_GRADE",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(4.0),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
+    ),
+    source="catlin-house heat-pump equipment pad — 4\" unreinforced concrete on a 4\" open-graded stone base, top 2\" proud of grade with a fall away from the house and an isolation joint at W-SG-E1. No below-slab XPS and no vapour retarder: nothing over it is conditioned and nothing under it has to stay dry. The 2\" freeboard is Gree's outdoor-unit instruction (\"install 2 in above the expected snow line\"), which the 18\" stands on top of it then clear by an order of magnitude"
 )
 
 # The garage service step-down, SL-G-STEP-1..4, is a real `Stair` (ST-G-SERVICE in
@@ -3338,6 +3367,7 @@ ASSEMBLIES = [
     GARAGE_METAL_WAINSCOT,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
+    HP_PAD_ON_GRADE,
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,

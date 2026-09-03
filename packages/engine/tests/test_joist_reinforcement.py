@@ -212,34 +212,26 @@ def test_no_catlin_deck_sisters_a_joist(catlin_model):
         ("11.875 I-joist", "sister_joist")]
 
 
-def test_the_balcony_blocking_hosts_the_heat_pump_anchors(catlin_model):
-    """``FS-SG-DECK``'s blocking exists to be drilled, and nothing else in the house does.
+def test_the_balcony_deck_carries_no_blocking_and_the_porch_still_does(catlin_model):
+    """``FS-SG-DECK`` hosts nothing that needs drilling, and that is the whole point of it.
 
-    Eight through-deck anchors hold the two condensers' stands down, and every one of them
-    must land in a block rather than in a joist or a beam — a fastener through this deck's
-    waterproof plane has to be hosted by a member that can be cut out and replaced from the
-    porch below. ``mep.deck_equipment_support`` grades that on the real house; this pins the
-    quantity behind it, so blocking cannot silently disappear and leave the check grading
-    anchors that no longer have a host.
+    Eight through-deck anchors used to hold the two condensers' stands down, on sixteen
+    sacrificial blocks laid by four ``JoistReinforcement``s — a fastener through this deck's
+    waterproof plane had to be hosted by a member that could be cut out and replaced from the
+    porch below (plans/01-decisions.md #64). Both units moved to a ground pad east of the
+    porch on 2026-09-02 (``houses/catlin/notes/heat_pump_ground_pad.md``), so the stand, the
+    blocking and the eight holes went with them. **Zero is asserted rather than assumed**:
+    blocking that reappears here means something is being bolted through a roof again, and
+    the rule says that has to be authored deliberately.
 
-    **Eight blocks for eight anchors, from FOUR reinforcements — not eight.** Each
-    reinforcement sits ON a joist line and lays one block in the bay either side, so one of
-    them serves two anchors. Authoring one per anchor instead needs eight, and where two of
-    those straddle a single bay it emits that bay's block twice at the same x — double
-    lumber, double butyl, two coincident solids. Sixteen blocks here is that bug, which is
-    why the count is asserted and not merely bounded.
-
-    ``FS-SG-PORCH`` carries exactly TWO — the squash blocks under PT-SG-BR2, the one
-    balcony pillar still bearing through a porch joist. Same ``plies=1`` idiom, and for a
-    related reason: what that joint needs is a bearing host, not a stiffened joist.
+    ``FS-SG-PORCH`` carries exactly TWO — the squash blocks under PT-SG-BR2, the one balcony
+    pillar still bearing through a porch joist. Same ``plies=1`` idiom, and for a related
+    reason: what that joint needs is a bearing host, not a stiffened joist. It is asserted
+    here so the deck's zero cannot be mistaken for a resolver that stopped emitting blocks.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 8, len(deck_blocks)
-    assert {m.profile for m in deck_blocks} == {"2x8"}
-    # No two blocks may share a span: that is precisely the double-emit above.
-    spans = {(round(m.p0[0], 4), round(m.p0[1], 4), round(m.p1[1], 4)) for m in deck_blocks}
-    assert len(spans) == len(deck_blocks), "two blocking members share one span"
+    assert deck_blocks == [], [m.tag for m in deck_blocks]
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
     assert len(porch_blocks) == 2, len(porch_blocks)
     assert [m for m in by_tag["FS-SG-PORCH"].members

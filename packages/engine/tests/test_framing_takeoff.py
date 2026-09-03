@@ -196,7 +196,15 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # frames no members and is not a solid reached no row at all —
                         # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).
                         "wall_structure"}
-    assert all(section for section in bom.values()), "no BOM section may come back empty"
+    # ``freeze_protection`` is the one section catlin may legitimately return empty. It bills
+    # heater cable by the foot off ``PipeRun.freeze_protection``, and the only two traced runs
+    # this house ever had were the balcony condensers' defrost lines — deleted on 2026-09-02
+    # when both units moved to a ground pad and started dripping onto it
+    # (houses/catlin/notes/heat_pump_ground_pad.md). The section stays in the contract above
+    # because a house with an outdoor run still needs it; it is exempted here rather than
+    # dropped, so a section that empties for any OTHER reason still fails this line.
+    empty = {name for name, section in bom.items() if not section}
+    assert empty <= {"freeze_protection"}, f"BOM section(s) came back empty: {sorted(empty)}"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
 

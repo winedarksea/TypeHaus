@@ -215,13 +215,12 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
     #
-    # PR-S-HP1-COND / PR-S-HP2-COND are the most literal air gaps on the list: the two
-    # balcony condensers' defrost lines run south across FS-SG-DECK and discharge OVER the
-    # rim of TR-SG-GUTTER, 1" above it. There is nothing to tie into — the trough is a
-    # `Gutter`, not a `PipeRun`, and stormwater is not a drain the DWV system may be
-    # connected to in any case.
+    # The two balcony condensers' defrost lines (PR-S-HP1-COND / PR-S-HP2-COND) used to be
+    # the most literal air gaps on this list, discharging over TR-SG-GUTTER's rim. Both
+    # units moved to a ground pad on 2026-09-02 and drip onto it, so there is no pipe at all
+    # any more — see houses/catlin/notes/heat_pump_ground_pad.md.
     assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
-                         "PR-B-ERV-COND", "PR-S-HP1-COND", "PR-S-HP2-COND"}
+                         "PR-B-ERV-COND"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

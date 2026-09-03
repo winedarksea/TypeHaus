@@ -1,3 +1,11 @@
+> **SUPERSEDED 2026-09-02 → `notes/heat_pump_ground_pad.md`.** Both condensers moved off the
+> balcony to a poured pad in the yard pocket east of the porch. `FS-SG-DECK` carries no
+> equipment, no stand, no blocking and no penetrations, and `HP_CONDENSATE` is deleted. This
+> note is kept because the RULE it established is not superseded: a fastener through a deck
+> that is also a roof over occupied space lands in a sacrificial member, never in a beam and
+> never in a joist (`plans/01-decisions.md` #64, `mep.deck_equipment_support_coverage`). Every
+> element reference below is historical.
+
 # Balcony heat pumps — mounting, and the eight holes
 
 Model: `params/sunken_garden.py` (`_HP_STAND_AT`, `HP_STAND_LEGS`,
