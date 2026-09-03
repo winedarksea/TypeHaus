@@ -201,9 +201,12 @@ def test_no_catlin_deck_sisters_a_joist(catlin_model):
         assert floor.tag not in decks or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
     assert [tag for tag, _ in sisters] == ["FS-M-WEST"]
-    # Full span, bearing to bearing: a sister that stops short carries nothing where the
-    # load is (``resolve/floors.py::_reinforcement_members``).
-    assert round(sisters[0][1].length_m / 0.3048, 2) == 18.0
+    # Full span, tip to tip: a sister that stops short carries nothing where the load is
+    # (``resolve/floors.py::_reinforcement_members``). 17.9' and not the 18'-0" bearing grid
+    # — the joist it doubles stops 1 1/4" inboard of the foundation's framing face, behind
+    # the rim board, and the sister is cut to the joist rather than to the grid line
+    # (``resolve/floor_ends.py``).
+    assert round(sisters[0][1].length_m / 0.3048, 2) == 17.9
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert [key for key in rows if key[1] == "sister_joist"] == [
         ("11.875 I-joist", "sister_joist")]

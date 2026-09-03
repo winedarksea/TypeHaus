@@ -39,7 +39,11 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // beside the sticks it wraps, not with the envelope layers, because it is bought and
     // installed by the framer with the framing and is gone under the deck sheet before any
     // other trade sees it.
-    sections: ["framing", "framing_by_size", "structural_solids", "wall_structure",
+    // `fabricated_members` follows the cut list it re-presents: it adds no quantity, it
+    // states what a made-to-order member (a floor truss) has to be BUILT to — overall
+    // length, clear span, seat at each end (→ takeoff/fabrication.py).
+    sections: ["framing", "framing_by_size", "fabricated_members", "structural_solids",
+      "wall_structure",
       "sheet_goods", "member_protection", "construction_returns", "sill_gaskets", "hardware",
       "footing_bedding"],
   },

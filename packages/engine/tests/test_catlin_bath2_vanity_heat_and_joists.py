@@ -310,7 +310,9 @@ def test_the_filled_bath_is_answered_with_blocking_and_one_sister():
     sisters = [m for m in floor.members if m.category == "sister_joist"]
     assert len(blocks) == 4
     assert len(sisters) == 1
-    assert round(sisters[0].length_m / 0.3048, 2) == 18.0, "a sister must run the whole span"
+    # 17.9', not the 18'-0" bearing grid: the joist it doubles stops behind the rim board
+    # at the framing face, and the sister is cut to the joist (``resolve/floor_ends.py``).
+    assert round(sisters[0].length_m / 0.3048, 2) == 17.9, "a sister must run the whole span"
 
 
 def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():

@@ -12,6 +12,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch, m
+from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
@@ -92,7 +93,15 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         (x0, y0), (x1, y1) = axis
         return (x0 + x1) / 2.0 if along_x else (y0 + y1) / 2.0
 
-    boundaries = sorted(_axis_coord(a) for a in resolved_axes)
+    # Deduplicated: several refs routinely name one line (catlin's x=18' carries three
+    # basement walls, and its two west walls share x=0). Left in, each duplicate opened a
+    # zero-length span that was silently dropped later — and, worse, pushed the real span
+    # off ``span_index == 0``, so the two outermost spans stopped being recognised as
+    # outermost and neither a cantilever nor an end bearing reached them.
+    boundaries: list[float] = []
+    for coord in sorted(_axis_coord(a) for a in resolved_axes):
+        if not boundaries or coord - boundaries[-1] > 1e-9:
+            boundaries.append(coord)
 
     # Perpendicular extent: an explicit deck outline (a freestanding sub-structure sharing
     # the storey) scopes the field; otherwise it spans the deck storey's whole wall bbox.
@@ -111,6 +120,21 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     depth = _member_depth_m(spec.member)
     z1 = storey.elevation.meters
     z0 = z1 - depth
+
+    cant_m = spec.cantilever.meters if spec.cantilever else 0.0
+    # Per-end overrides (a deck with a flush bearing at one end and an overhang at the
+    # other); each falls back to the symmetric scalar.
+    cant_start_m = spec.cantilever_start.meters if spec.cantilever_start is not None else cant_m
+    cant_end_m = spec.cantilever_end.meters if spec.cantilever_end is not None else cant_m
+    # Where the joists physically stop, which is not the line they are cut at: behind the
+    # rim board at a free end, at their authored share of the plate where two decks meet.
+    # ``resolve/floor_ends.py`` is the whole derivation, and the only place the three
+    # coordinates at a deck end (span line, joist tip, deck edge) are told apart.
+    depth_in = depth / inch(1).meters
+    rim_profile = spec.rim_member or f"1.25x{depth_in:g} rim"
+    ends = floor_ends(model, system, storey.tag, boundaries, 0 if along_x else 1,
+                      perp0, perp1, cross_section(rim_profile).width_m,
+                      cant_start_m, cant_end_m)
     # Width of a regular joist AND of one trimmer ply — both are ``spec.member``, so a
     # doubled trimmer pair's outboard face reaches ``_TRIMMER_PLIES * trimmer_ply_width``
     # past the opening edge (see the trim_specs loop below). A narrow-flange I-joist never
@@ -142,11 +166,6 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     if positions and positions[-1] < perp1 - 1e-6:
         positions.append(perp1)
 
-    cant_m = spec.cantilever.meters if spec.cantilever else 0.0
-    # Per-end overrides (a deck with a flush bearing at one end and an overhang at the
-    # other); each falls back to the symmetric scalar.
-    cant_start_m = spec.cantilever_start.meters if spec.cantilever_start is not None else cant_m
-    cant_end_m = spec.cantilever_end.meters if spec.cantilever_end is not None else cant_m
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
     # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
@@ -158,9 +177,9 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             # Cantilever only the two outer joist tips past the outermost bearing lines;
             # interior spans and opening-clipping are unchanged.
             if span_index == 0:
-                a -= cant_start_m
+                a = ends.tip_lo
             if span_index == len(boundaries) - 2:
-                b += cant_end_m
+                b = ends.tip_hi
             segments = [(a, b)]
             for _opening, minx, maxx, miny, maxy in opening_boxes:
                 opening_perp0, opening_perp1 = (miny, maxy) if along_x else (minx, maxx)
@@ -195,8 +214,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # before the opening/rim framing so a reinforced line is already in ``members`` when the
     # rim is drawn to the same tips.
     members.extend(_reinforcement_members(
-        system, spec, positions, along_x,
-        boundaries[0] - cant_start_m, boundaries[-1] + cant_end_m, z0, z1))
+        system, spec, positions, along_x, ends.tip_lo, ends.tip_hi, z0, z1))
 
     # Opening edge framing is generated once per opening, after clipping.  A declared
     # bearing wall directly under a long edge is the explicit support path; otherwise a
@@ -235,10 +253,15 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate
     # of the parallel edge joists above. When the outer spans cantilever, the band rides
     # out to the joist tips (the fascia line), not the beam axis it oversails.
-    depth_in = depth / inch(1).meters
-    rim_profile = spec.rim_member or f"1.25x{depth_in:g} rim"
-    for rim_index, boundary in enumerate((boundaries[0] - cant_start_m,
-                                          boundaries[-1] + cant_end_m)):
+    # The rim rides the deck edge, not the span line: at a free end its outboard face is
+    # flush with the framing face the sheathing runs down over, so it sits wholly outside
+    # the joist tips instead of overlapping the last 5/8" of every one of them. A *shared*
+    # line keeps the old centred placement, because the band there is not a rim at all —
+    # it is the squash-block course under a bearing line (``JoistSpec.rim_member``), and
+    # the joists landing on the plate from both sides leave it nowhere else to go.
+    for rim_index, boundary in enumerate((ends.rim_lo, ends.rim_hi)):
+        if boundary is None:
+            continue  # shared plate: blocking, not a band — see floor_ends
         if along_x:
             r0, r1 = (boundary, perp0), (boundary, perp1)
         else:
@@ -256,7 +279,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     deck_voids: tuple[Ring, ...] = ()
     deck_z0_m = deck_z1_m = z1
     if system.subfloor is not None:
-        axis0, axis1 = boundaries[0] - cant_start_m, boundaries[-1] + cant_end_m
+        axis0, axis1 = ends.deck_lo, ends.deck_hi
         if along_x:
             corners = ((axis0, perp0), (axis1, perp0), (axis1, perp1), (axis0, perp1))
         else:
@@ -272,7 +295,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         uid=system.uid, tag=system.tag, storey=storey.tag,
         direction=spec.direction, members=tuple(members),
         deck_outline=deck_outline, deck_voids=deck_voids,
-        deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m,
+        deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, ends=ends,
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
     ), []
 

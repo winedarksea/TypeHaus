@@ -31,6 +31,13 @@ from _helpers import CATLIN as CATLIN_DIR, frames_structure
 HOUSE_SIZE_FT = 36.0
 FRAMING_SPACING_IN = 16.0
 GRID_FT = 18.0
+# The bearing GRID is 18'-0"; a member is not. Each of these is the stick that spans one
+# bay, tip to tip — the grid line less the seat it takes at each end, and less the rim board
+# it stops behind at a free end (``resolve/floor_ends.py``). They differ from each other
+# because the x=18' plate is split unevenly between the truss and the I-joist that share it.
+ATTIC_FULL_BAY_FT = 17.812
+WEST_TRUSS_FT = 17.917
+EAST_BAY_FT = 17.792
 # What stands on the attic deck at the eave is a 2x6 laid FLAT — CATLIN_RAFTER_PLATE, 1 1/2"
 # on 3/4" of subfloor — so the bearing datum is 20'-2 1/4" rather than 25'-0". PLATE_FT is
 # that 2.25" expressed in feet above the attic datum.
@@ -69,10 +76,13 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         joists = [m for m in floor.members if m.category == "joist"]
         assert len(joists) == expected_pair_count, tag
-        # Most joists retain the 18' bearing span; lines crossing a stair opening are
-        # clipped at its framed edge rather than running through the stairwell.
+        # A full-bay joist is NOT ``GRID_FT`` long, and the difference is the point of
+        # ``resolve/floor_ends.py``: the 18'-0" grid is the line the joists are cut *at*,
+        # while the stick runs from behind the 1 3/4" LSL rim at the west framing face to
+        # its half of the x=18' plate — 17.812'. Lines crossing a stair opening are clipped
+        # at its framed edge rather than running through the stairwell.
         spans = {round(m.length_m / ft(1).meters, 3) for m in joists}
-        assert GRID_FT in spans
+        assert ATTIC_FULL_BAY_FT in spans
 
     # The second floor is split into FS-S-WEST/FS-S-EAST rather than one whole-floor
     # FS-SECOND: each half spans only 18' (one bearing pair, not two), so each has
@@ -83,10 +93,13 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     east_joists = [m for m in east.members if m.category == "joist"]
     assert len(west_joists) == expected_positions
     assert len(east_joists) == expected_positions
+    # Neither half is 18'-0" of stick, and they are not even the same length as each other:
+    # the x=18' plate they share is split 3 1/2" to the trusses and 2" to the I-joists
+    # (``params/second_deck.py``), so the truss is the longer member by 1 1/2".
     east_spans = {round(m.length_m / ft(1).meters, 3) for m in east_joists}
-    assert east_spans == {GRID_FT}
+    assert east_spans == {EAST_BAY_FT}
     west_spans = {round(m.length_m / ft(1).meters, 3) for m in west_joists}
-    assert GRID_FT in west_spans
+    assert WEST_TRUSS_FT in west_spans
     # FO-S-STAIR is drawn to the finished well, so the clip lands on W-M-STRW's
     # stair-side face at x=10'-3 3/8" rather than on its centreline. 8 lines clip here,
     # not the 7 that only cross the opening's own y-range: the doubled trimmer pair
@@ -94,9 +107,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     # I-joist's 2 1/2" flange at this depth) reaches past the opening into the next
     # regular joist line's own footprint, so that line is clipped too rather than left
     # to interpenetrate the trimmer (structural.member_interference).
-    assert 10.281 in west_spans
+    assert 10.135 in west_spans
     assert sum(1 for s in (round(m.length_m / ft(1).meters, 3) for m in west_joists)
-              if s == 10.281) == 8
+              if s == 10.135) == 8
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
@@ -525,21 +538,34 @@ def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
     assert any(member.category == "raked_plate" for member in gable.members)
 
 
-def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
-    """WP3: rim (band) joists cap the deck ends, one per outermost bearing line.
+def _floor(model, tag):
+    return next(f for f in model.floors if f.tag == tag)
 
-    The second floor is two systems (FS-S-WEST/FS-S-EAST), so it carries four rims across
-    the storey rather than one whole-floor FS-SECOND's two.
+
+def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
+    """WP3: rim (band) joists cap the deck ends — but only where a band can exist.
+
+    ``FS-ATTIC`` is one system across the house and gets both of its rims. The second floor
+    is two systems meeting on the x=18' plate, and that line gets NO rim from either of
+    them: the trusses take 3 1/2" of the 5 1/2" plate and the I-joists the other 2", so a
+    band across their ends has nowhere to sit (``resolve/floor_ends.py``). Before that was
+    derived, both halves drew a band on the same line — two coincident rims, billed twice,
+    each interpenetrating the other deck's joists.
     """
-    for tag in ("FS-S-WEST", "FS-S-EAST", "FS-ATTIC"):
-        floor = next(f for f in catlin_model.floors if f.tag == tag)
+    assert len([m for m in _floor(catlin_model, "FS-ATTIC").members
+                if m.category == "rim"]) == 2
+    for tag in ("FS-S-WEST", "FS-S-EAST"):
+        floor = _floor(catlin_model, tag)
         rims = [m for m in floor.members if m.category == "rim"]
-        assert len(rims) == 2, tag
+        assert len(rims) == 1, tag
+        # The one it keeps is the exterior one, at its own end of the house.
+        outer = 0.0 if tag == "FS-S-WEST" else ft(36).meters
+        assert abs(rims[0].p0[0] - outer) < ft(1).meters, tag
     # FS-ATTIC's rims are LSL and say so in their profile: they are the bearing line under
     # the rafter plates, not a band board capping joist ends, and a 1 1/4" OSB rim would
     # crush. The other decks keep the derived band-board profile.
     for tag in ("FS-S-WEST", "FS-S-EAST"):
-        floor = next(f for f in catlin_model.floors if f.tag == tag)
+        floor = _floor(catlin_model, tag)
         assert all(m.profile.endswith(" rim")
                    for m in floor.members if m.category == "rim"), tag
     attic = next(f for f in catlin_model.floors if f.tag == "FS-ATTIC")

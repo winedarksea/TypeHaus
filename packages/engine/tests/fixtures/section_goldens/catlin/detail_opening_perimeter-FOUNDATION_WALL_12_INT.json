@@ -648,62 +648,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          215.37500000000003,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.720964566929133
-        ],
-        [
-          215.37500000000003,
-          -11.720964566929133
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS01AAAA",
-      "tag": "rim-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          215.37500000000003,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.720964566929133
-        ],
-        [
-          215.37500000000003,
-          -11.720964566929133
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

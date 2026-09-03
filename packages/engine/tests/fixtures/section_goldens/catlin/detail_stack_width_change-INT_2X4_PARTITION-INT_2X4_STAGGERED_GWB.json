@@ -616,7 +616,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-013-0"
+      "tag": "joist-0-013-0"
     },
     {
       "space": "model",
@@ -664,7 +664,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-013-0/flange"
+      "tag": "joist-0-013-0/flange"
     },
     {
       "space": "model",
@@ -684,7 +684,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-013-0/flange"
+      "tag": "joist-0-013-0/flange"
     },
     {
       "space": "model",
@@ -712,7 +712,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-014-0"
+      "tag": "joist-0-014-0"
     },
     {
       "space": "model",
@@ -760,7 +760,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-014-0/flange"
+      "tag": "joist-0-014-0/flange"
     },
     {
       "space": "model",
@@ -780,7 +780,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-014-0/flange"
+      "tag": "joist-0-014-0/flange"
     },
     {
       "space": "model",

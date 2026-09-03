@@ -18,6 +18,7 @@ from typehaus.resolve.layout_lines import ResolvedLayoutLine
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
     from typehaus.model.placeables import Mount
+    from typehaus.resolve.floor_ends import FloorEnds
     from typehaus.resolve.geometry_ir import GeometryModel
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -544,6 +545,11 @@ class ResolvedFloor:
     deck_z0_m: float = 0.0   # = the storey datum: joists top out there, decking rides on it
     deck_z1_m: float = 0.0
     deck_material_ref: str | None = None
+    # Where the joists stop and what they are seated on at the two outermost bearing lines
+    # (``resolve/floor_ends.py``). Carried on the resolved record rather than re-derived by
+    # every reader: the bearing check grades these seats and the fabrication report prints
+    # them, and neither may reach a different answer than the members were cut to.
+    ends: FloorEnds | None = None
 
 
 @dataclass(frozen=True)

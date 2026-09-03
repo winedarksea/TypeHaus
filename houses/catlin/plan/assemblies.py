@@ -2818,10 +2818,29 @@ MATERIALS = [
     #
     # No `finish` key, deliberately: a new one costs ~5 hand-kept renderer registrations
     # (materials.ts, palette.ts, gltf/palette.py, draw/palette.py, DetailCanvas.tsx), each
-    # of which falls through SILENTLY if missed — the board-batten-24 precedent. It shares
-    # `metal-dark-exterior`'s #1c1f24 instead, which is the house's one exterior dark and
-    # already what this wainscot's own cap flashings wear. Charcoal gray is a stock colour
-    # at the supplier and remains a one-word swap if the near-black is ever unwanted.
+    # of which falls through SILENTLY if missed — the board-batten-24 precedent. An authored
+    # `color` needs none of them: it reaches both renderers through the material catalog
+    # (`authored_colors` in emit/gltf/palette.py, `materialColor` in ui/src/nordic/palette.ts),
+    # which is what makes the colourway a one-word swap where a `finish` would not be.
+    #
+    # WESTERN STATES "CHARCOAL GRAY", AND THE VALUE IS THE VENDOR'S OWN CHIP —
+    # #383838, sampled off westernstatesmetalroofing.com's colour chip for this PVDF
+    # standard colour (a flat 56/56/56 sheet; the panel photographs on that page are lit
+    # product shots and are not the colour). Solar reflectance 28.1% on their SRI table,
+    # against 4.1% for Matte Black: this is a mid-dark neutral grey, not a near-black.
+    #
+    # It shared `metal-dark-exterior`'s #1c1f24 until 2026-09-02 and rendered as black.
+    # That value carries a compensation — author two stops under the tone you want, because
+    # "the viewer's ambient lifts a dark albedo well above itself" — and the compensation is
+    # WRONG AT THE DARK END. Panel3D runs `NeutralToneMapping`, whose first step subtracts a
+    # black-point offset of up to 0.04 linear (`x - 6.25x²` for x < 0.08), and on a near-black
+    # surface that offset is larger than everything the light rig added: #1c1f24 leaves the
+    # pipeline at ~#0c1623 lit and ~#050e1a shaded — black, with a blue cast, because the
+    # offset comes off all three channels equally and only the blue excess survives it. The
+    # crush is on the FULLY LIT face too, so it is not the shadow map. Authored honestly, this
+    # chip renders #3b3b3b lit / #262626 in shade, which is the chip. Below ~#2a2a2a the
+    # tone mapper eats an albedo faster than the rig lifts it; do not "pre-darken" a dark
+    # exterior colour here.
     #
     # No `skin_family`: that field is the wall/roof continuous-skin reading at a
     # zero-overhang edge, and a base band is not skin (the `metal-copper-penny` reasoning
@@ -2833,7 +2852,7 @@ MATERIALS = [
     Material(tag="aluminum-flat-pvdf",
              name="PVDF-painted aluminium flat sheet (0.040-0.050\")",
              r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
-             color="#1c1f24",
+             color="#383838",
              source="garage ICF stem exterior protection band + east wainscot; 3105-H14 or 5005 painted aluminium flat sheet, 2-coat 70% PVDF (Kynar 500/Hylar 5000), 0.040\" min / 0.050\" preferred, stock 48\" x 120\"; fixed with #9 316 stainless gasketed screws (EPDM washer is the dielectric break) into KDAT furring, every exposed edge hemmed or folded; NEVER in contact with concrete or fresh mortar (alkali strips the oxide film) and never lapped metal-to-metal against the steel corrugated panel above"),
     # The garage's accent coil. Brake-formed PVDF-coated
     # stock in the same family as `metal-dark-exterior` above, sharing its reasoning: colour

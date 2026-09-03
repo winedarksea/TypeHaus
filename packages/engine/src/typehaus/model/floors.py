@@ -48,6 +48,17 @@ class JoistSpec(HausModel):
     # in either direction is worse than a field. The section is the engine's to carry; the
     # reason is the house's to state.
     rim_member: str | None = None
+    # End bearing this deck's members take on a *shared* bearing line, as (ref, length)
+    # pairs. A line two decks land on from opposite sides is one plate split between them,
+    # and the split is a design decision, not a derivation: an open-web floor truss wants
+    # 3" of seat where an I-joist wants 1 3/4", so a centreline split (2 3/4" each on a 2x6
+    # plate) shorts the truss and over-serves the joist. Authoring the number here moves
+    # this deck's joist ends off the ref's *near* structure face by exactly that much —
+    # the face its joists approach — so the two decks' authored bearings have to add up to
+    # the plate or the pair does not meet. Only a shared line reads this: an unshared end
+    # bearing already runs its joists to the framing face behind the rim (resolve/floors.py
+    # ``_end_coords``), and an interior line the deck spans over is not an end at all.
+    end_bearing: tuple[tuple[str, Length], ...] = ()
 
 
 class JoistReinforcement(HausModel):

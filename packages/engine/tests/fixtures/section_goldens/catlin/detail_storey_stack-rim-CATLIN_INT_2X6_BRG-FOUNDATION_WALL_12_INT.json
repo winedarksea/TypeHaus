@@ -784,7 +784,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-012-0"
+      "tag": "joist-0-012-0"
     },
     {
       "space": "model",
@@ -832,7 +832,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-012-0/flange"
+      "tag": "joist-0-012-0/flange"
     },
     {
       "space": "model",
@@ -852,63 +852,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "joist-1-012-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          215.37500000000003,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.875
-        ],
-        [
-          216.625,
-          0.0
-        ],
-        [
-          215.37500000000003,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS01AAAA",
-      "tag": "rim-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          215.37500000000003,
-          -11.875
-        ],
-        [
-          216.625,
-          -11.875
-        ],
-        [
-          216.625,
-          0.0
-        ],
-        [
-          215.37500000000003,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
+      "tag": "joist-0-012-0/flange"
     },
     {
       "space": "model",

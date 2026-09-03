@@ -744,7 +744,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-006-0"
+      "tag": "joist-1-006-0"
     },
     {
       "space": "model",
@@ -792,7 +792,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-006-0/flange"
+      "tag": "joist-1-006-0/flange"
     },
     {
       "space": "model",
@@ -812,7 +812,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-006-0/flange"
+      "tag": "joist-1-006-0/flange"
     },
     {
       "space": "model",
@@ -840,7 +840,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-007-0"
+      "tag": "joist-1-007-0"
     },
     {
       "space": "model",
@@ -888,7 +888,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-007-0/flange"
+      "tag": "joist-1-007-0/flange"
     },
     {
       "space": "model",
@@ -908,7 +908,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-007-0/flange"
+      "tag": "joist-1-007-0/flange"
     },
     {
       "space": "model",
@@ -936,7 +936,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-008-0"
+      "tag": "joist-1-008-0"
     },
     {
       "space": "model",
@@ -984,7 +984,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-008-0/flange"
+      "tag": "joist-1-008-0/flange"
     },
     {
       "space": "model",
@@ -1004,7 +1004,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "joist-2-008-0/flange"
+      "tag": "joist-1-008-0/flange"
     },
     {
       "space": "model",

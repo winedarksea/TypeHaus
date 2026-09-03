@@ -10,12 +10,14 @@
 //   3. I-joists -> three InstancedMeshes (top flange, bottom flange, web) sharing the
 //      member's axis transform; a sloped i-joist rafter (none in the current catalog)
 //      would render level rather than raked — square-cut, plumb ends not modeled.
+//   4. Open-web floor trusses -> chords + end blocks + diagonal webs (three/floorTruss.ts).
 // The box math itself lives in three/memberBox.ts, shared with the pick highlight.
 //
 // Every bucket records the member uids it drew, in draw order, so a click resolves to one
 // member (→ three/memberPicking.ts) instead of to the wall/floor/roof that owns it.
 import * as THREE from "three";
 import type { Member } from "../model/types";
+import { buildFloorTrusses } from "./floorTruss";
 import {
   authoredAppearance, familyOf, finishBaseColor, materialColor, type MaterialAppearance,
   type ResolvedNordicPalette, statesOwnColor,
@@ -219,16 +221,20 @@ interface Buckets {
   rect: Member[];
   raked: Member[];
   ijoist: Member[];
+  truss: Member[];
   seam: Member[];
 }
 
 function bucket(members: Member[], materials?: readonly MaterialAppearance[]): Buckets {
-  const out: Buckets = { rect: [], raked: [], ijoist: [], seam: [] };
+  const out: Buckets = { rect: [], raked: [], ijoist: [], truss: [], seam: [] };
   for (const m of members) {
     // Seam first: a standing-seam or declared ribbed-panel band needs its own textured
     // material, so it can't share the vertex-coloured merge with the lumber around it.
     if (isSeamMember(m, materials) && !isVerticalMember(m)) out.seam.push(m);
     else if (m.shape === "i_joist") out.ijoist.push(m);
+    // An open-web floor truss is not a bar: it draws as chords + webs (three/floorTruss.ts),
+    // and the open bay between the chords is the whole reason the member was specified.
+    else if (m.shape === "floor_truss") out.truss.push(m);
     else if (isRakedMember(m)) out.raked.push(m);
     else out.rect.push(m);
   }
@@ -448,6 +454,7 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid, materials);
   buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid, materials);
   buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid, materials);
+  buildFloorTrusses(group, buckets.truss, center, mode, palette, ownerUid, materials);
   buildSeamMesh(group, buckets.seam, center, mode, ownerUid, materials, lines);
 }
 

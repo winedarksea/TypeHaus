@@ -479,9 +479,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   finished floor and the ceiling below all stay flat across the split, and unlike the
   basement's boundary this one needs **no movement joint and no finish break** (same
   depth, same stiffness class). Trimmable stock is 18' and 20', trimmable up to 6" from
-  each end; the west field's spans are exactly 18'-0", the 18' truss untrimmed
-  (`takeoff/framing.py::_order_length_ft`). `FO-S-STAIR` falls in the west half, so seven
-  joist lines there clip to ~10'-3⅜" and fall outside the trimmable range — fabricated to
+  each end; the west field's *bearing grid* is 18'-0" but the **truss is 17'-11"** — it
+  stops behind the 1¼" rim at the west framing face and 3½" onto the x=18' plate, which is
+  what `resolve/floor_ends.py` derives and what `haus takeoff`'s fabrication schedule
+  states, along with the 17'-3¼" clear span and the seat at each end. An 18' blank trimmed
+  1" still covers it (`takeoff/framing.py::_order_length_ft`). **That x=18' plate is shared
+  with FS-S-EAST and is split deliberately, 3½" to the truss and 2" to the I-joist**
+  (`params/second_deck.py`): an open-web floor truss wants 3" of seat where an I-joist
+  wants 1¾", so the centreline split both halves used to take shorted the truss.
+  `integrity.floor_end_bearing` grades it. `FO-S-STAIR` falls in the west half, so eight
+  joist lines there clip to 10'-1⅝" and fall outside the trimmable range — fabricated to
   length instead. Moving the split is a one-line edit in `params/second_deck.py` (which is
   also where the shared depth constant lives, and which `params/main_deck.py` imports
   rather than restating). The truss price row in `prices.toml` is a placeholder pending a
@@ -1411,12 +1418,32 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     has to be the structure layer or `integrity.assembly_layers` finds none. That is also
     what keeps it pricing on a `[wall_structure]` key by assembly tag, where the brick
     priced, instead of migrating into `[envelope_layers]` mid-swap.
-  - **`aluminum-flat-pvdf` SHARES `metal-dark-exterior`'s `#1c1f24` and declares NO
-    `finish`.** A distinct charcoal gray costs a new `Material` plus ~5 hand-kept renderer
-    registrations, each of which falls through silently if missed (the `board-batten-24`
-    precedent). Near-black is the house's one exterior dark and is already what this
-    wainscot's own cap flashings wear, so cap and field are one colour and one metal.
-    Charcoal Gray is a stock colour at the supplier and stays a one-word swap.
+  - **`aluminum-flat-pvdf` IS WESTERN STATES "CHARCOAL GRAY" (`#383838`) AND DECLARES NO
+    `finish`.** A `finish` would cost ~5 hand-kept renderer registrations, each of which
+    falls through silently if missed (the `board-batten-24` precedent); an authored `color`
+    costs none — it reaches both renderers through the material catalog, which is what makes
+    a colourway a one-word swap. `#383838` is the vendor's own colour chip sampled off
+    `westernstatesmetalroofing.com/charcoal-gray` (a flat 56/56/56 sheet), and their SRI
+    table puts the colour at 28.1% solar reflectance against 4.1% for Matte Black: it is a
+    mid-dark neutral, not a near-black.
+  - **It shared `metal-dark-exterior`'s `#1c1f24` until 2026-09-02 and RENDERED AS BLACK.**
+    That value carries a deliberate compensation — author well under the tone you want,
+    because "the viewer's ambient lifts a dark albedo above itself" — and **the compensation
+    is wrong at the dark end.** `Panel3D` runs `NeutralToneMapping`, whose first step
+    subtracts a black-point offset of up to 0.04 linear (`x - 6.25x²` for x < 0.08), which on
+    a near-black surface exceeds everything the light rig adds: `#1c1f24` leaves the pipeline
+    at ~`#0c1623` lit, ~`#050e1a` shaded — black with a blue cast, since the offset comes off
+    all three channels equally and only the blue excess survives. **It is not the shadow
+    map**: the fully lit face is crushed too. Authored honestly the chip renders `#3b3b3b`
+    lit / `#262626` in shade. Below about `#2a2a2a` the tone mapper eats an albedo faster
+    than the rig lifts it — do not pre-darken an exterior colour here. The same stale
+    rationale is quoted on `metal-dark-exterior` and `latex-paint-accent`, which were left
+    alone: near-black IS the intent for the trim coil, and moving the house's one exterior
+    dark is a whole-envelope change, not this one.
+  - **The four cap flashings name `aluminum-flat-pvdf`, not `metal-dark-exterior`.** That is
+    the corrosion rule below written into the model — the cap over an aluminium sheet is
+    aluminium — and it keeps cap and field one colour and one coil order. No dollars move:
+    `drip_flashing` prices by trim kind, so the 16 LF only changes which row it lands in.
   - **NO ALUMINIUM ITEM MAY BORROW A STEEL PRICE ROW.** Every panel rate in `prices.toml`
     — `board-batten-24`, `corrugated-panel-26`, `pbr-panel-26`, the whole standing-seam
     family — is painted STEEL, and painted aluminium runs well above it per SF. Both new

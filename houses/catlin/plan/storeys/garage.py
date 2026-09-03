@@ -338,7 +338,13 @@ WAINSCOT_WALLS = [
 # 26 ga PVDF-coated STEEL and this wainscot is ALUMINIUM, so the cap and the Z-flash behind
 # it must both be ALUMINIUM, and the two panels must never lap metal-to-metal — sealant or
 # EPDM between, the Z's upper leg behind the corrugated. In a salted splash zone that
-# contact line is where the detail fails. Nothing in the engine grades dissimilar metals.
+# contact line is where the detail fails. Nothing in the engine grades dissimilar metals,
+# so the four caps below NAME `aluminum-flat-pvdf` — the sheet's own material — rather than
+# the `metal-dark-exterior` steel coil the rest of the envelope's dark trim is ordered in.
+# That is the corrosion rule written where it can be read off the model, and it is also
+# what keeps cap and field ONE colour: the field is Charcoal Gray (#383838, the vendor's
+# chip; see the Material in plan/assemblies.py) and a cap in the trim coil's near-black
+# would read as a mistake rather than as a choice. Same coil, same order, same brake.
 # The brick's base and cap through-wall flashings and its weeps are gone with the wythe;
 # what replaces them is a vented closure at the sheet's bottom hem and a solid closure under
 # the cap, priced with the garage's other closures as an allowance.
@@ -366,19 +372,19 @@ WAINSCOT_CAP_FLASHING = [
     Flashing(uid="91QT40BPXE", tag="TR-G-WAIN-CAP-S", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(24, 1.275), ft(44, 8.625)), pt(ft(24, 1.275), ft(40, 8.625))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
-             material="metal-dark-exterior", back_side="right"),
+             material="aluminum-flat-pvdf", back_side="right"),
     Flashing(uid="HJEFTKKFG6", tag="TR-G-WAIN-CAP-N", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(24, 1.275), ft(64, 8.625)), pt(ft(24, 1.275), ft(60, 8.625))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
-             material="metal-dark-exterior", back_side="right"),
+             material="aluminum-flat-pvdf", back_side="right"),
     Flashing(uid="Z91V9H686X", tag="TR-G-WAIN-CAP-SRET", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(24), ft(40, 7.35)), pt(ft(20), ft(40, 7.35))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
-             material="metal-dark-exterior", back_side="right"),
+             material="aluminum-flat-pvdf", back_side="right"),
     Flashing(uid="YRF9848XRM", tag="TR-G-WAIN-CAP-NRET", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(20), ft(64, 9.9)), pt(ft(24), ft(64, 9.9))),
              top_elevation=WAINSCOT_CAP_TOP, depth=inch(2.0), thickness=inch(2.55),
-             material="metal-dark-exterior", back_side="right"),
+             material="aluminum-flat-pvdf", back_side="right"),
 ]
 
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead

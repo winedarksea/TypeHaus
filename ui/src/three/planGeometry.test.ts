@@ -202,6 +202,41 @@ function checkMemberVerticalExtents() {
   });
   disposeGroup(ijoist);
 
+  // An open-web floor truss draws as the assembly it is: two chords and a web bay between
+  // them, never one solid bar. The bay is what a duct crosses through, and drawing wood
+  // there would hide every service crossing the second floor was trussed for.
+  const chordT = 0.0381;         // 2x4 flat: 1 1/2" deep
+  const truss = new THREE.Group();
+  buildMembers(truss, [member({
+    key: "truss", category: "joist", profile: "11.875 floor truss", shape: "floor_truss",
+    p0: [13, 27], p1: [18.46, 27], z0_m: datum - bandDepth, z1_m: datum,
+    width_m: 0.0889, depth_m: bandDepth, flange_width_m: 0.0889,
+    flange_thickness_m: chordT, web_thickness_m: chordT, orient: null,
+  })], center, "schematic", PALETTE, "TESTOWNER");
+  // Two meshes: the chord pair, and every web (end blocks + diagonals) in one more.
+  const trussMeshes = truss.children as THREE.InstancedMesh[];
+  if (trussMeshes.length !== 2) {
+    throw new Error(`Expected 2 truss meshes, received ${trussMeshes.length}`);
+  }
+  const chordMesh = trussMeshes.find((mesh) => mesh.count === 2);
+  const webMesh = trussMeshes.find((mesh) => mesh !== chordMesh);
+  if (!chordMesh || !webMesh) throw new Error("A truss draws one chord pair and its webs");
+  const chords = boundsForObject(chordMesh);
+  const webs = boundsForObject(webMesh);
+  closeTo(chords.min.y, datum - bandDepth, "truss chords start at the soffit");
+  closeTo(chords.max.y, datum, "truss chords top out at the deck");
+  // The webs live between the chords — inside the section, never through it. Their boxes
+  // are rotated, so this is an inequality rather than a plane: a diagonal's corner reaches
+  // a little past its own end, which is the overrun that buries it in the chord.
+  if (webs.min.y <= datum - bandDepth || webs.max.y >= datum) {
+    throw new Error("truss webs must stay inside the chords");
+  }
+  // Two end blocks and a zig-zag between them, not a single bar.
+  if (webMesh.count < 6) {
+    throw new Error(`A 17'-11" truss needs a web zig-zag, drew ${webMesh.count} pieces`);
+  }
+  disposeGroup(truss);
+
   // Roof members split two ways: sticks under the framing toggle, skin with the shell.
   // Fascia counts as framing: trim by category, but a nailer on the rafter tails by trade.
   // Mirrors ROOF_SKIN_CATEGORIES in emit/gltf/members.py.

@@ -29,16 +29,19 @@ instead of restating it, since the concrete band's depth derivation matches what
 module's members share.
 
 **Known cost of the west/trusses choice.** ``FO-S-STAIR`` (x 10'-3⅜"..17'-8⅝",
-y 26'-0⅜"..35'-5⅜") lands in the west half. Seven joist lines clip to ~10'-3⅜" there and
+y 26'-0⅜"..35'-5⅜") lands in the west half. Eight joist lines clip to 10'-1⅝" there and
 become short fabricated trusses rather than trimmed 18' stock — outside the trimmable
 range, so they are fabricated to length instead. The opening's parallel edges (running
 with the joist direction) resolve to doubled truss members — the correct real detail, a
 girder-truss pair; its perpendicular edges already resolve to multi-ply LVL headers via
 ``opening_header_profile``.
 
-**Stock.** Trimmable stock is 18' and 20', trimmable up to 6" from each end. The west
-field's spans are exactly 18'-0" — the 18' truss untrimmed, with 6" of range each end for
-any later adjustment (``takeoff/framing.py::_order_length_ft``).
+**Stock, and what the truss is built to.** Trimmable stock is 18' and 20', trimmable up to
+6" from each end. The west field's *bearing grid* is 18'-0"; the truss is **17'-11"** —
+``resolve/floor_ends.py`` cuts it to where it stops, behind the 1 1/4" rim at the west
+framing face and 3 1/2" onto the x=18' plate. Clear span 17'-3 1/4". An 18' blank trimmed
+1" still covers it (``takeoff/framing.py::_order_length_ft``), but 17'-11" is the number on
+the fabricator's order, which ``haus takeoff``'s fabrication schedule states.
 """
 
 from typehaus import DeckLayer, FloorSystem, JoistSpec, Layer, LayerFunction, Point2D, ft, inch, pt
@@ -51,6 +54,15 @@ _JOIST = "11.875 I-joist"
 _DEPTH = inch(11.875)
 _OC = inch(16)
 _SUBFLOOR = inch(0.75)
+
+# How the x=18' plate is split. ``W-M-C2`` is a 2x6: 5 1/2" of seat, both decks landing on
+# it from opposite sides. A centreline split gives each 2 3/4", which shorts the truss — an
+# open-web truss wants 3" minimum, an I-joist 1 3/4". So the meeting line moves 3/4" east:
+# 3 1/2" truss, 2" I-joist, both clear of their minimum with the plate exactly spent. The
+# two must sum to 5 1/2" or the halves do not meet, which is why they are stated together;
+# ``integrity.floor_end_bearing`` grades the result.
+_TRUSS_BEARING = inch(3.5)
+_JOIST_BEARING = inch(2.0)
 
 # The main floor's ceiling below both halves — 5/8" gypsum board, room side (and only
 # layer). The living room's resilient channel (``CR-LIVING-CEIL-RC`` in
@@ -71,7 +83,8 @@ def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]
 WEST_FLOOR = FloorSystem(
     uid="1JXQ975X9E", tag="FS-S-WEST",
     joists=JoistSpec(member=_TRUSS, spacing=_OC, direction="x",
-                     bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL")),
+                     bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL"),
+                     end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
@@ -86,7 +99,8 @@ WEST_FLOOR = FloorSystem(
 EAST_FLOOR = FloorSystem(
     uid="CSF603AAAA", tag="FS-S-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_OC, direction="x",
-                     bearing_refs=("W-M-C2", "W-M-E1", "BM-M-HALL")),
+                     bearing_refs=("W-M-C2", "W-M-E1", "BM-M-HALL"),
+                     end_bearing=(("W-M-C2", _JOIST_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     # The main floor's ceiling: this deck's underside *is* that ceiling (unchanged from
     # the old FS-SECOND). Plain board, not type X: R302.13 doesn't reach this floor.

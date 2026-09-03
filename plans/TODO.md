@@ -561,7 +561,17 @@ the future.
   French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
 - Floor drain in RM-S-PLANT — Answer: No floor drain necessary. Spilled water is mopped up as needed.
 - Make sure all desired access panels are in (deferred pending more design items settling)
-- Make sure the floor trusses (of the first to second floor) are modeled more accurately in 3d and make sure their measurements in the BOM are very exact for manufacturing
+- ~~Make sure the floor trusses (of the first to second floor) are modeled more accurately
+  in 3d and make sure their measurements in the BOM are very exact for manufacturing~~ —
+  DONE 2026-09-02. `resolve/floor_ends.py` cuts every deck's joists to where they physically
+  stop rather than to the bearing grid, so `FS-S-WEST`'s truss is **17'-11"** overall (was a
+  drawn 18'-0" that floated 1/2" outside the framing) on a 17'-3 1/4" clear span; the x=18'
+  plate it shares with `FS-S-EAST` is split 3 1/2" / 2" instead of on the centreline, which
+  was shorting the truss against its fabricator's 3" seat. `haus takeoff` prints the
+  fabrication schedule (`takeoff/fabrication.py`), `integrity.floor_end_bearing` grades the
+  seats per member type, and the viewer draws chords + end blocks + diagonal webs
+  (`ui/src/three/floorTruss.ts`) instead of a solid bar. Still open, if it ever matters: the
+  GLB and IFC exports keep the one-box representation.
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
   under a `face("concrete-ext")` wall whose concrete runs inboard from it. **The -2" north

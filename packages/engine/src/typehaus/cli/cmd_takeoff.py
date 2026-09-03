@@ -67,6 +67,7 @@ def takeoff(
     radiant = bom["floor_heat"]
     payload = {"framing": dict(sorted(framing.items())),
                "framing_bom": framing_bom, "framing_by_size": framing_by_size,
+               "fabricated_members": bom["fabricated_members"],
                "structural_solids": bom["structural_solids"],
                "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
                "construction_returns": bom["construction_returns"],
@@ -166,6 +167,23 @@ def takeoff(
         console.print(f"  {row['profile']:>18} {row['category']:<18} "
                       f"{row['pieces']:>4} pc / {row['cut_length_ft']:>7.1f} LF cut "
                       f"[{buckets}]{bf}")
+    if payload["fabricated_members"]:
+        # Not a quantity section: every piece here is already billed in the cut list above.
+        # It states what a made-to-order member has to be BUILT to — see takeoff/fabrication.
+        console.print("[bold]Fabrication schedule[/bold]  (made to length, not cut from stock)")
+        for row in payload["fabricated_members"]:
+            spacing = f" @ {row['spacing_in']:g}\" o.c." if row["spacing_in"] else ""
+            console.print(f"  {row['floor']} {row['profile']} {row['category']}"
+                          f"{spacing}: {row['pieces']:>3} @ "
+                          f"{row['overall_length_ft_in']} overall")
+            if row["clear_span_ft_in"]:
+                seats = " / ".join(f"{v:g}\"" for v in (row["bearing_low_in"],
+                                                       row["bearing_high_in"])
+                                   if v is not None)
+                console.print(f"      clear span {row['clear_span_ft_in']}, "
+                              f"{row['depth_in']:g}\" deep, bearing {seats}"
+                              + (f", {row['chord_clear_opening_in']:g}\" clear chord to chord"
+                                 if row["chord_clear_opening_in"] else ""))
     console.print("[bold]Framing rollup by size[/bold]")
     for row in framing_by_size:
         bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""

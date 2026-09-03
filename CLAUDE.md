@@ -24,7 +24,7 @@ find in older docs. Pytest defaults are configured in `packages/engine/pyproject
 - **Quantities are the product; dollars are opt-in** (`plans/01-decisions.md` #28). No
   price, wage, or productivity data ships in the engine — a house owns its own numbers in
   `houses/<name>/prices.toml`.
-- **Files under 500 lines**, per `AGENTS.md`.
+- **Files under 500 lines**, per `AGENTS.md`. And aim to keep comments concise and token-efficient. There is no need for long essays to explain a single point that a few quick words can summarize effectively.
 
 ## Layout
 

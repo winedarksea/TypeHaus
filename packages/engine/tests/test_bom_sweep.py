@@ -618,8 +618,11 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
     assert round_tripped == bom, "the BOM must survive its own transport"
 
     assert set(bom) == {
-        # Structure
-        "framing", "framing_by_size", "structural_solids", "sheet_goods",
+        # Structure. `fabricated_members` is not a quantity: it re-presents the made-to-
+        # order rows of `framing` with the overall length, clear span and end bearing a
+        # fabricator's order needs (→ takeoff/fabrication.py).
+        "framing", "framing_by_size", "fabricated_members", "structural_solids",
+        "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
         # The sill seal under the bearing plates: its own section because
         # `construction_returns` reconciles 1:1 with the resolved returns.

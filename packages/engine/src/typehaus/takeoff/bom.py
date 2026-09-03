@@ -23,6 +23,7 @@ from typehaus.takeoff.electrical import (
     solar_takeoff,
 )
 from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
+from typehaus.takeoff.fabrication import fabricated_member_schedule
 from typehaus.takeoff.finishes import floor_finish_rows
 from typehaus.takeoff.framing import (
     construction_returns_takeoff,
@@ -96,6 +97,10 @@ def bill_of_materials(
     return {
         "framing": framing_takeoff(model),
         "framing_by_size": framing_bom_by_size(model),
+        # What a made-to-order member is BUILT to, as opposed to what it is bought as: the
+        # overall length, clear span and end bearing a truss fabricator needs. Not a
+        # quantity — every piece it lists is already billed in ``framing`` above.
+        "fabricated_members": fabricated_member_schedule(model),
         "structural_solids": structural_solids_takeoff(model),
         "construction_returns": construction_returns_takeoff(model),
         # The seal under the sill plates the line above bills the boards of. Its own table

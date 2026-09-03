@@ -32,7 +32,7 @@ this; a slab on another storey is not this either.
 from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result, Severity, not_applicable
 from typehaus.model.floors import FloorSystem, Slab
 from typehaus.model.project import Storey
 from typehaus.model.structure import FoundationWall
@@ -234,4 +234,61 @@ def floor_bearing_grid(ctx: CheckContext) -> list[Finding]:
                              f"with at least {_MIN_BEARING_IN:g}\" of its wall's structure "
                              f"under the cut"),
                     element_tags=(floor.tag,), result=Result.PASS))
+    return out
+
+
+# --- end bearing, by what the member actually is ------------------------------
+#
+# ``floor_bearing_grid`` above asks whether there is *structure* under the line the joists
+# are cut at. This asks how much of it each end actually sits on, against what the member
+# needs. IRC R502.6 wants 1 1/2" on wood for a sawn joist; the other two numbers are the
+# fabricator's, not the code's — an I-joist bears on its web and its maker asks 1 3/4", an
+# open-web truss lands on its bottom chord over a block and BCSI/SBCA ask 3". Grading all
+# three at 1 1/2" passed catlin's x=18' line, where a centreline split gave a truss and an
+# I-joist 2 3/4" each. It is now split 3 1/2" / 2" (``params/second_deck.py``).
+_MIN_SEAT_IN = {"floor_truss": 3.0, "i_joist": 1.75}
+_MIN_SEAT_DEFAULT_IN = 1.5
+_SEAT_TOL_M = 1e-4
+
+
+@check(Tier.INTEGRITY, "integrity.floor_end_bearing")
+def floor_end_bearing(ctx: CheckContext) -> list[Finding]:
+    """Each deck's two end seats, against the bearing its own member needs."""
+    out: list[Finding] = []
+    graded = 0
+    for floor in ctx.model.floors:
+        system = ctx.plan.by_tag(floor.tag)
+        ends = floor.ends
+        if ends is None or not isinstance(system, FloorSystem):
+            continue
+        member = system.joists.member
+        shape = cross_section(member).shape
+        needed = _MIN_SEAT_IN.get(shape, _MIN_SEAT_DEFAULT_IN)
+        for label, seat in (("low", ends.seat_lo), ("high", ends.seat_hi)):
+            if seat is None:
+                continue  # a cantilevered tip seats on nothing, and says so by having no seat
+            graded += 1
+            got_in = seat / M_PER_IN
+            if seat >= needed * M_PER_IN - _SEAT_TOL_M:
+                continue
+            out.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.floor_end_bearing",
+                message=(f"{floor.tag}'s {member} takes {got_in:.4g}\" of bearing at its "
+                         f"{label} end, against the {needed:g}\" it needs"),
+                element_tags=(floor.tag,), result=Result.FAIL,
+                fix_hint=("author JoistSpec.end_bearing to take the share this deck needs "
+                          "off a shared plate, or widen the bearing wall")))
+    if not graded:
+        return [not_applicable(
+            "integrity.floor_end_bearing",
+            "no deck in this building frames joists onto a resolvable bearing — every "
+            "FloorSystem either has no bearing refs or cantilevers both ends", ())]
+    if not out:
+        out.append(Finding(
+            severity=Severity.WARN, check_id="integrity.floor_end_bearing",
+            message=(f"{graded} deck end(s) seated, each on at least the bearing its own "
+                     f"member needs (sawn {_MIN_SEAT_DEFAULT_IN:g}\", I-joist "
+                     f"{_MIN_SEAT_IN['i_joist']:g}\", floor truss "
+                     f"{_MIN_SEAT_IN['floor_truss']:g}\")"),
+            element_tags=(), result=Result.PASS))
     return out
