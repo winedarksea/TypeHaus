@@ -44,6 +44,8 @@ from typehaus.engineering.soil import (
     aggregate_bed,
 )
 from typehaus.model.enums import LayerFunction
+from typehaus.model.rebar import BARS
+from typehaus.resolve.concrete import concrete_spec_for, cover_in, fc_psi
 
 BASIS = "IRC R404.4; IBC 1610.1 / 1806.2 presumptive values"
 
@@ -55,10 +57,12 @@ REQUIRED_FS = 1.5
 #: severe by rule and not by map: MN Rules 1309.0301 subp. 2 amends Table R301.2(1) and
 #: writes "Severe" into the weathering column outright, so IRC Figure R301.2(4) never has to
 #: be read. (Figure R301.2(3) is the wrong number — that was the 2012/2015 IRC.) It is
-#: a code MINIMUM standing in for a mix design nobody has written: ``Material`` carries no
-#: ``f'c`` field, so no house can state one, and reading a strength out of a material tag
-#: would be the same guess ``FootingBedding`` refuses about its own gradation. Assuming more
-#: than the code floor is the unsafe direction, so the floor is what is assumed.
+#: a code MINIMUM, and now only the **fallback**: a house that authors a ``ConcreteSpec`` on
+#: its pour's assembly is graded on the mix it specified, and this value applies only where
+#: none is authored. Every record says which of the two it read, because a capacity
+#: understated by a presumptive strength and one computed from a real mix design are
+#: different claims that a reader cannot tell apart from the number alone. Assuming more
+#: than the code floor is the unsafe direction, so the floor is what the fallback assumes.
 PRESUMPTIVE_FC_PSI = 3000.0
 
 #: Grade 60, per IRC Table R404.1.2(8) footnote b.
@@ -71,11 +75,10 @@ REINFORCEMENT_FY_PSI = 60000.0
 #: ACI 318 states in strength terms, so it — and only it — carries this.
 EARTH_PRESSURE_LOAD_FACTOR = 1.6
 
-#: (area in^2, diameter in) by bar designation. ASTM A615 standard sizes.
-_BAR: dict[int, tuple[float, float]] = {
-    3: (0.11, 0.375), 4: (0.20, 0.500), 5: (0.31, 0.625),
-    6: (0.44, 0.750), 7: (0.60, 0.875), 8: (0.79, 1.000),
-}
+#: ASTM A615 bar sizes, from the shared pure-data table. ``model/rebar.py`` owns it because
+#: ``takeoff/`` has to weigh a bar it must never ask ``engineering/`` about: a BOM that
+#: imported a calc module would move every time a ``BASIS_VERSION`` moved.
+_BAR = BARS
 
 #: ACI 318-19 Table 20.5.1.3.1 — cast-in-place concrete exposed to earth and weather.
 _COVER_IN = {True: 2.0, False: 1.5}   # keyed on "#6 or larger"
@@ -102,6 +105,15 @@ class _Geometry:
     #: Parsed by :func:`stem_flexure`; an unparseable string is treated as no steel, which
     #: is the conservative reading and reports as such.
     vertical_reinforcement: str | None = None
+    #: The f'c this wall's assembly SPECIFIES, or None where it specifies none. None is not
+    #: 3,000 psi — it is "this model does not say", and :func:`stem_flexure` falls back to
+    #: ``PRESUMPTIVE_FC_PSI`` and names which of the two it used.
+    specified_fc_psi: float | None = None
+    #: The clear cover this wall's assembly SPECIFIES, inches, or None for the ACI
+    #: Table 20.5.1.3.1 minimum. Cover is subtracted from the stem thickness to get ``d``,
+    #: so 3" on a 12" stem is roughly -16% flexural capacity against 1-1/2": it is a
+    #: durability decision that spends section, and it must be graded on what was authored.
+    specified_cover_in: float | None = None
 
 
 @dataclass(frozen=True)
@@ -206,7 +218,7 @@ def parse_reinforcement(spec: str | None) -> tuple[int, float] | None:
 
 
 def stem_flexure(geometry: _Geometry, case: _Case,
-                 fc_psi: float = PRESUMPTIVE_FC_PSI) -> tuple[float, float, str]:
+                 fc_psi: float | None = None) -> tuple[float, float, str]:
     """``(Mu, phi_Mn, how)`` for the stem at the top of the footing, ft-lb per foot of wall.
 
     **This is a limit state this engine had not computed before, and on the
@@ -253,21 +265,35 @@ def stem_flexure(geometry: _Geometry, case: _Case,
 
     b_in = 12.0
     h_in = geometry.stem_thickness_ft * 12.0
+    # An explicit argument wins (a test pinning one number), then the wall's own authored
+    # mix, then the code floor. The third is named in the returned prose so a reader can see
+    # a presumptive strength for what it is.
+    if fc_psi is None:
+        fc_psi = geometry.specified_fc_psi or PRESUMPTIVE_FC_PSI
+    fc_note = (f"f'c {fc_psi:,.0f} psi" if geometry.specified_fc_psi
+               else f"f'c {fc_psi:,.0f} psi PRESUMPTIVE (no mix specified)")
     parsed = parse_reinforcement(geometry.vertical_reinforcement)
     if parsed is None:
         section = b_in * h_in ** 2 / 6.0
         capacity = 0.60 * 5.0 * fc_psi ** 0.5 * section / 12.0
-        return demand, capacity, (f"PLAIN, f'c {fc_psi:,.0f} psi — and ACI 318 R22.6.3 does "
+        return demand, capacity, (f"PLAIN, {fc_note} — and ACI 318 R22.6.3 does "
                                   f"not cover an unsupported wall as plain concrete at all")
 
     bar, spacing_in = parsed
-    area_in2, diameter_in = _BAR[bar]
+    area_in2, diameter_in = _BAR[bar].area_in2, _BAR[bar].diameter_in
     as_per_ft = area_in2 * b_in / spacing_in
-    depth_in = h_in - _COVER_IN[bar >= 6] - diameter_in / 2.0
+    # Cover comes off ``d`` directly, so an authored 3" for durability costs real capacity
+    # and must not be quietly credited with the table minimum's longer lever arm.
+    cover_in = (geometry.specified_cover_in if geometry.specified_cover_in is not None
+                else _COVER_IN[bar >= 6])
+    cover_note = ("" if geometry.specified_cover_in is not None
+                  else " (ACI Table 20.5.1.3.1 minimum, none specified)")
+    depth_in = h_in - cover_in - diameter_in / 2.0
     a_in = as_per_ft * REINFORCEMENT_FY_PSI / (0.85 * fc_psi * b_in)
     capacity = 0.90 * as_per_ft * REINFORCEMENT_FY_PSI * (depth_in - a_in / 2.0) / 12.0
     return demand, capacity, (f"#{bar} @ {spacing_in:.0f}\" o.c., As {as_per_ft:.3f} in2/ft, "
-                              f"d {depth_in:.2f}\", f'c {fc_psi:,.0f} psi")
+                              f"cover {cover_in:.2f}\"{cover_note}, d {depth_in:.2f}\", "
+                              f"{fc_note}")
 
 
 def _limit_states(case: _Case, geometry: _Geometry, soil: PresumptiveSoil,
@@ -328,6 +354,11 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
 
     tag = wall.tag
     missing: list[str] = []
+
+    # The mix this wall's assembly specifies, if it specifies one. ``None`` all the way
+    # through means "unstated", which ``stem_flexure`` falls back on and names — never a
+    # silent default, per decision #32.
+    spec = concrete_spec_for(ctx.plan, wall)
 
     thickness_in = _structure_thickness_in(ctx, wall.assembly)
     if thickness_in is None:
@@ -397,6 +428,8 @@ def _geometry(ctx: EngineeringContext, wall) -> tuple[_Geometry | None, list[str
         toe_ft=toe_ft,
         heel_ft=heel_ft,
         vertical_reinforcement=getattr(wall, "vertical_reinforcement", None),
+        specified_fc_psi=fc_psi(spec),
+        specified_cover_in=cover_in(spec),
         # **Two different heights, and conflating them was the other half of the same slip.**
         # ``unbalanced_fill`` is the IRC quantity — fill against the wall, measured to the
         # base of the wall — and it is what R404.1.1's 48" threshold and Table R404.1.2(8)'s

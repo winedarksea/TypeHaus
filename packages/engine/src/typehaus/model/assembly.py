@@ -154,7 +154,105 @@ class MasonrySpec(HausModel):
     unit_size: str  # e.g. "8x8x16 CMU", "ICF-6"
     coursing: Length | None = None
     core_fill: bool = False
+    #: SUPERSEDED by ``Layer.concrete`` + the elements' ``ReinforcementSpec``, and read by
+    #: nothing today. Kept only so no house's authored value has to move in the same change
+    #: that introduces the replacement; removing it is a separate cleanup.
     rebar_spacing: Length | None = None
+
+
+class FiberSpec(HausModel):
+    """Fiber reinforcement dosed into a concrete mix.
+
+    ``kind`` is what the fiber DOES, not who makes it, because the three families answer
+    three different questions and are not interchangeable:
+
+    * ``micro-synthetic`` — monofilament or fibrillated PP at ~0.75-1.5 lb/cy, targeting
+      *plastic shrinkage* cracking in the first hours. It is not structural and never
+      replaces steel. Monofilament is the polishable one: what little presents at a
+      finished surface sits in the paste layer a cream polish removes.
+    * ``macro-synthetic`` — 3-8 lb/cy, a post-crack residual strength that can stand in for
+      shrinkage-and-temperature mesh on a slab-on-ground. Visible at the surface, which is
+      why it belongs on a garage or an exterior pad and not on a polished interior floor.
+    * ``steel`` — the strongest residual, and foreclosed on any finished or exposed surface
+      because a fiber lying near it rust-stains.
+
+    ``dose_pcy`` is pounds per cubic yard, the unit every TDS publishes. ``product`` is the
+    specified item verbatim, for the submittal; it is prose and nothing grades it.
+    """
+
+    kind: Literal["micro-synthetic", "macro-synthetic", "steel"]
+    dose_pcy: float | None = None
+    product: str | None = None
+
+
+class ConcreteSpec(HausModel):
+    """What a concrete pour IS — the mix, its exposure class, its cover and its bar coating.
+
+    Hung on the STRUCTURE layer of an :class:`Assembly` (``Layer.concrete``), exactly as
+    :class:`MasonrySpec` is, because that is where ``material_ref="concrete"`` already lives
+    and ``resolve/assembly_material.py::assembly_structure_material`` is already the one
+    reduction that says "this is a concrete pour". Read it through
+    ``resolve/concrete.py::concrete_spec_for`` and never by walking layers in a consumer.
+
+    Before this type existed every one of these facts was English prose inside
+    ``Assembly.source``, where nothing read it and nothing could grade it: the engine
+    hardcoded one presumptive 3,000 psi for the whole house and *regex-scraped* cover out of
+    a free-text cage string. A house could not state a 5,000 psi F3+C2 mix, so its columns
+    were graded — silently, and in the safe direction — as if it had not specified one.
+
+    **Only ``fc_psi`` is required.** Every other field is optional and a missing one reports
+    UNKNOWN rather than defaulting into a number nobody authored (decision #32): a mix with
+    no stated w/cm is a mix whose w/cm this model does not know, which is a different fact
+    from a mix at 0.45.
+
+    The four ACI 318-19 Table 19.3.1.1 exposure categories are **four separate fields, not a
+    set**. They are orthogonal in ACI — a pour is simultaneously some F, some S, some W and
+    some C — and collapsing them into one collection would make "F3" and "C2" look like
+    alternatives to each other. (The editable dialect forbids ``frozenset`` in any case.)
+    """
+
+    #: Specified compressive strength, psi. The one required field: a pour whose strength
+    #: is unstated is the condition that made every calc in this engine read one presumptive
+    #: value, and it is the thing this type exists to end.
+    fc_psi: float
+    #: Maximum water-cementitious ratio. ACI Table 19.3.2.1 pairs it with the exposure
+    #: class: F3 and C2 both demand <= 0.40, and 0.40 with 5,000 psi is one requirement
+    #: stated two ways rather than two requirements.
+    w_cm_max: float | None = None
+    #: Total air content, percent, and the tolerance the spec allows around it. Air is the
+    #: freeze-thaw mechanism; a F3 mix that is not air-entrained is not an F3 mix.
+    air_content_pct: float | None = None
+    air_tolerance_pct: float | None = None
+    #: ACI 318-19 Table 19.3.1.1 exposure categories. F = freezing-and-thawing,
+    #: S = sulfate, W = water (in contact with, requiring low permeability),
+    #: C = corrosion protection of reinforcement.
+    exposure_f: Literal["F0", "F1", "F2", "F3"] | None = None
+    exposure_s: Literal["S0", "S1", "S2", "S3"] | None = None
+    exposure_w: Literal["W0", "W1", "W2"] | None = None
+    exposure_c: Literal["C0", "C1", "C2"] | None = None
+    #: Specified clear cover to the outermost bar. Where a pour states none, the consuming
+    #: calc falls back to the ACI Table 20.5.1.3.1 minimum for the condition and says which
+    #: of the two it used. Authored per pour on purpose: raising the engine-wide default
+    #: would move every unrelated calc at once.
+    cover: Length | None = None
+    #: What the bar is protected with. ``hdg-a767`` is ASTM A767 (galvanized after
+    #: fabrication), ``hdg-a1094`` is A1094 (continuously galvanized, bent after coating).
+    #: The distinction is real at the bender and irrelevant to capacity; both take
+    #: ACI 318-19 §25.4.2.5's psi_e = 1.0, and it is EPOXY that takes 1.2-1.5 — reading the
+    #: epoxy row for a galvanized bar lengthens every lap in a house by half.
+    bar_coating: Literal["black", "hdg-a767", "hdg-a1094", "stainless", "gfrp",
+                         "epoxy"] | None = None
+    fiber: FiberSpec | None = None
+    #: Supplementary cementitious materials, verbatim — "25% class F fly ash", "50% slag".
+    #: Prose: the substitution rate interacts with cold-weather set times and early
+    #: strength in ways nothing here grades.
+    scm: str | None = None
+    #: Nominal maximum aggregate size. Bounds bar clear spacing at (4/3) x this
+    #: (ACI 318-19 §25.2.1) and is what makes a small column core a placement question.
+    max_aggregate: Length | None = None
+    #: Where these numbers come from — a mix design number, a supplier, a note in
+    #: ``houses/<name>/notes/``. Prose, for the submittal.
+    source: str | None = None
 
 
 class CavityFill(HausModel):
@@ -218,6 +316,11 @@ class Layer(HausModel):
     function: LayerFunction
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
+    # The mix, exposure class, cover and bar coating of a concrete pour. Belongs on the
+    # STRUCTURE layer, where ``material_ref="concrete"`` already is. Read it through
+    # ``resolve/concrete.py::concrete_spec_for`` — a consumer that walks layers itself is
+    # a second spelling of the same rule, and that is how the two come to disagree.
+    concrete: ConcreteSpec | None = None
     control: frozenset[ControlLayer] = frozenset()
     # Insulation in this layer's framing bays (non-additive, → CavityFill). STRUCTURE
     # layers (a batt between studs) and FURRING layers alike: a furring band's fill resolves
@@ -410,6 +513,8 @@ for _name, _obj in (
     ("CavityFill", CavityFill),
     ("FramingSpec", FramingSpec),
     ("MasonrySpec", MasonrySpec),
+    ("ConcreteSpec", ConcreteSpec),
+    ("FiberSpec", FiberSpec),
     ("Assembly", Assembly),
     ("AssemblyInterface", AssemblyInterface),
     ("ConstructionRule", ConstructionRule),

@@ -7,6 +7,7 @@ from typing import Literal
 from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
+from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import FaceRef
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
@@ -35,6 +36,11 @@ class FoundationWall(Wall):
     # HAS, and the check compares them. Left None where the table's cell reads NR, since
     # there is nothing to record.
     vertical_reinforcement: str | None = None
+    #: The steel this pour actually contains, STRUCTURED — the graded input wherever it is
+    #: authored. See :class:`~typehaus.model.rebar.ReinforcementSpec`; the free-text field
+    #: beside it stays for the drawing, and ``integrity.reinforcement_spec_agrees`` raises an
+    #: ERROR where the two disagree.
+    reinforcement: ReinforcementSpec | None = None
     # Whether the wall is permanently braced top and bottom — a slab or footing key at the
     # base, a floor diaphragm at the head. This is not a detail, it is the precondition for
     # the whole prescriptive path: IRC Table R404.1.2(8) presumes it (footnote g), and
@@ -71,6 +77,12 @@ class Footing(Element):
     under: str  # wall or post tag
     width: Length
     depth: Length
+    #: The steel this pour actually contains. Unset means this model does not say — which
+    #: for a footing is the ordinary case and a legal one: ACI 318-19 §14.1.4 permits PLAIN
+    #: concrete in a footing (unlike §14.1.5 for a column), so a missing spec grades as plain
+    #: and reports OK or OVER rather than INCOMPLETE.
+    reinforcement: ReinforcementSpec | None = None
+
     # What the strip is made of. Unset stays "plain concrete" — the resolved solid carries
     # no assembly, ``structural_solids_takeoff`` groups it bare and prices it out of
     # ``emit/trades``' hardcoded category row, and nothing moves. That is right for most
@@ -128,6 +140,12 @@ class Pad(Element):
     outline: tuple[Point2D, ...]
     thickness: Length
     bottom_elevation: Length | None = None
+    #: The steel this pour actually contains. Unset means this model does not say — which
+    #: for a footing is the ordinary case and a legal one: ACI 318-19 §14.1.4 permits PLAIN
+    #: concrete in a footing (unlike §14.1.5 for a column), so a missing spec grades as plain
+    #: and reports OK or OVER rather than INCOMPLETE.
+    reinforcement: ReinforcementSpec | None = None
+
 
 
 class DrainTile(HausModel):
@@ -273,6 +291,11 @@ class Post(Element):
     # any stress, so ``engineering/deck_post.py`` reports INCOMPLETE naming this field rather
     # than assuming a sonotube "probably" has bars in it.
     vertical_reinforcement: str | None = None
+    #: The steel this pour actually contains, STRUCTURED — the graded input wherever it is
+    #: authored. See :class:`~typehaus.model.rebar.ReinforcementSpec`; the free-text field
+    #: beside it stays for the drawing, and ``integrity.reinforcement_spec_agrees`` raises an
+    #: ERROR where the two disagree.
+    reinforcement: ReinforcementSpec | None = None
 
 
 @register_element

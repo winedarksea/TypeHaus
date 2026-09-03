@@ -10,7 +10,9 @@ from typehaus.model.assembly import (
     Assembly,
     AssemblyInterface,
     CavityFill,
+    ConcreteSpec,
     ConstructionRule,
+    FiberSpec,
     FramingSpec,
     Layer,
     LayerBound,
@@ -236,6 +238,8 @@ for _name, _obj in (
     register_constructor(_name, _obj)
 
 __all__ = [
+    "FiberSpec",
+    "ConcreteSpec",
     "PlanModel", "Library", "Project", "Site", "Building", "Storey",
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",

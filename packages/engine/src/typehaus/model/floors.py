@@ -7,6 +7,7 @@ from typing import Literal
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
+from typehaus.model.rebar import ReinforcementSpec
 from typehaus.model.refs import Embed
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
@@ -186,6 +187,11 @@ class Slab(Element):
     outline: tuple[Point2D, ...]
     thickness: Length
     assembly: str | None = None
+    #: The steel this pour actually contains. Unset means this model does not say — which
+    #: for a footing is the ordinary case and a legal one: ACI 318-19 §14.1.4 permits PLAIN
+    #: concrete in a footing (unlike §14.1.5 for a column), so a missing spec grades as plain
+    #: and reports OK or OVER rather than INCOMPLETE.
+    reinforcement: ReinforcementSpec | None = None
     openings: tuple[str, ...] = ()  # FloorOpening tags
     # Which side of the storey datum (= top of floor structure) this slab occupies.
     # "structure" — the slab *is* the floor structure, so it hangs its thickness below the

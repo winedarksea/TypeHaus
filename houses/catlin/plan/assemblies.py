@@ -7,8 +7,10 @@ from typehaus import (
     Assembly,
     AssemblyInterface,
     CavityFill,
+    ConcreteSpec,
     ConstructionRule,
     ControlLayer,
+    FiberSpec,
     FramingSpec,
     Layer,
     LayerBound,
@@ -1530,11 +1532,107 @@ SG_FROST_WING_XPS2 = Assembly(
 # axis in them. The wings (SG_FROST_WING_XPS1/2) are the horizontal leg and the basement
 # wall's own 4" XPS is the vertical one, so the two legs Table R403.3(1) actually grades are
 # both modelled; the form's side foam is detail, not a graded quantity.
+# ---------------------------------------------------------------------------------------
+# The mixes this house pours. Three of them, stated once each and named by every concrete
+# assembly below, because a mix is a *purchase* — one ticket from one plant — and spelling
+# the same numbers out per assembly is how two pours that must be identical stop being.
+#
+# Until ``ConcreteSpec`` existed none of this was sayable: the engine hardcoded one
+# presumptive 3,000 psi for every concrete calc it ran, and cover was regex-scraped out of
+# the free-text cage string on a Post. The prose in each ``source=`` below said the right
+# thing and nothing read it.
+#
+# **Fiber is in all three, and it is not the same fiber.** Macro-synthetic carries a
+# post-crack residual and is visible at a finished surface, which is fine on a footing, a
+# garage slab or a buried wall and wrong on a floor anybody looks at. Micro-monofilament is
+# the polishable one — it targets *plastic shrinkage* in the first hours, and the little of
+# it that presents at the surface sits in the paste layer a cream polish grinds off. Steel
+# fiber is foreclosed anywhere near a finished or exposed face: it rust-stains.
+#
+# ** F0 ON THE BURIED MIX IS EARNED, NOT ASSUMED. ** ACI's F categories grade freeze-thaw,
+# and a strip footing bearing below Ramsey County's 42" frost depth does not freeze. The
+# three sunken-garden-face strips are the exception that proves it — they bottom out 8"
+# below the garden floor and are frost-protected by a form and wings under IRC R403.3
+# (FOOTING_FPSF_20 below), which is a detail precisely because the concrete there IS in the
+# freezing zone. ``exposure_s`` is left UNSET on all three: nobody has run a soil sulfate
+# test, and "S0" would be an assumption wearing a measurement's clothes.
+# ** 5,000 psi, AND THAT SETTLES A STANDING OPEN QUESTION. ** IRC Table R402.2's basement-
+# wall row is 3,000 psi, which is what every calc in this engine presumed and what
+# `notes/sunken_garden_court_free_body.md` §8, `notes/sunken_garden_piers.md` §5 and
+# `plans/TODO.md` all flagged as unresolved: **MN Rules 1309.0402 amends R402.2 with a
+# FOOTINGS row at 5,000 psi.** Footnote g's 2,500 psi relief needs an approved
+# water/vapour-resistance admixture, and footnote h exempts deck/porch post footings, wood
+# foundations and floating slabs — a house or garage strip footing is none of those. So the
+# amendment applies, 5,000 is the number, and the three notes above are updated to say the
+# question is answered rather than open.
+#
+# w/cm 0.40 rather than a strength-only spec: it is what 5,000 psi wants anyway, and W1
+# durability is bought by permeability and not by cylinder strength.
+CATLIN_BURIED_MIX = ConcreteSpec(
+    fc_psi=5000.0,
+    w_cm_max=0.40,
+    exposure_f="F0",
+    exposure_w="W1",
+    exposure_c="C1",
+    cover=inch(3.0),
+    fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
+    scm="25% class F fly ash",
+    max_aggregate=inch(0.75),
+    source="strip footings and buried stems below frost depth: MN Rules 1309.0402's 5,000 psi FOOTINGS amendment to IRC Table R402.2, ACI 318-19 Table 19.3.2.1 for F0/W1/C1, and 3\" cover per Table 20.5.1.3.1(a) cast against and permanently in contact with ground",
+)
+
+CATLIN_EXPOSED_MIX = ConcreteSpec(
+    fc_psi=5000.0,
+    w_cm_max=0.40,
+    air_content_pct=6.0,
+    air_tolerance_pct=1.5,
+    exposure_f="F3",
+    exposure_w="W1",
+    exposure_c="C2",
+    bar_coating="hdg-a767",
+    fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
+    scm="25% class F fly ash",
+    max_aggregate=inch(0.75),
+    source="every exterior and salt-splash pour: ACI 318-19 Table 19.3.2.1 class F3 + C2 — w/cm 0.40, f'c 5,000, 6%+/-1.5 air — with ASTM A767 class 1 galvanized bar. Cover is authored per pour, because on a 12\" round column it costs moment and on a footing it is free",
+)
+
+CATLIN_INTERIOR_MIX = ConcreteSpec(
+    fc_psi=4000.0,
+    w_cm_max=0.45,
+    exposure_f="F0",
+    exposure_w="W0",
+    exposure_c="C0",
+    bar_coating="black",
+    fiber=FiberSpec(kind="micro-synthetic", dose_pcy=1.5,
+                    product="monofilament PP, 1/2\" - confirm the dose against the supplier TDS and the finisher before ordering"),
+    max_aggregate=inch(0.75),
+    source="conditioned interior pours: no chloride, no freeze-thaw, so black bar and galvanizing would buy nothing. Micro-MONOFILAMENT fiber, not macro: this is the mix SL-M-DECK is polished from",
+)
+
+# The 20x8 strip under every house and garage wall that is NOT one of the four
+# sunken-garden-face runs. It carried no assembly at all until 2026-09-03, which meant its
+# pour had nowhere to state a mix and ``structural_solids`` grouped it with every other
+# bare pour under one blended $/cy. Naming it costs nothing in the estimate — ``[concrete]``
+# keys on the solid CATEGORY qualified by assembly, and ``cli/prices.candidate_keys`` falls
+# ``footing:CATLIN_FOOTING_20`` back to ``footing`` — and it is what lets the mix be said.
+#
+# No reinforcement, deliberately. These are plain strips under IRC Table R403.1, which is a
+# prescriptive answer to a prescriptive question; a 4-6" projection on an 8" depth satisfies
+# ACI §13.3 trivially, and a second, engineered authority on the same number buys nothing.
+CATLIN_FOOTING_20 = Assembly(
+    tag="CATLIN_FOOTING_20",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+    ),
+    source="the ordinary 20\" x 8\" cast strip under the house and garage walls (IRC Table R403.1), poured against the bedding prep",
+)
+
 FOOTING_FPSF_20 = Assembly(
     tag="FOOTING_FPSF_20",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
         Layer(name="xps-bearing", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),

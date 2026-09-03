@@ -164,7 +164,7 @@ def _slenderness(pier: _Pier) -> tuple[float, float, float, float]:
     radius_of_gyration = pier.diameter_in / 4.0          # d/4 for a circular section
     slenderness = pier.height_in / radius_of_gyration    # k = 1.0
     # ACI 318-19 §6.6.4.4.4(a) EI = 0.4 Ec Ig / (1 + beta_dns), §6.6.4.5.2 delta_ns.
-    modulus = 57_000.0 * math.sqrt(PRESUMPTIVE_FC_PSI)
+    modulus = 57_000.0 * math.sqrt(_fc_psi(pier))
     inertia = math.pi * pier.diameter_in ** 4 / 64.0
     sustained = (1.2 * pier.dead_lb / pier.factored_lb) if pier.factored_lb else 0.0
     stiffness = 0.4 * modulus * inertia / (1.0 + sustained)
@@ -225,9 +225,9 @@ def _one(pier: _Pier) -> EngineeringRecord:
     return _reinforced_column(pier, area, ratio, shape, demand, minimum_steel, cage, common)
 
 
-def _capacity(area_in2: float, steel_in2: float) -> float:
+def _capacity(area_in2: float, steel_in2: float, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     """``phi * alpha * Po`` — ACI 318-19 §22.4.2.1 with Eq. 22.4.2.2."""
-    squash = 0.85 * PRESUMPTIVE_FC_PSI * (area_in2 - steel_in2) + REINFORCEMENT_FY_PSI * steel_in2
+    squash = 0.85 * fc_psi * (area_in2 - steel_in2) + REINFORCEMENT_FY_PSI * steel_in2
     return PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * squash
 
 
@@ -350,13 +350,14 @@ def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
     *increases* a lightly loaded column's moment capacity up to the balance point.
     """
     radius = pier.diameter_in / 2.0
-    beta = _beta_1(PRESUMPTIVE_FC_PSI)
+    fc_psi = _fc_psi(pier)
+    beta = _beta_1(fc_psi)
     offsets = _bar_offsets(pier, cage, cover_in)
-    bar_area = _BAR[cage.bar][0]
+    bar_area = _BAR[cage.bar].area_in2
 
     def state(c: float) -> tuple[float, float, float]:
         area, centroid = _segment(radius, min(beta * c, 2.0 * radius))
-        force = 0.85 * PRESUMPTIVE_FC_PSI * area
+        force = 0.85 * fc_psi * area
         moment = force * centroid
         worst_tension = 0.0
         for offset in offsets:
@@ -366,7 +367,7 @@ def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
                          min(REINFORCEMENT_FY_PSI, STEEL_MODULUS_PSI * strain))
             # A bar inside the stress block displaces concrete that is already counted.
             if depth <= beta * c:
-                stress -= 0.85 * PRESUMPTIVE_FC_PSI
+                stress -= 0.85 * fc_psi
             force += stress * bar_area
             moment += stress * bar_area * offset
             worst_tension = min(worst_tension, strain)
@@ -396,7 +397,7 @@ def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
     """
     radius_of_gyration = pier.diameter_in / 4.0
     slenderness = CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in / radius_of_gyration
-    modulus = 57_000.0 * math.sqrt(PRESUMPTIVE_FC_PSI)
+    modulus = 57_000.0 * math.sqrt(_fc_psi(pier))
     inertia = math.pi * pier.diameter_in ** 4 / 64.0
     sustained = (1.2 * pier.dead_lb / pier.factored_lb) if pier.factored_lb else 0.0
     stiffness = 0.4 * modulus * inertia / (1.0 + sustained)
@@ -406,7 +407,7 @@ def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
     return (slenderness, magnifier)
 
 
-def _class_b_lap_in(cage: _Cage) -> float:
+def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     """ACI 318-19 §25.4.2.4 development, §25.5.2.1 class B splice, for a #6 or smaller bar.
 
     ``ld = (fy psi_t psi_e psi_s / (25 lambda sqrt(f'c))) db`` with every factor 1.0 —
@@ -418,7 +419,7 @@ def _class_b_lap_in(cage: _Cage) -> float:
     ACI 318-19's coating factor is written for EPOXY, and §25.4.2.5's zinc-coated (galvanized)
     reinforcement row carries psi_e = 1.0. Zinc does not debond the way epoxy does.
     """
-    length = (REINFORCEMENT_FY_PSI / (25.0 * math.sqrt(PRESUMPTIVE_FC_PSI))) \
+    length = (REINFORCEMENT_FY_PSI / (25.0 * math.sqrt(fc_psi))) \
         * cage.bar_diameter_in
     return 1.3 * length
 
@@ -442,18 +443,19 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     pass; ``tests/test_pier_calcs.py`` reproduces it.
     """
     steel = cage.area_in2
-    capacity = _capacity(area, steel)
-    cover_in = _authored_cover_in(pier.vertical_reinforcement)
+    fc_psi = _fc_psi(pier)
+    capacity = _capacity(area, steel, fc_psi)
+    cover_in = _cover_in(pier)
     phi_mn, phi, neutral_axis = _pm_point(pier, cage, cover_in, demand)
     slenderness, magnifier = _sway_magnifier(pier, demand)
     governing = max(pier.wind_base_moment_lb_ft, pier.guard_base_moment_lb_ft)
-    lap = _class_b_lap_in(cage)
+    lap = _class_b_lap_in(cage, fc_psi)
 
     states = (
         LimitState("axial, tied column", demand, capacity, "lb",
                    f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
-                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — f'c "
-                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi, fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — {_fc_note(pier)}, "
+                   f"fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
         LimitState("bending at base, wind", pier.wind_base_moment_lb_ft, phi_mn, "lb-ft",
                    f"ACI 318-19 §22.4 P-M interaction at Pu {demand:,.0f} lb, phi "
                    f"{phi:.2f}, c {neutral_axis:.2f}\" — ASCE 7-16 §29.3 storey shear at "
@@ -497,13 +499,15 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         f"below and lapped into the column's own cage. psi_e is 1.0 for GALVANIZED bar "
         f"(ACI 318-19 §25.4.2.5); it is epoxy coating that takes 1.2-1.5, and reading the "
         f"epoxy row for a galvanized bar would lengthen every lap in this house by half.",
-        f"f'c IS THE PRESUMPTIVE {PRESUMPTIVE_FC_PSI:,.0f} psi, not the mix the assembly "
-        f"specifies. This model carries no strength on an Assembly, so every concrete calc "
-        f"in this engine reads one presumptive value. Where a house specifies more — the "
-        f"catlin garden columns are a 5,000 psi class F3+C2 mix for durability — the "
-        f"capacity above is understated, which is the safe direction. It is named here so "
-        f"nobody reconciles this record against the drawing and concludes one of them is "
-        f"wrong.",
+        (f"f'c IS THE {pier.specified_fc_psi:,.0f} psi THIS POUR SPECIFIES, read from the "
+         f"``ConcreteSpec`` on its assembly. Every state above is computed on it, so this "
+         f"record and the drawing are quoting one number rather than two."
+         if pier.specified_fc_psi else
+         f"f'c IS THE PRESUMPTIVE {PRESUMPTIVE_FC_PSI:,.0f} psi, because this pour's "
+         f"assembly authors no ``ConcreteSpec``. That is the code floor, so the capacity "
+         f"above is understated wherever the real mix is richer — the safe direction, and "
+         f"named here so nobody reconciles this record against the drawing and concludes "
+         f"one of them is wrong. Authoring the mix is what closes it."),
         "SCREENING: the base is taken as FIXED, which the doweled lap into the wall top is "
         "detailed to deliver and which no calculation here proves; shear in the column is "
         "not graded (the section is enormous relative to a few hundred pounds, but 'enormous' "
@@ -532,6 +536,39 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
 DEFAULT_COVER_IN = 1.5
 
 
+def _fc_psi(pier: _Pier) -> float:
+    """The f'c to grade this pier on: the mix its assembly SPECIFIES, else the code floor.
+
+    Before ``ConcreteSpec`` existed there was nowhere for a house to state a mix, so every
+    concrete calc in this engine read one presumptive 3,000 psi and the catlin garden
+    columns' real 5,000 psi F3+C2 durability mix was silently unread. Now a specified mix is
+    read; the fallback stays, because 3,000 is the code minimum and assuming *more* than the
+    floor is the unsafe direction.
+    """
+    return pier.specified_fc_psi or PRESUMPTIVE_FC_PSI
+
+
+def _fc_note(pier: _Pier) -> str:
+    """``f'c`` for a limit state's prose, saying whether it was specified or presumed."""
+    if pier.specified_fc_psi:
+        return f"f'c {pier.specified_fc_psi:,.0f} psi (the mix the assembly specifies)"
+    return f"f'c {PRESUMPTIVE_FC_PSI:,.0f} psi PRESUMPTIVE (this pour specifies no mix)"
+
+
+def _cover_in(pier: _Pier) -> float:
+    """The cover to grade this pier on, in inches.
+
+    Three sources in falling order of authority: the ``ConcreteSpec`` on the pier's assembly
+    (structured, authored, and the one a durability check grades), the ``N" cover`` fragment
+    scraped out of the free-text cage string, and the Code minimum. The regex is kept as the
+    middle rung so that a house which has not yet migrated a pour to a structured spec is
+    graded exactly as it was before — migration is pour by pour, never one sweep.
+    """
+    if pier.specified_cover_in is not None:
+        return pier.specified_cover_in
+    return _authored_cover_in(pier.vertical_reinforcement)
+
+
 def _authored_cover_in(spec: str | None) -> float:
     """The cover the house wrote into ``Post.vertical_reinforcement``, or the Code minimum.
 
@@ -539,6 +576,8 @@ def _authored_cover_in(spec: str | None) -> float:
     the same way ``parse_cage`` reads the four numbers that carry meaning. Cover changes the
     bar circle and therefore the lever arm, so a house that specifies 2" for durability
     should be graded on 2" and not quietly credited with 1-1/2"'s longer arm.
+
+    Superseded by ``ConcreteSpec.cover`` where a pour authors one — see :func:`_cover_in`.
     """
     if not spec:
         return DEFAULT_COVER_IN
@@ -600,14 +639,14 @@ def _reinforced_column(pier: _Pier, area: float, ratio: float, shape: str, deman
                        common: tuple[str, ...]) -> EngineeringRecord:
     """The cage is stated: grade it, and grade the four detailing limits around it."""
     steel = cage.area_in2
-    capacity = _capacity(area, steel)
+    capacity = _capacity(area, steel, _fc_psi(pier))
     slenderness, magnifier, _eccentricity, _embedded = _slenderness(pier)
 
     states = (
         LimitState("axial, tied column", demand, capacity, "lb",
                    f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
-                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — f'c "
-                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi, fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+                   f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — {_fc_note(pier)}, "
+                   f"fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
         *_detailing_states(pier, area, minimum_steel, cage),
     )
     over = any(not state.ok for state in states)
@@ -651,7 +690,7 @@ def _unreinforced_column(pier: _Pier, area: float, ratio: float, shape: str, dem
     states = (
         LimitState("axial, gross section", demand, plain, "lb",
                    f"ACI 318-19 §14.5.4 at 0.45 f'c, phi 0.60 — reported to show the section "
-                   f"is not what is missing; f'c {PRESUMPTIVE_FC_PSI:,.0f} psi"),
+                   f"is not what is missing; {_fc_note(pier)}"),
     )
     reason = (f"the vertical reinforcement in {pier.tag} — ACI 318-19 §14.1.5 does not permit "
               f"a plain concrete COLUMN at any stress. Author `Post.vertical_reinforcement`, "
@@ -681,7 +720,7 @@ def _plain_pedestal(pier: _Pier, area: float, ratio: float, shape: str, demand: 
     states = (
         LimitState("axial, gross section", demand, plain, "lb",
                    f"ACI 318-19 §14.5.4 at 0.45 f'c, phi 0.60 — f'c "
-                   f"{PRESUMPTIVE_FC_PSI:,.0f} psi"),
+                   f"{_fc_note(pier)}"),
     )
     over = any(not state.ok for state in states)
     return EngineeringRecord(
@@ -700,7 +739,7 @@ def _plain_capacity(pier: _Pier, area: float) -> float:
     """ACI 318-19 §14.5.4 (§22.6.5.2 in 318-11), the expression ``retaining_system`` uses on
     the court's strut and with the same phi."""
     slenderness = max(1.0 - (pier.height_in / (32.0 * pier.diameter_in)) ** 2, 0.0)
-    return 0.60 * 0.45 * PRESUMPTIVE_FC_PSI * area * slenderness
+    return 0.60 * 0.45 * _fc_psi(pier) * area * slenderness
 
 
 def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple[Quantity, ...]:
@@ -712,7 +751,7 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
         Quantity("dead_load", pier.dead_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
-        Quantity("fc", PRESUMPTIVE_FC_PSI, "psi", 1.0),
+        Quantity("fc", _fc_psi(pier), "psi", 1.0),
     )
     if cage is None:
         return base

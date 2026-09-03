@@ -110,7 +110,7 @@ _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
-            assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else None)
+            assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "CATLIN_FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]
 
@@ -275,7 +275,8 @@ GARAGE_STEM_WALLS = [
 # `center_on="wall"`: the stem runs 0"..11" inboard of the raw node line, so a 20" strip
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
-_GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall")
+_GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
+                       assembly="CATLIN_FOOTING_20")
 # ** UNREFERENCED since 2026-09-02 ** — FT-GF-E1/E2/S3/N2 were widened 20" -> 24" only
 # because their stems carried a brick ledge, and the metal wainscot deleted the ledge. All
 # ten garage footings are back on one 20" strip, and the 2" eastward shift below goes with

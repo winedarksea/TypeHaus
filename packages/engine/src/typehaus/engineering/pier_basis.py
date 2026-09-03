@@ -90,6 +90,16 @@ class _Pier:
     #: ``Roof`` nor a ``FloorSystem`` but four ``Beam``s and three rafters
     #: (``params/breezeway.py`` explains why), so there is no polygon to divide.
     unmodelled_load: tuple[str, ...] = ()
+    #: The f'c this pier's assembly SPECIFIES, or None where it specifies none. None is not
+    #: 3,000 psi: it is "this model does not say", and ``deck_post`` falls back to
+    #: ``PRESUMPTIVE_FC_PSI`` and names which of the two every state was computed on.
+    specified_fc_psi: float | None = None
+    #: The clear cover this pier's assembly SPECIFIES, inches, or None. Cover sets the bar
+    #: circle and therefore the steel's lever arm in ``_pm_point`` — on a 12" round, 3"
+    #: cover is a 30% shorter arm than 2", which is the whole reason a durability decision
+    #: on a moment column has to be re-run rather than asserted. A structured spec is read
+    #: first; ``_authored_cover_in``'s regex over the free-text cage string is the fallback.
+    specified_cover_in: float | None = None
 
     @property
     def gross_area_in2(self) -> float:
@@ -467,6 +477,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     """
     from typehaus.model.structure import Footing, FoundationWall, Pad, Post
     from typehaus.resolve.assembly_material import assembly_structure_material
+    from typehaus.resolve.concrete import concrete_spec_for, cover_in, fc_psi
 
     footings = {f.under: f for f in ctx.plan.all_elements()
                 if isinstance(f, Footing) and f.under}
@@ -536,5 +547,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             footing_depth_in=footing.depth.inches if footing is not None else 0.0,
             vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
             unmodelled_load=unmodelled.get(post.tag, ()),
+            specified_fc_psi=fc_psi(concrete_spec_for(ctx.plan, post)),
+            specified_cover_in=cover_in(concrete_spec_for(ctx.plan, post)),
         ))
     return sorted(out, key=lambda pier: pier.tag)

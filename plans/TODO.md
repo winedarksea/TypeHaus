@@ -31,8 +31,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     unset and these items are **unsealed**. 1.58 against 1.50 is a screening on presumptive
     values, with no geotechnical report, a soil class from a survey for the wrong county, and
     **a design that depends on the washed-stone bed being built as specified — 1.13 without
-    it.** MN Rules 1309.0402 also amends IRC Table R402.2 with a **5,000 psi FOOTINGS row**
-    this model states no mix design against; that wants checking before anyone orders.
+    it.** MN Rules 1309.0402's **5,000 psi FOOTINGS row** amendment to IRC Table R402.2 is
+    **RESOLVED 2026-09-03**: `ConcreteSpec` gives a pour a place to state its mix, and
+    `CATLIN_BURIED_MIX` states 5,000 psi at w/cm 0.40 for every strip footing.
 
 - **`EQ-S-HP1-AH.zone_rooms` named `RM-A-STUDIO-BATH`, a tag that names no room — RESOLVED
   2026-08-31 as a typo.** The attic guest bath is `RM-A-STUBATH`, and it is in the zone now.

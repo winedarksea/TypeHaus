@@ -495,9 +495,12 @@ added:
 - **MN Rules 1309.0402 amends IRC Table R402.2 and adds a FOOTINGS row at 5,000 psi**
   (footnote g allows 2,500 with an approved water/vapour-resistance admixture; footnote h
   exempts deck/porch post footings, wood foundations and floating slabs — none of which is a
-  retaining-wall strip footing). Nothing in this model states a mix design, and f'c above is
-  the 3,000 psi the *wall* row requires. **The footing pours want checking against that
-  amendment before anyone orders concrete.**
+  retaining-wall strip footing). **ANSWERED 2026-09-03, and the model can now say so.**
+  `ConcreteSpec` gives a pour somewhere to state its mix, `CATLIN_BURIED_MIX` states
+  5,000 psi at w/cm 0.40 for every strip footing, and `stem_flexure` reads it instead of the
+  presumptive 3,000. What is *not* yet changed is the arithmetic in this note: f'c below is
+  still the 3,000 psi the wall row requires, which is the safe direction for a stem and is
+  re-oracled when the wall assemblies take a spec of their own.
 
 ---
 

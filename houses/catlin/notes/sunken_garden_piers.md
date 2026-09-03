@@ -85,14 +85,20 @@ and printed on every record so a reviewer can disagree with it.
 | | `PT-SG-COL` | `PT-SG-FCOL` |
 |---|---|---|
 | own deck share, `FS-SG-PORCH` 164.67 ft² / 2 | 82.33 ft² | 82.33 ft² |
-| handed down by a centre pillar (`FS-SG-DECK` 203.00 / 6) | 33.83 ft² (BR2) | 33.83 ft² (BF2) |
-| **tributary** | **116.17 ft²** | **116.17 ft²** |
+| handed down by a centre pillar (`FS-SG-DECK` 207.83 / 6) | 34.64 ft² (BR2) | 34.64 ft² (BF2) |
+| **tributary** | **116.97 ft²** | **116.97 ft²** |
 | column self weight | 1,258 lb | 1,258 lb |
 | the pillar's own 6x6, 35 pcf | 67 lb | 66 lb |
-| **D** = trib×10 + self + carried | **2,487 lb** | **2,486 lb** |
-| **L** = trib×40 | **4,647 lb** | **4,647 lb** |
-| **service** D+L | **7,134 lb** | **7,132 lb** |
-| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,419 lb** | **10,418 lb** |
+| **D** = trib×10 + self + carried | **2,495 lb** | **2,494 lb** |
+| **L** = trib×40 | **4,679 lb** | **4,679 lb** |
+| **service** D+L | **7,174 lb** | **7,173 lb** |
+| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,480 lb** | **10,479 lb** |
+
+**`FS-SG-DECK` went 203.00 → 207.83 ft² on 2026-09-03**, when `joist_cantilever_in` went
+6" → 9" so the balcony plank would drip clear of the 12" rounds' outer faces rather than
+onto them (3" per side is the smallest step that keeps the deck width a whole number of
+6" AridDek boards). That is +0.81 ft² of tributary on each of these two piers, and §3c is
+where it is felt.
 
 The two differ by a pound, and only because `PT-SG-BR2` is 2" taller than `PT-SG-BF2` (the
 rear pillar row runs proud for the deck's drainage crown), so its 6x6 weighs a pound more.
@@ -141,19 +147,24 @@ here would be reading a 42" section's allowable off a bedding one sixth as deep.
 q = (service + bell self weight) / bell area
 
 PT-SG-COL    bell 30" = 4.909 ft², 12" thick → 736 lb
-             (7,134 + 736) / 4.909  =  1,603 psf   vs 2,000   d/c 0.80   ✓
+             (7,174 + 736) / 4.909  =  1,611 psf   vs 2,000   d/c 0.81   ✓
 PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb
-             (7,132 + 1,060) / 7.069 =  1,159 psf  vs 2,000   d/c 0.58   ✓
+             (7,173 + 1,060) / 7.069 =  1,165 psf  vs 2,000   d/c 0.58   ✓
 ```
 
 Both clear, and **the two swapped places on 2026-09-03**. `PT-SG-FCOL` used to be the one to
 watch at d/c 0.74; it fell to 0.58 when the column shrank from 20" round to 12" and shed
-2,238 lb of its own concrete. `PT-SG-COL` rose from 0.62 to **0.80** when `PT-SG-BR2`'s
-share of the balcony was finally handed to it, and it is now the pier with the least margin
-in this structure — on a 30" bell against `PT-SG-FCOL`'s 36". Any growth in the balcony's
-loading lands here first. **Widening that bell to 36" would take it to 1,159 psf** and is the
-obvious move if it is ever wanted; it is not taken now, because 0.80 against a presumptive
-allowable with no boring is a screening margin either way (§5).
+2,238 lb of its own concrete. `PT-SG-COL` rose from 0.62 to 0.80 when `PT-SG-BR2`'s
+share of the balcony was finally handed to it, and to **0.81** when the deck grew to 21'-6"
+later the same day. It is the pier with the least margin in this structure — on a 30" bell
+against `PT-SG-FCOL`'s 36".
+
+**Any growth in the balcony's loading lands here first, and that is now a live number rather
+than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf. **Widening the bell
+to 36" would take it to 1,165 psf**, and is the obvious move if the balcony grows again; it
+is not taken now, because 0.81 against a presumptive allowable with no boring is a screening
+margin either way (§5). Two more 3" steps of `joist_cantilever_in` would reach roughly
+1,627 psf — still clear, and still the wrong place to spend the margin quietly.
 
 ---
 
@@ -367,8 +378,11 @@ authorities on one number: those footings are graded as `retaining_wall/*`.
 - **No development, splice or dowel detail.** §4 sizes a cage; it does not lap it into the
   bell, hook it, or check the tie hooks and the bar's clear cover against §20.5.1.3. That is
   drawing work and it is not here.
-- **`f'c` is presumptive.** 3,000 psi from IRC Table R402.2, and `f_y` is 60,000 psi Grade 60,
-  authored in the cage string and assumed by the calculation. And note that MN Rules 1309.0402
-  amends that table with a **5,000 psi FOOTINGS row**; whether an augered pier bell is a
-  "footing" for that amendment is not a question this note answers, and it should be asked
-  before anyone orders concrete.
+- **`f'c` was presumptive, and now only where a pour states nothing.** 3,000 psi from IRC
+  Table R402.2 was hardcoded for the whole engine; since 2026-09-03 a `ConcreteSpec` on the
+  pour's assembly is read instead, and every limit state's prose says which of the two it
+  used. `f_y` is still 60,000 psi Grade 60, authored in the cage string and assumed by the
+  calculation. MN Rules 1309.0402's **5,000 psi FOOTINGS row** is now stated for the strip
+  footings (`CATLIN_BURIED_MIX`); whether an augered pier BELL is a "footing" for that
+  amendment is still not a question this note answers, and the bells are poured from
+  `CATLIN_EXPOSED_MIX`'s 5,000 psi in any case, so the answer cannot bind.
