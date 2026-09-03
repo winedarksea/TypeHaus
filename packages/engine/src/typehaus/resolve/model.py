@@ -407,6 +407,11 @@ class ResolvedSolid:
     # say "I am category gutter", so a gutter ordered in a second coil colour had no way to
     # say so and rendered the palette's mill aluminium in both renderers.
     material: str | None = None
+    # Manufacturer part number for a solid that IS a purchased part rather than a shape cut
+    # from stock — the connector family, whose marker box is otherwise unidentifiable in the
+    # viewer ("connector · CN-BW-KBS-2" says nothing about which Simpson part is called for).
+    # Billing still runs off the authored element (takeoff/anchors.py), never off this.
+    product: str | None = None
     # A run — a handrail, a drain, a raceway — carried as one swept solid rather than as a
     # stack of level bands. When set, ``outline``/``z0_m``/``z1_m`` still carry the plan
     # silhouette and Z extents of the *whole* run, so every consumer that has not been

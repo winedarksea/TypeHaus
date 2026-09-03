@@ -1180,6 +1180,10 @@ export interface Solid {
   // The material the authored element named directly, for the solids that have one instead of
   // an assembly (the trim-run family). Mirrors ResolvedSolid.material.
   material?: string | null;
+  // Manufacturer part number, for a solid that IS a purchased part rather than a shape cut
+  // from stock — the connector family (→ resolve/model.py ResolvedSolid.product). Null on
+  // everything else.
+  product?: string | null;
   // A RUN — a handrail, a drain, a raceway — carried as one section swept along a 3D
   // polyline (→ resolve/model.py SolidSweep, resolve/sweep.py). Null on every prism, which
   // is every solid that is not one of those; `three/tubeGeometry.ts` mitres it, and

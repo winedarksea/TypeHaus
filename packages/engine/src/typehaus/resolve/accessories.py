@@ -437,6 +437,8 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
         category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),
         outline=square(cx, cy, inch(half_x).meters, inch(half_y).meters),
         z0_m=z - inch(half_z).meters, z1_m=z + inch(half_z).meters,
+        # The part number the take-off bills, so a click on the marker names the hardware.
+        product=el.size or None,
     ))
 
 
@@ -515,7 +517,7 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
             uid=f"{uid_base}-band-{end.lower()}", tag=f"{el.tag}-{el.connector}-{end}",
             storey=storey, category="connector",
             outline=rect_between(near, far, -band_half, band_half),
-            z0_m=band_top - thickness_z, z1_m=band_top,
+            z0_m=band_top - thickness_z, z1_m=band_top, product=el.connector,
         ))
 
 

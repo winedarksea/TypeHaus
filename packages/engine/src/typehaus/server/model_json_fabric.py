@@ -120,6 +120,9 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "voids": [[list(point) for point in ring] for ring in solid.voids],
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
+             # Manufacturer part number where the solid IS a purchased part (connectors);
+             # null on everything cut from stock.
+             "product": solid.product,
              # A run carried as one swept solid (→ resolve/sweep.py). Null on every prism,
              # which is every solid that is not a rail, a pipe or a raceway; the viewer
              # forks on it in ``buildSolid`` and mitres the tube itself.

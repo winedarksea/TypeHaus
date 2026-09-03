@@ -55,6 +55,10 @@ export function SolidInspector({ solid }: { solid: Solid }) {
           the viewer colours from it. Raw tag, matching MemberInspector: it is the key the
           palette, the trade table and the take-off are all written against. */}
       <span className="k">Material</span><span>{solid.material ?? "—"}</span>
+      {/* Hardware IS its part number: a connector marker box is unreadable without it, and
+          the number here is the one the take-off bills. Only the solids that are a purchased
+          part carry one, so the row stays off everything cut from stock. */}
+      {solid.product && <><span className="k">Part</span><span>{solid.product}</span></>}
       <ProductRows product={productForMaterial(model, solid.material)} />
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />
       <span className="k">Thickness</span><span>{formatFtIn(solid.z1_m - solid.z0_m)}</span>
