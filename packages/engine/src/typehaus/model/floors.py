@@ -126,6 +126,27 @@ class FloorSystem(Element):
     # perpendicular extent instead of the storey's whole wall bbox — needed for a deck that
     # frames a freestanding sub-structure sharing a storey with the main building.
     outline: tuple[Point2D, ...] = ()
+    #: **The SHEET, where it is not the joist field.** ``outline`` scopes the framing and the
+    #: subfloor follows it, bearing line to bearing line — which is right for a plywood deck
+    #: and wrong for a plank that oversails its rim. The breezeway's composite decking runs
+    #: 2 3/4" past the rim at each end onto ``D-M-ENTRY``'s and ``D-G-SERVICE``'s thresholds,
+    #: which is what a deck board does and what those two doors open onto; widening
+    #: ``outline`` to say so would lay a JOIST on each new edge, straight through the posts.
+    #: ``JoistSpec.cantilever*`` cannot help either — a bearing line is a span boundary, so a
+    #: cantilever is a joist-AXIS quantity by construction, and this oversail is on the
+    #: perpendicular one.
+    #:
+    #: So: an authored sheet polygon that wins outright, the direct analogue of ``outline``
+    #: above and of ``Slab.top_elevation``. It replaces the derived corners and nothing else —
+    #: ``deck_voids``, ``deck_z0_m``, ``deck_z1_m`` and the joist solver are all untouched.
+    #: Empty means the sheet is the joist field, which is every other deck in the house.
+    #:
+    #: **Bound it against the framing you are asking it to reach.**
+    #: ``preferences.toml [framing] bearing_plan_tolerance_in`` (8" by default) is how far
+    #: ``structural.uplift_path`` will look for a member's tie; a sheet oversailing further
+    #: than that finds neither a derived tie nor a hanger and FAILs every member under it.
+    #: ``structural.subfloor_oversail`` grades exactly that.
+    subfloor_outline: tuple[Point2D, ...] = ()
     iic: int | None = None  # empirical lookup (#50)
     # Self-adhered membrane over the joist and rim TOPS — butyl "joist tape" and its kin.
     # A catalog material ref, so the house prices it and the engine ships no number for it.

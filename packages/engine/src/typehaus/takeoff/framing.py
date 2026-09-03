@@ -359,18 +359,28 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if floor is None or not floor.members:
                 continue
             points = [point for member in floor.members for point in (member.p0, member.p1)]
-            gross = (max(point[0] for point in points) - min(point[0] for point in points)) * (
+            # The FRAMING's own bounding box — joist tip to joist tip, behind the rim.
+            framed = (max(point[0] for point in points) - min(point[0] for point in points)) * (
                 max(point[1] for point in points) - min(point[1] for point in points)
             )
             openings = sum(abs(polygon_area([point.xy_m for point in opening.outline]))
                            for opening in model.plan.storey_elements(storey.tag)
                            if isinstance(opening, FloorOpening) and opening.tag in system.openings)
+            # **The SHEET bills off the sheet, not off the framing.** This read the member
+            # bounding box for both, which understates every deck by a rim thickness at each
+            # end and — once ``FloorSystem.subfloor_outline`` existed — would have let a
+            # plank oversail its rim, draw wide, pass R311.3 and still bill the joist field.
+            # ``deck_outline`` is the one polygon the geometry, the drawings and the checks
+            # already agree on, so it is what the order reads too.
+            sheet = abs(polygon_area(list(floor.deck_outline))) if floor.deck_outline else framed
             areas[("subfloor", system.subfloor.material_ref,
-                   system.subfloor.thickness.meters)] += gross - openings
+                   system.subfloor.thickness.meters)] += sheet - openings
             # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
-            # the same deck.
+            # the same deck — and it is nailed to the JOISTS, so it keeps the framed extent
+            # whatever the sheet above does.
             for layer in system.ceiling_below:
-                areas[("ceiling", layer.material_ref, layer.thickness.meters)] += gross - openings
+                areas[("ceiling", layer.material_ref,
+                       layer.thickness.meters)] += framed - openings
 
     # A structural Slab's own ceiling_below (a room sitting under a cast deck) bills the
     # same way, net of its floor openings — meaningless, and left unauthored, on a

@@ -279,12 +279,17 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     deck_voids: tuple[Ring, ...] = ()
     deck_z0_m = deck_z1_m = z1
     if system.subfloor is not None:
-        axis0, axis1 = ends.deck_lo, ends.deck_hi
-        if along_x:
-            corners = ((axis0, perp0), (axis1, perp0), (axis1, perp1), (axis0, perp1))
+        if system.subfloor_outline:
+            # An authored sheet wins outright — a plank that oversails its rim. It replaces
+            # the derived corners and nothing else; see FloorSystem.subfloor_outline.
+            deck_outline = [p.xy_m for p in system.subfloor_outline]
         else:
-            corners = ((perp0, axis0), (perp0, axis1), (perp1, axis1), (perp1, axis0))
-        deck_outline = list(corners)
+            axis0, axis1 = ends.deck_lo, ends.deck_hi
+            if along_x:
+                corners = ((axis0, perp0), (axis1, perp0), (axis1, perp1), (axis0, perp1))
+            else:
+                corners = ((perp0, axis0), (perp0, axis1), (perp1, axis1), (perp1, axis0))
+            deck_outline = list(corners)
         deck_voids = tuple(
             [(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]
             for _opening, minx, maxx, miny, maxy in opening_boxes

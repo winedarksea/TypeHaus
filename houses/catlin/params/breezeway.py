@@ -84,8 +84,8 @@ Three places this deviates from the brief or from the plan it was built to, each
    The 1" house-to-garage slope this module used to carry was never a roof question: it was
    *walkway* drainage, and the walkway is a composite deck. A composite plank drains through
    the gaps between boards, so that is where it drains (see ``PORCH_DECK_COMPOSITE`` and
-   ``DECK`` below), and the roof is left doing the one job a roof does — shedding east and
-   west off a crown. The wedges are real framing now (``WEDGES``), not a drawing.
+   ``FLOOR``'s subfloor below), and the roof is left doing the one job a roof does —
+   shedding east and west off a crown. The wedges are real framing now (``WEDGES``), not a drawing.
 
 The 22" step at the garage door is resolved elsewhere, not here: ``D-G-SERVICE``
 now carries the same negative ``sill_height`` ``D-G-OVERHEAD`` always did, so it opens off
@@ -100,6 +100,7 @@ from typehaus import (
     Beam,
     Connector,
     ConnectorKind,
+    DeckLayer,
     FloorSystem,
     GlazingPanel,
     GlazingTrim,
@@ -107,7 +108,6 @@ from typehaus import (
     Node,
     Pad,
     Post,
-    Slab,
     TrimKind,
     Wedge,
     ft,
@@ -421,6 +421,35 @@ FLOOR_BEAMS = [
 _DECK_OUTLINE = (pt(ft(_POST_X0), ft(_FRAME_Y0)), pt(ft(_POST_X1), ft(_FRAME_Y0)),
                  pt(ft(_POST_X1), ft(_FRAME_Y1)), pt(ft(_POST_X0), ft(_FRAME_Y1)))
 
+# The composite plank is this floor system's own SUBFLOOR, and the sheet is authored.
+#
+# ** IT WAS A SLAB UNTIL 2026-09-03, AND THE REASON IT COULD NOT BE A SUBFLOOR IS FIXED. **
+# A plank over joists is a floor system's `subfloor` everywhere else in this house (the
+# garden's two decks and the balcony), which bills by the square foot in [sheet_goods]
+# instead of by the cubic yard out of a table named [concrete]. This one could not be,
+# because `resolve/floors.py` drew a subfloor bearing-line to bearing-line by the OUTLINE'S
+# perpendicular extent — so a floor system's sheet was exactly its joist field, and this
+# plank oversails the rim to land on the house cladding and the garage stem, which is what a
+# deck board does and what these two doors open onto. Two ways to say it and both failed:
+# keep the outline at the frame box and the sheet stops short of each threshold
+# (`code.R311_3_exterior_landing` FAILs both doors); stretch the outline to the two faces and
+# the joist solver lays a joist on that line, straight through the posts.
+#
+# `FloorSystem.subfloor_outline` is the third way and it is one field: an authored sheet
+# polygon that replaces the derived corners and touches nothing else — not the joist solver,
+# not `deck_voids`, not the elevations. The oversail is 2 3/4" on the glazing lines and
+# 2 3/4"/3 5/8" at the two buildings, all inside the 8" `bearing_plan_tolerance_in` that
+# `structural.subfloor_oversail` bounds it against.
+#
+# Laid door to door (N-S) across the joists, on breather tape at every joist top so the two
+# never trap water against each other, and GAPPED 3/16" between boards — the gaps are the
+# drainage, which is why this deck is dead flat and carries no fall (see PORCH_DECK_COMPOSITE
+# in plan/assemblies.py, and the module docstring's deviation 3).
+_DECK_SHEET = (pt(ft(_GLAZING_X0), ft(_HOUSE_CLADDING_Y)),
+               pt(ft(_GLAZING_X1), ft(_HOUSE_CLADDING_Y)),
+               pt(ft(_GLAZING_X1), ft(_GARAGE_STEM_Y)),
+               pt(ft(_GLAZING_X0), ft(_GARAGE_STEM_Y)))
+
 # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
 # 40-psf floor table — see checks/structural/deck.py.
 FLOOR = FloorSystem(
@@ -428,42 +457,10 @@ FLOOR = FloorSystem(
     joists=JoistSpec(member=_JOIST, spacing=inch(16), direction="x",
                      bearing_refs=("BM-BW-FW", "BM-BW-FE")),
     outline=_DECK_OUTLINE,
+    subfloor=DeckLayer(material_ref="composite-deck", thickness=inch(_DECK_THICKNESS_IN)),
+    subfloor_outline=_DECK_SHEET,
     service="deck",
     source="breezeway deck — KDAT 2x8 joists hung flush E-W between the two floor beams",
-)
-
-# Composite decking, laid door to door (N-S) across the joists, on breather tape at every
-# joist top so the two never trap water against each other. It reaches out to the post
-# faces on all four sides at the house end, and past them at the garage end: the deck
-# runs on to the stem face, tucking 7/8" under the cladding that oversails it.
-#
-# ** THIS ONE STAYS A SLAB, AND IT IS THE ONLY DECK IN THE HOUSE THAT DOES. ** A plank over
-# joists is normally a floor system's `subfloor` (the garden's two decks and the balcony are
-# all modelled that way), which bills by the square foot instead of the cubic yard out of
-# [concrete]. This one can't be: `resolve/floors.py` draws a subfloor bearing-line to
-# bearing-line by the OUTLINE'S perpendicular extent, so a floor system's sheet is exactly
-# its joist field. The plank here oversails the rim 2 3/4" at each end to land on the house
-# cladding and the garage stem, which is what a deck board does and what these two doors
-# open onto. Two ways to say it and both fail —
-#   * keep the outline at the post box, and the sheet stops 2 3/4" short of each threshold:
-#     `code.R311_3_exterior_landing` FAILS D-M-ENTRY and D-G-SERVICE, correctly, because
-#     nothing at threshold height covers the 36" patch outside them;
-#   * stretch the outline to the two faces, and the joist solver lays a joist on that line —
-#     straight through PT-BW-1..4 and into its own neighbour, five
-#     `structural.member_interference` FAILs. These joists are HUNG FLUSH between the beams
-#     and cannot cantilever (the `cantilever` fields run along the joist axis, x, not y).
-# The balcony's joists genuinely do cantilever 6" and its slab outline was that cantilever.
-# This one would have to invent framing to keep a plank where it is. Left as a Slab, priced
-# by qualified key in [concrete], and re-examined when a floor system can carry a sheet
-# wider than its joists.
-DECK = Slab(
-    uid="BWSL01AAAA", tag="SL-BW-DECK",
-    outline=(pt(ft(_GLAZING_X0), ft(_HOUSE_CLADDING_Y)),
-             pt(ft(_GLAZING_X1), ft(_HOUSE_CLADDING_Y)),
-             pt(ft(_GLAZING_X1), ft(_GARAGE_STEM_Y)),
-             pt(ft(_GLAZING_X0), ft(_GARAGE_STEM_Y))),
-    thickness=inch(_DECK_THICKNESS_IN), assembly="PORCH_DECK_COMPOSITE",
-    datum="walking_surface",
 )
 
 # ============================================================================
@@ -646,6 +643,6 @@ CONNECTORS = [
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
-MAIN_ELEMENTS = [*NODES, *PADS, *PIERS, *POSTS, *FLOOR_BEAMS, FLOOR, DECK,
+MAIN_ELEMENTS = [*NODES, *PADS, *PIERS, *POSTS, *FLOOR_BEAMS, FLOOR,
                  *ROOF_BEAMS, *RAFTERS, *WEDGES, *ROOF_GLAZING, *WALL_GLAZING,
                  *ROOF_TRIM, *WALL_TRIM, *CONNECTORS]

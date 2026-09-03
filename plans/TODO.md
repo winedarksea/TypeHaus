@@ -352,7 +352,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     value-engineered out. `notes/sunken_garden_piers.md` §4 is the oracle.
   (`deck_beam_span` itself is fully green: two genuine R507.5(1) overspans closed 2026-07-31
   by going engineered, and the balcony three closed 2026-08-23 prescriptively.)
-
+-Spec fiber in concrete almost everywhere. Also galvanized rebar.
 - **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
   by the two piers above, and answered the same day.) The alternative — closing both items in
   `engineering.toml` with the engineer's cage schedule and leaving the model silent — works

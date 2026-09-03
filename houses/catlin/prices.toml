@@ -472,7 +472,18 @@
 # Composite decking is bought by the board, not the sheet. 2026-08-08: rather than leave
 # it blank a second time, this is the sheet-EQUIVALENT — 32 SF at the $4-10/SF material
 # price of capped composite board. It is a unit conversion, not a product you can order.
-"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 128, high = 288 } }  # 6 sheets — 164.7 SF, FS-SG-PORCH only
+#
+# 2026-09-03: **the breezeway plank joined this row**, 164.7 -> 181.1 SF, when SL-BW-DECK
+# stopped being a Slab and became FS-BW-FLOOR's subfloor (see the retired
+# `slab:PORCH_DECK_COMPOSITE` row in [concrete]). Both areas round to the same 6 sheets, so
+# the MATERIAL is genuinely already bought — 6 x 32 = 192 SF against 181.1 net.
+#
+# The LABOUR is not, and this is where an unpriced item would have vanished. The retired row
+# carried $150-350 of cut-in that the flat per-sheet rate does not: 16.4 SF laid against two
+# dissimilar buildings, with the garage edge SCRIBED rather than butted (the deck tucks 7/8"
+# under that cladding). Folded in here at +$25-58 a sheet rather than dropped. If the
+# breezeway ever leaves this row, take it back out.
+"composite-deck" = { material = { low = 130, high = 320 }, labour = { low = 153, high = 346 } }  # 6 sheets — 181.1 SF: FS-SG-PORCH + FS-BW-FLOOR
 # The balcony's waterproof interlocking aluminium plank (FS-SG-DECK's subfloor). Bought by
 # the board like the composite above it, so this is the same sheet-EQUIVALENT conversion —
 # 32 SF at the researched installed rate. It carried the identical money as
@@ -1349,10 +1360,18 @@
 # (FS-SG-PORCH); this is the 4.0' x 4.11' breezeway between the house cladding and the
 # garage stem. Neither double-counts the other, and 16.5 SF is exactly the modelled outline.
 #
-# 2026-08-22: this row nearly went away. SL-BW-DECK was converted to FS-BW-FLOOR's subfloor
-# alongside the balcony's, and converted back the same day — a floor system's sheet is its
-# joist field, and this plank oversails its rim 2 3/4" onto the two door thresholds. The
-# reasoning is in params/breezeway.py; the row stays.
+# ** RETIRED 2026-09-03. THIS ROW IS DORMANT AND BILLS NOTHING. ** It went the way the
+# balcony's `slab:BALCONY_DECK_ALUMINUM` went: SL-BW-DECK is FS-BW-FLOOR's subfloor now, so
+# it bills by the square foot on [sheet_goods] `composite-deck` instead of by the cubic yard
+# out of a table named [concrete]. What made that possible is one field —
+# `FloorSystem.subfloor_outline` — which lets a plank oversail its joist field; the 2026-08-22
+# attempt failed because a floor system's sheet WAS its joist field, and this plank runs
+# 2 3/4" past the rim onto the two door thresholds.
+#
+# Kept, referenced by nothing, on the `glazed-green-brick` convention: the revert is one
+# `Slab(...)` in params/breezeway.py. **Its labour did NOT vanish with it** — the $150-350 of
+# scribed cut-in below is folded into the [sheet_goods] row's per-sheet labour, because both
+# areas round to the same 6 sheets and the flat rate would otherwise have laid 16.4 SF free.
 #
 # So: material is the same capped composite plank as the sheet_goods row, $4-10/SF, and
 # labour is a MINIMUM CHARGE rather than a rate — 16.5 SF is under an hour of laying and
@@ -1364,7 +1383,7 @@
 # BEWARE the $15-48/SF figures in the deck cost guides — those price a whole deck build with
 # footings, framing, railings and stairs. The 2x8 joists under this one are in [framing].
 # NOTE if hidden clips are used rather than flush-mount face screws: add 25-40% to lay time.
-"slab:PORCH_DECK_COMPOSITE" = { material = { low = 1320, high = 3300 }, labour = { low = 3000, high = 7000 } }  # 0.05 cy = 16.5 SF; $66-165 mat + $150-350 lab
+"slab:PORCH_DECK_COMPOSITE" = { material = { low = 1320, high = 3300 }, labour = { low = 3000, high = 7000 } }  # 0 cy — DORMANT, see above
 
 # RM-M-BATH2's tub-deck cap (2026-08-29). Same shape of row as the porch deck above and the
 # same warning applies twice over: THIS IS NOT CONCRETE. It is the flat 2x4 blocking under
