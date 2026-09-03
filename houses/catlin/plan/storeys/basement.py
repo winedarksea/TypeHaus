@@ -726,8 +726,16 @@ OPENINGS = [
     # and W-B-S3-FR's base is the top of the 7 1/4" curb. The threshold is at the same
     # absolute elevation it always was, a quarter inch higher: the door now sits ON the curb
     # rather than 7" up a pour with a quarter inch of concrete still above it.
+    #
+    # **It swings IN, and that is a code requirement, not a preference.** The curb makes
+    # this door a 7 1/4" step down to the court, which is R311.3.2's one-riser allowance
+    # for a door that is not the required egress door — and that allowance is conditioned
+    # on the door NOT swinging over its landing. `flip_swing=True` used to sweep it south
+    # into the court, over the very landing being measured, which voids the relief and
+    # drops the limit to 1 1/2". Swinging north into the gym is what makes the 7 1/4"
+    # legal. `code.R311_3_exterior_landing` now tests `swing_clearance` and will say so.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3-FR", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-B-S2F", inch(10)), sill_height=inch(0), flip_swing=True),
+         position=from_node("N-B-S2F", inch(10)), sill_height=inch(0)),
     # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and

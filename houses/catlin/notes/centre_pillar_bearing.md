@@ -233,27 +233,54 @@ things were wrong with it, and neither is about the part's quality:
   the framing would put its whole reaction through a base plate instead of through the wood
   this note grades.
 
-**`DTT2Z`**, a deck tension tie, replaces it: (8) SDS 1/4" × 1-1/2" into the post, a 1/2" rod
-through the joist pack below with the flat plate washer the part ships with. The post bears
-directly on the pack; the tie holds it down.
+**A `CCQ4.62-5.50SDS` column cap, installed INVERTED**, replaces it: the U-channel sits over
+the three-ply joist pack, the straps rise onto the 6x6, 16 factory SDS 1/4" × 2-1/2" screws
+into the pack and 14 into the post.
 
-**Read its rating with both conditions attached.** ICC-ES **ESR-2330** Table 4 (not ESR-2320 —
-that report is take-up devices and has no DTT in it) publishes 1,825 lbf allowable tension at
-a 1.5" member thickness and 2,000 lbf at 3.0", and §3.2.1 says in as many words that the -Z
-suffix is covered. But **§3.2.2 requires a wood member of specific gravity ≥ 0.50** and this
-house frames in SPF at 0.42, and **§4.1 tabulates for continuously dry interior service**
-while this frame stands in weather. Neither condition is met as built. The tie is the right
-*part* for the joint; its *number* needs either a species substitution on the porch joists or
-Simpson's own SPF/wet value, and that is an open question for the reviewer, not a closed one.
+A **`DTT2Z`** deck tension tie held this place for part of 2026-09-03 and is recorded here
+because the reasoning is worth keeping. It is a joint Simpson do publish for a post on
+framing, and ESR-2330 §3.2.1 covers the -Z suffix (the report is **ESR-2330**, not ESR-2320 —
+that one is take-up devices and has no DTT in it). But it is one-sided: eccentric on a 6x6,
+needing a 1/2" rod driven through the joist pack to a nut in the beam bay, and contributing
+nothing lateral at a base that is pinned by design.
+
+**The objection that actually settled it was the species, and it was never about the base.**
+ESR-2330 §3.2.2 requires a wood member of specific gravity ≥ 0.50. So does **ESR-2604
+§3.2.2**, for *every* cap and base in that report — including the `CCQ46SDS2.5` that has sat
+on top of these same two posts all along. At SPF 0.42, **nothing at either end of these
+pillars had a published number.** Swapping base parts could never have fixed that.
+
+So the pillars are specified **DF-L at SG 0.50** (`POST_WHITE_PAINT_DF`), which legitimises
+both ends at once for about $180–450 of lumber. ESR-2604 Table 2 then gives the base
+6,785 lbf uplift at C_D 1.6 and 30,940 lbf download at C_D 1.0.
+
+**Two conditions still ride with it**, and both belong to the reviewer:
+
+* **Moisture content.** §3.2.2 also wants ≤ 19%, and an open deck frame is not that. There is
+  no published reduction for it in this report.
+* **Orientation.** ESR-2604 contains no inverted installation, no orientation clause and no
+  base-side table. Simpson illustrate the configuration in their product literature, but that
+  is not the evaluation report. The mechanism is orientation-independent — uplift is tension
+  in the straps and their screws either way — which is the argument for it, and it is an
+  argument rather than a citation.
+
+**It does not change a number in this note.** Inverted, the channel's floor plate lies on the
+pack and the post stands on that plate: 7 gage steel in direct bearing, a bearing plate and
+not a standoff, so the joint is still wood-on-wood in the sense §3 grades. The plate is
+4-5/8" wide against the post's 5-1/2", and spreading through 0.18" of steel is ignored
+entirely — §3a grades the post's own footprint straight onto the joists. The plate is spare
+capacity, not a term.
 
 ---
 
 ## 7. What this note does NOT do
 
 - **No uplift.** This is a gravity bearing check. What holds these two posts down is the
-  `DTT2Z` above and `CN-SG-CAP-R2`/`-F2` (CCQ46SDS2.5) at the beam over them;
-  `notes/uplift_load_path.md` owns that path, and nothing here computes a net uplift demand to
-  compare the tie against — see §6's open question, which is the same gap from the other side.
+  inverted `CCQ4.62-5.50SDS` of §6 and `CN-SG-CAP-R2`/`-F2` (CCQ46SDS2.5) at the beam over
+  them; `notes/uplift_load_path.md` owns that path, and **nothing in this model computes a net
+  uplift demand at all** — `structural.uplift_path_coverage` is a coverage rule and says so.
+  So the 6,785 lbf is an available capacity with no demand beside it. Sizing these two
+  connectors by calculation, rather than by having a rated part present, is still open.
 - **No eccentricity.** `PT-SG-BR2` stands 3" off the beam axis it delivers to, and
   `PT-SG-BF2`'s footprint is half over the deck edge. Both put the resultant somewhere other
   than the centroid of the bearing area, and neither is carried as a moment in the joist or in

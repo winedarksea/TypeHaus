@@ -467,7 +467,7 @@ class ConnectorKind(Enum):
     # already claims it), and POST_BASE is a stirrup on CONCRETE. A wood post bearing
     # directly on a wood beam is a third joint, and the tie that makes it is a different
     # part with a different rating.
-    TENSION_TIE = "tension_tie"            # post-to-framing tension tie (e.g. Simpson DTT2Z)
+    TENSION_TIE = "tension_tie"            # post-to-framing tie: a DTT2Z, or an inverted CCQ cap
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
     # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
     # panel, on a standoff block, rather than by gripping a seam. Its own kind because the

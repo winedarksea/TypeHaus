@@ -180,3 +180,36 @@ def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan
 
     assert expected > 1.0, "the curb is the point of this test; it has gone flush"
     assert f"{expected:.1f}\"" in finding.message, finding.message
+
+
+def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_model_ro):
+    """D-B-PATIO must swing IN, and it is R311.3.2 that says so — not taste.
+
+    The curb makes this door a 7 1/4" step down to the court, which is legal only under
+    R311.3.2's one-riser allowance, and that allowance is conditioned on the door not
+    swinging over the landing being measured. A leaf sweeping south into the court sweeps
+    over exactly that landing, which drops the limit to 1 1/2" and makes the 7 1/4" step
+    illegal — so the swing and the flood threshold are one decision, not two.
+
+    `code.R311_3_exterior_landing` tests this now, but the check can only fail the house
+    after the fact; this pins the intent at the door where someone would flip it back.
+    """
+    door = next(o for o in catlin_model_ro.openings if o.tag == PATIO_DOOR)
+    wall = next(w for w in catlin_model_ro.walls if w.tag == door.host_wall)
+
+    assert door.swing_clearance, f"{PATIO_DOOR} resolved no leaf sweep to test"
+    (sx, sy), (ex, ey) = wall.axis
+    ux, uy = ex - sx, ey - sy
+    run = (ux ** 2 + uy ** 2) ** 0.5
+    nx, ny = -uy / run, ux / run
+    side = sum((px - sx) * nx + (py - sy) * ny
+               for px, py in door.swing_clearance) / len(door.swing_clearance)
+
+    garden = next(s for s in catlin_model_ro.solids if s.tag == GARDEN_FLOOR)
+    court = sum(p[1] for p in garden.outline) / len(garden.outline)
+    court_side = (court - sy) * ny
+
+    assert side * court_side < 0.0, (
+        f"{PATIO_DOOR} swings toward the court it steps down into; R311.3.2's one-riser "
+        "allowance needs the leaf clear of its landing (drop `flip_swing`)"
+    )

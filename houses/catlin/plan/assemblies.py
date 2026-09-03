@@ -1112,7 +1112,7 @@ POST_WHITE_PAINT = Assembly(
               function=LayerFunction.STRUCTURE),
     ),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house balcony 6x6 pillars — white-painted finish; chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of every pillar top by the narrower beam over it, and seal the cut before standing; at the two centre pillars cut a 4\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material) — a DTT2Z tension tie holds each down and there is no standoff base under either, so the post lands wood on wood; PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18\'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
+    source="catlin-house interior white-painted 6x6 posts — P-M-STRWELL-N and P-M-STRWELL-S, the two stairwell posts standing on SL-B-FLOOR. THE BALCONY PILLARS LEFT THIS ASSEMBLY on 2026-09-03 for POST_WHITE_PAINT_DF: they need Douglas Fir-Larch at specific gravity 0.50 to satisfy ESR-2604 §3.2.2 at their caps and bases, and these two interior posts carry no rated connector and no reason to change stock. Same 5.5\" body and the same white; standard SPF under the paint",
 )
 
 # The two heat-pump ground stands. Mill-finish extruded aluminium, and the alloy is a

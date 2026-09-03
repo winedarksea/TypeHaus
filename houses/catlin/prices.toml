@@ -566,14 +566,19 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to a DTT2Z below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
-# The part that replaced two of those, and a fifth of the price: a strap screwed to the post
-# and bolted through the joist pack, not a stainless stirrup. ZMAX (G185) rather than
-# stainless — it is bolted to KDAT rather than standing in run-off at grade, which is what
-# bought the ABU66SS its 316. PT-SG-BR2 and PT-SG-BF2. Range from single-piece retail
-# ($6-9 at Fasteners Plus / Connectors Only, widened for the DTT2Z-SDS2.5 variant that
-# ships with the longer screws).
-"DTT2Z" = { low = 6, high = 12 }  # 2 ea
+"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to an inverted CCQ4.62-5.50SDS below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
+# The part that replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a CCQ column cap installed
+# INVERTED, channel down over the three-ply joist pack and straps up onto the 6x6. Priced
+# alongside "CCQ46SDS2.5" below because it is the same family, the same No. 7 gage steel and
+# the same factory SDS screws, one width step larger.
+#
+# ** THIS IS NOT A CHEAP SWAP AND THE ROW SHOULD SAY SO. ** It briefly carried a DTT2Z at
+# $6-12 (2026-09-03, authored and superseded the same day). A DTT2 is a one-sided hold-down:
+# eccentric on a 6x6, needing a rod through the joist pack, and worth nothing laterally. The
+# cap costs roughly twenty times as much and is the part that actually makes the joint —
+# about $370 for the pair against $18, which is the real price of a base with a published
+# number behind it. See library/hardware.py for both readings.
+"CCQ4.62-5.50SDS" = { low = 150, high = 220 }  # 2 ea — CN-SG-BASE-R2/-F2, inverted
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
@@ -1307,7 +1312,15 @@
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.19 cy = ~24 LF — the balcony's TWO centre 6x6 pillars and the stairwell posts. Was 0.40 cy / 51.4 LF while all six pillars were wood (2026-09-03)
+"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the interior stairwell posts ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
+# The two CENTRE balcony pillars, split out of the row above when they were specified DF-L.
+# Same rate structure, same paint, same labour — it is the identical stick to hang and coat.
+# Material carries a 25% species premium over the SPF above: a DF-L 6x6 runs roughly a fifth
+# to a third more than SPF, and the reason it is worth paying is not strength, it is that
+# ESR-2604 §3.2.2 publishes no value below SG 0.50 — at SPF 0.42 neither the CCQ46SDS2.5 cap
+# over these two posts nor the inverted CCQ4.62-5.50SDS under them had a rating at all.
+# ~$180-450 of lumber to put a number behind two connectors that already cost $370.
+"column:POST_WHITE_PAINT_DF" = { material = { low = 1415, high = 3540 }, labour = { low = 1700, high = 4240 } }  # 0.13 cy = ~16 LF — PT-SG-BR2 and PT-SG-BF2
 # RESEARCHED 2026-08-28, RE-BASED 2026-09-02 for the move to grade — the two heat-pump ground
 # stands' legs, 8 of them, 0.01 cy. THE YARD IS A NONSENSE UNIT HERE AND THE RATE SAYS SO:
 # eight 2" square aluminium legs 18" long is a third of a cubic foot, so any $/cy that lands on a real number for this row is

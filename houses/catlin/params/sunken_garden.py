@@ -232,8 +232,8 @@ class SunkenGardenSpec:
     # The four CORNER pillars are 12" round reinforced concrete columns, FIXED at the base,
     # and they are the balcony's entire lateral system — the eight knee braces and two E-W
     # brace rails they replaced are deleted (2026-09-03). The two CENTRE pillars stay wood
-    # 6x6 bearing directly on the porch framing with a DTT2Z tension tie holding each down —
-    # leaning columns, tied in by the deck diaphragm.
+    # 6x6 in DF-L bearing directly on the porch framing, held down by a CCQ4.62-5.50SDS
+    # column cap installed inverted — leaning columns, tied in by the deck diaphragm.
     #
     # 12" is what 2" of cover needs (a 6-5/8" bar circle on a #5 cage inside #3 ties), which
     # is the hundred-year number rather than ACI's 1-1/2" minimum. It is also the same tube
@@ -1822,7 +1822,7 @@ _y_bf2 = _y_ax_front + _BF2_NORTH_OF_FRONT_AXIS_IN / 12.0
 # base (doweled into the 12" wall tops of W-SG-W1/E1, whose axis they stand on, so the round
 # is flush with both wall faces) are the balcony's entire lateral system, which is what let
 # the eight knee braces and two E-W brace rails be deleted outright. The centres stay wood
-# 6x6 bearing wood-on-wood with a DTT2Z tension tie — leaning columns, tied in by the deck
+# 6x6 bearing wood-on-wood under an inverted CCQ cap — leaning columns, tied in by the deck
 # diaphragm — because nothing asks them to carry moment and a 6x6 is a third the cost of a
 # formed column.
 #
@@ -1849,7 +1849,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                                                     if _is_corner else None),
                             reinforcement=(_CAST_COLUMN_CAGE_HDG if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
-                                      else "POST_WHITE_PAINT")))
+                                      else "POST_WHITE_PAINT_DF")))
 
 # The two CENTRE pillars are now alike again, and that is the point.
 #
@@ -1889,8 +1889,8 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
 # The hazard is unchanged and so is the answer this comment has always carried: a stainless
 # part bearing on 0.019" aluminium coil in a wet exterior location pits the coil (it is
 # anodic), and anchoring through it penetrates the butyl tape that IS the dielectric between
-# that coil and the copper-treated KDAT. **An EPDM or HDPE isolator pad goes under the DTT2Z's
-# seat and its rod penetration is sealed**, which is the written detail the old rule said such
+# that coil and the copper-treated KDAT. **An EPDM or HDPE isolator pad goes under the inverted
+# cap's channel and every screw penetration is sealed**, which is the written detail such
 # a crossing would need. It was answered rather than avoided — see
 # `_BF2_NORTH_OF_FRONT_AXIS_IN` for why the crossing is worth making.
 
@@ -2199,38 +2199,52 @@ DOWELS = [
 # claim a pinned joint where the whole redesign turns on a FIXED one.
 CONNECTORS = []
 for _row, _y, _rise in _PILLAR_ROWS:
-    # DTT2Z, not ABU66SS. Both centre pillars bear on the porch FRAMING, and the standoff
-    # base that used to sit here does not belong at that joint:
+    # An INVERTED CCQ4.62-5.50SDS column cap. Both centre pillars bear on the porch FRAMING,
+    # and the two parts that stood here before do not belong at that joint:
     #
-    #   * **The part was unrated.** Every published value an ABU has is measured with the
+    #   * **ABU66SS — unrated.** Every published value an ABU has is measured with the
     #     stirrup bearing on CONCRETE through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts
     #     that anchor and its footing outside its own scope. On a deck there is no pour, no
     #     cast-in bolt and no basis for the table — and library/hardware.py already records
     #     that the *stainless* ABU66SS is not in ESR-1622 at all, so the part carried no
-    #     published number even where it did stand on concrete.
-    #   * **The reason for the standoff went with it.** The 1" gap was cited to IRC R317.1.4
-    #     Exception 1/3 — "a wood column on CONCRETE stands on a pedestal projecting 1" above
-    #     the floor". Neither pillar has stood on concrete since 2026-09-03. Wood on wood is
-    #     not the condition R317.1.4 governs, and holding a post 1" off the framing it bears
-    #     on would put its whole reaction through the base plate instead of through the wood.
+    #     published number even where it did stand on concrete. Its 1" standoff was cited to
+    #     IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE; wood on wood
+    #     is not that condition, and holding the post 1" off the framing it bears on would
+    #     put its whole reaction through the base plate instead of through the wood.
+    #   * **DTT2Z — right idea, wrong shape, and it did not fix the real problem.** Simpson
+    #     do publish a DTT2 for a post on framing and ESR-2330 §3.2.1 covers the -Z suffix.
+    #     But it is one-sided: eccentric on a 6x6, needing a 1/2" rod driven through the
+    #     joist pack to a nut in the beam bay, and contributing nothing lateral at a base
+    #     that is pinned by design. It was authored and superseded the same day, unbuilt.
     #
-    # A DTT2 is the joint Simpson do publish for a post on framing: (8) SDS 1/4x1-1/2 into
-    # the post, a 1/2" rod through the joist pack below, ESR-2330 Table 4 — and §3.2.1 says
-    # in as many words that the -Z suffix is covered, which is exactly what could not be
-    # found for the ABU66SS. Read its catalog record before quoting the number: the table
-    # wants SG >= 0.50 and dry service, and this frame is SPF in weather.
+    # ** THE REAL PROBLEM WAS THE SPECIES, AND IT WAS NEVER ABOUT THE BASE. ** ESR-2604
+    # §3.2.2 conditions every cap and base in that report on SG >= 0.50, and ESR-2330 §3.2.2
+    # says the same for the holdowns. At SPF 0.42 NOTHING at this joint had a published
+    # value — including the CCQ46SDS2.5 cap that has been sitting on top of these same two
+    # posts all along. The pillars are therefore specified DF-L (SG 0.50): see
+    # POST_WHITE_PAINT_DF in plan/assemblies.py. That single change legitimises both ends.
     #
-    # The pillar now bears DIRECTLY on the 3-ply pack under it (see FS-SG-PORCH's
-    # reinforcements) and the tie holds it down. Both sit at ``_porch_walking_surface`` with
-    # a 4"-square plank cut-out under them, and the connector rides that pillar's own bearing
-    # top so it draws where the post actually starts.
+    # ** WHY THIS PART AND NOT THE OBVIOUS ONES. ** A CCQ is named CCQ<W1 beam><W2 post>.
+    # Inverted, W1 is the channel over the member BELOW and W2 the straps on the member
+    # ABOVE: a 4-1/2" three-ply pack and a 5-1/2" 6x6, so W1 4-5/8 / W2 5-1/2. A CCQ46
+    # inverted puts a 3-5/8" channel over a 4-1/2" pack and does not fit; a CC66 leaves 1"
+    # of slop. Same report, same SDS screw and same family as the cap at the other end.
+    # ESR-2604 does not evaluate the inverted orientation — that judgement rides on the seal.
+    #
+    # The pillar still bears DIRECTLY over the 3-ply pack under it (see FS-SG-PORCH's
+    # reinforcements): the channel's floor plate lies on the pack and the post stands on that
+    # plate, 7 gage steel in bearing, not a standoff. ``engineering/post_bearing.py`` ignores
+    # the plate and grades the post's own footprint onto the joists, so it is spare capacity
+    # rather than a term. Both sit at ``_porch_walking_surface`` with a 4"-square plank
+    # cut-out under them, and the connector rides that pillar's own bearing top so it draws
+    # where the post actually starts.
     _bearing_tag, _bearing_top = PILLAR_BEARINGS[f"PT-SG-B{_row}2"]
     CONNECTORS.append(Connector(
         uid=f"SGCB2{_row}AAAA", tag=f"CN-SG-BASE-{_row}2",
         kind=ConnectorKind.TENSION_TIE,
         position=pt(ft(_cx), ft(_y_bf2 if _row == "F" else _y)),
         elevation=_bearing_top,
-        size="DTT2Z", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
+        size="CCQ4.62-5.50SDS", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
 # Spent post-base uids, not reused: SGCB1RAAAA / SGCB3RAAAA / SGCB1FAAAA / SGCB3FAAAA, the
 # four corner ABU66SS bases retired when those pillars became cast columns.
 

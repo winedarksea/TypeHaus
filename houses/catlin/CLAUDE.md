@@ -1667,10 +1667,23 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     value an ABU has is measured bearing on CONCRETE through a 5/8" cast-in anchor
     (ESR-1622 §5.6 puts even that anchor outside its own scope), and the 1" standoff was
     cited to IRC R317.1.4, which governs wood on concrete. Neither pillar has stood on
-    concrete since. A **`DTT2Z`** deck tension tie holds each down instead. The bearing that
-    replaced it is graded: `haus engineering --item post_bearing/PT-SG-BR2`, oracled in
+    concrete since. A **`CCQ4.62-5.50SDS` column cap installed INVERTED** holds each down
+    instead — W1 4-5/8" channel over the 4-1/2" three-ply pack, W2 5-1/2" straps onto the
+    6x6. A `CCQ46` inverted does not fit that pack; a `CC66` leaves an inch of slop. Its
+    floor plate is a bearing plate, not a standoff, so the joint stays wood-on-wood and
+    `post_bearing` ignores the plate. The bearing that replaced the ABU is graded:
+    `haus engineering --item post_bearing/PT-SG-BR2`, oracled in
     `notes/centre_pillar_bearing.md` — at `plies=1` and against a DRY Fc-perp both pillars
     were over, at 0 FAIL, until that calculation existed.
+  - **The two centre pillars are DF-L, not SPF, and the species is a connector requirement.**
+    `ESR-2604 §3.2.2` conditions every cap and base in that report on SG >= 0.50, and
+    `ESR-2330 §3.2.2` says the same for the holdowns. At SPF 0.42 **nothing at either end of
+    these two posts had a published value** — the `CCQ46SDS2.5` cap on top included. DF-L at
+    0.50 fixes both ends for ~$180-450 of lumber; see `POST_WHITE_PAINT_DF`. Two conditions
+    still ride on the seal: the same clause wants MC <= 19% (an open deck is not that), and
+    ESR-2604 does not evaluate the inverted orientation at all. A `DTT2Z` stood here for part
+    of 2026-09-03 and was superseded unbuilt — one-sided, no lateral value, and it did not
+    touch the species problem that was the real objection.
   - **The three beams are treated SYP glulam, 3-1/2" x 11-7/8"** (24F-V5M1/SP, Anthony Power
     Preserved / Boise Cascade), clear-finished rather than painted, with no ply seam to hold
     water. Author the size DECIMALLY — `"3.5x11.875"` — or `_RE_NOMINAL` catches a

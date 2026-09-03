@@ -128,7 +128,7 @@ def test_every_pillar_top_lands_on_the_same_beam_soffit(catlin_model) -> None:
 
 
 def test_only_the_two_wood_pillars_take_a_base_and_it_is_a_tension_tie(catlin_model) -> None:
-    """Six ABU66SS until 2026-09-03, then two, and now two DTT2Z — the part changed too.
+    """Six ABU66SS until 2026-09-03, then two, and now two inverted CCQ caps.
 
     A 12" cast column standing on a 12" cast wall is joined by a lapped doweled splice made
     in the pour. Authoring a standoff base there would bill four stainless bases that do not
@@ -140,7 +140,16 @@ def test_only_the_two_wood_pillars_take_a_base_and_it_is_a_tension_tie(catlin_mo
     puts even that anchor outside its own scope. Both these pillars bear on the porch
     FRAMING, where there is no pour, no cast-in bolt and no basis for the table — and the
     R317.1.4 standoff the 1" gap was cited to governs wood on CONCRETE, which this is not.
-    A DTT2Z is the joint Simpson publishes for a post on framing.
+    ** AND WHY THEY ARE NOT DTT2Zs EITHER. ** A DTT2 is a joint Simpson do publish for a
+    post on framing, and it stood here for part of 2026-09-03. It is one-sided: eccentric on
+    a 6x6, needing a 1/2" rod through the joist pack, and worth nothing laterally at a base
+    that is pinned by design. The deeper objection was that ESR-2330 §3.2.2 wants SG >= 0.50
+    and the house framed in SPF at 0.42 — and ESR-2604 §3.2.2 says the same of every cap and
+    base in it, so NOTHING at this joint had a published number, the CCQ46SDS2.5 cap on top
+    of these same posts included. The pillars are specified DF-L for that reason alone
+    (POST_WHITE_PAINT_DF), and the base is a CCQ4.62-5.50SDS installed inverted: W1 4-5/8"
+    channel over the 4-1/2" three-ply pack, W2 5-1/2" straps onto the 6x6. A CCQ46 inverted
+    does not fit that pack and a CC66 leaves an inch of slop.
 
     The kind moves with the part, and it has to: ``ConnectorKind.TENSION_TIE`` is what
     ``takeoff/uplift_joints.py`` and ``checks/structural/uplift_path.py`` read to know this
@@ -153,7 +162,7 @@ def test_only_the_two_wood_pillars_take_a_base_and_it_is_a_tension_tie(catlin_mo
     bases = [el for el in catlin_model.plan.all_elements()
              if el.element_kind == "Connector" and el.tag.startswith("CN-SG-BASE-")]
     assert len(bases) == 2
-    assert {b.size for b in bases} == {"DTT2Z"}
+    assert {b.size for b in bases} == {"CCQ4.62-5.50SDS"}
     assert {b.kind for b in bases} == {ConnectorKind.TENSION_TIE}
     for base in bases:
         pillar = _solid(catlin_model, base.connects[0])

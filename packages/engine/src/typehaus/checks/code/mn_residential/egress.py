@@ -7,6 +7,8 @@ first was encoded.
 
 from __future__ import annotations
 
+from typing import Any
+
 from shapely.geometry import Point, Polygon
 
 from typehaus.checks.code.mn_residential._common import (
@@ -220,12 +222,25 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
         step = threshold - top
         if step > _MAX_LANDING_STEP_DOWN.meters + 1e-6:
             # Still a landing, and still legal for a door that is not the required egress
-            # door and does not swing out over it. Which door is *the* required egress door
-            # is not modeled, so this reports the allowance rather than assuming the strict
-            # case and failing an ordinary back door.
-            out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" below "
-                             "the threshold — within R311.3.1's one-riser allowance for a "
-                             "non-required door that does not swing over the landing", code))
+            # door and does not swing out over it. R311.3.2 states BOTH conditions; only
+            # the second is knowable here. Which door is *the* required egress door is not
+            # modeled, so that half still reports the allowance rather than assuming the
+            # strict case and failing an ordinary back door — but the swing IS modeled, in
+            # ``ResolvedOpening.swing_clearance``, and a door sweeping over the landing it
+            # is measured against loses the relief outright. Asserting that condition in a
+            # PASS message without testing it is how catlin carried a 7 1/4" outswing step
+            # at 0 FAIL.
+            if _swings_over(opening, patch):
+                out.append(_fail(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" "
+                                 "below the threshold, and swings out over that landing; "
+                                 "R311.3.2's one-riser allowance is conditioned on the door "
+                                 "not swinging over it, so the limit here is 1.5\"",
+                                 (opening.tag,), code))
+            else:
+                out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" "
+                                 "below the threshold — within R311.3.2's one-riser "
+                                 "allowance for a non-required door that swings inward, "
+                                 "clear of the landing", code))
         else:
             out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" below "
                              "the threshold (<= 1.5\")", code))
@@ -236,6 +251,33 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
 # projected from the wall *axis* offset by half the wall thickness, so its inner edge can
 # clip a stoop authored to the finished face.
 _LANDING_COVERAGE = 0.85
+
+
+def _swings_over(opening: Any, patch: Any) -> bool:
+    """Does the door leaf sweep over the landing R311.3.2 is measuring?
+
+    ``swing_clearance`` is the resolved quarter-circle of the leaf in the plan frame and
+    ``patch`` is the 36" landing rectangle outside the door, so the question is literally
+    whether the two overlap — no second outward-sign convention to keep in step with
+    ``_landing_patch``'s.
+
+    The leaf always brushes the patch edge it is hinged on, so a bare ``intersects`` would
+    answer True for every door in the house. The test is *area*, against a tenth of the
+    sweep: a door swinging in clips the patch with a corner, a door swinging out puts most
+    of its quarter-circle on it.
+
+    No resolved sweep — a fixed leaf, a stand-in wall in a unit fixture — answers False.
+    Absence of a sweep is not evidence of one over the landing.
+    """
+    from shapely.geometry import Polygon
+
+    sweep = getattr(opening, "swing_clearance", None)
+    if not sweep or len(sweep) < 3:
+        return False
+    leaf = Polygon(sweep)
+    if not leaf.is_valid or leaf.area <= 1e-9:
+        return False
+    return bool(leaf.intersection(patch).area > leaf.area * 0.10)
 
 
 def _landing_surfaces(ctx: CheckContext):

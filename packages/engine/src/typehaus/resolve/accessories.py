@@ -426,10 +426,15 @@ _CONNECTOR_MARKER_IN = {
     # the whole point of the part is the GAP it holds open under the beam soffit: a 5" x 5"
     # x 6" default box would fill that gap and hide the detail it exists to show.
     ConnectorKind.BEARING_STANDOFF: (1.75, 1.75, 0.50),
-    # A DTT2Z-class tie: a ~3" wide, 5-1/2" tall strap body wrapping the post face. Taller
-    # and narrower than the default cube, which is the shape a reader needs to tell it from
-    # the post base it replaces.
-    ConnectorKind.TENSION_TIE: (1.50, 1.50, 2.75),
+    # The kind spans a strap and a cap, so the marker is drawn at the LARGER: an inverted
+    # column cap wrapping a 6x6 (catlin's CN-SG-BASE-R2/-F2, a CCQ4.62-5.50SDS). 5-1/2"
+    # square in plan, and 14" tall because ESR-2604 Table 2 gives the U-channel a 7" height
+    # — 7" of channel hanging below the bearing plane and the straps rising about as far
+    # above it. A DTT2Z-class strap drawn in this box reads a little generous; a cap drawn
+    # in the strap's old 3" x 3" x 5-1/2" box read as the wrong part entirely, which is the
+    # error worth avoiding when the whole reason this kind exists is to tell a reader that
+    # the joint is NOT the standoff post base it replaced.
+    ConnectorKind.TENSION_TIE: (2.75, 2.75, 7.00),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

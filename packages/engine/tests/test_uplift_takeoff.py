@@ -33,7 +33,7 @@ RULES = CONFIG.uplift
 #: Six, not ten, since 2026-09-03: the balcony's four CORNER pillars became 12" cast
 #: concrete columns fixed at their bases and doweled into the wall tops under them, and
 #: concrete-on-concrete takes no post base at all. Then FOUR later the same day, when the
-#: two CENTRE pillars went from an ABU66SS to a DTT2Z tension tie — an ABU has no published
+#: two CENTRE pillars went from an ABU66SS to an inverted CCQ column cap — an ABU has no published
 #: value bearing on framing, and the R317.1.4 standoff it was cited for governs wood on
 #: CONCRETE. See ``houses/catlin/notes/balcony_moment_columns.md``.
 AUTHORED_POST_BASES = {
