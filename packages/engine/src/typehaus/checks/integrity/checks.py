@@ -520,3 +520,84 @@ def concrete_finish_needs_concrete_deck(ctx: CheckContext) -> list[Finding]:
                 "under it went away, or set floor_finish on the Slab that is actually there",
             ))
     return out
+
+
+@check(Tier.INTEGRITY, "integrity.reinforcement_spec_agrees")
+def reinforcement_spec_agrees(ctx: CheckContext) -> list[Finding]:
+    """A pour that states its steel BOTH ways must state the same steel both ways.
+
+    ``FoundationWall.vertical_reinforcement`` and ``Post.vertical_reinforcement`` are free
+    text a house writes for the drawing; ``reinforcement`` is the structured
+    :class:`~typehaus.model.rebar.ReinforcementSpec` the engineering suite grades. Both are
+    kept on purpose — the string holds prose the struct cannot (a hook, a stagger, a
+    galvanizing callout), and keeping it meant catlin could migrate pour by pour instead of
+    in one risky sweep, with every existing oracle test passing untouched on day one.
+
+    **This rule is the thing that makes keeping both safe rather than merely convenient.**
+    Once the struct governs every graded number, a stale string is a drawing that disagrees
+    with the calculation, and nothing else in the repo would ever notice: the calc reads the
+    struct and passes, the drawing prints the string, and the two go to site together. So a
+    disagreement is an ERROR, not an advisory — the same severity a colliding uid gets, and
+    for the same reason.
+
+    Compared on the two things that carry meaning and that both spellings can express: the
+    bar number, and the spacing or count. Anything the parsers cannot read is NOT a
+    disagreement — an unreadable string means "no steel stated here", the conservative
+    contract both parsers already keep, and reporting that as a conflict would punish a
+    house for writing prose.
+    """
+    from typehaus.engineering.deck_post import parse_cage
+    from typehaus.engineering.retaining_basis import parse_reinforcement
+
+    out: list[Finding] = []
+    for el in ctx.plan.all_elements():
+        spec = getattr(el, "reinforcement", None)
+        text = getattr(el, "vertical_reinforcement", None)
+        if spec is None or not text:
+            continue
+        if el.element_kind == "Post":
+            mismatch = _cage_mismatch(parse_cage(text), spec)
+        else:
+            mismatch = _spacing_mismatch(parse_reinforcement(text), spec)
+        if mismatch is None:
+            continue
+        out.append(_err(
+            "integrity.reinforcement_spec_agrees",
+            f"{el.tag} states its reinforcement twice and the two disagree: "
+            f"vertical_reinforcement reads {text!r} ({mismatch[0]}) while the structured "
+            f"`reinforcement` says {mismatch[1]}. The struct is what every limit state is "
+            f"computed against; the string is what prints on the drawing",
+            (el.tag,),
+            "correct whichever is stale — or drop the free text, which is optional once "
+            "`reinforcement` is authored",
+        ))
+    return out
+
+
+def _spacing_mismatch(parsed: tuple[int, float] | None,
+                      spec: object) -> tuple[str, str] | None:
+    """Wall/slab shape: compare the free text's ``(bar, spacing)`` against the struct's."""
+    if parsed is None:
+        return None  # unreadable prose is "no steel stated", never a conflict
+    bar, spacing_in = parsed
+    for entry in getattr(spec, "bars", ()) or ():
+        if entry.role not in ("vertical", "horizontal") or entry.spacing is None:
+            continue
+        if entry.bar == bar and abs(entry.spacing.inches - spacing_in) < 1e-6:
+            return None
+        return (f'#{bar} @ {spacing_in:g}"',
+                f'#{entry.bar} @ {entry.spacing.inches:g}" in role {entry.role!r}')
+    return None  # the struct states no comparable role; not this rule's complaint
+
+
+def _cage_mismatch(cage: object, spec: object) -> tuple[str, str] | None:
+    """Column shape: compare the free text's ``(count, bar)`` against the struct's."""
+    if cage is None:
+        return None
+    for entry in getattr(spec, "bars", ()) or ():
+        if entry.role != "vertical" or entry.count is None:
+            continue
+        if entry.bar == cage.bar and entry.count == cage.count:
+            return None
+        return (f"({cage.count}) #{cage.bar}", f"({entry.count}) #{entry.bar}")
+    return None
