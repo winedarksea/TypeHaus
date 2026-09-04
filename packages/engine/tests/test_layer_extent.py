@@ -4,7 +4,7 @@ An ``Assembly`` is a type: many walls share one and it knows none of their eleva
 layer that runs only part-way up a wall states its ends against a *datum* — the wall's own
 base or top, or finished grade — and the wall resolves it. ``GRADE`` is the datum that makes
 "above grade vs below grade" expressible on a type at all, which is what catlin's
-above-grade foundation protection panel needs.
+above-grade foundation coating band needs.
 
 These tests hold the chain end to end on the real house: the resolved band, the solid that
 is cut from it, the square feet that are ordered, and the IFC part it exports as.
@@ -17,7 +17,7 @@ import pytest
 from typehaus.quantities import inch
 
 _M_TO_FT = 3.280839895
-_PANEL = "protection-panel"
+_PANEL = "foundation-coating"
 _BANDED_WALLS = ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-E1", "W-B-E2", "W-B-W1", "W-B-W2")
 
 
@@ -25,7 +25,7 @@ def _panel(wall):
     return next(ly for ly in wall.layers if ly.name == _PANEL)
 
 
-def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_model):
+def test_the_coating_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_model):
     grade_m = catlin_model.plan.project.site.grade.meters
     for tag in _BANDED_WALLS:
         wall = catlin_model.wall(tag)
@@ -34,7 +34,7 @@ def test_the_panel_band_runs_from_six_inches_under_grade_to_the_wall_top(catlin_
         z0, z1 = layer.band(wall)
         assert z0 == pytest.approx(grade_m - inch(6).meters)
         assert z1 == pytest.approx(wall.z1_m)
-        # 2'-2 9/16" of panel over an 8'-0" wall — the point of banding it. Grade is
+        # 2'-2 9/16" of coating over an 8'-0" wall — the point of banding it. Grade is
         # -2'-10"; the band starts 6" under it. The wall stops at the -13 7/16" bearing
         # seat, not at 0'-0".
         assert (z1 - z0) * _M_TO_FT == pytest.approx((34.0 + 6.0 - 13.4375) / 12.0, abs=1e-6)
@@ -115,16 +115,28 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
-    """N-B-BRICK-W/-E are authored at inch(-4.55) — the sum of everything outboard of the
-    concrete face. The panel is the same 1/2" as the parge it replaces precisely so that
-    number never moved, and the brick veneer never moved with it."""
+    """The two banded assemblies agree with each other, and the number is 4.175".
+
+    It used to be 4.55", matching N-B-BRICK-W/-E's authored ``inch(-4.55)`` stand-off, and
+    the docstring here used to claim the skin was sized to keep that match. **That reasoning
+    was wrong and this test now pins the correction.** Those nodes stand over the *south
+    court* segments, which carry no skin at all (4.05" of bare XPS outboard of the concrete);
+    they have never stood over a banded wall. The equality was a coincidence, so retyping the
+    band from a 1/2" board to a 1/8" coating moved this sum and moved nothing else — the
+    veneer's 1-1/2" clear cavity is untouched (IRC R703.8.4 asks 1"). The court segments'
+    own 4.05" core is pinned by test_catlin_contract_m3.py, which walks every perimeter
+    assembly; it is not re-derived here because W-B-S2/S3 also carry the sauna's framed
+    liner and their wall-level sum is 7.55", not the assembly's.
+
+    What the test is actually for is the pair: the 8" and 12" walls must carry the same
+    outboard stack, because they differ only in the pour."""
     def outboard_in(tag):
         wall = catlin_model.wall(tag)
         return sum(ly.thickness_m for ly in wall.depth_layers()
                    if ly.name != "concrete") / inch(1).meters
 
-    assert outboard_in("W-B-N1") == pytest.approx(4.55, abs=1e-6)
-    assert outboard_in("W-B-S1") == pytest.approx(4.55, abs=1e-6)
+    assert outboard_in("W-B-N1") == pytest.approx(4.175, abs=1e-6)
+    assert outboard_in("W-B-S1") == pytest.approx(4.175, abs=1e-6)
 
 
 def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
@@ -147,16 +159,23 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     """276 SF: the perimeter's banded run x 2'-2 9/16". Billing the wall's face instead
-    would order the panel for every buried foot of foam it never reaches — which is exactly
-    what the parge coat it replaced was doing, over 1,394 SF house-wide."""
+    would order the coating for every buried foot of foam it never reaches — which is exactly
+    what the parge coat it replaced was doing, over 1,394 SF house-wide.
+
+    The AREA is what this pins and it did not move when the band was retyped from a 1/2"
+    board to a 1/8" acrylic coating (2026-09-04) — a `Layer.extent` bills its band, not its
+    thickness. Only the material key moved."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
-    panel = rows["foundation-protection-panel"]
+    panel = rows["foundation-coating-acrylic"]
     assert panel["net_area_sqft"] == pytest.approx(276.3, abs=1.0)
     # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials.py
-    # — this house simply has no instance of it.
+    # — this house simply has no instance of it. Nor does the protection board, which is
+    # kept as the named alternate in plan/assemblies.py and priced in prices.toml but is
+    # referenced by no layer; an unreferenced material must not reach the bill.
     assert "stucco" not in rows
+    assert "foundation-protection-panel" not in rows
 
 
 def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
@@ -169,7 +188,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts
-    # Only the south segments outside the excavation get a panel: W-B-S1 and W-B-S4 are
+    # Only the south segments outside the excavation get the band: W-B-S1 and W-B-S4 are
     # backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band. The four
     # inside the court are not — their XPS is in W-B-BRICK's ventilated cavity — and they
     # carry no skin at all, so there is nothing for the exporter to aggregate.
@@ -182,7 +201,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # (it runs the curb's full 7 1/4"), so only the framed wall's three layers are partial
     # and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        "W-B-S1:protection-panel", "W-B-S4:protection-panel",
+        f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}",
         "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]
@@ -191,7 +210,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     assert [p.Name for p in parents] == ["W-B-N1"]
     materials = [rel.RelatingMaterial for rel in model.by_type("IfcRelAssociatesMaterial")
                  if part in (rel.RelatedObjects or ())]
-    assert [m.Name for m in materials] == ["foundation-protection-panel"]
+    assert [m.Name for m in materials] == ["foundation-coating-acrylic"]
 
     # And it is *not* also a layer of the wall type's set, which would double-describe it
     # and make the set thicker than the geometry it belongs to.

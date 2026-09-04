@@ -132,12 +132,12 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
 def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
     # A fifth layer keeps bare foam from being the finish wherever the wall is not
     # backfilled: the two south segments whose foam is genuinely exposed take the same
-    # GRADE-banded protection panel N/E/W carry. It is last in the stack because it is
-    # outboard of everything, 1/2" (these walls align on face("concrete-ext")). The court
-    # walls carry no fifth layer at all and are not perimeter-pour assemblies — see
-    # test_layer_extent.py.
-    for tag, outermost in (("CATLIN_BASEMENT_12", "protection-panel"),
-                           ("CATLIN_BASEMENT_8", "protection-panel")):
+    # GRADE-banded coating N/E/W carry. It is last in the stack because it is outboard of
+    # everything, 1/8" (these walls align on face("concrete-ext"), so the skin's thickness
+    # is free to change without moving the wall). The court walls carry no fifth layer at
+    # all and are not perimeter-pour assemblies — see test_layer_extent.py.
+    for tag, outermost in (("CATLIN_BASEMENT_12", "foundation-coating"),
+                           ("CATLIN_BASEMENT_8", "foundation-coating")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
         assert [layer.name for layer in asm.layers] == [
             "concrete", "damp-proof", "xps-a", "xps-b", outermost

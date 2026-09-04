@@ -141,15 +141,21 @@ NODES = [
     # independent of the pour thickness; the veneer stands off that finished face, hence
     # the -4.55".
     #
-    # The stand-off is 4.55" and NOT 4.05" because it was struck against the parge coat the
-    # south wall used to carry (see plan/assemblies.py). The node is deliberately left where
-    # it is: moving the veneer 1/2" inboard would move its two arched reveals, its own
-    # footing and every garage-relative literal downstream of it, to buy nothing. Without
-    # the parge the cavity is 1-1/2" instead of 1" — still over IRC R703.8.4's 1" minimum,
-    # and better-draining. Wall aligns on face("air-gap-int"), which now begins on bare XPS.
-    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.55)),
+    # The stand-off is 4.05" — the south stack's finished face, bare XPS. It was 4.55" while
+    # the south wall carried a 1/2" parge, because the wall aligns on face("air-gap-int")
+    # and that face sat on the parge. **When the parge was deleted the node did not follow
+    # it, and that left a 0.5" void between the XPS at -4.05" and the veneer's air-gap layer
+    # at -4.55" which NO layer described** — the built cavity was 1-1/2" while the model said
+    # 1". Fixed 2026-09-04 by moving the node onto the foam and growing `air-gap` to 1-1/2"
+    # to suit (plan/assemblies.py BASEMENT_BRICK_VENEER).
+    #
+    # ** THE VENEER ITSELF DOES NOT MOVE, WHICH IS THE WHOLE POINT OF FIXING IT THIS WAY. **
+    # The two edits cancel at the air gap's outboard face: the wythe stays at -5.55..-9.175",
+    # so the two arched reveals, the veneer's own footing and every garage-relative literal
+    # downstream are all untouched. Only the 0.5" of nothing becomes something.
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.05)),
          open_end=True),
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.55)),
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.05)),
          open_end=True),
 ]
 
@@ -337,7 +343,7 @@ WALLS = [
     # `face("sheathing-ext")` is the deliberate mirror of the pour's `face("concrete-ext")`:
     # it pins the sheathing's outboard face on the node line, so the damp-proofing and the 4"
     # of XPS continue on exactly the plane they occupy on W-B-S1 and W-B-S4 either side, and
-    # W-B-BRICK's 4.55" stand-off and its two arched reveals do not move (see N-B-BRICK-W
+    # W-B-BRICK's stand-off and its two arched reveals do not move (see N-B-BRICK-W
     # above).
     # The tie hardware does change in reality — corrugated ties into framing instead of
     # anchors into concrete — which is ordinary for veneer over wood, and is said out loud

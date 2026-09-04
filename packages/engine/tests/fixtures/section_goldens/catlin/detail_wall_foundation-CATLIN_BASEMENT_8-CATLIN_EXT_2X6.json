@@ -7,19 +7,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -26.203543307086615,
+          -25.828543307086615,
           -64.61860236220473
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -64.61860236220473
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -34.0
         ],
         [
-          -26.203543307086615,
+          -25.828543307086615,
           -34.0
         ]
       ],
@@ -35,19 +35,19 @@
       "node": "polyline",
       "points": [
         [
-          -26.203543307086615,
+          -25.828543307086615,
           -64.61860236220473
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -64.61860236220473
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -34.0
         ],
         [
-          -26.203543307086615,
+          -25.828543307086615,
           -34.0
         ]
       ],
@@ -63,11 +63,11 @@
       "node": "polyline",
       "points": [
         [
-          -26.203543307086615,
+          -25.828543307086615,
           -34.0
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -34.0
         ]
       ],
@@ -307,7 +307,7 @@
       "node": "polyline",
       "points": [
         [
-          -4.550000000000001,
+          -4.175,
           -40.0
         ],
         [
@@ -319,7 +319,7 @@
           -13.437499999999998
         ],
         [
-          -4.550000000000001,
+          -4.175,
           -13.437499999999998
         ]
       ],
@@ -328,7 +328,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW101AAAA",
-      "tag": "W-B-S1/protection-panel"
+      "tag": "W-B-S1/foundation-coating"
     },
     {
       "space": "model",
@@ -1528,20 +1528,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.300000000000001,
+          -4.112500000000001,
           -21.898873578302705
         ],
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -21.898873578302705
       ],
       "to": [
-        -4.300000000000001,
+        -4.112500000000001,
         -21.898873578302705
       ],
-      "text": "protection-panel 0.5\"",
+      "text": "foundation-coating 0.125\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1559,7 +1559,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -27.22665135608048
       ],
       "to": [
@@ -1584,7 +1584,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -32.55442913385826
       ],
       "to": [
@@ -1609,7 +1609,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -37.88220691163603
       ],
       "to": [
@@ -1634,7 +1634,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -43.20998468941381
       ],
       "to": [
@@ -1659,7 +1659,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         18.817793088363956
       ],
       "to": [
@@ -1684,7 +1684,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         13.7622375328084
       ],
       "to": [
@@ -1709,7 +1709,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         8.706681977252845
       ],
       "to": [
@@ -1734,7 +1734,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         3.65112642169729
       ],
       "to": [
@@ -1759,7 +1759,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -1.4044291338582653
       ],
       "to": [
@@ -1784,7 +1784,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -6.459984689413821
       ],
       "to": [
@@ -1809,7 +1809,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -11.515540244969376
       ],
       "to": [
@@ -1834,7 +1834,7 @@
         "name": ""
       },
       "at": [
-        -27.203543307086615,
+        -26.828543307086615,
         -16.57109580052493
       ],
       "to": [
@@ -2212,7 +2212,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -4.550000000000001,
+          -4.175000000000001,
           -40.0
         ],
         [
@@ -2224,7 +2224,7 @@
           -13.437499999999998
         ],
         [
-          -4.550000000000001,
+          -4.175000000000001,
           -13.437499999999998
         ]
       ],
@@ -2240,7 +2240,7 @@
       "node": "polyline",
       "points": [
         [
-          -4.550000000000001,
+          -4.175000000000001,
           -40.0
         ],
         [
@@ -2252,7 +2252,7 @@
           -13.437499999999998
         ],
         [
-          -4.550000000000001,
+          -4.175000000000001,
           -13.437499999999998
         ]
       ],
@@ -2342,7 +2342,7 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        -26.203543307086615,
+        -25.828543307086615,
         -68.61860236220473
       ],
       "content": "TR-CATLIN-FOUNDATION  ·  basement-framed-wall",
@@ -3326,9 +3326,11 @@
     "• **The CI is sprayed, and the stand-off is horizontal.** `CATLIN_EXT_2X6` is a **catlin truss**: 4\" of 2 lb closed-cell spray foam around two tiers of flat horizontal 2x4 girts at 24\" o.c., each course bearing on 3-1/2\" blocks at the 16\" stud module — inner girt SPF and buried in the foam, outer girt KDAT standing in a 1/2\" vent gap, with the cladding on the outer girt. **There is no WRB** — the foam is the water plane — and the cladding face stands 6-1/2\" proud of the sheathing. See `notes/outie_window_truss_detail.md`, which carries the build order: the window bucks go in BEFORE the foam is sprayed, and band A is sprayed BEFORE the inner girts (foam cannot reach behind a flat girt).",
     "• Foundation waterproofing / air barrier: liquid-applied membrane on sheathing and on concrete foundation wall; maintain continuity at the sill/rim transition with overlap, sealant, and/or additional liquid membrane as needed.",
     "• Basement CI: 4\" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.",
-    "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer.",
-    "• **The exposed band is modelled, not only drawn.** The north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so a grade change grows it without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/2\" aluminium-faced protection panel (`foundation-protection-panel`, the house's one exterior dark, #1c1f24) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall (order ~374 SF). Six inches below so no foam edge shows at the soil line and the shovel hits panel, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
-    "• **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded protection panel: 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments carry no skin at all: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.55\" outboard of the concrete face over the band and 4.05\" below it; `N-B-BRICK-W`/`-E`'s 4.55\" stand-off did not move — the veneer's clear cavity is 1-1/2\", up from 1\".",
+    "• Exposed XPS (top portion above grade): protect with appropriate elastomeric coating or rigid metal/PVC trim per manufacturer. **This house takes the coating** — see the band paragraph below; the trim is recorded as the named alternate.",
+    "• **The exposed band is modelled, not only drawn.** The north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so a grade change grows it without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/8\" trowel-applied acrylic coating over reinforcing mesh (`foundation-coating-acrylic`, a stock grey) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. **Order 276.3 SF**, which is the live figure; the \"~374 SF\" this note carried until 2026-09-04 was stale. Six inches below so no foam edge shows at the soil line and the shovel hits coating, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
+    "• **The coating is specified over the 1/2\" protection board because the board could not be graded.** A butted, unsealed board's installed permeance is dominated by its joints, no manufacturer in that class publishes an ASTM E96 number for it, and `building_science.condensation` therefore reported UNKNOWN on *both* basement assemblies for as long as it was authored. A mesh-reinforced trowel lamina is monolithic and seamless, a published band describes it, and both walls now PASS the January gate with the tightest plane 69-73 Pa below saturation. The board is kept as the **named alternate** — its material and its price row both stay live — and going back to it is one `material_ref` edit. Note what it is *not*: cheaper. Installed, the coating bills alongside the board, not under it. The reason for the swap is the verdict.",
+    "• **The XPS is bonded, and nothing anchors it.** Foam-compatible mastic to the liquid-applied damp-proofing, per the membrane manufacturer, and that is the whole attachment. It is sufficient because the band is captured mechanically at both ends regardless: its head tucks under the rainscreen Z-flashing at the bearing seat, and its foot is buried 6\" in soil, with backfill holding everything below. It also gives up nothing — the board it replaces was pinned into the *foam*, never through to the concrete, so no version of this band has ever had an anchor in the wall. There is no hardware line for it and there should not be: the mastic rides in the `xps:2.0` labour rate, which is what an unfastened layer means.",
+    "• **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded coating: 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments carry no skin at all: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.175\" outboard of the concrete face over the band and 4.05\" below it. `N-B-BRICK-W`/`-E`'s 4.55\" stand-off did **not** follow the band down from 4.55\": those nodes stand over the *court* segments, which have never carried a skin, so the old numeric match to the banded walls was a coincidence rather than a dependency. The veneer's clear cavity is 1-1/2\", up from 1\", unchanged.",
     "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there.** The top of the concrete and the bottom of the framed wall are 13 7/16\" apart: the pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it.",
     "• **The sill is one board and it is shared.** The I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on. One rule takes the **union** of the two runs, on the seat, and it bills 370.0 LF. There is no second rule and there must not be: two rules over one board is a double-bill.",
     "• **The pour is 8\" everywhere the detail applies, and the steel is `#5 @ 41\" o.c.`** This detail is the wood-over-concrete transition: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. The north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Only `SL-M-DECK` is still a cast deck, and it lands on the east wall and the centre line — neither of which this detail draws. The walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they are drawn, and the 4\" came off the inside face where the sill has room to spare.",
@@ -3369,7 +3371,7 @@
       5.199999999999999
     ],
     "center": [
-      28.614763779527557,
+      28.802263779527557,
       -21.311515748031496
     ],
     "scale": 0.375,

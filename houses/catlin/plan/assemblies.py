@@ -614,9 +614,9 @@ CATLIN_ROOF = Assembly(
 # `FOUNDATION_WALL_8_XPS4_CORE` / `_12_XPS4_CORE` — the pour, damp-proofing and two
 # staggered 2" XPS courses (R-21.8 either way; the concrete's R-0.08/in is noise) — and each
 # wall below splats one of those cores and appends the one skin that covers the foam. What stays house-local is exactly that skin, because it is a colour and
-# exposure decision: neither `foundation-protection-panel` nor `stucco` resolves in
-# STARTER_MATERIALS, and the panel's #1c1f24 is the house's one exterior dark, which is a
-# palette call that has no business going upstream.
+# exposure decision: neither `foundation-coating-acrylic` nor `stucco` resolves in
+# STARTER_MATERIALS, and the coating's colour is a stock-grey palette call that has no
+# business going upstream.
 #
 # **The perimeter is two thicknesses and one rule, not one default.** 8" is earned only
 # where a *cast concrete deck* lands on the wall top beside the sill plate and needs its own
@@ -645,28 +645,31 @@ CATLIN_ROOF = Assembly(
 # what covers the foam, and they differ because what exposes it is different.
 #
 # On N/E/W the foam is buried except for the 2'-10" band the grade lifts raised out of the
-# ground, so it gets a protection panel *over that band only* — below grade the backfill
-# protects the XPS and above grade the panel does, and nothing is bought for the 6'-6" in
+# ground, so it gets a coating *over that band only* — below grade the backfill protects
+# the XPS and above grade the coating does, and nothing is bought for the 6'-6" in
 # between. That band is not a number in this file: the extent is authored off the GRADE
-# datum, so a grade lift grows it (and its panel area) without anything here being edited.
+# datum, so a grade lift grows it (and its coated area) without anything here being edited.
 #
 # On the south the sunken garden exposes the foam from -9'-4" to 0'-0", which is not a band
 # off grade at all — grade is above the garden floor by nine feet there. **The court walls
 # buy no skin at all**, because the sunken garden's foam is not exposed — it is inside
 # W-B-BRICK's ventilated cavity, with no UV and no impact on it. What is genuinely exposed
 # on the south is 6" of nobody's business either side of the excavation, so W-B-S1 and
-# W-B-S4 took the ordinary CATLIN_BASEMENT_8 panel band and the court segments took
+# W-B-S4 took the ordinary CATLIN_BASEMENT_8 coated band and the court segments took
 # nothing. See `_GARDEN_PARGE` below for the retirement in full.
 #
-# So the two are no longer the same tail. The banded walls carry 4.55" outboard of the
+# So the two are no longer the same tail. The banded walls carry 4.175" outboard of the
 # concrete face over their band and 4.05" below it; the court walls carry 4.05" throughout.
-# N-B-BRICK-W/-E's inch(-4.55) stand-off is unchanged and deliberately so — it was struck
-# against the parge, and what the parge's deletion buys is a 1-1/2" clear cavity instead of
-# a 1" one (IRC R703.8.4 asks for 1" minimum). 4.05" is 0.05" damp-proof + 2x 2" XPS, and is
-# independent of the pour's thickness.
+# N-B-BRICK-W/-E's stand-off is inch(-4.05) — the court walls' finished face, bare XPS —
+# and the veneer's clear cavity is 1-1/2" (IRC R703.8.4 asks 1" minimum). It was inch(-4.55)
+# until 2026-09-04, struck against the parge; the parge's deletion left the node stranded
+# half an inch off the foam with nothing describing the gap. See BASEMENT_BRICK_VENEER's
+# `air-gap` layer. Those nodes stand over the COURT segments, not the banded walls, so the
+# band's own thickness has never been theirs to follow. 4.05" is 0.05" damp-proof + 2x 2"
+# XPS, and is independent of the pour's thickness.
 
 # The exposed-foundation band runs from 6" *below* grade — so no foam edge shows at the
-# soil line, and so the panel is what the shovel hits rather than the XPS — up to the top
+# soil line, and so the coating is what the shovel hits rather than bare XPS — up to the top
 # of the wall, where its head tucks under the rainscreen's Z-flashing with the bug screen
 # above it. It is the ONLY skin over foundation XPS anywhere in this house, on all four
 # sides. The wall top is the bearing seat at -1'-1 7/16", not 0'-0": the framed wall above
@@ -675,9 +678,29 @@ CATLIN_ROOF = Assembly(
 # full-height parge the N/E/W walls used to claim over nine feet of buried foam, added for
 # the *south* wall's exposure and applied to all four sides because a layer had no way to
 # say "only here".
-_PROTECTION_PANEL = Layer(name="protection-panel",
-                          material_ref="foundation-protection-panel",
-                          thickness=inch(0.5), function=LayerFunction.CLADDING,
+#
+# ** IT IS A TROWEL-APPLIED ACRYLIC COATING SINCE 2026-09-04, NOT A RIGID BOARD. ** The
+# 1/2" aluminium-faced panel is kept as the named alternate (see `foundation-coating-acrylic`
+# and `foundation-protection-panel` below); what the swap buys is a verdict. The board's
+# installed permeance is a butted joint nobody publishes a test for, so
+# `building_science.condensation` reported UNKNOWN on BOTH basement assemblies for as long
+# as it was authored. A mesh-reinforced lamina is seamless, a published band describes it,
+# and the wall gets graded.
+#
+# **`function` stays CLADDING and MUST.** `checks/building_science/condensation.py` screens
+# on `any(layer.function == "cladding")` — retagging to FINISH would drop both foundation
+# walls out of the Glaser scope entirely, which makes the UNKNOWN vanish by losing the check
+# rather than by answering it. CLADDING also holds `_is_exterior_assembly`, the rainscreen
+# terminator, and `code.R406_1_dampproofing`'s accepted-function list.
+#
+# **The outboard sum moves 4.55" -> 4.175"** over the band (0.05 damp-proof + 2 + 2 XPS +
+# 0.125 coating) and is unchanged at 4.05" below it. `W-B-BRICK` does NOT follow: its
+# `N-B-BRICK-W/-E` nodes stand over the *south court* walls, which carry no band at all, so
+# the band's thickness was never theirs and the 1-1/2" cavity (IRC R703.8.4 asks 1"
+# minimum) is untouched. The face moves INBOARD, so nothing wall-mounted can be buried.
+_PROTECTION_PANEL = Layer(name="foundation-coating",
+                          material_ref="foundation-coating-acrylic",
+                          thickness=inch(0.125), function=LayerFunction.CLADDING,
                           extent=LayerExtent(
                               bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
 
@@ -725,7 +748,7 @@ CATLIN_BASEMENT_12 = Assembly(
         _PROTECTION_PANEL,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade protection panel (catlin basement east, where SL-M-DECK bears)",
+    source="library FOUNDATION_WALL_12_XPS4 + the house's above-grade acrylic coating band (catlin basement east, where SL-M-DECK bears)",
 )
 
 # The west and north walls (W-B-W1/W2, W-B-N1/N2/N3) — wood floor only, so 8" reinforced.
@@ -738,7 +761,7 @@ CATLIN_BASEMENT_8 = Assembly(
         _PROTECTION_PANEL,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_8_XPS4 + the house's above-grade protection panel (catlin basement west/north, wood floor only)",
+    source="library FOUNDATION_WALL_8_XPS4 + the house's above-grade acrylic coating band (catlin basement west/north, wood floor only)",
 )
 
 # The south wall, which the sunken garden opens to the air over its whole 9'.
@@ -964,7 +987,15 @@ _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
+        # 1-1/2", not 1". The wall aligns on ``face("air-gap-int")``, so this layer's inboard
+        # face IS the node line — and the node sits on the XPS at -4.05". It was 1.0" while
+        # N-B-BRICK-W/-E stood at -4.55" on the parge's finished face; when the parge was
+        # deleted the node stayed, and the 0.5" it used to fill became a void that no layer
+        # described. The brick did not move and does not move now: the gap grows inboard onto
+        # the foam, its outboard face stays at -5.55", and the wythe stays at -5.55..-9.175".
+        # IRC R703.8.4 asks 1" minimum and the built cavity was always 1-1/2" — this is the
+        # model catching up to it.
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.5),
               function=LayerFunction.AIRGAP),
         # 12 courses of ordinary unglazed brown brick — the cheapest face on the wall, and
         # the one the wall stands out of the ground on. Brown is the cheap brick, so the
@@ -2318,7 +2349,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 #
 # **The stack is the concrete one with studs where the pour was**, not CATLIN_EXT_2X6: the
 # outboard face has to stay exactly where it is. The damp-proofing and the 4" of XPS continue
-# from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.55" off its own footing with two
+# from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.05" off its own footing with two
 # arched reveals dimensioned to it. `alignment=face("sheathing-ext")` puts the sheathing's
 # outboard face on the node line exactly where `face("concrete-ext")` put the pour's, so the
 # whole outboard tail lands on the plane it always did. (The parge was once a third layer
@@ -3171,37 +3202,78 @@ MATERIALS = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
-    # The above-grade foundation band on CATLIN_BASEMENT_8/_12. Aluminium-faced
-    # rigid protection panel — the trade product for exactly this, and what
-    # notes/basement_to_framed_wall_detail.md already called for in prose ("rigid metal/PVC
-    # trim") and what the detail sheet has always drawn here in "metal-dark". 1/2" so it
-    # matches ``FOUNDATION_FACE.protection_board_in`` and the drawing needs no change; the
-    # house's one exterior dark (#1c1f24) so the band reads with the rake trim and the
-    # opening casings above it rather than as a grey skirt under them.
+    # The above-grade foundation band on CATLIN_BASEMENT_8/_12: a trowel-applied acrylic
+    # coating over the exposed XPS, on the Styro Industries Tuff II product data
+    # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option
+    # notes/basement_to_framed_wall_detail.md named first and always has ("protect with
+    # appropriate elastomeric coating or rigid metal/PVC trim per manufacturer").
     #
-    # Both vapour fields are UNSET, and that is the finding rather than a gap — the same
-    # conclusion `library/materials.py` reached for `pvc-panel` and `fiber-cement`, for the
-    # same reason. ``perm_rating=0.0`` is not usable here: ``perm_rating`` is a
-    # *permeability* (perms per inch of substance), ``Material.vapor_permeance_at`` treats
-    # 0.0 there as "not authored" because it cannot divide by a thickness and get anything,
-    # so the field would be inert — it would read as a declared vapour barrier and never be
-    # one. The published ASHRAE aluminium-foil permeance (0.05 perm, dry cup) is the wrong
-    # number too: it is the *facer sheet*'s rating, and this is a rigid protection board
-    # mechanically fastened over exterior XPS with butted, unsealed joints behind trim —
-    # a butted board's installed permeance is dominated by those joints, not by its face.
-    # Authoring the facer's rating as the assembly's would credit a continuous Class I
+    # **The manufacturer's system is a lamina, not a paint job, and both halves are bought.**
+    # Sticky Mesh HD over the ENTIRE foam face (the FAQ is explicit: "when coating foam, it is
+    # necessary to use sticky mesh"), a 1/16" skim coat that embeds it, then a 1/16" texture
+    # coat 2 hours later - 1/8" built, 80 SF per 5-gallon pail. The mesh is why the thickness
+    # is authored at 1/8" and not at a paint film's mils, and it is priced with the coating in
+    # one $/SF rate because no one buys the mesh separately for this.
+    #
+    # **The XPS is bonded, not anchored, and that is the manufacturer's own instruction** -
+    # "secure the foam boards to the wall using TOTAL WALL Blue Mastic #11 Adhesive or TOTAL
+    # WALL fasteners". Foam-compatible adhesive to the liquid-applied damp-proofing below,
+    # captured by the rainscreen Z-flash above and 6" of bury at the bottom. Nothing is given
+    # up against the board it replaces: that board's washered pins went into the XPS, never
+    # through to concrete, so no version of this band has ever had a masonry anchor in it.
+    # See prices.toml, and `what is deliberately not modelled` below.
+    #
+    # ** THE PERMEANCE IS A CLASS BAND, NOT A PRODUCT TEST, AND THE SOURCE SAYS SO. **
+    # Styro publishes appearance, pH, wet density and chemistry and no ASTM E96 number - the
+    # whole product class does not test for it. So this is authored the way `latex-paint` is
+    # (library/materials.py): a midpoint of a published band, quoted as a band. What makes
+    # that honest HERE and dishonest for the protection board below is the joint. A butted
+    # board's installed permeance is dominated by its unsealed seams and no band describes
+    # it; a mesh-reinforced trowel lamina is monolithic and seamless by construction, which
+    # is precisely the condition the published stucco/coating rows measure.
+    #
+    # **And the verdict does not turn on where in the band the number lands.** Swept 2.0 /
+    # 3.0 / 5.0 / 10.0 perms, the January gate PASSes at every value and the tightest plane
+    # stays `xps-b`: 40, 56, 69 and 100 Pa below saturation on _8 (48 / 62 / 73 / 102 on
+    # _12). The coating is nowhere near the control layer — 4" of XPS at ~0.28 perms is —
+    # so the band's WIDTH is what had to be defensible, not its midpoint. That is the whole
+    # reason a class band is admissible here and a made-up product figure would not be.
+    #
+    # ``vapor_permeance_perms`` and NOT ``perm_rating``: ``Material.vapor_permeance_at``
+    # divides a perm_rating by thickness, and at 1/8" that would invent a number no test
+    # measured. ``perm_rating=0.0`` is worse than useless - it is inert, reads as "not
+    # authored", and this is the opposite of a barrier.
+    Material(tag="foundation-coating-acrylic",
+             name="Trowel-applied acrylic foundation coating over mesh (1/8\")",
+             r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0,
+             coating=True, hatch="concrete", color="#8e8f8c",
+             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12) - Styro Industries Tuff II, 100% acrylic, 1/8\" over Sticky Mesh HD, 80 SF/5-gal pail, 10 stock colours, permitted below grade (product data + \"Applying TUFF II Over Rigid Foam & ICF\"). Styro publishes NO ASTM E96 value and neither does this product class, so 5.0 perms is a band midpoint and is quoted as one: buildingscience.com Info-500 gives exterior acrylic paint 5.5 perms and polymer-modified stucco 2-3 perms where latex-finished, and the UAF/ASHRAE table gives 11-20 perms for 3/4\" plaster. A 1/8\" acrylic lamina sits between a film and a render and the band brackets it; what the number has to carry is that it is far more open than the 4\" of XPS beneath it (~0.28 perms), which decides the Glaser walk. Colour is Styro's stock grey approximated - no hex is published, a chip governs"),
+    # **UNREFERENCED since 2026-09-04. The named alternate**, on the `glazed-green-brick`
+    # convention: an aluminium-faced 1/2" rigid protection board, the other half of the
+    # detail note's "rigid metal/PVC trim", fastened into the XPS with washered pins. Its
+    # price row is kept live in prices.toml for the same reason. Going back to it is one
+    # `material_ref`/`thickness` edit on `_PROTECTION_PANEL` above.
+    #
+    # ** AND IT IS WHY THE COATING WAS TAKEN. ** Both vapour fields are UNSET here, and that
+    # was the finding rather than a gap - the same conclusion library/materials.py reached
+    # for `pvc-panel` and `fiber-cement`. ``perm_rating=0.0`` is not usable: perm_rating is a
+    # *permeability* (perms per inch), ``Material.vapor_permeance_at`` treats 0.0 there as
+    # "not authored", so the field would be inert. The published ASHRAE aluminium-foil
+    # permeance (0.05 perm, dry cup) is the wrong number too: it is the *facer sheet*'s
+    # rating, and this is a rigid board over exterior XPS with butted, unsealed joints behind
+    # trim - a butted board's installed permeance is dominated by those joints, not by its
+    # face. Authoring the facer's rating as the assembly's would credit a continuous Class I
     # vapour barrier on the COLD side of a wall whose interior face is vapour-open, and the
-    # Glaser walk would then report dew point inside the XPS on January normals — an
-    # artifact of the input, not a defect in the wall.
-    #
-    # So the assembly reports UNKNOWN naming this material, which is the honest answer: no
-    # manufacturer in this product class publishes an ASTM E96 rating for the board as
-    # installed. Authoring one needs that test, not an extrapolation from its foil.
+    # Glaser walk would report dew point inside the XPS on January normals - an artifact of
+    # the input. So the board reported UNKNOWN on both basement assemblies, and no
+    # manufacturer in its class publishes the test that would answer it. **Choosing the
+    # coating is what answers it**, because a seamless lamina is a shape a published band
+    # actually describes.
     Material(tag="foundation-protection-panel",
              name="Aluminium-faced foundation protection panel (1/2\")",
              r_per_inch=0.0, density=1100.0, hatch="metal",
              color="#1c1f24",
-             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12); no ASTM E96 rating published for a butted, mechanically-fastened protection board in this class, so the vapour fields are unset and the Glaser walk reports UNKNOWN"),
+             source="UNREFERENCED named alternate to `foundation-coating-acrylic` above; no ASTM E96 rating published for a butted, mechanically-fastened protection board in this class, so the vapour fields are unset and the Glaser walk reported UNKNOWN on both basement assemblies while it was in use"),
     # stucco (no instance in this house), composite-deck (porch
     # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py
     # (CONTRIBUTING §Promotion flow); they arrive here through

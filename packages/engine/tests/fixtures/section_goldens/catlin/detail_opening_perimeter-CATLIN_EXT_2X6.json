@@ -235,11 +235,11 @@
           -17.716535433070867
         ],
         [
-          436.55,
+          436.175,
           -17.716535433070867
         ],
         [
-          436.55,
+          436.175,
           -13.437499999999998
         ],
         [
@@ -252,7 +252,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW108AAAA",
-      "tag": "W-B-N3/protection-panel"
+      "tag": "W-B-N3/foundation-coating"
     },
     {
       "space": "model",
@@ -2784,7 +2784,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          436.3,
+          436.1125,
           -31.237500000000004
         ],
         "name": ""
@@ -2794,10 +2794,10 @@
         -31.237500000000004
       ],
       "to": [
-        436.3,
+        436.1125,
         -31.237500000000004
       ],
-      "text": "protection-panel 0.5\"",
+      "text": "foundation-coating 0.125\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

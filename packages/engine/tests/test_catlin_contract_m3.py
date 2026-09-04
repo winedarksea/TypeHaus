@@ -1358,19 +1358,21 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
     veneer, the excavation, the XPS plane and the drain tile are all measured off the
     *exterior* face, which is the datum the walls align on, so only the inside face moves.
 
-    What sits outboard of THAT is a house skin: a 1/2" protection panel, banded off GRADE,
-    on the walls whose exposure is a grade line. The court walls carry nothing — their XPS
-    is inside W-B-BRICK's ventilated cavity. N-B-BRICK-W/-E's ``inch(-4.55)`` stand-off gives
-    a 1-1/2" clear cavity.
+    What sits outboard of THAT is a house skin: a 1/8" acrylic coating over mesh, banded off
+    GRADE, on the walls whose exposure is a grade line (a 1/2" protection board until
+    2026-09-04, kept as the named alternate). The court walls carry nothing — their XPS is
+    inside W-B-BRICK's ventilated cavity, and it is over THOSE that N-B-BRICK-W/-E's
+    ``inch(-4.55)`` stand-off is struck, which is why retyping the band did not touch the
+    1-1/2" clear cavity.
     """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
         core = [l for l in asm.layers if l.name in ("damp-proof", "xps-a", "xps-b")]
         assert sum(l.thickness.inches for l in core) == pytest.approx(4.05), tag
-        skin = [l for l in asm.layers if l.name in ("parge", "protection-panel")]
+        skin = [l for l in asm.layers if l.name in ("parge", "foundation-coating")]
         if tag in _BURIED_ASSEMBLIES:
-            assert [l.name for l in skin] == ["protection-panel"], tag
-            assert skin[0].thickness.inches == pytest.approx(0.5), tag
+            assert [l.name for l in skin] == ["foundation-coating"], tag
+            assert skin[0].thickness.inches == pytest.approx(0.125), tag
         else:
             assert skin == [], tag
 

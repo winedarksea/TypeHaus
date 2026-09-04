@@ -2394,14 +2394,71 @@
 # redesign and it is NOT taken here — this row is the fibreglass base case.
 # Sources: published R-30C cathedral batt retail $/SF 2026, uplifted ~15% over the R-19 row.
 "fiberglass-r30c" = { material = { low = 0.7, high = 1.25 }, labour = { low = 0.6, high = 1.05 } }  # 1449.0 SF — R-30C compressed to 6-7/8" in the 11-7/8" bay
-"foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 276.3 SF
+# The above-grade foundation band, 6" below GRADE to the wall top on the ten N/E/W/S1/S4
+# basement walls. **A trowel-applied acrylic coating since 2026-09-04**, and the row it
+# replaces is the one directly below.
+#
+# ** BARE KEY, DELIBERATELY. ** `envelope_layers` qualifies on `thickness_in`
+# (cli/prices.py QUALIFIED_KEY_FIELD) and `xps` two rows down is qualified for exactly that
+# reason — a board sold by the inch must be. A coating is not: its rate is per COAT and per
+# coverage area, and the 1/8" in the assembly is the built thickness of the two coats the
+# manufacturer specifies, not a depth you can buy more or less of.
+#
+# ** THE SECTION'S 10% WASTE IS RIGHT FOR HALF THIS ROW AND WRONG FOR THE OTHER HALF, AND
+# [waste] HAS NO PER-ROW OVERRIDE. ** model/materials.py says a coating bills "by coverage
+# area, with no waste allowance" — there is no offcut on a troweled coat, only what stays in
+# the pail, and a part-pail keeps 12-18 months. The MESH is a different animal: it is a
+# rolled good cut to length and lapped 2", so a tenth is about right on it. The rate is shaded
+# to land the post-waste number where the two halves actually sit:
+#   coating  $116.74 / 80 SF                 = $1.46/SF, and it wants NO waste
+#   mesh     $201.17 / 475 SF, +2" laps      = $0.45/SF, and it does want the 10%
+#   target ordered cost                      = 1.46 + 0.45 x 1.10 = $1.955/SF
+#   low authored here                        = 1.955 / 1.10       = $1.78/SF
+# The high column is the same shape over a custom tint and a third coat ($2.30 + $0.60,
+# shaded to $2.65). Take the low as the arithmetic and the high as the quote.
+#
+# What is in the rate, per the manufacturer's own instructions:
+#   - Tuff II, 5-gal pail, 80 SF/pail, TWO coats (1/16" skim + 1/16" texture) = the 1/8"
+#     the assembly carries. $116.74/pail retail 2026 ("Overcast" grey, one of 10 stock
+#     colours; custom tint is a special order and sits at the high end).
+#   - Sticky Mesh HD over the WHOLE face, which is not optional over foam — 38" x 150 ft
+#     roll, 475 SF, $201.17, so ~$0.42/SF before the 2" laps and ~$0.45 after.
+#   - Wire-brushing the XPS to open the pores before coating. It is a named, mandatory step
+#     ("this is an important step") and it is all labour.
+#   - The foam-compatible mastic that bonds the XPS to the damp-proofing. See the `xps:2.0`
+#     comment — it is authored there, on the board it actually attaches, not here.
+#
+# ** THE MOBILISATION ARGUMENT, ANSWERED HONESTLY: THIS IS NOT A SAVING. ** The parge was
+# retired because a plasterer's minimum call-out ($1,500-2,500) swamped its $/SF, and the
+# board it replaces already bills $1,381-2,901, which is that same floor. Tuff II does dodge
+# the specialty trade — it is a pre-mixed pail a GC or the foam installer applies with a
+# drywall knife, and nobody mobilises a stucco crew for 276 SF. What it does NOT dodge is
+# the hand labour: mesh the whole face, skim, wait two hours, texture. That is two crew-days
+# on 276 SF, which is why labour here is 3-4x material and the installed total lands
+# alongside the board rather than under it. ** THE REASON FOR THE SWAP IS THE VERDICT, NOT
+# THE MONEY ** — the board's butted joints have no publishable permeance and left
+# `building_science.condensation` UNKNOWN on both basement assemblies; a seamless lamina is
+# gradeable and both walls now PASS. If the coating is instead let to a stucco sub, the
+# minimum call-out comes back and the high column is the number to believe.
+# Sources: superarbor.io Tuff II 5-gal list 2026; homedepot.com SM38 Sticky Mesh HD 38" x
+# 150 ft; Styro Industries "Applying TUFF II Over Rigid Foam & ICF" for coverage and coats.
+"foundation-coating-acrylic" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
+# ** UNREFERENCED SINCE 2026-09-04 — the named alternate to the coating above, kept live on
+# the `glazed-green-brick` convention so the revert is one `material_ref` edit. ** A 1/2"
+# aluminium-faced rigid protection board, sold in 4' x 8' sheets and fastened into the XPS
+# with washered pins. Note what those pins are and are not: they land in the FOAM, not
+# through to the concrete, so the board hangs on the XPS and holds nothing to the wall. That
+# is the same attachment story the coating has — bond, Z-flash capture above, 6" of bury
+# below — and it is why swapping to a bonded coating gives up no anchorage that ever
+# existed. Cheaper in labour, dearer in material, and it cannot be graded for condensation.
+"foundation-protection-panel" = { material = { low = 3.5, high = 7.5 }, labour = { low = 1.5, high = 3 } }  # 276.3 SF — UNREFERENCED alternate
 # The garage ICF stem's exterior protection band, 2" below grade to the stem top — the
 # outside half of a both-faces requirement that was only ever half-built (`gwb-stem` was the
-# inside half). Same job as `foundation-protection-panel` above, which is why it sits here,
-# but a thin brake-formed sheet on furring rather than a 1/2" laminated board, so it is
+# inside half). Same job as the basement band above, which is why it sits here, but a thin
+# brake-formed sheet on furring rather than a coating or a laminated board, so it is
 # cheaper per SF in material and dearer in labour. Covers the sheet, the KDAT furring, the
 # 316 stainless gasketed fixings into the ICF webs, and the hemmed edges. Placeholder
-# pending a quote, struck off the protection-panel row it replaces in function.
+# pending a quote, struck off the basement band row it replaces in function.
 #
 # ** SINCE 2026-09-03 THIS IS THE GARAGE'S ENTIRE BASE SKIN, AND THE SF DID NOT MOVE. **
 # The 4'-0" east wainscot that stood in front of it was deleted, taking its own
@@ -2748,7 +2805,7 @@
 # plasterer on site at all for 273.7 SF of which about 29 SF was ever visible: ~139 SF was
 # inside W-B-BRICK's ventilated cavity and ~106 SF behind 6'-4" of backfill. The visible 29
 # SF is a grade band, and the house already owns a grade-banded skin for exactly that
-# (`foundation-protection-panel` above). See plan/assemblies.py `_GARDEN_PARGE`.
+# (the `foundation-coating-acrylic` band above). See plan/assemblies.py `_GARDEN_PARGE`.
 #
 # The `# 422.1 SF` below was stale — live was 273.7 SF at retirement.
 # "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # was 273.7 SF
@@ -2778,6 +2835,17 @@
 # rate here, and they do not carry the same rate in the yard. 40 psi runs roughly 20-35%
 # over 25 psi. Fixing it properly means a psi-bearing material tag, not another key.
 "xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # 512.3 SF — garage slab (1", 40 psi) + the 24.7 SF slab-edge thermal break
+# ** HOW THE FOUNDATION-WALL COURSES ARE HELD ON — it was written down nowhere until
+# 2026-09-04. ** Foam-compatible mastic to the liquid-applied damp-proofing, per the
+# membrane manufacturer, in vertical daubs; no plate anchors and no hardware record, because
+# there is nothing to anchor INTO that the model can describe (the engine has no masonry-
+# anchor concept, a documented gap). Adhesive is the coating manufacturer's own instruction
+# for this stack — "secure the foam boards to the wall using TOTAL WALL Blue Mastic #11
+# Adhesive or TOTAL WALL fasteners" — and above grade the band is captured mechanically at
+# both ends anyway: under the rainscreen Z-flashing at the bearing seat, and by 6" of bury at
+# the bottom. Below grade the backfill holds it. The mastic is inside this row's labour half
+# (a tube per ~35 SF is noise against the board), which is what `Material.exposed_fastener =
+# False` already asserts for every layer that has no countable fastener.
 "xps:2.0" = { material = { low = 0.74, high = 1.49 }, labour = { low = 0.75, high = 1.45 } }  # 3669.8 SF — foundation walls (2 x 2" staggered), basement slab (2", 25 psi), footing, wall
 "xps:3.0" = { material = { low = 1.12, high = 2.23 }, labour = { low = 0.75, high = 1.45 } }  # 0 SF — was 1783.7 (basement + garage slabs) until the 2026-08-31 slab review. Kept for the rate.
 # The blended fallback. Any thickness without a row above lands here. Researched; the three

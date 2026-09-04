@@ -1253,11 +1253,19 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local
   skin layer, so the core cannot drift between them.
   - *The skin, and there is only one.* `CATLIN_BASEMENT_12`/`_8` cover the
-    XPS with a 1/2" `foundation-protection-panel` banded from 6" below grade to the top of
-    the wall — authored as a `Layer.extent` off the `GRADE` datum, so a grade lift grows it
-    without an edit here. `W-B-S1`/`W-B-S4` are on `CATLIN_BASEMENT_8`, which
+    XPS with a 1/8" `foundation-coating-acrylic` banded from 6" below grade to the top of
+    the wall — a trowel-applied acrylic coat over reinforcing mesh, authored as a
+    `Layer.extent` off the `GRADE` datum, so a grade lift grows it without an edit here.
+    **It was a 1/2" `foundation-protection-panel` until 2026-09-04, and the swap bought a
+    verdict, not a saving.** A butted board's installed permeance is its joints, nothing in
+    that product class publishes an ASTM E96 number for it, and
+    `building_science.condensation` reported UNKNOWN on both assemblies for as long as it
+    was authored; a seamless lamina is gradeable and both walls now PASS. Installed, the
+    coating bills slightly *above* the board. The board and its price row survive as the
+    named alternate, so the revert is one `material_ref` edit.
+    `W-B-S1`/`W-B-S4` are on `CATLIN_BASEMENT_8`, which
     retired the stucco: their exposure genuinely *is* a grade band (6'-4" of fill,
-    2'-2 9/16" out of the ground), so they get ~37 SF of panel. The court segments in
+    2'-2 9/16" out of the ground), so they get ~37 SF of coating. The court segments in
     between get **no skin at all** — their XPS is inside `W-B-BRICK`'s ventilated cavity,
     with no UV and no impact on it, and 273.7 SF of parge was buying a plasterer's
     mobilization to finish a surface nobody sees. `CATLIN_BASEMENT_8_GARDEN` and
@@ -1280,11 +1288,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     carries wood on both faces — leaving `W-B-CS2`/`W-B-CN`/`W-B-CN2` as the interior pour
     that remains. Drop that string on any of the nine and
     `structural.foundation_unbalanced_fill` FAILs, correctly.
-  The banded walls carry 4.55" outboard of the concrete face over the band and 4.05" below
-  it; the court walls carry 4.05" throughout. `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off
-  was struck against the old parge and is deliberately unchanged: what the parge's deletion
-  buys is a **1-1/2" clear cavity** where there was 1" (IRC R703.8.4 wants 1" minimum), not
-  a moved veneer. That is why thinning the *wall* did not move the brick, and why changing a
+  The banded walls carry 4.175" outboard of the concrete face over the band and 4.05" below
+  it; the court walls carry 4.05" throughout. `N-B-BRICK-W`/`-E`'s stand-off is
+  `inch(-4.05)`, on the court walls' bare XPS, and the veneer's clear cavity is **1-1/2"**
+  (IRC R703.8.4 wants 1" minimum). **It was `inch(-4.55)` until 2026-09-04 and that was a
+  bug**: the node was struck on the old parge's finished face and did not follow the parge
+  when it was deleted, so a 1/2" void sat between the XPS and the veneer's 1" `air-gap`
+  layer with no layer describing it — the model said 1" where the build had 1-1/2". Moving
+  the node onto the foam and growing `air-gap` to 1-1/2" cancels at the gap's outboard face,
+  so the wythe, the arched reveals and the veneer's footing all stay exactly where they
+  were. That is why thinning the *wall* did not move the brick, and why changing a
   *skin* thickness moves the cavity rather than the wythe. Because
   the walls align on `face("concrete-ext")`, the 4" came off the INSIDE face: the furnace
   room and the workshop each gained 4" of clear (the model still reports the old number —
