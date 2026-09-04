@@ -218,7 +218,11 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # with the nailbase, and the inner tier's took the second wall row with it. The other 224
     # are the garage ICF stem's protection band (see above), which is a different building.
     assert row["count"] + furring[0]["count"] == sum(r["count"] for r in rows) > 0
-    assert row["count"] == 1118 and furring[0]["count"] == 224
+    # 1114 since 2026-09-03: the garden/garage window work moved the openings the girt
+    # courses pack around, and the block count follows the blocks, not a literal here — the
+    # assertion above already ties it to the resolved model, and this one is the tripwire
+    # that says a change of this size happened at all.
+    assert row["count"] == 1114 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

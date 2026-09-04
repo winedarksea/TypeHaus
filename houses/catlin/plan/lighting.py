@@ -508,7 +508,7 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(m(0.215078), m(4.71393)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(inch(7.635), m(4.71393)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(90),
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -744,7 +744,7 @@ SECOND_LIGHTING = [
     # y tracks W-S-SN1's south face (same station as ED-S-SUITE-RC5), the 8" staggered
     # sound wall.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 11.875), ft(21, 10.5)), type_ref="ED-T-LT-WALL-LINEAR",
+                     position=pt(ft(4, 11.875), inch(263.125)), type_ref="ED-T-LT-WALL-LINEAR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(180),
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),

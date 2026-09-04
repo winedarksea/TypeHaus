@@ -206,12 +206,29 @@ def test_the_overhead_door_reads_as_a_sectional_door(catlin_model):
 
 
 # --- cladding ----------------------------------------------------------------------------
+def _south_facade_tags(model) -> set[str]:
+    """Every wall tag the merged south panel run might carry.
+
+    ``elevation._merge_wall_runs`` dissolves the coplanar same-MATERIAL segments of a facade
+    into ONE visible piece and hands its provenance to the largest contributor, so which
+    segment names the run is not a thing a test may pin: it is W-S-S1 today (the plant
+    room's liner, whose outboard face is the same panel) and was a W-M-S* segment before
+    that. The group is the merge's own key, so this is derived the same way: the walls on
+    the y = 0 plane whose outermost body layer is the batten panel. The basement's coated
+    concrete and the garden curbs' xps sit on the same plane and merge separately, which is
+    what leaves the masonry courses for the second half of the panel test to find.
+    """
+    return {wall.tag for wall in model.walls
+            if wall.axis[0][1] == 0.0 and wall.axis[1][1] == 0.0
+            and (body := wall.body_layers()) and body[-1].material_ref == "board-batten-24"}
+
+
 def test_the_cladding_texture_reaches_the_face_fastened_panel(catlin_model):
     """``pbr-panel-26`` matches none of ``palette.family_of``'s needles, so the catalog's
     own ``exposed_fastener`` flag is what says which module to draw."""
     scene = build_elevation(catlin_model, "south")
-    panel = [node for node in _polylines(scene, "A-WALL-FINI")
-             if node.tag and node.tag.startswith("W-M-S")]
+    south = _south_facade_tags(catlin_model)
+    panel = [node for node in _polylines(scene, "A-WALL-FINI") if node.tag in south]
     assert len(panel) > 5, "the main south facade drew no cladding module at all"
     assert all(abs(node.points[0][0] - node.points[-1][0]) < 1e-6 for node in panel), \
         "a profiled panel's joints run vertically"
@@ -233,9 +250,10 @@ def test_the_board_and_batten_wall_draws_battens_and_not_seam_pitch(catlin_model
     from typehaus.emit.draw.elevation_finish import _BATTEN_PITCH_M, _SEAM_PITCH_M
 
     scene = build_elevation(catlin_model, "south")
+    south = _south_facade_tags(catlin_model)
     stations = sorted({round(node.points[0][0], 4)
                        for node in _polylines(scene, "A-WALL-FINI")
-                       if node.tag and node.tag.startswith("W-M-S")
+                       if node.tag in south
                        and abs(node.points[0][0] - node.points[-1][0]) < 1e-6})
     assert len(stations) > 5, "the main south facade drew no cladding module at all"
     gaps = [round(b - a, 3) for a, b in zip(stations[:-1], stations[1:], strict=True)]

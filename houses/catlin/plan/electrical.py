@@ -167,6 +167,19 @@ DEVICE_TYPES = (
                           ifc_predefined_type="NETWORKAPPLIANCE",
                           ports=(ServicePort(tag="data", service=Service.DATA,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # The same radio on a wall bracket, and it exists because ``footprint`` is a PLAN
+    # rectangle: the ceiling type's 8x8 is the disc seen from below, and hung on a wall that
+    # reads as 8" of DEPTH, so ED-A-STUDIO-AP buried 3" of itself in W-A-STU-N's studs at
+    # 0 FAIL. Turned on edge the disc is 8" across the wall and 2" off it, which is what
+    # these numbers are; ``height`` is the 8" diameter now that the diameter stands up.
+    ElectricalDeviceType(tag="ED-T-AP-WALL",
+                          name="Wireless access point, wall, PoE 802.3af",
+                          poe_watts=15.0,
+                          footprint=(inch(8), inch(2)), height=inch(8),
+                          ifc_entity="IfcCommunicationsAppliance",
+                          ifc_predefined_type="NETWORKAPPLIANCE",
+                          ports=(ServicePort(tag="data", service=Service.DATA,
+                                             position=(ft(0), ft(0), ft(0))),)),
     # A wall jack. The catalog had an enclosure and two access points and no way to say
     # "a cable ends here at a plate", so a hardwired drop could not be modelled at all —
     # which is why RM-M-STUDY and RM-B-PLAY-N had none. Receptacle-sized because it is a
@@ -1334,7 +1347,7 @@ ATTIC_DATA_DEVICES = [
     # and the two differ by about a foot.) y=22'-0 5/8" is 1" off the gwb face on the STUDIO
     # side, the station ED-A-POCKET-SW already uses.
     ElectricalDevice(uid="CND004AAAA", tag="ED-A-STUDIO-AP", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(6, 6), ft(22, 0.625)), type_ref="ED-T-AP-CEILING",
+                     position=pt(ft(6, 6), ft(22, 0.625)), type_ref="ED-T-AP-WALL",
                      room="RM-A-STUDIO", wall_ref="W-A-STU-N",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3))),
 ]
@@ -1625,9 +1638,9 @@ NEC_FILL_MAIN = [
     # OUTSIDE EDGE, which here is 4.6'. The check understates every distance by half a
     # fixture, so it under-reports rather than over-reports — this one is real either way.
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(m(1.9388), m(7.91434)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(inch(76.385), m(7.91434)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-M-LIVING", rotation=deg(0)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-M-LIVING", rotation=deg(90)),
     # ED-M-LIVING-RC11 stood on the 10 3/16" pier at W-M-STRS's east end. That wall was
     # removed with D-M-STAIR (main.py WALLS) and the receptacle went with its host — there
     # is no wall on that face any more to mount it to.
@@ -1644,11 +1657,11 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 7.625), ft(10, 9)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(inch(211.115), ft(10, 9)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC015AAAA", tag="ED-M-BED-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 7.625), ft(1, 1.5)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(inch(211.115), ft(1, 1.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC016AAAA", tag="ED-M-BED-RC5", kind=DeviceKind.RECEPTACLE,
@@ -1784,11 +1797,11 @@ NEC_FILL_SECOND = [
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC031AAAA", tag="ED-S-BED1-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 2.875), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 2.875), inch(111.875)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC032AAAA", tag="ED-S-BED1-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(22, 7.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(22, 7.375), inch(111.875)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RM-S-BED1's west wall, SOUTH of D-S-BED1. The run from the room's SW corner to the
@@ -1869,7 +1882,7 @@ NEC_FILL_SECOND = [
     # y follows W-S-SN1's south face: the suite's north wall is the 8" staggered sound wall,
     # not the 4 3/4" INT_2X4_PARTITION.
     ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(1, 0.75), ft(21, 11)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(1, 0.75), inch(263.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,

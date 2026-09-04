@@ -258,13 +258,14 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     assert centres["WIN-S-BED1"][1] == pytest.approx(ft(13, 4).meters, abs=TOL_M)
 
     # The source draws one balcony door, east of the centre line, inside its 18'-8"..23'-11"
-    # run. D-S-DECK-W, the second door off the plant room, is ours, not the survey's — it is
-    # held to the mirror of D-S-DECK-E about the x=18' centre line rather than to a source
-    # station it has none of.
+    # run, and that is now the only one: D-S-DECK-W, our own mirror of it off the plant
+    # room, was deleted on 2026-09-03 (a 60" French door is the one hole in RM-S-PLANT's
+    # sealed liner no detail fixes — plan/storeys/second.py states the case). WIN-S-PLANT4
+    # holds its station. Asserted as an absence so the door cannot come back unnoticed.
     x, _y = centres["D-S-DECK-E"]
     assert ft(18, 8).meters < x < ft(23, 11).meters
-    west, _y = centres["D-S-DECK-W"]
-    assert ft(36).meters - x == pytest.approx(west, abs=TOL_M)
+    assert "D-S-DECK-W" not in centres, \
+        "the plant room's balcony door is back — see notes/plant_room.md"
 
 
 def test_balcony_french_door_uses_the_standard_60_inch_type(catlin_plan):

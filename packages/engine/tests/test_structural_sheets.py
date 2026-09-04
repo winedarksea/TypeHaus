@@ -117,10 +117,23 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # the flight swapped halves of the pocket (houses/catlin/notes/heat_pump_ground_pad.md
     # and porch_stair.md). Both are asserted by name so the exemption cannot quietly cover a
     # fifth slab.
+    #
+    # SL-M-HP3PAD is the fifth and, like the other two pads, a real 4" pour: the north-side
+    # equipment pad under EQ-M-HP3-OD, in the slot between the house and the garage
+    # (plan/site.py). It arrived 2026-09-04 when that unit stopped floating on the storey
+    # datum. SL-SG-STOOP is the sixth and the last real pour on this list — 7-1/4", the
+    # R311.3 landing off the porch stair, sized by `_landing_patch` rather than by eye.
+    #
+    # SL-SG-FIELD is not a pour at all: 12" of growing medium over the sunken garden's
+    # court, a `Slab` for the same reason the frost wings are — a horizontal band has no
+    # other element kind to be (params/sunken_garden.py states the case at length).
     assert poured["SL-SG-HPPAD"] == '4"' and poured["SL-SG-STAIRPAD"] == '4"'
+    assert poured["SL-M-HP3PAD"] == '4"' and poured["SL-SG-STOOP"] == '7-1/4"'
+    assert poured["SL-SG-FIELD"] == '12"'
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
-               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-",
-                                      "SL-SG-HPPAD", "SL-SG-STAIRPAD"))), poured
+               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-", "SL-SG-HPPAD",
+                                      "SL-SG-STAIRPAD", "SL-M-HP3PAD", "SL-SG-STOOP",
+                                      "SL-SG-FIELD"))), poured
     assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
     assert [tag for tag in poured if tag.startswith("SL-G-STEP-")] == ["SL-G-STEP-0"]
     assert {poured[tag] for tag in poured if tag.startswith("SL-SG-FROST-")} == {'1"', '2"'}

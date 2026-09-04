@@ -1667,7 +1667,8 @@
 # 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
 # made-to-size box, so the material carries the house-local millwork premium.
 "CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
-"ED-T-AP-CEILING" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 2 ea
+"ED-T-AP-CEILING" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 1 ea
+"ED-T-AP-WALL" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-AP-OUTDOOR" = { material = { low = 150, high = 450 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-BACKUP-ENCL" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-BACKUP-PANEL" = { material = { low = 90, high = 260 }, labour = { low = 250, high = 600 } }  # 1 ea

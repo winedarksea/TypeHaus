@@ -45,7 +45,7 @@ def test_a_staggered_wall_is_framed_on_half_its_authored_spacing(catlin_model):
 
 def test_it_is_dormant_on_windows_and_live_on_doors(catlin_model):
     """Why it is fixed *before* the door check exists. No catlin window sits on a staggered
-    wall, so the window check never saw the disagreement; four doors do."""
+    wall, so the window check never saw the disagreement; three doors do."""
     on_staggered = {"window": [], "door": []}
     for opening in catlin_model.openings:
         wall = catlin_model.wall(opening.host_wall)
@@ -55,8 +55,10 @@ def test_it_is_dormant_on_windows_and_live_on_doors(catlin_model):
         if framing is not None and framing.layout is PartitionLayout.STAGGERED:
             on_staggered["door" if opening.is_door else "window"].append(opening.tag)
     assert on_staggered["window"] == []
-    assert sorted(on_staggered["door"]) == ["D-B-BATH", "D-B-PLAY", "D-M-BATH1",
-                                            "D-S-SUITEBATH"]
+    # D-S-SUITEBATH left this list when W-S-SBS was retyped to a plain INT_2X4_PARTITION:
+    # nothing backs onto the suite bath's south wall any more, so it has no reason to be
+    # staggered (plan/storeys/second.py).
+    assert sorted(on_staggered["door"]) == ["D-B-BATH", "D-B-PLAY", "D-M-BATH1"]
 
 
 def test_a_plain_wall_keeps_its_authored_module(catlin_model):

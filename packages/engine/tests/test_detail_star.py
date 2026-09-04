@@ -106,7 +106,10 @@ def test_stars_precedence_unstar_wins_and_star_is_the_default():
 def test_per_condition_overrides_curate_the_primary_sheet_set(catlin_model):
     """The interior rim/foundation keys are unstarred while their siblings stay primary."""
     rows = {r["key"]: r for r in detail_index(catlin_model)}
-    interior = "storey_stack:rim:INT_2X4_PARTITION"
+    # A *paired* key, because a bare ``storey_stack:rim:INT_2X4_PARTITION`` stopped deriving
+    # when the partitions either side of that rim stopped matching each other; the house's
+    # own overrides moved to the pairs at the same time (plan/transitions.py).
+    interior = "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB"
     exterior = "storey_stack:rim:CATLIN_EXT_2X6"
     # Same transition, same pattern-wide star, opposite effective answers.
     assert rows[interior]["transition"] == rows[exterior]["transition"]
@@ -153,7 +156,8 @@ def test_stale_override_keys_are_reported(catlin_model):
     said = messages(inert)
     assert len(said) == 1 and "does not match" in said[0]
     # A live, matching key is what an override is supposed to look like: silence.
-    assert messages(_transition(unstarred_conditions=("storey_stack:rim:INT_2X4_PARTITION",))) == []
+    live = "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB"
+    assert messages(_transition(unstarred_conditions=(live,))) == []
 
 
 def test_per_condition_override_writes_back_to_source(tmp_path):

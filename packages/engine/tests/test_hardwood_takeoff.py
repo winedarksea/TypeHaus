@@ -83,9 +83,9 @@ def test_rough_stock_always_exceeds_the_finished_piece(rows):
 
 def test_a_stool_is_scheduled_at_its_rough_size_from_eight_quarter_stock(rows):
     stools = _use(rows, "window stool")
-    # See test_millwork.py for which windows have no stool (attic knee walls and the south
-    # gable's corner pair).
-    assert stools and sum(row["pieces"] for row in stools) == 33
+    # See test_millwork.py for which windows have no stool (the plant room's liner, the
+    # sauna's, and the garage).
+    assert stools and sum(row["pieces"] for row in stools) == 32
     for row in stools:
         assert row["nominal_stock"] == "8/4"
         assert row["nominal_quarters"] == 8

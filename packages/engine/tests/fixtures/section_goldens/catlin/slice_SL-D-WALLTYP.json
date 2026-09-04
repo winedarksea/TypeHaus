@@ -935,11 +935,11 @@
           -102.4375
         ],
         [
-          -4.550000000000001,
+          -4.050000000000001,
           -102.4375
         ],
         [
-          -4.550000000000001,
+          -4.050000000000001,
           0.0
         ],
         [
@@ -963,11 +963,11 @@
           -102.4375
         ],
         [
-          -4.550000000000001,
+          -4.050000000000001,
           -102.4375
         ],
         [
-          -4.550000000000001,
+          -4.050000000000001,
           0.0
         ],
         [
@@ -3243,11 +3243,11 @@
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -102.4375
         ],
         [
@@ -3271,11 +3271,11 @@
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -102.4375
         ],
         [
@@ -7332,7 +7332,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "header-2"
+      "tag": "header-1"
     },
     {
       "space": "model",
@@ -7388,7 +7388,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "sill-2"
+      "tag": "sill-1"
     },
     {
       "space": "model",
@@ -7500,7 +7500,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-liner-furring-002"
+      "tag": "strapping-liner-furring-001"
     },
     {
       "space": "model",
@@ -7549,6 +7549,118 @@
         [
           6.04,
           203.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "strapping-liner-furring-014"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.04,
+          200.0
+        ],
+        [
+          6.790000000000001,
+          200.0
+        ],
+        [
+          6.790000000000001,
+          203.5
+        ],
+        [
+          6.04,
+          203.5
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.04,
+          216.0
+        ],
+        [
+          6.790000000000001,
+          216.0
+        ],
+        [
+          6.790000000000001,
+          219.5
+        ],
+        [
+          6.04,
+          219.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW101AAAA",
+      "tag": "strapping-liner-furring-015"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          6.04,
+          216.0
+        ],
+        [
+          6.790000000000001,
+          216.0
+        ],
+        [
+          6.790000000000001,
+          219.5
+        ],
+        [
+          6.04,
+          219.5
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          6.04,
+          231.99999999999997
+        ],
+        [
+          6.790000000000001,
+          231.99999999999997
+        ],
+        [
+          6.790000000000001,
+          235.49999999999997
+        ],
+        [
+          6.04,
+          235.49999999999997
         ]
       ],
       "layer": "S-FRAM",
@@ -7564,19 +7676,19 @@
       "boundary": [
         [
           6.04,
-          200.0
+          231.99999999999997
         ],
         [
           6.790000000000001,
-          200.0
+          231.99999999999997
         ],
         [
           6.790000000000001,
-          203.5
+          235.49999999999997
         ],
         [
           6.04,
-          203.5
+          235.49999999999997
         ]
       ],
       "pattern": "lumber",
@@ -7592,19 +7704,19 @@
       "points": [
         [
           6.04,
-          216.0
+          236.50000000000003
         ],
         [
           6.790000000000001,
-          216.0
+          236.50000000000003
         ],
         [
           6.790000000000001,
-          219.5
+          240.0
         ],
         [
           6.04,
-          219.5
+          240.0
         ]
       ],
       "layer": "S-FRAM",
@@ -7613,118 +7725,6 @@
       "closed": true,
       "uid": "CSW101AAAA",
       "tag": "strapping-liner-furring-017"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          6.04,
-          216.0
-        ],
-        [
-          6.790000000000001,
-          216.0
-        ],
-        [
-          6.790000000000001,
-          219.5
-        ],
-        [
-          6.04,
-          219.5
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.04,
-          231.99999999999997
-        ],
-        [
-          6.790000000000001,
-          231.99999999999997
-        ],
-        [
-          6.790000000000001,
-          235.49999999999997
-        ],
-        [
-          6.04,
-          235.49999999999997
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW101AAAA",
-      "tag": "strapping-liner-furring-018"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          6.04,
-          231.99999999999997
-        ],
-        [
-          6.790000000000001,
-          231.99999999999997
-        ],
-        [
-          6.790000000000001,
-          235.49999999999997
-        ],
-        [
-          6.04,
-          235.49999999999997
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "spf"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.04,
-          236.50000000000003
-        ],
-        [
-          6.790000000000001,
-          236.50000000000003
-        ],
-        [
-          6.790000000000001,
-          240.0
-        ],
-        [
-          6.04,
-          240.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW101AAAA",
-      "tag": "strapping-liner-furring-019"
     },
     {
       "space": "model",
@@ -7836,7 +7836,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-outer-girt-002"
+      "tag": "strapping-outer-girt-001"
     },
     {
       "space": "model",
@@ -7892,7 +7892,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-outer-girt-012"
+      "tag": "strapping-outer-girt-010"
     },
     {
       "space": "model",
@@ -7948,7 +7948,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "strapping-outer-girt-013"
+      "tag": "strapping-outer-girt-011"
     },
     {
       "space": "model",
@@ -8004,7 +8004,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "ladder-head-outer-girt-002"
+      "tag": "ladder-head-outer-girt-001"
     },
     {
       "space": "model",
@@ -8060,7 +8060,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "ladder-sill-outer-girt-002"
+      "tag": "ladder-sill-outer-girt-001"
     },
     {
       "space": "model",
@@ -8116,7 +8116,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "buck-head-002"
+      "tag": "buck-head-001"
     },
     {
       "space": "model",
@@ -8172,7 +8172,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW101AAAA",
-      "tag": "buck-sill-002"
+      "tag": "buck-sill-001"
     },
     {
       "space": "model",
@@ -9781,7 +9781,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -5.05,
+          -4.8,
           -32.25999999999999
         ],
         "name": ""
@@ -9791,10 +9791,10 @@
         -32.25999999999999
       ],
       "to": [
-        -5.05,
+        -4.8,
         -32.25999999999999
       ],
-      "text": "air-gap 1\"",
+      "text": "air-gap 1.5\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
