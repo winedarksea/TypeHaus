@@ -41,11 +41,17 @@ from typehaus import wind
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 
 KIND = "wall_panel"
 
@@ -174,6 +180,13 @@ def _framing_spacing_in(ctx: EngineeringContext, wall: object,
     return None if spacing is None else float(spacing.inches)
 
 
+#: The independent hand pass this module is checked against — see ``Oracle``.
+oracled_by(
+    KIND,
+    Oracle(note="board_batten_girt_span.md", test="tests/test_wall_panel_calcs.py"),
+)
+
+
 @keys(KIND)
 def enumerate_panels(ctx: EngineeringContext) -> list[str]:
     return [panel.wall_tag for panel in _panels(ctx)]
@@ -257,7 +270,24 @@ def _one(ctx: EngineeringContext, panel: _Panel) -> EngineeringRecord:
         "eight surveyed, only two do, and substituting one of the other six forces a second "
         "girt course or a continuous deck.",
         "An evaluation report would close this item outright. There is none for a "
-        "concealed-fastener profile over open girts, which is why it is here.",
+        "concealed-fastener BOARD-AND-BATTEN profile over open girts, which is why this "
+        "item is here. Surveyed 2026-09-04 across current ICC-ES, IAPMO-UES and "
+        "manufacturer data: every document falls into one of two buckets, and neither "
+        "answers the question. A report that publishes a negative allowable requires a "
+        "SOLID SUBSTRATE (ESR-5839 §3.1.6, ESR-5838 §3.1.6, ESR-4730 §5.2, and AEP Select "
+        "Seam \"over solid substrates only\"); a report that permits OPEN FRAMING excludes "
+        "the fastener connection from its own table — ICC-ES ESR-5045 (2026-04), the "
+        "newest and broadest that allows open framing, states verbatim that \"tabulated "
+        "allowable negative loads do not consider panel connection to structural support\" "
+        "and that it \"must be determined by registered design professional\". The full "
+        "survey, with every document and URL, is section 7 of the oracle note.",
+        "A RATIONAL-DESIGN PATH EXISTS AND IS NOT TAKEN HERE. IAPMO UES ER-309 "
+        "(2025-06-24) publishes per-fastener pull-out values behind its own tables and "
+        "expressly permits a design professional to extend them by engineering mechanics. "
+        "Its three substrate rows are 20 ga Gr50 steel, 20 ga Gr33 steel and DFL at 1\" "
+        "penetration; this wall's support is a 1-1/2\" KDAT girt and is none of them, so "
+        "the row that would govern is not published either. That is the shape of the "
+        "engineered design this item is waiting for, not a substitute for it.",
     ]
 
     # OVER wins over INCOMPLETE: a panel whose bending is over its published allowable is

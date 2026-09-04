@@ -1593,7 +1593,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     now and the braces are gone (see the balcony structure passage below).
 - **The balcony's structure: four cast columns, two wood posts, three glulam beams**
   (2026-09-03; `houses/catlin/notes/balcony_moment_columns.md` is the design, and it
-  supersedes `balcony_lateral_bracing_design.md`).
+  supersedes `superseded/balcony_lateral_bracing_design.md`).
   - **The four CORNER pillars are 12" round reinforced concrete, FIXED at the base**, doweled
     into the 12" wall tops of `W-SG-W1`/`E1` they stand on, and **they are the balcony's
     entire lateral system in both plan directions.** The eight 2x6 knee braces and two E-W
@@ -1742,6 +1742,37 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     81 5/8", the window's at 52 5/8". The depth is not free: the door crowns at 84", so 3 5/8" puts the
     extrados at 87 5/8", 3/8" under the gold register — a full 7 5/8" ring would punch
     through it. **Viewer-only**; an exported `.glb` still shows the plain spandrel.
+
+## The engineering workflow
+
+Catlin carries ~46 engineered items across ten kinds — the requirements outside the
+prescriptive tables. The workflow lives in the root `CLAUDE.md`; what belongs here is where
+this house keeps its half of it.
+
+```
+haus engineering .                          # the register: what governs, and who sealed it
+haus engineering . --item retaining_wall/W-SG-E2       # one item, term by term
+haus engineering . --fingerprint retaining_wall/W-SG-E2  # paste into engineering.toml
+haus calcs .                                # -> out/calcs/, the package a PE marks up
+haus print . --sealed                       # the submittal gate — exits 1 today, correctly
+```
+
+- **`notes/` is the oracle set** and `notes/README.md` is its index: which note checks which
+  calculation, which are design reasoning, and which 11 are *drawing content* pinned by
+  `test_section_goldens.py` and must not be edited as documentation. `notes/TEMPLATE.md` is
+  the shape a new calculation note takes; `notes/superseded/` holds designs that are not
+  built, each with a `⛔ SUPERSEDED` banner naming what replaced it.
+- **No `engineering.toml` exists yet**, so every item reads `unsealed` and the sealed gate
+  is shut. That is the true state, not a gap in the setup — the engine reads that file and
+  never writes it, and pinning a seal stays a human act.
+- **Five items are deferred to a designer of record** (both roofs' rafters and uplift path,
+  and the overhead-door header). `out/calcs/03-open-items.md` names who owns each.
+- **Two open engineering questions** are real and are on that page, not hidden: the
+  concealed-fastener wall panel's withdrawal allowable over 24" open girts, which no
+  manufacturer publishes (`notes/board_batten_girt_span.md`), and the breezeway piers'
+  axial demand, which has no modelled plan area to shoelace
+  (`notes/breezeway_piers.md` §3 bounds it and says why that is not a doubt about the
+  section).
 
 ## The loop: edit → build → check → *look* → fix
 ```

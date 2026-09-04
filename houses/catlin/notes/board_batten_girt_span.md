@@ -1,9 +1,13 @@
 # Board & batten over 24" open girts — hand-worked wind check
 
-**Oracle for `packages/engine/src/typehaus/engineering/wall_panel.py`.** Worked here first,
-by hand, from the standard; the module is checked against these numbers by
-`packages/engine/tests/test_wall_panel_calcs.py`. A calculation that only agrees with itself
+**House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** the twenty north/south walls clad in `board-batten-24` over a 24" girt course.
+**Written:** by hand, from the standard, before the module was encoded.
+**Oracle for:** `engineering/wall_panel.py`, reported by `structural.wall_panel_span`;
+reproduced by `tests/test_wall_panel_calcs.py`. A calculation that only agrees with itself
 is not verified.
+**What is asked of the reviewer:** §6 — the withdrawal allowable nobody publishes. The
+bending check passes and is not the question.
 
 Subject: `board-batten-24` — 24 ga concealed-fastener steel board & batten, 20" net
 coverage — on the twenty north/south walls of the house, spanning the KDAT girt course at
@@ -131,10 +135,147 @@ with no evaluation report behind it to 0.32.
 - Panel deflection, and thermal movement over a continuous run.
 - Whether the supplier actually named on the order permits open framing (§1).
 
-## 7. What a seal has to cover
+## 7. The literature survey, 2026-09-04 — and it comes back empty
+
+**The gap is real, it is structured, and it is now evidenced.** A sweep of current ICC-ES,
+IAPMO-UES and manufacturer technical data found **no product that publishes a suction or
+withdrawal allowable for a concealed-fastener metal board-and-batten WALL panel over open
+framing at 24" o.c.** Every document falls into one of exactly two buckets, and neither
+answers §6's question:
+
+**(a) Publishes a negative allowable, but requires a solid substrate** — so a batten profile
+over open girts is off-label:
+
+| Report | Date | The clause |
+|---|---|---|
+| ICC-ES ESR-5839 (Petersen) | 2026-04 | §3.1.6 *"The metal siding must be installed over solid substrate."* Board-and-batten is not among the profiles covered at all. |
+| ICC-ES ESR-5838 (Drexel) | 2026-05 | §3.1.6, identical language; board-and-batten not covered. |
+| ICC-ES ESR-4730 (Western States) | 2025-09 | §5.2 *"must be backed by a solid substrate."* Board & Batten is **absent** from the covered list. |
+| IAPMO UES ER-309 §3 (AEP Select Seam Narrow Batten) | 2025-06-24 | *"Clip Usage: Over solid substrates only"* and *"Design Values are not available."* |
+| Metal Sales Mini/Maxi-Batten | — | *"not recommended for use over open framing."* |
+| Morin BCR / SWL / SCR | — | *"require a solid substrate."* |
+| McElroy Nostalgia B&B | — | substrates *"Plywood or OSB"* only; ASTM E1592 uplift *"(Pending)"* — no load table, no report. |
+| ATAS Monarch, and Multi-Purpose (MPW) | — | *"Load tables available upon request"* — i.e. nothing published. The nearest ATAS data in the right format is Rigid Wall II at −169.6 psf @ 2'-0" over min. 18 ga steel, which is a flush/reveal panel and not a batten. |
+| ICC-ES ESR-2385 (Metal Sales) | reissued 2026-08 | the word *batten* appears zero times in the text layer (see the caveat below). Mini/Maxi-Batten is separately *"not recommended for use over open framing."* |
+| ICC-ES ESR-5046 §Taylor T-Panel w/ Narrow Batten | rev. 2026-02 | 49.8 psf at 2'-0" — but the table is headed *"INSTALLATION OVER SOLID SUPPORT"* and note 8 confirms it is not suitable over open framing. Taylor's own Board & Batten data sheet says testing and ESR-5045 coverage are *"Coming soon."* |
+| Central States Board & Batten | — | *"does not have any documented certified testing."* |
+| Nu-Ray | — | makes no batten panel at all. |
+
+**(b) Permits open framing, but the negative table explicitly excludes the fastener
+connection** — that is, it omits precisely the limit state that governs here. The clearest
+statement of it is ICC-ES **ESR-5045** (Taylor Metal, TMP Metal Siding, reissued 2026-04,
+the newest and broadest wall-siding report that *does* allow open framing — §3.2.1 admits
+C/Z/Hat cold-formed steel framing, min 20 ga, with no solid-substrate condition anywhere):
+
+> *"Tabulated allowable negative loads do not consider panel connection to structural
+> support. The fastener connection strength must be determined by registered design
+> professional."*
+
+The word *batten* appears **zero times in ESR-5045's text layer** — see the two unclosed
+items at the end of this section for what that does and does not establish.
+Metal Sales' own BB75-1111 Board &
+Batten guide (2025-10) is the nearest real batten product that both permits open framing
+(*"Steel Framing – 18 gauge or thicker"*) and publishes a 2'-0" outward number — 58 psf —
+and its note 2 says the same thing: *"Allowable load does not address web crippling,
+**fasteners, support material** or load testing."* Panel bending only, exactly as §5.
+
+**Three independent sweeps, one answer.** A second pass over McElroy, ATAS and Metal Sales
+(the three most likely to carry a wood-girt batten product) and a third over AEP, Sheffield,
+Drexel and Western States each reached the same conclusion and added the rows above. **None
+of those makes a 24"-coverage batten panel at all** — published coverages are 11", 12" and
+8/12/16". Sheffield's SMI Board & Batten cites Florida approval FL45939 with no numbers
+published and details drawn on *"SHEATHING (BY OTHERS)"*.
+
+**Two things the survey turned up that are not in §6 and belong to somebody's decision, not
+to this note's arithmetic.**
+
+1. **A rational-design path exists, and one report explicitly authorises it.** IAPMO UES
+   **ER-309** (ASC Profiles / AEP Span, rev. 2025-06-24) publishes the per-fastener
+   **pull-out** capacities behind its own tables — #10 into 20 ga Gr50 CFS: **124 lb**; into
+   20 ga Gr33: **86 lb**; into DFL lumber at 1" minimum penetration: **208 lb** (steel per
+   AISI S100, wood per NDS) — and states: *"The structural design professional may
+   rationally design other fastener and substrate combinations based on engineering
+   mechanics and the maximum panel/clip capacities stated within this report."* At §4's
+   18.27 psf and one fastener per panel per girt that is a ~4 ft² tributary and ~73 lb per
+   fastener. **That arithmetic is not done here and no d/c is published from it**: the girt
+   is 1-1/2" KDAT, not 20 ga steel and not a 1"-penetration DFL member, so the pull-out row
+   that would govern is not one of the three ER-309 prints. This is the shape of the
+   engineered design §8 asks for, not a substitute for it.
+
+   **One reading point that makes those tables quotable here at all.** ER-309's *"attachment
+   spacing"* and ESR-4730's *"support fastener max. spacing"* are the fastener or clip
+   spacing measured **along the panel's length**, not a girt-span table. For a panel run
+   VERTICALLY over horizontal girts — which is this wall — the two coincide, so the reports'
+   2'-0" column really is this wall's 24" girt spacing. It would **not** coincide for a
+   horizontally-run panel, and quoting these numbers for one would be wrong.
+2. **No 24"-coverage board-and-batten was found on the market.** Published coverages are 10"
+   (Central States), 11" (Metal Sales BB75-1111), 12"/16" (Petersen, McElroy, Sheffield,
+   Taylor, Drexel, Englert) and 16" (Berridge). `board-batten-24` is authored at **20" net
+   coverage**, which is inside that range for a nominal-24" stock width — but the profile has
+   not been matched to a named product, and fastener tributary area moves directly with
+   coverage. **Naming the product is an owner decision and a possible cost change**; nothing
+   here picks one.
+
+One product does publish an open-framing *system* allowable for a batten panel and is worth
+recording because it is the closest thing that exists: **Berridge Batten Seam**, 16"
+coverage, 24 ga, open framing on 16 ga steel support, panel-to-purlin 48", batten clip 20"
+o.c., 2 × #10 — **52.5 psf allowable / 105 psf ultimate**, from UL90 Construction #262. It is
+not 24" o.c., not this coverage, and not over wood girts.
+
+**Two things the survey could not close, and they are gaps in the survey rather than
+findings.** Stated so nobody reads them as verified absences:
+
+1. **ESR-5045's 88 figures are images, not text.** The "zero occurrences of *batten*" result
+   above is a text-layer search, so a batten profile drawn only in a figure would not be
+   caught by it. The quotation from note 3 is unaffected — it is text and was read — but if
+   this item ever turns on whether ESR-5045 covers a batten profile, someone has to page
+   through the figures by eye.
+2. **Sheffield's Florida approval FL45939 would not load.** Any pressures it publishes are
+   unverified here. Sheffield's own details draw the panel on *"SHEATHING (BY OTHERS)"*,
+   which is the reason it sits in bucket (a) above, but the record itself was not read.
+
+**Nothing in the model changed on the strength of this survey**, and that is the point: an
+absence of published data is a finding, not a licence to interpolate one.
+
+## 8. What a seal has to cover
 
 `wall_panel/W-M-S1` and its nineteen siblings, per `docs/engineering-toml-format.md`. One
 stamp may cover all twenty — they are the same panel, the same spacing and the same wind —
 but the register keeps them per element so that moving one wall stales that wall alone.
 The engineer's fee is plausibly already inside `permits-design-testing-and-insurance`
 ($20k-60k in `prices.toml`); no new cost line was added for it.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ASCE 7-16** — §26.10 (velocity pressure), §30.3 (C&C, walls)
+- **ASTM A153** — hot-dip galvanizing on hardware
+- **MN Rules 1309.0301** — the 115 mph statewide basic wind speed
+- **ICC-ES ESR-4729** — cited HERE ONLY TO EXCLUDE IT. It is Western States' report, it
+  covers ROOF panels over 16 ga steel supports, and **it does not cover this wall at all.**
+  A reader who reaches for it has the wrong document.
+
+**The §7 survey, 2026-09-04.** Documents read, not merely cited:
+
+- **ICC-ES ESR-5045** (Taylor Metal, TMP Metal Siding), reissued 2026-04 —
+  <https://icc-es.org/wp-content/uploads/report-directory/ESR-5045.pdf>
+- **IAPMO UES ER-309** (ASC Profiles / AEP Span), rev. 2025-06-24 —
+  <https://forms.iapmo.org/ues_reports/reports/er_0309.pdf>
+- **ICC-ES ESR-4646** (Innovative Metals / IMETCO, "Element"), reissued 2024-10 —
+  <https://icc-es.org/wp-content/uploads/report-directory/ESR-4646.pdf>
+- **ICC-ES ESR-5839** (Petersen), 2026-04; **ESR-5838** (Drexel), 2026-05; **ESR-4730**
+  (Western States), 2025-09 — all three require a solid substrate.
+- **Metal Sales BB75-1111 Board & Batten install guide**, 2025-10 —
+  <https://www.metalsales.us.com/wp-content/uploads/2025/10/Install-Guide-BB75-1111_10-2025.pdf>
+- **Berridge Batten Seam load chart, open framing** —
+  <https://www.berridge.com/resources/batten-seam-panel-load-chart-open-framing/>
+
+- **No published withdrawal or negative-pressure allowable exists** for a concealed-leg
+  board-and-batten profile over open framing at 24" o.c. That absence is the finding, not a
+  gap in this bibliography — see §6, §7 and `03-open-items.md` in the calculation package.

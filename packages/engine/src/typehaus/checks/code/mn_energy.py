@@ -59,8 +59,24 @@ def _walls_bounding_conditioned_space(model: ResolvedModel) -> frozenset[str]:
     result. The relation is derivable: a wall is part of the thermal envelope when it runs
     along the boundary of a conditioned room on its own storey, which is what the freestanding
     porch, retaining, planter, and detached-garage walls do not do.
+
+    **Measured from the wall's BODY, not from ``axis`` +/- half its thickness.** ``axis`` is
+    the wall's *alignment reference*, and only a centreline-aligned wall puts that in the
+    middle: a wall authored ``alignment=face(...)`` carries its whole depth to ONE side of
+    the axis, so half-thickness is both the wrong distance and the wrong direction. For a
+    centreline wall the two formulations are identical — the body reaches exactly half the
+    thickness either way — so nothing that was classified correctly moves.
+
+    It matters at real margins. catlin's `W-B-BRICK` is a freestanding glazed-brick wythe
+    standing in the open air of the sunken garden court, separated from the conditioned
+    basement by the court wall's concrete and 4" of XPS; it is not an envelope wall and its
+    R-1.6 is not a defect. Under the old formulation it sat 0.27" outside the reach and was
+    excluded by luck. Growing its air gap by 1/2" (2026-09-04, the parge-deletion fix) moved
+    the axis 1/2" inboard AND the half-thickness 1/4" outward, which flipped it in and
+    reported a spurious R-15 FAIL. From the body its nearest face is 4.05" off the room
+    polygon and it is excluded on the geometry rather than on a coincidence.
     """
-    from shapely.geometry import LineString, Polygon
+    from shapely.geometry import Polygon
 
     rooms: dict[str, list[Polygon]] = {}
     for room in model.rooms:
@@ -68,17 +84,26 @@ def _walls_bounding_conditioned_space(model: ResolvedModel) -> frozenset[str]:
             rooms.setdefault(room.storey, []).append(Polygon(room.clear_face))
     bounding: set[str] = set()
     for wall in model.walls:
-        axis = LineString(wall.axis)
-        # The room polygon is the *interior face*, so a bounding wall sits about half its
-        # thickness away from it; the tolerance absorbs lining/junction resolution.
-        reach = wall.thickness_m / 2 + _ENVELOPE_ADJACENCY_TOLERANCE_M
-        if any(axis.distance(poly) <= reach for poly in rooms.get(wall.storey, ())):
+        near = rooms.get(wall.storey, ())
+        if not near:
+            continue
+        # The room polygon is the *interior face*, so a bounding wall's body lands on it or
+        # just off it; the tolerance absorbs lining/junction resolution. Distances are taken
+        # per layer rather than over a union — an overlay of every wall's layers would be a
+        # lot of GEOS work to answer a question min() already answers.
+        bodies = [Polygon(ly.polygon) for ly in wall.depth_layers() if len(ly.polygon) >= 3]
+        if not bodies:
+            continue
+        if any(body.distance(poly) <= _ENVELOPE_ADJACENCY_TOLERANCE_M
+               for poly in near for body in bodies):
             bounding.add(wall.uid)
     return frozenset(bounding)
 
 
-# How far a wall axis may sit from a conditioned room's interior face and still be that
-# room's enclosure, beyond the wall's own half-thickness.
+# How far a wall's BODY may sit off a conditioned room's interior face and still be that
+# room's enclosure. It was "beyond the wall's own half-thickness" while the measurement was
+# taken from ``axis``; the half-thickness is now in the body itself, so this is the whole
+# slack and it absorbs lining and junction resolution only.
 _ENVELOPE_ADJACENCY_TOLERANCE_M = 0.05
 
 

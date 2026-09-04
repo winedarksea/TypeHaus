@@ -1,5 +1,12 @@
 # Ridge beam RB-HOUSE — section, hangers, straps (2026-08-28)
 
+**House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** `RB-HOUSE`, the structural ridge, and the `header/D-G-OVERHEAD` opening that
+shares its deferral.
+**Written:** 2026-08-28; revised in part 2026-08-29 (see the banner).
+**Oracle for:** the `header/D-G-OVERHEAD` deferral in `engineering/deferred.py`. No
+calculation in the engine is pinned to the sections below.
+
 > **SUPERSEDED IN PART, 2026-08-29 — the pitch and section below are one revision behind.**
 > The roof went from 4:12 to 6:12 and the ridge from `2-1.75x14 LVL` to **`2-1.75x16 LVL`**
 > (CLAUDE.md's "Structural ridge, not a rafter-tie roof" bullet is the current source of

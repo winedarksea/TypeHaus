@@ -25,6 +25,7 @@ from __future__ import annotations
 # so the order here is free — but the presence of the line is not.
 from typehaus.engineering import (
     deck_post,  # noqa: F401  (registration)
+    deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
     glulam_beam,  # noqa: F401  (registration)
     post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
@@ -32,10 +33,12 @@ from typehaus.engineering import (
     spread_footing,  # noqa: F401  (registration)
     wall_panel,  # noqa: F401  (registration)
 )
+from typehaus.engineering.deferred import DEFERRALS, Deferral
 from typehaus.engineering.fingerprint import Freshness, fingerprint
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
@@ -58,10 +61,11 @@ from typehaus.engineering.registry import (
 )
 
 __all__ = [
+    "DEFERRALS", "Deferral",
     "EngineeringContext", "EngineeringRecord", "EngineeringRegister", "EngineeringResults",
-    "Freshness", "LimitState", "NO_ENGINEERING", "Quantity", "REGISTER_FILENAME",
+    "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity", "REGISTER_FILENAME",
     "Signoff", "Status",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "deck_post", "glulam_beam", "registered_kinds", "retaining_system", "retaining_wall",
-    "spread_footing", "wall_panel",
+    "deck_post", "deferred", "glulam_beam", "registered_kinds", "retaining_system",
+    "retaining_wall", "spread_footing", "wall_panel",
 ]

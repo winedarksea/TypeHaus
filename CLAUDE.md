@@ -68,6 +68,7 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
 .venv/bin/haus engineering houses/catlin                  # what needs a seal, and what governs
 .venv/bin/haus engineering houses/catlin --item retaining_wall/W-SG-E2   # term by term
 .venv/bin/haus engineering houses/catlin --fingerprint retaining_wall/W-SG-E2
+.venv/bin/haus calcs houses/catlin                        # the calc package a PE marks up
 .venv/bin/haus print houses/catlin --sealed               # the submittal gate
 ```
 
@@ -80,7 +81,12 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
   `catlin_truss_engineering.md`. A calc that only agrees with itself is not verified.
 - **draft** = this engine computed it and it checks out; `haus print` gates here, because
   draft approval is exactly what a permit-ready printoff is for. **sealed** = a licensed PE
-  stamped it *and* the pinned fingerprint still matches the model.
+  stamped it *and* the pinned fingerprint still matches the model. `haus print --sealed` is
+  the second gate and it really does refuse.
+- `haus calcs` writes `out/calcs/` — cover, derived design criteria, item register, gap
+  register, and one nine-section sheet per item, byte-deterministic and regenerated rather
+  than maintained (`docs/calc-package-format.md`). Each kind declares its oracle note with
+  `oracled_by(KIND, Oracle(...))`, and a test lints that every kind names one that exists.
 - The seal lives in `houses/<name>/engineering.toml` (`docs/engineering-toml-format.md`),
   never on the elements: those are `# haus: editable` and undoable, and `_content_hash`
   hashes every `plan/**/*.py`, so a stamp written into plan source would change the hash it

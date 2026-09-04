@@ -56,32 +56,35 @@ def _markdown(rows: list[dict[str, object]]) -> str:
     The format a mill or a family member can actually read in an email. CSV is for a
     spreadsheet and turns every one of these numbers into a bare float; this keeps the
     inch marks, the species column and the stock notes that say what to do.
+
+    Rendered through :mod:`emit.md_writer`, which is the one table renderer in the repo —
+    so this file and a calc sheet cannot disagree about how a cell is escaped.
     """
+    from typehaus.emit.md_writer import document, heading, table
+
     flat = _flat_rows(rows)
     header = [column.replace("_", " ") for column in MILLWORK_COLUMNS]
-    lines = ["# Hardwood milling schedule", "",
-             "Sorted by use, then stock, then profile. Every quantity here is also billed "
-             "in another section of the takeoff — this is a *view* for the mill, not an "
-             "addition to the estimate.", "",
-             "| " + " | ".join(header) + " |",
-             "|" + "|".join("---" for _ in header) + "|"]
-    for row in flat:
-        cells = [str(row[column]) if row[column] not in (None, "") else ""
-                 for column in MILLWORK_COLUMNS]
-        lines.append("| " + " | ".join(cell.replace("|", "\\|") for cell in cells) + " |")
+    schedule = table(header, [[row[column] if row[column] != "" else None
+                               for column in MILLWORK_COLUMNS] for row in flat])
     totals: dict[str, float] = {}
     for row in rows:
         rough = row.get("rough_board_feet")
         if isinstance(rough, (int, float)):
             species = str(row.get("species") or "unknown")
             totals[species] = totals.get(species, 0.0) + float(rough)
-    lines += ["", "## Rough board feet by species", "",
-              "| species | rough bf |", "|---|---|"]
-    lines += [f"| {species} | {totals[species]:.1f} |" for species in sorted(totals)]
-    lines += ["", f"**Total {sum(totals.values()):.1f} rough board feet.** Rough figures "
-                  "include a straight-line/joint width loss and a defect-and-trim length "
-                  "allowance.", ""]
-    return "\n".join(lines)
+    return document(
+        heading("Hardwood milling schedule"),
+        "Sorted by use, then stock, then profile. Every quantity here is also billed "
+        "in another section of the takeoff — this is a *view* for the mill, not an "
+        "addition to the estimate.",
+        schedule,
+        heading("Rough board feet by species", 2),
+        table(["species", "rough bf"],
+              [[species, f"{totals[species]:.1f}"] for species in sorted(totals)]),
+        f"**Total {sum(totals.values()):.1f} rough board feet.** Rough figures "
+        "include a straight-line/joint width loss and a defect-and-trim length "
+        "allowance.",
+    )
 
 
 @app.command()

@@ -1,6 +1,11 @@
 # Soffit ladder rungs — the deflection check, worked by hand
 
-Written 2026-08-31. Model: `plan/storeys/second.py` (the three `Soffit` elements and their
+**House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** the three `Soffit` elements on the second storey and the rungs that frame them.
+**Written:** 2026-08-31, independently of the code it grades.
+**Oracle for:** `checks/structural/soffit.py`, reported by `structural.soffit_rung_span`.
+
+Model: `plan/storeys/second.py` (the three `Soffit` elements and their
 `FramingSpec`s), `packages/engine/src/typehaus/resolve/framing/soffit.py` (the generator that
 lays the members). Graded by `structural.soffit_rung_span`
 (`packages/engine/src/typehaus/checks/structural/soffit.py`), which this note is the oracle
@@ -134,3 +139,14 @@ and nothing about a soffit carrying anything other than its own board — a soff
 a piece of equipment off its rungs is outside this note. A soffit with no `FramingSpec` gets
 **no finding at all**, not UNKNOWN: it is drawn but not built, there is no lumber to grade, and
 `mep.duct_soffit_occupancy` already reports the missing spec once.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- IRC Table R301.5, IRC Table R301.7, IRC Table R802.5.1

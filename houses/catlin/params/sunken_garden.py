@@ -1308,7 +1308,7 @@ FROST_WINGS = [
 # until 2026-09-02. They stand on the ground now, and the whole detail this file used to
 # carry — eight lags through a watertight plank, sixteen sacrificial blocks, four
 # reinforcements, two traced condensate runs — went with them. See
-# notes/heat_pump_ground_pad.md; notes/heat_pump_deck_mounting.md is SUPERSEDED and kept
+# notes/heat_pump_ground_pad.md; notes/superseded/heat_pump_deck_mounting.md is SUPERSEDED and kept
 # for the reasoning, because the balcony rule (decision #64) still governs any future deck.
 #
 # ** THE POCKET IS THE SITE, AND IT WAS ALREADY EMPTY. ** West is the porch's east wall

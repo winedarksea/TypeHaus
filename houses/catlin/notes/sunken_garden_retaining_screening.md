@@ -32,8 +32,13 @@
 > `houses/starter` carries its own. Nothing here chooses for you.
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** `W-SG-W2`, `W-SG-E2` and `W-SG-S`, taken one at a time as isolated free
+cantilevers.
+**Oracle for:** `engineering/retaining_wall.py` and `engineering/retaining_basis.py` — §4's
+table is the FROZEN oracle and must not be restated or "corrected"; reproduced by
+`tests/test_retaining_wall_calc.py`.
 **Written:** 2026-08-30, in the same pass that corrected the retained height (§1).
-**Companion note:** `notes/balcony_lateral_bracing_design.md`. These are two asks to the same
+**Companion note:** `notes/superseded/balcony_lateral_bracing_design.md`. These are two asks to the same
 consultant, not two problems — see §7.
 
 ---
@@ -232,7 +237,7 @@ question and a separate decision; it should not ride in on this wall.
 
 ## 7. This and the balcony are one ask, not two
 
-`notes/balcony_lateral_bracing_design.md` covers the structure standing *on* these walls, and
+`notes/superseded/balcony_lateral_bracing_design.md` covers the structure standing *on* these walls, and
 the two belong in the same envelope to the same consultant:
 
 - **The apron is already documented as defective.** `params/raised_garden.py` carries its own
@@ -247,3 +252,15 @@ the two belong in the same envelope to the same consultant:
   geometry change, because the cheapest real lever (§5) is a geotechnical boring, not concrete
   — and pricing a footing widening nobody has designed would put a number in the estimate that
   the estimate cannot defend.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- IBC Table 1610.1, IBC Table 1806.2
+- IRC R404.4

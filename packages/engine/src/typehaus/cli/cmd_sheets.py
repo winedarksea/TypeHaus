@@ -177,6 +177,26 @@ def print_sheets(
                     and item.result is not Result.PASS:
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
+    # The FINAL gate, and it is a second one: ``checklist.ok`` above is the draft gate and
+    # opens on this engine's own calculations. Until this was wired, ``--sealed`` was
+    # declared and never read, so it silently printed an unsealed set — which is exactly
+    # the one thing the submittal gate exists to prevent.
+    if sealed and not checklist.sealed:
+        console.print("[red]sealed print blocked: engineered requirements are not covered "
+                      "by a fresh professional seal[/red]")
+        for item in checklist.unsealed:
+            state = item.seal.value if item.seal is not None else "unsealed"
+            console.print(f"  {item.label}: {state}"
+                          + (f" — {', '.join(item.engineering_items)}"
+                             if item.engineering_items else ""))
+        for item in checklist.stale_seals:
+            console.print(f"  [red]STALE[/red] {item.label}: sealed once, and the model or "
+                          f"the calculation has moved since")
+        console.print("[dim]`haus engineering --unsealed` lists the items; "
+                      "`haus engineering --fingerprint <id>` prints what to pin in "
+                      "engineering.toml. The engine never writes that file.[/dim]",
+                      soft_wrap=True)
+        raise typer.Exit(1)
     model, _ = resolve(result.plan)
     out = d / "out"
     if fmt in ("dxf", "both"):

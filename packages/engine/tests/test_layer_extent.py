@@ -239,8 +239,12 @@ def test_a_split_row_is_one_slice_of_the_wall_depth(catlin_model):
     assert [ly.name for ly in regions] == list(_VENEER_REGIONS)
     assert all(ly.slot == "wythe" for ly in regions)
 
-    # One depth position between them: the wall is the 1" air gap plus ONE 3 5/8" wythe.
-    assert wall.thickness_m * 39.3700787 == pytest.approx(1.0 + _WYTHE_IN, abs=1e-6)
+    # One depth position between them: the wall is the 1-1/2" air gap plus ONE 3 5/8" wythe.
+    # The gap was 1" until 2026-09-04, when it grew to cover the 1/2" of undescribed void the
+    # parge's deletion had left between the XPS and the veneer (the node moved onto the foam
+    # by the same 1/2", so the wythe itself did not shift). Five regions, still one wythe —
+    # which is the whole point of the slot and is what this pins.
+    assert wall.thickness_m * 39.3700787 == pytest.approx(1.5 + _WYTHE_IN, abs=1e-6)
     assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick-plinth"]
 
     # And they resolve onto the identical strip in plan — same polygon, different elevations.

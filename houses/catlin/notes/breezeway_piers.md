@@ -1,9 +1,16 @@
 # Breezeway piers PR-BW-1..4 — hand-worked basis
 
-**Oracle note for `engineering/deck_post.py` and `engineering/pier_basis.py`.** Worked by
-hand from the authored geometry, not read out of the engine — a calculation that only agrees
-with itself is not verified (`engineering/__init__.py`). `tests/test_pier_calcs.py` asserts
-the engine reproduces every number below.
+**House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** `PR-BW-1..4`, the four 12" round cast piers under the breezeway posts.
+**Written:** 2026-09-03, by hand from the authored geometry, not read out of the engine.
+**Oracle for:** `engineering/deck_post.py` and `engineering/pier_basis.py`, reported by
+`structural.deck_post_size`; reproduced by `tests/test_pier_calcs.py`, which asserts the
+engine reproduces every number below.
+**Companions:** `notes/sunken_garden_piers.md` — the same 12" section out of the same
+assembly, on belled footings instead of pads.
+**What is asked of the reviewer:** §3. The cage and the detailing are complete; the axial
+state is declined because the demand is a known under-count, and §3 is the bound that says
+why that is not a doubt about the section.
 
 Same shape as `notes/sunken_garden_piers.md` §1–§5, and deliberately so: these are the same
 12" round section out of the same assembly (`PIER_CONCRETE_12`), so §4 and §5 are the same
@@ -24,7 +31,7 @@ plate; moving the posts inboard removed the clash the special case existed for.
 
 ---
 
-## §1 — Geometry
+## 1. Geometry
 
 | | |
 |---|---|
@@ -42,7 +49,7 @@ stress. These four therefore need a cage whatever the load is — which is §4.
 §14.1.2's exclusion for piers *embedded in ground* does not reach: grade is −2'-10" and the
 pier top is −0'-7 1/4", so 2'-2 3/4" of the shaft stands free above the soil.
 
-## §2 — The load the model can account for
+## 2. The load the model can account for
 
 The deck `FS-BW-FLOOR` is the only load with a plan area anywhere in the model.
 
@@ -78,7 +85,7 @@ these pads at 1.00 ft² required against 1.78 built, and §4's capacity is 235×
 The 6x6 uses its DRESSED 5.5" section and a conventional 35 pcf for wood, matching
 `pier_basis._round_size` and `handed_dead`. Its height 82.75" is `_POST_TOP − _PIER_TOP`.
 
-## §3 — What is NOT in that number, and why no d/c is published
+## 3. What is NOT in that number, and why no d/c is published
 
 `PR-BW-i` also carries `BM-BW-RW` or `BM-BW-RE` through the 6x6 above it, and those two roof
 beams carry the whole enclosure: three 2x6 rafters, six drainage wedges, the 4'-0" × 4'-0"
@@ -115,7 +122,7 @@ turn a bound into a number a reader would take at face value.
 The remedy is upstream: give the roof a modelled area to divide, or have the engineer state
 the demand. Either closes the INCOMPLETE with nothing in `deck_post.py` changed.
 
-## §4 — The cage, and why it is the Code's minimum
+## 4. The cage, and why it is the Code's minimum
 
 `vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.'`
 
@@ -140,7 +147,7 @@ Table R402.2's presumptive 3,000 psi. Nothing about the pier changed; what chang
 the model can now say what is in it. §3's bound was a factor of 140 clear of the old number
 and is a factor of 216 clear of this one, so the conclusion is untouched either way.)
 
-## §5 — Slenderness and minimum eccentricity
+## 5. Slenderness and minimum eccentricity
 
 | | working | |
 |---|---|---|
@@ -158,7 +165,7 @@ collects it, and reports that claim UNKNOWN. If it fails, k = 2.0 and the thresh
 in §3's bound comes close to mattering at that d/c, but the assumption is named rather than
 buried.
 
-## §6 — What is NOT graded here
+## 6. What is NOT graded here
 
 No bending from the beams landing eccentrically beyond §6.6.4.5.4's minimum above; no wind or
 seismic moment in the shaft; no development, splice or cover detail; and **no bearing check on
@@ -167,3 +174,15 @@ R507.3.1 row, and `structural.deck_footing_size` grades it prescriptively (1.78 
 against 1.00 ft² required, on 1,500 psf soil). `engineering/spread_footing.py` scopes itself
 to piers on a `Footing` for exactly that reason — the augered BELL is what the table does not
 publish, and these have none.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-19** — §2.3
+- IRC R507.1, IRC Table R402.2, IRC Table R507.3.1

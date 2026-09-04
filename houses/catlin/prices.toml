@@ -619,7 +619,7 @@
 # ER-280 has no table for it), and those eight braces are the whole lateral system of a
 # freestanding deck at storey height. They now take KBS1Z below, two per brace. The row stays
 # so the price research is not lost if the part is ever wanted for a genuinely decorative
-# joint; see params/sunken_garden.py and notes/balcony_lateral_bracing_design.md.
+# joint; see params/sunken_garden.py and notes/superseded/balcony_lateral_bracing_design.md.
 "APVKB45-6" = { low = 22, high = 45 }  # 0 ea — Outdoor Accents Avant 45-deg knee brace, 6x
 # The takeoff bills CS16 by the COIL (unit: "coil"), so this is a whole coil, not a strap.
 # 2026-08-28: 1 coil -> 2. The strap rule fired only at stacked framed-exterior CORNERS, which

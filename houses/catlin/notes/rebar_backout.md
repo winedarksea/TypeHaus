@@ -1,5 +1,12 @@
 # Rebar back-out — the reconciliation, and why the rate cut is NOT taken yet
 
+**House:** catlin, Ramsey County, Minnesota.
+**Subject:** the reinforcing-steel back-out out of the `[concrete]` and `[wall_structure]`
+$/cy rates.
+**Written:** 2026-09-03, by hand in a separate pass.
+**Oracle for:** `takeoff/reinforcement.py`'s back-out. **It does not pass yet** — §5 says
+what has to be authored first.
+
 **Status: the quantity ships, the dollar does not.** `takeoff/reinforcement.py` bills
 reinforcing steel by the pound as of 2026-09-03. `[reinforcement]` in `prices.toml` is
 present and **empty**, so every row lands in the estimate's `unpriced` list and the total
@@ -230,3 +237,16 @@ Three independent mechanical checks. Two are already runnable.
    pass silently re-grouped a pour.
 3. **This note.** `tests/test_rebar_backout.py` pins §1's tonnage and §3's verdict, so the
    day the tonnage rises past the gate a test says so out loud.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-19** — §11.6.1, §14.1.4
+- **ACI 544.4R**
+- IRC Table R403.1

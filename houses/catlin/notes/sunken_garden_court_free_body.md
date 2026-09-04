@@ -18,10 +18,11 @@
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Written:** 2026-08-30, by hand, before the calculation it oracles was encoded.
-**Oracles:** `engineering/retaining_system.py` and `engineering/retaining_basis.py`;
-reproduced by `tests/test_retaining_court.py`.
+**Oracle for:** `engineering/retaining_system.py` and `engineering/retaining_basis.py`,
+reported by `structural.foundation_unbalanced_fill`; reproduced by
+`tests/test_retaining_court.py`.
 **Companions:** `notes/sunken_garden_retaining_screening.md` (the isolated-wall case, still
-correct on its own terms), `notes/balcony_lateral_bracing_design.md` (the structure standing
+correct on its own terms), `notes/superseded/balcony_lateral_bracing_design.md` (the structure standing
 on these walls).
 
 ---
@@ -716,3 +717,19 @@ no settlement, no compaction surcharge, corner bar development nobody has checke
 design that depends on the stone bed being built as specified — 1.13 without it.**
 
 **1.58 against 1.50 is a screening that clears. It is not a stamp.**
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-19** — Table 20.5.1.3.1, Table 22.2.2.4.3, §11.6.1, §13.2.7.1, §14.5.2.1, §14.5.4
+- **ASCE 7-16** — §2.3.1
+- ASTM A767, ASTM C33, ASTM D422
+- IBC Table 1610.1, IBC Table 1806.2
+- IRC R404.4, IRC Table R301.2(1, IRC Table R402.2, IRC Table R404.1.2(8
+- MN Rules 1309.0301, MN Rules 1309.0402

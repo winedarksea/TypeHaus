@@ -5,6 +5,8 @@
 carried on 4-1/2" blocks, standing in free air outboard of 4" of closed-cell spray foam.
 Every number below is recomputed here from first principles, with the arithmetic shown, so a
 reviewer can check the whole chain without opening the model.
+**Oracle for:** `typehaus/wind.py`, reproduced by `tests/test_wind_loads.py`; and the
+`rafter/RF-*` deferral in `engineering/deferred.py`.
 **What is asked of the reviewer:** this is a plain NDS connection design under IRC R301.1.3
 engineered design. It is not a prescriptive furring schedule and does not claim to be one.
 See §6 (Code path) for why IRC Table R703.15.1 is not the applicable provision.
@@ -641,3 +643,17 @@ for the sweep and `notes/outie_window_truss_detail.md` for the per-opening table
    connection and not an R703.15 through-foam furring attachment.
 5. Whether anything in §9 needs to become a specification line rather than a note — the
    fillet at the blocks and the marked stud line are the two candidates.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ASCE 7-16**
+- ASTM A153, ASTM D1623
+- **IAPMO UES ER-192**
+- IRC R301.1.3, IRC R702.7.1, IRC R703.15, IRC R703.3, IRC R703.3.2, IRC Table R703.15.1

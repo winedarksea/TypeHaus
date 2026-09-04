@@ -31,11 +31,17 @@ from typing import Any
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 
 KIND = "deck_beam"
 
@@ -195,6 +201,13 @@ def _section(beam: Any) -> tuple[float, float] | None:
     except (KeyError, ValueError):
         return None
     return (float(profile.width_m) / 0.0254, float(profile.depth_m) / 0.0254)
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+oracled_by(
+    KIND,
+    Oracle(note="balcony_moment_columns.md", section="§5", test="tests/test_pier_calcs.py"),
+)
 
 
 @keys(KIND)

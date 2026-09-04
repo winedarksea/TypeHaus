@@ -23,6 +23,7 @@ import math
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
@@ -33,7 +34,12 @@ from typehaus.engineering.pier_basis import (
     _Pier,
     cast_piers,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF, presumptive
 
@@ -77,6 +83,14 @@ def _piers_on_their_own_footing(ctx: EngineeringContext) -> list[_Pier]:
     """
     return [pier for pier in cast_piers(ctx)
             if pier.footing_tag and not pier.shared_wall_footing]
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+oracled_by(
+    KIND,
+    Oracle(note="sunken_garden_piers.md", test="tests/test_pier_calcs.py"),
+    Oracle(note="breezeway_piers.md"),
+)
 
 
 @keys(KIND)

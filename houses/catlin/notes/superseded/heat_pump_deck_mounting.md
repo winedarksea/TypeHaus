@@ -1,4 +1,6 @@
-> **SUPERSEDED 2026-09-02 → `notes/heat_pump_ground_pad.md`.** Both condensers moved off the
+> # ⛔ SUPERSEDED 2026-09-02
+>
+> **Read `notes/heat_pump_ground_pad.md` instead.** Both condensers moved off the
 > balcony to a poured pad in the yard pocket east of the porch. `FS-SG-DECK` carries no
 > equipment, no stand, no blocking and no penetrations, and `HP_CONDENSATE` is deleted. This
 > note is kept because the RULE it established is not superseded: a fastener through a deck

@@ -34,8 +34,9 @@
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Written:** 2026-08-30, by hand, before the calculations it oracles were encoded; revised
 2026-09-03 for the balcony redesign (see the box above).
-**Oracles:** `engineering/pier_basis.py`, `engineering/spread_footing.py`,
-`engineering/deck_post.py`; reproduced by `tests/test_pier_calcs.py`.
+**Oracle for:** `engineering/pier_basis.py`, `engineering/spread_footing.py` and
+`engineering/deck_post.py`, reported by `structural.deck_post_size` and
+`structural.deck_footing_size`; reproduced by `tests/test_pier_calcs.py`.
 **Companion:** `notes/sunken_garden_court_free_body.md` — same structure, same missing boring,
 and its §2 geotechnical table is the one used here.
 
@@ -592,3 +593,20 @@ re-check it after the fact.
   still not a question this note answers, and at 5,000 psi either way the answer cannot bind.
   **The one pour still graded on the presumptive value is `SUNKEN_GARDEN_COLUMN_12`** — see
   §2 and §4d.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-11**
+- **ACI 318-19** — §10.6.1.1, §14.1.4, §2.3
+- **ACI 318-71**
+- ASTM C33
+- IBC Table 1806.2
+- IRC Table R301.5, IRC Table R402.2
+- MN Rules 1309.0402

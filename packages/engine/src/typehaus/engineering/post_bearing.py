@@ -36,11 +36,17 @@ from typing import Any
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 
 KIND = "post_bearing"
 
@@ -461,6 +467,13 @@ def _one(ctx: EngineeringContext, post: Any, deck: Any) -> EngineeringRecord:
             "is what closes those.",
         ),
         element_tags=tags)
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+oracled_by(
+    KIND,
+    Oracle(note="centre_pillar_bearing.md", test="tests/test_post_bearing.py"),
+)
 
 
 @keys(KIND)

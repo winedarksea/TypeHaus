@@ -38,6 +38,32 @@ class Status(Enum):
 
 
 @dataclass(frozen=True)
+class Oracle:
+    """The independent hand-worked check behind a calculation — a citation, not an input.
+
+    The root ``CLAUDE.md`` rule ("a calc that only agrees with itself is not verified") is
+    satisfied today only in a Python module docstring, which is exactly where a reviewer
+    holding the CLI output cannot see it. This is that reference made data, so the calc
+    package can print "who checked this independently" beside every result.
+
+    Deliberately **not** hashed by ``fingerprint.py``. A seal is a statement about the
+    numbers a calculation consumed; staling one because somebody renamed a note or added a
+    section reference would make the stamp mean less, not more.
+    """
+
+    #: File name under ``houses/<name>/notes/`` — the note, not a path, so the reference
+    #: survives a house being copied or renamed.
+    note: str
+    #: Optional section within the note (``"§4"``), where only part of it oracles this calc.
+    section: str = ""
+    #: The test module that reproduces the note's arithmetic, when one exists.
+    test: str = ""
+
+    def __str__(self) -> str:
+        return f"{self.note} {self.section}".rstrip()
+
+
+@dataclass(frozen=True)
 class Quantity:
     """One number the calculation consumed or produced, with its unit *and its quantum*.
 
@@ -127,6 +153,9 @@ class EngineeringRecord:
     notes: tuple[str, ...] = field(default_factory=tuple)
     #: Element tags this record covers, for the finding it becomes. Usually just ``key``.
     element_tags: tuple[str, ...] = ()
+    #: The hand-worked note(s) that independently reproduce this arithmetic. Prose, so it
+    #: stays out of the fingerprint — see :class:`Oracle`.
+    oracle: tuple[Oracle, ...] = ()
 
     @property
     def governing(self) -> LimitState | None:
@@ -154,7 +183,8 @@ def item_id(kind: str, key: str) -> str:
     return f"{kind}/{key}"
 
 
-def no_calc(kind: str, key: str, *, reason: str = "") -> EngineeringRecord:
+def no_calc(kind: str, key: str, *, reason: str = "",
+            oracle: tuple[Oracle, ...] = ()) -> EngineeringRecord:
     """The record for an item this build computes nothing for.
 
     Deliberately a *record* rather than an absence. ``rafter/RF-GARAGE`` is the case that
@@ -166,5 +196,5 @@ def no_calc(kind: str, key: str, *, reason: str = "") -> EngineeringRecord:
         item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC,
         summary=reason or "no calculation is registered for this kind — an engineer's "
                           "design governs",
-        element_tags=(key,),
+        element_tags=(key,), oracle=oracle,
     )

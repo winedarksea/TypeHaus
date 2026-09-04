@@ -36,11 +36,17 @@ from dataclasses import dataclass
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 from typehaus.engineering.retaining_basis import (
     BASIS,
     EARTH_PRESSURE_LOAD_FACTOR,
@@ -355,6 +361,17 @@ def _strut(ctx: EngineeringContext, cross, members: list[_Member],
     return demand, capacity, (f"{force_lb:,.0f} lb service on {thickness_in:.0f}\" x "
                               f"{height_in:.1f}\" ({area_in2:,.0f} in2), {span_ft:.1f}' clear, "
                               f"slenderness factor {max(slenderness, 0.0):.2f}")
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+#: The closed-loop court free body is hand-worked start to finish in the first note; the
+#: isolated free cantilever the loop is compared against is §4 of the second.
+oracled_by(
+    KIND,
+    Oracle(note="sunken_garden_court_free_body.md", test="tests/test_retaining_court.py"),
+    Oracle(note="sunken_garden_retaining_screening.md", section="§4",
+           test="tests/test_retaining_wall_calc.py"),
+)
 
 
 @keys(KIND)

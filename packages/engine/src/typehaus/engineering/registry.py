@@ -14,8 +14,9 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass, field
+from dataclasses import replace as _replace
 
-from typehaus.engineering.item import EngineeringRecord, Status, item_id, no_calc
+from typehaus.engineering.item import EngineeringRecord, Oracle, Status, item_id, no_calc
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel
 
@@ -80,6 +81,45 @@ def keys(kind: str) -> Callable[
     return deco
 
 
+#: ``kind`` -> the hand-worked note(s) that independently reproduce that family's
+#: arithmetic. Declared per *kind* rather than per record because an oracle is a property of
+#: the calculation, not of the wall it was run on — and because a record built on some
+#: branch nobody remembered would otherwise ship with no independent check named. Stamped on
+#: in :meth:`EngineeringResults._run`, so a calc module cannot forget to thread it through
+#: five constructors.
+_ORACLES: dict[str, tuple[Oracle, ...]] = {}
+
+
+def oracled_by(kind: str, *oracle: Oracle) -> None:
+    """Declare which notes independently verify one kind of calculation.
+
+    The root ``CLAUDE.md`` rule — "a calc that only agrees with itself is not verified" —
+    lives today in module docstrings, where the reviewer holding the CLI output cannot
+    reach it. This is that reference as data. ``tests/test_calc_package.py`` lints that
+    every registered kind names one and that every named note exists on disk.
+    """
+    _ORACLES[kind] = tuple(oracle)
+
+
+def oracles_for(kind: str) -> tuple[Oracle, ...]:
+    return _ORACLES.get(kind, ())
+
+
+def _no_calc(kind: str, key: str) -> EngineeringRecord:
+    """A NO_CALC record for one item, carrying its kind's declared deferral when it has one.
+
+    Without this, every uncomputed item reads "no calculation is registered for this kind",
+    which names nobody. ``engineering/deferred.py`` is where a kind says who *does* own the
+    design; the import is local because that module registers keys onto this one.
+    """
+    from typehaus.engineering.deferred import DEFERRALS
+
+    deferral = DEFERRALS.get(kind)
+    if deferral is not None:
+        return deferral.record(key)
+    return no_calc(kind, key, oracle=_ORACLES.get(kind, ()))
+
+
 def registered_kinds() -> tuple[str, ...]:
     return tuple(sorted(set(_CALCS) | set(_KEYS)))
 
@@ -103,8 +143,11 @@ class EngineeringResults(Mapping[str, EngineeringRecord]):
             return
         self._done.add(kind)
         for key in _KEYS.get(kind, lambda _ctx: [])(self.context):
-            self._records.setdefault(item_id(kind, key), no_calc(kind, key))
+            self._records.setdefault(item_id(kind, key), _no_calc(kind, key))
+        stamp = _ORACLES.get(kind, ())
         for record in _CALCS.get(kind, lambda _ctx: [])(self.context):
+            if stamp and not record.oracle:
+                record = _replace(record, oracle=stamp)
             self._records[record.item_id] = record
 
     def _resolve_all(self) -> None:
@@ -118,7 +161,7 @@ class EngineeringResults(Mapping[str, EngineeringRecord]):
         if record is not None:
             return record
         element = key.split("/", 1)[1] if "/" in key else key
-        return no_calc(kind, element)
+        return _no_calc(kind, element)
 
     def __contains__(self, key: object) -> bool:
         """Whether a *computed or enumerated* item exists under this id.
@@ -160,7 +203,7 @@ class _NoEngineering(Mapping[str, EngineeringRecord]):
 
     def __getitem__(self, key: str) -> EngineeringRecord:
         kind, _, element = key.partition("/")
-        return no_calc(kind, element or key)
+        return _no_calc(kind, element or key)
 
     def __contains__(self, key: object) -> bool:
         return False

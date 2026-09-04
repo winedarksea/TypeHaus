@@ -5,7 +5,7 @@ Model: `params/sunken_garden.py` (`HP_PAD`, `_HP_STAND_AT`, `HP_STAND_LEGS`,
 pad (added 2026-09-04 — see the section on it), `plan/electrical.py` (all three units and
 their disconnects),
 `plan/assemblies.py` (`HP_PAD_ON_GRADE`, `EQUIP_STAND_ALUM`), `plan/site.py` (the pad's
-fall). Supersedes `notes/heat_pump_deck_mounting.md`, which is kept because the rule it
+fall). Supersedes `notes/superseded/heat_pump_deck_mounting.md`, which is kept because the rule it
 established — decision #64, a fastener through a waterproof deck lands in a sacrificial
 member — still governs any future deck. The stair that shares this pad and made the
 2026-09-03 turn necessary is `notes/porch_stair.md`.

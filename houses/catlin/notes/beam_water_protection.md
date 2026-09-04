@@ -131,7 +131,7 @@ went with them.
 
 The rule that governed them stands and is enforced, not merely written down:
 `mep.deck_equipment_support_coverage` FAILs an anchor that lands on a beam
-(`notes/heat_pump_deck_mounting.md`, decision #64). **Anything that puts equipment back on
+(`notes/superseded/heat_pump_deck_mounting.md`, decision #64). **Anything that puts equipment back on
 this deck has to satisfy it.**
 
 ## Still open

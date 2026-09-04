@@ -1,5 +1,16 @@
 # Uplift load path — roof to footing (2026-08-28)
 
+**House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
+**Structure:** the continuous uplift path, roof sheathing to footing, over `RF-HOUSE` and
+`RF-GARAGE`.
+**Written:** 2026-08-28.
+**Oracle for:** the `lateral_uplift/RF-*` deferral in `engineering/deferred.py`, reported by
+`structural.uplift_capacity`; the derived joints are reproduced by
+`tests/test_uplift_load_path.py`.
+**What is asked of the reviewer:** this note derives a COVERAGE schedule and no capacity.
+The uplift reactions themselves are the truss fabricator's, and the register carries that as
+an open item rather than pretending otherwise.
+
 The house had connectors at the ends of the load path and nothing in the middle. The sill was
 anchored (MASA at 4' o.c.), the studs were tied to their top plates (SP6), the stacked corners
 were strapped (CS16), and the *hung* member ends carried hangers (LSSR at the ridge beam, LUS
@@ -258,3 +269,16 @@ Anything added at a KDAT beam top has to respect `beam_water_protection.md` §2:
 aluminium against copper-treated lumber, and the formed caps are bedded **on** the butyl tape.
 The 8 derived KBS1Z straps land on the post faces, not the beam tops, so they do not
 disturb that order — but a future cap or seat at a beam top would.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-19** — §10.6.1.1
+- **AWC DCA6**
+- IRC R403.1.6

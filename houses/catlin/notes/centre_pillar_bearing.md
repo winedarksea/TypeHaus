@@ -7,8 +7,9 @@ deck `FS-SG-PORCH` and carry `BM-SG-BLC`, the balcony's centre glulam.
 **Written:** 2026-09-03, by hand, before the calculation it oracles was encoded.
 **Oracle for:** `engineering/post_bearing.py`, reported by `structural.deck_post_bearing`;
 reproduced by `tests/test_post_bearing.py`.
-**Companions:** `balcony_moment_columns.md` (the four cast columns and the glulam above these
-two), `sunken_garden_piers.md` (`PT-SG-COL`/`FCOL`, which is where this load goes next).
+**Companions:** `notes/balcony_moment_columns.md` (the four cast columns and the glulam above
+these two), `notes/sunken_garden_piers.md` (`PT-SG-COL`/`FCOL`, which is where this load goes
+next).
 
 > ## ⚠ THIS JOINT WAS OVER, AND NOTHING IN THE MODEL SAW IT.
 > Until this note and its calculation existed, catlin reported **0 FAIL** with `PT-SG-BF2`
@@ -394,3 +395,18 @@ G185 (the Z suffix) is the coating both parts carry, with hot-dip galvanised nai
   the field against DCA6 for a uniform load; a 2,647 lb point load 3" from a bearing is
   essentially all shear into that bearing, which is why bearing is the question — but "essentially"
   is a judgement, not a calculation.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- ASTM A653
+- **AWC NDS 2018** — §3.10.2
+- ICC-ES ESR-2105
+- IRC R317.1.4, IRC R507.1, IRC R507.4, IRC R507.6
+- MN Rules 1309.0301

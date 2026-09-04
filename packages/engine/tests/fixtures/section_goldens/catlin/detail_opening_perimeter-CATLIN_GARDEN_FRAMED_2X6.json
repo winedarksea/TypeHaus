@@ -715,19 +715,19 @@
       "node": "polyline",
       "points": [
         [
-          -4.8470919456053565,
+          -4.495637918408035,
           -24.748925999907346
         ],
         [
-          -4.55,
+          -4.05,
           -24.748925999907346
         ],
         [
-          -4.55,
+          -4.05,
           -17.337001543847762
         ],
         [
-          -4.55,
+          -4.05,
           -4.470964566929124
         ],
         [
@@ -755,19 +755,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -4.8470919456053565,
+          -4.495637918408035,
           -24.748925999907346
         ],
         [
-          -4.55,
+          -4.05,
           -24.748925999907346
         ],
         [
-          -4.55,
+          -4.05,
           -17.337001543847762
         ],
         [
-          -4.55,
+          -4.05,
           -4.470964566929124
         ],
         [
@@ -811,19 +811,19 @@
           -14.437500000000009
         ],
         [
-          -6.6269583028194186,
+          -6.626958302819418,
           -14.437500000000009
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -14.437500000000009
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -21.626266508525102
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -855,19 +855,19 @@
           -14.437500000000009
         ],
         [
-          -6.6269583028194186,
+          -6.626958302819418,
           -14.437500000000009
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -14.437500000000009
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -21.626266508525102
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -899,19 +899,19 @@
           -9.10450000000001
         ],
         [
-          -6.6269583028194186,
+          -6.626958302819418,
           -9.10450000000001
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -9.10450000000001
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -20.04187516261174
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -943,19 +943,19 @@
           -9.10450000000001
         ],
         [
-          -6.6269583028194186,
+          -6.626958302819418,
           -9.10450000000001
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -9.10450000000001
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -20.04187516261174
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -987,15 +987,15 @@
           -4.470964566929124
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -4.470964566929124
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -17.337001543847762
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -1027,15 +1027,15 @@
           -4.470964566929124
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -4.470964566929124
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -17.337001543847762
         ],
         [
-          -9.175,
+          -9.174999999999999,
           -24.748925999907346
         ]
       ],
@@ -1051,11 +1051,11 @@
       "node": "polyline",
       "points": [
         [
-          -5.05,
+          -4.8,
           -102.4375
         ],
         [
-          -5.05,
+          -4.8,
           -24.43750000000001
         ]
       ],
@@ -1763,19 +1763,19 @@
       "node": "polyline",
       "points": [
         [
-          -9.55,
+          -9.05,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -102.4375
         ],
         [
-          -9.55,
+          -9.05,
           -102.4375
         ]
       ],
@@ -1791,19 +1791,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -9.55,
+          -9.05,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -107.4375
         ],
         [
-          0.45,
+          0.95,
           -102.4375
         ],
         [
-          -9.55,
+          -9.05,
           -102.4375
         ]
       ],
@@ -3689,7 +3689,8 @@
     "• **The exposed band is modelled, not only drawn.** The north, east and west basement walls stand 2'-10\" out of the ground and that much XPS is exposed on each. The band is authored off the GRADE datum rather than as a height, so a grade change grows it without the assembly being edited. `CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry a fifth layer — a 1/8\" trowel-applied acrylic coating over reinforcing mesh (`foundation-coating-acrylic`, a stock grey) — with a `Layer.extent` running from 6\" *below* grade up to the top of the wall. **Order 276.3 SF**, which is the live figure; the \"~374 SF\" this note carried until 2026-09-04 was stale. Six inches below so no foam edge shows at the soil line and the shovel hits coating, not XPS. Because it is a real layer with a real band, the drawing, the 3D model, the IFC export (as an `IfcBuildingElementPart` aggregated to its wall) and the order all read the same area; the detail component no longer derives a second band of its own beside it.",
     "• **The coating is specified over the 1/2\" protection board because the board could not be graded.** A butted, unsealed board's installed permeance is dominated by its joints, no manufacturer in that class publishes an ASTM E96 number for it, and `building_science.condensation` therefore reported UNKNOWN on *both* basement assemblies for as long as it was authored. A mesh-reinforced trowel lamina is monolithic and seamless, a published band describes it, and both walls now PASS the January gate with the tightest plane 69-73 Pa below saturation. The board is kept as the **named alternate** — its material and its price row both stay live — and going back to it is one `material_ref` edit. Note what it is *not*: cheaper. Installed, the coating bills alongside the board, not under it. The reason for the swap is the verdict.",
     "• **The XPS is bonded, and nothing anchors it.** Foam-compatible mastic to the liquid-applied damp-proofing, per the membrane manufacturer, and that is the whole attachment. It is sufficient because the band is captured mechanically at both ends regardless: its head tucks under the rainscreen Z-flashing at the bearing seat, and its foot is buried 6\" in soil, with backfill holding everything below. It also gives up nothing — the board it replaces was pinned into the *foam*, never through to the concrete, so no version of this band has ever had an anchor in the wall. There is no hardware line for it and there should not be: the mastic rides in the `xps:2.0` labour rate, which is what an unfastened layer means.",
-    "• **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded coating: 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments carry no skin at all: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.175\" outboard of the concrete face over the band and 4.05\" below it. `N-B-BRICK-W`/`-E`'s 4.55\" stand-off did **not** follow the band down from 4.55\": those nodes stand over the *court* segments, which have never carried a skin, so the old numeric match to the banded walls was a coincidence rather than a dependency. The veneer's clear cavity is 1-1/2\", up from 1\", unchanged.",
+    "• **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded coating: 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments carry no skin at all: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.175\" outboard of the concrete face over the band and 4.05\" below it. `N-B-BRICK-W`/`-E` did **not** follow the band: those nodes stand over the *court* segments, which have never carried a skin, so the band's thickness was never theirs to track.",
+    "• **The veneer's cavity is 1-1/2\" and the model finally says so.** The stand-off was `inch(-4.55)`, struck on the parge coat's finished face. When the parge was deleted the node stayed put, so a 1/2\" void opened between the XPS at -4.05\" and the veneer's own 1\" `air-gap` layer at -4.55\" — half an inch that no layer described, with the drawing, the 3D model and the IFC export all carrying a gap belonging to nothing. Corrected 2026-09-04: the node moves onto the foam at `inch(-4.05)` and `air-gap` grows to 1-1/2\". The two edits cancel at the gap's outboard face, so **the wythe does not move** (-5.55\" to -9.175\", as built) and neither do the arched reveals or the veneer's footing. IRC R703.8.4 asks 1\" minimum; the built cavity always cleared it, only the model was wrong.",
     "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there.** The top of the concrete and the bottom of the framed wall are 13 7/16\" apart: the pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it.",
     "• **The sill is one board and it is shared.** The I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on. One rule takes the **union** of the two runs, on the seat, and it bills 370.0 LF. There is no second rule and there must not be: two rules over one board is a double-bill.",
     "• **The pour is 8\" everywhere the detail applies, and the steel is `#5 @ 41\" o.c.`** This detail is the wood-over-concrete transition: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. The north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Only `SL-M-DECK` is still a cast deck, and it lands on the east wall and the centre line — neither of which this detail draws. The walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they are drawn, and the 4\" came off the inside face where the sill has room to spare.",

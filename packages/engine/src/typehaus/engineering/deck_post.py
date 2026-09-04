@@ -30,12 +30,18 @@ from dataclasses import dataclass
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
 from typehaus.engineering.pier_basis import _Pier, cast_piers
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 from typehaus.engineering.retaining_basis import (
     _BAR,
     PRESUMPTIVE_FC_PSI,
@@ -209,6 +215,17 @@ def _slenderness(pier: _Pier) -> tuple[float, float, float, float]:
     minimum_eccentricity = 0.6 + 0.03 * pier.diameter_in
     return (slenderness, magnifier, minimum_eccentricity * magnifier,
             TIED_EMBEDDED_ECCENTRICITY_RATIO * pier.diameter_in)
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+#: Three notes, because one kind covers three families of pier: the sunken-garden cast piers,
+#: the balcony moment columns, and the breezeway piers whose section is still open.
+oracled_by(
+    KIND,
+    Oracle(note="sunken_garden_piers.md", section="§4", test="tests/test_pier_calcs.py"),
+    Oracle(note="balcony_moment_columns.md", test="tests/test_pier_section_calcs.py"),
+    Oracle(note="breezeway_piers.md"),
+)
 
 
 @keys(KIND)
@@ -646,7 +663,10 @@ def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_
               f"FloorSystem and no Roof names — so there is no tributary AREA for that load "
               f"and the {pier.tributary_ft2:.1f} ft2 this pier does account for is an "
               f"under-count of unknown size. The cage is graded in full above; the section "
-              f"is not, and is not guessed at")
+              f"is not, and is not guessed at. TO CLOSE THIS: either give the load a "
+              f"modelled plan area to divide (a Roof or a FloorSystem over "
+              f"{beams}), or have the engineer of record state the axial demand and author "
+              f"it — nothing in this module changes either way")
     return EngineeringRecord(
         item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
         basis_version=BASIS_VERSION, basis=BASIS,
@@ -657,6 +677,12 @@ def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_
                  f"six detailing limits met; the AXIAL state is not computed"),
         inputs=_inputs(pier, area, steel, cage), limit_states=states, missing=(reason,),
         notes=common + (
+            "THE OMITTED STATE IS NOT A DOUBT ABOUT THE SECTION. A bounding estimate of "
+            "the unaccounted load is hand-worked in the oracle note beside this "
+            "calculation, and it lands three orders of magnitude clear of the section's "
+            "axial capacity. What is declined here is turning a bound into a d/c a reader "
+            "would take at face value — not a judgement that the pier is marginal.",
+
             f"CAGE: {pier.vertical_reinforcement} — As {steel:.2f} in2, rho "
             f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
             f"{COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag requires. This is the MINIMUM cage the "

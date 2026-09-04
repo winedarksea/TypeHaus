@@ -116,11 +116,16 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
                 _LOCAL_LABEL[record.status],
                 signoff.id if signoff else "—",
                 state.value.upper() if state is Freshness.STALE else state.value,
+                # The hand-worked note that independently reproduces this item's
+                # arithmetic. Without it the drawing set states a result and gives a
+                # reviewer no route to the check behind it — which was true of this sheet
+                # until the calculation package existed.
+                ", ".join(oracle.note for oracle in record.oracle) or "—",
             ))
         section(fig, 0.04, 0.90, "ENGINEERED REQUIREMENTS")
         _add_table(fig, rows,
                    ("Item", "Elements", "Basis", "Governing", "d/c", "Local", "Signoff",
-                    "Seal"),
+                    "Seal", "Checked against"),
                    bbox=(0.04, 0.58, 0.92, 0.30))
 
         section(fig, 0.04, 0.535, "SIGNOFFS")
@@ -150,6 +155,10 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
             "made: the stamp no longer describes what is drawn.",
             "This set encodes a declared subset of the code. Verify local amendments "
             "with the authority having jurisdiction.",
+            "The CALCULATIONS behind this table are `out/calcs/` — one sheet per item, "
+            "term by term. Regenerate with `haus calcs`.",
+            "\"Checked against\" names the hand-worked note in `houses/<house>/notes/` "
+            "that independently reproduces the item; `out/calcs/` prints both together.",
         )):
             fig.text(0.04, 0.14 - offset * 0.016, f"\u2022 {text}", fontsize=5.5,
                      family="monospace")

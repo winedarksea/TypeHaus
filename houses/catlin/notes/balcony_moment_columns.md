@@ -6,8 +6,12 @@
 **four 12" round reinforced-concrete columns fixed at the base** (PT-SG-BR1, PT-SG-BR3,
 PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars bearing on the porch framing under
 pinned strap-and-angle base ties, under three treated structural-glulam beams.
-**Written:** 2026-09-03. It **supersedes `balcony_lateral_bracing_design.md`**, which
+**Written:** 2026-09-03. It **supersedes `superseded/balcony_lateral_bracing_design.md`**, which
 designed the eight knee braces and two brace rails this replaced.
+**Oracle for:** `engineering/deck_post.py`'s moment-column branch and, at §5,
+`engineering/glulam_beam.py`; reproduced by `tests/test_pier_section_calcs.py`.
+**Companions:** `notes/centre_pillar_bearing.md` (the two wood pillars among these six),
+`notes/sunken_garden_piers.md` (where this load goes next).
 **What is asked of the reviewer:** this is a screening design under IRC R301.1.3 engineered
 design. It is offered for a licensed engineer's check and stamp. It is **not** a stamped
 design, and nothing in the model treats it as one: `haus engineering` reports these items as
@@ -22,7 +26,7 @@ hand working and the engine differ, the difference is stated (§4a).
 
 ## 0. Why the braces went, and why this is not just "the same deck with fatter posts"
 
-`balcony_lateral_bracing_design.md` opened by saying the balcony has no shear walls: six
+`superseded/balcony_lateral_bracing_design.md` opened by saying the balcony has no shear walls: six
 posts on `ABU66SS` standoff bases, and Simpson's own reports (ESR-1622, ESR-3050) say a
 standoff base *"does not provide adequate resistance to prevent members from rotating about
 the base."* Both the bases and the beam bearings were pins. Eight 2x6 knee braces were the
@@ -539,3 +543,20 @@ Four `deck_post/PT-SG-B{R,F}{1,3}` records and three `deck_beam/BM-SG-BL*` recor
 `draft`, all `unsealed`. `structural.lateral_racking` now names each corner column as the
 deck's lateral system and delegates to the same `deck_post/<tag>` item — one design, one
 stamp, two checks.
+
+---
+
+## Sources
+
+Every standard and document this note rests on, collected from the citations above.
+Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
+section form after. A document is listed here only if a number in this note came
+out of it.
+
+- **ACI 318-19** — §19.3.3.4, §20.5.1.3
+- **ASCE 7-16** — Fig. 29.3-1, §2.3.1, §2.4.1, §29.3
+- ASTM A767
+- **AWC NDS 2018** — Table 5.3.1
+- ICC-ES ESR-3485
+- IRC R106, IRC R202, IRC R301.1.3, IRC R301.5, IRC R402.2, IRC R507.1, IRC R507.4, IRC Table R507.5(1
+- MN Rules 1309.0301

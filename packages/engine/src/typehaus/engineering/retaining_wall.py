@@ -28,11 +28,17 @@ from __future__ import annotations
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
+    Oracle,
     Quantity,
     Status,
     item_id,
 )
-from typehaus.engineering.registry import EngineeringContext, calc, keys
+from typehaus.engineering.registry import (
+    EngineeringContext,
+    calc,
+    keys,
+    oracled_by,
+)
 from typehaus.engineering.retaining_basis import (
     BASIS,
     REQUIRED_FS,
@@ -88,6 +94,17 @@ def _retaining_walls(ctx: EngineeringContext) -> list:
     return [w for w in ctx.plan.all_elements()
             if isinstance(w, FoundationWall)
             and getattr(w, "lateral_support", None) in ("unsupported", "base")]
+
+
+#: The independent hand pass this module is checked against — see ``Oracle``.
+#: §4 of the screening note is the hand pass this module was written against, term by term;
+#: the court note is what says when a wall is in a loop instead.
+oracled_by(
+    KIND,
+    Oracle(note="sunken_garden_retaining_screening.md", section="§4",
+           test="tests/test_retaining_wall_calc.py"),
+    Oracle(note="sunken_garden_court_free_body.md", test="tests/test_retaining_court.py"),
+)
 
 
 @keys(KIND)
