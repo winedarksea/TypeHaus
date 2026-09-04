@@ -65,7 +65,11 @@ submittal value regardless.
 - **Space dashboard + storage ratio:** HUD panel totaling conditioned / unconditioned /
   usable floor area per storey and overall (derived Rooms + `conditioned` flag), plus
   **storage ratio** = (storage-occupancy rooms + `Furniture` with `storage=True` footprints)
-  ÷ usable area.
+  ÷ usable area. **Usable is head-limited and conditioned is not**: the part of a room a
+  roof rakes below 5'-0" of clear head (R304.3 / ANSI Z765) is reported separately as
+  `low_head_sf` and left out of usable, because a 134 sf attic pocket with 5'-3" at its best
+  point is not 134 sf of space — but every one of those square feet is still sheathed,
+  finished and heated, so conditioned keeps the whole floor.
 - **Service filters:** filter modes that dim everything except elements whose type `needs` a
   selected `Service` — "show me everything needing hot water" (likewise gas, 240 V, drain,
   vent) — for planning wet walls and gas runs. Groundwork for the MEP future

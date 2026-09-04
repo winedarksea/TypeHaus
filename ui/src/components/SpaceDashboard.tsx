@@ -14,12 +14,17 @@ export function SpaceDashboard({ summary, buildingHeight }: {
           <span className="k">Conditioned</span><span>{overall.conditioned_sf.toFixed(0)} sf</span>
           <span className="k">Unconditioned</span><span>{overall.unconditioned_sf.toFixed(0)} sf</span>
           <span className="k">Usable</span><span>{overall.usable_sf.toFixed(0)} sf</span>
+          {overall.low_head_sf > 0 && <>
+            <span className="k">Under 5'-0" head</span><span>{overall.low_head_sf.toFixed(0)} sf</span>
+          </>}
           <span className="k">Storage ratio</span><span>{(overall.storage_ratio * 100).toFixed(1)}%</span>
         </div>
       </>}
       {summary?.storeys.map((row) => (
         <div key={row.storey} className="muted" style={{ marginTop: 5 }}>
-          {row.storey}: {row.usable_sf.toFixed(0)} sf usable · {(row.storage_ratio * 100).toFixed(1)}% storage
+          {row.storey}: {row.usable_sf.toFixed(0)} sf usable
+          {row.low_head_sf > 0 && ` (+${row.low_head_sf.toFixed(0)} sf under 5'-0" head)`}
+          {" "}· {(row.storage_ratio * 100).toFixed(1)}% storage
         </div>
       ))}
       {buildingHeight && <>

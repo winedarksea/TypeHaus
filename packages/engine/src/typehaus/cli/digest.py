@@ -20,7 +20,13 @@ def print_summary(plan: PlanModel, console: Console) -> None:
         console.print(f"  storey {storey.tag} @ {storey.elevation.fmt()}: "
                       f"{len(walls)} walls, {len(rooms)} rooms")
         for r in rooms:
-            console.print(f"    {r.tag} ({r.occupancy}) {r.area_m2 * 10.7639:.0f} sf")
+            # The floor area, and — where a roof rakes into the room — how much of it has
+            # 5'-0" of head. An attic room's first number alone is misleading.
+            head = ""
+            if r.head_limited_area_m2 is not None and \
+                    r.area_m2 - r.head_limited_area_m2 > 0.5:
+                head = f" ({r.head_limited_area_m2 * 10.7639:.0f} sf over 5'-0\" head)"
+            console.print(f"    {r.tag} ({r.occupancy}) {r.area_m2 * 10.7639:.0f} sf{head}")
     console.print("  assemblies:")
     for asm in plan.library.assemblies:
         ra = plan.library.resolve_assembly(asm.tag)

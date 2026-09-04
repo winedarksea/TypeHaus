@@ -10,17 +10,31 @@ from typehaus.resolve.model import ResolvedModel
 def build_space_summary(model: ResolvedModel) -> dict[str, object]:
     """Return per-storey and whole-house room-area metrics in square feet.
 
-    Usable area is the modeled room area. Storage is a transparent subset: rooms tagged
-    storage plus any future storage furniture whose footprint can be associated with a room.
+    Usable area is the modeled room area **with the rake taken off**: the part of a room a
+    roof brings below 5'-0" of clear head is not floor anyone uses, and reporting it as
+    usable was the difference between a 134 sf attic pocket and the 6 sf of it a person can
+    stand in (``ResolvedRoom.head_limited_area_m2``, R304.3 / ANSI Z765). ``low_head_sf``
+    carries what was subtracted so the two reconcile against ``area_m2``.
+
+    ``conditioned_sf`` deliberately does NOT take the rake off. Every square foot under it
+    is sheathed, finished and heated, and the energy code grades floor area, not headroom —
+    so the conditioned figure stays the full modeled floor and only the "how much space is
+    this" figures are head-limited.
+
+    Storage is a transparent subset of usable: rooms tagged storage plus any storage
+    furniture whose footprint can be associated with a room.
     """
     rows: dict[str, dict[str, float]] = {}
     for room in model.rooms:
         row = rows.setdefault(room.storey, _empty_row())
         area = room.area_m2 * 10.7639
-        row["usable_sf"] += area
+        usable = (room.head_limited_area_m2 if room.head_limited_area_m2 is not None
+                  else room.area_m2) * 10.7639
+        row["usable_sf"] += usable
+        row["low_head_sf"] += max(area - usable, 0.0)
         row["conditioned_sf" if room.conditioned else "unconditioned_sf"] += area
         if room.occupancy == "storage":
-            row["storage_sf"] += area
+            row["storage_sf"] += usable
     furniture_types = {item.tag: item for item in model.plan.library.furniture_types}
     for storey in model.plan.storeys:
         row = rows.setdefault(storey.tag, _empty_row())
@@ -133,7 +147,7 @@ def exterior_footprint_dimensions_m(model: ResolvedModel) -> list[dict[str, obje
 
 def _empty_row() -> dict[str, float]:
     return {"conditioned_sf": 0.0, "unconditioned_sf": 0.0,
-            "usable_sf": 0.0, "storage_sf": 0.0}
+            "usable_sf": 0.0, "low_head_sf": 0.0, "storage_sf": 0.0}
 
 
 def _rounded(row: dict[str, float]) -> dict[str, float]:

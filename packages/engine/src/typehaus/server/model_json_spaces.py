@@ -53,8 +53,14 @@ def spaces_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str
              # pre-halved: a reader totalling them against a floor area must apply the code
              # rule themselves, the same way the check does. null means a window type did
              # not resolve — not that the room has no glass.
+             #
+             # ``head_limited_area_m2`` is ``area_m2`` less the part a roof rakes below
+             # 5'-0" of clear head — the "how big is this room" number, where ``area_m2`` is
+             # the "how much floor is built" one. Equal to ``area_m2`` under a flat ceiling;
+             # never a substitute for it in a takeoff or an energy total.
              "clear_height_m": r.clear_height_m,
              "soffit_area_m2": r.soffit_area_m2,
+             "head_limited_area_m2": r.head_limited_area_m2,
              "glazed_area_m2": r.glazed_area_m2,
              "operable_glazed_area_m2": r.operable_glazed_area_m2}
             for r in model.rooms

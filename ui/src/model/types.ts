@@ -229,6 +229,13 @@ export interface Room {
   provenance: Provenance | null;
   conditioned: boolean;
   area_m2: number;
+  /**
+   * `area_m2` less the part a roof rakes below 5'-0" of clear head — the "how big is this
+   * room" figure, where `area_m2` is "how much floor is built". Equal to `area_m2` under a
+   * flat ceiling, and null when the engine could not derive it. Never use it as a takeoff
+   * or energy quantity: the floor under a rake is still sheathed, finished and heated.
+   */
+  head_limited_area_m2?: number | null;
   clear_face: Vec2[];
   floor_finish: string | null;
   /**
@@ -397,7 +404,10 @@ export interface SpaceSummaryRow {
   storey?: string;
   conditioned_sf: number;
   unconditioned_sf: number;
+  /** Modeled room area with the part a roof rakes below 5'-0" of clear head removed. */
   usable_sf: number;
+  /** What that rake took off — `usable_sf + low_head_sf` is the modeled floor area. */
+  low_head_sf: number;
   storage_sf: number;
   storage_ratio: number;
 }

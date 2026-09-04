@@ -11,6 +11,7 @@ from shapely.ops import polygonize, unary_union
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
+from typehaus.resolve.roof_geometry import room_head_limited_area_m2
 from typehaus.resolve.room_openings import room_glazing_areas
 
 
@@ -158,6 +159,8 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
                 finish_zones=_finish_zones(plan, storey.tag, room, clear),
                 clear_height_m=head, soffit_area_m2=soffit_m2,
+                head_limited_area_m2=room_head_limited_area_m2(
+                    model, ring, storey.elevation.meters),
             )
             glazing = room_glazing_areas(plan, model, resolved)
             if glazing is not None:

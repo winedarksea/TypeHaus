@@ -194,6 +194,14 @@ function SelectionInspector({
           <span>{r.occupancy}</span>
           <span className="k">Area</span>
           <span>{sf} sf</span>
+          {/* A raked room is two areas: the floor that gets built, and the part of it with
+              5'-0" over it. Only shown where a roof actually takes some away. */}
+          {r.head_limited_area_m2 != null && r.area_m2 - r.head_limited_area_m2 > 0.5 && (
+            <>
+              <span className="k">Over 5'-0" head</span>
+              <span>{(r.head_limited_area_m2 * 10.7639).toFixed(0)} sf</span>
+            </>
+          )}
           <span className="k">Conditioned</span>
           <span>{r.conditioned ? "yes" : "no"}</span>
           <span className="k">Floor</span>

@@ -60,6 +60,9 @@ CEILING_PLANE_TOLERANCE_IN = 0.25
 #: A ceiling region smaller than this is not worth its own note — it is a closet return or
 #: a stair-well nib, and a second height caption over 4 SF is clutter, not information.
 MIN_NOTED_CEILING_SF = 12.0
+# Below this, the rake takes off less than a chair's worth of floor and the second area
+# line is noise on the drawing.
+LOW_HEAD_NOTE_SF = 5.0
 
 #: Fraction of a room's clear-face bbox a label line may span before it is dropped. A block
 #: wider than its room is not annotation, it is a caption lying across two partitions.
@@ -308,6 +311,14 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         planes = _ceiling_planes(model, room, room_floor_elevation(model, room))
         lines = [(room_display_name(room.tag), TEXT_PT),
                  (f"{room.area_m2 * SF_PER_M2:.0f} SF", DIM_TEXT_PT)]
+        # A room a roof rakes into is two areas, and a plan that prints only the first one
+        # sells the attic pocket as 134 SF of room when 6 SF of it has 5'-0" over it. The
+        # floor area stays the headline — it is what gets built — and the qualifying area
+        # goes under it, on the rooms that actually have a rake and nowhere else.
+        head_sf = ((room.head_limited_area_m2 or 0.0) * SF_PER_M2
+                   if room.head_limited_area_m2 is not None else None)
+        if head_sf is not None and room.area_m2 * SF_PER_M2 - head_sf > LOW_HEAD_NOTE_SF:
+            lines.append((f"{head_sf:.0f} SF OVER 5'-0\"", DIM_TEXT_PT))
         # One plane (or none worth splitting) folds its caption into the block; two or more
         # get their own caption over their own region, because the *where* is the finding.
         noted = [item for item in planes if item[1] >= MIN_NOTED_CEILING_SF]

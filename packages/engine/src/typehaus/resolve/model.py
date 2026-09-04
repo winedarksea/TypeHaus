@@ -757,8 +757,16 @@ class ResolvedRoom:
     # units at half) and both must stay expressible; the halving is the check's, not the
     # model's. ``None`` means a window type did not resolve, which is not the same fact as
     # zero glazing and must not be flattened into it.
+    #
+    # ``head_limited_area_m2`` is ``area_m2`` with the part a roof rakes below 5'-0" of clear
+    # head taken off (R304.3 / ANSI Z765). It is NOT a substitute for ``area_m2``: the floor
+    # under a rake is still sheathed, finished and heated, so every takeoff, finish and
+    # energy consumer must keep reading ``area_m2``. This is the number for the question
+    # "how big is this room" — catlin's attic pocket answers 134 sf to the first and 6 sf to
+    # the second, and the second one is the true one.
     clear_height_m: float | None = None
     soffit_area_m2: float = 0.0
+    head_limited_area_m2: float | None = None
     glazed_area_m2: float | None = None
     operable_glazed_area_m2: float | None = None
 

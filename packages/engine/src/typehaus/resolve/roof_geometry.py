@@ -263,52 +263,103 @@ def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
     model.walls = resolved
 
 
-def roof_headroom_areas(room_ring: list[tuple[float, float]], roof: ResolvedRoof,
-                        elevation_m: float, threshold_m: float) -> tuple[float, float]:
-    """Return room area and area at/above a headroom threshold.
+def roof_headroom_region(roof: ResolvedRoof, elevation_m: float,
+                         threshold_m: float) -> Polygon:
+    """The plan region under ``roof`` with at least ``threshold_m`` of height over ``elevation_m``.
 
-    Gable roof halves are linear planes.  Clipping each half against the corresponding
-    threshold strip keeps the code result exact for arbitrary room polygons rather than
-    relying on a display-resolution sample grid.
+    Gable roof halves are linear planes, so the qualifying region is a strip (or a
+    half-plane, on a shed) — clipping against it keeps the answer exact for an arbitrary
+    room polygon rather than relying on a display-resolution sample grid. The returned
+    polygon is unbounded-ish: it is grown past the footprint on the non-slope axis, so a
+    caller must intersect it with whatever area it is grading. An empty polygon means the
+    roof never reaches the threshold.
+
+    Measured to the roof PLANE — the deck top, not the ceiling anybody stands under. A
+    caller that wants clear head must add :func:`roof_structure_depth_m` to its threshold;
+    :func:`room_head_limited_area_m2` is the one that does.
     """
-    room = Polygon(room_ring).intersection(Polygon(roof.footprint))
-    if room.is_empty:
-        return (0.0, 0.0)
-    total = room.area
-    required_z = elevation_m + threshold_m
     xs = [item[0] for item in roof.footprint]
     ys = [item[1] for item in roof.footprint]
+    extent = max(max(xs) - min(xs), max(ys) - min(ys)) + 1.0
+    everywhere = Polygon([(min(xs) - extent, min(ys) - extent),
+                          (max(xs) + extent, min(ys) - extent),
+                          (max(xs) + extent, max(ys) + extent),
+                          (min(xs) - extent, max(ys) + extent)])
+    nowhere = Polygon()
+    required_z = elevation_m + threshold_m
     low, high = (min(ys), max(ys)) if roof.ridge_direction == "x" else (min(xs), max(xs))
     rise = roof.ridge_z_m - roof.eave_z_m
     if rise <= 1e-9:
-        return total, total if roof.eave_z_m >= required_z else 0.0
+        return everywhere if roof.eave_z_m >= required_z else nowhere
     ratio = (required_z - roof.eave_z_m) / rise
     if ratio <= 0:
-        return total, total
+        return everywhere
     if ratio > 1:
-        return total, 0.0
+        return nowhere
     midpoint = (low + high) / 2.0
-    extent = max(max(xs) - min(xs), max(ys) - min(ys)) + 1.0
-    if roof.ridge_direction == "x":
-        if roof.form == "shed":
-            qualifying = Polygon([(min(xs) - extent, low + ratio * (high - low)),
-                                  (max(xs) + extent, low + ratio * (high - low)),
-                                  (max(xs) + extent, max(ys) + extent),
-                                  (min(xs) - extent, max(ys) + extent)])
-        else:
-            lo = low + ratio * (midpoint - low)
-            hi = high - ratio * (high - midpoint)
-            qualifying = Polygon([(min(xs) - extent, lo), (max(xs) + extent, lo),
-                                  (max(xs) + extent, hi), (min(xs) - extent, hi)])
+    if roof.form == "shed":
+        lo, hi = low + ratio * (high - low), high + extent
     else:
-        if roof.form == "shed":
-            qualifying = Polygon([(low + ratio * (high - low), min(ys) - extent),
-                                  (max(xs) + extent, min(ys) - extent),
-                                  (max(xs) + extent, max(ys) + extent),
-                                  (low + ratio * (high - low), max(ys) + extent)])
-        else:
-            lo = low + ratio * (midpoint - low)
-            hi = high - ratio * (high - midpoint)
-            qualifying = Polygon([(lo, min(ys) - extent), (hi, min(ys) - extent),
-                                  (hi, max(ys) + extent), (lo, max(ys) + extent)])
-    return total, room.intersection(qualifying).area
+        lo, hi = low + ratio * (midpoint - low), high - ratio * (high - midpoint)
+    if roof.ridge_direction == "x":
+        return Polygon([(min(xs) - extent, lo), (max(xs) + extent, lo),
+                        (max(xs) + extent, hi), (min(xs) - extent, hi)])
+    return Polygon([(lo, min(ys) - extent), (hi, min(ys) - extent),
+                    (hi, max(ys) + extent), (lo, max(ys) + extent)])
+
+
+def roof_headroom_areas(room_ring: list[tuple[float, float]], roof: ResolvedRoof,
+                        elevation_m: float, threshold_m: float) -> tuple[float, float]:
+    """Return room area under ``roof`` and the part of it at/above a headroom threshold."""
+    room = Polygon(room_ring).intersection(Polygon(roof.footprint))
+    if room.is_empty:
+        return (0.0, 0.0)
+    region = roof_headroom_region(roof, elevation_m, threshold_m)
+    if region.is_empty:
+        return room.area, 0.0
+    return room.area, room.intersection(region).area
+
+
+# R304.3: floor area with a ceiling under 5'-0" "shall not be considered as contributing to
+# the minimum required habitable area" — and the same 5'-0" is the line ANSI Z765 draws when
+# it measures a sloped-ceiling storey. One constant, so the reported area and the code check
+# cannot disagree about where a rake stops being floor.
+MIN_COUNTABLE_HEAD_M = inch(60).meters
+
+
+def room_head_limited_area_m2(model: ResolvedModel, ring: list[tuple[float, float]],
+                              elevation_m: float,
+                              threshold_m: float = MIN_COUNTABLE_HEAD_M) -> float:
+    """A room's plan area minus whatever a roof over it rakes below ``threshold_m`` of head.
+
+    The plain ``area_m2`` a room resolves is its floor: the right number for sheathing it,
+    finishing it and heating it, and the wrong one for "how big is this room" the moment a
+    roof plane comes down inside it. Catlin's attic pocket is 134 sf of deck with 5'-3" of
+    head at its best point — floor that gets built and paid for, and not one square foot of
+    it is space anyone stands in.
+
+    Measured to the roof's UNDERSIDE (structure depth taken off the plane), because head is
+    what the rule is about. Any part of the room no roof covers keeps its full area: a deck
+    or a soffit overhead is ``ResolvedRoom.clear_height_m``'s question, one flat height
+    rather than an area, and nothing here second-guesses it.
+    """
+    room = Polygon(ring)
+    if room.is_empty or room.area <= 1e-12:
+        return 0.0
+    area = room.area
+    for roof in model.roofs:
+        if not roof.footprint:
+            continue
+        under = room.intersection(Polygon(roof.footprint))
+        if under.is_empty or under.area <= 1e-12:
+            continue
+        region = roof_headroom_region(
+            roof, elevation_m, threshold_m + roof_structure_depth_m(model, roof))
+        qualifying = 0.0 if region.is_empty else under.intersection(region).area
+        # A roof clearing the threshold over the whole room subtracts nothing — and must
+        # subtract nothing *exactly*, or clipping noise leaves every flat-ceilinged room in
+        # the house a few square microns off its own floor area.
+        deficit = under.area - qualifying
+        if deficit > 1e-9:
+            area -= deficit
+    return float(max(area, 0.0))

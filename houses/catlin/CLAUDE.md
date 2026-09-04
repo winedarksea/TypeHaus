@@ -584,6 +584,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     rather than a scuttle because the ERV manifold, the OA hood and `VR-M-RADON-VENT`'s head
     all sit inside it and IRC M1305.1.3 wants a passageway, light and receptacle at the
     appliance (`ED-A-POCKET-LT1`, `ED-A-POCKET-RC1`).
+    **It is 134 sf of floor and 6 sf of space.** RF-HOUSE's underside runs from 3" over the
+    deck at `W-A-W1` to 5'-3" at x=9'-7 1/2", so almost none of it clears the 5'-0" that
+    R304.3 makes floor area count. `ResolvedRoom.head_limited_area_m2` is the number the
+    dashboard, the plan label and `haus build` now report beside `area_m2`; the whole attic
+    reads 496 sf usable against 1,171 sf of built deck. **Every takeoff still reads
+    `area_m2`** — the rake is sheathed and heated like anything else.
   - **Three walls SPLIT for it** — `W-A-C2` (twice, at N-A-BW-E and N-A-C3), `W-A-N2` and
     `W-A-W1` — because a partition teeing in mid-span leaves `resolve/topology.py`'s junction
     solver without a shared endpoint. In each case the TAG AND UID stay on the piece keeping a
