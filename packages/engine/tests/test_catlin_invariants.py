@@ -96,6 +96,13 @@ def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model)
 # --- the flood threshold at the sunken-garden door ----------------------------
 PATIO_DOOR = "D-B-PATIO"
 GARDEN_FLOOR = "SL-SG-FLOOR"
+# ** THE LANDING IS NO LONGER THE COURT FLOOR. ** On 2026-09-03 the court dropped 7 1/4" so
+# heavy rain ponds in it rather than crossing this threshold, and SL-SG-STOOP — the piece of
+# the old flush floor the door stands on — became the landing R311.3 measures. The step from
+# the threshold is the SAME 7 1/4" it always was; what changed is that there is now a second
+# riser from the landing down to the court. Measuring the step against SL-SG-FLOOR would
+# read 14 1/2" and report a code failure where the design put a step.
+PATIO_LANDING = "SL-SG-STOOP"
 # checks/code/mn_residential/egress.py::_MAX_NONREQUIRED_STEP_DOWN. Restated rather than
 # imported on purpose: this test is a statement about the HOUSE, and it must fail if the
 # engine's constant moves under it rather than move with it.
@@ -134,24 +141,36 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
     """...and the threshold cannot grow, because R311.3.1 is half an inch away.
 
     `code.R311_3_exterior_landing` allows a non-required exterior door 7.75" — one riser —
-    down to its landing. The garden floor outside this door is flush with the basement slab
-    and is the landing, so the flood threshold IS that step. At 7 1/4" — the curb, up from a
+    down to its landing. The flood threshold IS that step. At 7 1/4" — the curb, up from a
     7" authored sill — it passes with 1/2" to spare; at 8" it FAILS, and the
     failure would read as a landing problem rather than as the threshold decision it is.
     That half inch is the whole remaining budget, and it is why the curb is one board deep
     and not two.
     This is the pin that makes raising the threshold a conscious trade rather than a
     surprise, and the reason the two live in one test file.
+
+    **The landing is SL-SG-STOOP since 2026-09-03, not the court floor**, and the 7 1/4"
+    below is the same 7 1/4" this test has always measured — the court fell away from the
+    landing, the landing did not fall away from the door. The second assertion is what keeps
+    that honest: the court has to be a FURTHER riser down, or the stoop has quietly gone
+    flush and the flood reservoir with it.
     """
     door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
+    landing = next(s for s in catlin_model.solids if s.tag == PATIO_LANDING)
     garden = next(s for s in catlin_model.solids if s.tag == GARDEN_FLOOR)
 
-    step_down = (wall.z0_m + door.sill_m) - garden.z1_m
+    step_down = (wall.z0_m + door.sill_m) - landing.z1_m
     assert 0.0 <= step_down / INCH <= MAX_NONREQUIRED_STEP_DOWN_IN, (
-        f"{PATIO_DOOR} steps {step_down / INCH:.2f}\" down to {GARDEN_FLOOR}; "
+        f"{PATIO_DOOR} steps {step_down / INCH:.2f}\" down to {PATIO_LANDING}; "
         f"R311.3.1 allows {MAX_NONREQUIRED_STEP_DOWN_IN}\" for a door that is not the "
         "required egress door"
+    )
+    # And the court is a second riser below the landing — the flood step itself.
+    assert (landing.z1_m - garden.z1_m) / INCH == pytest.approx(7.25, abs=0.05), (
+        f"{PATIO_LANDING} stands {(landing.z1_m - garden.z1_m) / INCH:.2f}\" over "
+        f"{GARDEN_FLOOR}; the court is the building's flood reservoir and that step is the "
+        "dam (params/sunken_garden.SPEC.court_step_down_in)"
     )
 
 
@@ -175,8 +194,8 @@ def test_the_landing_check_measures_the_step_the_curb_actually_makes(catlin_plan
 
     door = next(o for o in ctx.model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in ctx.model.walls if w.tag == door.host_wall)
-    garden = next(s for s in ctx.model.solids if s.tag == GARDEN_FLOOR)
-    expected = ((wall.base_ref_z_m + door.sill_m) - garden.z1_m) / INCH
+    landing = next(s for s in ctx.model.solids if s.tag == PATIO_LANDING)
+    expected = ((wall.base_ref_z_m + door.sill_m) - landing.z1_m) / INCH
 
     assert expected > 1.0, "the curb is the point of this test; it has gone flush"
     assert f"{expected:.1f}\"" in finding.message, finding.message

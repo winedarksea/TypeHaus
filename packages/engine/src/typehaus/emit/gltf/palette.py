@@ -259,7 +259,7 @@ _GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.ba
 _GLAZED_LAPIS_BRICK_BASE = "#10386a"
 _GLAZED_GOLD_BRICK_BASE = "#c08a12"
 _BROWN_BRICK_BASE = "#a07c5c"  # lightened + de-jittered; see materials.ts
-# The garage wainscot's Glen-Gery Columbia Roman Maximus brick — materials.ts
+# Glen-Gery Columbia Roman Maximus brick — materials.ts
 # ROMAN_MAXIMUS_BRICK_STYLE.base and ROMAN_MAXIMUS_SOLDIER_STYLE.base. The off-white
 # colourway of the Roman Maximus unit; the `finish` key names the UNIT GEOMETRY, so a colour
 # swap moves this value and nothing else — and standing the units on end moved the key

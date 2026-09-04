@@ -227,6 +227,12 @@ def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: 
                        band_z + height, "insect-screen", None, "rigid", lineweight=0.3)
 
 
+# How far from where a label is expected to land a candidate solid may sit and still be
+# that label's piece. Sized to swallow lap-order and schematic-vs-authored offsets (inches)
+# while rejecting anything on another storey.
+_ANCHOR_Z_WINDOW_IN = 36.0
+
+
 def _water_anchor(model, direction: str, station: float, clad_out: float,
                   category: str, fallback: tuple[float, float]) -> tuple[float, float]:
     """Centre of the resolved gutter/drip solids this cut passes through, or ``fallback``.
@@ -237,6 +243,14 @@ def _water_anchor(model, direction: str, station: float, clad_out: float,
     the deck datum, while the schematic trough hangs below the roof plane. A label anchored on
     a guessed offset therefore points at the right piece on one eave and at empty paper on the
     other, so the anchor is read back off the geometry that was actually drawn.
+
+    ** THE ELEVATION WINDOW IS NOT OPTIONAL. ** Plan proximity alone does not identify a
+    piece: a wall line that carries an eave drip 8'-6" up may also carry a base flashing at
+    the foundation, and both are ``flashing`` solids crossing the same station within the
+    same 24" of the cladding face. Averaging them puts the eave's label at their midpoint —
+    on paper, a leader from the roof pointing at the ground. Catlin's garage is exactly that
+    case since its stem-top Z was authored (2026-09-03). ``fallback`` already carries where
+    this label is expected to land, so it is also the right centre for the window.
     """
     axis, cross = (0, 1) if direction == "x" else (1, 0)
     us: list[float] = []
@@ -250,8 +264,14 @@ def _water_anchor(model, direction: str, station: float, clad_out: float,
             continue
         if min(abs(min(across) - clad_out), abs(max(across) - clad_out)) > 24.0:
             continue
+        z0, z1 = solid.z0_m / M_PER_IN, solid.z1_m / M_PER_IN
+        # Generous, because the authored piece and the schematic fallback deliberately sit
+        # at different elevations (see above) — this rejects a different STOREY's flashing,
+        # not a few inches of lap order.
+        if min(abs(z0 - fallback[1]), abs(z1 - fallback[1])) > _ANCHOR_Z_WINDOW_IN:
+            continue
         us += across
-        zs += [solid.z0_m / M_PER_IN, solid.z1_m / M_PER_IN]
+        zs += [z0, z1]
     if not us:
         return fallback
     return ((min(us) + max(us)) / 2.0, (min(zs) + max(zs)) / 2.0)

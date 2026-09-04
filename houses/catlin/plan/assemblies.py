@@ -1395,11 +1395,19 @@ GARAGE_ICF_6 = Assembly(
         # `GRADE` is a datum, not a literal, so the band follows `Site.grade` on the next
         # lift exactly as `gwb-stem` and the basement's `_PROTECTION_PANEL` do.
         #
-        # IT RUNS BEHIND THE EAST WAINSCOT TOO, and that is deliberate rather than a
-        # billing artifact. The wainscot is a VENTED, DRAINED rainscreen open at its base:
-        # water gets into that cavity by design, so the foam behind it needs the same
-        # continuous protection as the foam beside it. The wainscot is a wear layer over
-        # this band, not a substitute for it.
+        # SINCE 2026-09-03 IT IS THE GARAGE'S WHOLE BASE SKIN. It used to run BEHIND a
+        # 4'-0" aluminium wainscot on the two east piers flanking the overhead door — the
+        # wainscot was a wear layer over this band, never a substitute for it, which is why
+        # deleting the wainscot took nothing away from the piers. They keep exactly the
+        # protection the other three walls always had, and the east elevation now reads as
+        # one uniform base course. This band is not a leftover of that change; it is the
+        # thing the change kept.
+        #
+        # ITS TOP IS A REAL JUNCTION AND IT IS FLASHED. The band's top and the corrugated
+        # panel's base both land on the stem top, and a rainscreen's cavity water arrives at
+        # exactly that line. `STEM_TOP_Z_FLASHING` in plan/storeys/garage.py is the Z that
+        # catches it — aluminium over aluminium, broken only at the two stem gaps where
+        # there is no stem to band.
         #
         # The band pushes the stem's exterior face 0.30" east (gap + sheet), which nicks the "stem and wood
         # wall are coplanar on the outside" promise this garage is built on. It is inside
@@ -1437,207 +1445,6 @@ GARAGE_ICF_6 = Assembly(
                                                    offset=inch(-2.0)))),
     ),
     source="library GARAGE_ICF's 6\" concrete core (ICF-6, matching masonry spec) + this house's 2.5\" EPS facing (thinner than library's 2.625\" generic default) and gwb-stem interior banding above grade (code.R316_4); exterior face protected above grade by a PVDF-painted aluminium band from 2\" below grade to the stem top, fixed with 316 stainless gasketed screws into the ICF webs, closing the other half of the note's both-faces requirement",
-)
-
-# --- garage east/south/north brick wainscot -----------------------------------
-#
-# The two 4'-0" strips of east wall flanking the overhead door, plus a 4'-0" return around
-# each of the SE and NE corners, carry a short off-white-brick wainscot: the most-abused surface
-# on the building (apron splash, snow piled off the drive, trimmers, car doors) gets the one
-# face that does not care. Full 3 5/8" brick, not thin brick, which means real bearing —
-# hence the ledge below and the veneer wall in plan/storeys/garage.py rather than a
-# WallPaneling band (a band carries neither a wythe thickness nor an air gap, and the
-# wood-surfaces rollup only bills materials with a `species`, so a brick band would produce
-# no BOM line at all).
-#
-# Glen-Gery "Columbia Roman Maximus" (glengery.com/brick-catalog/columbia-roman-maximus):
-# 3 5/8" x 1 5/8" x 23 5/8", ASTM C216 Grade SW Type FBA. The bed depth (3 5/8") is the same
-# as a modular unit, so the wythe thickness, air gap and ledge width below are UNCHANGED
-# from the original buff-modular spec.
-#
-# ** THE UNITS STAND ON END. ** This is a SOLDIER field, not a running bond: the 23 5/8"
-# length is vertical and the 1 5/8" width is the exposed face width, so the wall reads as a
-# fine vertical pinstripe on a 2" horizontal module — the old course module, rotated.
-#
-# SOLDIER, NOT SAILOR, AND THAT IS A CODE LINE RATHER THAN A PREFERENCE. Tipping the unit
-# onto its 1 5/8" face to show the broad 3 5/8" face would leave a 1 5/8" wythe, under IRC
-# R703.8.2's 2 5/8" minimum for anchored masonry veneer and too thin for corrugated-tie
-# embedment (~1 1/2" embedment plus 5/8" mortar cover wants 2 1/8" of wythe). NOTHING IN THE
-# ENGINE WOULD CATCH IT — there is no veneer-thickness check — so it would ship at 0 FAIL.
-# Standing the unit on end instead keeps the 3 5/8" bed depth as the wythe and every
-# dimension outboard of the stem holds.
-#
-# Coursing, working up from grade (-2'-10"). The vertical module is 23 5/8" + 3/8" joint
-# = 24"; the horizontal one is 1 5/8" + 3/8" = 2":
-#     ledge/shelf top   2" above grade       (-2'-8")
-#     soldier course 1  24"                  (-0'-8")
-#     soldier course 2  24"                  (+1'-4")
-#     metal cap flash   2"                   (+1'-6" == 4'-4" above grade)
-# TWO WHOLE UNITS IS WHY THE CAP LEFT 4'-0", and the rowlock cap went with it. Only 44" of
-# the old 4'-0" was brick and only 40" of that was field, so a 48" pair of soldiers does not
-# fit under a 4'-0" cap: holding that anchor would have meant sawing one course to 15 5/8"
-# in a special-order handmade unit. A rowlock is itself a horizontal on-edge course and
-# reads as a stripe across an all-vertical field; the formed metal cap already gives the
-# wash it was there for. The shelf did not move.
-#
-# `finish="roman-maximus-soldier"` on the Material tells the renderer's masonry recipe about
-# the unit geometry — that key names the GEOMETRY, and the geometry is what changed here.
-# The colourway lives in the style's `base` colour (ui/src/three/materials.ts) and the
-# palette's `_FINISH_BASE` entry (emit/gltf/palette.py).
-#
-# The shelf sits one unit bed height ABOVE finish grade rather than at it — the cheapest
-# durability move available in a 40+ freeze-thaw-cycle climate, lifting the base of the
-# brick clear of the worst splash and snow-contact zone. It is no longer "one course" of
-# anything now that the courses run 24", just 2" of splash clearance.
-GARAGE_BRICK_LEDGE_RISE = inch(2.0)  # one unit bed height of splash clearance above grade
-# 1" air space (IRC R703.8 minimum) + a 3 5/8" wythe: how far east of the node line the
-# bearing shelf has to project. Below the shelf the concrete section widens from 11" to
-# ~15 5/8" — all of it below grade and backfilled, so none of it is visible.
-GARAGE_BRICK_LEDGE = inch(4.625)
-
-# ** UNREFERENCED since 2026-09-02, kept for the revert ** on the `glazed-green-brick` /
-# `CATLIN_EXT_2X6_SWINBURNE` convention. The east wainscot is metal now and a hung sheet
-# needs no bearing shelf, so W-GF-E1/E2/S3/N2 went back to plain `GARAGE_ICF_6` and their
-# footings back from 24" to 20". Note this assembly did NOT get GARAGE_ICF_6's new
-# `coil-ext` band: restoring the brick would put the wythe back in front of this face.
-#
-# GARAGE_ICF_6 with a brick ledge appended as one extra OUTERMOST layer. Brick-ledge ICF
-# forms are catalog items for 6" and 8" cores (Amvic, Nudura, Alliance), and the ICF Brick
-# Ledge Extension is rated for "any height, angle and side of an ICF wall"; ours lands near
-# grade, well below the top of the stack — the easy case. A 4' welded-wire reinforcer
-# dropped into the ledge is the standard way to develop it.
-#
-# OUTERMOST is not a style choice, it is the only thing that works. A banded layer with no
-# `slot` still occupies its full depth over the whole wall (see model/assembly.py's note on
-# `extent`): a general stepped section — thicker core below, thinner above — is not
-# expressible, because a stack whose total thickness varies with elevation is not something
-# `Wall.alignment` can answer. As the LAST layer nothing outboard of it is displaced, and
-# params/foundations.py's `face("concrete-ext", offset=GARAGE_ICF_EPS)` measures from the
-# INTERIOR, so `_ALIGN` is unchanged and the ledge grows east exactly as wanted.
-#
-# NOT a `slot`: every member of a slot must carry the same thickness
-# (integrity.assembly_layers), so a slot cannot express a 4 5/8" step against an 11" wall
-# and would only add a finding.
-#
-# The band top is the GRADE datum, not a literal elevation — the same mechanism the
-# `gwb-stem` layer already uses, so the ledge tracks `Site.grade` and follows the next grade
-# lift instead of silently detaching from it. Everything above the ledge is GARAGE_ICF_6
-# restated verbatim; above the shelf this is the same wall.
-GARAGE_ICF_6_BRICKLEDGE = Assembly(
-    tag="GARAGE_ICF_6_BRICKLEDGE",
-    layers=(
-        Layer(name="gwb-stem", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH,
-              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.GRADE))),
-        Layer(name="eps-int", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX,
-              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True,
-                                  rebar_spacing=inch(16))),
-        Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="brick-ledge", material_ref="concrete", thickness=GARAGE_BRICK_LEDGE,
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX,
-              extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.WALL_BASE),
-                                 top=LayerBound(datum=LayerDatum.GRADE,
-                                                offset=GARAGE_BRICK_LEDGE_RISE))),
-    ),
-    source="GARAGE_ICF_6 + a mid-stack ICF brick-ledge form (Amvic/Nudura/Alliance brick-ledge block, or the ICF Brick Ledge Extension rated for any height) carrying the east wainscot's 3 5/8\" wythe on a shelf one modular course above grade; 4' welded-wire reinforcer in the ledge; ledge and the widened section below it are backfilled and not visible",
-)
-
-# ** UNREFERENCED since 2026-09-02, kept for the revert ** alongside
-# GARAGE_ICF_6_BRICKLEDGE above — see GARAGE_METAL_WAINSCOT below for what replaced it and
-# what the swap deleted. Its `prices.toml` row is kept at rate for the same reason.
-#
-# The wainscot itself: a short veneer wall standing in front of the existing stem/wood wall,
-# exactly W-B-BRICK's precedent (plan/storeys/basement.py). ONE flat field, no `slot`-banded
-# courses — BASEMENT_BRICK_VENEER's banding exists to serve the Ishtar scheme; this wall is
-# one brick, laid soldier, and the metal cap is a separate element, not a band.
-#
-# STRUCTURE, not CLADDING, on the wythe — the same reason BASEMENT_BRICK_VENEER gives, and
-# RETAINING_BLOCK_12's precedent: this wythe has nothing behind it IN THIS ASSEMBLY (the
-# backer is a different wall), so it has to be the structure layer or
-# integrity.assembly_layers finds none.
-#
-# The detailing that keeps this alive is in the veneer wall's own notes and the house
-# CLAUDE.md: through-wall flashing + weeps at the base course on the ledge, a second
-# through-wall flashing under the cap, and ties that DIFFER BY BACKING — the storey datum is
-# -1'-0", so ~19 3/8" of brick backs onto the ICF stem and ~28 5/8" onto the wood wall above
-# it. The soldier coursing is what makes the ties hard: bed joints exist only at the shelf,
-# at -0'-8" and at +1'-4", fixing the vertical tie spacing at IRC R703.8.4's 24" maximum,
-# and 2.67 sf per tie then forces 16" HORIZONTAL — which 24" o.c. studs cannot give. Flat
-# 2x6 blocking in the bays at the two joints above the datum buys it; the ICF's webs below
-# already allow any horizontal station.
-GARAGE_BRICK_WAINSCOT = Assembly(
-    tag="GARAGE_BRICK_WAINSCOT",
-    layers=(
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
-              function=LayerFunction.AIRGAP),
-        Layer(name="brick", material_ref="off-white-brick", thickness=inch(3.625),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — full-wythe Glen-Gery Columbia Roman Maximus face brick (3 5/8\" bed, ASTM C216 Grade SW Type FBA) SET AS A SOLDIER, units on end so the 23 5/8\" length is vertical and the exposed face is 1 5/8\" wide, stack bond, two whole courses on a 24\" vertical module; on a 1\" drained cavity (IRC R703.8), borne on GARAGE_ICF_6_BRICKLEDGE's shelf; through-wall flashing + weeps at 33\" o.c. max at the base and again under the cap; corrugated ties at 16\" o.c. horizontal in all three bed joints (24\" vertical is R703.8.4's maximum and the only spacing the coursing offers), on flat 2x6 blocking in the stud bays at the two joints above the storey datum, ICF ties at the shelf",
-)
-
-# --- garage east/south/north metal wainscot (2026-09-02) ----------------------
-#
-# What replaced the brick above, and WHY IT IS NOT A DOWNGRADE. The driveway apron is
-# plowed and salted, and this is the one surface on the site that chloride-laden slush is
-# thrown at. Brick is the ABSORPTIVE choice there: the unit is Grade SW and survives, but
-# salt goes into the mortar and the base course by capillarity and comes back out as
-# subflorescence, and a wainscot's own base is the classic place that shows. Painted
-# aluminium takes none of it in, washes clean, and is the metal whose oxide film re-forms
-# in chloride.
-#
-# What the swap DELETES, which is most of the argument: the ICF brick-ledge block, the
-# 20" -> 24" footing widening on four stem segments, the through-wall flashing and weeps at
-# the base, the second through-wall flashing under the cap, corrugated ties in three bed
-# joints at a 16" o.c. horizontal spacing 24" studs could not give, and the ~8 lf per pier
-# of flat 2x6 blocking bought to make that spacing reachable. None of that exists here.
-# `GARAGE_BRICK_WAINSCOT` and `GARAGE_ICF_6_BRICKLEDGE` are kept UNREFERENCED above on the
-# `glazed-green-brick` convention; the revert is four `assembly=` edits in
-# plan/storeys/garage.py plus its node and elevation constants.
-#
-# 1.5" OF CAVITY, AND 1" WOULD NOT DO. The wainscot is its own short wall standing in front
-# of the stem, so its layout line has to clear the stem's and the wood wall's by more than
-# `resolve/stacking.py::_axis_match`'s 1/2" tolerance or `integrity.stack_ambiguous` is a
-# hard ERROR (the brick's own comment in plan/storeys/garage.py records hitting exactly
-# this). At a 1" cavity the stack is 1.05" thick and the margin is 0.05"; at 1.5" it is
-# 1.55" and the margin is an inch. It is also the better drained cavity, and it matches the
-# 1-1/2" clear the sunken garden's veneer ended up with.
-#
-# `AIRGAP`, NOT `FURRING`, on the cavity, though vertical KDAT furring is what is in it. A
-# `FURRING` + `CLADDING` pair is the signature `resolve/accessories.py` reads to derive a
-# rainscreen bug screen and turn on the `bug_screen:<assembly>` price row; this garage
-# prices its closures as an `[allowances]` lump everywhere else (the corrugated wall's
-# ~192 LF), and one wainscot should not be the exception. Same reading the brick's own 1"
-# air gap got.
-#
-# THERE IS NO BACKER SHEET, AND THE DENT ARGUMENT IS WHY THERE ISN'T. The stem's exterior
-# EPS face and the wood wall's CDX face are deliberately coplanar, so this band stands off
-# one flat plane — which is what makes a SMOOTH sheet buildable here at all. The lower
-# ~22" of that plane is 2-1/2" of bead foam and is exactly the shovel-and-plow zone, so
-# the first instinct is a rigid board over it. That is the wrong lever: the sheet spans
-# the KDAT furring and never touches the foam, so dent resistance is GAUGE and FURRING
-# SPACING, not a sheet behind it. 0.050" on furring at 12" o.c. through the lower band
-# (16" above it) answers it without adding a sheet that would sit in a wet vented cavity
-# and want to be treated — and this house has no treated-panel material to give it.
-#
-# `STRUCTURE` ON THE PANEL, not `CLADDING`, and it is the brick's own reasoning: this
-# sheet has nothing behind it IN THIS ASSEMBLY (the backer is a different wall), so it has
-# to be the structure layer or `integrity.assembly_layers` finds none. It also keeps the
-# wainscot pricing where the brick priced, on a `[wall_structure]` key qualified by
-# assembly tag, instead of moving it into `[envelope_layers]` mid-swap.
-GARAGE_METAL_WAINSCOT = Assembly(
-    tag="GARAGE_METAL_WAINSCOT",
-    layers=(
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.5),
-              function=LayerFunction.AIRGAP),
-        Layer(name="panel", material_ref="aluminum-flat-pvdf", thickness=inch(0.05),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="garage east wainscot flanking the overhead door, wrapped 4' around each of the SE/NE corners onto the south and north walls — PVDF-painted aluminium flat sheet on a 1-1/2\" drained and vented cavity of vertical KDAT furring at 12\" o.c. through the lower band and 16\" o.c. above it, hung on concealed cleats with hemmed top and bottom edges and a #9 316 stainless gasketed perimeter fixing. ONE UNCUT 48\" x 120\" SHEET PER PIER: a pier face is 49-9/16\" (the 4'-0\" door offset plus the 1.55\" stretch out to the corner point) and its return is 48\", so the developed girth is 97-9/16\" plus end hems, inside the 120\" length with ~20\" of drop — a real brake-bent outside corner and no corner joint. Vented closure at the base and solid closure under the cap, priced as an allowance with the garage's other closures. The steel corrugated panel above must never lap this metal-to-metal — aluminium Z-flash, sealant/EPDM separation, the Z's upper leg behind the corrugated; on site the corrugated terminates at the cap and its vented base closure moves up with it, which the model does not express (it bills the panel full height behind this band, as it did behind the brick)",
 )
 
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
@@ -1764,6 +1571,74 @@ CATLIN_GARDEN_SLAB = Assembly(
               function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
     ),
     source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
+)
+
+# The sunken-garden court's open centre: 147 sf of gravel and turf inside the SL-SG-FLOOR
+# rim (params/sunken_garden.GARDEN_FIELD).
+#
+# ** PROVISIONAL, AND ISOLATED HERE ON PURPOSE. ** Whether this court's middle ends up
+# planted, gravelled or paved is an owner decision that has not been taken. Everything that
+# depends on it is inside this one assembly, so flipping it to grass, to a different
+# build-up, or back to plain concrete is a `layers=` edit and nothing else moves — the slab
+# outline, the rim, the frost datum and the R311.3 landing are all independent of it.
+#
+# ** `role="band"`, the same as the frost wings, and it costs nothing here. ** A band is "a
+# buried layer of the ground, not a thing that holds anything up" — which is exactly what 12"
+# of sand, fabric and stone is. It carries no STRUCTURE layer, and `integrity.assembly_layers`
+# requires an `enclosure` to have one, so the two facts agree rather than fight.
+#
+# What a band costs elsewhere is that `resolve/site_earth._is_a_floor` stops reading it as an
+# excavation floor — and here that is free, because SL-SG-FLOOR's outline spans the WHOLE
+# court (site_earth reads `outline` and ignores voids), so the court is one excavation floor
+# at one elevation either way. It also removes a hazard: with the field invisible to that
+# derivation, no frost finding can ever name SL-SG-FIELD instead of SL-SG-FLOOR, whatever
+# happens to the two `top_elevation`s.
+#
+# No `ConcreteSpec` on any layer and no `reinforcement`, because there is no concrete here.
+# That is what keeps the field out of `concrete_mix_matches_exposure` (it drops from
+# `with_spec`, and that check's UNKNOWN branch only fires when NO pour in the house states a
+# mix) and out of `concrete_cover_meets_minimum`. Every layer is a `_BILLABLE` function, so
+# all 147 sf of each bills through `envelope_layer_takeoff`; prices.toml carries a zero
+# `slab:CATLIN_GARDEN_FIELD` row so `structural_solids_takeoff` does not ALSO order 5.4 cy
+# of concrete that does not exist. Irrigation is an `[allowances]` line, not a layer.
+CATLIN_GARDEN_FIELD = Assembly(
+    tag="CATLIN_GARDEN_FIELD",
+    role="band",
+    layers=(
+        Layer(name="turf", material_ref="bentgrass-turf", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        # 7 1/2" nominal; the 0.02" the fabric takes comes out of here so the build-up
+        # closes on a round 12" and `integrity.slab_thickness` has a boundary to land on.
+        #
+        # SHEATHING, not STRUCTURE, and the reason is billing as much as mechanics:
+        # `takeoff/envelope._BILLABLE` deliberately excludes STRUCTURE (that layer's
+        # quantity is the pour's own cubic yards, and this assembly's $/cy key is zeroed), so
+        # a rootzone filed as structure would bill NOTHING — 8" of sand, the biggest single
+        # line of this build-up, silently free. Same function the capillary break below
+        # already carries, for the same reason: it is a placed course measured by the SF.
+        Layer(name="rootzone", material_ref="rootzone-sand", thickness=inch(7.48),
+              function=LayerFunction.SHEATHING),
+        Layer(name="separation", material_ref="geotextile-separation", thickness=inch(0.02),
+              function=LayerFunction.MEMBRANE),
+        Layer(name="drainage-stone", material_ref="capillary-break-stone", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
+    ),
+    source="sunken-garden court field, PROVISIONAL: USGA-style rootzone over a geotextile on 4\" #57 open-graded stone, draining to DRW-SG-MAIN. Flip this assembly to change what the court's middle is",
+)
+
+# D-B-PATIO's landing: the piece of the old flush garden floor the door still stands on,
+# now a 7 1/4" block cast on the dropped court (params/sunken_garden.GARDEN_STOOP).
+#
+# Its own assembly rather than CATLIN_GARDEN_SLAB because `integrity.slab_thickness` wants a
+# layer boundary at the authored thickness, and 7 1/4" is not 3 1/2". Same mix, same
+# exposure, same reasoning as the court floor — this is the same pour on the same day.
+CATLIN_GARDEN_STOOP = Assembly(
+    tag="CATLIN_GARDEN_STOOP",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(7.25),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+    ),
+    source="sunken-garden court: D-B-PATIO's landing, one 7 1/4\" riser above the court and 7 1/4\" below the threshold (IRC R311.3.2). Sky-exposed, F3+C2 mix; its base is the court floor",
 )
 
 CATLIN_GARAGE_STEP_6 = Assembly(
@@ -2638,6 +2513,19 @@ MATERIALS = [
     Material(tag="eps-deck-form", name="EPS stay-in-place deck form", r_per_inch=3.125,
              perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
              source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
+    # --- the sunken-garden court's field build-up ---------------------------------
+    # Three house-local materials, all provisional with `CATLIN_GARDEN_FIELD` itself. None
+    # of them appears in any other assembly, so retiring the gravel-and-turf field retires
+    # them with it.
+    Material(tag="rootzone-sand", name="Rootzone sand/compost blend, 8\" placed",
+             density=1600.0, hatch="earth", color="#8b7a5e",
+             source="USGA-style rootzone: coarse sand with 10-15% compost by volume. 8\" is the shallow end of the range and is what a 4\" #57 drainage bed under it permits"),
+    Material(tag="geotextile-separation", name="Non-woven geotextile separation fabric",
+             perm_rating=100.0, hatch="membrane", color="#9a9a8c",
+             source="AASHTO M288 Class 2 non-woven; it keeps the rootzone out of the #57 voids, which is the same failure DRW-SG-MAIN's fabric wrap exists to prevent"),
+    Material(tag="bentgrass-turf", name="Turf, cool-season sod",
+             density=1000.0, hatch="earth", color="#5f7a4a", finish="planted",
+             source="sod rather than seed: this is a 9'-deep court that will be walked through before anything germinates. Species is a landscape decision, not a building one"),
     # --- accent wall paint -------------------------------------------------------
     # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
     # (storeys/second.py). Physically identical to `latex-paint` (same film, same Class III
@@ -3141,27 +3029,6 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
              source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
-    # Glen-Gery "Columbia Roman Maximus" for the garage wainscot, replacing
-    # the black colourway of the same unit (which itself replaced an earlier light-buff
-    # stock spec). Same clay physics as every other brick here — a brick is a brick and
-    # only the face differs, which is the whole reason `finish` and `color` are separate
-    # fields from `r_per_inch`/`density`. The unit itself is 3 5/8" x 1 5/8" x 23 5/8"
-    # (glengery.com/brick-catalog/columbia-roman-maximus): the bed depth matches a modular
-    # unit exactly (this material drops into the same 3 5/8" `brick` layer unchanged), but
-    # it is a handmade Type FBA unit, and IT IS LAID ON END — a soldier field, so the
-    # 23 5/8" length is the course height and the 1 5/8" width is the exposed face width, a
-    # 24" vertical by 2" horizontal module. See GARAGE_BRICK_LEDGE_RISE above for the
-    # coursing this drives and for why soldier rather than sailor.
-    #
-    # `finish` is "roman-maximus-soldier": that key names the UNIT GEOMETRY recipe, not a
-    # colourway, so it moved when the units stood up and did NOT move for the earlier
-    # black-to-Columbia colour swap. The colour itself lives in the style's `base` in
-    # ui/src/three/materials.ts and in emit/gltf/palette.py's `_FINISH_BASE`, which mirror
-    # each other by hand.
-    Material(tag="off-white-brick", name="Columbia Roman Maximus face brick (ASTM C216 Grade SW)",
-             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
-             color="#e4ddc9", finish="roman-maximus-soldier",
-             source="garage wainscot — Glen-Gery Columbia Roman Maximus, ASTM C216 Grade SW Type FBA (severe weathering; Type FBA rather than FBS because the handmade process gives it intentional dimensional variation), an off-white/ivory through-body colour, a SINGLE body and not a blend: a chip or a trimmer scar exposes the same colour rather than a red core, and Grade SW is not optional at 40+ freeze-thaw cycles a year"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
     # through STARTER_MATERIALS above.
@@ -3177,11 +3044,23 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
-    # The garage's base skin: the ICF stem's exterior protection band and the east
-    # wainscot, one material and one trade. Painted aluminium flat sheet, 3105-H14 or 5005,
-    # 2-coat 70% PVDF (Kynar 500 / Hylar 5000), 0.040" minimum and 0.050" preferred — NOT
-    # 0.019" trim coil, which takes a permanent dimple from a shovel corner in exactly the
-    # zone this exists to survive.
+    # The garage's base skin, and since 2026-09-03 it is the ONLY thing on it: the 24" band
+    # on the ICF stem, all four walls, plus the stem-top Z at the corrugated panel base.
+    # The 4'-0" east wainscot this material also clad was deleted that day. Painted
+    # aluminium flat sheet, 3105-H14 or 5005, 2-coat 70% PVDF (Kynar 500 / Hylar 5000),
+    # 0.040" minimum and 0.050" preferred — NOT 0.019" trim coil, which takes a permanent
+    # dimple from a shovel corner in exactly the zone this exists to survive.
+    #
+    # ** THE HEAVY GAUGE SURVIVED THE WAINSCOT, AND IT IS FREE. ** With only a ~24" band
+    # left, 24" trim coil is the obvious buy and it is the WRONG one: stock 48" x 120"
+    # architectural sheet rips into exactly TWO 24" bands with no waste, so the heavier
+    # metal costs nothing per SF over coil and the dent argument above is unchanged. The
+    # band is still the shovel/plow-splash zone; it just got shorter.
+    #
+    # SECOND BEST, IF A SUPPLIER CANNOT GET SHEET: 0.024" heavy-gauge aluminium trim coil in
+    # a 24" width, the thickest the trim-coil product line reaches (0.027" in a few lines).
+    # That is a REAL fallback and is why it is written down rather than left to the field.
+    # 0.019" standard trim coil is NOT the fallback — it is the thing this note rejects.
     #
     # ALUMINIUM, WHERE EVERY OTHER PANEL ON THIS BUILDING IS STEEL, AND THAT IS THE POINT.
     # `corrugated-panel-26` above it is 26 ga PVDF-coated STEEL. The driveway apron is
@@ -3227,7 +3106,7 @@ MATERIALS = [
              name="PVDF-painted aluminium flat sheet (0.040-0.050\")",
              r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#383838",
-             source="garage ICF stem exterior protection band + east wainscot; 3105-H14 or 5005 painted aluminium flat sheet, 2-coat 70% PVDF (Kynar 500/Hylar 5000), 0.040\" min / 0.050\" preferred, stock 48\" x 120\"; fixed with #9 316 stainless gasketed screws (EPDM washer is the dielectric break) into KDAT furring, every exposed edge hemmed or folded; NEVER in contact with concrete or fresh mortar (alkali strips the oxide film) and never lapped metal-to-metal against the steel corrugated panel above"),
+             source="garage ICF stem exterior protection band (all four walls) + the stem-top Z-flash at the corrugated panel base; 3105-H14 or 5005 painted aluminium flat sheet, 2-coat 70% PVDF (Kynar 500/Hylar 5000), 0.040\" min / 0.050\" preferred, stock 48\" x 120\" ripped into two 24\" bands with no waste (second best if sheet is unobtainable: 0.024\" heavy-gauge 24\" trim coil, never 0.019\"); fixed with #9 316 stainless gasketed screws (EPDM washer is the dielectric break) into KDAT furring, every exposed edge hemmed or folded; NEVER in contact with concrete or fresh mortar (alkali strips the oxide film) and never lapped metal-to-metal against the steel corrugated panel above"),
     # The garage's accent coil. Brake-formed PVDF-coated
     # stock in the same family as `metal-dark-exterior` above, sharing its reasoning: colour
     # is an albedo, so it is authored a step darker than the chip reads in hand, and it is
@@ -3721,9 +3600,6 @@ ASSEMBLIES = [
     PIER_CONCRETE_12,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,
-    GARAGE_ICF_6_BRICKLEDGE,
-    GARAGE_BRICK_WAINSCOT,
-    GARAGE_METAL_WAINSCOT,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
     HP_PAD_ON_GRADE,
@@ -3735,6 +3611,8 @@ ASSEMBLIES = [
     CATLIN_PORCH_FOOTING_84,
     CATLIN_PIER_BASE_12,
     CATLIN_GARDEN_SLAB,
+    CATLIN_GARDEN_FIELD,
+    CATLIN_GARDEN_STOOP,
     CATLIN_GARAGE_STEP_6,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,

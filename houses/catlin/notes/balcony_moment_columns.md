@@ -122,12 +122,20 @@ changed when they went; what changed is that `FS-SG-DECK`'s aluminium plank now 
 ### 2b. Wind — ASCE 7-16 §29.3, on the same basis as the superseded note
 
 `plan/site.py`, from **MN Rules 1309.0301**: V_ult 115 mph statewide, Exposure B, Risk
-Category II. Height is measured from the **sunken garden floor**, the ground actually beneath
-this structure, not from the site grade nine feet higher — the conservative reading and the
-physical one.
+Category II. Height is measured from the **sunken garden court surface**, the ground actually
+beneath this structure, not from the site grade nine feet higher — the conservative reading
+and the physical one.
+
+**That ground dropped 4 11/16" on 2026-09-03 and this demand rose with it.**
+`balcony_wind.ground_below_ft` takes the lowest of the site's spot elevations, and the two
+over the court now read -9'-8 11/16": the court fell 7 1/4" for the flood step at
+`D-B-PATIO`, and the annotation it was read from had been 1 7/16" stale before that. `z`
+grew, `K_z` with it, and every figure below moved about half a per cent. A *lower* floor is a
+*taller* structure — the wrong direction to be wrong in, which is why this reads the court
+and not the grade.
 
 ```
-q_h at h = 23.0'                        18.7 psf        (typehaus/wind.py)
+q_h at h = 23.3'                        18.8 psf        (typehaus/wind.py)
 G (rigid, §26.11.1)                     0.85
 ASD factor (§2.4.1)                     0.6
 ```
@@ -156,9 +164,9 @@ adequate at 1.80 is adequate for any legitimate reading of the figure.
 
 ```
 F = 0.6 × q_h × G × C_f × A_s
-  = 0.6 × 18.7 × 0.85 × 1.80 × 35.94  =  616 lb   storey shear, E-W
-split over 4 fixed columns             =  154 lb  each, delivered at the deck plane
-base moment  M_w = 154 × 9.01'         =  1,388 lb-ft
+  = 0.6 × 18.8 × 0.85 × 1.80 × 35.94  =  619 lb   storey shear, E-W
+split over 4 fixed columns             =  155 lb  each, delivered at the deck plane
+base moment  M_w = 155 × 9.01'         =  1,395 lb-ft
 ```
 
 **The three-beam band is an over-count and is kept deliberately.** Three N-S beams seen from
@@ -166,6 +174,9 @@ the east stand behind one another and a real open-frame analysis would shield th
 third. Counting all three is conservative, it is what `checks/structural/lateral_racking`
 already did with the rails, and at d/c 0.07 the margin is not worth an argument about
 shielding factors.
+
+(The rear row `PT-SG-BR1/BR3` stands 2" proud for the deck's drainage crown, so its lever is
+9.18' and its wind moment **1,421 lb-ft**. The guard case still governs both rows.)
 
 ### 2c. Guard — IRC R301.5, and it is what governs
 

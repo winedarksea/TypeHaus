@@ -400,8 +400,9 @@ HYDRANT_BRANCH_MAIN = [
     # across: W-S-S1 resolves king-1-r0 at x=5'-5 1/4" (face 5'-6") and king-2-l0 at
     # x=7'-10 3/4" (face 7'-10") with ONE stud between them, at x=6'-8". That leaves two
     # 13 1/4" bays, and 7'-4" is 7 1/4" off the stud's east face and 6" off the king's — the
-    # 16" module bay centre. It is also 4'-8" clear of D-S-DECK-W's west jamb pack, which
-    # starts at x=11'-11".
+    # 16" module bay centre. It is also well clear of the openings east of it — 4'-8" to
+    # what was D-S-DECK-W's west jamb pack, and 5'-11" to WIN-S-PLANT4's, the window that
+    # replaced that door on 2026-09-03 (mep.run_through_opening).
     PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALC-HYD", system=PipeSystem.WATER_COLD,
             path=(pt(ft(7, 4), ft(0, 9)), pt(ft(7, 4), ft(0, 3.25)),
                   pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), ft(0, 3.25))),

@@ -176,11 +176,13 @@ SITE = Site(
         #
         # None of these four move with grade: they are the tops of structures, not readings
         # of the soil plane, and those structures stay put.
-        # The garden floor reads -9'-4": SL-SG-FLOOR is filed on the basement storey and goes
-        # down with that datum. Nothing structural reads spot elevations — they are drafting
+        # The garden floor reads -9'-8 11/16" — the court surface, rim and field alike, one
+        # 7 1/4" flood step below the basement floor plane (params/sunken_garden._court_top).
+        # It read -9'-4" until 2026-09-03 and that was already stale by 1 7/16" before the
+        # court dropped. Nothing structural reads spot elevations — they are drafting
         # annotation — which is exactly why a stale one can survive unnoticed.
-        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -4)),
-        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -4)),
+        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -8.6875)),
+        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -8.6875)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
         SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6)),
     ),

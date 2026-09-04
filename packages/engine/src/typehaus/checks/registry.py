@@ -149,9 +149,10 @@ class Preferences:
     #: * ``"check.id:ELEMENT-TAG"`` — drop that check's findings **on that one element**.
     #:   For the case a check cannot see: a finding that is real, was looked at, and was
     #:   decided against for a reason the model does not carry. ``D-G-OVERHEAD`` is off the
-    #:   stud module by 8" and moving it re-cuts the garage's brick wainscot into two unequal
-    #:   piers; that is a facade decision, and the right place to record it is beside the
-    #:   reason, in the house's own file.
+    #:   stud module and moving it drags the ICF grade beam gapped on its offset, and with
+    #:   that the stem segments, their footings and a buried service sleeve; that is a
+    #:   building decision the check cannot see, and the right place to record it is beside
+    #:   the reason, in the house's own file.
     #:
     #: An entry of the second form never hides another element's finding, so the check goes on
     #: grading the other twenty doors exactly as before.

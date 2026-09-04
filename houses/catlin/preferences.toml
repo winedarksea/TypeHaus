@@ -154,12 +154,24 @@ suppress = [
   # re-state it rather than carry it: at 16" o.c. the miss was 8" and every legal station
   # was 8" away (104"/120"/136"/152"/168"/184"); at 24" o.c. — GARAGE_WALL_2X6, 2026-08-31 —
   # the miss is 12" and the nearest legal centres are 11'-0" and 13'-0".
-  # Every one of them moves OVERHEAD_DOOR_OFFSET, which is not just the door's offset:
-  # params/foundations.py gaps the ICF stem into a grade beam on it, and W-G-BRICK-S/N stand
-  # on the stem segments that leaves, so the piers' jamb-to-corner span IS that constant.
-  # Moving the door 12" makes the two brick piers flanking the garage door 5'-0" and 3'-0"
-  # where they are 4'-0" and 4'-0" today — a wider asymmetry than the 4'-8"/3'-4" the 16"
-  # grid would have bought. A visibly asymmetric masonry wainscot on the garage's main
-  # facade is a worse building than one extra cut stud.
+  #
+  # ** THE FACADE ARGUMENT THAT CARRIED THIS DIED ON 2026-09-03, AND THE SUPPRESSION IS
+  # THEREFORE WEAKER THAN IT LOOKS. ** It used to read: moving the door 12" makes the two
+  # wainscot piers flanking it 5'-0" and 3'-0" where they are 4'-0" and 4'-0", and a visibly
+  # asymmetric wainscot on the garage's main facade is a worse building than one extra cut
+  # stud. There is no wainscot any more — the base skin is a 24" band on the stem, uniform
+  # on all four walls, and it does not care where the door sits.
+  #
+  # What is left is a COST OF MOVING, not a reason not to move: OVERHEAD_DOOR_OFFSET is not
+  # just the door's offset. params/foundations.py gaps the ICF stem into a grade beam on it,
+  # so the gap nodes, two stem segments, their footings and the two STEM_TOP_Z_FLASHING
+  # break stations all travel with the door, and plan/mep_sleeves.py's water-service sleeve
+  # is pinned to the stem footing that happens to sit over it (integrity.sleeve_in_opening
+  # caught exactly that the last time this constant moved).
+  #
+  # ** THIS IS AN OPEN OWNER QUESTION, NOT A SETTLED DECISION. ** One extra cut stud against
+  # a vehicle door centred on the framing module, with a day of foundation re-derivation
+  # between them. Left suppressed so the report stays clean while it is decided; re-open it
+  # deliberately, do not let a cleanup silently keep it.
   "structural.door_framing_module:D-G-OVERHEAD",
 ]

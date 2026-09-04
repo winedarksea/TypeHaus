@@ -30,22 +30,22 @@ import pytest
 _ORACLE = {
     "PT-SG-COL": {
         "bell_in": 30.0,
-        "pressure_psi": 15.242,
-        "punching_demand": 4284.0,
+        "pressure_psi": 15.363,
+        "punching_demand": 4318.0,
         "punching_capacity": 93150.0,
         # §5d: the critical section at h from the face lands 15.32" out on a 15" radius.
         "one_way_demand": 0.0,
-        "flexure_demand": 12046.0,
+        "flexure_demand": 12141.0,
         "flexure_capacity": 99172.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
-        "pressure_psi": 10.583,
-        "punching_demand": 6266.0,
+        "pressure_psi": 10.667,
+        "punching_demand": 6316.0,
         "punching_capacity": 93150.0,
         "one_way_demand": 367.0,
         "one_way_capacity": 10697.0,
-        "flexure_demand": 17854.0,
+        "flexure_demand": 17995.0,
         "flexure_capacity": 121594.0,
     },
 }

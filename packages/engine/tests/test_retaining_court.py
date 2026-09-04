@@ -198,21 +198,36 @@ def test_the_footings_grew_inboard_only_and_the_apron_did_not_move(catlin_model)
         assert span == pytest.approx(8.0, abs=1e-6), tag
 
 
-def test_the_grade_beam_is_buried_and_the_floor_datum_did_not_move(catlin_model) -> None:
-    """W-SG-ARCH tops out at the garden floor's UNDERSIDE and bottoms flush with the footings.
+def test_the_grade_beam_holds_its_section_and_stands_proud_of_the_dropped_court(
+        catlin_model) -> None:
+    """W-SG-ARCH is 17 1/2" deep, bottomed flush with the footings, and it did NOT follow the
+    court down.
 
-    Both ends matter. Above the floor it would be underfoot in a court that ponds; below the
-    footings it would be a second excavation depth. And ``SL-SG-FLOOR`` must not move at all —
-    it is the datum eleven footings and the 7 1/4" flood curb at ``W-B-S2``/``S3`` are set
-    from.
+    **This test promised the opposite until 2026-09-03** — "``SL-SG-FLOOR`` must not move at
+    all" — and that promise is retired, not merely renumbered. The court dropped 7 1/4" so
+    heavy rain ponds outside ``D-B-PATIO`` instead of crossing its threshold, and the floor
+    is now a rim around an open field at -9'-8 11/16".
+
+    What the beam cannot do is follow it. Its bottom is the retaining footings' underside —
+    one excavation, one stone plane — and holding that while dropping the top to the new rim
+    leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c 1.02, it fails**
+    (notes/sunken_garden_court_free_body.md). Lowering the bottom instead puts its 42" bed
+    below DRW-SG-MAIN. So the top stays where it was and the beam stands 3 3/4" proud of the
+    court as a mow strip on the paved-bay/gravel-field boundary, with FO-SG-ARCH cutting the
+    rim around it.
+
+    The 17 1/2" is the assertion that matters: it is the section §7 of the note grades.
     """
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
-    slab = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
+    court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     footing = next(s for s in catlin_model.solids if s.tag == "FT-SG-W2")
 
-    assert beam.z1_m == pytest.approx(slab.z0_m, abs=1e-9)
     assert beam.z0_m == pytest.approx(footing.z0_m, abs=1e-9)
     assert (beam.z1_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(17.5, abs=1e-6)
+    # Proud of the court's walking surface, not buried under it, and by a mow strip's height.
+    assert (beam.z1_m - court.z1_m) / _M_PER_FT * 12 == pytest.approx(3.75, abs=1e-6)
+    # The court fell exactly one flood step below the basement floor plane it used to share.
+    assert court.z1_m / _M_PER_FT * 12 == pytest.approx(-116.6875, abs=1e-6)
     # The curb over that floor is the flood step, and it is 7 1/4" whatever happens here.
     curb = next(w for w in catlin_model.plan.all_elements()
                 if getattr(w, "tag", None) == "W-B-S2")
@@ -228,8 +243,11 @@ def test_the_front_columns_bell_does_not_reach_the_beam(catlin_model) -> None:
     """
     bell = next(s for s in catlin_model.solids if s.tag == "FT-SG-FCOL")
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
+    # 9" until 2026-09-03; the bell followed the court's 7 1/4" flood step down and the beam
+    # did not, so the two sections are further apart than ever. The span §7 grades is still
+    # the full 20'-0".
     gap_in = (beam.z0_m - bell.z1_m) / _M_PER_FT * 12
-    assert gap_in == pytest.approx(9.0, abs=0.01), "the bell and the beam must not touch"
+    assert gap_in == pytest.approx(16.25, abs=0.01), "the bell and the beam must not touch"
 
 
 # --------------------------------------------------------------------------------------

@@ -47,21 +47,28 @@ and its §2 geotechnical table is the one used here.
                         porch deck FS-SG-PORCH, 164.67 ft2
         BM-SG-BKW  ====================================  BM-SG-BKE      y = -2.25'
                               ||  PT-SG-COL
-                              ||  12" round, 10'-8 3/16"
+                              ||  12" round, 11'-3 7/16"
                               ||  PIER_CONCRETE_12 — one concrete layer
         BM-SG-FRW  ====================================  BM-SG-FRE      y = -9.50'
                               ||  PT-SG-FCOL
-                              ||  12" round, 10'-8 3/16"
+                              ||  12" round, 11'-3 7/16"
                               ||  SUNKEN_GARDEN_COLUMN_12 — one concrete layer
-   garden floor  ------------ || ------------------------------------  -9'-1 7/16"
+   court surface ------------ || ------------------------------------  -9'-8 11/16"
                           +---++---+
                           |  bell   |   30" / 36" dia x 12", augered
-        -12'-7 7/16"      +---------+   to frost depth on undisturbed soil
+        -13'-2 11/16"     +---------+   to frost depth on undisturbed soil
                           | 7" levelling course (NOT a soil replacement) |
 ```
 
-Both columns are **10'-8 3/16" (128.1875")**, both are 12" round, and both are **one concrete
-STRUCTURE layer** — the assemblies state a thickness and a material and nothing else. They
+Both columns are **11'-3 7/16" (135.4375")**, both are 12" round, and both are **one concrete
+STRUCTURE layer**
+
+**They grew 7 1/4" on 2026-09-03, and the bells did not move relative to the soil.** The
+court surface dropped that far so heavy rain ponds outside `D-B-PATIO` rather than crossing
+its threshold, and `_pier_bell_bottom_ft` is measured from the court — 42" below it, by
+excavation — so the bells followed the ground down and the shafts made up the difference.
+The beam soffits did not move. Every self-weight, slenderness and pressure figure below is
+re-derived on the new height; the geometry of the bell, the cage and the mix are untouched — the assemblies state a thickness and a material and nothing else. They
 carry different assemblies for a reason that is not the section — though as of 2026-09-03 it
 is no longer a reason about the concrete. `PIER_CONCRETE_12` now names `CATLIN_EXPOSED_MIX`,
 the same 5,000 psi F3+C2 galvanized-bar mix `SUNKEN_GARDEN_COLUMN_12` is specified from in
@@ -107,12 +114,12 @@ and the number is printed on every record so a reviewer can disagree with it.
 | own deck share: 2 porch beams × 7.25' strip × 10.00' ÷ 2 supports each | 72.50 ft² | 72.50 ft² |
 | handed down by a centre pillar: `BM-SG-BLC`, 10.00' strip × 9.67' ÷ 2 | 48.33 ft² (BR2) | 48.33 ft² (BF2) |
 | **tributary** | **120.83 ft²** | **120.83 ft²** |
-| column self weight | 1,258 lb | 1,258 lb |
+| column self weight | 1,329 lb | 1,329 lb |
 | the pillar's own 6x6, 35 pcf | 67 lb | 66 lb |
-| **D** = trib×10 + self + carried | **2,534 lb** | **2,532 lb** |
+| **D** = trib×10 + self + carried | **2,605 lb** | **2,604 lb** |
 | **L** = trib×40 | **4,833 lb** | **4,833 lb** |
-| **service** D+L | **7,367 lb** | **7,366 lb** |
-| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,774 lb** | **10,772 lb** |
+| **service** D+L | **7,438 lb** | **7,436 lb** |
+| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,859 lb** | **10,858 lb** |
 
 **What the change was worth, per column: 116.97 → 120.83 ft², +3.3%.** It moved in two
 directions at once and they nearly cancelled. The porch share FELL, 82.33 → 72.50, because
@@ -131,8 +138,9 @@ where it is felt.
 The two differ by a pound, and only because `PT-SG-BR2` is 2" taller than `PT-SG-BF2` (the
 rear pillar row runs proud for the deck's drainage crown), so its 6x6 weighs a pound more.
 
-Column self weight, worked once: 12" round is `π×6² = 113.1 in²` = 0.7854 ft², × 10.682' ×
-150 pcf = **1,258 lb**. (`PT-SG-FCOL` was a 20" round until 2026-09-03 — `π×10² = 314.2 in²`
+Column self weight, worked once: 12" round is `π×6² = 113.1 in²` = 0.7854 ft², × 11.287' ×
+150 pcf = **1,329 lb**. (It was 1,258 lb at the old 10.682' height; the 7 1/4" the court
+dropped is worth 71 lb of concrete per column, and it lands in D on both.) (`PT-SG-FCOL` was a 20" round until 2026-09-03 — `π×10² = 314.2 in²`
 = 2.182 ft², × 10.682' × 150 = **3,496 lb** — which is where its old 4,735 lb dead load and
 13,117 lb factored load came from. The column shrank; the deck did not.)
 
@@ -175,9 +183,9 @@ here would be reading a 42" section's allowable off a bedding one sixth as deep.
 q = (service + bell self weight) / bell area
 
 PT-SG-COL    bell 30" = 4.909 ft², 12" thick → 736 lb
-             (7,367 + 736) / 4.909  =  1,651 psf   vs 2,000   d/c 0.83   ✓
+             (7,438 + 736) / 4.909  =  1,665 psf   vs 2,000   d/c 0.83   ✓
 PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb
-             (7,366 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
+             (7,436 + 1,060) / 7.069 =  1,202 psf  vs 2,000   d/c 0.60   ✓
 ```
 
 Both clear, and **the two swapped places on 2026-09-03**. `PT-SG-FCOL` used to be the one to
@@ -190,7 +198,8 @@ least margin in this structure — on a 30" bell against `PT-SG-FCOL`'s 36".
 
 **Any growth in the balcony's loading lands here first, and that is now a live number rather
 than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf; the tributary fix
-cost it 40 psf. **Widening the bell to 36" would take it to 1,192 psf**, and is the obvious
+cost it 40 psf; the court's 7 1/4" step cost it 14 more, in 71 lb of extra shaft.
+**Widening the bell to 36" would take it to 1,202 psf**, and is the obvious
 move if the balcony grows again; it is not taken now, because 0.83 against a presumptive
 allowable with no boring is a screening margin either way (§6). Two more 3" steps of
 `joist_cantilever_in` would reach roughly 1,667 psf — still clear, and still the wrong place
@@ -212,14 +221,14 @@ crack in an unreinforced one endangers its structural integrity. (ACI 318-11 car
 prohibition in §22.2.1's closing sentence.)
 
 ```
-PT-SG-COL    128.1875 / 12  =  10.7          }  both far past 3.
-PT-SG-FCOL   128.1875 / 12  =  10.7          }  both are COLUMNS.
+PT-SG-COL    135.4375 / 12  =  11.29         }  both far past 3.
+PT-SG-FCOL   135.4375 / 12  =  11.29         }  both are COLUMNS.
 ```
 
 **One escape a reviewer will reach for, and it does not reach.** §14.1.2 excludes
 *"cast-in-place piles and piers embedded in ground"* from Chapter 14 altogether, and these
 are augered piers. But only the **bell** is embedded: the shaft stands free in an open court
-for its whole 10'-8", which is the condition §14.1.2 is not describing.
+for its whole 11'-3", which is the condition §14.1.2 is not describing.
 
 So these two take cages, and the rest of this section designs them.
 
@@ -282,13 +291,13 @@ COL   f'c 5,000 (CATLIN_EXPOSED_MIX, via PIER_CONCRETE_12)
              0.85 x 5,000 x 111.857 = 475,392  +  60,000 x 1.24 =  74,400
              P_o = 549,792 lb
              phi P_n,max = 0.65 x 0.80 x 549,792 = 285,893 lb
-             P_u = 10,419 lb                            ->  d/c 0.036
+             P_u = 10,859 lb                            ->  d/c 0.038
 
 FCOL  f'c 3,000 PRESUMPTIVE (SUNKEN_GARDEN_COLUMN_12 states no ConcreteSpec)
              0.85 x 3,000 x 111.86 = 285,236  +  74,400
              P_o = 359,636 lb
              phi P_n,max = 0.65 x 0.80 x 359,636 = 187,011 lb
-             P_u = 10,418 lb                            ->  d/c 0.056
+             P_u = 10,858 lb                            ->  d/c 0.058
 ```
 
 **`PT-SG-FCOL`'s 187,011 is not this column's capacity; it is the capacity of the mix the
@@ -317,7 +326,7 @@ it, and **that** is the open question, reported where it belongs rather than smu
 ```
                           PT-SG-COL          PT-SG-FCOL
 r = d/4                     3.00"               3.00"
-k l_u / r                    42.7                42.7
+k l_u / r                    45.1                45.1
 §6.2.5 non-sway floor          34                  34
                         NOT neglectable     NOT neglectable
 ```
@@ -332,14 +341,18 @@ So both get magnified (§6.6.4.4.4(a), §6.6.4.5.2):
                                 COL (5,000)      FCOL (3,000 presumptive)
 E_c = 57,000 sqrt(f'c)          4,030,509 psi     3,122,019 psi
 I_g = pi d^4 / 64                 1,017.9 in^4      1,017.9 in^4
-beta_dns = 1.2 D / P_u                 0.2864            0.2864
-EI = 0.4 E_c I_g / (1+beta)     1,275.7e6         988.3e6 lb-in^2
-P_c = pi^2 EI / (k l_u)^2         766,227 lb        593,600 lb
-delta_ns = 1/(1 - P_u/0.75 P_c)     1.0185            1.024
+beta_dns = 1.2 D / P_u                 0.2879            0.2878
+EI = 0.4 E_c I_g / (1+beta)     1,274.3e6         987.1e6 lb-in^2
+(k l_u)^2 = 135.4375^2            18,343 in^2       18,343 in^2
+P_c = pi^2 EI / (k l_u)^2         685,650 lb        531,145 lb
+delta_ns = 1/(1 - P_u/0.75 P_c)     1.022             1.028
 ```
 
-**A 1.9% magnifier on the back column and 2.4% on the front**, because both are at a few per
-cent of capacity. The split is `E_c`, which goes as `sqrt(f'c)`: a stiffer column magnifies
+**A 2.2% magnifier on the back column and 2.8% on the front**, because both are at a few per
+cent of capacity. (They were 1.9% and 2.4% before the court dropped: `P_c` goes as
+`1/(k l_u)^2`, so 7 1/4" of extra shaft costs 10.5% of the buckling load. That is the one
+place the step is felt as a stiffness rather than as a weight, and it is still nowhere near
+binding.) The split is `E_c`, which goes as `sqrt(f'c)`: a stiffer column magnifies
 less, so the pour that can prove its mix is rewarded twice — once in §4d's capacity and again
 here. Neither figure is near binding. Now spend §4d's
 eccentricity. §6.6.4.5.4 sets a minimum moment `M_2,min = P_u (0.6 + 0.03h)`, i.e. a minimum
@@ -348,7 +361,7 @@ eccentricity of `0.6 + 0.03h`:
 ```
                           PT-SG-COL          PT-SG-FCOL
 e_min = 0.6 + 0.03h         0.960"              0.960"
-magnified by delta_ns       0.978"              0.983"
+magnified by delta_ns       0.981"              0.987"
 e already in the 0.80 cap   1.200"              1.200"
                             COVERED             COVERED
 ```
@@ -437,8 +450,8 @@ cover and do not freeze (§5a's levelling-course diagram, and `CATLIN_BURIED_MIX
                         PT-SG-COL          PT-SG-FCOL
 bell diameter               30"                36"
 bell area  pi R^2       706.86 in^2       1,017.88 in^2
-P_u (§2)                 10,480 lb           10,479 lb
-q_u = P_u / A            14.826 psi          10.295 psi   (2,135 / 1,483 psf)
+P_u (§2)                 10,859 lb           10,858 lb
+q_u = P_u / A            15.363 psi          10.667 psi   (2,212 / 1,536 psf)
 ```
 
 ### 5c. Two-way (punching) shear — ACI §14.5.5.1(b)
@@ -448,18 +461,18 @@ Critical perimeter at `h/2` from the equivalent square's face, i.e. a square of 
 
 ```
 b_o = 8 x 10.3175                     =  82.54"
-area inside = (2 x 10.3175)^2         = 425.75 in^2
+area inside = (2 x 10.3175)^2         = 425.79 in^2
 
-V_u = q_u x (A_bell - 425.75)
-  COL   14.826 x (706.86 - 425.75)  =  14.826 x 281.11  =  4,168 lb
-  FCOL  10.295 x (1,017.88 - 425.75) =  10.295 x 592.13 =  6,096 lb
+V_u = q_u x (A_bell - 425.79)
+  COL   15.363 x (706.86 - 425.79)  =  15.363 x 281.07  =  4,318 lb
+  FCOL  10.667 x (1,017.88 - 425.79) =  10.667 x 592.09 =  6,316 lb
 
 V_n = (4/3 + 8/3beta) lambda sqrt(f'c) b_o h,  capped at 2.66 lambda sqrt(f'c) b_o h
 beta = 1.0 for a square, so the bracket is 4.0 and THE CAP GOVERNS.
 phi V_n = 0.60 x 2.66 x 70.711 x 82.54 x 10  =  93,150 lb        (both bells)
 
-  COL   4,168 / 93,150  =  d/c 0.045   OK
-  FCOL  6,096 / 93,150  =  d/c 0.065   OK
+  COL   4,318 / 93,150  =  d/c 0.046   OK
+  FCOL  6,316 / 93,150  =  d/c 0.068   OK
 ```
 
 ### 5d. One-way shear — ACI §14.5.5.1(a)
@@ -477,9 +490,9 @@ half-chord = sqrt(18^2 - 15.3175^2) = sqrt(324 - 234.63) = 9.454"   ->  b = 18.9
 segment beyond = R^2 acos(x/R) - x sqrt(R^2 - x^2)
                = 324 x acos(0.85097) - 15.3175 x 9.454
                = 324 x 0.55396 - 144.81  =  179.48 - 144.81  =  34.67 in^2
-V_u     = 10.295 x 34.67                        =    357 lb
+V_u     = 10.667 x 34.67                        =    370 lb
 phi V_n = 0.60 x (4/3) x 70.711 x 18.91 x 10    = 10,697 lb
-                                                    d/c 0.033   OK
+                                                    d/c 0.035   OK
 ```
 
 ### 5e. Flexure at the column face — ACI §13.2.7.1 / §14.5.2.1(a)
@@ -497,27 +510,27 @@ PT-SG-COL   R = 15"
   A    = 225 x 1.20853 - 5.3175 x 14.026  =  271.92 - 74.58  =  197.34 in^2
   xbar = (2/3)(196.72)^1.5 / 197.34 = (2/3)(2,759.2)/197.34  =    9.322"
   arm  = 9.322 - 5.3175                                      =    4.005"
-  M_u  = 14.826 x 197.34 x 4.005                             = 11,718 lb-in
+  M_u  = 15.363 x 197.34 x 4.005                             = 12,142 lb-in
   b    = 2 x 14.026 = 28.05"    S_m = b h^2/6 = 28.05 x 100/6 = 467.5 in^3
   phi M_n = 0.60 x 5 x 70.711 x 467.5                        = 99,172 lb-in
-                                                                 d/c 0.118   OK
+                                                                 d/c 0.122   OK
 
 PT-SG-FCOL  R = 18"
   sqrt(324 - 28.276) = 17.196 ;  acos(0.29542) = 1.27078 rad
   A    = 324 x 1.27078 - 5.3175 x 17.196  =  411.73 - 91.44  =  320.29 in^2
   xbar = (2/3)(295.72)^1.5 / 320.29 = (2/3)(5,085.4)/320.29  =   10.585"
   arm  = 10.585 - 5.3175                                     =    5.268"
-  M_u  = 10.295 x 320.29 x 5.268                             = 17,371 lb-in
+  M_u  = 10.667 x 320.29 x 5.268                             = 17,997 lb-in
   b    = 2 x 17.196 = 34.39"    S_m = 34.39 x 100/6           = 573.2 in^3
   phi M_n = 0.60 x 5 x 70.711 x 573.2                        = 121,594 lb-in
-                                                                 d/c 0.143   OK
+                                                                 d/c 0.148   OK
 ```
 
 ### 5f. What this says
 
 **Bearing still governs both bells, and by a wider margin than before** — 0.83 and 0.60
-against a worst section d/c of 0.14, where the same comparison at the presumptive 3,000 psi
-read 0.18. Giving the bells their real mix moved the section states further from governing,
+against a worst section d/c of 0.15, where the same comparison at the presumptive 3,000 psi
+read 0.19. Giving the bells their real mix moved the section states further from governing,
 which is the useful direction for a negative result to move: the conclusion below did not
 depend on the 29% it gained. The bells are thick relative to their projection (a 9.68" cantilever on
 an effective 10" section on `PT-SG-COL`), which is exactly the shape that makes flexure and
@@ -525,7 +538,7 @@ shear irrelevant and soil the whole question.
 
 That is a useful negative result rather than a formality. It says the answer to a bearing
 problem here is **width, not thickness**: widening `PT-SG-COL`'s bell to 36" — the move §3c
-names — takes bearing from 0.83 to 0.60 and takes flexure only from 0.153 to 0.184, still
+names — takes bearing from 0.83 to 0.60 and takes flexure only from 0.122 to 0.148, still
 nowhere near governing. A 36" bell at 12" thick is a sound section, and nobody has to
 re-check it after the fact.
 

@@ -21,13 +21,18 @@ rate.
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
 | column | #3 | hdg-a767 | 187.6 LF | 70.5 lb | all ten cast columns, ties |
-| column | #5 | hdg-a767 | 292.1 LF | 304.7 lb | all ten cast columns, verticals |
+| column | #5 | hdg-a767 | 297.0 LF | 309.8 lb | all ten cast columns, verticals |
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
 | foundation wall | #4 | hdg-a767 | 881.4 LF | 588.8 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 208.0 LF | 216.9 lb | the eight 8" basement runs |
 | foundation wall | #6 | hdg-a767 | 768.0 LF | 1,153.5 lb | `W-SG-*` verticals |
-| | | | | **4,171 lb** | **2.09 ton** |
+| | | | | **4,176 lb** | **2.09 ton** |
+
+`column #5` gained 4.9 LF / 5.1 lb on 2026-09-03: the court dropped 7 1/4" and
+`_pier_bell_bottom_ft` followed it, so both belled piers' shafts — and the four #5 verticals
+in each — grew by exactly that step. The bells did not move relative to the ground they bear
+on; the ground moved.
 
 **Nine rows became seven on 2026-09-03, and not one pound moved.** `PIER_CONCRETE_12` was
 given a real `ConcreteSpec`, and `bar_coating` is a property of the POUR, so the 149 lb in
@@ -55,8 +60,8 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 `wall_structure` row of material `concrete`. `tests/test_rebar_backout.py` recomputes it.
 
 ```
-column   PIER_CONCRETE_12                       0.82 cy
-column   SUNKEN_GARDEN_COLUMN_12                1.25
+column   PIER_CONCRETE_12                       0.84 cy
+column   SUNKEN_GARDEN_COLUMN_12                1.27
 footing  CATLIN_FOOTING_20                     10.46
 footing  CATLIN_PIER_BASE_12                    0.57
 footing  CATLIN_PORCH_FOOTING_84                5.71
@@ -65,11 +70,12 @@ footing  FOOTING_FPSF_20                        1.73
 pad      CATLIN_PIER_BASE_12                    0.26
 slab     CATLIN_DECK_EPS_INT                   18.37
 slab     CATLIN_GARAGE_STEP_6                   0.17
-slab     CATLIN_GARDEN_SLAB                     5.75
+slab     CATLIN_GARDEN_SLAB                     3.96
+slab     CATLIN_GARDEN_STOOP                    0.53
 slab     CATLIN_SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
-slab     HP_PAD_ON_GRADE                        0.49
-                                     solids   81.64 cy
+slab     HP_PAD_ON_GRADE                        0.58
+                                     solids   80.51 cy
 
 SUNKEN_GARDEN_WALL                            30.21
 CATLIN_BASEMENT_8                             17.55
@@ -79,8 +85,17 @@ FOUNDATION_WALL_12_INT                         5.25
 the two garden curbs                           0.21
                                       walls   72.71 cy
 
-                                      TOTAL  154.35 cy
+                                      TOTAL  153.22 cy
 ```
+
+**`CATLIN_GARDEN_SLAB` fell 5.75 -> 3.96 cy on 2026-09-03** and two rows appeared beside
+it. The court dropped 7 1/4" so heavy rain ponds outside `D-B-PATIO` instead of crossing it,
+and the floor became a **rim** around an open field: `FO-SG-FIELD` and `FO-SG-ARCH` void
+1.79 cy out of the pour, `CATLIN_GARDEN_STOOP` (the door's landing, left at the old floor
+plane) puts 0.53 back, and the two belled piers' shafts grew with the step. `SL-SG-FIELD` —
+5.43 cy of sand, fabric and stone — does **not** appear above and must not be added to it:
+this filter takes a STRUCTURE layer of material `concrete`, and `CATLIN_GARDEN_FIELD` has
+neither.
 
 **Two things the filter tells you that a hand count would have hidden.**
 
@@ -104,11 +119,11 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          4,171 lb / 154.35 cy   =  27.0 lb/cy
-register ~5 t  10,000 lb / 154.35 cy   =  64.8 lb/cy
+billed          4,176 lb / 153.22 cy   =  27.3 lb/cy
+register ~5 t  10,000 lb / 153.22 cy   =  65.3 lb/cy
 ```
 
-At a black-bar material price of $1.05-1.35/lb, **4,171 lb is $4,380-5,630.** The allowance
+At a black-bar material price of $1.05-1.35/lb, **4,176 lb is $4,385-5,638.** The allowance
 register (`plans/cost-options.md`, `prices.toml` `[allowances]`) carries rebar at
 **$10,000-18,000**, and the plan's acceptance condition is explicit:
 
@@ -121,8 +136,8 @@ billing 42% of the steel would make the estimate FALL by the difference — the 
 type drops from the BOM and the saving looks real when it is an artifact" hazard, arriving
 from the other direction and for about $6,000.
 
-27.0 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
-40-80 lb/cy; the register's 64.8 sits inside that and this house — with three 10'-tall
+27.3 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
+40-80 lb/cy; the register's 65.3 sits inside that and this house — with three 10'-tall
 retaining walls at `#6 @ 10"` both ways — has no business being below it.
 
 ## 4. Where the missing ~2.9 tons is

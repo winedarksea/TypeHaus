@@ -574,27 +574,18 @@ OPENINGS = [
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5)), flip_swing=True, flip_hinge=True),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
-    # Balcony doors. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
+    # Balcony door. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
     # leaves), east of the centre line; that is D-S-DECK-E, standardized to the catalog's
     # 5'-0" French pair rather than distorted into a narrow 3'-0" double door.
-    # D-S-DECK-W is a deliberate addition to the source: the balcony runs the
-    # full x 7'-6"..28'-6" and only the study reached it, so the plant room now opens onto
-    # it too, at the exact mirror of the east door about the x=18' centre line — centre
-    # x 13'-8", the same 5'-0" French pair. Mirroring a *pair* is position only: the glyph
-    # is symmetric about the opening and `flip_swing` names the side along the wall normal,
-    # not a hand, so this carries the east door's flag verbatim to swing out onto the deck.
-    # Authoring it flipped instead (flip_hinge, no flip_swing) drew both leaves sweeping
-    # north into the plant room — caught in `haus render --view plan`, not by any check.
-    # The mirror station is what forced the two balcony condensers off the plant room's
-    # wall band: see SECOND_EQUIPMENT in plan/electrical.py.
     #
-    # Both doors moved 1'-0" inward on 2026-08-24 (13'-8"/22'-4" -> 14'-8"/21'-4"), still an
-    # exact mirror about x=18'-0". 14'-8" is a stud line on W-S-S1's grid, and on W-M-S1's
-    # below it, which is the point: WIN-M-BED-S2 moved there to column under this door.
-    # The inward move also opened the west door's gap to WIN-S-PLANT2 from 7" to 1'-7";
-    # it leaves 10" of wall to each inside corner, which is the trade.
-    Door(uid="CSD218AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-SW", ft(12, 2)), flip_swing=True),                       # x 14'-8"
+    # There was a second, D-S-DECK-W, a mirror of this one at x 14'-8" giving the plant room
+    # its own balcony access. IT IS GONE (2026-09-03): a 60" French door is the one hole in
+    # RM-S-PLANT's six-sided sealed liner that no detail fixes. Its threshold condenses at
+    # design (notes/plant_room.md — the frame and edge of glass run 5-8 F below centre, and
+    # a door has far more frame than a window), every use of it dumps 70%-RH air onto the
+    # balcony and pulls -15 F air onto the liner, and it is the one opening in the room that
+    # cannot be a fixed, gasketed, thermally broken unit. WIN-S-PLANT4 takes its station.
+    # The study still reaches the balcony through D-S-DECK-E, which is what the source drew.
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-S-S1", ft(0, 10)), flip_swing=True),                       # x 21'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
@@ -699,8 +690,17 @@ OPENINGS = [
     # width, same height, same sill, same centres: a retype moves nothing.
     Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3048-HP",
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2, 8)),     # x 4'-0"
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048-HP-T",
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048-HP",
            position=from_node("N-S-SW", ft(8, 1)), sill_height=ft(2, 8)),     # x 9'-4"
+    # WIN-S-PLANT4 stands where D-S-DECK-W did, and it is why PLANT2 above is no longer the
+    # tempered twin: R308.4.2 made that unit hazardous only because it sat within 24" of a
+    # door, and there is no door on this wall any more. Same 30x48 HP unit, same 2'-8" sill
+    # and 6'-8" head as PLANT1/2, and centre x 14'-8" continues their exact 5'-4" beat — the
+    # station is a stud line on W-S-S1's grid (it is the one the door was moved onto on
+    # 2026-08-24) and still columns over WIN-M-BED-S2 one storey down. Three equal windows
+    # on one line where there were two and a door.
+    Window(uid="T84MSZYSVQ", tag="WIN-S-PLANT4", host="W-S-S1", type_ref="WT-3048-HP",
+           position=from_node("N-S-SW", ft(13, 5)), sill_height=ft(2, 8)),    # x 14'-8"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type, not the 30" south-glazing one ("resize windows to fit the grid", CLAUDE.md).
     # Sill raised to 3'-0" for the shared 6'-0" head line. Unmoved by the
@@ -746,9 +746,10 @@ OPENINGS = [
            position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
     # entry column to x=21'-11". Centre x 12'-8" is the stud line inside the arriving
-    # upper flight's lane. WIN-A-N1 could stack on this (12'-8" is a stud line on W-A-N2
-    # too) but deliberately stays at 7'-4" instead, so the north gable reads
-    # near-symmetric about the ridge — the same read that governs the south gable pair.
+    # upper flight's lane. WIN-A-N1 above aims at this station but CANNOT reach it: on the
+    # gable's layout line a 30" RO must centre on a stud line (144", 160", 176"…) while
+    # 12'-8" is a bay centre, so it sits 8" east at 13'-4" and mirrors WIN-A-N2 at 22'-8"
+    # about the ridge (2026-09-03; see storeys/attic.py's north-gable note).
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
            position=from_node("N-S-N1", ft(3, 5)), sill_height=ft(3)),        # x 12'-8"
 ]

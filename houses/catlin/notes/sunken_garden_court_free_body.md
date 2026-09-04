@@ -591,8 +591,21 @@ The garden slab is cheaper and does not work:
   beam simply removes it.
 * No control joints, no shrinkage gap to close before the strut bears, no bearing on the
   compressible FPSF wing foam, and no permanent "`SL-SG-FLOOR` can never be saw-cut".
-* `SL-SG-FLOOR` is **untouched** — same 3 1/2", same assembly-less open excavation floor,
-  same −9'-1 7/16" datum for eleven footings and for the 7 1/4" flood curb at `W-B-S2`/`S3`.
+* `SL-SG-FLOOR` is **untouched by the strut question** — the beam needs nothing from it.
+
+  It has since moved for an unrelated reason (2026-09-03): the court dropped **7 1/4"** to
+  −9'-8 11/16" so heavy rain ponds outside `D-B-PATIO` rather than crossing its threshold,
+  and the floor became a 3 1/2" **rim** around a 147 sf gravel-and-turf field. **None of
+  this note's arithmetic moves with it.** The free body is bounded by the wall tops and the
+  footing undersides, neither of which changed; `_ret_unbalanced_fill` is `_ret_top −
+  _wall_bottom` and the low side has never entered the retaining calculation at all
+  (`toe_embedment_ft` is hardcoded 0.0). Dropping the court only removes toe overburden the
+  model never credited, so every FS and every d/c below is unchanged or conservative.
+
+  The one thing that *would* have changed the strut is holding the beam's top against the
+  new floor: a 10 1/4" section gives φPn 60,712 lb against Pu 62,051 — **d/c 1.02, it
+  fails.** So `W-SG-ARCH` stays at −9'-4 15/16" and stands 3 3/4" proud of the court as a
+  mow strip, and the 12" × 17 1/2" section this note grades is the one that gets built.
 
 ### The strut check
 

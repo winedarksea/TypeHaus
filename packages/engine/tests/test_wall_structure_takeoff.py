@@ -53,17 +53,23 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # parapet, neither of which returns. It is one more `SUNKEN_GARDEN_WALL` tag and ~1.08 cy
     # of the same pour, and it is what closes the court's structural loop so its two side
     # walls cancel each other's soil thrust (`engineering/retaining_system.py`).
-    assert len({tag for row in rows for tag in row["tags"]}) == 41
-    # **`off-white-brick` is GONE since 2026-09-02 and `aluminum-flat-pvdf` is here in its
-    # place.** The garage wainscot was the Columbia colourway of a Glen-Gery Roman Maximus
-    # unit (and wore Black for part of 2026-08-26 before that); it is PVDF-painted aluminium
-    # flat sheet now, because the driveway apron is salted and brick is the absorptive
-    # choice in a chloride splash zone. It is still a MONOLITHIC wall in this table's sense
-    # — a freestanding skin whose panel is the assembly's STRUCTURE layer, exactly as the
-    # wythe was — which is why the swap changes the material here and not the row count.
-    # `off-white-brick` and GARAGE_BRICK_WAINSCOT are both kept unreferenced for the revert.
+    # **37 since 2026-09-03, and the four that left are the whole garage wainscot.**
+    # W-G-WAIN-S/N (the two east piers) and W-G-WAIN-SRET/NRET (their SE/NE corner returns)
+    # were deleted outright. THE SIX STEM TAGS STAY: W-GF-E1/E2 existed before the wainscot
+    # did, because the stem drops to a grade beam under the overhead door, and W-GF-S3/N2
+    # are a kept fossil of the corner returns (see test_catlin_contract_m3's
+    # freestanding-garage test for why un-splitting them is not worth the uid churn).
+    assert len({tag for row in rows for tag in row["tags"]}) == 37
+    # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
+    # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
+    # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
+    # unchanged, because that band always ran behind the wainscot. What this table lost is
+    # the wainscot's own free-standing panel wall, whose sheet WAS the assembly's STRUCTURE
+    # layer and so priced here on the assembly tag. A material dropping out of this set is
+    # therefore not evidence it dropped out of the model; check `[envelope_layers]` first.
+    # (`off-white-brick` went the same way on 2026-09-02, brick to metal, then deleted.)
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "aluminum-flat-pvdf",
+        "concrete", "retaining-block", "brown-brick",
         "glazed-lapis-brick", "glazed-gold-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:

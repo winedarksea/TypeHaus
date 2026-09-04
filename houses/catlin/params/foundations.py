@@ -199,9 +199,13 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
          position=pt(SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH + _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
-    # The SE/NE brick-ledge corner returns (garage.py's W-G-BRICK-SRET/NRET) need 4'-0" of
-    # widened, brick-ledged stem under them too, same as the east piers. These
-    # split the last 4'-0" off the corner end of W-GF-S2/W-GF-N.
+    # ** THESE TWO SPLITS ARE LEGACY AND ARE KEPT DELIBERATELY. ** They exist only because
+    # the SE/NE brick-ledge wainscot returns once needed 4'-0" of widened, ledged stem under
+    # them; both halves have been plain `_STEM` since 2026-09-02, and the wainscot itself is
+    # gone since 2026-09-03, so the split is now purely cosmetic. Merging W-GF-S2/S3 and
+    # W-GF-N/N2 back into one wall apiece would delete two real footings and churn every
+    # golden that names them, for no geometric change at all. Not worth it — but do not
+    # invent a new reason for the split either: there isn't one.
     Node(uid="CGF009AAAA", tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
     Node(uid="CGF010AAAA", tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
 ]
@@ -219,20 +223,6 @@ _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
              bottom_elevation=ft(_GRADE_FT - _FROST))
-# The two east segments flanking the overhead door carry the brick wainscot
-# (plan/storeys/garage.py's W-G-BRICK-S/N), so their stem is the brick-ledge form: the same
-# wall above the shelf, widened below it to bear a full 3 5/8" wythe. A sibling dict rather
-# than a mutation of _STEM, which every other segment shares.
-#
-# These walls are NOT conceptually new — they exist today only because the stem drops to a
-# grade beam under the door, and they already happen to be exactly the 4'-0" piers the
-# wainscot wants. Only the assembly string changes; the uids stay.
-# ** UNREFERENCED since 2026-09-02 ** — the east wainscot is hung aluminium sheet now and
-# needs no bearing shelf, so W-GF-E1/E2/S3/N2 are back on the plain `_STEM`. Kept for the
-# revert alongside GARAGE_ICF_6_BRICKLEDGE and GARAGE_BRICK_WAINSCOT in plan/assemblies.py.
-_STEM_BRICKLEDGE = dict(assembly="GARAGE_ICF_6_BRICKLEDGE", alignment=_ALIGN,
-                        top_elevation=_STEM_TOP,
-                        bottom_elevation=ft(_GRADE_FT - _FROST))
 _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    top_elevation=_GRADE_BEAM_TOP,
                    bottom_elevation=ft(_GRADE_FT - _FROST))
@@ -245,9 +235,8 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-S-DRW", **_STEM),
     FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
                    end_node="N-GF-S-DRE", **_GRADE_BEAM),
-    # W-GF-S2 split again: its corner-adjacent 4'-0" now carries the SE brick
-    # return, so it needs the brick-ledge stem too. W-GF-S2 keeps its uid on the remnant
-    # (SERVICE_DOOR side); W-GF-S3 is the new corner piece.
+    # W-GF-S2 keeps its uid on the remnant (SERVICE_DOOR side); W-GF-S3 is the corner
+    # piece. See the legacy-split note on N-GF-S-BRICK above.
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
                    end_node="N-GF-S-BRICK", **_STEM),
     FoundationWall(uid="CGF109AAAA", tag="W-GF-S3", start_node="N-GF-S-BRICK",
@@ -258,8 +247,8 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-E-DRN", **_GRADE_BEAM),
     FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
                    end_node="N-GF-NE", **_STEM),
-    # W-GF-N split the same way, for the NE brick return: W-GF-N keeps its uid
-    # on the remnant (west side); W-GF-N2 is the new corner piece.
+    # W-GF-N split the same way: W-GF-N keeps its uid on the remnant (west side);
+    # W-GF-N2 is the corner piece.
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-BRICK",
                    end_node="N-GF-NW", **_STEM),
     FoundationWall(uid="CGF110AAAA", tag="W-GF-N2", start_node="N-GF-NE",
@@ -277,25 +266,6 @@ GARAGE_STEM_WALLS = [
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
                        assembly="CATLIN_FOOTING_20")
-# ** UNREFERENCED since 2026-09-02 ** — FT-GF-E1/E2/S3/N2 were widened 20" -> 24" only
-# because their stems carried a brick ledge, and the metal wainscot deleted the ledge. All
-# ten garage footings are back on one 20" strip, and the 2" eastward shift below goes with
-# it. Kept for the revert; what it records is still true of any future ledged stem.
-#
-# FT-GF-E1/E2 (and, since the SE/NE brick returns, FT-GF-S3/N2) were wider because their
-# stems are (GARAGE_ICF_6_BRICKLEDGE, above). Two facts worth stating rather than
-# rediscovering:
-#
-# 1. `center_on="wall"` takes `band_axis` over EVERY resolved layer polygon
-#    (resolve/envelope.py), and the ledge band is now one of them — so these two footings
-#    re-centre on the stepped section (276 3/8" .. 292 5/8", 16 1/4" wide once the gwb band
-#    is counted) and sit 2" east of their un-ledged neighbours: FT-GF-E-DR centres on
-#    x = 282 1/2", these two on 284 1/2". That is the correct behaviour — the footing wants
-#    to be under the ledge — but nothing downstream may be dimensioned off their edges.
-# 2. It also drops the toe. At the shared 20" a symmetric toe under an 11" section is
-#    4 1/2"; under the stepped section it would be ~1 7/8". 24" gives 3 7/8" outboard of
-#    the ledge (272 1/2" .. 296 1/2") and 4 1/2" inboard, back in the same range.
-_GARAGE_FOOTING_BRICKLEDGE = dict(width=inch(24), depth=inch(8), center_on="wall")
 
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),

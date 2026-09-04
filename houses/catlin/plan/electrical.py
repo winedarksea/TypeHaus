@@ -992,16 +992,16 @@ PV_JBOX = [
     #
     # ** THE STATION HAS TO CLEAR BOTH THE RAKE AND A WINDOW, AND THE BAND IS NARROW. **
     # The rake wants x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box
-    # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 10'-9"..13'-3",
-    # framing bumper 10'-7"..13'-5", sill +22'-0", head +25'-0") wants x <= 10'-7" or
-    # x >= 13'-5". Those do not overlap at 25'-6": the ROOF UNDERSIDE (20'-1 1/2" + x/2,
-    # the plane `integrity.element_above_roof` reads, a foot below the cladding plane)
-    # needs x >= 10'-10" to carry a 25'-6" riser, and the window starts at 10'-9". So the
-    # box sits at x=10'-2", elevation 25'-0", where the underside is 25'-4" and there is
-    # 4" of clearance — wholly west of the window on the facade, which is the better
-    # elevation anyway.
+    # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 12'-1"..14'-7",
+    # framing bumper 11'-11"..14'-9", sill +22'-0", head +25'-0") wants x <= 11'-11" or
+    # x >= 14'-9". The 2026-09-03 window move east opened this band: the ROOF UNDERSIDE
+    # (20'-1 1/2" + x/2, the plane `integrity.element_above_roof` reads, a foot below the
+    # cladding plane) needs x >= 10'-10" to carry a 25'-6" riser, and 10'-10"..11'-11" now
+    # clears both. The box is LEFT at x=10'-2", elevation 25'-0", where the underside is
+    # 25'-4" and there is 4" of clearance — wholly west of the window on the facade, which
+    # is the better elevation anyway, and moving it would only re-run conduit for nothing.
     #
-    # Going east instead (x >= 13'-7") clears the window at 25'-6" and costs 2'-6" of
+    # Going east instead (x >= 14'-11") clears the window at 25'-6" and costs 2'-6" of
     # 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser, and out
     # over the stair void's bay.
     #
@@ -1728,9 +1728,12 @@ NEC_FILL_SECOND = [
     # CKT-LT-UPPER, a separate, non-GFCI lighting circuit, so a nuisance trip from a pump
     # cannot take the photoperiod down with it — and grow-light drivers' own leakage current
     # is exactly why the lighting side must not sit behind a 5 mA trip either.
-    # RC1 is on the 11'-4" bay centre, the *west* jamb of D-S-DECK-W's rough opening (x
-    # 12'-2"..17'-2") — the east remnant is 2" of wall — which is also what closes the wall
-    # space west of the door, 6'-3 3/4" from RC2 alone (electrical.receptacle_spacing).
+    # RC1 is on the 11'-4" bay centre, 6'-3 3/4" from RC2 (electrical.receptacle_spacing).
+    # It was placed there as the *west* jamb of D-S-DECK-W's rough opening (x 12'-2"..17'-2"),
+    # which closed the wall space west of that door. The door is gone (2026-09-03) and
+    # WIN-S-PLANT4 stands in its place, so this is now an ordinary station on a continuous
+    # wall: a window sill 2'-8" up breaks no wall space, and 210.52(A) is satisfied by RC1/RC2
+    # on their own spacing. The bay is still the right one — it stays.
     # FX-S-BALC-HYD gave up this bay for it and moved to 7'-4" (plan/fixtures.py).
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(11, 4), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",

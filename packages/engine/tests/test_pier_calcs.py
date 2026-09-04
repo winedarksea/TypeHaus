@@ -85,12 +85,18 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # nearly cancelled: the porch share was 10 ft² too high and the balcony share 14 too low.
 # PT-SG-COL's bearing d/c is what feels it — 0.81 -> 0.83 on a 30" bell, the least margin in
 # this structure.
+#
+# ** THE SHAFTS GREW 7 1/4" ON 2026-09-03. ** The sunken-garden court dropped that far (the
+# flood step at D-B-PATIO) and `_pier_bell_bottom_ft` is 42" below the COURT, so both bells
+# followed the ground down and the shafts made up the difference. No beam soffit moved. What
+# did move: 71 lb of self weight per column into D, h/d 10.7 -> 11.29, k*lu/r 42.7 -> 45.1,
+# and P_c down 10.5% (it goes as 1/lu^2) so delta_ns eased up a little. notes §1, §2, §4e.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 120.83, "dead_lb": 2534.0, "live_lb": 4833.0,
-        "service_lb": 7367.0, "factored_lb": 10_774.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1651.0,
-        "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
+        "tributary_ft2": 120.83, "dead_lb": 2605.0, "live_lb": 4833.0,
+        "service_lb": 7438.0, "factored_lb": 10_859.0,
+        "bell_area_ft2": 4.909, "bearing_psf": 1665.0,
+        "gross_in2": 113.1, "h_over_d": 11.29, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
         # §4d: PIER_CONCRETE_12 names CATLIN_EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
@@ -99,16 +105,16 @@ _ORACLE = {
         # THE TWO COLUMNS ARE POURED FROM THE SAME 5,000 psi; the split is the unfinished
         # migration of SUNKEN_GARDEN_COLUMN_12, not a difference in the concrete.
         "capacity_lb": 285_893.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
+        "slenderness": 45.1, "delta_ns": 1.022, "e_magnified_in": 0.981, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 120.83, "dead_lb": 2532.0, "live_lb": 4833.0,
-        "service_lb": 7366.0, "factored_lb": 10_772.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
-        "gross_in2": 113.1, "h_over_d": 10.7, "min_steel_in2": 1.131,
+        "tributary_ft2": 120.83, "dead_lb": 2604.0, "live_lb": 4833.0,
+        "service_lb": 7436.0, "factored_lb": 10_858.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1202.0,
+        "gross_in2": 113.1, "h_over_d": 11.29, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.025, "e_magnified_in": 0.984, "e_capped_in": 1.20,
+        "slenderness": 45.1, "delta_ns": 1.028, "e_magnified_in": 0.987, "e_capped_in": 1.20,
     },
 }
 
@@ -117,12 +123,17 @@ _ORACLE = {
 # W-SG-W1/E1 rather than on their own belled piers, and what governs them is BENDING at a
 # fixed base, not bearing. §4 and §5 of that note.
 _CORNER_PIERS = ("PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
+# The wind rows rose 0.5% on 2026-09-03 and no member moved. `balcony_wind.ground_below_ft`
+# takes the LOWEST site spot elevation as the ground under this deck, and the two over the
+# sunken garden fell 4 11/16" (the court's flood step, plus 1 7/16" of stale annotation).
+# A lower floor is a taller structure: z 23.0' -> 23.3', q_h 18.7 -> 18.8 psf. The guard case
+# still governs both rows, so no capacity comparison changes.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1388.4, "guard_lb_ft": 2502.1},
-    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1388.4, "guard_lb_ft": 2502.1},
+    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1395.1, "guard_lb_ft": 2502.1},
+    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1395.1, "guard_lb_ft": 2502.1},
     # The rear row runs 2" proud for the deck's drainage crown.
-    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1414.1, "guard_lb_ft": 2535.4},
-    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1414.1, "guard_lb_ft": 2535.4},
+    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1421.0, "guard_lb_ft": 2535.4},
+    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1421.0, "guard_lb_ft": 2535.4},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 _CORNER_PHI_MN_LB_FT = 20_900.0

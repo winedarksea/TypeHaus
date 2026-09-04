@@ -10,8 +10,8 @@ Why the geometry IR and not the resolved records
 the building is made of — the wall body already jamb-split into piers/sills/headers, already
 banded (``Layer.extent``), already raked under a gable, the roof already a real sloped surface
 with its edge setbacks applied, the window already a frame + glass + exterior casing. Rebuilding
-any of that from ``ResolvedWall.axis`` loses it — no way to know that a brick wainscot stops at
-4'-0" or that an attic wall is raked. So the projector reads the IR, and the only things it
+any of that from ``ResolvedWall.axis`` loses it — no way to know that a banded base skin stops
+at the stem top or that an attic wall is raked. So the projector reads the IR, and the only things it
 asks the resolved model for are
 names (tag, storey, material) that the IR deliberately does not carry.
 

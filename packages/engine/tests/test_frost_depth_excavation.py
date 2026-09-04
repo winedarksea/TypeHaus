@@ -2,8 +2,8 @@
 
 ``structural.frost_depth`` compared every footing in the model to ``Site.grade`` — a single
 scalar — for as long as it existed. That reading cannot see an excavation, and the Catlin
-house contains one: the sunken garden's floor is 6'-6" below the site grade plane, and the
-strips along it carry 8" of cover while reporting a comfortable 7'-2" and passing.
+house contains one: the sunken garden's court is 7'-2" below the site grade plane, and the
+strips along it carry 1" of cover while reporting a comfortable 7'-2" and passing.
 
 These pin the three outcomes the check now distinguishes, the shelter that keeps it from
 over-reaching inward, and ``Footing.assembly`` reaching the resolved solid.
@@ -59,7 +59,9 @@ def test_local_grade_drops_to_the_garden_floor_beside_it(catlin_model):
         open_excavation_floors(catlin_model), heated_floor_footprint(catlin_model))
     assert source == "SL-SG-FLOOR"
     assert grade_m == pytest.approx(garden.z1_m)
-    assert (grade_m - south.z0_m) / 0.0254 == pytest.approx(8.0, abs=0.5)
+    # 8" until 2026-09-03, when the court dropped 7 1/4" for the flood step at D-B-PATIO.
+    # The footing did not move; the ground beside it did, and the cover went with it.
+    assert (grade_m - south.z0_m) / 0.0254 == pytest.approx(0.75, abs=0.5)
 
 
 def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_model):
@@ -77,9 +79,10 @@ def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_mod
     assert grade_m == pytest.approx(site_grade_elevation_m(catlin_model))
 
 
-#: The four house footings the sunken garden reaches. FT-B-BRICK's plinth bottoms 2" ABOVE
-#: the garden floor; the three south strips carry 8" of cover under it. All four reported a
-#: comfortable 7'-2" and passed until the grade was derived per footing.
+#: The four house footings the sunken garden reaches. FT-B-BRICK's plinth bottoms 9" ABOVE
+#: the court surface; the three south strips carry 1" of cover under it (it was 2" above and
+#: 8" under until the court dropped 7 1/4" on 2026-09-03). All four reported a comfortable
+#: 7'-2" and passed until the grade was derived per footing.
 _BESIDE_THE_GARDEN = ("FT-B-BRICK", "FT-B-S1", "FT-B-S2", "FT-B-S3")
 
 
@@ -103,7 +106,7 @@ def test_without_the_wing_insulation_the_same_four_footings_fail(catlin_plan, ca
     """The finding this check existed to be unable to make.
 
     Take the drawn wings away and nothing else changes: the same four footings, the same
-    8" and -2" of cover, the same 42" requirement. They FAIL. That is the before-and-after
+    1" and -9" of cover, the same 42" requirement. They FAIL. That is the before-and-after
     the R403.3 band exists to move, and pinning both halves is what stops the local-grade
     derivation from silently reverting to the single global plane — which would pass them
     both ways round and prove nothing.
@@ -220,7 +223,9 @@ def test_the_sheet_note_no_longer_claims_every_footing_bears_42_below_grade(catl
     notes = " | ".join(foundation_general_notes(catlin_model))
     assert "LOWEST ADJACENT FINISHED GRADE" in notes
     assert "SL-SG-FLOOR" in notes
-    assert 'FT-B-S2 (8" COVER)' in notes
+    # 8" until the court dropped 7 1/4" on 2026-09-03. The note reads the model, so what
+    # this pins is that a real per-footing number reaches the sheet — not which number.
+    assert 'FT-B-S2 (1" COVER)' in notes
 
 
 def _frost_by_tag(model):

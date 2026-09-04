@@ -75,13 +75,14 @@ def test_raising_the_plane_does_not_bury_a_footing_beside_an_open_excavation(cat
     """The claim the old single-plane reading got backwards.
 
     Piling 3' more soil onto the site does nothing for the strip along the sunken garden:
-    the ground beside it is still the garden floor, 6'-6" down, and the court does not fill
+    the ground beside it is still the court surface, 7'-2" down, and the court does not fill
     in because the survey says the lawn got higher.
     """
     matched = _frost(_model_at_grade(catlin_model, ft(3)))
     south = next(f for f in matched if "FT-B-S2" in f.element_tags)
     # It passes — but on the R403.3 wing insulation beside it, and still measured against
-    # the garden floor. The single-plane reading would have it 10'-2" deep and would say so.
+    # the court floor. The single-plane reading would have it 10'-2" deep and would say so.
     assert south.result.value == "pass"
     assert "SL-SG-FLOOR" in south.message and "R403.3" in south.message
-    assert '8"' in south.message
+    # 8" until the court dropped 7 1/4" for the flood step on 2026-09-03.
+    assert '1"' in south.message

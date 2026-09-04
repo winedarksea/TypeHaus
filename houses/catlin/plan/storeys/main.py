@@ -123,7 +123,7 @@ DOOR_TYPES = [
 # "no window in this house carries a depth dimension"), so the wall fixes where the OUTSIDE
 # of the frame lands and says nothing about where the INSIDE does. That difference is the
 # interior return, which is what a WindowStool is cut to cover — see plan/millwork.py.
-# 3-1/4" is the ordinary double-glazed unit; the three plant-room `-HP` types are 4",
+# 3-1/4" is the ordinary double-glazed unit; the two plant-room `-HP` types are 4",
 # because a triple pack on a warm-edge spacer in a thermally broken frame is a deeper
 # section. Both are product facts, and both are the term the derived stool subtracts.
 WINDOW_TYPES = [
@@ -255,7 +255,7 @@ WINDOW_TYPES = [
     WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement", tempered=True),
     # --- high-performance twins (building_science.glazing_dew_point) -------
-    # Three types for the plant room, identical in every dimension to their parents and
+    # Two types for the plant room, identical in every dimension to their parents and
     # differing only in the glass package: triple/low-e at U-0.14 with a warm-edge spacer
     # and a thermally broken frame. Exactly the `-T` precedent one line up — adding a
     # better unit is a RETYPE, never a move, so no facade column, no header, no framing
@@ -272,18 +272,26 @@ WINDOW_TYPES = [
     # SHGC is deliberately unchanged at 0.35: this room is south-glazed for plants, and a
     # triple unit that bought its U with a low SHGC would take the light the room exists
     # for. VT likewise.
+    #
+    # BOTH ARE FIXED, NOT CASEMENT (2026-09-03), and that is a consequence of the U-0.14
+    # spec rather than a separate choice. A U-0.14 whole-window number is only reachable on
+    # a fixed unit: an operable sash carries a second frame profile, a sash-to-frame gap and
+    # hardware through the thermal break, and the same glass package in a casement lands
+    # around U-0.18-0.20. It is also the right answer for the room — an openable sash in a
+    # 70%-RH room is an owner-operable hole in a Class I liner, and RM-S-PLANT is
+    # ventilated mechanically by design (REG-S-HP-PLANT in, REG-S-ERV-PLANT-EXH out, both
+    # dampered), never by opening a window. R303.1's openable-area half is therefore carried
+    # by Exception 1, which this room already meets on its grow tubes and its supply
+    # terminal, and there is no egress duty on the second storey's SW corner.
     WindowType(tag="WT-2736-HP", width=inch(27), height=ft(3), u_factor=u_us(0.14), frame_depth=inch(4),
-               shgc=0.35, vt=0.5, operation="casement",
-               source="notes/plant_room.md — WT-2736 dimensions, triple/low-e warm-edge thermally broken frame at U-0.14 for RM-S-PLANT"),
+               shgc=0.35, vt=0.5, operation="fixed",
+               source="notes/plant_room.md — WT-2736 dimensions, triple/low-e warm-edge thermally broken frame at U-0.14 for RM-S-PLANT, fixed"),
     WindowType(tag="WT-3048-HP", width=inch(30), height=ft(4), u_factor=u_us(0.14), frame_depth=inch(4),
-               shgc=0.35, vt=0.5, operation="casement",
-               source="notes/plant_room.md — WT-3048 dimensions at U-0.14 for RM-S-PLANT"),
-    # WIN-S-PLANT2 sits within 24" of D-S-DECK-W, so R308.4 makes its location hazardous
-    # regardless of what the glass costs: it needs the tempered pane AND the U-0.14 package,
-    # which is a fourth product, not a choice between the two.
-    WindowType(tag="WT-3048-HP-T", width=inch(30), height=ft(4), u_factor=u_us(0.14), frame_depth=inch(4),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True,
-               source="notes/plant_room.md — WT-3048-HP with tempered glazing for WIN-S-PLANT2 (R308.4, within 24\" of D-S-DECK-W)"),
+               shgc=0.35, vt=0.5, operation="fixed",
+               source="notes/plant_room.md — WT-3048 dimensions at U-0.14 for RM-S-PLANT, fixed"),
+    # There was a third, WT-3048-HP-T: the tempered twin WIN-S-PLANT2 needed while it sat
+    # within 24" of D-S-DECK-W. That door is gone (see second.py), the location is no longer
+    # hazardous under R308.4.2, and the type went with it.
 ]
 
 NODES = [
@@ -977,8 +985,9 @@ OPENINGS = [
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(3)),                                               # y 10'-4"
     # South face, bedroom: centres 4'-0" and 14'-8", both STUD LINES on W-M-S1's grid.
-    # S1 stacks under WIN-S-PLANT1; S2 stacks under D-S-DECK-W, the balcony's west French
-    # pair, which moved 1'-0" inward on 2026-08-24 to share this stud line (see
+    # S1 stacks under WIN-S-PLANT1; S2 stacks under WIN-S-PLANT4, which took over this stud
+    # line from D-S-DECK-W when that door was deleted on 2026-09-03 — the column survives the
+    # swap intact, because the window inherited the door's exact centre (see
     # plan/storeys/second.py). Sill 2'-8" puts heads at 6'-8" with the doors. Moved 8" east
     # off the old 3'-4"/8'-8" bay centres when units narrowed 42" -> 30" (WT-3048,
     # 2026-08-01) — a 30" RO wants a stud line, not a bay centre
@@ -1031,7 +1040,7 @@ OPENINGS = [
     #
     # Its partner WIN-M-LIV-S2 (27'-4", WT-3048-T, under WIN-S-STUDY2) was deleted
     # 2026-08-24: the south face reads as a column now, not a pair of pairs — see
-    # WIN-M-BED-S2, which moved east to 13'-8" to stand under D-S-DECK-W.
+    # WIN-M-BED-S2, which moved east to 13'-8" to stand under what is now WIN-S-PLANT4.
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 9)),
            sill_height=ft(2, 8)),

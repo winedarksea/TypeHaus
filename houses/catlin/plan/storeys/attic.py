@@ -467,29 +467,33 @@ OPENINGS = [
     # 5'-0" (60"), which needs 2 x (60 + 2) = 124" of clearance to the outer jamb, and at
     # 6'-8" there are 65".
     #
-    # 12'-0" / 24'-0" is the nearest legal mirrored pair, and it is legal for two separate
-    # reasons that both have to hold: a 30" RO BREAKS studs and so must centre on a STUD
-    # LINE (144" and 288", each = 0 mod 16 — unlike the 14" family, which must sit on a bay
-    # CENTRE), and the outer jambs land at 129" from their eaves against the 124" the rake
-    # allows. Five inches. No shrink is needed, and shrinking would not buy much: the height
-    # is what the rake charges for and 30x36 is already the shortest unit in the 30" family.
+    # They went to 12'-0" / 24'-0" first, then INBOARD ONE MORE BAY to 13'-4" / 22'-8"
+    # (2026-09-03) to stack the pair as nearly as the module allows on WIN-S-STAIR-N below
+    # (x 12'-8"). 12'-8" itself is unreachable here: a 30" RO BREAKS studs and so must centre
+    # on a STUD LINE — on layout line LL-W-A-N1 those are 144", 160", 176"… — unlike the 14"
+    # family, which sits on a bay CENTRE (8 mod 16), which is exactly what 12'-8" is. 13'-4"
+    # (160") is the nearest legal station, 8" east of the stair window, and 22'-8" (272") is
+    # its mirror about the 18'-0" ridge. Retyping to WT-1436 would have hit 12'-8" exactly and
+    # made the north gable a literal twin of the south pair, but it buys the alignment with
+    # glass. The rake is not the binding constraint at this station: the outer jambs land at
+    # 145" from their eaves against the 124" it allows (129" at the old 12'-0" / 24'-0").
     #
-    # ** WIN-A-N1 REHOSTS W-A-N2 -> W-A-N2B. ** x=12'-0" is east of N-A-N3 (x=10'-0"), where
+    # ** WIN-A-N1 REHOSTS W-A-N2 -> W-A-N2B. ** x=13'-4" is east of N-A-N3 (x=10'-0"), where
     # the north wall split, so the window is simply on the other piece now.
     # W-A-N2's own comment spends a paragraph arguing that keeping the tag on the WEST piece
     # is what preserves this window's host and its from_node offset verbatim — that argument
     # is now spent, and the tag stays on the west piece for the PV/NEMA boxes alone
     # (test_catlin_outdoor_structures.py). W-A-N2B runs N-A-N1 (x=18') -> N-A-N3 (x=10'), so
-    # the offset is measured east-to-west: 18'-0" - 4'-9" - 15" = the 12'-0" centre.
+    # the offset is measured east-to-west: 18'-0" - 3'-5" - 15" = the 13'-4" centre.
     #
-    # At x=12'-0" the west unit fronts FO-A-HALL, the stair void — it daylights a
+    # At x=13'-4" the west unit fronts FO-A-HALL, the stair void — it daylights a
     # double-height space rather than a room. That is an amenity, not a code problem: the
     # sill is 11'-0" above the floor below and nowhere near R312.2's 24" fall-protection
     # trigger, and R303.1 asks nothing of a hall.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-3036",
-           position=from_node("N-A-N1", ft(4, 9)), sill_height=ft(2)),   # ctr x 12'-0"
+           position=from_node("N-A-N1", ft(3, 5)), sill_height=ft(2)),   # ctr x 13'-4"
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
-           position=from_node("N-A-NE", ft(10, 9)), sill_height=ft(2)),  # ctr x 24'-0"
+           position=from_node("N-A-NE", ft(12, 1)), sill_height=ft(2)),  # ctr x 22'-8"
     # ** THE FOUR EAVE WINDOWS ARE GONE. ** WIN-A-W-S (CAX308AAAA), WIN-A-W-N
     # (CAX306AAAA), WIN-A-E-S (CAX309AAAA) and WIN-A-E-N (CAX310AAAA) were the knee-wall
     # pair on each side — WT-1424s chosen for HEIGHT rather than width, because a 5'-0" knee

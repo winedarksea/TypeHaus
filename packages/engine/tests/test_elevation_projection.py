@@ -174,10 +174,14 @@ def test_the_south_gable_carries_four_openings_mirrored_about_the_ridge(catlin_m
     assert centres["WIN-A-S3"] == pytest.approx(23 * FT + 4, abs=1.0)
 
 
-def test_the_north_gable_pair_sits_at_twelve_and_twenty_four_feet(catlin_model):
-    """Same source, same section — and the north view is mirrored, so u = -x."""
+def test_the_north_gable_pair_near_stacks_on_the_stair_window(catlin_model):
+    """Same source, same section — and the north view is mirrored, so u = -x.
+
+    13'-4" / 22'-8" is the nearest stud-line mirror to WIN-S-STAIR-N's 12'-8" below;
+    a 30" RO cannot centre on a bay centre. See storeys/attic.py's north-gable note.
+    """
     scene = build_elevation(catlin_model, "north")
-    for tag, station_ft in (("WIN-A-N1", 12.0), ("WIN-A-N2", 24.0)):
+    for tag, station_ft in (("WIN-A-N1", 13.0 + 4 / 12), ("WIN-A-N2", 22.0 + 8 / 12)):
         nodes = [node for node in _polylines(scene) if node.tag == tag]
         assert nodes, f"{tag} missing from the north gable"
         us = [point[0] for node in nodes for point in node.points]

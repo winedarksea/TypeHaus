@@ -1382,20 +1382,15 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # W-GF-E2) and the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
     # not climb a 22" curb any more happily than a car will.
     #
-    # The other two are the wainscot returns: it wraps 4'-0" around the SE and NE corners
-    # off the east elevation. W-GF-S3 and W-GF-N2 are those corner pieces; their parents
-    # keep their uids on the remnants.
-    #
-    # ** NO STEM IS LEDGED ANY MORE, and the split segments are kept anyway. ** These four
-    # carried GARAGE_ICF_6_BRICKLEDGE while the wainscot was brick, because a full 3 5/8"
-    # wythe needs a bearing shelf. The wainscot is hung aluminium sheet since 2026-09-02 and
-    # bears on nothing, so all ten are plain GARAGE_ICF_6 and all ten footings are back on
-    # one 20" strip. The SEGMENTATION survives the swap because reversing it would churn
-    # four wall uids and four footing uids to express nothing; it costs a node pair each and
-    # buys the option back cheaply if the veneer ever returns.
+    # The other two splits are a FOSSIL, and the count pins them on purpose. W-GF-S3 and
+    # W-GF-N2 were cut off W-GF-S2/W-GF-N to carry the SE/NE corner returns of a brick
+    # wainscot, on a ledged stem (GARAGE_ICF_6_BRICKLEDGE) that a full 3 5/8" wythe needed
+    # for bearing. The brick went to hung aluminium sheet on 2026-09-02 and the wainscot
+    # went away entirely on 2026-09-03, so nothing stands on them and both halves are plain
+    # stem. THE SEGMENTATION IS KEPT ANYWAY: reversing it would churn four wall uids and
+    # four footing uids to express no geometric change at all. If this count ever has to
+    # move, merge deliberately — do not let a cleanup do it by accident.
     assert len(stem) == 10
-    ledged = {w.tag for w in stem if w.assembly == "GARAGE_ICF_6_BRICKLEDGE"}
-    assert ledged == set(), "the brick ledge went with the brick; see GARAGE_METAL_WAINSCOT"
     assert {w.assembly for w in stem} == {"GARAGE_ICF_6"}
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
@@ -1485,99 +1480,75 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     # change (plans/TODO.md).
 
 
-def test_garage_wainscot_piers_are_the_door_jambs_and_cap_at_four_feet(catlin_model):
-    """The things about the east metal wainscot (plus its SE/NE corner returns) a future
-    edit could silently break. It was off-white soldier brick until 2026-09-02 and is
-    PVDF-painted aluminium flat sheet now; every fact below outlived the swap except the
-    two the swap was about — the cap height and the assembly's own thickness.
+def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_model):
+    """The garage's base skin is ONE band on all four walls, and the Z at its top is the
+    only thing standing between a rainscreen cavity and the foam.
 
-    **The piers are not a free choice.** W-G-WAIN-S/N stand on the stem segments that
-    exist only because the stem drops to a grade beam under the overhead door, so the
-    JAMB-TO-CORNER span of each pier IS ``OVERHEAD_DOOR_OFFSET`` and their inboard ends ARE
-    the door jambs. The editable-plan dialect bans arithmetic, so plan/storeys/garage.py
-    spells the node y values as literals and nothing but this test ties them back to the
-    door. Each pier is 1.55" LONGER than the door offset alone — the corner-adjacent end
-    was pushed out to the true outside-corner point where its return meets it (see
-    CLAUDE.md's corner-return note), so the door-side 4'-0" is measured from the jamb
-    inward, not end to end. That stretch IS the assembly's thickness, so it tracked the
-    swap: 4 5/8" of cavity-plus-wythe became 1.55" of cavity-plus-sheet.
+    **What this test replaced.** Until 2026-09-03 a 4'-0" wainscot stood in front of the two
+    east stem segments flanking the overhead door, wrapped 4'-0" around each of the SE/NE
+    corners: four ``W-G-WAIN-*`` FoundationWalls on ``GARAGE_METAL_WAINSCOT`` (aluminium
+    sheet since 2026-09-02, off-white soldier brick before that) with cap flashings at a
+    round 4'-0". It was deleted. **The piers lost nothing**: ``GARAGE_ICF_6``'s
+    ``coil-gap``/``coil-ext`` band always ran BEHIND the wainscot, so those two segments keep
+    exactly the protection the other three walls always had, and the whole garage now reads
+    as one uniform base course. The first assertion here is simply that no fragment of the
+    wainscot came back.
 
-    **The returns are a clean 4'-0" run apiece**, and terminate at the SAME point in space
-    as their pier's corner end — a shared node, not just a coincidentally equal coordinate.
+    **The band is a LayerExtent, not an elevation**, banded from 2" below the ``GRADE`` datum
+    with no top, so it runs to the stem top and follows ``Site.grade`` on the next lift. Read
+    off ``site.grade`` for the same reason the stem test does — this is a property of the
+    ground, and the house datum is not the ground.
 
-    **ONE UNCUT 48" x 120" SHEET PER PIER IS THE WHOLE DIMENSIONAL ARGUMENT**, and it is
-    pinned here in both directions because nothing else in the model knows about stock
-    sheet sizes. Vertically the band is 48" — from a hemmed drip 2" BELOW grade to a top
-    46" above it, capped at a round 4'-0". Horizontally the developed girth around the
-    brake-bent corner is the pier face plus its return, which has to stay inside 120" with
-    room for end hems or the corner becomes a joint. The brick capped at 4'-4" on a shelf
-    2" ABOVE grade; wetted height is 48" either way and the vulnerable bottom edge is now
-    under the splash line rather than sitting in it. Read off ``site.grade`` for the same
-    reason the stem test does — the wainscot is a property of the ground, and the house
-    datum is not the ground.
-
-    Neither fact has a check behind it. A veneer wall whose node fails to resolve comes back
-    ``None`` silently — no geometry and no finding — so the first assertion here is simply
-    that all four walls exist at all.
+    **The Z is new scope and has no check behind it.** The band's top and the corrugated
+    panel's base both land on the stem top, and a rainscreen's cavity water arrives exactly
+    there; until this change that junction was modelled by nothing at all. It breaks at both
+    stem gaps — there is no stem, and so no band and no Z, across the 16'-0" overhead door or
+    the 3'-0" service door. Nothing grades a missing flashing run, so the count and the break
+    stations are pinned here or nowhere.
     """
     grade_m = catlin_model.plan.project.site.grade.meters
-    south = catlin_model.wall("W-G-WAIN-S")
-    north = catlin_model.wall("W-G-WAIN-N")
-    sret = catlin_model.wall("W-G-WAIN-SRET")
-    nret = catlin_model.wall("W-G-WAIN-NRET")
-    assert south is not None and north is not None
-    assert sret is not None and nret is not None
 
-    # W-G-E runs south -> north, so ``center_along_m`` is measured from its south end and
-    # the two jambs are absolute y values on the same line the piers stand on.
-    door = next(o for o in catlin_model.openings if o.tag == "D-G-OVERHEAD")
-    host = catlin_model.wall("W-G-E")
-    (_, ya), (_, yb) = host.axis[0], host.axis[-1]
-    assert yb > ya, "W-G-E is authored south -> north; the jamb maths below assumes it"
-    jamb_lo = ya + door.center_along_m - door.width_m / 2.0
-    jamb_hi = ya + door.center_along_m + door.width_m / 2.0
+    # ** NO FRAGMENT OF THE WAINSCOT SURVIVES. ** A wall whose node fails to resolve comes
+    # back None silently, so a half-deleted wainscot would look like a clean one.
+    assert [w for w in catlin_model.walls if w.tag.startswith("W-G-WAIN")] == []
+    assert [n for n in catlin_model.plan.elements_of_kind("Node")
+            if str(getattr(n, "tag", "")).startswith("N-G-WAIN")] == []
+    assert [s for s in catlin_model.solids
+            if str(s.tag).startswith("TR-G-WAIN-CAP-")] == []
 
-    corner_stretch = inch(1.55).meters  # how far the corner end was pushed past the jamb span
-    pier_faces = []
-    for wall, jamb, end in ((south, jamb_lo, "north"), (north, jamb_hi, "south")):
-        ys = sorted(p[1] for p in wall.axis)
-        span = ys[1] - ys[0]
-        pier_faces.append(span)
-        assert span == pytest.approx(ft(4.0).meters + corner_stretch), \
-            "pier is the door offset, plus the corner stretch to meet its return"
-        # The pier's inboard end lands on the jamb it flanks.
-        inboard = ys[1] if end == "north" else ys[0]
-        assert inboard == pytest.approx(jamb)
+    # The band itself: 2" below grade to the stem top, on the stem assembly, both layers.
+    stem_asm = catlin_model.plan.library.resolve_assembly("GARAGE_ICF_6")
+    band = [ly for ly in stem_asm.layers if ly.name in ("coil-gap", "coil-ext")]
+    assert len(band) == 2, "the vented standoff and the sheet are a pair; neither is optional"
+    for layer in band:
+        assert layer.extent is not None and layer.extent.top is None, \
+            "no top bound — the band runs to the stem top and follows GARAGE_STEM_REVEAL"
+        assert layer.extent.bottom.offset.inches == pytest.approx(-2.0), \
+            "2\" of bury seals the termination instead of leaving a lip water stands on"
 
-    return_runs = []
-    for ret in (sret, nret):
-        xs = sorted(p[0] for p in ret.axis)
-        run = xs[1] - xs[0]
-        return_runs.append(run)
-        assert run == pytest.approx(ft(4.0).meters), "return is a clean 4'-0 run"
+    # ** THE Z AT THE TOP, BROKEN AT BOTH DOORS. ** Each Flashing resolves to a "-DRIP" solid
+    # plus a "-LAP" seam solid, so count the "-DRIP" ones: one per authored run.
+    zs = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-STEMZ-")]
+    drips = [z for z in zs if str(z.tag).endswith("-DRIP")]
+    assert len(drips) == 6, \
+        "south and east are each broken by a stem gap; north and west run whole"
+    # It sits ON the stem top, which is the garage storey datum: grade + GARAGE_STEM_REVEAL.
+    stem_top_m = grade_m + ft(1, 10).meters
+    assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m)
 
-    # ONE SHEET PER CORNER. Stock flat sheet is 48" x 120"; the developed girth is the
-    # pier face plus its return, bent at the corner. Hold a 6" allowance for the two end
-    # hems — lose this and the corner stops being a bend and becomes a joint, which is the
-    # single thing this detail exists to avoid.
-    stock_length_m = inch(120.0).meters
-    hem_allowance_m = inch(6.0).meters
-    for face, run in zip(pier_faces, return_runs):
-        assert face + run + hem_allowance_m <= stock_length_m, \
-            "pier + return must brake from one 120\" sheet with room for end hems"
-
-    # The 48" band: 2" below grade to 46" above it, on every segment.
-    for wall in (south, north, sret, nret):
-        assert wall.z0_m == pytest.approx(grade_m - inch(2.0).meters), \
-            "hemmed bottom drip sits 2\" BELOW grade, not on a shelf above it"
-        assert wall.z1_m - wall.z0_m == pytest.approx(inch(48.0).meters), "one stock sheet"
-    # Each Flashing element resolves to a "-DRIP" solid plus a "-LAP" seam solid, so four
-    # wall segments' worth of cap is 8 solids, not 4 — count the "-DRIP" ones (one per
-    # element) to check "all four wall segments get their own cap run".
-    caps = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-WAIN-CAP-")]
-    drips = [c for c in caps if str(c.tag).endswith("-DRIP")]
-    assert len(drips) == 4, "all four wall segments get their own cap run"
-    assert max(c.z1_m for c in caps) == pytest.approx(grade_m + inch(48.0).meters)
+    # ** ALUMINIUM OVER ALUMINIUM. ** The corrugated panel above is PVDF-coated STEEL and the
+    # band below is aluminium; in a plowed, salted splash zone the metal-to-metal lap is
+    # where this detail fails. Nothing in the engine grades dissimilar metals, so naming the
+    # material is the whole enforcement — a Z that quietly took the envelope's
+    # `metal-dark-exterior` steel trim coil would pass every other check in the suite.
+    flashings = [f for f in catlin_model.plan.elements_of_kind("Flashing")
+                 if str(getattr(f, "tag", "")).startswith("TR-G-STEMZ-")]
+    assert len(flashings) == 6
+    assert {f.material for f in flashings} == {"aluminum-flat-pvdf"}
+    # `back_side` decides which end the turn-down hangs off, and pointing it at the wall
+    # throws cavity water BEHIND the band with no finding anywhere. The loop is authored
+    # counter-clockwise so every run's left-hand normal points inboard.
+    assert {f.back_side for f in flashings} == {"left"}
 
 
 def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
@@ -1711,11 +1682,17 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # `notes/sunken_garden_court_free_body.md`.
     assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
                                       "W-SG-ARCH"}
-    # And it is BURIED — the porch reads exactly as it did, because nothing of the beam is
-    # visible above the garden floor.
+    # It was BURIED until 2026-09-03: its top was the garden floor's underside. The court
+    # dropped 7 1/4" for the flood step at D-B-PATIO and the beam DID NOT FOLLOW — a 10 1/4"
+    # section fails as a strut (d/c 1.02) and lowering its bottom instead puts its bed under
+    # DRW-SG-MAIN. So it now stands 3 3/4" proud of the court as a mow strip on the
+    # paved-bay/gravel-field boundary, with FO-SG-ARCH cutting the rim around it. What must
+    # stay true is that it is still nowhere near underfoot on the PORCH: its top is below the
+    # porch deck by the whole basement depth.
     beam = next(w for w in walls if w.tag == "W-SG-ARCH")
-    floor = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
-    assert beam.z1_m <= floor.z0_m + 1e-9
+    court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
+    assert (beam.z1_m - court.z1_m) / 0.0254 == pytest.approx(3.75, abs=1e-6)
+    assert beam.z1_m < 0.0
     assert all(w.is_foundation for w in walls)
     assert all(w.assembly == "SUNKEN_GARDEN_WALL" for w in walls)
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
@@ -1823,8 +1800,10 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     assert by_storey["main"] >= 25
     assert by_storey["second"] >= 30
     assert by_storey["attic"] >= 12
-    # 4 wood-framed walls + 4 brick-wainscot walls (2 east piers + 2 SE/NE corner returns).
-    assert by_storey["garage"] == 8
+    # The four wood-framed walls, and only those. It was 8 until 2026-09-03: the other four
+    # were the east wainscot's own veneer walls (2 piers + 2 SE/NE corner returns), deleted
+    # with it. The garage's base skin is a banded LAYER on the stem now, not a wall.
+    assert by_storey["garage"] == 4
     rooms = {r.tag for r in catlin_model.rooms}
     # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place (same uid, CAR401AAAA),
     # and split off RM-A-STUBATH and RM-A-POCKET as new rooms.

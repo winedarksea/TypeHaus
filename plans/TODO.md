@@ -646,8 +646,10 @@ the future.
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
   is the strictest case in the house; the rest of the envelope still rides
   TR-CATLIN-FRAMED-OPENING)
-- Does balcony access have to pass through the plant room? `D-S-DECK-W` is a 60" exterior
-  French door in a 70 %-RH room and its threshold will condense (raised 2026-08-18)
+- ~~Does balcony access have to pass through the plant room?~~ — ANSWERED 2026-09-03: no.
+  `D-S-DECK-W` is deleted and `WIN-S-PLANT4` (WT-3048-HP, fixed) stands on its centre. The
+  balcony is reached from the study through `D-S-DECK-E`, which is the only balcony door the
+  source ever drew.
 - Floor drain in RM-S-PLANT — Answer: No floor drain necessary. Spilled water is mopped up as needed.
 - Make sure all desired access panels are in (deferred pending more design items settling)
 - ~~Make sure the floor trusses (of the first to second floor) are modeled more accurately

@@ -1126,7 +1126,13 @@
 # opens that section (notes/rebar_backout.md §5). That section bills BAR by the pound. Fibre
 # is an admixture priced by the yard and it stays in this rate, exactly as the mesh it
 # replaced did.
-"slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 26.37 cy — SLAB-ON-GRADE ONLY, was merged $390-685
+# 2026-09-03: the sunken-garden court floor became a RIM around an open field, and both
+# halves land in this row's fallback. SL-SG-FLOOR fell 5.75 -> 3.96 cy (FO-SG-FIELD and
+# FO-SG-ARCH voided out of it) and SL-SG-STOOP, D-B-PATIO's 7 1/4" landing, added 0.53. Both
+# are the same pour on the same day as the rest of this row's slabs-on-grade, so neither
+# earns a qualified key or a short-load premium — unlike HP_PAD_ON_GRADE below, which is a
+# separate trip. The field itself is sand and stone and is zeroed by qualified key above.
+"slab" = { material = { low = 200, high = 250 }, labour = { low = 190, high = 435 } }  # 24.0 cy — SLAB-ON-GRADE ONLY, was merged $390-685
 # The heat-pump pad, SL-SG-HPPAD — 0.70 cy (was 0.36 until 2026-09-03, when the two
 # condensers turned to face SOUTH and the pad grew east to the SE corner and north to carry
 # ST-SG-PORCH's foot and step-off; 56.9 SF at 4"). STILL QUALIFIED, and for the same reason:
@@ -1148,6 +1154,12 @@
 # same assembly the model draws.
 "slab:SG_FROST_WING_XPS1" = { low = 0, high = 0 }  # 0.08 cy of foam — bills in [envelope_layers]
 "slab:SG_FROST_WING_XPS2" = { low = 0, high = 0 }  # 0.14 cy of foam — bills in [envelope_layers]
+# ** THIS ZERO IS LOAD-BEARING. ** SL-SG-FIELD is the sunken-garden court's open centre —
+# 147 sf of sand, fabric and stone, 12" deep — and it is a `Slab` for the same reason the
+# frost wings are. Delete this row and `cli/prices.candidate_keys` falls back to the bare
+# "slab" $/cy above and orders **5.4 cy of concrete that does not exist**. The build-up
+# bills by the square foot in [envelope_layers], off the same assembly the model draws.
+"slab:CATLIN_GARDEN_FIELD" = { low = 0, high = 0 }  # 5.43 cy of sand+stone — bills in [envelope_layers]
 # RESEARCHED 2026-08-18 — the suspended main-floor deck, priced apart from every other
 # slab in the house. `structural_solids` keys on solid CATEGORY, and "slab" is one
 # category covering two completely different jobs: a slab-on-grade is screeded on the
@@ -2323,7 +2335,12 @@
 # foundation — wheelbarrowed or conveyed, not tailgated, which is the whole spread between
 # the ends. Compaction is nominal by design: an open-graded stone is placed, not compacted
 # to a proctor, and the absence of fines IS the capillary break.
-"capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1783.7 SF — 4" #57, screeded
+"capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1977.0 SF — 4" #57, screeded (+146.7 SF 2026-09-03: CATLIN_GARDEN_FIELD's drainage bed, outdoors and tailgated rather than wheelbarrowed, which sits at the cheap end of the same band)
+# The sunken-garden court's field build-up, all three PROVISIONAL with the field itself
+# (plan/assemblies.CATLIN_GARDEN_FIELD). 146.7 SF each.
+"rootzone-sand" = { material = { low = 1.6, high = 2.9 }, labour = { low = 0.9, high = 2.2 } }  # 146.7 SF — 8" of sand/compost blend, placed and graded 9' down in a court reachable only by conveyor or crane bucket, which is the top of the labour band
+"geotextile-separation" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.25, high = 0.6 } }  # 146.7 SF — non-woven, lapped 12"
+"bentgrass-turf" = { material = { low = 0.55, high = 1.1 }, labour = { low = 0.6, high = 1.4 } }  # 146.7 SF — sod, laid and rolled. Species and irrigation are landscape decisions; the water is an [allowances] line, not a layer
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
 # RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
 # CATLIN_EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
@@ -2382,11 +2399,29 @@
 # outside half of a both-faces requirement that was only ever half-built (`gwb-stem` was the
 # inside half). Same job as `foundation-protection-panel` above, which is why it sits here,
 # but a thin brake-formed sheet on furring rather than a 1/2" laminated board, so it is
-# cheaper per SF in material and dearer in labour. ALUMINIUM: do not read this off any of
-# the painted-STEEL panel rows in this file (see the GARAGE_METAL_WAINSCOT note in
-# [wall_structure]). Covers the sheet, the KDAT furring, the 316 stainless gasketed fixings
-# into the ICF webs, and the hemmed edges. Placeholder pending a quote, struck off the
-# protection-panel row it replaces in function.
+# cheaper per SF in material and dearer in labour. Covers the sheet, the KDAT furring, the
+# 316 stainless gasketed fixings into the ICF webs, and the hemmed edges. Placeholder
+# pending a quote, struck off the protection-panel row it replaces in function.
+#
+# ** SINCE 2026-09-03 THIS IS THE GARAGE'S ENTIRE BASE SKIN, AND THE SF DID NOT MOVE. **
+# The 4'-0" east wainscot that stood in front of it was deleted, taking its own
+# `[wall_structure] GARAGE_METAL_WAINSCOT` row (65 SF, $1,430-2,730) and its 15.5 LF of cap
+# flashing with it. This band always ran BEHIND that wainscot, so 156.2 SF is unchanged —
+# the deletion is a pure saving, not a transfer. What it does add is 76.5 LF of stem-top Z
+# in `[edge_trim] drip_flashing`.
+#
+# ALUMINIUM: do not read this off any of the painted-STEEL panel rows in this file
+# (`board-batten-24`, `corrugated-panel-26`, `pbr-panel-26`, the standing-seam family).
+# Painted aluminium runs well above painted steel per SF, and reading one off the other is
+# the class of error the `[envelope_layers]` note at the foot of this file warns about, one
+# key deeper: fixing method + profile + gauge + METAL.
+#
+# ** THE GAUGE IS 0.040-0.050" SHEET AND THE RATE ASSUMES IT, NOT TRIM COIL. ** With only a
+# ~24" band left, 24" trim coil is the obvious buy; stock 48" x 120" architectural sheet
+# rips into exactly two 24" bands with no waste, so the heavier metal costs nothing per SF
+# over coil and the band is still the plow-splash zone. SECOND BEST, if a supplier cannot
+# get sheet: 0.024" heavy-gauge 24" trim coil — take a few percent off the material half if
+# so. NOT 0.019" standard trim coil, which dimples under a shovel corner.
 "aluminum-flat-pvdf" = { material = { low = 2.5, high = 5 }, labour = { low = 2.5, high = 5 } }
 # 2026-08-18: the above-grade foundation band on the basement walls, authored as a
 # `Layer.extent` off the GRADE datum rather than as a number here, so the 2026-08-21 deck
@@ -2423,8 +2458,8 @@
 # the ready-mix and steel — over half the rate is material". The blocks are INSIDE that rate.
 # Billing them again here, at $6.50-11.50 per face-SF over 952.5 SF (= both faces of the same
 # 476 SF stem), put the house at $27-47/SF for a 6" ICF frost wall against a $13-25 market.
-# `icf-eps` is used by nothing but GARAGE_ICF_6 and GARAGE_ICF_6_BRICKLEDGE (plan/assemblies.py
-# 1024/1030 and 1105/1111), so zeroing it here is complete. The deck's stay-in-place form is a
+# `icf-eps` is used by nothing but GARAGE_ICF_6 (plan/assemblies.py; GARAGE_ICF_6_BRICKLEDGE
+# was deleted with the brick wainscot on 2026-09-03), so zeroing it here is complete. The deck's stay-in-place form is a
 # DIFFERENT material (`eps-deck-form`, assemblies.py:1856) and is untouched.
 # Same pattern as "slab:SG_FROST_WING_XPS1/2" above: priced in one section, zeroed in the other.
 "icf-eps" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # 952.5 SF — billed inside GARAGE_ICF_6 in [wall_structure]
@@ -2898,67 +2933,6 @@
 # 2026-08-21: was "CATLIN_CONC_12_INT". Same 12" interior pour, now drawn from library
 # FOUNDATION_WALL_12_INT rather than minted a second time here; the rate is untouched.
 "FOUNDATION_WALL_12_INT" = { low = 470, high = 780 }  # 5.25 CY — was $320-600; comment was stale at 22.18 CY until 2026-08-29
-# ** SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER: zero ready-mix on this line. ** It is a
-# full 3 5/8" clay wythe on a 1" cavity, priced by the SF OF FACE like every other brick row
-# here, and it must not be escalated with a concrete index. The gross-wall-volume basis this
-# section's header documents (units not deducted) applies to the $/cy rows; this one is $/SF.
-#
-# 67.1 SF of face — the two 4'-0" east piers PLUS a 4'-0" return around each of the SE/NE
-# corners onto the south/north walls (2026-08-26), four short wall segments in all, now 4'-0"
-# of brick tall apiece rather than 3'-8" (2026-09-02, see below). Glen-Gery
-# Columbia Roman Maximus, ASTM C216 Grade SW Type FBA — a special-order handmade unit, not the
-# stock buff body this wythe originally specified, which is why this now prices ABOVE the
-# glazed rows rather than at the brown plinth's basis: special-order unit cost plus a
-# handmade FBA body's wider dimensional tolerance (more mason time per unit fitting the joint).
-#
-# Still a mobilisation-dominated job at 67.1 SF, and now with FOUR corners/terminations
-# instead of two straight run-ends: two mitred outside corners (SE, NE) in addition to the
-# two horizontal terminations at the door jambs. A mason sets up, lays four short wall
-# segments with through-wall flashing throughout, and leaves. Ties, weeps and all four
-# flashing runs are in this rate. The cap flashing itself is
-# NOT — it is modelled as TR-G-BRICK-CAP-S/N/SRET/NRET and bills by length through
-# [edge_trim]. The ICF brick ledge that carries the wythe is not here either: it is concrete
-# in the GARAGE_ICF_6_BRICKLEDGE stem. Neither is the flat 2x6 tie blocking in the stud bays
-# behind it: that is carpentry, and it is small enough to sit inside the wall's framing rate.
-#
-# ** RAISED 2026-09-02 FOR SOLDIER SETTING, $24-42 -> $31-55. ** The units now stand on end
-# (plan/assemblies.py GARAGE_BRICK_LEDGE_RISE), and a 23 5/8" unit set as a soldier bears on
-# ~5.9 sq in of bed with two full-height head joints doing the stabilising: it wants a stiff
-# mortar, wants the run strung and braced while it is green, and cannot be laid at anything
-# like a stretcher's pace. Material does not move — same unit, same count per SF — so this is
-# a labour-only premium on a rate whose labour half is the larger one; ~30% overall. It is
-# NOT offset by the rowlock cap coming off (a 4" course over 16.8 LF is under a
-# day-of-the-week's worth of the mobilisation this row is really paying for).
-#
-# The 2026-08-26 swap from the Black colourway to Columbia does NOT move this rate: same
-# unit, same size, same ASTM grade, same handmade FBA body, off-white instead of black.
-# A colourway is not a cost driver here; the special-order handling already in the rate is.
-"GARAGE_BRICK_WAINSCOT" = { low = 31, high = 55, unit = "SF" }  # 0 SF — UNREFERENCED since 2026-09-02 (metal wainscot). Kept at rate, the `glazed-green-brick` convention.
-# The metal wainscot that replaced it. PRICED PER SF OF FACE, like the brick row above and
-# for the same reason — the wythe/sheet is the assembly's STRUCTURE layer, so it bills
-# through `[wall_structure]` on the assembly tag rather than through `[envelope_layers]`.
-#
-# ** THIS RATE IS A PLACEHOLDER PENDING A REAL QUOTE, AND IT IS THE ONE NUMBER IN THE SWAP
-# THAT A SUPPLIER SHOULD GOVERN. ** No other panel rate in this file can be borrowed for it:
-# `board-batten-24`, `corrugated-panel-26`, `pbr-panel-26` and the whole standing-seam family
-# are painted STEEL, and painted aluminium coil runs well above painted steel per SF. Reading
-# an aluminium wainscot off a steel row is the same class of error the `[envelope_layers]`
-# note at the foot of this file warns about, one key deeper: fixing method + profile + gauge
-# + METAL.
-#
-# The build the rate has to cover: 0.040-0.050" PVDF-painted aluminium flat sheet (stock
-# 48" x 120", ~2.5 sheets), brake-formed with a bent outside corner and hemmed top and
-# bottom, on 1-1/2" vertical KDAT furring at 12-16" o.c. with concealed cleats and a #9 316
-# stainless gasketed perimeter fixing. Material is the small half and BRAKE TIME IS THE BIG
-# ONE — this is a shop-formed part, not a stocked profile. Furring, cleats, fixings and the
-# aluminium Z-flash at the corrugated transition are all in this rate; the CAP FLASHING IS
-# NOT (TR-G-WAIN-CAP-S/N/SRET/NRET bill by length through `[edge_trim]`), and neither are
-# the base/head closures (an `[allowances]` lump, with the garage's other closures).
-#
-# What the swap DELETED and is no longer billed anywhere: the ICF brick-ledge block, ~4 cy
-# of the widened footing section on four segments, the ties, the weeps, both through-wall
-# flashings and the ~8 lf per pier of flat 2x6 tie blocking.
-"GARAGE_METAL_WAINSCOT" = { low = 22, high = 42, unit = "SF" }
 # HISTORY, so the number can be re-struck rather than re-guessed. 2026-08-20: $480-1,000/cy
 # was $8.89-18.52/SF and its LOW sat on the absolute floor of the cheapest published number
 # anywhere; it went to $756-1,296 = $14-24/SF against a $13-25/SF typical installed market.
@@ -2991,25 +2965,6 @@
 # foxblocks.com ICF foundation cost ($10-25/SF of wall surface); icfmag.com "Build Stem Walls
 # or Frost Walls" on the minimum-crew, one-to-three-course stem case.
 "GARAGE_ICF_6" = { material = { low = 460, high = 600 }, labour = { low = 205, high = 460 } }  # 7.20 CY = 389 SF — was $756-1,296 merged, then $756-1,296 split
-# Four stem segments now (2026-08-26): the two east segments flanking the overhead door
-# PLUS the two SE/NE corner segments that carry the brick's 4'-0" corner returns
-# (W-GF-S3/N2) — all four formed with a brick-ledge block so they carry the wainscot's
-# wythe. Same KEYING WARNING as GARAGE_ICF_6 above — ICF is bought per SF OF WALL and this
-# row is $/cy — with a second twist: the takeoff splits this assembly into two rows against
-# ONE key, the 6" core (1.58 cy) and the 4 5/8" ledge band (0.84 cy), so the rate is struck
-# across their sum, 2.42 cy over 85.3 SF of wall (35 SF/cy, not GARAGE_ICF_6's 54 — the
-# ledge is real extra concrete).
-#
-# Derivation, so the number can be re-struck rather than re-guessed:
-#   85.3 SF of wall at GARAGE_ICF_6's own $12.31-19.63/SF    = $1,050 - 1,674
-#   brick-ledge form premium, 16 LF at $8-15/LF              =   $128 -   240
-#   the ledge's own ready-mix + four 4' welded-wire reinforcers = $180 -   280
-#   ------------------------------------------------------------------------
-#   $1,358 - 2,194 over 2.42 cy                              = $561 -   907/cy
-# RE-STRUCK 2026-08-29 with GARAGE_ICF_6 (was $620-1,060 off its old $14-24/SF). The two
-# addends below the first line are unchanged — a brick ledge is a block swap and a bit of
-# extra ready-mix, and neither one gets cheaper because the wall is short.
-"GARAGE_ICF_6_BRICKLEDGE" = { low = 561, high = 907 }  # 2.42 CY = 85.3 SF of wall
 # ** CATEGORY ERROR, same as BASEMENT_BRICK_VENEER: this line contains ZERO ready-mix. ** It
 # is dry-stacked segmental block. The cost drivers are SF of exposed face and wall HEIGHT,
 # and the model tracks neither — 9.07 cy is 245 SF of face at 27 SF/cy. Market for SRW
@@ -3313,18 +3268,21 @@
 "WT-2748-T" = { material = { low = 820, high = 1515 }, labour = { low = 173, high = 365 } }  # 2 ea
 "WT-3048" = { material = { low = 700, high = 1320 }, labour = { low = 185, high = 390 } }  # 7 ea — 78 UI, over the band; two-man set
 "WT-3048-T" = { material = { low = 850, high = 1570 }, labour = { low = 190, high = 405 } }  # 2 ea — was 3 until WIN-M-LIV-S2 was deleted (2026-08-24)
-# The plant room's U-0.14 units. Same dimensions as their parents, a different MANUFACTURER.
-# Not an upgrade the owner may decline: `building_science.glazing_dew_point` FAILs these three
-# at U-0.25 — the glass condenses below about +13 F outdoors.
+# The plant room's U-0.14 units, FIXED sash. Same dimensions as their parents, a different
+# MANUFACTURER. Not an upgrade the owner may decline: `building_science.glazing_dew_point`
+# FAILs these at U-0.25 — the glass condenses below about +13 F outdoors. The fixed sash is
+# what makes U-0.14 reachable at all, and it is cheaper than the operable parent, not dearer:
+# no hardware, no second frame profile. The numbers below are unchanged anyway — they were
+# priced off the glass package, which is the term that dominates.
+# WT-3048-HP-T (the tempered twin) is gone with D-S-DECK-W: no door, no hazardous location.
 "WT-2736-HP" = { material = { low = 750, high = 1500 }, labour = { low = 195, high = 390 } }  # 1 ea
-"WT-3048-HP" = { material = { low = 950, high = 1900 }, labour = { low = 235, high = 470 } }  # 1 ea — two-man set is mandatory
-"WT-3048-HP-T" = { material = { low = 1100, high = 2150 }, labour = { low = 245, high = 490 } }  # 1 ea
+"WT-3048-HP" = { material = { low = 950, high = 1900 }, labour = { low = 235, high = 470 } }  # 3 ea — two-man set is mandatory
 
 # --- exterior doors -------------------------------------------------------------------------
 # Unit only. Low is a closeout/builder fiberglass pair ($598 at Door Clearance Center); high is
 # a full-lite Low-E or 10-lite SDL fiberglass double ($2,188-2,829 at doornmore.com). The old
 # $3,600 high was an installed price wearing a material label.
-"DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 4 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
+"DT-EXT-FRENCH60" = { material = { low = 1300, high = 2900 }, labour = { low = 450, high = 1050 } }  # 3 ea — sill pan, flashing, and a unit that must stay square for the astragal to latch
 "DT-EXT-SWING36" = { material = { low = 500, high = 1600 }, labour = { low = 320, high = 720 } }  # 2 ea — flush primed fiberglass to decorative-glass
 # ** LOW END RAISED, not lowered. ** An UNINSULATED 16x7 steel door is $888 at Home Depot and
 # should not be the base case in Climate Zone 6 on a heated-adjacent garage. This now starts at
@@ -3788,7 +3746,10 @@
 #   it carries the garage fascia as well as the cap — ~134 LF between the two rows, not the
 #   26.7 LF the cap alone was. Both blends still land inside their ranges below, so no number
 #   moved; it is the reason to check BOTH rows against a real quote rather than the blend.
-#   drip_flashing 21.0 LF plain aluminium + 73.7 LF dark formed metal.
+#   drip_flashing 21.5 LF plain aluminium + 78.4 LF dark formed metal + 76.5 LF of the
+#   garage's PVDF aluminium (STEM_TOP_Z_FLASHING, new 2026-09-03 — the Z at the stem-top
+#   band/corrugated-panel junction, which until then was modelled by nothing). It replaced
+#   15.5 LF of wainscot cap in the same row, so the row grew by 61.0 LF net.
 # Basis: aluminium soffit material $0.50-2.00/LF and fascia $7-22/LF installed against
 # $10-24/LF total (so material is the lower third); aluminium drip edge $0.50-1.00/LF
 # material; formed and colour-matched metal trim runs well over plain stock.
@@ -3825,7 +3786,7 @@
 # four are 22'-4" tall each, so they are a staging job rather than a ladder job, which is where
 # the high end goes.
 "wall_corner" = { material = { low = 3, high = 7 }, labour = { low = 2.5, high = 5 } }  # 89.5 LF — 4 pieces, 22.37' each, at the four house corners. The PBR<->board & batten transition
-"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 94.7 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
+"drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 176.4 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed PVDF metallic (garage "Copper Penny", metal since 2026-08-26) over SPF
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
@@ -5143,7 +5104,7 @@ pipe_fittings   = "material only, and derived rather than quoted — see the tab
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT is the same case and the same warning. GARAGE_ICF_6_BRICKLEDGE is NOT — it is mostly ICF wall, and its rate is struck across the core row and the brick-ledge band row together, which share one key"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"

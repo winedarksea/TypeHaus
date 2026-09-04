@@ -36,14 +36,14 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 # to galvanized dowels would have been.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): 70.5,
-    ("column", "#5", "hdg-a767"): 304.7,
+    ("column", "#5", "hdg-a767"): 309.8,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
     ("foundation wall", "#4", "hdg-a767"): 588.8,
     ("foundation wall", "#5", "hdg-a767"): 216.9,
     ("foundation wall", "#6", "hdg-a767"): 1153.5,
 }
-_TOTAL_LB = 4170.6
+_TOTAL_LB = 4175.6
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0

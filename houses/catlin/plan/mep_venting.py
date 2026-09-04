@@ -187,9 +187,9 @@ VENT_BRANCHES_ATTIC = [
 # termination. NO ROOF PENETRATION ANYWHERE, which was the point.
 #
 # THE RISER IS AT x=9'-7 1/2", WEST OF WIN-A-N1 AND ON THE WET WALL. At x=13'-4" the riser
-# would stand on top of that window: WT-3036 is 30" wide on a 12'-0" centre, so its rough
-# opening runs x 10'-9"..13'-3", and the riser is a PAIR of 3" pipes straddling its station
-# about 7 3/4" overall — at 13'-4" that puts pipe inside the opening. Nothing fails, because
+# would stand on top of that window: WT-3036 is 30" wide, and since the 2026-09-03 move its
+# centre IS 13'-4", so its rough opening runs x 12'-1"..14'-7" and the riser — a PAIR of 3"
+# pipes straddling its station, about 7 3/4" overall — would sit dead centre in the glass. Nothing fails, because
 # no check grades a riser against a window it runs beside, but it is unbuildable: the
 # standoff straps have no cladding to land on and the window trim has nowhere to die.
 #
@@ -201,7 +201,7 @@ VENT_BRANCHES_ATTIC = [
 # 9'-7 1/2" is chosen from inside that band because it is **PR-A-STUBATH-VENT's own wet-wall
 # line**. Landing on it deletes that run's last leg outright: the bath vent goes up the wet
 # wall and straight into the stack instead of turning east for 3'-8" to meet it. Measured:
-#   * riser pair x 9'-3 5/8"..9'-11 3/8", so 9 5/8" clear of WIN-A-N1's west jamb;
+#   * riser pair x 9'-3 5/8"..9'-11 3/8", so 2'-1 5/8" clear of WIN-A-N1's west jamb;
 #   * termination 27'-8 3/4", 2'-8 3/4" over the window head (subpart 5 wants 2'-0");
 #   * the under-deck jog is 8'-7 1/2" of 3" PVC in the FS-ATTIC band.
 #
