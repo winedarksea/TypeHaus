@@ -51,7 +51,7 @@ pier top is −0'-7 1/4", so 2'-2 3/4" of the shaft stands free above the soil.
 
 ## 2. The load the model can account for
 
-The deck `FS-BW-FLOOR` is the only load with a plan area anywhere in the model.
+Two areas: the deck `FS-BW-FLOOR` below, and — since 2026-09-04 — the roof field above.
 
 | term | working | lb |
 |---|---|---|
@@ -61,12 +61,25 @@ The deck `FS-BW-FLOOR` is the only load with a plan area anywhere in the model.
 | Tributary, per pier | one beam each, so one share each | **6.3455 ft²** |
 | Deck dead | 6.3455 × 10 psf (IRC R507.1) | 63.46 |
 | Deck live | 6.3455 × 40 psf | **253.82** |
+| Roof field, framed rectangle | 4.0000' rafter span × 3.5833' beam run | 14.333 ft² |
+| Roof field, `GL-BW-ROOF` outline | 4.0' × 4.0' | 16.000 ft² |
+| Roof field taken | the LARGER — the rafters oversail the beams 2 3/4" each end | **16.000 ft²** |
+| its share, per pier | 16.000 / 2 beams / 2 posts | **4.0000 ft²** |
+| Roof dead | 4.0000 × 10 psf | 40.00 |
+| Roof snow | 4.0000 × 50 psf (`Site.ground_snow_load_psf`, flat) | **200.00** |
 | 6x6 KDAT post above | (5.5² / 144) × (82.75 / 12) × 35 pcf | 50.70 |
 | Pier self weight | (113.097 / 144) × (56.75 / 12) × 150 pcf | 557.14 |
-| **D** | 63.46 + 50.70 + 557.14 | **671.30** |
-| **L** | | **253.82** |
-| Service | D + L | 925.12 |
-| **Factored** | 1.2(671.30) + 1.6(253.82) = 805.56 + 406.11 | **1,211.67** |
+| **D** | 63.46 + 40.00 + 50.70 + 557.14 | **711.30** |
+| **L** | 253.82 + 200.00 | **453.82** |
+| Service | D + L | 1,165.12 |
+| **Factored** | 1.2(711.30) + 1.6(453.82) = 853.56 + 726.11 | **1,579.67** |
+
+**Snow, not deck live, on the roof share.** The two areas are kept apart in `_Pier` for
+exactly this reason: 50 psf ground snow is larger than IRC Table R301.5's 40 psf occupancy
+load, so folding the roof into the deck tributary would grade it at 40 and understate the
+pier. No C_e/C_t/C_s reduction is taken — this is a screening load on a pier at d/c 0.006,
+and the reductions belong to `checks/structural/snow.py` against a roof slope this flat
+field has not got.
 
 **THE TRIBUTARY DOUBLED ON 2026-09-03, AND IT IS DELIBERATELY CONSERVATIVE.** It was
 `12.691 / 4 posts = 3.1727 ft²`, an even split, which is the right answer here — this deck
@@ -85,42 +98,51 @@ these pads at 1.00 ft² required against 1.78 built, and §4's capacity is 235×
 The 6x6 uses its DRESSED 5.5" section and a conventional 35 pcf for wood, matching
 `pier_basis._round_size` and `handed_dead`. Its height 82.75" is `_POST_TOP − _PIER_TOP`.
 
-## 3. What is NOT in that number, and why no d/c is published
+## 3. How the roof entered the number, and what is still outside it
 
-`PR-BW-i` also carries `BM-BW-RW` or `BM-BW-RE` through the 6x6 above it, and those two roof
-beams carry the whole enclosure: three 2x6 rafters, six drainage wedges, the 4'-0" × 4'-0"
-roof sheet, and — through the H channels — the head of each 4'-0" × 8'-0" standing sheet.
+**Closed 2026-09-04.** Until then this section explained why NO d/c was published: the
+breezeway roof is neither a `Roof` nor a `FloorSystem`, so `_deck_tributaries` found no
+polygon, `_unmodelled_beams` flagged `BM-BW-RW`/`RE`, and `deck_post` reported the axial
+state INCOMPLETE rather than print a ratio against a demand it knew was short.
 
-**None of it has a plan area in the model.** The breezeway roof is neither a `Roof` nor a
-`FloorSystem` (`params/breezeway.py` explains why: `resolve/roof_geometry.py` accepts only
-Wall bearing refs, and a FloorSystem is pinned to a storey datum), so it is four `Beam`s and
-some sticks. `pier_basis._deck_tributaries` distributes AREAS to posts, and there is no area
-here to distribute. So `tributary_ft2 = 6.35` is an **under-count** of the pier's real load
-despite being a 2× over-count of its deck share, and
-`deck_post._detailing_only` publishes the six load-independent detailing states and reports
-the axial one INCOMPLETE rather than printing a d/c against a demand it knows is short.
+What closed it is `pier_basis._rafter_fields`, and the point is that **it reads an area
+rather than inventing one**. A `Beam` naming two other `Beam`s as its bearing refs is
+stating, in the model, that it spans between them; `BM-BW-R1..3` all name `BM-BW-RW` and
+`BM-BW-RE`, so those three rafters are a framed field and that pair of beams carries it.
+The field's plan extent is then the larger of two numbers the model already holds — the
+framed rectangle (4.0' × 3.5833' = 14.333 ft²) and the covering authored over it
+(`GL-BW-ROOF`, 4.0' × 4.0' = 16.000 ft²). The covering wins here, and it should: the
+rafters oversail each beam by 2 3/4", and that eave is real load on real posts. Taking the
+framed rectangle alone would have understated every pier by 10%.
 
-**A bounding estimate, so nobody reads that INCOMPLETE as "the pier might be too small".**
-This is screening arithmetic — assumptions stated, not a design, and deliberately NOT what
-the register publishes:
+**What is still outside the number, and why it does not reopen the item.** Three things:
 
 | | working | lb, all four piers |
 |---|---|---|
-| Roof sheet, 16 mm multiwall | 16 ft² × 0.55 psf | 9 |
 | 3 rafters, 2x6 KDAT × 4'-0" | 3 × 4 × ~1.6 lb/ft | 19 |
 | 2 roof beams, 2-2x8 × 3.58' | 2 × 3.58 × ~4.3 lb/ft | 31 |
 | 6 wedges | 12 LF of 2x4 rip | 5 |
 | 2 wall sheets, head half only | 2 × 32 ft² × 0.55 × 0.5 | 18 |
-| **Unaccounted dead** | | **~82**, say **21 per pier** |
-| Roof snow | `Site.ground_snow_load_psf` 50 × 16 ft² | 800, **200 per pier** |
+| **Self weight of the frame, and the standing sheets' heads** | | **~73**, say **18 per pier** |
 
-Factored that is 1.2(21) + 1.6(200) = **345 lb** on top of §2's 1,211.67, so a bounded
-factored demand is on the order of **1,560 lb**. Against §4's 285,893 lb capacity that is **d/c ≈
-0.005**. *The section is not the question and never was.* What the register declines to do is
-turn a bound into a number a reader would take at face value.
+The framing's own weight is not in the 10 psf: that figure is a covering allowance, and the
+sticks below it are modelled as sticks. The standing 4'-0" × 8'-0" wall sheets hang their
+heads on the roof beams through the H channels, and they have no plan area over this field
+at all. Together they are **~18 lb per pier**, factored **~22 lb**, against §2's 1,579.67.
 
-The remedy is upstream: give the roof a modelled area to divide, or have the engineer state
-the demand. Either closes the INCOMPLETE with nothing in `deck_post.py` changed.
+That is a 1.4% under-count and it is written down rather than absorbed, because the honest
+place for a residual is a note and not a silent margin. It does not reopen the INCOMPLETE
+for one reason only: §4's capacity is **285,893 lb**, so the item sits at **d/c ≈ 0.006**
+and a 1.4% move on the demand is invisible at three decimal places. *The section is not the
+question and never was.* Were this a ratio anywhere near 1.0, the residual would have to be
+modelled rather than noted.
+
+**The old bound, kept as the check on the new number.** Before the closure this section
+carried a screening estimate — 1,211.67 factored from the deck, plus 1.2(21) + 1.6(200) for
+the roof — reaching *"on the order of 1,560 lb"*. The engine now computes **1,579.67**
+independently of it, 1.3% higher, and higher is the right side: the bound counted the
+covering's actual 0.55 psf where §2 charges a flat 10 psf of roof dead. Two arithmetics
+that were never allowed to see each other agree to within 1.3%.
 
 ## 4. The cage, and why it is the Code's minimum
 

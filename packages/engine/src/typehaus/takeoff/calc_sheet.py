@@ -94,16 +94,34 @@ def _analysis(record: EngineeringRecord) -> str:
         # A safety factor is stored as required/achieved so that every row of this table is
         # "over 1.0 is bad" — see ``LimitState``. The column headers say which convention a
         # row is in rather than letting a reader assume the wrong one.
-        kind = "FS (required / achieved)" if state.is_safety_factor else "demand / capacity"
+        if state.is_safety_factor:
+            kind = "FS (required / achieved)"
+        elif state.is_detailing:
+            kind = "detailing rule (required / provided)"
+        else:
+            kind = "demand / capacity"
         rows.append([
             ("**" + state.name + "**") if state is governing else state.name,
             state.demand, state.capacity, state.unit,
             f"{state.ratio:.3f}", kind, state.citation,
         ])
-    return table(["Limit state", "Demand", "Capacity", "Unit", "Ratio", "Basis of ratio",
-                  "Citation"], rows) + \
-        "\n\nThe **bold** row governs — it is the worst ratio, and the one an engineer " \
-        "would name if asked what controls this item."
+    body = table(["Limit state", "Demand", "Capacity", "Unit", "Ratio", "Basis of ratio",
+                  "Citation"], rows)
+    if governing is not None:
+        body += ("\n\nThe **bold** row governs — it is the worst ratio among the states "
+                 "that carry load, and the one an engineer would name if asked what "
+                 "controls this item.")
+    else:
+        body += ("\n\n**No row is bold, because no load-carrying limit state could be "
+                 "computed here.** Every row above is a detailing rule, and detailing "
+                 "rules are graded against the section and the cage alone. What the "
+                 "section can carry is unresolved — see **Open inputs**.")
+    if any(state.is_detailing for state in record.limit_states):
+        body += ("\n\nA row marked *detailing rule* reads 1.000 when the design sits "
+                 "exactly on the code minimum, which is compliant. Such a row is graded "
+                 "and would fail the item if it went over 1.0, but it is never named as "
+                 "governing — a bar count at its minimum does not control a column.")
+    return body
 
 
 def _result(record: EngineeringRecord) -> str:

@@ -298,22 +298,32 @@ def _detailing_states(pier: _Pier, area: float, minimum_steel: float,
     tie_limit = min(16.0 * cage.bar_diameter_in, 48.0 * cage.tie_diameter_in, pier.diameter_in)
     required_tie = (_TIE_BAR_FOR_SMALL_LONGITUDINAL
                     if cage.bar <= _LARGEST_LONGITUDINAL_TAKING_A_NUMBER_3_TIE else 4)
+    # Every row here is ``is_detailing``: each reaches exactly 1.000 when the design sits on
+    # ACI's minimum, which is compliant and ordinary. Leaving them eligible to "govern" made
+    # every pier in the register read "governing: bar count, d/c 1.00" beside a real axial
+    # ratio of 0.04 — see ``LimitState.is_detailing``.
     return (
         LimitState("longitudinal steel", minimum_steel, steel, "in2",
-                   f"ACI 318-19 §10.6.1.1 minimum {COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag"),
+                   f"ACI 318-19 §10.6.1.1 minimum {COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag",
+                   is_detailing=True),
         LimitState("steel ratio ceiling", steel, COLUMN_MAX_REINFORCEMENT_RATIO * area, "in2",
-                   f"ACI 318-19 §10.6.1.1 maximum {COLUMN_MAX_REINFORCEMENT_RATIO:.2f} Ag"),
+                   f"ACI 318-19 §10.6.1.1 maximum {COLUMN_MAX_REINFORCEMENT_RATIO:.2f} Ag",
+                   is_detailing=True),
         LimitState("bar count", float(MIN_BARS_IN_CIRCULAR_TIES), float(cage.count), "bars",
-                   "ACI 318-19 §10.7.3.1(b), four within rectangular or circular ties"),
+                   "ACI 318-19 §10.7.3.1(b), four within rectangular or circular ties",
+                   is_detailing=True),
         LimitState("tie size", float(required_tie), float(cage.tie_bar), "bar no.",
-                   "ACI 318-19 §25.7.2.1 — #3 for longitudinal bars #10 and smaller"),
+                   "ACI 318-19 §25.7.2.1 — #3 for longitudinal bars #10 and smaller",
+                   is_detailing=True),
         LimitState("tie spacing", cage.tie_spacing_in, tie_limit, "in",
                    f"ACI 318-19 §25.7.2.2, least of 16db ({16.0 * cage.bar_diameter_in:.1f}\"), "
-                   f"48dt ({48.0 * cage.tie_diameter_in:.1f}\"), h ({pier.diameter_in:.1f}\")"),
+                   f"48dt ({48.0 * cage.tie_diameter_in:.1f}\"), h ({pier.diameter_in:.1f}\")",
+                   is_detailing=True),
         LimitState("minimum eccentricity", eccentricity, embedded, "in",
                    f"ACI 318-19 §6.6.4.5.4 e_min magnified by §6.6.4.5.2 delta_ns "
                    f"{magnifier:.3f}, against the {TIED_EMBEDDED_ECCENTRICITY_RATIO:.2f}h "
-                   f"R22.4.2 says the {TIED_AXIAL_CAP:.2f} cap already carries"),
+                   f"R22.4.2 says the {TIED_AXIAL_CAP:.2f} cap already carries",
+                   is_detailing=True),
     )
 
 

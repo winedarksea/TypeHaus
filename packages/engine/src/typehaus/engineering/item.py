@@ -109,6 +109,17 @@ class LimitState:
     #: Set where the number is a factor of safety rather than a force or a stress, so the
     #: CLI can letter it as "FS 1.62 >= 1.5" instead of a bare ratio nobody can place.
     is_safety_factor: bool = False
+    #: Set where the row is a prescriptive DETAILING rule — a bar count, a tie pitch, a
+    #: minimum steel area — rather than a demand the structure has to carry.
+    #:
+    #: These rows are bounded above by 1.0 *when the design is compliant*, and they reach
+    #: exactly 1.000 when it sits on the code minimum, which is the ordinary and desirable
+    #: case. That makes them useless as a governing state: a blind ``max`` by ratio hands
+    #: "bar count" the win over a real axial ratio of 0.04, and the sheet then tells a
+    #: reviewer that a 12" column with 96% of its capacity spare is "controlled by bar
+    #: count". No engineer would say that. They are still graded, still printed, and still
+    #: fail the item when they go over — they are only excluded from ``governing``.
+    is_detailing: bool = False
 
     @property
     def ratio(self) -> float:
@@ -159,10 +170,19 @@ class EngineeringRecord:
 
     @property
     def governing(self) -> LimitState | None:
-        """The worst limit state — the one an engineer would name if asked what controls."""
-        if not self.limit_states:
+        """The worst CAPACITY limit state — what an engineer would name as controlling.
+
+        Detailing rows are excluded (see :attr:`LimitState.is_detailing`): they sit at
+        1.000 whenever the design meets the code minimum exactly, so including them means
+        the answer to "what controls this column?" is always "bar count". Where an item has
+        no capacity state at all — a pier whose axial demand could not be derived — this is
+        ``None`` rather than the worst detailing row, because the honest answer there is
+        that the section is ungraded, not that it is at 100%.
+        """
+        graded = [state for state in self.limit_states if not state.is_detailing]
+        if not graded:
             return None
-        return max(self.limit_states, key=lambda state: state.ratio)
+        return max(graded, key=lambda state: state.ratio)
 
     @property
     def ratio(self) -> float | None:

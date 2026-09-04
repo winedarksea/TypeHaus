@@ -32,7 +32,8 @@ at any spacing. Western States states the consequence directly: *"consult a desi
 for load and design calculations."*
 
 Of eight manufacturers surveyed, **two permit open framing**: Western States (*"most details
-in this guide are shown with panels attached to open framing"*) and Metal Sales. McElroy
+in this guide are shown with panels attached to open framing"* — but that sentence is from
+the **T-8 PlankWall** guide, a reveal panel, not a batten; see §7) and Metal Sales. McElroy
 lists solid deck only; Lyon caps furring at 18"; Best Buy Metals says solid decking.
 **Substituting one of the other six forces a second girt course or a continuous OSB layer,
 which costs more than the panel switch itself** — which is why it is written into the
@@ -150,7 +151,7 @@ over open girts is off-label:
 |---|---|---|
 | ICC-ES ESR-5839 (Petersen) | 2026-04 | §3.1.6 *"The metal siding must be installed over solid substrate."* Board-and-batten is not among the profiles covered at all. |
 | ICC-ES ESR-5838 (Drexel) | 2026-05 | §3.1.6, identical language; board-and-batten not covered. |
-| ICC-ES ESR-4730 (Western States) | 2025-09 | §5.2 *"must be backed by a solid substrate."* Board & Batten is **absent** from the covered list. |
+| ICC-ES ESR-4730 (Western States) | 2025-09 | §5.2 *"must be backed by a solid substrate."* Covers eight wall panels, T-8 PlankWall among them at 48 psf allowable negative — but §5.6 limits that to *"the wall panels only"* and §5.8 hands the fasteners to the RDP. Board & Batten is **absent** from the covered list. |
 | IAPMO UES ER-309 §3 (AEP Select Seam Narrow Batten) | 2025-06-24 | *"Clip Usage: Over solid substrates only"* and *"Design Values are not available."* |
 | Metal Sales Mini/Maxi-Batten | — | *"not recommended for use over open framing."* |
 | Morin BCR / SWL / SCR | — | *"require a solid substrate."* |
@@ -221,6 +222,40 @@ recording because it is the closest thing that exists: **Berridge Batten Seam**,
 coverage, 24 ga, open framing on 16 ga steel support, panel-to-purlin 48", batten clip 20"
 o.c., 2 × #10 — **52.5 psf allowable / 105 psf ultimate**, from UL90 Construction #262. It is
 not 24" o.c., not this coverage, and not over wood girts.
+
+**The Western States open-framing quote, run down.** §1 cites WSMR as one of two suppliers
+permitting open framing, on the strength of *"most details in this guide are shown with
+panels attached to open framing"* (T-8 PlankWall Install Guide, doc `4209-22`, p.1). That
+sentence is verbatim and real. It does not reach this wall, for three separate reasons, and
+the third is the one that matters:
+
+1. **T-8 PlankWall is not a board-and-batten panel.** WSMR's own shop drawing titles it
+   *"REVEAL PANEL PROFILE"* — a flush 7.75"-coverage plank with a recessed groove at the
+   joint and a face that is planar. Board & batten reads as a batten standing *proud* of
+   the field; T-8 is the geometric opposite. It was never the right analogue for this wall.
+2. **It is covered by ESR-4730, not outside it.** T-8 appears in that report's Table 1,
+   Table 2 and Figure 6 by name, so §5.2's solid-substrate condition governs it. ESR-4730
+   §5.1 settles the conflict with the install guide explicitly: *"In the event of a conflict
+   between the manufacturer's published installation instructions and this report, the most
+   stringent governs."* The solid substrate governs.
+3. **The install guide carries no load data at all** — no psf, no span table, no wind
+   pressure anywhere in its 40 pages. What it says instead is *"Please consult a design
+   engineer for load and design calculations."* An open-framing permission with no allowable
+   behind it does not close §5's question; it restates it.
+
+And ESR-4730's own number cannot be borrowed: T-8's row reads **48 psf at a 12" maximum
+spacing**, and footnote 3 defines that spacing as *"panel support fasteners or clips ... along
+panel length"* — the same reading trap as ER-309 above. Table 2 has no span variable at all.
+For a vertically-run panel the fasteners land on the girts, so this wall's **24" girts would
+violate that 12" maximum outright**, quite apart from the substrate condition.
+
+**WSMR does make a true board-and-batten panel, and it is simply unrated.** Its catalog
+(`4222-23`, 10"-25" coverage, 3/4" panel height, 2" batten, concealed fasteners) publishes
+**no load table, no psf, no span table and no ESR number**, and it is one of the products
+*absent* from ESR-4730's covered list. That is the WSMR row that actually bears on this wall,
+and it is a blank. One trap worth naming: that catalog has a *"Substrate"* row reading
+`AZ 50 (Galvalume)` / `Aluminum` — that is the panel's own base metal, **not** a permitted
+wall backing, and must not be read as a framing permission.
 
 **Two things the survey could not close, and they are gaps in the survey rather than
 findings.** Stated so nobody reads them as verified absences:

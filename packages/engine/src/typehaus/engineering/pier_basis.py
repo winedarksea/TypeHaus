@@ -76,6 +76,17 @@ class _Pier:
     moment_basis: str
     footing_width_in: float
     footing_depth_in: float
+    #: ROOF area this post carries — a framed field over it (see :func:`_rafter_fields`),
+    #: kept apart from ``tributary_ft2`` because a roof is not a deck. A deck carries IRC
+    #: Table R301.5's 40 psf occupancy live load; a roof carries SNOW, which on this site is
+    #: 50 psf and therefore the LARGER of the two. Summing the roof into the deck tributary
+    #: would quietly grade it at 40 and understate the pier by a fifth of its live load.
+    roof_tributary_ft2: float = 0.0
+    #: Ground snow, psf, from ``Site.ground_snow_load_psf``. Taken as the roof load flat,
+    #: with no C_e/C_t/C_s reduction: this is a pier screening load, and the reductions are
+    #: ``checks/structural/snow.py``'s business against a real roof slope this field has not
+    #: got. Conservative, and the direction a demand should err in.
+    roof_snow_psf: float = 0.0
     #: ``Post.vertical_reinforcement`` verbatim, or None for a plain section. Parsed by
     #: ``deck_post.parse_cage``; a string that will not parse is read as NO steel, which is
     #: the conservative direction and one the record names rather than swallows.
@@ -137,12 +148,13 @@ class _Pier:
 
     @property
     def dead_lb(self) -> float:
-        return (self.tributary_ft2 * DECK_DEAD_LOAD_PSF + self.self_weight_lb
-                + self.carried_dead_lb)
+        return ((self.tributary_ft2 + self.roof_tributary_ft2) * DECK_DEAD_LOAD_PSF
+                + self.self_weight_lb + self.carried_dead_lb)
 
     @property
     def live_lb(self) -> float:
-        return self.tributary_ft2 * DECK_LIVE_LOAD_PSF
+        return (self.tributary_ft2 * DECK_LIVE_LOAD_PSF
+                + self.roof_tributary_ft2 * self.roof_snow_psf)
 
     @property
     def service_lb(self) -> float:
@@ -209,8 +221,7 @@ def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
 
     out: dict[str, float] = {}
     resolved = {f.tag for f in ctx.model.floors}
-    nodes = {e.tag: e.position.xy_m for e in ctx.plan.all_elements()
-             if e.element_kind == "Node"}
+    nodes = _node_positions(ctx)
     for deck in ctx.plan.all_elements():
         if not isinstance(deck, FloorSystem) or deck.service != "deck":
             continue
@@ -274,7 +285,128 @@ def _weighted_shares(ctx: EngineeringContext, deck: Any, beams: list[Any],
     return out or None
 
 
-def _unmodelled_beams(ctx: EngineeringContext) -> dict[str, tuple[str, ...]]:
+def _node_positions(ctx: EngineeringContext) -> dict[str, tuple[float, float]]:
+    """``node tag -> (x, y)`` in metres. One spelling, because three callers had their own.
+
+    ``all_elements()`` is typed as ``Element``, which declares no ``position`` — the
+    ``element_kind`` guard is what makes the attribute safe, and mypy cannot see that.
+    Narrowed once here rather than ignored at every call site.
+    """
+    out: dict[str, tuple[float, float]] = {}
+    for element in ctx.plan.all_elements():
+        if element.element_kind == "Node":
+            position = getattr(element, "position", None)
+            if position is not None:
+                out[element.tag] = position.xy_m
+    return out
+
+
+def _bbox(points: list[tuple[float, float]]) -> tuple[float, float, float, float]:
+    xs, ys = [p[0] for p in points], [p[1] for p in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _covering_area_ft2(ctx: EngineeringContext, bbox: tuple[float, float, float, float]) -> float:
+    """Plan area of the horizontal panels a framed field carries, ft2, or 0.0 for none.
+
+    A panel counts when its CENTROID falls inside the field's bounding box — deliberately a
+    containment test and not an intersection one, so a neighbouring roof that merely brushes
+    the box cannot donate its area to these posts.
+    """
+    from typehaus.model.structure import GlazingPanel
+
+    minx, miny, maxx, maxy = bbox
+    total = 0.0
+    for element in ctx.plan.all_elements():
+        if not isinstance(element, GlazingPanel) or getattr(element, "plane", "") != "horizontal":
+            continue
+        ring = [p.xy_m for p in element.outline or ()]
+        if len(ring) < 3:
+            continue
+        cx = sum(p[0] for p in ring) / len(ring)
+        cy = sum(p[1] for p in ring) / len(ring)
+        if minx <= cx <= maxx and miny <= cy <= maxy:
+            total += abs(_shoelace(ring)) / (_M_PER_FT ** 2)
+    return total
+
+
+def _rafter_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
+    """``post tag -> ft2`` for a roof framed as beams-on-beams, and the beams it accounts for.
+
+    The breezeway shelter is the case: two N-S beams on four posts, three E-W rafters seated
+    across them, glazing over that. It is neither a ``Roof`` nor a ``FloorSystem`` — see
+    ``params/breezeway.py`` for why either would be the wrong element — so
+    :func:`_deck_tributaries` finds no polygon and :func:`_unmodelled_beams` used to flag both
+    beams, which left every breezeway pier's axial demand INCOMPLETE.
+
+    **The area is read, not invented.** A rafter that names two ``Beam``s as its bearing refs
+    is stating, in the model, that it spans between them; the set of rafters sharing one pair
+    of parents is a framed field, and its plan extent is that pair's own overlap times the
+    span the rafters themselves measure. Nothing here assumes a spacing, an overhang or a
+    covering — it is the same shoelace-free rectangle ``roof_bearing_footprint`` builds from
+    two bearing WALLS, sourced from beams because that is what this roof bears on.
+
+    **The covering wins where there is one.** The framed rectangle stops at the outer beams,
+    so on a roof with eaves it is an UNDER-count — and an understated tributary is an
+    understated demand, which is the one direction this module must not err in. Where a
+    horizontal panel is authored over the field, that panel's own outline is the area the
+    field actually carries, and the larger of the two is taken. On the breezeway the framed
+    rectangle is 14.33 ft2 and ``GL-BW-ROOF`` is 16.0 ft2 — the 1.67 ft2 difference is the
+    eave the rafters oversail, and it is real load on real posts.
+    """
+    from typehaus.model.structure import Beam, Post
+
+    nodes = _node_positions(ctx)
+
+    def axis(beam: Any) -> tuple[tuple[float, float], tuple[float, float]] | None:
+        p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+        return None if p0 is None or p1 is None else (p0, p1)
+
+    beams = {b.tag: b for b in ctx.plan.all_elements() if isinstance(b, Beam)}
+    fields: dict[frozenset[str], list[Any]] = {}
+    for beam in beams.values():
+        parents = frozenset(ref for ref in beam.bearing_refs or () if ref in beams)
+        if len(parents) == 2:
+            fields.setdefault(parents, []).append(beam)
+
+    out: dict[str, float] = {}
+    accounted: set[str] = set()
+    for parents, rafters in fields.items():
+        parent_axes = [axis(beams[tag]) for tag in sorted(parents)]
+        rafter_axes = [axis(r) for r in rafters]
+        if any(a is None for a in parent_axes) or any(a is None for a in rafter_axes):
+            continue
+        # The span the rafters themselves measure, averaged — one rafter trimmed at a corner
+        # should not set the whole field's width.
+        spans = [math.dist(a[0], a[1]) for a in rafter_axes if a is not None]
+        # The parents' shared run: the shorter of the two, since the field cannot be longer
+        # than the beam that stops first.
+        runs = [math.dist(a[0], a[1]) for a in parent_axes if a is not None]
+        if not spans or not runs:
+            continue
+        framed_ft2 = ((sum(spans) / len(spans)) * min(runs)) / (_M_PER_FT ** 2)
+        bbox = _bbox([pt for a in rafter_axes if a is not None for pt in a])
+        area_ft2 = max(framed_ft2, _covering_area_ft2(ctx, bbox))
+        if area_ft2 <= 0.0:
+            continue
+        # Each parent beam takes half the field, then splits its half among the supports it
+        # names — a support that is not a Post (a wall, a pier direct) keeps its share and
+        # simply falls out here, exactly as in ``_weighted_shares``.
+        for tag in parents:
+            supports = beams[tag].bearing_refs or ()
+            if not supports:
+                continue
+            share = (area_ft2 / len(parents)) / len(supports)
+            for support in supports:
+                if isinstance(ctx.plan.by_tag(support), Post):
+                    out[support] = out.get(support, 0.0) + share
+            accounted.add(tag)
+        accounted.update(r.tag for r in rafters)
+    return out, accounted
+
+
+def _unmodelled_beams(ctx: EngineeringContext,
+                      accounted_extra: set[str] | None = None) -> dict[str, tuple[str, ...]]:
     """Post tag -> beams bearing on it that belong to no deck and no roof.
 
     A ``Beam`` named by some ``FloorSystem.joists.bearing_refs`` or ``Roof.bearing_refs``
@@ -294,6 +426,8 @@ def _unmodelled_beams(ctx: EngineeringContext) -> dict[str, tuple[str, ...]]:
             accounted.update(element.joists.bearing_refs or ())
         elif isinstance(element, Roof):
             accounted.update(getattr(element, "bearing_refs", ()) or ())
+    # Beams carrying a rafter field have a real plan area after all — see _rafter_fields.
+    accounted.update(accounted_extra or ())
 
     direct: dict[str, list[str]] = {}
     for beam in ctx.plan.all_elements():
@@ -545,14 +679,18 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                 if isinstance(f, Footing) and f.under}
     pads = {p.tag: p for p in ctx.plan.all_elements() if isinstance(p, Pad)}
     walls = {w.tag: w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)}
-    unmodelled = _unmodelled_beams(ctx)
+    rafter_trib, rafter_accounted = _rafter_fields(ctx)
+    unmodelled = _unmodelled_beams(ctx, rafter_accounted)
     tributaries = _deck_tributaries(ctx)
+    site = getattr(ctx.plan.project, "site", None)
+    snow_psf = float(getattr(site, "ground_snow_load_psf", None) or 0.0)
     moments = _base_moments(ctx)
 
     # A post standing on another post hands its whole load down. Collect it before the
     # piers are built so the pier below carries the share the N/A on the post above
     # promised it would — see `deck.py::_not_a_pad`.
     handed_trib: dict[str, float] = {}
+    handed_roof: dict[str, float] = {}
     handed_dead: dict[str, float] = {}
     for post in ctx.plan.all_elements():
         if not isinstance(post, Post) or not post.supported_by:
@@ -567,8 +705,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             # A wood pillar, at a conventional 35 pcf rather than concrete's 150.
             dead = area / 144.0 * post.height.inches / 12.0 * 35.0
         trib = tributaries.get(post.tag, 0.0)
+        roof = rafter_trib.get(post.tag, 0.0)
         for tag in below:
             handed_trib[tag] = handed_trib.get(tag, 0.0) + trib / len(below)
+            handed_roof[tag] = handed_roof.get(tag, 0.0) + roof / len(below)
             handed_dead[tag] = handed_dead.get(tag, 0.0) + dead / len(below)
 
     out: list[_Pier] = []
@@ -598,6 +738,8 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             tag=post.tag, diameter_in=size[0], round_section=size[1],
             height_in=post.height.inches,
             tributary_ft2=tributaries.get(post.tag, 0.0) + handed_trib.get(post.tag, 0.0),
+            roof_tributary_ft2=rafter_trib.get(post.tag, 0.0) + handed_roof.get(post.tag, 0.0),
+            roof_snow_psf=snow_psf,
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
             footing_tag=footing.tag if footing is not None else None,
             shared_wall_footing=on_wall,

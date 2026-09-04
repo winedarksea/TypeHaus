@@ -68,7 +68,10 @@ _BW_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
 _BREEZEWAY_ORACLE = {
     "height_in": 56.75, "gross_in2": 113.097, "h_over_d": 4.73,
     "tributary_ft2": 6.3455, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
-    "dead_lb": 671.30, "live_lb": 253.82, "service_lb": 925.12, "factored_lb": 1211.67,
+    # §2 as re-worked 2026-09-04, when the roof field closed the axial gap. The roof share
+    # is SNOW-loaded (50 psf) and kept apart from the 40 psf deck tributary on purpose.
+    "roof_tributary_ft2": 4.0, "roof_snow_psf": 50.0,
+    "dead_lb": 711.30, "live_lb": 453.82, "service_lb": 1165.12, "factored_lb": 1579.67,
     "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 187_011.0,
     "tie_spacing_in": 10.0,
     "slenderness": 18.92, "delta_ns": 1.0005, "e_magnified_in": 0.9604, "e_capped_in": 1.20,
@@ -222,6 +225,8 @@ def test_the_breezeway_load_path_reproduces_its_note(tag, piers) -> None:
     assert pier.gross_area_in2 == pytest.approx(want["gross_in2"], rel=0.001)
     assert pier.height_in / pier.diameter_in == pytest.approx(want["h_over_d"], abs=0.01)
     assert pier.tributary_ft2 == pytest.approx(want["tributary_ft2"], abs=0.001)
+    assert pier.roof_tributary_ft2 == pytest.approx(want["roof_tributary_ft2"], abs=0.001)
+    assert pier.roof_snow_psf == pytest.approx(want["roof_snow_psf"], abs=0.001)
     assert pier.carried_dead_lb == pytest.approx(want["carried_dead_lb"], abs=0.5)
     assert pier.self_weight_lb == pytest.approx(want["self_weight_lb"], abs=0.5)
     assert pier.dead_lb == pytest.approx(want["dead_lb"], abs=1.0)
@@ -231,20 +236,46 @@ def test_the_breezeway_load_path_reproduces_its_note(tag, piers) -> None:
 
 
 @pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_a_pier_whose_demand_is_short_publishes_no_ratio(tag, results) -> None:
-    """§3 of the note: the roof has no plan area, so the tributary is an under-count.
+def test_the_roof_field_closed_the_axial_gap(tag, results) -> None:
+    """§3 of the note, as re-worked 2026-09-04.
 
-    The six load-independent detailing states are graded in full; the §22.4.2 axial state is
-    **omitted, not estimated**. Publishing an understated d/c is worse than publishing none,
-    because a reader takes a printed ratio at face value and cannot see what is missing.
+    This test used to assert the opposite — that the axial state was OMITTED because the
+    breezeway roof had no plan area to divide. ``pier_basis._rafter_fields`` gave it one by
+    reading what the model already said: three rafters naming the same two beams are a
+    framed field, and the covering authored over it (``GL-BW-ROOF``) sets its extent.
+
+    What is asserted here is that the gap is closed *and stayed honest*: a real axial ratio,
+    no ``missing`` entry, and no beam still flagged as unaccounted.
     """
     record = results[f"deck_post/{tag}"]
-    assert record.status is Status.INCOMPLETE
+    assert record.status is Status.OK, record.missing
     names = [state.name for state in record.limit_states]
-    assert "axial, tied column" not in names
-    assert len(names) == 6
+    assert "axial, tied column" in names
     assert all(state.ok for state in record.limit_states)
-    assert record.missing and "BM-BW-R" in record.missing[0]
+    assert not record.missing
+
+
+@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
+def test_the_roof_share_is_snow_not_deck_live(tag, piers) -> None:
+    """A roof is not a deck. 50 psf ground snow beats IRC Table R301.5's 40 psf, so folding
+    the roof share into ``tributary_ft2`` would understate every one of these piers."""
+    want = _BREEZEWAY_ORACLE
+    pier = piers[tag]
+    assert pier.live_lb == pytest.approx(
+        want["tributary_ft2"] * 40.0 + want["roof_tributary_ft2"] * want["roof_snow_psf"],
+        abs=0.5)
+    # The whole point: grading the roof at deck live would lose 40 lb a pier.
+    assert pier.live_lb > (want["tributary_ft2"] + want["roof_tributary_ft2"]) * 40.0
+
+
+@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
+def test_the_roof_field_prefers_the_covering_to_the_framed_rectangle(tag, piers) -> None:
+    """§3: the rafters oversail each beam by 2 3/4", so the framed rectangle (14.333 ft2)
+    is a 10% under-count of what ``GL-BW-ROOF`` actually covers (16.0 ft2). The larger
+    governs, because an understated tributary is an understated demand."""
+    framed_share = (4.0 * (40.4167 - 36.8333)) / 4.0
+    assert piers[tag].roof_tributary_ft2 == pytest.approx(16.0 / 4.0, abs=0.001)
+    assert piers[tag].roof_tributary_ft2 > framed_share
 
 
 @pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
