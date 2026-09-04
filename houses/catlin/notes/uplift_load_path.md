@@ -138,10 +138,16 @@ rather than split into a second product for one role.
 The derived rules skip any joint an authored `Connector` already names — that guard is what
 keeps the sunken garden's and the breezeway's twenty connectors from being bought twice.
 
-- 2 × ABU66SS under the balcony's two WOOD centre pillars, 4 × under the breezeway posts
-  (`params/`). It was 6 until 2026-09-03: the four corner pillars became 12" cast concrete
-  columns doweled into the wall tops under them, and concrete on concrete is a lapped
-  splice made in the pour, not a connector. See `notes/balcony_moment_columns.md`.
+- 4 × ABU66SS under the breezeway posts (`params/`). It was 6 until 2026-09-03, when the
+  four balcony corner pillars became 12" cast concrete columns doweled into the wall tops
+  under them — concrete on concrete is a lapped splice made in the pour, not a connector
+  (see `notes/balcony_moment_columns.md`) — and it fell to 4 later the same day when the two
+  WOOD centre pillars lost theirs: an ABU has no published value bearing on framing.
+- 2 × MSTA12Z straps and 3 × L50Z angles at those two centre pillars, `CN-SG-BASE-*2-W/-N/-S`
+  (ESR-2105 Table 3 / ESR-3096 Table 4, both wet-derated at C_M 0.70). The mix is per FACE,
+  not per pillar: a strap on the flush west pair at each, an angle wherever there is joist
+  pack beside the post. `notes/centre_pillar_bearing.md` §6 is the inventory and the ~285 lb
+  hand-worked demand it is sized against.
 - 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
 - 6 × HGAM10 masonry gusset angles at the cast-column beam seats — the two porch columns
@@ -236,6 +242,8 @@ usually cheaper:
 | LTP4 | TP37 class | plate to band |
 | KBS1Z | — (use the strap tie family) | beam to post |
 | CCQ46SDS2.5 | — (column cap family) | 4x beam seated on a 6x6 post |
+| MSTA12Z | — (medium strap tie family) | 6x6 post face to the joist pack it stands on |
+| L50Z | — (reinforcing angle family) | 6x6 post to the joist pack beside it |
 | ABU66 / ABU44 | ABU-equivalent standoff base | post to pier |
 | AB-058-10-SS | any 5/8 in cast-in anchor + nut/washer | post base to concrete |
 | MASA | MA-series mudsill anchor | sill to concrete |

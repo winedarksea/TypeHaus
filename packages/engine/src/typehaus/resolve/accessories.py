@@ -426,15 +426,16 @@ _CONNECTOR_MARKER_IN = {
     # the whole point of the part is the GAP it holds open under the beam soffit: a 5" x 5"
     # x 6" default box would fill that gap and hide the detail it exists to show.
     ConnectorKind.BEARING_STANDOFF: (1.75, 1.75, 0.50),
-    # The kind spans a strap and a cap, so the marker is drawn at the LARGER: an inverted
-    # column cap wrapping a 6x6 (catlin's CN-SG-BASE-R2/-F2, a CCQ4.62-5.50SDS). 5-1/2"
-    # square in plan, and 14" tall because ESR-2604 Table 2 gives the U-channel a 7" height
-    # — 7" of channel hanging below the bearing plane and the straps rising about as far
-    # above it. A DTT2Z-class strap drawn in this box reads a little generous; a cap drawn
-    # in the strap's old 3" x 3" x 5-1/2" box read as the wrong part entirely, which is the
-    # error worth avoiding when the whole reason this kind exists is to tell a reader that
-    # the joint is NOT the standoff post base it replaced.
-    ConnectorKind.TENSION_TIE: (2.75, 2.75, 7.00),
+    # The kind spans a face strap and a reinforcing angle, and the marker is drawn at the
+    # larger of the two in each direction: 5" square in plan (an L50Z's leg — catlin's
+    # CN-SG-BASE-*2-N/-S) and 12" tall (an MSTA12Z's length — CN-SG-BASE-*2-W, 6" of strap
+    # into each member, so the box is centred on the bearing plane the same way the strap
+    # is). It was 5-1/2" x 5-1/2" x 14" while this kind meant an inverted column cap that
+    # wrapped the whole joint; that part could not be built at either pillar and is gone.
+    # A box drawn at the WRONG part is the error worth avoiding here, because the only
+    # reason this kind exists is to tell a reader the joint is not the standoff post base
+    # it replaced.
+    ConnectorKind.TENSION_TIE: (2.50, 2.50, 6.00),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 

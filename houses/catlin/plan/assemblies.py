@@ -1097,8 +1097,11 @@ BALCONY_DECK_ALUMINUM = Assembly(
 #    Chamfer or bevel the exposed rim, or form a small drip under the beam seat, and seal
 #    the cut before the pillar is stood. Highest durability-per-dollar item in the porch.
 # 2. PLANK CUT-OUT AT THE TWO CENTRE PILLARS. PT-SG-BR2 and PT-SG-BF2 bear on FS-SG-PORCH.
-#    Cut a 4" square through the composite plank at each so the ABU66SS lands on framing:
-#    Trex's own spec says composite decking "cannot be used as structural material". Not a
+#    Cut a ~9" square through the composite plank at each so the POST ITSELF lands on the
+#    3-ply joist pack: Trex's own spec says composite decking "cannot be used as structural
+#    material". 9", not the 4" this note said until 2026-09-03 — the post is 5-1/2" square,
+#    so 4" never cleared it, and the cut-out has to pass the L50Z angles' legs on the pack
+#    faces as well. Size it to the post plus the connector legs plus a working gap. Not a
 #    strength question (~50 psi on the plank) — it is CREEP at a 140-160 degF summer surface
 #    temperature settling those two pillars relative to the four on concrete and taking the
 #    balcony's watertight aluminium plank out of plane, and REPLACEABILITY, because the
@@ -1145,7 +1148,7 @@ POST_WHITE_PAINT_DF = Assembly(
               thickness=inch(5.5), function=LayerFunction.STRUCTURE),
     ),
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2 conditions every cap and base in that report on SG >= 0.50 at 19% maximum moisture content, and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the inverted CCQ4.62-5.50SDS base under them had any published value; the moisture half of that clause is still not met by an open deck frame and rides on the seal. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a 4\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material); the inverted cap's U-channel floor plate lies on the pack and the post stands on that plate, which is a bearing plate and not a standoff, so the joint is still wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
+    source="catlin-house balcony CENTRE 6x6 pillars PT-SG-BR2/BF2 — Douglas Fir-Larch, specific gravity 0.50, white-painted finish. THE SPECIES IS A CONNECTOR REQUIREMENT, not a preference: ICC-ES ESR-2604 §3.2.2, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 all carry the SAME clause — sawn or engineered lumber, SG >= 0.50, 19% maximum moisture content — and at SPF 0.42 neither the CCQ46SDS2.5 cap over these posts nor the MSTA12Z strap and L50Z angles that tie their bases down had any published value. The clause is family-wide, so the species call survives every part change at this joint; only the citation widens. The moisture half is still not met by an open deck frame and rides on the seal, while the WET SERVICE half is resolvable and applied: both ESR-2105 §4.1 and ESR-3096 §4.1 send it to the NDS wet service factor, so C_M 0.70 is already inside the 658 lbf and 375 lbf recorded in library/hardware.py. Chamfer or bevel the 1/2\" of upward end grain left proud on the east and west faces of each pillar top by the narrower beam over it, and seal the cut before standing. Cut a ~9\" square through the composite porch plank so the POST ITSELF bears on the 3-ply joist pack below, not on decking (Trex: composite decking is not structural material) — 9\" because the post is 5-1/2\" square and the cut must also clear the L50Z angle legs lying on the pack beside it. The post stands directly on the joists with no plate between, so the joint is wood on wood. PT-SG-BF2 also serves as the RL-SG-PORCH south-leg guard post at x 18'-0\", so its top 42\" is a guard post and its rails frame into the 6x6 rather than into a 2x2 beside it",
 )
 
 # Guards were split off POST_WHITE_PAINT (they shared it with the balcony's
@@ -3338,7 +3341,7 @@ MATERIALS = [
     # which matters to nothing here — an open-air pillar is in no envelope assembly.
     Material(tag="post-df-paint-white", name="White-painted DF-L (SG 0.50)", r_per_inch=1.00,
              density=530.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
-             source="balcony centre 6x6 pillars PT-SG-BR2/BF2, exterior white paint over Douglas Fir-Larch specified at specific gravity 0.50 so ESR-2604 §3.2.2 is met at both the CCQ46SDS2.5 cap above and the inverted CCQ4.62-5.50SDS base below; painted softwood ~1 perm-in"),
+             source="balcony centre 6x6 pillars PT-SG-BR2/BF2, exterior white paint over Douglas Fir-Larch specified at specific gravity 0.50 so the SG >= 0.50 clause is met at both ends — ESR-2604 §3.2.2 for the CCQ46SDS2.5 cap above, ESR-2105 §3.5.2 and ESR-3096 §3.2.2 for the MSTA12Z strap and L50Z angles at the base below; painted softwood ~1 perm-in"),
     # retaining-block (raised garden outer face), polycarbonate-multiwall (breezeway
     # glazing) and aluminum-extrusion (breezeway glazing trim) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here

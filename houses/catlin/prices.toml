@@ -569,19 +569,27 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to an inverted CCQ4.62-5.50SDS below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
-# The part that replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a CCQ column cap installed
-# INVERTED, channel down over the three-ply joist pack and straps up onto the 6x6. Priced
-# alongside "CCQ46SDS2.5" below because it is the same family, the same No. 7 gage steel and
-# the same factory SDS screws, one width step larger.
+"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
+# What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
+# sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
+# on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
+# Five parts for two pillars.
 #
-# ** THIS IS NOT A CHEAP SWAP AND THE ROW SHOULD SAY SO. ** It briefly carried a DTT2Z at
-# $6-12 (2026-09-03, authored and superseded the same day). A DTT2 is a one-sided hold-down:
-# eccentric on a 6x6, needing a rod through the joist pack, and worth nothing laterally. The
-# cap costs roughly twenty times as much and is the part that actually makes the joint —
-# about $370 for the pair against $18, which is the real price of a base with a published
-# number behind it. See library/hardware.py for both readings.
-"CCQ4.62-5.50SDS" = { low = 150, high = 220 }  # 2 ea — CN-SG-BASE-R2/-F2, inverted
+# ** THE COST HISTORY OF THIS ONE JOINT, BECAUSE IT SWUNG BY 15x IN A DAY. ** ABU66SS at
+# ~$150-230 each (unrated on framing) -> DTT2Z at $6-12 (authored and superseded the same
+# day; one-sided, eccentric on a 6x6, nothing lateral) -> an inverted CCQ4.62-5.50SDS at
+# ~$370 for the pair, which read as "the price of a base with a published number behind
+# it" -> **~$25 for all five parts here.** The CCQ was not merely expensive: it does not
+# FIT at either pillar (at BF2 the rim, joist tips, beam axis and post centre are one line;
+# at BR2 the squash blocks occupy the bays its side plates would hang in), and it carried
+# 6,785 lbf against a net uplift demand of roughly 285 lb. The strap and angles come to
+# 1,408 lbf at BR2 and 1,033 lbf at BF2, wet-service derated, which is the right size.
+#
+# So the lesson the earlier version of this comment drew — that a real base is expensive —
+# was drawn from the wrong part. A published number costs about $5. See
+# library/hardware.py for both readings, ESR-2105 Table 3 and ESR-3096 Table 4.
+"MSTA12Z" = { low = 3, high = 7 }  # 2 ea — CN-SG-BASE-R2-W / -F2-W, the west-face straps
+"L50Z" = { low = 3, high = 6 }  # 3 ea — CN-SG-BASE-R2-N/-S and -F2-N, the pack-face angles
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in

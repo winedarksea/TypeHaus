@@ -13,9 +13,17 @@ joint was got wrong before the calc existed:
 * :func:`test_wet_service_is_applied_and_no_duration_factor_is` — 425 psi is the DRY value
   and the house's own comments graded this joint against it, while the glulam bearing on the
   top of the same post has been graded wet since the day it was computed.
-* :func:`test_the_bearing_length_is_the_geometry_not_the_beam_width` — the porch's joists
-  CROSS one beam and END on the other, so the beam's own width is the right answer at one
-  and twice the right answer at the other.
+* :func:`test_the_bearing_length_is_the_geometry_not_the_beam_width` — a joist that CROSSES
+  a beam bears on all of it and one that ENDS on its axis bears on half, so the beam's own
+  width is the right answer at one and twice the right answer at the other.
+
+That last one runs on a **synthetic** deck, and deliberately. It used to read catlin's porch,
+which carried one of each case: the joists crossed the back beam and stopped on the front
+one. On 2026-09-03 ``FS-SG-PORCH``'s ``JoistSpec`` gained a 2-3/4" ``cantilever_start`` so
+the joists cross BOTH beams — the right framing, and it takes ``PT-SG-BF2`` from d/c 0.76 to
+0.35 — which left the END branch of ``_beam_bearing_in`` and ``_post_on_field_in`` with no
+subject in this house. Deleting the assertions would have deleted the coverage with the
+subject, so the old porch geometry lives on below as a fixture instead.
 """
 
 from __future__ import annotations
@@ -38,13 +46,15 @@ _ORACLE = {
     "PT-SG-BF2": {
         "reaction_lb": 2187.0,
         "ply_width_in": 4.50,
-        # Half the post is over the deck edge: the porch outline ends on the front beam axis.
-        "post_bearing_in": 2.75,
-        # The joists END on the 4-1/2" front beam with 2-1/4" of bearing.
-        "beam_bearing_in": 2.25,
+        # 5-1/2" of post, wholly inside the joist field — the joists CROSS the front beam
+        # and run 2-3/4" past its far face, so there is joist under all of the post.
+        "post_bearing_in": 5.50,
+        # And they therefore take all 4-1/2" of the front beam, not the 2-1/4" they took
+        # while they stopped on its axis.
+        "beam_bearing_in": 4.50,
         "beam_tag": "BM-SG-FRW",
-        "top_psi": 176.7, "top_capacity_psi": 284.8, "top_dc": 0.621,
-        "beam_psi": 216.0, "beam_capacity_psi": 284.8, "beam_dc": 0.758,
+        "top_psi": 88.3, "top_capacity_psi": 304.2, "top_dc": 0.290,
+        "beam_psi": 108.0, "beam_capacity_psi": 308.5, "beam_dc": 0.350,
     },
 }
 _PILLARS = tuple(_ORACLE)
@@ -154,37 +164,104 @@ def test_wet_service_is_applied_and_no_duration_factor_is(records, tag) -> None:
         assert "NO C_D" in state.citation or "C_b" in state.citation
 
 
-def test_the_bearing_length_is_the_geometry_not_the_beam_width(records) -> None:
-    """§3b — the porch carries one of each case, on the same deck.
+def _end_bearing_deck():
+    """catlin's porch as it was framed before 2026-09-03, as a fixture.
 
-    The joists run past the BACK beam to the deck's north edge, so they cross all 4-1/2" of
-    it. They STOP on the FRONT beam's axis, so they take 2-1/4" of the same 4-1/2". Reading
-    ``Beam.size``'s width at both would credit the front joint with twice the bearing it has,
-    which is where the 2.36 d/c in the note's "before" table came from.
+    Joists running in y from 17" north of the back beam at y = 0 — the porch's real
+    ``cantilever_end`` — south to the FRONT beam's axis at y = -9.5 ft, where they stop.
+    A 6x6 stands on each beam. Both beams 4-1/2" wide. That is one of each case on one
+    deck — the back beam CROSSED, the front beam LANDED ON — which is what
+    ``_beam_bearing_in`` and ``_post_on_field_in`` need a subject for and what the real
+    porch no longer provides.
     """
-    crossed = _quantity(records["PT-SG-BR2"], "beam_bearing_length")
-    landed = _quantity(records["PT-SG-BF2"], "beam_bearing_length")
-    assert crossed == pytest.approx(4.5)
-    assert landed == pytest.approx(crossed / 2.0)
+    from types import SimpleNamespace
+
+    from typehaus.model.elements import Node
+    from typehaus.model.structure import Beam
+    from typehaus.quantities import Point2D, ft, inch, m
+
+    front_y, back_y = ft(-9.5).meters, 0.0
+
+    def at(x_m, y_m):
+        return Point2D(m(x_m), m(y_m))
+
+    nodes = [
+        Node(uid="TSTND01AAA", tag="N-BK-W", position=at(0.0, back_y)),
+        Node(uid="TSTND02AAA", tag="N-BK-E", position=at(6.0, back_y)),
+        Node(uid="TSTND03AAA", tag="N-FR-W", position=at(0.0, front_y)),
+        Node(uid="TSTND04AAA", tag="N-FR-E", position=at(6.0, front_y)),
+    ]
+    beams = [
+        Beam(uid="TSTBM01AAA", tag="BM-BACK", start_node="N-BK-W", end_node="N-BK-E",
+             size="4.5x11.875"),
+        Beam(uid="TSTBM02AAA", tag="BM-FRONT", start_node="N-FR-W", end_node="N-FR-E",
+             size="4.5x11.875"),
+    ]
+    by_tag = {e.tag: e for e in (*nodes, *beams)}
+    # One joist line is enough: the field extent is all either function reads. It runs 17"
+    # PAST the back beam to the deck's north edge — catlin's real ``cantilever_end`` — and
+    # stops dead on the front beam's axis, which is the pair of cases being pinned.
+    joist = SimpleNamespace(category="joist", p0=(3.0, front_y),
+                            p1=(3.0, back_y + inch(17).meters))
+    floor = SimpleNamespace(tag="FS-TEST", members=[joist])
+    deck = SimpleNamespace(
+        tag="FS-TEST",
+        joists=SimpleNamespace(direction="y", bearing_refs=("BM-BACK", "BM-FRONT")))
+    ctx = SimpleNamespace(
+        plan=SimpleNamespace(by_tag=by_tag.get, all_elements=lambda: list(by_tag.values())),
+        model=SimpleNamespace(floors=[floor]))
+    at_front = SimpleNamespace(size="6x6", position=SimpleNamespace(xy_m=(3.0, front_y)))
+    at_back = SimpleNamespace(size="6x6", position=SimpleNamespace(xy_m=(3.0, back_y)))
+    return ctx, deck, at_front, at_back
+
+
+def test_the_bearing_length_is_the_geometry_not_the_beam_width() -> None:
+    """§3b — one deck carrying one of each case.
+
+    Joists that run past the BACK beam cross all 4-1/2" of it. Joists that STOP on the
+    FRONT beam's axis take 2-1/4" of the same 4-1/2". Reading ``Beam.size``'s width at both
+    would credit the landed joint with twice the bearing it has, which is where the 2.36 d/c
+    in the note's "before" table came from — and it is still where a hand check goes wrong,
+    which is why this assertion outlived the geometry that prompted it.
+    """
+    from typehaus.engineering.post_bearing import _beam_bearing_in
+
+    ctx, deck, at_front, at_back = _end_bearing_deck()
+    crossed_in, crossed_tag, crossed_at_end = _beam_bearing_in(ctx, deck, at_back)
+    landed_in, landed_tag, landed_at_end = _beam_bearing_in(ctx, deck, at_front)
+    assert (crossed_tag, landed_tag) == ("BM-BACK", "BM-FRONT")
+    assert crossed_in == pytest.approx(4.5)
+    assert landed_in == pytest.approx(crossed_in / 2.0)
     # And the END bearing earns no C_b, because there is no wood past it to earn one.
-    assert "END bearing" in _state(records["PT-SG-BF2"], "where the joists land on").citation
-    assert "END bearing" not in _state(records["PT-SG-BR2"],
-                                       "where the joists land on").citation
+    assert landed_at_end and not crossed_at_end
+    # catlin itself now has neither: both porch beams are crossed since the joists gained
+    # their 2-3/4" ``cantilever_start``. That is what makes this fixture necessary.
+    assert all(entry["beam_bearing_in"] == 4.5 for entry in _ORACLE.values())
 
 
-def test_a_post_at_the_deck_edge_is_credited_only_with_what_is_under_it(records) -> None:
-    """§3a — ``PT-SG-BF2`` is half over the porch's south edge.
+def test_a_post_at_the_deck_edge_is_credited_only_with_what_is_under_it() -> None:
+    """§3a — a post standing on the line where the joists stop is half over air.
 
-    The porch outline ends on the front beam axis and the pillar stands on it, so 2-3/4" of
-    its 5-1/2" footprint has no joist beneath it. Crediting the whole section would halve the
-    reported stress at the one post this rule was written to find an error at.
+    2-3/4" of its 5-1/2" footprint has no joist beneath it. Crediting the whole section
+    would halve the reported stress at exactly the post this rule was written to catch an
+    error at, and it would also hand the bearing a ``C_b`` it has not earned.
+
+    catlin no longer poses the question — ``PT-SG-BF2`` sits on the same axis it always did,
+    but the joists now run 2-3/4" PAST it, so the post is wholly over wood. The oracle below
+    asserts that, and the fixture keeps the branch tested.
     """
-    assert _quantity(records["PT-SG-BR2"], "joist_plies") == 3
-    top = _state(records["PT-SG-BF2"], "on the joist top")
-    interior = _state(records["PT-SG-BR2"], "on the joist top")
-    # Same 4-1/2" of stock and 83% of the load, and still 1.65x the stress.
-    assert top.demand > interior.demand * 1.6
-    assert "2.75" in top.citation
+    from typehaus.engineering.post_bearing import _post_on_field_in
+
+    ctx, deck, at_front, at_back = _end_bearing_deck()
+    edge_in, edge_at_end = _post_on_field_in(ctx, deck, at_front)
+    interior_in, interior_at_end = _post_on_field_in(ctx, deck, at_back)
+    assert edge_in == pytest.approx(2.75)
+    assert edge_at_end
+    # The post on the CROSSED beam has 17" of joist running on past it, so it keeps its
+    # whole 5-1/2" and is not at a field end. Same post, same section, twice the bearing.
+    assert interior_in == pytest.approx(5.50) and not interior_at_end
+    # And in the house, both pillars are now credited with the whole 5-1/2".
+    assert all(entry["post_bearing_in"] == 5.50 for entry in _ORACLE.values())
 
 
 @pytest.mark.parametrize("tag", _PILLARS)

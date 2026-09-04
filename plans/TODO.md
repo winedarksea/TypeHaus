@@ -101,7 +101,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   The balcony's four CORNER pillars are now **12" round reinforced-concrete columns fixed at
   their bases**, doweled into the wall tops of `W-SG-W1`/`E1`, and those four columns are the
   entire lateral system in both plan directions. The eight knee braces and both E-W brace
-  rails are **deleted**. The two centre pillars stay wood 6x6 on pinned `ABU66SS` bases,
+  rails are **deleted**. The two centre pillars stay wood 6x6 bearing on the porch framing,
+  tied down by an `MSTA12Z` strap and `L50Z` angles (an `ABU66SS`, then a `DTT2Z`, then an
+  inverted `CCQ4.62-5.50SDS` cap that does not physically fit, all on 2026-09-03),
   leaning columns tied in by the deck diaphragm — which is the one claim here that is still
   a claim. `houses/catlin/notes/balcony_moment_columns.md` is the design: base moments from
   wind and from R301.5's guard load, the P-M interaction on the round section worked term by
@@ -169,7 +171,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   DRY Fc-perp of 425 psi; the frame is outdoors and NDS Table 4.3.1's `C_M` of 0.67 takes it
   to **285**. And it divided the balcony six ways where `BM-SG-BLC` runs onto two posts. Both
   centre pillars were over — `PT-SG-BF2` at **d/c 2.36** — at 0 FAIL. Three plies of sister
-  under each and BF2 onto the front beam axis closed it (0.42 and 0.76).
+  under each and BF2 onto the front beam axis closed it (0.42 and 0.76), and a 2-3/4"
+  `cantilever_start` running the joists ACROSS the front beam rather than onto its
+  centreline took BF2 the rest of the way to **0.35** without moving the pillar.
 
   `landing_post_bearing` itself is unchanged and still scoped to resolver-generated stair
   landing posts; the two rules do not overlap, and `_bearing_element_under` still cannot see

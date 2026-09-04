@@ -1656,34 +1656,48 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `PIER_CONCRETE_12` still carries a grout island at `PT-SG-COL`; aligning it is a
     follow-up, not an oversight.
   - **The two CENTRE pillars stay wood 6x6**, bearing DIRECTLY on the porch framing through
-    a 4"-square plank cut-out — Trex says plainly that composite decking bears nothing — on a
+    a ~9"-square plank cut-out — Trex says plainly that composite decking bears nothing, and
+    the cut has to clear a 5-1/2" post plus the `L50Z` angle legs beside it — on a
     **3-ply bearing pack** (the authored joist plus two full-length sisters) with squash
     blocks at the beam line. `PT-SG-BF2` moved north onto the deck, which is what let
     `PT-SG-FCOL` shrink from a 20" round to a 12" one, and then the last 3" onto the front
     beam axis itself, where it doubles as the `RL-SG-PORCH` south-leg guard post at x 18'-0".
     A `CCQ46SDS2.5` column cap closes the uplift path at each — a 3-1/2" beam on a 6x6 is
-    the unequal-width case the PC6Z is not published for.
+    the unequal-width case the PC6Z is not published for. **The porch joists CROSS both
+    beams** since 2026-09-03: `JoistSpec.cantilever_start = 2-3/4"` runs them past the front
+    beam instead of stopping on its centreline, which takes both bearing planes at
+    `PT-SG-BF2` out of NDS §3.10.4's END case (d/c 0.76 -> 0.35) without moving the pillar.
+    The composite sheet followed the framing, so the plank now ends 2-3/4" outboard of
+    `RL-SG-PORCH`'s guard line — a deliberate setback, since the guard blocking sits in the
+    bay north of the beam and a guard on the new edge would bolt into cantilevered tips.
   - **No standoff post base at either.** The `ABU66SS` went on 2026-09-03: every published
     value an ABU has is measured bearing on CONCRETE through a 5/8" cast-in anchor
     (ESR-1622 §5.6 puts even that anchor outside its own scope), and the 1" standoff was
     cited to IRC R317.1.4, which governs wood on concrete. Neither pillar has stood on
-    concrete since. A **`CCQ4.62-5.50SDS` column cap installed INVERTED** holds each down
-    instead — W1 4-5/8" channel over the 4-1/2" three-ply pack, W2 5-1/2" straps onto the
-    6x6. A `CCQ46` inverted does not fit that pack; a `CC66` leaves an inch of slop. Its
-    floor plate is a bearing plate, not a standoff, so the joint stays wood-on-wood and
-    `post_bearing` ignores the plate. The bearing that replaced the ABU is graded:
+    concrete since. **A `MSTA12Z` strap plus `L50Z` angles** hold each down instead, mixed
+    by what each face has beside it: the strap on the one flush vertical pair (both west
+    faces at x = 213.25"), an angle wherever there is joist pack to screw into — north at
+    both pillars, south at `PT-SG-BR2` alone. Five elements for two pillars, ~$25 the lot,
+    1,408 lbf at BR2 and 1,033 lbf at BF2 wet-derated against a hand-worked ~285 lb net
+    uplift. **An inverted `CCQ4.62-5.50SDS` cap stood here for one day and CANNOT BE BUILT**:
+    at BF2 the rim, joist tips, beam axis and post centre are one line, and at BR2 the squash
+    blocks occupy the bays its side plates would hang in — and it was ~20x the demand. Do not
+    reach for a part that wraps this joint. The post now stands on the pack with no plate
+    between it, wood on wood. The bearing that replaced the ABU is graded:
     `haus engineering --item post_bearing/PT-SG-BR2`, oracled in
     `notes/centre_pillar_bearing.md` — at `plies=1` and against a DRY Fc-perp both pillars
     were over, at 0 FAIL, until that calculation existed.
   - **The two centre pillars are DF-L, not SPF, and the species is a connector requirement.**
-    `ESR-2604 §3.2.2` conditions every cap and base in that report on SG >= 0.50, and
-    `ESR-2330 §3.2.2` says the same for the holdowns. At SPF 0.42 **nothing at either end of
-    these two posts had a published value** — the `CCQ46SDS2.5` cap on top included. DF-L at
-    0.50 fixes both ends for ~$180-450 of lumber; see `POST_WHITE_PAINT_DF`. Two conditions
-    still ride on the seal: the same clause wants MC <= 19% (an open deck is not that), and
-    ESR-2604 does not evaluate the inverted orientation at all. A `DTT2Z` stood here for part
-    of 2026-09-03 and was superseded unbuilt — one-sided, no lateral value, and it did not
-    touch the species problem that was the real objection.
+    `ESR-2604 §3.2.2`, `ESR-2330 §3.2.2`, `ESR-2105 §3.5.2` and `ESR-3096 §3.2.2` are the
+    SAME sentence — SG >= 0.50 at MC <= 19%. At SPF 0.42 **nothing at either end of these two
+    posts had a published value** — the `CCQ46SDS2.5` cap on top included. DF-L at 0.50 fixes
+    both ends for ~$180-450 of lumber; see `POST_WHITE_PAINT_DF`. The clause being
+    family-wide is why that call survived four base parts in one day: only the citation
+    moves. **One** condition rides on the seal — MC <= 19%, which an open deck is not. The
+    other half is resolvable and IS applied: both reports' §4.1 send wet service to the NDS
+    factor, so C_M 0.70 is already inside the 658/375 lbf recorded in `library/hardware.py`.
+    Do not derate again. A `DTT2Z` stood here for part of 2026-09-03 and was superseded
+    unbuilt — one-sided, no lateral value, and it did not touch the species problem.
   - **The three beams are treated SYP glulam, 3-1/2" x 11-7/8"** (24F-V5M1/SP, Anthony Power
     Preserved / Boise Cascade), clear-finished rather than painted, with no ply seam to hold
     water. Author the size DECIMALLY — `"3.5x11.875"` — or `_RE_NOMINAL` catches a

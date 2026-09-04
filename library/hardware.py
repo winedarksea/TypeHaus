@@ -415,90 +415,152 @@ ABU66SS_POST_BASE = StructuralHardware(
 #: ICC-ES ESR-2330, Table 4, read 2026-09-03. Note the number: the DTT2's report is **2330,
 #: not 2320** — ESR-2320 is Simpson's take-up device report (CTUD/TUD/ATUD/RTUD/TUW) and has
 #: no DTT in it at all. That was worth checking rather than copying.
-# The connector that holds a wood post DOWN to the framing it stands on, at PT-SG-BR2 and
-# PT-SG-BF2 — a CCQ column cap installed INVERTED, so its U-channel sits over the 3-ply
-# joist pack and its straps rise onto the 6x6.
+#: ICC-ES ESR-2105 (Simpson Strong-Tie straps), Table 3 — the LSTA/MSTA/LSTI/MSTI series —
+#: and ICC-ES ESR-3096 (framing connectors), Table 4 — the L reinforcing angles. Both read
+#: 2026-09-03 from the ICC-ES PDFs, not from a retail listing.
+# THE BASE TIE AT PT-SG-BR2 / PT-SG-BF2 — a strap plus angles, NOT a cap.
 #
-# ** WHY NOT THE ABU66SS THAT WAS HERE. ** Every published number an ABU has is measured with
-# the stirrup bearing on concrete through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts that
-# anchor and its footing outside its own scope. On a deck there is no pour, no cast-in bolt
-# and no basis for the table. The reason for the standoff went with it: the 1" gap answered
-# IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE. Wood on wood is not
-# that condition.
+# ** WHY NOTHING THAT WRAPS THE JOINT WORKS HERE. ** Three parts stood at this joint before
+# and all three were wrong; the third was not merely oversized, it could not be installed:
 #
-# ** WHY NOT THE DTT2Z THAT REPLACED IT (2026-09-03, superseded the same day). ** A DTT2 is a
-# joint Simpson do publish for a post on framing, and ESR-2330 §3.2.1 does cover the -Z
-# suffix — the sentence that could not be found for the stainless ABU. But it is a one-sided
-# hold-down: eccentric on a 6x6, it needs a 1/2" rod driven through the joist pack to a nut
-# in the beam bay below, and it contributes no lateral restraint at a base that is pinned by
-# design. ESR-2330 §3.2.2 also requires SG >= 0.50, which was the real objection and which
-# ESR-2604 turns out to share — see below. Retired without ever being built.
+#   * **ABU66SS — unrated.** Every published number an ABU has is measured with the stirrup
+#     bearing on concrete through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts that anchor
+#     and its footing outside its own scope. On a deck there is no pour, no cast-in bolt and
+#     no basis for the table; §3.2.1 evaluates galvanised steel and lists no stainless model
+#     at all. Its 1" standoff answered IRC R317.1.4 Exception 1/3, which governs a wood
+#     column on CONCRETE. Wood on wood is not that condition.
+#   * **DTT2Z — right family, wrong shape.** ESR-2330 §3.2.1 does cover the -Z suffix, and
+#     Simpson do publish a DTT2 for a post on framing. But it is one-sided: eccentric on a
+#     6x6, needing a 1/2" rod driven through the joist pack to a nut in the beam bay, and
+#     contributing nothing lateral at a base that is pinned by design. Authored and
+#     superseded the same day, unbuilt.
+#   * **CCQ4.62-5.50SDS inverted — DOES NOT FIT, at either pillar.** The resolved geometry
+#     says so plainly. At PT-SG-BF2 the rim, the joist tips, the beam axis and the post
+#     centre are all one line — a T, with no orientation for a channel. At PT-SG-BR2 the
+#     squash blocks sit in the bays flanking the 3-ply pack, exactly where an inverted
+#     channel's side plates must hang. It also carried 6,785 lbf against a demand around
+#     300-600 lbf, and ESR-2604 evaluates no inverted installation. Never buildable here.
 #
-# ** WHY THIS PART FITS AND THE OBVIOUS ONES DO NOT. ** ESR-2604 names a CCQ by its two
-# widths, CCQ<W1 for beam><W2 for post>. Inverted, W1 is the channel that must straddle the
-# member BELOW and W2 the straps that must grip the member ABOVE. Here that is a 4-1/2"
-# three-ply 2x8 pack below and a 5-1/2" 6x6 above, so the part must be W1 4-5/8 / W2 5-1/2 —
-# CCQ4.62-5.50SDS, and Simpson's "4.62" width IS the three-ply 2x width. A CCQ46 inverted
-# would put a 3-5/8" channel over a 4-1/2" pack and does not fit; a CC66 inverted leaves 1"
-# of slop in the channel.
+# ** WHAT THE DEMAND ACTUALLY IS. ** ``structural.uplift_capacity`` is an honest UNKNOWN at
+# this joint — no tributary area, no force coefficient, no share of the storey shear. From
+# the house's own wind basis (typehaus/wind.py, V_ult 115, Exposure B): q_h ~16.5 psf at
+# 15 ft, free-roof C_N ~1.2, 0.6 for ASD -> ~11.9 psf over ~48 ft2 = ~575 lb up, less 0.6D
+# ~290 lb -> **~285 lb net**. Call the design demand 300-600 lbf. That is the yardstick the
+# two parts below are sized against, and it is why a 6,785 lbf cap was ~20x the joint.
 #
-# ** THE LOAD PATH IS STILL WOOD TO WOOD. ** Inverted, the channel's floor plate lies on top
-# of the pack and the post stands on it: 7 gage steel in direct bearing, a bearing plate and
-# not a standoff. ``engineering/post_bearing.py`` conservatively IGNORES the plate and grades
-# the post's own footprint straight onto the joists, so the plate is spare capacity rather
-# than a term in the calc — see notes/centre_pillar_bearing.md §3a.
+# ** MIXED BY WHAT EACH FACE HAS BESIDE IT. ** The strap goes on the one flush vertical pair
+# in the joint: the post's west face and the pack's west face are both at x = 213.25" at
+# BOTH pillars, so a 12" strap lies flat across the joint with 6" in each member. The east
+# face has a 1" step and takes nothing. The angle earns its place only where there is pack
+# beside the post to screw into — the north face at both pillars, and the south face at
+# PT-SG-BR2 only. The E/W faces offer 1-1/2" of block and would be fiction; **do not author
+# angles there.** Totals against a 300-600 lbf demand: BR2 1,408 lbf, BF2 1,033 lbf.
 #
-# ** TWO CONDITIONS, AND ONE OF THEM IS WHY THE PILLARS CHANGED SPECIES. ** ESR-2604 §3.2.2
-# requires sawn or engineered lumber of minimum specific gravity 0.50 at a maximum moisture
-# content of 19 percent, and it governs EVERY connector in that report — the CCQ46SDS2.5 cap
-# already at the top of these same two posts included. catlin framed in SPF at 0.42, so no
-# cap or base at this joint had a published value at all. That is why PT-SG-BR2/BF2 are
-# specified DF-L (SG 0.50) rather than SPF as of 2026-09-03; see POST_WHITE_PAINT_DF in
-# houses/catlin/plan/assemblies.py. The moisture-content half is NOT met and cannot be — an
-# open deck frame is not "continuously dry" — so it is recorded here with the condition
-# attached rather than silently used, per this module's rule 3.
+# ** REJECTED. ** Four angles (do not fit); L70Z (7" legs overhang the 4-1/2" pack by
+# 1-1/4" each side); GA2 (ESR-3096 Table 3 publishes the same 535/820, but there is no ZMAX
+# or HDG variant and this pack is copper-treated KDAT); H8 (footnote 7 derates the
+# stud-to-bottom-plate case — the one closest to a post on framing — to 380 lbf, with 85 lbf
+# F1 and no F2).
 #
-# ** AND THE ORIENTATION IS OUTSIDE THE REPORT'S FIGURES. ** ESR-2604 contains no inverted
-# installation, no orientation clause and no base-side table; Simpson illustrate the
-# configuration in their own product literature, but that is not the evaluation report. The
-# mechanism is orientation-independent (uplift is tension in the straps and their screws
-# either way), which is the argument for it — but it is an argument, and it belongs to the
-# engineer of record, not to this catalog.
-CCQ462_550_POST_TENSION_TIE = StructuralHardware(
-    tag="simpson-ccq462-550-inverted-post-tension-tie",
-    name="CCQ4.62-5.50SDS column cap, inverted as a 6x6 post base on a 3-ply",
+# ** THE WET SERVICE FACTOR IS APPLIED, NOT DEFERRED. ** ESR-2105 §4.1 and ESR-3096 §4.1 say
+# the same thing in the same words: where wet service is expected the allowable loads "must
+# be adjusted by the wet service factor, C_M, specified in the NDS" for dowel-type
+# fasteners. An open deck frame IS that condition, so C_M 0.70 is taken here and the derated
+# number is what these records carry. This is the resolvable half of the moisture question;
+# unlike the 19% clause below it does not ride on the seal.
+#
+# ** THE SPECIES CLAUSE IS FAMILY-WIDE. ** ESR-2105 §3.5.2 and ESR-3096 §3.2.2 are the same
+# sentence as ESR-2604/ESR-2330 §3.2.2 — sawn or engineered lumber, SG >= 0.50, MC <= 19%.
+# POST_WHITE_PAINT_DF's reason therefore survives the part change intact; only the citation
+# widens. The 19% half is still not met by an open deck frame and stays with the record.
+MSTA12Z_POST_TENSION_STRAP = StructuralHardware(
+    tag="simpson-msta12z-post-base-strap",
+    name="MSTA12Z strap, 6x6 post to the joist pack under it (west face)",
     role=ROLE_POST_TENSION_TIE,
     manufacturer=_SIMPSON,
-    model="CCQ4.62-5.50SDS",
+    model="MSTA12Z",
     fits_nominal=("6x6",),
-    source="Simpson Strong-Tie CCQ column cap (strongtie.com/ccq) — No. 7 gage straps "
-           "factory welded to a No. 7 gage U-channel, supplied with 1/4 in x 2-1/2 in SDS "
-           "Heavy-Duty Connector screws. Specified here INVERTED, channel down over the "
-           "three-ply joist pack and straps up onto the 6x6, because both centre balcony "
-           "pillars bear on the porch deck framing where a standoff post base has no pour "
-           "to stand on. Same report, same screw and same family as the CCQ46SDS2.5 cap at "
-           "the other end of the same two posts",
+    source="Simpson Strong-Tie MSTA medium strap tie, No. 18 gage, 12 in long, G185 (the Z "
+           "suffix). Face-nailed flat across the ONE flush vertical pair at this joint: "
+           "the 6x6's west face and the 3-ply 2x8 pack's west face are coplanar at both "
+           "centre pillars, 6 in of strap into each member. Chosen over a cap because both "
+           "pillars bear on porch deck FRAMING, where nothing that wraps the joint fits",
     allowable=AllowableLoads(
-        uplift_lb=6_785.0,
+        uplift_lb=658.0,
+        load_duration_factor=1.6,
+        species="DF-L, SG 0.50 — specified for these two pillars to meet §3.5.2; the "
+                "19 percent moisture-content half of that clause is NOT met",
+        fasteners="10 - 10d x 2-1/2 in common nails, 5 into each member (ESR-2105 Table 3 "
+                  "footnote 1). Hot-dip galvanised nails with the G185 strap. In the pack "
+                  "the 2-1/2 in nail crosses the 1-1/2 in outer joist and lands 1 in into "
+                  "the first sister, so two of the three plies are engaged",
+        citation=("ICC-ES ESR-2105 (Simpson Strong-Tie straps), Table 3, MSTA12 row — read "
+                  "2026-09-03. **THE PUBLISHED NUMBER IS 940 lbf** allowable tension at "
+                  "C_D 1.6 (the table's only column; footnotes 3-4 say connection strength "
+                  "governs and that the C_D is already in it, so no further duration "
+                  "increase applies). 940 carries no footnote 5, i.e. the nails govern and "
+                  "not the steel, which is exactly the case §4.1's wet service clause bites "
+                  "on: 'where wet service is expected, the allowable tension loads based on "
+                  "fastener lateral design values ... must be adjusted by the wet service "
+                  "factor, C_M, specified in the NDS'. C_M 0.70 for dowel-type fasteners "
+                  "gives **940 x 0.70 = 658 lbf**, and 658 is the value recorded above — "
+                  "the derate is applied here, not deferred to the seal. NO LATERAL VALUE: "
+                  "Table 3 publishes tension only, so lateral_f1/f2 are left None rather "
+                  "than invented; the L50Z angles beside this strap are what carry lateral "
+                  "at this base. §3.5.2 conditions the value on SG >= 0.50 at MC <= 19 "
+                  "percent AND on a main member at least as thick as the fastener is long "
+                  "(2-1/2 in; the pack is 4-1/2 in and the post 5-1/2 in, both met). The SG "
+                  "half is met only because these two pillars are specified DF-L rather "
+                  "than the house's SPF; the moisture half is not met by an open deck frame "
+                  "and rides on the seal. §3.5.1: the Z suffix IS the G185 coating, stated "
+                  "in the report rather than inferred from a catalog page"),
+    ),
+)
+
+L50Z_POST_TENSION_ANGLE = StructuralHardware(
+    tag="simpson-l50z-post-base-angle",
+    name="L50Z reinforcing angle, 6x6 post to the joist pack beside it",
+    role=ROLE_POST_TENSION_TIE,
+    manufacturer=_SIMPSON,
+    model="L50Z",
+    fits_nominal=("6x6",),
+    source="Simpson Strong-Tie L reinforcing angle, No. 16 gage, 5 in legs, G185 (the Z "
+           "suffix). One leg on the 6x6, one on the top of the 3-ply 2x8 pack, only on the "
+           "faces where there IS pack beside the post: north at both centre pillars, south "
+           "at PT-SG-BR2 alone. The 5 in leg sits inside the pack's 4-1/2 in width with "
+           "1/4 in over each edge; an L70Z's 7 in leg would overhang it by 1-1/4 in each "
+           "side. It is here for the N-S lateral at a base the notes call pinned, which a "
+           "strap in tension does not carry",
+    allowable=AllowableLoads(
+        lateral_f1_lb=375.0,
+        lateral_f2_lb=574.0,
         load_duration_factor=1.6,
         species="DF-L, SG 0.50 — specified for these two pillars to meet §3.2.2; the "
                 "19 percent moisture-content half of that clause is NOT met",
-        fasteners="factory-supplied 1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws, "
-                  "16 into the member in the U-channel (inverted, the joist pack) and 14 "
-                  "into the member in the straps (the 6x6)",
-        citation=("ICC-ES ESR-2604 (Simpson Strong-Tie column caps and post caps), "
-                  "Table 2, CCQ4.62-5.50SDS row — read 2026-09-03. Uplift 6,785 lbf at "
-                  "C_D 1.6 (already carries the wind/seismic increase; no further duration "
-                  "increase applies), download 30,940 lbf at C_D 1.0. Table 2 publishes NO "
-                  "LATERAL VALUE for the CCQ series — lateral is tabulated only for the "
-                  "AC/ACE/ACH, LPC, PC/EPC and BC/BCS caps of Tables 3-6 — so "
-                  "``lateral_f1_lb`` is left None here rather than invented, and any "
-                  "lateral demand at this base needs a different part or an engineered "
-                  "detail. TWO CONDITIONS RIDE WITH THE NUMBER: §3.2.2's SG >= 0.50 is met "
-                  "only because these two pillars are specified DF-L rather than the "
-                  "house's SPF, and its 19 percent maximum moisture content is not met by "
-                  "an open deck frame at all. The INVERTED orientation is not evaluated in "
-                  "this report."),
+        fasteners="6 - SD9112 Strong-Drive SD Connector screws (#9 x 1-1/2 in), 3 per leg "
+                  "(ESR-3096 §3.2.3, the screws themselves evaluated in ESR-3046). The "
+                  "1-1/2 in screw is inside both members: 5-1/2 in post, 4-1/2 in pack",
+        citation=("ICC-ES ESR-3096 (Simpson Strong-Tie framing connectors), Table 4, L50 "
+                  "row — read 2026-09-03. **PUBLISHED: F1 535 lbf and F2 820 lbf, both at "
+                  "C_D 1.6**, already duration-adjusted, and footnote 1 forbids adjusting "
+                  "them for any other duration. §4.1's wet service clause is word for word "
+                  "ESR-2105 §4.1's — where wet service is expected the allowables 'must be "
+                  "adjusted by the wet service factor, C_M, specified in the NDS' — so "
+                  "C_M 0.70 for dowel-type fasteners gives **F1 535 x 0.70 = 375 lbf** and "
+                  "**F2 820 x 0.70 = 574 lbf**, which are the values recorded above. NO "
+                  "UPLIFT VALUE: Table 4 publishes F1 and F2 only, and footnote 2 forbids "
+                  "combining even those two, so uplift_lb is left None — the MSTA12Z beside "
+                  "it is the uplift part. TWO CONDITIONS RIDE WITH THESE NUMBERS: footnote "
+                  "3 requires the terminating member to be constrained against rotation for "
+                  "F1 where the angles are not used in pairs, and footnote 5 requires "
+                  "angles on BOTH sides of the terminating member to resist F2 in both "
+                  "directions — PT-SG-BF2 carries a north angle only and earns no two-way "
+                  "F2 on that account. §3.2.2 conditions the values on SG >= 0.50 at MC <= "
+                  "19 percent (SG met by the DF-L specification, moisture not met by an "
+                  "open deck frame) and on member thickness >= fastener length. §3.2.1: the "
+                  "Z suffix IS the G185 coating, and it also directs that the lumber "
+                  "treater's own recommendations govern corrosion resistance with a "
+                  "specific proprietary preservative — this pack is copper-treated KDAT"),
     ),
 )
 
@@ -1127,7 +1189,8 @@ STRUCTURAL_HARDWARE: tuple = (
     CS16_COIL_STRAP,
     ABU_POST_BASE,
     ABU44_POST_BASE,
-    CCQ462_550_POST_TENSION_TIE,
+    MSTA12Z_POST_TENSION_STRAP,
+    L50Z_POST_TENSION_ANGLE,
     POST_BASE_ANCHOR_BOLT,
     PC6Z_POST_CAP,
     CCQ46SDS_POST_CAP,

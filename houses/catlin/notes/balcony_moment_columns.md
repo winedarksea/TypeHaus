@@ -4,8 +4,8 @@
 2018 IRC).
 **Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0", carried on
 **four 12" round reinforced-concrete columns fixed at the base** (PT-SG-BR1, PT-SG-BR3,
-PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars on pinned standoff bases, under three
-treated structural-glulam beams.
+PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars bearing on the porch framing under
+pinned strap-and-angle base ties, under three treated structural-glulam beams.
 **Written:** 2026-09-03. It **supersedes `balcony_lateral_bracing_design.md`**, which
 designed the eight knee braces and two brace rails this replaced.
 **What is asked of the reviewer:** this is a screening design under IRC R301.1.3 engineered
