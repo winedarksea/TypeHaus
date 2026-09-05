@@ -73,8 +73,13 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     # (W-B-S2), and BOTH carry the liner, because stopping it at the curb top would leave a
     # strip of bare concrete at the bottom of the hot side's vapour control. Four walls
     # became five; the liner area did not gain a face, it gained a joint.
+    # **W-B-S1B joined on 2026-09-05.** The sauna rotated onto the garden wall, so its south
+    # face now runs 3'-10" further west than the excavation does, onto the buried 8" pour —
+    # the liner-over-a-full-height-pour case, `SAUNA_LINER_ON_BASEMENT_8`. Five walls became
+    # six for the same reason four became five: the liner has to be continuous on all four
+    # faces of a wet room, so a change of substrate along a face is a joint, not a boundary.
     assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS",
-                                            "W-B-S2", "W-B-S2-FR"}
+                                            "W-B-S1B", "W-B-S2", "W-B-S2-FR"}
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     # Filtered by TAG since 2026-09-02, not just by ``replaces_wall_finish``: RM-M-BATH2's
     # WP-M-BATH2-SURR is the house's second finish-replacing band, and it replaces gypsum on

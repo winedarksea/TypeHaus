@@ -81,9 +81,9 @@ lines it actually bears on — see the split at ``_MECH_Y`` below.
 walls its joists actually land on, all of them, including duplicates on one grid line — a
 duplicate boundary is a degenerate span and ``resolve/floors.py`` drops it, so listing the
 truth costs nothing. ``integrity.floor_bearing_grid`` catches the remaining trap: ``W-B-CS``
-carries ``alignment=face("concrete-ext", offset=inch(-6))``, a hardcoded HALF of its
-thickness; an alignment offset that stopped matching would slide its axis off x=18' and
-inject a bay of stub joists. It resolves to 18.000 exactly today.
+and ``W-B-CS3`` carry ``alignment=face("stud-ext", offset=inch(-2.75))``, a hardcoded HALF
+of the stud thickness; an alignment offset that stopped matching would slide their axis off
+x=18' and inject a bay of stub joists. Both resolve to 18.000 exactly today.
 
 Quantities, from the manufacturers' published tables:
 
@@ -327,10 +327,12 @@ WEST_FLOOR = FloorSystem(
     uid="CMFS01AAAA", tag="FS-M-WEST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      # x=0': W-B-W2 carries y 0..18', W-B-W1 the rest. x=18': W-B-CS
-                     # carries y 0..13'-10", W-B-CS2 to 18', W-B-CN2 to the node line.
+                     # carries y 0..9'-5" since the sauna rotated (2026-09-05), W-B-CS3
+                     # to 13'-10", W-B-CS2 to 18', W-B-CN2 to the node line.
                      # All five are true bearing; the three on x=18' resolve to one
                      # boundary (integrity.floor_bearing_grid holds them there).
-                     bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS2", "W-B-CN2")),
+                     bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS3", "W-B-CS2",
+                                   "W-B-CN2")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     reinforcements=_TUB_DECK_REINFORCEMENT,
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
@@ -347,7 +349,7 @@ WEST_FLOOR = FloorSystem(
 MECH_FLOOR = FloorSystem(
     uid="CMFS03AAAA", tag="FS-M-MECH",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     bearing_refs=("W-B-W1", "W-B-STR3", "W-B-STR")),
+                     bearing_refs=("W-B-W1", "W-B-STR3B", "W-B-STR3", "W-B-STR")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
@@ -365,7 +367,7 @@ MECH_FLOOR = FloorSystem(
 STAIR_FLOOR = FloorSystem(
     uid="CMFS04AAAA", tag="FS-M-STAIR",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     bearing_refs=("W-B-STR3", "W-B-STR", "W-B-CN")),
+                     bearing_refs=("W-B-STR3B", "W-B-STR3", "W-B-STR", "W-B-CN")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
@@ -378,9 +380,10 @@ STAIR_FLOOR = FloorSystem(
 EAST_FLOOR = FloorSystem(
     uid="CMFS02AAAA", tag="FS-M-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
-                     # This bay is south of y=13'-10", so its west bearing is W-B-CS —
-                     # W-B-CS2 runs y 13'-10"..18' and this deck never touches it.
-                     bearing_refs=("W-B-CS", "W-B-E1")),
+                     # This bay is south of y=13'-10", so its west bearing is the framed
+                     # pair W-B-CS (y 0..9'-5") and W-B-CS3 (9'-5"..13'-10") — W-B-CS2 runs
+                     # y 13'-10"..18' and this deck never touches it.
+                     bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),

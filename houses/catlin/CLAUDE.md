@@ -68,7 +68,9 @@ proposing any design change.
   `FX-VANITY-24-SHALLOW` (RM-M-BATH1), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
   double alcove is two 30" bases under one 61" top, which is how one is actually built and
   which keeps two drains and two lavatories in the schedule instead of collapsing them),
-  `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH) and
+  `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH — 18" deep
+  on the pallet-depth argument alone since 2026-09-05; the door-swing argument that forced
+  it went with the room's rotation) and
   `FX-VANITY-48-SINGLE` (RM-S-BATH1).
   **`-SHALLOW` is 18" deep and `-SINGLE` is 21"**, and shallow is not the premium it sounds
   like: the cheap big-box combos that arrive boxed with their top and bowl already on them
@@ -1369,6 +1371,65 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     across thicknesses, which is the conservative reading.
   - The basement's return to 2" retired a `DECLARED_DIVERGENCES` entry in
     `test_catlin_reference_parity.py` — catlin and the reference detail agree again.
+- **THE BASEMENT'S WEST HALF WAS REPLANNED ON 2026-09-05, AND WHAT IT BOUGHT IS
+  CIRCULATION.** Two doors were formed through 12" interior pours — `D-B-GYM` in `W-B-CS2`
+  and `D-B-NE` in `W-B-CN` — and they were the house's only openings through concrete. The
+  money was small (a buck-and-blockout allowance, $500-1,200 the pair, and
+  `prices.toml`'s `concrete-window-bucks-and-blockouts` row now drives to zero and is kept
+  under the `glazed-green-brick` convention). The defect was that from the stair foot the
+  only route to the furnace room was **stair → playroom → gym → aisle → workshop →
+  furnace**. Both doors are gone. Nothing on the x=18' bearing grid moved and no concrete
+  wall moved.
+  - **The sauna rotated onto the south (garden) wall**, long axis east-west, node lines
+    x 4'-8"..18'-0" by y 0'-0"..9'-5" — a **12'-2" x 8'-2" clear box** between liner faces
+    against the 8'-1" x 12'-7" it was. It keeps `WIN-B-SAUNA` and is entered **from the
+    gym** through framed `W-B-CS`, a short walk from `D-B-PATIO` and the sunken garden,
+    which is what the brief asks the room for. Its south face is now two substrates: the
+    buried 8" pour west of the excavation (`W-B-S1B`, the new
+    `SAUNA_LINER_ON_BASEMENT_8` — the retired `SAUNA_LINER_ON_BASEMENT_8_GARDEN` pattern
+    brought back with `CATLIN_BASEMENT_8`'s tail instead of the retired parge) and the
+    7 1/4" curb under the framed walkout east of it. **There is a 2" jog between the two
+    liner faces at x=8'-10"** and the joiner furs the pour segment flush; nothing in the
+    model draws that.
+  - **x=4'-8", not the 5'-0" the plan was drawn at, and the reason is a footing.**
+    `structural.frost_depth` lowers a footing's local grade by any open excavation within a
+    frost depth (42") of the footing SOLID, and a footing follows its wall. At a 5'-0"
+    split, `FT-B-S1` — the west half — sits **exactly 42.0"** from `SL-SG-FLOOR`'s rim:
+    inside the reach by floating point, and outside `SL-SG-FROST-W`'s own 42" shielding
+    radius, which is what carried the un-split strip. 4'-8" is 46" clear, and a 16" module
+    station. `FT-B-S1B` is the half the wings still protect.
+  - **The bathroom rotated** north-south along the framed stair wall
+    (`W-B-STR3B`/`W-B-STR2`), 3'-5 1/4" x 7'-1 1/4" clear. Its **wet wall is `W-B-BA-E`**,
+    a new `INT_2X6_STAGGERED_PLUMBING` east partition carrying the shared vent riser at
+    (14', 19'-3") — and `W-B-BA-N`, which used to be the room's only stud cavity, dropped to
+    a dry `INT_2X4_PARTITION` when the plumbing left it. `D-B-BATH` swings out into the
+    hall, and **on this wall that takes `flip_swing=True`**: the leaf's default side follows
+    the host's direction and `W-B-BA-E` runs north-to-south where `W-B-BA-N` ran west-to-east.
+  - **A hall** runs west of `W-B-CN2` from the stair foot south to the y=18' line —
+    3'-2 5/8" clear, part of `RM-B-STAIR`'s own loop, no new `Room` — and crosses that line
+    through `O-B-HALL`, a **cased opening** (a bare `RoughOpening`, the `O-S-VANITY` idiom)
+    in the new `W-B-CW2B`. **That wall must EXIST rather than be a gap**, or the workshop
+    and stair loops merge into one room.
+  - **ACCEPTED CONSEQUENCE, stated rather than discovered:** the playroom is reached only
+    via the gym (stair → hall → workshop → gym → `D-B-PLAY`), and the workshop is the
+    through-route from the stair to the gym.
+  - **Two things the replan cost that are worth knowing before the next edit.** S-100's
+    ARCH D scale went **3/16" → 1/8"**: one new foundation assembly is one more row in the
+    FOUNDATION WALL SCHEDULE, that column already carried all three schedules (the sheet has
+    no width left to open a fourth with), and the scene passed the 3/16" height by 0.18".
+    And `test_upper_storey_studs_stand_over_studs` went 112/247 → 123/255, all of it two
+    walls: `W-M-C1` (the x=18' line has three basement segments under it now and `stacks_on`
+    names one, so `W-B-CS3`'s studs are invisible to the metric though they share its layout
+    line) and `W-M-CLN2` (forced onto `W-B-CW2B`, which restarts its module 8" off because
+    `INT_2X4_PARTITION` is deliberately not on the interior grid).
+  - **`ED-B-GYM-RC1`/`RC2` were on the wrong side of the x=18' line and nobody noticed.**
+    They were authored 1" WEST of `W-B-CS`'s west face — inside the sauna, a 120V
+    convenience receptacle in a 190 °F room — and `electrical.receptacle_spacing` accepts a
+    device within 0.5 m of a room's clear face **regardless of which side it is drawn on**,
+    so the gym counted them and nothing said so. Both are on the gym face now, and there are
+    three: the line is broken by two doors, and NEC 210.52(A)(2) measures wall space between
+    doorways. `ED-B-GYM-RC8` stands in the 15" of `W-B-CS3` north of `D-B-GYM`, because
+    everything past `N-B-C1` is `W-B-CS2`'s pour.
 - **Four basement assemblies, and every split is a condition, not a preference.** Two
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local

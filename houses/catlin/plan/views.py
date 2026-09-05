@@ -23,7 +23,8 @@ DETAIL_SLICES = [
          crop=(pt(ft(15), ft(-2)), pt(ft(21), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # Typical exterior wall section — south wall, full height (cut x=9', away from the
-    # sunken garden's x-extent).
+    # sunken garden's x-extent). Since the sauna rotated it passes W-B-SA-N (y=9'-5")
+    # rather than W-B-SA-W; the section goldens moved with it.
     Slice(uid="CVD903AAAA", tag="SL-D-WALLTYP", kind=SliceKind.DETAIL,
          title="Typical exterior wall section",
          cut_origin=pt(ft(9), ft(0)), cut_direction="y",
@@ -36,8 +37,11 @@ DETAIL_SLICES = [
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
          crop=(pt(ft(10), ft(26)), pt(ft(26), ft(33)))),
-    # Sauna room section — transverse cut across the 8'-wide sauna (x=10'→18') at y=6',
-    # below the door (D-B-SAUNA sits high on the west wall) so the cut is clean interior.
+    # Sauna room section — transverse cut across the sauna at y=6'. The room rotated onto
+    # the garden wall on 2026-09-05 and is now 12'-2" east-west (x 5'-3 13/16"..17'-5 3/4"),
+    # so the crop widens to x 4'-0"..19'-6" to keep both liner faces in the frame. y=6' is
+    # still clean interior: D-B-SAUNA is on the east wall now (y 2'-10"..4'-10") and this
+    # cut runs north of it.
     # This documentation-only crop reaches the floor slab, so the sauna liner base, slab
     # thermal break and room-scale vocabulary (two-tier benches, heater clearance, floor
     # slope to drain, hung drop ceiling below the main-floor deck) all render. The crop runs
@@ -45,7 +49,7 @@ DETAIL_SLICES = [
     Slice(uid="CVD905AAAA", tag="SL-D-SAUNA", kind=SliceKind.DETAIL,
          title="Sauna room section",
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
-         crop=(pt(ft(9), inch(-116)), pt(ft(19, 6), inch(6))),
+         crop=(pt(ft(4), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Hall bath shower section — cut plane x=5' through FX-S-BATH1-SH so the recess,
     # tile-on-backer sides, glass panel, and (once authorable) the HRV takeoff render.

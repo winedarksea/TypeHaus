@@ -2232,7 +2232,9 @@ SAUNA_2X4 = Assembly(
 )
 
 # W-B-CS, the sauna's east face on the x=18' bearing line — **framed**, where it was 12"
-# of cast concrete (``SAUNA_LINER_ON_CONCRETE``, retired with it).
+# of cast concrete (``SAUNA_LINER_ON_CONCRETE``, retired with it). Since the sauna rotated
+# onto the garden wall (2026-09-05) this wall is the room's east face for y 0'-0"..9'-5"
+# only; CATLIN_INT_2X6_BRG carries the same line north of it as W-B-CS3.
 #
 # basement.py's WALLS header had already written the argument down: this segment "carries
 # wood on both faces and COULD go to 8"". The honest reading is that it needs no concrete
@@ -2286,10 +2288,31 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
     source="catlin basement sauna east wall (W-B-CS), framed 2026-08-28: SAUNA_2X4's liner and cold-side gwb over 2x6 spf bearing studs at 16 in. o.c. on a PT sill, per notes/sauna_basement_wall_detail.md and notes/basement_to_framed_wall_detail.md",
 )
 
-# SAUNA_LINER_ON_BASEMENT_8_GARDEN, RETIRED with the wall it described: W-B-S2 is a
-# 7 1/4" curb under a framed wall now, so the liner-on-a-full-height-pour case has no
-# instance left in this house. SAUNA_LINER_ON_GARDEN_CURB and SAUNA_LINER_ON_GARDEN_FRAMED
-# are what replaced it, between them.
+# SAUNA_LINER_ON_BASEMENT_8_GARDEN was RETIRED when W-B-S2 became a 7 1/4" curb under a
+# framed wall, on the grounds that the liner-on-a-full-height-pour case had no instance
+# left in this house. **It has one again**: rotating the sauna onto the garden wall
+# (2026-09-05) put its south face on W-B-S1B, the 3'-10" of buried 8" pour west of the
+# excavation, so the pattern comes back — with CATLIN_BASEMENT_8's outboard tail rather
+# than the retired garden parge, because W-B-S1B's exposure is an ordinary grade line and
+# that is precisely what the `_PROTECTION_PANEL` band is for.
+#
+# The liner is UNBANDED, as it was on the wall this replaces. The pour tops out at the
+# -13 7/16" bearing seat, 8'-0" over the slab, and the sauna ceiling is at 7'-6", so about
+# 1.9 SF of basswood/furring/polyiso is bought for the 6" above it. W-B-CS bands its liner
+# because `resolve/platform.py` grows a framed wall's solid to the main-floor datum and the
+# over-run there is 13 7/16" over 9'-2"; a FoundationWall's top is authored and stops here.
+SAUNA_LINER_ON_BASEMENT_8 = Assembly(
+    tag="SAUNA_LINER_ON_BASEMENT_8",
+    layers=(
+        *_SAUNA_LINER,
+        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+        *FOUNDATION_WALL_XPS4_OUTBOARD,
+        _PROTECTION_PANEL,
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin basement south under the rotated sauna (W-B-S1B), 2026-09-05: CATLIN_BASEMENT_8 with the sauna liner carried down its inboard face so the hot side's vapour control is continuous on all four walls",
+)
 
 # --- the framed walkout at the sunken garden --------------------------------------
 # W-B-S2-FR and W-B-S3-FR: the 19'-2" of south wall that stands *inside* the sunken garden
@@ -3674,6 +3697,7 @@ ASSEMBLIES = [
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_INT_2X6_BRG,
+    SAUNA_LINER_ON_BASEMENT_8,
     CATLIN_GARDEN_CURB_6,
     SAUNA_LINER_ON_GARDEN_CURB,
     CATLIN_GARDEN_FRAMED_2X6,

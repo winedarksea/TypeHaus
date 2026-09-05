@@ -767,10 +767,13 @@ WALLS = [
          end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. `stacks_on` MUST stay: it is the tiebreaker on the
-    # y=18' run and dropping it re-arms integrity.stack_ambiguous.
+    # y=18' run and dropping it re-arms integrity.stack_ambiguous. It names **W-B-CW2B**
+    # since 2026-09-05, when the hall's cased opening split the basement wall at x=14'-0":
+    # this wall runs x 13'-4"..18'-0", so W-B-CW2B (14'..18') is its only >=2' overlap.
+    # W-M-CLN keeps W-B-CW2.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
          end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
-         stacks_on="W-B-CW2"),
+         stacks_on="W-B-CW2B"),
     # --- RM-M-BATH2 drop-in tub deck knee walls ---------------------
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one

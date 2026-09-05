@@ -624,16 +624,50 @@ def test_interior_opening_gets_no_applied_vocabulary(catlin_model):
         "opening-head-flashing", "opening-sill-pan", "opening-buck"}
 
 
-def test_concrete_opening_draws_a_sealed_buck(catlin_model):
-    _derived, scene = _exact_detail_scene(catlin_model,
-                                          "opening_perimeter:FOUNDATION_WALL_12_INT")
-    tags = _component_tags(scene)
+def test_catlin_has_no_opening_cast_into_concrete_left(catlin_model):
+    """The buck recipe has no instance in this house since 2026-09-05, and that is the fact
+    worth pinning rather than a scene that no longer derives.
+
+    Catlin's only two openings through a pour were `D-B-GYM` (W-B-CS2) and `D-B-NE`
+    (W-B-CN), both formed through 12" interior concrete. The basement's west-side replan
+    retired one outright and moved the other onto framed `W-B-CS3`, so
+    `opening_perimeter:FOUNDATION_WALL_*_INT` no longer derives at all — which is also why
+    `prices.toml`'s `concrete-window-bucks-and-blockouts` row now bills nothing.
+
+    `TR-CATLIN-CONCRETE-OPENING` and the `concrete-opening` overlay stay registered and
+    unexercised, the same convention `glazed-green-brick` is kept under: the day a door or
+    window is formed through a pour again it draws itself with no edit. The recipe's own
+    geometry is covered by `test_concrete_opening_bucks_seal_both_faces` below, which calls
+    it directly rather than through a house.
+    """
+    keys = {c.key for c in catlin_model.conditions}
+    assert not [k for k in keys if k.startswith("opening_perimeter:FOUNDATION_WALL")]
+
+
+def test_concrete_opening_bucks_seal_both_faces(catlin_model):
+    """The recipe itself, called on a pour that still exists (W-B-CS2) with a synthetic
+    opening — coverage that does not depend on catlin still hosting a door in concrete."""
+    from typehaus.emit.draw.detail_components import concrete_opening_bucks
+
+    wall = next(w for w in catlin_model.walls if w.tag == "W-B-CS2")
+    opening = next(o for o in catlin_model.openings if o.tag == "D-B-GYM")
+    crop = ((-1e4, -1e4), (1e4, 1e4))
+    nodes = concrete_opening_bucks(catlin_model, wall, opening, crop, "y",
+                                   wall.axis[0][0])
+    tags = {str(getattr(n, "tag", "")).split(":", 1)[-1] for n in nodes}
     assert {"opening-buck", "opening-sealant"} <= tags
 
 
 def test_sauna_opening_returns_the_foil_face(catlin_model):
-    """The door punches the hot side's vapour plane; the foil is returned, not butted."""
-    _derived, scene = _exact_detail_scene(catlin_model, "opening_perimeter:SAUNA_2X4")
+    """The door punches the hot side's vapour plane; the foil is returned, not butted.
+
+    `D-B-SAUNA` moved from `W-B-SA-W` (SAUNA_2X4) onto `W-B-CS`
+    (SAUNA_LINER_INT_2X6_BRG) when the room rotated onto the garden wall; both are matched
+    by `TR-CATLIN-SAUNA-OPENING`'s `opening_perimeter:SAUNA_*` pattern, which is why the
+    detail followed the door with no transition edit.
+    """
+    _derived, scene = _exact_detail_scene(catlin_model,
+                                          "opening_perimeter:SAUNA_LINER_INT_2X6_BRG")
     assert "sauna-foil-return" in _component_tags(scene)
 
 

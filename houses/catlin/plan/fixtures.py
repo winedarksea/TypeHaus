@@ -11,58 +11,63 @@ from typehaus.model import m
 # Both RM-B-SAUNA fixtures drain under the slab to PR-B-MAIN-DRAIN, not a wall stack
 # (see plan/mep.py SLAB_STUBS).
 #
-# 36"x36" curbed pan in the NE corner (only corner with both sides finished wall, at
-# y=13'-6 3/16" and x=17'-2 1/2"); curbed rather than curbless because the floor drain at
-# (13'-6", 12'-9") covers the rest of the wet floor. That drain sits at the sauna's
-# 1/8"/ft slope's low point, positioned so a boxed corner chase can bring PR-B-COND's
-# air-gap down over it and stay clear of D-B-SAUNA's leaf sweep. No slope field exists on
+# **The sauna rotated onto the garden wall on 2026-09-05** — long axis east-west, clear box
+# x 5'-3 13/16"..17'-5 3/4", y 0'-11 1/2"/0'-9 1/2"..9'-1 3/16" between liner faces (the 2"
+# jog in the south face is where the buried pour hands over to the framed walkout at
+# x=8'-10"). The two fixtures moved with the room and kept their corner: the 36"x36" curbed
+# pan is still in the NE corner, still the only corner with both sides finished wall, and
+# the floor drain still sits west of it at the 1/8"/ft slope's low point where a boxed
+# corner chase can bring PR-B-COND's air-gap down over it. D-B-SAUNA is on W-B-CS now and
+# swings OUT into the gym, so no leaf sweeps this floor at all. No slope field exists on
 # Slab/FinishZone, so both slopes (and IRC P2708.1's 1/4"-1/2"/ft) live only in comments.
 #
-# Both fixtures chase through W-B-CS, not the closer W-B-SA-N partition, to keep
+# Both fixtures still chase through W-B-CS, not the closer W-B-SA-N partition, to keep
 # W-B-SA-N's foil-faced polyiso vapour barrier unbreached; W-B-CS also gives a true vent
 # stack path via W-M-C1 above. advisory.wet_wall_depth's 5.5" cavity requirement is a
 # house preference, not code — it is not what drives this wall choice.
 BASEMENT_FIXTURES = (
+    # Pan x 14'-5 3/4"..17'-5 3/4", y 6'-1 3/16"..9'-1 3/16" — snug into the liner faces.
     Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36",
-            room="RM-B-SAUNA", position=pt(ft(15, 8.5), ft(12, 0.1875)),
+            room="RM-B-SAUNA", position=pt(inch(191.75), inch(91.1875)),
             wall_ref="W-B-CS"),
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
-            room="RM-B-SAUNA", position=pt(ft(13, 6), ft(12, 0.1875)),
+            room="RM-B-SAUNA", position=pt(ft(13, 6), inch(91.1875)),
             wall_ref="W-B-CS"),
-    # RM-B-BATH (stair-foot bath, 3'-0" deep): each fixture backs an end wall so depth runs
-    # along the 7'-0" length. WC is floor-mounted, not wall-hung, since the west end is 12"
-    # cast concrete and a wall-hung carrier would cost 6 1/2" of furring. `wall_ref` on both
-    # is W-B-BA-N (north partition, not each one's backing wall): it's the room's only stud
-    # cavity, carries their shared vent, and is a 5 1/2" wet-wall (not 2x4) because a 3" WC
-    # branch needs the depth. Trap arms: 12" (WC), 17" (lav), both well inside Table
-    # 1002.2's 6'-0"/3'-6" limits.
-    Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOILET-STD",
-            room="RM-B-BATH", position=pt(ft(11, 8), ft(20)), rotation=deg(90),
-            wall_ref="W-B-BA-N"),
-    # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
-    # fixture rather than being retired with the tag. `drain_position` puts the trap 6" off
-    # the east wall face, under the basin's back where the tailpiece actually drops, over
-    # SP-B-BATH-LAV.
-    # ** A 36" VANITY, AND THE DEPTH IS SET BY THE DOOR. ** The east wall is 39.61" of clear
-    # run (y 218.38"..257.99" between W-B-CW2's and W-B-BA-N's finish faces), which takes a
-    # 36" cabinet with 1.8" at each end.
+    # **RM-B-BATH rotated north-south on 2026-09-05** and is 3'-5 1/4" x 7'-1 1/4" between
+    # finish faces (x 10'-3 3/8"..13'-8 5/8" off W-B-STR2/W-B-STR3B and W-B-BA-E,
+    # y 18'-2 3/8"..25'-3 5/8" off W-B-CW2 and W-B-BA-N). One fixture at each end again, so
+    # each one's depth runs across the room's short dimension and the door lands between
+    # them on the long east wall.
     #
-    # ** 18" DEEP, NOT 21", BECAUSE D-B-BATH'S SWING ARC REACHES THIS WALL. ** Tested
-    # against the real ``swing_clearance`` polygon rather than its bounding box: a 21"-deep
-    # cabinet is caught by the arc at EVERY position along the east wall, and an 18" one
-    # clears at every position. That is the whole reason this room gets the shallow type,
-    # and it is also the cheaper one -- see fixture_types.py on the big-box combo depth.
+    # `wall_ref` on both is **W-B-BA-E**, the room's one wet wall and its only 5 1/2" stud
+    # cavity — venting reads `wall_ref`, not geometry, and W-B-BA-N dropped to a dry 2x4
+    # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at (14', 19'-3").
+    # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
+    #
+    # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"
+    # of furring this room has nowhere to spend). Bowl x 11'-2"..12'-10", y 22'-11 5/8"..
+    # 25'-3 5/8"; UPC 402.5's 24" front envelope then reaches y=20'-11 5/8" and its 15"
+    # side clearances land 10'-9"..13'-3", inside the room both ways.
+    Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOILET-STD",
+            room="RM-B-BATH", position=pt(ft(12), inch(289.625)),
+            wall_ref="W-B-BA-E"),
+    # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
+    # fixture rather than being retired with the tag.
+    #
+    # ** A 36" VANITY ACROSS THE SOUTH END. ** The south wall gives 41.25" of clear run
+    # (x 123.375"..164.625"), which takes a 36" cabinet with 2.6" at each end; 18" deep, not
+    # 21", is now a straight cost call rather than a door-swing one (see fixture_types.py on
+    # the big-box combo depth) — D-B-BATH is on the east wall and swings out.
     #
     # Position is measured off the wall's own layer polygons, never off `Room.clear_face`.
-    # Back at x=210" (W-B-CN2's face), so x 192"..210"; centred on the wall run at
-    # y=238.19", so y 220.19"..256.19". The 21" front zone then reaches x=171", clear of
-    # FX-B-BATH-WC's 24" front envelope, which ends at x=178".
+    # Carcass y 18'-2 3/8"..19'-8 3/8"; the 21" front zone reaches y=21'-5 3/8", clear of
+    # the WC's own 24" envelope, which starts at 20'-11 5/8".
     #
-    # `drain_position` (17'-0", 20'-0") falls inside the carcass, 6" off the east wall face
-    # under the basin's back, over SP-B-BATH-LAV.
+    # `drain_position` puts the trap 6" off the south wall face under the basin's back,
+    # over SP-B-BATH-LAV.
     Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-36-SHALLOW",
-            room="RM-B-BATH", position=pt(inch(201), inch(238.19)), rotation=deg(-90),
-            wall_ref="W-B-BA-N", drain_position=pt(ft(17), ft(20))),
+            room="RM-B-BATH", position=pt(ft(12), inch(227.375)), rotation=deg(180),
+            wall_ref="W-B-BA-E", drain_position=pt(ft(12), inch(224.375))),
 )
 
 # ** RM-M-BATH1 IS 61.98" x 44.24" BETWEEN FINISH FACES, AND THAT IS WHY THE WALL-HUNG

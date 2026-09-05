@@ -325,8 +325,11 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # this node — exactly what a builder has to be told, the same shape of key as the
         # resilient-channel ones below.
         "assembly_change:CATLIN_BASEMENT_8|CATLIN_GARDEN_CURB_6",
+        # N-B-SA-SW since 2026-09-05, and it moved rather than went away. The sauna rotated
+        # onto the garden wall, so the liner now starts at x=4'-8" on the buried pour itself
+        # (W-B-S1 -> W-B-S1B) instead of at the excavation edge on the curb.
         ("assembly_change:CATLIN_BASEMENT_8|"
-         "SAUNA_LINER_ON_GARDEN_CURB"),
+         "SAUNA_LINER_ON_BASEMENT_8"),
         # The plant room's liner: a humid-side wall type starting partway along a wall
         # line. On the south wall it is CATLIN_EXT_2X6 handing off to PLANT_EXT_2X6_HUMID
         # at x=18'; at N-S-C1 the bearing line, the two partitions and both plant
@@ -346,8 +349,18 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # a builder who runs them through to W-M-C2 has shorted the acoustic wall by a leaf
         # while gaining 1/2" of wall the drawings do not show.
         "assembly_change:CATLIN_INT_2X6_BRG|CATLIN_INT_2X6_BRG_RC",
+        # N-B-C1 since 2026-09-05. The x=18' line's framed run reaches further north than
+        # the sauna does now: W-B-CS3 is a plain 2x6 bearing wall between the room and the
+        # y=18' cross line, and it is what meets W-B-CS2's 12" pour here. The same
+        # wood-against-concrete detail this node always carried, one assembly along.
+        "assembly_change:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
         ("assembly_change:CATLIN_INT_2X6_BRG|INT_2X4_PARTITION|"
          "PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID"),
+        # N-B-SA-NE, new with the rotation: the sauna's east liner stops at the room's north
+        # face and the same 2x6 bearing wall carries on without it. The liner RETURNS into
+        # the corner here — the hot side's vapour control is continuous on all four faces or
+        # it is not vapour control — which is exactly what this key exists to put on a sheet.
+        "assembly_change:CATLIN_INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
         # N-B-ESS-SE. The stair wall's own split, and a real change of construction: W-B-STR
         # carries a 5/8" Type X leaf on the ESS closet's face where W-B-STR3 does not, so
         # the two segments are two assemblies — a builder has to be told where the rated
@@ -360,11 +373,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # closed the x-line too, so the node changes construction on neither and there is
         # nothing here to tell a builder.
         #
-        # N-B-C1: the sauna's east face is a framed bearing wall against the 12" pour that
-        # carries SL-M-DECK, so the change of construction is wood against concrete rather
-        # than one pour against another. `integrity.junction_fallback` reports the same
-        # node UNKNOWN for exactly that reason, and this key is the drawing that answers it.
-        "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_INT_2X6_BRG",
+        # (N-B-C1's key is CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT above since the
+        # rotation. `integrity.junction_fallback` reports the same node UNKNOWN for the same
+        # wood-against-concrete reason, and that key is the drawing which answers it.)
         # N-S-B1 on the second storey: the sleeping-side partitions carry INT_2X4_RC
         # (STC 34 -> 48) and the plain partitions they meet do not. W-S-BW4 joined the RC
         # family on 2026-09-04 — SF-S-HP1 spans it and W-S-BW3 both, and a 1/2" jog in the
@@ -382,4 +393,11 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # staggered sound wall, the one node where this key still fires against a plain
         # INT_2X4_PARTITION neighbour.
         "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
+        # N-B-S1, the excavation edge. Both segments carry the sauna liner — the room
+        # crosses this node since the rotation — but below it one is a buried 8'-0" pour and
+        # the other a 7 1/4" curb under a framed walkout, so the liner's substrate changes
+        # here and the joiner furs the 2" jog between the two faces flush. It was
+        # CATLIN_BASEMENT_8|SAUNA_LINER_ON_GARDEN_CURB before; a change of construction
+        # either way, and the one the plan comments call the jog.
+        "assembly_change:SAUNA_LINER_ON_BASEMENT_8|SAUNA_LINER_ON_GARDEN_CURB",
     ]

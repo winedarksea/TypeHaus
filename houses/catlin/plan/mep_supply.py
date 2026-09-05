@@ -300,36 +300,40 @@ SUPPLY = [
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(21, 7.4375)),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
-    # 2026-07-30, now turned east through W-B-STR's two sleeves at their own y (cold 20'-3",
-    # hot 19'-9") to x=16', then north into W-B-BA-N's cavity. Cold carries the WC and
-    # lavatory (3.25 WSFU), hot the lavatory alone.
+    # 2026-07-30. They bore W-B-STR2 at their own y (cold 20'-3", hot 19'-9") and now stop
+    # at x=14'-0" — **W-B-BA-E, the rotated room's wet wall** — dropping to the pair of
+    # stops at (14', 19'-3") beside the vent riser. Cold carries the WC and lavatory
+    # (3.25 WSFU), hot the lavatory alone.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
-                  pt(ft(16), ft(20, 3)), pt(ft(16), ft(21, 9.375)),
-                  pt(ft(16), ft(21, 9.375))),
+                  pt(ft(14), ft(20, 3)), pt(ft(14), ft(19, 3)),
+                  pt(ft(14), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
-                  pt(ft(7, 3.6), ft(19, 9)), pt(ft(16), ft(19, 9)),
-                  pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375))),
+                  pt(ft(7, 3.6), ft(19, 9)), pt(ft(14), ft(19, 9)),
+                  pt(ft(14), ft(19, 3)), pt(ft(14), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
-    # trunks and run down the aisle at x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), through
+    # trunks and run south down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), through
     # W-B-SA-N's framed stud bay (no cast sleeve needed) to the valve inside W-B-CS's liner.
+    # The rotation moved the pan to the room's NORTH-EAST corner, so the drops land at
+    # y 6'-6"/6'-2" — inside the pan and 1'-1" clear of PR-B-SAUNA-VENT's riser at
+    # 7'-7 3/16", which shares this build-up.
     # No supply to FX-B-SAUNA-FD: a floor drain has none.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(12, 2)),
-                  pt(ft(17, 4), ft(12, 2))),
+            path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 6)),
+                  pt(ft(17, 4), ft(6, 6))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 4), ft(15, 6)),
-                  pt(ft(17, 4), ft(11, 10)), pt(ft(17, 4), ft(11, 10))),
+                  pt(ft(17, 4), ft(6, 2)), pt(ft(17, 4), ft(6, 2))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),

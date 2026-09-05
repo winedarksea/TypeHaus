@@ -13,39 +13,53 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # FX-B-SAUNA-FD, the sauna's trapped wet-floor drain, which sees regular water flow the way
 # an air gap wants and a bathroom lavatory does not.
 #
-# Sauna benches are dimensioned to *liner faces* (what the joiner scribes to), not node
-# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south liner y=0'-11 1/2", north
-# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-6 5/8" clear box. The south liner is on W-B-S2
-# (SAUNA_LINER_ON_BASEMENT_8_GARDEN, aligned on face("concrete-ext"), so only the inside
-# face carries it); the east liner is on W-B-CS. The east bench stops at y=9'-5 1/2" to
-# leave the north end for the shower (notes/sauna_shower_basement_detail.md).
+# ** THE SAUNA ROTATED ONTO THE GARDEN WALL ON 2026-09-05 ** — long axis east-west now, and
+# the benches turned with it. They are dimensioned to *liner faces* (what the joiner scribes
+# to), not node lines: west liner x=5'-3 13/16", east liner x=17'-5 3/4", north liner
+# y=9'-1 3/16", south liner y=0'-11 1/2" west of x=8'-10" and y=0'-9 1/2" east of it — a
+# 12'-1 15/16" x 8'-1 11/16" clear box with a **2" jog in its south face at x=8'-10"**,
+# where the buried pour (W-B-S1B, SAUNA_LINER_ON_BASEMENT_8) hands over to the framed
+# walkout (W-B-S2/W-B-S2-FR). The joiner furs the pour segment's liner flush; nothing in the
+# model draws that.
+#
+# The east liner is on W-B-CS, and the shower pan takes the room's NORTH-EAST corner
+# (notes/sauna_shower_basement_detail.md).
 BASEMENT_PLACEABLES = [
-    # The long two-tier run takes the east wall: it is the only unbroken face in the room —
-    # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
-    # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)
-    # against that face, giving x 13'-8 1/2"..17'-2 1/2" and
-    # y 0'-11 1/2"..9'-5 1/2" — clearing FX-B-SAUNA-SH's pan by 12 11/16" at its north end.
+    # The long two-tier run takes the NORTH wall: it is the only unbroken face left in the
+    # room — the south wall has WIN-B-SAUNA and EQ-B-SAUNA-HTR, the east wall D-B-SAUNA and
+    # the pan — so the bench lands as one 8'-6" carcass with no scribes around an opening.
+    # rotation 0 puts its back (+y local) against that face, giving x 5'-5 1/4"..13'-11 1/4"
+    # and y 5'-7 3/16"..9'-1 3/16": 1 7/16" of scribe at the west liner and 6 1/2" clear of
+    # FX-B-SAUNA-SH's pan at its east end.
+    #
+    # FX-B-SAUNA-FD and the two condensate air gaps over it (PR-B-COND, PR-B-ERV-COND) sit
+    # UNDER this bench, 18" off the north liner, and that is deliberate: a two-tier sauna
+    # bench is an open frame, the slab falls to that point, and a boxed chase in the bench's
+    # back corner is the only place in the room it can go without standing in open floor.
     Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-102",
-              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 2.5)), rotation=deg(-90)),
-    # The foot bench returns along the south wall, butted into the two-tier run's west face
-    # at 13'-8 1/2" with an 11/16" scribe left at the west liner. rotation 180 puts its back
-    # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-8" sill above it.
+              room="RM-B-SAUNA", position=pt(inch(116.25), inch(88.1875)), rotation=deg(0)),
+    # The foot bench returns along the WEST liner, back to it (rotation 90 turns the 54"
+    # carcass into the y direction), running y 1'-0"..5'-6" with a 1 1/2" scribe at the
+    # liner. Its top is 18"; REG-B-EXH2's low stale pickup sits 4" off the floor behind it,
+    # which is the convection loop the sauna's two dampered terminals drive.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
-              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(1, 9.5)), rotation=deg(180)),
+              room="RM-B-SAUNA", position=pt(inch(73.8125), inch(39)), rotation=deg(90)),
 
-    # RM-B-WORKSHOP's two benches. The room is L-shaped: a west bay running the
-    # full 18' of the storey, plus a north strip east of the sauna block. **Both benches take
-    # the west wall, not one per leg** — the north strip is 4'-2" deep and a 30" bench there
-    # would leave a 20" aisle, which is not an aisle.
+    # RM-B-WORKSHOP's two benches. The room is still L-shaped after the rotation, with the
+    # legs redrawn: a west bay 4'-1" clear (x 0'-8"..4'-8 1/4") running from the south wall
+    # up to the sauna's north face at y=9'-5", plus a north strip 8'-7" deep running the
+    # full width east to x=18'. **Both benches take the west wall**, which is the one
+    # unbroken face and is continuous across both legs.
     #
     # The west wall is the only unbroken face the room has: 18'-0" of bare concrete
     # (CATLIN_BASEMENT_8, interior face at x=0'-8" — the pour's inboard face, the foam is all
     # outboard). `rotation=deg(90)` turns FURN-G-WORKBENCH's 30" depth into the wall-to-room
     # dimension, exactly as the garage instance does, so the centre sits 15" off that face at
-    # x=1'-11". Centres at y=6'-0" (under ED-B-WORKSHOP-PANEL1, the "over a bench" panel that
-    # has been naming a bench that did not exist since it was authored) and y=11'-0", giving
-    # one contiguous 10'-0" run from y=3'-6" to y=13'-6" — clear of the sauna's north face
-    # beyond it.
+    # x=1'-11". Centres at y=6'-0" (under ED-B-WORKSHOP-PANEL1, the "over a bench" panel
+    # that has been naming a bench that did not exist since it was authored) and y=11'-0",
+    # giving one contiguous 10'-0" run from y=3'-6" to y=13'-6" that crosses the sauna's
+    # north face at y=9'-5" without stopping at it — the west bay and the north strip are
+    # one wall.
     Furniture(uid="6FJ01Z04WX", tag="FURN-B-WORKSHOP-BENCH-N", type_ref="FURN-G-WORKBENCH",
               room="RM-B-WORKSHOP", position=pt(ft(1, 11), ft(11)), rotation=deg(90)),
     Furniture(uid="8FXXT06T4E", tag="FURN-B-WORKSHOP-BENCH-S", type_ref="FURN-G-WORKBENCH",

@@ -195,8 +195,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW130AAAA",
-      "tag": "W-M-CLN2/gwb-a"
+      "uid": "CMW129AAAA",
+      "tag": "W-M-CLN/gwb-a"
     },
     {
       "space": "model",
@@ -251,8 +251,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW130AAAA",
-      "tag": "W-M-CLN2/staggered-studs"
+      "uid": "CMW129AAAA",
+      "tag": "W-M-CLN/staggered-studs"
     },
     {
       "space": "model",
@@ -307,8 +307,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW130AAAA",
-      "tag": "W-M-CLN2/gwb-b"
+      "uid": "CMW129AAAA",
+      "tag": "W-M-CLN/gwb-b"
     },
     {
       "space": "model",
@@ -955,62 +955,6 @@
       "node": "polyline",
       "points": [
         [
-          214.25000000000003,
-          -21.65354330708662
-        ],
-        [
-          217.75,
-          -21.65354330708662
-        ],
-        [
-          217.75,
-          -16.437499999999996
-        ],
-        [
-          214.25000000000003,
-          -16.437499999999996
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CBW119AAAA",
-      "tag": "stud-003"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          214.25000000000003,
-          -21.65354330708662
-        ],
-        [
-          217.75,
-          -21.65354330708662
-        ],
-        [
-          217.75,
-          -16.437499999999996
-        ],
-        [
-          214.25000000000003,
-          -16.437499999999996
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           213.25,
           0.0
         ],
@@ -1031,7 +975,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW130AAAA",
+      "uid": "CMW129AAAA",
       "tag": "plate-bottom"
     },
     {
@@ -1067,19 +1011,19 @@
       "node": "polyline",
       "points": [
         [
-          213.25,
+          215.25,
           1.4999999999999998
         ],
         [
-          216.75,
+          218.75000000000003,
           1.4999999999999998
         ],
         [
-          216.75,
+          218.75000000000003,
           21.65354330708662
         ],
         [
-          213.25,
+          215.25,
           21.65354330708662
         ]
       ],
@@ -1087,27 +1031,27 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW130AAAA",
-      "tag": "stud-001"
+      "uid": "CMW129AAAA",
+      "tag": "stud-006"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          213.25,
+          215.25,
           1.4999999999999998
         ],
         [
-          216.75,
+          218.75000000000003,
           1.4999999999999998
         ],
         [
-          216.75,
+          218.75000000000003,
           21.65354330708662
         ],
         [
-          213.25,
+          215.25,
           21.65354330708662
         ]
       ],

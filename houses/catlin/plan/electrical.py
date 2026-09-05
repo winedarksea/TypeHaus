@@ -472,12 +472,13 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(4, 6), ft(35, 3)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # On the sauna's west liner wall immediately south of EQ-B-SAUNA-HTR (footprint y
-    # 8'-0"..9'-6"), low like the heater terminals. Old (15', 7') position was off-wall and
-    # is now inside FURN-B-SAUNA-BENCH-E.
+    # On the sauna's SOUTH liner immediately east of EQ-B-SAUNA-HTR (footprint x
+    # 8'-6"..10'-0"), low like the heater terminals. It followed the heater onto the garden
+    # wall when the room rotated on 2026-09-05.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9, 4.875), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)), rotation=deg(90)),
+                     position=pt(ft(10, 6), inch(12.5)), type_ref="ED-T-SAUNA-JB",
+                     circuit="CKT-SAUNA", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
     # x is 1 5/8" off W-SG-W1's east face (x=8'-6"), not 2": the can is 3 1/4" deep, and the
@@ -489,13 +490,14 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(8, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4)), rotation=deg(90)),
-    # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's
-    # edge (1'-0" here), on the north partition — not the east wall, which is 12" cast
-    # concrete behind the basin. Rides CKT-RC-BSMT rather than its own 20A circuit (the
-    # panel-slot trade recorded in plans/TODO.md's panel_spaces item).
+    # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge (1'-9"
+    # here), on W-B-STR2's bath face at x=10'-3 3/8" — beside the vanity across the room's
+    # short dimension, with no wall between plate and basin. Rides CKT-RC-BSMT rather than
+    # its own 20A circuit (the panel-slot trade recorded in plans/TODO.md's panel_spaces
+    # item).
     ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(15, 4), ft(21, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-BSMT", room="RM-B-BATH", rotation=deg(180),
+                     position=pt(inch(124.375), ft(19, 3)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-BSMT", room="RM-B-BATH", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
 ]
 
@@ -534,22 +536,22 @@ BASEMENT_EQUIPMENT = [
               # pan to FX-B-SAUNA-FD.
               mount=Mount(kind=MountKind.CEILING, elevation=ft(4, 6)),
               pan_drain_ref="PR-B-ERV-COND"),
-    # Sauna heater: NW corner of the *heated* zone (south 8'-6" of RM-B-SAUNA — the north 4'
-    # is the shower per notes/sauna_shower_basement_detail.md), back to the west liner face,
-    # diagonally opposite the bench for 3'-2 11/16" of clear floor.
+    # Sauna heater: back to the SOUTH liner at x 8'-6"..10'-0", 2" off the face, diagonally
+    # opposite the shower pan in the room's north-east corner and 2'-1" west of
+    # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.
     # EQ-B-HP2-GYM (System 2's basement head): high on the centre bearing wall's east face at
     # x=18', backs west, throws east across the gym. zone_rooms is the whole conditioned
     # basement (one open volume off the stair) — EQ-B-SAUNA-HTR heats the sauna, not space.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(18, 6), ft(9)), footprint=(inch(32), inch(8)),
+              position=pt(ft(18, 6), ft(7, 8)), footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(90),
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
-              position=pt(ft(9, 9.8125), ft(8, 9)), footprint=(inch(18), inch(16)),
-              room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(90),
+              position=pt(ft(9, 3), inch(19.5)), footprint=(inch(18), inch(16)),
+              room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER",
               circuit="CKT-SAUNA"),
 ]
 
@@ -1456,7 +1458,9 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
                       position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
-    SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
+    # Host is W-B-S1B since 2026-09-05: the rotated sauna split the south pour at x=4'-8",
+    # and x=8'-6" is in the east segment now. Same hole, same station.
+    SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1B",
                       position=pt(ft(8, 6), ft(0, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
@@ -1471,17 +1475,32 @@ CONDUIT_SLEEVES = [
 # receptacles close every wall-space gap the 6-foot rule found. Positions sit on the
 # room boundary and are draggable like any other device.
 NEC_FILL_BASEMENT = [
-    # RC1/RC2 hang on the x=18' line's west face. W-B-CS is a 2x6 stud wall with a liner,
-    # west face at 17'-5 3/4"; these two sit 1" off it, the setback the whole NEC fill sets
-    # its bodies back from the face it hangs on.
+    # ** RC1/RC2 HUNG ON THE WRONG SIDE OF THE x=18' LINE UNTIL 2026-09-05. ** They were
+    # authored at x=17'-4 3/4", 1" WEST of W-B-CS's west face — which is inside the sauna,
+    # not the gym: a 120V convenience receptacle in a 190 F room. `receptacle_spacing`
+    # accepts any device within 0.5 m of a room's clear face regardless of which side it is
+    # drawn on, so nothing said so. All three now sit 1" EAST of the line's gym face
+    # (18'-3 3/8" on the framed segments), which is the setback this whole file uses, with
+    # the plate turned east into the room.
+    #
+    # Three, not two, because the line is broken by two doors now: D-B-SAUNA at y 2'-10"..
+    # 4'-10" and D-B-GYM at y 9'-11"..12'-7". NEC 210.52(A)(2) measures wall space between
+    # doorways, so each of the three stretches needs its own — south of the sauna door,
+    # between the two, and north of D-B-GYM. RC8 sits on the 15" of W-B-CS3 left north of
+    # that door; the wall past it is W-B-CS2's 12" pour, which is the last place to want a
+    # cast-in box.
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 4.75), ft(2, 7.5)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     position=pt(inch(220.375), ft(1, 4)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC002AAAA", tag="ED-B-GYM-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17, 4.75), ft(10, 6.5)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+                     position=pt(inch(220.375), ft(5, 6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+    ElectricalDevice(uid="WSTK6T5E4K", tag="ED-B-GYM-RC8", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(220.375), ft(13, 4)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-GYM",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     # RC3/RC4 are on the gym side of W-B-CE, a 6 3/4" staggered partition on the y=18'-0"
     # centreline: gym face at 17'-8 5/8", play face at 18'-3 3/8". y=17'-7.615" is the gym
     # face less the 1" body setback this file sets everywhere, and `rotation=deg(180)` turns

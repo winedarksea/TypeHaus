@@ -120,9 +120,23 @@ def test_a_table_is_never_split_across_columns():
 
 
 def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
-    """S-100 must print bigger than the 3/32" the single stack forced it down to."""
+    """S-100 must print bigger than the 3/32" the single stack forced it down to.
+
+    ** ARCH D WENT 3/16" -> 1/8" ON 2026-09-05, AND THE MARGIN IT SPENT WAS 0.18". ** The
+    basement's west-side replan minted one new foundation assembly
+    (``SAUNA_LINER_ON_BASEMENT_8``, the sauna's liner over the buried south pour), which is
+    one more row in the FOUNDATION WALL SCHEDULE. That column already carried all three
+    schedules — the reflow puts them there because the sheet has no width left to open a
+    fourth column with, the plan being 37'-8" wide — so one row is 29.6 drawing-inches on
+    the tallest column, the scene went 1412" -> 1442" tall, and 3/16" needed 1424".
+
+    Re-pinned rather than loosened: 1/8" = 1'-0" is an ordinary architectural plan scale on
+    a 24x36 sheet and the reflow is still doing its job — the single-column stack this test
+    was written against printed at 3/32", the bottom of the ladder. What would be a real
+    regression is falling back to that, so the assertion is exact at both papers.
+    """
     scene = build_foundation_plan(catlin_model)
-    assert frame_for_scene(scene, ARCH_D).scale_label == "3/16\" = 1'-0\""
+    assert frame_for_scene(scene, ARCH_D).scale_label == "1/8\" = 1'-0\""
     assert frame_for_scene(scene, LEDGER).scale_label == "1/16\" = 1'-0\""
 
 

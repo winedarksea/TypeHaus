@@ -470,8 +470,8 @@ DUCTS_ERV_BASEMENT = [
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=30),
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(8, 9)), pt(ft(9, 9.8125), ft(8, 9)),
-                  pt(ft(9, 9.8125), ft(8, 9))),
+            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), inch(19.5)),
+                  pt(ft(9, 3), inch(19.5)), pt(ft(9, 3), inch(19.5))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
@@ -482,16 +482,18 @@ DUCTS_ERV_BASEMENT = [
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(6, 2)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=25),
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(ft(11, 8), ft(28, 6)), pt(ft(11, 8), ft(20))),
+            path=(pt(ft(6, 6), ft(28, 6)), pt(ft(12), ft(28, 6)),
+                  pt(ft(12), inch(289.625))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
-    # The sauna's low pickup is 4" off the floor on the south liner, so this radial runs the
-    # length of the room in the ceiling chase and then drops seven feet down the wall. The
+    # The sauna's low pickup is 4" off the floor on the WEST liner (the south face went to
+    # EQ-B-SAUNA-HTR when the room rotated), so this radial runs the length of the house in
+    # the ceiling chase and then drops seven feet down the wall. The
     # drop is drawn — a repeated plan point at two elevations — which it could not be before
     # `DuctRun` carried elevations.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(ft(9, 4.5), ft(28, 6)), pt(ft(9, 4.5), ft(1, 4)),
-                  pt(ft(9, 4.5), ft(1, 4))),
+            path=(pt(ft(6, 6), ft(28, 6)), pt(inch(64), ft(28, 6)), pt(inch(64), ft(3, 2)),
+                  pt(inch(64), ft(3, 2))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(4)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
 ]

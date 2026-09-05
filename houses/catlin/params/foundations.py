@@ -90,6 +90,16 @@ _HOUSE_WALL_TAGS = (
     # 22 is the east 8'-0" of the old W-B-S3, split off at the excavation edge (x=28'-0")
     # so each half could author the backfill it actually retains.
     (22, "W-B-S4"),
+    # 23 is the west 3'-10" of the old W-B-S1, split off at x=5'-0" when the sauna rotated
+    # onto the garden wall (2026-09-05): same buried pour, same 6'-4" of fill, the sauna
+    # liner on its inboard face. Same strip, same bedding — the split is a change of room
+    # face, not of foundation.
+    (23, "W-B-S1B"),
+    # 24 is the 3'-8 5/8" of the old W-B-STR3 between the rotated bathroom's north
+    # partition and N-B-BA-W. It is a BEARING wall — FS-M-MECH and FS-M-STAIR both name it
+    # — so unlike W-B-STR2 beside it (which carries nothing and stands on the slab) it
+    # keeps the strip its parent had.
+    (24, "W-B-STR3B"),
 )
 
 # The three south strips are formed in an insulated footing form, the rest are poured
@@ -105,7 +115,12 @@ _HOUSE_WALL_TAGS = (
 # soil on both faces. Deepening the strips is not an available alternative: FT-B-BRICK's
 # derivation leans on FT-B-S2/S3's 10" south toe being there to bear on, so re-centring the
 # strips and re-footing the brick wall are one change and not this one.
-_FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
+# W-B-S1B joined on 2026-09-05 with the wall: it is the south-run segment that actually
+# ABUTS the excavation (x 4'-8"..8'-10"), so if any of these five wants the insulated form
+# it does. The split also moved FT-B-S1 out of the court's 42" frost reach entirely — see
+# the header note on `structural.frost_depth` above, and the x=4'-8" derivation in
+# plan/storeys/basement.py.
+_FROST_FORMED = {"W-B-S1", "W-B-S1B", "W-B-S2", "W-B-S3", "W-B-S4"}
 
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,

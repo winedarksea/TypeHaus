@@ -952,6 +952,11 @@ the future.
   hosted by `W-B-S3-FR` (`CATLIN_GARDEN_FRAMED_2X6`) and `WIN-B-SAUNA` by `W-B-S2-FR`
   (`SAUNA_LINER_ON_GARDEN_FRAMED`) — framed walls standing in FRONT of the pour, which need a
   rough opening, not a buck. The count was right for the wrong reason.
+  **Postscript, 2026-09-05:** the driver now resolves to ZERO. The basement's west-side
+  replan retired `D-B-NE` and moved `D-B-GYM` onto framed `W-B-CS3`, so no opening in this
+  house is hosted by a wall whose STRUCTURE layer is concrete. The row is kept unpriced
+  under the `glazed-green-brick` convention, and `_DRIVES_TO_ZERO` in
+  `test_allowance_drivers.py` is where a driven row is allowed to bill nothing.
 
 - **No check is elevation-aware about a luminaire and the stair it lights.**
   `ED-S-STUDY2-STAIR-SC1` sat 2'-11 1/2" BELOW its own tread and 2'-0" under the stringer

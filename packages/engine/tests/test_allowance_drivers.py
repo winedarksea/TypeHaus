@@ -248,6 +248,17 @@ def test_an_undriven_allowance_can_never_report_an_overlap(tmp_path) -> None:
 
 # --- against the reference house -------------------------------------------------------------
 
+#: Driven allowance rows whose driver legitimately resolves to ZERO today, so
+#: ``estimate_costs`` emits no row for them at all. They are kept in ``prices.toml`` on the
+#: ``glazed-green-brick`` convention — a researched rate with a correct driver, ready for the
+#: day the condition returns — and the file says so at each one.
+#:
+#: ``concrete-window-bucks-and-blockouts`` joined this list on 2026-09-05: the basement's
+#: west-side replan retired ``D-B-NE`` and moved ``D-B-GYM`` onto framed ``W-B-CS3``, so
+#: catlin has no opening left whose host wall's STRUCTURE layer is concrete.
+_DRIVES_TO_ZERO = {"concrete-window-bucks-and-blockouts"}
+
+
 def test_catlin_drives_most_of_its_allowance_block(catlin_model, catlin_areas) -> None:
     """The house-side half of the change, and the one that would go stale silently. Every
     driven row has to resolve to a real quantity — an unresolvable one raises, so reaching
@@ -261,9 +272,13 @@ def test_catlin_drives_most_of_its_allowance_block(catlin_model, catlin_areas) -
 
     estimate = estimate_costs(bill_of_materials(catlin_model), prices, catlin_areas)
     rows = {row["key"]: row for row in estimate["sections"]["allowances"]["rows"]}
-    for key in driven:
+    for key in driven - _DRIVES_TO_ZERO:
         assert rows[key]["quantity"] > 0, f"{key} drove to nothing"
         assert rows[key]["unit"] != "ls", f"{key} is driven and must not print as a lump"
+    # A row whose driver honestly resolves to zero emits no row at all. Asserted rather than
+    # skipped, so "drove to zero" cannot hide "drove to something unexpected".
+    for key in _DRIVES_TO_ZERO:
+        assert key not in rows or rows[key]["quantity"] == 0, f"{key} unexpectedly drove"
     # And the rows deliberately LEFT as lump sums are still lump sums — the residual is the
     # honest half of this change, not an oversight.
     assert rows["site-general-conditions"]["quantity"] == 1.0

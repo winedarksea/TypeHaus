@@ -152,6 +152,9 @@ def rainscreen_band(
     Everything downstream — the bug screen, ``vent_face``, the envelope take-off, the roof
     layer setbacks — follows this one number.
 
+    **A STRUCTURE layer between the band and the cladding cancels the band**, for the
+    reason spelled out at the branch below: nothing vents through the wall's own structure.
+
     ``layers`` is ``ResolvedWall.layers`` — every resolved layer interior→exterior,
     cavity fills included, since a fill is exactly what this has to subtract. Passing
     ``depth_layers()`` (which drops them) reports the band's gross depth.
@@ -174,6 +177,16 @@ def rainscreen_band(
             band, depth = layer, layer.thickness_m + airgap
         elif layer.function == LayerFunction.CLADDING.value and band is not None:
             return (band, depth) if depth > 1e-9 else None
+        elif layer.function == LayerFunction.STRUCTURE.value:
+            # **A cavity cannot vent to the outside through the wall's own structure.** A
+            # furring band INBOARD of the structure is a liner or service batten, and a
+            # cladding layer on the far side of 8" of concrete does not turn it into a
+            # rainscreen. Without this, catlin's `SAUNA_LINER_ON_BASEMENT_8` — the sauna's
+            # T&G-on-furring liner inboard of a buried pour, with the above-grade acrylic
+            # protection band (function CLADDING, deliberately) outboard of it — resolved a
+            # 1/2" rainscreen and an insect closure at the bottom of a wall standing under
+            # 6'-4" of soil, and billed it.
+            band, depth = None, 0.0
         airgap = 0.0
     return None
 

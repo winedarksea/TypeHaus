@@ -30,7 +30,10 @@ IN = 0.0254
 
 # tag -> (type_ref, storey, backing wall, which face of it the cabinet stands on)
 VANITIES = {
-    "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CN2", "-x"),
+    # The basement bath rotated north-south on 2026-09-05, so its 36" vanity turned with it:
+    # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
+    # stand along the east wall against W-B-CN2's 12" pour.
+    "FX-B-BATH-LAV": ("FX-VANITY-36-SHALLOW", "basement", "W-B-CW2", "+y"),
     "FX-M-BATH1-LAV": ("FX-VANITY-24-SHALLOW", "main", "W-M-HS1", "+y"),
     "FX-S-BATH1-LAV": ("FX-VANITY-48-SINGLE", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-VANITY-30-SINGLE", "second", "W-S-SN3", "-y"),
@@ -172,25 +175,41 @@ def test_the_hall_baths_forty_eight_fits_between_the_door_arc_and_the_shelf():
         f"{sy0 - y1:.2f}in to the shelf -- if this grew, a wider cabinet now fits")
 
 
-def test_the_basement_vanity_is_shallow_because_of_its_door():
-    """18" is not a preference here: at 21" the cabinet meets D-B-BATH's arc everywhere.
+def test_the_basement_vanity_is_shallow_and_the_reason_changed_with_the_room():
+    """** THE DOOR-SWING ARGUMENT IS RETIRED, AND SAYING SO IS THE POINT. **
 
-    This is the test that explains why RM-B-BATH gets the shallow type while RM-S-SUITEBATH,
-    with less wall, keeps the standard 21" one.
+    Until 2026-09-05 this cabinet stood along RM-B-BATH's east wall with `D-B-BATH` in the
+    north partition swinging past it, and 18" was forced: a 21" carcass was caught by the
+    arc at every station along the run, which is why this room took the shallow type where
+    RM-S-SUITEBATH — with less wall — keeps the standard 21" one.
+
+    The basement's west-side replan rotated the room north-south. The vanity runs across the
+    SOUTH end now and `D-B-BATH` is on the east wall swinging OUT into the new hall, so its
+    arc never enters this room at all. 18" survives on the commercial argument alone (the
+    big-box combos that arrive with their top and bowl on them are 18.6"-18.75" deep, so 18"
+    is the pallet depth — see `fixture_types.py`), and on the room's own 3'-5 1/4" width:
+    at 21" the front zone would leave 20 1/4" of floor.
+
+    Both halves are asserted, so nobody re-derives the retired reason and nobody quietly
+    upgrades the cabinet either.
     """
     model = _model()
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-B-BATH-LAV"))
-    assert round(x1 - x0, 2) == 18.0, "the basement vanity stopped being shallow"
+    assert round(y1 - y0, 2) == 18.0, "the basement vanity stopped being shallow"
+    assert round(x1 - x0, 2) == 36.0
 
+    # The swing is out of the room, so the arc it once governed is not in play any more.
     swing = next(Polygon(o.swing_clearance) for o in model.openings
                  if o.tag == "D-B-BATH" and o.swing_clearance)
-    assert not box(x0 * IN, y0 * IN, x1 * IN, y1 * IN).intersects(swing)
-
-    # ... and the counterfactual, which is the whole point: a 21" carcass on this wall is
-    # caught by the arc at every position it could take along the run.
-    deep = [y for y in range(219, 222 + 1)
-            if not box((x1 - 21) * IN, y * IN, x1 * IN, (y + 36) * IN).intersects(swing)]
-    assert deep == [], "a 21in cabinet now clears the door -- re-check the shallow choice"
+    cab = box(x0 * IN, y0 * IN, x1 * IN, y1 * IN)
+    assert not cab.intersects(swing)
+    # Measured off the WALL's own finish face, never off `Room.clear_face`, which
+    # polygonizes wall AXES and reaches 2.4"-3.4" past every face in the room: the swing
+    # touches that ring by construction and would prove nothing.
+    bath_face = max(p[0] for ly in model.wall("W-B-BA-E").layers if ly.name == "gwb-a"
+                    for p in ly.polygon)
+    assert min(p[0] for p in swing.exterior.coords) >= bath_face - 1e-6, (
+        "D-B-BATH swings back into the room -- the 18in depth is load bearing again")
 
 
 def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():

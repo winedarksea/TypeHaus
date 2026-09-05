@@ -143,20 +143,32 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 
 # --- the catlin conversion is not a geometry change --------------------------------------
 
-#: Inverts as they resolve after the conversion, in PROJECT-FRAME feet (the resolved IR
-#: carries absolute elevations; the source authors them storey-relative). PR-B-COND
-#: reproduced its hand-authored numbers exactly; the two slab branches move by 0.004"-0.010",
-#: which is the rounding that was in the old hand-computed numbers rather than a change of
-#: grade — the comments on all three already declared the uniform 0.3"/ft this now solves at.
+#: Inverts as they resolve, in PROJECT-FRAME feet (the resolved IR carries absolute
+#: elevations; the source authors them storey-relative). All three are solved from an
+#: authored grade plus authored endpoints, which is what the conversion these numbers were
+#: first pinned for bought.
 #:
-#: PR-B-SAUNA-DRAIN reaches the drain by a jog instead of on the long leg, so index 2 is the
-#: drain rather than the corner — the total plan run, and therefore every other invert on
-#: the run, is unchanged. PR-B-COND's north leg is 8 13/16" shorter because its air gap
-#: followed the receptor, which lifts index 3 (the head of the boxed chase's drop) by 0.22".
+#: ** RE-PINNED 2026-09-05 with the basement's west-side replan. ** The sauna rotated onto
+#: the garden wall and the bathroom onto the stair wall, so all three runs are re-routed:
+#: PR-B-BATH-DRAIN leaves a water closet at the bath's NORTH end and drops to three
+#: vertices from four (it goes straight south to y=15'-6" and west, with no jog); the sauna
+#: branch turns south at its floor drain instead of running on; PR-B-COND's chase follows
+#: the receptor.
 _PINNED_FT = {
-    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.08789, -8.36979],
-    "PR-B-BATH-DRAIN": [-9.11979, -9.87779, -9.99446, -10.10696, -10.20779],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89, -9.90836, -10.17079],
+    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.04754, -8.36979],
+    "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -10.01636, -10.20396],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89677, -9.98674, -10.24896],
+}
+
+#: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
+#: 1/4"/ft — IRC P3005.3's published minimum for 3" and above, and twice `mep.drain_slope`'s
+#: 1/8"/ft floor — when the rotated bathroom put its water closet 4'-1 5/8" further from the
+#: main: at 0.3"/ft the extra run ate the 5.7" of crown the 4" line has under the slab and
+#: the branch arrived below its invert.
+_GRADE_IN_PER_FT = {
+    "PR-B-COND": 0.3,
+    "PR-B-BATH-DRAIN": 0.25,
+    "PR-B-SAUNA-DRAIN": 0.3,
 }
 
 
@@ -176,7 +188,7 @@ def test_the_converted_runs_still_fall_at_the_grade_their_comments_declare(
             if plan < 1e-6:
                 continue  # a vertical drop has no grade
             grade = (run.z_m[i] - run.z_m[i + 1]) / plan * 0.3048 / inch(1).meters
-            assert grade == pytest.approx(0.3, abs=0.01), f"{tag} leg {i}"
+            assert grade == pytest.approx(_GRADE_IN_PER_FT[tag], abs=0.01), f"{tag} leg {i}"
 
 
 def test_the_main_drain_stays_hand_authored(catlin_model) -> None:

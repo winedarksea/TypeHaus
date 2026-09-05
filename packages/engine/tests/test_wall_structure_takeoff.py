@@ -60,7 +60,13 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # did, because the stem drops to a grade beam under the overhead door, and W-GF-S3/N2
     # are a kept fossil of the corner returns (see test_catlin_contract_m3's
     # freestanding-garage test for why un-splitting them is not worth the uid churn).
-    assert len({tag for row in rows for tag in row["tags"]}) == 37
+    # **38 since 2026-09-05**, and the extra tag is not extra concrete. The basement's
+    # west-side replan split W-B-S1 at x=4'-8" so the rotated sauna's south face could carry
+    # the hot-side liner: W-B-S1B is the east 3'-10" on `SAUNA_LINER_ON_BASEMENT_8`, the
+    # same 8" pour with the liner inboard of it, priced at its parent's own $/cy. The same
+    # replan took two tags OUT of the model's opening count and none out of this one — the
+    # two doors it retired were holes in W-B-CS2 and W-B-CN, and a hole is not a tag.
+    assert len({tag for row in rows for tag in row["tags"]}) == 38
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

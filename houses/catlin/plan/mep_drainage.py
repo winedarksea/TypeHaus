@@ -181,42 +181,51 @@ DRAINS = [
     # `mep.pipe_sizing` rolls every drain's load up through the routed geometry regardless
     # (resolve/mep.py::accumulated_serves).
     #
-    # The bathroom branch: 3" out of the WC's closet bend at (11'-8", 20'), west under
-    # FT-B-STR (SP-B-STR-BATH-DR) and FT-B-CW (SP-B-CW-BATH-DR) to the main at (3', 15'-6").
-    # It goes west rather than straight south because south would cross under W-B-CW2, which
-    # has no footing to hang a protection sleeve on.
+    # The bathroom branch: 3" out of the WC's closet bend at (12', 24'-1 5/8"), straight
+    # south under the bathroom and W-B-CW2 to y=15'-6", then west under the workshop to the
+    # main's slab drop at (3', 15'-6"). It crosses no footing at all: W-B-CW2 is a framed
+    # partition on the slab and FT-B-CW / FT-B-STR2 were retired with the pours they sat
+    # under, so there is nothing on this route to sleeve through.
+    #
+    # ** THE GRADE IS 1/4"/ft, NOT 0.3, AND THE ROTATED ROOM IS WHY. ** The WC moved to the
+    # bath's north end, which is 4'-1 5/8" further from the main than the old west-end
+    # station — 17.64 ft of plan run against 13.17. At 0.3"/ft that eats 5.3" of the 5.7"
+    # the main's crown has under the slab and the branch arrives BELOW the 4" line's invert.
+    # 1/4"/ft is IRC P3005.3's published minimum for 3" and above (and twice the 1/8"/ft
+    # `mep.drain_slope` floor), and it lands the branch at -13" against the main's -13.2"
+    # invert — the same hair of margin the old route had.
     PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(11, 8), ft(20)), pt(ft(11, 8), ft(20)), pt(ft(7), ft(20)),
-                  pt(ft(7), ft(15, 6)), pt(ft(3), ft(15, 6))),
+            path=(pt(ft(12), inch(289.625)), pt(ft(12), inch(289.625)),
+                  pt(ft(12), ft(15, 6)), pt(ft(3), ft(15, 6))),
             diameter=inch(3), material="pvc",
-            # The 0.3"/ft above is the authored fact now; the two intermediate inverts fall
-            # out of it. (They moved 0.004" and 0.010" doing so — the old hand-computed
-            # numbers were rounded to the thousandth of a foot, which is where that came
-            # from. The stub at path[1] is the vertical drop's foot and must stay authored.)
-            elevations=(ft(0), ft(-0.758), None, None, ft(-1.088)),
-            slope_in_per_ft=0.3,
+            elevations=(ft(0), inch(-8.6), None, inch(-13.01)),
+            slope_in_per_ft=0.25,
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
-    # The lavatory's own 1 1/2" arm to the WC's branch, arriving at -7 5/8" — inside the
-    # 3" branch's upper half there (invert -8 5/8", crown -5 5/8").
+    # The lavatory's own 1 1/2" arm. The vanity sits on the same x=12' line as the WC, so
+    # its trap drops straight onto the 3" branch below it — one vertical leg with no
+    # horizontal arm under the slab at all, authored as its own run (not a vertex on the
+    # branch) so `mep.sleeve_coverage` sees a run passing through SP-B-BATH-LAV.
+    # It arrives at -8", inside the 3" branch's upper half there (invert -9 15/16",
+    # crown -6 7/16").
     PipeRun(uid="CBPD09AAAA", tag="PR-B-BATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(17), ft(20)), pt(ft(17), ft(20)), pt(ft(11, 8), ft(20))),
+            path=(pt(ft(12), inch(224.375)), pt(ft(12), inch(224.375))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 6), ft(-0.52), ft(-0.653)),
+            elevations=(ft(1, 6), inch(-8)),
             serves=("FX-B-BATH-LAV",)),
-    # The sauna group: curbed pan's drop, west to the floor drain at (13'-6", 12'-0 3/16")
-    # on the pan's own centre line, north to y=12'-9" and west under the workshop to the
-    # main. Total plan run, and every authored invert on it, is 13'-5 5/16".
-    # One 2" branch carries both (4 DFU vs. the 6 a 2" branch
-    # takes) and crosses no footing — W-B-SA-W is a framed partition, and the run stops 1'-8"
-    # short of FT-B-W2, outside its 45° influence line.
+    # The sauna group: the curbed pan's drop at the NE corner, west along the pan's own
+    # centre line to the floor drain at (13'-6", 7'-7 3/16"), then south to y=4'-0" and west
+    # under the sauna and the workshop to the main. One 2" branch carries both (4 DFU vs.
+    # the 6 a 2" branch takes) and crosses no footing — W-B-SA-W is a framed partition, and
+    # the run stops at x=3'-0", 2'-2" clear of FT-B-W2's edge and outside its 45° influence
+    # line. It ties into the main's under-slab leg at -13 9/16", between that pipe's
+    # -16 15/16" invert and its -12 15/16" crown.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(15, 8.5), ft(12, 0.1875)), pt(ft(15, 8.5), ft(12, 0.1875)),
-                  pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 9)),
-                  pt(ft(3), ft(12, 9))),
+            path=(pt(inch(191.75), inch(91.1875)), pt(inch(191.75), inch(91.1875)),
+                  pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), ft(4)),
+                  pt(ft(3), ft(4))),
             diameter=inch(2), material="pvc",
-            # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow
-            # (-0.004" and -0.007" off the old rounded numbers).
-            elevations=(ft(0, 2), ft(-0.715), None, None, ft(-1.051)),
+            # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow.
+            elevations=(ft(0, 2), inch(-8.58), None, None, inch(-13.55)),
             slope_in_per_ft=0.3,
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
     # The floor drain's own drop through the slab: a floor drain has no trap arm above the
@@ -224,9 +233,9 @@ DRAINS = [
     # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
     # passing through the cast stub rather than a stale or mis-routed sleeve.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
-            path=(pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 0.1875))),
+            path=(pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), inch(91.1875))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0), ft(-0.770)),
+            elevations=(ft(0), inch(-9.324)),
             serves=("FX-B-SAUNA-FD",)),
 ]
 
@@ -370,26 +379,26 @@ ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
                   pt(ft(2, 11), ft(13, 3)),
-                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(12, 0.1875)),
-                  pt(ft(13), ft(12, 0.1875))),
+                  pt(ft(13), ft(13, 3)), pt(ft(13), inch(91.1875)),
+                  pt(ft(13), inch(91.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
             # is 0.3"/ft the whole way, and the tie-in at FX-B-SAUNA-FD is 9".
-            elevations=(inch(54), inch(53.7), inch(48.45), inch(45.42), inch(45.05),
-                        inch(9))),
+            elevations=(inch(54), inch(53.7), inch(48.45), inch(45.425),
+                        inch(43.73), inch(9))),
 ]
 
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
-                  pt(ft(13, 6), ft(12, 0.1875)), pt(ft(13, 6), ft(12, 0.1875))),
+                  pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), inch(91.1875))),
             diameter=inch(0.75), material="pvc",
             # The 0.3"/ft the comment above states, authored as the grade it is: the two
             # intermediate inverts solve to exactly the numbers that were hand-written here.
             # path[3] is the top of the boxed chase's drop and stays authored — a vertical
             # leg has no plan run to fall over.
-            elevations=(ft(7, 5.3375), None, None, ft(7, 0.3828), ft(0, 9)),
+            elevations=(ft(7, 5.3375), None, None, inch(84.867), ft(0, 9)),
             slope_in_per_ft=0.3),
 ]
 

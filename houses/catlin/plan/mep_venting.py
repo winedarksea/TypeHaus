@@ -249,9 +249,10 @@ VENT_CLAMPS = [
 ]
 # The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared
 # radon/plumbing chase at (1', 34'-6"), because neither room has a wet wall that continues to
-# the storey above: every wall around the stair-foot bathroom except its own north partition
-# is 12" cast concrete stopping at the main-floor deck, and the sauna's are a 2x4 partition,
-# the centre concrete wall and the foundation. `mep.vent_reachability` grades the authored
+# the storey above: the stair-foot bathroom's four sides are two runs of framed stair wall,
+# a dry 2x4 partition and its own east wet wall, none of which is a stack, and the sauna's
+# are 2x4 partitions, the centre bearing wall and the foundation.
+# `mep.vent_reachability` grades the authored
 # path — nothing here is inferred, so an unvented fixture would still fail loudly.
 #
 # Both share the same vertical band: the tee sits low, the riser goes up inside the room's own
@@ -264,35 +265,35 @@ VENT_CLAMPS = [
 # x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.
 VENT_BRANCHES_BASEMENT = [
     # RM-B-BATH: same corridor north at x=7' to the chase. The riser stands in a real stud
-    # cavity — W-B-BA-N, the bathroom's INT_2X6_STAGGERED_PLUMBING north partition — which
-    # is what that wall's assembly was chosen for. It crosses W-B-STR's concrete through
-    # SP-B-STR-BATH-VENT.
+    # cavity — W-B-BA-E, the rotated bathroom's INT_2X6_STAGGERED_PLUMBING east partition,
+    # which is the room's one wet wall and the only 5 1/2" cavity it has. Both fixtures name
+    # it in `wall_ref`, and `mep.vent_reachability` reads that field rather than geometry.
     #
-    # The riser stands on the partition's line at (16', 21'-9 3/8"); the leg west runs 9"
-    # south of it at y=21'-0", so its crossing of W-B-STR2 stays clear of the node the
-    # partition tees into. Trap arms measured to that leg: 1'-0" from the water closet's
-    # flange and 1'-5" from the lavatory's trap, against Table 1002.2's 6'-0" for 3" and
-    # 3'-6" for 1 1/2".
+    # The riser stands at (14', 19'-3"), between the two fixtures and 15" clear of N-B-STR
+    # and 2'-6" clear of N-B-BA-W, so the leg west at the same y bores W-B-STR2 mid-panel
+    # rather than at a node the wall tees into. Trap arms measured to it: 5'-3" from the
+    # water closet's flange and 2'-1" from the lavatory's trap, against Table 1002.2's
+    # 6'-0" for 3" and 3'-6" for 1 1/2".
     PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375)),
-                  pt(ft(16), ft(21)), pt(ft(7), ft(21)), pt(ft(7), ft(34, 6)),
+            path=(pt(ft(14), ft(19, 3)), pt(ft(14), ft(19, 3)),
+                  pt(ft(7), ft(19, 3)), pt(ft(7), ft(34, 6)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 3.4375), ft(7, 5.4375), ft(7, 6.4375), ft(7, 7.4375), ft(7, 9.9375), ft(7, 10.4375)),
+            elevations=(ft(1, 3.4375), ft(7, 5.4375), ft(7, 7.4375), ft(7, 9.9375),
+                        ft(7, 10.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 13'-0") — inside W-B-CS's
-    # 3 1/2" liner build-up, in the pan's own east wall, 6" south of the north liner and clear
-    # of the mixer's two supply drops at 11'-10" and 12'-2". That is both fixtures' declared
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 7'-7 3/16") — inside
+    # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
+    # centre line and clear of the mixer's two supply drops. That is both fixtures' declared
     # wet wall (plan/fixtures.py) and the one basement wet wall that carries a framed wall on
     # the storey above, so the vent has a true stack path as well as this drawn one.
     #
-    # Trap arms as the check measures them: 14" from the pan's drain and 23" from the floor
-    # drain, against Table 1002.2's 5'-0" for a 2" arm. Above the sauna's hung ceiling the run leaves
-    # the build-up north over W-B-SA-N, crosses the aisle west, and passes W-B-CW through
-    # SP-B-CW-SAUNA-VENT at x=9'.
+    # Trap arms as the check measures them, both well inside Table 1002.2's 5'-0" for a 2"
+    # arm. Above the sauna's hung ceiling the run leaves the build-up north over W-B-SA-N,
+    # crosses the workshop west at y=10'-6", and passes W-B-CW at x=9'.
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(17, 4), ft(13)), pt(ft(17, 4), ft(13)),
-                  pt(ft(17, 4), ft(14, 8)), pt(ft(9), ft(14, 8)),
+            path=(pt(ft(17, 4), inch(91.1875)), pt(ft(17, 4), inch(91.1875)),
+                  pt(ft(17, 4), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), material="pvc",
             elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375), ft(7, 9.9375), ft(7, 10.4375)),

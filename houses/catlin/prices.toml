@@ -3017,6 +3017,14 @@
 # "SAUNA_LINER_ON_BASEMENT_8_GARDEN" = { low = 495, high = 810 } stood here for 1.8 cy.
 # RETIRED 2026-08-28 with the assembly: W-B-S2 is a 7 1/4" curb under a framed wall now and
 # bills on "SAUNA_LINER_ON_GARDEN_CURB" above.
+# ** THE PATTERN CAME BACK ON 2026-09-05 as SAUNA_LINER_ON_BASEMENT_8. ** Rotating the sauna
+# onto the garden wall put its south face on W-B-S1B, the 3'-10" of buried 8" pour west of
+# the excavation, so there is a liner-over-a-full-height-pour segment in this house again.
+# Same reasoning as the retired row and the same rate as its parent CATLIN_BASEMENT_8: this
+# table prices PLACED CONCRETE by the yard, the concrete is the same concrete, and the liner
+# it gained (basswood, furring, foil-polyiso) is already bought by the square foot in
+# [envelope_layers]. The outboard tail is CATLIN_BASEMENT_8's, not the retired garden parge.
+"SAUNA_LINER_ON_BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-S1B, 0.76 CY
 # Interior bearing walls carry a 10-20% premium over the perimeter: both faces need forming
 # AND stripping in a confined excavation, there is no backfill to brace against, pump and
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
@@ -4363,10 +4371,20 @@ foundation-damp-or-waterproofing = { low = 0.0, high = 12.50, unit = "SF", drive
 # (SAUNA_LINER_ON_GARDEN_FRAMED). Both are FRAMED walls standing in front of the pour, not
 # openings through it — they need a rough opening, not a buck. The count happened to be right
 # for the wrong reason.
-# The rate stands: a door buck in a 12" interior pour is the same formed, braced and stripped
-# box as one in an exterior wall, $250-600 apiece. Every other penetration of a concrete wall
-# in this house is a SLEEVE, and sleeves are the modelled [sleeves] section — pipe, duct and
-# conduit blockouts bill there by the each, not here.
+# ** AND ON 2026-09-05 THE DRIVER WENT TO ZERO. ** Both of those doors were retired with the
+# basement's west-side replan: D-B-NE is deleted outright and D-B-GYM moved onto W-B-CS3, a
+# framed 2x6 segment of the x=18' line. There is now no opening anywhere in this house whose
+# host wall's STRUCTURE layer is concrete, so this row bills nothing — it shows up in the
+# takeoff's unpriced-group list for that reason, not because a rate is missing.
+# The row is KEPT, on the `glazed-green-brick` convention: the rate is researched, the driver
+# is correct, and the day a door or window is formed through a pour again it prices itself
+# with no edit here. The saving from retiring the two was never the point of the replan — it
+# is $500-1,200 against a circulation defect that had the furnace room five rooms from the
+# stair foot.
+# The rate stands for whenever it is next used: a door buck in a 12" interior pour is the same
+# formed, braced and stripped box as one in an exterior wall, $250-600 apiece. Every other
+# penetration of a concrete wall in this house is a SLEEVE, and sleeves are the modelled
+# [sleeves] section — pipe, duct and conduit blockouts bill there by the each, not here.
 concrete-window-bucks-and-blockouts = { low = 250, high = 600, unit = "ea", driver = "openings.count[host_structure=concrete]" }
 # ** SPLIT AND RE-SCOPED 2026-08-30, renamed from `radon-roughin-and-egress-window-wells`.
 # Two defects, one row. ** Minnesota has required radon-resistant new construction since

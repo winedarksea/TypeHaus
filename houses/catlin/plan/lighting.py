@@ -68,9 +68,10 @@ BASEMENT_LIGHTING = [
 
     # RM-B-WORKSHOP: flat panels, per the notes. A workshop wants flat even light over a
     # bench, not the scalloping a can grid gives. The L-shaped room takes one panel in
-    # each leg — the west bay south of the sauna, and the north strip.
+    # each leg — the west bay beside the sauna, and the north strip. The west leg narrowed
+    # to 4'-1" clear when the sauna rotated (2026-09-05), so PANEL1 came in to x=2'-6".
     ElectricalDevice(uid="QTB0005AAA", tag="ED-B-WORKSHOP-PANEL1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 6), ft(6)), type_ref="ED-T-LT-PANEL",
+                     position=pt(ft(2, 6), ft(6)), type_ref="ED-T-LT-PANEL",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
@@ -79,8 +80,11 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+    # 7" west of O-B-HALL's west jamb, on W-B-CW2's workshop face — the switch you reach
+    # for coming through the cased opening from the hall. It was at x=16', which the
+    # opening now occupies.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(16), ft(17, 8.626)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(13, 10), ft(17, 8.626)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -149,7 +153,7 @@ BASEMENT_LIGHTING = [
     # eyeline coming up. 3-way with the main-storey stair switch, because a stair light
     # that can only be switched from the bottom is a stair light nobody uses.
     LightRun(uid="QRB0001AAA", tag="LR-B-STAIR-RAIL", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(10, 4.375), ft(25, 5)), pt(ft(10, 4.375), ft(34, 10))),
+             path=(pt(ft(10, 4.375), ft(25, 8)), pt(ft(10, 4.375), ft(34, 10))),
              room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU",
              controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
              mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
@@ -157,37 +161,38 @@ BASEMENT_LIGHTING = [
     # ceiling for AC/DC power supply"). 9'-5" of tape at 3 W/ft is 28 W; x1.25 = 35 W, so
     # the 60 W supply is the catalog size above it.
     ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(11), ft(24, 6)), type_ref="ED-T-LT-PSU-60",
+                     position=pt(ft(11), ft(26)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),
     # This and LR-B-STAIR-RAIL above hang on W-B-STR3's framed 2x6 face, x=10'-3 3/8", each
-    # 1" proud of it.
+    # 1" proud of it. Both moved north of y=25'-6" on 2026-09-05: south of that line is
+    # RM-B-BATH now, not the stair.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 4.375), ft(23)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10, 4.375), ft(26, 6)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # At y=23'-6" the can sits in the arrival zone at the foot of the flight, between the
-    # bathroom door's outswing arc and D-B-NE's opening at 22'-6"..25'-2" — north of
-    # RM-B-BATH, which claims the shaft's south 3'-0" (`integrity.placeable_room_mismatch`
-    # would flag a can any further south).
+    # The can lights the HALL now — the 3'-2 5/8" slot between W-B-BA-E and W-B-CN2 that
+    # runs from the stair foot south to O-B-HALL — centred in it at x=15'-9" and level with
+    # D-B-BATH's leaf. x=14' would put it inside W-B-BA-E's studs.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(23, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(15, 9), ft(23, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # RM-B-BATH (2026-07-30). On CKT-LT-BACKUP, deliberately, so this room and the stair
-    # foot stay lit together on backup power. Can centred at x=14', clear of the exhaust
-    # terminal over the WC at 11'-8"; switch on the latch-jamb side (door swings out, so
-    # it isn't behind the leaf).
+    # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BACKUP, deliberately, so this
+    # room and the stair foot stay lit together on backup power. Can on the room's centre
+    # line between the vanity and the water closet, clear of REG-B-EXH1 over the WC at
+    # 24'-1 5/8"; switch on the latch-jamb side (door swings out, so it isn't behind the
+    # leaf).
     ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(20)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(ft(12), ft(21, 6)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-BACKUP", room="RM-B-BATH",
                      controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(15, 8), ft(21, 5)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-BATH", rotation=deg(180),
+                     position=pt(inch(163.625), ft(24, 2)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-BATH", rotation=deg(270),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]
 

@@ -564,27 +564,30 @@ REGISTERS_BASEMENT = [
     # the heat is worth recovering, and this is not a spray booth.
     #
     # HONEST LIMIT: the two benches run ten feet along the west wall (y 3'-6"..13'-6") and
-    # one 30" hood captures a fraction of that. It is a bench hood, not bench-run coverage.
+    # one 30" hood captures a fraction of that. It is a bench hood, not bench-run
+    # coverage. It is a bench hood, not bench-run coverage.
     Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
             position=pt(ft(2), ft(8, 6)), duct_ref="DU-B-ERV-R-BENCH",
             type_ref="REG-T-ERV-BENCH-HOOD", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(5, 6))),
-    # The sauna's stale pickup is on the wall, 4" above the floor on the south face below
-    # FURN-B-SAUNA-BENCH-S: a sauna stratifies hard, so the low pickup pulls the cold spent
+    # The sauna's stale pickup is on the wall, 4" above the floor on the WEST liner below
+    # FURN-B-SAUNA-BENCH-S (it was the south face until the room rotated on 2026-09-05 and
+    # EQ-B-SAUNA-HTR took that wall): a sauna stratifies hard, so the low pickup pulls
+    # the cold spent
     # layer off the floor rather than the löyly at bench height. Paired with REG-B-SUP3 over
     # the heater, both ends dampered (REG-T-ERV-SAUNA-*), it drives the room's convection
     # loop — down the far wall, across the floor, out under the bench. EXHAUST at 20 cfm:
     # the room is Occupancy.BATHROOM and its window's openable area (1.2 sf) falls short of
     # R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
-            position=pt(m(2.85824), m(0.407047)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
+            position=pt(inch(64), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
-    # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (west liner,
+    # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (south liner,
     # plan/electrical.py) at 7'-0" — below the 8' ceiling so the boot doesn't fight the drop
     # ceiling the condensate line already runs above.
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
-            position=pt(ft(9, 9.8125), ft(8, 9)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
+            position=pt(ft(9, 3), inch(19.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-ERV-SAUNA-SUP", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
@@ -592,7 +595,7 @@ REGISTERS_BASEMENT = [
     # recirculated. It sits over the water closet at the room's west end, the far corner from
     # the door, so the room's makeup air crosses it on the way through.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
-            position=pt(ft(11, 8), ft(20)), duct_ref="DU-B-ERV-R-BATH",
+            position=pt(ft(12), inch(289.625)), duct_ref="DU-B-ERV-R-BATH",
             type_ref="REG-T-ERV-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]

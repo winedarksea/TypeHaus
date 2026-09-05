@@ -53,23 +53,25 @@ STACK_SLEEVES = []
 # Slab-on-grade stub-ups. A fixture on grade has no wall drain stack — its trap arm runs
 # *under* the slab — so the penetration is set pre-pour like the deck sleeves above, at the
 # fixture's own `drain_position` for an exact alignment match: a bathroom at the stair foot,
-# and the sauna's shower end (curbed pan + floor drain).
+# and the sauna's shower end (curbed pan + floor drain). All four moved with the rooms on
+# 2026-09-05 when the sauna rotated onto the garden wall and the bathroom onto the stair
+# wall; `mep.sleeve_alignment` is what holds each of them on its fixture.
 SLAB_STUBS = [
     # Upsized to 3" for a WC (needing a closet bend) in place of the old utility sink.
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-BATH-WC", host_ref="SL-B-FLOOR",
-                      position=pt(ft(11, 8), ft(20)), pipe_diameter=inch(3),
+                      position=pt(ft(12), inch(289.625)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-B-BATH-WC"),
     SleevePenetration(uid="CBP904AAAA", tag="SP-B-BATH-LAV", host_ref="SL-B-FLOOR",
-                      position=pt(ft(17), ft(20)), pipe_diameter=inch(1.5),
+                      position=pt(ft(12), inch(224.375)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-B-BATH-LAV"),
     # The sauna's two. The pan's is under the centre of the 36" x 36" curbed shower; the floor
     # drain's is the drain body itself, which is why its position and the fixture's are the
     # same point with no `drain_position` override on either.
     SleevePenetration(uid="CBP905AAAA", tag="SP-B-SAUNA-SH", host_ref="SL-B-FLOOR",
-                      position=pt(ft(15, 8.5), ft(12, 0.1875)), pipe_diameter=inch(2),
+                      position=pt(inch(191.75), inch(91.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-SH"),
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
-                      position=pt(ft(13, 6), ft(12, 0.1875)), pipe_diameter=inch(2),
+                      position=pt(ft(13, 6), inch(91.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Where the ceiling collector turns down to become the under-slab building drain; 4",
     # matching the building drain. `mep.sleeve_coverage` holds the crossing.

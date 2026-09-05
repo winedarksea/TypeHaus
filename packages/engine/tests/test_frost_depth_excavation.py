@@ -83,7 +83,27 @@ def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_mod
 #: the court surface; the three south strips carry 1" of cover under it (it was 2" above and
 #: 8" under until the court dropped 7 1/4" on 2026-09-03). All four reported a comfortable
 #: 7'-2" and passed until the grade was derived per footing.
-_BESIDE_THE_GARDEN = ("FT-B-BRICK", "FT-B-S1", "FT-B-S2", "FT-B-S3")
+#:
+#: ** FT-B-S1 LEFT THIS LIST ON 2026-09-05 AND FT-B-S1B TOOK ITS PLACE. ** The basement's
+#: west-side replan split the old W-B-S1 at x=4'-8" so the rotated sauna's south face could
+#: carry the hot-side liner, and a footing follows its wall: FT-B-S1 is now the WEST 4'-8",
+#: whose nearest point is 46" from SL-SG-FLOOR's rim — outside the 42" reach, so its grade
+#: is the site plane and it clears on depth like any inland strip. FT-B-S1B is the 3'-10"
+#: beside the court and is the one the wings protect.
+#:
+#: The split is also why 4'-8" and not the 5'-0" the replan was drawn at: at 5'-0" the west
+#: strip sits EXACTLY 42.0" from the rim — inside the reach by floating point, and outside
+#: SL-SG-FROST-W's own 42" shielding radius, which is what carried the un-split strip.
+_BESIDE_THE_GARDEN = ("FT-B-BRICK", "FT-B-S1B", "FT-B-S2", "FT-B-S3")
+
+
+def test_the_split_south_strip_west_of_the_court_is_out_of_frost_reach(frost_by_tag):
+    """FT-B-S1's own half of that split, pinned so the 4" of margin cannot be spent by
+    accident. It passes on DEPTH against the site plane, not on the wings."""
+    finding = frost_by_tag["FT-B-S1"]
+    assert finding.result is Result.PASS
+    assert "SL-SG-FLOOR" not in finding.message
+    assert not [t for t in finding.element_tags if t.startswith("SL-SG-FROST-")]
 
 
 def test_the_south_strips_and_the_plinth_are_protected_not_deep(frost_by_tag):

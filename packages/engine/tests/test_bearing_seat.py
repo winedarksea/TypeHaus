@@ -152,7 +152,10 @@ def test_the_seat_is_the_number_the_basement_walls_are_authored_to(catlin_model)
     # still the basement floor and their footings are unchanged — but they have nothing to
     # say about the pour's top. W-B-CS was framed the same way, and W-B-S3 split into
     # W-B-S3 + W-B-S4 at the excavation edge, of which only W-B-S4 is a full-height pour.
-    assert len(walls) == 13
+    # 14 since 2026-09-05: W-B-S1 split at x=4'-8" so the rotated sauna's south face could
+    # carry the hot-side liner, and W-B-S1B is the second full-height pour that came of it —
+    # same base, same seat, a liner inboard of the concrete and nothing else changed.
+    assert len(walls) == 14
     # The two curbs, separately: same base, same 7 1/4" of pour, top on the framed walls'
     # own base so the chain footing -> curb -> plate is continuous.
     for tag in sorted(_CURBS):
