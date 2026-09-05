@@ -25,10 +25,11 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # It was 39 from 2026-08-18, when the sunken garden's 16" arched cross-wall and the three
     # W-SG-RAIL-* masonry parapets over it went, and with them the last `cmu` in the house.
     #
-    # Counted as DISTINCT WALLS, not as the sum of the rows' counts. Since the Ishtar scheme
-    # (2026-08-20) one wall can reach several rows: W-B-BRICK's wythe is a split row
-    # (`Layer.slot`) of three brick colours, and each colour bills its own band. Summing the
-    # counts would say 41 walls and be counting brick, not walls.
+    # Counted as DISTINCT WALLS, not as the sum of the rows' counts. One wall CAN reach
+    # several rows — a `Layer.slot` wythe bills a row per material — which is why the count
+    # is over the tag set rather than the rows. W-B-BRICK was that wall from the Ishtar
+    # scheme (2026-08-20) until 2026-09-04, when its three brick colours became one; the
+    # rule stays because the machinery does.
     # 36 from 2026-08-23, when the ESS closet's relocation to the NE corner split W-B-N3
     # at x=6'-0" and W-B-STR at y=31'-0" so its two partitions had nodes to tee into —
     # two more tags, the same pour, the same cubic yards.
@@ -68,9 +69,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # layer and so priced here on the assembly tag. A material dropping out of this set is
     # therefore not evidence it dropped out of the model; check `[envelope_layers]` first.
     # (`off-white-brick` went the same way on 2026-09-02, brick to metal, then deleted.)
+    # `glazed-lapis-brick` and `glazed-gold-brick` LEFT ON 2026-09-04 with the Ishtar scheme:
+    # the veneer is one flat `brown-brick` field now. Both Materials are still in the
+    # catalog, unreferenced and deliberately so (plan/assemblies.py), so a material dropping
+    # out of this set is again not evidence it dropped out of the catalog.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick",
-        "glazed-lapis-brick", "glazed-gold-brick"}
+        "concrete", "retaining-block", "brown-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is
@@ -101,38 +105,34 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
 
 
 def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
-    """W-B-BRICK — the glazed-brick veneer over the exposed basement wall at the sunken
-    garden, added in 76c1871 — is the wall whose absence from the BOM surfaced this hole.
+    """W-B-BRICK — the brick veneer over the exposed basement wall at the sunken garden,
+    added in 76c1871 — is the wall whose absence from the BOM surfaced this hole.
 
-    Since the Ishtar scheme (2026-08-20) it bills as three rows, one per brick colour, and
-    that is the second thing this pins. The wythe is a split row (`Layer.slot`): five banded
-    regions sharing one 3 5/8" depth position. Billing it by "the" structure layer — the
-    first one — would have put the whole net face on the brown plinth and never mentioned the
-    glaze,
-    which is the modern version of the hole this test was written for.
+    THREE ROWS BECAME ONE on 2026-09-04. From the Ishtar scheme (2026-08-20) the wythe was a
+    split row (`Layer.slot`) of five banded regions in three colours, and this test pinned a
+    row per colour — because billing it by "the" structure layer, the first one, would have
+    put the whole net face on the brown plinth and never mentioned the glaze. The glaze is
+    gone and the plinth's brick is now the whole field, so there is one honest row. What is
+    still pinned is that the row exists, names its assembly, and carries the wall's WHOLE net
+    face: a single-region wythe that under-billed would look exactly like this test's PASS if
+    the area bound were dropped with the colours.
     """
     rows = [row for row in wall_structure_takeoff(catlin_model)
             if "W-B-BRICK" in row["tags"]]
-    assert len(rows) == 3, "one row per brick colour on the wythe"
-    by_material = {row["material"]: row for row in rows}
-    assert set(by_material) == {"brown-brick", "glazed-lapis-brick", "glazed-gold-brick"}
-    for row in rows:
-        assert row["assembly"] == "BASEMENT_BRICK_VENEER"
-        assert row["tags"] == ["W-B-BRICK"]
-        assert float(row["net_area_sqft"]) > 0
-        assert float(row["volume_cuft"]) > 0
-    # The bands partition the wall's whole net face, no more and no less: 19'-2" x 8'-6 7/16"
-    # gross, less the two reveals (5'-0" x 78" and 14" x 20"). 133.2 until 2026-08-23, when
-    # the wythe's base rose 2 9/16" with the footing toe it bears on — its head is still
-    # 0'-0", so the wall simply got that much shorter. The window was 132 before 2026-08-21,
-    # when both reveals were taken down 6" at the head — a reminder that this bound moves
-    # whenever the reveals or the plinth do.
-    assert 127 < sum(float(row["net_area_sqft"]) for row in rows) < 133
-    # And they are in the right proportions: the field is most of the wall, the plinth is
-    # the bottom 2'-0", and the two 2-course registers are the least of it.
-    assert (float(by_material["glazed-lapis-brick"]["net_area_sqft"])
-            > float(by_material["brown-brick"]["net_area_sqft"])
-            > float(by_material["glazed-gold-brick"]["net_area_sqft"]))
+    assert len(rows) == 1, "one flat unglazed field, one row"
+    (row,) = rows
+    assert row["material"] == "brown-brick"
+    assert row["assembly"] == "BASEMENT_BRICK_VENEER"
+    assert row["tags"] == ["W-B-BRICK"]
+    assert float(row["volume_cuft"]) > 0
+    # The row is the wall's whole net face, no more and no less: 19'-2" x 8'-6 7/16" gross,
+    # less the two reveals (5'-0" x 78" and 14" x 20"). 133.2 until 2026-08-23, when the
+    # wythe's base rose 2 9/16" with the footing toe it bears on — its head is still 0'-0",
+    # so the wall simply got that much shorter. The window was 132 before 2026-08-21, when
+    # both reveals were taken down 6" at the head — a reminder that this bound moves whenever
+    # the reveals or the wall's extent do. The face itself did NOT move on 2026-09-04: only
+    # the number of rows it is split across did, which is why the bound is unchanged.
+    assert 127 < float(row["net_area_sqft"]) < 133
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

@@ -941,48 +941,38 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
     source="catlin-house garden columns (PT-SG-FCOL + the four balcony corners PT-SG-BR1/BR3/BF1/BF3) — 12\" round cast concrete, FIXED at the base: (4) #5 hot-dip galvanized verticals (ASTM A767 cl. 1 or A1094) with #3 galvanized ties @ 10\" o.c. at 2\" cover, lapped class B ~30\" onto (4) #5 galvanized dowels cast with the wall pour below; wall-top cold joint roughened to 1/4\" amplitude with laitance removed and a bentonite or crystalline waterstop strip set inside the dowel circle (it is the wettest, saltiest elevation on the column and a documented chloride path); Sonotube Finish Free form seated in a plywood saddle collar screwed to the wall FACES (a flush tube leaves no wall top to anchor a collar to) and kicked to the porch framing, stripped to the form line; 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air at 3/4\" or 3/8\" aggregate with SCM caps per ACI 318-19 §19.3.3.4 (class F3 + C2 — deicing salt below and planter runoff above; IRC R402.2), air verified at the point of placement, 12-18\" lifts vibrated in the core and never on the cage; top CAST TO LINE under the beam footprint with a >=15 degree wash and >=1\" drip lip screeded around it (BIA Tech Note 36A) and NO grout island — tolerance taken in the SS316-SHIM-35 standoff shim pack (modeled at CN-SG-STDF-*, and its catalog record carries the detailing) or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 masonry gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round; broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); wet-cure 7 days protected from freezing to 3,600 psi (ACI 306); silane/siloxane repellent at 28 days, re-applied ~10-yearly; optional mineral paint to match the white centre posts",
 )
 
-# Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
+# Brick veneer over the exposed basement wall (sunken garden excavated against it).
 # There is no CMU backer wythe here, because the existing basement concrete
 # (damp-proofing + 4" XPS already outboard) IS the backer — this wall stands 1-1/2" off
 # it on masonry ties. A fictional backer would double-count concrete already modeled by
 # W-B-S2/W-B-S3. No `interfaces`: non-bearing.
 #
-# **The Ishtar scheme.** The wythe was one flat field of glazed-green-brick until the
-# green — liked on its own — was judged not to sit with a house of white standing seam,
-# #1c1f24 trim and arched concrete garden walls. It now reads as the Ishtar Gate of
-# Babylon: a lapis field with golden-yellow register bands over an unglazed brown plinth.
-# `glazed-green-brick` is still in the catalog, unreferenced, so reverting is one word.
+# **One flat field of unglazed buff/brown brick** (2026-09-04). This wythe carried the
+# Ishtar scheme from 2026-08-20 — a lapis glazed field with golden-yellow register bands
+# over an unglazed brown plinth, five regions sharing one `slot="wythe"` — and before that
+# one flat field of glazed-green-brick. The glaze is simply not wanted. What replaces it is
+# the plinth's own brick run full height: ordinary ASTM C216 Grade SW face brick, the
+# cheapest face that was ever on this wall, stocked by every Twin Cities yard.
 #
-# All five brick regions are ONE row of the stack — `slot="wythe"` — so they share a single
-# 3 5/8" depth position between them instead of taking one each. Without the slot this
-# assembly would resolve to a 18 1/8" wythe and shove the whole wall into the garden.
-# Every region carries the same thickness and its own band off WALL_BASE (one datum
-# throughout, so `integrity.assembly_layers` can actually compare them), and the bands do
-# not overlap.
+# The swap also settles a spec conflict the banded scheme only just cleared. BIA Tech Note
+# 13 says glazed brick "should not be used in locations where they are likely to be
+# saturated"; the Ishtar scheme complied only because the unglazed plinth kept the glaze
+# above the splash line. An all-unglazed SW field is unconditionally right for a sunken
+# court in Minnesota, which is a rain sump with walls.
 #
-# Band heights are on the 2 2/3" modular course, measured off the wall's own base
-# (-8'-5", not -9'-0" — see the note on W-B-BRICK in plan/storeys/basement.py). The wall is
-# 8'-5" tall, so `brick-field-hi` takes the partial top course. The upper register sits ON
-# D-B-PATIO's head line at 88", which is the Ishtar reading — the band runs across the top of
-# the opening rather than floating above it. The brick reveal AO-B-BRICK-DOOR crowns 10"
-# under that band: with no course between them at 88" the arch read as sawn off, so it is
-# cut to 78". The lower register caps the plinth and crosses the door's foot.
+# `glazed-lapis-brick`, `glazed-gold-brick` and `glazed-green-brick` all stay in the
+# catalog, unreferenced, on the convention documented at `glazed-green-brick` — reverting
+# any of the three schemes is a material_ref edit, not an archaeology exercise.
 #
-# The plinth is 12 courses and the lower register rides 8" up from its floor, out of the
-# lapis field's 19 courses. AO-B-BRICK-WIN's sill/head are 37"/57", keeping a 1/3" foot in
-# the register and the same clear run of lapis above it; the sauna window it reveals moves
-# with it.
+# No `slot`, no `extent`: with one region there is nothing to co-locate at a shared depth
+# and nothing to band, so this is the ordinary case — a plain full-height layer that takes
+# the wall's own base and top. (The `slot="wythe"` machinery is intact and still tested; see
+# packages/engine/tests/test_emitter_band_parity.py, which now carries its own fixture
+# because catlin no longer supplies a live multi-region wall.)
 #
-# STRUCTURE, not CLADDING, on every region: this wythe has nothing behind it in this
-# assembly (the backer is a *different wall*), so it has to be the structure layer or
-# integrity.assembly_layers finds none. Same precedent as RETAINING_BLOCK_12.
-#
-# Every band is measured LINE_BASE, not WALL_BASE, and that is the whole point of the
-# datum: a 2 2/3" modular course is a property of the *building*, not of whichever wall
-# happens to carry it, so stacking a second wall on this line has to continue the coursing
-# rather than restart it at the storey datum. W-B-BRICK is a single-wall line today, so
-# ``base_z_m == z0_m`` and every region resolves to exactly the elevation it did as
-# WALL_BASE — the conversion is a no-op on this house and a promise about the next one.
+# STRUCTURE, not CLADDING: this wythe has nothing behind it in this assembly (the backer is
+# a *different wall*), so it has to be the structure layer or integrity.assembly_layers
+# finds none. Same precedent as RETAINING_BLOCK_12.
 _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
@@ -997,44 +987,11 @@ BASEMENT_BRICK_VENEER = Assembly(
         # model catching up to it.
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.5),
               function=LayerFunction.AIRGAP),
-        # 12 courses of ordinary unglazed brown brick — the cheapest face on the wall, and
-        # the one the wall stands out of the ground on. Brown is the cheap brick, so the
-        # cheap band is the one that grows.
-        Layer(name="brick-plinth", material_ref="brown-brick", thickness=_VENEER_WYTHE,
-              function=LayerFunction.STRUCTURE, slot="wythe",
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(0.0)),
-                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(32.0)))),
-        # 2 courses of gold capping the plinth — the same two courses, carried up 8" with it.
-        Layer(name="brick-band-lo", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
-              function=LayerFunction.STRUCTURE, slot="wythe",
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(32.0)),
-                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(37.333)))),
-        # The field: 19 courses of lapis, plinth cap to door head. It gives up the three
-        # courses the plinth gained; the door head at 88" does not move.
-        Layer(name="brick-field-lo", material_ref="glazed-lapis-brick",
-              thickness=_VENEER_WYTHE,
-              function=LayerFunction.STRUCTURE, slot="wythe",
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(37.333)),
-                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(88.0)))),
-        # 2 courses of gold on the door head line, springing off the arch crown.
-        Layer(name="brick-band-hi", material_ref="glazed-gold-brick", thickness=_VENEER_WYTHE,
-              function=LayerFunction.STRUCTURE, slot="wythe",
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(88.0)),
-                  top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(93.333)))),
-        # The lapis cap above the upper register. Open top on purpose: `top=None` is the
-        # wall's own top, which is the only way to say "run it out" without writing this
-        # wall's 8'-9" into an assembly type that any wall may use.
-        Layer(name="brick-field-hi", material_ref="glazed-lapis-brick",
-              thickness=_VENEER_WYTHE,
-              function=LayerFunction.STRUCTURE, slot="wythe",
-              extent=LayerExtent(
-                  bottom=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(93.333)))),
+        # The field: unglazed brown face brick, base to wall top, 8'-5" of it.
+        Layer(name="brick", material_ref="brown-brick", thickness=_VENEER_WYTHE,
+              function=LayerFunction.STRUCTURE),
     ),
-    source="basement south veneer over the sunken garden — the Ishtar scheme (2026-08-20): lapis glazed field with golden-yellow register bands over an unglazed brown plinth, one 3 5/8\" wythe banded by Layer.slot, 1\" airgap, corrugated masonry ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was one flat field of glazed-green-brick, which is still in the catalog for a one-word revert",
+    source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 1-1/2\" ventilated airgap, corrugated masonry ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -3024,12 +2981,18 @@ MATERIALS = [
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#1b4332", finish="glazed-green-brick",
              source="basement south veneer over the sunken garden until 2026-08-20 — glazed brick, 1\" airgap off the existing concrete wall; kept in the catalog as the revert target for the Ishtar scheme"),
-    # --- the Ishtar scheme -------------------------------------------------------------
+    # --- the Ishtar scheme, RETIRED 2026-09-04 -----------------------------------------
     # Three faces on one wythe, banded by Layer.slot in BASEMENT_BRICK_VENEER: a lapis field
     # with golden-yellow registers over an unglazed brown plinth, after the Ishtar Gate of
     # Babylon. Same clay unit, R-value, density and permeance as every other brick here —
     # a brick is a brick and only the face differs, which is the whole reason `finish` and
     # `color` are separate fields from the physics.
+    #
+    # BOTH GLAZES ARE NOW UNREFERENCED, and both stay, on the same convention as
+    # `glazed-green-brick` above: the wall went to one flat unglazed buff/brown field on
+    # 2026-09-04 and the Materials, their MasonryStyles and their _FINISH_BASE entries are
+    # the whole cost of getting the scheme back. Do not delete them to tidy up. Their
+    # prices.toml rows are commented out rather than removed for the same reason.
     #
     # All three hexes are authored a step DARKER than their reference colour, deliberately.
     # An authored colour is an albedo, and the viewer lights with 0.8 hemisphere + 0.9 key +
@@ -3039,7 +3002,7 @@ MATERIALS = [
     Material(tag="glazed-lapis-brick", name="Glazed lapis-blue face brick",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#10386a", finish="glazed-lapis-brick",
-             source="basement south veneer, the Ishtar field (2026-08-20) — glazed brick, 1\" airgap off the existing concrete wall"),
+             source="basement south veneer, the Ishtar field (2026-08-20 to 2026-09-04) — glazed brick, 1\" airgap off the existing concrete wall; RETIRED when the wall went to one flat unglazed field, kept in the catalog as the revert target"),
     # The registers. Same glaze technology as the lapis and so the same low jitter, but it is
     # a SECOND colour on the same job: its own special-order pallet, its own lead time, and a
     # mason laying two colours to a line rather than one. That is a price fact, not a
@@ -3047,19 +3010,27 @@ MATERIALS = [
     Material(tag="glazed-gold-brick", name="Glazed golden-yellow face brick",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#c08a12", finish="glazed-gold-brick",
-             source="basement south veneer, the Ishtar register bands (2026-08-20) — glazed brick, 1\" airgap off the existing concrete wall"),
-    # The plinth: ordinary unglazed brown face brick, the cheapest brick on the wall and the
-    # only one a Twin Cities yard carries off the shelf. Specify it as a SINGLE light body,
-    # not a blend. It was first authored dark and at the red brick's full
-    # variegation, on the argument that an unglazed body beside a fired glaze is what makes
-    # the glaze read as a glaze; on the wall that came out as a plinth laid from mixed
-    # pallets with near-black units through it, which is a different building. One light
-    # brown reads as one brick, and the glaze contrast is carried by sheen and joint colour
-    # instead — see BROWN_BRICK_STYLE in ui/src/three/materials.ts, kept in step by hand.
+             source="basement south veneer, the Ishtar register bands (2026-08-20 to 2026-09-04) — glazed brick, 1\" airgap off the existing concrete wall; RETIRED with the lapis field, kept in the catalog as the revert target"),
+    # THE WHOLE WALL since 2026-09-04, and unchanged as a Material: ordinary unglazed
+    # buff/brown face brick, ASTM C216 Grade SW, the cheapest brick that was ever on this
+    # wall and the only one a Twin Cities yard carries off the shelf. It was the Ishtar
+    # plinth's 28 SF; it is now the full 129 SF field.
+    #
+    # Specify it as a SINGLE light body, not a blend. It was first authored dark and at the
+    # red brick's full variegation, on the argument that an unglazed body beside a fired
+    # glaze is what makes the glaze read as a glaze; on the wall that came out as a plinth
+    # laid from mixed pallets with near-black units through it, which is a different
+    # building. One light brown reads as one brick.
+    #
+    # #a07c5c is already authored a step under its target (the albedo lesson #1c1f24 records
+    # below) — do NOT re-darken it. What DID have to move with the swap is the renderer's
+    # variegation: BROWN_BRICK_STYLE's jitter was set near zero for a 28 SF plinth beside a
+    # glaze, and at 129 SF with nothing to contrast against that reads as a printed sheet.
+    # See ui/src/three/materials.ts, kept in step by hand.
     Material(tag="brown-brick", name="Brown face brick (unglazed)",
              r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
              color="#a07c5c", finish="brown-brick",
-             source="basement south veneer, the Ishtar plinth (2026-08-20) — standard unglazed face brick, no special order"),
+             source="basement south veneer over the sunken garden — the Ishtar plinth 2026-08-20, the whole field since 2026-09-04; standard unglazed ASTM C216 Grade SW face brick, no special order"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
     # through STARTER_MATERIALS above.

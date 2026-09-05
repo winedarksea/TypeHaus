@@ -136,9 +136,10 @@ export function buildWall(
     // the strip path here rather than inside `wallLayerPieces` keeps the jamb/arch clipping
     // it does unchanged and simply trims the result; the swept path takes the band itself,
     // because its outline is built from the wall's own z-range and would otherwise hand back
-    // a full-height solid per region — five coincident wythes z-fighting for the same face,
-    // as on the sunken garden's Ishtar wall, whose arched door and window put it on the swept
-    // path in the first place.
+    // a full-height solid per region — N coincident wythes z-fighting for the same face. The
+    // case was the sunken garden's five-region Ishtar wall, whose arched door and window put
+    // it on the swept path in the first place; that wall is one flat field since 2026-09-04,
+    // so the clamp has no live subject and the rule stays because `Layer.slot` does.
     const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center, ly);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
       ? [smoothArchGeometry]
@@ -182,11 +183,13 @@ export function buildWall(
     }
     // Voussoirs. A masonry layer's arched openings each get a ring of radiating bricks, so the
     // head reads as an arch instead of as a curve sliced out of running bond. Built once per
-    // arch, in the layer band that holds the arch's SPRINGLINE — the split brick row on the
-    // Ishtar wall is five layers deep, and without that rule the same ring would be built five
-    // times, once per band. The springline is where the arch is born, so its band is the one
-    // whose brick the arch would actually be turned in; on W-B-BRICK both arches spring inside
-    // `brick-field-lo` and both rings come out lapis. The layer's own material does the rest —
+    // arch, in the layer band that holds the arch's SPRINGLINE — the Ishtar wall's split
+    // brick row was five layers deep, and without that rule the same ring would have been
+    // built five times, once per band. The springline is where the arch is born, so its band
+    // is the one whose brick the arch would actually be turned in; it decided the ring's
+    // COLOUR there, which is how the rule got written. W-B-BRICK is one flat unglazed field
+    // since 2026-09-04 so there is one band to pick, and the rule still governs any banded
+    // wythe. The layer's own material does the rest —
     // the ring carries polar UVs into the very same tile, so `mat` is reused as it stands.
     if (masonryStyle) {
       for (const opening of openings) {

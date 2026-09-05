@@ -121,6 +121,30 @@ REGISTER_TYPES = (
                  plan_symbol="register",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # The SIDEWALL twin of REG-T-HP-SUP, and the house's only System 1 terminal that is not
+    # cut into a ceiling. It exists for REG-S-HP-STAIR, which was a ceiling diffuser dumping
+    # 50 cfm straight down 6'-2" from a 650 cfm return in the same room — a short circuit that
+    # no size of grille fixes, because the fault is the DIRECTION.
+    #
+    # `footprint` is a PLAN rectangle, so a wall type authors (face, DEPTH) and puts the face
+    # height in `height` — the same swap REG-T-ERV-EXH-WALL and REG-T-TRANSFER-1210 make, and
+    # for the same reason: mount a ceiling type on a wall and 6" of it draws inside the
+    # framing. The 12" face runs along the wall, 1" of body reaches into the room, the 6" is
+    # vertical. On a y-running face (which SF-S-DUCT's west lining is) the instance carries
+    # `rotation=deg(90)`, exactly as REG-M-XFER-MUD does.
+    #
+    # DOUBLE DEFLECTION, and that is the whole point of the part: the horizontal blades set
+    # the spread and the vertical ones aim it, so 50 cfm can be thrown WEST across the hall
+    # instead of being handed to the return. 72 in2 gross / ~50 in2 free at 50 cfm is 144 fpm
+    # face velocity — silent — with the throw coming off the vane setting rather than off a
+    # starved face.
+    RegisterType(tag="REG-T-HP-SUP-SIDE",
+                 name="Heat-pump supply register, 12x6, sidewall double-deflection",
+                 footprint=(inch(12), inch(1)), height=inch(6),
+                 plan_symbol="register",
+                 source="Sidewall supply register, 12 x 6 nominal, double-deflection core with an opposed-blade damper behind it. Takes off the side of DU-S-HP-SUP through the soffit's west lining — a collar, not a boot: the trunk's west face stands 3/8\" off the framed cavity's west edge, so the whole take-off is 2 1/2\" of build-up.",
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
     # REG-T-HP-RET is a filter-back return grille, and it is the only filter in this system:
     # with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else, and this
     # grille is the serviceable face a person reaches from the hall floor.
@@ -333,14 +357,40 @@ DUCTS_HVAC_SECOND = [
     # the west arm (75 cfm to REG-S-HP-PLANT). 10" fits the 13 1/2" clear bay with 1 3/4"
     # to spare and 6" fits the 11 7/8" I-joist depth.
     #
-    # The riser lands at x=23'-0 1/2", 3'-1 1/2" west of REG-S-HP-STUDY2 and east of the
-    # room's midpoint — a short arm east to the study and the attic study, a long one west
-    # to the plant room. Manual D App. A13 calls a take-off this close to a supply plenum a
-    # noise defect; it is mitigated by turning vanes at the riser, a lined plenum and first
-    # 5 ft, and a balancing damper, and the 18x8 trunk was chosen partly so the take-off
-    # could sit further downstream than a 14x8 would have allowed.
+    # The riser lands at x=19'-6" (the trunk's own centreline, see DU-S-HP-SOUTH-RISE) — a
+    # short arm east to the study and the attic study, a long one west to the plant room.
+    # Manual D App. A13 calls a take-off this close to a supply plenum a noise defect; it is
+    # mitigated by turning vanes at the riser, a lined plenum and first 5 ft, and a balancing
+    # damper, and the 18x8 trunk was chosen partly so the take-off could sit further
+    # downstream than a 14x8 would have allowed.
+    #
+    # ** BOTH ENDS CAME IN ON 2026-09-04, THE WEST END BY MOST. ** 19'-4" of 10x6 became
+    # 15'-8" — and both moves are better terminal placement, not only less duct:
+    #
+    #  * WEST 6'-8" -> 9'-4", a 2'-8" saving. The old end was 2'-4" PAST the plant room's
+    #    centreline, and its "centred between WIN-S-PLANT1/2" argument only ever counted two
+    #    of the three south windows: the glass runs x 4'-0" / 9'-4" / 14'-8", so 6'-8" left
+    #    WIN-S-PLANT4 unwashed eight feet away. 9'-4" is WIN-S-PLANT2's own centreline and
+    #    the centroid of all three, so one terminal washes the whole south wall. It is 4"
+    #    clear in y of FURN-S-PLANT-POT2 (which ends at y=2'-9") and 1'-4" north of
+    #    ED-S-PLANT-TUBE1/2's line, so it is over neither a pot nor a grow tube, and it is
+    #    still 9'-2" from REG-S-ERV-PLANT-EXH across a 159 sf room.
+    #  * EAST 26'-0" -> 25'-0", a 1'-0" saving, and this one is a defect fix. REG-A-HP-STUDY
+    #    is a FLOOR boot, and at (26'-0", 3'-4") it stood under FURN-A-STUDY-CHAIR2
+    #    (x 25'-8"..27'-4", y 3'-3"..5'-1") — a 100 cfm supply with a seat on it. 25'-0" is
+    #    8" clear west of that chair and 7" clear east of CHAIR1. It is still inside
+    #    FURN-A-STUDY-TABLE's 36" square (x 24'-2 5/8"..27'-2 5/8"), and that is accepted: a
+    #    legged table is not a lid, the boot sits at its open west end between the two chairs,
+    #    and every station on this bay line from x 21'-0" to 27'-3" is under something. Moving
+    #    the terminal off the line entirely wants a boot north across two joists — legal at
+    #    x=25' (mid-span of the 18' east span, where the TJI hole chart is at its most
+    #    permissive) but a bigger change than a duct length.
+    #
+    # ** THE EAST END CANNOT COME IN FURTHER. ** 25'-0" is already 2'-0" west of RM-A-STUDY's
+    # centreline and 2'-4" from REG-S-HP-STUDY2's station at 22'-8"; the next foot west stacks
+    # the storey's two study terminals on top of one another.
     DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
-            path=(pt(ft(26), ft(3, 4)), pt(ft(6, 8), ft(3, 4))),
+            path=(pt(ft(25), ft(3, 4)), pt(ft(9, 4), ft(3, 4))),
             width=inch(10), depth=inch(6), routing=DuctRouting.JOIST_BAY,
             floor_ref="FS-ATTIC", design_cfm=250),
     # THE RISER — a repeated plan point at two elevations is the vertical leg, the idiom
@@ -359,6 +409,27 @@ DUCTS_HVAC_SECOND = [
     # (The east-lane alternative also fits — 18 + 2 + 10 = 30 against SF-S-DUCT's 30 3/4" —
     # but a jog would overlap the trunk ALONG the box and report. Kept here as the
     # documented fallback if the cap ever has to move.)
+    #
+    # ** WHY IT TRAVELS SOUTH BELOW THE JOISTS INSTEAD OF RISING AT THE CAP. ** The obvious
+    # saving is to stand this branch up at the trunk cap and let the attic side do the
+    # north-south travel — which would also let SF-S-DUCT stop at y=9'-10" and give
+    # RM-S-STUDY2 back the 7 ft of 14"-deep box that lowers its ceiling to 7'-10". It does not
+    # work, and the reason is the hole chart, not the duct size:
+    #
+    #  * FS-ATTIC's joists run in **x** (11 7/8" I-joist, 16" o.c.), so ANY north-south run in
+    #    that floor crosses them. DU-S-HP-SOUTH avoids this by living in ONE bay for its whole
+    #    length; a riser at the cap would have to cross ~5 joists to reach that bay.
+    #  * Those crossings would land at x=19'-6" — 15 1/4" from the face of W-S-C1, the x=18'
+    #    bearing wall the east span starts on. That is inside every published no-hole zone;
+    #    the chart's permissive band is mid-span, out at x~27'.
+    #  * And "a small enough duct" does not buy it back. 250 cfm wants ~51 in2 to stay under
+    #    Manual D's 700 fpm branch ceiling, i.e. 8" round — a hole this depth of I-joist only
+    #    allows near mid-span. The largest hole the chart would entertain 15" off a bearing is
+    #    about 6 1/2" round: 33 in2, 1,090 fpm, half again over the ceiling and audible in a
+    #    bedroom hallway.
+    #
+    # So the soffit leg is not laziness — it is the only way to travel 6'-6" in y under a
+    # floor whose joists run in x. The 7 ft of box in the study is what that costs.
     #
     # 99 1/8" is a 6"-deep duct on SF-S-DUCT's clear underside (the box's 14" drop, not
     # SF-S-HP1's 21"); 111 1/8" is the same duct's centreline on FS-ATTIC's bottom chord,

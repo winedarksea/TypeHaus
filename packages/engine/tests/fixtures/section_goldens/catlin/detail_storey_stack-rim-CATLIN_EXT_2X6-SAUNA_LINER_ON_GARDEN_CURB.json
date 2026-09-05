@@ -952,7 +952,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW126AAAA",
-      "tag": "W-B-BRICK/brick-plinth"
+      "tag": "W-B-BRICK/brick"
     },
     {
       "space": "model",
@@ -2048,7 +2048,7 @@
         -7.3625,
         -82.62284558180228
       ],
-      "text": "brick-plinth 3.62\"",
+      "text": "brick 3.62\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

@@ -2163,6 +2163,10 @@
 "REG-T-HP-RET" = { material = { low = 30, high = 90 }, labour = { low = 18, high = 45 } }  # 1 ea
 "REG-T-HP-SUP" = { material = { low = 15, high = 50 }, labour = { low = 18, high = 45 } }  # 8 ea
 "REG-T-HP-SUP-DAMPERED" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — 8" motorised zone damper
+# Dearer than the plain REG-T-HP-SUP face: a double-deflection sidewall core with an
+# opposed-blade damper behind it is a different part, and it is the one terminal in System 1
+# whose throw has to be aimed on site rather than left at the factory setting.
+"REG-T-HP-SUP-SIDE" = { material = { low = 30, high = 85 }, labour = { low = 25, high = 60 } }  # 1 ea — 12x6 sidewall, double deflection + OBD, side collar off the trunk
 # The passive transfer louver. Cheapest terminal in the house and it should be: a stamped
 # door/wall grille with no damper, no boot and no duct behind it. Bracketed against
 # REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.
@@ -2929,40 +2933,41 @@
 # no local substitute if a pallet arrives short. Ties, flashing, weeps and the shelf angle are
 # in this rate; the CMU or concrete backup is the wall it veneers, priced on its own row.
 #
-# 2026-08-20, second pass: the veneer became the ISHTAR SCHEME and is now three brick colours
-# on one wythe, so it is three rows. A single blended rate would be weighted right only for
-# today's band heights and would quietly become wrong the moment a band moved — the same
-# argument that split the gutters by product. The keys are qualified by MATERIAL
-# (`<assembly>:<material>`, cli/prices.py QUALIFIED_KEY_FIELD); the bare assembly key below
-# stays as the fallback for any brick region a future band adds without its own rate.
+# 2026-09-04: BACK TO ONE ROW. The Ishtar scheme is retired and the wythe is one flat field
+# of ordinary unglazed buff/brown face brick — the same `brown-brick` that was the plinth,
+# now running the full 8'-5". The two glazed rows are commented out rather than deleted, on
+# the same convention that keeps their Materials in the catalog (assemblies.py): getting the
+# scheme back should not require re-researching a rate.
 #
-#   brown-brick   28.3 SF   the plinth. ORDINARY unglazed face brick, which is the point of
-#                           it: a Twin Cities yard stocks brown/buff body brick, so there is
-#                           no special order, no lead time and no short-pallet risk. $15-28/SF
-#                           installed is the standard-veneer market, at the low end of it
-#                           because this band is 24" off the ground — no scaffold, and the
-#                           easiest 28 SF on the wall to lay.
-#   glazed-lapis  90.1 SF   the field. Unchanged from the green it replaces: a GLAZED
-#                           specialty face brick is a special order at 1.5-2x the body price.
+# THE OLD PLINTH RATE CANNOT SIMPLY CARRY OVER, and this is the trap worth naming. $15-28/SF
+# was the standard-veneer market taken AT ITS LOW END, and the reason was written down: the
+# plinth was a 24"-tall band, no scaffold, the easiest 28 SF on the wall to lay. A full 8'-5"
+# field needs scaffold for its upper 6'. The stated Twin Cities market for standard veneer in
+# this file is $15-35/SF, so the field belongs mid-range, not at the floor: $19-30/SF.
+#
+# The LOW is $19, not the $16 the market alone would say, and that is deliberate. 129.2 SF is
+# a minimum-mobilisation masonry job and this file's own note above says a mason will not set
+# up scaffold for under roughly $2,500-4,000. $16/SF x 129.2 SF = $2,067, which is BELOW that
+# floor — a number this file elsewhere says cannot be bought. $19 x 129.2 = $2,455 lands on
+# it. The range is therefore $2,455-3,876 against the Ishtar wall's $2,573-5,467: a saving of
+# roughly $120-1,590, real but modest. The honest headline is that this is a look change that
+# also happens to be cheaper and better suited to a wet court, not a cost measure.
+#
+# The bare assembly key stays as the fallback for any brick region a future band adds without
+# its own rate, and is re-based to the same field rate — there is no glaze left to price up.
+# Ties, flashing, weeps and the shelf angle are in the rate; the concrete backup is the wall
+# this veneers, priced on its own row.
+"BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 129.2 SF of face
+"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 129.2 SF, the whole field
+# RETIRED 2026-09-04 with the Ishtar scheme. Kept for the revert, NOT dead weight to tidy up:
+#   glazed-lapis  90.1 SF   the field. A GLAZED specialty face brick is a special order at
+#                           1.5-2x the body price, with lead time and no local substitute.
 #   glazed-gold   14.8 SF   the register bands. Dearer than the lapis and not because the
-#                           brick is: it is a SECOND colour on a 122 SF job. Its own pallet,
-#                           its own lead time, a full pallet minimum against 15 SF of need,
-#                           and a mason laying two colours to a line rather than running one
-#                           up the wall. $32-65/SF is the small-quantity accent rate; the
-#                           high end is where the pallet minimum dominates outright.
-#
-# NET vs. the one-colour wall: roughly a wash. The plinth saves a few hundred dollars and the
-# gold gives most of it back. The plinth's argument is compositional first — an unglazed clay
-# body under a fired glaze is what makes the glaze read as glaze — and economic second. The
-# line that actually holds money here is still plans/cost-options.md's "Ishtar-gate glazed
-# brick veneer → plain brick, or delete", $3,300-7,100.
-#
-# Ties, flashing, weeps and the shelf angle are in all three rates; the concrete backup is the
-# wall this veneers, priced on its own row.
-"BASEMENT_BRICK_VENEER" = { low = 20, high = 45, unit = "SF" }  # fallback; 122.1 SF of face
-"BASEMENT_BRICK_VENEER:brown-brick" = { low = 15, high = 28, unit = "SF" }  # 28.3 SF, the plinth
-"BASEMENT_BRICK_VENEER:glazed-lapis-brick" = { low = 20, high = 45, unit = "SF" }  # 90.1 SF, the field
-"BASEMENT_BRICK_VENEER:glazed-gold-brick" = { low = 32, high = 65, unit = "SF" }  # 14.8 SF, the registers
+#                           brick is: a SECOND colour on a 122 SF job, its own pallet, a full
+#                           pallet minimum against 15 SF of need, and a mason laying two
+#                           colours to a line. $32-65/SF is the small-quantity accent rate.
+# "BASEMENT_BRICK_VENEER:glazed-lapis-brick" = { low = 20, high = 45, unit = "SF" }
+# "BASEMENT_BRICK_VENEER:glazed-gold-brick" = { low = 32, high = 65, unit = "SF" }
 # 2026-08-20 RESEARCH PASS 4. Conversion chain for a 12" wall 9' tall: 0.3333 cy/LF, 9.0 SF
 # of face per LF, 27 SF of face per cy. The old $320-600/cy was $107-200/LF = $11.85-22.22/SF
 # of face; $420-700 is $140-233/LF = $15.56-25.93/SF.
@@ -5198,7 +5203,7 @@ pipe_fittings   = "material only, and derived rather than quoted — see the tab
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (including its per-material rows BASEMENT_BRICK_VENEER:brown-brick / :glazed-lapis-brick / :glazed-gold-brick) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (with its one live per-material row BASEMENT_BRICK_VENEER:brown-brick — the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and are kept there for the revert) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"

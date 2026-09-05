@@ -21,6 +21,7 @@ import pytest
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
+from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.geometry_members import member_solid
 from typehaus.source import load_plan
 from typehaus.checks import run
@@ -1375,6 +1376,33 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
             assert skin[0].thickness.inches == pytest.approx(0.125), tag
         else:
             assert skin == [], tag
+
+
+def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_model):
+    """``AO-B-BRICK-DOOR``/``-WIN`` are holes FOR ``D-B-PATIO``/``WIN-B-SAUNA``, not openings
+    of their own, and nothing but this pin and ``integrity.reveal_concentric`` says so.
+
+    They are authored on a different wall, off a different node, in a different paragraph of
+    the same file, and every consumer is satisfied by each of them alone. That is exactly how
+    the door came to move 6" west on 2026-08-30 while its arched reveal stayed put — five
+    days of a segmental crown centred on nothing, at 0 FAIL.
+    """
+    by_tag = {o.tag: o for o in catlin_model.openings}
+    walls = {w.tag: w for w in catlin_model.walls}
+    for reveal_tag, opening_tag in (("AO-B-BRICK-DOOR", "D-B-PATIO"),
+                                    ("AO-B-BRICK-WIN", "WIN-B-SAUNA")):
+        reveal, opening = by_tag[reveal_tag], by_tag[opening_tag]
+        # WORLD centres, not ``center_along_m``: the two walls start at different x
+        # (N-B-BRICK-W at 8'-10", the framed walkout at 18'-0"), which is the whole reason
+        # one can drift from the other without anything looking wrong in source.
+        here = opening_center(walls[reveal.host_wall], reveal)
+        there = opening_center(walls[opening.host_wall], opening)
+        assert here[0] == pytest.approx(there[0], abs=1e-6), (
+            f"{reveal_tag} is {(here[0] - there[0]) / inch(1).meters:.2f}\" "
+            f"off {opening_tag}")
+        # The reveal is deliberately SHORTER (the arch crowns below the door head) but never
+        # narrower: a masonry reveal is meant to overlap the hole it fronts.
+        assert reveal.width_m == pytest.approx(opening.width_m, abs=1e-6), reveal_tag
 
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):

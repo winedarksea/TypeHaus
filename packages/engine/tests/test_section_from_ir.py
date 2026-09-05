@@ -18,16 +18,21 @@ def _tags(scene, layer: str) -> set[str]:
             if isinstance(node, Polyline) and node.layer == layer and node.tag}
 
 
-def test_every_slot_region_of_a_banded_wythe_draws(catlin_model):
-    """A plinth, two bands and two fields are one 3 5/8" wythe — and five courses of brick.
+def test_the_brick_veneers_wythe_draws_in_the_wall_type_section(catlin_model):
+    """MOVED, not weakened. This asserted that all five ``Layer.slot`` regions of
+    ``W-B-BRICK``'s Ishtar wythe drew — a real regression, where building section bodies
+    from ``depth_layers()`` left the plinth standing with nothing above it. That wall went to
+    one flat unglazed field on 2026-09-04 and catlin has no banded wythe left, so the slot
+    assertion moved to a fixture of its own:
+    ``test_emitter_band_parity.test_every_slot_region_of_a_banded_wythe_draws_in_section``.
 
-    They share a ``Layer.slot``, so ``depth_layers()`` counts them once; building bodies
-    from that list left the plinth standing with nothing above it.
+    What stays here is the ordinary half — the veneer is still cut by this slice and still
+    draws — so the move cannot quietly take the wall out of the drawing altogether.
     """
     scene = build_section(catlin_model, _slice(catlin_model, "SL-D-WALLTYP"))
     drawn = {tag.split("/")[-1] for tag in _tags(scene, "A-WALL")
              if tag.startswith("W-B-BRICK/")}
-    assert {"brick-band-lo", "brick-field-lo", "brick-band-hi", "brick-field-hi"} <= drawn
+    assert "brick" in drawn, drawn
 
 
 def test_a_cut_layer_is_never_drawn_across_its_own_opening(catlin_model):

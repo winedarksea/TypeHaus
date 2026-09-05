@@ -92,10 +92,12 @@ export function runArchRingTests() {
   assert(radialVertices > 4 * doorBricks,
     "The radial surfaces were found, and there are more of them than there are voussoirs");
 
-  // The constraint that pins ARCH_RING_DEPTH_M: the ring may not grow into the gold register
-  // `brick-band-hi`, whose bottom edge is 88". AO-B-BRICK-DOOR crowns at 78", so a 3 5/8"
-  // ring extradoses at 81 5/8". The margin is comfortable at this head height and was not at
-  // the 84" the door passed through, which is the reason to keep asserting it.
+  // Where the ring's extrados lands. AO-B-BRICK-DOOR crowns at 78", so a 3 5/8" ring
+  // extradoses at 81 5/8". This USED to be a clearance assertion — the ring could not grow
+  // into the gold register `brick-band-hi`, whose bottom edge was 88", and the margin was
+  // uncomfortable at the 84" head the door passed through on its way down. The registers went
+  // with the glaze on 2026-09-04 and there is nothing above the extrados to hit. It is still
+  // asserted as the geometry it is: ARCH_RING_DEPTH_M must reach the extrados and no further.
   const bounds = new THREE.Box3().setFromBufferAttribute(position as THREE.BufferAttribute);
   const extrados = centerY + outer;
   // An ODD voussoir count means the crown falls mid-brick rather than on a joint — the whole

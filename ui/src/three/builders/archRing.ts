@@ -27,11 +27,15 @@ import { archSoffitCircle, archSoffitSegmentCount, baseRefZ, wallLocalFrame, wal
 /**
  * How far the ring stands radially above the soffit: one header, 3⅝".
  *
- * This number is load-bearing for the reference house, not a free choice. `AO-B-BRICK-DOOR`
- * crowns at 84" and the gold register band `brick-band-hi` starts at 88", so a 3⅝" ring puts
- * the extrados at 87⅝" — ⅜" clear under the band. The other common rowlock arch, one full
- * 7⅝" brick length deep, would drive the extrados to 92" and punch straight through the gold,
- * which is the very collision the opening was shortened to 84" to avoid.
+ * It is one header because that is the ordinary rowlock arch — the other common depth, one
+ * full 7⅝" brick length, is a heavier ring than a 5'-0" segmental opening wants.
+ *
+ * IT WAS ALSO A HARD CONSTRAINT ON THE REFERENCE HOUSE, AND THAT PART IS HISTORY. When
+ * `W-B-BRICK` carried the Ishtar scheme, `AO-B-BRICK-DOOR` crowned at 84" and the gold
+ * register `brick-band-hi` started at 88", so 3⅝" put the extrados ⅜" clear under the band
+ * and 7⅝" would have punched straight through it. The registers went away on 2026-09-04 with
+ * the glaze, and the door reveal now crowns at 78" in one flat field — nothing above the
+ * extrados to collide with. The depth is kept on the compositional argument alone.
  */
 export const ARCH_RING_DEPTH_M = 0.0921; // 3⅝"
 

@@ -358,11 +358,15 @@ const GLAZED_GREEN_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#4a4f49", base: "#1b4332",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The Ishtar scheme on the sunken garden's veneer. Lapis field and gold
-// registers are the same fired glaze as the green above, so they take the same near-zero
-// jitter and a dark mortar; they differ only in the unit colour, which is fixed for the same
-// reason the green's is — a ceramic glaze is not a clay body and must not take the
-// brick-red family colour.
+// The Ishtar scheme on the sunken garden's veneer, RETIRED 2026-09-04 with the glaze itself.
+// Both styles are kept, unreferenced by any live material, on the same convention as
+// GLAZED_GREEN_BRICK_STYLE above and the Materials in houses/catlin/plan/assemblies.py:
+// restoring the scheme should be a material_ref edit, not a re-derivation.
+//
+// Lapis field and gold registers are the same fired glaze as the green above, so they take
+// the same near-zero jitter and a dark mortar; they differ only in the unit colour, which is
+// fixed for the same reason the green's is — a ceramic glaze is not a clay body and must not
+// take the brick-red family colour.
 const GLAZED_LAPIS_BRICK_STYLE: MasonryStyle = {
   key: "glazed-lapis-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
   jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#10386a",
@@ -375,14 +379,27 @@ const GLAZED_GOLD_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#3c4756", base: "#c08a12",
   jitterHSL: [0.004, 0.015, 0.04],
 };
-// The plinth under them: a light, uniform brown over tan mortar, near-zero jitter like the
-// glazes above it. Full red-brick jitter at this wall's scale reads as mixed pallets rather
-// than clay variegation, so the glaze/no-glaze contrast is carried by the sheen and the tan
-// mortar joint instead.
+// THE WHOLE SUNKEN-GARDEN VENEER since 2026-09-04, and the jitter moved with the job.
+//
+// It was [0.004, 0.015, 0.04] — the glazes' near-zero — and the reason was specific: a 28 SF
+// plinth standing under a fired glaze, where full red-brick jitter reads as mixed pallets
+// rather than clay variegation, and the glaze/no-glaze contrast was carried by sheen and the
+// tan joint instead. None of that survives the swap. The field is now 129 SF with no glaze
+// anywhere on it to contrast against, and one flat brown at near-zero jitter reads as a
+// printed sheet rather than a wall of fired clay.
+//
+// [0.008, 0.035, 0.09] is deliberately INTERMEDIATE, not a move to BRICK_STYLE's
+// [0.02, 0.08, 0.16]: that is the failure mode in the other direction and this material has
+// already been there once (the plinth was first authored at the red brick's full variegation
+// and came out with near-black units through it — see the Material's note in
+// houses/catlin/plan/assemblies.py). Roughly double the hue and lightness spread of a glaze,
+// half of a red field. Mortar stays #cfc8ba: tan is already the unglazed pairing.
+//
+// Judge it in `haus render --view elevation`, never by reading the numbers here.
 const BROWN_BRICK_STYLE: MasonryStyle = {
   key: "brown-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
   jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: "#a07c5c",
-  jitterHSL: [0.004, 0.015, 0.04],
+  jitterHSL: [0.008, 0.035, 0.09],
 };
 // Glen-Gery Columbia Roman Maximus laid FLAT, in running bond. Nothing in the house uses it
 // today — the garage wainscot stood its units up (see the soldier style below) — but it is

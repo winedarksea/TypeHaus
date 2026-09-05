@@ -176,9 +176,10 @@ export function runArchGeometryTests() {
     "The soffit ring was actually found and smoothed");
 
   // A banded layer (`Layer.extent` / `Layer.slot`) must be swept over its OWN z-range, not the
-  // wall's — else the sunken garden's five-region Ishtar wythe (arched door, arched window,
-  // therefore swept) builds five coincident full-height solids in five colours and z-fights
-  // instead of banding.
+  // wall's — else a banded, arched wythe builds N coincident full-height solids and z-fights
+  // instead of banding. The case was the sunken garden's five-region Ishtar wall (arched door,
+  // arched window, therefore swept); it went flat on 2026-09-04, so this fixture is the
+  // subject now.
   const yRange = (geo: THREE.BufferGeometry | null) => {
     assert(geo !== null, "The banded region still takes the swept-arch path");
     const bounds = new THREE.Box3().setFromBufferAttribute(

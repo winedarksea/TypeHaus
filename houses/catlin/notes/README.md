@@ -55,6 +55,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `porch_enclosure.md` | the seasonal curtain track that replaced the glazed enclosure |
 | `porch_stair.md` | the porch stair geometry |
 | `roof_flash_and_batt.md` | the unvented flash-and-batt roof and its condensation gate |
+| `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |
 
 ## Detail notes — drawing content, byte-pinned
 

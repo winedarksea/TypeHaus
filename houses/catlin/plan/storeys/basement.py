@@ -746,10 +746,12 @@ OPENINGS = [
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and
     # WT-3660-FIX stay in the catalog.
-    # Sill 3'-8" (head 5'-8"), up three 2 2/3" brick courses from 3'-0": the veneer in front
-    # of it grew its cheap brown plinth from 9 courses to 12 (assemblies.py
-    # BASEMENT_BRICK_VENEER), and the window goes up with its reveal rather than let the
-    # register band cut across the glass. Still well above the 18" bench top (placeables.py).
+    # Sill 3'-8" (head 5'-8"), up three 2 2/3" brick courses from 3'-0". The reason was the
+    # Ishtar registers — the sill rose with the plinth so a band would not cut across the
+    # glass — and the registers are gone (assemblies.py BASEMENT_BRICK_VENEER is one flat
+    # unglazed field since 2026-09-04). The elevation stays because it is a good one on its
+    # own: still on the brick course, still well above the 18" bench top (placeables.py),
+    # and moving it would move AO-B-BRICK-WIN with it for no gain.
     # Host and datum are the framed walkout: W-B-S2-FR's base is the curb top, 7 1/4" above
     # the slab this sill used to be measured from, so ft(3, 8) becomes inch(36.75). The
     # glass does not move — the head stays where AO-B-BRICK-WIN's arched reveal in front of
@@ -773,23 +775,32 @@ OPENINGS = [
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
     # 3'-3" follows WIN-B-SAUNA onto its stud bay centre. The reveal and the window it
-    # reveals must stay concentric; only the offset moved, and the elevations did not (both
-    # sills still land at -65 7/16").
+    # reveals must stay concentric — `integrity.reveal_concentric` FAILs if they are more
+    # than 1" apart — and only the offset moved; the elevations did not (both sills still
+    # land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(3, 3)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
-    # Both reveals are set on the eye rather than on a rule: at a full-height door crown the
-    # arch would land exactly on the gold register with no brick above it and no haunch
-    # below it, reading as one someone had sawn off. 78" leaves 10" — nearly four courses —
-    # of lapis between crown and register, and springs the arch at 70".
+    # 78" is a HEIGHT WITH NO CONSTRAINT LEFT ON IT, and that is worth saying plainly. It
+    # was struck to leave 10" of lapis between the arch crown and the gold register at 88";
+    # the registers went away on 2026-09-04 and the field is now one flat unglazed brick, so
+    # nothing above the crown is fixed any more. 78" is kept because it still looks right and
+    # still springs the arch at 70" — not because anything requires it. If more of the door
+    # head should be covered, 84" is now available; the register was the only thing that was
+    # ever stopping it.
     #
-    # Both reveals are therefore now SHORTER than the openings they front, and that is the
-    # point, not a defect: a masonry reveal in front of a rectangular hole is meant to overlap
-    # it. The door's head is covered across its full width and the sauna window loses its top
-    # 6". Neither is a daylight or egress subject — WIN-B-SAUNA is not an emergency escape
+    # Both reveals are SHORTER than the openings they front, and that is the point, not a
+    # defect: a masonry reveal in front of a rectangular hole is meant to overlap it. The
+    # door's head is covered across its full width and the sauna window loses its top 6".
+    # Neither is a daylight or egress subject — WIN-B-SAUNA is not an emergency escape
     # opening and `egress.py` already excludes these arches by name — but if the sauna ever
     # wants that glass back, this height is the line to move, not the window.
+    #
+    # WIDTH AND POSITION ARE NOT FREE THE WAY HEIGHT IS. This reveal drifted 6" east of
+    # D-B-PATIO between 2026-08-30 and 2026-09-04, because the door moved off its own node
+    # on its own wall and nothing carried the reveal with it. `integrity.reveal_concentric`
+    # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", ft(10)),
                  width=ft(5), height=inch(78), sill_height=ft(0),

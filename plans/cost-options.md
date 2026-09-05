@@ -90,7 +90,7 @@ table is here: **a feature and its slice are the same money.**
 | feature | cost | of the bid total | note |
 |---|---:|---|---|
 | **Habitable cathedral-roofed attic** — 1,281 sf of floor and the hot roof over it | **$69,100–133,900** | 7.5% / 7.1% | vs a modelled trussed cold attic. $59–114/sf — the cheapest floor area in the building |
-| **Sunken garden / porch / balcony** — the freestanding concrete structure | **$47,900–86,900** | 5.2% / 4.6% | balcony alone is $10,300–19,100 of it; brick veneer $3,300–7,100 |
+| **Sunken garden / porch / balcony** — the freestanding concrete structure | **$47,900–86,900** | 5.2% / 4.6% | balcony alone is $10,300–19,100 of it; brick veneer's BOM row is $2,455–3,876 since the 2026-09-04 buff swap (its ablation figure is stale — see *Cost cutting*) |
 | ⏳ **PV array + battery** — 5.28 kW, 14.3 kWh, EG4 12kPV | **$38,000–73,000** | 4.1% / 3.9% | defer, but pre-wire — see *Upgrades* |
 | **Sauna** — 127 sf, heater, benches, T&G liner, shower, its own ERV pair | **$12,700–29,500** | 1.4% / 1.6% | Two basement walls carry a second house-local liner stack |
 | **Insulated + heated detached garage** — the insulation and heat only | **$12,500–23,600** | 1.4% / 1.2% | the whole garage is $62,300–119,100 |
@@ -130,7 +130,7 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 | ccSPF 4" → 3.0" — the one-step version of the row above | $3,296–4,682 | **built, re-measured** | no | supersedes/halves the 2.5" row | Deletes band C only; the block geometry does not move |
 | Exterior guards: Trex Signature → builder-grade aluminium | $3,700–5,700 | `[railings]` | no | — | Both guards or neither, or the two levels stop matching |
 | Balcony aluminium plank → walkable PVC membrane | $3,400–10,000 | `[sheet_goods]`, **low confidence** | no | inside the sunken-garden premium | Dry-below is not optional: this deck is the porch's roof. **Call Versadeck (651) 356-1870 first** |
-| Ishtar-gate glazed brick veneer → plain brick, or delete | $3,300–7,100 | ablation | no | inside the sunken-garden premium | The whole Ishtar-Gate composition and the one place the garden has colour |
+| ~~Ishtar-gate glazed brick veneer → plain brick~~ **TAKEN 2026-09-04** — remaining option: *delete the veneer* | ~~$3,300–7,100~~ **needs re-ablation** | ablation, stale | no | inside the sunken-garden premium | The plain-brick half is built: one flat unglazed buff field, BOM row $2,573–5,467 → **$2,455–3,876**, a saving of roughly $120–1,590. Modest, and never the point — the glaze was dropped for the look and because BIA TN 13 warns off glazed brick in a saturated location, which a sunken court is. **The $3,300–7,100 figure covered plain-brick AND delete together and is now wrong for either; re-run the ablation before quoting it.** Deleting outright still gives up the one place the garden has colour |
 | Engineer the garden footing base and stone bed | $3,200–8,000 | arithmetic | no | court-shortening | Nothing, if it stamps |
 | HVAC System 3 folded into the multi-zone | $3,000–5,400 | ablation + line-set allowance | no | — | The Sapphire's true VFD soft-start is what lets that zone run off the battery |
 | Refrigerator columns → one 36" side-by-side | $3,000–4,500 | arithmetic | no | — | All-fridge/all-freezer capacity, and 21" of layout |

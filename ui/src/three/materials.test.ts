@@ -197,29 +197,35 @@ export function runMaterialGeometryTests() {
   assert(Math.abs(2 * BOARD_BATTEN_PROFILE.ribHalfWidth * BATTEN_PITCH_M - 0.0508) < 1e-4,
     "The batten draws about 2in wide, the wide end of the profile's real range");
 
-  // The Ishtar scheme: three more brick faces on the sunken garden's wythe. Every one of
-  // them is a tag substring inference CANNOT reach — "glazed-lapis-brick" and "brown-brick"
-  // say nothing the CMU/white/red ladder recognises, so all three would fall through to red
-  // brick without their authored finish. That is the whole case for Material.finish and it
-  // is what these pin.
+  // Three more brick faces on the sunken garden's wythe. Every one of them is a tag
+  // substring inference CANNOT reach — "glazed-lapis-brick" and "brown-brick" say nothing
+  // the CMU/white/red ladder recognises, so all three would fall through to red brick
+  // without their authored finish. That is the whole case for Material.finish and it is what
+  // these pin. The two glazes are the RETIRED Ishtar scheme (2026-09-04) and are kept,
+  // unreferenced, as the revert target — so they are still pinned here.
   const lapis = masonryStyleFor("glazed-lapis-brick", "glazed-lapis-brick");
   const gold = masonryStyleFor("glazed-gold-brick", "glazed-gold-brick");
   const brown = masonryStyleFor("brown-brick", "brown-brick");
   assert(lapis.unitM === BRICK_UNIT_M && gold.unitM === BRICK_UNIT_M && brown.unitM === BRICK_UNIT_M,
-    "The Ishtar faces are all brick, so all three keep the brick module");
+    "All three faces are brick, so all three keep the brick module");
   assert(lapis.base !== null && gold.base !== null && brown.base !== null,
     "A glaze is a ceramic coat and brown clay is not red clay — none may take the family colour");
   assert(lapis.mortar === gold.mortar,
     "The gold registers sit inside the lapis field, so they share its joint colour");
   assert(brown.mortar === defaultBrick.mortar,
-    "The unglazed plinth keeps the tan mortar of ordinary brick");
-  // The plinth is specified as ONE light brick, not a blend: full red-brick jitter reads as
-  // mixed pallets with near-black units, not clay variegation, at this wall's scale. This
-  // pins that, since the jitter is invisible in any test that only checks the base colour.
-  assert(brown.jitterHSL.every((amount, index) => amount <= defaultBrick.jitterHSL[index] / 3),
-    "The plinth is one light brick: nowhere near the red brick's blend");
-  assert(brown.jitterHSL[2] <= 0.05,
-    "Lightness jitter is what showed as mixed pallets, so it stays at the glazes' near-zero");
+    "The unglazed field keeps the tan mortar of ordinary brick");
+  // THE BROWN'S JITTER IS INTERMEDIATE, and it has to stay that way — it is the one thing
+  // that moved when the wall went from a 24in-tall plinth beside a glaze to a 129 SF field
+  // with no glaze on it (2026-09-04). Both bounds are a real failure this material has
+  // already had: at the red brick's full blend it reads as mixed pallets with near-black
+  // units through it, and at the glazes' near-zero, over a whole wall, it reads as a printed
+  // sheet. Neither is visible in any test that only checks the base colour, hence this.
+  assert(brown.jitterHSL.every((amount, index) => amount < defaultBrick.jitterHSL[index]),
+    "One flat brown is not a red-brick blend: every term stays under the red field's");
+  assert(brown.jitterHSL.every((amount, index) => amount > lapis.jitterHSL[index]),
+    "...and not the glazes' near-zero either, or 129 SF of it reads as a printed sheet");
+  assert(brown.jitterHSL[2] <= 0.12,
+    "Lightness jitter is the term that showed as mixed pallets — it stays well reined in");
   assert(masonryStyleFor("glazed-lapis-brick").key === "brick",
     "Without the authored finish the ref alone still cannot tell lapis from red — hence Material.finish");
 

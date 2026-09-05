@@ -228,45 +228,35 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 # of the sunken garden where 3 5/8" of brick does.
 
 _WYTHE_IN = 3.625
-_VENEER_REGIONS = ("brick-plinth", "brick-band-lo", "brick-field-lo",
-                   "brick-band-hi", "brick-field-hi")
 
 
-def test_a_split_row_is_one_slice_of_the_wall_depth(catlin_model):
-    """The bug the slot exists for: five brick regions, one wythe."""
+def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
+    """W-B-BRICK's depth, which is what the ``Layer.slot`` machinery was protecting.
+
+    THE BANDING IS GONE (2026-09-04): the wythe was five ``slot="wythe"`` regions of the
+    Ishtar scheme and is now one flat unglazed field, so the two assertions that lived here
+    — that five regions take ONE depth position, and that their bands tile the wall bottom to
+    top without a gap — have no subject on this house any more. They moved to a fixture of
+    their own in ``test_emitter_band_parity.py`` rather than being deleted; the slot is still
+    a live feature.
+
+    What is pinned here is the depth itself, which is a fact about the built wall and did not
+    change with the face: a 1-1/2" ventilated cavity plus one 3 5/8" wythe. The gap was 1"
+    until 2026-09-04, when it grew to cover the 1/2" of undescribed void the parge's deletion
+    had left between the XPS and the veneer — the node moved onto the foam by the same 1/2",
+    so the brick itself did not shift.
+    """
     wall = catlin_model.wall("W-B-BRICK")
-    regions = [ly for ly in wall.layers if ly.name in _VENEER_REGIONS]
-    assert [ly.name for ly in regions] == list(_VENEER_REGIONS)
-    assert all(ly.slot == "wythe" for ly in regions)
-
-    # One depth position between them: the wall is the 1-1/2" air gap plus ONE 3 5/8" wythe.
-    # The gap was 1" until 2026-09-04, when it grew to cover the 1/2" of undescribed void the
-    # parge's deletion had left between the XPS and the veneer (the node moved onto the foam
-    # by the same 1/2", so the wythe itself did not shift). Five regions, still one wythe —
-    # which is the whole point of the slot and is what this pins.
+    assert [ly.name for ly in wall.layers] == ["air-gap", "brick"]
+    assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick"]
+    assert not any(ly.slot for ly in wall.layers), "the flat field must not carry a slot"
     assert wall.thickness_m * 39.3700787 == pytest.approx(1.5 + _WYTHE_IN, abs=1e-6)
-    assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick-plinth"]
 
-    # And they resolve onto the identical strip in plan — same polygon, different elevations.
-    first = regions[0].polygon
-    for region in regions[1:]:
-        assert region.polygon == first, f"{region.name} left the wythe's strip"
-
-
-def test_the_veneer_bands_tile_the_wall_without_overlap(catlin_model):
-    """Bottom to top, each region starts where the last one stopped."""
-    wall = catlin_model.wall("W-B-BRICK")
-    bands = [ly.band(wall) for ly in wall.layers if ly.name in _VENEER_REGIONS]
-    assert bands[0][0] == pytest.approx(wall.z0_m)
-    assert bands[-1][1] == pytest.approx(wall.z1_m)
-    for (_lower, top), (bottom, _upper) in zip(bands, bands[1:], strict=False):
-        assert bottom == pytest.approx(top), "a gap or an overlap in the wythe"
-    # The registers are two courses; the plinth is 12 courses, 2'-8". Course = 2 2/3"
-    # nominal.
-    heights_in = [(z1 - z0) * 39.3700787 for z0, z1 in bands]
-    assert heights_in[0] == pytest.approx(32.0, abs=1e-3)
-    assert heights_in[1] == pytest.approx(5.333, abs=1e-2)
-    assert heights_in[3] == pytest.approx(5.333, abs=1e-2)
+    # The field runs the wall's own full height — no extent, so no band to tile.
+    brick = next(ly for ly in wall.layers if ly.name == "brick")
+    z0, z1 = brick.band(wall)
+    assert z0 == pytest.approx(wall.z0_m)
+    assert z1 == pytest.approx(wall.z1_m)
 
 
 def _assembly_findings(assembly):

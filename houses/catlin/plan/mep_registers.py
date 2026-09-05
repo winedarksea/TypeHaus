@@ -25,6 +25,22 @@
 # for holding a 70% RH room negative and pulling solder fume off a bench respectively. The
 # honest fix is a LARGER ERV, not a redistribution; this arithmetic is true against the
 # machine the house actually has.
+#
+# ================== SYSTEM 1 HAS ONE RETURN, AND SIX DOORS ARE IT ==================
+#
+# REG-S-HP-RET is the only return, it is in RM-S-HALL, every other System 1 terminal below is
+# a supply, and the ERV's 2 cfm bedroom pickups are stale-air tokens, not a return path. So a
+# room's air gets back to the machine UNDER ITS DOOR — and at a conventional 3/4" undercut it
+# does not: 80 cfm through a 30" leaf's 22.5 in2 is 11 Pa against the 3 Pa ACCA/ASHRAE
+# ceiling, and RM-A-STUDY's 100 cfm is 17 Pa. Six doors therefore carry a LARGER undercut than
+# a carpenter would cut unasked — 1 1/2" on D-S-BED1/2/3, 1 3/4" on D-S-SUITE and D-A-STUDY,
+# 1 1/4" on D-A-HALVES. D-S-PLANT deliberately does not: its room's pressure is a design
+# output held by an interlocked damper, and an undercut is a leak in the one place it matters.
+#
+# ** `Opening` HAS NO `undercut` FIELD, SO NONE OF THIS IS IN THE MODEL. ** The A-601 schedule
+# has no column for it, so a door with no undercut on it gets cut at 3/4" and six rooms do not
+# get their air. Arithmetic, exclusions, acoustic and carpet costs, and what closing the gap
+# would take: notes/system1_return_path.md.
 
 from typehaus import (
     DuctRun,
@@ -42,7 +58,17 @@ from typehaus.model import m
 # Terminals off the chase. Each bedroom grille sits just inside the bedroom at the hallway
 # wall (interior face x=22'-2 3/4"), fed by a short boot through that wall out of the
 # soffit — the boot carries no DuctRun of its own; `duct_ref` names the trunk it comes off.
-# All are ceiling grilles in the soffit face at 8'-0" (9'-0" ceiling less the 12" drop).
+#
+# ** THEY ARE AT 9'-0", AND UNTIL 2026-09-04 THEY WERE AT 8'-0". ** The old comment read
+# "ceiling grilles in the soffit face at 8'-0" (9'-0" ceiling less the 12" drop)" and every
+# clause of it was wrong: SF-S-DUCT drops 14"; the box stops at x=21'-5 1/2" and these grilles
+# are at 22'-6", so they are not in its face at all; and RM-S-BED1/2/3 carry no soffit of
+# their own (`soffit_area` 0.0 sf), finishing at 8'-11 1/2". Three supply grilles were drawn
+# hanging a foot below the plane they are cut into. **NOTHING GRADES A REGISTER AGAINST ITS
+# HOST SURFACE** — a Register resolves no solid, so `Mount.elevation` is a number the schedule
+# and the sections print and no check reads. Author it off the room's own ceiling, every time.
+# The boot is unmodelled as every boot here is: out of the cavity (96 1/8"..107 3/8"), through
+# W-S-BW1/2/3's stud bay above the 80" head, then a 90 degree ceiling boot up to the gypsum.
 #
 # RM-S-SUITE's terminal (REG-S-HP-SUITE) sits at DU-S-HP-SUITE's west terminus (12'-6",
 # 14'-1 7/8") in SF-S-SUITE's end face, throwing down the entry arm into the suite's main
@@ -51,11 +77,11 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
              position=pt(ft(22, 6), ft(13, 6)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     Register(uid="CSRH02AAAA", tag="REG-S-HP-BED2", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
              position=pt(ft(22, 6), ft(22, 6)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # BED3's station moved on the 2026-09-04 HP1 reversal: (19'-6", 31'-6") is now five feet
     # INSIDE SF-S-HP1 and directly over the machine, so its boot had nowhere to come out of.
     # (22'-6", 29'-0") is 36" due east of the trunk and 2'-4" inside the room — the same
@@ -63,13 +89,34 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
              position=pt(ft(22, 6), ft(29)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=80,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # "Near the stairs": in the hall band west of the centre line, just south of the stair
-    # well's south edge (the well is x 11'..18', y 25'..36').
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # ** IT IS A SIDEWALL GRILLE IN THE SOFFIT'S WEST FACE, AND IT WAS A SHORT CIRCUIT. **
+    # Until 2026-09-04 this was a ceiling diffuser at (17'-6", 24'-0"), 6'-2" in plan from
+    # REG-S-HP-RET — 50 cfm blown straight DOWN, in the same room, at a 650 cfm return sitting
+    # LOWER than it did (7'-3" against 8'-0"). The return simply ate it: the hall and the stair
+    # got a terminal on the drawing and no air in the building. No size of ceiling grille fixes
+    # that, because the fault is DIRECTION. A sidewall face throws the 50 cfm horizontally
+    # WEST, 180 degrees away from the return, across 12'-7" of open landing (x 5'-11 1/8"..
+    # 21'-10 3/8" here, the widest the hall gets) and into the stair void at y=26'-0 3/8".
+    #
+    # THE WEST FACE, BECAUSE THE TAKE-OFF THERE IS THE CLEANEST IN THE HOUSE: DU-S-HP-SUP is
+    # 18" wide on x=19'-6", so its west face stands at 18'-9" — 3/8" off the cavity's west edge
+    # at 18'-8 5/8". A side collar through 3/8" of air, 1 1/2" of rail and 5/8" of gypsum, and
+    # no boot at all.
+    #
+    # x=18'-6" is the lining's room face (18'-6 1/2") less half the type's 1" body — the
+    # convention REG-M-XFER-MUD and every wall device here uses; authored ON the face the
+    # centre reads outside RM-S-HALL and `integrity.placeable_room_mismatch` says so. y=24'-0"
+    # is unchanged, still 2'-0" south of the well. `rotation=deg(90)` turns REG-T-HP-SUP-SIDE's
+    # (12, 1) plan rectangle into (1, 12), which is what a y-running face wants.
+    #
+    # ** 97 1/8" IS DERIVED AND IS THE FACE'S BOTTOM: ** the trunk's centreline resolves at
+    # 100 1/8" (`ResolvedDuct.z_m`), so a 6" face centred on it runs 97 1/8"..103 1/8", inside
+    # the cavity's 96 1/8"..107 3/8". Change the trunk's depth or the drop and this moves.
     Register(uid="CSRH04AAAA", tag="REG-S-HP-STAIR", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
-             position=pt(ft(17, 6), ft(24)), duct_ref="DU-S-HP-SUP",
-             type_ref="REG-T-HP-SUP", design_cfm=50,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             position=pt(inch(222), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
+             type_ref="REG-T-HP-SUP-SIDE", design_cfm=50,
+             mount=Mount(kind=MountKind.WALL, elevation=inch(97.125))),
     # The suite's supply, in SF-S-SUITE's soffit face at the branch's west terminus,
     # throwing west out of the entry arm. 7'-10" because SF-S-SUITE drops 14" off the
     # 9'-0" ceiling.
@@ -93,11 +140,17 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(22, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # RM-S-PLANT at (6'-8", 3'-4"): the branch's west terminus, centred between the room's
-    # two south windows (WIN-S-PLANT1/2 at x 4'-0"/9'-4") so the throw washes the glass a
-    # humid plant room condenses on first. 1'-4" north of the plant line and 2'-11" south of
-    # the two chairs (y 6'-2"/6'-4"), and between — not over — ED-S-PLANT-TUBE1/2, whose
-    # suspended tubes hang at x 3'-4"/8'-8". The room's only opening is D-S-PLANT back into
+    # RM-S-PLANT at (9'-4", 3'-4"): the branch's west terminus, and it MOVED 2'-8" EAST on
+    # 2026-09-04. The old station at 6'-8" was argued as "centred between the room's two south
+    # windows" — but the room has THREE, at x 4'-0" / 9'-4" / 14'-8", and 6'-8" left
+    # WIN-S-PLANT4 unwashed eight feet away. 9'-4" is WIN-S-PLANT2's own centreline and the
+    # centroid of all three, so one terminal washes the whole south wall that a humid plant
+    # room condenses on first. It is also the room's centreline and 2'-8" less duct.
+    #
+    # It clears everything it has to: FURN-S-PLANT-POT2 spans x 7'-11"..9'-5" but only reaches
+    # y=2'-9", so this is 4" north of it in plan and blows past it rather than onto it; the
+    # grow tubes ED-S-PLANT-TUBE1/2 hang on the y=2'-0" line, 1'-4" south; the two chairs are
+    # at y 6'-2"/6'-4". The room's only opening is D-S-PLANT back into
     # the study, at the far east end, so the supply is diagonally opposite it and the room's
     # air crosses the glazing on the way out. (placeables.py still describes the chairs as
     # straddling a floor register at (9', 4') — that was REG-S-SUP1, since retired; this
@@ -110,7 +163,7 @@ REGISTERS_HVAC_SECOND = [
     # pair balanced rather than merely present (mep.humid_room_pressure is the rule that
     # says so out loud).
     Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-             position=pt(ft(6, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             position=pt(ft(9, 4), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP-DAMPERED", design_cfm=75,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The plant room's extract. RM-S-PLANT was supply-only, so its own ventilation pushed
@@ -142,9 +195,10 @@ REGISTERS_HVAC_SECOND = [
     # carry that UNKNOWN and want the same treatment.) The duct's riser is still on the axis,
     # inside the stud cavity; the boot is the 5" of horizontal that crosses the liner.
     #
-    # y=4'-8" is the radial's own bay centre. It leaves 6'-9" between this grille and
-    # REG-S-HP-PLANT at (6'-8", 3'-4"), so conditioned air still lands on the south glass and
-    # crosses the planting before it is pulled out, rather than short-circuiting.
+    # It leaves 9'-2" between this grille and REG-S-HP-PLANT at (9'-4", 3'-4"), so conditioned
+    # air still lands on the south glass and crosses the planting before it is pulled out,
+    # rather than short-circuiting. (The old text here claimed 6'-9" against a supply at
+    # (6'-8", 3'-4"), which was 11'-7" away — stale arithmetic from a y=4'-8" station.)
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
              # y=7'-4" is a truss bay centre and a stud bay centre at once; y=4'-8" would
              # put the riser inside D-S-PLANT's rough opening — 78 1/2" of bare duct standing
@@ -194,12 +248,23 @@ REGISTERS_HVAC_SECOND = [
 ]
 
 REGISTERS_HVAC_ATTIC = [
-    # y=3'-4" is the FS-ATTIC bay's own centreline (8" + 2 x 16"), so the boot drops
-    # straight down out of DU-S-HP-SOUTH, which passes directly under this point — the same
+    # y=3'-4" is the FS-ATTIC bay's own centreline (8" + 2 x 16"), so the boot rises
+    # straight up out of DU-S-HP-SOUTH, which passes directly under this point — the same
     # straight-boot pattern as REG-A-HP-EAST and REG-A-HP-WEST. 100 cfm is the east arm's
     # larger share; see DU-S-HP-SOUTH for why that branch is 10x6.
+    #
+    # ** x=25'-0" SINCE 2026-09-04, AND THE OLD 26'-0" HAD A CHAIR ON IT. **
+    # FURN-A-STUDY-CHAIR2 occupies x 25'-8"..27'-4", y 3'-3"..5'-1"; the boot stood inside it,
+    # which for a FLOOR supply means a seat over the grille whenever the chair is pushed in.
+    # 25'-0" is 8" clear west of that chair and 7" east of CHAIR1, and shortens DU-S-HP-SOUTH
+    # by a foot. It is STILL under FURN-A-STUDY-TABLE (x 24'-2 5/8"..27'-2 5/8") and that is
+    # accepted: a legged 36" table is not a lid, this sits at its open west end between the two
+    # chairs, and every station on the y=3'-4" line from x 21'-0" to 27'-3" is under something.
+    # Getting off the line wants a ~32" boot north across two joists — legal here (x=25' is
+    # mid-span of FS-ATTIC's east span, the permissive band of the hole chart), but a bigger
+    # change than this. Nothing grades it: no check tests a placeable against a register.
     Register(uid="CARH01AAAA", tag="REG-A-HP-STUDY", kind=DuctSystem.SUPPLY,
-             room="RM-A-STUDY", position=pt(ft(26), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             room="RM-A-STUDY", position=pt(ft(25), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
              type_ref="REG-T-HP-SUP", design_cfm=100,
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # Directly above the hall soffit: the boot rises straight through FS-ATTIC off the

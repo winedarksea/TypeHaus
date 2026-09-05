@@ -629,8 +629,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **The terminal is HIGH SIDEWALL, not CEILING, and that does not give up the height
     argument.** Humid air stratifies, so the extract must be in the warm wet air at the top of
     the room; 8'-6" is six inches under the ceiling. The argument was about height, not about
-    which direction the boot arrives from. Separation from `REG-S-HP-PLANT` actually improves,
-    5'-9" → 6'-9".
+    which direction the boot arrives from. Separation from `REG-S-HP-PLANT` actually improves
+    — and it improved again on 2026-09-04 when that supply moved from x=6'-8" to x=9'-4",
+    giving 9'-2" across a 159 sf room.
   - **It is LONGER, not shorter — 55'-8" against 47'-5"** (9'-4" of that is the rise, which an
     eyeballed estimate misses). Affordable because **the machine's rating point is 0.4" w.g.,
     not the 0.2" several comments still quote**: HVI certifies the B210E75RT at 206 cfm net
@@ -1275,6 +1276,49 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       gets ~29 sf back to full height with the remainder 7" higher. That is the trade, made
       with open eyes. `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2" — the
       unsoffited-area escape holds.
+    - **THE AIR-SIDE REVIEW THAT FOLLOWED (2026-09-04) FOUND THREE MORE THINGS, AND TWO OF
+      THEM NOTHING GRADES.** The balance itself is sound — 750 leaves the machine and
+      80+80+80+50+35+175+250 comes off it, exactly — but:
+      - **Four supply grilles were authored 11 1/2" below the plane they are cut into.**
+        `REG-S-HP-BED1/2/3` and `REG-S-HP-STAIR` all sat at 8'-0", on the strength of a
+        comment reading "9'-0" ceiling less the 12" drop". `SF-S-DUCT` drops **14"**, it stops
+        at x=21'-5 1/2" and those grilles are at 22'-6", and `RM-S-BED1/2/3` carry no soffit
+        at all (`soffit_area` 0.0 sf) — they finish at 8'-11 1/2". **A `Register` resolves no
+        solid, so `Mount.elevation` is a number the schedule and the sections print and NO
+        CHECK READS.** Author every ceiling terminal off its own room's ceiling.
+      - **`REG-S-HP-STAIR` was a short circuit and is now a SIDEWALL grille.** 50 cfm blown
+        straight down 6'-2" from a 650 cfm return in the same room, with the return the
+        *lower* of the two (7'-3" against 8'-0"). No size of ceiling grille fixes a direction
+        fault. It is `REG-T-HP-SUP-SIDE` in `SF-S-DUCT`'s **west** lining now, throwing west
+        across 12'-7" of landing into the stair void — and the take-off is the cleanest in
+        the house, because `DU-S-HP-SUP`'s west face stands 3/8" off the cavity's west edge:
+        a side collar through 2 1/2" of build-up, no boot. Its 97 1/8" is derived (the trunk
+        centreline at 100 1/8" less half a 6" face), not chosen.
+      - **`REG-A-HP-STUDY` had a chair on it.** A 100 cfm FLOOR boot at (26'-0", 3'-4") stood
+        inside `FURN-A-STUDY-CHAIR2` (x 25'-8"..27'-4", y 3'-3"..5'-1"). Moved to 25'-0",
+        which clears both chairs and shortens `DU-S-HP-SOUTH` by a foot; it is still under
+        the legged 36" table, because **every** station on that bay line from x 21'-0" to
+        27'-3" is under furniture. **Nothing grades a placeable against a register** — see
+        the `placeable_column_overlap` note.
+      - **`DU-S-HP-SOUTH` came in at both ends**, 19'-4" to 15'-8", the west by most: 6'-8" ->
+        9'-4". The old west station's "centred between the two south windows" argument counted
+        two of the room's **three** (x 4'-0" / 9'-4" / 14'-8"); 9'-4" is the centroid of all
+        three, so one terminal washes the whole south wall.
+      - **The riser cannot shortcut up through the joists**, which is worth recording because
+        it is the obvious saving and it would give `RM-S-STUDY2` back 7 ft of 14" box.
+        `FS-ATTIC`'s joists run in **x**, so any north-south run crosses them, and at x=19'-6"
+        every hole lands 15 1/4" off `W-S-C1`'s face — inside the no-hole zone. Nor does "a
+        small enough duct" buy it: 250 cfm wants ~51 in² for Manual D's 700 fpm, and the
+        largest hole entertained that close to a bearing is ~6 1/2" round = 1,090 fpm.
+    - **THE RETURN PATH IS SIX DOOR UNDERCUTS, AND `Opening` CANNOT HOLD ONE.** System 1 has
+      **one** return, in `RM-S-HALL`; the ERV's 2 cfm bedroom pickups are tokens, not a path.
+      At a conventional 3/4" undercut a 30" leaf passes 42 cfm at the 3 Pa ACCA/ASHRAE
+      ceiling, so `RM-S-BED1/2/3` sit at **11 Pa** and `RM-A-STUDY` at **17 Pa**.
+      `D-S-BED1/2/3` take 1 1/2", `D-S-SUITE` and `D-A-STUDY` 1 3/4", `D-A-HALVES` 1 1/4";
+      `D-S-PLANT` deliberately does not (its pressure is a design output held by an
+      interlocked damper). **The A-601 opening schedule has no undercut column, so a door
+      with no undercut on it gets cut at 3/4" and six rooms do not get their air.** Full
+      arithmetic and the acoustic/carpet costs: `notes/system1_return_path.md`.
     - **The box carries a FRAMED opening, `AO-S-HP1-AP`** — see **Soffit openings** below.
       30" x 29" clear under the machine's north two-thirds and its return face, in the closet
       ceiling. It is gasketed, and that is a code line: leaving the soffit's bottom open in
@@ -1770,55 +1814,80 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     Brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own instructions
     (four 5/16" x 4" bolts, nuts on the rim's inside face), landing in rim blocking authored
     in `FS-SG-DECK.reinforcements`.
-- **The sunken garden's veneer is the Ishtar Gate.** `W-B-BRICK` was one flat
-  field of `glazed-green-brick` (`#1b4332`); the green was liked on its own but did not sit
-  with white standing seam and `#1c1f24` trim. It now reads after the Ishtar Gate of
-  Babylon — a lapis field with golden-yellow register bands over an unglazed brown plinth:
-  - `glazed-lapis-brick` `#10386a`, `glazed-gold-brick` `#c08a12`, `brown-brick` `#a07c5c`.
-    Each is a three-place change like every other material appearance here — the `Material`
-    in `plan/assemblies.py`, a `MasonryStyle` in `ui/src/three/materials.ts`, and a
-    `_FINISH_BASE` entry in `emit/gltf/palette.py`. The lapis and the brown are both authored
-    a step darker than their reference colour, for the albedo reason above: the first pass at
-    `#144a86`/`#7a5340` arrived on screen as cobalt and rust. The plinth went the other way:
-    it was authored dark AND at the red brick's full `jitterHSL`, on the
-    argument that an unglazed body beside a glaze is what makes the glaze read as a glaze,
-    and on the wall that came out as a plinth laid from mixed pallets with near-black units
-    through it. **The plinth is ONE light brick** — the jitter is now the glazes' near-zero,
-    and the no-glaze contrast is carried by sheen and the tan mortar joint instead.
-  - **`glazed-green-brick` is still in the catalog, referenced by nothing.** Reverting the
-    wall to one flat forest-green field is a one-word `material_ref` swap. Do not delete it.
-  - Band heights off `WALL_BASE`, on the 2 2/3" course: brown 0"–24", gold 24"–29 1/3",
-    lapis 29 1/3"–88", gold 88"–93 1/3", lapis 93 1/3"–top. Every one of those is a whole
-    number of courses off `WALL_BASE` (9 / 11 / 33 / 35), which is what makes each band land
-    on a bed joint now that the viewer courses masonry from the wall's own base rather than
-    from project zero (`applyMasonryWallUv`). Keep any new band on the module or
-    it will render cut. The upper register sits **on
-    D-B-PATIO's head line** at 88", so the band runs across the top of the opening rather
-    than floating above it. Move that line and the band goes with it.
-  - **Both brick reveals are shorter than the openings they front.**
-    `AO-B-BRICK-DOOR` went 88" -> 84" -> 78" and `AO-B-BRICK-WIN` 26" -> 20", all by eye. At
-    88" the door's crown landed exactly on the gold register and its springline exactly on
-    D-B-PATIO's 80 1/4" head: no course above the arch, no haunch below it, and it read as an
-    arch someone had sawn off. At 78" there is 10" of lapis between crown and register. The
-    consequence is deliberate: the door's head is covered across its full width and the sauna
-    window loses its top 6", because a masonry reveal in front of a rectangular hole is
-    *meant* to overlap it. Neither opening is a daylight or egress subject.
-  - **All five are ONE row**, `slot="wythe"` (`Layer.slot`, new with this): they share a
-    single 3 5/8" depth position instead of taking one each. Without the slot the assembly
-    resolves to an 18 1/8" wythe. Every region must keep the same thickness and its own
-    non-overlapping `extent`; `integrity.assembly_layers` refuses the rest.
-  - Each colour bills its own band area on its own BOM row, priced by a material-qualified
-    key in `prices.toml` (`BASEMENT_BRICK_VENEER:brown-brick`, …). 28.3 / 90.1 / 14.8 SF — the lapis grew from
-    79.0 when the two reveals were shortened.
+- **The sunken garden's veneer is one flat field of unglazed buff brick** (2026-09-04).
+  `W-B-BRICK` has now worn three faces: one flat field of `glazed-green-brick` (`#1b4332`),
+  then the Ishtar Gate — a lapis field with golden-yellow register bands over an unglazed
+  brown plinth — and since 2026-09-04 the plinth's own brick run full height. **The glaze is
+  not wanted.** What is on the wall is `brown-brick` `#a07c5c`, ordinary ASTM C216 Grade SW
+  face brick, the cheapest face that was ever on it and the only one a Twin Cities yard
+  stocks off the shelf.
+  - **The swap also settles a spec conflict.** [BIA Tech Note 13](https://www.gobrick.com/media/file/13-ceramic-glazed-brick-exterior-walls.pdf)
+    says glazed brick *"should not be used in locations where they are likely to be
+    saturated."* The Ishtar scheme complied only because the unglazed plinth kept the glaze
+    above the splash line. An all-unglazed SW field is unconditionally right for a Minnesota
+    sunken court, which is a rain sump with walls.
+  - **`glazed-green-brick`, `glazed-lapis-brick` and `glazed-gold-brick` are all still in the
+    catalog, referenced by nothing.** Any of the three schemes is a `material_ref` swap. Do
+    not delete them, and do not delete their `MasonryStyle`s in `ui/src/three/materials.ts`
+    or their `_FINISH_BASE` entries in `emit/gltf/palette.py` either — a material's
+    appearance is a three-place change and the revert has to find all three. Their
+    `prices.toml` rows are commented out rather than removed for the same reason.
+  - **The jitter had to move with the job, and it is the one thing that did.** A material
+    appearance is `Material` + `MasonryStyle` + `_FINISH_BASE`, and `#a07c5c` is unchanged in
+    all three — it is already authored a step under its target for the albedo reason above,
+    and re-darkening it is the mistake. `BROWN_BRICK_STYLE.jitterHSL` is NOT: it was
+    `[0.004, 0.015, 0.04]`, the glazes' near-zero, and the reason was a **28 SF plinth beside
+    a glaze**, where the red brick's full variegation read as mixed pallets with near-black
+    units through it. The field is now **129 SF with no glaze to contrast against**, and one
+    flat brown at near-zero reads as a printed sheet. It is `[0.008, 0.035, 0.09]` —
+    deliberately intermediate, roughly double a glaze and half of `BRICK_STYLE`'s
+    `[0.02, 0.08, 0.16]`, which is the failure mode in the other direction and one this
+    material has already been in once. Mortar stays `#cfc8ba` (tan), the unglazed pairing.
+    **Judge it in `haus render --view elevation`, never by reading the numbers.**
+  - **The wythe is ONE layer now — no `slot`, no `extent`.** It was five `slot="wythe"`
+    regions sharing a single 3 5/8" depth position (without the slot the assembly resolves to
+    an 18 1/8" wythe and shoves the wall into the garden). With one region there is nothing
+    to co-locate and nothing to band, so it is the ordinary case: a plain full-height
+    STRUCTURE layer taking the wall's own base and top. **`Layer.slot` is a live feature that
+    catlin no longer exercises** — the machinery, and the emitter regression it exists to
+    catch, are guarded on a synthetic fixture in
+    `packages/engine/tests/test_emitter_band_parity.py`. Anything that used to be true about
+    band heights on the 2 2/3" course, `applyMasonryWallUv`, or the upper register riding
+    `D-B-PATIO`'s head line at 88" is history, not a constraint.
+  - **STRUCTURE, not CLADDING**: the backer is a *different wall*, so this has to be the
+    structure layer or `integrity.assembly_layers` finds none. Same precedent as
+    `RETAINING_BLOCK_12`. One BOM row, `BASEMENT_BRICK_VENEER:brown-brick`, 129.2 SF.
+  - **The rate could not carry over, and that is the interesting part of the money.** The old
+    `$15-28/SF` was the standard-veneer market taken at its LOW end *because the plinth was
+    24" off the ground — no scaffold*. A full 8'-5" field needs scaffold for its upper 6', so
+    it is `$19-30/SF`: $2,455-3,876 against the Ishtar wall's $2,573-5,467. The $19 low is
+    above the $16 the market alone says, because 129 SF is a minimum-mobilisation masonry job
+    and `prices.toml` elsewhere says a mason will not set up scaffold under ~$2,500-4,000. So
+    the saving is roughly **$120-1,590** — real, modest, and never the point.
+  - **Both brick reveals are shorter than the openings they front, and the door reveal's
+    height is now a free variable.** `AO-B-BRICK-DOOR` went 88" -> 84" -> 78" and
+    `AO-B-BRICK-WIN` 26" -> 20", all by eye and all against the gold register at 88" that no
+    longer exists. 78" is kept because it still looks right — nothing requires it, and **84"
+    is now available** if more of the door head should be covered. The overlap itself is
+    deliberate: a masonry reveal in front of a rectangular hole is *meant* to overlap it, so
+    the door's head is covered across its full width and the sauna window loses its top 6".
+    Neither opening is a daylight or egress subject.
+  - **A REVEAL MUST STAY CONCENTRIC WITH THE OPENING IT REVEALS, and for five days one was
+    not.** `AO-B-BRICK-DOOR` was authored against `D-B-PATIO`'s position; on 2026-08-30 the
+    door moved 6" west off a different node on a different wall and the reveal did not follow.
+    `haus check` reported 0 FAIL the whole time, because the two are individually correct and
+    nothing compared them. `integrity.reveal_concentric` grades that now — every rough
+    opening with a wall standing behind it, against the nearest door or window in that wall,
+    at a 1" tolerance — and `test_catlin_contract_m3` pins both pairs. **Edit the reveal and
+    the opening together.** Height is free; width and position are not.
   - **Both arched reveals turn a voussoir ring**,
     `ui/src/three/builders/archRing.ts`. Masonry here is a texture, so the arch heads were
     running bond sliced by a curve; the ring is an annulus with *polar* UVs into that same
     tile, which turns its rectangular bricks into wedges. One header deep (3 5/8") and 3/16"
     proud on every face (the proud offset is what exposes the skewback end caps, and at 3/8"
     each one read as a black shard off the springline). The door's extrados crowns at
-    81 5/8", the window's at 52 5/8". The depth is not free: the door crowns at 84", so 3 5/8" puts the
-    extrados at 87 5/8", 3/8" under the gold register — a full 7 5/8" ring would punch
-    through it. **Viewer-only**; an exported `.glb` still shows the plain spandrel.
+    81 5/8", the window's at 52 5/8". **Viewer-only**; an exported `.glb` still shows the
+    plain spandrel.
 
 ## The engineering workflow
 

@@ -9,7 +9,9 @@ function assert(condition: unknown, message: string): asserts condition {
 
 const IN = 0.0254;
 
-// W-B-BRICK, the Ishtar wythe, and its two arched reveals — the case the band clamp broke.
+// W-B-BRICK as it stood under the Ishtar scheme — a banded wythe with two arched reveals,
+// the case the band clamp broke. The real wall is one flat field since 2026-09-04, so this
+// fixture is now the only banded-and-arched subject there is; keep it banded.
 const WALL: Wall = {
   uid: "wall", tag: "W-B-BRICK", storey: "S-B", assembly: "A-1", provenance: null,
   axis: [[0, 0], [5.842, 0]], z0_m: 0, z1_m: 105 * IN,
