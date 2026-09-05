@@ -356,6 +356,44 @@ The stand takes the POCKET's form and not `hp3_pad`'s: a leg directly under each
 published foot holes (29 3/4" x 15 9/16"), no rail spanning two grids. 18" of leg, for the
 pocket's reasons, plus one this face adds: **north is the shaded side all winter.**
 
+### The return, and the wall grille that could not be framed
+
+The move put `SF-S-HP1` over `RM-S-NCLOSET`, and that raised a question about System 1's
+return which is worth recording because the answer is *forced* and the wrong answers all look
+reasonable. **The air handler's return face is its NORTH face** — supply has to face south to
+feed the trunk — so the plenum has to sit north of the cabinet. But the soffit's north end is
+over a **closet**, and IMC 601.5(7) forbids taking return air from one; and the soffit's south
+end is the **supply** side, carrying the discharge, the strip heater and the trunk in the
+west/centre lane. So the room-air inlet must be in the **hall ceiling, in the east lane**,
+with a duct carrying it north past the cabinet. There is no other arrangement.
+
+**A grille in `W-S-C4B` facing the stair well was the obvious alternative and it cannot be
+built.** That wall is the only one on the well's east side at this storey, and it is the
+**x=18' bearing line** — `RB-HOUSE`'s load path down to the footings. Its studs resolve at
+y 369 / 384 / 400 / 416 / 424 5/8 with a double top plate at 225"..228", so:
+
+- the only stud bay overlapping the plenum band (y 400 3/4"..415 1/4") is blocked by the
+  cabinet below y=408, leaving **7 1/4" of clear bay** — a 115 in² boot at 800 fpm;
+- cutting a stud to widen it puts the double 2x6 top plate over a ~31" span carrying
+  ~1,600 plf of attic floor and roof: **f ≈ 1,940 psi against Fb ≈ 1,310**. It needs a real
+  header, and a header eats the hole's height out of the 15 7/8" between the plate and the
+  cavity floor.
+
+Moving the air handler does not rescue it: the wall is the constraint, not the cabinet.
+
+**What was built instead.** `EQ-S-ERV-MIX` grew from a 10 x 12 x 8 mixing box into a
+**12 x 29 1/2 x 18 return plenum** filling the east lane south of the cabinet, and
+`REG-S-HP-RET` shrank from 30 x 16 to 28 x 12 so its whole **336 in²** face sits inside it.
+The defect that fixed was real and silent: the old grille lapped the duct (240 in²), the box
+(120 in²) and **120 in² of bare soffit cavity** at once, which is IMC 601.5's
+building-cavity-as-plenum. `mep.register_duct_match` grades the pair in plan only and a boot
+is unmodelled by convention here, so nothing reported it.
+
+Its `design_cfm` is **650, not 750**, and that is a correction rather than a resizing: the
+machine moves 750 and the ERV puts 100 of it into the same plenum through its own drop, so
+the room air this grille draws is 650. 336 in² at 650 cfm is **279 fpm**, inside Manual D
+SS4-10's 300 for a grille carrying the filter.
+
 ### One more thing the move fixed, incidentally
 
 `ED-M-HP1-DISC` had been on `W-SG-E1`'s east face at -0'-8", in the splash and the plough

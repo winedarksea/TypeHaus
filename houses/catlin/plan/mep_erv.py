@@ -187,22 +187,32 @@ EQUIPMENT_ERV_ATTIC = [
 #     pending a deliberate decision — see plan/mep_erv_types.py.)
 # Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
 #
-# (21'-0", 28'-3") is the SOUTH end of SF-S-HP1, sitting ON DU-S-HP-RET's start. That is
-# the 2026-09-04 change and it is an improvement of substance, not a relocation: the fresh
-# air now enters at the far end of a 6'-7" return duct and mixes along the whole of it
-# before it reaches the coil, where it used to be dumped into an open chamber. It is still
-# upstream of EQ-S-HP1-STRIP, which is now SOUTH of the cabinet in the discharge — the
-# ordering that matters (fresh -> mix -> coil -> strip) is preserved end to end.
+# ** IT IS THE RETURN PLENUM NOW, NOT A BOX BESIDE THE RETURN (2026-09-04). ** It fills the
+# east lane of SF-S-HP1 from the box's south end to the air handler's south face —
+# x 20'-5 1/2"..21'-5 1/2", y 27'-10 1/2"..30'-4", z on the cavity floor and 18" tall — and
+# REG-S-HP-RET's whole 336 in2 face is inside it. What that replaced: a 10 x 12 box with a
+# 30 x 16 ceiling grille lapping it, the return duct and 120 in2 of bare soffit cavity all at
+# once. A return drawing a quarter of its face out of a framed cavity is IMC 601.5's
+# building-cavity-as-plenum; nothing in the engine grades it, and it was wrong.
+#
+# So the airflow is now what the drawing says it is: room air in through the grille, ERV
+# fresh air in through the 6" drop and its damper, the two mixing across 29 1/2" of plenum,
+# then north up DU-S-HP-RET past the cabinet to its return face. Still upstream of the coil
+# and of EQ-S-HP1-STRIP, which is SOUTH of the cabinet in the discharge — the ordering that
+# matters (fresh -> mix -> coil -> strip) is preserved end to end.
 #
 # ** IT IS ON THE RETURN AND NOT ON THE TRUNK, AND THAT IS FORCED. ** `_pair_is_plumbed`
 # excuses only equipment<->duct pairs; a duct riser landing on another duct is always a
-# clash. The ERV feed therefore has to land on a piece of EQUIPMENT, and this box is it.
+# clash. The ERV feed therefore has to land on a piece of EQUIPMENT, and this plenum is it.
 #
-# Across the box it is 10" in the east lane beside the 21 1/4" cabinet; along the box it
-# occupies y 27'-9"..28'-9", the first foot of the return's travel.
+# ** THE THREE DIMENSIONS ARE EACH A CLEARANCE, NOT A CHOICE. ** 12" across is the east lane
+# less the 2" HANGER_GAP_M off DU-S-HP-SUP (which runs x 18'-9"..20'-3"), leaving 1/2" to the
+# cavity's east face. 29 1/2" along stops it clear of the cabinet's south face at
+# y=30'-4 1/2": overlap the cabinet along the box by even an inch and the pair is graded
+# across it, where the gap is 7/8" and the check FAILs. 18" fills the 18 1/4" cavity.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(ft(21), ft(28, 3)), footprint=(inch(10), inch(12)),
+              position=pt(inch(251.5), inch(349.25)), footprint=(inch(12), inch(29.5)),
               room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
               soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),
@@ -879,14 +889,14 @@ DUCTS_ERV_MIX_FEED = [
             # I-joists span x — so nothing is bored; the north-south leg that follows stays
             # on the deck for the same reason.
             #
-            # ** THE DECK LEG MUST STOP AT y=27'-9" AND NOT ONE INCH FURTHER NORTH. **
-            # That is the mixing box's own south face, and it is where the run turns down.
-            # `duct_occupants` clips a run's extent ALONG the box it names but deliberately
-            # NOT ACROSS it, so a deck leg carried north past this point would be graded as
-            # an occupant of a cavity it is 14" above — a phantom clash against the cabinet,
-            # with nothing in the report to say the two are on different planes. This stop
-            # is load-bearing and completely invisible. The box's south edge may be moved
-            # NORTH if it ever has to move; it may never be moved south.
+            # ** THE DECK LEG TURNS DOWN AT y=28'-9", INSIDE THE PLENUM. ** It has to land
+            # within EQ-S-ERV-MIX's footprint (y 27'-10 1/2"..30'-4") for
+            # `mep.duct_connectivity` to read the joint, and 28'-9" is comfortably inside it
+            # rather than on an edge. It was y=27'-9" while the plenum was a 12"-deep box.
+            #
+            # This run names NO soffit (below), so the old "stop exactly here or the attic
+            # legs get graded" constraint is gone with it — but the drop still has to land
+            # IN the plenum, so moving the plenum in y means moving this vertex with it.
             #
             # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; +4" is the same duct lying on
             # the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
@@ -894,8 +904,8 @@ DUCTS_ERV_MIX_FEED = [
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(21), ft(22)),
-                  pt(ft(21), ft(22)), pt(ft(21), ft(27, 9)),
-                  pt(ft(21), ft(27, 9))),
+                  pt(ft(21), ft(22)), pt(ft(21), ft(28, 9)),
+                  pt(ft(21), ft(28, 9))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),
                         inch(4), inch(4), inch(-24.875)),

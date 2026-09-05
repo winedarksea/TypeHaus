@@ -45,6 +45,11 @@ SOFFIT_LINING_THICKNESS = inch(0.625)
 #: rung set from geometry could drift from what this generator actually builds.
 SOFFIT_RUNG_KEY_PREFIX = "soffit-rung-"
 
+#: The ``FramedMember.key`` prefix every opening header carries. A header is the member a
+#: cut rung bears on, running ALONG the box between the two stations that bound the hole —
+#: so it is a different article from a rung (which spans ACROSS) and is graded separately.
+SOFFIT_HEADER_KEY_PREFIX = "soffit-header-"
+
 # Plan tolerance for "this outline is an axis-aligned rectangle" (metres). Authored
 # corners come from foot/inch quantities, so they land on the box exactly; this only
 # absorbs float round-trip noise.
@@ -251,6 +256,7 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
                                        end_stations))
 
     members: list[FramedMember] = []
+    findings: list[Finding] = []
 
     # --- ladder rails: continuous top + bottom plate down each long side --------
     for side_key, across in zip(side_keys, (side_low, side_high), strict=True):
@@ -271,6 +277,14 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
                 at, at, stud_z0, stud_z1, stud_z1 - stud_z0, orient=run_direction,
             ))
 
+    # --- openings: framed holes through the ladder ------------------------------
+    # Projected into the box's own (along, across) frame once, here, so the rung loop and
+    # the header loop below both read the same numbers and cannot disagree about which
+    # rungs a hole crosses.
+    openings, opening_findings = _project_openings(
+        soffit, long_is_x, run_origin, (span_low, span_high), (0.0, run_length))
+    findings.extend(opening_findings)
+
     # --- rungs: the bottom tie across the box at each interior station ----------
     # The two end stations are closed by end blocking instead — a rung there would sit in
     # the same square, which reads as two members where the carpenter cuts one.
@@ -278,11 +292,41 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
     for index, station in enumerate(stations):
         if any(abs(station - end) <= _RECT_TOLERANCE_M for end in end_stations):
             continue
-        members.append(FramedMember(
-            soffit.uid, f"{SOFFIT_RUNG_KEY_PREFIX}{index:03d}", "blocking", rung_profile,
-            point(station, span_low), point(station, span_high),
-            z_bottom, z_bottom + rung_thickness, rung_length,
-        ))
+        # A rung crossing an opening is CUT, not omitted: what is left either side still
+        # bears the ceiling board out to the rail, and the stubs are what the header
+        # actually carries. A hole that reaches a rail leaves no stub on that side, which
+        # is the ordinary full-width hatch and is why this returns a list rather than a
+        # pair.
+        blocked = [(low, high) for _tag, (a0, a1), (low, high) in openings
+                   if a0 < station + rung_thickness / 2.0
+                   and station - rung_thickness / 2.0 < a1]
+        for suffix, (seg_low, seg_high) in _segments(span_low, span_high, blocked):
+            members.append(FramedMember(
+                soffit.uid, f"{SOFFIT_RUNG_KEY_PREFIX}{index:03d}{suffix}", "blocking",
+                rung_profile, point(station, seg_low), point(station, seg_high),
+                z_bottom, z_bottom + rung_thickness, seg_high - seg_low,
+            ))
+
+    # --- opening headers: the member each cut rung bears on ---------------------
+    # One per across-edge of the hole that lands inside the clear span, running ALONG the
+    # box from the last station south of the hole to the first station north of it. An
+    # edge sitting ON a rail gets no header — the rail is already there.
+    all_stations = sorted(stations)
+    for tag, (a0, a1), (low, high) in openings:
+        below = [st for st in all_stations if st <= a0 + _RECT_TOLERANCE_M]
+        above = [st for st in all_stations if st >= a1 - _RECT_TOLERANCE_M]
+        if not below or not above:
+            continue  # already reported by _project_openings
+        head_lo, head_hi = max(below), min(above)
+        for edge_key, across_at in (("lo", low), ("hi", high)):
+            if (across_at - span_low <= _RECT_TOLERANCE_M
+                    or span_high - across_at <= _RECT_TOLERANCE_M):
+                continue
+            members.append(FramedMember(
+                soffit.uid, f"{SOFFIT_HEADER_KEY_PREFIX}{tag}-{edge_key}", "blocking",
+                rung_profile, point(head_lo, across_at), point(head_hi, across_at),
+                z_bottom, z_bottom + rung_thickness, head_hi - head_lo,
+            ))
 
     # --- end blocking: the full-depth piece closing each end of the box ---------
     for end_key, station in zip(end_keys, end_stations, strict=True):
@@ -292,4 +336,74 @@ def _frame_one(soffit: ResolvedSoffit) -> tuple[list[FramedMember], list[Finding
             stud_z0, stud_z1, rung_length,
         ))
 
-    return members, []
+    return members, findings
+
+
+def _segments(low: float, high: float,
+              blocked: list[tuple[float, float]]) -> list[tuple[str, tuple[float, float]]]:
+    """``low..high`` less every interval in ``blocked``, as ``(key suffix, span)`` pairs.
+
+    The suffix is "" when nothing was cut, so a soffit with no openings frames members
+    with byte-identical keys to the ones it framed before openings existed — which is what
+    keeps every golden, every take-off row and every ``member_interference`` pairing on an
+    unchanged soffit exactly where it was. A cut rung's pieces take "a", "b", … in order,
+    because they are two sticks the carpenter cuts and the BOM should say so.
+    """
+    if not blocked:
+        return [("", (low, high))]
+    spans: list[tuple[float, float]] = []
+    cursor = low
+    for cut_low, cut_high in sorted(blocked):
+        if cut_low - cursor > _RECT_TOLERANCE_M:
+            spans.append((cursor, min(cut_low, high)))
+        cursor = max(cursor, cut_high)
+        if cursor >= high:
+            break
+    if high - cursor > _RECT_TOLERANCE_M:
+        spans.append((cursor, high))
+    return [(chr(ord("a") + index), span) for index, span in enumerate(spans)]
+
+
+def _project_openings(
+    soffit: ResolvedSoffit, long_is_x: bool, run_origin: float,
+    across_bounds: tuple[float, float], along_bounds: tuple[float, float],
+) -> tuple[list[tuple[str, tuple[float, float], tuple[float, float]]], list[Finding]]:
+    """Every authored opening as ``(tag, (along0, along1), (across0, across1))``.
+
+    Rejected — with a finding, never silently — when it is not an axis-aligned rectangle
+    (the same v1 limit the box itself carries) or when it does not lie wholly inside the
+    ladder's clear span. An opening running past the rails or the end blocking is not a
+    hatch the generator can head off: it is a hole through the members that hold the box
+    together, and framing it as if it were would put a header on nothing.
+    """
+    projected: list[tuple[str, tuple[float, float], tuple[float, float]]] = []
+    findings: list[Finding] = []
+    for tag, ring in soffit.openings:
+        rect = _rectangle(ring)
+        if rect is None:
+            findings.append(Finding(
+                severity=Severity.WARN, check_id="framing.soffit_shape",
+                message=(f"soffit {soffit.tag} opening {tag} is not an axis-aligned "
+                         "rectangle; its framing cannot be generated"),
+                element_tags=(soffit.tag, tag), result=Result.UNKNOWN,
+            ))
+            continue
+        minx, miny, maxx, maxy = rect
+        along = (minx - run_origin, maxx - run_origin) if long_is_x else (
+            miny - run_origin, maxy - run_origin)
+        across = (miny, maxy) if long_is_x else (minx, maxx)
+        inside = (along[0] >= along_bounds[0] - _RECT_TOLERANCE_M
+                  and along[1] <= along_bounds[1] + _RECT_TOLERANCE_M
+                  and across[0] >= across_bounds[0] - _RECT_TOLERANCE_M
+                  and across[1] <= across_bounds[1] + _RECT_TOLERANCE_M)
+        if not inside:
+            findings.append(Finding(
+                severity=Severity.WARN, check_id="framing.soffit_shape",
+                message=(f"soffit {soffit.tag} opening {tag} runs outside the ladder's "
+                         "clear span; it cannot be headed off"),
+                element_tags=(soffit.tag, tag), result=Result.UNKNOWN,
+                fix_hint="pull the opening inside the rails and the end blocking",
+            ))
+            continue
+        projected.append((tag, along, across))
+    return projected, findings

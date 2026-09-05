@@ -116,6 +116,52 @@ that sets this cavity, and the cavity is what `DU-S-HP-RET`'s 18" duct and the 2
 cabinet are authored against; and a 2x4 rung is a wider nailer under a ceiling that now
 carries a hinged access panel. There is no lumber saving in it worth re-deriving a cavity for.
 
+## The framed opening (2026-09-04)
+
+`SF-S-HP1` carries `AO-S-HP1-AP`, a **30" x 29" clear hatch** in its underside at
+x 18'-10"..21'-4" by y 31'-10"..34'-3", under the air handler's north two-thirds and its
+return face. It exists because the machine needs servicing from `RM-S-NCLOSET` below, and
+until that day the model could not express it: an access panel was a `Furniture` placeable
+in the ceiling plane, and the generator laid a 2x4 rung straight through the middle of it
+with nothing to compare the two. **A panel that cannot be opened, at 0 FAIL.**
+
+`Soffit.openings` (`model/floors.py`) is the field that fixes it, and it changes what this
+generator builds:
+
+- the rung the hole crosses is **cut**, not omitted — at y 33'-0 5/8" it leaves a **4 1/2"
+  stub west and a 2" stub east**, each still carrying the ceiling board out to its rail;
+- two **headers** run ALONG the box at the hole's two across-edges, from the rung at
+  y 31'-8 5/8" to the rung at y 34'-4 5/8" — **32" of 2x4 laid flat**, which is what the cut
+  ends and the panel's frame bear on;
+- an edge landing **on** a rail takes no header: the rail is already there, and framing one
+  against it would put two members in the same square.
+
+### The header, worked by hand
+
+`structural.soffit_opening` grades it, and this is the oracle for that check. The header
+carries two things and neither is the box's field load:
+
+| term | value |
+|---|---|
+| its share of the panel | a quarter of the hatch — the lid bears on four edges, two of them these headers and two the rungs bounding the hole. 29"/4 = **7.25" of tributary** |
+| the cut rung stub | simply supported rail-to-header, so it delivers **w x L/2** at the header: 0.5556 x 4.5/2 = **1.25 lb** as a point load |
+
+    UDL term:    w = 5 psf x (7.25/12) / 12 = 0.2517 lb/in
+                 δ = 5wL⁴/384EI = 5(0.2517)(32⁴) / (384 · 1.4e6 · 0.9844)
+                   = 1,319,913 / 5.2921e8 = 0.00249"
+    Point term:  δ = PL³/48EI = 1.25(32,768) / (48 · 1.4e6 · 0.9844) = 0.00062"
+    Total:       0.00311"  ->  32 / 0.00311 = L/10,279
+
+The engine reports **L/10279**. The point load is taken at MIDSPAN wherever it really lands,
+which is conservative by construction and stated in the check's own docstring — on this
+header it is worth a fifth of the deflection and nothing of the verdict.
+
+**The number is enormous and the check is still worth having.** A hatch this size heads off
+ONE station. Head off three for a four-foot opening and the header spans 64" of the same
+2x4 laid flat, carrying three stubs: δ goes as L⁴, so 0.00311" becomes **0.0548"** and the
+ratio falls to **L/1,169** — still passing, but nine times nearer the limit for one more
+foot of hole. That is the shape this check exists to make visible before it is spent.
+
 ## The fix, and why it is `plate_member` and not a bigger member
 
 `FramingSpec.plate_member` already existed and was already documented as "the plate size when

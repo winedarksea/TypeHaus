@@ -121,22 +121,26 @@ REGISTER_TYPES = (
                  plan_symbol="register",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # REG-T-HP-RET is a 25x20 filter-back grille. 480 in2 gross at 750 cfm is 225 fpm face
-    # velocity — under Manual D SS4-10's 350 fpm for a plain return grille and its 300 fpm
-    # for one carrying the filter, which this one does: with the machine hung in SF-S-HP1
-    # there is no filter cabinet anywhere else in the system, and the grille is the only
-    # serviceable face a person can reach.
+    # REG-T-HP-RET is a filter-back return grille, and it is the only filter in this system:
+    # with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else, and this
+    # grille is the serviceable face a person reaches from the hall floor.
     #
-    # 30 x 16 nominal, and since the 2026-09-04 reversal the INSTANCE turns it 90 degrees
-    # (plan/mep_registers.py): SF-S-HP1 is 36.50" clear ACROSS x now, so the 30" runs along
-    # the box in y and only the 16" crosses it. Turned, the grille sits wholly in RM-S-HALL
-    # — IMC 601.5(7), no return air out of a closet — with 4 5/8" to spare.
-    # A ceiling access panel under the cabinet is modelled now (FURN-S-NCLOSET-AP); the
-    # filter itself still lives behind this grille and nowhere else in the model.
-    RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 30x16, filter-back",
-                 footprint=(inch(30), inch(16)), height=inch(1),
+    # ** 28 x 12 SINCE 2026-09-04, DOWN FROM 30 x 16, AND THE GRILLE SHRANK TO FIT ITS OWN
+    # PLENUM. ** It was 480 in2 lapping three different things at once — 240 in2 into
+    # DU-S-HP-RET, 120 in2 into the old mixing box, and 120 in2 into bare soffit cavity,
+    # which is IMC 601.5's building-cavity-as-plenum and which no check in this engine
+    # grades. EQ-S-ERV-MIX is a full return plenum now (12" across the east lane by 29 1/2"
+    # along), and this face is sized to sit WHOLLY inside it: 12" across after the instance's
+    # deg(90), 28" along, 336 in2.
+    #
+    # 336 in2 at the 650 cfm of ROOM air it actually carries — the ERV puts the other 100
+    # into the same plenum through its own drop — is 279 fpm, under Manual D SS4-10's 300 fpm
+    # for a grille carrying the filter. At the full 750 it would be 321 fpm, under the 350
+    # for a plain return grille; either reading clears.
+    RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 28x12, filter-back",
+                 footprint=(inch(28), inch(12)), height=inch(1),
                  plan_symbol="register",
-                 source="Filter-back return grille, 30 x 16 nominal (480 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at System 1's 750 cfm, which is 225 fpm here; the 20x14 it replaced was 386 fpm and carried no filter.",
+                 source="Filter-back return grille, 28 x 12 nominal (336 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at the 650 cfm of room air System 1 draws through it (279 fpm), the ERV's 100 cfm entering the same plenum separately. It was 30 x 16 until 2026-09-04, when the grille was sized down to sit wholly inside EQ-S-ERV-MIX rather than lapping the plenum, the duct and 120 in2 of open cavity.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # Third family: a passive transfer louver — no duct/fan/system, just a hole with a
@@ -276,9 +280,15 @@ DUCTS_HVAC_SECOND = [
             soffit_ref="SF-S-DUCT", design_cfm=750),
     # THE RETURN — a real one, up the east lane of SF-S-HP1. The old system had no return
     # duct worth the name: the machine breathed through RM-S-STUDY2's cased opening off a
-    # 6" stub. Now REG-S-HP-RET is a central-hall grille at (20'-9", 29'-0") and this run
-    # carries it north up the box's east lane, then west across the box's north end onto the
-    # cabinet's return face at (19'-6", 34'-0").
+    # 6" stub.
+    #
+    # ** IT STARTS INSIDE THE PLENUM, NOT AT A GRILLE. ** REG-S-HP-RET opens into
+    # EQ-S-ERV-MIX's underside and the ERV's fresh feed drops into the same box; this run is
+    # what leaves it. It begins at (21'-0", 29'-7"), inside the plenum's y 27'-10 1/2"..30'-4",
+    # runs north up the east lane past the cabinet, then west across the box's north end onto
+    # the cabinet's return face at (19'-6", 34'-0"). `_pair_is_plumbed` excuses the
+    # plenum<->duct overlap at the start — `mep.duct_connectivity` earns that, it is not a
+    # tolerance.
     #
     # 10 (x) x 18 (depth): 180 in2 at 750 cfm is 600 fpm, a return velocity. The 10" is what
     # the box's 36.50" clear width can spare beside the 21 1/4" cabinet and a 2 3/8" hanger
@@ -287,13 +297,11 @@ DUCTS_HVAC_SECOND = [
     # objects to 18" in an 18 1/4" cavity, the fallback is 10x16 at 675 fpm. ** Let the
     # check decide; never hand-author a clear width.
     #
-    # EQ-S-ERV-MIX sits at this run's START, at the south end, so the ERV's fresh air mixes
-    # across the whole 6'-7" of return before the coil — and still upstream of
-    # EQ-S-HP1-STRIP, which is now south of the cabinet in the discharge. The mixing box is
-    # on the return and not on the trunk because `_pair_is_plumbed` excuses only
-    # equipment<->duct pairs: a duct riser landing on another duct is always a clash.
+    # It carries the full 750: 650 of room air off the grille plus the ERV's 100, mixed in
+    # the plenum behind it. Everything here is upstream of the coil and therefore upstream of
+    # EQ-S-HP1-STRIP, which sits SOUTH of the cabinet in the discharge.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
-            path=(pt(ft(21), ft(28, 3)), pt(ft(21), ft(34, 8)),
+            path=(pt(ft(21), ft(29, 7)), pt(ft(21), ft(34, 8)),
                   pt(ft(19, 6), ft(34, 8)), pt(ft(19, 6), ft(34))),
             width=inch(10), depth=inch(18), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-HP1", design_cfm=750),

@@ -63,6 +63,7 @@ from typehaus.model.floors import (
     Slab,
     SlabThermalBreak,
     Soffit,
+    SoffitOpening,
 )
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
@@ -259,7 +260,7 @@ __all__ = [
     "RegisterType", "RailingType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
     "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",
     "Slab", "SlabThermalBreak",
-    "Soffit",
+    "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling",
     "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",

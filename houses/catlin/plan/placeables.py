@@ -1067,17 +1067,21 @@ SECOND_PLACEABLES = [
     # trap or a control board. This is a 20 x 13 hinged panel in SF-S-HP1's underside
     # directly BELOW EQ-S-HP1-AH, in RM-S-NCLOSET where a stepladder can stand.
     #
-    # ** ITS SIZE IS THE LADDER'S, NOT A CATALOG'S. ** SF-S-HP1's rungs resolve at
-    # y = 348 5/8 / 364 5/8 / 380 5/8 / 396 5/8 / 412 5/8, so the clear bay is 14 1/2" and
-    # 13" takes it with 3/4" either side. (388 5/8", 19'-6") is that bay's centre, on the
-    # cabinet's own centreline: the cabinet runs y 30'-4 1/2"..34'-0", so the opening is
-    # under the middle of it. Re-read the resolved rung stations before moving this —
-    # nothing couples the two, and a panel that lands on a rung is a panel that does not open.
+    # ** IT IS THE LID ON A FRAMED HOLE, AND THE HOLE IS AUTHORED. ** `AO-S-HP1-AP` in
+    # plan/storeys/second.py is the `SoffitOpening` this covers: 30" x 29" clear at
+    # x 18'-10"..21'-4" by y 31'-10"..34'-3", made by heading off SF-S-HP1's rung at
+    # y=33'-0 5/8" between the rungs either side of it. This panel is drawn to the same
+    # rectangle, so the two agree by construction rather than by a comment.
+    #
+    # It was 20 x 13 for one day — the clear bay between two rungs, which is a hand and a
+    # filter. The engine had no way to say "cut the rung" then; it does now, and the
+    # opening reaches the air handler's north two-thirds AND its return face at y=34'-0",
+    # which is where the filter rack, the coil, the blower and the condensate trap are.
     #
     # elevation 7'-3" is the box's finished underside, hand-coupled to the 21" drop the
     # same way REG-S-HP-RET's is.
-    Furniture(uid="J49Q7W1RWR", tag="FURN-S-NCLOSET-AP", type_ref="FT-ACCESS-PANEL-CLG-2013",
-              room="RM-S-NCLOSET", position=pt(ft(19, 6), inch(388.625)),
+    Furniture(uid="J49Q7W1RWR", tag="FURN-S-NCLOSET-AP", type_ref="FT-ACCESS-PANEL-CLG-3029",
+              room="RM-S-NCLOSET", position=pt(ft(20, 1), inch(396.5)),
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
 
     # The second storey's two closets, same rule as the main floor's pair above.

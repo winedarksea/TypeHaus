@@ -447,6 +447,10 @@ class ResolvedSoffit:
     z0_m: float  # underside of the finished soffit
     z1_m: float  # the ceiling plane it hangs from
     framing: object | None = None  # FramingSpec | None (model/floors.py Soffit.framing)
+    # Framed holes through the ladder, each an authored ``SoffitOpening``'s ring in the
+    # same plan frame as ``outline``. Carried here rather than re-read from the plan so
+    # the framing stage, the check and the emitters all see one list.
+    openings: tuple[tuple[str, Ring], ...] = ()
     members: list[FramedMember] = field(default_factory=list)
 
 

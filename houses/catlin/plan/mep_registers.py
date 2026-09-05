@@ -154,19 +154,33 @@ REGISTERS_HVAC_SECOND = [
              duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=12,
              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    # THE ONE RETURN, and it is a proper central-hall grille now rather than a machine
-    # breathing through a study's cased opening. (20'-9", 29'-0"), in SF-S-HP1's underside
-    # at the box's south end, upstream of the coil, the strip heater and the machine's own
-    # filter — with EQ-S-ERV-MIX on the same run's start, which is what puts 100 cfm of
-    # -15 F design outdoor air UPSTREAM of the heat rather than downstream of it.
+    # THE ONE RETURN, and since 2026-09-04 it opens into a BOX rather than into three
+    # things at once. It is a filter-back grille in SF-S-HP1's underside at (20'-11 1/2",
+    # 29'-1 1/4"), wholly inside EQ-S-ERV-MIX — the return plenum that fills the box's east
+    # lane south of the cabinet — where the ERV's 100 cfm of fresh air enters through its own
+    # 6" drop and damper. Room air and outdoor air mix across 29 1/2" of plenum, then leave
+    # north up DU-S-HP-RET to the coil. Upstream of the coil and of EQ-S-HP1-STRIP, which
+    # sits south of the cabinet in the discharge.
     #
-    # ** `rotation=deg(90)` IS REQUIRED. ** REG-T-HP-RET's footprint is 30 x 16 as
-    # catalogued; unrotated, its 30" x-dimension runs straight past the box lining. Turned,
-    # it is 16 (x) x 30 (y) and sits wholly in RM-S-HALL with 4 5/8" north of W-S-CLN-S to
-    # spare. That is what satisfies ** IMC 601.5(7) **, which forbids taking return air from
-    # a closet: MN adopts the IMC (Minn. R. 1309.0010 deletes IRC ch. 12-24), and the grille
-    # being in the hall rather than in RM-S-NCLOSET is not a detail. The 480 in2 face is
-    # kept: 750 cfm is 225 fpm, inside Manual D SS4-10's 300.
+    # ** WHAT IT WAS, AND WHY IT MOVED. ** A 30 x 16 face at (20'-9", 29'-0"): 240 in2 of it
+    # opened into DU-S-HP-RET, 120 in2 into the old 10 x 12 mixing box, and 120 in2 into bare
+    # soffit cavity. A return drawing a quarter of its face out of a framed ceiling cavity is
+    # IMC 601.5's building-cavity-as-plenum, and no check in this engine looks for it.
+    #
+    # ** `rotation=deg(90)` IS STILL REQUIRED. ** REG-T-HP-RET is catalogued 28 x 12; turned,
+    # it is 12 (x) x 28 (y), which is the plenum's own 12" east lane. Unrotated it would run
+    # 28" straight through the box lining.
+    #
+    # ** IT IS IN THE HALL, AND THAT IS ** IMC 601.5(7) **, NOT A PREFERENCE. ** MN adopts the
+    # IMC (Minn. R. 1309.0010 deletes IRC ch. 12-24), and 601.5(7) forbids taking return air
+    # from a closet. The face runs y 27'-11 1/4"..30'-3 1/4", clear of W-S-CLN-S's hall face
+    # at 30'-7 5/8" by 4 3/8". The same rule is why the closet's ceiling access panel is
+    # gasketed: an open lid over this cavity would be a closet return by another name.
+    #
+    # ** design_cfm IS 650, NOT 750, AND THE 100 IS NOT LOST. ** The air handler moves 750;
+    # the ERV puts 100 of that into the plenum through DU-S-ERV-HP-FEED, so the ROOM air
+    # this grille draws is 650. Authoring 750 here double-counted the ERV's share. 336 in2
+    # at 650 cfm is 279 fpm, inside Manual D SS4-10's 300 for a grille carrying the filter.
     #
     # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-3" is SF-S-HP1's finished
     # underside (21" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
@@ -174,8 +188,8 @@ REGISTERS_HVAC_SECOND = [
     # says so.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-HALL", rotation=deg(90),
-             position=pt(ft(20, 9), ft(29)), duct_ref="DU-S-HP-RET",
-             type_ref="REG-T-HP-RET", design_cfm=750,
+             position=pt(inch(251.5), inch(349.25)), duct_ref="DU-S-HP-RET",
+             type_ref="REG-T-HP-RET", design_cfm=650,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
 ]
 

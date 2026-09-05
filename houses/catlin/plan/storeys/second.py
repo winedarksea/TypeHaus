@@ -42,6 +42,7 @@ from typehaus import (
     Room,
     RoughOpening,
     Soffit,
+    SoffitOpening,
     Stair,
     StructuralRole,
     Wall,
@@ -1002,7 +1003,27 @@ SOFFITS = [
            outline=(pt(ft(18, 3.375), ft(27, 8)), pt(ft(21, 8.125), ft(27, 8)),
                     pt(ft(21, 8.125), ft(35, 5.375)), pt(ft(18, 3.375), ft(35, 5.375))),
            drop=inch(21),
-           framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16))),
+           framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16)),
+           # ** THE SERVICE HATCH IS FRAMED, NOT JUST DRAWN. ** The lid is
+           # FURN-S-NCLOSET-AP (plan/placeables.py); THIS is the hole it covers, and until
+           # `Soffit.openings` existed the generator laid a 2x4 rung straight through the
+           # middle of it at y=33'-0 5/8" with nothing to report the collision — a panel
+           # the model said could not be opened.
+           #
+           # 30" (x) x 29" (y), clear, at x 18'-10"..21'-4" by y 31'-10"..34'-3". It heads
+           # off exactly ONE station (the rung at y=33'-0 5/8") between the rungs at
+           # 31'-8 5/8" and 34'-4 5/8", so the two headers span 32" along the box at
+           # x=18'-10" and x=21'-4" and the cut rung leaves a 4 1/2" stub west and a 2"
+           # stub east. `structural.soffit_opening` grades that header.
+           #
+           # It is wholly inside RM-S-NCLOSET (y 30'-10"..36'-0") and it sits under the
+           # air handler's north two-thirds AND its return face at y=34'-0", which is the
+           # point: one opening reaches the filter rack, the coil, the blower and the
+           # condensate trap. A hand-sized panel between two rungs reaches none of them.
+           openings=(SoffitOpening(
+               tag="AO-S-HP1-AP",
+               outline=(pt(ft(18, 10), ft(31, 10)), pt(ft(21, 4), ft(31, 10)),
+                        pt(ft(21, 4), ft(34, 3)), pt(ft(18, 10), ft(34, 3)))),)),
     # The west branch to the suite (DU-S-HP-SUITE) — rerouted 2026-07-30 onto the short
     # straight line over D-S-SUITE and the suite's entry arm, instead of a 2026-07-29 detour
     # crossing RM-S-SUITEBATH's fixtures. The duct passes through W-S-C2B in the cripple

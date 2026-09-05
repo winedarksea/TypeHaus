@@ -227,6 +227,32 @@ class Slab(Element):
     ceiling_below: tuple[Layer, ...] = ()
 
 
+class SoffitOpening(HausModel):
+    """A framed hole through a soffit's ladder — a service hatch, not a duct penetration.
+
+    ** IT IS THE FRAMING THAT NEEDS THIS FIELD, NOT THE DRAWING. ** A hatch drawn as a
+    placeable in the ceiling below is already expressible (a ``Furniture`` access panel),
+    and until this existed that is all a soffit hatch was: a lid in a plane, with the
+    generator laying its rungs straight through the hole underneath it. Nothing reported
+    the rung standing in the opening, because nothing compared them — so the model asserted
+    a panel that could not be opened.
+
+    Naming the opening here instead makes ``resolve/framing/soffit.py`` cut the rungs it
+    crosses and frame headers along the box between the two bounding stations, which is
+    what a carpenter does and what the take-off should carry. It is deliberately NOT a
+    duct penetration: a duct leaves a soffit through its END (the ``along`` clip in
+    ``duct_occupants`` is built on exactly that), and a hole in a ladder rail is a
+    different article with a different check.
+
+    ``outline`` is an axis-aligned rectangle in the same plan frame as ``Soffit.outline``,
+    and it is the CLEAR opening — the hole a hand goes through, not the panel that covers
+    it. The panel is its own placeable and is free to be larger by its frame's flange.
+    """
+
+    tag: str
+    outline: tuple[Point2D, ...]
+
+
 @register_element
 class Soffit(Element):
     """Storey-level dropped ceiling; polygon may span rooms (#40)."""
@@ -235,6 +261,10 @@ class Soffit(Element):
     drop: Length | None = None
     underside_elevation: Length | None = None
     framing: object | None = None  # FramingSpec | None (avoids import cycle)
+    # Framed holes through the ladder — access hatches. See SoffitOpening: authoring one
+    # is what makes the generator cut the rungs it crosses and head them off, instead of
+    # laying lumber straight through a panel drawn below it.
+    openings: tuple[SoffitOpening, ...] = ()
 
 
 @register_element
@@ -270,6 +300,7 @@ for _name, _obj in (
     ("Slab", Slab),
     ("SlabThermalBreak", SlabThermalBreak),
     ("Soffit", Soffit),
+    ("SoffitOpening", SoffitOpening),
     ("FloorHeat", FloorHeat),
     ("FinishZone", FinishZone),
 ):

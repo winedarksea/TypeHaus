@@ -1182,6 +1182,27 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     turn it the other way and the check grades the trunk's whole travel as its "width" and
     never compares the lane to the machine at all. Whenever a soffit is near-square, the
     ordering is a design decision, not an accident of drawing.
+  - **A HATCH THROUGH A SOFFIT IS AUTHORED, AND THE LADDER IS CUT FOR IT.**
+    `Soffit.openings` (a tuple of `SoffitOpening`, `model/floors.py`) is what makes
+    `resolve/framing/soffit.py` cut the rungs a hole crosses and frame **headers** along the
+    box between the two bounding stations. Before it, an access panel was a `Furniture`
+    placeable in the ceiling plane and the generator laid a rung straight through the middle
+    of it — nothing compared them, because a placeable's footprint is a plan rectangle and
+    `structural.member_interference` does not test placeables against members. The model
+    asserted a panel that could not be opened, at 0 FAIL.
+    - A cut rung becomes **stubs**, not nothing: what is left either side still carries the
+      board out to its rail, and the stubs are what the header actually carries. Keys gain a
+      letter suffix (`soffit-rung-004a`/`-004b`); a soffit with no opening frames
+      **byte-identical** members to before the field existed, which is what kept every
+      section golden and take-off row on the other boxes still.
+    - An opening edge landing **on** a rail takes no header — the rail is already there.
+    - `structural.soffit_opening` grades the header on deflection, oracled by
+      `notes/soffit_rung_deflection.md`. It reads huge on catlin's hatch (L/10,279) and that
+      is the point of having it: the same 2x4 over a four-foot opening is L/1,169, and δ goes
+      as L⁴, so the margin is spent long before it looks spent.
+    - It is deliberately NOT a duct penetration. A duct leaves a soffit through its END —
+      `duct_occupants`'s `along` clip is built on exactly that — and a hole through a ladder
+      rail is a different article with a different check.
   - `CHASE` routing keeps its honest meaning — a framed shaft that is NOT modeled as a
     `Soffit` — and is a *declared* unchecked case. It used to be the flag that turned the
     joist-bay check off, which is why four hand-arithmetic clearance comments lived in the
@@ -1230,10 +1251,35 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       x=1'-0" attic chase runs through, twenty feet west and fourteen inches up. Named, three
       attic legs are graded as occupants of a cavity they never enter — a hard FAIL on correct
       geometry. The drop lands inside `EQ-S-ERV-MIX`'s own graded footprint, so little is lost.
+    - **THE RETURN OPENS INTO A BOX, AND IT DID NOT AT FIRST.** `EQ-S-ERV-MIX` is a full
+      **return plenum** now — 12" across the east lane by 29 1/2" along by 18", x 20'-5 1/2"..
+      21'-5 1/2", y 27'-10 1/2"..30'-4" — and `REG-S-HP-RET`'s whole 336 in² face is inside
+      it. For a few hours it was a 10 x 12 mixing box with a 30 x 16 ceiling grille lapping
+      **three** things at once: 240 in² into `DU-S-HP-RET`, 120 in² into the box, and 120 in²
+      into bare soffit cavity. A return drawing part of its face out of a framed ceiling
+      cavity is **IMC 601.5's building-cavity-as-plenum**, and no check in this engine looks
+      for it — `mep.register_duct_match` grades the pair in PLAN only, and a boot is
+      unmodelled by convention here, so it passed. The three dimensions are each a clearance:
+      12" is the east lane less the 2" `HANGER_GAP_M` off `DU-S-HP-SUP`; 29 1/2" stops the
+      plenum clear of the cabinet's south face (overlap it ALONG by an inch and the pair is
+      graded ACROSS, where the gap is 7/8"); 18" fills the 18 1/4" cavity.
+    - **The wall-grille alternative was investigated and is NOT buildable**, which is worth
+      recording so nobody re-proposes it. `W-S-C4B` is the only wall on the stair well's east
+      side, and it is the **x=18' bearing line** — `RB-HOUSE`'s load path to the footings. Its
+      studs resolve at y 369 / 384 / 400 / 416 / 424 5/8 with a double top plate at 225..228,
+      so the one bay overlapping the plenum band (400 3/4..415 1/4) is blocked by the cabinet
+      below y=408 and leaves **7 1/4" of clear bay**. Cutting a stud puts that plate over a
+      ~31" span at ~1,600 plf: f ≈ 1,940 psi against Fb ≈ 1,310. Moving the air handler does
+      not help — the wall is the problem, not the cabinet.
     - **`RM-S-NCLOSET` and about 7'-9" of the north hall are at 7'-3"**, and `RM-S-STUDY2`
       gets ~29 sf back to full height with the remainder 7" higher. That is the trade, made
       with open eyes. `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2" — the
       unsoffited-area escape holds.
+    - **The box carries a FRAMED opening, `AO-S-HP1-AP`** — see **Soffit openings** below.
+      30" x 29" clear under the machine's north two-thirds and its return face, in the closet
+      ceiling. It is gasketed, and that is a code line: leaving the soffit's bottom open in
+      the closet for the same convenience makes the closet the return plenum, which is what
+      IMC 601.5(7) forbids.
   - **The passage below is HISTORY: it describes the box as it stood in `RM-S-STUDY2`'s
     ceiling, and the seam it argues for is now at y=27'-8" for a different reason (abutting
     `SF-S-DUCT`'s north end). The ledger argument no longer binds anything — a 35"-wide box

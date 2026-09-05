@@ -1823,6 +1823,15 @@
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
 "FT-ACCESS-PANEL-1414" = { material = { low = 35, high = 90 }, labour = { low = 45, high = 110 } }  # 2 ea
 "FT-ACCESS-PANEL-1429" = { material = { low = 55, high = 140 }, labour = { low = 45, high = 110 } }  # 2 ea
+# The mechanical hatch under EQ-S-HP1-AH, new 2026-09-04. It is a bigger article than the two
+# rows above in three ways and each of them is money: it is 30 x 29 against 14 x 29, it is
+# GASKETED (the cavity above it is return-side, so an unsealed lid would be IMC 601.5(7)'s
+# return air from a closet), and it is in a CEILING, where a door is hung overhead against
+# its own weight rather than screwed to a wall. The labour also carries the framing that made
+# the opening: SF-S-HP1's rung at y=33'-0 5/8" is cut and headed off with two 32" 2x4s
+# (plan/storeys/second.py::AO-S-HP1-AP), which is about an hour of a carpenter's day and
+# ~8 LF of 2x4 that the soffit's own $/cy row already carries.
+"FT-ACCESS-PANEL-CLG-3029" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 1 ea — insulated/gasketed hinged ceiling door, 30 x 29 clear
 # Site-built, not bought: a 20" x 30" x 84" plywood carcass closing RM-S-BATH1's tub alcove,
 # whose west panel is the tub's east return. ~95 SF of cabinet plywood — cross-check against
 # the "cabinet-plywood" row, which carries the same $/SF casework-fabrication read —

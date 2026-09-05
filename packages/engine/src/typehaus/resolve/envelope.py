@@ -124,6 +124,9 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 model.soffits.append(ResolvedSoffit(
                     element.uid, element.tag, storey.tag, outline, bottom, ceiling,
                     framing=element.framing,
+                    openings=tuple(
+                        (opening.tag, tuple(point.xy_m for point in opening.outline))
+                        for opening in element.openings),
                 ))
             elif isinstance(element, GlazingPanel):
                 solid, panel_findings = _resolve_glazing_panel(element, storey.tag)

@@ -32,11 +32,15 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.framing.soffit import SOFFIT_RUNG_KEY_PREFIX
+from typehaus.resolve.framing.soffit import (
+    SOFFIT_HEADER_KEY_PREFIX,
+    SOFFIT_RUNG_KEY_PREFIX,
+)
 from typehaus.resolve.framing.tables import member_actual
 from typehaus.resolve.model import FramedMember
 
 _CHECK_ID = "structural.soffit_rung_span"
+_OPENING_CHECK_ID = "structural.soffit_opening"
 
 # SPF No.2 modulus of elasticity, NDS Supplement Table 4A. The same 1.4e6 psi the deck and
 # joist tiers use; a soffit rung is ordinary dimension lumber and there is no reason for it
@@ -143,3 +147,119 @@ def _tributary_in(rungs: list[FramedMember], worst: FramedMember) -> float:
     stations = sorted(m.p0[axis] for m in rungs)
     gaps = [(b - a) / M_PER_IN for a, b in zip(stations, stations[1:], strict=False)]
     return max(gaps) if gaps else 0.0
+
+
+# --- framed openings -------------------------------------------------------------------
+#
+# A hatch through a soffit is not a rung problem and it is not a duct problem. It is the
+# one place in a ladder where a member is deliberately cut, and the member that replaces
+# it runs the OTHER way — along the box, between the two stations bounding the hole. That
+# header is what the panel's frame screws to and what the cut rung stubs bear on, and
+# nothing graded it until openings became authorable.
+#
+# What it carries, and why the number comes out so large on a small hatch: the stubs left
+# either side of the hole are short, so their reactions are ounces, and the panel itself is
+# a piece of ceiling. The check exists for the case that is NOT small — head off three
+# rungs for a 4-foot hatch and the header spans 64" of 2x4 laid flat, which is a real
+# deflection question and a cracked joint at the panel's edge.
+
+
+def _point_load_deflection_in(span_in: float, i_in4: float, load_lb: float) -> float:
+    """δ = PL³/48EI — every point load taken at MIDSPAN, wherever it really lands.
+
+    Conservative by construction: a load at midspan deflects a simple beam more than the
+    same load anywhere else on it. A hatch is headed off between two stations and its stubs
+    sit wherever the module put them, so placing each reaction exactly costs a station map
+    and buys a number that is smaller than this one.
+    """
+    return load_lb * span_in ** 3 / (48.0 * _E_PSI * i_in4)
+
+
+@check(Tier.STRUCTURAL, _OPENING_CHECK_ID)
+def soffit_opening(ctx: CheckContext) -> list[Finding]:
+    """Every framed hatch through a soffit ladder, graded on its header's deflection."""
+    openings = [soffit for soffit in ctx.model.soffits if soffit.openings]
+    if not openings:
+        # Earned N/A, not silence: the model was read and no soffit authors an opening.
+        # A soffit with no hatch is the norm, and "there is nothing to head off" is a fact
+        # about this building rather than a missing input.
+        return [_not_applicable(_OPENING_CHECK_ID, "no soffit in the model authors a "
+                                "framed opening, so there is no header to grade")]
+    out: list[Finding] = []
+    for soffit in openings:
+        headers = [m for m in soffit.members
+                   if m.child_key.startswith(SOFFIT_HEADER_KEY_PREFIX)]
+        rungs = [m for m in soffit.members
+                 if m.child_key.startswith(SOFFIT_RUNG_KEY_PREFIX)]
+        for tag, ring in soffit.openings:
+            xs = [x for x, _ in ring]
+            ys = [y for _, y in ring]
+            width_in = (max(xs) - min(xs)) / M_PER_IN
+            depth_in = (max(ys) - min(ys)) / M_PER_IN
+            mine = [m for m in headers
+                    if m.child_key.startswith(f"{SOFFIT_HEADER_KEY_PREFIX}{tag}-")]
+            if not mine:
+                # A hole reaching both rails is framed by the rails themselves. Legal, and
+                # worth saying out loud rather than passing in silence: it means the hatch
+                # is the full clear width of the box.
+                out.append(_pass(
+                    _OPENING_CHECK_ID,
+                    f"soffit {soffit.tag} opening {tag}: {width_in:.1f}\" x "
+                    f"{depth_in:.1f}\" clear, full width of the ladder — the rails carry "
+                    "its long edges and no header is framed",
+                    (soffit.tag, tag)))
+                continue
+            worst = max(mine, key=lambda m: m.length_m)
+            span_in = worst.length_m / M_PER_IN
+            thickness_in, profile_depth_in = member_actual(worst.profile)
+            z_extent_in = (worst.z1_m - worst.z0_m) / M_PER_IN
+            laid_flat = (abs(z_extent_in - profile_depth_in)
+                         >= abs(z_extent_in - thickness_in))
+            i_in4 = _moment_of_inertia_in4(worst.profile, laid_flat)
+            # A quarter of the hatch: the panel's board bears on four edges, two of them
+            # these headers and two of them the rungs that bound the hole.
+            panel_tributary_in = min(width_in, depth_in) / 4.0
+            delta_in = _deflection_in(span_in, i_in4, panel_tributary_in)
+            # Plus every rung stub that now ends on this header rather than running through.
+            stubs = [m for m in rungs if _bears_on(m, worst)]
+            stub_load_lb = sum(
+                _CEILING_DEAD_LOAD_PSF * (16.0 / 12.0) / 12.0 * (m.length_m / M_PER_IN) / 2.0
+                for m in stubs)
+            delta_in += _point_load_deflection_in(span_in, i_in4, stub_load_lb)
+            ratio = span_in / delta_in if delta_in > 0 else float("inf")
+            detail = (f"soffit {soffit.tag} opening {tag}: {width_in:.1f}\" x "
+                      f"{depth_in:.1f}\" clear, headed off with {len(mine)} "
+                      f"{worst.profile} header(s), longest {span_in:.2f}\" carrying "
+                      f"{len(stubs)} cut rung stub(s) — {delta_in:.4f}\" of deflection, "
+                      f"L/{ratio:.0f}")
+            if ratio >= _DEFLECTION_DENOMINATOR:
+                out.append(_pass(
+                    _OPENING_CHECK_ID,
+                    detail + f" against L/{_DEFLECTION_DENOMINATOR:.0f}",
+                    (soffit.tag, tag)))
+            else:
+                out.append(_advisory(
+                    _OPENING_CHECK_ID,
+                    detail + f" — short of IRC R301.7's L/{_DEFLECTION_DENOMINATOR:.0f} "
+                    "for a ceiling with brittle finishes. Shorten the opening so it heads "
+                    "off fewer stations, or deepen the rung stock with FramingSpec.member",
+                    (soffit.tag, tag), Result.FAIL))
+    return out
+
+
+def _bears_on(rung: FramedMember, header: FramedMember) -> bool:
+    """Whether ``rung``'s cut end lands on ``header``.
+
+    Geometric, not by key: the generator names a stub after its station and a header after
+    its opening, so pairing them by name would be a second encoding of a relationship the
+    coordinates already state.
+    """
+    header_axis = 0 if abs(header.p1[0] - header.p0[0]) > abs(header.p1[1] - header.p0[1]) else 1
+    across_axis = 1 - header_axis
+    line = header.p0[across_axis]
+    lo, hi = sorted((header.p0[header_axis], header.p1[header_axis]))
+    for end in (rung.p0, rung.p1):
+        if (abs(end[across_axis] - line) <= 1e-6
+                and lo - 1e-6 <= end[header_axis] <= hi + 1e-6):
+            return True
+    return False

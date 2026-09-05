@@ -104,18 +104,27 @@ ACCESS_PANEL_1429 = FurnitureType(
 # out 1" deep. For a ceiling panel the whole clear opening is in PLAN and the frame's
 # projection is the height, so the fields swap roles and the type has to be its own.
 #
-# 20 x 13 is sized to SF-S-HP1's ladder, not to a catalog: the rungs land at y 380 5/8" and
-# 396 5/8", which leaves a 14 1/2" clear bay, and 13" takes it with 3/4" either side. 20" in
-# x sits inside the box's 36 1/2" clear and under EQ-S-HP1-AH's own 21 1/4" case. Heading
-# off a rung would buy a bigger opening and would have to be re-checked against
-# `structural.soffit_rung_span`; a hand-in-the-bay panel does not.
-ACCESS_PANEL_CLG_2013 = FurnitureType(
-    tag="FT-ACCESS-PANEL-CLG-2013", name='Ceiling access panel, 20" x 13"',
-    footprint=(inch(20), inch(13)), height=inch(1),
+# ** 30 x 29, AND IT IS THAT BIG BECAUSE THE LADDER WAS HEADED OFF FOR IT. ** It was 20 x 13
+# for one day — the clear bay between two rungs at 16" o.c., which is a hand and a filter and
+# nothing else. `Soffit.openings` now exists (model/floors.py), so SF-S-HP1 authors a real
+# framed hole: one rung cut, two 32" headers along the box, and 30 x 29 of clear opening
+# under the air handler's north two-thirds and its return face. That is a service hatch a
+# blower comes out of, and `structural.soffit_opening` grades the header it hangs on.
+#
+# ** IT IS SEALED AND GASKETED, AND THAT IS A CODE LINE, NOT A DETAIL. ** The obvious
+# convenience — leave the soffit's bottom open in the closet and reach straight up — makes
+# the CLOSET the return plenum, which is exactly what IMC 601.5(7) forbids. A hinged, gasketed
+# door is the compliant version of the same convenience: air does not enter through it, so it
+# is a service hatch and not an inlet.
+ACCESS_PANEL_CLG_3029 = FurnitureType(
+    tag="FT-ACCESS-PANEL-CLG-3029", name='Ceiling access panel, 30" x 29", gasketed',
+    footprint=(inch(30), inch(29)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING),
-    source=("plans/TODO.md — mechanical access. Hinged framed panel in a finished ceiling "
-            "face; plan size is the clear opening, height the frame's projection. Sized to "
-            "the clear bay between SF-S-HP1's ladder rungs, under EQ-S-HP1-AH."),
+    source=("plans/TODO.md — mechanical access. Hinged, gasketed framed panel in a finished "
+            "ceiling face; plan size is the clear opening, height the frame's projection. "
+            "Sized to SF-S-HP1's framed opening AO-S-HP1-AP, which heads off one ladder rung "
+            "to make it. The gasket is not a nicety: the cavity above is return-side, and an "
+            "unsealed lid in a closet ceiling is IMC 601.5(7)'s return-air-from-a-closet."),
 )
 
 # --- built-in millwork ----------------------------------------------------------------
@@ -719,7 +728,7 @@ STUDIO_BAR_BASE_2418 = FurnitureType(
 
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
-                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_2013,
+                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,

@@ -207,16 +207,20 @@ def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_mode
     ** AND THE GEOMETRY INVERTED AGAIN ON 2026-09-04, WITHOUT THE ORDER CHANGING. ** The
     machine moved to the north end of the storey and the trunk now runs SOUTH, so the
     cabinet's discharge is its south face and the strip heater sits south of it, where it
-    used to sit north. The mixing box is south of the cabinet too — but it is on the far end
-    of a 6'-7" RETURN duct, so the fresh air travels north up that duct into the coil and
-    only then comes back south past the strip. The airflow order is unchanged: mix, coil,
-    strip. What the move bought is the mixing length: 100 cfm of -15 F outdoor air now blends
-    across the whole return instead of being dumped into an open chamber.
+    used to sit north. The mixing box — a full return PLENUM since later the same day, and
+    REG-S-HP-RET opens into its underside — is south of the cabinet too. Both are, and that
+    is the point: on this side of the machine the return and the supply run SIDE BY SIDE in
+    two lanes, not one behind the other, so "which is upstream" is no longer a question
+    about y at all.
 
-    South-to-north the three read: box, strip, cabinet. Both of the first two are south of
-    the cabinet, which is what says the box is upstream of the coil and the strip is in the
-    discharge; and the box south of the strip is what says the fresh air is picked up at the
-    far end of the return rather than beside the heat."""
+    What still has to hold, and is asserted here:
+
+    * both the plenum and the strip are wholly SOUTH of the cabinet — the plenum because it
+      feeds the return face, the strip because it sits in the discharge;
+    * they are in DIFFERENT LANES across the box, with the hanger gap between them. If they
+      ever shared a lane, return air and 4.6 kW of supply-side heat would be in one duct,
+      and `mep.duct_soffit_occupancy` would say so — but only because of this separation,
+      which is a siting decision rather than a check's doing."""
     box = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     strip = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-STRIP")
@@ -225,7 +229,21 @@ def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_mode
     tol = 1e-9
     assert max(y for _, y in box.footprint) <= min(y for _, y in handler.footprint) + tol
     assert max(y for _, y in strip.footprint) <= min(y for _, y in handler.footprint) + tol
-    assert max(y for _, y in box.footprint) <= min(y for _, y in strip.footprint) + tol
+    # Side by side, and clear of one another: the plenum takes the east lane, the strip the
+    # centre, with more than the 2" hanger gap between them.
+    box_west = min(x for x, _ in box.footprint)
+    strip_east = max(x for x, _ in strip.footprint)
+    assert box_west > strip_east
+    assert (box_west - strip_east) / M_PER_IN > 2.0
+
+    # And the room-air inlet is INSIDE the plenum, which is the whole 2026-09-04 fix: the
+    # grille used to lap the plenum, the return duct and 120 in2 of bare soffit cavity at
+    # once, and a return drawing part of its face out of a framed cavity is IMC 601.5's
+    # building-cavity-as-plenum. Nothing in this engine grades that, so it is pinned here.
+    grille = next(o for o in catlin_model.canvas_objects if o.tag == "REG-S-HP-RET")
+    for axis in (0, 1):
+        assert min(p[axis] for p in grille.footprint) >= min(p[axis] for p in box.footprint) - tol
+        assert max(p[axis] for p in grille.footprint) <= max(p[axis] for p in box.footprint) + tol
     # And it is in the box the machine is in, not the trunk's.
     plan_refs = {el.tag: getattr(el, "soffit_ref", None)
                  for el in catlin_model.plan.all_elements()}

@@ -78,11 +78,25 @@ EQUIPMENT_TYPES_ERV = (
     # because of the damper in it — a backdraft damper on the ERV leg is what keeps the
     # return working when the ERV is off, which is the behaviour the owner asked for and is
     # behaviour, not geometry.
+    #
+    # ** IT GREW FROM 10 x 12 x 8 TO A REAL RETURN PLENUM ON 2026-09-04, AND THAT IS A FIX. **
+    # It used to be a small box beside the return duct, and REG-S-HP-RET was a 30 x 16 ceiling
+    # grille that lapped BOTH of them: 240 in2 of its face opened into the duct, 120 in2 into
+    # this box, and the remaining 120 in2 into bare soffit cavity. A return drawing a quarter
+    # of its face out of a framed cavity is IMC 601.5's building-cavity-as-plenum, and nothing
+    # in the engine grades it. The box is now 12 x 29 1/2 x 18 — the full east lane of
+    # SF-S-HP1 south of the air handler — and the grille sits WHOLLY inside it, which is what
+    # makes the fresh air and the room air actually mix in a box instead of in a joist bay.
+    #
+    # 12" is the east lane less the 2" hanger gap off DU-S-HP-SUP; 29 1/2" stops it clear of
+    # the cabinet's south face at y=30'-4 1/2"; 18" fills the 18 1/4" cavity. 750 cfm through
+    # the 12 x 18 it presents to DU-S-HP-RET is 500 fpm, a duct velocity, and the grille's own
+    # face is 336 in2 at 279 fpm.
     EquipmentType(tag="EQ-T-ERV-MIXING-BOX",
-                  name="Return-air mixing box, 6\" ERV leg with backdraft damper",
-                  footprint=(inch(10), inch(12)), height=inch(8),
+                  name="Return-air mixing plenum, 6\" ERV leg with backdraft damper",
+                  footprint=(inch(12), inch(29.5)), height=inch(18),
                   plan_symbol="erv",
-                  source="Fabricated plenum box: 6\" ERV inlet with a gravity backdraft damper, open to System 1's return plenum. The damper is the whole point — the ERV and the air handler run on independent schedules and each must breathe without the other.",
+                  source="Fabricated plenum box, 12 x 29 1/2 x 18 in: System 1's return plenum, with a 6 in ERV inlet on a gravity backdraft damper and a filter-back return grille in its underside. The damper is the whole point — the ERV and the air handler run on independent schedules and each must breathe without the other. It was a 10 x 12 x 8 box until 2026-09-04, beside the return rather than containing it; the grille then lapped the box, the duct and 120 in2 of bare cavity at once.",
                   ports=(ServicePort(tag="fresh", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,

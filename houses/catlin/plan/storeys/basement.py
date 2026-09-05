@@ -791,7 +791,7 @@ OPENINGS = [
     # opening and `egress.py` already excludes these arches by name — but if the sauna ever
     # wants that glass back, this height is the line to move, not the window.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(10, 6)),
+                 position=from_node("N-B-BRICK-W", ft(10)),
                  width=ft(5), height=inch(78), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]
