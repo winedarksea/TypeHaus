@@ -1341,21 +1341,25 @@ FROST_WINGS = [
 # pad's 56.9 / 0.70. Two forms for less concrete and less hardscape is the trade, and at
 # this size the forms are the cheaper half.
 #
-# ** HP_PAD: x 29'-0"..36'-10", y -3'-4"..-0'-10" — 19.6 sf, 0.24 cy at 4". ** The north
+# ** HP_PAD: x 29'-0"..32'-7", y -3'-4"..-0'-10" — 8.96 sf, 0.11 cy at 4". ** The north
 # edge stops 3" short of the cladding rather than butting it: there is no isolation joint to
 # detail if the pad never touches the house, and a 3" gap sheds the wall's runoff into
 # gravel instead of against a lip. The west edge is HP2's own cabinet face, 6" clear of
 # W-SG-E1 — the row is tucked as far west as 40 5/32" + 12" + 39" allows (owner, 2026-09-04:
 # a condenser behind the SE corner is quieter down the whole east side yard than one out
-# past it, and the living room takes the difference). It does not tuck all the way; the row
-# is 7'-7 1/6" and the porch wall to the corner is 7'-6", so HP1 oversails by 7 1/6" with
-# 19'-5" to the setback. The east edge runs 2 3/4" past HP1's cabinet.
+# past it, and the living room takes the difference).
+#
+# ** IT SHRANK ON 2026-09-04 WHEN HP1 CROSSED TO THE NORTH FACE. ** It was 19.6 sf carrying
+# a two-unit row that oversailed the pocket's SE corner by 7 1/6"; the east edge is now
+# 2 3/4" past HP2's cabinet by the same rule that set the old one, and there is no oversail
+# left at all — HP2 alone stops 3'-7 27/32" short of the corner. What the pocket keeps is
+# one condenser under WIN-M-LIV-S1 instead of two, and 10.6 sf less concrete.
 #
 # ** THE DISCONNECTS PAID FOR THE TUCK. ** At x 31'-0" the row left a 30" band of the house's
 # south face for them at NEC 110.26(A) working space; tucked, it does not, and they hang on
 # W-SG-E1's east face at 2'-2" above grade instead of the house's at 6'-4". plan/electrical.py
 # argues that trade where it is made.
-_HP_PAD_X0, _HP_PAD_X1 = 29.0, 36.833333
+_HP_PAD_X0, _HP_PAD_X1 = 29.0, 32.583333
 _HP_PAD_Y0, _HP_PAD_Y1 = -3.333333, -0.833333
 #: Two inches proud of the -2'-10" site grade — Gree's "install 2 in above the expected snow
 #: line", and the first two of the ~20" the 18" stands on top of it then add. STAIR_PAD is
@@ -1376,28 +1380,30 @@ HP_PAD = Slab(
 # A flat slab has no grid, so each leg stands directly under a published foot hole and the
 # rails carry no cantilever at all. Gree's patterns, width x depth, from the submittals:
 #
-#   EQ-M-HP1-OD  FXU24HP230V1R32AO   29 3/4"  x 15 9/16"   187.4 lb
 #   EQ-M-HP2-OD  MUL30HP230V1R32AO   25"      x 15 19/32"  145.5 lb
 #
-# Both cabinets sit SQUARE to the plan (`rotation=deg(0)`, discharge facing south) since
-# 2026-09-03 — they were rotated 90 degrees and facing east before that. The long axis runs
-# in x now, so the WIDTH pitch is in x and the DEPTH pitch in y, and the four leg patterns
-# transpose with them. The rotation did NOT change on 2026-09-04; only the centres did, when
+# (EQ-M-HP1-OD's FXU24HP230V1R32AO pattern, 29 3/4" x 15 9/16", now lives in
+# params/hp1_north_pad.py with the unit.)
+#
+# The cabinet sits SQUARE to the plan (`rotation=deg(0)`, discharge facing south) since
+# 2026-09-03 — it was rotated 90 degrees and facing east before that. The long axis runs
+# in x now, so the WIDTH pitch is in x and the DEPTH pitch in y, and the leg pattern
+# transposes with it. The rotation did NOT change on 2026-09-04; only the centre did, when
 # the row crossed the pocket to sit against the house and the flight took the south half.
-# The centres are the units' own, authored in plan/electrical.py — the two files cannot
+# The centre is the unit's own, authored in plan/electrical.py — the two files cannot
 # import each other, so a unit that moves must move here too.
 #
-# The published foot pattern is WIDER than the cabinet across the depth on both units
-# (15 9/16" of feet under a 14 9/16" casing), so the north legs stand half an inch PROUD of
-# the north face — 2 3/4" from the pad edge, not 3 1/4". That half inch is why the pad's
-# north edge is a derived number rather than "the cabinet line plus a bit".
+# The published foot pattern is WIDER than the cabinet across the depth (15 19/32" of feet
+# under a 16 13/16" casing on this one; it was 15 9/16" under 14 9/16" on HP1), so a leg can
+# stand proud of a face — which is why the pad's north edge is a derived number rather than
+# "the cabinet line plus a bit".
 # `test_catlin_outdoor_structures.py` is what holds the two together now that the deck check
 # no longer does.
+# ** THE "A" STAND IS GONE (2026-09-04). ** EQ-M-HP1-OD crossed to the north face with its
+# air handler (params/hp1_north_pad.py), taking PT-SG-HPA1..4 and CN-SG-HPA1..4 with it —
+# both are comprehensions over this table, so deleting four rows deletes eight elements.
+# What is left in the pocket is HP2 alone.
 _HP_STAND_AT = (
-    ("A", 1, 34.97166667 - 29.75 / 24.0, -1.7109375 - 15.5625 / 24.0),
-    ("A", 2, 34.97166667 - 29.75 / 24.0, -1.7109375 + 15.5625 / 24.0),
-    ("A", 3, 34.97166667 + 29.75 / 24.0, -1.7109375 - 15.5625 / 24.0),
-    ("A", 4, 34.97166667 + 29.75 / 24.0, -1.7109375 + 15.5625 / 24.0),
     ("B", 1, 30.67333333 - 25.0 / 24.0, -1.80458333 - 15.59375 / 24.0),
     ("B", 2, 30.67333333 - 25.0 / 24.0, -1.80458333 + 15.59375 / 24.0),
     ("B", 3, 30.67333333 + 25.0 / 24.0, -1.80458333 - 15.59375 / 24.0),

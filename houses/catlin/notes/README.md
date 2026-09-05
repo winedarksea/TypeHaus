@@ -48,7 +48,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `bath2_over_toilet_cabinet.md` | the over-toilet cabinet and its clearances |
 | `beam_water_protection.md` | keeping water out of a built-up exterior beam |
 | `fortified_roof_cert.md` | what the FORTIFIED Roof designation asks for |
-| `heat_pump_ground_pad.md` | why both condensers left the balcony for a poured pad |
+| `heat_pump_ground_pad.md` | why the condensers left the balcony, and why the three of them now stand on three separate pads on three sides of the house |
 | `mixed_deck_movement_joint.md` | the movement joint where two deck materials meet |
 | `pantry_climbable_shelving.md` | the climbable-shelving rule and what it retired |
 | `pocket_door_at_laundry.md` | the pocket door and the wall it is cut into |

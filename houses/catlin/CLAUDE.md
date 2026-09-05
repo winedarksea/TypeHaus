@@ -614,7 +614,8 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `DU-S-ERV-HP-FEED` (100 cfm, the mixing-box feed) sets the chase's section — wide enough
     that the first answer was a 21'-8" bench along the eave. **It turns east one bay sooner, in `y=22'-0"`** — the bay
     `DU-A-ERV-R-BED3` already uses, the last one south of `FO-A-HALL` — and reaches the same
-    `SF-S-DUCT` drop down `RM-A-EAST-UNFIN`'s deck. `DU-A-ERV-R-STUBATH`'s east leg
+    `SF-S-HP1` drop up `RM-A-EAST-UNFIN`'s deck (it was a `SF-S-DUCT` drop until the
+    2026-09-04 HP1 move). `DU-A-ERV-R-STUBATH`'s east leg
     runs into the `y=19'-4"` bay rather than lying across 8'-7" of the
     studio's floor.
   - **`DU-A-ERV-R-PLANT` left too, and the eave line is bare.** It is `DU-M-ERV-R-PLANT` now,
@@ -1175,11 +1176,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   gap. **Never author a clear width** — it is a second source of truth for a number the
   framing already states, and it drifts the first time a 2x2 becomes a 2x3. `SF-S-DUCT`
   derives 30 3/4" clear x 11 1/4" drop; `SF-S-SUITE` 31 3/4" x 11 1/4"; `SF-S-HP1`
-  72 3/4" x 14 1/4".
+  **36 1/2" x 18 1/4"**.
   - **A box's LONG plan dimension is its axis, and every occupant is measured ACROSS the
-    other one.** `SF-S-HP1` is 80" in y against 77" in x for exactly that reason: turn it
-    the other way and the check grades the trunk's whole travel as its "width" and never
-    compares the two lanes to the machine at all. Whenever a soffit is near-square, the
+    other one.** `SF-S-HP1` is 7'-9 3/8" in y against 40 3/4" in x for exactly that reason:
+    turn it the other way and the check grades the trunk's whole travel as its "width" and
+    never compares the lane to the machine at all. Whenever a soffit is near-square, the
     ordering is a design decision, not an accident of drawing.
   - `CHASE` routing keeps its honest meaning — a framed shaft that is NOT modeled as a
     `Soffit` — and is a *declared* unchecked case. It used to be the flag that turned the
@@ -1213,7 +1214,31 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     11 13/16" — which is what took `SF-S-HP1` from a 17" drop to 21" and its underside to
     7'-3". **The generalisation of the generalisation: a verified datasheet number is only as
     good as the column it was read from, and three of these were read from the wrong one.**
-  - **`SF-S-HP1` runs UNDER `ST-S2A`'s flight, and that is allowed but bounded.** The stair
+  - **`SF-S-HP1` MOVED TO `RM-S-NCLOSET`'S CEILING ON 2026-09-04, AND THE WHOLE SYSTEM
+    REVERSED WITH IT.** The air handler is at the north end of the storey now, the trunk runs
+    SOUTH out of it, `DU-S-HP-SOUTH-RISE` is a collinear reducer at the trunk's south cap
+    instead of a dogleg round the machine, and `EQ-M-HP1-OD` crossed to the north face on its
+    own pad (`params/hp1_north_pad.py`). The box is **40 3/4" x 7'-9 3/8", flush on all four
+    finished faces**, and the machine is turned `rotation=deg(90)` so only its 21 1/4" case
+    depth competes for the graded width. Three things follow that are not obvious:
+    - **`W-S-BW4` had to be retyped `INT_2X4_RC`.** The box spans it and `W-S-BW3`, which is
+      already RC; a plain partition left the east face jogging 1/2" at y=30'-10", and
+      `_rectangle` returns `None` on a non-rectangle, sending EVERY occupant to UNKNOWN. It
+      narrows `RM-S-NCLOSET` by 1/2". The acoustics are a bonus, not the argument.
+    - **`DU-S-ERV-HP-FEED` NAMES NO SOFFIT NOW.** `duct_occupants` clips a run ALONG the box
+      it names and deliberately not ACROSS it, and the box's new y band is the same band the
+      x=1'-0" attic chase runs through, twenty feet west and fourteen inches up. Named, three
+      attic legs are graded as occupants of a cavity they never enter — a hard FAIL on correct
+      geometry. The drop lands inside `EQ-S-ERV-MIX`'s own graded footprint, so little is lost.
+    - **`RM-S-NCLOSET` and about 7'-9" of the north hall are at 7'-3"**, and `RM-S-STUDY2`
+      gets ~29 sf back to full height with the remainder 7" higher. That is the trade, made
+      with open eyes. `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2" — the
+      unsoffited-area escape holds.
+  - **The passage below is HISTORY: it describes the box as it stood in `RM-S-STUDY2`'s
+    ceiling, and the seam it argues for is now at y=27'-8" for a different reason (abutting
+    `SF-S-DUCT`'s north end). The ledger argument no longer binds anything — a 35"-wide box
+    topping out at x=21'-5 1/2" never reaches it.**
+  - **`SF-S-HP1` ran UNDER `ST-S2A`'s flight, and that was allowed but bounded.** The stair
     climbs west along `W-S-SS2`, so over the box's north-east corner its underside is at or
     above the box's own 7'-3" face and the two finish as one plane. What may NOT be lapped
     is `ledger-W-S-SS2-stringer-1`, the 2x10 on the wall at y 104 1/8"..105 5/8":

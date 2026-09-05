@@ -56,8 +56,12 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(22, 6), ft(22, 6)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=80,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # BED3's station moved on the 2026-09-04 HP1 reversal: (19'-6", 31'-6") is now five feet
+    # INSIDE SF-S-HP1 and directly over the machine, so its boot had nowhere to come out of.
+    # (22'-6", 29'-0") is 36" due east of the trunk and 2'-4" inside the room — the same
+    # just-inside-the-hallway-wall pattern as BED1 and BED2, whose x it shares.
     Register(uid="CSRH03AAAA", tag="REG-S-HP-BED3", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
-             position=pt(ft(22, 6), ft(31, 6)), duct_ref="DU-S-HP-SUP",
+             position=pt(ft(22, 6), ft(29)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP", design_cfm=80,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # "Near the stairs": in the hall band west of the centre line, just south of the stair
@@ -150,21 +154,27 @@ REGISTERS_HVAC_SECOND = [
              duct_ref="DU-M-ERV-R-PLANT",
              type_ref="REG-T-ERV-PLANT-EXH", design_cfm=12,
              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
-    # The one return: a filter-back grille in SF-S-HP1's underside at (20'-7", 1'-9"), in
-    # the return chamber at the box's south end, upstream of the coil, the strip heater and
-    # the machine's own filter — with EQ-S-ERV-MIX at the far side of the same chamber,
-    # which is what puts 100 cfm of -15 F design outdoor air UPSTREAM of the heat rather
-    # than downstream of it. DU-S-HP-RET is 25x14 from here to the case's collar.
+    # THE ONE RETURN, and it is a proper central-hall grille now rather than a machine
+    # breathing through a study's cased opening. (20'-9", 29'-0"), in SF-S-HP1's underside
+    # at the box's south end, upstream of the coil, the strip heater and the machine's own
+    # filter — with EQ-S-ERV-MIX on the same run's start, which is what puts 100 cfm of
+    # -15 F design outdoor air UPSTREAM of the heat rather than downstream of it.
     #
-    # `room` is RM-S-STUDY2 rather than RM-S-HALL because that is the room the chamber is
-    # in. The AH draws through the study: hall -> D-S-STUDY2 (a 2'-6" cased opening, no
-    # leaf) -> return, a deliberate loose coupling.
+    # ** `rotation=deg(90)` IS REQUIRED. ** REG-T-HP-RET's footprint is 30 x 16 as
+    # catalogued; unrotated, its 30" x-dimension runs straight past the box lining. Turned,
+    # it is 16 (x) x 30 (y) and sits wholly in RM-S-HALL with 4 5/8" north of W-S-CLN-S to
+    # spare. That is what satisfies ** IMC 601.5(7) **, which forbids taking return air from
+    # a closet: MN adopts the IMC (Minn. R. 1309.0010 deletes IRC ch. 12-24), and the grille
+    # being in the hall rather than in RM-S-NCLOSET is not a detail. The 480 in2 face is
+    # kept: 750 cfm is 225 fpm, inside Manual D SS4-10's 300.
     #
-    # Elevation 7'-3" is SF-S-HP1's finished underside (21" drop for the FLEXX Ultra
-    # cabinet, storeys/second.py), not SF-S-DUCT's 7'-10".
+    # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-3" is SF-S-HP1's finished
+    # underside (21" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
+    # this number must be changed with it, or the grille sits inside the box and nothing
+    # says so.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
-             room="RM-S-STUDY2",
-             position=pt(ft(20, 7), ft(1, 9)), duct_ref="DU-S-HP-RET",
+             room="RM-S-HALL", rotation=deg(90),
+             position=pt(ft(20, 9), ft(29)), duct_ref="DU-S-HP-RET",
              type_ref="REG-T-HP-RET", design_cfm=750,
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
 ]

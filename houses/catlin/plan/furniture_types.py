@@ -98,6 +98,25 @@ ACCESS_PANEL_1429 = FurnitureType(
     footprint=(inch(14), inch(1)), height=inch(29),
     plan_symbol=None, mount=_WALL_MOUNT, source=_PANEL_SOURCE,
 )
+# ** A CEILING PANEL IS A DIFFERENT SHAPE OF TYPE, NOT A REUSE OF THE TWO ABOVE. ** Those
+# two are WALL mounts: their `footprint` is (width, frame projection) and their `height` is
+# the vertical dimension of the opening. Lay one in a ceiling and the plan rectangle comes
+# out 1" deep. For a ceiling panel the whole clear opening is in PLAN and the frame's
+# projection is the height, so the fields swap roles and the type has to be its own.
+#
+# 20 x 13 is sized to SF-S-HP1's ladder, not to a catalog: the rungs land at y 380 5/8" and
+# 396 5/8", which leaves a 14 1/2" clear bay, and 13" takes it with 3/4" either side. 20" in
+# x sits inside the box's 36 1/2" clear and under EQ-S-HP1-AH's own 21 1/4" case. Heading
+# off a rung would buy a bigger opening and would have to be re-checked against
+# `structural.soffit_rung_span`; a hand-in-the-bay panel does not.
+ACCESS_PANEL_CLG_2013 = FurnitureType(
+    tag="FT-ACCESS-PANEL-CLG-2013", name='Ceiling access panel, 20" x 13"',
+    footprint=(inch(20), inch(13)), height=inch(1),
+    plan_symbol=None, mount=Mount(kind=MountKind.CEILING),
+    source=("plans/TODO.md — mechanical access. Hinged framed panel in a finished ceiling "
+            "face; plan size is the clear opening, height the frame's projection. Sized to "
+            "the clear bay between SF-S-HP1's ladder rungs, under EQ-S-HP1-AH."),
+)
 
 # --- built-in millwork ----------------------------------------------------------------
 #
@@ -700,7 +719,8 @@ STUDIO_BAR_BASE_2418 = FurnitureType(
 
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
-                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, BATH1_SHELF_2030,
+                   ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_2013,
+                   BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,

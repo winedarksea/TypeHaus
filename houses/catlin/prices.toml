@@ -856,7 +856,7 @@
 # while both condensers stood on FS-SG-DECK. Nothing is bolted through that plank now, so
 # the deck anchor's row went with the stand — the part survives in library/hardware.py for
 # any house that does put equipment on a dry-below deck.
-"SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 8 ea
+"SS316-WEDGE-38x3" = { low = 4, high = 7 }  # 12 ea — four legs each under three stands. The "8 ea" this comment carried was stale from the day SL-M-HP3PAD shipped; on 2026-09-04 HP1 moved to its own north pad and the count is still 12, four to each of SL-SG-HPPAD, SL-M-HP3PAD and SL-M-HP1PAD
 "SS316-STANDOFF-STRAP #13" = { low = 3, high = 5.5 }  # 8 ea — roof leaders
 # NOT TAKEN as of 2026-08-31 — 0 ea, and it falls out on its own: `takeoff/fasteners.py`
 # derives the length and the count from the stack, and there is no longer a nailbase to screw
@@ -1145,7 +1145,7 @@
 # no frost footing under it: an equipment pad that heaves an inch in February and comes back
 # in April has done nothing a line set cannot absorb — see
 # plan/assemblies.py::HP_PAD_ON_GRADE. The rate is unchanged; only the quantity moved.
-"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 480, high = 1050 } }  # 0.58 cy over THREE pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25 + SL-M-HP3PAD 0.08). ** THE LABOUR BAND ROSE 2026-09-04, THE MATERIAL BAND DID NOT. ** SL-M-HP3PAD is 6.9 sf — 0.08 cy of concrete and a whole third form, in a different part of the site from the other two, and a $/cy lump that only followed the volume would have priced that form at $30-70. The band is set so three pours cost about $105-210 more in labour than two, which is one more small form and one more trowel visit; the concrete still costs what short-load concrete costs. Superseded text, for the record: 0.49 cy over TWO pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25) — short-load or bagged; NOT the bulk slab-on-grade rate. It was 0.70 in one pour for a day; the row and the flight swapped halves of the pocket on 2026-09-04 and they are now 2'-8" apart, so a rectangle covering both would be 94 sf to serve 40. The rate carries the second form: at this size two 20 sf forms and one short load cost about what one 57 sf form did, and the concrete saved is real
+"slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 685, high = 1463 } }  # 0.56 cy over FOUR pours (SL-SG-HPPAD 0.11 + SL-SG-STAIRPAD 0.25 + SL-M-HP3PAD 0.08 + SL-M-HP1PAD 0.11). ** THE LABOUR BAND ROSE AGAIN LATER ON 2026-09-04 AND THE MATERIAL BAND STILL DID NOT. ** EQ-M-HP1-OD crossed to the north face, SL-SG-HPPAD shrank from 0.24 cy to 0.11 and SL-M-HP1PAD was poured for it: the VOLUME is essentially unchanged (0.58 -> 0.56) but there is a fourth form, in a fourth part of the site. The band is re-solved so the fourth pour adds about $105-210 of labour over the three-pour total, the same increment the third one took — 685-1463 $/cy x 0.56 cy is $384-819 against $278-609. Left alone, a per-cy rate would have priced a whole extra form at nothing, because no concrete came with it. Superseded text: 480-1050 $/cy. ** THE LABOUR BAND ROSE 2026-09-04, THE MATERIAL BAND DID NOT. ** SL-M-HP3PAD is 6.9 sf — 0.08 cy of concrete and a whole third form, in a different part of the site from the other two, and a $/cy lump that only followed the volume would have priced that form at $30-70. The band is set so three pours cost about $105-210 more in labour than two, which is one more small form and one more trowel visit; the concrete still costs what short-load concrete costs. Superseded text, for the record: 0.49 cy over TWO pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25) — short-load or bagged; NOT the bulk slab-on-grade rate. It was 0.70 in one pour for a day; the row and the flight swapped halves of the pocket on 2026-09-04 and they are now 2'-8" apart, so a rectangle covering both would be 94 sf to serve 40. The rate carries the second form: at this size two 20 sf forms and one short load cost about what one 57 sf form did, and the concrete saved is real
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -1360,7 +1360,7 @@
 # ** THE CROSS-RAILS ARE IN THIS ROW AND ARE NOT MODELLED GEOMETRY. ** Only the legs resolve
 # as solids. Pricing the legs alone would buy half a stand.
 # -> material $300-800 and labour $150-400 over 0.01 cy.
-"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.02 cy = 12 legs + 3 sets of cross-rails since 2026-09-04, when EQ-M-HP3-OD got the stand it never had (params/hp3_pad.py). The rate is per-cy and the three stands are the same 2" x 18" leg, so it scales honestly: about $450-1,200 mat + $225-600 lab for all three, against $300-800 + $150-400 for the pair
+"column:EQUIP_STAND_ALUM" = { material = { low = 30000, high = 80000 }, labour = { low = 15000, high = 40000 } }  # 0.02 cy = 12 legs + 3 sets of cross-rails since 2026-09-04, when EQ-M-HP3-OD got the stand it never had (params/hp3_pad.py). The three stands now sit on three SEPARATE pads (HP1 moved to SL-M-HP1PAD on the north face later the same day) — no change to the quantity or the rate, but they are three trips, not two. The rate is per-cy and the three stands are the same 2" x 18" leg, so it scales honestly: about $450-1,200 mat + $225-600 lab for all three, against $300-800 + $150-400 for the pair
 #
 # WHITE-PAINTED GARDEN FRAME — 37.3 LF over four members, 0.49 cy. Every stick of the garden's
 # frame that anybody actually sees: BM-SG-FRW/FRE (the porch's front pair, 3-2x12 at 10'-0")
@@ -1391,27 +1391,34 @@
 # 2026-08-31 because a cubic-yard rate calibrated on one section shape stops meaning anything
 # once the shapes differ by 4x in area.
 #
-#   SF-S-DUCT   35" x 14" over 26.5 LF   5.25 SF/LF   139.1 SF   3.34 cy
-#   SF-S-SUITE  36" x 14" over  6.5 LF   5.33 SF/LF    34.9 SF   0.85 cy
-#   SF-S-HP1    77" x 21" over  6.7 LF   9.92 SF/LF    66.1 SF   2.77 cy
-#                                                      240.1 SF  6.96 cy
+#   SF-S-DUCT    35"     x 14" over 24.8 LF   5.25 SF/LF   130.4 SF
+#   SF-S-SUITE   36"     x 14" over  6.5 LF   5.33 SF/LF    34.9 SF
+#   SF-S-HP1     40 3/4" x 21" over  7.8 LF   6.90 SF/LF    53.7 SF
+#                                                           219.0 SF  5.69 cy
 #
-# The comment here read "SF-S-DUCT and SF-S-SUITE, 4.38 cy ... 101.4 LF" — stale twice over.
-# SF-S-HP1 joined on 2026-08-30 and went from a 17" drop to 21" on 2026-08-31 for the FLEXX
-# Ultra cabinet, and the "101.4 LF" was never a run length: it was 4.38 cy divided by a
-# nominal 14"x12" section. The three boxes run 39.7 LF between them.
+# ** BOTH THE HALL BOX AND THE MACHINE BOX CHANGED SHAPE ON 2026-09-04. ** The air handler
+# crossed from RM-S-STUDY2's ceiling to RM-S-NCLOSET's, so SF-S-HP1 went from a 77"-wide,
+# 6'-8" box to a 40 3/4"-wide, 7'-9" one, and SF-S-DUCT was recut at both ends (y 2'-10"
+# instead of 7'-6" at the south, y 27'-8" instead of 34'-0" at the north). Net: 21.1 SF and
+# 1.27 cy less board and framing. The three boxes run 39.1 LF between them.
+#
+# Earlier stale text, for the record: the comment once read "SF-S-DUCT and SF-S-SUITE,
+# 4.38 cy ... 101.4 LF" — stale twice over. SF-S-HP1 joined on 2026-08-30 and went from a
+# 17" drop to 21" on 2026-08-31 for the FLEXX Ultra cabinet, and the "101.4 LF" was never a
+# run length: it was 4.38 cy divided by a nominal 14"x12" section.
 #
 # The unit rate is unchanged in substance — $28-60/LF at 3.17 SF/LF is $8.83-18.93 per SF of
 # finished board (framing $15-34/LF, homewyse "cost to frame soffit" is $19.50-34.40/LF for
 # exactly this article; board $4-7; corner bead + tape + 3-coat + sand $9-19). Soffits are
 # labour-dominated — three narrow planes with two outside corners per foot, and finishers
 # charge a premium over flat wall work — so the 28.5% material split carries over.
-# -> 240.1 SF x $8.83-18.93 = $2,120-4,545, i.e. $305-653 per cy over 6.96 cy.
+# -> 219.0 SF x $8.83-18.93 = $1,934-4,146, i.e. $340-729 per cy over 5.69 cy.
 #
-# NOTE what a per-cy rate now over-bills if left alone: SF-S-HP1 is 40% of the volume and 28%
-# of the board, because a wide box is mostly air. That is the whole reason this moved to SF.
+# NOTE what a per-cy rate over-bills if left alone: a wide box is mostly air, so its volume
+# runs ahead of its board. That gap narrowed with the reshape — SF-S-HP1 is 24% of the board
+# on a section not far off the other two — but it is the whole reason this moved to SF.
 # DISTINCT from the 101.1 LF of PVC ROOF soffit in [edge_trim]; unrelated articles, one word.
-"soffit" = { material = { low = 87, high = 186 }, labour = { low = 218, high = 467 } }  # 6.96 cy = 240.1 SF of board over 39.7 LF, three boxes
+"soffit" = { material = { low = 97, high = 208 }, labour = { low = 243, high = 521 } }  # 5.69 cy = 219.0 SF of board over 39.1 LF, three boxes
 #
 # BUG SCREEN / RAINSCREEN VENT STRIP — 240 LF of Cor-A-Vent SV-3 class corrugated strip closing
 # the top and bottom of the rainscreen cavity, split 144 LF house / 96 LF garage. $2.00-4.50/LF
@@ -4708,14 +4715,23 @@ envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 plumbing-municipal-water-sewer-and-sac = { low = 6000, high = 18000 }
 # Includes temporary construction power.
 electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
-# 5 pairings, ~203 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
-# condensers moved to a ground pad east of the porch: HP1 now runs ~40 ft up the W-M-S2 /
+# 5 pairings, ~198 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
+# condensers moved to a ground pad east of the porch: HP1 ran ~40 ft up the W-M-S2 /
 # W-S-S2 stud bay into FS-ATTIC, and HP2's three ports ~25-30 ft each through the main-floor
 # band. It GREW ~8 LF on 2026-09-03 when the cabinets turned to face south, and GAVE MOST OF
 # IT BACK on 2026-09-04 when the row crossed the pocket to stand against the house: both
-# units are now ~1'-9" from the single band penetration at x 30'-6" instead of 5'-0" of
-# east-west run along a pad, so each system loses roughly 3-4 ft of outdoor line. HP1 is at
-# ~36 ft of 164 and 21 ft of 49. Routes and
+# units are ~1'-9" from the single band penetration at x 30'-6" instead of 5'-0" of
+# east-west run along a pad, so each system lost roughly 3-4 ft of outdoor line.
+#
+# ** HP1'S ROUTE INVERTED LATER THE SAME DAY. ** Its condenser is on the NORTH face now
+# (params/hp1_north_pad.py) and its air handler is in SF-S-HP1 over RM-S-NCLOSET, at the
+# north end of the second storey. The run goes up the north wall from the pad at
+# x 26'-6"..29'-9", through the band, up an outside stud bay to FS-ATTIC, ~6'-4" west along
+# an attic joist bay — ALONG it, so nothing is bored — and drops into the box. ~31 ft
+# against 164 of line length and ~21 ft of rise against 49. That is a foot or two under the
+# precharge most 24k FLEXX Ultra sets ship with, so there is no meaningful field-charge
+# adder either way, and the run no longer climbs an occupied second-storey stud bay. HP1 is
+# at ~31 ft of 164 and 21 ft of 49. Routes and
 # lengths against Gree's published limits are in
 # notes/heat_pump_ground_pad.md. The allowance is NOT re-priced for it: at $26-49/LF the
 # added footage is inside its own spread, and the number below was always a lump. NOT DRIVEN (2026-08-27): `pipe_runs` carries

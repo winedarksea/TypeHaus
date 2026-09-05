@@ -489,7 +489,7 @@ WALLS = [
     #
     # ** THIS SEGMENT KEEPS ITS TAG, ITS UID AND ITS ``start_node="N-M-NE"``. THAT IS THE
     # POINT OF THE SPLIT. ** A segment's stud grid is a property of its start node, so
-    # holding N-M-NE holds WIN-M-KITCH (x=28'-0", the north face's three-storey column) and
+    # holding N-M-NE holds WIN-M-KITCH (x=29'-4", the north face's three-storey column) and
     # WIN-M-KITCH-N (x=34'-0") exactly where they are. Both ROs are east of 24'-4", so both
     # stay on this segment.
     #

@@ -204,15 +204,28 @@ def test_the_mixing_box_is_upstream_of_the_coil_and_the_strip_heater(catlin_mode
     fresh air, DOWNSTREAM of both the coil and the 2 kW strip heater, where it reaches the
     rooms untempered.
 
-    With the machine in SF-S-HP1 the return is a real chamber at the box's south end, and
-    the mixing box sits in it: south of the cabinet, therefore south of the coil and of the
-    strip heater in the supply trunk beyond it, and upstream of the unit's own filter."""
+    ** AND THE GEOMETRY INVERTED AGAIN ON 2026-09-04, WITHOUT THE ORDER CHANGING. ** The
+    machine moved to the north end of the storey and the trunk now runs SOUTH, so the
+    cabinet's discharge is its south face and the strip heater sits south of it, where it
+    used to sit north. The mixing box is south of the cabinet too — but it is on the far end
+    of a 6'-7" RETURN duct, so the fresh air travels north up that duct into the coil and
+    only then comes back south past the strip. The airflow order is unchanged: mix, coil,
+    strip. What the move bought is the mixing length: 100 cfm of -15 F outdoor air now blends
+    across the whole return instead of being dumped into an open chamber.
+
+    South-to-north the three read: box, strip, cabinet. Both of the first two are south of
+    the cabinet, which is what says the box is upstream of the coil and the strip is in the
+    discharge; and the box south of the strip is what says the fresh air is picked up at the
+    far end of the return rather than beside the heat."""
     box = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-ERV-MIX")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     strip = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-STRIP")
-    # South-to-north is the airflow direction: mixing box, then cabinet, then duct heater.
-    assert max(y for _, y in box.footprint) <= min(y for _, y in handler.footprint)
-    assert max(y for _, y in handler.footprint) <= min(y for _, y in strip.footprint)
+    # The strip's north edge is flush ON the cabinet's discharge face, so this pair is
+    # tangent to the micrometre and compares with a tolerance rather than exactly.
+    tol = 1e-9
+    assert max(y for _, y in box.footprint) <= min(y for _, y in handler.footprint) + tol
+    assert max(y for _, y in strip.footprint) <= min(y for _, y in handler.footprint) + tol
+    assert max(y for _, y in box.footprint) <= min(y for _, y in strip.footprint) + tol
     # And it is in the box the machine is in, not the trunk's.
     plan_refs = {el.tag: getattr(el, "soffit_ref", None)
                  for el in catlin_model.plan.all_elements()}

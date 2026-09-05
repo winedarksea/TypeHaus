@@ -2,7 +2,10 @@
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Structure:** the three `Soffit` elements on the second storey and the rungs that frame them.
-**Written:** 2026-08-31, independently of the code it grades.
+**Written:** 2026-08-31, independently of the code it grades. **Re-worked 2026-09-04**, when
+`SF-S-HP1` moved from `RM-S-STUDY2`'s ceiling to `RM-S-NCLOSET`'s and changed shape from
+77" x 80" to 40 3/4" x 7'-9 3/8". The arithmetic is unchanged; the span it is applied to is
+not, and an oracle that no longer matches what the check computes is not an oracle.
 **Oracle for:** `checks/structural/soffit.py`, reported by `structural.soffit_rung_span`.
 
 Model: `plan/storeys/second.py` (the three `Soffit` elements and their
@@ -14,11 +17,17 @@ independently of the code, and the engine reproduces it to the third decimal.
 
 ## What had to be decided
 
-`SF-S-HP1` is a 77" x 80" bulkhead built to hold System 1's air handler in `RM-S-STUDY2`'s
-ceiling. `resolve/framing/soffit.py` framed it without
+`SF-S-HP1` was a 77" x 80" bulkhead built to hold System 1's air handler in
+`RM-S-STUDY2`'s ceiling. `resolve/framing/soffit.py` framed it without
 complaint, because that generator **lays rungs at any span**: it has no bearer concept, no
-span table and no limit. Its rungs on this box are 72 3/4" of 2x2 at 16" o.c. Nothing in
+span table and no limit. Its rungs on that box were 72 3/4" of 2x2 at 16" o.c. Nothing in
 `checks/` looked at them.
+
+**That box is gone and the finding it produced is not.** On 2026-09-04 the machine moved to
+`RM-S-NCLOSET`'s ceiling and the box became 40 3/4" x 7'-9 3/8" — a 36.50" clear span, which
+even a 2x2 carries at L/1440. The 72.75" case survives as the fixture in
+`test_soffit_rung_span.py`, because it is the worst span this generator can be handed in this
+house's idiom and it is what the check exists for. The live house is graded below.
 
 Two things follow. The rungs are what the underside gypsum hangs on, so their deflection is a
 cracked-ceiling question, not an academic one. And the generator's other habit — one profile
@@ -65,7 +74,8 @@ crosses it:
 
     δ = 5 w L⁴ / (384 E I)
 
-At L = 72.75" (SF-S-HP1's clear cavity), L⁴ = 2.8005e7 in⁴:
+At L = 72.75" (the span `SF-S-HP1` had until 2026-09-04, and the test fixture's span),
+L⁴ = 2.8005e7 in⁴:
 
 | rung | I | δ | L/δ | verdict |
 |---|---|---|---|---|
@@ -79,18 +89,32 @@ governing, and quoting a stress ratio for them would dress an arithmetic identit
 **The 2x3 line is why the interim recommendation in this house's own notes was wrong.** It
 assumed the rung stood on edge (I = 1.9531 in⁴, δ = 0.074", L/978). Flat, it fails.
 
-## The other two boxes, as a discrimination check
+## The three boxes as the house actually stands (2026-09-04)
 
-A limit that fails everything is not a limit. The same arithmetic at the other two spans:
+A limit that fails everything is not a limit. The same arithmetic at the three live spans:
 
 | soffit | rungs | L | I | δ | ratio |
 |---|---|---|---|---|---|
-| SF-S-DUCT | 19 x 2x2 | 30.75" | 0.4219 | 0.0109" | **L/2808** |
+| SF-S-DUCT | 18 x 2x2 | 30.75" | 0.4219 | 0.0109" | **L/2808** |
 | SF-S-SUITE | 4 x 2x2 | 31.75" | 0.4219 | 0.0124" | **L/2551** |
-| SF-S-HP1 | 4 x 2x4 | 72.75" | 0.9844 | 0.147" | **L/495** |
+| SF-S-HP1 | 5 x 2x4 | 36.50" | 0.9844 | 0.0093" | **L/3918** |
 
-Two orders of magnitude between the passing boxes and the failing one, because δ goes as L⁴.
-The check fails exactly one soffit in this house, which is the right number.
+SF-S-HP1's line, worked out: L⁴ = 36.50⁴ = 1.77501e6 in⁴, so
+δ = 5(0.5556)(1.77501e6) / (384 · 1.4e6 · 0.9844) = 4.9310e6 / 5.2921e8 = **0.00932"**, and
+36.50 / 0.00932 = **L/3917**. The engine reports L/3918; the third figure is rounding in the
+last term and the two agree to within it.
+
+**Every box in the house passes now, and that is not a weakening of the check.** The
+discrimination is in the fixture: the same generator, the same load, the same rungs at
+72.75" fail at L/212, and δ going as L⁴ is what puts two orders of magnitude between 30" and
+73". Nothing here is graded by a limit that cannot bite.
+
+**`SF-S-HP1` KEPT ITS 2x4 RUNGS THROUGH THE MOVE, and that was a choice.** At 36.50" a 2x2
+rung deflects 0.0253" — L/1440, four times the limit — so the box could be reframed on one
+stock. It is not, for two reasons: `plate_member="2x2"` is what holds the RAILS at the size
+that sets this cavity, and the cavity is what `DU-S-HP-RET`'s 18" duct and the 21 1/4"
+cabinet are authored against; and a 2x4 rung is a wider nailer under a ceiling that now
+carries a hinged access panel. There is no lumber saving in it worth re-deriving a cavity for.
 
 ## The fix, and why it is `plate_member` and not a bigger member
 
@@ -105,8 +129,9 @@ So on `SF-S-HP1`:
 
     framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16))
 
-- `across` is **still 72.75"** — the rails are still 2x2, so the cavity width does not move,
-  and `EQ-S-ERV-MIX` stays in the box.
+- `across` was **still 72.75"** on the box as it then stood — the rails are still 2x2, so the
+  cavity width does not move, and `EQ-S-ERV-MIX` stayed in the box. (The same property is what
+  keeps `across` at 36.50" on the box that replaced it.)
 - `along` is unchanged — every 2x is 1.5" thick, and `along` is set by the end blocking.
 - **`z[0]` does not move** — the rung is still laid flat at 1.5". This is the point that made
   this the right design rather than merely a working one: `DU-S-HP-RET` is a **14" duct in a
@@ -124,12 +149,16 @@ byte-identically, which is why nothing else in the house moved.
   `SoffitClearSection` from one interval into lanes, rewriting `soffit_occupancy`,
   `duct_soffit_occupancy` and its PASS message — a large change to the most carefully argued
   check in the MEP tier, for a member that cannot be built.
-- **Honouring `FramingSpec.direction`.** The box is 77 x 80 and the rungs already span the
-  shorter axis. Forcing the other way gives 75.75" — *worse*. `direction` being ignored here
-  is correct: "run the ladders the long way" is what a ladder *is*, not a preference.
-- **Splitting SF-S-HP1 into two rectangles.** Split in x and neither half is wider than the
-  43 1/2" cabinet. Split in y and `long_axis` flips to x, re-grading every occupant across the
-  wrong dimension — precisely the inversion the 80"-over-77" ordering exists to prevent.
+- **Honouring `FramingSpec.direction`.** The box's rungs already span its shorter axis.
+  Forcing the other way was *worse* on the 77 x 80 box (75.75" against 72.75") and is
+  absurd on the 40 3/4" x 7'-9 3/8" one it became. `direction` being ignored here is
+  correct: "run the ladders the long way" is what a ladder *is*, not a preference.
+- **Splitting SF-S-HP1 into two rectangles** (an argument about the 77 x 80 box, kept for the
+  rule it hands forward). Split in x and neither half was wider than the 43 1/2" cabinet.
+  Split in y and `long_axis` flipped to x, re-grading every occupant across the wrong
+  dimension. The box that replaced it takes the same medicine a different way: the cabinet is
+  turned 90 degrees so its 43 1/2" runs ALONG the box, and only its 21 1/4" case depth
+  competes for the graded width.
 
 ## What the check does not do
 

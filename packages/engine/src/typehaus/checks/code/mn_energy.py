@@ -130,6 +130,12 @@ _FREESTANDING_SLAB_PREFIXES = (
     # full rather than by a family prefix: it is one pad, not a zone, and "SL-M-" is the
     # house's own storey key.
     "SL-M-HP3PAD",
+    # The north-face heat-pump equipment pad (catlin's SL-M-HP1PAD,
+    # params/hp1_north_pad.py), added 2026-09-04 when System 1's condenser crossed from the
+    # south pocket. Same argument as SL-M-HP3PAD one entry up, and named in full for the
+    # same reason: 9.27 sf on grade east of the garage under an outdoor unit on 18" legs,
+    # with nothing conditioned above it.
+    "SL-M-HP1PAD",
 )
 
 

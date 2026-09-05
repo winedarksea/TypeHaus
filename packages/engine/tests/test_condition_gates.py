@@ -365,11 +365,14 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # than one pour against another. `integrity.junction_fallback` reports the same
         # node UNKNOWN for exactly that reason, and this key is the drawing that answers it.
         "assembly_change:FOUNDATION_WALL_12_INT|SAUNA_LINER_INT_2X6_BRG",
-        # N-S-B1..B4 on the second storey: the five sleeping-side partitions carry
-        # INT_2X4_RC (STC 36 -> 48) and the walls they meet — W-S-SS1/SS2 in the hall,
-        # W-S-BW4 at the closet — do not. It is a real change of construction and a real
-        # detail: the resilient channel and its own leaf of board stop at these nodes, and a
-        # builder who carries them through has shorted the acoustic wall by one leaf.
+        # N-S-B1 on the second storey: the sleeping-side partitions carry INT_2X4_RC
+        # (STC 34 -> 48) and the plain partitions they meet do not. W-S-BW4 joined the RC
+        # family on 2026-09-04 — SF-S-HP1 spans it and W-S-BW3 both, and a 1/2" jog in the
+        # box's east face would have made the outline non-rectangular (storeys/second.py) —
+        # so the key is now generated at N-S-B1 rather than along the whole block. It is a
+        # real change of construction and a real detail: the resilient channel and its own
+        # leaf of board stop at that node, and a builder who carries them through has
+        # shorted the acoustic wall by one leaf.
         "assembly_change:INT_2X4_PARTITION|INT_2X4_RC",
         # N-B-STR, the y=18' line's surviving change: W-B-CW2's playroom partition against
         # W-B-CW3's wet wall.

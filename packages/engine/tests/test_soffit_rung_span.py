@@ -24,9 +24,14 @@ from typehaus.resolve.framing.soffit import soffit_clear_section
 
 _CHECK_ID = "structural.soffit_rung_span"
 
-# The box: 77" x 80" finished, 21" drop — SF-S-HP1's own dimensions. 77 - 2 x 5/8 lining
-# - 2 x 1.5 rail depth is the 72.75" of clear span its rungs really cross. 80" in the other
-# direction so the LONG axis is y and the rungs span x, which is the ordering that box is
+# The box: 77" x 80" finished, 21" drop. It WAS SF-S-HP1's own shape until 2026-09-04, when
+# that box moved to RM-S-NCLOSET's ceiling and turned to 40 3/4" x 7'-9 3/8" — a 36.50" clear
+# span, which a 2x2 rung would carry at L/1440 and which would demonstrate nothing. The
+# fixture is deliberately left at the 72.75" span, and is SYNTHETIC now rather than a copy of
+# a live element: it is the worst rung span this generator can be handed in this house's
+# idiom, and the failure it produces is the whole reason `plate_member` exists.
+# 77 - 2 x 5/8 lining - 2 x 1.5 rail depth is the 72.75" of clear span. 80" in the other
+# direction so the LONG axis is y and the rungs span x, which is the ordering the real box is
 # authored for and the reason it is 80 over 77 rather than the other way round.
 _OUTLINE = (pt(ft(4), ft(1)), pt(inch(48 + 77), ft(1)),
             pt(inch(48 + 77), inch(12 + 80)), pt(ft(4), inch(12 + 80)))
@@ -75,7 +80,8 @@ _TWO_STOCK = FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16))
 
 
 def test_a_seventy_three_inch_2x2_rung_fails_at_l_over_212() -> None:
-    """The condition the check exists for, and the one SF-S-HP1 was built with.
+    """The condition the check exists for, and the one SF-S-HP1 was built with when this
+    test was written (see the fixture's note: that box is 36.50" across since 2026-09-04).
 
     5 psf of ceiling dead load over a 16" tributary is w = 0.5556 lb/in. A 2x2 laid FLAT —
     which is what the generator lays, and correctly, since the rung is the board's nailer —

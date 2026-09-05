@@ -696,14 +696,24 @@ MAIN_LIGHTING = [
 SECOND_LIGHTING = [
     # RM-S-HALL: the upstairs shadow gap, run as one polyline around three sides of the
     # hall — a cove that stops short of a corner reads as a mistake, so it turns instead.
+    #
+    # ** IT TURNS AT y=27'-6" NOW, NOT 30'-4". ** SF-S-HP1's south edge is at y=27'-8" and
+    # its face is at 7'-3"; a cove at 9'-0" north of that line would be BURIED inside the
+    # bulkhead, lighting the inside of a soffit. It turns 2'-10" sooner and the north end of
+    # the hall is lit by the box's own face instead. 44'-6" -> 38'-10" of strip, which is a
+    # real change to the takeoff, not a drafting tidy. Still four vertices.
     LightRun(uid="QRS0001AAA", tag="LR-S-HALL-GAP", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(30, 4)),
-                   pt(ft(21, 6), ft(30, 4)), pt(ft(21, 6), ft(9, 7))),
+             path=(pt(ft(18, 6), ft(9, 7)), pt(ft(18, 6), ft(27, 6)),
+                   pt(ft(21, 6), ft(27, 6)), pt(ft(21, 6), ft(9, 7))),
              room="RM-S-HALL", psu_ref="ED-S-HALL-LT-PSU",
              controlled_by=("ED-S-HALL-SW", "ED-S-HALL-SW2"),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # The driver moved with the cove: (20'-0", 30'-6") is inside EQ-S-HP1-AH's footprint
+    # since the 2026-09-04 HP1 move. (19'-0", 27'-2") keeps the relationship it always had
+    # — a driver hidden in SF-S-DUCT, 12" west of ED-S-HALL-CAN3 — on the other side of the
+    # y=27'-8" seam from the machine.
     ElectricalDevice(uid="QTS0001AAA", tag="ED-S-HALL-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(20), ft(30, 6)), type_ref="ED-T-LT-PSU-200",
+                     position=pt(ft(19), ft(27, 2)), type_ref="ED-T-LT-PSU-200",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.CEILING)),
     # CAN1-3 recess into the SF-S-DUCT dropped duct soffit face (drop 14" -> 7'-10"),

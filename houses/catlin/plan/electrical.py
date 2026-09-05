@@ -5,8 +5,9 @@
 #
 # All-electric: no gas, no furnace. Three Gree heat-pump systems plus electric radiant
 # floor zones (FloorHeat in plan/storeys/):
-#   System 1  EQ-M-HP1-OD (Vireo GEN3) -> EQ-S-HP1-AH, concealed ducted AH in RM-S-STUDY2
-#             feeding the dropped hallway chase — upstairs + two attic branches.
+#   System 1  EQ-M-HP1-OD (FLEXX Ultra, NORTH pad) -> EQ-S-HP1-AH, concealed ducted AH in
+#             SF-S-HP1 over RM-S-NCLOSET, feeding the dropped hallway chase SOUTHWARD —
+#             upstairs + two attic branches.
 #   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> EQ-B-HP2-GYM, EQ-M-HP2-BED,
 #             EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
@@ -273,17 +274,22 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(43.5), inch(21.25)), height=inch(18.125),
                   cooling_capacity_btuh=24000,
                   source="Gree FLEXX Ultra R32 air handler FXU24HP230V1R32AH, matched to EQ-T-GREE-FLEXX-ULTRA-24-OD. Cabinet 18 1/8 x 21 1/4 x 43 1/2 in (W x D x H as shipped), net weight 135.6 lb, laid horizontally for ceiling mount with the 18 1/8 in face vertical — the orientation that minimises soffit depth, so `height` is 18 1/8 in and the 43 1/2 in dimension is the plan long axis. Airflow to 760 cfm against an external static pressure of 1.0 in. w.c., which is what lets it drive the 750 cfm this duct system is sized to with margin; the DUC24 it replaced claimed 1030 cfm in prose and really topped out at 736 at 0.8 in. w.c. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate (AHRI 215213329). 24 VAC thermostat terminals and a factory electric heat kit (4.6 / 5.5 / 9.2 kW) — the DUC24 had NEITHER, so EQ-S-HP1-STRIP could not physically be interlocked with the heat pump at all, which is the defect this retype closes. The indoor unit carries no heating rating of its own on purpose: the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against the outdoor type.",
-                  # Real face positions, on the same convention EQ-T-GREE-DUC24 established:
-                  # the long dimension is x, so supply and return are on the two 43 1/2 x
-                  # 18 1/8 faces — supply out the north face (+y), return in the south face
-                  # (-y), both on the cabinet's own centre height. Power enters at the
-                  # north-east corner where the whip lands.
+                  # Real face positions. Air crosses the cabinet the LONG way — in one
+                  # 18 1/8 x 21 1/4 end and out the other — which is what the source note's
+                  # "43 1/2 in H as shipped, laid horizontally" describes and what the coil
+                  # and blower actually do. The ports were previously authored on the
+                  # 43 1/2 x 18 1/8 faces, i.e. air crossing the 21 1/4" dimension, which
+                  # contradicted the type's own note. Nothing in the engine checks port
+                  # positions; this is documentation integrity, and leaving it made the plan
+                  # self-contradictory under EQ-S-HP1-AH's rotation=deg(90).
+                  # Local -x is supply, +x is return, both on the cabinet's centre height;
+                  # power enters at the return-end top corner where the whip lands.
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(inch(21.75), inch(10.625), inch(18.125))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), inch(10.625), inch(9.0625))),
+                                     position=(inch(-21.75), ft(0), inch(9.0625))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
-                                     position=(ft(0), inch(-10.625), inch(9.0625))))),
+                                     position=(inch(21.75), ft(0), inch(9.0625))))),
     EquipmentType(tag="EQ-T-GREE-FLEXX-ULTRA-24-OD",
                   name="Gree FLEXX Ultra R32 outdoor unit, 24k (-22F, cold climate)",
                   footprint=(inch(39), inch(14.5625)), height=inch(37.8125),
@@ -592,10 +598,12 @@ MAIN_DEVICES = [
     #     handles 7'-10" up — nearly a foot past the limit, and nothing was measuring it
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
     #
-    # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They are on W-SG-E1's EAST
-    # face now, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6"), 1 5/8" off the concrete for
+    # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They went to W-SG-E1's EAST
+    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6"), 1 5/8" off the concrete for
     # the can's 3 1/4" depth and turned `deg(90)` so the depth runs in x against an east face
-    # (the ED-M-LIVING-KFZ1 convention).
+    # (the ED-M-LIVING-KFZ1 convention). HP1's can then followed its unit to the north face
+    # later the same day (see its own block below); ED-M-HP2-DISC is the one that stayed,
+    # and everything argued here is now argued for it alone.
     #
     # **The row is what evicted them, and 110.26(A)(3) is why there was no appeal.** With the
     # condensers tucked against the house from x 29'-0" to 36'-7" — the owner's call on
@@ -631,10 +639,19 @@ MAIN_DEVICES = [
     # balcony (notes/heat_pump_ground_pad.md). The units came down; the disconnects came
     # down with them, because a disconnect one storey above the machine it kills is not
     # within sight of it in any sense 440.14 means.
+    # ** ED-M-HP1-DISC LEFT THIS WALL WITH ITS UNIT (2026-09-04, later the same day). **
+    # Everything above is now HP2's story alone; only ED-M-HP2-DISC stays on W-SG-E1.
+    # HP1's can goes to the house's NORTH face beside its own cabinet, at (32'-0",
+    # 36'-8 7/8") — 1 5/8" off the cladding for the can's 3 1/4" depth, and with NO
+    # `rotation`, because a north face wants the depth in y where the pocket's east face
+    # wanted it in x. x=32'-0" is the only clear band on this wall: 30'-7 1/2"..33'-3",
+    # between WIN-M-KITCH's framing bumper and the next opening's.
+    # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
+    # 404.8(A)'s 6'-7" — and it is dry, at standing height, not in the plough line.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(28, 7.625), ft(-3, -6)), rotation=deg(90),
+                     position=pt(ft(32), ft(36, 8.875)),
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(28, 7.625), ft(-4, -6)), rotation=deg(90),
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
@@ -643,9 +660,16 @@ MAIN_DEVICES = [
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway.
     # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
+    #
+    # ** 5'-0" WAS A DEFECT AND IS FIXED (2026-09-04). ** A WALL mount measures from its
+    # storey datum, and `main` is 0'-0" while the grade this can is operated from is -2'-10".
+    # ft(5) therefore hung the handle 7'-10" above that grade, against NEC 404.8(A)'s
+    # 6'-7" ceiling — the same arithmetic that put ED-M-HP1/HP2-DISC at 2'-2" above the
+    # pocket grade and passed. ft(3, 6) reads 6'-4" and clears. Verified 2'-2 3/4" clear of
+    # D-M-ENTRY's near jamb, so the lower handle fouls nothing.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-2 3/8"). Floor sensor is FH-M-BATH2's `stat` point.
     #
@@ -769,9 +793,22 @@ MAIN_EQUIPMENT = [
     # No `drain_pan` / `pan_drain_ref` on either, matching EQ-M-HP3-OD below: defrost
     # meltwater off a unit at grade drips onto its own pad and runs east onto gravel. The
     # piped, heat-traced condensate runs the balcony needed are deleted.
+    # ** SYSTEM 1'S UNIT LEFT THE POCKET ON 2026-09-04 AND STANDS ON THE NORTH FACE. **
+    # It follows its air handler, which moved to SF-S-HP1 over RM-S-NCLOSET at the north end
+    # of the second storey; the whole argument is in `params/hp1_north_pad.py`, which carries
+    # SL-M-HP1PAD, PT-M-HP1-L1..4 and CN-M-HP1-A1..4. The centre here and the centre there
+    # are the same literal, written twice on purpose — the two files cannot import each
+    # other — and `test_catlin_outdoor_structures.py` holds them together.
+    #
+    # `rotation=deg(180)` faces the discharge NORTH, away from the wall. All four clearances
+    # are better than the south row's: back (S) 6" against the published 4"; discharge (N)
+    # 40" into open front yard; service side (E) 23 3/4"; far end (W) 14" to the garage rake.
+    #
+    # `mount.elevation` is UNCHANGED at -14": the new pad tops out at the same -2'-8" under
+    # the same 18" stand, so all three cabinets keep one base plane at -1'-2".
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(34, 11.66), ft(-1, -8.53125)), footprint=(inch(39), inch(14.5625)),
-              rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
+              position=pt(ft(28, 1.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
+              rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(30, 8.08), ft(-1, -9.655)), footprint=(inch(40.16), inch(16.81)),
@@ -903,27 +940,30 @@ SECOND_DEVICES = [
 ]
 
 SECOND_EQUIPMENT = [
-    # System 1's concealed ducted AH — inside SF-S-HP1, the wide bulkhead in RM-S-STUDY2's
-    # ceiling (plan/storeys/second.py). Own branch circuit (CKT-HP1-AH) since a ducted unit's
+    # System 1's concealed ducted AH — inside SF-S-HP1, the box that IS the ceiling of
+    # RM-S-NCLOSET and the north end of RM-S-HALL (plan/storeys/second.py). It moved here
+    # from RM-S-STUDY2 on 2026-09-04. Own branch circuit (CKT-HP1-AH) since a ducted unit's
     # blower is fed at the unit, unlike a multi's heads.
     #
     # `soffit_ref` is load-bearing: WITHOUT it a CEILING mount with no stated elevation
     # hangs off `storey.default_ceiling_height` (resolve/placeables.py), which puts this
     # unit at 9'-0", above the box it lives in.
     #
-    # `rotation` is not needed: EQ-T-GREE-FLEXX-ULTRA-24-AH states (43.5, 21.25), which is
-    # the cabinet as installed: 43 1/2" across x, 21 1/4" along the airflow, supply out the
-    # north face into the discharge plenum and return in the south face out of the return
-    # chamber. `footprint` here agrees with the type rather than fighting it.
+    # ** rotation=deg(90), NOT a hand-swapped `footprint`. ** The type states (43.5, 21.25);
+    # `_transformed_polygon` rotates the catalogued case, so the 43 1/2" runs ALONG the box
+    # (y) where there is 7'-9", and only the 21 1/4" case depth competes for the box's
+    # 36.50" clear width. Hand-swapping the footprint would have left the type and the
+    # instance disagreeing about which dimension is which.
     #
-    # (20'-7", 3'-4 3/4") puts it at x 225 1/4"..268 3/4" and y 30 1/8"..51 3/8". y=30 1/8"
-    # reaches DU-S-HP-RET's 25x14 stub and its 3 1/8" collar; the return chamber, REG-S-HP-RET
-    # and EQ-S-ERV-MIX are all built to that face. North of the discharge, DU-S-HP-SOUTH-RISE's
-    # take-off leg and the heat kit occupy the clear box between the discharge face and the
-    # ERV feed's east jog at y=5'-5 1/2".
+    # ** x = 19'-6" IS FORCED, NOT PREFERRED. ** Three constraints intersect at one 1 3/8"
+    # band: DU-S-HP-SUITE's tee bounds the cabinet centre to [229, 235], SF-S-DUCT's cavity
+    # to [233.625, 246.375], and the discharge face to within 1 5/8" of the cabinet centre.
+    # The intersection is [233.625, 235] and 19'-6" = 234 sits in it.
     #
-    # It is still 2 5/8" inside SF-S-HP1's west cavity face and clear of the east lanes by
-    # more than the 2" hanger gap; the check prints the clearances, so they are not restated.
+    # (19'-6", 32'-2 1/4") puts the case at y 30'-4 1/2"..34'-0" and x 18'-11 3/8"..20'-0 5/8".
+    # y=30'-4 1/2" is DU-S-HP-SUP's start (supply, running SOUTH now); y=34'-0" is
+    # DU-S-HP-RET's end. The lanes across the box are 1 7/8 | cabinet 21 1/4 | 2 3/8 |
+    # return 10 | 1 against 36.50" clear; the check prints them, so they are not restated.
     #
     # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST-UNFIN
     # (short attic branches) and RM-A-STUDIO/RM-A-STUBATH/RM-A-POCKET — the three rooms the
@@ -931,8 +971,9 @@ SECOND_EQUIPMENT = [
     # branch. Dropping any of the three from this list would report it as unheated.
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(20, 7), ft(3, 4.75)), footprint=(inch(43.5), inch(21.25)),
-              room="RM-S-STUDY2", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
+              position=pt(ft(19, 6), inch(386.25)), footprint=(inch(43.5), inch(21.25)),
+              rotation=deg(90),
+              room="RM-S-NCLOSET", type_ref="EQ-T-GREE-FLEXX-ULTRA-24-AH",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               mount=Mount(kind=MountKind.CEILING), soffit_ref="SF-S-HP1",
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
@@ -943,16 +984,19 @@ SECOND_EQUIPMENT = [
     # System 1's heat kit, INSIDE the air handler's discharge plenum in SF-S-HP1.
     #
     # The FLEXX Ultra's 24 VAC board stages this kit itself, and the kit is a factory part
-    # that lands in the cabinet's discharge — hence `soffit_ref` is SF-S-HP1, and the plate
-    # sits at (21'-1", 4'-8 3/8"): its south edge flush on the cabinet's discharge face at
-    # y=4'-3 3/8", inside DU-S-HP-SOUTH-RISE's take-off leg and 2" clear of DU-S-HP-SUP's
-    # take-off the other side of the same discharge. `mep.duct_soffit_occupancy` reads that
-    # leg's centreline running through the plate and reports the two as one assembly.
+    # that lands in the cabinet's discharge — hence `soffit_ref` is SF-S-HP1. With the
+    # machine turned and the trunk running SOUTH, the discharge is the cabinet's SOUTH face
+    # at y=30'-4 1/2", so the plate sits at (19'-6", 29'-11 1/2"): its north edge flush on
+    # that face, on the trunk's own centreline, upstream of DU-S-HP-SUP's start.
+    # Across the box it is 16" against 36.50" clear with the 10" return beside it —
+    # 16 + 2 + 10 = 28.00, 8 1/2" spare — so it is nowhere near the graded pair.
+    # It is also DOWNSTREAM of EQ-S-ERV-MIX, which is on the return at the box's south end:
+    # fresh air mixes across the whole 6'-7" return before the coil, then gets heated.
     #
-    # `room` follows the box: RM-S-STUDY2, which is the room SF-S-HP1 hangs in and the room
-    # the air handler is already filed under. It changes nothing about the credit —
-    # `supplemental_heat_by_room` keys on the room and both rooms are in the same
-    # EQ-S-HP1-AH zone_rooms list — and it is where the part is.
+    # `room` follows the box: RM-S-HALL, the room the discharge end of SF-S-HP1 hangs in
+    # (the cabinet itself is filed under RM-S-NCLOSET at the north end). It changes nothing
+    # about the credit — `supplemental_heat_by_room` keys on the room and both rooms are in
+    # the same EQ-S-HP1-AH zone_rooms list — and it is where the part is.
     #
     # ITS JOB CHANGED TOO, and that is the more important half. It is no longer covering a
     # design-temperature shortfall: EQ-M-HP1-OD makes 21,000 Btu/h at -15 F against a
@@ -962,8 +1006,8 @@ SECOND_EQUIPMENT = [
     # own circuit, so CKT-HP1-AH goes 15A -> 35A (the kit's MCA 29.9 A / max OCPD 35 A) and
     # the panel gets its spare 2-pole back at slot 18 (plan/circuits.py).
     Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(21, 1), ft(4, 8.375)), footprint=(inch(16), inch(10)),
-              room="RM-S-STUDY2", type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW",
+              position=pt(ft(19, 6), ft(29, 11.5)), footprint=(inch(16), inch(10)),
+              room="RM-S-HALL", type_ref="EQ-T-GREE-FLEXX-HEATKIT-46KW",
               circuit="CKT-HP1-AH", mount=Mount(kind=MountKind.CEILING),
               soffit_ref="SF-S-HP1"),
 ]

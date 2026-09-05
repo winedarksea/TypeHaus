@@ -129,8 +129,15 @@ def test_service_upgrade_devices_are_present(catlin_model):
     assert types["ED-T-EV-1450"].load_va == 9600
 
 
-def test_the_two_condenser_disconnects_clear_the_stair_and_reach_from_grade(catlin_model):
-    """ED-M-HP1-DISC / ED-M-HP2-DISC on W-SG-E1's east face, y -3'-6" / -4'-6" (2026-09-04).
+def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade(catlin_model):
+    """ED-M-HP2-DISC on W-SG-E1's east face, y -4'-6" (2026-09-04).
+
+    ** ED-M-HP1-DISC LEFT THIS WALL LATER THE SAME DAY, WITH ITS UNIT. ** System 1's
+    condenser crossed to the north face (params/hp1_north_pad.py) and its disconnect went
+    with it, to W-M-N1 at (32'-0", 36'-8 7/8"). Only HP2's can is on the porch wall now, and
+    everything below is argued for it alone — but the 42" stretch and the 110.26(A)(2)
+    arithmetic are kept as authored, because the stretch is what makes even one can legal
+    here and a second one could still be added back into it.
 
     They were on W-M-S2 until the condenser row was tucked west behind the SE corner, which
     left that elevation cabinet from x 29'-0" east. Three things put them where they are, and
@@ -155,7 +162,7 @@ def test_the_two_condenser_disconnects_clear_the_stair_and_reach_from_grade(catl
     # W-SG-E1's east face is x 28'-6"; ED-T-DISCONNECT-3R is a 3 1/4" can, so its centre
     # belongs 1 5/8" off it. A footprint is CENTRED on the authored point.
     want_x = 28.5 + 1.625 / 12.0
-    for tag, want_y in (("ED-M-HP1-DISC", -3.5), ("ED-M-HP2-DISC", -4.5)):
+    for tag, want_y in (("ED-M-HP2-DISC", -4.5),):
         device = devices[tag]
         x_ft, y_ft = (c / 0.3048 for c in device.position.xy_m)
         assert x_ft == pytest.approx(want_x), tag
@@ -447,3 +454,33 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
     assert [f.element_tags for f in failures] == [("FURN-M-KIT-PENINSULA",)]
     assert "210.52(C)" in failures[0].message
+
+
+def test_every_condenser_disconnect_is_reachable_under_NEC_404_8_A(catlin_model):
+    """** 404.8(A) CAPS AN OPERATING HANDLE AT 6'-7" ABOVE THE STANDING SURFACE, AND
+    ``Mount.elevation`` IS STOREY-RELATIVE. ** That gap is a defect generator: `main`'s datum
+    is 0'-0" and every one of these cans is worked from a grade at -2'-10", so a plausible
+    ft(5) reads 7'-10" and nothing in the engine says a word.
+
+    ED-M-HP3-DISC carried exactly that ft(5) from the day it was authored until 2026-09-04,
+    when EQ-M-HP1-OD moved to the north face and put a second can on the same wall. It is
+    ft(3, 6) now, 6'-4" above grade, and this test is the guard that keeps it there.
+
+    The CENSUS is asserted with the heights, deliberately: a fourth system joining the house
+    with its disconnect at a comfortable-looking ft(5) would otherwise pass silently.
+    """
+    devices = {element.tag: element for storey in catlin_model.plan.storeys
+               for element in catlin_model.plan.storey_elements(storey.tag)
+               if element.element_kind == "ElectricalDevice"}
+    grade_ft = catlin_model.plan.project.site.grade.meters / 0.3048
+    condenser_discs = sorted(tag for tag, d in devices.items()
+                             if d.kind.value == "disconnect" and "-HP" in tag)
+    assert condenser_discs == ["ED-M-HP1-DISC", "ED-M-HP2-DISC", "ED-M-HP3-DISC"]
+    for tag in condenser_discs:
+        device = devices[tag]
+        reach_in = (device.mount.elevation.inches / 12.0 - grade_ft) * 12.0
+        assert 0.0 < reach_in <= 79.0, f"{tag} at {reach_in:.1f}in above grade"
+    # And the two that are hung at standing height rather than in the plough line are the
+    # two on the house's north face, which is dry ground.
+    assert devices["ED-M-HP1-DISC"].mount.elevation.inches == pytest.approx(42.0)
+    assert devices["ED-M-HP3-DISC"].mount.elevation.inches == pytest.approx(42.0)

@@ -1061,6 +1061,25 @@ SECOND_PLACEABLES = [
               position=pt(ft(1, 4), ft(32, 10.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
 
+    # ** THE AIR HANDLER'S SERVICE OPENING, AND THE OLD BOX HAD NOTHING LIKE IT. **
+    # Until 2026-09-04 the only way into System 1's machine was REG-S-HP-RET's hinged
+    # filter face — fine for a filter, useless for a coil, a blower wheel, a condensate
+    # trap or a control board. This is a 20 x 13 hinged panel in SF-S-HP1's underside
+    # directly BELOW EQ-S-HP1-AH, in RM-S-NCLOSET where a stepladder can stand.
+    #
+    # ** ITS SIZE IS THE LADDER'S, NOT A CATALOG'S. ** SF-S-HP1's rungs resolve at
+    # y = 348 5/8 / 364 5/8 / 380 5/8 / 396 5/8 / 412 5/8, so the clear bay is 14 1/2" and
+    # 13" takes it with 3/4" either side. (388 5/8", 19'-6") is that bay's centre, on the
+    # cabinet's own centreline: the cabinet runs y 30'-4 1/2"..34'-0", so the opening is
+    # under the middle of it. Re-read the resolved rung stations before moving this —
+    # nothing couples the two, and a panel that lands on a rung is a panel that does not open.
+    #
+    # elevation 7'-3" is the box's finished underside, hand-coupled to the 21" drop the
+    # same way REG-S-HP-RET's is.
+    Furniture(uid="J49Q7W1RWR", tag="FURN-S-NCLOSET-AP", type_ref="FT-ACCESS-PANEL-CLG-2013",
+              room="RM-S-NCLOSET", position=pt(ft(19, 6), inch(388.625)),
+              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
+
     # The second storey's two closets, same rule as the main floor's pair above.
     # RM-S-CLOSET: 94 3/4" of clear wall on the north side (W-S-CLN, face y 12'-2 5/8");
     # an 84" run leaves 5 3/8" either end clear of W-S-DC1's jamb.

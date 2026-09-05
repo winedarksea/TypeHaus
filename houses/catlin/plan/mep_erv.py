@@ -187,17 +187,23 @@ EQUIPMENT_ERV_ATTIC = [
 #     pending a deliberate decision — see plan/mep_erv_types.py.)
 # Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.
 #
-# x=24'-1" is the box's east lane, shared with DU-S-ERV-HP-FEED's tail: the 10" case stands
-# 7/8" inside the cavity's east face and clear of the 10x6 south-branch riser lane. y=1'-9"
-# puts it IN the return chamber — the 19" of SF-S-HP1 south of the cabinet — level with
-# REG-S-HP-RET at the far side of it, 22" west. So the fresh air enters at one end of the
-# chamber, the room air at the other, and the two mix across its width before they turn
-# north into the machine's return face. Nothing about that is packing: everything upstream
-# of the coil is upstream of the strip heater too, which is the whole reversal.
+# (21'-0", 28'-3") is the SOUTH end of SF-S-HP1, sitting ON DU-S-HP-RET's start. That is
+# the 2026-09-04 change and it is an improvement of substance, not a relocation: the fresh
+# air now enters at the far end of a 6'-7" return duct and mixes along the whole of it
+# before it reaches the coil, where it used to be dumped into an open chamber. It is still
+# upstream of EQ-S-HP1-STRIP, which is now SOUTH of the cabinet in the discharge — the
+# ordering that matters (fresh -> mix -> coil -> strip) is preserved end to end.
+#
+# ** IT IS ON THE RETURN AND NOT ON THE TRUNK, AND THAT IS FORCED. ** `_pair_is_plumbed`
+# excuses only equipment<->duct pairs; a duct riser landing on another duct is always a
+# clash. The ERV feed therefore has to land on a piece of EQUIPMENT, and this box is it.
+#
+# Across the box it is 10" in the east lane beside the 21 1/4" cabinet; along the box it
+# occupies y 27'-9"..28'-9", the first foot of the return's travel.
 EQUIPMENT_ERV_SECOND = [
     Equipment(uid="8PE9E87JX5", tag="EQ-S-ERV-MIX", kind=EquipmentKind.MIXING_BOX,
-              position=pt(ft(24, 1), ft(1, 9)), footprint=(inch(10), inch(12)),
-              room="RM-S-STUDY2", type_ref="EQ-T-ERV-MIXING-BOX",
+              position=pt(ft(21), ft(28, 3)), footprint=(inch(10), inch(12)),
+              room="RM-S-HALL", type_ref="EQ-T-ERV-MIXING-BOX",
               soffit_ref="SF-S-HP1",
               mount=Mount(kind=MountKind.CEILING)),
 ]
@@ -737,7 +743,7 @@ DUCTS_ERV_LEVEL2 = [
 # north-south travel happens ON the deck, above the joists, where it costs nothing in DEPTH.
 #
 # ** THE x=1'-0" CHASE RUNS THE LENGTH OF A FINISHED BEDROOM, AND THE KNEE WALL AT ITS FOOT
-# IS BARE. ** DU-S-ERV-HP-FEED turns east at y=22'-0" and reaches SF-S-DUCT down
+# IS BARE. ** DU-S-ERV-HP-FEED turns east at y=22'-0" and reaches SF-S-HP1 up
 # RM-A-EAST-UNFIN's deck instead of running the knee wall's length; DU-A-ERV-R-STUBATH's
 # east leg rides the y=19'-4" bay, ALONG the joists, boring nothing; DU-A-ERV-R-PLANT feeds
 # from FS-S-WEST's trusses (DU-M-ERV-R-PLANT in DUCTS_ERV_LEVEL2), rising inside W-S-C1's
@@ -838,78 +844,72 @@ DUCTS_ERV_ATTIC = [
 
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
 #
-# It keeps DU-S-ERV-HP-FEED's tag and uid. It comes off the supply riser's head
-# on the attic deck, takes the boxed floor chase south, rides the FS-ATTIC bay at y=11'-4"
-# east, and **drops into SF-S-DUCT** onto the mixing box — a drop that is drawn, swept, and
-# billed at its developed length.
+# It keeps DU-S-ERV-HP-FEED's tag and uid. It comes off the supply riser's head on the attic
+# deck, takes the boxed floor chase south, rides the FS-ATTIC bay at y=22'-0" east, comes
+# back up onto RM-A-EAST-UNFIN's deck and runs NORTH to the mixing box, dropping onto it
+# through SF-S-HP1's lid.
+#
+# ** THE 12'-2" SOFFIT TAIL IS GONE. ** Until 2026-09-04 the box sat at the far south end of
+# SF-S-HP1 in RM-S-STUDY2's ceiling, and this run had to travel the length of SF-S-DUCT
+# beside the trunk, cross a seam, jog east across three lanes with 1 1/8" to spare, and come
+# back south. Nine vertices now instead of twelve; the tail, both of its turns and the pinch
+# are all gone. Developed ~43'-7" against ~61'-2".
 #
 # 6" and not a 75 mm radial: ~100 of the machine's 210 authored cfm goes through here (206
 # certified — see the header), which is half the house's fresh air arriving in one place, and
 # a radial would run it at ~5,000 fpm.
-# -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; -20 7/8" is a 6" duct on SF-S-DUCT's clear
-# underside at 216 1/8".
 #
 # ** IT NEVER ENTERS THE GUEST STUDIO. ** Running the x=1'-0" deck chase south all the way
-# to y=11'-4" would put 10'-11" of 6" duct along the base of a finished bedroom's knee wall
-# — the single item that would set that chase's SECTION, where everything else on that wall
-# is 75 mm.
+# would put 10'-11" of 6" duct along the base of a finished bedroom's knee wall — the single
+# item that would set that chase's SECTION, where everything else on that wall is 75 mm.
+# It turns east in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and for the same
+# reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate so the
+# partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
+# west-to-east route north of it.
 #
-# It turns east one bay sooner, in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and
-# for the same reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate
-# so the partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every
-# west-to-east route north of it. From x=20'-8" it rises back onto RM-A-EAST-UNFIN's deck and
-# runs south to the same SF-S-DUCT drop. An UNFINISHED loft is where a 6" duct
-# lying on a deck belongs. Developed length: 11'-7" west leg, 10'-8" east leg — the machine
-# sees the same run either way, and DU-M-ERV-R-PLANT (25 cfm) remains the radial whose drop
-# the installer must check.
+# ** ROUTE EFFICIENCY: ~2.05 AGAINST `mep.run_route_efficiency`'S 2.5. WATCH IT. ** It was
+# 1.54 before, and it got WORSE only because the destination moved 27 ft closer to the
+# origin while the route still has to go round FO-A-HALL. The margin is 0.45, not 0.96.
 DUCTS_ERV_MIX_FEED = [
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
-            # ** ITS FIRST 7" IS IN THE BAY. ** It comes off the riser head
-            # on the deck at x=0'-5", under 4" of roof. It picks the riser up on FS-ATTIC's
-            # bottom chord instead and stands up at x=1'-0", where the underside is 7 1/2"
-            # and a bare 6" duct on the deck clears by 1/2". The 7" east is ALONG a bay —
-            # FS-ATTIC's I-joists span x — so nothing is bored; the north-south leg that
-            # follows stays on the deck for the same reason.
-            # ** THE TAIL FOLLOWS THE MIXING BOX SOUTH. ** From the drop at (20'-8", 11'-4")
-            # the machine sees a 6" run continuing 12'-2": south inside SF-S-DUCT beside the
-            # 18x8 trunk (18 + 2 hanger gap + 6 = 26
-            # against 30 3/4" clear, which is the whole reason the trunk is 18x8 and not
-            # 20x8), across the y=7'-6" seam into SF-S-HP1, east at y=5'-5 1/2" — the
-            # band between the air handler's discharge plenum and ST-S2A's lowest stringer,
-            # which is the only place in the box where a 6" duct may cross all three
-            # lanes — and south down the east lane onto EQ-S-ERV-MIX at (24'-1", 1'-9").
-            # It cannot pass the machine on the west: the cabinet is 43 1/2" wide in a
-            # 72 3/4" cavity, so x=20'-8" runs straight through it, and only the east third
-            # of the box is a lane. Nothing rides RM-A-STUDY's finished floor.
+            # ** ITS FIRST 7" IS IN THE BAY. ** It comes off the riser head on the deck at
+            # x=0'-5", under 4" of roof. It picks the riser up on FS-ATTIC's bottom chord
+            # instead and stands up at x=1'-0", where the underside is 7 1/2" and a bare 6"
+            # duct on the deck clears by 1/2". The 7" east is ALONG a bay — FS-ATTIC's
+            # I-joists span x — so nothing is bored; the north-south leg that follows stays
+            # on the deck for the same reason.
             #
-            # ** THE JOG MAY NOT MOVE SOUTH. ** It clears the north edge of
-            # DU-S-HP-SOUTH-RISE's take-off leg and EQ-S-HP1-STRIP's plate by 1 1/8" — the
-            # tightest joint in this box, and one `mep.duct_soffit_occupancy` will not
-            # report, because it compares a pair's clearance ACROSS the box and this one is
-            # separated ALONG it. North it may go if something ever needs the room; south it
-            # may not.
+            # ** THE DECK LEG MUST STOP AT y=27'-9" AND NOT ONE INCH FURTHER NORTH. **
+            # That is the mixing box's own south face, and it is where the run turns down.
+            # `duct_occupants` clips a run's extent ALONG the box it names but deliberately
+            # NOT ACROSS it, so a deck leg carried north past this point would be graded as
+            # an occupant of a cavity it is 14" above — a phantom clash against the cabinet,
+            # with nothing in the report to say the two are on different planes. This stop
+            # is load-bearing and completely invisible. The box's south edge may be moved
+            # NORTH if it ever has to move; it may never be moved south.
             #
-            # One elevation the whole way, -24 7/8" (215 1/8" absolute): 6" above SF-S-HP1's
-            # cavity floor.
+            # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; +4" is the same duct lying on
+            # the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
+            # move because the 21" drop keeps that floor at 209 1/8" absolute.
             path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
-                  pt(ft(1), ft(22)), pt(ft(20, 8), ft(22)),
-                  pt(ft(20, 8), ft(22)), pt(ft(20, 8), ft(11, 4)),
-                  pt(ft(20, 8), ft(11, 4)),
-                  pt(ft(20, 8), ft(5, 5.5)),
-                  pt(ft(24, 1), ft(5, 5.5)),
-                  pt(ft(24, 1), ft(1, 9))),
+                  pt(ft(1), ft(22)), pt(ft(21), ft(22)),
+                  pt(ft(21), ft(22)), pt(ft(21), ft(27, 9)),
+                  pt(ft(21), ft(27, 9))),
             elevations=(inch(-8.875), inch(-8.875), inch(4), inch(4),
                         inch(-8.875), inch(-8.875),
-                        inch(4), inch(4), inch(-24.875),
-                        inch(-24.875), inch(-24.875), inch(-24.875)),
-            # `routing` stays CHASE: the legs above are a boxed floor chase and a run on an
-            # unfinished deck, and CHASE keeps its honest meaning for a shaft that is not a
-            # modeled Soffit. `soffit_ref` names SF-S-HP1 so the tail's two segments in that
-            # box ARE graded by `mep.duct_soffit_occupancy` against the derived cavity, beside
-            # the machine, the south-branch riser and the mixing box. The check clips a run to
-            # the box it names, so every attic leg clips away and only the tail is measured.
-            soffit_ref="SF-S-HP1",
+                        inch(4), inch(4), inch(-24.875)),
+            # ** IT NAMES NO SOFFIT, AND THAT IS THE 2026-09-04 CHANGE THAT COSTS SOMETHING. **
+            # It used to name SF-S-HP1. `duct_occupants` clips a run's extent ALONG the box
+            # it names and deliberately not ACROSS it — and SF-S-HP1 now spans y
+            # 27'-8"..35'-5 3/8", which is the same y band the x=1'-0" attic chase and the
+            # riser head run through, twenty feet west of the box and fourteen inches above
+            # its lid. Named, those three attic legs are graded as occupants of a cavity
+            # they never enter: a hard FAIL against geometry that is correct.
+            # What is given up is the grading of the final 12" drop, and that costs little:
+            # the drop lands inside EQ-S-ERV-MIX's own 10 x 12 footprint, which IS a graded
+            # occupant of the box, in the east lane with 1" to the cavity face. Nothing else
+            # of this run is in the box at all — the 12'-2" tail that used to be is gone.
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=100),
 ]

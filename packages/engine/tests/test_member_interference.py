@@ -151,17 +151,20 @@ def test_tudor_posts_within_their_wall_are_not_a_clash():
 _OPENING_FRAMING_KEYS = ("king-", "jack-", "header-", "sill-")
 
 
-def test_catlin_window_member_overlaps_pinned_at_three():
-    """The 3 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
+def test_catlin_window_member_overlaps_pinned_at_zero():
+    """The residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
 
     Measured with the junction-proximity clear disabled — the honest metric the TODO
-    records, since every one of these sits at a junction and would otherwise be silently
-    cleared. The measured composition:
+    records, since every one of these sat at a junction and would otherwise be silently
+    cleared. The history, because a count going to zero is worth being able to re-derive:
 
-    - 2 at one T: CSW148's king stud against the neighbouring walls' end studs
-      (CSW145:stud-008, CSW146:stud-000) — the jamb sits at the junction.
-    - 1 raked: CSW141:king-0-r0 against the stair soffit's bottom plate
-      (CSF601AAAA:soffit-plate-bottom-e).
+    - 3 originally. 2 of them were at one T: CSW148's king stud against the neighbouring
+      walls' end studs (CSW145:stud-008, CSW146:stud-000), and they went when the
+      door-module pass moved twenty-two openings onto their host wall's stud grid.
+    - 1 raked, the last: CSW141:king-0-r0 (W-S-CLN-S) against CSF601AAAA's bottom plate —
+      SF-S-DUCT's north end, which reached y=34'-0". On 2026-09-04 the HP1 move recut that
+      box to y=27'-8" and the two stopped sharing any volume at all. Incidental to that
+      change, not aimed at.
 
     The count is the regression guard; the docstring is the map for whoever moves it."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
@@ -171,12 +174,10 @@ def test_catlin_window_member_overlaps_pinned_at_three():
         if any(t.split(":")[-1].startswith(_OPENING_FRAMING_KEYS)
                for t in f.element_tags)
     ]
-    # LOWERED from 3 to 1: the door-module pass (structural.door_framing_module) moved
-    # twenty-two openings onto their host wall's stud grid, and two of the three overlaps this
-    # pinned went with them — an opening on the module puts its king where a module stud would
-    # have stood instead of beside it. Never widened: the point of the pin is that a
-    # regression shows up as a number going the wrong way.
-    assert len(window_findings) == 1, sorted(
+    # LOWERED 3 -> 1 -> 0, twice by side effect and never by widening the pin. The point of
+    # the pin is that a regression shows up as a number going the wrong way, and zero is the
+    # only value from which that is unambiguous.
+    assert window_findings == [], sorted(
         f.element_tags for f in window_findings)
 
 

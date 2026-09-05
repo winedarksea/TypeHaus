@@ -145,13 +145,28 @@ def test_a_branch_tees_into_the_side_of_a_trunk(catlin_model):
     assert landed == ["duct DU-S-HP-SUITE start lands on DU-S-HP-SUP"]
 
 
-def test_a_served_trunk_may_be_capped(catlin_model):
-    """DU-S-HP-SUP stops past its last bedroom boot. A capped trunk end lands on nothing and
-    never will, and that is how a trunk ends — earned from the take-offs on its final leg."""
-    capped = [f for f in _connectivity(catlin_model) if "DU-S-HP-SUP end" in f.message]
-    assert len(capped) == 1
-    assert capped[0].result.value == "pass"
-    assert "cap past" in capped[0].message
+def test_the_trunk_hands_off_collinearly_at_its_south_cap(catlin_model):
+    """** THIS TEST ASSERTED A CAPPED END UNTIL 2026-09-04, AND THE REVERSAL IS THE POINT. **
+
+    DU-S-HP-SUP used to run NORTH out of a machine at the south end of the chase and simply
+    stop past its last bedroom boot — a cap earned from the take-offs on its final leg.
+    With EQ-S-HP1-AH moved to SF-S-HP1 over RM-S-NCLOSET the trunk runs SOUTH, and its end
+    is no longer a cap at all: DU-S-HP-SOUTH-RISE picks it up COLLINEARLY at x=19'-6",
+    y=9'-10", 18x8 reducing to 10x6, and stands up into the FS-ATTIC bay.
+
+    That reducer replaced an east dogleg with two elbows whose only purpose was to get round
+    the old machine. So the assertion is the handoff, and the check earning it from geometry
+    rather than from a `duct_ref` is what makes it worth pinning.
+    """
+    ends = [f for f in _connectivity(catlin_model) if "DU-S-HP-SUP end" in f.message]
+    assert len(ends) == 1
+    assert ends[0].result.value == "pass"
+    assert ends[0].message == "duct DU-S-HP-SUP end lands on DU-S-HP-SOUTH-RISE"
+    # And the handoff is collinear: same x, and the riser starts where the trunk stops.
+    trunk = next(d for d in catlin_model.ducts if d.tag == "DU-S-HP-SUP")
+    riser = next(d for d in catlin_model.ducts if d.tag == "DU-S-HP-SOUTH-RISE")
+    assert trunk.path[-1] == pytest.approx(riser.path[0])
+    assert {p[0] for p in trunk.path} == {p[0] for p in riser.path}
 
 
 def test_a_machine_67_inches_above_the_end_is_not_a_joint(catlin_model):

@@ -781,7 +781,10 @@ def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
 # host, and the cabinets' own base all have to agree, and they are authored in two files.
 _HP_PAD_TOP_FT = -2 - 8 / 12.0
 _HP_STAND_IN = 18.0
-_HP_UNITS = ("EQ-M-HP1-OD", "EQ-M-HP2-OD")
+#: ** ONE UNIT IN THE POCKET SINCE 2026-09-04. ** EQ-M-HP1-OD crossed to the north face
+#: with its air handler (params/hp1_north_pad.py); its own pad, stand and anchors are
+#: asserted in their own section at the foot of this file. What is left here is HP2 alone.
+_HP_UNITS = ("EQ-M-HP2-OD",)
 
 
 def test_the_heat_pump_pad_tops_out_two_inches_proud_of_grade(catlin_model) -> None:
@@ -801,7 +804,7 @@ def test_the_heat_pump_pad_tops_out_two_inches_proud_of_grade(catlin_model) -> N
     assert (pad.z1_m - site_grade) / INCH == pytest.approx(2.0)
 
 
-def test_the_eight_stand_legs_stand_UP_from_the_pad_top(catlin_model) -> None:
+def test_the_four_stand_legs_stand_UP_from_the_pad_top(catlin_model) -> None:
     """``supported_by="SL-SG-HPPAD"`` is what makes a post rise from a support.
 
     ``_resolve_post`` (resolve/envelope.py) bears a post on any tag in ``solid_top``, which
@@ -810,7 +813,7 @@ def test_the_eight_stand_legs_stand_UP_from_the_pad_top(catlin_model) -> None:
     above a pad they are supposed to be bolted to.
     """
     legs = [s for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")]
-    assert len(legs) == 8, [s.tag for s in legs]
+    assert len(legs) == 4, [s.tag for s in legs]
     pad_top = _solid(catlin_model, "SL-SG-HPPAD").z1_m
     for leg in legs:
         assert leg.z0_m == pytest.approx(pad_top), leg.tag
@@ -827,7 +830,7 @@ def test_every_stand_anchor_names_the_pad_and_sits_on_its_top(catlin_model) -> N
     anchors = [e for s in catlin_model.plan.storeys
                for e in catlin_model.plan.storey_elements(s.tag)
                if getattr(e, "tag", "").startswith("CN-SG-HP")]
-    assert len(anchors) == 8, [e.tag for e in anchors]
+    assert len(anchors) == 4, [e.tag for e in anchors]
     legs = {s.tag for s in catlin_model.solids if s.tag.startswith("PT-SG-HP")}
     for anchor in anchors:
         assert anchor.kind.value == "equipment_anchor", anchor.tag
@@ -837,8 +840,8 @@ def test_every_stand_anchor_names_the_pad_and_sits_on_its_top(catlin_model) -> N
         assert anchor.elevation.meters / FT == pytest.approx(_HP_PAD_TOP_FT), anchor.tag
 
 
-def test_both_condensers_sit_on_the_stands_rather_than_beside_them(catlin_model) -> None:
-    """The cabinets' base and the legs' tops are one plane written in two files.
+def test_the_pocket_condenser_sits_on_its_stand_rather_than_beside_it(catlin_model) -> None:
+    """The cabinet's base and the legs' tops are one plane written in two files.
 
     ``mount.elevation`` is authored in plan/electrical.py and measures from the `main` datum;
     the pad top and the stand height are authored in params/sunken_garden.py. -2'-8" + 18"
@@ -869,19 +872,17 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
     On the balcony the legs answered to the deck (bay centres, six inches off a beam axis)
     and the feet to the cabinet, and the two could not coincide — decision #64. A flat slab
     has no grid, so each leg sits directly under a published foot hole: Gree's patterns are
-    29 3/4" x 15 9/16" (FXU24, HP1) and 25" x 15 19/32" (MUL30, HP2), width x depth. Both
-    cabinets sit SQUARE to the plan since 2026-09-03 (`rotation=deg(0)`, discharge facing
-    south), so the width pitch runs in **x** and the depth pitch in **y** — the transpose of
-    the arrangement that faced east, and the reason this test asserts the mapping rather
-    than assuming it.
+    25" x 15 19/32" for the MUL30, width x depth. The cabinet sits SQUARE to the plan since
+    2026-09-03 (`rotation=deg(0)`, discharge facing south), so the width pitch runs in **x**
+    and the depth pitch in **y** — the transpose of the arrangement that faced east, and the
+    reason this test asserts the mapping rather than assuming it. (HP1's 29 3/4 x 15 9/16
+    pattern left with it on 2026-09-04; it is asserted on its own pad below.)
 
-    And every leg's full 2" section must land ON the pad. HP1's depth pattern is an inch
-    WIDER than its cabinet, so its leg lines sit outboard of the cabinet's own faces on that
-    axis.
+    And every leg's full 2" section must land ON the pad.
     """
     from shapely.geometry import Polygon
 
-    pattern = {"EQ-M-HP1-OD": ("A", 29.75, 15.5625), "EQ-M-HP2-OD": ("B", 25.0, 15.59375)}
+    pattern = {"EQ-M-HP2-OD": ("B", 25.0, 15.59375)}
     units = {e.tag: e for s in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(s.tag)
              if getattr(e, "tag", "") in _HP_UNITS}
@@ -922,14 +923,19 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
 # The row's x is unchanged by the swap and asserted below at both ends — tucked as far west
 # as 40 5/32" + 12" + 39" allows.
 # ---------------------------------------------------------------------------------------
-_PAD_X = (29.0, 36.833333)
+_PAD_X = (29.0, 32.583333)
 _PAD_Y = (-3.333333, -0.833333)
 _STAIR_PAD_X = (28.5, 35.25)
 _STAIR_PAD_Y = (-9.0, -6.0)
 
 
 def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
-    """19.6 sf / 0.24 cy, x 29'-0"..36'-10" by y -3'-4"..-0'-10".
+    """8.96 sf / 0.11 cy, x 29'-0"..32'-7" by y -3'-4"..-0'-10".
+
+    ** IT SHRANK ON 2026-09-04. ** It was 19.6 sf carrying a two-cabinet row that oversailed
+    the pocket's SE corner by 7 1/6"; EQ-M-HP1-OD then crossed to the north face with its air
+    handler and the east edge came back to 2 3/4" past HP2's cabinet — the same rule that set
+    the old one. There is no oversail left: HP2 alone stops 3'-7 27/32" short of x 36'-0".
 
     It was 56.9 sf / 0.70 cy for a day, when one pour had to reach both the cabinets and a
     flight in the same band. They are 2'-8" apart in y now, and a rectangle spanning both
@@ -947,8 +953,8 @@ def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
     assert (x0 / FT, x1 / FT) == pytest.approx(_PAD_X)
     assert (y0 / FT, y1 / FT) == pytest.approx(_PAD_Y)
     area_sf = pad.area / (FT * FT)
-    assert area_sf == pytest.approx(19.583, abs=0.05)
-    assert area_sf * (4.0 / 12.0) / 27.0 == pytest.approx(0.242, abs=0.005)
+    assert area_sf == pytest.approx(8.958, abs=0.05)
+    assert area_sf * (4.0 / 12.0) / 27.0 == pytest.approx(0.1106, abs=0.005)
 
 
 def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> None:
@@ -981,13 +987,17 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
             == slabs["SL-SG-HPPAD"].top_elevation.meters)
 
 
-def test_both_condensers_face_south_square_to_the_plan(catlin_model) -> None:
-    """`rotation=deg(0)` on both, and their extents are the row this house is laid out from.
+def test_the_pocket_condenser_faces_south_square_to_the_plan(catlin_model) -> None:
+    """`rotation=deg(0)`, and its extent is the row this pocket is laid out from.
 
     The rotation is not cosmetic: it is what turns the discharge out of the pocket's own
-    reflecting faces into open yard, and what transposes the stand leg patterns in
-    params/sunken_garden.py. The 12" service gap between them is the one clearance still at
-    its published minimum, so it is asserted rather than described.
+    reflecting faces into open yard, and what transposes the stand leg pattern in
+    params/sunken_garden.py.
+
+    ** THE 12" SERVICE GAP AND THE 7 1/5" OVERSAIL ARE GONE WITH HP1 (2026-09-04). ** They
+    were the two tightest facts about this row and both were assertions about a cabinet that
+    no longer stands here. What is asserted now is the west end, which did not move, and the
+    fact that this unit ends WELL short of the house's SE corner — the thing the move bought.
     """
     units = {e.tag: e for s in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(s.tag)
@@ -998,13 +1008,11 @@ def test_both_condensers_face_south_square_to_the_plan(catlin_model) -> None:
         cx, cy = unit.position.xy_m
         w, d = (q.meters for q in unit.footprint)
         extents[tag] = (cx - w / 2.0, cx + w / 2.0, cy - d / 2.0, cy + d / 2.0)
-    hp2, hp1 = extents["EQ-M-HP2-OD"], extents["EQ-M-HP1-OD"]
-    # HP2 west, HP1 east, 12" of service gap between them.
-    assert (hp1[0] - hp2[1]) / INCH == pytest.approx(12.0, abs=0.05)
+    hp2 = extents["EQ-M-HP2-OD"]
     # HP2's west end holds 6" off W-SG-E1's east face at x 28'-6".
     assert (hp2[0] / FT - 28.5) * 12.0 == pytest.approx(6.0, abs=0.05)
-    # HP1 stands 7 1/5" past the house's SE corner at x 36'-0", into open side yard.
-    assert (hp1[1] / FT - 36.0) * 12.0 == pytest.approx(7.2, abs=0.05)
+    # And its east end stops 3'-7 27/32" short of the house's SE corner at x 36'-0".
+    assert (36.0 - hp2[1] / FT) * 12.0 == pytest.approx(43.84, abs=0.05)
 
 
 def test_the_porch_stair_climbs_five_risers_from_the_pad_to_the_plank(catlin_model) -> None:
@@ -1210,3 +1218,124 @@ def test_hp3s_cabinet_faces_the_slot_and_clears_both_walls(catlin_model) -> None
     assert box(min(xs), min(ys), max(xs), max(ys)).contains(
         box(cx_in - _HP3_CAB_W_IN / 2.0, cy_in - _HP3_CAB_D_IN / 2.0,
             cx_in + _HP3_CAB_W_IN / 2.0, cy_in + _HP3_CAB_D_IN / 2.0))
+
+
+# ---------------------------------------------------------------------------------------
+# EQ-M-HP1-OD's pad and stand, north face east of the garage
+# (params/hp1_north_pad.py, added 2026-09-04)
+# ---------------------------------------------------------------------------------------
+# System 1's condenser left the pocket the day its air handler left RM-S-STUDY2's ceiling
+# for RM-S-NCLOSET's: with the machine at the north end of the second storey, the short
+# lineset is up the north wall. The same coupling as the other two pads has to hold across
+# two modules that cannot import each other, and no check asks what a FLOOR-mounted exterior
+# machine bears on.
+_HP1_PAD = "SL-M-HP1PAD"
+_HP1_CAB_W_IN, _HP1_CAB_D_IN = 39.0, 14.5625
+_HP1_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
+#: The garage's plan extent. The discharge argument turns on the cabinet standing EAST of
+#: it: the 48 1/2" slot could never give a 24k unit 40" of throw.
+_GARAGE_EAST_X_FT = 24.0
+
+
+def test_hp1_stands_on_a_pad_at_the_same_top_and_height_as_the_other_two(catlin_model
+                                                                        ) -> None:
+    """One pad top and one stand height across all three outdoor units, still.
+
+    -2'-8" + 18" = -1'-2", and every cabinet carries ``inch(-14)``. ``mount.elevation`` did
+    NOT change when this unit moved, and that is the point: the new pad was poured to the
+    old pad's top so the authored -14" stayed true. A pad at some other top would be
+    invisible in the model and obvious on site.
+    """
+    pad = _solid(catlin_model, _HP1_PAD)
+    assert pad.category == "slab"
+    assert pad.z1_m / FT == pytest.approx(_HP_PAD_TOP_FT)
+    assert (pad.z1_m - pad.z0_m) / INCH == pytest.approx(4.0)
+    site_grade = catlin_model.plan.project.site.grade.meters
+    assert (pad.z1_m - site_grade) / INCH == pytest.approx(2.0)
+
+    legs = [s for s in catlin_model.solids if s.tag.startswith("PT-M-HP1-L")]
+    assert len(legs) == 4, [s.tag for s in legs]
+    for leg in legs:
+        assert leg.z0_m == pytest.approx(pad.z1_m), leg.tag
+        assert (leg.z1_m - leg.z0_m) / INCH == pytest.approx(_HP_STAND_IN), leg.tag
+        assert leg.assembly == "EQUIP_STAND_ALUM", leg.tag
+
+    storeys = {s.tag: s for s in catlin_model.plan.storeys}
+    unit = next(e for s in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(s.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP1-OD")
+    base = resolved_mount_elevation(storeys["main"], unit)
+    assert base == pytest.approx(max(leg.z1_m for leg in legs))
+    assert base / FT == pytest.approx(-1 - 2 / 12.0)
+    assert not getattr(unit, "drain_pan", False)
+    assert getattr(unit, "pan_drain_ref", None) is None
+
+
+def test_hp1s_four_anchors_name_their_leg_and_the_pad(catlin_model) -> None:
+    """Same part and the same pairing as the other two stands: an anchor naming a leg but
+    not the slab it is set into describes a fastener into nothing."""
+    anchors = [e for s in catlin_model.plan.storeys
+               for e in catlin_model.plan.storey_elements(s.tag)
+               if getattr(e, "tag", "").startswith("CN-M-HP1-A")]
+    assert len(anchors) == 4, [e.tag for e in anchors]
+    legs = {s.tag for s in catlin_model.solids if s.tag.startswith("PT-M-HP1-L")}
+    for anchor in anchors:
+        assert anchor.kind.value == "equipment_anchor", anchor.tag
+        assert anchor.size == "SS316-WEDGE-38x3", anchor.tag
+        assert _HP1_PAD in anchor.connects, anchor.tag
+        assert legs & set(anchor.connects), anchor.tag
+        assert anchor.elevation.meters / FT == pytest.approx(_HP_PAD_TOP_FT), anchor.tag
+
+
+def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
+    """The siting, in the four numbers that decide it.
+
+    ``rotation=deg(180)`` faces the discharge NORTH, away from the wall — the opposite of the
+    deg(0) this unit carried in the pocket, where it discharged south into open yard. Every
+    clearance is better than the row it left: 6" back against a published 4", 23 3/4" of
+    service side, 14" to the garage rake, and 40" of throw.
+
+    ** THE 40" IS ONLY LEGAL BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** The garage
+    occupies x 0'..24'; this cabinet is at x 26'-6"..29'-9", past its plan extent, throwing
+    into open front yard. Assert that, not the 40", because the 40" is a consequence.
+
+    And the price, asserted so nobody discovers it on site: the cabinet laps WIN-M-KITCH's
+    rough opening in plan. There is no window-free band 39" wide on this wall.
+    """
+    from shapely.geometry import Polygon
+
+    unit = next(e for s in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(s.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP1-OD")
+    assert unit.rotation.degrees == pytest.approx(180.0)
+    assert unit.footprint[0].inches == pytest.approx(_HP1_CAB_W_IN)
+    assert unit.footprint[1].inches == pytest.approx(_HP1_CAB_D_IN)
+    cx_in, cy_in = (v / INCH for v in unit.position.xy_m)
+    # 6" of back clearance to the house cladding, against Gree's published 4".
+    assert (cy_in - _HP1_CAB_D_IN / 2.0) - _HP1_CLADDING_Y_IN == pytest.approx(6.0)
+    # East of the garage's plan extent, which is what gives the discharge somewhere to go.
+    assert cx_in - _HP1_CAB_W_IN / 2.0 > _GARAGE_EAST_X_FT * 12.0
+    # It laps the kitchen sink window. Unavoidable, and stated rather than discovered.
+    # W-M-N1 runs EAST to WEST, so the opening's `center_along_m` is subtracted from the
+    # wall's start x rather than added to it.
+    wall = _wall(catlin_model, "W-M-N1")
+    window = next(o for o in catlin_model.openings if o.tag == "WIN-M-KITCH")
+    assert window.host_wall == "W-M-N1"
+    wx_in = (wall.axis[0][0] - window.center_along_m) / INCH
+    ro_half = (window.width_m / INCH) / 2.0
+    assert abs(wx_in - cx_in) < _HP1_CAB_W_IN / 2.0 + ro_half
+
+    # Every leg's full 2" section lands on the pad, and on a published foot hole.
+    pad = Polygon(_solid(catlin_model, _HP1_PAD).outline)
+    legs = {s.tag: Polygon(s.outline) for s in catlin_model.solids
+            if s.tag.startswith("PT-M-HP1-L")}
+    cx, cy = unit.position.xy_m
+    want = [(cx + sx * 29.75 * INCH / 2.0, cy + sy * 15.5625 * INCH / 2.0)
+            for sx in (-1, 1) for sy in (-1, 1)]
+    tol = 0.001 * INCH
+    for tag, ring in legs.items():
+        assert pad.contains(ring), f"{tag} overhangs the pad"
+        got = (ring.centroid.x, ring.centroid.y)
+        assert any(abs(got[0] - w[0]) < tol and abs(got[1] - w[1]) < tol
+                   for w in want), tag
+    assert len(legs) == len(want)

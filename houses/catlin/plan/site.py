@@ -160,7 +160,11 @@ SITE = Site(
         # line (x=24') because the garage now stands only 4' north: the old (12,39) / (24,45)
         # pair fell in the breezeway slot and inside the garage footprint respectively, where
         # there is no longer 10' of open ground to fall into.
-        SpotElevation(position=pt(ft(30), ft(39)), elevation=ft(-3)),
+        # ** MOVED EAST 4'-0" ON 2026-09-04. ** (30, 39) is 1/4" east of SL-M-HP1PAD's edge
+        # and would read -3'-0" of soil hard against a slab topped at -2'-8". (34, 39) is
+        # clear of the pad in open ground. Do not push it further out: `code.R401_3_grading`
+        # passes here by only 0.6 points.
+        SpotElevation(position=pt(ft(34), ft(39)), elevation=ft(-3)),
         SpotElevation(position=pt(ft(32), ft(45)), elevation=ft(-3, -4)),
         # east side (house wall at x=36')
         SpotElevation(position=pt(ft(39), ft(12)), elevation=ft(-3)),
@@ -221,13 +225,14 @@ SITE = Site(
         # their high edge; the fall is a finishing fact and lives here, where
         # code.R401_3_impervious can read it.
         #
-        # SL-SG-HPPAD, x 29'-0"..36'-10" by y -3'-4"..-0'-10" — 19.6 sf. It falls 3/4" south
+        # SL-SG-HPPAD, x 29'-0"..32'-7" by y -3'-4"..-0'-10" — 8.96 sf, shrunk from 19.6
+        # on 2026-09-04 when EQ-M-HP1-OD crossed to the north face. It falls 3/4" south
         # over 2'-6", 2.5% against R401.3's 2%, and its far edge lands 1/2" below grade so
         # the sheet leaves onto gravel rather than ponding at a lip.
         ImperviousSurface(
             label="hp pad",
-            outline=(pt(ft(29), ft(-3, -4)), pt(ft(36, 10), ft(-3, -4)),
-                     pt(ft(36, 10), ft(0, -10)), pt(ft(29), ft(0, -10))),
+            outline=(pt(ft(29), ft(-3, -4)), pt(ft(32, 7), ft(-3, -4)),
+                     pt(ft(32, 7), ft(0, -10)), pt(ft(29), ft(0, -10))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
         ),
@@ -245,6 +250,22 @@ SITE = Site(
                      pt(ft(13, 1), ft(38, 11)), pt(ft(9, 9), ft(38, 11))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -9),
+        ),
+        # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
+        # x 26'-3 1/4"..29'-11 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04. Same
+        # top, -2'-8", 2" proud of grade.
+        #
+        # ** IT FALLS STRAIGHT NORTH, unlike SL-M-HP3PAD's diagonal. ** That pad runs its
+        # fall on the diagonal only because the garage stem stands directly north of it and
+        # there is nowhere else for the sheet to go. The garage is x 0'..24'; this pad is at
+        # x 26'-3 1/4"..29'-11 3/4", with open front yard in front of it. 3/4" over 30" is
+        # 2.5% against R401.3's 2%, away from the house, and that is the whole story.
+        ImperviousSurface(
+            label="hp1 pad",
+            outline=(pt(ft(26, 3.25), ft(36, 10)), pt(ft(29, 11.75), ft(36, 10)),
+                     pt(ft(29, 11.75), ft(39, 4)), pt(ft(26, 3.25), ft(39, 4))),
+            near_elevation=ft(-2, -8),
+            far_elevation=ft(-2, -8.75),
         ),
         # SL-SG-STAIRPAD, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
         # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is

@@ -342,10 +342,20 @@ SECOND_DEVICES = [
     ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(11, 6), ft(22, 8.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # ** IT MOVED, AND IT HAD TO. ** (20'-0", 33'-0") is inside EQ-S-HP1-AH's footprint
+    # since the 2026-09-04 HP1 move, and having no authored elevation it resolved against a
+    # 9'-0" ceiling that no longer exists in this room at all — SF-S-HP1 is the closet's
+    # ceiling now, at 7'-3". (18'-9", 33'-6") is west of the cabinet, in the closet's own
+    # west lane, with the elevation and the recess authored so it sets into the box face
+    # rather than hanging above it.
+    # It is 12 3/8" east of FO-S-STAIR's east edge — CLOSER to the stair than the old
+    # station, so `code.R303_7_stairway_illumination` still counts it for ST-M2S.
     ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(33)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
+                     position=pt(ft(18, 9), ft(33, 6)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-UPPER",
                      room="RM-S-NCLOSET", controlled_by=("ED-S-NCLOSET-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3),
+                                 recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED016K2AA", tag="ED-S-NCLOSET-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(21, 5.5), ft(30, 6.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),

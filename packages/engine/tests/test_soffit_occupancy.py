@@ -65,23 +65,34 @@ def test_a_fourteen_inch_drop_clears_an_eight_inch_duct(catlin_model) -> None:
     assert section.drop_m > 8 * M_PER_IN
 
 
-def test_the_air_handler_is_the_real_cabinet_and_the_lanes_beside_it_are_real_too(
+def test_the_air_handler_is_the_real_cabinet_and_the_lane_beside_it_is_real_too(
         catlin_model) -> None:
-    """The real cabinet is 43 1/2" wide (EQ-T-GREE-FLEXX-ULTRA-24-AH) and lives in SF-S-HP1.
-    The point of that box is that the two things which have to pass the machine — the 10x6
-    south-branch riser lane and the 6" ERV mixing-box feed — fit BESIDE it with the hanger
-    gap, not instead of it. So the assertion is not a pair of symmetric margins; it is that
-    the machine is the catalogued cabinet and the box still has lanes left over."""
+    """The real cabinet is 43 1/2" x 21 1/4" (EQ-T-GREE-FLEXX-ULTRA-24-AH) and lives in
+    SF-S-HP1.
+
+    ** THE BOX TURNED ON 2026-09-04 AND SO DID THE MACHINE. ** SF-S-HP1 used to be 77" in x
+    by 80" in y in RM-S-STUDY2's ceiling, with the cabinet's 43 1/2" ACROSS the graded axis
+    and two lanes beside it. It is now 40 3/4" x 7'-9 3/8" over RM-S-NCLOSET and the north
+    hall, and ``rotation=deg(90)`` turns the cabinet so its 43 1/2" runs ALONG the box where
+    there is no pressure. So the assertion inverts: across the graded axis the machine is
+    21 1/4", not 43 1/2", and what has to fit beside it is the ONE 10" return — the ERV feed
+    now lands on EQ-S-ERV-MIX at the box's south end instead of passing the cabinet, and the
+    south-branch riser left the box entirely for SF-S-DUCT's south cap.
+
+    ``east >= 10 + 6 + 2 x gap`` is not merely false now, it is impossible in a 36 1/2"
+    cavity beside a 21 1/4" case, which is exactly what the turn bought."""
     _, section = _section(catlin_model, "SF-S-HP1")
     handler = next(o for o in catlin_model.canvas_objects if o.tag == "EQ-S-HP1-AH")
     xs = [x for x, _ in handler.footprint]
-    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(43.5, abs=1e-6)
+    ys = [y for _, y in handler.footprint]
+    assert (max(xs) - min(xs)) / M_PER_IN == pytest.approx(21.25, abs=1e-6), "across"
+    assert (max(ys) - min(ys)) / M_PER_IN == pytest.approx(43.5, abs=1e-6), "along"
     west = (min(xs) - section.across[0]) / M_PER_IN
     east = (section.across[1] - max(xs)) / M_PER_IN
     assert west > 0.0, "the case must be inside its own cavity"
-    # Everything the machine does not take is lane: 10 branch + 2 gap + 6 ERV + 2 gap.
-    assert west + east == pytest.approx(section.width_m / M_PER_IN - 43.5, abs=1e-6)
-    assert east >= 10 + 6 + 2 * (HANGER_GAP_M / M_PER_IN)
+    assert west + east == pytest.approx(section.width_m / M_PER_IN - 21.25, abs=1e-6)
+    # The east lane carries the 10" return with the hanger gap and an inch of lining relief.
+    assert east >= 10 + HANGER_GAP_M / M_PER_IN
 
 
 # --- the occupancy rule itself -----------------------------------------------------------
