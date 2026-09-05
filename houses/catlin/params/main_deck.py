@@ -16,7 +16,9 @@ and the basement wall comes out at exactly 8'-0".
 ::
 
                     WOOD BAY                          EPS DECK BAY
-      +0.95"..0.99" 6 mm SPC LVP (5 mm + 1 mm IXPE)
+      +1 1/2"  3/4" solid oak    (south bay, x 18'-36' y 0'-13')
+      +1 5/16" 5/16" porcelain + 1/8" uncoupling membrane (RM-M-MUDROOM)
+      +0.95"..0.99" 6 mm SPC LVP (5 mm + 1 mm IXPE)   -- everywhere else
       +15/16" ------------------------------------  cap top, polished  <- finished floor
       +3/4"   3/4" plywood subfloor
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
@@ -150,6 +152,20 @@ MAIN_FINISHED_FLOOR = inch(MAIN_DATUM.inches + _SUBFLOOR.inches)
 # Giving finishes a real thickness is its own change (plans/TODO.md).
 _LVP = inch(0.2362)  # 6 mm nominal
 MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
+
+# 2026-09-05: and the south bay's 3/4" solid oak, on the same subfloor. Stated here for the
+# same reason the plank is — the model gives a finish no thickness, so the one number the
+# junction detail turns on has nowhere else to live.
+#
+# ** THE REDUCER. ** MAIN_FINISHED_FLOOR_OAK - DECK_TOP = 9/16" at the y=13' line, where the
+# oak meets the polished cap. That step is deliberate and cannot be designed out from this
+# side: ``structural.mixed_deck_bearing_seat`` holds cap-top within 1/4" of the subfloor
+# top, so the cap has 1/16" of lift in it, not 9/16". It is also the leg that has to break
+# for differential deflection anyway (notes/mixed_deck_movement_joint.md). The other two
+# junctions are small: LVP is 1/64" proud of the cap at x=18' (flush), and the mudroom's
+# ~5/16" of tile-over-membrane wants a transition strip at its doorway.
+_OAK = inch(0.75)                        # 3/4" solid, nailed to the plywood
+MAIN_FINISHED_FLOOR_OAK = inch(MAIN_FINISHED_FLOOR.inches + _OAK.inches)
 
 # --- the plane the whole exercise turns on ----------------------------------------
 #

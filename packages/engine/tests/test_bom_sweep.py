@@ -233,9 +233,14 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     # intent if that slab outline ever moves, not a field finish. It is in the room list
     # because the list is by authored finish; the sqft assertions elsewhere are what pin
     # that it adds nothing.
+    # 2026-09-05: the four main-floor rooms off the hall — RM-M-BATH1, RM-M-LAUNDRY,
+    # RM-M-MECH and RM-M-MUD-CLOSET — retyped off `vinyl-sheet` onto this plank when the
+    # hall's own vinyl FinishZone was deleted, so the spine bills as one floor.
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
                                  "RM-S-VANITY", "RM-S-BATH1",
-                                 "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY"}
+                                 "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY",
+                                 "RM-M-BATH1", "RM-M-LAUNDRY", "RM-M-MECH",
+                                 "RM-M-MUD-CLOSET"}
     # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
     # SL-M-DECK, whose polished cap is the finished floor there, so the plank stops at the
     # band. Summing room areas alone would order LVP for a floor nobody covers.
@@ -266,9 +271,12 @@ def test_a_finish_brings_the_layer_it_implies(bom):
     """Carpet needs pad and LVP needs underlayment; a schedule that bills the covering alone
     is not orderable."""
     companions = {row["finish"]: row for row in bom["floor_finishes"] if "under" in row}
-    assert set(companions) == {"carpet-pad", "lvp-underlayment"}
+    # And tile needs an uncoupling membrane, since 2026-09-05: both tile floors in this
+    # house are over a wood deck, and the tile row's own $/SF is thinset and grout only.
+    assert set(companions) == {"carpet-pad", "lvp-underlayment", "tile-uncoupling-membrane"}
     assert companions["carpet-pad"]["under"] == "carpet"
     assert companions["lvp-underlayment"]["under"] == "lvp"
+    assert companions["tile-uncoupling-membrane"]["under"] == "tile"
     for row in companions.values():
         assert row["known"], row
         assert float(row["order_area_sqft"]) > 0
@@ -324,8 +332,10 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     rows = bom["footing_bedding"]
     assert ({tag for row in rows for tag in row["tags"]}
             == {bedding.tag for bedding in catlin_model.footing_beddings})
-    # An aggregate bedding, not FB-B-BRICK: the veneer plinth's "bedding" is a 2" XPS sheet
-    # on the house footing's toe, so it bills no stone, fabric or tile by design.
+    # An aggregate bedding — one with real stone under it. FB-B-BRICK used to be the odd
+    # one out here (the veneer plinth's "bedding" claimed a 2" XPS sheet and billed stone
+    # instead, which is the contradiction that retired it on 2026-09-05); every bedding left
+    # is a genuine aggregate bed, so the filter simply picks the first with fabric.
     row = next(r for r in rows if float(r["geotextile_sqft"]) > 0)
     assert float(row["volume_cubic_yards"]) > 0
     assert float(row["drain_tile_ft"]) > 0

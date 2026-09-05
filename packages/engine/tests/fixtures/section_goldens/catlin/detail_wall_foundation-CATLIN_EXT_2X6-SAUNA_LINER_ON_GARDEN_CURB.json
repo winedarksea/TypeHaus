@@ -875,7 +875,7 @@
       "node": "polyline",
       "points": [
         [
-          -5.550000000000001,
+          -10.05,
           -102.4375
         ],
         [
@@ -887,7 +887,7 @@
           -66.75442913385827
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -66.75442913385827
         ]
       ],
@@ -903,7 +903,7 @@
       "node": "hatch",
       "boundary": [
         [
-          -5.550000000000001,
+          -10.05,
           -102.4375
         ],
         [
@@ -915,7 +915,7 @@
           -66.75442913385827
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -66.75442913385827
         ]
       ],
@@ -931,19 +931,19 @@
       "node": "polyline",
       "points": [
         [
-          -9.175,
+          -13.675,
           -102.4375
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -102.4375
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -66.75442913385827
         ],
         [
-          -9.175,
+          -13.675,
           -66.75442913385827
         ]
       ],
@@ -959,19 +959,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -9.175,
+          -13.675,
           -102.4375
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -102.4375
         ],
         [
-          -5.550000000000001,
+          -10.05,
           -66.75442913385827
         ],
         [
-          -9.175,
+          -13.675,
           -66.75442913385827
         ]
       ],
@@ -981,6 +981,118 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "brown-brick"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -22.0,
+          -120.1875
+        ],
+        [
+          -10.0,
+          -120.1875
+        ],
+        [
+          -10.0,
+          -102.4375
+        ],
+        [
+          -22.0,
+          -102.4375
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGW108AAAA",
+      "tag": "W-SG-BRKBM/concrete"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -22.0,
+          -120.1875
+        ],
+        [
+          -10.0,
+          -120.1875
+        ],
+        [
+          -10.0,
+          -102.4375
+        ],
+        [
+          -22.0,
+          -102.4375
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -10.0,
+          -120.1875
+        ],
+        [
+          -8.0,
+          -120.1875
+        ],
+        [
+          -8.0,
+          -102.4375
+        ],
+        [
+          -10.0,
+          -102.4375
+        ]
+      ],
+      "layer": "A-WALL-INSU",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGW108AAAA",
+      "tag": "W-SG-BRKBM/xps-break"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -10.0,
+          -120.1875
+        ],
+        [
+          -8.0,
+          -120.1875
+        ],
+        [
+          -8.0,
+          -102.4375
+        ],
+        [
+          -10.0,
+          -102.4375
+        ]
+      ],
+      "pattern": "none",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "xps"
     },
     {
       "space": "model",
@@ -1047,11 +1159,11 @@
           -120.1875
         ],
         [
-          -10.0,
+          -22.0,
           -120.1875
         ],
         [
-          -10.0,
+          -22.0,
           -116.6875
         ],
         [
@@ -1075,11 +1187,11 @@
           -120.1875
         ],
         [
-          -10.0,
+          -22.0,
           -120.1875
         ],
         [
-          -10.0,
+          -22.0,
           -116.6875
         ],
         [
@@ -1155,19 +1267,19 @@
       "node": "polyline",
       "points": [
         [
-          -10.0,
+          -8.0,
           -117.4375
         ],
         [
-          10.0,
+          12.000000000000002,
           -117.4375
         ],
         [
-          10.0,
+          12.000000000000002,
           -109.4375
         ],
         [
-          -10.0,
+          -8.0,
           -109.4375
         ]
       ],
@@ -1183,19 +1295,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -10.0,
+          -8.0,
           -117.4375
         ],
         [
-          10.0,
+          12.000000000000002,
           -117.4375
         ],
         [
-          10.0,
+          12.000000000000002,
           -109.4375
         ],
         [
-          -10.0,
+          -8.0,
           -109.4375
         ]
       ],
@@ -1211,75 +1323,19 @@
       "node": "polyline",
       "points": [
         [
-          -9.05,
-          -107.4375
-        ],
-        [
-          0.95,
-          -107.4375
-        ],
-        [
-          0.95,
-          -102.4375
-        ],
-        [
-          -9.05,
-          -102.4375
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CFV301AAAA",
-      "tag": "FT-B-BRICK"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -9.05,
-          -107.4375
-        ],
-        [
-          0.95,
-          -107.4375
-        ],
-        [
-          0.95,
-          -102.4375
-        ],
-        [
-          -9.05,
-          -102.4375
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          -12.000000000000002,
+          -10.0,
           -123.4375
         ],
         [
-          -8.0,
+          -6.000000000000001,
           -123.4375
         ],
         [
-          -8.0,
+          -6.000000000000001,
           -119.4375
         ],
         [
-          -12.000000000000002,
+          -10.0,
           -119.4375
         ]
       ],
@@ -1295,19 +1351,19 @@
       "node": "hatch",
       "boundary": [
         [
-          -12.000000000000002,
+          -10.0,
           -123.4375
         ],
         [
-          -8.0,
+          -6.000000000000001,
           -123.4375
         ],
         [
-          -8.0,
+          -6.000000000000001,
           -119.4375
         ],
         [
-          -12.000000000000002,
+          -10.0,
           -119.4375
         ]
       ],
@@ -1323,19 +1379,19 @@
       "node": "polyline",
       "points": [
         [
-          8.0,
+          10.0,
           -123.4375
         ],
         [
-          12.000000000000002,
+          14.000000000000002,
           -123.4375
         ],
         [
-          12.000000000000002,
+          14.000000000000002,
           -119.4375
         ],
         [
-          8.0,
+          10.0,
           -119.4375
         ]
       ],
@@ -1351,19 +1407,19 @@
       "node": "hatch",
       "boundary": [
         [
-          8.0,
+          10.0,
           -123.4375
         ],
         [
-          12.000000000000002,
+          14.000000000000002,
           -123.4375
         ],
         [
-          12.000000000000002,
+          14.000000000000002,
           -119.4375
         ],
         [
-          8.0,
+          10.0,
           -119.4375
         ]
       ],
@@ -1742,17 +1798,17 @@
         "kind": "point",
         "xy": [
           -1.05,
-          -128.53776246719167
+          -133.86554024496942
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -128.53776246719167
+        -133.86554024496942
       ],
       "to": [
         -1.05,
-        -128.53776246719167
+        -133.86554024496942
       ],
       "text": "xps-a 2\"",
       "height": 1.6,
@@ -1767,17 +1823,17 @@
         "kind": "point",
         "xy": [
           -0.025,
-          -133.86554024496942
+          -144.521095800525
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -133.86554024496942
+        -144.521095800525
       ],
       "to": [
         -0.025,
-        -133.86554024496942
+        -144.521095800525
       ],
       "text": "damp-proof 0.05\"",
       "height": 1.6,
@@ -1792,17 +1848,17 @@
         "kind": "point",
         "xy": [
           3.0000000000000004,
-          -139.1933180227472
+          -149.84887357830277
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -139.1933180227472
+        -149.84887357830277
       ],
       "to": [
         3.0000000000000004,
-        -139.1933180227472
+        -149.84887357830277
       ],
       "text": "concrete 6\"",
       "height": 1.6,
@@ -1817,17 +1873,17 @@
         "kind": "point",
         "xy": [
           7.000000000000001,
-          -144.521095800525
+          -155.17665135608055
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -144.521095800525
+        -155.17665135608055
       ],
       "to": [
         7.000000000000001,
-        -144.521095800525
+        -155.17665135608055
       ],
       "text": "foil-polyiso 2\"",
       "height": 1.6,
@@ -1842,17 +1898,17 @@
         "kind": "point",
         "xy": [
           8.25,
-          -149.84887357830277
+          -160.50442913385834
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -149.84887357830277
+        -160.50442913385834
       ],
       "to": [
         8.25,
-        -149.84887357830277
+        -160.50442913385834
       ],
       "text": "liner-furring 0.5\"",
       "height": 1.6,
@@ -1867,17 +1923,17 @@
         "kind": "point",
         "xy": [
           9.0,
-          -155.17665135608055
+          -165.83220691163612
         ],
         "name": ""
       },
       "at": [
         -26.70354330708662,
-        -155.17665135608055
+        -165.83220691163612
       ],
       "to": [
         9.0,
-        -155.17665135608055
+        -165.83220691163612
       ],
       "text": "shiplap-liner 1\"",
       "height": 1.6,
@@ -2091,7 +2147,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -7.3625,
+          -11.8625,
           -69.93220691163604
         ],
         "name": ""
@@ -2101,10 +2157,10 @@
         -69.93220691163604
       ],
       "to": [
-        -7.3625,
+        -11.8625,
         -69.93220691163604
       ],
-      "text": "brick 3.62\"",
+      "text": "brick 3.63\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2116,7 +2172,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          -4.8,
+          -7.050000000000001,
           -80.58776246719161
         ],
         "name": ""
@@ -2126,10 +2182,60 @@
         -80.58776246719161
       ],
       "to": [
-        -4.8,
+        -7.050000000000001,
         -80.58776246719161
       ],
-      "text": "air-gap 1.5\"",
+      "text": "air-gap 6\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -16.0,
+          -128.53776246719167
+        ],
+        "name": ""
+      },
+      "at": [
+        -26.70354330708662,
+        -128.53776246719167
+      ],
+      "to": [
+        -16.0,
+        -128.53776246719167
+      ],
+      "text": "concrete 12\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          -9.0,
+          -139.1933180227472
+        ],
+        "name": ""
+      },
+      "at": [
+        -26.70354330708662,
+        -139.1933180227472
+      ],
+      "to": [
+        -9.0,
+        -139.1933180227472
+      ],
+      "text": "xps-break 2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2702,7 +2808,7 @@
         {
           "kind": "point",
           "xy": [
-            -10.0,
+            -8.0,
             -120.4375
           ],
           "name": ""
@@ -2710,18 +2816,18 @@
         {
           "kind": "point",
           "xy": [
-            10.0,
+            12.000000000000002,
             -120.4375
           ],
           "name": ""
         }
       ],
       "p0": [
-        -10.0,
+        -8.0,
         -120.4375
       ],
       "p1": [
-        10.0,
+        12.000000000000002,
         -120.4375
       ],
       "offset": 3.0,
@@ -2738,7 +2844,7 @@
         {
           "kind": "point",
           "xy": [
-            -13.0,
+            -11.0,
             -117.4375
           ],
           "name": ""
@@ -2746,18 +2852,18 @@
         {
           "kind": "point",
           "xy": [
-            -13.0,
+            -11.0,
             -109.4375
           ],
           "name": ""
         }
       ],
       "p0": [
-        -13.0,
+        -11.0,
         -117.4375
       ],
       "p1": [
-        -13.0,
+        -11.0,
         -109.4375
       ],
       "offset": 3.0,
@@ -3419,7 +3525,7 @@
     "• **The coating is specified over the 1/2\" protection board because the board could not be graded.** A butted, unsealed board's installed permeance is dominated by its joints, no manufacturer in that class publishes an ASTM E96 number for it, and `building_science.condensation` therefore reported UNKNOWN on *both* basement assemblies for as long as it was authored. A mesh-reinforced trowel lamina is monolithic and seamless, a published band describes it, and both walls now PASS the January gate with the tightest plane 69-73 Pa below saturation. The board is kept as the **named alternate** — its material and its price row both stay live — and going back to it is one `material_ref` edit. Note what it is *not*: cheaper. Installed, the coating bills alongside the board, not under it. The reason for the swap is the verdict.",
     "• **The XPS is bonded, and nothing anchors it.** Foam-compatible mastic to the liquid-applied damp-proofing, per the membrane manufacturer, and that is the whole attachment. It is sufficient because the band is captured mechanically at both ends regardless: its head tucks under the rainscreen Z-flashing at the bearing seat, and its foot is buried 6\" in soil, with backfill holding everything below. It also gives up nothing — the board it replaces was pinned into the *foam*, never through to the concrete, so no version of this band has ever had an anchor in the wall. There is no hardware line for it and there should not be: the mastic rides in the `xps:2.0` labour rate, which is what an unfastened layer means.",
     "• **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded coating: 6'-4\" of fill with 2'-2 9/16\" standing out of it is exactly a grade band. The court segments carry no skin at all: their XPS is inside `W-B-BRICK`'s ventilated cavity. The banded walls carry 4.175\" outboard of the concrete face over the band and 4.05\" below it. `N-B-BRICK-W`/`-E` did **not** follow the band: those nodes stand over the *court* segments, which have never carried a skin, so the band's thickness was never theirs to track.",
-    "• **The veneer's cavity is 1-1/2\" and the model finally says so.** The stand-off was `inch(-4.55)`, struck on the parge coat's finished face. When the parge was deleted the node stayed put, so a 1/2\" void opened between the XPS at -4.05\" and the veneer's own 1\" `air-gap` layer at -4.55\" — half an inch that no layer described, with the drawing, the 3D model and the IFC export all carrying a gap belonging to nothing. Corrected 2026-09-04: the node moves onto the foam at `inch(-4.05)` and `air-gap` grows to 1-1/2\". The two edits cancel at the gap's outboard face, so **the wythe does not move** (-5.55\" to -9.175\", as built) and neither do the arched reveals or the veneer's footing. IRC R703.8.4 asks 1\" minimum; the built cavity always cleared it, only the model was wrong.",
+    "• **The veneer's cavity is 6\", and it is a foundation dimension rather than a rainscreen one.** The wythe does not bear on the house any more. Until 2026-09-05 it stood on `FT-B-BRICK`, a plinth cast on `FT-B-S2`/`FT-B-S3`'s own projecting toe, which put 129 SF of brick — exposed on **both** faces at the bottom of an open court, so at outdoor temperature all winter — in direct series with the footings whose underside is level with the court floor. The break meant to interrupt that was ordered twice and placed never: the plinth's `FOOTING_FPSF_20` billed 16.0 SF of 2\" XPS that no geometry ever held, and its bedding dug a 2\" undercut for the same space that billed as washed crushed stone, with a `cast_foam_in_aggregate` flag beside it carrying no thickness at all. Nothing grades a thermal break for continuity, so the condition sat at 0 FAIL. The veneer now bears on `W-SG-BRKBM`, a 12\" x 17 3/4\" grade beam spanning the court's 19'-0\" between `W-SG-W1` and `W-SG-E1`, whose north face carries a **2\" 40 psi XPS isolation board** against the house footing's trimmed toe — the same cut `DW-SG-W1/E1-FOAM` already makes at the porch footings, spelled as an assembly Layer so it has a polygon, a face and an order that a test can pin. The beam's concrete can reach y = -10\" and no further, which is what sets the wythe at -10.05\"..-13 5/8\" and the cavity at 6\". That is past IRC R703.8.4's 4-1/2\" prescriptive airspace, so the ties are engineered under TMS 402 — see `notes/sunken_garden_veneer_beam.md`. The cavity was 1-1/2\" under the plinth and 1\" before that.",
     "• **The pour stops at the bearing seat, -13 7/16\", and this detail's junction is there.** The top of the concrete and the bottom of the framed wall are 13 7/16\" apart: the pour tops out on one flat seat all the way round, the framed wall above still starts at the storey datum (the house-wide datum convention is a known split — see `plans/TODO.md`), and the 13 7/16\" between them is the mudsill, its gasket, and the 11 7/8\" rim band the joists die into. The L-flashing, the Z-flashing with its drip, the bug screen and the sill gasket all draw on the concrete rather than a foot above it.",
     "• **The sill is one board and it is shared.** The I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on. One rule takes the **union** of the two runs, on the seat, and it bills 370.0 LF. There is no second rule and there must not be: two rules over one board is a double-bill.",
     "• **The pour is 8\" everywhere the detail applies, and the steel is `#5 @ 41\" o.c.`** This detail is the wood-over-concrete transition: the I-joists and rim bear on the same 2x6 mudsill the framed wall above stands on, and an 8\" wall carries that sill with 2\" to spare. The north, west and south perimeter is 8\" (`CATLIN_BASEMENT_8`, `CATLIN_BASEMENT_8_GARDEN`, `SAUNA_LINER_ON_BASEMENT_8_GARDEN`) with `#5 @ 41\" o.c.` vertical steel, which IRC Table R404.1.2(8) requires at 8\" where 12\" reads NR. Only `SL-M-DECK` is still a cast deck, and it lands on the east wall and the centre line — neither of which this detail draws. The walls align on `face(\"concrete-ext\")`, so the exterior face, the 4\" of XPS and its hand-off to the framed wall's 4\" of CI all stand exactly where they are drawn, and the 4\" came off the inside face where the sill has room to spare.",

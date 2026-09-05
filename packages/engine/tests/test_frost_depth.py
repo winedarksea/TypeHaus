@@ -24,7 +24,9 @@ from typehaus.quantities import ft
 # The footings the sunken-garden excavation reaches. Their grade is the garden floor, so
 # moving the site plane up or down does not move them, and they are excluded wherever
 # these tests make a claim about *the plane*.
-_BESIDE_THE_EXCAVATION = {"FT-B-BRICK", "FT-B-S1", "FT-B-S2", "FT-B-S3",
+# FT-B-BRICK left this set on 2026-09-05 with the veneer plinth itself; W-B-BRICK bears on
+# the spanning beam W-SG-BRKBM now and touches no soil.
+_BESIDE_THE_EXCAVATION = {"FT-B-S1", "FT-B-S2", "FT-B-S3",
                           "FT-SG-COL", "FT-SG-FCOL", "FT-SG-E1", "FT-SG-E2",
                           "FT-SG-S", "FT-SG-W1", "FT-SG-W2"}
 

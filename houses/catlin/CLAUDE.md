@@ -461,12 +461,23 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
-  That room also carries a second, **authored** zone: the hall band
-  (x 6'-0 5/8"-18'-0", y 22'-4 5/8"-26'-3 3/8") is `vinyl-sheet`, continuous with the
-  mudroom, laundry and powder bath. Authored zones win over derived ones, but these two do
-  not overlap — the hall is west of x=18' and `SL-M-DECK` starts there.
-  `notes/mixed_deck_movement_joint.md` has the T-moulding (the two walking surfaces are
-  flush within a plank's tolerance), the L-shaped
+  That room also carries a second, **authored** zone, and since **2026-09-05** it is the
+  **south bay in 3/4" solid oak** (x 18'-36', y 0'-13') — not the sheet-vinyl hall band it
+  was. That band's zone is deleted outright: the hall simply takes the room's field `lvp`,
+  and `RM-M-BATH1`, `RM-M-LAUNDRY`, `RM-M-MECH` and `RM-M-MUD-CLOSET` retyped onto the same
+  plank, so `vinyl-sheet` has left this storey. `RM-M-MUDROOM` is the one room that breaks
+  the plank, in porcelain over an uncoupling membrane —
+  `integrity.concrete_finish_needs_concrete_deck` is still what keeps it off a concrete
+  finish, since `FS-M-MECH`'s I-joists and plywood are what is under it.
+  **Three walking planes, and one of them steps**: oak +1 1/2", tile ~+1 5/16", plank
+  +0.986" against the polished cap's +15/16". So the `y=13'` leg is a **9/16" reducer** —
+  deliberate, and on the leg that has to break for differential deflection anyway, because
+  `structural.mixed_deck_bearing_seat` leaves the cap 1/16" of lift, not 9/16". The `x=18'`
+  leg **improved** to a flush T (1/64"), and the mudroom doorway takes a ~5/16" transition
+  strip. Only the oak zone's NORTH edge is a real literal — it duplicates `_BAND_Y`, which
+  the editable dialect cannot import, and `test_catlin_contract_m3` pins the two together;
+  the other three edges are over-extended and clipped to the clear face.
+  `notes/mixed_deck_movement_joint.md` has all three junctions, the L-shaped
   transition and the cream-polish spec — whose "no fibres" clause was **superseded
   2026-09-03** by micro-MONOFILAMENT PP at ~1.5 lb/cy (`CATLIN_POLISHED_MIX`). Macro fibre
   is still excluded here, and so is steel; the distinction is the whole finding.
@@ -1380,33 +1391,32 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   only route to the furnace room was **stair → playroom → gym → aisle → workshop →
   furnace**. Both doors are gone. Nothing on the x=18' bearing grid moved and no concrete
   wall moved.
-  - **The sauna rotated onto the south (garden) wall**, long axis east-west, node lines
-    x 4'-8"..18'-0" by y 0'-0"..9'-5" — a **12'-2" x 8'-2" clear box** between liner faces
-    against the 8'-1" x 12'-7" it was. It keeps `WIN-B-SAUNA` and is entered **from the
-    gym** through framed `W-B-CS`, a short walk from `D-B-PATIO` and the sunken garden,
-    which is what the brief asks the room for. Its south face is now two substrates: the
-    buried 8" pour west of the excavation (`W-B-S1B`, the new
-    `SAUNA_LINER_ON_BASEMENT_8` — the retired `SAUNA_LINER_ON_BASEMENT_8_GARDEN` pattern
-    brought back with `CATLIN_BASEMENT_8`'s tail instead of the retired parge) and the
-    7 1/4" curb under the framed walkout east of it. **There is a 2" jog between the two
-    liner faces at x=8'-10"** and the joiner furs the pour segment flush; nothing in the
-    model draws that.
-  - **x=4'-8", not the 5'-0" the plan was drawn at, and the reason is a footing.**
+  - **The sauna rotated onto the south (garden) wall**, long axis east-west, and then
+    **shrank east to x=8'-10" the same afternoon — see the round-two entry below.** As
+    rotated it ran x 4'-8"..18'-0" by y 0'-0"..9'-5", a 12'-2" x 8'-2" clear box against the
+    8'-1" x 12'-7" it was, and its south face crossed two substrates with a **2" jog between
+    the two liner faces at x=8'-10"** that nothing in the model drew. The `W-B-S1B` segment
+    and the `SAUNA_LINER_ON_BASEMENT_8` assembly that carried it both existed for one
+    afternoon and are gone. What survives the rotation: the room keeps `WIN-B-SAUNA` and is
+    entered **from the gym** through framed `W-B-CS`, a short walk from `D-B-PATIO` and the
+    sunken garden, which is what the brief asks the room for.
+  - **x=4'-8" was a footing's doing, and it went away with the split.**
     `structural.frost_depth` lowers a footing's local grade by any open excavation within a
-    frost depth (42") of the footing SOLID, and a footing follows its wall. At a 5'-0"
-    split, `FT-B-S1` — the west half — sits **exactly 42.0"** from `SL-SG-FLOOR`'s rim:
-    inside the reach by floating point, and outside `SL-SG-FROST-W`'s own 42" shielding
-    radius, which is what carried the un-split strip. 4'-8" is 46" clear, and a 16" module
-    station. `FT-B-S1B` is the half the wings still protect.
+    frost depth (42") of the footing SOLID, and a footing follows its wall. At the 5'-0"
+    split the plan was drawn at, `FT-B-S1` — the west half — sat **exactly 42.0"** from
+    `SL-SG-FLOOR`'s rim: inside the reach by floating point, and outside `SL-SG-FROST-W`'s
+    own 42" shielding radius. 4'-8" bought 46" of clear. With the split retired, `FT-B-S1`
+    is one strip beside the court again and the wings protect it as they always did.
   - **The bathroom rotated** north-south along the framed stair wall
-    (`W-B-STR3B`/`W-B-STR2`), 3'-5 1/4" x 7'-1 1/4" clear. Its **wet wall is `W-B-BA-E`**,
+    (`W-B-STR3B`/`W-B-STR2`), **3'-3 15/16" x 7'-1 1/4" clear** (3'-5 1/4" until round two
+    slid its east wall 1 5/16" west). Its **wet wall is `W-B-BA-E`**,
     a new `INT_2X6_STAGGERED_PLUMBING` east partition carrying the shared vent riser at
-    (14', 19'-3") — and `W-B-BA-N`, which used to be the room's only stud cavity, dropped to
+    (13'-10 11/16", 19'-3") — and `W-B-BA-N`, which used to be the room's only stud cavity, dropped to
     a dry `INT_2X4_PARTITION` when the plumbing left it. `D-B-BATH` swings out into the
     hall, and **on this wall that takes `flip_swing=True`**: the leaf's default side follows
     the host's direction and `W-B-BA-E` runs north-to-south where `W-B-BA-N` ran west-to-east.
   - **A hall** runs west of `W-B-CN2` from the stair foot south to the y=18' line —
-    3'-2 5/8" clear, part of `RM-B-STAIR`'s own loop, no new `Room` — and crosses that line
+    3'-3 15/16" clear, part of `RM-B-STAIR`'s own loop, no new `Room` — and crosses that line
     through `O-B-HALL`, a **cased opening** (a bare `RoughOpening`, the `O-S-VANITY` idiom)
     in the new `W-B-CW2B`. **That wall must EXIST rather than be a gap**, or the workshop
     and stair loops merge into one room.
@@ -1414,10 +1424,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     via the gym (stair → hall → workshop → gym → `D-B-PLAY`), and the workshop is the
     through-route from the stair to the gym.
   - **Two things the replan cost that are worth knowing before the next edit.** S-100's
-    ARCH D scale went **3/16" → 1/8"**: one new foundation assembly is one more row in the
+    ARCH D scale went **3/16" → 1/8"** — one new foundation assembly is one more row in the
     FOUNDATION WALL SCHEDULE, that column already carried all three schedules (the sheet has
     no width left to open a fourth with), and the scene passed the 3/16" height by 0.18".
-    And `test_upper_storey_studs_stand_over_studs` went 112/247 → 123/255, all of it two
+    **Round two handed the scale back** by deleting that assembly, and the 0.18" of margin
+    is still all there is: the next `FoundationWall` assembly tag anywhere in this house
+    steps ARCH D down again.
+    And `test_upper_storey_studs_stand_over_studs` went 112/247 → 124/255, all of it two
     walls: `W-M-C1` (the x=18' line has three basement segments under it now and `stacks_on`
     names one, so `W-B-CS3`'s studs are invisible to the metric though they share its layout
     line) and `W-M-CLN2` (forced onto `W-B-CW2B`, which restarts its module 8" off because
@@ -1430,6 +1443,82 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     three: the line is broken by two doors, and NEC 210.52(A)(2) measures wall space between
     doorways. `ED-B-GYM-RC8` stands in the 15" of `W-B-CS3` north of `D-B-GYM`, because
     everything past `N-B-C1` is `W-B-CS2`'s pour.
+- **ROUND TWO, THE SAME DAY: one substrate under the sauna, one plane beside the stair, and
+  a closet in the dead space.** The replan above fixed the circulation and left three things
+  that read wrong on a drawing. All three had one answer.
+  - **The sauna's west wall moved from x=4'-8" to x=8'-10", onto `N-B-S1`.** ~8'-3 15/16" x
+    8'-3 11/16" clear, and its south face is now **one plane on `W-B-S2`'s garden curb** —
+    the 2" jog is gone, `W-B-S1B` is deleted, `SAUNA_LINER_ON_BASEMENT_8` is unregistered,
+    `FT-B-S1` is one unsplit strip and `structural.frost_depth` still passes. The workshop's
+    west bay took the four feet: 3'-8 3/16" → **7'-10 3/16"** clear, and
+    `ED-B-WORKSHOP-PANEL1` went back to its centre. The 8'-6" two-tier bench does not fit an
+    8'-4" room whose north wall gives up 3'-0" to the shower pan, so
+    `FURN-SAUNA-BENCH-2T-60` was minted beside it in `library/`; the heater and its junction
+    box crossed to the **south-east corner**, the only stretch of south liner clear of the
+    window, the benches and the door. **`EQ-T-SAUNA-HEATER`'s 9 kW was always sized for this
+    room** — the "~513 cf" in `electrical.py` matched the pre-rotation box and the shrunk one
+    (519 cf), not the 745 cf the rotation grew it to.
+  - **`W-B-BA-E` slid 1 5/16" west onto the stair well's partition centreline** at
+    `inch(166.6875)`. Two nearly-collinear planes an inch and a third apart became one, and
+    everything that references `N-B-BA-NE`/`N-B-BA-SE` rode along. The wet-wall risers did
+    NOT — they are absolute coordinates in `mep_venting.py`, `mep_supply.py` and
+    `mep_supply_devices.py` — and neither did `ED-B-BATH-SW`, which stood 1 5/16" inside the
+    studs until `test_wall_mounted_devices_resolve_against_a_wall_face` caught it. **No
+    `haus check` rule grades a wall device's depth.**
+  - **`W-B-WELL` gives the well partition faces, not framing.**
+    `resolve/stairs/u_split.py` already GENERATES the 2x4 plates and studs between the two
+    flights — the plan this was written from said it emitted nothing, and the first build
+    answered with twelve `structural.member_interference` FAILs. So
+    `CATLIN_STAIRWELL_PARTITION_4H`'s structure layer carries **no `FramingSpec`**, which
+    `framing/solver.frames_as_members` reads as monolithic — so the wall lands in
+    `[wall_structure]` billing 0.47 cy of "placed spf", and `prices.toml` prices it at
+    **zero** and says why. Its thickness must stay locked to
+    `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"): `INT_2X4_PARTITION`'s
+    4 3/4" pushes 1/8" into each inner stringer.
+  - **`RM-B-UNDERSTAIR`, 17.5 sf that nobody could reach.** The volume under the arriving
+    flight was inside `RM-B-STAIR`'s polygon, so the model called it floor. `W-B-WELL` closes
+    the east side, `W-B-CL-N` the north (**47" tall, not the 52" the stringer allows — the
+    upper landing's ledger is the lower obstruction and it starts at 47 5/8"**), and
+    `D-B-CLOSET` opens it west into the furnace room. `RM-B-STAIR`'s seed had to move out of
+    the new partition's footprint.
+    - **Do not author `Room.ceiling` here and do not put a `Soffit` under the flight.** The
+      real head rakes 96.7" → 54.8" and no field says that; `_clear_head` reads decks and
+      soffits, a stringer is neither, so `clear_height_m` resolves to the main-floor deck and
+      passes R305.1.1 honestly. An authored 53" ceiling would be taken verbatim and FAIL.
+    - `DT-INT-CLOSET24` is **2'-0" x 6'-0"** and the far jamb is why: at y=28'-4" there is
+      76.5" of head, a 6'-8" leaf plus header wants 82", a 6'-0" one wants 74".
+    - `W-B-STR3` was retyped to `CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR` — 5/8" Type X in
+      place of the 3/4" stair plywood, per R302.7. **That cost the exposed-plywood stair face
+      on this segment** (a `Wall` carries one leaf) and moved `FO-M-STAIR`'s west edge to
+      `ft(10, 3.25)`, exactly as that opening's own comment predicted it would have to.
+  - **The engine changed twice.** `illumination._gypsum_finishes` matched the literal
+    `"gyp"`, which **no layer in this catalog contains** — every gypsum layer is `gwb*` on
+    `gwb`/`gwb-x` — so `code.R302_7_under_stair_protection` could never verify protection,
+    only fail or find nothing to protect. And `topology._through_pair` chose a four-way
+    node's through run **alphabetically**, which at `N-B-ESS-SE` picked the two partitions
+    over the bearing wall running through and reported a mixed-assembly junction; it prefers
+    a continuous bearing pair now, tag order as the tie-break.
+  - **`D-B-FURN` is at `ft(3, 3)` and the condensate line fixed it there.** A UI drag had put
+    it at 1'-6 1/16" — `from_node` offsets the NEAR JAMB — across `CD-B-SPA`,
+    `CD-B-DATA-SHOP` and `PR-B-ERV-COND`. None of the three can move (a `ConduitRun` has one
+    flat elevation and `CD-B-SPA`'s south end is sleeve-pinned at -4'-0"), so the door did.
+    The king stud's west face lands 0.475" off the condensate pipe: **any move of that door
+    east re-opens the clash.**
+  - **Two rooms had no light at all and nothing graded it.** `RM-B-SAUNA` and the new closet
+    now have one each (`ED-T-LT-SAUNA-VT`, a 125 °C sauna-listed fixture with its switch
+    OUTSIDE the hot room; `ED-T-LT-SPOT-SW`, integral-switch). There is **no NEC 210.70 check
+    in this engine** — a missing lighting outlet is invisible to `haus check`.
+  - **`EQ-B-HP2-GYM` was 5 1/2" into the ceiling and the UI drag did not do it.** Mounted at
+    7'-6" AFF, a 10 53/64" cabinet tops out at 100 13/16" in a room `code.R305_ceiling_height`
+    measures at 95 3/8". It is at 6'-6" now. The drag itself was kept: it is on `W-B-S3-FR`
+    throwing north across the room's 18' depth, which is the better wall.
+  - **`LR-B-STAIR-RAIL` still lies under the flight rather than along it** — one `Mount`
+    elevation for a whole `LightRun`, measured off the slab, so it cannot rake. Pre-existing,
+    now visible because the volume it runs through is a named closet. `PA-B-BFP-SAUNA`'s
+    `room=` said `RM-B-SAUNA` and never was (it is 6'-7" north of the sauna); fixed.
+  - **Still unresolved and not this change's:** `CD-B-SPA`'s east leg at y=1'-0", 61" over
+    the slab, appears to run **through** the rotated sauna.
+
 - **Four basement assemblies, and every split is a condition, not a preference.** Two
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local
@@ -1875,6 +1964,64 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     Brackets through-bolt the PVC fascia and the 2x8 rim per Ultralox's own instructions
     (four 5/16" x 4" bolts, nuts on the rim's inside face), landing in rim blocking authored
     in `FS-SG-DECK.reinforcements`.
+- **The veneer stands on a grade beam, not on the house footing** (2026-09-05). `W-B-BRICK`
+  is 129 SF of masonry exposed on **both** faces at the bottom of an open court, so it runs
+  at outdoor temperature all winter. It used to bear on `FT-B-BRICK`, a 10"x5" plinth cast on
+  `FT-B-S2`/`FT-B-S3`'s own projecting toe — putting that cold in series with the footings
+  whose underside is level with the court floor and whose only frost protection is the R403.3
+  wings. It now bears on **`W-SG-BRKBM`**, a 12" x 17 3/4" beam spanning the court's 19'-0"
+  between `W-SG-W1` and `W-SG-E1`. Basis: `notes/sunken_garden_veneer_beam.md`.
+  - **The break was ordered twice and placed never, and that is the lesson.** `FT-B-BRICK`
+    carried `assembly="FOOTING_FPSF_20"`, whose 2" `xps-bearing` layer *did* bill — 16.0 SF
+    through `takeoff/envelope.py`'s `_LAYERED_SOLID_SCOPES` — while `FB-B-BRICK` dug a 2"
+    `undercut` for that same 2" of space which billed as 0.1 cy of washed crushed stone, with
+    `cast_foam_in_aggregate=True` beside it carrying no thickness, no material and no
+    R-value. A `Footing` resolves to ONE extruded blob, so neither claim ever had a polygon.
+    **Nothing in this engine grades a thermal break for continuity**, so one order of foam
+    and one order of stone for one gap sat at 0 FAIL for a fortnight.
+  - **A better bed was not available — the geometry says so.** The wythe sits inside the
+    footings' 10" toe, and any separate pour bearing on soil has to stay outside the 45 deg
+    line off their bearing edge, at y = -12.76". That pushes the brick to -15.95" and opens
+    an 11.9" slot to the house: a 19-ft-long, 11.5-ft-deep snow trap with no way to reach the
+    bottom. **A beam that SPANS needs no soil bearing, so that constraint does not apply** —
+    which is the whole reason this shape was chosen and the reason the cavity can be 6".
+  - **It reinforces nothing, and do not let anyone say it does.** The tempting story is that
+    a beam closing the court's north end props the side walls. It does not: `W-SG-W1`/`E1`
+    are already restrained top and bottom (porch beams pocketed in HUCQ410-SDS hangers, the
+    deck diaphragm, the garden slab at their feet) and PASS
+    `structural.foundation_unbalanced_fill` on the last published row of IRC Table
+    R404.1.2(8). This beam earns its ~1.05 cy on the thermal argument alone.
+  - **The 2" board is a `Layer`, on a WALL, and the face is asserted.** `SG_VENEER_BEAM_14`
+    is the court's 12" pour plus 2" of 40 psi XPS. A wall's layers resolve to real polygons
+    on real faces in a stated order, which a Footing's do not — that is the whole reason it
+    moved here. **The face is not reliable on its own**: the beam is its own open wall-graph
+    chain, so it takes the FALLBACK outward sign, and sign x layer-order decides whether the
+    board builds north or south. Authored the wrong way the concrete lands hard against
+    `FT-B-S2/S3` and looks perfect in every view.
+    `test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing` pins both faces
+    in absolute coordinates. Do not trust the sign.
+  - **`FT-B-S2`/`FT-B-S3` gave up 2" of south toe, by `offset` and not by width.** The strips
+    keep all 20" of bearing and simply sit further under the house; since they carry a 7 1/4"
+    curb and three storeys of framed wall standing at y = 0..+9 1/2", moving toward the load
+    *reduces* the eccentricity they already had. Their south face is at **-8"** now, and the
+    board occupies -8"..-10". Anything that re-centres these footings has to keep that face.
+  - **The wythe moved 4 1/2" south and the reveals did not move at all.** The 6" cavity is
+    authored as `BASEMENT_BRICK_VENEER`'s `air-gap` THICKNESS, never as a node position,
+    because `AO-B-BRICK-WIN`/`-DOOR` are placed `from_node` along the wall AXIS — a y-move
+    leaves them concentric and `integrity.reveal_concentric` still passes.
+    `N-B-BRICK-E` did have to come in from 28'-0" to 27'-6": 28'-0" is `W-SG-E1`'s axis, and
+    the move walked the wythe's east 6" *inside* that retaining wall — 4.25 SF of brick
+    billed into solid concrete, at 0 FAIL, because nothing grades masonry against a pour.
+  - **6" is past IRC R703.8.4's 4-1/2" prescriptive airspace**, so the veneer ties are an
+    ENGINEERED item under TMS 402. The note does not design them and neither does the engine.
+  - **Two engine bugs fell out of this and are fixed.** `local_grade_elevation_m` sheltered a
+    footing whose CENTROID sat inside the heated slab, so trimming a perimeter toe 2" walked
+    it over the line and turned 3/4" of frost cover into a reported 83" — whole-polygon
+    containment now. And `_exterior_shells_by_storey` filled every interior ring, which was
+    invisible only while the court was a *disjoint* polygon; the beam connects it to the
+    house, and 610 sf of open sky became basement floor area until holes over an open
+    excavation floor were kept.
+
 - **The sunken garden's veneer is one flat field of unglazed buff brick** (2026-09-04).
   `W-B-BRICK` has now worn three faces: one flat field of `glazed-green-brick` (`#1b4332`),
   then the Ishtar Gate — a lapis field with golden-yellow register bands over an unglazed
@@ -1904,7 +2051,12 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     deliberately intermediate, roughly double a glaze and half of `BRICK_STYLE`'s
     `[0.02, 0.08, 0.16]`, which is the failure mode in the other direction and one this
     material has already been in once. Mortar stays `#cfc8ba` (tan), the unglazed pairing.
-    **Judge it in `haus render --view elevation`, never by reading the numbers.**
+    **`haus render` cannot show this and never could** — the CLI emitters carry only the flat
+    de-jittered `_FINISH_BASE` hex (`emit/gltf/palette.py` annotates `_BROWN_BRICK_BASE` as
+    exactly that), and `--view elevation` emits east/west while this wall faces south. Judge
+    it in the headless viewer, or compute the recipe's extremes directly: the whole of the
+    per-unit jitter is `new THREE.Color(base).offsetHSL(±j[0]/2, ±j[1]/2, ±j[2]/2)`, so a
+    five-line node script prints the darkest and lightest unit a setting produces.
   - **The wythe is ONE layer now — no `slot`, no `extent`.** It was five `slot="wythe"`
     regions sharing a single 3 5/8" depth position (without the slot the assembly resolves to
     an 18 1/8" wythe and shoves the wall into the garden). With one region there is nothing

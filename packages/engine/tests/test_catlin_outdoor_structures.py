@@ -606,8 +606,10 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     ``SPEC.column_south_offset_in`` instead of restating it.
 
     The bell is augered to frost depth, so the two footings do not meet at one elevation and
-    there is no joint to dowel or bridge to break. The 2" clearance is 17" of column offset
-    less the bell's own 15" reach.
+    there is no joint to dowel or bridge to break. The clearance was 17" of column offset
+    less the bell's own 15" reach, i.e. 2", until 2026-09-05: FT-B-S2/S3 gave up 2" of their
+    south toe (an `offset`, not a narrower strip) so W-SG-BRKBM's isolation board could sit
+    at -8"..-10", and the bell inherited the room. Nothing about the bell moved.
     """
     deck_edge_y = max(y for _, y in _porch_outline(catlin_model))
     column = _solid(catlin_model, "PT-SG-COL")
@@ -622,7 +624,7 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     house_footing_s = min(y for _, y in _solid(catlin_model, "FT-B-S2").outline)
     bell_north = max(p[1] for p in bell.outline)
     assert bell_north < house_footing_s, "the bell stops short of the house's own footing"
-    assert house_footing_s - bell_north == pytest.approx(2 * INCH)
+    assert house_footing_s - bell_north == pytest.approx(4 * INCH)
     assert catlin_model.plan.by_tag("DW-SG-COL") is None
     assert {d.tag for d in catlin_model.plan.all_elements()
             if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1"}

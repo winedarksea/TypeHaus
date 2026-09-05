@@ -830,9 +830,11 @@ def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
     """Every house footing's bedding authors the 4" socked daylight tile now."""
     from typehaus.emit.draw.detail_components.below_grade import drain_tile_spec_for
 
-    # House strip footings — the ones with a tiled bedding. FT-B-BRICK shares the prefix but
-    # is the veneer plinth: it sits a foot above the house footing's own tile, inside the
-    # sunken garden, so its bedding is a bare 2" XPS bed with nothing to collect.
+    # House strip footings — the ones with a tiled bedding. FT-B-BRICK shared the prefix and
+    # was excluded here (the veneer plinth sat a foot above the house footing's own tile with
+    # nothing to collect); it was retired 2026-09-05 with the re-founding of W-B-BRICK onto
+    # W-SG-BRKBM. The exclusion is kept: it costs nothing and it is the guard that would
+    # catch an untiled pour joining this prefix again.
     footings = [s for s in catlin_model.solids if s.category == "footing"
                 and s.tag.startswith("FT-B-") and s.tag != "FT-B-BRICK"]
     assert footings

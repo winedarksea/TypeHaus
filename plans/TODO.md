@@ -669,9 +669,12 @@ the future.
   toe in this note is stale**: that wall went 12" -> 8" on 2026-08-21 and only its inside
   face moved, so the south toe is 10" and the north one is now **+2"**, not -2".
   `Footing.center_on="wall"` now exists to
-  fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
-  derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
-  to bear on. Correcting the footings means re-deriving the plinth with them.
+  fix it, and the obstacle that used to stand in the way is gone: the plinth `FT-B-BRICK`,
+  whose derivation leaned on that 10" toe being there to bear on, was retired 2026-09-05 when
+  the veneer was re-founded on `W-SG-BRKBM`. What the toe now carries is `SG_VENEER_BEAM_14`'s
+  2" isolation board at -8"..-10", reached by an `offset` rather than a re-centring — so a
+  future `center_on="wall"` pass has to keep that face where it is, or the beam's concrete
+  meets the footing again.
 - **Wall-hung WC — the cost half is answered: NO (2026-08-31).** Making `FX-TOILET-STD`
   wall-hung to save slab penetrations does not pay, on four counts:
   1. **The premise reaches one fixture.** Only `FX-B-BATH-WC` (RM-B-BATH) sits on a slab;
@@ -864,7 +867,33 @@ the future.
   so it cannot drift out silently. Still worth a check nobody has written: nothing in the
   engine *enforces* the step, and the curb's height is a literal on two walls.
 - The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
-- The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK. Brick is cold, so thermal breaks need to be on the inward side of it (possible this footing uses ICF)
+- ~~The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK.
+  Brick is cold, so thermal breaks need to be on the inward side of it.~~ **RIGHT, AND FIXED
+  2026-09-05 — by deleting the footing.** The diagnosis was exact: `W-B-BRICK` is 129 SF of
+  masonry exposed on both faces at the bottom of an open court, so it runs at outdoor
+  temperature all winter, and it bore on a plinth cast on `FT-B-S2`/`FT-B-S3`'s own toe. The
+  break was ordered TWICE and placed NEVER — `FOOTING_FPSF_20` billed 16.0 SF of 2" XPS with
+  no geometry to hold it, while `FB-B-BRICK` dug a 2" undercut for the same space that billed
+  as 0.1 cy of washed crushed stone, `cast_foam_in_aggregate=True` beside it carrying no
+  thickness, material or R-value. Nothing in the engine grades a thermal break for
+  continuity, so it all sat at 0 FAIL.
+  **A better bed was not available.** The wythe sits inside the footings' 10" toe, and a
+  separate strip bearing on soil must stay outside the 45 deg line off their bearing edge
+  (y = -12.76"), which pushes the brick to -15.95" and opens an 11.9" slot to the house. So
+  the veneer was RE-FOUNDED instead, on `W-SG-BRKBM` — a 12" x 17 3/4" grade beam spanning
+  the court's 19'-0" between `W-SG-W1` and `W-SG-E1`. A beam that spans needs no soil bearing,
+  so the 45 deg rule does not apply and the cavity lands at 6". Its assembly
+  (`SG_VENEER_BEAM_14`) carries the 2" XPS as a LAYER, on the north face, against the
+  footings' toe — trimmed 2" by an `offset`, which keeps all 20" of bearing and improves the
+  eccentricity it already had. Load and cold both route into the court's own structure, which
+  is already broken from the house at `DW-SG-W1/E1-FOAM`. Basis:
+  `notes/sunken_garden_veneer_beam.md`; pinned by
+  `test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing`.
+  Two engine bugs fell out of it and are fixed: `local_grade_elevation_m` sheltered a
+  footing on its CENTROID, so trimming a perimeter toe 2" walked it inside the heated slab
+  and turned 3/4" of frost cover into a reported 83"; and `_exterior_shells_by_storey` filled
+  every interior ring, so the beam connecting the house to the court counted 610 sf of open
+  sky as basement floor area.
 - ~~FX-S-BATH1-LAV is in the way of the bathroom door swing.~~ **NOT A CONFLICT — measured
   and struck 2026-09-01.** Against the resolved quarter-disc `swing_clearance` polygon (not
   the bbox): vanity x 95.62..116.62, y 345.88..393.88; `D-S-BATH1`'s swing x 84..114,

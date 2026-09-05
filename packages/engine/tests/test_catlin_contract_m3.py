@@ -1370,8 +1370,9 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
     GRADE, on the walls whose exposure is a grade line (a 1/2" protection board until
     2026-09-04, kept as the named alternate). The court walls carry nothing — their XPS is
     inside W-B-BRICK's ventilated cavity, and it is over THOSE that N-B-BRICK-W/-E's
-    ``inch(-4.55)`` stand-off is struck, which is why retyping the band did not touch the
-    1-1/2" clear cavity.
+    stand-off is struck, which is why retyping the band did not touch the cavity. (That
+    cavity is 6" since 2026-09-05 — set by where W-SG-BRKBM's concrete can put its north
+    face, not by R703.8.4 — and the nodes still have not moved: the `air-gap` LAYER grew.)
     """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
@@ -1707,8 +1708,17 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     ``houses/catlin/notes/balcony_moment_columns.md``.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
-    # 6 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and W-SG-ARCH.
+    # 7 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and TWO buried
+    # grade beams — W-SG-ARCH at the court's south end and W-SG-BRKBM at its north.
     # No north wall, no front wall, and no masonry railing over any of them.
+    #
+    # W-SG-BRKBM (2026-09-05) is the second beam and it does a different job from the first.
+    # W-SG-ARCH is structural: it closes the loop that lets W-SG-W2/E2 cancel. W-SG-BRKBM is
+    # THERMAL: it spans W-SG-W1 to W-SG-E1 to carry W-B-BRICK, so 129 SF of brick standing in
+    # open air stops bearing on FT-B-S2/S3's own toe. It reinforces nothing — W1/E1 are
+    # already restrained top and bottom by the porch frame — and its assembly carries the
+    # 2" XPS isolation board that is the actual point. See
+    # `notes/sunken_garden_veneer_beam.md`.
     #
     # W-SG-ARCH is NOT the arch: the 16" cast cross-wall with two semicircular arches, its
     # 42" masonry parapet and its three balcony pillars are retired. What carries the tag now
@@ -1718,7 +1728,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # uid deliberately. See `engineering/retaining_system.py` and
     # `notes/sunken_garden_court_free_body.md`.
     assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
-                                      "W-SG-ARCH"}
+                                      "W-SG-ARCH", "W-SG-BRKBM"}
     # It was BURIED until 2026-09-03: its top was the garden floor's underside. The court
     # dropped 7 1/4" for the flood step at D-B-PATIO and the beam DID NOT FOLLOW — a 10 1/4"
     # section fails as a strut (d/c 1.02) and lowering its bottom instead puts its bed under
@@ -1731,7 +1741,15 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert (beam.z1_m - court.z1_m) / 0.0254 == pytest.approx(3.75, abs=1e-6)
     assert beam.z1_m < 0.0
     assert all(w.is_foundation for w in walls)
-    assert all(w.assembly == "SUNKEN_GARDEN_WALL" for w in walls)
+    # Every court wall is the same 12" pour, and W-SG-BRKBM is that pour PLUS a 2" board —
+    # `SG_VENEER_BEAM_14`. It is spelled as its own assembly rather than as SUNKEN_GARDEN_WALL
+    # with a bedding flag beside it precisely because a bedding flag is what failed: the
+    # retired FT-B-BRICK/FB-B-BRICK pair ordered 16 SF of foam through one annotation and
+    # 0.1 cy of washed stone through another, for the same 2" of space, and placed neither.
+    # A Layer has a polygon, a face and an order, so it can be pinned — see below.
+    assert all(w.assembly == "SUNKEN_GARDEN_WALL"
+               for w in walls if w.tag != "W-SG-BRKBM")
+    assert next(w for w in walls if w.tag == "W-SG-BRKBM").assembly == "SG_VENEER_BEAM_14"
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.
@@ -1809,6 +1827,65 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
         assert system.subfloor is not None and system.subfloor.material_ref == material
     assert not [s for s in catlin_model.solids
                 if s.category == "slab" and s.tag.startswith("SL-SG-DECK")]
+
+
+def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
+    """W-B-BRICK's load and its cold both leave the house footing alone. The FACE matters.
+
+    The old detail put a plinth (FT-B-BRICK) straight onto FT-B-S2/S3's projecting toe and
+    relied on two annotations to break it — `FOOTING_FPSF_20`'s `xps-bearing` layer, which
+    billed 16 SF of foam it never placed, and `FB-B-BRICK.cast_foam_in_aggregate`, a bool
+    with no thickness at all beside a 2" undercut that billed as washed stone. Nothing in
+    the engine grades a thermal break for continuity, so the whole condition sat at 0 FAIL
+    with 129 SF of brick, exposed on both faces in an open court, feeding it.
+
+    ** THIS TEST EXISTS BECAUSE THE SIGN IS NOT TRUSTWORTHY. ** W-SG-BRKBM is its own open
+    wall-graph chain, so `resolve/orientation.py` gives it the FALLBACK outward sign, and
+    that sign plus the assembly's layer order decides whether the board builds north or
+    south. Authored the other way round the concrete lands hard against FT-B-S2/S3 and the
+    beam is worse than useless — geometry that looks right in every view and breaks nothing.
+    Both faces are asserted in absolute coordinates for that reason.
+    """
+    inch_m = 0.0254
+    beam = catlin_model.wall("W-SG-BRKBM")
+    layers = {ly.name: ly for ly in beam.layers}
+    assert set(layers) == {"concrete", "xps-break"}
+
+    def span_in(polygon):
+        ys = [y for _x, y in polygon]
+        return min(ys) / inch_m, max(ys) / inch_m
+
+    # North of the concrete, not south of it: the board faces the house.
+    assert span_in(layers["xps-break"].polygon) == pytest.approx((-10.0, -8.0), abs=1e-6)
+    assert span_in(layers["concrete"].polygon) == pytest.approx((-22.0, -10.0), abs=1e-6)
+
+    # And the toe it faces gave up exactly that 2" — an `offset`, so the strip keeps its
+    # full 20" of bearing and simply sits further under the house.
+    for tag in ("FT-B-S2", "FT-B-S3"):
+        strip = next(s for s in catlin_model.solids if s.tag == tag)
+        south_in = min(y for _x, y in strip.outline) / inch_m
+        assert south_in == pytest.approx(-8.0, abs=1e-6), tag
+        assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(8.0, abs=1e-3), tag
+
+    # No concrete-to-concrete anywhere on that plane: 2" of board, and nothing else.
+    assert -8.0 - (-10.0) == pytest.approx(2.0)
+
+    # The plinth and its bed are gone, not merely unreferenced.
+    tags = {s.tag for s in catlin_model.solids}
+    assert "FT-B-BRICK" not in tags
+    assert not any(b.tag == "FB-B-BRICK" for b in catlin_model.footing_beddings)
+
+    # The wythe bears on the beam's CONCRETE over its whole width, and the cavity that
+    # bought that position is 6".
+    brick = catlin_model.wall("W-B-BRICK")
+    faces = {ly.name: span_in(ly.polygon) for ly in brick.layers}
+    assert faces["brick"] == pytest.approx((-13.675, -10.05), abs=1e-6)
+    assert faces["air-gap"] == pytest.approx((-10.05, -4.05), abs=1e-6)
+    beam_lo, beam_hi = span_in(layers["concrete"].polygon)
+    assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi, \
+        "the wythe must sit wholly on the beam, not overhang its north edge"
+    assert brick.z0_m == pytest.approx(beam.z1_m, abs=1e-9), "wythe bears on the beam top"
+
 
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):
@@ -2144,6 +2221,40 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # unaffected.
     assert before == pytest.approx(392.7, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
+
+
+def test_the_oak_bays_north_edge_is_the_deck_boundary(catlin_model):
+    """The oak zone is AUTHORED, so nothing derives it — this test is what pins it.
+
+    ``RM-M-LIVING``'s south bay went to 3/4" solid oak on 2026-09-05, and it had to be a
+    ``FinishZone`` rather than a second Room: the living room is one polygonized face and a
+    second seed in it would bill the floor twice. Three of the zone's four edges are
+    over-extended past the room and clipped by ``resolve/rooms.py``, so they cannot go stale.
+    The NORTH edge cannot be over-extended — north of it is ``SL-M-DECK``'s polished cap —
+    and it is a literal, because ``plan/storeys/main.py`` is editable-dialect and cannot
+    import ``params/main_deck._BAND_Y``.
+
+    So the two numbers are pinned here. Move ``_BAND_Y`` without moving the zone and the oak
+    either runs 9/16" proud over the concrete or leaves a strip of plank behind it, and
+    nothing else in the build would say so — the finish has no thickness in the model.
+    """
+    import re
+
+    source = (CATLIN_DIR / "params" / "main_deck.py").read_text()
+    band = re.search(r"^_BAND_Y = ft\((\d+)\)$", source, re.M)
+    assert band is not None, "_BAND_Y is no longer a bare ft() literal — re-read this test"
+    band_y_m = ft(float(band.group(1))).meters
+
+    living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
+    oak = [z for z in living.finish_zones if z.material_ref == "oak"]
+    assert len(oak) == 1 and oak[0].source_ref is None, "the oak zone is authored, not derived"
+    north = max(y for _, y in oak[0].outline)
+    assert north == pytest.approx(band_y_m, abs=1e-6), (
+        "the oak zone's north edge and the concrete/wood boundary have drifted apart")
+    # And the zone really does stop there rather than being clipped short of it: the room's
+    # clear face reaches past y = 13' (the polished band is the rest of this same room), so a
+    # zone edge on the boundary is the edge that bills.
+    assert oak[0].area_m2 * 10.7639104 == pytest.approx(231.7, abs=0.5)
 
 
 def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_model):

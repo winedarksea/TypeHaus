@@ -148,12 +148,22 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         group["tags"] = sorted(group["tags"])  # type: ignore[index]
         rows.append(group)
 
-    # --- species floors (the oak studies) -------------------------------------------
+    # --- species floors (the oak studies, and the living room's south bay) -----------
     # Mirror of the ``floor_finishes`` field-area math for finishes whose material has a
-    # species, so the two sections reconcile to the digit.
+    # species, so the two sections reconcile to the digit. That means BOTH halves of that
+    # math: a room's field finish over its clear face less its zones, **and** the zones
+    # themselves. An oak ``FinishZone`` was invisible here until 2026-09-05 — RM-M-LIVING's
+    # south bay is 231.7 sf of oak the mill would never have been told about, and this row
+    # would have gone on claiming it reconciled.
     floor_area: dict[str, float] = defaultdict(float)
     floor_rooms: dict[str, list[str]] = defaultdict(list)
     for room in model.rooms:
+        for zone in room.finish_zones:
+            zone_material = materials.get(zone.material_ref)
+            if zone_material is None or zone_material.species is None:
+                continue
+            floor_area[zone_material.tag] += zone.area_m2
+            floor_rooms[zone_material.tag].append(room.tag)
         material = materials.get(room.floor_finish) if room.floor_finish else None
         if material is None or material.species is None:
             continue
@@ -162,7 +172,7 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         floor_rooms[material.tag].append(room.tag)
     for ref in sorted(floor_area):
         rows.append(_area_row(materials, ref, floor_area[ref], kind="floor",
-                              where=floor_rooms[ref],
+                              where=sorted(set(floor_rooms[ref])),
                               also={"also_in_floor_finishes": True}))
 
     return rows

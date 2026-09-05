@@ -36,11 +36,13 @@ to ignore against a rigid floor finish:
 Along y = 13'-0" the two midspans are 18' apart in the span direction but adjacent across
 the line, so the differential shows up as a hinge. Two consequences to draw:
 
-1. **A continuous LVP run across the line will telegraph.** Plank is floating and forgiving
-   in-plane, but a joint that opens and closes 1/2" per footfall works the locking edge
-   loose, and the seam nearest the line will open first. Break the run on the line with a
-   T-moulding or a transition strip on the concrete side, and let each field float within
-   its own structure.
+1. **A continuous wood run across the line will telegraph.** The plank read here until
+   2026-09-05 and the south bay is solid oak now, which makes the point sharper, not softer:
+   floating plank is at least forgiving in-plane, and a nailed-down 3/4" strip floor is not.
+   Either way a joint that opens and closes 1/2" per footfall works the edge loose and the
+   seam nearest the line opens first. Break the run on the line — which since 2026-09-05 is
+   a **9/16" reducer** rather than a T, because oak finishes that far above the cap — and
+   let each field float within its own structure.
 2. **Tile must not cross it at all.** `FH-M-DINING` (x 22'-11" to 30'-11", y 13'-9" to
    21'-0") sits wholly inside the concrete band, 9" clear of the line, which is deliberate —
    a thinset bed over the cured cap has nothing to accommodate. If a tile field ever grows
@@ -63,9 +65,11 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
   band, and `RM-M-LIVING`'s `floor_finish="lvp"` is the field finish over the wood bays
   only. The resolver intersects the slab with each room's clear face and emits the result as
   a finish zone, so the boundary is stated once — `_BAND_Y` in `params/main_deck.py` — and
-  the finish moves when it does. 411.3 SF of polish, 355.1 SF of plank, in one room.
+  the finish moves when it does. Since 2026-09-05 the wood half is no longer one material:
+  410.2 SF of polish, an authored 231.7 SF **oak** zone over the south bay, and 123.9 SF of
+  plank field left in the stair lane and the hall, in one room.
 
-## Three things the model still cannot hold
+## What the model still cannot hold
 
 **The transition is an L, not a line.** Inside `RM-M-LIVING` the finish changes along
 y = 13'-0" from x = 18' to 36' (17.9 lf) **and** along x = 18'-0" from y = 22.4' to 36'
@@ -75,25 +79,30 @@ Along x = 18' both the slab and `FS-M-WEST`'s joists bear on the same wall line,
 deflects nowhere. It is a material and height change and nothing more, and it does not want
 a soft joint.
 
-**The x = 18' leg is not one material on its west side.** The hall band
-became an authored `vinyl-sheet` `FinishZone` on `RM-M-LIVING`, so from y = 22.4' to 26.28'
-— the BM-M-HALL opening, which is the whole width of the hall — the cap now meets sheet
-vinyl, not plank. North of 26.28' (the stair lane) it is still LVP against the cap. Nothing
-about the *joint* changes: this leg deflects nowhere either way and still wants a T rather
-than a soft joint. What changes is the height either side of it. The 1/64"-1/20" proud
-figure below is the 6 mm SPC plank's number and does NOT carry to the vinyl half: sheet
-vinyl over the 3/4" plywood is ~2 mm of goods with no rigid core and no IXPE pad, so it will
-sit **low** to the cap rather than a hair proud, and the T over those 3.9 lf has to be
-specified for a real step. Measure it against the resolved elevations, not against this
-paragraph or the one below.
+**The x = 18' leg is one material again, and it is flush.** It read sheet vinyl from
+2026-08-25 to 2026-09-05 — the hall band was an authored `vinyl-sheet` `FinishZone`, ~2 mm
+of goods with no rigid core, so the cap met a floor that sat **low** and this note carried a
+warning that those 3.9 lf had to be trimmed for a real step. **That zone is deleted.** The
+hall takes the room's own field `lvp`, so the whole 13.6 lf is 6 mm SPC against the cap:
++0.986" to +0.9375", **1/64" proud**. A plain flush T, specified for movement it does not
+have. This leg got better, and there is nothing here to trim for height.
 
-**The step — and there is very nearly none.** The plank is 6 mm SPC (5 mm
-rigid core over a 1 mm IXPE pad that compresses under load), so it stands 0.95"-0.99" over
-the storey datum; the polished cap tops at 0.9375". The plank finishes **1/64" to 1/20"
-proud**, which is inside the tolerance any floor covering is laid to and is not a step
-anybody trims. Use a **T-moulding** on the 31.5 lf — a T presumes two surfaces at one height,
-which is now true — and specify it for the movement, not the height: the y = 13' leg still
-has to break the plank and let each field float.
+**The y = 13' leg is a 9/16" reducer now, and that is deliberate.** The south bay
+(x 18'..36', y 0'..13') went to 3/4" solid oak on 2026-09-05, so this leg is oak at
+**+1.500"** meeting the polished cap at **+0.9375"**. It cannot be flushed from either side:
+
+- *Not from the concrete.* `structural.mixed_deck_bearing_seat`
+  (`checks/structural/bearing_seat.py`) FAILs when cap-top and subfloor-top differ by more
+  than 1/4", so `DECK_TOP` has about **1/16"** of lift in it — not the 9/16" the oak wants.
+  Raising it further needs the engine to give finishes a real thickness, which is that
+  check's own stated fix and is not this change.
+- *Not from the wood side.* Furring the whole south bay up 9/16" would move a subfloor plane
+  that the bearing seat, the wall bases and the stair rise all read.
+
+So it is a **reducer**, and it lands on the one leg that already has to break: this is the
+movement joint, the oak has to be let float on both sides of it regardless, and a reducer
+does that at least as well as a T. Specify it for the movement first and the height second.
+The other 13.6 lf take a flush T as above.
 
 That 3/16" of cap over plywood is deliberate and it is derived, not dialled. The deck is
 14 3/8" (10" beam + 4 3/8" cover) against the wood bay's 14 3/16" to the same seat
@@ -102,6 +111,15 @@ upward, because the seat below is the plane that must not move. Re-spec the cove
 cap top moves with it — `structural.mixed_deck_bearing_seat` allows a quarter inch here,
 which is roughly a floor finish, and FAILs past it. Check the resolved elevations before
 ordering the moulding, not this paragraph.
+
+**A third junction, off this L entirely: the mudroom doorway.** `RM-M-MUDROOM` went to
+porcelain over a 1/8" uncoupling membrane in the same change, so its walking surface is
+~**+1.3125"** where the hall's plank is +0.986" — a ~5/16" **transition strip** at the
+entry, and the only new threshold the change creates. It is wanted: a dirt step at the door
+people come in through in boots. It also improves the *exterior* side, which no check can
+see — `FS-BW-FLOOR`'s composite plank tops at +1.000", so the mudroom floor now stands 5/16"
+**above** the breezeway deck instead of ~1/6" below it, and water runs out rather than in.
+R311.3.1's 1 1/2" is untouched.
 
 **And a second step, in the ceiling below — 2 1/16".** The gypsum
 is continuous across the boundary but the two faces are not coplanar: on the wood side the

@@ -56,6 +56,11 @@ _DEFAULT_WASTE = 0.10
 _COMPANIONS: dict[str, str] = {
     "carpet": "carpet-pad",
     "lvp": "lvp-underlayment",
+    # Every tile floor in this house is over a wood deck, and none of them billed the
+    # uncoupling membrane that puts it there safely — RM-M-BATH2's tile over radiant as much as
+    # RM-M-MUDROOM's. It is not in the tile row's $/SF (that rate covers thinset and grout,
+    # the trade convention), so without this line it was simply missing from the schedule.
+    "tile": "tile-uncoupling-membrane",
 }
 
 

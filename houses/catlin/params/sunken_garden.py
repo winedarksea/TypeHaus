@@ -321,6 +321,17 @@ _x_ax_e = _x_in_e + _half  # 28.0
 _y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
+# The veneer grade beam's isolation board, and the axis that places it.
+#
+# The beam's CONCRETE north face has to land exactly on `_y_ax_n` (-10"), the line
+# FT-B-S2/S3's south face used to hold: any further south and W-B-BRICK cannot reach a 6"
+# cavity, any further north and the two pours touch. The 2" break therefore sits NORTH of
+# -10", in the 2" those footings give up (their `offset` in params/foundations.py), which
+# puts the 14" section at -8"..-22" and its axis at -15". Both derived off `_y_ax_n`, so
+# trimming the footing and moving the beam can never drift apart.
+_break_in = 2.0
+_y_ax_brkbm = _y_ax_n - (SPEC.wall_thickness_in - _break_in) / 24.0  # -1.25' = -15"
+_brkbm_half = (SPEC.wall_thickness_in + _break_in) / 24.0  # half the 14" section
 # The porch's front edge: the axis of the two front beams, of RL-SG-PORCH's south run and
 # of the porch deck itself, at -9.5'.
 #
@@ -398,6 +409,11 @@ _ret_unbalanced_fill = ft(SPEC.retaining_top_ft + SPEC.basement_depth_ft + 0.75)
 # this elevation is the only version of this beam that works.
 _grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
 _grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
+# W-SG-BRKBM's two faces, and neither is a new number: the top IS W-B-BRICK's authored
+# underside and the bottom IS the garden slab's, so the beam exactly fills the void already
+# between them. If either moves, this beam has to be re-derived rather than nudged.
+_veneer_beam_top = inch(-102.4375)          # = W-B-BRICK.bottom_elevation
+_veneer_beam_bottom = _court_top - inch(SPEC.rim_thickness_in)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
 # way a correctly-sized wall falls over. Sized in
@@ -529,6 +545,16 @@ NODES = [
     Node(uid="SGN004AAAA", tag="N-SG-ME", position=pt(ft(_x_ax_e), ft(_y_ax_mid))),
     Node(uid="SGN005AAAA", tag="N-SG-SW", position=pt(ft(_x_ax_w), ft(_y_ax_s))),
     Node(uid="SGN006AAAA", tag="N-SG-SE", position=pt(ft(_x_ax_e), ft(_y_ax_s))),
+    # The veneer grade beam's ends, landing on the two side-wall AXES so the beam is cast
+    # into W-SG-W1 and W-SG-E1 rather than butted against them. Clear span is therefore the
+    # court's own 19'-0", not the 20'-0" axis distance.
+    # `open_end` for the same reason N-SG-NW/-NE carry it: the beam dies INTO the side
+    # walls 6" past their inside faces rather than meeting them at a shared node, so this
+    # run terminates here and closes no loop.
+    Node(uid="SGN007AAAA", tag="N-SG-BMW", position=pt(ft(_x_ax_w), ft(_y_ax_brkbm)),
+         open_end=True),
+    Node(uid="SGN008AAAA", tag="N-SG-BME", position=pt(ft(_x_ax_e), ft(_y_ax_brkbm)),
+         open_end=True),
 ]
 
 WALLS = [
@@ -620,6 +646,59 @@ WALLS = [
     FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,
+                   unbalanced_fill=inch(0),
+                   lateral_support="top_and_bottom"),
+    # ============================================================================
+    # W-SG-BRKBM — the SECOND buried grade beam, and the whole answer to the veneer's
+    # thermal bridge.
+    # ============================================================================
+    # W-B-BRICK used to stand on FT-B-BRICK, a 10"x5" plinth cast on FT-B-S2/S3's own
+    # projecting toe. That put 129 SF of brick — exposed on BOTH faces in an open court, so
+    # running at outdoor temperature all winter — in series with the house footing through
+    # 2" of washed stone. The intended break was `cast_foam_in_aggregate`, a bool that emits
+    # no solid and bills nothing; the take-off ordered the stone and not the foam. The path
+    # was ~R-0.4 over 16.0 SF where R-10 was meant, into a footing whose underside is level
+    # with the court floor and whose frost protection is the R403.3 wings.
+    #
+    # **Why a beam and not a better bed.** A strip bearing on soil cannot be had: the wythe
+    # sits inside FT-B-S2/S3's 10" toe, and a separate pour bottoming on the wing plane has
+    # to stay outside the 45 deg line off their bearing edge — y = -12.76" — which pushes the
+    # brick to -15.95" and opens an 11.9" slot between it and the house. A beam SPANNING to
+    # W-SG-W1 and W-SG-E1 needs no soil bearing at all, so that constraint simply does not
+    # apply, and the wythe lands at -10.05" for a 6" cavity.
+    #
+    # **It reinforces nothing, and that is worth saying.** The obvious hope is that a north
+    # strut helps the side walls. It does not: W-SG-W1/E1 are already restrained top and
+    # bottom (porch beams pocketed in HUCQ410-SDS hangers, deck diaphragm, garden slab at
+    # their feet) and PASS `structural.foundation_unbalanced_fill` on the last row of
+    # IRC Table R404.1.2(8). This beam earns its 1.0 cy on the thermal argument alone.
+    #
+    # **17 3/4" deep, between two surfaces that were already there**: its top IS W-B-BRICK's
+    # underside (-8'-6 7/16") and its bottom IS the garden slab's (-10'-0 3/16"), so it drops
+    # into the void the court already had. The wings stay CONTINUOUS underneath — the beam
+    # bears on the side walls at its ends, not on the compressible foam, which is the same
+    # care W-SG-ARCH takes for the same reason.
+    #
+    # **The wythe sits off centre on purpose.** Brick at -10.05..-13.675" against a beam
+    # centred at -15" is 4.1" of eccentricity, ~162 ft-lb/ft of torsion over the span. The
+    # section is cast into both side walls and the garden slab bears on its south face, so
+    # it is restrained at both ends and along its length; see
+    # notes/sunken_garden_veneer_beam.md. Centring the brick instead would have cost the 6".
+    #
+    # No Footing, same as W-SG-ARCH and for the same reason — it spans, so a strip under it
+    # would be concrete spent on nothing, and a `FT-SG-BRKBM` solid would land inside the
+    # excavation and reopen the frost question ASCE 32 closes.
+    # ** WHICH FACE THE BOARD LANDS ON IS NOT OBVIOUS, AND IT IS THE WHOLE POINT. ** This
+    # beam is its own open wall-graph chain (both ends `open_end`), so
+    # `resolve/orientation.py` hands it the fallback outward sign rather than a winding's,
+    # and that sign plus the assembly's layer ORDER is what decides whether the 2"
+    # `xps-break` builds north or south. Get either wrong and the concrete lands hard against
+    # FT-B-S2/S3 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
+    # grades a thermal break for continuity. The face is pinned by
+    # `test_the_veneer_beam_isolates_the_house_footing`; do not trust the sign.
+    FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
+                   end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
+                   top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom"),
     # Garden retaining run (to just above grade), the U south of the porch.
@@ -1161,7 +1240,7 @@ GARDEN_SLAB = Slab(
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.rim_thickness_in),
     top_elevation=_court_top,
-    openings=("FO-SG-FIELD", "FO-SG-ARCH"),
+    openings=("FO-SG-FIELD", "FO-SG-ARCH", "FO-SG-BRKBM"),
 )
 
 # `FloorOpeningPurpose.CHASE` on both, and it is load-bearing rather than descriptive: CHASE
@@ -1182,6 +1261,16 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_x_in_e), ft(_y_ax_mid - _half)),
                           pt(ft(_x_in_e), ft(_y_ax_mid + _half)),
                           pt(ft(_x_in_w), ft(_y_ax_mid + _half)))),
+    # And the same cut around W-SG-BRKBM at the north end. The beam drops through the rim's
+    # full 3 1/2" (its underside IS the rim's), so the slab cannot pour through it either —
+    # it dies into the beam's south face and the beam becomes the court floor's north edge.
+    # The full 14" section, not just the concrete: the 2" XPS break is north of the rim
+    # anyway, and cutting the section as one keeps this outline derived off one number.
+    FloorOpening(uid="SGO003AAAA", tag="FO-SG-BRKBM", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)),
+                          pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
+                          pt(ft(_x_in_e), ft(_y_ax_brkbm + _brkbm_half)),
+                          pt(ft(_x_in_w), ft(_y_ax_brkbm + _brkbm_half)))),
 ]
 
 # ** THE OPEN CENTRE IS PROVISIONAL, AND IT IS ISOLATED BEHIND ONE ASSEMBLY. ** Drainage
@@ -1245,8 +1334,8 @@ GARDEN_STOOP = Slab(
 # corners; SG_FROST_WING_XPS1/2 in plan/assemblies.py carry R-5 and R-10 and the citation.
 #
 # WHY THIS EXISTS: measuring every footing against one global grade plane would pass FT-B-
-# S1/S2/S3 with only 8" of cover below the garden floor, and FT-B-BRICK with 2" of NEGATIVE
-# cover. Frost depth is measured from the lowest adjacent grade, and beside these footings
+# S1/S2/S3 with only 8" of cover below the garden floor. (It also passed the veneer plinth
+# FT-B-BRICK, which had 2" of NEGATIVE cover, until that plinth was retired 2026-09-05.) Frost depth is measured from the lowest adjacent grade, and beside these footings
 # that is the garden floor at -9'-4", not the -2'-10" site plane six and a half feet above
 # it.
 #

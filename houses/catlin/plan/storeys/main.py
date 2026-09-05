@@ -1150,56 +1150,60 @@ ROOMS = [
     # Main-floor finishes revised 2026-08-02 (plans/TODO.md §Hardwood): solid oak is the
     # studies' floor (RM-A-STUDY + RM-S-STUDY2) — living/study here go LVP, bed/closet carpet.
     #
-    # 2026-08-25, the hall: the corridor along the north side of the W-M-HS* band is part of
-    # this one claim (see above) and cannot be a second Room without double-billing the
-    # floor, so it is a `FinishZone` instead — the authored in-room override the field
-    # `lvp` yields to. Sheet vinyl, matching RM-M-MUDROOM, RM-M-MECH and RM-M-MUD-CLOSET to
-    # the west and RM-M-LAUNDRY and RM-M-BATH1 off it, so the whole wet/dirty spine from
-    # the entry through to the laundry is one washable surface with no transition strip.
-    # North edge y=26'-5 3/8" since 2026-08-29 (was 26'-3 3/8"): it IS W-M-STOS*'s south
-    # lining face and that wall moved 2" north.
-    # The rectangle IS the hall band of RM-M-LIVING's clear face: W-M-BAE's east lining
-    # face at x=6'-0 5/8" to the centre line at x=18'-0", W-M-HS*'s north lining face at
-    # y=22'-4 5/8" to W-M-STOS*'s south lining face at y=26'-5 3/8". It stops at x=18'-0"
-    # — the BM-M-HALL opening is where hall becomes living room, so that is where the
-    # vinyl meets the plank. `resolve/rooms.py` clips the zone to the clear face before
-    # billing, so the 1/16" of slop at the beam line costs nothing.
+    # 2026-09-05, the main-floor finishes: three planes and one reducer. The hall band's
+    # `vinyl-sheet` FinishZone is GONE — the corridor simply takes the room's own field
+    # `lvp`, and so do the rooms off it (RM-M-BATH1, RM-M-LAUNDRY, RM-M-MECH,
+    # RM-M-MUD-CLOSET), so the spine from the entry to the laundry is one plank floor with
+    # no zone and no threshold. `vinyl-sheet` leaves the main storey entirely. Only
+    # RM-M-MUDROOM breaks the plank, and it goes to porcelain over an uncoupling membrane —
+    # dirt containment at the entry, not a change of mind about wet floors.
     #
-    # ** WHERE THE VINYL'S EDGE IS ACTUALLY EXPOSED. ** Three of the four sides die into a
-    # wall line (W-M-HS* south, W-M-BAE west, W-M-STOS/STOS2 north to x=10'-0 5/8"), and
-    # every room on the far side of those walls is vinyl-sheet too, so the doorways are
-    # vinyl-to-vinyl with nothing to trim. The exposed edges are the east end at x=18'-0",
-    # under BM-M-HALL, where the vinyl meets SL-M-DECK's polished cap — that is the top of
-    # the x=18' leg in `notes/mixed_deck_movement_joint.md`, and it wants that leg's
-    # T-moulding — and the north edge east of x=10'-0 5/8", which runs across the head of
-    # the stairs. Most of that second line is over FO-M-STAIR's hole rather than over floor:
-    # the well is x 10'-3 3/8"..17'-6", y 26'-0 3/8"..35'-0", so what is left of the edge is
-    # ~3" at the west jamb and ~6" at the east. THE ZONE IS NOT CUT TO THE WELL, on purpose
-    # — the room's own clear face is not either (`resolve/rooms.py` polygonizes wall axes and
-    # never subtracts a FloorOpening), so cutting the zone and not the room would make the
-    # override more precise than the thing it overrides. It bills ~1.8 sf of vinyl over the
-    # hole. Take that off by hand at order time, or move the whole north edge to the well's
-    # y=26'-0 3/8" and accept the jog.
+    # ** THE OAK BAY. ** The south bay (x 18'..36', y 0'..13') is 3/4" solid oak: the
+    # wood-framed half of the room, over FS-M-EAST. Authored as a FinishZone rather than a
+    # second Room for the same reason the hall band was — one polygonized face, and a second
+    # seed in it would bill the floor twice.
+    #   * The outline is deliberately OVER-EXTENDED south, east and west (x 17'..37',
+    #     y -1'..13'). ``resolve/rooms.py`` clips every zone to the room's clear face before
+    #     billing, so only the NORTH edge is a real number; the other three cost nothing and
+    #     cannot go stale when a wall moves.
+    #   * ** ft(13) is the one load-bearing literal. ** It duplicates
+    #     ``params/main_deck._BAND_Y`` — where FS-M-EAST's joists stop and SL-M-DECK's cap
+    #     begins — which the editable dialect cannot import. test_catlin_contract_m3 pins
+    #     the two together, so moving the deck boundary cannot silently orphan the oak.
+    #
+    # ** THE THREE JUNCTIONS, stated honestly. ** Finishes have no thickness in the model
+    # (``model/floors.py``), so no check sees any of these:
+    #   * y = 13', ~17.9 lf — oak at +1.500" meets the polished cap at +0.9375": a 9/16"
+    #     REDUCER, accepted deliberately. The concrete cannot be raised to meet it —
+    #     ``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the subfloor
+    #     — and this is the leg that has to break for differential deflection anyway
+    #     (notes/mixed_deck_movement_joint.md).
+    #   * x = 18', ~13.6 lf — LVP at +0.986" meets the cap at +0.9375": 1/64", a flush T.
+    #     This leg IMPROVED; sheet vinyl sat low here and that note called it a real step.
+    #   * the mudroom doorway — tile at ~+1.3125" down to LVP at +0.986": a ~5/16"
+    #     transition strip, the only new threshold this change creates, and a dirt step is
+    #     what an entry wants.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="lvp",
-         finish_zones=(FinishZone(outline=(pt(ft(6, 0.625), ft(22, 4.625)),
-                                           pt(ft(18), ft(22, 4.625)),
-                                           pt(ft(18), ft(26, 5.375)),
-                                           pt(ft(6, 0.625), ft(26, 5.375))),
-                                  material_ref="vinyl-sheet"),)),
+         finish_zones=(FinishZone(outline=(pt(ft(17), ft(-1)),
+                                           pt(ft(37), ft(-1)),
+                                           pt(ft(37), ft(13)),
+                                           pt(ft(17), ft(13))),
+                                  material_ref="oak"),)),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
-    # RM-M-BATH1 and RM-M-LAUNDRY are sheet vinyl, not tile: both open off the
-    # hall band, whose FinishZone above is vinyl-sheet, and the point of the change is one
-    # unbroken washable floor from the mudroom to the laundry with no threshold and no
-    # grout to keep. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a full
-    # bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
+    # RM-M-BATH1 and RM-M-LAUNDRY were sheet vinyl and are LVP since 2026-09-05: both open
+    # off the hall, which no longer carries a FinishZone of its own, so the plank simply
+    # runs through — one floor, one product, no zone, no threshold and no grout to keep.
+    # Neither is a wet room: a powder bath and a laundry are splash duty, and 6 mm SPC is a
+    # waterproof core. RM-M-BATH2 upstairs of the plumbing wall keeps its tile — it is a
+    # full bath on its own radiant zone (FH-M-BATH2), which is where tile earns the mass.
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
-         occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
-         occupancy=Occupancy.LAUNDRY, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.LAUNDRY, floor_finish="lvp"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
          occupancy=Occupancy.OFFICE, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
@@ -1210,25 +1214,38 @@ ROOMS = [
     # hard-finish floor) than LIVING or HALLWAY would be.
     #
     # 2026-08-21, the floor: this and the two closets below read "sealed-concrete" until the
-    # basement-ceiling overhaul put FS-M-WEST's I-joists and 3/4" plywood under all three.
-    # A sealer needs a slab to seal. vinyl-sheet is already the house's answer for exactly
-    # this condition (RM-S-PLANT) — homogeneous sheet, heat-welded seams, 6" integral flash
-    # cove — and it is the right one for a wet entry over a wood deck.
-    # integrity.concrete_finish_needs_concrete_deck fails the build if this drifts again.
+    # basement-ceiling overhaul put I-joists and 3/4" plywood under all three — FS-M-MECH's
+    # since the west half was split (params/main_deck.py). A sealer needs a slab to seal,
+    # and there is none. ``integrity.concrete_finish_needs_concrete_deck``
+    # (checks/integrity/checks.py) is still what fails the build if that ever drifts back,
+    # and it is the reason this room cannot simply carry the polish the dining end does.
+    #
+    # 2026-09-05: vinyl-sheet -> tile. It was sheet vinyl because the whole spine was; the
+    # spine is LVP now, and the ONE room that should not be plank is the one people walk
+    # into off the breezeway in boots. Porcelain over an uncoupling membrane, ~5/16" proud
+    # of the LVP at the doorway — a deliberate dirt step and the only new threshold the
+    # change creates. Tile is safe on this deck: RM-M-MUDROOM sits wholly on FS-M-MECH,
+    # a 10'-0" span at ~L/2280 against tile's L/360 bar (params/main_deck.py).
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.STORAGE, floor_finish="tile"),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N: the
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
+    #
+    # LVP since 2026-09-05, with the rest of the spine rather than with the mudroom's tile.
+    # ** Judgment call, easy to reverse: ** this and RM-M-MUD-CLOSET are 33 SF between them,
+    # and leaving 33 SF on a heat-welded-cove specialist product buys a mobilisation for two
+    # closets. Neither is a wet room; both are closed doors off a dry hall.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
-         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S: the last
     # furniture closet becomes a real reach-in — 32 3/4" deep clear since W-M-STOS moved
     # north on 2026-08-29 (34 3/4" before), bypass slider in its north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
-    # names the dressing corridor. STORAGE + the mudroom's own floor, the same closed-enum
-    # reasoning as RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it.
+    # names the dressing corridor. STORAGE, the same closed-enum reasoning as
+    # RM-M-MUDROOM/RM-M-MECH above — and the same wood deck under it. Its floor is the
+    # SPINE's now, not the mudroom's: LVP, per RM-M-MECH's note above.
     Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="vinyl-sheet"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
     # The kitchen's framed reach-in pantry, replacing FURN-M-KIT-PANTRY-E,
     # -TALL-N and -TALL-S. STORAGE for the same closed-enum reason as RM-M-MECH and
     # RM-M-MUD-CLOSET above; 14.6 SF clear, 5'-10 1/4" x 2'-6".

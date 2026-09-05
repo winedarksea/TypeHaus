@@ -201,15 +201,23 @@ def test_a_custom_actual_profile_parses_as_stated_dimensions() -> None:
 
 # --- the species floors --------------------------------------------------------------------
 
-def test_the_oak_floor_mirrors_floor_finishes_for_the_two_studies(catlin_model, bom):
-    """Solid oak retreated to the studies on 2026-08-02: RM-A-STUDY plus RM-S-STUDY2,
-    and the mirror row must equal the floor_finishes oak row to the digit."""
+def test_the_oak_floor_mirrors_floor_finishes_room_for_room(catlin_model, bom):
+    """Solid oak retreated to the studies on 2026-08-02 — RM-A-STUDY plus RM-S-STUDY2 — and
+    took RM-M-LIVING's south bay on 2026-09-05. The mirror row must equal the
+    floor_finishes oak row to the digit, whichever way the area got there.
+
+    ** THAT SECOND ONE IS THE INTERESTING CASE, and it was a real gap. ** The living room's
+    oak is an authored ``FinishZone``, not a ``Room.floor_finish``: the room is one
+    polygonized face and a second seed in it would bill the floor twice. This mirror read
+    only ``room.floor_finish`` and SUBTRACTED every zone, so 231.7 sf of oak was invisible
+    to it while its docstring claimed the two sections reconciled — the mill would have been
+    told about the two studies and nothing else."""
     oak = next(row for row in bom["wood_surfaces"] if row["material"] == "oak")
     assert oak["kind"] == "floor"
-    assert oak["tags"] == ["RM-A-STUDY", "RM-S-STUDY2"]
+    assert oak["tags"] == ["RM-A-STUDY", "RM-M-LIVING", "RM-S-STUDY2"]
     assert oak["also_in_floor_finishes"] is True
     primary = next(row for row in bom["floor_finishes"] if row["finish"] == "oak")
-    assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2"}
+    assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-M-LIVING", "RM-S-STUDY2"}
     assert float(oak["net_area_sqft"]) == pytest.approx(
         float(primary["net_area_sqft"]), abs=0.05)
 

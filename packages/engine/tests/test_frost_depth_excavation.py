@@ -79,14 +79,34 @@ def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_mod
     assert grade_m == pytest.approx(site_grade_elevation_m(catlin_model))
 
 
-#: The four house footings the sunken garden reaches. FT-B-BRICK's plinth bottoms 9" ABOVE
-#: the court surface; the three south strips carry 1" of cover under it (it was 2" above and
-#: 8" under until the court dropped 7 1/4" on 2026-09-03). All four reported a comfortable
-#: 7'-2" and passed until the grade was derived per footing.
-#:
-#: The four house footings the sunken garden reaches. FT-B-BRICK's plinth bottoms 9" ABOVE
-#: the court surface; the three south strips carry 1" of cover under it. All four reported a
-#: comfortable 7'-2" and passed until the grade was derived per footing.
+def test_a_perimeter_footing_does_not_buy_shelter_by_shifting_inward(catlin_model):
+    """The other half of the rule above, and it was a real silent failure on 2026-09-05.
+
+    ``local_grade_elevation_m`` sheltered anything whose CENTROID fell inside the heated
+    slab. That is fine for FT-B-CS, which is wholly inside — but a perimeter footing sits
+    half in and half out, so nudging one a couple of inches toward the house walks its
+    centroid over the line and buys it the site grade plane.
+
+    That is exactly what trimming FT-B-S2/S3's south toe 2" (to clear W-SG-BRKBM's isolation
+    board) did: their cover jumped from 3/4" below the court floor to a reported 83" below
+    the site plane, and the two footings the R403.3 wings exist for started PASSING for the
+    wrong reason, at 0 FAIL. The guard is whole-polygon containment now, which shelters a
+    strict subset of what the centroid did and so can only ever move a footing back INTO
+    grading.
+    """
+    sheltered = heated_floor_footprint(catlin_model)
+    floors = open_excavation_floors(catlin_model)
+    for tag in ("FT-B-S2", "FT-B-S3"):
+        strip = next(s for s in catlin_model.solids if s.tag == tag)
+        grade_m, source = local_grade_elevation_m(
+            catlin_model, strip.outline, 42 * 0.0254, floors, sheltered)
+        assert source == "SL-SG-FLOOR", tag
+        assert grade_m < site_grade_elevation_m(catlin_model), tag
+
+
+#: The house footings the sunken garden reaches, all carrying ~1" of cover under the court
+#: floor. All of them reported a comfortable 7'-2" and passed until the grade was derived
+#: per footing.
 #:
 #: ** FT-B-S1 LEFT THIS LIST AND CAME BACK ON 2026-09-05. ** The basement's west-side replan
 #: split the old W-B-S1 at x=4'-8" that morning so the rotated sauna's south face could carry
@@ -94,14 +114,21 @@ def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_mod
 #: and made FT-B-S1B the one the wings protect. The afternoon's shrink pulled the sauna east
 #: to the excavation edge, deleted W-B-S1B and the split with it, and FT-B-S1 is one strip
 #: beside the court again. Nothing about the wings changed in either direction.
-_BESIDE_THE_GARDEN = ("FT-B-BRICK", "FT-B-S1", "FT-B-S2", "FT-B-S3")
+#:
+#: ** FT-B-BRICK LEFT IT THE SAME DAY AND DOES NOT COME BACK. ** The veneer plinth — the one
+#: member of this set whose bottom sat 9" ABOVE the court surface, i.e. negative cover — was
+#: retired when W-B-BRICK was re-founded on the grade beam W-SG-BRKBM. A beam that spans to
+#: W-SG-W1/E1 bears on no soil, so it has no frost condition to grade at all; the plinth's
+#: real problem was never its own cover but that it conducted the court's cold into
+#: FT-B-S2/S3 through a break that existed only as an annotation.
+_BESIDE_THE_GARDEN = ("FT-B-S1", "FT-B-S2", "FT-B-S3")
 
 
-def test_the_south_strips_and_the_plinth_are_protected_not_deep(frost_by_tag):
+def test_the_south_strips_are_protected_not_deep(frost_by_tag):
     """They pass, and the reason they pass is the thing to pin.
 
-    Not by depth — none of the four has anything like 42" of cover below the garden floor,
-    and FT-B-BRICK has negative cover. They pass through IRC R403.3's frost-protected
+    Not by depth — none of the three has anything like 42" of cover below the garden floor.
+    They pass through IRC R403.3's frost-protected
     shallow-foundation path, on the horizontal wing insulation drawn under the garden slab
     beside them (``params/sunken_garden.FROST_WINGS``). A check that reported PASS here
     without naming those elements would be reporting the old answer by accident.
@@ -113,7 +140,7 @@ def test_the_south_strips_and_the_plinth_are_protected_not_deep(frost_by_tag):
         assert any(name.startswith("SL-SG-FROST-") for name in finding.element_tags), tag
 
 
-def test_without_the_wing_insulation_the_same_four_footings_fail(catlin_plan, catlin_model):
+def test_without_the_wing_insulation_the_same_three_footings_fail(catlin_plan, catlin_model):
     """The finding this check existed to be unable to make.
 
     Take the drawn wings away and nothing else changes: the same four footings, the same

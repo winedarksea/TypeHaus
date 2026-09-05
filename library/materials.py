@@ -416,6 +416,13 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "the carpet rather than leaving it off the schedule"),
     Material(tag="tile", name="Porcelain floor tile", hatch="masonry", color="#dfe3e5",
              source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+    Material(tag="tile-uncoupling-membrane", name="Uncoupling membrane, 1/8\"",
+             hatch="membrane", color="#d9662a",
+             source="companion layer under `tile` — Schluter DITRA or equivalent 1/8\" "
+                    "polyethylene dimpled sheet, bedded in thinset. Carried so a takeoff "
+                    "orders it with the tile: it is what lets porcelain go over a wood "
+                    "deck without a crack-isolation gamble, and it is not in the tile "
+                    "row's own rate"),
     Material(tag="sealed-concrete", name="Sealed concrete slab finish", hatch="concrete",
              color="#b3b1ad", coating=True,
              source="a sealer on the slab rather than a covering over it — it adds no "

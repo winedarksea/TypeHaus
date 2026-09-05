@@ -25,10 +25,16 @@ DETAIL_SLICES = [
     # Typical exterior wall section — south wall, full height (cut x=9', away from the
     # sunken garden's x-extent). Since the sauna rotated it passes W-B-SA-N (y=9'-5")
     # rather than W-B-SA-W; the section goldens moved with it.
+    # The crop's south edge was -6" until 2026-09-05 and now reaches -2'-0". W-B-BRICK moved
+    # 4 1/2" south that day (its cavity grew to 6" to meet the grade beam W-SG-BRKBM), which
+    # carried the wythe past -6" and silently took the veneer, its cavity and its new bearing
+    # out of the "typical exterior wall" section altogether — the one drawing whose whole job
+    # is to show that stack. -2'-0" holds the brick (-13 5/8"), the beam (-8"..-22") and the
+    # isolation board between the beam and FT-B-S2/S3, with room to spare.
     Slice(uid="CVD903AAAA", tag="SL-D-WALLTYP", kind=SliceKind.DETAIL,
          title="Typical exterior wall section",
          cut_origin=pt(ft(9), ft(0)), cut_direction="y",
-         crop=(pt(ft(0, -6), ft(-10)), pt(ft(6), ft(30)))),
+         crop=(pt(ft(-2), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
     # y=18') so the section shows the ridge's peak, cropped past the beam band at
     # 31'-32' (ridge_z_m = 9.7652 m = 32.04'). The beam's soffit is at 30.87', well inside

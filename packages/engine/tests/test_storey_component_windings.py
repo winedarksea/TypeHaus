@@ -106,19 +106,22 @@ def test_a_component_with_no_closed_loop_keeps_its_authored_geometry() -> None:
 
 
 def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
-    """Four structures share the ``basement`` key; each must answer for itself."""
+    """Several structures share the ``basement`` key; each must answer for itself."""
     windings = resolve_storey_windings(catlin_model.plan, "basement")
 
-    # Six components: the house basement, garage foundation, retaining garden, sunken
-    # garden, the glazed-brick veneer over the exposed south wall (a two-node open run
-    # standing off the house, its own component), and the sunken garden's framed walkout
+    # Seven components: the house basement, garage foundation, retaining garden, sunken
+    # garden, the brick veneer over the exposed south wall (a two-node open run standing off
+    # the house, its own component), W-SG-BRKBM (the veneer's grade beam, added 2026-09-05 —
+    # it dies INTO W-SG-W1/E1 six inches past their inside faces rather than meeting them at
+    # a shared node, so both its ends are `open_end` and it traces as its own component on
+    # N-SG-BME), and the sunken garden's framed walkout
     # (W-B-S2-FR/W-B-S3-FR). The walkout stands ON the south wall's two curbs, and two wall
     # edges between one pair of nodes is a junction with no answer, so it has its own nodes
     # at the same three x stations with `open_end` at each end (the same device W-B-BRICK
     # uses) and traces as its own component keyed on N-B-S1F. Like the veneer it winds at
     # +1 rather than the perimeter's -1, which is why both framed walls author
     # `interior_room` explicitly.
-    assert len(windings.sign_by_component_key) == 6
+    assert len(windings.sign_by_component_key) == 7
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]
     sunken_garden = next(w for w in basement_walls if w.start_node.startswith("N-SG-"))

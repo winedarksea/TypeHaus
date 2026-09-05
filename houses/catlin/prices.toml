@@ -2193,16 +2193,28 @@
 # Sources: homeguide.com 2026 LVP / carpet / carpet-padding / tile-flooring cost charts,
 # dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
-"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1343 SF — labour INCLUDES pad and tack strip
-"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1343 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
-"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 766 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
+"carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1295 SF — labour INCLUDES pad and tack strip
+"carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1295 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
+# 2026-09-05: 766 -> 650 SF ordered (694.3 -> 590.1 net). Two moves against each other —
+# the living room's south bay left for oak (-231.7 net), and the whole vinyl spine arrived
+# (+127.4 net: the hall band's deleted FinishZone, plus RM-M-BATH1, RM-M-LAUNDRY,
+# RM-M-MECH and RM-M-MUD-CLOSET).
+"lvp" = { material = { low = 2, high = 5.5 }, labour = { low = 1.5, high = 3.25 } }  # 650 SF — click-lock floating; glue-down or herringbone would be +$1.00-2.50
 # ** POSSIBLE DOUBLE-COUNT, flagged not resolved. ** Most 5-8mm SPC/rigid-core plank ships with
 # an attached IXPE pad, in which case this layer should not exist at all and the row is buying
 # a product the floor does not need. The plan carries it as an explicit layer, so it is priced
 # — but the labour floor is 0 because when a separate pad IS used it rolls out ahead of the
 # plank at almost no marginal time. Resolve the spec before ordering.
-"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 766 SF
-"oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 351 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00). ** 351 SF is UNDER most Twin Cities sand-and-finish minimums ($1,200-1,800 mobilisation plus a trip per coat) — carry the HIGH end or take it as a lump **
+"lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 650 SF
+# ** 2026-09-05: 351 -> 612 SF, and that RELAXES this row's own warning. ** RM-M-LIVING's
+# south bay (231.7 sf net over FS-M-EAST) joined the two studies, so the oak scope is now
+# 555.9 sf net on three storeys instead of two rooms. 612 SF is a real sand-and-finish
+# contract: it clears the $1,200-1,800 mobilisation minimum this row used to warn about, so
+# the $/SF arithmetic below is defensible where before it was not, and the high end is a
+# choice rather than a hedge. What is left to confirm is a SCOPE question, not a size one —
+# three storeys means three set-ups for the sander and three trips per coat, and one of the
+# fields (the south bay) has a 9/16" reducer along its whole north edge to supply and fit.
+"oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 612 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
 # 2026-08-21: SL-M-DECK's cap. A polish is not a covering and not the sealer above it —
 # it is a mechanical grind, 4-6 passes on progressively finer diamonds, with a lithium
 # densifier between passes and a guard coat at the end. The slab itself is billed in
@@ -2216,7 +2228,7 @@
 # concrete chart, CPAA cream-polish class specifications.
 "polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 411 SF — cream polish over the EPS-deck cap; grinding only, the cap is in [concrete]
 "rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
-"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1189 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
+"sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1190 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
 # 2026-08-25: the tile scope collapsed from 495 SF to 119. RM-B-SAUNA went to sealed
 # concrete (its shower is a curbed liner pan, which brings its own waterproof floor), and
 # RM-M-BATH1 and RM-M-LAUNDRY went to sheet vinyl with the hall. What is left is RM-B-BATH
@@ -2229,7 +2241,24 @@
 # than the $/SF arithmetic, the same mobilisation argument the oak and vinyl-sheet rows make.
 # The tile trade is NOT deleted by this change and should not be presented as if it were —
 # only the stucco scope deletes a trade. ** The rate is kept so the line is not zero.
-"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 84 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT included and are not in this file at all
+# ** 2026-09-05: 84 -> 151 SF. ** RM-M-MUDROOM's 58.2 sf came in off `vinyl-sheet` — the
+# spine went to LVP and the one room that should not be plank is the one people walk into
+# off the breezeway in boots. The mobilisation caveat above stands; 151 SF is still under a
+# tile sub's minimum, and it is still the same one day on site.
+"tile" = { material = { low = 3, high = 9 }, labour = { low = 7, high = 14 } }  # 151 SF — labour INCLUDES thinset and grout, which is the trade convention. Backer board and waterproofing are NOT in this rate — and since 2026-09-05 the uncoupling membrane under it IS, as its own row below
+# 2026-09-05, the companion under it (`takeoff/finishes._COMPANIONS`). Schluter DITRA or
+# equivalent: a 1/8" polyethylene dimpled sheet bedded in thinset, which is what lets
+# porcelain go over a wood deck without a crack-isolation gamble. BOTH tile floors in this
+# house are over a wood deck — RM-M-BATH2 over FS-M-WEST with radiant in it, RM-M-MUDROOM
+# over FS-M-MECH — and neither billed this layer before, so this row closes a pre-existing
+# gap as well as covering the new mudroom.
+# ** Labour is near zero ON PURPOSE, the same argument the carpet pad and the LVP
+# underlayment rows make: ** the membrane goes down in the tile setter's own thinset, on the
+# same day, and is inside the rate above. The high end carries the case where it is a
+# separate mobilisation. Material: DITRA is $1.50-2.20/SF at the big boxes in 2026; the
+# generic dimpled sheets run lower and the DITRA-XL/HEAT variants much higher — this is the
+# plain 1/8" sheet, NOT the heated variant (that is priced in [floor_heat]).
+"tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }  # 151 SF
 # 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
 # $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
 # a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
@@ -2252,7 +2281,15 @@
 # stale before that (the attic-studio pass had already taken it to 432); 466 SF is the
 # blessed post-change figure off `haus takeoff`. The cove-scope caveat above stands and
 # grows with it.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 466 SF
+# ** 2026-09-05: 466 -> 257 SF, and the mobilisation caveat COMES BACK. ** Sheet vinyl left
+# the main storey entirely — the hall band's FinishZone was deleted, RM-M-BATH1,
+# RM-M-LAUNDRY, RM-M-MECH and RM-M-MUD-CLOSET went to the plank the hall now carries, and
+# RM-M-MUDROOM went to tile. What is left is RM-S-PLANT, RM-A-STUBATH and RM-B-BATH: three
+# rooms on THREE DIFFERENT STOREYS. The "385 SF is a real day's work and the $/SF arithmetic
+# is defensible" clause above is retired with that — 257 sf split three ways is a
+# mobilisation-dominated scope again, and the resilient crew is walking a stair between each
+# one. Expect a LUMP, and read the $/SF below as a floor on it, not as the price.
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 257 SF
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -3129,6 +3166,20 @@
 # retiring them saved is not being given back. (That measurement is in git history; the
 # 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
 "SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 30.20 CY — was merged $500-900
+
+# The veneer grade beam, NEW 2026-09-05. Same ready-mix anchor as SUNKEN_GARDEN_WALL — it is
+# the same pour, the same day, off the same ticket — but the labour half is materially
+# CHEAPER, and both directions of that are real. Cheaper: it is buried its whole life, so it
+# has no architectural face to rub, patch or match; the excavation is the court's, already
+# open; and it is one straight 19'-0" run with no corners and no returns. Dearer than nothing:
+# it is formed on four sides in a 6'-6" hole, it is cast into two existing walls at pockets
+# that have to be chipped and doweled, and the 2" XPS board is set as a form face on the
+# north side rather than stripped, which is a slower pour than a plain wall.
+#
+# The board is NOT in this rate. It bills separately as `xps:2.0` out of the envelope-layer
+# section, which is the whole reason the break was authored as a Layer and not as a
+# `FootingBedding` flag — see the assembly's own note in plan/assemblies.py.
+"SG_VENEER_BEAM_14" = { material = { low = 215, high = 280 }, labour = { low = 210, high = 430 } }  # ~1.05 CY
 
 [timber]
 # NEW 2026-08-22 — [low, high] $/cy, by solid category, qualified by assembly. This is the

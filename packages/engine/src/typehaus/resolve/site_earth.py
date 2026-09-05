@@ -199,7 +199,17 @@ def local_grade_elevation_m(
     here = Polygon(outline)
     if not here.is_valid or here.area <= 0.0:
         return grade, None
-    if sheltered_by is not None and sheltered_by.contains(here.centroid):
+    # WHOLLY inside, not merely centred inside. A footing only stops being exposed to the
+    # excavation beside it when no part of it reaches out from under the heated slab; the
+    # spine footing this guard was written for is entirely inside and still is. Centroid
+    # containment let a PERIMETER footing buy shelter by moving half its width inward:
+    # nudging FT-B-S2/S3 2" north (to clear W-SG-BRKBM's isolation board) walked their
+    # centroids from y=0 to y=+2", inside the slab, and their local grade jumped from the
+    # sunken court's floor back to the site plane 6'-6" overhead — turning 3/4" of cover
+    # into a reported 83" and PASSING the two footings the FPSF detail exists for. Silently,
+    # at 0 FAIL. `contains(polygon)` shelters a strict subset of what the centroid did, so
+    # it can only ever move a footing back INTO grading, never out of it.
+    if sheltered_by is not None and sheltered_by.contains(here):
         return grade, None
     lowest, governing = grade, None
     for tag, polygon, top_m in (open_excavation_floors(model) if floors is None else floors):

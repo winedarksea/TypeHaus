@@ -421,10 +421,15 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
 
     W-B-BRICK is the brick veneer over the exposed south basement wall, whose two reveals
     (AO-B-BRICK-WIN/DOOR) are segmental arches. More than one layer, so the assertion is
-    against the *thick* layer (3 5/8" of brick) rather than the wall — which is the sharper
-    test anyway: a half-thickness pick on the brick would land at 1 13/16", indistinguishable
-    from nothing in particular, while the 1-1/2" air gap beside it proves the per-layer depths
-    are not being merged.
+    per-LAYER rather than against the wall: each of the two must export its own authored
+    depth, which is what proves they are not being merged into one 9 5/8" slab.
+
+    This used to take `max(depths)` and compare it to the brick, on the reasoning that the
+    3 5/8" wythe was the thick layer and the 1-1/2" cavity beside it the thin one. That
+    ordering inverted on 2026-09-05, when the cavity grew to 6" to walk the wythe south onto
+    W-SG-BRKBM — so the maximum is now the AIR GAP, and a test that had quietly become "the
+    biggest number is the brick" would have failed for the right reason and been fixed the
+    wrong way. Both layers are named explicitly now.
 
     The wythe was five banded `Layer.slot` regions until 2026-09-04 and is one flat layer
     now; the slot arithmetic that made this assertion do double duty (five regions must still
@@ -443,7 +448,12 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
         accessor = gltf["accessors"][prim["attributes"]["POSITION"]]
         # The wall runs east-west, so its depth is the glTF z extent (model -y).
         depths.append(accessor["max"][2] - accessor["min"][2])
-    assert max(depths) == pytest.approx(brick.thickness_m, abs=1e-6)
+    cavity = next(layer for layer in wall.layers if layer.name == "air-gap")
+    assert brick.thickness_m != pytest.approx(cavity.thickness_m), \
+        "the two must differ, or this proves nothing about per-layer depth"
+    for layer in (brick, cavity):
+        assert any(depth == pytest.approx(layer.thickness_m, abs=1e-6) for depth in depths), \
+            f"{layer.name} ({layer.thickness_m:.4f} m) missing from {depths}"
     assert brick.thickness_m == pytest.approx(0.092075)
 
 

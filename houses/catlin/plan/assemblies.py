@@ -878,6 +878,48 @@ SUNKEN_GARDEN_WALL = Assembly(
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
+# The veneer grade beam W-SG-BRKBM: the same 12" court pour, plus the 2" isolation board
+# that is the entire point of it.
+#
+# ** THE FOAM IS A LAYER WITH A POLYGON, NOT TWO ANNOTATIONS THAT DISAGREED. ** The wythe
+# used to bear on FT-B-BRICK, a plinth cast on FT-B-S2/S3's own toe, and the break between
+# the two was stated TWICE, inconsistently, and drawn never:
+#
+#   * FT-B-BRICK carried `assembly="FOOTING_FPSF_20"`, whose 2" `xps-bearing` layer DID
+#     bill — 16.0 SF of xps:2.0 through `takeoff/envelope.py`'s `_LAYERED_SOLID_SCOPES`; and
+#   * FB-B-BRICK dug a 2" `undercut` for that same 2" of space, which billed as 0.1 cy of
+#     ASTM C33 #57 washed crushed stone, with `cast_foam_in_aggregate=True` beside it — a
+#     bool with no thickness, no material and no R-value that emits nothing at all.
+#
+# One order of foam and one order of stone for one gap. A Footing resolves to a single
+# extruded blob (`structural_solids_takeoff` bills its VOLUME keyed on the STRUCTURE layer),
+# so neither claim had a polygon and the only thing actually occupying the 2" in the model
+# was a void. Nothing grades a thermal break for continuity, so both spellings sat at
+# 0 FAIL under 129 SF of brick standing in open air on both faces.
+#
+# A WALL's layers do resolve to real polygons, on real faces, in a stated order. That is why
+# the break moved here: it can now be pointed at, measured, and pinned by a test.
+#
+# 40 psi, as everywhere else in this court: the board is a form face and a bond breaker
+# here, not a bearing layer — the beam spans to W-SG-W1/E1 and delivers nothing to it.
+SG_VENEER_BEAM_14 = Assembly(
+    tag="SG_VENEER_BEAM_14",
+    layers=(
+        # Concrete first, board second — the same order every other foundation wall in this
+        # house states (W-B-S2 runs concrete, damp-proof, xps-a, xps-b). Authored the other
+        # way round `code.R316_4` FAILs it: the innermost layer is what that rule reads as
+        # facing a room, and a bare 2" of XPS there needs a thermal barrier. It is also
+        # simply the truth about the pour: the board is a form face applied to a side of the
+        # concrete, not something the concrete sits on.
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+        Layer(name="xps-break", material_ref="xps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="sunken-garden veneer grade beam (2026-09-05): the court's own 12\" exposed pour, spanning W-SG-W1 to W-SG-E1 to carry W-B-BRICK clear of the house footing, with a 2\" 40 psi XPS isolation board on its north face against FT-B-S2/S3's trimmed toe — the same thermal cut DW-SG-W1/E1-FOAM makes at the porch footings, expressed as a layer so it resolves, bills and draws",
+)
+
 # The FIVE 12" round cast columns of the garden frame: PT-SG-FCOL (carrying the porch's
 # two front beams) and the four balcony corner columns PT-SG-BR1/BR3/BF1/BF3, which
 # replaced painted 6x6 wood pillars on pinned standoff bases in 2026-09-03's redesign.
@@ -977,21 +1019,31 @@ _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
-        # 1-1/2", not 1". The wall aligns on ``face("air-gap-int")``, so this layer's inboard
-        # face IS the node line — and the node sits on the XPS at -4.05". It was 1.0" while
-        # N-B-BRICK-W/-E stood at -4.55" on the parge's finished face; when the parge was
-        # deleted the node stayed, and the 0.5" it used to fill became a void that no layer
-        # described. The brick did not move and does not move now: the gap grows inboard onto
-        # the foam, its outboard face stays at -5.55", and the wythe stays at -5.55..-9.175".
-        # IRC R703.8.4 asks 1" minimum and the built cavity was always 1-1/2" — this is the
-        # model catching up to it.
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.5),
+        # ** 6", AND THIS LAYER IS WHAT MOVES THE WYTHE. ** The wall aligns on
+        # ``face("air-gap-int")``, so this layer's inboard face IS the node line, pinned to
+        # the XPS at -4.05". Growing the cavity therefore walks the brick SOUTH without
+        # touching N-B-BRICK-W/-E — which is the whole reason the move was made here and not
+        # at the nodes: the two arched reveals are positioned ``from_node`` along the wall
+        # AXIS, so a y-move leaves them concentric and `integrity.reveal_concentric` never
+        # has to be re-derived.
+        #
+        # The size is set by the foundation, not by rainscreen practice. The wythe now bears
+        # on W-SG-BRKBM (params/sunken_garden.py), a grade beam spanning between W-SG-W1 and
+        # W-SG-E1 whose north face can reach y=-10" and no further — FT-B-S2/S3 hold the
+        # 2" isolation joint north of that. Brick at -10.05..-13.675" is what that allows,
+        # and -4.05 to -10.05 is this layer.
+        #
+        # 6" is PAST IRC R703.8.4's 4-1/2" prescriptive airspace, so the ties are a TMS 402
+        # engineered item — see notes/sunken_garden_veneer_beam.md. It was 1-1/2" (and 1"
+        # before that) while the wythe stood on a plinth cast on the house footing own toe;
+        # that plinth was the thermal bridge this beam exists to remove.
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(6.0),
               function=LayerFunction.AIRGAP),
         # The field: unglazed brown face brick, base to wall top, 8'-5" of it.
         Layer(name="brick", material_ref="brown-brick", thickness=_VENEER_WYTHE,
               function=LayerFunction.STRUCTURE),
     ),
-    source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 1-1/2\" ventilated airgap, corrugated masonry ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
+    source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 6\" ventilated airgap on the grade beam W-SG-BRKBM (not the house footing toe), TMS 402 engineered ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -1437,20 +1489,22 @@ GARAGE_ICF_6 = Assembly(
 
 # --- frost-protected shallow foundation, sunken-garden side -----------------------------
 #
-# The condition: the sunken garden's floor is at -9'-4", the south house strips
-# FT-B-S1/S2/S3 bottom out at -10'-0", and the glazed-brick plinth FT-B-BRICK bottoms at
-# -9'-2" — 8" of cover, and 2" of *negative* cover, against MN Rules 1303.1600's 42" for
+# The condition: the sunken garden's floor is at -9'-4" and the south house strips
+# FT-B-S1/S2/S3 bottom out at -10'-0" — 8" of cover against MN Rules 1303.1600's 42" for
 # Ramsey County (Zone II). Frost depth is measured from the LOWEST ADJACENT grade (IRC
 # R403.1.4.1), and beside those footings that is the garden floor, not the -2'-10" site
 # grade plane. `structural.frost_depth` derives a local grade per footing and names these
-# four rather than comparing every footing to one global scalar.
+# three rather than comparing every footing to one global scalar. (A fourth, the veneer
+# plinth FT-B-BRICK, sat here with 2" of NEGATIVE cover until 2026-09-05; it is retired —
+# W-B-BRICK bears on the spanning grade beam W-SG-BRKBM now and touches no soil at all.)
 #
 # The answer is R403.3 — a frost-protected shallow foundation — under **Figure R403.3(3)**
 # specifically: a heated building adjoining a slab-on-ground that is *not* maintained at
 # 64 deg F, which is exactly a heated basement beside an open sunken court. Deepening the
-# strips is the alternative and it is not available: FT-B-BRICK's whole derivation leans on
-# FT-B-S2/S3's 10" south toe being there to bear on (params/foundations.py), so re-centring
-# the strips and re-footing the brick wall are one change, and not this one.
+# strips is the alternative and it is still not the move, though the reason changed: the
+# plinth that used to lean on FT-B-S2/S3's 10" south toe is gone, but that toe now carries
+# SG_VENEER_BEAM_14's isolation board at -8"..-10", so re-centring these strips still means
+# re-deriving what stands beside them.
 #
 # Design air-freezing index **AFI 2500** (Minneapolis-St Paul; MN Rules 1303.1600 and the
 # IRC's own Figure R403.3(2) put the Twin Cities near 2,500 F-days). Table R403.3(1) at
@@ -3699,6 +3753,7 @@ ASSEMBLIES = [
     CATLIN_DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
+    SG_VENEER_BEAM_14,
     SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,
     RETAINING_BLOCK_12,

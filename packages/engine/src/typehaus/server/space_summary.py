@@ -75,6 +75,7 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
     from shapely.geometry import Polygon
 
     from typehaus.resolve.overlay import union_all
+    from typehaus.resolve.site_earth import open_excavation_floors
 
     per_storey: dict[str, list] = {}
     for wall in model.walls:
@@ -82,6 +83,10 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
                   if layer.polygon and len(layer.polygon) >= 3]
         if bodies:
             per_storey.setdefault(wall.storey, []).extend(bodies)
+    # The court floors, porch pits and window wells: exterior ground at their own level.
+    # Same derivation `structural.frost_depth` measures from, so the two cannot disagree
+    # about which surfaces are open sky.
+    open_ground = [polygon for _tag, polygon, _top in open_excavation_floors(model)]
     rooms_by_storey: dict[str, list] = {}
     for room in model.rooms:
         if room.clear_face and len(room.clear_face) >= 3:
@@ -99,7 +104,24 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
         for poly in polys:
             if poly.is_empty:
                 continue
-            shell = Polygon(poly.exterior)
+            # **A hole over OPEN GROUND stays a hole.** The docstring above has always
+            # promised courtyards are not filled; `Polygon(poly.exterior)` discarded every
+            # interior ring, and it went unnoticed only because no outdoor enclosure had ever
+            # MERGED with the house mass — the sunken court was its own disjoint polygon, so
+            # its void was never one of the house's holes to fill. W-SG-BRKBM changed that: a
+            # grade beam bearing on W-SG-W1/E1 to carry W-B-BRICK is one connected pour from
+            # the house wall to the court's south end, and filling that ring added 610 sf of
+            # "floor area" that is open sky.
+            #
+            # Keyed on an excavation floor rather than on "no Room in it", which was tried
+            # first and is much too broad: a stair well, a chase and a vaulted void are all
+            # room-less holes in a wall union that a builder absolutely does price, and
+            # keeping those cost the attic 97 sf. `open_excavation_floors` is the plan's own
+            # positive statement that a surface is exterior ground at its own elevation.
+            interiors = [ring for ring in poly.interiors
+                         if any(Polygon(ring).contains(floor.representative_point())
+                                for floor in open_ground)]
+            shell = Polygon(poly.exterior, interiors)
             # **An enclosure counts only if it encloses a Room.** The retaining walls of the
             # sunken garden, the porch and balcony guards, and the breezeway posts are all
             # walls on a storey and none of them is floor area anyone builds or buys. Rooms

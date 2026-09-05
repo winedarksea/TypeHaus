@@ -190,10 +190,12 @@ def test_framing_matches_the_reference(catlin_model):
     assert rise_over_run > reference_pitch
 
 
-# Shares the house's FT-B- prefix but is not one of its strip footings, so the 20"x8" rule
-# below does not govern it: FT-B-BRICK is the shallow plinth under the glazed-brick veneer
-# (W-B-BRICK), cast on the house footing's toe over a 2" XPS bed rather than poured with it.
-_NON_STRIP_FT_B = {"FT-B-BRICK"}
+# Footings sharing the house's FT-B- prefix that the 20"x8" rule below does not govern.
+# FT-B-BRICK — the plinth under the brick veneer, cast on the house footing's toe — was the
+# only member and was retired 2026-09-05, when W-B-BRICK was re-founded on the spanning grade
+# beam W-SG-BRKBM. The set stays as the seam: a non-strip pour on this prefix must be named
+# here rather than quietly widening the rule.
+_NON_STRIP_FT_B: set[str] = {"FT-B-BRICK"}
 
 
 def test_house_footings_match_the_reference(catlin_model):
@@ -230,12 +232,12 @@ def test_footing_bedding_carries_the_reference_drainage_vocabulary(catlin_model)
     exists and claims those parts — the drain's 4" diameter has nowhere to live on
     ``FootingBedding`` yet (tracked in plans/TODO.md).
     """
-    # Every bedding that beds a *footing* on aggregate. Two kinds are excluded:
-    # FB-B-BRICK, because the veneer plinth bears on a 2" XPS sheet laid on the house
-    # footing's toe (see params/foundations.py) — no stone, no fabric, no tile, and it uses
-    # this element only for ``cast_foam_in_aggregate``; and the FB-RG-* levelling pads under
-    # the raised-garden apron, which host a dry-stacked wall rather than a footing and are
-    # bearing prep with no drainage role (params/raised_garden.py).
+    # Every bedding that beds a *footing* on aggregate. FB-B-BRICK used to be excluded here
+    # because the veneer plinth's "bedding" claimed a 2" XPS sheet through
+    # ``cast_foam_in_aggregate`` and billed washed stone — the contradiction that retired
+    # both it and the plinth on 2026-09-05. What is still excluded is the FB-RG-* levelling
+    # pads under the raised-garden apron, which host a dry-stacked wall rather than a footing
+    # and are bearing prep with no drainage role (params/raised_garden.py).
     beddings = [e for e in catlin_model.plan.elements_of_kind("FootingBedding")
                 if e.tag != "FB-B-BRICK" and not e.tag.startswith("FB-RG-")]
     assert beddings, "every house footing should carry a bearing-prep record"

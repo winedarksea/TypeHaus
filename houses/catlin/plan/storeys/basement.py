@@ -70,14 +70,16 @@ from typehaus import (
 # Both are gone. What replaced them, on the owner's call:
 #
 #   * **The sauna rotated onto the south (garden) wall**, long axis east-west,
-#     x 4'-8"..18'-0" by y 0'-0"..9'-5" on the node lines — a 12'-2" x 8'-2" clear box
-#     against the 8'-1" x 12'-7" it was. It keeps WIN-B-SAUNA and is entered FROM THE GYM
-#     through framed W-B-CS, a short walk from D-B-PATIO and the sunken garden, which is
-#     what the brief asks the room for.
+#     x 8'-10"..18'-0" by y 0'-0"..9'-5" on the node lines — an 8'-3 15/16" x 8'-3 11/16"
+#     clear box against the 8'-1" x 12'-7" it was. It keeps WIN-B-SAUNA and is entered FROM
+#     THE GYM through framed W-B-CS, a short walk from D-B-PATIO and the sunken garden,
+#     which is what the brief asks the room for. (The rotation drew it x 4'-8"..18'-0", a
+#     12'-2" box straddling two substrates; ROUND TWO the same afternoon pulled the west
+#     wall onto N-B-S1 — see the node block below.)
 #   * **The bathroom rotated** to run north-south along the framed stair wall
-#     (W-B-STR3B/W-B-STR2), 3'-5" x 7'-1" clear, with its door on a new east wall.
+#     (W-B-STR3B/W-B-STR2), 3'-3 15/16" x 7'-1 1/4" clear, with its door on a new east wall.
 #   * **A hall** runs west of W-B-CN2 from the stair foot south to the y=18' line —
-#     3'-2 5/8" clear, part of RM-B-STAIR's own loop — and crosses that line through
+#     3'-3 15/16" clear, part of RM-B-STAIR's own loop — and crosses that line through
 #     O-B-HALL, a cased opening in W-B-CW2B, into the workshop.
 #
 # ACCEPTED CONSEQUENCE, stated rather than discovered: the playroom is reached only via the
@@ -85,13 +87,15 @@ from typehaus import (
 # from the stair to the gym. Nothing on the x=18' bearing grid moved and no concrete wall
 # moved; W-B-CS2, W-B-CN and W-B-CN2 stay pours because they carry SL-M-DECK.
 #
-# **x=4'-8" and not the 5'-0" the plan was drawn at**, for one measured reason:
+# **x=4'-8" and not the 5'-0" the plan was drawn at**, for one measured reason, and it is
+# recorded because it is the trap anyone re-splitting this wall will fall into:
 # `structural.frost_depth` lowers a footing's local grade by any open excavation within a
 # frost depth (42") of it, and it reads the footing SOLID, not the wall. A split at 5'-0"
 # leaves FT-B-S1 exactly 42.0" from SL-SG-FLOOR's rim — inside the reach, and outside
 # SL-SG-FROST-W's own 42" shielding radius, which is what carried the un-split strip. 4'-8"
-# is 46" from the rim, clear of the reach with 4" to spare, and it is a 16" module station
-# into the bargain. The sauna gains 4" rather than losing anything.
+# was 46" from the rim, clear with 4" to spare. **The split is retired**: the sauna shrank
+# east to the excavation edge the same afternoon, W-B-S1 is one segment again, and FT-B-S1
+# is back inside the court's reach and back on the wings, where it started.
 NODES = [
     # Perimeter (split at grid lines + partition tees)
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
@@ -231,7 +235,19 @@ NODES = [
     # downstream are all untouched. Only the 0.5" of nothing becomes something.
     Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.05)),
          open_end=True),
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.05)),
+    # ** 27'-6", NOT 28'-0", SINCE 2026-09-05. ** 28'-0" is W-SG-E1's AXIS, and while the
+    # wythe stood at y -5.55..-9.175" that was harmless: it ended north of the retaining
+    # wall's north end (-10") and the two never met in plan. Moving the veneer south to
+    # -10.05..-13.675" for its 6" cavity walked its east 6" straight INSIDE that wall —
+    # 4.25 SF of brick with concrete already in it, billed and drawn and unbuildable, at
+    # 0 FAIL (nothing grades masonry against concrete; `structural.concrete_interference`
+    # only sees pours). 27'-6" is `_x_in_e`, the court's own clear face, so the wythe now
+    # dies against the retaining wall instead of into it.
+    #
+    # The reveals do NOT move: they are positioned `from_node("N-B-BRICK-W", ...)`, measured
+    # from the WEST node, so shortening the east end leaves every station where it was.
+    # `integrity.reveal_concentric` is what proves that, and it still passes.
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-4.05)),
          open_end=True),
 ]
 
@@ -323,8 +339,10 @@ WALLS = [
     #
     # The 8" walls also sit better than the 12" ones did: FT-B-* is a 20" strip on
     # `center_on="axis"`, so a 12" pour overhung its inside edge by 2" and an 8" one has a
-    # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py) but do
-    # not move in plan — the brick plinth FT-B-BRICK is dimensioned off the strip's -10" edge.
+    # 2" inboard toe. The footings follow the slab up 2 9/16" (params/foundations.py). Two of
+    # them DO move in plan now: FT-B-S2/S3 carry a 2" `offset` since 2026-09-05, so their
+    # south face is at -8" and W-SG-BRKBM's XPS isolation board occupies -8"..-10". The brick
+    # plinth that used to be dimensioned off the -10" edge is retired with it.
     # **The south wall retains four different amounts of soil, and now says so.**
     # Without an authored ``unbalanced_fill``, ``structural.foundation_unbalanced_fill``
     # falls back to its documented proxy — grade (-2'-10") minus the wall bottom
@@ -814,17 +832,29 @@ WALLS = [
     Wall(uid="3GQXK314FQ", tag="W-B-CL-N", start_node="N-B-ESS-SE",
          end_node="N-B-CL-NE", assembly="INT_2X4_PARTITION", top=inch(47),
          interior_room="RM-B-UNDERSTAIR"),
-    # Glazed forest-green brick veneer over the exposed run of W-B-S2/W-B-S3, where the
-    # sunken garden is dug against them — everywhere else this wall is buried and the parge
-    # is a below-grade coating nobody sees; here it's the house's most-looked-at elevation.
+    # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
+    # garden is dug against them — everywhere else this wall is buried and the parge is a
+    # below-grade coating nobody sees; here it's the house's most-looked-at elevation.
     #
-    # Bottom at -8'-9", NOT -9' with the concrete it faces: (1) there's no ground left for a
-    # footing at -9' — FT-B-S2/FT-B-S3 already project 10" south, so the veneer bears on the
-    # house footing's own toe via a shallow plinth (FT-B-BRICK) cast on it, not poured
-    # beside it; (2) that plinth has to clear D-B-PATIO's raised threshold, which is also
-    # the better detail — a glazed veneer's base course should not sit in standing water.
-    # The plinth runs -9'-2" to -8'-9" and shows **7"** above the garden slab (-9'-4") as a
-    # concrete water table.
+    # ** IT STANDS ON W-SG-BRKBM, AND NOT ON THE HOUSE FOOTING. ** This wythe is 129 SF of
+    # masonry exposed on BOTH faces at the bottom of an open court, so it runs at outdoor
+    # temperature all winter. Until 2026-09-05 it bore on FT-B-BRICK, a plinth cast on
+    # FT-B-S2/S3's own projecting toe, which put that cold directly in series with the house
+    # footing — the footing whose underside is level with the court floor and whose frost
+    # cover is the R403.3 wings. The break meant to interrupt it was authored twice and
+    # drawn never (see SG_VENEER_BEAM_14 in plan/assemblies.py for both spellings and why
+    # neither existed). It now bears on a grade beam spanning to W-SG-W1 and W-SG-E1, so
+    # its whole load and heat path goes into the court's own structure, which is already
+    # broken from the house at DW-SG-W1/E1-FOAM.
+    #
+    # Bottom stays at -8'-9", now because that is the beam's top rather than a plinth's: it
+    # still has to clear D-B-PATIO's raised threshold, and a base course should not sit in
+    # standing water whatever the brick is.
+    #
+    # ** THE WYTHE MOVED 4 1/2" SOUTH, AND NOT FROM HERE. ** The 6" cavity is authored as
+    # BASEMENT_BRICK_VENEER's `air-gap` thickness, not as a node position, precisely so the
+    # two arched reveals below — positioned `from_node` along the wall AXIS — do not move
+    # with it. N-B-BRICK-W/-E are untouched at -4.05".
     #
     # Authored EAST->WEST — opposite W-B-S2/W-B-S3 — deliberately: this wythe is its own
     # wall-graph component (two open ends, no loop), so resolve/orientation.py hands it
@@ -1018,7 +1048,7 @@ ROOMS = [
     # W-B-STR now separates this from the furnace room, so the stair bottom is its own
     # space instead of dumping arrivals into the mechanical room.
     # **The HALL is part of this room's loop, not a room of its own** (2026-09-05): the
-    # 3'-2 5/8" slot west of W-B-CN2, from the stair foot south to the y=18' line, is inside
+    # 3'-3 15/16" slot west of W-B-CN2, from the stair foot south to the y=18' line, is inside
     # the same closed face and needs no `Room` — it is circulation on the same floor finish
     # with the same occupancy, and a second `Room` here would only split one space in two
     # for every check that walks rooms.

@@ -128,11 +128,14 @@ DECLARED_DIVERGENCES = {
         "side walls replaced the arched cross-wall, and the 42\" masonry parapet over it "
         "became RL-SG-PORCH (→ contract test)"
     ),
-    # "Sunken Garden North Wall Footing" is not declared here even though that wall is gone:
-    # FT-B-BRICK, the plinth under the glazed-brick veneer (params/foundations.py), lands
-    # 0.6 m from the old footing line and the matcher pairs the two. They are not the same
-    # element — a strip of concrete simply runs along that line once more, which is all the
-    # matcher claims.
+    "Sunken Garden North Wall Footing": (
+        "the court's north end has carried no footing since the north wall went. It was "
+        "PAIRED rather than declared until 2026-09-05 — FT-B-BRICK, the plinth under the "
+        "brick veneer, happened to land 0.6 m off the old footing line and the matcher took "
+        "the two for one, which was only ever a coincidence of position. That plinth is "
+        "retired: the veneer bears on W-SG-BRKBM, a grade beam spanning to W-SG-W1/E1, and a "
+        "wall that spans has no footing to pair with"
+    ),
     #
     # The garage move (_GARAGE_MOVED) leaves it unchanged in size, section and framing; only
     # its y is different, and 7'-5 5/8" is far past MAX_PAIRED_PLACEMENT_DELTA_M —

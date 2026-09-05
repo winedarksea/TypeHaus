@@ -111,18 +111,40 @@ _HOUSE_WALL_TAGS = (
 # ``structural.frost_depth`` derives a local grade per footing; the answer to what it finds
 # here is IRC R403.3 — the horizontal wings under the garden slab
 # (``params/sunken_garden.FROST_WINGS``) plus this form, which keeps the concrete off the
-# soil on both faces. Deepening the strips is not an available alternative: FT-B-BRICK's
-# derivation leans on FT-B-S2/S3's 10" south toe being there to bear on, so re-centring the
-# strips and re-footing the brick wall are one change and not this one.
+# soil on both faces. Deepening the strips is not an available alternative: FT-B-S2/S3's
+# south toe is what carries SG_VENEER_BEAM_14's isolation board at -8"..-10" (that is what
+# `_SOUTH_TOE_TRIM` below is for), so re-centring the strips and re-founding the brick wall
+# are one change and not this one. It used to be the veneer PLINTH that leaned on that toe;
+# the plinth is gone and the constraint is not.
 # W-B-S1B joined on 2026-09-05 and left the same day with the sauna shrink. FT-B-S1 is one
 # unsplit strip again, and it is back inside the court's 42" frost reach — which is what the
 # insulated form and the `SL-SG-FROST-W` wings under the garden slab are for. See the header
 # note on `structural.frost_depth` above.
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
+# The two the veneer stands over — see `_SOUTH_TOE_TRIM`. S1 and S4 are deliberately NOT in
+# it: they carry full 8" basement walls with soil against them, the beam does not reach
+# them, and a 2" jog at each end of the run is a footing step, which is an ordinary thing
+# to build and cheaper than moving two footings that had no reason to move.
+_TOE_TRIMMED = {"W-B-S2", "W-B-S3"}
 
+# ** THE FOUR GARDEN-FACE STRIPS ARE SHIFTED 2" OFF THE WALL AXIS, AND IT COSTS NOTHING. **
+# `offset` moves the strip square to its wall without changing its width, so all 20" of
+# bearing is still there — it is the same footing, sitting 2" further under the house.
+#
+# It buys the 2" that W-SG-BRKBM's XPS isolation board needs at -8"..-10" (the beam's
+# concrete north face has to reach -10" or W-B-BRICK cannot have a 6" cavity). And it is
+# free structurally, in fact better: these four carry a 7 1/4" curb and three storeys of
+# framed wall standing at y = 0..+9 1/2", so a strip centred on y = 0 threw 10" of toe south
+# under a load that was never over it. Moving 2" toward the load reduces the eccentricity it
+# was already carrying.
+#
+# The sign is the resolver's own left-hand normal off `start_node -> end_node`, NOT a
+# compass direction — `test_catlin_contract_m3` pins the resulting face at y = -8".
+_SOUTH_TOE_TRIM = inch(2)
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
+            offset=_SOUTH_TOE_TRIM if t in _TOE_TRIMMED else None,
             assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "CATLIN_FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]
@@ -139,40 +161,23 @@ HOUSE_FOOTING_BEDDING = [
     for i, t in _HOUSE_WALL_TAGS
 ]
 
-# --- glazed-brick veneer plinth (W-B-BRICK) ---------------------------------------
-# Deliberately NOT appended to _HOUSE_WALL_TAGS: that loop pours a 20"x8" strip monolithic
-# with the house footing, which is the thermal bridge this detail exists to avoid. Instead
-# it's a shallow plinth cast ON the house footing's projecting toe (FT-B-S2/S3's toe runs
-# 10" south of the brick face), separated by a 2" XPS bed (FB-B-BRICK) rather than a
-# ``Dowel`` block — ``Dowel.axis`` can't describe a horizontal bed, so the veneer's own
-# masonry ties do that job instead (plans/TODO.md).
+# --- the veneer plinth, RETIRED 2026-09-05 -----------------------------------------
+# FT-B-BRICK (10"x5" on FT-B-S2/S3's toe) and FB-B-BRICK (its 2" bed) are GONE, not
+# commented out: W-B-BRICK now bears on W-SG-BRKBM, a grade beam spanning between the
+# court's two side walls (params/sunken_garden.py), and a wall that spans has no footing.
 #
-# 10"x5": 10" wide clears the brick's outer face (-9.175") with ~0.4" to spare and stays
-# inside the house footing's -10" edge; 5" deep over the 2" bed tops out at -8'-5",
-# D-B-PATIO's raised threshold — the highest it can go without crossing the door. Full
-# derivation on W-B-BRICK in plan/storeys/basement.py.
+# Why they went. The plinth was cast ON the house footing's own toe, and the break between
+# the two was `FootingBedding.cast_foam_in_aggregate` — a bool with no thickness, no
+# material and no R-value, which emits no solid and bills nothing. The 2" `undercut` it dug
+# billed as 0.1 cy of washed crushed stone, so what the BOM actually ordered under 129 SF of
+# brick standing in open air was ~R-0.4 where R-10 was intended. The uids CFV301AAAA /
+# CFV351AAAA are retired with them and must not be reused.
 #
-# Stops at x=28' on the sunken garden's east wall axis, where FT-SG-E1 already breaks
-# thermally from the house footing — no third break needed, no collision (FT-SG-E1 sits
-# 1'-5" below this plinth).
-# On the same insulated form as the strips it bears on: its bottom is at
-# -9'-2", which is 2" **above** the garden floor beside it, so of the four footings the
-# sunken garden reaches this is the one with negative frost cover. The R403.3 wings under
-# the garden slab are what answer it; the form is what keeps this pour from being a
-# 10"-wide thermal bridge sitting in the open at the bottom of the court.
-VENEER_PLINTH = [
-    Footing(uid="CFV301AAAA", tag="FT-B-BRICK", under="W-B-BRICK",
-            width=inch(10), depth=inch(5), assembly="FOOTING_FPSF_20"),
-]
-
-# Same ``cast_foam_in_aggregate`` record the sunken garden's house-adjacent footings carry
-# (2" 40psi XPS), used here as a bed rather than a block. No drain tile: sits a foot above
-# the house footing's own tile with nothing to collect.
-VENEER_PLINTH_BEDDING = [
-    FootingBedding(uid="CFV351AAAA", tag="FB-B-BRICK", host_ref="FT-B-BRICK",
-                   undercut=inch(2), geotextile=False, drain_tile=False,
-                   cast_foam_in_aggregate=True),
-]
+# `VENEER_PLINTH` and `VENEER_PLINTH_BEDDING` are still imported by name in
+# plan/manifest.py's element list; both are now empty, which keeps that list honest about
+# what this file used to publish rather than silently dropping a name.
+VENEER_PLINTH: list[Footing] = []
+VENEER_PLINTH_BEDDING: list[FootingBedding] = []
 
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
 #

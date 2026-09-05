@@ -70,7 +70,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # `prices.toml` therefore prices `CATLIN_STAIRWELL_PARTITION_4H` at zero and says why:
     # those sticks are already in `[framing]`. That is the one row in this table which is
     # not a pour, and it is the reason the material set below gained "spf".
-    assert len({tag for row in rows for tag in row["tags"]}) == 38
+    # **39 later the same day**: W-SG-BRKBM, the veneer's grade beam, on its own
+    # `SG_VENEER_BEAM_14` — the court's 12" pour plus the 2" XPS isolation board that keeps
+    # W-B-BRICK's cold out of FT-B-S2/S3. The board is NOT in this table (it is an
+    # INSULATION layer and this one partitions on STRUCTURE); it bills as `xps:2.0` through
+    # `takeoff/envelope.py`, which is the whole reason the break was authored as a Layer.
+    assert len({tag for row in rows for tag in row["tags"]}) == 39
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -135,14 +140,20 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     assert row["assembly"] == "BASEMENT_BRICK_VENEER"
     assert row["tags"] == ["W-B-BRICK"]
     assert float(row["volume_cuft"]) > 0
-    # The row is the wall's whole net face, no more and no less: 19'-2" x 8'-6 7/16" gross,
+    # The row is the wall's whole net face, no more and no less: 18'-8" x 8'-6 7/16" gross,
     # less the two reveals (5'-0" x 78" and 14" x 20"). 133.2 until 2026-08-23, when the
     # wythe's base rose 2 9/16" with the footing toe it bears on — its head is still 0'-0",
     # so the wall simply got that much shorter. The window was 132 before 2026-08-21, when
     # both reveals were taken down 6" at the head — a reminder that this bound moves whenever
     # the reveals or the wall's extent do. The face itself did NOT move on 2026-09-04: only
-    # the number of rows it is split across did, which is why the bound is unchanged.
-    assert 127 < float(row["net_area_sqft"]) < 133
+    # the number of rows it is split across did.
+    #
+    # ** 6" SHORTER SINCE 2026-09-05, AND THE 6" WAS NEVER BUILDABLE. ** N-B-BRICK-E was on
+    # W-SG-E1's AXIS at 28'-0", which was harmless while the wythe stood north of that wall's
+    # north end. Moving the veneer south for its 6" cavity walked its east 6" INSIDE the
+    # retaining wall — 4.25 SF of brick billed into solid concrete, at 0 FAIL. The node is on
+    # the court's clear face at 27'-6" now, so this bound drops with it.
+    assert 122 < float(row["net_area_sqft"]) < 128
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

@@ -80,8 +80,11 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     tables = {table.title: table for table in build_foundation_schedules(catlin_model)}
     footings = tables["FOOTING / PAD SCHEDULE"]
     assert footings.columns == ("MARK", "TYPE", "SIZE", "BEARING EL.", "QTY", "SUPPORTS")
-    # A house strip footing, not the veneer plinth: FT-B-BRICK also supports a "W-B-" wall
-    # but is 10"x5" cast on the house footing's toe (params/foundations.py).
+    # A house strip footing. The exclusion here used to be FT-B-BRICK, the 10"x5" veneer
+    # plinth cast on the house footing's toe, which also supported a "W-B-" wall; it was
+    # retired 2026-09-05 when W-B-BRICK was re-founded on the spanning beam W-SG-BRKBM, and
+    # a wall that spans has no footing. The filter is kept so the schedule cannot silently
+    # start reporting a non-strip pour against this 20"x8" claim again.
     strip = next(row for row in footings.rows
                  if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
     # -9.79': the strips follow the basement slab, bearing on the deck's flat bearing seat.
