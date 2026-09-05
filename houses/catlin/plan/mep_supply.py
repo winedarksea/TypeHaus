@@ -301,20 +301,21 @@ SUPPLY = [
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
     # 2026-07-30. They bore W-B-STR2 at their own y (cold 20'-3", hot 19'-9") and now stop
-    # at x=14'-0" — **W-B-BA-E, the rotated room's wet wall** — dropping to the pair of
-    # stops at (14', 19'-3") beside the vent riser. Cold carries the WC and lavatory
+    # at x=13'-10 11/16" — **W-B-BA-E, the rotated room's wet wall** — dropping to the pair
+    # of stops at (13'-10 11/16", 19'-3") beside the vent riser. That x is the wall's own,
+    # and the wall slid 1 5/16" west onto the stair well's partition line on 2026-09-05. Cold carries the WC and lavatory
     # (3.25 WSFU), hot the lavatory alone.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
-                  pt(ft(14), ft(20, 3)), pt(ft(14), ft(19, 3)),
-                  pt(ft(14), ft(19, 3))),
+                  pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 3)),
+                  pt(inch(166.6875), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
-                  pt(ft(7, 3.6), ft(19, 9)), pt(ft(14), ft(19, 9)),
-                  pt(ft(14), ft(19, 3)), pt(ft(14), ft(19, 3))),
+                  pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
+                  pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),

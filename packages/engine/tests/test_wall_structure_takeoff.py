@@ -60,12 +60,16 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # did, because the stem drops to a grade beam under the overhead door, and W-GF-S3/N2
     # are a kept fossil of the corner returns (see test_catlin_contract_m3's
     # freestanding-garage test for why un-splitting them is not worth the uid churn).
-    # **38 since 2026-09-05**, and the extra tag is not extra concrete. The basement's
-    # west-side replan split W-B-S1 at x=4'-8" so the rotated sauna's south face could carry
-    # the hot-side liner: W-B-S1B is the east 3'-10" on `SAUNA_LINER_ON_BASEMENT_8`, the
-    # same 8" pour with the liner inboard of it, priced at its parent's own $/cy. The same
-    # replan took two tags OUT of the model's opening count and none out of this one — the
-    # two doors it retired were holes in W-B-CS2 and W-B-CN, and a hole is not a tag.
+    # **38 since 2026-09-05**, and the extra tag is not concrete at all. The morning's
+    # replan split W-B-S1 for the rotated sauna's liner; the afternoon's shrink undid that
+    # split and added W-B-WELL, the stair well's partition, which lands here for a reason
+    # worth knowing: its STRUCTURE layer carries no `FramingSpec` — `resolve/stairs/u_split`
+    # already generates the studs between the two flights and a second set interpenetrates
+    # them — and `frames_as_members` is the same predicate this table partitions on, so a
+    # structure layer that does not frame reads as monolithic and bills its gross volume.
+    # `prices.toml` therefore prices `CATLIN_STAIRWELL_PARTITION_4H` at zero and says why:
+    # those sticks are already in `[framing]`. That is the one row in this table which is
+    # not a pour, and it is the reason the material set below gained "spf".
     assert len({tag for row in rows for tag in row["tags"]}) == 38
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
@@ -80,7 +84,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # catalog, unreferenced and deliberately so (plan/assemblies.py), so a material dropping
     # out of this set is again not evidence it dropped out of the catalog.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick"}
+        "concrete", "retaining-block", "brown-brick", "spf"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is

@@ -300,7 +300,8 @@ def _gypsum_finishes(ctx: CheckContext, room) -> set[str]:
         if assembly is None:
             continue
         for layer in assembly.layers:
-            if layer.function is LayerFunction.FINISH and "gyp" in (
-                    (layer.material_ref or "") + layer.name).lower():
+            if layer.function is LayerFunction.FINISH and any(
+                    token in ((layer.material_ref or "") + layer.name).lower()
+                    for token in ("gyp", "gwb")):
                 found.add(f"{assembly.tag}/{layer.name}")
     return found

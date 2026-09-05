@@ -346,14 +346,17 @@ LAUNDRY_MAIN = [
 # and everything else stays.
 #
 # ** x=2'-11" IS A MEASURED BAY, AND x=2'-9" — THE OBVIOUS GUESS — IS NOT. ** W-B-CW
-# resolves studs at x=0'-8 3/4", 1'-4", 2'-8" and 6'-9", with the door's king at 3'-1 3/4".
-# That leaves a 4 1/4" bay between the 2x8 stud's east face (2'-8 3/4") and the king's west
-# face (3'-1"), and a 14 1/2" bay west of it. 2'-9" lands 1/4" off the stud face, which a
-# 1.05"-OD 3/4" PVC pipe cannot clear — it would be bored half into the stud. 2'-11" sits
-# 1/8" north of the small bay's centre with 2 1/4" to the stud and 2" to the king, so the
-# hole is a hole in sheathing and gypsum and nothing else. The bigger western bay was
-# declined: it costs another 1'-11" of jog each way and puts the line into the lane
-# PR-B-WC2-DRAIN (x=2'-6") and the BATH2 supply pair (x=2'-3") already share.
+# resolves studs at x=0'-8 3/4", 1'-4", 2'-8" and 6'-9", with the door's king at 3'-0 3/4".
+# That leaves a 3 1/4" bay between the 2x8 stud's east face (2'-8 3/4") and the king's west
+# face (3'-0"), and a 14 1/2" bay west of it. 2'-9" lands 1/4" off the stud face, which a
+# 1.05"-OD 3/4" PVC pipe cannot clear — it would be bored half into the stud. 2'-11" leaves
+# 1 3/4" to the stud and **0.475" to the king**, so the hole is a hole in sheathing and
+# gypsum and nothing else — but it is the tightest dimension in this run, and it is what
+# fixed D-B-FURN at 3'-3" rather than the 3'-4" it was authored at before the 2026-09-05 UI
+# drag (this note was struck against that 3'-4", where the king's west face was 3'-1" and
+# the bay 4 1/4"). Any move of that door east re-opens the clash this line was routed around.
+# The bigger western bay was declined: it costs another 1'-11" of jog each way and puts the
+# line into the lane PR-B-WC2-DRAIN (x=2'-6") and the BATH2 supply pair (x=2'-3") share.
 #
 # The one thing in the new lane is PR-B-MAIN-DRAIN, whose 4" trunk runs x=3'-0" between
 # y=16'-6" and y=15'-6". Their plan lanes overlap by about half an inch there and their

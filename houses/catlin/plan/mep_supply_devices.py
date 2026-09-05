@@ -9,6 +9,7 @@ from typehaus import (
     PipeAccessory,
     PipeAccessoryKind,
     ft,
+    inch,
     pt,
 )
 
@@ -45,7 +46,11 @@ SUPPLY_DEVICES_BASEMENT = [
                   serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeAccessory(uid="Q8RJ1ZFN6V", tag="PA-B-BFP-SAUNA",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-SAUNA",
-                  position=pt(ft(17, 4), ft(16)), room="RM-B-SAUNA", accessible=True,
+                  # room= said RM-B-SAUNA until 2026-09-05 and never was: y=16'-0" is six and
+                  # a half feet north of the sauna's north wall, in the workshop's north
+                  # strip. It is on PR-B-CW-SAUNA, which is what `serves` records; the room
+                  # is where the valve hangs, and it hangs here.
+                  position=pt(ft(17, 4), ft(16)), room="RM-B-WORKSHOP", accessible=True,
                   model='1/2" dual-check backflow preventer, testable',
                   serves=("FX-B-SAUNA-SH",)),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —
@@ -168,12 +173,12 @@ SUPPLY_STOPS = [
     # here that is not 3/4". Both arrive in W-B-BA-E's cavity at the same point, which is
     # also PR-B-BATH-VENT's riser station.
     PipeAccessory(uid="F1M7RSZV67", tag="PA-B-BATH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH", position=pt(ft(14), ft(19, 3)),
+                  pipe_ref="PR-B-CW-BATH", position=pt(inch(166.6875), ft(19, 3)),
                   accessible=True, room="RM-B-BATH",
                   model='1/2" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeAccessory(uid="2DD9DEYNAS", tag="PA-B-BATH-STOP-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-HW-BATH", position=pt(ft(14), ft(19, 3)),
+                  pipe_ref="PR-B-HW-BATH", position=pt(inch(166.6875), ft(19, 3)),
                   accessible=True, room="RM-B-BATH",
                   model='1/2" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-B-BATH-LAV",)),

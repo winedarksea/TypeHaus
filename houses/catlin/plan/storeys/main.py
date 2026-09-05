@@ -85,6 +85,15 @@ DOOR_TYPES = [
     # habitable room is reached through it, so R311's door rules have nothing to say.
     DoorType(tag="DT-INT-ACCESS24", width=ft(2), height=ft(3),
              source="2026-08-29 attic 6:12 redesign — M1305.1.3 service access to RM-A-POCKET under the west rake"),
+    # 2'-0" x 6'-0" — the house's second sub-6'-8" leaf, and RM-B-UNDERSTAIR's only option.
+    # The closet is under ST-B2M's arriving flight and its head rakes: 96.7" at the south
+    # end, 0.73" lost per inch north. A door needs its full height plus a ~2" header at its
+    # FAR jamb, and the far jamb of a 24" leaf hung 10" off the corner sits at y=28'-4",
+    # where 76.5" is all there is. A 6'-8" leaf wants 82" and would be six inches into the
+    # stringer; 6'-0" wants 74" and clears by 2 1/2". Same derivation as DT-INT-ACCESS24
+    # above, one storey down.
+    DoorType(tag="DT-INT-CLOSET24", width=ft(2), height=ft(6),
+             source="2026-09-05 under-stair closet — the tallest leaf ST-B2M's raking soffit admits at D-B-CLOSET's far jamb"),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     # RM-M-MUD-CLOSET's bypass pair: no floor for a swing, same reasoning as
@@ -1375,7 +1384,11 @@ FLOOR_HEAT = [
 # shaft reads 7'-2 5/8" rather than 7'-0". The edge lands *exactly* on the layer
 # footprint's east limit, which is what `_opening_edge_has_declared_bearing` tests to a
 # 1e-9 tolerance; if a header ever emits here, back it off to ft(10, 3.25) — 1/8" of deck
-# lip is framing, not a design change. North
+# lip is framing, not a design change. **It emitted on 2026-09-05 and the west edge is
+# ft(10, 3.25) now**: W-B-STR3 was retyped to CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR so its
+# closet face could carry Type X instead of stair plywood (R302.7), and 5/8" board finishes
+# 1/8" shy of where 3/4" ply did. `structural.floor_opening_header` FAILed with a 9'-0" LVL
+# within the same build, as promised. North
 # is y=35'-0" — it *was* W-B-N2's inside face, and the 12" -> 8" thinning moved
 # that face to 35'-4". The opening deliberately stays at 35'-0": a 4" strip of deck against
 # the wall is ordinary framing, and chasing the face would perturb a stair tuned to
@@ -1384,8 +1397,8 @@ FLOOR_HEAT = [
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
-                 outline=(pt(ft(10, 3.375), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
-                          pt(ft(17, 6), ft(35)), pt(ft(10, 3.375), ft(35))),
+                 outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
+                          pt(ft(17, 6), ft(35)), pt(ft(10, 3.25), ft(35))),
                  # The basement walls *under* the two long edges, not the main-storey walls
                  # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
                  # was cut in a concrete pour and nothing framed it, so the wrong tags were

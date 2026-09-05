@@ -1709,6 +1709,11 @@
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 "ED-T-LT-SCONCE-SPOT-WET" = { material = { low = 95, high = 340 }, labour = { low = 60, high = 140 } }  # 1 ea
+# 2026-09-05: the sauna's own fixture. A 125 C sauna listing is a small, specialised market
+# — the article is a shaded IP65 wall luminaire, not a sconce with a gasket — so the material
+# band sits above the ordinary sconce rows despite the lower output. Labour is a plain
+# sconce's: one box, one gasketed backplate, on a liner the joiner has already blocked.
+"ED-T-LT-SAUNA-VT" = { material = { low = 90, high = 300 }, labour = { low = 48, high = 115 } }  # 1 ea
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
 "ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 2 ea
 "ED-T-LT-SHOP4" = { material = { low = 30, high = 80 }, labour = { low = 45, high = 100 } }  # 2 ea
@@ -1974,7 +1979,12 @@
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
 "FURN-M-MUD-BENCH" = { material = { low = 150, high = 700 }, labour = { low = 80, high = 250 } }  # 1 ea
-"FURN-SAUNA-BENCH-2T-102" = { material = { low = 400, high = 1500 }, labour = { low = 150, high = 500 } }  # 1 ea
+"FURN-SAUNA-BENCH-2T-102" = { material = { low = 400, high = 1500 }, labour = { low = 150, high = 500 } }  # 0 ea since 2026-09-05
+# The 5'-0" sibling the shrunk sauna takes instead. Scaled off the 8'-6" row by carcass
+# length (60/102 = 0.59) on the material and held near-flat on the labour: a two-tier bench
+# is mostly setting-out, scribing and two cleat runs whatever its length, so the joiner's
+# day does not shrink with the lumber.
+"FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 1 ea
 "FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
@@ -3005,6 +3015,16 @@
 # of its own — the same all-in rate that already absorbs the 12" wall's rebar absorbs this.
 # SPLIT 2026-08-27. Slightly more material per yard than the 12" row because the vertical #6
 # steel this wall needs and that one did not is inside the same all-in rate.
+# ** ZERO, AND IT IS NOT A PLACEHOLDER. ** W-B-WELL's structure layer carries no
+# `FramingSpec` on purpose (plan/assemblies.py): `resolve/stairs/u_split.py` already
+# generates the 2x4 plates and studs between ST-B2M's two flights, and authoring a second
+# set made twelve `structural.member_interference` FAILs. But `frames_as_members` is the
+# same predicate `wall_structure_takeoff` partitions on, so a structure layer that does not
+# frame reads as MONOLITHIC here and bills its gross volume — 0.47 cy of "placed spf".
+# Those sticks are already in [framing] under `partition:2x4` and `plate:2x4`. Pricing this
+# row at anything but zero buys them twice. The 1/2" board on both faces is real and is
+# bought in [envelope_layers], where every other gwb face in the house is.
+"CATLIN_STAIRWELL_PARTITION_4H" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # W-B-WELL, 0.47 CY — billed in [framing], see above
 "CATLIN_BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-N1/N2/N3, W-B-W1/W2
 # The south wall, split out 2026-08-18 so its full-height parge could stay while the others
 # took an above-grade panel instead. Identical pour, identical formwork, so identical basis —
@@ -3017,14 +3037,10 @@
 # "SAUNA_LINER_ON_BASEMENT_8_GARDEN" = { low = 495, high = 810 } stood here for 1.8 cy.
 # RETIRED 2026-08-28 with the assembly: W-B-S2 is a 7 1/4" curb under a framed wall now and
 # bills on "SAUNA_LINER_ON_GARDEN_CURB" above.
-# ** THE PATTERN CAME BACK ON 2026-09-05 as SAUNA_LINER_ON_BASEMENT_8. ** Rotating the sauna
-# onto the garden wall put its south face on W-B-S1B, the 3'-10" of buried 8" pour west of
-# the excavation, so there is a liner-over-a-full-height-pour segment in this house again.
-# Same reasoning as the retired row and the same rate as its parent CATLIN_BASEMENT_8: this
-# table prices PLACED CONCRETE by the yard, the concrete is the same concrete, and the liner
-# it gained (basswood, furring, foil-polyiso) is already bought by the square foot in
-# [envelope_layers]. The outboard tail is CATLIN_BASEMENT_8's, not the retired garden parge.
-"SAUNA_LINER_ON_BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-S1B, 0.76 CY
+# The pattern came back briefly on 2026-09-05 as "SAUNA_LINER_ON_BASEMENT_8" (W-B-S1B, 0.76
+# CY at the same rate as its parent CATLIN_BASEMENT_8) and left the same day: the sauna shrank
+# east to the excavation edge, its whole south face is the garden curb, and the row is retired
+# with the assembly.
 # Interior bearing walls carry a 10-20% premium over the perimeter: both faces need forming
 # AND stripping in a confined excavation, there is no backfill to brace against, pump and
 # crane access is tighter, and a face that will be visible often gets rubbed or patched.
@@ -3402,6 +3418,12 @@
 # most of it, and it is less than a passage door's because there is no casing to run and no
 # strike to set square. It still clears IRC M1305.1.3's 30" x 22" passageway minimum.
 "DT-INT-ACCESS24" = { material = { low = 60, high = 190 }, labour = { low = 95, high = 200 } }  # 1 ea
+# 2026-09-05: RM-B-UNDERSTAIR's 2'-0" x 6'-0" leaf. Priced off DT-INT-SWING24 above and NOT
+# off DT-INT-ACCESS24 beside it: this is a finished closet door with casing, a passage set
+# and a painted jamb, not a service hatch. The material band comes down ~15% for the 8"
+# it loses in height (a 6'-0" leaf is a stock size at most millwork suppliers, so there is
+# no special-order adder) and the labour does not move — hanging a door is hanging a door.
+"DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 135, high = 280 } }  # 1 ea
 "DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 12 ea — high end is solid-core paint-grade
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 9 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door

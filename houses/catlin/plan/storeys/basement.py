@@ -136,11 +136,18 @@ NODES = [
     # west wall tees into it rather than dying in the middle of the furnace room.
     Node(uid="CBN013AAAA", tag="N-B-STR", position=pt(ft(10), ft(18))),
     # Sauna box, rotated onto the south (garden) wall 2026-09-05: long axis east-west,
-    # x 4'-8"..18'-0", y 0'-0"..9'-5", so it keeps WIN-B-SAUNA and D-B-PATIO's court and is
-    # entered from the gym instead of the workshop. N-B-SA1 (the old NW corner at
-    # 8'-10", 13'-10") is gone with the north-south box.
-    Node(uid="M8TPREXHPB", tag="N-B-SA-SW", position=pt(ft(4, 8), ft(0))),
-    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(4, 8), ft(9, 5))),
+    # y 0'-0"..9'-5", entered from the gym instead of the workshop. N-B-SA1 (the old NW
+    # corner at 8'-10", 13'-10") is gone with the north-south box.
+    #
+    # **Shortened east to x=8'-10" on 2026-09-05 (round two).** The west wall used to stand
+    # at 4'-8", which put the sauna's south face across two substrates — the buried 8" pour
+    # and the garden curb — and forced W-B-S1B, a 3'-10" third segment carrying a liner
+    # variant of the pour whose inboard face did not line up with the curb's. Landing the
+    # west wall on N-B-S1 instead puts the whole south face on W-B-S2, deletes W-B-S1B and
+    # SAUNA_LINER_ON_BASEMENT_8 with it, returns FT-B-S1 to one unsplit strip, and hands the
+    # workshop's west bay the four feet it gives up. The room is ~8'-3 7/8" x 8'-2" clear,
+    # which is what EQ-T-SAUNA-HEATER's 9 kW was always sized for (see electrical.py).
+    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(8, 10), ft(9, 5))),
     Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), ft(9, 5))),
     # Stair-foot bathroom's north partition (2026-07-30), spanning the shaft's full 7'-0"
     # clear width so it tees into both concrete walls' node lines (x=10', x=18"). y=21'-9 3/8"
@@ -159,8 +166,19 @@ NODES = [
     # jamb is still covered by W-B-STR3 + W-B-STR alone and `FO-M-STAIR.bearing_refs`
     # needs no edit.
     Node(uid="YW3E1CW7DT", tag="N-B-BA-NW", position=pt(ft(10), ft(25, 6))),
-    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(ft(14), ft(25, 6))),
-    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(ft(14), ft(18))),
+    #
+    # ** BOTH SLID WEST TO x=13'-10 11/16" ON 2026-09-05 (round two). ** x=14'-0" missed the
+    # stair well's partition centreline by 1 5/16": `resolve/stairs/common.py` reserves
+    # 4 1/2" for that partition at x 13'-8 7/16"..14'-0 15/16" and builds nothing in it, so
+    # the bathroom's east wall and the flight divider were two nearly-collinear planes an
+    # inch and a third apart — the kind of jog that reads as a mistake and is not one on any
+    # drawing. `inch(166.6875)` IS that centreline, so W-B-BA-E, the new W-B-WELL above it
+    # and W-B-CL-N's east end are one continuous plane from y=18' to y=31' now. Everything
+    # that references these two nodes rides along and needed no edit; the wet-wall risers,
+    # which are absolute coordinates and not node references, did (mep_venting.py,
+    # mep_supply.py, mep_supply_devices.py).
+    Node(uid="ZHKG5KWP08", tag="N-B-BA-NE", position=pt(inch(166.6875), ft(25, 6))),
+    Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(166.6875), ft(18))),
     # W-B-CW's east end. The split here is real (W-B-CW3 carries a different assembly from
     # W-B-CW) though the room it was minted for has since moved off this corner; uid
     # unchanged.
@@ -185,6 +203,11 @@ NODES = [
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
     Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
     Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
+    # ** RM-B-UNDERSTAIR's north-east corner, new 2026-09-05. ** x is N-B-BA-NE's — the
+    # stair well's partition centreline — and y=31'-0" is N-B-ESS-SE's, so the closet's north
+    # wall lands exactly on the existing W-B-STR3/W-B-STR split and needs no second node on
+    # the x=10' line. Both new walls (W-B-WELL, W-B-CL-N) meet here.
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.6875), ft(31))),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
@@ -332,31 +355,16 @@ WALLS = [
     # See plan/assemblies.py for the whole stucco retirement.
 
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
-                   end_node="N-B-SA-SW", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
-    # The rotated sauna's south face west of the excavation: 3'-10" of the same buried 8"
-    # pour W-B-S1 carries, with the sauna liner on its inboard face. Split at N-B-SA-SW
-    # because the room stops there and vapour control cannot stop with it — the liner has
-    # to be continuous on all four faces or it is not vapour control, the same reading
-    # that put SAUNA_LINER_ON_GARDEN_CURB on W-B-S2. Everything else is W-B-S1 verbatim:
-    # still 6'-4" of backfill, still the 8' / 7' row, still #5 @ 41" o.c.
-    FoundationWall(uid="9K5B2KFBBY", tag="W-B-S1B", start_node="N-B-SA-SW",
-                   end_node="N-B-S1", assembly="SAUNA_LINER_ON_BASEMENT_8",
-                   interior_room="RM-B-SAUNA",
-                   alignment=face("concrete-ext"),
-                   unbalanced_fill=ft(6, 4),
-                   top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
-                   lateral_support="top_and_bottom",
-                   vertical_reinforcement='#5 @ 41" o.c.',
-                   reinforcement=_B8_STEEL),
-    # The sauna's south side east of the excavation edge. W-B-S1 takes the buried wall's own
-    # stack (W-B-S1B beside it takes the same stack with the liner on it, since the rotation
-    # put the sauna over that segment too) and W-B-S3 the bare curb — but this one is a room
+    # The sauna's south side. Since the 2026-09-05 shrink pulled the sauna's west wall onto
+    # N-B-S1 this is the room's WHOLE south base: W-B-S1 west of it takes the buried wall's
+    # own stack with no liner on it, W-B-S3 east of it the bare curb — but this one is a room
     # face
     # in a WET room, so it carries the liner variant of the curb (SAUNA_LINER_ON_GARDEN_CURB):
     # the vapour control has to be continuous on all four faces or it is not vapour control.
@@ -613,7 +621,8 @@ WALLS = [
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
          end_node="N-B-BA-SE", assembly="INT_2X4_PARTITION", top=ft(8)),
-    # The last 4'-0" of the y=18' line, and the wall the new hall crosses to reach the
+    # The last 4'-1 5/16" of the y=18' line (it was 4'-0" until W-B-BA-E slid west onto the
+    # well-partition line on 2026-09-05), and the wall the new hall crosses to reach the
     # workshop: O-B-HALL is a cased opening (a bare RoughOpening) through it. The wall has
     # to EXIST rather than be left as a gap — delete it and the workshop and the stair
     # loops merge into one room and every room-bounded check downstream reads the wrong
@@ -683,8 +692,12 @@ WALLS = [
     # tag and `_resolve_footing` sets z1 from the wall's own z0, which for a framed wall on
     # the basement storey is the same -109 7/16" the pour authored (params/foundations.py
     # says so in as many words).
+    # ** RETYPED 2026-09-05 to the UNDERSTAIR variant. ** Same uid, same alignment, same
+    # interior_room, same BEARING role — only the finish leaf changes, from 3/4" stair
+    # plywood to 5/8" Type X, because this whole run is RM-B-UNDERSTAIR's west wall now and
+    # R302.7 wants gypsum on the enclosed side. See plan/assemblies.py for what it costs.
     Wall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
-         end_node="N-B-BA-NW", assembly="CATLIN_STAIRWALL_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-BA-NW", assembly="CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
@@ -718,10 +731,10 @@ WALLS = [
     # polyiso) as part of the wall type, not a room finish override; the east wall (the
     # x=18' bearing line) takes it via SAUNA_LINER_INT_2X6_BRG. Both are interior walls, so
     # `interior_room` is what names which side the liner lands on.
-    Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-SA-SW",
+    Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA-NW", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # The sauna's cold north face, x 4'-8"..18'-0" at y=9'-5" since the rotation. It used
+    # The sauna's cold north face, x 8'-10"..18'-0" at y=9'-5" since the shrink. It used
     # to sit on y=13'-10", where W-M-BDN1 at y=13'-4" fell inside `resolve/platform.py`'s
     # same-wall-line tolerance and topped it out at the deck instead of its authored 7'-6";
     # that partition moved to 13'-0" then and this wall is now four feet clear of it.
@@ -733,7 +746,8 @@ WALLS = [
     # INT_2X6_STAGGERED_PLUMBING because it was the one stud cavity a room otherwise walled
     # in concrete had. The rotation gave the room a real east wall (W-B-BA-E below), the
     # vent and both supplies went with it, and what is left here is the bathroom's north
-    # end: a plain 2x4 partition running x 10'-0"..14'-0" at y=25'-6".
+    # end: a plain 2x4 partition running x 10'-0"..13'-10 11/16" at y=25'-6" — 1 5/16"
+    # shorter since W-B-BA-E slid onto the well-partition line.
     # Top=8'-0" is the bearing seat, like every other partition in this basement.
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
          end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION", top=ft(8),
@@ -766,6 +780,40 @@ WALLS = [
     Wall(uid="CBW125AAAA", tag="W-B-ESS-S", start_node="N-B-ESS-SW",
          end_node="N-B-ESS-SE", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
+    # ================= THE STAIR WELL'S PARTITION, AND THE CLOSET UNDER THE FLIGHT
+    # =================
+    #
+    # Two walls that between them turn 17.5 sf of unreachable floor into a closet, and draw
+    # a divider the model has always reserved space for and never built.
+    #
+    # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and emits no
+    # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is
+    # the thing the stair already made room for. CATLIN_STAIRWELL_PARTITION_4H is 4 1/2"
+    # exactly for that reason (plan/assemblies.py). It runs from N-B-BA-NE — the bathroom's
+    # north-east corner, slid onto this same centreline in the same edit — north to
+    # N-B-CL-NE, so W-B-BA-E and this wall are ONE PLANE 13 feet long.
+    #
+    # top=ft(8) is the basement's bearing seat, like every other partition down here. Above
+    # it is FO-M-STAIR's void, not joists, so nothing lands on it and it is not BEARING.
+    # It carries no framing of its own — see the assembly.
+    Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-BA-NE",
+         end_node="N-B-CL-NE", assembly="CATLIN_STAIRWELL_PARTITION_4H", top=ft(8),
+         interior_room="RM-B-UNDERSTAIR"),
+    # The closet's north wall, and **it is NOT full height.** Two things are overhead: the
+    # arriving flight, whose stringer underside on this line is 52.9" over the slab, and —
+    # 1 1/2" of the way along it — `ledger-W-B-STR-landing-rim-upper-0`, the 2x10 carrying
+    # the upper landing off W-B-STR, which occupies 47.6"..56.9". The ledger is the binding
+    # one and it is the lower: **47" tops out 5/8" under it**. (52" would have cleared the
+    # stringer by 1.2" and driven straight into the ledger; the first build said so.)
+    # Ordinary INT_2X4_PARTITION: this wall is not in the stair's reserved slot, nothing
+    # else frames it, and it needs its own studs. It does make N-B-ESS-SE a four-way — a
+    # 2x6 bearing wall running through, a steel-stud ESS partition west, this one east —
+    # and `_through_pair` used to pick its through run alphabetically, which chose the two
+    # partitions and called the node mixed-assembly. That was an engine bug and is fixed in
+    # resolve/topology.py; the node classifies off the bearing pair now.
+    Wall(uid="3GQXK314FQ", tag="W-B-CL-N", start_node="N-B-ESS-SE",
+         end_node="N-B-CL-NE", assembly="INT_2X4_PARTITION", top=inch(47),
+         interior_room="RM-B-UNDERSTAIR"),
     # Glazed forest-green brick veneer over the exposed run of W-B-S2/W-B-S3, where the
     # sunken garden is dug against them — everywhere else this wall is buried and the parge
     # is a below-grade coating nobody sees; here it's the house's most-looked-at elevation.
@@ -794,8 +842,26 @@ WALLS = [
 
 OPENINGS = [
     # Interior circulation
+    # ** 3'-3", AND IT IS THE CONDENSATE LINE THAT SAYS SO (2026-09-05). ** A UI drag had
+    # put this at 1'-6 1/16", and `from_node` offsets the NEAR JAMB, not the centre
+    # (resolve/pipeline.py), so the 32" opening ran x 1'-6 1/16"..4'-2 1/16" — straight
+    # across all three services in this wall. `mep.run_through_opening` FAILed three times:
+    # CD-B-SPA at x=2'-0" and CD-B-DATA-SHOP at x=2'-6", both 61" over the slab, and
+    # PR-B-ERV-COND at x=2'-11", 49 7/8" up.
+    #
+    # None of the three can move. `ConduitRun` carries ONE flat elevation for its whole
+    # polyline (model/mep.py), and CD-B-SPA's south end is pinned at -4'-0" by two concrete
+    # sleeves, so it cannot be lifted over the head. PR-B-ERV-COND is a gravity condensate
+    # drain that already starts at 54" under an 80" head. And the bay west of the opening is
+    # 5 9/16" clear, which takes two of the three and not all three.
+    #
+    # So the door moves. The binding constraint is the condensate line at x=2'-11": the king
+    # stud occupies [jamb-3", jamb-1 1/2"], so a jamb at 3'-3" puts the king's west face at
+    # 3'-0" and clears the pipe's surface by 0.475". Both conduits clear by 6"-12". 1" west
+    # of the 3'-4" this door was authored at before the drag, which is why
+    # mep_drainage.py's routing note (measured against 40") was restruck with it.
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-W1", ft(3, 4))),
+         position=from_node("N-B-W1", ft(3, 3))),
     # Solid-core pair: the play room keeps the 5'-0" double opening, with flush solid
     # leaves instead of full glazing.
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",
@@ -815,18 +881,19 @@ OPENINGS = [
     # It swings east into the gym on the default (left-hand normal of W-B-CS3's
     # north-to-south direction).
     Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-SA-NE", inch(6)), flip_swing=False, flip_hinge=False),
+         position=from_node("N-B-C1", ft(0, 7.8125)), flip_swing=False, flip_hinge=False),
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, and on 2026-09-05 the bathroom
     # rotated north-south, so this leaf (same uid, same 32" width) is on the room's east
     # wall now, opening into the new hall. It still swings OUT — the left-hand normal of
-    # W-B-BA-E's north-to-south direction is east — because an inswing in a 3'-5" room
+    # W-B-BA-E's north-to-south direction is east — because an inswing in a 3'-3 15/16" room
     # sweeps the WC clearance zone, the lavatory and the receptacle, all
-    # `integrity.door_swing_conflict` violations. Jambs at y 23'-2"..20'-6" clear both
-    # fixtures' footprints; hinge at the south jamb, latch at the north where
+    # `integrity.door_swing_conflict` violations. Jambs resolve to y 22'-8 1/16"..20'-0 1/16"
+    # (the "23'-2"..20'-6"" this comment claimed was already 6" out before the wall moved)
+    # and clear both fixtures' footprints; hinge at the south jamb, latch at the north where
     # ED-B-BATH-SW is.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-NE", ft(2, 4)), flip_hinge=True, flip_swing=True),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=True),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post
@@ -836,13 +903,24 @@ OPENINGS = [
     # stands clear of the swing.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-ESS-SW", ft(1, 4))),
+    # ** RM-B-UNDERSTAIR's door, new 2026-09-05 — the thing that makes 17.5 sf of floor
+    # reachable. ** In W-B-STR3, opening WEST into RM-B-FURNACE: W-B-STR3 runs
+    # north-to-south, so its default left-hand normal is east — into 17.5 sf under a rake,
+    # where no leaf can open. `flip_swing` sends it into the mechanical room instead.
+    #
+    # 10" off N-B-BA-NW, not 4", for exactly D-B-ESS's reason two lines up: at 4" the king
+    # stud clashes with the corner post. That puts the leaf at y 26'-4"..28'-4", and the far
+    # jamb is what sizes the door — see DT-INT-CLOSET24 in storeys/main.py. A 6'-8" head
+    # would be six inches inside the stringer.
+    Door(uid="B43P8B5Y0T", tag="D-B-CLOSET", host="W-B-STR3", type_ref="DT-INT-CLOSET24",
+         position=from_node("N-B-BA-NW", inch(10)), flip_swing=True),
     # **The hall's cased opening into the workshop** — a bare `RoughOpening` with no
     # `type_ref`, the `O-S-VANITY` idiom (second.py); `structural.door_module` already
     # reads a typeless RoughOpening as cased. No leaf: this is the through-route from the
     # stair foot to the gym now that both concrete doors are gone, and a door across a
     # circulation spine buys nothing.
-    # 2'-10" and not 3'-0": on a 4'-0" segment with a 5" offset it keeps a king and a jack
-    # at both ends.
+    # 2'-10" and not 3'-0": on a 4'-1 5/16" segment with a 5" offset it keeps a king and a
+    # jack at both ends, with 4 5/16" to spare at the east one.
     RoughOpening(uid="ZCY1ZX6VRA", tag="O-B-HALL", host="W-B-CW2B",
                  position=from_node("N-B-BA-SE", inch(5)),
                  width=ft(2, 10), height=ft(6, 8)),
@@ -852,7 +930,7 @@ OPENINGS = [
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-SA-NE", ft(4, 7))),
+         position=from_node("N-B-SA-NE", ft(4, 3.3125)), flip_hinge=True),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
     # Hosted on the framed wall, and `sill_height` is inch(0) — NOT because the threshold
     # dropped, but because the datum did. A sill is measured from the host wall's own base,
@@ -944,10 +1022,34 @@ ROOMS = [
     # the same closed face and needs no `Room` — it is circulation on the same floor finish
     # with the same occupancy, and a second `Room` here would only split one space in two
     # for every check that walks rooms.
-    Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(ft(14), ft(30)),
+    # **The seed moved into the hall on 2026-09-05.** (14', 30') is inside W-B-WELL's new
+    # footprint (x 13'-8 7/16"..14'-0 15/16"), which would be a guaranteed
+    # `integrity.room_unclaimed`. The hall is the same room, so the seed only has to find it.
+    Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(inch(186), ft(22)),
          occupancy=Occupancy.STAIR, floor_finish="sealed-concrete"),
+    # ** RM-B-UNDERSTAIR, new 2026-09-05: 17.5 sf that nobody could reach until this edit. **
+    # The volume under ST-B2M's arriving flight was inside RM-B-STAIR's polygon, so the model
+    # counted it as floor, but the bathroom is south of it, the well partition east,
+    # W-B-STR3 west and the flight overhead: no way in and no check that could say so,
+    # because the well partition was not a wall. It is one now (W-B-WELL above), the closet's
+    # north wall closes the last side, and D-B-CLOSET in W-B-STR3 opens it to the furnace
+    # room. x 10'-3 3/8"..13'-8 7/16" (3'-5 1/16") by y 25'-8 3/8"..30'-9 3/4" (5'-1 3/8").
+    #
+    # ** DO NOT AUTHOR `ceiling`, AND DO NOT PUT A `Soffit` UNDER THE FLIGHT. ** The real
+    # head here rakes from 96.7" at the south end to 54.8" at the north, and no field in this
+    # engine can say that: `_clear_head` (resolve/rooms.py) reads ceiling decks and
+    # ResolvedSoffits, and a raking stringer is neither, so `clear_height_m` resolves to the
+    # main-floor deck at ~96.9" and passes R305.1.1's 80" basement minimum. An authored 53"
+    # ceiling, or a flat soffit at 53", would be taken VERBATIM and FAIL
+    # `code.R305_ceiling_height` for a storage closet the code does not measure. The rake is
+    # recorded here, in prose, because that is the only place the model can hold it.
+    #
+    # STORAGE is in `_UNDER_STAIR_OCCUPANCIES` (checks/code/mn_residential/illumination.py),
+    # which is what puts this closet in front of R302.7 — see W-B-STR3's retype in WALLS.
+    Room(uid="R58W0DMTJ5", tag="RM-B-UNDERSTAIR", seed=pt(ft(12), ft(28)),
+         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
     # Stair-foot bathroom, ROTATED NORTH-SOUTH 2026-09-05: it runs down the framed stair
-    # wall (x 10'-3 3/8"..13'-8 5/8", y 18'-2 3/8"..25'-3 5/8", 3'-5 1/4" x 7'-1 1/4"
+    # wall (x 10'-3 3/8"..13'-7 5/16", y 18'-2 3/8"..25'-3 5/8", 3'-3 15/16" x 7'-1 1/4"
     # between finish faces) rather than across the shaft's south 3'-0". It is still under
     # ST-B2M's flight (bottom riser at y=26'-0 3/8"), and it is still one fixture at each
     # end so each one's depth runs across the room's short dimension: WC north, vanity
@@ -968,10 +1070,11 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, floor_finish="vinyl-sheet"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(8), ft(14)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
-    # ** ROTATED ONTO THE GARDEN WALL 2026-09-05 ** — long axis east-west, 12'-2" x 8'-2"
-    # clear, entered from the gym. See the header for the whole move.
+    # ** ROTATED ONTO THE GARDEN WALL 2026-09-05, THEN SHORTENED EAST THE SAME DAY ** — long
+    # axis east-west, ~8'-3 7/8" x 8'-2" clear, entered from the gym. See the header for the
+    # whole move and the node block for why the west wall stands on N-B-S1.
     # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_INT_2X6_BRG /
-    # SAUNA_LINER_ON_BASEMENT_8 / SAUNA_LINER_ON_GARDEN_FRAMED /
+    # SAUNA_LINER_ON_GARDEN_FRAMED /
     # SAUNA_LINER_ON_GARDEN_CURB. WET since the south wall got
     # the liner variant and the vapour control became continuous on all four faces; it stays
     # continuous through the east and south framing, which is why the curb under the south
@@ -1052,13 +1155,13 @@ FLOOR_OPENINGS = [
 # closed sides are tile for the full 7'-6" liner height, not basswood T&G — an override
 # that bills as tile and is subtracted from the SAUNA assemblies' sauna-shiplap liner area.
 # W-B-CS runs from N-B-SA-NE (the shower corner) south, so its splash is the first 3';
-# W-B-SA-N runs west→east into that same corner, so its splash is the last 3' of its
-# 13'-0" run.
+# W-B-SA-N runs west→east into that same corner, so its splash is the last 3' of its run —
+# re-datumed to 5'-10" when the 2026-09-05 shrink took that run from 13'-4" to 9'-2".
 PANELING = [
     WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
                  material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-B-CS", start=ft(0), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-SA-N", start=ft(10), length=ft(3)))),
+                        PanelingSpan(wall_ref="W-B-SA-N", start=ft(5, 10), length=ft(3)))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS,

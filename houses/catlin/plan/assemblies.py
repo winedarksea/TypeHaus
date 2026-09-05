@@ -2290,29 +2290,12 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 
 # SAUNA_LINER_ON_BASEMENT_8_GARDEN was RETIRED when W-B-S2 became a 7 1/4" curb under a
 # framed wall, on the grounds that the liner-on-a-full-height-pour case had no instance
-# left in this house. **It has one again**: rotating the sauna onto the garden wall
-# (2026-09-05) put its south face on W-B-S1B, the 3'-10" of buried 8" pour west of the
-# excavation, so the pattern comes back — with CATLIN_BASEMENT_8's outboard tail rather
-# than the retired garden parge, because W-B-S1B's exposure is an ordinary grade line and
-# that is precisely what the `_PROTECTION_PANEL` band is for.
-#
-# The liner is UNBANDED, as it was on the wall this replaces. The pour tops out at the
-# -13 7/16" bearing seat, 8'-0" over the slab, and the sauna ceiling is at 7'-6", so about
-# 1.9 SF of basswood/furring/polyiso is bought for the 6" above it. W-B-CS bands its liner
-# because `resolve/platform.py` grows a framed wall's solid to the main-floor datum and the
-# over-run there is 13 7/16" over 9'-2"; a FoundationWall's top is authored and stops here.
-SAUNA_LINER_ON_BASEMENT_8 = Assembly(
-    tag="SAUNA_LINER_ON_BASEMENT_8",
-    layers=(
-        *_SAUNA_LINER,
-        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
-        *FOUNDATION_WALL_XPS4_OUTBOARD,
-        _PROTECTION_PANEL,
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source="catlin basement south under the rotated sauna (W-B-S1B), 2026-09-05: CATLIN_BASEMENT_8 with the sauna liner carried down its inboard face so the hot side's vapour control is continuous on all four walls",
-)
+# left in this house. It came back briefly as SAUNA_LINER_ON_BASEMENT_8 when the sauna
+# rotated onto the garden wall (2026-09-05) and its south face landed on W-B-S1B, the
+# 3'-10" of buried 8" pour west of the excavation. **Both are retired again**: the same
+# day's shrink pulled the sauna's west wall east to x=8'-10", the excavation edge, so its
+# whole south face is W-B-S2's garden curb and SAUNA_LINER_ON_GARDEN_CURB carries it alone.
+# The pattern is recoverable from git if a future room ever straddles the line again.
 
 # --- the framed walkout at the sunken garden --------------------------------------
 # W-B-S2-FR and W-B-S3-FR: the 19'-2" of south wall that stands *inside* the sunken garden
@@ -2494,6 +2477,40 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
     source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing CATLIN_MUDROOM_INT_2X6_EXPOSED",
 )
 
+# ** The same wall where it forms RM-B-UNDERSTAIR's west side (2026-09-05). ** W-B-STR3's
+# whole 5'-6" run is that closet now, and R302.7 asks for gypsum on the ENCLOSED side of an
+# enclosed usable space under a stair — which is precisely where this family puts its 3/4"
+# cabinet plywood. A layer cannot be added over it: the wall pins `face("stud-ext",
+# offset=inch(-2.625))`, so the ply already finishes at x=123 3/8", which IS the flight's
+# west edge, and another 1/2" goes into the stringer. So the leaf is SWAPPED, not stacked:
+# 5/8" Type X in place of the ply, the stud band held by the alignment, the face retreating
+# to 123 1/4" and clearing the stringer by 1/8".
+#
+# ** What this costs: the exposed-plywood stair face, on this segment only. ** The ply is
+# CATLIN_MUDROOM_INT_2X6_EXPOSED continued up the stairway, and a triangular strip of it —
+# about 32" tall at the landing end, dying out around y=27'-1" where the stringer top meets
+# the wall's 8'-0" head — was visible from the upper flight. A `Wall` carries one leaf, so
+# protecting the closet below and exposing ply above is not authorable. W-B-STR (north of
+# N-B-ESS-SE) and W-B-STR2/W-B-STR3B keep theirs; only the closet's own segment changes.
+#
+# `code.R302_7_under_stair_protection` PASSED before this retype and would pass after
+# reverting it — it screens for gypsum on ANY bounding wall, and the closet has four other
+# gypsum-lined faces. This is the rule read properly rather than the check satisfied.
+CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
+    tag="CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
+    layers=(
+        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", spacing=inch(16),
+                                  sill_gasket=inch(0.0625),
+                                  layout_origin="line")),
+        Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement stair wall where it encloses RM-B-UNDERSTAIR (W-B-STR3), 2026-09-05: CATLIN_STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
+)
+
 # The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf on the closet
 # face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
 # concrete is no longer there to satisfy it. Same `gwb-x` material as INT_ESS_CLOSET_STEEL.
@@ -2512,6 +2529,41 @@ CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: CATLIN_STAIRWALL_INT_2X6_BRG with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
+)
+
+# ** THE U-STAIR'S WELL PARTITION, GIVEN FACES AND A ROOM SIDE 2026-09-05. **
+# `resolve/stairs/common.py` budgets 4 1/2" of cross-run space between the two flights —
+# 3 1/2" of stud and 1/2" of gwb each face — and `resolve/stairs/u_split.py` FRAMES IT: two
+# 2x4 plates and four studs, slab to arrival deck, generated members on ST-B2M and not an
+# authored Wall. What it does not have is faces, a room side, or anything a check can walk,
+# which is why the volume under the arriving flight read as open floor for as long as it did.
+#
+# So W-B-WELL is a Wall that supplies exactly the two things the generated partition lacks,
+# and **its structure layer carries NO FramingSpec on purpose**: `framing/solver.py` skips a
+# layer whose `framing is None`, so the wall emits no stick and does not double the stair's.
+# Author one here and every stud interpenetrates its generated twin —
+# `structural.member_interference` said so, twelve times, on the first build.
+#
+# The thickness IS the specification and must stay locked to `_WELL_PARTITION_THICKNESS_M`:
+# INT_2X4_PARTITION is 4 3/4" on its 5/8" leaves and would push 1/8" into each inner
+# stringer. 1/2" gwb is already precedented in the library.
+#
+# Honest about the seam: the generated partition is inset 0.20 m from each flight end
+# (u_split.py), so it runs y 26'-8 1/4"..30'-4 1/2" while this wall runs 25'-6"..31'-0".
+# About 8" at each end is board with no generated stud behind it. The framer blocks it; the
+# model cannot say so, because the engine owns the sticks and the house owns the faces.
+CATLIN_STAIRWELL_PARTITION_4H = Assembly(
+    tag="CATLIN_STAIRWELL_PARTITION_4H",
+    layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="catlin basement stair-well partition (W-B-WELL), 2026-09-05: 1/2 in. board each face of the 2x4 studs resolve/stairs/u_split.py already generates, so the built thickness is exactly the 4 1/2 in. resolve/stairs/common.py reserves between the flights",
 )
 
 MATERIALS = [
@@ -3697,7 +3749,6 @@ ASSEMBLIES = [
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_INT_2X6_BRG,
-    SAUNA_LINER_ON_BASEMENT_8,
     CATLIN_GARDEN_CURB_6,
     SAUNA_LINER_ON_GARDEN_CURB,
     CATLIN_GARDEN_FRAMED_2X6,
@@ -3708,6 +3759,8 @@ ASSEMBLIES = [
     CATLIN_MUDROOM_INT_2X6_EXPOSED,
     CATLIN_STAIRWALL_INT_2X6_BRG,
     CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX,
+    CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR,
+    CATLIN_STAIRWELL_PARTITION_4H,
     CATLIN_TUBDECK_INT_2X4,
     CATLIN_TUBDECK_INT_PLY_CAP,
 ]

@@ -100,6 +100,10 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # still clears IRC M1305.1.3's 30" x 22" passageway minimum, and no habitable room
         # is reached through it.
         "DT-INT-ACCESS24": (24.0, DoorOperation.SWING, False, False),
+        # RM-B-UNDERSTAIR's closet door, 2026-09-05: 2'-0" x 6'-0", the tallest leaf the
+        # arriving flight's rake admits at its far jamb. A finished door, not a hatch —
+        # ACCESS24 above is the service opening, this one has casing and a passage set.
+        "DT-INT-CLOSET24": (24.0, DoorOperation.SWING, False, False),
     }
     # The house catalog is the union of its own types and the library's shared pocket
     # family, which is what D-M-LAUN is typed from. The two tag sets must stay disjoint —

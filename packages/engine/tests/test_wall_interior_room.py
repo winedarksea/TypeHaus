@@ -23,10 +23,12 @@ from typehaus.quantities import inch
 _LINER_LAYERS = {"shiplap-liner", "liner-furring", "foil-polyiso"}
 # Five since 2026-08-28: the south face is a framed wall (W-B-S2-FR) on a 7 1/4" curb
 # (W-B-S2), and both carry the liner so the hot side's vapour control reaches the slab.
-# W-B-S1B joined on 2026-09-05: the sauna rotated onto the garden wall and its south face
-# now runs 3'-10" west of the excavation, onto the buried 8" pour. This set is a filter —
-# a wall missing from it is silently skipped, not failed — so it has to follow the room.
-_SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S1B", "W-B-S2", "W-B-S2-FR"}
+# W-B-S1B joined on 2026-09-05 when the sauna rotated onto the garden wall and its south
+# face ran 3'-10" west of the excavation onto the buried 8" pour, and left the same day when
+# the room was shortened east to x=8'-10": its whole south face is W-B-S2 again. This set is
+# a filter — a wall missing from it is silently skipped, not failed — so it has to follow
+# the room.
+_SAUNA_WALLS = {"W-B-SA-W", "W-B-SA-N", "W-B-CS", "W-B-S2", "W-B-S2-FR"}
 
 
 def _sauna(catlin_model) -> Polygon:

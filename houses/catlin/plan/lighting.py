@@ -69,14 +69,20 @@ BASEMENT_LIGHTING = [
     # RM-B-WORKSHOP: flat panels, per the notes. A workshop wants flat even light over a
     # bench, not the scalloping a can grid gives. The L-shaped room takes one panel in
     # each leg — the west bay beside the sauna, and the north strip. The west leg narrowed
-    # to 4'-1" clear when the sauna rotated (2026-09-05), so PANEL1 came in to x=2'-6".
+    # to 3'-8 3/16" clear when the sauna rotated (2026-09-05) and PANEL1 came in to x=2'-6";
+    # the same day's shrink took the bay back out to 7'-10 3/16" (x 0'-8"..8'-6 3/16"), so
+    # the panel returns to the bay's centre at x=4'-7 1/8", rounded to 4'-7".
     ElectricalDevice(uid="QTB0005AAA", tag="ED-B-WORKSHOP-PANEL1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 6), ft(6)), type_ref="ED-T-LT-PANEL",
+                     position=pt(ft(4, 7), ft(6)), type_ref="ED-T-LT-PANEL",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5)), rotation=deg(90)),
     ElectricalDevice(uid="QTB0006AAA", tag="ED-B-WORKSHOP-PANEL2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(16)), type_ref="ED-T-LT-PANEL",
+                     # Dragged 2026-09-05 and kept; the metres the UI wrote back are
+                     # restated as inches, rounded to the nearest inch and no further —
+                     # 7'-2" x 15'-11" is where it is, not a round station pretending to be
+                     # one.
+                     position=pt(inch(86), inch(191)), type_ref="ED-T-LT-PANEL",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
@@ -86,6 +92,41 @@ BASEMENT_LIGHTING = [
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(13, 10), ft(17, 8.626)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # RM-B-UNDERSTAIR, the under-stair closet (new 2026-09-05). ED-T-LT-SPOT-SW is the
+    # house's integral-switch down-spot — the same article ED-A-STUDIO-SCONCE uses — which
+    # is the right fixture for a 17.5 sf closet: NEC 210.70 wants a lighting outlet with a
+    # switch you can reach, and `integral_switch=True` is what exempts it from
+    # `electrical.lighting_controls` (lighting_types.py says so on the type).
+    #
+    # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 2'-0" north of D-B-CLOSET's
+    # far jamb, at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
+    # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
+    ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
+                     position=pt(inch(125.25), ft(28, 8)), type_ref="ED-T-LT-SPOT-SW",
+                     circuit="CKT-LT-BACKUP", room="RM-B-UNDERSTAIR", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+
+    # RM-B-SAUNA had NO LIGHT AND NO SWITCH until 2026-09-05 — the room was drawn, rotated
+    # and shrunk without one, and nothing in this engine grades a missing lighting outlet
+    # (there is no NEC 210.70 check), so it stayed invisible. One fixture, in the south-west
+    # corner on the south liner at 5'-0" AFF: diagonally opposite EQ-B-SAUNA-HTR in the
+    # room's coolest corner, west of WIN-B-SAUNA's west jamb (x=12'-1"), and 3'-6" above
+    # FURN-B-SAUNA-BENCH-S's 18" top so nothing shades it.
+    ElectricalDevice(uid="AEYMMW1KDG", tag="ED-B-SAUNA-LT", kind=DeviceKind.LIGHT,
+                     position=pt(inch(120), inch(11.5)), type_ref="ED-T-LT-SAUNA-VT",
+                     circuit="CKT-LT-BACKUP", room="RM-B-SAUNA",
+                     controlled_by=("ED-B-SAUNA-SW",), rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(60))),
+    # The switch is OUTSIDE the hot room — a standard wall switch is rated to 40 C ambient
+    # and a sauna is not, which is why the fixture above needed its own 125 C listing and
+    # why this cannot simply be an integral-switch J1. It sits on W-B-CS's GYM face, 4 3/8"
+    # north of D-B-SAUNA's north jamb (y=5'-1 11/16"), so it is the switch you reach for on
+    # the way in. `room` is RM-B-GYM for the same reason: the device is in the gym.
+    ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
+                     position=pt(inch(220.375), inch(66)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-GYM", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-B-FURNACE: same panels. This is the room the electrician and the plumber work in.
@@ -152,6 +193,15 @@ BASEMENT_LIGHTING = [
     # west wall, under the handrail — it lights the treads without a fixture in anyone's
     # eyeline coming up. 3-way with the main-storey stair switch, because a stair light
     # that can only be switched from the bottom is a stair light nobody uses.
+    #
+    # ** A KNOWN LIMIT, MADE VISIBLE BY THE 2026-09-05 CLOSET AND NOT CAUSED BY IT. **
+    # `LightRun` carries ONE `Mount` elevation for its whole path, and 34" is measured off
+    # the SLAB, not off the raking nosing line — so this tape does not climb with the flight
+    # it lights. From y=25'-8" to y=31'-0" it lies under the arriving flight, which is
+    # RM-B-UNDERSTAIR's volume now; north of that it is under the landing deck. Nothing
+    # grades a light run's room, so no check says this. Fixing it needs a raked run, which
+    # the schema does not have (see `serves_stair` on Railing for the same problem solved
+    # for guards).
     LightRun(uid="QRB0001AAA", tag="LR-B-STAIR-RAIL", type_ref="ED-T-LT-STRIP24",
              path=(pt(ft(10, 4.375), ft(25, 8)), pt(ft(10, 4.375), ft(34, 10))),
              room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU",
@@ -159,23 +209,32 @@ BASEMENT_LIGHTING = [
              mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
     # The AC/DC supply in a ceiling box, at the head of the run it feeds (notes: "Box in
     # ceiling for AC/DC power supply"). 9'-5" of tape at 3 W/ft is 28 W; x1.25 = 35 W, so
-    # the 60 W supply is the catalog size above it.
+    # the 60 W supply is the catalog size above it. **It moved to the lower landing's
+    # ceiling on 2026-09-05**: (11', 26') is inside RM-B-UNDERSTAIR now, and a stair light's
+    # supply does not belong in a locked storage closet.
     ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(11), ft(26)), type_ref="ED-T-LT-PSU-60",
+                     position=pt(ft(15, 6), ft(33)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.CEILING)),
-    # This and LR-B-STAIR-RAIL above hang on W-B-STR3's framed 2x6 face, x=10'-3 3/8", each
-    # 1" proud of it. Both moved north of y=25'-6" on 2026-09-05: south of that line is
-    # RM-B-BATH now, not the stair.
+    # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
+    # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
+    # well onto **W-B-WELL's east face** (x=14'-0 15/16") at the same height, level with the
+    # bathroom's north wall. That is the hall side, which is where you reach for it.
+    # y=25'-10" and not 25'-6": at the bathroom's north wall line the box straddles
+    # W-B-BA-E's own end — that wall's gypsum runs to x=14'-2 1/16", four inches past this
+    # face — and reads as 0.8" buried. Four inches north is clear of it and still the first
+    # thing your hand finds at the stair foot.
     ElectricalDevice(uid="QTB000HAAA", tag="ED-B-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 4.375), ft(26, 6)), type_ref="ED-T-SWITCH",
+                     position=pt(inch(169.9375), ft(25, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # The can lights the HALL now — the 3'-2 5/8" slot between W-B-BA-E and W-B-CN2 that
-    # runs from the stair foot south to O-B-HALL — centred in it at x=15'-9" and level with
-    # D-B-BATH's leaf. x=14' would put it inside W-B-BA-E's studs.
+    # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 that runs from the
+    # stair foot south to O-B-HALL — centred in it and level with D-B-BATH's leaf. The slot
+    # was 3'-2 5/8" and the can sat at x=15'-9"; sliding W-B-BA-E 1 5/16" west onto the well
+    # partition's line (2026-09-05) made it **3'-3 15/16", x 14'-2 1/16"..17'-6"**, whose
+    # centre is x=15'-10". x=14' would still put the can inside W-B-BA-E's studs.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 9), ft(23, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(inch(190), ft(23, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -190,8 +249,12 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-BATH",
                      controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # x follows W-B-BA-E: the wall slid 1 5/16" west on 2026-09-05 and the switch went with
+    # it, back onto the new finish face at 13'-7 5/16". Left where it was it stood 1 5/16"
+    # inside the studs — `test_wall_mounted_devices_resolve_against_a_wall_face` caught it,
+    # and no `haus check` rule does.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(163.625), ft(24, 2)), type_ref="ED-T-SWITCH",
+                     position=pt(inch(162.3125), ft(24, 2)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-BATH", rotation=deg(270),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

@@ -269,13 +269,14 @@ VENT_BRANCHES_BASEMENT = [
     # which is the room's one wet wall and the only 5 1/2" cavity it has. Both fixtures name
     # it in `wall_ref`, and `mep.vent_reachability` reads that field rather than geometry.
     #
-    # The riser stands at (14', 19'-3"), between the two fixtures and 15" clear of N-B-STR
+    # The riser stands at (13'-10 11/16", 19'-3"), between the two fixtures, 15" clear of
+    # N-B-STR
     # and 2'-6" clear of N-B-BA-W, so the leg west at the same y bores W-B-STR2 mid-panel
     # rather than at a node the wall tees into. Trap arms measured to it: 5'-3" from the
     # water closet's flange and 2'-1" from the lavatory's trap, against Table 1002.2's
     # 6'-0" for 3" and 3'-6" for 1 1/2".
     PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(14), ft(19, 3)), pt(ft(14), ft(19, 3)),
+            path=(pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3)),
                   pt(ft(7), ft(19, 3)), pt(ft(7), ft(34, 6)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), material="pvc",

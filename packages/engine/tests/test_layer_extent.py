@@ -47,11 +47,10 @@ def test_the_coating_band_runs_from_six_inches_under_grade_to_the_wall_top(catli
 # siblings, a curb below and a stud wall above) are inside the court, where the XPS sits in
 # W-B-BRICK's ventilated cavity and buys no skin at all.
 _SOUTH_BANDED = {
+    # W-B-S1B, the 3'-10" the 2026-09-05 replan split off W-B-S1 for the rotated sauna's
+    # south face, held the same band for one afternoon and went away with the shrink that
+    # put the whole room on the garden curb. Two entries again, and never three for long.
     "W-B-S1": "CATLIN_BASEMENT_8",
-    # The 3'-10" the 2026-09-05 replan split off W-B-S1 so the rotated sauna's south face
-    # could carry the hot-side liner. Same pour, same exposure, same band — the liner is
-    # inboard of the concrete and changes nothing outboard of it.
-    "W-B-S1B": "SAUNA_LINER_ON_BASEMENT_8",
     "W-B-S4": "CATLIN_BASEMENT_8",
 }
 _SOUTH_COURT = {
@@ -192,26 +191,21 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 
     parts = {p.Name: p for p in model.by_type("IfcBuildingElementPart")}
     assert f"W-B-N1:{_PANEL}" in parts
-    # Only the south segments outside the excavation get the band: W-B-S1, W-B-S1B and
-    # W-B-S4 are backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band.
-    # The four inside the court are not — their XPS is in W-B-BRICK's ventilated cavity —
-    # and they carry no skin at all, so there is nothing for the exporter to aggregate.
-    #
-    # W-B-S1B is the 3'-10" the 2026-09-05 replan split off W-B-S1 so the rotated sauna's
-    # south face could carry the hot-side liner (SAUNA_LINER_ON_BASEMENT_8). It is the same
-    # pour with the same outboard tail, so it bands exactly as its parent does — the band is
-    # a property of the exposure, not of the room behind it.
+    # Only the south segments outside the excavation get the band: W-B-S1 and W-B-S4 are
+    # backfilled 6'-4" with 2'-2 9/16" out of the ground, which is a grade band. The four
+    # inside the court are not — their XPS is in W-B-BRICK's ventilated cavity — and they
+    # carry no skin at all, so there is nothing for the exporter to aggregate. (W-B-S1B was
+    # a third for one afternoon on 2026-09-05; the sauna shrink took it back.)
     south_banded = {name for name in parts
                     if name.startswith("W-B-S") and name.endswith(_PANEL)}
-    assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S1B:{_PANEL}", f"W-B-S4:{_PANEL}"}
+    assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}"}
     # The sauna's south liner is the other banded stack in the house, and it exports the
     # same way: three parts stopping at the room's 7'-6" ceiling, not at the wall's top.
     # W-B-S2-FR's south face is a framed wall on a curb; the curb's own liner is unbanded
-    # (it runs the curb's full 7 1/4"), and so is W-B-S1B's (an 8'-0" pour whose liner runs
-    # the whole height, 6" past the ceiling) — so only the framed wall's three layers are
-    # partial and only they aggregate.
+    # (it runs the curb's full 7 1/4"), so only the framed wall's three layers are partial
+    # and only they aggregate.
     assert {n for n in parts if n.startswith("W-B-S")} == {
-        f"W-B-S1:{_PANEL}", f"W-B-S1B:{_PANEL}", f"W-B-S4:{_PANEL}",
+        f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}",
         "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
 
     part = parts[f"W-B-N1:{_PANEL}"]

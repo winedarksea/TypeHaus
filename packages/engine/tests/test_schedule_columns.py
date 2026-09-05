@@ -122,21 +122,24 @@ def test_a_table_is_never_split_across_columns():
 def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
     """S-100 must print bigger than the 3/32" the single stack forced it down to.
 
-    ** ARCH D WENT 3/16" -> 1/8" ON 2026-09-05, AND THE MARGIN IT SPENT WAS 0.18". ** The
-    basement's west-side replan minted one new foundation assembly
-    (``SAUNA_LINER_ON_BASEMENT_8``, the sauna's liner over the buried south pour), which is
-    one more row in the FOUNDATION WALL SCHEDULE. That column already carried all three
+    ** ARCH D WENT 3/16" -> 1/8" AND BACK ON 2026-09-05, AND THE MARGIN IS 0.18". ** The
+    basement's west-side replan minted one new foundation assembly that morning
+    (``SAUNA_LINER_ON_BASEMENT_8``, the sauna's liner over the buried south pour), which was
+    one more row in the FOUNDATION WALL SCHEDULE. That column already carries all three
     schedules — the reflow puts them there because the sheet has no width left to open a
-    fourth column with, the plan being 37'-8" wide — so one row is 29.6 drawing-inches on
-    the tallest column, the scene went 1412" -> 1442" tall, and 3/16" needed 1424".
+    fourth column with, the plan being 37'-8" wide — so one row is 29.6 drawing-inches on the
+    tallest column, the scene went 1412" -> 1442" tall, and 3/16" needed 1424". The
+    afternoon's shrink pulled the sauna onto the garden curb, deleted that assembly, and
+    handed the scale back.
 
-    Re-pinned rather than loosened: 1/8" = 1'-0" is an ordinary architectural plan scale on
-    a 24x36 sheet and the reflow is still doing its job — the single-column stack this test
-    was written against printed at 3/32", the bottom of the ladder. What would be a real
-    regression is falling back to that, so the assertion is exact at both papers.
+    ** THIS SHEET IS ONE FOUNDATION-SCHEDULE ROW FROM STEPPING DOWN AGAIN, AND THE ROW NEED
+    NOT BE CONCRETE. ** The margin at 3/16" is 0.18" of scene height against a row's 29.6".
+    The two partitions the same replan added (W-B-WELL, W-B-CL-N) did not cost it — a framed
+    wall on the slab is not in the FOUNDATION WALL SCHEDULE — but the next `FoundationWall`
+    assembly tag anywhere in this house will be.
     """
     scene = build_foundation_plan(catlin_model)
-    assert frame_for_scene(scene, ARCH_D).scale_label == "1/8\" = 1'-0\""
+    assert frame_for_scene(scene, ARCH_D).scale_label == "3/16\" = 1'-0\""
     assert frame_for_scene(scene, LEDGER).scale_label == "1/16\" = 1'-0\""
 
 

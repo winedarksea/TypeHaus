@@ -347,7 +347,18 @@ def _opposite(a: tuple[float, float], b: tuple[float, float]) -> bool:
     return abs(_cross(a, b)) <= _COLLINEAR_CROSS_TOLERANCE and _dot(a, b) < 0.0
 
 
-def _through_pair(incidents: list[JunctionIncident]) -> tuple[int, int] | None:
+def _through_pair(incidents: list[JunctionIncident],
+                  plan: PlanModel | None = None) -> tuple[int, int] | None:
+    """The opposed pair that runs THROUGH a node, the rest being branches on it.
+
+    A four-way node offers two opposed pairs and only one of them is usually the through
+    run: the one whose bearing element is continuous. Prefer that pair before falling back
+    on the tag order, or a node where a bearing wall runs through and two partitions tee
+    onto it from opposite sides gets classified off whichever partition happens to sort
+    first — which then reads as a mixed-assembly junction because a steel-stud partition and
+    a wood one are not one continuous element. (catlin's N-B-ESS-SE, 2026-09-05.) The tag
+    order stays as the tie-break so the choice is still deterministic.
+    """
     pairs = [
         (i, j) for i in range(len(incidents)) for j in range(i + 1, len(incidents))
         if _opposite(incidents[i].direction, incidents[j].direction)
@@ -355,6 +366,8 @@ def _through_pair(incidents: list[JunctionIncident]) -> tuple[int, int] | None:
     if not pairs:
         return None
     return min(pairs, key=lambda pair: (
+        0 if plan is not None and _through_continuous(
+            plan, [incidents[pair[0]], incidents[pair[1]]]) else 1,
         incidents[pair[0]].wall_tag, incidents[pair[1]].wall_tag
     ))
 
@@ -481,7 +494,7 @@ def _classify_tier(plan: PlanModel, node_tag: str, storey_tag: str,
                    incidents: list[JunctionIncident]) -> ResolvedJunction:
     """Classify one bearing tier of a plan node into a resolved junction record."""
     count = len(incidents)
-    pair = _through_pair(incidents)
+    pair = _through_pair(incidents, plan)
     if count == 1:
         kind = "open_end"
     elif count == 2:

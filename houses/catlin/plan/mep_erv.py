@@ -462,7 +462,8 @@ DUCTS_ERV_BASEMENT = [
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             design_cfm=210),
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
-            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(10, 6.6)), pt(ft(18, 10.4), ft(10, 6.6))),
+            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(10, 6.6)), pt(ft(19), ft(10, 6.6)),
+                  pt(ft(19), ft(13))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=18),
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
@@ -471,7 +472,7 @@ DUCTS_ERV_BASEMENT = [
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=30),
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), inch(19.5)),
-                  pt(ft(9, 3), inch(19.5)), pt(ft(9, 3), inch(19.5))),
+                  pt(inch(182.75), inch(19.5)), pt(inch(182.75), inch(19.5))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
@@ -490,10 +491,11 @@ DUCTS_ERV_BASEMENT = [
     # EQ-B-SAUNA-HTR when the room rotated), so this radial runs the length of the house in
     # the ceiling chase and then drops seven feet down the wall. The
     # drop is drawn — a repeated plan point at two elevations — which it could not be before
-    # `DuctRun` carried elevations.
+    # `DuctRun` carried elevations. The drop moved 3'-10" east with the west liner on
+    # 2026-09-05: x=64" is workshop floor now, not sauna wall.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(inch(64), ft(28, 6)), pt(inch(64), ft(3, 2)),
-                  pt(inch(64), ft(3, 2))),
+            path=(pt(ft(6, 6), ft(28, 6)), pt(inch(110), ft(28, 6)), pt(inch(110), ft(3, 2)),
+                  pt(inch(110), ft(3, 2))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(4)),
             diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
 ]

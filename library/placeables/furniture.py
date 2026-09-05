@@ -221,6 +221,15 @@ SAUNA_BENCH_TIERED_102 = FurnitureType(
     source=("Law of Löyly two-tier bench: upper 36\", lower 18\" "
             "(notes/sauna_shower_basement_detail.md)"),
 )
+# The 5'-0" sibling, added 2026-09-05 for catlin's shrunk basement sauna: an 8'-4" square
+# room whose north wall gives up its east 3'-0" to a shower pan has 5'-3 15/16" of unbroken
+# face left, and the 8'-6" carcass above does not fit it. Same tiers, same symbol.
+SAUNA_BENCH_TIERED_60 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-2T-60", name="Two-tier sauna bench, 5'-0\"",
+    footprint=(ft(5), ft(3, 6)), height=ft(3), plan_symbol="sauna-bench-tiered",
+    source=("Law of Löyly two-tier bench: upper 36\", lower 18\" "
+            "(notes/sauna_shower_basement_detail.md)"),
+)
 SAUNA_BENCH_54 = FurnitureType(
     tag="FURN-SAUNA-BENCH-54", name='Sauna foot bench, 4\'-6"',
     footprint=(ft(4, 6), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
@@ -258,6 +267,6 @@ STARTER_FURNITURE_TYPES = (
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
-    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_54,
+    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_54,
     WORKBENCH_60, MUDROOM_BENCH_36,
 )

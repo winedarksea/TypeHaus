@@ -231,6 +231,21 @@ LUMINAIRE_TYPES = (
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
                   lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
                   integral_switch=True, load_va=8.0, ports=_POWER_120),
+    # V: the sauna. A hot room needs its own listing — an ordinary damp-rated sconce is
+    # rated to 40 C ambient and the ceiling of a 194 F löyly peak is roughly 90 C — so this
+    # is a purpose-built sauna luminaire: IP65 gasketed, wood-shielded, listed for 125 C.
+    # 2700K and 400 lm on purpose: the room is basswood-lined and read by firelight
+    # standards, and a bright fixture in a small hot room is glare, not light. NOT dimmable
+    # — a sauna luminaire's driver is potted for the temperature, not for a phase dimmer —
+    # and it therefore has no place on ED-T-DIMMER. Mounted low, in the corner diagonally
+    # opposite EQ-B-SAUNA-HTR, which is the coolest air in the room.
+    LuminaireType(tag="ED-T-LT-SAUNA-VT", name="Sauna wall luminaire, IP65, 125 C",
+                  form=LuminaireForm.SCONCE, type_mark="V",
+                  footprint=(inch(5), inch(4)), height=inch(7), plan_symbol="sconce",
+                  lamp="LED integrated", watts=6.0, lumens=400.0, cct_k=2700, cri=90,
+                  damp_rated=True, wet_rated=True, load_va=6.0, ports=_POWER_120,
+                  source="sauna-listed gasketed wall luminaire with a basswood shade, "
+                         "125 C ambient (notes/sauna_basement_wall_detail.md)"),
     LuminaireType(tag="ED-T-LT-SCONCE-STAIR", name="Stair wall sconce",
                   form=LuminaireForm.SCONCE, type_mark="K",
                   footprint=(inch(5), inch(4)), height=inch(8), plan_symbol="sconce",

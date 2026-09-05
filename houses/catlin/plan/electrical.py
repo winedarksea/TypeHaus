@@ -204,8 +204,14 @@ DEVICE_TYPES = (
 )
 
 EQUIPMENT_TYPES = (
-    # RM-B-SAUNA's heated zone is ~513 cf; trade rule ~1kW/45-50cf wants 9-10.5 kW, matching
-    # the detail notes' "240V, 50A GFCI breaker ... max 10.5 kW".
+    # RM-B-SAUNA's heated zone measures 519 cf off the resolved liner faces (8'-3 15/16" x
+    # 8'-3 11/16" x 7'-6"); trade rule ~1kW/45-50cf wants 10.4-11.5 kW... but the room is
+    # BASSWOOD-LINED OVER FOIL-POLYISO ON ALL SIX SURFACES, which is the low end of that
+    # band, and the notes' heater is rated 9 kW to 600 cf. The "~513 cf" this comment used to
+    # claim was right for the sauna as originally drawn and stale for the 745 cf the
+    # 2026-09-05 rotation grew it to; the same day's shrink brought it back to 519. 9 kW
+    # stands, matching the detail notes' "240V, 50A GFCI breaker ... max 10.5 kW", and
+    # CKT-SAUNA (circuits.py, 50A/2p, 9000 VA) does not move.
     EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 9 kW",
                   footprint=(inch(18), inch(16)), height=inch(30),
                   plan_symbol="sauna-heater",
@@ -472,11 +478,13 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(4, 6), ft(35, 3)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # On the sauna's SOUTH liner immediately east of EQ-B-SAUNA-HTR (footprint x
-    # 8'-6"..10'-0"), low like the heater terminals. It followed the heater onto the garden
-    # wall when the room rotated on 2026-09-05.
+    # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR (footprint x
+    # 14'-5 3/4"..15'-11 3/4"), low like the heater terminals. It followed the heater onto
+    # the garden wall when the room rotated on 2026-09-05 and into the south-east corner
+    # when the room shrank; west rather than east because east of the heater is the east
+    # liner, 2" away.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(10, 6), inch(12.5)), type_ref="ED-T-SAUNA-JB",
+                     position=pt(inch(167.75), inch(12.5)), type_ref="ED-T-SAUNA-JB",
                      circuit="CKT-SAUNA", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
@@ -539,18 +547,41 @@ BASEMENT_EQUIPMENT = [
     # Sauna heater: back to the SOUTH liner at x 8'-6"..10'-0", 2" off the face, diagonally
     # opposite the shower pan in the room's north-east corner and 2'-1" west of
     # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.
-    # EQ-B-HP2-GYM (System 2's basement head): high on the centre bearing wall's east face at
-    # x=18', backs west, throws east across the gym. zone_rooms is the whole conditioned
+    # EQ-B-HP2-GYM (System 2's basement head). ** MOVED TO THE GYM'S SOUTH WALL BY A UI DRAG
+    # AND KEPT THERE (2026-09-05). ** The comment here said "high on the centre bearing
+    # wall's east face at x=18', backs west, throws east across the gym" and had been wrong
+    # since the drag: it is on W-B-S3-FR, the framed walkout, at x=26'-5", backing SOUTH and
+    # throwing north across the room. That is the better wall — a 32 7/8" cabinet on the
+    # centre line sat between D-B-GYM and D-B-SAUNA, and the long throw is now across the
+    # room's 18' depth rather than its width. y=10 9/16" puts its back on the wall's gwb
+    # face at 6 5/8"; `rotation=deg(0)` aims the discharge at -y, which is into the wall, so
+    # the louvre throws off the coil face at +y. zone_rooms is the whole conditioned
     # basement (one open volume off the stair) — EQ-B-SAUNA-HTR heats the sauna, not space.
+    #
+    # ** THE HEAD WAS 5 1/2" INTO THE CEILING AND THAT WAS NOT THE DRAG'S DOING. ** The mount
+    # was authored at 7'-6" AFF and this is a 10 53/64" cabinet, so its top stood at 100 13/16"
+    # in a room whose ceiling `code.R305_ceiling_height` measures at 7'-11 3/8" (95 3/8").
+    # It read as "high on the wall" and was through the deck; the same numbers held on the
+    # centre wall it came off, so this is a pre-existing error the move surfaced rather than
+    # caused. 6'-6" puts the top at 88 13/16" with 6 9/16" of clear above it, which is the
+    # air Gree's Multi R32 wall-mount installation wants over the cabinet.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(18, 6), ft(7, 8)), footprint=(inch(32), inch(8)),
-              room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(90),
+              position=pt(inch(317), inch(10.5625)), footprint=(inch(32), inch(8)),
+              room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP2-OD",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH",
+                          "RM-B-UNDERSTAIR")),
+    # ** MOVED TO THE SOUTH-EAST CORNER BY THE 2026-09-05 SHRINK. ** It used to stand at the
+    # west end of the south liner, 2'-1" west of WIN-B-SAUNA's west jamb; that station is
+    # 4" inside the new west wall. East of the window there is 4'-2 3/4" of south liner and
+    # nothing on it — the pan is north of y=6'-1", D-B-SAUNA's leaf is at y 3'-1 11/16"..
+    # 5'-1 11/16", and the foot bench stops at x=9'-11 13/16". So the heater takes x
+    # 14'-5 3/4"..15'-11 3/4", 2" off the liner, diagonally opposite the benches and clear
+    # of every one of them.
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
-              position=pt(ft(9, 3), inch(19.5)), footprint=(inch(18), inch(16)),
+              position=pt(inch(182.75), inch(19.5)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER",
               circuit="CKT-SAUNA"),
 ]
@@ -1458,9 +1489,9 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
                       position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
-    # Host is W-B-S1B since 2026-09-05: the rotated sauna split the south pour at x=4'-8",
-    # and x=8'-6" is in the east segment now. Same hole, same station.
-    SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1B",
+    # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: x=8'-6"
+    # is back in the one south segment. Same hole, same station.
+    SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
                       position=pt(ft(8, 6), ft(0, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),

@@ -50,9 +50,11 @@ TRANSITIONS = (
                continuity=AIR_WATER_THERMAL, star=True,
                unstarred_conditions=(
                    "storey_stack:rim:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
-                   # The stair-wall stack, framed-on-framed. Two keys now, because W-B-STR
-                   # carries the ESS closet's Type X leaf and W-B-STR3 does not.
-                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG",
+                   # The stair-wall stack, framed-on-framed. Two keys, one per leaf: W-B-STR
+                   # carries the ESS closet's Type X and W-B-STR3 the under-stair closet's
+                   # (2026-09-05 — the plain BRG key stopped deriving with that retype, and
+                   # `integrity.condition_star_override` said so within the same build).
+                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
                    "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
                    "storey_stack:rim:CATLIN_INT_2X6_BRG",
                    # W-M-C1 on W-B-CS. This pair IS that one stack; the old key stopped
@@ -171,6 +173,14 @@ TRANSITIONS = (
     # a wall carrying an attic joist field are the point of the sheet.
     Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_PLUMBING",
+               overlay="bearing-partition-opening"),
+    # D-B-CLOSET's opening in W-B-STR3, the under-stair closet's door (2026-09-05). Its own
+    # binding for the same reason as the four above: the tag starts "CATLIN_", so
+    # TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. `bearing-partition-opening`
+    # and not the plain interior sheet — W-B-STR3 is BEARING (FS-M-MECH and FS-M-STAIR both
+    # name it), so the jack/king pack at this door is exactly what the sheet is for.
+    Transition(uid="4K0XA3X1TX", tag="TR-CATLIN-UNDERSTAIR-OPENING",
+               condition_pattern="opening_perimeter:CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
                overlay="bearing-partition-opening"),
     # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline. Same reason as
     # the others: the tag starts "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob

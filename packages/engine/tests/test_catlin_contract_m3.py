@@ -1274,12 +1274,11 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
 # The invariant is one number per group, not a single value: every perimeter assembly
 # carries a 1/2" skin over the XPS on N/E/W (a protection panel), but the south's parge coat
 # is gone, so the two halves differ by exactly that skin.
-# SAUNA_LINER_ON_BASEMENT_8 joined on 2026-09-05: the rotated sauna's south face west of
-# the excavation is the same buried 8" pour with the hot-side liner inboard of it, so it
-# belongs to every assertion below about what is OUTBOARD of the concrete. Leaving it out
-# would have made W-B-S1B invisible to the XPS and skin walks — a check that no-ops.
-_BURIED_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8",
-                      "SAUNA_LINER_ON_BASEMENT_8")
+# SAUNA_LINER_ON_BASEMENT_8 joined on 2026-09-05 and left the same day: the rotation put
+# the sauna's south face on the buried 8" pour west of the excavation, and the shrink that
+# followed pulled the room east to the excavation edge, so the whole south face is the
+# garden curb again and W-B-S1 is one unsplit segment.
+_BURIED_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8")
 _COURT_ASSEMBLIES = ("CATLIN_GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
                      "CATLIN_GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
 _PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
@@ -1296,26 +1295,24 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """
     perimeter = [w for w in catlin_model.walls
                  if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES]
-    # 15: W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so each half could author
+    # 14: W-B-S3 split at the excavation edge into W-B-S3 + W-B-S4 so each half could author
     # the backfill it actually retains; W-B-S2 and W-B-S3 became the 7 1/4" curbs under the
     # framed walkout and took two new assemblies with them, and the framed walls on those
-    # curbs carry the identical outboard tail; and W-B-S1 split at x=4'-8" on 2026-09-05 so
-    # the rotated sauna's south face could carry the liner. The foam is identical on every
-    # one and still 4.05" outboard of whatever is behind it, which is what this test is
-    # actually about.
-    assert len(perimeter) == 15  # same wall line, split at grid/tee/curb/room nodes
-    # Seven south segments: three buried 8" pours (W-B-S1 and W-B-S1B west of the
-    # excavation, W-B-S4 east of it), the two 7 1/4" curbs inside it, and the two framed
-    # walls standing on those curbs. Four of the seven carry the sauna's liner inboard.
+    # curbs carry the identical outboard tail. It was 15 for part of 2026-09-05, while the
+    # rotated sauna's south face ran onto W-B-S1B; the shrink that afternoon put the room
+    # wholly on the curb and W-B-S1 back together. The foam is identical on every one and
+    # still 4.05" outboard of whatever is behind it, which is what this test is about.
+    assert len(perimeter) == 14  # same wall line, split at grid/tee/curb/room nodes
+    # Six south segments: two buried 8" pours (W-B-S1 west of the excavation, W-B-S4 east of
+    # it), the two 7 1/4" curbs inside it, and the two framed walls standing on those curbs.
+    # Three of the six carry the sauna's liner inboard.
     south = [w for w in perimeter if w.tag.startswith("W-B-S")]
-    assert len(south) == 7, sorted(w.tag for w in south)
+    assert len(south) == 6, sorted(w.tag for w in south)
     # The buried pours carry CATLIN_BASEMENT_8 — the same assembly the N/E/W walls carry,
-    # because the same thing is true of them: their exposure is a grade band. W-B-S1B is
-    # that assembly plus the liner, which is why it is a different tag and the same skin.
-    # CATLIN_BASEMENT_8_GARDEN has no instance left.
+    # because the same thing is true of them: their exposure is a grade band. No liner
+    # variant of it has an instance now, and neither does CATLIN_BASEMENT_8_GARDEN.
     assert {w.tag for w in south if w.assembly == "CATLIN_BASEMENT_8"} == {"W-B-S1", "W-B-S4"}
-    assert {w.tag for w in south
-            if w.assembly == "SAUNA_LINER_ON_BASEMENT_8"} == {"W-B-S1B"}
+    assert not [w for w in south if w.assembly.startswith("SAUNA_LINER_ON_BASEMENT_8")]
     assert not [w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
@@ -2450,6 +2447,12 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     #         node, 8" off N-M-E2's. Neither node position is free — one is the bathroom's
     #         east wall, the other the laundry closet's — so this is the honest price of the
     #         tee, and it goes away the day the y=18' partitions join the interior grid.
-    assert orphan_count <= 123, (
+    #   * **124/255 later the same day**, and it is the same two walls moving one each. The
+    #     under-stair replan slid N-B-BA-SE 1 5/16" west onto the stair well's partition
+    #     line, which is W-B-CW2B's start node: `W-M-CLN2` 7 -> 8 for the same reason it went
+    #     0 -> 7 above, the module restarting off a node that moved. `W-M-C1` came back 5 ->
+    #     4 with the sauna shrink, which took the x=18' line's three basement segments back
+    #     to a longer W-B-CS. Neither is re-phasable and neither is framing coming apart.
+    assert orphan_count <= 124, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
         f"(was 123/255); first offenders {orphans[:12]}")

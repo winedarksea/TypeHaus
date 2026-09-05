@@ -539,7 +539,12 @@ REGISTERS_MAIN = [
 # sauna's stale pickup, which is the one wall-mounted terminal in the house (see below).
 REGISTERS_BASEMENT = [
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
-            position=pt(m(5.75157), m(3.2161)), duct_ref="DU-B-ERV-R-GYM",
+            # Dragged north-east on 2026-09-05 and kept, rounded onto (19'-0", 13'-0") —
+            # 1 11/16" and 1/2" off the drag, both genuinely round stations, and near the
+            # centre of the gym's 18' x 18' ceiling instead of tucked into its south-west
+            # corner. DU-B-ERV-R-GYM's last leg follows it: a register and the duct that
+            # feeds it have to end at the same point.
+            position=pt(ft(19), ft(13)), duct_ref="DU-B-ERV-R-GYM",
             type_ref="REG-T-ERV-SUP", design_cfm=18,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
@@ -580,14 +585,14 @@ REGISTERS_BASEMENT = [
     # the room is Occupancy.BATHROOM and its window's openable area (1.2 sf) falls short of
     # R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
-            position=pt(inch(64), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
+            position=pt(inch(110), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
     # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (south liner,
     # plan/electrical.py) at 7'-0" — below the 8' ceiling so the boot doesn't fight the drop
     # ceiling the condensate line already runs above.
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
-            position=pt(ft(9, 3), inch(19.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
+            position=pt(inch(182.75), inch(19.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-ERV-SAUNA-SUP", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike

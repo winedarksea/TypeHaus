@@ -49,7 +49,7 @@ DETAIL_SLICES = [
     Slice(uid="CVD905AAAA", tag="SL-D-SAUNA", kind=SliceKind.DETAIL,
          title="Sauna room section",
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
-         crop=(pt(ft(4), inch(-116)), pt(ft(19, 6), inch(6))),
+         crop=(pt(ft(8), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # Hall bath shower section — cut plane x=5' through FX-S-BATH1-SH so the recess,
     # tile-on-backer sides, glass panel, and (once authorable) the HRV takeoff render.

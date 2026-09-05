@@ -33,29 +33,36 @@ BASEMENT_FIXTURES = (
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
             room="RM-B-SAUNA", position=pt(ft(13, 6), inch(91.1875)),
             wall_ref="W-B-CS"),
-    # **RM-B-BATH rotated north-south on 2026-09-05** and is 3'-5 1/4" x 7'-1 1/4" between
-    # finish faces (x 10'-3 3/8"..13'-8 5/8" off W-B-STR2/W-B-STR3B and W-B-BA-E,
-    # y 18'-2 3/8"..25'-3 5/8" off W-B-CW2 and W-B-BA-N). One fixture at each end again, so
+    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-3 15/16" x 7'-1 1/4"**
+    # between finish faces (x 10'-3 3/8"..13'-7 5/16" off W-B-STR2/W-B-STR3B and W-B-BA-E,
+    # y 18'-2 3/8"..25'-3 5/8" off W-B-CW2 and W-B-BA-N). It lost 1 5/16" of width later the
+    # same day, when W-B-BA-E slid onto the stair well's partition line so the two would be
+    # one plane; nothing in the room had to move for it. One fixture at each end again, so
     # each one's depth runs across the room's short dimension and the door lands between
     # them on the long east wall.
     #
     # `wall_ref` on both is **W-B-BA-E**, the room's one wet wall and its only 5 1/2" stud
     # cavity — venting reads `wall_ref`, not geometry, and W-B-BA-N dropped to a dry 2x4
-    # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at (14', 19'-3").
+    # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at
+    # (13'-10 11/16", 19'-3") — the wall's own x, which moved with it.
     # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
     #
     # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"
     # of furring this room has nowhere to spend). Bowl x 11'-2"..12'-10", y 22'-11 5/8"..
     # 25'-3 5/8"; UPC 402.5's 24" front envelope then reaches y=20'-11 5/8" and its 15"
-    # side clearances land 10'-9"..13'-3", inside the room both ways.
+    # side clearances land 10'-9"..13'-3", inside the room both ways — 5 5/8" of slack at the
+    # west face and 4 5/16" at the east, down from 5 5/8" when the east wall moved.
     Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOILET-STD",
             room="RM-B-BATH", position=pt(ft(12), inch(289.625)),
             wall_ref="W-B-BA-E"),
     # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
     # fixture rather than being retired with the tag.
     #
-    # ** A 36" VANITY ACROSS THE SOUTH END. ** The south wall gives 41.25" of clear run
-    # (x 123.375"..164.625"), which takes a 36" cabinet with 2.6" at each end; 18" deep, not
+    # ** A 36" VANITY ACROSS THE SOUTH END. ** The south wall gives 39.94" of clear run
+    # (x 123.375"..163.303"), which takes a 36" cabinet with 2.625" at the west end and
+    # 1.3125" at the east. **The cabinet stayed at x=12'-0" when the east wall slid west on
+    # 2026-09-05 and was not re-centred**: re-centring drags `drain_position` and
+    # PR-B-BATH-LAV with it for 5/8" of symmetry nobody can see. 18" deep, not
     # 21", is now a straight cost call rather than a door-swing one (see fixture_types.py on
     # the big-box combo depth) — D-B-BATH is on the east wall and swings out.
     #
