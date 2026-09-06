@@ -42,7 +42,8 @@ def test_every_sheet_number_is_well_formed(catlin_model_ro):
 def test_the_type_digit_agrees_with_the_content(catlin_model_ro):
     """The digit is the claim; this is the claim being checked against the sheet."""
     expect = {
-        "G-001": "0", "G-002": "0", "G-004": "0",   # cover, notes, energy — all general
+        # cover, notes, symbols legend, energy — all general information
+        "G-001": "0", "G-002": "0", "G-003": "0", "G-004": "0",
         "C-101": "1", "S-100": "1",                  # site and foundation are plans
         "A-201": "2", "A-202": "2", "A-203": "2", "A-204": "2",
         "A-301": "3",
@@ -86,6 +87,20 @@ def test_the_three_schedules_are_three_sheets(catlin_model_ro):
     assert titles["A-601"] == "Door schedule"
     assert titles["A-602"] == "Window schedule"
     assert titles["A-603"] == "Room finish schedule"
+
+
+def test_the_symbols_legend_explains_what_the_set_draws(catlin_model_ro):
+    """NCS asks for G-003 and the set had none, which made every bubble on it a convention
+    a reader had to already know."""
+    from typehaus.emit.draw.schedules.architectural import ABBREVIATIONS, SYMBOLS
+
+    titles = {s.number: s.title for s in build_sheet_index(catlin_model_ro)}
+    assert "Symbols" in titles["G-003"]
+    drawn = " ".join(meaning for _symbol, meaning in SYMBOLS)
+    for expected in ("keyed note", "detail callout", "braced wall line"):
+        assert expected in drawn, f"G-003 does not explain the {expected}"
+    keys = [key for key, _ in ABBREVIATIONS]
+    assert keys == sorted(keys, key=str.casefold)
 
 
 def test_no_sheet_number_is_used_twice(catlin_model_ro):

@@ -660,3 +660,81 @@ def _write_specifications(pdf, model: ResolvedModel, number: str, name: str,
             fig.text(0.03, 0.06,
                      f"NOTE: {overflow} section(s) did not fit and are NOT printed.",
                      fontsize=7, family="monospace", color="#8a1c1c")
+
+
+#: Abbreviations this set actually prints, and what each expands to. Kept short and
+#: honest — a legend listing forty abbreviations a set never uses trains a reader to skip
+#: it, and the one they needed is then in a list they have learned to ignore.
+ABBREVIATIONS = (
+    ("AFF", "above finished floor"),
+    ("ccSPF", "closed-cell spray polyurethane foam"),
+    ("CDX", "exterior-glue plywood sheathing"),
+    ("CI", "continuous insulation"),
+    ("CLG", "ceiling"),
+    ("EPS / XPS", "expanded / extruded polystyrene"),
+    ("ERV", "energy recovery ventilator"),
+    ("FS", "factor of safety"),
+    ("ICF", "insulating concrete form"),
+    ("KDAT", "kiln-dried after treatment"),
+    ("LVL / LSL", "laminated veneer / laminated strand lumber"),
+    ("o.c.", "on centre"),
+    ("PT", "preservative-treated"),
+    ("PVDF", "polyvinylidene fluoride coating"),
+    ("R.O.", "rough opening"),
+    ("SF / LF / CY", "square foot / lineal foot / cubic yard"),
+    ("TJI", "wood I-joist"),
+    ("WRB", "water-resistive barrier"),
+    ("WSP", "wood structural panel (IRC R602.10.4)"),
+)
+
+#: What each symbol on the sheets means. Every row names a real drawn thing — the modules
+#: are cited so a reader who wants the geometry can find it, and so a symbol that stops
+#: being drawn stops being explained here in the same edit.
+SYMBOLS = (
+    ("D1, W3 in a bubble", "door / window mark, keyed to A-601 and A-602 (plan_marks.py)"),
+    ("K1 in a circle", "keyed note, listed in the notes band on that sheet (keyed_notes.py)"),
+    ("Split circle, 2 over A-502",
+     "detail callout: detail 2, drawn on sheet A-502 (callouts.py)"),
+    ("Heavy red line on S-103", "braced wall line (bracedwallplan.py)"),
+    ("Triangle with a level name", "storey datum, on sections and elevations"),
+    ("Hatched band in a wall cut", "material, named in that sheet's own legend"),
+)
+
+#: The lineweight hierarchy, said once for a reader who is about to trust it. Sourced from
+#: ``emit/draw/lineweights.py`` rather than restated, so the sheet cannot drift from the pen.
+_WEIGHT_ROWS = (
+    ("CUT", "material the cut plane passes through"),
+    ("PROFILE", "material seen beyond the cut; anything drawn in elevation"),
+    ("LIGHT", "surfaces, hatches, layer boundaries, furniture"),
+    ("REFERENCE", "dimensions, leaders, grids, bubbles"),
+    ("FAINT", "construction lines, underlay, centrelines"),
+)
+
+
+def _write_symbols_legend(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """G-003 — symbols, abbreviations and the lineweight hierarchy.
+
+    NCS asks for this sheet and the set had none, which means every bubble on it was a
+    convention a reader had to already know. The abbreviations are the ones this set prints
+    and no more: a legend listing forty a set never uses trains a reader to skip it, and the
+    one they needed is then in a list they have learned to ignore.
+    """
+    from typehaus.emit.draw import lineweights
+
+    with schedule_sheet(pdf, model, number, name, heading_xy=(0.03, 0.945)) as fig:
+        section(fig, 0.03, 0.90, "SYMBOLS", fontsize=8, va="top")
+        _add_table(fig, [list(row) for row in SYMBOLS], ("Symbol", "Meaning"),
+                   bbox=(0.03, 0.62, 0.55, 0.25))
+
+        section(fig, 0.62, 0.90, "LINE WEIGHTS", fontsize=8, va="top")
+        weights = [[name_, f"{getattr(lineweights, name_):.2f} mm", meaning]
+                   for name_, meaning in _WEIGHT_ROWS]
+        _add_table(fig, weights, ("Name", "Width", "What it draws"),
+                   bbox=(0.62, 0.62, 0.35, 0.25))
+
+        section(fig, 0.03, 0.57, "ABBREVIATIONS", fontsize=8, va="top")
+        half = (len(ABBREVIATIONS) + 1) // 2
+        _add_table(fig, [list(row) for row in ABBREVIATIONS[:half]], ("", ""),
+                   bbox=(0.03, 0.13, 0.45, 0.41))
+        _add_table(fig, [list(row) for row in ABBREVIATIONS[half:]], ("", ""),
+                   bbox=(0.52, 0.13, 0.45, 0.41))

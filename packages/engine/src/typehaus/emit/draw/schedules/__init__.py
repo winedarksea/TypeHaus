@@ -15,6 +15,7 @@ from typehaus.emit.draw.schedules.architectural import (
     _write_opening_schedule,
     _write_room_finish_schedule,
     _write_specifications,
+    _write_symbols_legend,
 )
 from typehaus.emit.draw.schedules.compare import write_compare_sheet
 from typehaus.emit.draw.schedules.electrical import (
@@ -43,6 +44,7 @@ __all__ = [
     "_write_luminaire_schedule",
     "_write_opening_schedule",
     "_write_room_finish_schedule",
+    "_write_symbols_legend",
     "_write_specifications",
     "_write_panel_schedule",
     "write_compare_sheet",

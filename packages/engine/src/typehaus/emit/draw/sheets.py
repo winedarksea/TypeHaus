@@ -51,6 +51,7 @@ from typehaus.emit.draw.schedules import (
     _write_panel_schedule,
     _write_room_finish_schedule,
     _write_specifications,
+    _write_symbols_legend,
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
@@ -162,6 +163,8 @@ def build_sheet_index(model: ResolvedModel,
     sheets: list[SheetSpec] = [SheetSpec("G-001", "Cover / code summary")]
     sheets.append(SheetSpec("G-002", "General notes",
                             page=partial(_write_general_notes, profile=profile)))
+    sheets.append(SheetSpec("G-003", "Symbols, abbreviations and line weights",
+                            page=_write_symbols_legend))
     # G-004, not EN-1. "EN" is not an NCS discipline designator at all — the energy summary
     # is general project information and belongs with the code summary it restates.
     sheets.append(SheetSpec("G-004", "Energy compliance summary",
