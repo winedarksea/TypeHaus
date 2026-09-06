@@ -12,6 +12,33 @@ source:
   - sauna_basement_wall_detail.py
 ---
 
+## Sheet notes
+
+### General
+- Sauna liner: 2" foil-faced polyiso, taped seams, over the wall and the ceiling.
+- Liner furring: 1/2" plywood strips. Fasten to framing per IRC Table R703.15.2.
+- Liner finish: 5/4 shiplap, 1" actual, 5-1/2" face over 5" coverage. Basswood, poplar or aspen.
+- Liner stops at the 7'-6" ceiling on the south face; the foundation wall runs 9'-4" to the deck.
+- Sauna floor: 4" slab, R-10 XPS at 25 psi min, 10 mil polyethylene under it.
+- Slab perimeter isolation joint: 1" XPS with 1/2" polyurethane sealant.
+- Base: 6" fiber cement in place of the shiplap and furring, with liquid membrane lapped up it.
+- Foundation: 8" wall, #6 at 48" o.c. vertical, on a 20"x8" footing over 6" washed stone.
+- Sauna heater circuit: 240V, 50A GFCI, 10.5 kW max.
+
+### Keyed
+- [K1] Fasten liner furring to the pour with masonry anchors; verify embedment for the substrate.
+- [K2] Rough jamb 11 1/2" deep at the south wall: 8" pour plus 3 1/2" liner. Deepen the buck to match.
+- [K3] Return the foil facing into the jamb and seal it; do not stop the facing at the opening.
+- [K4] Bench: two tiers at 18" and 36". Heater low, in the airflow path.
+- [K5] Drop framing: 2x4 wall on the concrete carrying a 2x4 ceiling, hung from the I-joists above.
+- [K6] Footing drain: perforated pipe in the washed stone beside the footing, not under it.
+
+### Spec 07 21 00
+- Tape each polyiso seam and each insulation-to-insulation junction at the wall and ceiling corner.
+- Lap the liquid floor membrane up the fiber cement base and flash the polyiso over its top edge.
+- Set light strips under the lower bench lip; keep drivers and transformers out of the hot zone.
+- Run ERV intake low and away from the heater; run exhaust high. Keep plastic vent pipe behind insulation.
+
 # Notes
 
 - Detail intent: schematic section showing sauna interior finishes, slab, and foundation bearing. Confirm all dimensions with the project plan set.
