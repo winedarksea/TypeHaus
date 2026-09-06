@@ -17,6 +17,7 @@ from typehaus import (
     Footing,
     FootingBedding,
     FoundationWall,
+    Length,
     Node,
     Service,
     Slab,
@@ -121,11 +122,37 @@ _HOUSE_WALL_TAGS = (
 # insulated form and the `SL-SG-FROST-W` wings under the garden slab are for. See the header
 # note on `structural.frost_depth` above.
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
-# The two the veneer stands over — see `_SOUTH_TOE_TRIM`. S1 and S4 are deliberately NOT in
-# it: they carry full 8" basement walls with soil against them, the beam does not reach
-# them, and a 2" jog at each end of the run is a footing step, which is an ordinary thing
-# to build and cheaper than moving two footings that had no reason to move.
+# The two the veneer stands over — see `_SOUTH_TOE_TRIM`. S1 and S4 are not in this set,
+# but they are no longer untrimmed: they take a 6" trim of their own for a different
+# reason, immediately below. A jog between the two trims is a footing step, which is an
+# ordinary thing to build.
 _TOE_TRIMMED = {"W-B-S2", "W-B-S3"}
+# ** S1 AND S4 ARE TRIMMED TOO NOW, AND BY 6" (2026-09-05). **
+# The rationale block above is kept because its reasoning about the BEAM is still right; its
+# conclusion about these two is not, and this is why.
+#
+# The sunken garden's side walls run north to the house across a 2" XPS board since this
+# date (params/sunken_garden._y_wall_end), ending on -6 3/16". FT-SG-W1/E1 are hosted
+# (``Footing.under``) so they come with the wall — and an untrimmed 20" strip on the wall
+# axis puts FT-B-S1/FT-B-S4's south face on -10", which would have left the two footings
+# lapping by nearly 4" of solid concrete. Nothing grades that: ``concrete_interference``
+# sees isolated pours only.
+#
+# 6", not the beam's 2", because the board has to be a board at footing level as well as at
+# stem level: -4" leaves the full 2" between the strips, so DW-SG-W1/E1-FOAM and the stem
+# blocks above them are one continuous plane instead of a nominal one buried in a pour.
+#
+# It is free structurally, and in the same direction the 2" trim already argued for: these
+# two carry an 8" wall standing at y = 0..8", so a strip centred on y = 0 threw a 10" toe
+# south under a load whose centre is at +4". At -4"..+16" the toes are 4" and 8" — the
+# eccentricity halves and changes sign, and all 20" of bearing is still under the wall.
+#
+# Two things fall out of it that were wrong before and are not any more. FT-B-S1's south
+# 2" used to lap SG_VENEER_BEAM_14's `xps-break` at -10"..-8" over the 10" the beam
+# oversails it (x 8'-0"..8'-10"); at -4" it does not, and FT-B-S4 — which now reaches west
+# to 27'-2" and would have picked up the identical lap — never gets it.
+_GARDEN_END_TOE_TRIM = inch(6)
+_GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S4"}
 
 # ** THE FOUR GARDEN-FACE STRIPS ARE SHIFTED 2" OFF THE WALL AXIS, AND IT COSTS NOTHING. **
 # `offset` moves the strip square to its wall without changing its width, so all 20" of
@@ -141,10 +168,21 @@ _TOE_TRIMMED = {"W-B-S2", "W-B-S3"}
 # The sign is the resolver's own left-hand normal off `start_node -> end_node`, NOT a
 # compass direction — `test_catlin_contract_m3` pins the resulting face at y = -8".
 _SOUTH_TOE_TRIM = inch(2)
+
+
+def _toe_offset(tag: str) -> Length | None:
+    """How far this strip's centre sits north of its wall axis — see the two blocks above."""
+    if tag in _GARDEN_END_TRIMMED:
+        return _GARDEN_END_TOE_TRIM
+    if tag in _TOE_TRIMMED:
+        return _SOUTH_TOE_TRIM
+    return None
+
+
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
-            offset=_SOUTH_TOE_TRIM if t in _TOE_TRIMMED else None,
+            offset=_toe_offset(t),
             assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "CATLIN_FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]

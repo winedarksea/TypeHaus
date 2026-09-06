@@ -93,6 +93,17 @@ class SunkenGardenSpec:
     clear_length_ft: float = 28.0  # N-S between wall inner faces
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
     gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
+    # The house's real BELOW-GRADE outboard face, on the south run: 0.05" damp-proofing +
+    # 2" + 2" XPS + 0.125" acrylic foundation coating over CATLIN_BASEMENT_8's pour
+    # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
+    # same way `basement_depth_ft` is. `house_ext_layers_in = 5.0` above is the
+    # ABOVE-GRADE stack (polyiso + EPS + furring + cladding) and is why `_y_ax_n` landed
+    # on -10" rather than on this plane: the porch deck clears the cladding, but the court
+    # wall meets the foundation.
+    house_below_grade_face_in: float = 4.175
+    # The XPS isolation board between the court's side walls and the house — same 2" and
+    # same 40 psi as SG_VENEER_BEAM_14's `xps-break` and the DW-SG-* footing blocks.
+    closure_break_in: float = 2.0
     wall_thickness_in: float = 12.0  # side + retaining walls
     # The cast column near the porch's front edge: a SHARED bearing, seating both front
     # beams (on `_y_ax_front`) and PT-SG-BF2 (12" further south, on `_y_balcony_front`) on
@@ -362,6 +373,37 @@ _x_ax_e = _x_in_e + _half  # 28.0
 _y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
+# ============================================================================
+# ** THE SIDE WALLS RUN NORTH PAST THE DECK EDGE AND CLOSE THE SLOT (2026-09-05). **
+# ============================================================================
+# `_y_ax_n` is the PORCH's north line, set by the above-grade cladding face. The side walls
+# used to terminate on it, which left a 5.8" x 12" plan slot, ~9 ft tall, between each wall
+# end and the basement wall behind it — full of the 6'-4" of backfill W-B-S1/W-B-S4 retain,
+# with nothing holding it. It sloughed into the court and carried water with it.
+#
+# The walls now run north to the house's own below-grade face less the 2" isolation board.
+# Written as that arithmetic and not as a literal so the board thickness and the face it
+# bears against can never drift apart. -6.175", which is 3.825" more concrete per wall.
+#
+# **`_y_ax_n`, `_y_in_n` and `_y_out_n` DO NOT MOVE.** The porch deck edge, the back beams,
+# the front column and the veneer grade beam all read those, and N-SG-NW/-NE are referenced
+# by nothing but W-SG-W1/W-SG-E1. That is what makes this a surgical node move with no porch
+# blast radius, and it must stay that way.
+#
+# Both nodes keep `open_end=True`: the closure must NOT share a node with a house wall. A
+# shared node is a junction, and the whole point is that these two structures are separately
+# founded and only ever meet through foam — see DW-SG-*-STEM at the bottom of this file.
+#
+# The hosted footings FT-SG-W1/E1 follow the wall (``Footing.under``), so their north ends
+# come with it. FT-B-S1/FT-B-S4 give them the room: those two strips carry a 6" south-toe
+# trim since this change (params/foundations._GARDEN_END_TOE_TRIM), which puts their south
+# face on -4" and leaves the board its full 2" at footing level as well as at stem level.
+# Re-derive both before trusting it: without that trim the house strips reach -10" and the
+# extended garden footings would lap them by nearly 4".
+_y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  # -6.175"
+# The isolation board's own mid-thickness, which is where a `Dowel` wants its position:
+# the foam block resolves CENTRED on it, so this is 1" north of the concrete end face.
+_y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.175"
 # The veneer grade beam's isolation board, and the axis that places it.
 #
 # The beam's CONCRETE north face has to land exactly on `_y_ax_n` (-10"), the line
@@ -631,9 +673,12 @@ _BEAM_TAPE_WIDE = "butyl-tape-beam"
 # Basement: garden retaining walls, footings, back + front columns.
 # ============================================================================
 NODES = [
-    Node(uid="SGN001AAAA", tag="N-SG-NW", position=pt(ft(_x_ax_w), ft(_y_ax_n)),
+    # `_y_wall_end`, NOT `_y_ax_n`: these two run north past the porch's deck line to close
+    # the slot against the house across the 2" board. See `_y_wall_end` above for why they
+    # stay `open_end` and why no porch geometry follows them.
+    Node(uid="SGN001AAAA", tag="N-SG-NW", position=pt(ft(_x_ax_w), ft(_y_wall_end)),
          open_end=True),  # north wall removed — side wall terminates here (freestanding)
-    Node(uid="SGN002AAAA", tag="N-SG-NE", position=pt(ft(_x_ax_e), ft(_y_ax_n)),
+    Node(uid="SGN002AAAA", tag="N-SG-NE", position=pt(ft(_x_ax_e), ft(_y_wall_end)),
          open_end=True),
     Node(uid="SGN003AAAA", tag="N-SG-MW", position=pt(ft(_x_ax_w), ft(_y_ax_mid))),
     Node(uid="SGN004AAAA", tag="N-SG-ME", position=pt(ft(_x_ax_e), ft(_y_ax_mid))),
@@ -2869,14 +2914,68 @@ BALCONY_JOISTS = FloorSystem(
 # exactly instead of standing proud of it into the slab bed.
 _HOUSE_FOOTING_DEPTH_IN = 8.0
 _dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
-_DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n))
+# ** THE BLOCK IS ON THE JOINT PLANE, AND THE OPPOSING FOOTING IS NAMED CORRECTLY. **
+# Both fixed 2026-09-05, on the same pass that extended the walls.
+#
+# The y was `_y_in_n` (-10"), the porch's deck line, with NO house concrete opposite it:
+# FT-B-S1/FT-B-S4's south face stood there too, so the block straddled a butt joint rather
+# than filling one. It is now `_y_closure_break` — the isolation board's own mid-thickness —
+# so this block and the stem block above it are coplanar and read as one continuous 2" board
+# from the house footing's underside to the wall top.
+#
+# And `connects` said "FT-B-S2" on BOTH. FT-B-S2 runs x 8'-10"..18'-0" and faces neither of
+# these: at x 8'-0" the opposing strip is FT-B-S1, at x 28'-0" it is FT-B-S4 (which reaches
+# west to 27'-2" since the framed run was pulled clear of the court — storeys/basement.py).
+# The tag is carried in the tuple now, so a third literal cannot drift from the geometry.
+_DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1"), ("E1", _x_ax_e, "FT-B-S4"))
 DOWELS = [
-    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(y)),
+    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
+          position=pt(ft(x), ft(_y_closure_break)),
           axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,
           count=3, spacing=inch(8),
-          connects=(f"FT-SG-{name}", "FT-B-S2"),
-          foam_thickness=inch(2), foam_height=inch(_HOUSE_FOOTING_DEPTH_IN), foam_psi=40.0)
-    for i, (name, x, y) in enumerate(_DOWEL_AT, start=1)
+          connects=(f"FT-SG-{name}", house_footing),
+          foam_thickness=inch(SPEC.closure_break_in),
+          foam_height=inch(_HOUSE_FOOTING_DEPTH_IN), foam_psi=40.0)
+    for i, (name, x, house_footing) in enumerate(_DOWEL_AT, start=1)
+]
+
+# --- the stem-level board, and the two bars that hold it captive (2026-09-05) ----------
+# The closure's isolation board above the footings. It is a VERTICAL plane on the wall's
+# END face, which `Layer` cannot express — layers run parallel to the axis — so it is
+# modelled the one way this engine resolves a real XPS solid at a joint: as a `Dowel`'s
+# foam block (resolve/accessories._resolve_dowel), 2" thick along the bar axis and
+# `foam_height` tall, centred on `position`.
+#
+# It stacks directly on the footing block declared just above (DW-SG-W1/E1-FOAM), which
+# sits BELOW it in the building: footing block -117 7/16"..-109 7/16",
+# stem block -109 7/16"..0. Together they are ONE continuous board from the house footing's
+# underside to the top of the porch wall, on one plane (-6 3/16"..-4 3/16").
+#
+# ** count=2 @ 6" IS NOT ARBITRARY. ** The block's length along the joint is
+# `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12", i.e. exactly the wall's own
+# thickness, so the foam lands flush with both faces of the 12" pour. The footing rows'
+# `count=3 @ 8"` would resolve to 16 + 5 = 21" and throw 4 1/2" of foam past each face.
+#
+# ** Two GFRP bars is a detail decision, not a rounding. ** They hold the board captive
+# during the pour and give the closure a positive tie into the house wall — without a
+# thermal bridge (fiberglass, not steel) and without a vertical bond, which is the same
+# argument the footing blocks already make. `count=0` is not available: `_resolve_dowel`
+# lays `range(max(count, 1))`. The bars run 24" centred on the board, so ~11" is embedded in
+# the garden stem and ~6 3/4" reaches into the 8" house pour past 4 3/16" of foam and
+# coating — a drilled-and-epoxied dowel across a break, cover 1 1/4" on the far face.
+_STEM_DOWEL_AT = (("W1", _x_ax_w, "W-B-S1"), ("E1", _x_ax_e, "W-B-S4"))
+_stem_height = _porch_top - _wall_bottom
+STEM_DOWELS = [
+    Dowel(uid=uid, tag=f"DW-SG-{name}-STEM",
+          position=pt(ft(x), ft(_y_closure_break)),
+          axis="y", length=inch(24), diameter=inch(0.625),
+          elevation=_wall_bottom + _stem_height / 2.0,
+          count=2, spacing=inch(6),
+          connects=(f"W-SG-{name}", house_wall),
+          foam_thickness=inch(SPEC.closure_break_in),
+          foam_height=_stem_height, foam_psi=40.0)
+    for uid, (name, x, house_wall) in zip(("SGDW03AAAA", "SGDW04AAAA"),
+                                          _STEM_DOWEL_AT, strict=True)
 ]
 
 # ============================================================================
@@ -3308,7 +3407,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
                      GARDEN_LEAD_W, GARDEN_LEAD_E,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
-                     GARDEN_FIELD, *FROST_WINGS, *DOWELS]
+                     GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
 # is the porch deck edge; the house cladding face is at -0'-5". The 5" between them

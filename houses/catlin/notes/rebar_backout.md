@@ -32,9 +32,17 @@ rate.
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
 | foundation wall | #4 | hdg-a767 | 789.3 LF | 527.3 lb | `W-SG-W2/E2/S` horizontal |
-| foundation wall | #5 | hdg-a767 | 208.0 LF | 216.9 lb | the eight 8" basement runs |
-| foundation wall | #6 | hdg-a767 | 690.0 LF | 1,036.4 lb | `W-SG-*` verticals |
-| | | | | **3,992 lb** | **2.00 ton** |
+| foundation wall | #5 | hdg-a767 | 210.0 LF | 219.0 lb | the eight 8" basement runs |
+| foundation wall | #6 | hdg-a767 | 691.9 LF | 1,039.2 lb | `W-SG-*` verticals |
+| | | | | **3,997 lb** | **2.00 ton** |
+
+**Both `foundation wall` rows moved again on 2026-09-05 — the slot closure — and again no
+schedule changed.** `W-B-S4` grew 10" west when the south wall's split came off the retaining
+wall's axis and onto 27'-2" (`storeys/basement.py`, N-B-S3): 10" of `#5 @ 41" o.c.` 8" wall
+where there had been 10" of unreinforced curb, +2.0 LF / +2.1 lb. And `W-SG-W1`/`W-SG-E1` each
+ran 3 13/16" north to close the slot against the house (`params/sunken_garden._y_wall_end`),
+which is 1.9 LF more `#6 @ 38" o.c.` on the two porch side walls, +2.8 lb. Same bars, same
+spacings, more wall — the arithmetic is `area / spacing` in both directions.
 
 **The two `foundation wall` rows have lost 159.4 lb across two moves on 2026-09-05, and no
 schedule changed.** First the three retaining footings rose 9" so their tops could become the

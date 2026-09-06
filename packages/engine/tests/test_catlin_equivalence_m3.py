@@ -112,11 +112,14 @@ DECLARED_DIVERGENCES = {
     "Sunken Garden West Wall (Open Zone)": "porch/balcony redesign (→ contract test)",
     "Sunken Garden East Wall (Porch Box)": "porch/balcony redesign (→ contract test)",
     "Sunken Garden West Wall (Porch Box)": "porch/balcony redesign (→ contract test)",
-    "Sunken Garden Porch North Arch Wall (Lower)": (
-        "the two-tier arch stack became a single 16\" arched front wall with two 8' arches, "
-        "and that wall became PT-SG-FCOL + BM-SG-FRW/FRE on 2026-08-18 — the porch's front "
-        "edge is a column and two beams now, mirroring its back edge"
-    ),
+    # "Sunken Garden Porch North Arch Wall (Lower)" was declared here until 2026-09-05, on
+    # the same reasoning its Upper/South siblings still carry. It is gone because it now
+    # PAIRS: the matcher lands it on `W-B-BRICK`, 64 mm away, which is a fair reading — the
+    # glazed wythe stands on the court's north edge where the lower arch wall stood. What
+    # freed the pairing was the porch side walls running north to close the slot against the
+    # house (params/sunken_garden._y_wall_end), which moved the two candidates that had been
+    # taking the greedy match. A declared divergence that has quietly acquired a counterpart
+    # is exactly what the stale-entry assertion below is for.
     "Sunken Garden Porch South Arch Wall (Upper)": (
         "the two-tier arch stack became a single 16\" arched front wall with two 8' arches, "
         "and that wall became PT-SG-FCOL + BM-SG-FRW/FRE on 2026-08-18 — the porch's front "

@@ -3,70 +3,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **RESOLVED 2026-08-30 — the sunken-garden retaining walls check, and the lever table this
-  entry used to carry is now history.** This item stood **twice** on this list (at FS 0.80
-  and, staler, at FS 0.57) saying the same thing: `W-SG-E2`/`S`/`W2` reached FS 0.73-0.80
-  against sliding where IRC R404.4 requires 1.5, `haus check` exited 1, and `verify.sh`'s
-  0-FAIL contract on catlin was broken. Both copies are collapsed here.
-  - **The fix was the free body, not the base.** Every option the old table priced —
-    rebalance the toe, widen to 9'-0", add a 2'-0" shear key, widen to 11'-0" — was arithmetic
-    on the wrong drawing. These are not three cantilevers; they are three sides of a closed
-    loop, and `W-SG-W2` and `W-SG-E2` face each other across a 19'-0" court and cancel. What
-    was missing was the fourth side. `W-SG-ARCH` is back as a buried 12" x 17 1/2" grade beam
-    — not the retired arch, not its parapet — and `engineering/retaining_system.py` sums the
-    court as ONE free body: **FS 1.58 against 1.50**, graded at at-rest.
-  - **The blocking finding this entry named is fixed, and differently.** It said an eccentric
-    footing was "inexpressible" and a shear key had no field. `Footing.offset` expresses the
-    first; the shear key turned out **unnecessary**. What eccentricity needed was 12" of toe,
-    and it had to go INBOARD because the raised garden's apron measures its 3'-0" clear off
-    these footings' outboard edges — the owner's figure, from the brief. Toe 4'-0" / heel
-    3'-0", outboard edges unmoved to four figures, +2.10 CY.
-  - **And the section, which neither entry had noticed.** The stems were plain concrete at
-    465 psi — which ACI 318 R22.6.3 does not cover *at all* for a wall unsupported at the
-    top. `#6 @ 10" o.c.` now, sized in the note. Fixing sliding alone would have turned the
-    report green over a louder uncomputed failure.
-  - `notes/sunken_garden_court_free_body.md` is the hand-worked oracle. It supersedes the
-    screening note's CONCLUSION and not its arithmetic.
-  - **What is NOT resolved:** §6 of the screening note still holds — `engineering_spec` is
-    unset and these items are **unsealed**. 1.58 against 1.50 is a screening on presumptive
-    values, with no geotechnical report, a soil class from a survey for the wrong county, and
-    **a design that depends on the washed-stone bed being built as specified — 1.13 without
-    it.** MN Rules 1309.0402's **5,000 psi FOOTINGS row** amendment to IRC Table R402.2 is
-    **RESOLVED 2026-09-03**: `ConcreteSpec` gives a pour a place to state its mix, and
-    `CATLIN_BURIED_MIX` states 5,000 psi at w/cm 0.40 for every strip footing.
-
-- **`EQ-S-HP1-AH.zone_rooms` named `RM-A-STUDIO-BATH`, a tag that names no room — RESOLVED
-  2026-08-31 as a typo.** The attic guest bath is `RM-A-STUBATH`, and it is in the zone now.
-  - The two parts of the repo that disagreed: `plan/electrical.py`'s comment above that list
-    (2026-08-29) said all three of the split west loft's rooms are named there because one
-    boot conditions the whole footprint, and that "dropping either from this list would
-    report them as unheated rather than as what they are" — which the typo did, silently.
-    Against it, `tests/test_heating_capacity.py` pinned `RM-A-STUBATH` as **deliberately**
-    unclaimed, arguing it is exhaust-only (`REG-A-STUBATH-EXH`, 20 cfm continuous) and takes
-    make-up air under the door, so a supply boot would short-circuit its own extract.
-  - **The comment won, and the test's argument was about the wrong thing.** It is a true
-    statement about AIR — the bath still has no supply boot and still should not have one —
-    and a false one about the HEATING ZONE, which is what `zone_rooms` is. A 50 sf
-    conditioned room off a conditioned bedroom is inside System 1's zone whether or not it
-    has a terminal of its own, and its load belongs in that zone's block load. The test now
-    says so where it used to argue the opposite.
-  - Three unclaimed rooms left (`RM-B-ESS`, `RM-M-MUD-CLOSET`, `RM-M-PANTRY`), all documented
-    as intentional.
-
-  - **The entry's "and now it would pass" was wrong.** `RM-A-STUBATH` FAILED: its only
-    125 V receptacle, `ED-A-STUBATH-GFCI`, was 44.4" from the lavatory carcass — right room,
-    right height, right circuit, wrong wall. It moved to `W-A-HALL-S`'s south face in the
-    same commit, which then opened a real 210.52(A) gap in `RM-A-STUDIO` (the old position
-    was covering for the studio *through* `W-A-STU-W`) and `ED-A-STUDIO-RC10` closes it.
-  - Both traps the entry names do fire, and the check kills both: `ED-M-BATH2-TUB-RC` on the
-    enclosure gate (a `ResolvedSolid` over it, E3901.1 item 3) and `ED-M-LIVING-RC8` — 16.5"
-    from `FX-M-BATH1-LAV` — on the room gate.
-  - **Still open, and named in the check's docstring:** the model carries no basin extent,
-    so the distance is measured to the whole vanity CARCASS. That is a lower bound on the
-    real 210.52(D) distance, so the rule is permissive; tightening it means a
-    `FixtureType.basin`. The (D)(2) cabinet-face branch reports UNKNOWN for the same kind of
-    reason — it is bounded 12" below the countertop and `FixtureType.height` is the whole
-    assembly, not the deck.
+- **NEC 210.52 receptacle-distance checks measure to the whole vanity carcass, not the basin**
+  (named in the check's docstring). The model carries no basin extent, so the distance is a
+  lower bound on the real 210.52(D) distance — permissive rather than wrong. Tightening it
+  means a `FixtureType.basin`. The (D)(2) cabinet-face branch reports UNKNOWN for the same
+  kind of reason — it is bounded 12" below the countertop and `FixtureType.height` is the
+  whole assembly, not the deck.
 
 - **`Room.clear_face` is not the wall's finish face, and something should say so louder
   (2026-08-29).** It is inset from the wall AXIS by the room's lining, so on RM-M-BATH2's
@@ -94,53 +36,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   limit for this district is. If a limit is close, the levers are the attic's 11' ceiling
   and the 4:12 ridge, not the lift.
 
-- ~~**What braces the porch and balcony east-west, now that the arch is gone?**~~
-  **CLOSED 2026-09-03. The answer is four fixed concrete columns, and every option below
-  lost.** (Raised 2026-08-18; the longest-running item on this list.)
-
-  The balcony's four CORNER pillars are now **12" round reinforced-concrete columns fixed at
-  their bases**, doweled into the wall tops of `W-SG-W1`/`E1`, and those four columns are the
-  entire lateral system in both plan directions. The eight knee braces and both E-W brace
-  rails are **deleted**. The two centre pillars stay wood 6x6 bearing on the porch framing,
-  tied down by an `MSTA12Z` strap and `L50Z` angles (an `ABU66SS`, then a `DTT2Z`, then an
-  inverted `CCQ4.62-5.50SDS` cap that does not physically fit, all on 2026-09-03),
-  leaning columns tied in by the deck diaphragm — which is the one claim here that is still
-  a claim. `houses/catlin/notes/balcony_moment_columns.md` is the design: base moments from
-  wind and from R301.5's guard load, the P-M interaction on the round section worked term by
-  term, slenderness at k = 2.1 against §6.2.5's sway limit, and the class B dowel lap.
-  `structural.lateral_racking` names each column and delegates to `deck_post/<tag>`; both are
-  on the permit checklist as "Freestanding deck lateral resistance".
-
-  **How the three options closed:**
-  - **Extend the knee-brace rule to the centre pillars** — moot. There is no knee brace left
-    to extend, and the members the rule braced against are gone with it.
-  - **A moment base at the four corner pillars (`MPB66Z`)** — **FORECLOSED, on capacity and
-    not on cover.** The cover arithmetic that ran through three section shapes in this entry
-    (16" square, 16" round, 20" round) never got to be the deciding factor: ESR-3050 Table
-    A's wet-service cap is **2,610 lb-ft**, and the guard case alone is **2,502 lb-ft** on
-    one column before any wind, with nothing between them. It also wants 5" of side cover —
-    about 16" of concrete, cast in — which neither a 12" round nor a 12" wall top has. Every
-    number quoted in the struck-through text below is stale twice over: `PT-SG-FCOL` is a
-    **12" round** now, and the four pillars this bullet was written about are the columns.
-  - **An engineer's lateral design** — **still the answer, and now it has something to
-    stamp.** What changed is that the ask is no longer "please design a lateral system": it
-    is "please check and seal `deck_post/PT-SG-B{R,F}{1,3}`", a computed design with a
-    hand-worked oracle beside it. The screening list at §9 of that note is what a reviewer
-    should look at first: base fixity itself (the wall top's own capacity to receive the
-    moment, and the foundation's rotational stiffness), column shear, and the diaphragm claim
-    that delivers storey shear to four corners rather than six posts.
-
-  **The porch's own E-W path was never this question and is now answered by inspection.**
-  `FS-SG-PORCH` lands its four beams in `W-SG-W1`/`E1`, two 12" concrete retaining walls — it
-  is braced by shear walls in both directions. `structural.lateral_racking` skips it
-  explicitly for that reason (`_bears_on_a_wall`), because without the gate its two cast
-  columns would each be reported as "the lateral system", which is a false claim about a real
-  structure.
-
-  **The doctrine at the head of this item held all the way through and is worth keeping:**
-  nothing was authored for the lateral system until it was decided, and what is authored now
-  is a section and a cage with a calculation behind them, not a number invented in the model.
-
 - **Two porch/balcony span knife-edges, written down 2026-08-28.** Neither is a finding
   today and neither had been recorded anywhere before. `structural.deck_beam_span` looks IRC
   Table R507.5(1) up on the **joist** span the beam carries, and the table's rows are
@@ -150,54 +45,19 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     8' row → a 10.25' limit against the four porch beams' 10.00' span. At a joist span of
     8.01' the lookup drops to the 10' row (9.17') and **all four porch beams FAIL by 10"**.
     Deepening the porch, or moving the back-beam line north, is what would do it.
-  - ~~**Balcony: retired, and worth keeping visible.**~~ **OFF THE TABLE 2026-09-03: the
-    three balcony beams are treated GLULAM and have no row in Table R507.5(1) at all.** They
-    are engineered items now (`deck_beam/BM-SG-BL*`, `engineering/glulam_beam.py`, oracled by
-    `notes/balcony_moment_columns.md` §5), graded on NDS bending, shear, bearing and
-    deflection with AWC Table 5.3.1's wet-service factors applied. Bearing governs at under
-    half. A joist-span cliff cannot reach them, because there is no lookup to step.
   The porch half above is unchanged and still live. Anything that changes a PORCH beam
   section has to be re-checked against it. Also in
   `houses/catlin/notes/beam_water_protection.md`.
 
-- ~~**Widen `structural.landing_post_bearing` past stair landings.**~~ **DONE 2026-09-03, by
-  a NEW rule rather than by widening that one.** `structural.deck_post_bearing` delegates to
-  `engineering/post_bearing.py`, which grades every authored `Post` whose `supported_by`
-  names a `FloorSystem` against NDS §3.10 — two limit states per post, the end grain on the
-  joist top and the joists' flat on the beam under them. Oracled by
-  `notes/centre_pillar_bearing.md`, on the mn-2024 permit checklist, `draft`.
+- **Eight heat-pump stand legs on `SL-SG-HPPAD` are ungraded for bearing.** Neither
+  `structural.deck_post_bearing` (scoped to posts on a `FloorSystem`) nor
+  `landing_post_bearing` (scoped to resolver-generated stair landing posts) reaches a post
+  standing on a slab — and their anchors, not their bearing, are what actually governs.
 
-  **The prose in this entry was wrong in a way worth keeping.** It graded the joint against a
-  DRY Fc-perp of 425 psi; the frame is outdoors and NDS Table 4.3.1's `C_M` of 0.67 takes it
-  to **285**. And it divided the balcony six ways where `BM-SG-BLC` runs onto two posts. Both
-  centre pillars were over — `PT-SG-BF2` at **d/c 2.36** — at 0 FAIL. Three plies of sister
-  under each and BF2 onto the front beam axis closed it (0.42 and 0.76), and a 2-3/4"
-  `cantilever_start` running the joists ACROSS the front beam rather than onto its
-  centreline took BF2 the rest of the way to **0.35** without moving the pillar.
-
-  `landing_post_bearing` itself is unchanged and still scoped to resolver-generated stair
-  landing posts; the two rules do not overlap, and `_bearing_element_under` still cannot see
-  a FloorSystem's blocking or its sheet thickness. **What is still open** is the eight
-  heat-pump stand legs: they stand on `SL-SG-HPPAD`, a slab, so neither rule reaches them —
-  and their anchors, not their bearing, are what governs.
-
-- ~~**Verify the PWT treated LVL lead — one phone call.**~~ **ANSWERED 2026-09-03, and the
-  answer was a different product.** `notes/beam_water_protection.md` recorded that the real
-  durability defect in these beams is **fourteen site-built ply seams** that hold water and
-  grit and freeze ~100x/year, and chased an unverified Pro Deck Supply listing for PWT
-  treated LVL. The three BALCONY beams are now **treated SYP structural glulam, 3-1/2" x
-  11-7/8", 24F-V5M1/SP** (Anthony Power Preserved / Boise Cascade, ~$35/LF through
-  Lakeville) — one manufactured member with published engineered values, no ply seam at all,
-  and a stocked product rather than a listing nobody had called about. `BEAM_GLULAM_TREATED`
-  in `plan/assemblies.py`; the material is `glulam-treated` in `library/materials.py`; the
-  design is `notes/balcony_moment_columns.md` §5.
-
-  **Two things this does NOT close.** (a) The **four porch beams** are still 3-ply KDAT 2x12
-  with eight seams between them, taped and capped, and the same trade is available there for
-  the same reasons — it was not taken because nothing about the porch redesign forced the
-  question. (b) The 2026-08-23 note in `params/sunken_garden.py` that says "treated LVL is
-  not a product" was about **Parallam Plus PSL depths** and said nothing about LVL or about
-  glulam; it has been rewritten where it sat, on `SPEC.balcony_beam`.
+- **The four porch beams are still 3-ply KDAT 2x12 with eight ply seams** that hold water and
+  grit and freeze ~100x/year (`notes/beam_water_protection.md`). The balcony beams were moved
+  to treated SYP structural glulam for the same defect; the same trade is available on the
+  porch and hasn't been taken because nothing about the porch redesign forced the question.
 
 - **2D-edit sync — fix design proposed** (investigated 2026-08-02). Root cause confirmed: a
   PatchOp rewrites one constructor; derived data recomputes, authored cross-references
@@ -249,130 +109,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   only panel members left on an exterior wall are the 176 window **bucks** (`6x0.375 panel`,
   560 LF ordered). The item stands, but it is now a ~$300 line, not a ~$1,200 one.
 
-- ~~**The girt bands have no RAKE NAILER at an attic gable.**~~ **DONE 2026-08-30.** One
-  raked `strapping-{band}-rake-{i}` member per band along each gable's raked top, on
-  `FramedMember`'s `z0_end_m`/`z1_end_m`, cut around any opening it crosses, with its own
-  blocks on the stud module (`GirtFrame.rake_blocks` — its own branch, because the field
-  pass pairs the two tiers by a single `z0_m` and a rake has an elevation per station). 12
-  nailers, 160 LF, 114 blocks. The field is held one full board clear of it, which is the
-  same rule that holds a course clear of an opening's head course and which retired the
-  short raked stub the `snap` `bounds` argument existed to paper over.
-
 **Deliberately not done, and why:**
 
-- **Deck post/footing UNKNOWNs (2026-07-26, by design) — MOSTLY CLOSED 2026-08-30, and the
-  "by design" half of this entry was half true.** It read: `deck_post_size` has no R507.4 row
-  for the 12" round column PT-SG-COL, and PT-SG-COL plus the six balcony pillars bear on
-  non-Pad chains so `deck_footing_size` "can't resolve". The first clause is right and
-  permanent — R507.4 tabulates SAWN LUMBER posts and a round cast column will never have a
-  row. **The second was a check bug wearing a design rationale.** The model says exactly what
-  every one of those posts bears on; the check followed one `Post -> Post` link and knew about
-  `Pad` and nothing else, so it reported "does not bear on a resolvable Pad" — a sentence
-  about its own reach — and minted `spread_footing/<post>` items for footings that do not
-  exist. Now:
-  - **six earned N/A** — four balcony corner pillars on `W-SG-W1`/`E1` (foundation walls
-    with their own strip footings), and both centre pillars on `FS-SG-PORCH` (a post on a
-    deck is not a post on the ground; `PT-SG-BF2` was on `PT-SG-FCOL`'s top from 2026-08-29
-    until it came north onto the deck on 2026-09-03). Either way the load leaves through the
-    column beside it, and that column's own item picks up the share —
-    `pier_basis._piers_below` is what makes the promise true, and it did not exist for the
-    deck-borne case until 2026-09-03;
-  - **two PASS** — `spread_footing/PT-SG-COL` and `/PT-SG-FCOL` compute bearing on the belled
-    piers: **1,651 and 1,192 psf** against IBC Table 1806.2's presumptive 2,000 for this
-    site's GM. `engineering/spread_footing.py`, oracled by `notes/sunken_garden_piers.md`.
-    The two swapped places on 2026-09-03: FCOL fell from 1,477 when its column shrank from
-    20" round to 12", and COL rose from 1,245 when `PT-SG-BR2`'s share of the balcony was
-    finally handed to it, and again when that share stopped being a sixth of the deck and
-    became `BM-SG-BLC`'s own reaction. COL is the pier with the least margin in this
-    structure;
-  - **four more, and they are BENDING** — `deck_post/PT-SG-B{R,F}{1,3}`, the balcony's corner
-    columns, graded on base moment rather than on axial load because they are that deck's
-    entire lateral system. `engineering/deck_post.py::_moment_column`, oracled by
-    `notes/balcony_moment_columns.md`. `spread_footing` deliberately declines them
-    (`_Pier.shared_wall_footing`): they stand on a wall's strip footing, which
-    `structural.foundation_unbalanced_fill` already grades as `retaining_wall/<tag>`;
-  - **two more PASS, as of 2026-08-30** — `deck_post/PT-SG-COL` and `/PT-SG-FCOL`. They were
-    UNKNOWN because ACI 318-19 §14.1.5 does not permit a plain concrete COLUMN at any stress
-    and `Post` had no field to state a cage in. **It has one now** (`vertical_reinforcement`,
-    the decision below, answered YES), and the record grades seven limit states: the §22.4.2 axial cap, §10.6.1.1's 1%
-    floor and 8% ceiling, §10.7.3.1(b)'s four-bar minimum, §25.7.2's tie size and spacing,
-    and the §6.6.4.5.4 minimum eccentricity magnified per §6.6.4.5.2. Both piers carry
-    `(4) #5` with #3 ties at 10" — FCOL came down from `(8) #6` at 12" when it shrank to a
-    12" round on 2026-09-03. **The cages are the Code minimum and the axial d/c is 0.056** —
-    the steel is there for creep, shrinkage and the accidental moment, not for strength,
-    which is exactly why it cannot be value-engineered out. `notes/sunken_garden_piers.md`
-    §4 is the oracle.
-  (`deck_beam_span` is green too, and by both routes: two genuine R507.5(1) overspans closed
-  2026-07-31 by going engineered, the porch four pass the table prescriptively, and the
-  balcony three went ENGINEERED on 2026-09-03 when they became glulam — a section the table
-  publishes no row for. `engineering/glulam_beam.py`.)
-- **Spec fiber in concrete almost everywhere. Also galvanized rebar. — LARGELY DONE
-  2026-09-03.** The blocker was never the decision, it was that **the engine had no schema
-  for any of it**: no mix, no exposure class, no cover, no bar coating, no fibre. Every one
-  of those facts lived as English prose inside an `Assembly.source` string where nothing read
-  it, the engine hardcoded one presumptive 3,000 psi for every concrete calc it ran, and
-  cover was *regex-scraped* out of a free-text cage string. `ConcreteSpec` /
-  `FiberSpec` / `ReinforcementSpec` closed that, and the spec change followed on top.
-  - **Fibre**: macro-synthetic house-wide; **micro-MONOFILAMENT PP at ~1.5 lb/cy in
-    `SL-M-DECK`**, which is the interesting half. **Corrected 2026-09-03:** the two were one
-    `CATLIN_INTERIOR_MIX` serving both `SL-M-DECK` and `SL-B-FLOOR`, and the house claimed
-    "fibre replaces the mesh" of both. True of macro (ACI 544.4R); **false of micro-mono**,
-    which targets plastic shrinkage only and carries no post-crack residual — so 14 CY of
-    basement slab had neither mesh nor a fibre doing the mesh's job. Split into
-    `CATLIN_POLISHED_MIX` (micro, the deck) and `CATLIN_INTERIOR_SLAB_MIX` (macro, the slab).
-    Control joints on `SL-B-FLOOR` are still required and are modelled nowhere. `notes/mixed_deck_movement_joint.md` said
-    "no fibres in the mix" and that stands against MACRO fibre (visible at a finished
-    surface) and against steel (it rust-stains). Micro-mono answers a different question —
-    plastic shrinkage in the first hours, a 55-70% reduction, exactly what a thin 4 5/8" cap
-    over EPS is prone to — and what little presents at the surface sits in the paste layer a
-    CREAM polish removes. Confirm the dose against a supplier TDS: 1.5 is the top of the
-    published 0.75-1.5 range.
-  - **Galvanized**: `hdg-a767` on both the buried and the exposed mixes, so every pour that
-    names one gets it. Recorded as a DECISION, not a code requirement — ACI's C1 asks nothing
-    of the bar beyond cover — so nobody later "corrects" a pour that omits it. Interior pours
-    stay black: no chloride, no freeze-thaw, nothing bought.
-  - **3" cover**: taken on the footings, where ACI Table 20.5.1.3.1(a) asks for it anyway
-    and it is free, and **taken on all six sunken-garden stems on 2026-09-03, where it is
-    not** — `d` 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, stem d/c 0.81 -> 0.90.
-    `#6 @ 12"` stops working at 3" cover, so `#6 @ 10"` went from the comfortable choice to
-    the arithmetic minimum; `notes/sunken_garden_court_free_body.md` §6a is the trade, worked
-    by hand. Still NOT taken on the 12" round columns, where it costs 30% of the bar circle
-    and therefore of the moment lever arm — see below.
-  - **Two defects the sweep turned up, both now fixed.** (a) `ReinforcementSpec.cover` was
-    authored on six elements and **read by nothing** — every calc reached for
-    `ConcreteSpec.cover`, so the stems' 2" was inert (masked because the ACI table fallback
-    also returns 2" for a #6) and the basement walls silently took the buried mix's
-    cast-against-earth 3" onto a formed face. `resolve/concrete.cover_for` is the one
-    reduction now, and the schedule outranks the mix because cover belongs to a FACE and a
-    mix is one ticket serving many. (b) **Nothing graded cover against ACI at all** — a 3/4"
-    cover on a footing would have passed every rule in silence. `structural.
-    concrete_cover_meets_minimum` is Table 20.5.1.3.1, with the exposure condition derived
-    from authored classes and never from geometry.
-  - **13 pours that named no assembly now name one** (`CATLIN_PORCH_FOOTING_84`,
-    `CATLIN_PIER_BASE_12`, and `PIER_CONCRETE_12` gaining a real mix): 4 footings, 4
-    breezeway pads, 5 sonotube piers. Before this they had no `structure_material`, so no
-    `ConcreteSpec` could be reached, every calc fell back to the presumptive 3,000 psi, and
-    the durability rule could not see them. `Pad` grew an `assembly` field to make it
-    possible — it had none, in any house. The durability check now grades **80** pours where
-    it graded 67, and the whole estimate impact was **+$4.50** with no quantity change.
-    `PIER_CONCRETE_12`'s prose had specified "4,000 psi ... class F2", and ACI Table
-    19.3.2.1 asks 4,500 psi of class F2: **a mix that did not buy its own class**, invisible
-    while it was a sentence. It now pours from `CATLIN_EXPOSED_MIX`, which also galvanizes
-    its five cages — **every bar in the house is A767 now**, closing the one place a black
-    cage could have been lapped to galvanized steel (a dissimilar-metal couple is a
-    corrosion cell; the standard advice is one material throughout, not detailed isolation).
-  - **Rebar inside the $/cy rates** is no longer "a rate note plus a plan of its own":
-    `takeoff/reinforcement.py` bills the steel by the pound NOW, priced at nothing, so the
-    tonnage can be read before any rate is cut; and `[rebar_inclusive]` makes the standing
-    "cut the rates the same day" condition a hard error instead of a comment.
-    **The back-out gate has been RUN and it says do not cut yet** — 2.09 of ~5 tons,
-    $4,380-5,630 against the register's $10,000-18,000. `notes/rebar_backout.md` is the
-    oracle, §4 names the three modelling gaps that make up the difference (the basement
-    walls' horizontal steel, `GARAGE_ICF_6`'s bar size, `SL-M-DECK`'s cap schedule) and §5
-    is the ordered list of what to author. `tests/test_rebar_backout.py` fails loudly the
-    day the gate opens; `scripts/price_delta.py` is the one-command proof that nothing but
-    the three intended sections moved.
-  - **STILL OPEN**, and each is blocked on something specific:
+- **Deck post/footing and concrete-spec follow-ups still open**, each blocked on something
+  specific:
     - **`SUNKEN_GARDEN_COLUMN_12` still reads the presumptive f'c**, alone now.
       `PIER_CONCRETE_12` was migrated 2026-09-03 and `notes/sunken_garden_piers.md` /
       `notes/breezeway_piers.md` re-oracled with it. The consequence is visible and ugly in
@@ -409,88 +149,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
       the breezeway posts sit on `ABU66SS` standoff bases. What is unaudited is whether EVERY
       wood member bearing on concrete is covered, and `PT-SG-COL`'s grout island is a known
       outstanding follow-up.
-- **DECIDED 2026-08-30: `Post` grew a `vertical_reinforcement` field.** (Raised the same day
-  by the two piers above, and answered the same day.) The alternative — closing both items in
-  `engineering.toml` with the engineer's cage schedule and leaving the model silent — works
-  for the permit and leaves the DRAWINGS unable to say what the columns contain, which is the
-  wrong trade for a field that costs one line. The spec shape deliberately differs from
-  `FoundationWall`'s: a wall's bars are a **spacing** because a wall is billed per foot, a
-  column's are a **count** because ACI bounds the cage by `0.01Ag` and by four bars, and
-  neither question can be asked of a spacing. `deck_post.parse_cage` reads it, and an
-  unreadable string is NO steel, the same conservative contract
-  `retaining_basis.parse_reinforcement` keeps.
-- ~~**FOUND OUT OF SCOPE 2026-08-30: the four breezeway piers are the same defect, unfixed.**~~
-  **DONE 2026-09-03, taking the staged option this entry proposed.** `PR-BW-1..4` are graded
-  now: `deck_post/PR-BW-*` and nothing else — they carry `'(4) #5 vertical, #3 ties @ 10"
-  o.c.'`, ACI's own minimum for a 113.10 in² section, oracled by
-  `houses/catlin/notes/breezeway_piers.md`.
-  1. **The gate widened, and gained a concrete test it never had.** `cast_piers` admits a
-     post on a `Pad`, gated by `assembly_structure_material(...) == "concrete"` — the
-     predicate `checks/structural/uplift_path.py` uses, because `"12 round"` is a SHAPE and a
-     12" round wood column is an ordinary thing. It had no material test at all before, so
-     this closed a latent bug as well. `spread_footing` stays scoped to `Footing`s: a `Pad`
-     **is** an R507.3.1 row and `structural.deck_footing_size` grades it, and two authorities
-     on one number is worse than one.
-  2. **The axial state is INCOMPLETE, and the demand is not faked.** `_Pier.unmodelled_load`
-     derives which beams bear on a pier with no plan area behind them — here `BM-BW-RW/RE`,
-     the breezeway roof, which is neither a `Roof` nor a `FloorSystem` — and
-     `deck_post._detailing_only` grades the six load-independent detailing states in full
-     while OMITTING the §22.4.2 comparison. `deck_post.BASIS_VERSION` 2 → 3. The note's §3
-     carries a bounding estimate (d/c ≈ 0.007 even with 50 psf of snow on the roof) so nobody
-     reads the INCOMPLETE as "the pier might be too small"; the register publishes no ratio,
-     because a bound is not a design. **Closing it is upstream work**: give the roof a
-     modelled area to divide, or have the engineer state the demand.
-  Cost: **+28 lb of steel over 18.92 LF, +$18-36** — this entry's "~+16 lb per pier"
-  overstated it about fourfold (16 lb was the whole of `PT-SG-COL`'s 10.68 LF, not one
-  pier's). `column:PIER_CONCRETE_12` is re-struck and no longer says it is uncounted.
-- **Windows: 4 residual member-interference overlaps** — now **pinned** by
-  `test_catlin_window_member_overlaps_pinned_at_four` (junction clear disabled — the
-  honest metric). Measured composition drifted from this file's memory of 4+4: it is 2 at
-  one T (CSW148's king stud), 1 L corner, 1 vs the stair soffit plate. The T was 6 until
-  2026-08-22, when O-S-VANITY moved off the corner square that the 8" suite sound wall grew
-  the day before — its whole jamb pack had been standing inside it. (Historic: 138 → 8 → 4.)
-
-### Undrawn verticals
-
-`DuctRun` had no elevation field at all, so every vertical leg in the house's air side was
-a plan polyline that teleported between floors, ducts emitted no 3D solids, and the take-off
-billed plan length. It carries per-vertex elevations now, the same field set `PipeRun` has
-had since MEP Phase 2 and solved by the same solver — a riser is a repeated plan point at
-two elevations, which is exactly how a drain drop has always been written.
-
-- **`DU-S-HP-SOUTH`'s rise — CLOSED 2026-08-30, and the reason it stayed open for weeks is
-  worth keeping.** The blocker was never the route: it was that `SF-S-DUCT`'s south end had
-  no lane a branch could leave through, because a 21"-wide air handler filled a 30 3/4" box.
-  That air handler did not exist. `EQ-T-GREE-SLIM24` was an explicit "REPRESENTATIVE
-  PLACEHOLDER … TODO verify datasheet", and the only real 43 3/8" cabinet matching it, Gree's
-  discontinued low-static `DUCT24HP230V1AD`, tops out at 589 cfm against the 750 cfm this
-  whole duct system is sized to — so the packing problem, and the airflow the packing was
-  arranged around, were both artifacts of an unverified type. The real machine
-  (`EQ-T-GREE-DUC24`, 44 1/2 x 29 11/16 x 11 13/16) went into a new wide bulkhead in
-  `RM-S-STUDY2`'s ceiling, `SF-S-HP1`, and `DU-S-HP-SOUTH-RISE` is the vertical: 15" from
-  that box's cavity into the `FS-ATTIC` bay at (23'-0 1/2", 3'-4"). **The lesson generalises:
-  a `# TODO verify datasheet` on a type is not a documentation debt — every clearance, lane
-  and velocity downstream of it is provisional.**
-  - **AND THE RISER STILL DID NOT TOUCH THE MACHINE — closed properly 2026-08-31.** Both its
-    ends sat at x=276.5" while the cabinet's east face was at 269.235": a 7 1/4" gap, in
-    mid-air, with a comment here and in `plan/mep_hvac.py` asserting that "the plenum is
-    fabricated out to x=23'-5 1/2" to catch this take-off". Nothing in the engine can catch
-    that — no check validates that a `DuctRun` endpoint reaches equipment or another run, and
-    `Register.duct_ref` is an unvalidated string — so a branch feeding three registers hung
-    off a sentence for a day. It has a real take-off leg now, running east from the air
-    handler's discharge face. **The same lesson, one level up: closing a TODO about a missing
-    vertical is not the same as closing the connection, and only one of the two was checked.**
-  - Closed with it, the airflow: the trunk carried 750 cfm and this riser 250, and because
-    they joined nothing they SUMMED — 1,000 cfm against a machine that moves 760. The
-    discharge is 750 now, split 500 north up the trunk and 250 east into the riser, and all
-    ten of System 1's supply registers carry a `design_cfm` that sums to it. Nine of the ten
-    had none at all.
-  - Closed with it: `DU-A-HP-STUDY`, which was orphaned, straddled the joist at y=32",
-    overlapped `DU-S-HP-SOUTH` by 4" in a 13 1/2" bay, and ran 6'-8" of bare duct across
-    `RM-A-STUDY`'s finished floor. `REG-A-HP-STUDY` is a straight boot off the branch now.
-  - Closed with it: the return grille sat 1" north of the case, on the same face the supply
-    left from, and `EQ-S-ERV-MIX` injected 100 cfm of -15 F outdoor air downstream of both
-    the coil and the strip heater. Both are on the return side now.
+- **The breezeway piers' axial state is INCOMPLETE, and the demand is not faked.**
+  `_Pier.unmodelled_load` derives which beams bear on a pier with no plan area behind them —
+  here `BM-BW-RW/RE`, the breezeway roof, which is neither a `Roof` nor a `FloorSystem` — and
+  `deck_post._detailing_only` grades the six load-independent detailing states in full while
+  OMITTING the §22.4.2 comparison. The note's §3 carries a bounding estimate (d/c ≈ 0.007
+  even with 50 psf of snow on the roof), so nobody reads the INCOMPLETE as "the pier might be
+  too small"; the register publishes no ratio, because a bound is not a design. **Closing it
+  is upstream work**: give the roof a modelled area to divide, or have the engineer state the
+  demand.
 
 ### Found in passing, 2026-08-30 (System 1's south branch)
 
@@ -549,28 +216,6 @@ two elevations, which is exactly how a drain drop has always been written.
   unreferenced until WP1.4 condition derivation lands (→ 11b §Transitions, decision #37) —
   keep it in place, don't flag it dead.
 
-## Breezeway
-
-- ~~**The 1" fall toward the garage is drawn, not framed**~~ **DONE 2026-09-03, and half of
-  it was WITHDRAWN rather than built.**
-  - **The E-W crown is framed.** `Wedge` is a real element: six tapered 2x4:kdat rips,
-    `WG-BW-R{1..3}{W,E}`, a back-to-back pair on every rafter, 1" at the crown feathering to
-    nothing over a 2'-0" half-span. They are ordered, cut, counted (12 LF, +$32) and cut in
-    section like any other stick. **No sloped-`Beam` schema change was needed** — the
-    deferral's premise was wrong. `FramedMember` already carried `z0_end_m`/`z1_end_m` and
-    `member_box` already built the raked hexahedron; `KneeBrace` was the working precedent
-    for an element that resolves to raked lumber and hosts itself. What was actually missing
-    was one escape hatch, `FramedMember.plan_width_m`: `plan_cross_section_m` classifies
-    flat-vs-on-edge from a member's vertical extent, and a taper is neither.
-  - **The N-S fall is WITHDRAWN, not deferred.** Owner decision 2026-09-02. It was never a
-    roof question: the 1" house-to-garage slope was *walkway* drainage, and the walkway is a
-    composite deck that drains through the 3/16" gaps between its boards. Stated in
-    `PORCH_DECK_COMPOSITE`'s source and in `params/breezeway.py`'s deviation 3. There is no
-    gap field in the model and one would buy nothing.
-  - Two things fell out on the way, both fixed: `cross_section` sent every `"2x4:kdat"` to
-    the 1.5 x 5.5 fallback (a treatment suffix is not a section), and `SL-D-BREEZEWAY`'s crop
-    was cutting off the east half of its own subject.
-
 ## Current Orientation
 
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
@@ -617,52 +262,15 @@ the future.
     `houses/catlin/plan/` should size millwork off `Room.clear_face`.
   - **A floor drain in RM-S-PLANT** (the room should be hoseable): implies a drain line, a
     trap primer — the trap *will* dry — and slope in `FS-SECOND`. See the Questions list.
-  - `SL-SG-DECK` is gone: the aluminium plank is `FS-SG-DECK`'s `subfloor` and bills as
-    182.0 SF in `[sheet_goods]`. The conversion was exact — the balcony joists cantilever 6"
-    and the deleted slab's outline *was* that cantilever.
-  - ~~**`SL-BW-DECK` stays a Slab, and that is the finding.**~~ **DONE 2026-09-03 — the
-    engine can say it now, and the deck is a subfloor.** `FloorSystem.subfloor_outline` is an
-    authored sheet polygon consumed in place of the derived corners: one field, one branch in
-    `resolve/floors.py`, and `deck_voids`, the elevations and the joist solver all untouched.
-    The plank bills 16.4 SF into `[sheet_goods] composite-deck` (164.7 → 181.1 SF) and the
-    `[concrete] slab:PORCH_DECK_COMPOSITE` row is dormant. Three things came with it:
-    - **`sheet_goods_takeoff` had to move too**, or the order would silently disagree with
-      the geometry: it computed area from the bounding box of `floor.members`, so a wider
-      sheet would draw wide, pass R311.3 and still bill the joist field. The subfloor reads
-      `deck_outline` now; `ceiling_below` keeps the framed extent, because a ceiling is
-      nailed to the joists. (It was already understating every deck by a rim thickness at
-      each end — +12 SF house-wide, no change in sheet count.)
-    - **The oversail is bounded, not just documented.** `structural.subfloor_oversail` grades
-      an authored sheet against `[framing] bearing_plan_tolerance_in`, because past that the
-      uplift pass finds neither a derived tie nor a hanger and FAILs every member under the
-      deck, reported nowhere near the deck (`params/sunken_garden.py` records that failure).
-      The breezeway's worst edge is 3 5/8" of 8".
-    - **No section drew a subfloor sheet at all**, which only showed up when the Slab left:
-      a floor's deck is an IR element on the floor's own uid and `emit_framing_cuts` reaches
-      `<uid>::framing`. `emit_floor_deck_cuts` closes it, and 58 goldens gained the plywood
-      their joists have always been carrying.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - Window sealing detail (RM-S-PLANT's is drawn — TR-CATLIN-PLANT-OPENING, 2026-08-18 — and
   is the strictest case in the house; the rest of the envelope still rides
   TR-CATLIN-FRAMED-OPENING)
-- ~~Does balcony access have to pass through the plant room?~~ — ANSWERED 2026-09-03: no.
-  `D-S-DECK-W` is deleted and `WIN-S-PLANT4` (WT-3048-HP, fixed) stands on its centre. The
-  balcony is reached from the study through `D-S-DECK-E`, which is the only balcony door the
-  source ever drew.
-- Floor drain in RM-S-PLANT — Answer: No floor drain necessary. Spilled water is mopped up as needed.
 - Make sure all desired access panels are in (deferred pending more design items settling)
-- ~~Make sure the floor trusses (of the first to second floor) are modeled more accurately
-  in 3d and make sure their measurements in the BOM are very exact for manufacturing~~ —
-  DONE 2026-09-02. `resolve/floor_ends.py` cuts every deck's joists to where they physically
-  stop rather than to the bearing grid, so `FS-S-WEST`'s truss is **17'-11"** overall (was a
-  drawn 18'-0" that floated 1/2" outside the framing) on a 17'-3 1/4" clear span; the x=18'
-  plate it shares with `FS-S-EAST` is split 3 1/2" / 2" instead of on the centreline, which
-  was shorting the truss against its fabricator's 3" seat. `haus takeoff` prints the
-  fabrication schedule (`takeoff/fabrication.py`), `integrity.floor_end_bearing` grades the
-  seats per member type, and the viewer draws chords + end blocks + diagonal webs
-  (`ui/src/three/floorTruss.ts`) instead of a solid bar. Still open, if it ever matters: the
-  GLB and IFC exports keep the one-box representation.
+- **Floor truss GLB/IFC exports still keep the one-box representation**, even though the
+  viewer draws chords + end blocks + diagonal webs (`ui/src/three/floorTruss.ts`). Only
+  worth doing if it ever matters.
 - The house's own strip footings are eccentric under their walls, the same way the garage
   stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
   under a `face("concrete-ext")` wall whose concrete runs inboard from it. **The -2" north
@@ -675,30 +283,6 @@ the future.
   2" isolation board at -8"..-10", reached by an `offset` rather than a re-centring — so a
   future `center_on="wall"` pass has to keep that face where it is, or the beam's concrete
   meets the footing again.
-- **Wall-hung WC — the cost half is answered: NO (2026-08-31).** Making `FX-TOILET-STD`
-  wall-hung to save slab penetrations does not pay, on four counts:
-  1. **The premise reaches one fixture.** Only `FX-B-BATH-WC` (RM-B-BATH) sits on a slab;
-     the other four WCs are over framed decks, where a "slab penetration" is not a cost.
-  2. **A carrier on a slab still penetrates the slab.** The 3" drop moves inside the wall.
-     It relocates a penetration; it removes none.
-  3. **That one fixture is already a recorded owner decision (2026-07-30)**, on other
-     grounds: the west end of RM-B-BATH is 12" cast concrete and a carrier would cost
-     6 1/2" of furring (`houses/catlin/plan/fixtures.py`). The attic WC carries the same
-     decision for the same reason.
-  4. **`prices.toml` puts the wall-hung unit at ~3x the floor unit** and records that
-     ordering as an invariant. Nothing in (1)-(3) offsets it.
-
-  If a hard number is ever wanted, price it by ablation (filter the resolved model and
-  re-run the BOM) — never by editing the house.
-
-  The modelling half is **done (2026-08-31)**: `FX-TOILET-WH` draws and models as a
-  tankless wall-hung bowl (`toilet-wall-hung` symbol), its carrier is a first-class framing
-  keepout with its own flanking studs and blocking, the type states its own wall-drainage
-  so no instance override is needed, and `advisory.carrier_bay_depth` /
-  `advisory.carrier_bay_conflict` grade the host wall and what else is in it. The carrier
-  is also its own price line now (`plumbing-wall-hung-wc-carrier`), split out of the
-  `FX-TOILET-WH` fixture row so the framing-stage cost is billed where it is incurred.
-
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But
   the numbers are knowable, so here they are —
@@ -732,48 +316,7 @@ the future.
     daylight one.
   - **RM-M-STUDY's 19 sf** is a nook, not a room. Ignore the 0%.
 
- - Make sure 7" threshold to basement from sunken garden
  - Basement under the stairs storage closet
- - ~~For the breezeway sonotubes, something like a Bigfoot single-pour footing form. However
-   right now it looks like those footings bisect the house and garage foundation walls.~~
-   **CONFIRMED AND FIXED 2026-09-03 — it was real, and worse than it read.** Measured from
-   source, with 2'-0" pads on the frame line:
-
-   | interface | plan overlap | vertically |
-   |---|---|---|
-   | `PD-BW-1/2` ↔ `FT-B-N*` strip footing | 12 3/4" | pad 3'-1 7/16" **above** it — no contact |
-   | `PD-BW-1/2` ↔ `W-B-N*` wall assembly | **6 1/16"** | the pad's full 12" **inside** the wall band |
-   | `PD-BW-3/4` ↔ `FT-GF-S*` strip footing | 12 7/8" | pad bottom only **4" above** the footing top |
-   | `PD-BW-3/4` ↔ `W-GF-S*` ICF stem | **8 3/8"** | the pad's full 12" **inside** the stem band |
-   | `PR-BW-3/4` ↔ `W-GF-S*` ICF stem | 1 5/8" | over 4'-0" of shared height |
-
-   **Nothing in the engine could see any of it, at 0 FAIL.**
-   `structural.member_interference` deliberately skips `slab`/`footing`/`pad` solids ("beams
-   legitimately bear into concrete") and a `FoundationWall` contributes no framed members, so
-   no rule graded concrete against concrete anywhere in the house.
-   - **The remedy was the cantilever**, per the owner's own first suggestion and
-     `params/sunken_garden.py`'s exact precedent (a sonotube moved 17" south rather than
-     merging pours). The pads shrank 2'-0" → 1'-4" — `structural.deck_footing_size` graded
-     them at 4.00 ft² against a 1.00 ft² requirement, and 1.00 is already the 12" minimum
-     side, not the load — and the posts moved onto the band's centre at 2'-8" spacing, the
-     practical maximum. The floor and roof beams cantilever 0.3615' and 0.5552' against
-     R507.5.2's 0.6667'. Nothing above the beams moved.
-   - **The Bigfoot single-pour reading was rejected deliberately.** `Footing.bottom_elevation`
-     exists for exactly the belled pour, so it is a supported idiom — but
-     `checks/structural/deck.py` returns `_engineered` for a post on a `Footing`, converting
-     four PASSes into four UNKNOWNs, and the bearing area does not remotely demand a bell.
-   - **The engine gap is closed**: `structural.concrete_interference`, its own check rather
-     than a widening of `member_interference` (whose framing-into-concrete exclusion is
-     correct and must not move). Scoped to an ISOLATED pour — a `Pad`, or a wall-less
-     `Footing` — against any other concrete, and it says so in the module rather than
-     silently clearing the rest: the wider sweep reports ~80 findings of correct continuous
-     foundation work, because strip footings and walls lap at every corner by design.
-     `test_concrete_interference.py` re-creates the old pad and watches it go red.
-   - Two things fell out: the two garage-end piers no longer need to stop a course lower to
-     dodge `W-G-S`'s bottom plate (all four top out on one plane now), and `DETAIL_CUT_Y_FT`
-     can no longer cross both the foundation and the frame — it stays on the frame line, and
-     the 6x6 post is the one thing it now misses.
- - ~~Improve the framing logic of the girts/outriggers holding the insulation and cladding of the catlin house. Especialy on the gable ends, it seems the spacing of these isn't always correct and optimal. Perhaps also increase the spacing (I believe and earlier review concluded 32" OC was sufficient)~~ **DONE 2026-08-30.** All three parts. The gable ends were genuinely wrong: a forced course at the lower top re-phased the whole rake band 11-1/2" off the module of the wall below it, and one wall carried a doubled course mid-run. There is now ONE module from the wall base through the rake. The spacing went to 32" o.c. (2x the stud module, so no block moved), and the module was re-phased onto the datum the window sills are measured from. See `houses/catlin/notes/outie_window_truss_detail.md` — the saving is real but small ($466-742), because the same change also nails two places that had no backing at all: the rake, and the cladding lap over the floor rim band.
 
 - **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
   and a look to it, flagged in `plan/storeys/garage.py`. It comes with an engine gap worth
@@ -808,50 +351,6 @@ the future.
   landing's plan rectangle and grade the CLEAR WIDTH left by every solid standing on that
   wall, against R311.7.1's 36". It is the same missing idea as the two items above — the
   engine grades distances and overlaps, and what these three want is *coverage*.
-- **`W-SG-W2`/`E2`/`S` are screened and DO NOT reach R404.4's 1.5 against sliding**
-  (2026-08-30). Two things landed that day, and the first is why the second matters.
-  **(a) The retained height was understated by 3'-4".** `structural.foundation_unbalanced_fill`
-  derived fill from the single global `Site.grade`, which cannot see that
-  `params/raised_garden.py`'s SRW apron holds a terrace at +0'-6" — these walls' own top
-  elevation, read from the same constant — against their outer faces. `unbalanced_fill` is
-  now authored on all three at **10.37'**, up from a derived 7.0'. No verdict moved (both are
-  far past R404.1.1's 48"); what moved is what an engineer is being asked to design for.
-  **(b) The screening on IBC presumptive values finds sliding at 0.58-0.64.** Overturning
-  (3.06-3.43) and bearing (~1,000 psf of 2,000) are fine; sliding is not, and the soil-density
-  band moves it by 0.06, so compaction is not the lever. The footing is centred — 3'-0" of toe
-  doing nothing for sliding — and its toe is buried 6 1/2" because the garden floor sits below
-  natural grade. `houses/catlin/notes/sunken_garden_retaining_screening.md` has the full
-  arithmetic, the cited inputs, and a lever table (rebalance the toe -> 0.84; widen to 9'-0"
-  -> 1.11; add a 2'-0" shear key -> 1.30; 11'-0" + key -> 1.56).
-  **`FoundationWall.engineering_spec` is deliberately left unset on all three** and must stay
-  unset: it would make the check PASS, and there is no design to cite. The cheapest real move,
-  per the screening's own math, is a **geotechnical boring** — mu = 0.25 is the presumptive
-  floor for a broad soil class and a real test could plausibly support 0.35-0.45, which
-  changes the answer more than any amount of concrete. This and the balcony's lateral design
-  are **one ask to one consultant**: the apron's own documented negative-embedment defect
-  makes it and these three walls a coupled tiered system.
-  **(c) `structural.foundation_unbalanced_fill` now computes R404.4 itself and FAILs all
-  three**, having grown that calculation the same day from a different direction: *"sliding is
-  over by 162% (d/c = 2.62, governed by sliding (IRC R404.4))"*, an implied F.S. of 0.57
-  against the hand-worked 0.58 in the note. Two independent implementations agreeing to within
-  a percent. The check **will not run off the derived grade plane** ("the grade-plane proxy is
-  not a safe input for a retaining-wall design"), so it needs (a)'s authored value; removing
-  that would hide a real defect behind a modelling gap. **Catlin is therefore off 0 FAIL, and
-  closing that is an owner's decision**: a stamped design, a geometry change from the note's
-  lever table, or a deliberate decision to carry these three reds the way `houses/starter`
-  carries its own. Do not close it by authoring `engineering_spec`.
-  **(d) CLOSED 2026-08-30 by a fourth wall, not by any of (c)'s three options.** The lever
-  table in (b) priced four ways to fix a base that was never the problem: these are three
-  sides of a closed loop, not three cantilevers, and `W-SG-W2`/`E2` cancel across the court.
-  `W-SG-ARCH` returns as a buried grade beam, `engineering/retaining_system.py` sums the
-  court as one free body, and it reaches **FS 1.58 against 1.50** at at-rest. `engineering_spec`
-  is still unset and these items are still unsealed, exactly as (b) requires — the engine
-  computes a draft verdict, and a stamp is a different thing.
-  **The 0.58 in (b) and the 0.57 in (c) are both a foot short**, incidentally: both read
-  -9'-10 7/16" as the footing's underside when it is its top, so H was 10.37' where the
-  stability free body wants 11.37'. Corrected, the isolated wall is 0.73, not 0.80.
-  See `notes/sunken_garden_court_free_body.md` §0.
-
 - **`FT-SG-*`'s frost cover**, 12"-21" below the sunken garden's own floor against 42".
   `structural.frost_depth` routes all seven to UNKNOWN — a structure retaining the
   excavation it stands in is an engineered design under IRC R404.4, and
@@ -859,87 +358,18 @@ the future.
   consultant. The permit checklist's "Foundation frost depth" item is UNKNOWN because of it,
   and `test_catlin_contract_m3.py` pins exactly that so nothing else can regress behind it.
 
-- Make sure the basement door keeps the 7" step threshold (reduces flood risk)
-  — **it does, and it is 7 1/4" (`W-B-S2`/`W-B-S3`, top -102 3/16" over the garden floor at
-  -109 7/16"). Re-verified byte-for-byte 2026-08-30** across the sunken-garden court work,
-  along with `SL-SG-FLOOR`'s datum and every `FT-SG-*`/`FT-B-*` underside, because that work
-  moved concrete inside the court. `test_retaining_court.py` now asserts the 7 1/4" directly
-  so it cannot drift out silently. Still worth a check nobody has written: nothing in the
-  engine *enforces* the step, and the curb's height is a literal on two walls.
+- **Nothing in the engine enforces the basement door's 7" flood-step threshold** — it is
+  currently 7 1/4" on `W-B-S2`/`W-B-S3`, but the curb height is a literal on two walls, and a
+  check that walks the step would catch a future regression a literal can't.
 - The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
-- ~~The frost protection and the thermal breaks are wrong around the brick footing FT-B-BRICK.
-  Brick is cold, so thermal breaks need to be on the inward side of it.~~ **RIGHT, AND FIXED
-  2026-09-05 — by deleting the footing.** The diagnosis was exact: `W-B-BRICK` is 129 SF of
-  masonry exposed on both faces at the bottom of an open court, so it runs at outdoor
-  temperature all winter, and it bore on a plinth cast on `FT-B-S2`/`FT-B-S3`'s own toe. The
-  break was ordered TWICE and placed NEVER — `FOOTING_FPSF_20` billed 16.0 SF of 2" XPS with
-  no geometry to hold it, while `FB-B-BRICK` dug a 2" undercut for the same space that billed
-  as 0.1 cy of washed crushed stone, `cast_foam_in_aggregate=True` beside it carrying no
-  thickness, material or R-value. Nothing in the engine grades a thermal break for
-  continuity, so it all sat at 0 FAIL.
-  **A better bed was not available.** The wythe sits inside the footings' 10" toe, and a
-  separate strip bearing on soil must stay outside the 45 deg line off their bearing edge
-  (y = -12.76"), which pushes the brick to -15.95" and opens an 11.9" slot to the house. So
-  the veneer was RE-FOUNDED instead, on `W-SG-BRKBM` — a 12" x 17 3/4" grade beam spanning
-  the court's 19'-0" between `W-SG-W1` and `W-SG-E1`. A beam that spans needs no soil bearing,
-  so the 45 deg rule does not apply and the cavity lands at 6". Its assembly
-  (`SG_VENEER_BEAM_14`) carries the 2" XPS as a LAYER, on the north face, against the
-  footings' toe — trimmed 2" by an `offset`, which keeps all 20" of bearing and improves the
-  eccentricity it already had. Load and cold both route into the court's own structure, which
-  is already broken from the house at `DW-SG-W1/E1-FOAM`. Basis:
-  `notes/sunken_garden_veneer_beam.md`; pinned by
-  `test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing`.
-  Two engine bugs fell out of it and are fixed: `local_grade_elevation_m` sheltered a
-  footing on its CENTROID, so trimming a perimeter toe 2" walked it inside the heated slab
-  and turned 3/4" of frost cover into a reported 83"; and `_exterior_shells_by_storey` filled
-  every interior ring, so the beam connecting the house to the court counted 610 sf of open
-  sky as basement floor area.
-- ~~FX-S-BATH1-LAV is in the way of the bathroom door swing.~~ **NOT A CONFLICT — measured
-  and struck 2026-09-01.** Against the resolved quarter-disc `swing_clearance` polygon (not
-  the bbox): vanity x 95.62..116.62, y 345.88..393.88; `D-S-BATH1`'s swing x 84..114,
-  y 318..348. **Intersection area 0.0 sf, minimum distance 0.21".** The BOUNDING BOXES
-  overlap 2.12" in y, which is exactly why it reads wrong on a plan sheet, and
-  `integrity.door_swing_conflict` tests the arc and is correctly silent. Recorded in
-  `plan/fixtures.py` — including that 0.21" is now the tighter of the two margins on that
-  cabinet, ahead of the 0.62" shelf scribe.
-- ~~FX-A-STUDIO-BAR-SINK is floating and unplumbed, and so are the attic bath fixtures.~~
-  **HALF FALSE, AND THE REAL DEFECT WAS DIFFERENT — 2026-09-01.** The plumbing is complete:
-  `PR-A-BAR-DRAIN` (2" PVC, 10.5 LF, 1.0 DFU against 1.25" required), supply at
-  `plan/mep_supply.py:576,583`, vent at `plan/mep_venting.py:191-197`. The attic bath
-  fixtures are neither floating nor unserved — `FX-A-STUBATH-WC/LAV/SH` carry no `mount=` so
-  they default to FLOOR on the attic deck, and `PR-A-STUBATH-DRAIN` names all three. That
-  clause was simply wrong.
-  The real defect: the bar sink is `Mount(WALL, elevation=27")` with **no casework under
-  it** — the same mount `FX-M-KITCH-SINK` survives only because a sink base stands under it.
-  Fixed with `FT-STUDIO-BAR-BASE-2418` + one `Furniture` row. It is 18" deep, not the
-  catalog's 24": measured against `D-A-STUBATH`'s arc, 24" puts 52 in^2 inside it, 21" puts
-  15 in^2, and 18" clears by 0.42".
 
 ## Found while doing the 2026-09-01 batch — recorded so they are not rediscovered
 
-- **`mep.duct_connectivity` IS REGISTERED, AND THE ERV WAS PLUMBED TO NOTHING (closed
-  2026-09-01).** The check grades every duct end against four honest terminations — another
-  duct (matched in plan AND elevation, against a *segment* rather than a vertex), a machine
-  footprint at the height of its case, a register naming this run within a 36" boot reach, or
-  a cap past the last take-off on a served trunk — plus the outdoor-hood exemption. catlin is
-  0 FAIL with it on.
-
-  The batch plan predicted five orphans and named five; the unregistered draft found two; the
-  registered check finds **four**, and the difference is the elevation band on the equipment
-  probe. Without it `DU-ERV-RISER-SUP`'s basement end "landed on" `EQ-M-ERV-HOOD-OA` 67"
-  above it and `DU-S-HP-SUP`'s cap "landed on" the fridge 220" below — the same coincidence
-  the draft had already fixed for duct-to-duct and never applied to machines. The four:
-
-      DU-ERV-OA        end   at (1'-11", 33'-7 1/2")   -> EQ-B-ERV
-      DU-ERV-EA        start at (1'-11", 34'-8")       -> EQ-B-ERV
-      DU-ERV-RISER-SUP start at (0'-5",  33'-7 1/2")   -> EQ-B-ERV-MAN-SUP
-      DU-ERV-RISER-EXH end   at (1'-2",  33'-7 1/2")   -> EQ-B-ERV-MAN-EXH
-
-  **And a fifth thing nothing could report: `EQ-B-ERV` had no duct to either manifold.** The
-  six basement radials started at boxes that nothing fed. No check says so — this one grades
-  duct ENDS, and a manifold with nothing arriving at it has no end to orphan. A machine-side
-  rule ("every equipment port that names a service is reached by a run of that service") is
-  the missing companion and is not written.
+- **No check validates that every equipment port naming a service is reached by a run of that
+  service.** `mep.duct_connectivity` grades duct ENDS against terminations (another duct,
+  a machine footprint, a register, or a cap), so a manifold with nothing arriving at it has
+  no end to orphan and is invisible to it — `EQ-B-ERV` once had no duct to either manifold and
+  nothing reported it. The missing companion rule is not written.
 
   **The machine had to come down 18" before any of it could be drawn.**
   `EQ-T-BROAN-B210E75RT`'s four air ports are all 6" round on its TOP face. Hung at 6'-0" the
@@ -965,41 +395,12 @@ the future.
   extract is its only moisture removal path. A middle station (x ~12'-6") would take about
   half the duct and keep a 5'-0" throw, if the saving is wanted.
 
-- **A plan-only proximity test is not a duct joint, and neither is a vertex-only one.** The
-  first draft of the check matched ends in plan alone and read a basement riser as connected
-  to a SECOND-STOREY run 231" above it. The elevations must not be required to be *equal*
-  either — a riser is one plan point spanning a z range — so the rule is that the end's z
-  falls in the matched *segment's* z range, widened by the joint tolerance. Segment, because
-  a branch tees into the side of a trunk: `DU-S-HP-SUITE` leaves `DU-S-HP-SUP` 118" from
-  either end of its only segment, and a vertex-only test called it an orphan while crediting
-  it to a register 39" away.
-
-- **`concrete-window-bucks-and-blockouts` named the wrong two openings.** Its comment claimed
-  "the sunken garden's patio door and the sauna window, both in the basement's daylight wall".
-  Driven off the new `openings.host_structure`, the two openings that actually pierce a
-  concrete wall are **D-B-GYM and D-B-NE**, through `FOUNDATION_WALL_12_INT`. `D-B-PATIO` is
-  hosted by `W-B-S3-FR` (`CATLIN_GARDEN_FRAMED_2X6`) and `WIN-B-SAUNA` by `W-B-S2-FR`
-  (`SAUNA_LINER_ON_GARDEN_FRAMED`) — framed walls standing in FRONT of the pour, which need a
-  rough opening, not a buck. The count was right for the wrong reason.
-  **Postscript, 2026-09-05:** the driver now resolves to ZERO. The basement's west-side
-  replan retired `D-B-NE` and moved `D-B-GYM` onto framed `W-B-CS3`, so no opening in this
-  house is hosted by a wall whose STRUCTURE layer is concrete. The row is kept unpriced
-  under the `glazed-green-brick` convention, and `_DRIVES_TO_ZERO` in
-  `test_allowance_drivers.py` is where a driven row is allowed to bill nothing.
-
 - **No check is elevation-aware about a luminaire and the stair it lights.**
   `ED-S-STUDY2-STAIR-SC1` sat 2'-11 1/2" BELOW its own tread and 2'-0" under the stringer
   soffit, with its plan point inside the stair outline, and `haus check` was silent:
   `code.R303_7_stairway_illumination` counts luminaires serving the flight (nine for ST-S2A),
   `electrical.room_lighting` counts by room, and the fc advisory is planar. Nothing compares a
   wall-mount elevation against the stair. Worth a check.
-
-- **A rate corrected by a ratio is a defect, not a workaround.** Four price rows carried
-  hand-applied corrections (`x 35/37`, `x 131.4/143.4`) because the takeoff had no field to
-  filter on. Every one drifts silently the moment the model changes — which is the actual
-  failure mode, not the arithmetic. All four are now driven off a real predicate with the
-  researched rate restored. **When a driver cannot express a scope, add the field; do not
-  take the correction in the rate.**
 
 ## Found while doing the 2026-08-23 batch — recorded so they are not rediscovered
 
@@ -1102,8 +503,6 @@ number are ready to move to `plans/cost-options.md` whenever the owner wants the
 Implement now:
 Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it
 a dark surround, and turn the seats toward it (181/185). Likely a small section of oak, walnut, or cherry wainscot.
-An exterior stair off the porch -- the house currently has no route from a door to its own
-ground anywhere on the site (168/120)
 
 Deferred:
 Retype the east living row 27x48 -> 27x64, the type already exists (192) -- MEASURED +$269-562.  Note: deferred pending decision.
@@ -1145,6 +544,3 @@ Two pricing decisions that are correct today and become double bills the moment 
   concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in
   the 2026-08-30 pass because it is a rate re-derivation, not a defect fix.
 
-## What I am unhappy with
-- ~~The price (cost-options.md is missing some of the style details as 'optional' and it needs to be slimmed down to be more concise)~~ — **DONE 2026-08-31**, decision #66. `plans/cost-options.md` is 325 lines: three tables (cost cutting, self-perform, upgrades) plus a premium-feature table, an imports table, an anti-summation map, a *Do not reopen* list and an *upward exposures* list, every row against one stated baseline. The narrative, the superseded pricings and the duplicate allowance register are gone to git history.
-- The concrete deck of the basement (either size up for completeness or down for cost savings)

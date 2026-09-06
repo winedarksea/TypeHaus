@@ -263,15 +263,31 @@ def test_knee_brace_member_carries_its_assembly_material(braced_model) -> None:
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
     dowels = _solids(catlin_model, "dowel")
     foam = _solids(catlin_model, "thermal_break")
-    # Two locations x 3 bars: FT-SG-COL is doweled to the house footing across a foam block.
-    # Belling that pier to frost depth put its top 1'-10" BELOW FT-B-S2's underside, so there
-    # is no joint between the two pours for a bar to cross or foam to break — the separation
-    # itself is the thermal break.
-    assert len(dowels) == 6
-    assert len(foam) == 2
-    # Bars sit at mid-footing (~ -9.25') and span ~24" across the joint.
+    # Two locations x (3 footing bars + 2 stem bars). FT-SG-COL is NOT doweled: belling that
+    # pier to frost depth put its top 1'-10" BELOW FT-B-S2's underside, so there is no joint
+    # between the two pours for a bar to cross or foam to break — the separation itself is
+    # the thermal break.
+    #
+    # The stem pair (DW-SG-*-STEM, 2026-09-05) carries the board that closes the slot between
+    # each garden side wall and the house above the footings, so each location now resolves
+    # TWO foam blocks that stack into one continuous plane.
+    assert len(dowels) == 10
+    assert len(foam) == 4
+    assert {b.tag.rsplit("-", 1)[0] for b in dowels} == {
+        "DW-SG-W1", "DW-SG-E1", "DW-SG-W1-STEM", "DW-SG-E1-STEM"}
+    # Footing bars sit at mid-footing (~ -9.25'); the stem pair at mid-stem (~ -4.56').
     for bar in dowels:
-        assert bar.z0_m < -2.5 < bar.z1_m or abs((bar.z1_m + bar.z0_m) / 2 + 9.25 * FT) < 0.2
+        mid = (bar.z1_m + bar.z0_m) / 2
+        assert (bar.z0_m < -2.5 < bar.z1_m
+                or abs(mid + 9.25 * FT) < 0.2 or abs(mid + 4.56 * FT) < 0.2)
+    # The two blocks at one location are coplanar in Y and meet at the footing top, so the
+    # board is continuous from the house footing's underside to the wall top.
+    for name in ("DW-SG-W1", "DW-SG-E1"):
+        base = next(b for b in foam if b.tag == f"{name}-FOAM")
+        stem = next(b for b in foam if b.tag == f"{name}-STEM-FOAM")
+        assert [round(y, 9) for y in sorted({y for _, y in base.outline})] == \
+               [round(y, 9) for y in sorted({y for _, y in stem.outline})]
+        assert base.z1_m == pytest.approx(stem.z0_m)
 
 
 def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:

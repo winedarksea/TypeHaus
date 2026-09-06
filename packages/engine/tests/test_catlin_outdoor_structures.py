@@ -633,7 +633,8 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     assert house_footing_s - bell_north == pytest.approx(4 * INCH)
     assert catlin_model.plan.by_tag("DW-SG-COL") is None
     assert {d.tag for d in catlin_model.plan.all_elements()
-            if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1"}
+            if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1",
+                                              "DW-SG-W1-STEM", "DW-SG-E1-STEM"}
     # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
     # The tolerance IS the beam's own half-width, READ off the member (a 4 1/2" three-ply
     # KDAT 2x12) rather than written out as a hardcoded number.

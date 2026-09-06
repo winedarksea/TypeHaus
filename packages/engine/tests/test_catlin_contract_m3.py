@@ -2375,9 +2375,15 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
 
 #: Facade stations, in inches from the wall line's origin, where a framed run legitimately
 #: starts or stops partway along a facade and must plant an end stud off the module. One
-#: entry: the sunken garden's framed walkout, whose west end is the excavation edge at
-#: 8'-10" (its east end, 28'-0", lands on the module by luck and needs no allowance).
-_FRAMED_RUN_ENDS = {"W-M-S1": (106.0,)}
+#: run, both of its ends: the sunken garden's framed walkout, whose west end is the
+#: excavation edge at 8'-10".
+#:
+#: Its east end used to be 28'-0" and landed on the module by luck. That luck was the tell:
+#: 28'-0" is the retaining wall's AXIS, so the framed run's last 6" of studs, sheathing and
+#: outboard foam stood inside the soil column beside the court. It moved to 27'-2" on
+#: 2026-09-05 — 4" clear of the court's 27'-6" face, mirroring the west end's 4" lap — and
+#: 326" is off the module, which is the honest answer for an end set by grade.
+_FRAMED_RUN_ENDS = {"W-M-S1": (106.0, 326.0)}
 
 
 @pytest.mark.parametrize("wall_tag", FACADE_WALLS)
@@ -2552,6 +2558,13 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     #     0 -> 7 above, the module restarting off a node that moved. `W-M-C1` came back 5 ->
     #     4 with the sauna shrink, which took the x=18' line's three basement segments back
     #     to a longer W-B-CS. Neither is re-phasable and neither is framing coming apart.
-    assert orphan_count <= 124, (
+    #   * **125/255 on 2026-09-05**, one stud, and it is bought and not lost. `W-M-S2` 3 ->
+    #     4: the framed walkout below it (W-B-S3-FR) gave up its east 10" when the south
+    #     wall's split moved off the retaining wall's axis onto 27'-2", so the run stops
+    #     clear of the court's soil column instead of standing 6" inside it
+    #     (storeys/basement.py, N-B-S3). The main-floor stud nearest that end now stands over
+    #     W-B-S4's pour rather than over a stud, which is what "a stud cannot stack on
+    #     concrete" means and not framing coming apart.
+    assert orphan_count <= 125, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(was 123/255); first offenders {orphans[:12]}")
+        f"(was 124/255); first offenders {orphans[:12]}")

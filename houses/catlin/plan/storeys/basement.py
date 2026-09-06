@@ -102,13 +102,25 @@ NODES = [
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
     Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(8, 10), ft(0))),
     Node(uid="CBN003AAAA", tag="N-B-S2", position=pt(ft(18), ft(0))),
-    # x=28'-0" is the excavation edge (params/sunken_garden's ``_x_ax_e``), where the
-    # sunken garden ends and grade comes back up to the -2'-10" site plane. It splits the
-    # south wall at the one place on that line where the backfill condition changes, so
-    # each segment can author the fill it actually retains instead of one wall carrying
-    # two conditions. It is also W-B-BRICK's east end, which was already dimensioned to
-    # this x.
-    Node(uid="NW1W09NAD2", tag="N-B-S3", position=pt(ft(28), ft(0))),
+    # ** 27'-2", NOT 28'-0", SINCE 2026-09-05. AND 28'-0" WAS NEVER THE EXCAVATION EDGE. **
+    # This said "x=28'-0" is the excavation edge" for as long as it existed and it was not:
+    # 28'-0" is `_x_ax_e`, the AXIS of the court's east retaining wall, whose faces are at
+    # 27'-6" and 28'-6". The excavation edge is `_x_in_e` = 27'-6". So the split stood half
+    # a wall INSIDE the soil, and W-B-S3-FR — a 2x6 framed wall — ran its last 6" of studs,
+    # sheathing, damp-proofing and outboard foam into that soil column, end-grain and foam
+    # edge unclosed. Nothing grades it: `code.R406_1_dampproofing` and
+    # `structural.foundation_unbalanced_fill` iterate FoundationWall, so a framed run is
+    # invisible to both, and no check exists for wood against soil. The brick wythe made
+    # exactly this retreat the same day (N-B-BRICK-E below); the framing did not follow.
+    #
+    # 27'-2" puts the framed run's whole stack 4" clear of W-SG-E1's 27'-6" face — the
+    # mirror of the west end, where N-B-S1 at 8'-10" already laps 4" past W-SG-W1's 8'-6".
+    # W-B-S4's concrete then covers the entire slot (27'-6"..28'-6") and gives the court's
+    # closure wall a concrete bearing face over its full 12" width.
+    #
+    # The split is still at the one place on this line where the backfill condition changes,
+    # which is what it is for; it is now at the place where that change actually happens.
+    Node(uid="NW1W09NAD2", tag="N-B-S3", position=pt(ft(27, 2), ft(0))),
     # **The framed walkout's own node chain (2026-08-28).** W-B-S2-FR and W-B-S3-FR stand
     # ON W-B-S2/W-B-S3, which are 7 1/4" curbs now, so they are a second run of wall over
     # the same three stations. They cannot share those nodes: two wall edges between one
@@ -126,7 +138,7 @@ NODES = [
     # author `interior_room` explicitly instead of trusting the winding.
     Node(uid="QEDBCR7NYR", tag="N-B-S1F", position=pt(ft(8, 10), ft(0)), open_end=True),
     Node(uid="PGQVHV2VRH", tag="N-B-S2F", position=pt(ft(18), ft(0))),
-    Node(uid="Z44TJSW6JJ", tag="N-B-S3F", position=pt(ft(28), ft(0)), open_end=True),
+    Node(uid="Z44TJSW6JJ", tag="N-B-S3F", position=pt(ft(27, 2), ft(0)), open_end=True),
     Node(uid="CBN004AAAA", tag="N-B-SE", position=pt(ft(36), ft(0))),
     Node(uid="CBN005AAAA", tag="N-B-E1", position=pt(ft(36), ft(18))),
     Node(uid="CBN006AAAA", tag="N-B-NE", position=pt(ft(36), ft(36))),
@@ -391,13 +403,17 @@ WALLS = [
     # rounded up to the table's 7' row. Its own docstring warns about exactly this
     # ("it over-reports a walkout wall whose exterior grade falls away ... author
     # ``unbalanced_fill`` where it matters"), and this is the walkout side: the sunken
-    # garden is excavated from x=8'-10" to x=28'-0" with its floor flush with the basement
-    # slab, so two of the four segments retain nothing at all.
+    # garden is excavated from x=8'-10" to x=27'-6" (`_x_in_e`, the court's own clear face
+    # — NOT 28'-0", which is the retaining wall's axis) with its floor flush with the
+    # basement slab, so two of the four segments retain nothing at all.
     #
     #   W-B-S1   0'-0" .. 8'-10"   6'-4"  genuinely buried, west of the excavation
     #   W-B-S2   8'-10" .. 18'-0"  0      entirely inside the court
-    #   W-B-S3   18'-0" .. 28'-0"  0      entirely inside the court
-    #   W-B-S4   28'-0" .. 36'-0"  6'-4"  buried again, east of the excavation
+    #   W-B-S3   18'-0" .. 27'-2"  0      entirely inside the court
+    #   W-B-S4   27'-2" .. 36'-0"  6'-4"  buried again, east of the excavation
+    #
+    # The 27'-2" break is 4" west of the court's face, so the framed run above W-B-S3 stops
+    # clear of the soil column and W-B-S4's concrete carries the whole slot — see N-B-S3.
     #
     # 6'-4" is the measured 6.29' rounded UP to the nearest inch, the same direction
     # footnote f rounds the table row. It changes no grade: 6.3' still lands on the 7' row
@@ -501,7 +517,8 @@ WALLS = [
          interior_room="RM-B-GYM",
          base_elevation=inch(-102.1875), top=inch(88.75),
          structural_role=StructuralRole.BEARING),
-    # The east 8'-0" of the old W-B-S3, split off at the excavation edge.
+    # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
+    # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
     # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join
     # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
     # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.

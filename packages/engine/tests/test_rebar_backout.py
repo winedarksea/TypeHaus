@@ -40,10 +40,10 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
     ("foundation wall", "#4", "hdg-a767"): 527.3,
-    ("foundation wall", "#5", "hdg-a767"): 216.9,
-    ("foundation wall", "#6", "hdg-a767"): 1036.4,
+    ("foundation wall", "#5", "hdg-a767"): 219.0,
+    ("foundation wall", "#6", "hdg-a767"): 1039.2,
 }
-_TOTAL_LB = 3991.9
+_TOTAL_LB = 3996.8
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
