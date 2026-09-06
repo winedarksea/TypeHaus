@@ -445,3 +445,24 @@ def test_a_keyed_note_off_this_detail_draws_nothing_and_reports_nothing(catlin_m
     scene, findings = build_detail(catlin_model_ro, derived)
     assert any(line.startswith("K") for line in scene.notes), "the legend still prints"
     assert not [f for f in findings if "anchor" in f.check_id]
+
+
+def test_a_bubble_never_leaves_the_drawing_to_avoid_a_leader(catlin_model_ro):
+    """The regression the eave detail showed at 300 dpi.
+
+    The dodge was unbounded, so K3 and K4 slid clean off the bottom of the drawing into the
+    legend band and pointed at nothing. A bubble that grazes a leader box is legible; one in
+    the legend is not, so the dodge gives up and stays put rather than travelling forever.
+    """
+    from typehaus.emit.draw.keyed_notes import KEY_LAYER
+
+    for _derived, scene, _keys in _keyed_details(catlin_model_ro):
+        crop = [n for n in scene.nodes if isinstance(n, Polyline) and n.space == "model"]
+        assert crop
+        z_low = min(p[1] for n in crop for p in n.points)
+        z_high = max(p[1] for n in crop for p in n.points)
+        span = z_high - z_low
+        for node in scene.nodes:
+            if isinstance(node, Text) and node.layer == KEY_LAYER:
+                assert z_low - span * 0.25 <= node.anchor[1] <= z_high + span * 0.25, \
+                    f"bubble {node.content} is outside the drawing it annotates"

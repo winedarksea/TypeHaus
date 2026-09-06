@@ -498,24 +498,43 @@ def _keyed_anchor(model: ResolvedModel, derived: DerivedDetail, frame, note):
     return None if err is not None else point
 
 
-def _dodge_point(at, fixed, extent, _dodge) -> tuple[float, float]:
-    """Slide ``at`` down until its ``extent`` clears every reserved box in ``fixed``.
+#: How far a bubble may be pushed off its anchor to clear an obstacle, in bubble heights.
+#: The dodge was unbounded and it showed: on the eave detail K3 and K4 slid clean off the
+#: bottom of the drawing into the legend band, pointing at nothing — which is worse than a
+#: bubble that grazes a leader box.
+_MAX_DODGE_HEIGHTS = 7.0
 
-    ``annotate.dodge`` works on ``LabelSpec`` placements, which a bubble is not — it has no
+
+def _dodge_point(at, fixed, extent, _dodge) -> tuple[float, float]:
+    """Slide ``at`` clear of every reserved box in ``fixed`` — down first, then up.
+
+    ``annotate.dodge`` works on ``LabelSpec`` placements, which a bubble is not: it has no
     text width and no row height, it is a circle. Rather than force a bubble into a label
-    shape, the one thing ``dodge`` does that matters here is done directly: move along -z
-    until nothing overlaps.
+    shape, the one thing ``dodge`` does that matters here is done directly.
+
+    **Bounded, and it returns the ORIGINAL position when it cannot find a clear one inside
+    the bound.** A leader still points at the right place from a bubble that grazes a label;
+    it points at nothing from a bubble that has left the drawing.
     """
     u0, z0, u1, z1 = extent
-    dz = 0.0
-    for _ in range(24):
-        clash = next((box for box in fixed
-                      if not (u1 < box[0] or u0 > box[2]
-                              or z1 + dz < box[1] or z0 + dz > box[3])), None)
-        if clash is None:
-            break
-        dz -= (z1 - z0) + (clash[3] - clash[1]) * 0.05
-    return (at[0], at[1] + dz)
+    height = z1 - z0
+    limit = _MAX_DODGE_HEIGHTS * height
+
+    def clash_at(dz: float):
+        return next((box for box in fixed
+                     if not (u1 < box[0] or u0 > box[2]
+                             or z1 + dz < box[1] or z0 + dz > box[3])), None)
+
+    for direction in (-1.0, 1.0):
+        dz = 0.0
+        for _ in range(24):
+            clash = clash_at(dz)
+            if clash is None:
+                return (at[0], at[1] + dz)
+            dz += direction * (height + (clash[3] - clash[1]) * 0.05)
+            if abs(dz) > limit:
+                break
+    return at
 
 
 def _point_anchor(point):
