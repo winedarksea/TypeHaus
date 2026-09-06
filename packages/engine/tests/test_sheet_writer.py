@@ -150,7 +150,7 @@ def test_compose_sheet_draws_scale_bar_on_scaled_sheets(catlin_model):
 def test_index_gains_general_notes_after_cover(catlin_model):
     sheets = build_sheet_index(catlin_model)
     numbers = [s.number for s in sheets]
-    assert numbers[0] == "A-000"
+    assert numbers[0] == "G-001"
     assert numbers[1] == "G-002"
     assert sheets[1].page is not None
 

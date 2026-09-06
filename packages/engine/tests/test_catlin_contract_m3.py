@@ -1945,6 +1945,74 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     assert brick.z0_m == pytest.approx(beam.z1_m, abs=1e-9), "wythe bears on the beam top"
 
 
+def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
+    """`FT-B-*` centres on the resolved section, not on the node line — where that helps.
+
+    Every basement concrete wall aligns on `face("concrete-ext")`, so its pour runs wholly
+    INBOARD of the node line, and a 20" strip centred there threw all of its toe outboard.
+    Measured before `Footing.center_on="wall"` was authored here: an 8" segment had 10" of
+    toe outside the pour and 2" inside, and on the 12" segments (W-B-E1/E2) the wall's
+    inboard face stood **2" PAST the footing altogether** — the wall was not all on its own
+    footing, at 0 FAIL.
+
+    ** THE BAND IS NOT THE CONCRETE, WHICH IS WHY THESE NUMBERS ARE ASYMMETRIC. **
+    `band_axis` is handed EVERY layer's polygon, so the new datum is the midline of the
+    whole stack, the 4" of exterior XPS included — 2 3/32" outboard of the pour's own
+    midline. The toes below are the best this datum can do, and they are pinned so that
+    residue stays visible rather than being rediscovered as a defect.
+
+    The other eleven strips stay on the node line and this test says so in GEOMETRY, not in
+    a flag. The four garden-end strips are pinned at -4" by the closure joint against
+    FT-SG-W1/E1 (above), so re-centring them would move nothing and only re-express the
+    same strip against a datum that includes the sauna's shiplap liner; the four framed
+    walls are already centred on their own node line, and their bands are finishes.
+    See `params/foundations._center_on`.
+    """
+    from typehaus.resolve.geometry import normal, sub, unit
+
+    inch_m = 0.0254
+
+    def spans(wall_tag):
+        """(footing, structure-layer) perpendicular spans in inches off the node line."""
+        wall = catlin_model.wall(wall_tag)
+        (ax, ay), end = wall.axis
+        px, py = normal(unit(sub(end, wall.axis[0])))
+
+        def project(points):
+            v = [((x - ax) * px + (y - ay) * py) / inch_m for x, y in points]
+            return min(v), max(v)
+
+        strip = next(s for s in catlin_model.solids if s.tag == f"FT-{wall_tag[2:]}")
+        structure = next(ly for ly in wall.layers if ly.function == "structure")
+        return project(strip.outline), project(structure.polygon)
+
+    # The eight strips the re-centring actually moves, and the exact toes it leaves.
+    for tag in ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2"):
+        footing, pour = spans(tag)
+        assert pour == pytest.approx((0.0, 8.0), abs=1e-6), tag
+        assert footing == pytest.approx((-8.0875, 11.9125), abs=1e-6), tag
+    for tag in ("W-B-E1", "W-B-E2"):
+        footing, pour = spans(tag)
+        assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
+        assert footing == pytest.approx((-6.0875, 13.9125), abs=1e-6), tag
+
+    # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
+    # seven interior walls a 20" strip already straddles symmetrically.
+    for tag in ("W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"):
+        assert spans(tag)[0] == pytest.approx((-4.0, 16.0), abs=1e-6), tag
+    for tag in ("W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2",
+                "W-B-STR", "W-B-STR3", "W-B-STR3B"):
+        assert spans(tag)[0] == pytest.approx((-10.0, 10.0), abs=1e-6), tag
+
+    # And the promise the whole change exists for, asserted for every strip in the house:
+    # the wall's structure is entirely on its own footing. W-B-E1/E2 failed this before.
+    for tag in ("W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4", "W-B-E1", "W-B-E2",
+                "W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2",
+                "W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2",
+                "W-B-STR", "W-B-STR3", "W-B-STR3B"):
+        (f_lo, f_hi), (p_lo, p_hi) = spans(tag)
+        assert f_lo <= p_lo + 1e-6 and p_hi <= f_hi + 1e-6, tag
+
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):
     """M3 acceptance: a main->second stack edge with a width change still resolves.

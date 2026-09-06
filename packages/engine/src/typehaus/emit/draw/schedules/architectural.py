@@ -363,7 +363,7 @@ def _write_room_finish_schedule(pdf, model: ResolvedModel, number: str, name: st
         section(fig, 0.04, 0.93, "ROOM FINISH SCHEDULE")
         rows = [(room.tag, (room.storey or "—"), _finish(room, "floor_finish"),
                  _finish(room, "base_finish"), _finish(room, "wall_finish"),
-                 _ceiling_finish(room), f"{room.area_m2 * 10.7639:,.0f}")
+                 _ceiling_finish(model, room), f"{room.area_m2 * 10.7639:,.0f}")
                 for room in rooms]
         _add_table(fig, rows,
                    ("Room", "Storey", "Floor", "Base", "Walls", "Ceiling", "Area (ft2)"),
@@ -389,17 +389,36 @@ def _finish(room, field: str) -> str:
     return str(value) if value else "—"
 
 
-def _ceiling_finish(room) -> str:
-    """The ceiling a room actually resolved, which may be more than one.
+def _ceiling_finish(model, room) -> str:
+    """The ceiling a room actually resolved, named by its ROOM-SIDE layer's material.
 
-    ``resolve/ceilings.py`` derives a ceiling per DECK REGION, not per room, so catlin's gym
-    has two — 234 sf under the I-joists and 90 sf under the cast deck, 1 9/16" apart. The
-    schedule states both rather than picking one.
+    ``ResolvedCeiling`` carries a layer stack, not a finish string — it is derived (a room
+    override, else the covering deck's ``ceiling_below``, else the roof's default lining),
+    which is exactly why this schedule can be trusted: the board named here is the board the
+    take-off ordered.
+
+    A room may resolve MORE THAN ONE, because ``resolve/ceilings.py`` derives a ceiling per
+    DECK REGION rather than per room — catlin's gym has two, 234 sf under the I-joists and
+    90 sf under the cast deck, 1 9/16" apart. Both are named. A vaulted room resolves a
+    stack with no flat plane and still names its board.
     """
-    ceilings = getattr(room, "ceilings", None) or ()
-    names = sorted({getattr(c, "finish", None) or getattr(c, "material_ref", "") or ""
-                    for c in ceilings} - {""})
-    return " / ".join(names) if names else _finish(room, "ceiling_finish")
+    names = sorted({_room_side_material(c) for c in model.ceilings
+                    if c.room_ref == room.tag or c.room_ref == room.uid} - {""})
+    return " / ".join(names) if names else "—"
+
+
+def _room_side_material(ceiling) -> str:
+    """The material of the layer a person standing in the room can touch.
+
+    Layers run interior-first, so it is ``layers[0]`` — and it is a *material* ref rather
+    than the layer's function name, because "FINISH" tells a builder nothing and
+    ``gwb-x`` tells them which board to buy.
+    """
+    for layer in ceiling.layers:
+        ref = getattr(layer, "material_ref", "") or ""
+        if ref:
+            return ref
+    return ""
 
 
 def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,

@@ -306,3 +306,148 @@ def test_an_opaque_sheet_guard_is_not_glazing_and_gets_no_finding():
     findings = structural_glass_guard(_glass_ctx("tempered", materials={"lite": "#8fb7c9"}))
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
     assert "no guard in the plan is filled with a glass panel" in findings[0].message
+
+
+# --- edge coverage: the shared helper, and the three findings it opened -----------------
+
+
+def test_the_shared_helper_projects_onto_a_skew_segment():
+    """A 45-degree edge is measured on its own axis, not on x or y.
+
+    The predecessor of this helper indexed ``across``/``along`` as 0/1, so an edge that ran
+    diagonally could not be graded at all. Two railing sub-segments covering the middle
+    third of a skew edge have to read as the middle third.
+    """
+    from typehaus.checks.code.mn_residential.fall_protection import _uncovered_runs
+
+    rail = SimpleNamespace(
+        tag="RL-X",
+        path=(SimpleNamespace(xy_m=(1.0, 1.0)), SimpleNamespace(xy_m=(2.0, 2.0))))
+    runs, short, used = _uncovered_runs(
+        (0.0, 0.0), (3.0, 3.0), [], [(rail, True)], [],
+        gap_tol_m=0.05, plane_tol_m=0.20, wall_face_tol_m=0.05)
+    assert used == {"RL-X"} and not short
+    assert len(runs) == 2
+    assert runs[0] == pytest.approx((0.0, 2.0 ** 0.5), abs=1e-6)
+    assert runs[1] == pytest.approx((2.0 * 2.0 ** 0.5, 3.0 * 2.0 ** 0.5), abs=1e-6)
+
+
+def test_a_guard_covering_only_the_middle_no_longer_passes_the_whole_edge():
+    """The bug the old ``_railing_runs_edge`` was: distance to the WHOLE segment.
+
+    A guard sitting on the middle of a 10 m edge is 0 m from it, so the retired boolean
+    reported the entire edge guarded. Coverage reports the two ends, which is what a builder
+    would see standing there.
+    """
+    from typehaus.checks.code.mn_residential.fall_protection import _uncovered_runs
+
+    rail = SimpleNamespace(
+        tag="RL-MID",
+        path=(SimpleNamespace(xy_m=(0.0, 4.0)), SimpleNamespace(xy_m=(0.0, 6.0))))
+    runs, _short, _used = _uncovered_runs(
+        (0.0, 0.0), (0.0, 10.0), [], [(rail, True)], [],
+        gap_tol_m=0.30, plane_tol_m=0.20, wall_face_tol_m=0.05)
+    assert runs == [(0.0, 4.0), (6.0, 10.0)]
+
+
+def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catlin_ctx):
+    """``RL-SG-PORCH``'s east leg carries a 3'-0" hole and the check has to see it as one.
+
+    The two pieces of the split guard cover 0'..5.2' and 8.2'..8.7' of the porch deck's east
+    edge; the 3'-0" between them is exactly ``ST-SG-PORCH``'s throat, which is the stairway
+    rather than an open side. The assertion that matters is the *derivation*: with the
+    flight's throat removed the same edge reports the doorway as unguarded, so the PASS is
+    earned by the stair being there and not by the old midpoint accident.
+    """
+    from typehaus.checks.code.mn_residential import fall_protection as fp
+    from typehaus.model.structure import Railing
+    from typehaus.quantities import inch as _inch
+
+    deck = next(f for f in catlin_ctx.model.floors if f.tag == "FS-SG-PORCH")
+    surface = deck.deck_z1_m
+    ring = list(deck.deck_outline)
+    east = next((a, b) for a, b in zip(ring, ring[1:] + ring[:1], strict=True)
+                if a[0] == b[0] and a[0] == max(p[0] for p in ring))
+    walls = [w for w in catlin_ctx.model.walls
+             if w.z0_m <= surface + 0.1
+             and w.z1_m >= surface + _inch(36).meters - 0.02]
+    rails = [(r, r.height.meters + 1e-9 >= _inch(36).meters)
+             for r in catlin_ctx.plan.all_elements()
+             if isinstance(r, Railing) and abs(r.base_elevation.meters - surface) < 0.15]
+    kwargs = dict(gap_tol_m=fp._EDGE_GAP_TOL_M, plane_tol_m=fp._EDGE_RAILING_PLANE_TOL_M,
+                  wall_face_tol_m=fp._EDGE_WALL_FACE_TOL_M)
+    quads = fp._stair_throat_quads(catlin_ctx, surface)
+    with_stair, _s, _u = fp._uncovered_runs(*east, walls, rails, quads, **kwargs)
+    assert with_stair == []
+    without_stair, _s, _u = fp._uncovered_runs(*east, walls, rails, [], **kwargs)
+    opening = max(hi - lo for lo, hi in without_stair)
+    assert opening == pytest.approx(inch(36).meters, abs=0.02)
+
+
+def test_the_slab_census_reaches_the_garage_step(catlin_ctx):
+    """``SL-G-STEP-0`` is a ``Slab``, so it was in no guard rule's census at all.
+
+    ``code.R312_1_guard_height`` censused ``FloorSystem``s and ``code.R312_1_guard``
+    censused ``FloorOpening``s; a slab landing 34" over the grade beside it was graded by
+    nothing. The guard on it is an owner decision, so this asserts the FINDING exists and
+    names the drop — not that the house answers it.
+    """
+    from typehaus.checks.code.mn_residential.fall_protection import (
+        raised_surface_guard_height,
+    )
+
+    findings = {f.message.split(":")[0]: f for f in raised_surface_guard_height(catlin_ctx)}
+    assert "SL-G-STEP-0" in findings, sorted(findings)
+    step = findings["SL-G-STEP-0"]
+    assert step.result is Result.FAIL
+    assert "unguarded edge" in step.message and "2.8' drop" in step.message
+
+
+def test_an_interior_seam_between_two_floor_systems_is_not_an_open_side(catlin_ctx):
+    """Two decks of one storey abut across the wall between them and never touch.
+
+    Probed on the edge line, every interior floor boundary in the house reads as a fall to
+    grade. The drop is asked *outboard* of the run for exactly this reason, and the main
+    floor's four systems have to come back clean.
+    """
+    from typehaus.checks.code.mn_residential.fall_protection import (
+        raised_surface_guard_height,
+    )
+
+    findings = {f.message.split(":")[0]: f for f in raised_surface_guard_height(catlin_ctx)}
+    for tag in ("FS-M-WEST", "FS-M-MECH", "FS-M-STAIR", "FS-M-EAST", "FS-S-WEST"):
+        assert findings[tag].result is Result.PASS, findings[tag].message
+
+
+# --- R311.7.1 at a stair head that lands on a wall top ---------------------------------
+
+
+def test_the_porch_stair_head_is_graded_against_its_wall_top(catlin_ctx):
+    """``ST-SG-PORCH`` springs from ``W-SG-E1``'s top, which no element models."""
+    from typehaus.checks.code.mn_residential.stair_guards import wall_top_landing_width
+
+    findings = wall_top_landing_width(catlin_ctx)
+    assert len(findings) == 1, [f.message for f in findings]
+    assert findings[0].result is Result.PASS
+    assert "W-SG-E1" in findings[0].message and "36.0\"" in findings[0].message
+
+
+def test_a_column_on_the_wall_top_splits_the_threshold():
+    """The north-strip drawing this rule exists for: a 12" round on a 12" wall.
+
+    It filled the top edge to edge, leaving 10" of passage one side and 14" the other, and
+    every check in the engine passed it. The clear width is the WIDER passage, not their
+    sum — you walk through one of them.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.checks.code.mn_residential.stair_guards import _clear_across
+
+    foot = 0.3048
+    a, b, travel = (28.5 * foot, -3.5 * foot), (28.5 * foot, -0.5 * foot), (-1.0, 0.0)
+    landing = Polygon([a, b, (27.5 * foot, -0.5 * foot), (27.5 * foot, -3.5 * foot)])
+    column = Polygon([(27.5 * foot, -3.0 * foot), (28.5 * foot, -3.0 * foot),
+                      (28.5 * foot, -2.0 * foot), (27.5 * foot, -2.0 * foot)])
+    assert _clear_across(landing, a, b, travel) == pytest.approx(inch(36).meters, abs=1e-4)
+    assert (_clear_across(landing.difference(column), a, b, travel)
+            == pytest.approx(inch(18).meters, abs=1e-4))
