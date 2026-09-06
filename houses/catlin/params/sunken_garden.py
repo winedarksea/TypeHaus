@@ -147,22 +147,46 @@ class SunkenGardenSpec:
     # ``structural.foundation_unbalanced_fill`` keeps reporting them UNKNOWN.
     basement_depth_ft: float = 109.4375 / 12.0
     slab_thickness_in: float = 3.5
-    # ** THE FLOOD STEP. ** The court surface is 7 1/4" BELOW the basement floor plane, not
-    # flush with it, so D-B-PATIO's threshold stands a full riser above the court and heavy
-    # rain landing in a 9'-deep hole ponds outside and drains rather than crossing into the
-    # basement. The court is the sacrificial reservoir; this number is the dam. It is the
-    # same 7 1/4" as the W-B-S2/W-B-S3 curb the door already stands on, so the threshold
-    # itself does not move — what moved is the ground in front of it, from 0" down to -7 1/4".
-    court_step_down_in: float = 7.25
+    # ** THE FLOOD STEP IS BACK TO ZERO (2026-09-05), AND THE CURB IS NOW THE WHOLE DAM. **
+    # The court surface is FLUSH with the basement floor plane again. Owner's call, taken on
+    # a stated trade: the court reads as ONE surface with a single 7 1/4" riser at
+    # D-B-PATIO, instead of a 23.7 sf landing perched a riser above 508 sf of floor.
+    #
+    # **What it costs is half the freeboard, and that is the whole cost.** Water in the
+    # court now climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 532 sf
+    # that is 321 cf of ponding rather than 643 cf — against roughly 191 cf of direct
+    # 100-year/24-hour rainfall (NOAA Atlas 14, ~4.3" for the Twin Cities), so the margin
+    # with the drywell assumed FULLY FAILED goes from about 3.4x to about 1.7x. Still over
+    # unity, and the curb is still a dam; but the case to watch is not summer rain, it is
+    # **snowmelt onto a frozen court over a frozen grate**, where the drywell contributes
+    # nothing by definition. DRW-SG-MAIN's grate is now the single line of defence it was
+    # only half of before. Do not let anything raise the court above this plane.
+    #
+    # The threshold does NOT move: it is W-B-S2/W-B-S3's 7 1/4" curb top at -102 3/16" and
+    # always was. What moved is the ground in front of it, from -7 1/4" back up to 0".
+    # 7 1/4" is also the largest step R311.3.2 allows without a landing (7 3/4" is
+    # `_MAX_NONREQUIRED_STEP_DOWN`), so this plane is not a preference — it is the ONLY
+    # court elevation from which one riser reaches this door. Lower it and the step becomes
+    # two risers with no landing, which is a hard R311.3 FAIL.
+    court_step_down_in: float = 0.0
     # The rim pour is the same 3 1/2" it always was; only its top elevation changed. Named
     # separately from ``slab_thickness_in`` because that one still sets the frost wings'
     # datum arithmetic and the grade beam's top, and the two must be free to differ.
     rim_thickness_in: float = 3.5
-    # The open centre's build-up: 8" rootzone / geotextile / 4" #57 stone. PROVISIONAL —
-    # gravel-and-turf today, flippable to grass or plain concrete by editing one assembly
-    # (``CATLIN_GARDEN_FIELD``). It tops out on the same plane as the rim, which is what
+    # The open centre's build-up, a USGA putting-green profile (``CATLIN_GARDEN_FIELD``):
+    # 12" rootzone / 2" intermediate choker sand / 4" bridging gravel / subgrade fabric.
+    #
+    # ** 18", not 12", and the extra 6" is all excavated DOWNWARD. ** USGA's cut is 16" when
+    # the gravel bridges the rootzone directly and 18-20" when an intermediate layer is used
+    # — and one is used here, because no gravel sold in this market bridges against a USGA
+    # rootzone. The field's TOP does not move: it stays on the rim's plane, which is what
     # keeps the court one excavation floor and one R311.3 landing.
-    field_depth_in: float = 12.0
+    #
+    # ** The number the next depth change must respect is 3". ** At 18" the field bottoms at
+    # -127 7/16"; the grade beam bottoms at -130 7/16". That is 3" of subgrade between them,
+    # and the underdrain trench (FD-SG-FIELD) is cut into it. Deepening this profile past
+    # 21" undermines the beam.
+    field_depth_in: float = 18.0
     porch_top_ft: float = 0.0  # top of the porch concrete walls = porch floor / railing base
     railing_height_ft: float = 3.5  # 42" guard above the porch walking surface
     retaining_top_ft: float = 0.5
@@ -355,16 +379,17 @@ _y_ax_mid = _y_ax_front - SPEC.side_wall_south_extension_in / 12.0  # -11.0'
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
-# ** THE COURT SURFACE. ** -116 11/16": the basement floor plane less the flood step.
+# ** THE COURT SURFACE. ** -109 7/16": the basement floor plane less the flood step,
+# which is now zero.
 # Everything that is walked on, or measured down from, inside this court reads this and not
 # ``basement_depth_ft`` — the rim's top, the field's top, the frost wings, the pier bells.
-_court_top_in = -(SPEC.basement_depth_ft * 12.0) - SPEC.court_step_down_in  # -116.6875
+_court_top_in = -(SPEC.basement_depth_ft * 12.0) - SPEC.court_step_down_in  # -109.4375
 _court_top = inch(_court_top_in)
-# The rim pour's underside, -120 3/16". It LAPS the FT-SG-* toes by 1 3/4"/2 3/4" and that
+# The rim pour's underside, -112 15/16". It LAPS the FT-SG-* toes by 1 3/4"/2 3/4" and that
 # is deliberate, not a collision: ``structural.concrete_interference`` grades only isolated
 # pours, every FT-SG-* carries ``under=``, and SL-B-FLOOR already laps every FT-B-* by
 # 3 1/2". No footing moves for this.
-_rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -120.1875
+_rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 
 _wall_bottom = ft(-(SPEC.basement_depth_ft + 0.75))
 # The two porch side walls stop 1" higher than the free retaining run, and the 1" comes out
@@ -397,10 +422,11 @@ _ret_top = ft(SPEC.retaining_top_ft)
 _ret_unbalanced_fill = ft(SPEC.retaining_top_ft + SPEC.basement_depth_ft + 0.75)
 # W-SG-ARCH, the grade beam closing the court's north end. Its underside is the retaining
 # footings' underside, so the excavation has one bottom and the strut engages them; its top
-# is the OLD garden-floor underside, -112 15/16", and it is DELIBERATELY LEFT THERE now that
-# the court dropped to -116 11/16". So the beam is no longer buried: it stands 3 3/4" proud
-# of the court as a mow strip on the boundary between the paved porch bay and the gravel
-# field — which is exactly where it runs.
+# is the garden-floor underside, -112 15/16". With the court flush again (2026-09-05,
+# `court_step_down_in` back to 0) that expression and `_rim_underside_in` are the SAME
+# number, so the beam is fully buried and the rim slab bears directly on it — one bearing
+# plane, no cut, and the 3 3/4" proud mow strip it briefly was (while the court sat at
+# -116 11/16") is gone along with FO-SG-ARCH.
 #
 # ** IT CANNOT FOLLOW THE COURT DOWN. ** Drop the top to the rim underside and the section
 # is 10 1/4": the note's own strut arithmetic gives phi-Pn 60,712 lb against Pu 62,051 —
@@ -413,7 +439,14 @@ _grade_beam_bottom = _wall_bottom - inch(SPEC.footing_thickness_in)
 # underside and the bottom IS the garden slab's, so the beam exactly fills the void already
 # between them. If either moves, this beam has to be re-derived rather than nudged.
 _veneer_beam_top = inch(-102.4375)          # = W-B-BRICK.bottom_elevation
-_veneer_beam_bottom = _court_top - inch(SPEC.rim_thickness_in)
+# ** THE BOTTOM IS HELD, NOT DERIVED, SINCE THE COURT CAME BACK UP (2026-09-05). ** It used
+# to read `_court_top - rim_thickness_in`, which was the garden slab's underside; with the
+# court flush again that expression gives -112 15/16" and a 10 1/2" beam. This beam spans
+# 19'-0" and ACI 318-19 Table 9.3.1.1 wants L/16 = 14 1/4" minimum depth on a simple span
+# before deflection has to be computed, so 10 1/2" is not a shallower beam, it is a
+# different design. 17 3/4" is what notes/sunken_garden_veneer_beam.md Sec. 3 actually
+# grades. The beam is now buried 7 1/4" below the court rather than forming its north edge.
+_veneer_beam_bottom = inch(-120.1875)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
 # way a correctly-sized wall falls over. Sized in
@@ -634,10 +667,9 @@ WALLS = [
     #
     # **The underside is flush with the retaining footings' at -10'-10 7/16"**, which is one
     # excavation level and one stone plane rather than two, and lets the strut engage those
-    # footings directly instead of hanging above them. Its top stands 3 3/4" above the
-    # court surface and is a mow strip, not a trip hazard in the middle of a floor:
-    # FO-SG-ARCH cuts the rim around it and the gravel field dies into its south face. See
-    # `_grade_beam_top` for why it does not follow the court down.
+    # footings directly instead of hanging above them. Its TOP is the rim slab's underside,
+    # so the court floor bears on it and nothing of it shows. See `_grade_beam_top` for why
+    # the top cannot move: at 10 1/4" the strut is d/c 1.02 and FAILS.
     #
     # `unbalanced_fill=inch(0)` is authored and is not a formality: without it
     # `_unbalanced_fill_ft`'s grade-plane proxy invents a retained height for a wall buried
@@ -863,7 +895,24 @@ _front_footing_width_in = 36.0
 # ``under`` is a Post, so it misses the R404.4 branch and the nearest frost wing is 62" away.
 # FT-SG-COL would have passed for the wrong reason, shielded at distance 0 by a foam board it
 # happens to sit under. Re-derived, cover is exactly 42.0" again.
-_pier_bell_bottom_ft = _court_top_in / 12.0 - SPEC.frost_depth_in / 12.0
+# ** HELD AT -13'-2 11/16" WHEN THE COURT CAME BACK UP (2026-09-05). NOT DERIVED. **
+# This read `_court_top_in/12 - frost_depth_in/12` — 42" below the garden floor, which is
+# the rule these two bells exist to satisfy. When `court_step_down_in` went back to 0 that
+# expression lifted both bells 7 1/4", and it was not WRONG: 42" below the flush court is
+# still 42" of cover. It was not worth taking.
+#
+# What it costs to take: PT-SG-COL and PT-SG-FCOL are the two items in this house whose
+# bearing, punching shear, flexure, slenderness and cage are all hand-worked in
+# notes/porch_pier_*.md and reproduced term by term by test_pier_calcs /
+# test_pier_section_calcs. Moving the bells re-opens every one of them.
+# What it buys: a 12" and a 20" shaft each 7 1/4" shorter — about **0.1 cy of concrete**
+# across both piers. That is the wrong 0.1 cy to chase.
+#
+# So the bells stay where they were augered and simply carry 49 1/4" of cover instead of
+# 42" — strictly more conservative, and `structural.frost_depth` grades them on cover, so
+# it can only get happier. If these ever DO need to move, the note re-derivation is the
+# work, not this line.
+_pier_bell_bottom_ft = -158.6875 / 12.0
 # ** NEW CLEARANCE TO WATCH. ** The bells' 7" levelling beds now bottom at -13'-9 11/16"
 # against `_SG_DRYWELL_TOP` at -14'-4 7/16": 6 3/4" clear, down from 14". Still positive,
 # and it is the exact collision the FOOTING_BEDDING block below warns about — asserted in
@@ -1240,7 +1289,7 @@ GARDEN_SLAB = Slab(
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.rim_thickness_in),
     top_elevation=_court_top,
-    openings=("FO-SG-FIELD", "FO-SG-ARCH", "FO-SG-BRKBM"),
+    openings=("FO-SG-FIELD", "FO-SG-BRKBM"),
 )
 
 # `FloorOpeningPurpose.CHASE` on both, and it is load-bearing rather than descriptive: CHASE
@@ -1254,13 +1303,12 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_field_x_e), ft(_field_y_s)),
                           pt(ft(_field_x_e), ft(_field_y_n)),
                           pt(ft(_field_x_w), ft(_field_y_n)))),
-    # W-SG-ARCH stands 3 3/4" proud of the court (see `_grade_beam_top`), so the rim cannot
-    # pour through it. The full 19'-0" clear width, the beam's own 12".
-    FloorOpening(uid="SGO002AAAA", tag="FO-SG-ARCH", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(_x_in_w), ft(_y_ax_mid - _half)),
-                          pt(ft(_x_in_e), ft(_y_ax_mid - _half)),
-                          pt(ft(_x_in_e), ft(_y_ax_mid + _half)),
-                          pt(ft(_x_in_w), ft(_y_ax_mid + _half)))),
+    # ** FO-SG-ARCH IS RETIRED (2026-09-05). uid SGO002AAAA MUST NOT BE REUSED. ** It cut
+    # the rim so W-SG-ARCH could stand 3 3/4" proud of the dropped court as a mow strip.
+    # With the court flush again, `_grade_beam_top` (-112 15/16") IS `_rim_underside_in`
+    # exactly — the same expression on both sides — so the beam is fully buried and the rim
+    # pours straight over it and bears on it. There is nothing left to cut around, and a
+    # chase here would open a 19'-0" slot in the court floor over a solid beam.
     # And the same cut around W-SG-BRKBM at the north end. The beam drops through the rim's
     # full 3 1/2" (its underside IS the rim's), so the slab cannot pour through it either —
     # it dies into the beam's south face and the beam becomes the court floor's north edge.
@@ -1273,15 +1321,17 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_x_in_w), ft(_y_ax_brkbm + _brkbm_half)))),
 ]
 
-# ** THE OPEN CENTRE IS PROVISIONAL, AND IT IS ISOLATED BEHIND ONE ASSEMBLY. ** Drainage
-# gravel and a turf build-up today; the decision to flip it to grass, or back to plain
-# concrete, is a one-line `assembly=` change. 12" deep, topping out on the rim's own plane.
+# ** THE OPEN CENTRE IS A USGA PUTTING-GREEN PROFILE, ISOLATED BEHIND ONE ASSEMBLY. **
+# 18" deep, topping out on the rim's own plane; the whole build-up lives in
+# `CATLIN_GARDEN_FIELD` and changing what the court's middle is remains a one-line
+# `assembly=` change.
 #
-# `CATLIN_GARDEN_FIELD` takes the default `role="enclosure"`, NOT the `"band"` the frost
-# wings carry, and the difference is the point: `resolve/site_earth._is_a_floor` reads a
-# band as buried and an enclosure as ground. A wing IS buried — foam under a floor. A lawn
-# is the ground you stand on. Same element kind, opposite answers, and the reason is which
-# side of the surface it lives on.
+# `CATLIN_GARDEN_FIELD` is authored `role="band"`, the same as the frost wings, and the
+# reasoning is written out at the assembly. In short: a band carries no STRUCTURE layer,
+# which `integrity.assembly_layers` requires of an `enclosure` and this build-up has none of;
+# and a band is invisible to `resolve/site_earth._is_a_floor`, which is free here because
+# SL-SG-FLOOR's outline already spans the whole court, and which removes the hazard of a
+# frost finding ever naming SL-SG-FIELD instead of SL-SG-FLOOR.
 GARDEN_FIELD = Slab(
     uid="SGS502AAAA", tag="SL-SG-FIELD", assembly="CATLIN_GARDEN_FIELD",
     outline=(pt(ft(_field_x_w), ft(_field_y_s)), pt(ft(_field_x_e), ft(_field_y_s)),
@@ -1290,41 +1340,23 @@ GARDEN_FIELD = Slab(
     top_elevation=_court_top,
 )
 
-# ** D-B-PATIO'S LANDING, WHICH IS THE OLD FLOOR PLANE LEFT WHERE THE DOOR NEEDS IT. **
+# ** SL-SG-STOOP IS RETIRED (2026-09-05). uid SGS503AAAA MUST NOT BE REUSED. **
 #
-# The threshold is at -8'-6 3/16" (W-B-S3-FR's 7 1/4" curb; `wall.base_ref_z_m + sill_m`,
-# and note it is NOT the basement floor plane). Against the old flush court that was a
-# 7 1/4" step — R311.3.2's one-riser allowance, legal because D-B-PATIO swings INWARD and
-# `_swings_over` returns False. Drop the court to -9'-8 11/16" and the step becomes 14 1/2",
-# past `_MAX_NONREQUIRED_STEP_DOWN` (7 3/4") by nearly a riser, and R311.3 has no landing at
-# all: a hard FAIL, and the right one.
+# It existed for exactly one reason: when the court dropped 7 1/4" it left D-B-PATIO's
+# threshold 14 1/2" above the floor in front of it — past `_MAX_NONREQUIRED_STEP_DOWN`
+# (7 3/4") by nearly a riser, with no landing, which is a hard R311.3 FAIL. So a 23.7 sf
+# block of the OLD flush floor was left standing where the door needed it, and the court
+# fell away from it on three sides.
 #
-# So the landing stays at the elevation it always had. This block is exactly the piece of
-# the old flush floor the door stands on — top -9'-1 7/16", cast ON the court, 7 1/4" tall —
-# and the finding it produces is the same one, word for word, that catlin has always
-# reported. What changed is that the court now falls away from the landing instead of
-# running level with it, which is the whole point of the step.
+# The court is flush again, so the whole 532 sf floor IS that plane. The landing is not
+# deleted — it is everywhere. `_landing_patch` projects x 18'-10"..23'-10",
+# y -3'-5 3/8"..-0'-5 3/8" and `_LANDING_COVERAGE` wants 85% of it; the court's north 5"
+# strip (the insulation gap to the house) can never be covered by anything, which caps any
+# surface here at 87%, and the rim slab covers the patch's full width the way the stoop did.
 #
-# ** THE FLOOD DEFENCE IS UNCHANGED AND THAT IS WHY THIS IS SAFE. ** Water in the court has
-# to climb 7 1/4" to reach this landing and another 7 1/4" to reach the threshold — 14 1/2"
-# of freeboard where there used to be 7 1/4". The landing is where you stand at the top of
-# that climb, not a breach in it.
-#
-# ** SIZE IS SET BY THE CHECK'S OWN PATCH, NOT BY EYE. ** `_landing_patch` projects
-# x 18'-10" .. 23'-10", y -3'-5 3/8" .. -0'-5 3/8" and `_LANDING_COVERAGE` demands 85% of
-# it. The court's north 5" strip (the insulation gap to the house) can never be covered by
-# anything, which caps any surface here at 87%, so the landing has to cover the patch's full
-# WIDTH to clear the bar — 7'-6" x 3'-2 1/2" does, with a foot to spare each side.
-#
-# It is an excavation floor too, but a HIGHER one, so `local_grade_elevation_m` — which
-# takes the lowest — ignores it and no frost number moves.
-GARDEN_STOOP = Slab(
-    uid="SGS503AAAA", tag="SL-SG-STOOP", assembly="CATLIN_GARDEN_STOOP",
-    outline=(pt(ft(17, 6), ft(-4, 0)), pt(ft(25, 0), ft(-4, 0)),
-             pt(ft(25, 0), ft(_y_in_n)), pt(ft(17, 6), ft(_y_in_n))),
-    thickness=inch(SPEC.court_step_down_in),
-    top_elevation=inch(-(SPEC.basement_depth_ft * 12.0)),
-)
+# `CATLIN_GARDEN_STOOP` goes unreferenced with it. Kept in plan/assemblies.py on the
+# CATLIN_EXT_2X6_SWINBURNE precedent — an unreferenced assembly saves no test churn, it
+# preserves the reasoning — and its prices.toml row falls to 0 SF.
 
 # --- FPSF wing insulation under the garden slab, along the house ------------------------
 #
@@ -2290,6 +2322,19 @@ PORCH_JOISTS = FloorSystem(
                      cantilever=inch(SPEC.porch_joist_cantilever_in),
                      cantilever_start=inch(2.75),
                      cantilever_end=inch(SPEC.column_south_offset_in),
+                     # The NORTH band (rim-0, y = -9'-8 3/4") is the porch's exposed front
+                     # edge: it closes the joist tips over the garden walk, in the same plane
+                     # as the white pillars and knee braces above it, and no fascia covers it
+                     # the way TR-SG-FASCIA covers the balcony's. So it is painted with them,
+                     # exactly as FS-SG-DECK's bands are.
+                     # ** IT PAINTS BOTH BANDS. ** `rim_material` is a JoistSpec field, not a
+                     # per-band one, so the SOUTH band at y = -10" takes the same paint and
+                     # the same qualified price key — and that one dies against W-B-BRICK's
+                     # wythe face at -10.05", where nothing will ever see it. 19 LF of paint
+                     # on a hidden board is the honest cost of saying the front one is white;
+                     # a board that tight to masonry is back-primed off the truck anyway.
+                     # The joists behind both stay bare PT.
+                     rim_material="post-paint-white",
                      # Four boundaries with two duplicate pairs: front and back are each two
                      # collinear beams meeting over their column, so the span solver sees
                      # the same two cut lines twice and drops the degenerate segment.
@@ -2951,7 +2996,7 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
-                     GARDEN_FIELD, GARDEN_STOOP, *FROST_WINGS, *DOWELS]
+                     GARDEN_FIELD, *FROST_WINGS, *DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
 # is the porch deck edge; the house cladding face is at -0'-5". The 5" between them

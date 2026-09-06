@@ -126,21 +126,22 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # (plan/site.py). It arrived 2026-09-04 when that unit stopped floating on the storey
     # datum. SL-M-HP1PAD is the sixth and the same article again, poured later the same day
     # when EQ-M-HP1-OD crossed from the pocket to the north face east of the garage
-    # (params/hp1_north_pad.py). SL-SG-STOOP is the seventh and the last real pour on this
-    # list — 7-1/4", the R311.3 landing off the porch stair, sized by `_landing_patch`
-    # rather than by eye.
+    # (params/hp1_north_pad.py). **SL-SG-STOOP was the seventh and is RETIRED (2026-09-05):**
+    # it was a 7-1/4" block of the old flush floor left as the R311.3 landing when the court
+    # dropped, and `court_step_down_in` going back to 0 made the whole 532 sf court that
+    # plane again, so the landing is SL-SG-FLOOR and the block is redundant.
     #
     # SL-SG-FIELD is not a pour at all: 12" of growing medium over the sunken garden's
     # court, a `Slab` for the same reason the frost wings are — a horizontal band has no
     # other element kind to be (params/sunken_garden.py states the case at length).
     assert poured["SL-SG-HPPAD"] == '4"' and poured["SL-SG-STAIRPAD"] == '4"'
     assert poured["SL-M-HP3PAD"] == '4"' and poured["SL-M-HP1PAD"] == '4"'
-    assert poured["SL-SG-STOOP"] == '7-1/4"'
-    assert poured["SL-SG-FIELD"] == '12"'
+    assert "SL-SG-STOOP" not in poured, "the stoop was retired 2026-09-05"
+    assert poured["SL-SG-FIELD"] == '18"'
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
                if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-", "SL-SG-HPPAD",
                                       "SL-SG-STAIRPAD", "SL-M-HP3PAD", "SL-M-HP1PAD",
-                                      "SL-SG-STOOP", "SL-SG-FIELD"))), poured
+                                      "SL-SG-FIELD"))), poured
     assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
     assert [tag for tag in poured if tag.startswith("SL-G-STEP-")] == ["SL-G-STEP-0"]
     assert {poured[tag] for tag in poured if tag.startswith("SL-SG-FROST-")} == {'1"', '2"'}

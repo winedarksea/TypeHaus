@@ -1019,25 +1019,33 @@ _VENEER_WYTHE = inch(3.625)
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
-        # ** 6", AND THIS LAYER IS WHAT MOVES THE WYTHE. ** The wall aligns on
-        # ``face("air-gap-int")``, so this layer's inboard face IS the node line, pinned to
-        # the XPS at -4.05". Growing the cavity therefore walks the brick SOUTH without
-        # touching N-B-BRICK-W/-E — which is the whole reason the move was made here and not
-        # at the nodes: the two arched reveals are positioned ``from_node`` along the wall
-        # AXIS, so a y-move leaves them concentric and `integrity.reveal_concentric` never
-        # has to be re-derived.
+        # ** 4" OF OPEN CAVITY, AND THE OTHER 2" IS NOW FOAM ON THE BACKUP WALL. **
+        # The 6" between this wall's finished face and the brick is FIXED and always was:
+        # W-SG-BRKBM's north face can reach y=-10" and no further (FT-B-S2/S3 hold the 2"
+        # isolation joint north of it), and the wythe bears on the beam, so the brick sits
+        # at -10.05..-13.675" and cannot move north. The only question was ever how to
+        # SPLIT that 6", and the answer is 2" of EPS on the backup (see _GARDEN_CURB_CORE
+        # and _GARDEN_FRAMED_OUTBOARD, which carry the two bounds that set that 2") plus 4"
+        # of drained air here.
         #
-        # The size is set by the foundation, not by rainscreen practice. The wythe now bears
-        # on W-SG-BRKBM (params/sunken_garden.py), a grade beam spanning between W-SG-W1 and
-        # W-SG-E1 whose north face can reach y=-10" and no further — FT-B-S2/S3 hold the
-        # 2" isolation joint north of that. Brick at -10.05..-13.675" is what that allows,
-        # and -4.05 to -10.05 is this layer.
+        # **Why the split and not 6" of air.** A drainage cavity is not optional — brick is
+        # a reservoir cladding and IRC R703.8.4 asks 1" minimum — but 6" of it bought
+        # nothing except an unbraced anchor. 4" is well past the 1" minimum and is generous
+        # drainage; the 2" that comes out of the cavity does not disappear, it goes onto the
+        # wall, where it insulates and braces the inboard third of the anchor.
         #
-        # 6" is PAST IRC R703.8.4's 4-1/2" prescriptive airspace, so the ties are a TMS 402
-        # engineered item — see notes/sunken_garden_veneer_beam.md. It was 1-1/2" (and 1"
-        # before that) while the wythe stood on a plinth cast on the house footing own toe;
-        # that plinth was the thermal bridge this beam exists to remove.
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(6.0),
+        # **Do not read the 4-1/2" prescriptive airspace as settled.** 4.0" is inside it,
+        # but the anchor still spans ~10" brick-to-stud through 6" of foam and that is past
+        # what the tables contemplate. notes/sunken_garden_veneer_beam.md Sec. 5 keeps the
+        # tie an engineered item and says why; what changed is that it is now a designable
+        # one instead of a 6" unbraced strut.
+        #
+        # This layer's inboard face IS the node line (the wall aligns on
+        # ``face("air-gap-int")``), so N-B-BRICK-W/-E moved to -6.05" with the backup's new
+        # face rather than this thickness absorbing the change — the reverse of the
+        # 2026-09-04 edit. Either way the brick does not move and the two arched reveals,
+        # positioned ``from_node`` along the wall AXIS, stay concentric.
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(4.0),
               function=LayerFunction.AIRGAP),
         # The field: unglazed brown face brick, base to wall top, 8'-5" of it.
         Layer(name="brick", material_ref="brown-brick", thickness=_VENEER_WYTHE,
@@ -1615,18 +1623,29 @@ CATLIN_GARDEN_SLAB = Assembly(
     source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
 )
 
-# The sunken-garden court's open centre: 147 sf of gravel and turf inside the SL-SG-FLOOR
-# rim (params/sunken_garden.GARDEN_FIELD).
+# The sunken-garden court's open centre: 147 sf of turf inside the SL-SG-FLOOR rim
+# (params/sunken_garden.GARDEN_FIELD). It is a USGA putting-green profile, built to the
+# *Recommendations for a Method of Putting Green Construction*, 2018 revision, Steps 3-5.
 #
-# ** PROVISIONAL, AND ISOLATED HERE ON PURPOSE. ** Whether this court's middle ends up
-# planted, gravelled or paved is an owner decision that has not been taken. Everything that
-# depends on it is inside this one assembly, so flipping it to grass, to a different
-# build-up, or back to plain concrete is a `layers=` edit and nothing else moves — the slab
-# outline, the rim, the frost datum and the R311.3 landing are all independent of it.
+# ** The stack is five courses, not four, and the fifth is why it is 18" and not 16". **
+# USGA's cut is 16" where the gravel bridges the rootzone directly (Table 1). No gravel sold
+# in this market bridges against a USGA rootzone, so this profile takes the Table 2 route —
+# a 2-4" intermediate "choker" sand between rootzone and gravel — and USGA's depth for that
+# build-up is 18-20". 18.00" is the shallow end, and 11.48 + 0.02 closes the stack on it
+# exactly: `integrity.slab_thickness_matches_assembly` wants a top-down prefix summing to
+# the authored thickness, and 11.48" is inside USGA's 12" +/- 1" rootzone.
+#
+# ** There is no fabric between rootzone and gravel, and its absence is the design. ** USGA
+# Step 3 permits geotextile only "as a barrier between the subsoil and the gravel layer",
+# and warns that "under no circumstances should geotextile fabric cover the drainage pipes
+# or trenches". Fabric at the rootzone/gravel interface is a permeability discontinuity that
+# fouls with fines and perches water; that interface is made by particle bridging, or by the
+# choker sand when it cannot be. The one membrane here is at the BOTTOM, against the clay
+# subgrade, which is the position USGA actually allows.
 #
 # ** `role="band"`, the same as the frost wings, and it costs nothing here. ** A band is "a
-# buried layer of the ground, not a thing that holds anything up" — which is exactly what 12"
-# of sand, fabric and stone is. It carries no STRUCTURE layer, and `integrity.assembly_layers`
+# buried layer of the ground, not a thing that holds anything up" — which is exactly what
+# 18" of sand, stone and fabric is. It carries no STRUCTURE layer, and `integrity.assembly_layers`
 # requires an `enclosure` to have one, so the two facts agree rather than fight.
 #
 # What a band costs elsewhere is that `resolve/site_earth._is_a_floor` stops reading it as an
@@ -1641,31 +1660,34 @@ CATLIN_GARDEN_SLAB = Assembly(
 # `with_spec`, and that check's UNKNOWN branch only fires when NO pour in the house states a
 # mix) and out of `concrete_cover_meets_minimum`. Every layer is a `_BILLABLE` function, so
 # all 147 sf of each bills through `envelope_layer_takeoff`; prices.toml carries a zero
-# `slab:CATLIN_GARDEN_FIELD` row so `structural_solids_takeoff` does not ALSO order 5.4 cy
+# `slab:CATLIN_GARDEN_FIELD` row so `structural_solids_takeoff` does not ALSO order 8.15 cy
 # of concrete that does not exist. Irrigation is an `[allowances]` line, not a layer.
 CATLIN_GARDEN_FIELD = Assembly(
     tag="CATLIN_GARDEN_FIELD",
     role="band",
     layers=(
-        Layer(name="turf", material_ref="bentgrass-turf", thickness=inch(0.5),
+        Layer(name="turf", material_ref="kbg-sod", thickness=inch(0.5),
               function=LayerFunction.FINISH),
-        # 7 1/2" nominal; the 0.02" the fabric takes comes out of here so the build-up
-        # closes on a round 12" and `integrity.slab_thickness` has a boundary to land on.
+        # 11 1/2" nominal; the 0.02" the subgrade fabric takes comes out of here so the
+        # build-up closes on a round 18" and `integrity.slab_thickness` has a boundary to
+        # land on. 11.48" is inside USGA's 12" +/- 1".
         #
         # SHEATHING, not STRUCTURE, and the reason is billing as much as mechanics:
         # `takeoff/envelope._BILLABLE` deliberately excludes STRUCTURE (that layer's
         # quantity is the pour's own cubic yards, and this assembly's $/cy key is zeroed), so
-        # a rootzone filed as structure would bill NOTHING — 8" of sand, the biggest single
-        # line of this build-up, silently free. Same function the capillary break below
-        # already carries, for the same reason: it is a placed course measured by the SF.
-        Layer(name="rootzone", material_ref="rootzone-sand", thickness=inch(7.48),
+        # a rootzone filed as structure would bill NOTHING — 12" of sand, the biggest single
+        # line of this build-up, silently free. Same function the two granular courses below
+        # carry, for the same reason: they are placed courses measured by the SF.
+        Layer(name="rootzone", material_ref="rootzone-sand", thickness=inch(11.48),
               function=LayerFunction.SHEATHING),
-        Layer(name="separation", material_ref="geotextile-separation", thickness=inch(0.02),
+        Layer(name="choker", material_ref="usga-choker-sand", thickness=inch(2.0),
+              function=LayerFunction.SHEATHING),
+        Layer(name="drainage-gravel", material_ref="usga-bridging-gravel", thickness=inch(4.0),
+              function=LayerFunction.SHEATHING),
+        Layer(name="subgrade-separation", material_ref="geotextile-separation", thickness=inch(0.02),
               function=LayerFunction.MEMBRANE),
-        Layer(name="drainage-stone", material_ref="capillary-break-stone", thickness=inch(4.0),
-              function=LayerFunction.SHEATHING),
     ),
-    source="sunken-garden court field, PROVISIONAL: USGA-style rootzone over a geotextile on 4\" #57 open-graded stone, draining to DRW-SG-MAIN. Flip this assembly to change what the court's middle is",
+    source="sunken-garden court field: USGA Recommendations for a Method of Putting Green Construction (2018), Steps 3-5 — 12\" rootzone over a 2\" intermediate choker sand over 4\" bridging gravel, on a subgrade separation fabric, underdrained by FD-SG-FIELD to DRW-SG-MAIN. 18\" is USGA's depth for the intermediate-layer build-up",
 )
 
 # D-B-PATIO's landing: the piece of the old flush garden floor the door still stands on,
@@ -2389,6 +2411,49 @@ _GARDEN_FRAMED_OUTBOARD = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    # ** 2" EPS, 2026-09-05, AND IT IS HERE RATHER THAN IN THE VENEER'S CAVITY. **
+    # It is fastened to THIS wall, so this is where it belongs — and putting it in
+    # BASEMENT_BRICK_VENEER instead would have been worse than untidy:
+    # `code.energy_prescriptive` grades one assembly at a time, so foam parked in the
+    # veneer's stack would have earned this wall no R at all and the check would still
+    # have read R-37.0.
+    #
+    # **What it is actually for, because the heat is a rounding error.** The backup here
+    # is already R-37.0 framed (R-50.4 under the sauna); 2" of EPS takes it to R-45 and
+    # saves on the order of $2/year. The reason it is worth ~$200-350 is the veneer ANCHOR.
+    # W-SG-BRKBM fixed the wythe's foot 6" off this face and no closer (notes/
+    # sunken_garden_veneer_beam.md), so the tie already had to reach ~10" from brick to
+    # stud whatever we did. What it could not do was reach 6" of that UNBRACED, through
+    # open air, which is what made it a TMS 402 engineered anchor. Filling 2" of the gap
+    # leaves 4" of open cavity and braces that much of the anchor's length in foam.
+    #
+    # ** 2" AND NOT 4", AND TWO SEPARATE BOUNDS SAY SO. ** Both were found by building 4"
+    # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
+    # at 4", at 3" and at 2" alike.
+    #
+    #   1. `CATLIN_EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
+    #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
+    #      UNDER the main storey's rainscreen Z-flashing (see
+    #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
+    #      above turns that lap into an upward-facing ledge. 4" put the face at -8.05",
+    #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
+    #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
+    #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
+    #      junctions get a width-change DETAIL DRAWN. 4" pushed `CATLIN_GARDEN_CURB_6`
+    #      inside the tolerance and 3" pushed `CATLIN_GARDEN_FRAMED_2X6` inside it — each
+    #      silently deleting the drawing of a junction that still exists. 2" is the one
+    #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
+    #      walls gain the detail they now genuinely warrant. Re-run the goldens.
+    #
+    # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
+    # is already 4" of XPS plus damp-proofing at roughly 0.13 perm, so this wall can only
+    # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
+    # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
+    # EPS also holds up better than XPS in long-term ground contact, and the bottom of
+    # this run sits in a court that can stand water. Lower R per inch (4.0 vs 5.0) is the
+    # price, and here it is the right trade.
+    Layer(name="eps-ci", material_ref="eps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
 )
 
 _GARDEN_FRAMED_STUD = Layer(
@@ -2419,6 +2484,49 @@ _GARDEN_CURB_CORE = (
     Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+          function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    # ** 2" EPS, 2026-09-05, AND IT IS HERE RATHER THAN IN THE VENEER'S CAVITY. **
+    # It is fastened to THIS wall, so this is where it belongs — and putting it in
+    # BASEMENT_BRICK_VENEER instead would have been worse than untidy:
+    # `code.energy_prescriptive` grades one assembly at a time, so foam parked in the
+    # veneer's stack would have earned this wall no R at all and the check would still
+    # have read R-37.0.
+    #
+    # **What it is actually for, because the heat is a rounding error.** The backup here
+    # is already R-37.0 framed (R-50.4 under the sauna); 2" of EPS takes it to R-45 and
+    # saves on the order of $2/year. The reason it is worth ~$200-350 is the veneer ANCHOR.
+    # W-SG-BRKBM fixed the wythe's foot 6" off this face and no closer (notes/
+    # sunken_garden_veneer_beam.md), so the tie already had to reach ~10" from brick to
+    # stud whatever we did. What it could not do was reach 6" of that UNBRACED, through
+    # open air, which is what made it a TMS 402 engineered anchor. Filling 2" of the gap
+    # leaves 4" of open cavity and braces that much of the anchor's length in foam.
+    #
+    # ** 2" AND NOT 4", AND TWO SEPARATE BOUNDS SAY SO. ** Both were found by building 4"
+    # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
+    # at 4", at 3" and at 2" alike.
+    #
+    #   1. `CATLIN_EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
+    #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
+    #      UNDER the main storey's rainscreen Z-flashing (see
+    #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
+    #      above turns that lap into an upward-facing ledge. 4" put the face at -8.05",
+    #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
+    #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
+    #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
+    #      junctions get a width-change DETAIL DRAWN. 4" pushed `CATLIN_GARDEN_CURB_6`
+    #      inside the tolerance and 3" pushed `CATLIN_GARDEN_FRAMED_2X6` inside it — each
+    #      silently deleting the drawing of a junction that still exists. 2" is the one
+    #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
+    #      walls gain the detail they now genuinely warrant. Re-run the goldens.
+    #
+    # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
+    # is already 4" of XPS plus damp-proofing at roughly 0.13 perm, so this wall can only
+    # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
+    # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
+    # EPS also holds up better than XPS in long-term ground contact, and the bottom of
+    # this run sits in a court that can stand water. Lower R per inch (4.0 vs 5.0) is the
+    # price, and here it is the right trade.
+    Layer(name="eps-ci", material_ref="eps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
 )
 
@@ -2631,18 +2739,26 @@ MATERIALS = [
              perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
              source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- the sunken-garden court's field build-up ---------------------------------
-    # Three house-local materials, all provisional with `CATLIN_GARDEN_FIELD` itself. None
-    # of them appears in any other assembly, so retiring the gravel-and-turf field retires
-    # them with it.
-    Material(tag="rootzone-sand", name="Rootzone sand/compost blend, 8\" placed",
+    # Five house-local materials, all specific to `CATLIN_GARDEN_FIELD`. None appears in any
+    # other assembly, so retiring the turf field retires them with it. Every one of them is
+    # a USGA *specification*, not a product: the gravel's bridging factor is computed against
+    # the actual sand purchased, and the rootzone is qualified by an A2LA lab against USGA
+    # Tables 3 and 4. An assembly can record the specification; it cannot record the test.
+    Material(tag="rootzone-sand", name="USGA rootzone sand, 12\" placed",
              density=1600.0, hatch="earth", color="#8b7a5e",
-             source="USGA-style rootzone: coarse sand with 10-15% compost by volume. 8\" is the shallow end of the range and is what a 4\" #57 drainage bed under it permits"),
+             source="USGA 2018 Table 3 particle size (coarse+medium sand 0.25-1.0 mm >=60%, gravel >2 mm <=3%, silt <=5%, clay <=3%, very fine+silt+clay <=10%, Cu 1.8-3.5) and Table 4 physical properties (total porosity 35-55%, air-filled 15-30%, capillary 15-25%, Ksat >=6 in/hr). 2018 sets NO fixed organic percentage — the mix is qualified by an A2LA lab against those tables, and \"80:20 sand:peat\" is common practice rather than the specification"),
+    Material(tag="usga-choker-sand", name="USGA intermediate (choker) sand, 2\" placed",
+             density=1600.0, hatch="earth", color="#b3a382",
+             source="USGA 2018 Table 2 intermediate layer: >=90% between 1 mm and 4 mm, placed 2-4\" uniform. Required here because no locally available gravel bridges directly against a USGA rootzone (Table 1); it is what replaces the fabric that must not sit at that interface"),
+    Material(tag="usga-bridging-gravel", name="USGA bridging gravel, 3/8\"",
+             density=1600.0, hatch="gravel", color="#a09a90",
+             source="USGA 2018 Table 2 gravel for use with an intermediate layer: <=10% larger than 12.7 mm, >=65% between 6.4 and 9.5 mm, <=10% smaller than 2 mm; Micro-Deval loss <=18% (ASTM D6928); neutral pH preferred — 2018 added the warning that a low-pH rootzone over limestone or dolomite gravel forms iron-oxide layers that impede drainage. Locally: Plaisted Companies (Elk River, MN) \"USGA Coarse Gravel (3/8 in.)\". NOT ASTM #57, which cannot meet Table 1 or Table 2 at any gradation"),
     Material(tag="geotextile-separation", name="Non-woven geotextile separation fabric",
              perm_rating=100.0, hatch="membrane", color="#9a9a8c",
-             source="AASHTO M288 Class 2 non-woven; it keeps the rootzone out of the #57 voids, which is the same failure DRW-SG-MAIN's fabric wrap exists to prevent"),
-    Material(tag="bentgrass-turf", name="Turf, cool-season sod",
+             source="AASHTO M288 Class 2 non-woven, at the ONE position USGA Step 3 permits — \"a barrier between the subsoil and the gravel layer\", keeping the clay subgrade out of the gravel voids. It is deliberately NOT run between rootzone and gravel (a permeability discontinuity that perches water) and never over the underdrain trench"),
+    Material(tag="kbg-sod", name="Kentucky bluegrass sod, washed or sand-grown",
              density=1000.0, hatch="earth", color="#5f7a4a", finish="planted",
-             source="sod rather than seed: this is a 9'-deep court that will be walked through before anything germinates. Species is a landscape decision, not a building one"),
+             source="Kentucky bluegrass mown 2-2.5\", not creeping bentgrass: UMN Extension treats bentgrass as a weed in Minnesota lawns (reel mower at 0.25-0.75\", 3-4 mows/week, 5-10+ dollar-spot sprays/yr), while KBG is rhizomatous and self-repairing and per UMN's WinterTurf ICE-BREAKER trials is largely unaffected at 90 days of ice encasement. USGA Step 7 governs the product: sod over a sand rootzone must be grown on the same or similar rootzone, or washed — \"in no case is it acceptable to place unwashed sod grown on loam or fine-textured soil above a sand-based rootzone\". Sod rather than seed because this is a 9'-deep court that will be walked through before anything germinates"),
     # --- accent wall paint -------------------------------------------------------
     # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
     # (storeys/second.py). Physically identical to `latex-paint` (same film, same Class III
@@ -2783,6 +2899,27 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
              nominal_quarters=4, milling_profile="T&G",
              source="plans/TODO.md — first-floor study walnut paneling to 36\""),
+    # RM-S-SUITE and its walk-in, 2026-09-05. ** THE SAME WALNUT AS THE WAINSCOT ABOVE, AND
+    # DELIBERATELY NOT THE SAME TAG. ** Species, stock and profile are identical — one 4/4 T&G
+    # run off the family's own milled stock, the mill sets up once — but a tag is what the
+    # price join keys on, and `walnut-tg` is priced in prices.toml [wood_surfaces] because the
+    # wainscot is billed nowhere else. Give the floor that same tag and `takeoff/wood_surfaces.py`
+    # emits a second row (kind "floor") under it, the [wood_surfaces] rate lands on that row
+    # too, and 182 SF of floor bills once there and again in [floor_finishes]. A separate tag
+    # is the whole fix, and it follows the library's own `oak`, which is a flooring tag and not
+    # a paneling one for exactly this reason.
+    #
+    # `finish="strip-floor"` is a RENDER recipe, not the coating (the coating is the wainscot's
+    # hardwax oil, and prices.toml carries it): it is the one key `plankStyleFor` knows for a
+    # floor, so the boards draw with staggered butt end joints instead of the wainscot's
+    # continuous V-grooved run. `walnut-floor` is also named in `STRIP_FLOOR_REFS`
+    # (ui/src/three/plankMaterial.ts) — without that needle `isWoodPlank` never asks for a
+    # recipe at all and the suite renders as flat fill.
+    Material(tag="walnut-floor", name="Black walnut T&G strip flooring (4/4)", r_per_inch=1.1,
+             density=610.0, hatch="lumber", color="#5d4433",
+             finish="strip-floor", species="walnut", stock_bf_per_sqft=1.0,
+             nominal_quarters=4, milling_profile="T&G",
+             source="owner's family milled walnut stock, dried and run T&G — the same board as the RM-M-STUDY wainscot; 4/4, so board feet = square feet"),
     # The call booth's bench seat and desk top, the same walnut as the wainscot
     # they sit against. ** `nominal_quarters=8` IS REQUIRED, not decoration: ** both pieces
     # finish 1-1/2", 4/4 dresses to 3/4", and `takeoff/hardwood.py` flags a finished piece
