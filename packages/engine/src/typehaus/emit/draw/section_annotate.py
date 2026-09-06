@@ -44,7 +44,7 @@ from typehaus.emit.draw.elevation_annotate import (
 )
 from typehaus.emit.draw.elevation_project import ElevationView, view_for
 from typehaus.emit.draw.lineweights import CUT_HEAVY
-from typehaus.emit.draw.plan_labels import room_display_name
+from typehaus.emit.draw.plan_labels import feet_inches, room_display_name
 from typehaus.emit.draw.scene import (
     IRNode,
     Leader,
@@ -352,9 +352,22 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane) -> 
         if (u1 - u0) / M_PER_IN < width_in:
             continue
         z_in = room_floor_elevation(model, room) / M_PER_IN + _ROOM_LABEL_RISE_IN
-        b.add(Text(anchor=((u0 + u1) / 2.0 / M_PER_IN, z_in), content=name,
+        centre_u = (u0 + u1) / 2.0 / M_PER_IN
+        b.add(Text(anchor=(centre_u, z_in), content=name,
                    height=ANNO_IN, height_pt=ANNO_PT, layer="A-AREA-IDEN",
                    align="center"))
+        # Floor-to-ceiling under the name. A building section is where a reviewer looks for
+        # headroom, and the datum ladder beside the drawing cannot answer it: that ladder
+        # gives top-of-PLATE, and a room under a soffit, a dropped ceiling or a rake
+        # finishes somewhere else entirely — catlin's north closet is 7'-3" under an
+        # 8'-11 1/2" plate. ``clear_height_m`` is the number ``code.R305_ceiling_height``
+        # grades, so the sheet and the check state one height.
+        clear = getattr(room, "clear_height_m", None)
+        if clear:
+            b.add(Text(anchor=(centre_u, z_in - ANNO_IN * 1.6),
+                       content=f"CLG {feet_inches(clear / M_PER_IN)}",
+                       height=ANNO_IN * 0.85, height_pt=ANNO_PT * 0.85,
+                       layer="A-AREA-IDEN", align="center"))
 
 
 def _emit_envelope_callouts(b: SceneBuilder, model: ResolvedModel,

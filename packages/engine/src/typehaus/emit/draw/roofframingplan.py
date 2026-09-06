@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
-from typehaus.emit.draw.lineweights import CUT, PROFILE
+from typehaus.emit.draw.lineweights import CUT, FAINT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
@@ -90,7 +90,7 @@ def _emit_bearing_walls(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoo
         authored = model.plan.by_tag(wall.tag)
         bearing = getattr(authored, "structural_role", None) is StructuralRole.BEARING
         emit_wall(b, wall, layer_override="S-WALL" if bearing else "S-WALL-BELW",
-                  weight_override=0.5 if bearing else 0.13, hatch=False, members=False)
+                  weight_override=CUT if bearing else FAINT, hatch=False, members=False)
         if bearing:
             cx, cy = wall_center(wall)
             b.add(Text(anchor=_in((cx, cy + _BEARING_LABEL_OFFSET_M)),

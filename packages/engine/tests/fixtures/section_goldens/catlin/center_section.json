@@ -11224,12 +11224,44 @@
       "space": "model",
       "node": "text",
       "anchor": [
+        108.00000000000001,
+        -95.39305555555555
+      ],
+      "content": "CLG 8'-0 15/16\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
         324.00000000000006,
         -85.4375
       ],
       "content": "GYM",
       "height": 6.222222222222221,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        324.00000000000006,
+        -95.39305555555555
+      ],
+      "content": "CLG 7'-11 3/8\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-AREA-IDEN",
@@ -11256,12 +11288,44 @@
       "space": "model",
       "node": "text",
       "anchor": [
+        324.00000000000006,
+        14.981944444444444
+      ],
+      "content": "CLG 8'-11 1/2\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
         48.00000000000001,
         24.0
       ],
       "content": "BATH2",
       "height": 6.222222222222221,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        48.00000000000001,
+        14.044444444444444
+      ],
+      "content": "CLG 8'-11 1/2\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-AREA-IDEN",
@@ -11288,12 +11352,44 @@
       "space": "model",
       "node": "text",
       "anchor": [
+        156.0,
+        14.044444444444444
+      ],
+      "content": "CLG 8'-11 1/2\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
         347.50000000000006,
         144.0
       ],
       "content": "BED1",
       "height": 6.222222222222221,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        347.50000000000006,
+        134.04444444444445
+      ],
+      "content": "CLG 8'-11 1/2\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-AREA-IDEN",
@@ -11320,12 +11416,44 @@
       "space": "model",
       "node": "text",
       "anchor": [
+        108.00000000000001,
+        134.04444444444445
+      ],
+      "content": "CLG 7'-10\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
         239.50000000000003,
         144.0
       ],
       "content": "HALL",
       "height": 6.222222222222221,
       "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-AREA-IDEN",
+      "align": "center",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "text",
+      "anchor": [
+        239.50000000000003,
+        134.04444444444445
+      ],
+      "content": "CLG 7'-3\"",
+      "height": 5.288888888888888,
+      "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-AREA-IDEN",

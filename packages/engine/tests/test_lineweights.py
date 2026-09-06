@@ -36,6 +36,9 @@ def test_the_hierarchy_is_ordered_and_wide_enough():
 def test_no_drawing_module_writes_a_bare_lineweight():
     """The regression this module exists to prevent — a fourteenth literal.
 
+    Covers ``weight_override=`` as well as ``lineweight=``: it is the same number by
+    another name, and it is where four literals survived the first sweep.
+
     ``0.0`` is exempt and is not a weight: it means *no stroke*, which is a statement about
     a band that is filled and not outlined.
     """
@@ -45,7 +48,11 @@ def test_no_drawing_module_writes_a_bare_lineweight():
             continue
         tree = ast.parse(path.read_text(), filename=str(path))
         for node in ast.walk(tree):
-            if not isinstance(node, ast.keyword) or node.arg != "lineweight":
+            # ``weight_override`` is the same number by another name: ``_shared.emit_wall``
+            # takes it and passes it straight to ``lineweight``. It was where four literals
+            # survived the first sweep, because the guard only looked for one keyword.
+            if not isinstance(node, ast.keyword) \
+                    or node.arg not in ("lineweight", "weight_override"):
                 continue
             value = node.value
             if isinstance(value, ast.Constant) and value.value not in (0.0, None):

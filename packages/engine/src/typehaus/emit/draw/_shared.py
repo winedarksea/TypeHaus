@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.annotate import DODGE_GAP_PT, LabelSpec, PlacedLabel, dodge, label_box
 from typehaus.emit.draw.annotate import model_in_per_pt as annotate_model_in_per_pt
-from typehaus.emit.draw.lineweights import CUT, LIGHT
+from typehaus.emit.draw.lineweights import CUT, FAINT, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     ArchDimension,
     FaceAnchor,
@@ -53,6 +53,21 @@ STAGGER_ROWS = 3
 #: and finish stand outboard of it and move whenever the rainscreen does (catlin's face has
 #: moved three times in a month); the sheathing plane is the one the house is dimensioned
 #: from (houses/catlin/CLAUDE.md, "36'x36' at sheathing").
+#:
+#: **This is deliberately NOT face-of-stud, which is the general residential convention.**
+#: The permit-output work asked for that move and it is the wrong one *here*, for a reason
+#: specific to this model rather than to drafting practice: catlin's whole coordinate system
+#: is struck from the sheathing plane. Exterior walls carry ``alignment=face("sheathing-ext")``
+#: (decision #43), ``resolve/layout_lines.py`` phases every stud grid off it, every window
+#: station and every facade rule in the house guide is measured from it, and the headline
+#: dimension the owner and the drawings both use is 36'-0" AT SHEATHING. Dimensioning to
+#: face-of-stud would print 35'-11" on the sheet against 36'-0" everywhere else — a drawing
+#: that disagrees with its own model, which is worse than one that disagrees with a
+#: convention. The strings are already consistently one side (the outside), which is the
+#: other half of what the convention is actually protecting against.
+#:
+#: A house authored to a stud-face datum should set this to ``{"structure"}``; it is a
+#: per-model choice and the machinery already takes either.
 DIMENSION_FACE_FUNCTIONS = frozenset({"structure", "sheathing"})
 
 # How far below a symbol's footprint its tag sits, so the label never covers the glyph.
@@ -99,8 +114,10 @@ def emit_wall(
         if len(layer.polygon) < 2:
             continue
         aia = layer_override or FUNCTION_LAYER.get(layer.function, "A-WALL")
+        # A structural layer is what the cut passes through; everything else in the wall is
+        # a surface inside it. The two must not print alike — see ``lineweights``.
         weight = weight_override if weight_override is not None else (
-            0.35 if aia == "A-WALL" else 0.18
+            PROFILE if aia == "A-WALL" else REFERENCE
         )
         b.add(Polyline(
             points=tuple(to_in(p) for p in layer.polygon),
@@ -132,7 +149,7 @@ def emit_ghost_walls(b: SceneBuilder, model: ResolvedModel, storey: str) -> None
     """
     for wall in model.walls:
         if wall.storey == storey:
-            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
+            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=FAINT,
                       hatch=False, members=False)
 
 

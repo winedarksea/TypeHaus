@@ -20,7 +20,7 @@ from typehaus.emit.draw.framing_schedule import (
     framing_sheet_findings,
     joist_label,
 )
-from typehaus.emit.draw.lineweights import CUT, PROFILE
+from typehaus.emit.draw.lineweights import CUT, FAINT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
@@ -93,9 +93,9 @@ def _emit_walls_below(b: SceneBuilder, model: ResolvedModel, level: FramedLevel)
         if wall.storey != level.bearing_storey:
             continue
         if wall.tag in heavy:
-            emit_wall(b, wall, layer_override="S-WALL", weight_override=0.5, members=False)
+            emit_wall(b, wall, layer_override="S-WALL", weight_override=CUT, members=False)
         else:
-            emit_wall(b, wall, layer_override="S-WALL-BELW", weight_override=0.13,
+            emit_wall(b, wall, layer_override="S-WALL-BELW", weight_override=FAINT,
                       hatch=False, members=False)
 
 
