@@ -56,6 +56,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 - PR-B-KITCHEN-DRAIN-RUN is right through the middle of the theater. It should likely run more west first, bypassing the theater/media room as much as possible.
 
+- Let's add soffit lighting to the overhead garage door side of the garage, and then to both side walls of that. Likely an aluminum channel cleanly integrated with the soffit of the garage.
+
+- Add some trim/baseboard to the design. Note we are generally going with trimless for now, in our design, clean lines, drywall more often, but we do maybe want a flush-with-drywall baseboard.
+
+- Orientation tuned glass (particularly second story south facing windows)
+
 - **The four porch beams are still 3-ply KDAT 2x12 with eight ply seams** that hold water and
   grit and freeze ~100x/year (`notes/beam_water_protection.md`). The balcony beams were moved
   to treated SYP structural glulam for the same defect; the same trade is available on the
@@ -503,21 +509,10 @@ number, the pattern and the reasoning against every one of these; the rows with 
 number are ready to move to `plans/cost-options.md` whenever the owner wants them):
 
 Implement now:
-Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it
-a dark surround, and turn the seats toward it (181/185). Likely a small section of oak, walnut, or cherry wainscot.
+Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it a dark surround, and turn the seats toward it (181/185). Likely a small section of oak, walnut, or cherry wainscot.
 
 Deferred:
-Retype the east living row 27x48 -> 27x64, the type already exists (192) -- MEASURED +$269-562.  Note: deferred pending decision.
-Oak in the second-floor hall, so the oak stair stops landing on vinyl between two oak rooms
-(233) -- MEASURED +$1,943-2,695. Note: deferred pending decision.
-Unglazed quarry tile in the mudroom instead of the lab-grade sheet vinyl (248) -- MEASURED,
-effectively free at +$33-360. Note: deferred pending decision.
-A 10" soffit band over the dining table -- the ONLY lever for ceiling variety on main/second,
-because Room.ceiling as a Length produces no geometry there (190/182). Perhaps more oak. Note: deferred pending decision.
-Trees: one canopy tree north, two ironwood west, one serviceberry east -- and none within 25'
-of the sunken-garden walls (171). Note: deferred pending decision.
-Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has
-nothing on it (241).
+Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has nothing on it (241).
 
 
 ## Takeoff and price-model gaps found by the 2026-08-30 allowance audit

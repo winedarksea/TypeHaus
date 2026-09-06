@@ -30,8 +30,8 @@ source:
 ### Keyed
 - [K1] Birdsmouth seat: beveled stiffeners per APA D710 10h, or beveled plate 10q.
 - [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
-- [K3] Eave bay blocking: rigid foam in the sheathing plane, sealed to web and plate.
-- [K4] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
+- [K3 @ host#layer:sheathing:out] Eave bay blocking: rigid foam in the sheathing plane, sealed to web and plate.
+- [K4 @ host#layer:spray-foam:out] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
 - [K5] Drip flange on the deck, 1-1/2" back, underside 0.70" up. Turn down at the trough mid-width.
 - [K6] Lap the membrane over the drip. Nothing else reaches that plane.
 - [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the trim.

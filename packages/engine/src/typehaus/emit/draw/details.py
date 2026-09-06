@@ -300,10 +300,24 @@ def _notes_path(model: ResolvedModel, derived: DerivedDetail):
     return path if path.exists() else None
 
 
+def _sheet_note_set(model: ResolvedModel, derived: DerivedDetail):
+    """This detail's parsed notes file, or an empty set when it names none.
+
+    One parse feeds both consumers — the notes column takes ``sheet_lines()`` and the keyed
+    bubbles take ``keyed``. Parsing twice would let the legend and the drawing disagree
+    about a key, which is the one failure mode a keynote system has.
+    """
+    from typehaus.emit.draw.sheet_notes import SheetNoteSet
+
+    path = _notes_path(model, derived)
+    if path is None:
+        return SheetNoteSet()
+    return parse_sheet_notes(path.read_text(encoding="utf-8"), source=path.name)
+
+
 def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
     """Logical note lines for ``Scene.notes`` — outside the drawing's coordinate space."""
-    path = _notes_path(model, derived)
-    return _load_markdown_notes(path) if path is not None else []
+    return _sheet_note_set(model, derived).sheet_lines()
 
 
 def _load_markdown_notes(path) -> list[str]:
@@ -373,7 +387,122 @@ def _annotation_nodes(model: ResolvedModel, derived: DerivedDetail, scene: Scene
                                   layer="A-ANNO-TEXT", uid=ann.uid or None))
     else:
         nodes.extend(_seed_nodes(model, derived, scene))
+    # OUTSIDE the branch, deliberately. Keyed notes come from the transition's markdown, not
+    # from a DetailAnnotation, so hanging them off the ``else`` would mean one authored
+    # annotation on a detail silently deleted every bubble on it.
+    key_nodes, key_findings = _keyed_note_nodes(model, derived, scene, nodes)
+    nodes.extend(key_nodes)
+    findings.extend(key_findings)
     return nodes, findings
+
+
+def _keyed_note_nodes(model: ResolvedModel, derived: DerivedDetail,
+                      scene: Scene = None, placed: list | None = None,
+                      ) -> tuple[list, list[Finding]]:
+    """A bubble per anchored keyed note, dodged clear of what is already in the scene.
+
+    Only a note that names an anchor gets a bubble; ``[K1] text`` with no ``@ uid`` is a
+    legend entry and nothing else. That is not a limitation to be fixed — one notes file
+    reaches six details (``basement_to_framed_wall_detail.md`` does), and a uid that exists
+    on one junction may be nowhere near another. An anchor that will not resolve *on this
+    detail* is silently skipped rather than reported: it is a note about a different cut of
+    the same wall, not an authoring error.
+    """
+    from typehaus.emit.draw.annotate import dodge, leader_box
+    from typehaus.emit.draw.keyed_notes import bubble_extent, bubble_nodes, standoff
+
+    notes = _sheet_note_set(model, derived)
+    anchored = [n for n in notes.keyed if n.anchored]
+    if not anchored:
+        return ([], [])
+
+    frame = _frame(derived)
+    scale = scene.frame.scale if scene is not None and scene.frame is not None else None
+    # ``placed`` is what THIS call just built — the seed callout column, which does not
+    # exist in ``scene.nodes`` yet. Dodging only against the scene put every bubble
+    # straight through the continuity column it is supposed to be avoiding.
+    reserved = [*(scene.nodes if scene is not None else ()), *(placed or [])]
+    fixed = [leader_box(n, scale) for n in reserved if isinstance(n, Leader) and n.text]
+    nodes: list = []
+    for note in anchored:
+        point = _keyed_anchor(model, derived, frame, note)
+        if point is None:
+            continue
+        at = standoff(point, scale)
+        # The continuity column already occupies the strip outboard of the wall. Push the
+        # bubble down until it clears every leader box in it, the way the seed callouts do.
+        at = _dodge_point(at, fixed, bubble_extent(at, scale), dodge)
+        # A bubble already placed is as much an obstacle as a leader box: two notes
+        # anchored on adjacent layer faces resolve within a few model inches of each other.
+        fixed.append(bubble_extent(at, scale))
+        nodes.extend(bubble_nodes(note.key, at, scale))
+        nodes.append(Leader(anchor=_point_anchor(point), at=at, to=point, text="",
+                            height_pt=ANNOTATION_TEXT_PT, uid=None))
+    return (nodes, [])
+
+
+#: The anchor target that means "whichever wall *this* detail is cutting". A notes file is
+#: bound by an assembly pattern, so one file reaches several junctions with different walls
+#: in them; ``host`` is what lets a keyed note follow the binding instead of naming one of
+#: them and rendering nowhere on the other five.
+HOST_ANCHOR = "host"
+
+
+def _keyed_anchor(model: ResolvedModel, derived: DerivedDetail, frame, note):
+    """The keyed note's anchor point, or ``None`` when it does not land on this detail.
+
+    ``None`` rather than a ``Finding``, because it is not an error. One notes file is bound
+    by an assembly pattern and reaches several junctions; a note about the spray foam has
+    nothing to say on the interior partition that shares the file, and reporting that would
+    be reporting the binding working correctly.
+
+    Accepts an element **tag** as well as a uid.
+
+    Uids are minted by ``haus fmt`` and a note file must never hand-write one — that is a
+    house rule, and it applies to a reference as much as to a declaration, because a
+    reference to a uid that is regenerated points at nothing. Tags are the stable name a
+    person writes. ``host`` (:data:`HOST_ANCHOR`) is stabler still: it takes whichever wall
+    the condition names on the detail being drawn.
+    """
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    target = note.anchor_uid
+    if target == HOST_ANCHOR:
+        walls = condition_walls(model, derived.condition) or []
+        host = _host_wall(model, derived.condition)
+        if host is not None and host not in walls:
+            walls = [*walls, host]
+        for wall in walls:
+            point, err = _wall_anchor(wall, note.anchor_face, frame)
+            if err is None:
+                return point
+        return None
+    by_tag = next((e for e in (*model.walls, *model.roofs, *model.solids)
+                   if getattr(e, "tag", None) == target), None)
+    if by_tag is not None:
+        target = by_tag.uid
+    point, err = resolve_anchor(model, frame, target, note.anchor_face)
+    return None if err is not None else point
+
+
+def _dodge_point(at, fixed, extent, _dodge) -> tuple[float, float]:
+    """Slide ``at`` down until its ``extent`` clears every reserved box in ``fixed``.
+
+    ``annotate.dodge`` works on ``LabelSpec`` placements, which a bubble is not — it has no
+    text width and no row height, it is a circle. Rather than force a bubble into a label
+    shape, the one thing ``dodge`` does that matters here is done directly: move along -z
+    until nothing overlaps.
+    """
+    u0, z0, u1, z1 = extent
+    dz = 0.0
+    for _ in range(24):
+        clash = next((box for box in fixed
+                      if not (u1 < box[0] or u0 > box[2]
+                              or z1 + dz < box[1] or z0 + dz > box[3])), None)
+        if clash is None:
+            break
+        dz -= (z1 - z0) + (clash[3] - clash[1]) * 0.05
+    return (at[0], at[1] + dz)
 
 
 def _point_anchor(point):

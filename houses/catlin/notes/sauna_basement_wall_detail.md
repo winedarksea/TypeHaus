@@ -25,9 +25,9 @@ source:
 - Foundation: 8" wall, #6 at 48" o.c., on a 20"x8" footing over washed stone.
 
 ### Keyed
-- [K1] Furring to the pour: masonry anchors, embedment verified for the substrate.
+- [K1 @ host#layer:liner-furring:out] Furring to the pour: masonry anchors, embedment verified for the substrate.
 - [K2] South rough jamb 11 1/2" deep: 8" pour plus 3 1/2" liner. Deepen the buck.
-- [K3] Return the foil facing into the jamb and seal it. Do not stop it short.
+- [K3 @ host#layer:foil-polyiso:out] Return the foil facing into the jamb and seal it. Do not stop it short.
 - [K4] Bench: two tiers at 18" and 36". Heater low, in the airflow path.
 - [K5] Drop framing: 2x4 wall on the pour, 2x4 ceiling hung from the I-joists.
 - [K6] Footing drain: perforated pipe in the stone beside the footing, not under.

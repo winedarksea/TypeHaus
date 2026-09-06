@@ -25,11 +25,11 @@ source:
 - Roof: gable trusses at 24" o.c., OSB deck, underlayment, standing-seam metal.
 
 ### Keyed
-- [K1] Stem band on a 1/4" vented standoff into the ICF webs. Hem each edge.
-- [K2] Closures: vented inside at base, solid outside at head and rake. ~192 LF.
-- [K3] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the panel.
+- [K1 @ host#layer:coil-gap:out] Stem band on a 1/4" vented standoff into the ICF webs. Hem each edge.
+- [K2 @ host#layer:cladding:out] Closures: vented inside at base, solid outside at head and rake. ~192 LF.
+- [K3 @ host#layer:cdx:out] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the panel.
 - [K4] Isolate steel panel from aluminium band: EPDM between, no metal contact.
-- [K5] Curb cap: up-turned flashing behind the drywall, sloped in, drip inboard.
+- [K5 @ host#layer:gwb-int:in] Curb cap: up-turned flashing behind the drywall, sloped in, drip inboard.
 - [K6] Sill: PT plate on gasket and capillary break. Anchors per IRC R403.1.6.
 - [K7] Overhead door header: 2-ply 14" LVL on packs sized from the 16'-0" opening.
 - [K8] Slab-to-driveway joint: 1" XPS, 1/2" traffic-rated polyurethane sealant.

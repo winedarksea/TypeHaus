@@ -27,6 +27,37 @@ source:
   - plan/electrical.py
 ---
 
+## Sheet notes
+
+### General
+- Room design condition: 75 F at 70% RH. Dew point 64.4 F.
+- Liner, inside out: 1/2" PVC panel, 3/4" furring, membrane. Walls and ceiling.
+- The membrane is the air and vapour barrier. Continuous on all six sides.
+- Floor: heat-welded sheet vinyl, 6" integral flash cove, sloped to a drain.
+- Glazing: fixed units only, U-0.14, warm-edge spacer, thermally broken frame.
+- No suspended ceiling. No roofing membrane under the vinyl.
+- Ventilation: 25 cfm in, 25 cfm out, both dampered. Extract high, far end.
+- Damp location throughout; wet location wherever misted or hosed.
+
+### Keyed
+- [K1] Lap the floor cove up the wall and terminate it behind the wall membrane.
+- [K2 @ host#layer:humid-membrane:out] Membrane continuous from wall to ceiling at the perimeter; seal each penetration.
+- [K3] Drained sill pan under each unit: sloped, flashed into the wall membrane, draining to the room and never into framing.
+- [K4 @ host#layer:liner-furring:out] Keep the 3/4" furring gap open behind the panel; it is the drying path.
+- [K5] Wet-location listed luminaires, gasketed, corrosion-resistant housings.
+- [K6] Receptacles WR-listed and GFCI, in non-metallic gasketed boxes with in-use covers.
+- [K7] Grow tubes listed to UL 8800 per NEC Article 410 Part XVI.
+
+### Spec 07 26 00
+- If this wall is ever built with board insulation, use glass-faced or unfaced polyiso. Never foil-faced.
+
+### Spec 09 65 16
+- Heat-weld each vinyl seam. The cove is the waterproofing; add no second impermeable layer under it.
+
+### Spec 23 00 00
+- Hold the room neutral to slightly negative, -0.05 to -0.15 in. w.g. against adjacent spaces.
+- A humidifier is required: an 84%-latent ERV still loses 1.5 to 2 gal/day at design.
+
 # Notes
 
 `RM-S-PLANT` is a tropical plant room held at **~75 °F / 70 % RH

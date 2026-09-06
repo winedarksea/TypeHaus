@@ -23,6 +23,34 @@ source:
 
 # Notes
 
+## Sheet notes
+
+### General
+- Wall: 2x6 studs, 1/2" plywood, 4" of 2 lb closed-cell foam in one pass.
+- Girts: KDAT 2x4 laid flat, horizontal, 24" o.c., on three-ply 4-1/2" KDAT blocks.
+- Blocks land on every other stud, 32" o.c. from the layout line.
+- One 8" SDWS22800DB per crossing, 1-1/2" into the stud. 1,128 total.
+- Cladding: PBR board-and-batten on the girts, face 7-1/4" off the sheathing.
+- Block stands 1/2" proud of the foam. That gap is the drainage plane.
+- Window mount plane is the girt face, 6" outboard of the sheathing.
+- Everything outboard of the sheathing is KDAT. No WRB; the foam is the water plane.
+
+### Keyed
+- [K1 @ host#layer:outer-girt:out] Jamb post: KDAT 2x4 flat, inner face on the RO edge, 3-1/2" past each end.
+- [K2] Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.
+- [K3] Block each course the post crosses, at 24" max, and across the RO.
+- [K4] Field courses stop 3-1/2" clear of each RO.
+- [K5] Sill pan on the buck: back dam up its leg, out to the mount plane, down the vent.
+- [K6 @ host#layer:spray-foam:out] Head flashing on the foam face, out over the head course, past the cladding, drip.
+- [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
+
+### Spec 06 10 00
+- Mark the stud line across the girt face as each girt is laid; the screw is blind through 6" of wood into a 1-1/2" target.
+- Set the window bucks before spraying the foam.
+
+### Spec 07 21 00
+- Spray the foam in one application; the blocks are the only thing crossing it.
+
 ## What the wall is
 
 `CATLIN_EXT_2X6` is a **catlin truss wall**, ONE girt tier.

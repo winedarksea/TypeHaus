@@ -364,3 +364,84 @@ def test_the_legend_names_the_flashing_it_drew(catlin_model):
     labels = {t.content for t in scene.nodes if isinstance(t, Text) and t.space == "paper"}
     assert "flashing" in labels, sorted(labels)
     assert not any(c.startswith("flashing ") for c in labels), "no schematic thickness"
+
+
+# --- keyed notes -------------------------------------------------------------
+#
+# A keynote system has exactly one failure mode worth testing: the bubble on the drawing
+# and the entry in the legend disagreeing. Everything below is that property from a
+# different side.
+
+
+def _keyed_details(model):
+    """Every derived detail whose notes file carries keyed notes, with its scene."""
+    from typehaus.emit.draw.keyed_notes import KEY_LAYER
+
+    out = []
+    for derived in derive_detail_slices(model):
+        scene, _ = build_detail(model, derived)
+        keys = {n.content for n in scene.nodes
+                if isinstance(n, Text) and n.layer == KEY_LAYER}
+        if keys:
+            out.append((derived, scene, keys))
+    return out
+
+
+def test_the_catlin_set_actually_draws_keyed_bubbles(catlin_model_ro):
+    """A guard on the whole feature: an anchor that silently stops resolving reads as
+    'no keyed notes anywhere', which is indistinguishable from 'the feature is off'."""
+    assert _keyed_details(catlin_model_ro), "no detail in the house draws a keyed bubble"
+
+
+def test_every_bubble_on_a_drawing_has_an_entry_in_its_legend(catlin_model_ro):
+    for derived, scene, keys in _keyed_details(catlin_model_ro):
+        legend = {line.split("  ")[0] for line in scene.notes if line[:1] == "K"}
+        assert keys <= legend, f"{derived.key}: bubbles {keys - legend} are in no legend"
+
+
+def test_a_key_is_bubbled_at_most_once_per_drawing(catlin_model_ro):
+    """Two bubbles carrying one key means a builder cannot tell which place the note is
+    about, which is worse than no bubble at all."""
+    from typehaus.emit.draw.keyed_notes import KEY_LAYER
+
+    for derived, scene, _ in _keyed_details(catlin_model_ro):
+        drawn = [n.content for n in scene.nodes
+                 if isinstance(n, Text) and n.layer == KEY_LAYER]
+        assert len(drawn) == len(set(drawn)), f"{derived.key}: duplicate bubble {drawn}"
+
+
+def test_a_bubble_never_lands_on_a_layer_ladder_leader(catlin_model_ro):
+    """The strip outboard of the wall is where the continuity column already lives.
+
+    ``_dodge_point`` slides a bubble down until it clears every leader box in the scene;
+    this is that, asserted on the real details rather than on the dodger in isolation.
+    """
+    from typehaus.emit.draw.annotate import leader_box
+    from typehaus.emit.draw.keyed_notes import KEY_LAYER, bubble_extent
+
+    for derived, scene, _ in _keyed_details(catlin_model_ro):
+        scale = scene.frame.scale if scene.frame is not None else None
+        boxes = [leader_box(n, scale) for n in scene.nodes if isinstance(n, Leader)
+                 and n.text]
+        for node in scene.nodes:
+            if not (isinstance(node, Text) and node.layer == KEY_LAYER):
+                continue
+            u0, z0, u1, z1 = bubble_extent(node.anchor, scale)
+            for box in boxes:
+                overlaps = not (u1 < box[0] or u0 > box[2] or z1 < box[1] or z0 > box[3])
+                assert not overlaps, (
+                    f"{derived.key}: bubble {node.content} overprints a leader box")
+
+
+def test_a_keyed_note_off_this_detail_draws_nothing_and_reports_nothing(catlin_model_ro):
+    """One notes file is bound by an assembly pattern and reaches several junctions.
+
+    ``basement_to_framed_wall_detail.md`` reaches seven, and a note anchored on the
+    damp-proofing has nothing to say at the interior bearing line that shares the file.
+    That is the binding working, not an authoring error, so it must not produce a finding.
+    """
+    derived = next(d for d in derive_detail_slices(catlin_model_ro)
+                   if d.key == "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT")
+    scene, findings = build_detail(catlin_model_ro, derived)
+    assert any(line.startswith("K") for line in scene.notes), "the legend still prints"
+    assert not [f for f in findings if "anchor" in f.check_id]

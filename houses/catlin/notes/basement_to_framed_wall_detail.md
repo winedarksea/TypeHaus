@@ -25,11 +25,11 @@ source:
 - Footing drain: 4" perforated pipe in lined stone beside the footing.
 
 ### Keyed
-- [K1] Liquid membrane on sheathing and concrete, lapped across sill and rim.
-- [K2] Z-flashing with drip at the outrigger base, set to the 1" vent, not 3-1/2".
+- [K1 @ host#layer:damp-proof:out] Liquid membrane on sheathing and concrete, lapped across sill and rim.
+- [K2 @ host#layer:xps-b:out] Z-flashing with drip at the outrigger base, set to the 1" vent, not 3-1/2".
 - [K3] Insect mesh above it, stapled to the outriggers and run behind the flashing.
 - [K4] L-flashing from sheathing base onto the foam; seal its outer end.
-- [K5] Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.
+- [K5 @ host#layer:concrete:out] Mudsill anchors per IRC R403.1.6. Plate joint peel-and-stick on the envelope.
 - [K6] Slab perimeter: 1" XPS thermal break with 1/2" polyurethane sealant.
 - [K7] Veneer: 2" EPS on the backup wall, 4" clear air, weeps at the beam. Two-piece adjustable anchors through the full 6".
 
