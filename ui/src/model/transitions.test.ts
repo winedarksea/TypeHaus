@@ -21,9 +21,9 @@ export function runTransitionTests() {
     "A pattern may narrow within a kind — the key prefix must not be double-counted");
   assert(!globMatches("storey_stack:rim:*", "storey_stack:sill:BASEMENT_12"),
     "A narrowed pattern must not swallow the rest of its kind");
-  assert(globMatches("opening_perimeter:CATLIN_EXT_*", "opening_perimeter:EXT_2X6"),
+  assert(globMatches("opening_perimeter:EXT_*", "opening_perimeter:EXT_2X6"),
     "Wildcards work mid-key");
-  assert(!globMatches("opening_perimeter:CATLIN_EXT_*", "opening_perimeter:CATLIN_CONC_12_INT"),
+  assert(!globMatches("opening_perimeter:EXT_*", "opening_perimeter:BASEMENT_12"),
     "A prefix that does not match is not covered");
   assert(globMatches("assembly_change:?", "assembly_change:A") &&
     !globMatches("assembly_change:?", "assembly_change:AB"),
