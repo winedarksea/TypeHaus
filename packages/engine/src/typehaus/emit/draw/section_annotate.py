@@ -367,7 +367,11 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane) -> 
             b.add(Text(anchor=(centre_u, z_in - ANNO_IN * 1.6),
                        content=f"CLG {feet_inches(clear / M_PER_IN)}",
                        height=ANNO_IN * 0.85, height_pt=ANNO_PT * 0.85,
-                       layer="A-AREA-IDEN", align="center"))
+                       # A-ANNO-DIMS, not A-AREA-IDEN: this is a DIMENSION that happens to
+                       # sit under a room name. On the identifier layer it reads as part of
+                       # the name to anything walking the layer — which two annotation
+                       # tests do, and which is how they caught it.
+                       layer="A-ANNO-DIMS", align="center"))
 
 
 def _emit_envelope_callouts(b: SceneBuilder, model: ResolvedModel,

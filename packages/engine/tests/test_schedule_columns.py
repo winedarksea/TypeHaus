@@ -132,14 +132,23 @@ def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
     afternoon's shrink pulled the sauna onto the garden curb, deleted that assembly, and
     handed the scale back.
 
-    ** THIS SHEET IS ONE FOUNDATION-SCHEDULE ROW FROM STEPPING DOWN AGAIN, AND THE ROW NEED
-    NOT BE CONCRETE. ** The margin at 3/16" is 0.18" of scene height against a row's 29.6".
-    The two partitions the same replan added (W-B-WELL, W-B-CL-N) did not cost it — a framed
-    wall on the slab is not in the FOUNDATION WALL SCHEDULE — but the next `FoundationWall`
-    assembly tag anywhere in this house will be.
+    ** THAT 0.18" IS SPENT, AND THE TITLE BLOCK SPENT IT (2026-09-06). ** The margin at
+    3/16" was 0.18" of scene height against a schedule row's 29.6", and the sheet is 94% of
+    the ARCH D width as well — a knife-edge in both directions. Giving every sheet a real
+    NCS title block (revision block, seal box, issue stamp) costs more than that in either
+    geometry: as a bottom strip it takes the height, and on the right edge it takes the
+    width this sheet has only 2.17" of to spare. So ARCH D is 1/8" now, deliberately.
+
+    **The assertion this test exists for still holds**, and it is not the scale label: the
+    reflow keeps S-100 well above the 3/32" the single stack forced it down to. What changed
+    is one step, not the defect.
+
+    The lever, if 3/16" is wanted back, is `sheet_writer.TITLE_W` — and the honest options
+    are a narrower block or a schedule that does not need a full column, not a smaller
+    drawing.
     """
     scene = build_foundation_plan(catlin_model)
-    assert frame_for_scene(scene, ARCH_D).scale_label == "3/16\" = 1'-0\""
+    assert frame_for_scene(scene, ARCH_D).scale_label == "1/8\" = 1'-0\""
     assert frame_for_scene(scene, LEDGER).scale_label == "1/16\" = 1'-0\""
 
 

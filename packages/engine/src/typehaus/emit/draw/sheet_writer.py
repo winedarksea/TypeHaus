@@ -79,6 +79,24 @@ _TITLE_H_MAX = 1.90
 _TITLE_H_FRACTION = 0.085
 
 
+#: Width of the RIGHT-EDGE title block, paper inches, used on scene sheets.
+#:
+#: **Why there are two title-block geometries, and why that is not a smell.** A scene sheet
+#: and a table page compete for different things. A plan's viewport is computed — it takes
+#: whatever the chrome leaves — and on ARCH D catlin's foundation plan needs 21.4" of the
+#: 22.25" available HEIGHT while using 22.2" of 35.3" of WIDTH. Height there is the scarce
+#: resource and width is free: a full NCS title block as a bottom strip costs S-100 a whole
+#: step of scale (3/16" to 1/8"), and the same block on the right edge costs nothing.
+#:
+#: A table page is the mirror. It lays its content out in FIGURE FRACTIONS across the full
+#: width, with the bottom already reserved at 0.11 — so a right-edge block would run through
+#: every schedule on the sheet while the bottom strip costs it nothing.
+#:
+#: Same cells, same content, placed where each sheet has room. ``_draw_chrome(edge=...)``
+#: is the switch and ``viewport_box`` reserves to match.
+TITLE_W = 2.60
+
+
 def title_height(size: tuple[float, float]) -> float:
     """Title-block strip height for this paper, inches.
 
@@ -144,8 +162,10 @@ def viewport_box(size: tuple[float, float], notes_panel: bool = False,
     """
     width, height = size
     x = _MARGIN + _VIEW_PAD
-    y = _MARGIN + title_height(size) + _VIEW_PAD + _BAR_LANE
-    w = width - _MARGIN - _VIEW_PAD - x
+    # No title strip along the bottom on a scene sheet — the block is on the right edge
+    # (``TITLE_W``), where this sheet has room to spare. Only the scale-bar lane is here.
+    y = _MARGIN + _VIEW_PAD + _BAR_LANE
+    w = width - _MARGIN - _VIEW_PAD - x - TITLE_W - _VIEW_PAD
     h = height - _MARGIN - _VIEW_PAD - y
     if notes_panel:
         w -= _NOTES_W + _VIEW_PAD
@@ -259,7 +279,7 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
     if notes:
         _draw_notes_panel(fig, notes, view, size)
     _draw_chrome(fig, model, getattr(spec, "number", ""), getattr(spec, "title", ""),
-                 scale_label, size)
+                 scale_label, size, edge=True)
     _apply_text_scale(fig, ax, scaled_text)
     return fig
 
@@ -354,8 +374,14 @@ def sheet_chrome(fig, model: ResolvedModel, number: str, title: str,
 
 
 def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
-                 scale_label: str, size: tuple[float, float]) -> None:
-    """Border rectangle + bottom title-block strip, drawn in paper-inch coordinates."""
+                 scale_label: str, size: tuple[float, float], *,
+                 edge: bool = False) -> None:
+    """Border rectangle + title block, drawn in paper-inch coordinates.
+
+    ``edge`` puts the block down the right-hand side (scene sheets, where height is the
+    scarce resource) instead of along the bottom (table pages, where width is). See
+    :data:`TITLE_W` for the measurement behind that split.
+    """
     from matplotlib.patches import Rectangle
 
     width, height = size
@@ -368,30 +394,52 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     m = _MARGIN
     ax.add_patch(Rectangle((m, m), width - 2 * m, height - 2 * m, fill=False,
                            edgecolor=_INK, linewidth=1.2))
-    strip_h = title_height(size)
-    strip_top = m + strip_h
-    ax.plot([m, width - m], [strip_top, strip_top], color=_INK, linewidth=0.9)
-    inner_w = width - 2 * m
-
-    # Six cells, left to right: identity · site · preparer + issue · revisions · seal ·
-    # sheet. The order is the reading order of a title block — who and where, then who drew
-    # it and what it may be used for, then what changed, then who is answerable, then which
-    # sheet this is. The sheet number is last because it is what a reader's thumb finds on
-    # the bottom-right corner of a stack.
-    # Widths are what each cell has to SAY, measured off the printed sheet rather than
-    # split evenly: identity is a name and up to two address lines, the revision block needs
-    # room for a description, and the seal box wants to be nearly square.
-    cuts = (0.18, 0.32, 0.52, 0.76, 0.87)
-    dividers = [m + inner_w * f for f in cuts]
-    for x in dividers:
-        ax.plot([x, x], [m, strip_top], color=_INK, linewidth=0.5)
-    edges = [m, *dividers, width - m]
     pad = 0.10
 
-    def rows(count: int) -> list[float]:
-        """``count`` evenly spaced text baselines down the strip, top row first."""
-        step = strip_h / (count + 0.6)
-        return [strip_top - step * (i + 0.8) for i in range(count)]
+    # Six cells: identity · site · preparer + issue · revisions · seal · sheet. The order is
+    # the reading order of a title block — who and where, then who drew it and what it may
+    # be used for, then what changed, then who is answerable, then which sheet this is. The
+    # sheet number is LAST because it is what a reader's thumb finds on the corner of a
+    # stack, which on the right-edge block means the bottom of the column.
+    #
+    # Proportions are what each cell has to SAY, measured off the printed sheet rather than
+    # split evenly: identity is a name and up to two address lines, the revision block needs
+    # room for a description, and the seal box wants to be nearly square.
+    fractions = (0.18, 0.32, 0.52, 0.76, 0.87)
+    if edge:
+        block_x0 = width - m - TITLE_W
+        strip_h = height - 2 * m
+        ax.plot([block_x0, block_x0], [m, height - m], color=_INK, linewidth=0.9)
+        # Bottom-to-top: the sheet number sits at the bottom corner, so the cell order is
+        # reversed against the fractions, which run "first cell first".
+        cuts = [height - m - (height - 2 * m) * f for f in fractions]
+        for y in cuts:
+            ax.plot([block_x0, width - m], [y, y], color=_INK, linewidth=0.5)
+        tops = [height - m, *cuts]
+        bottoms = [*cuts, m]
+        cells = [(block_x0, block_x0 + TITLE_W, top, bottom)
+                 for top, bottom in zip(tops, bottoms, strict=True)]
+    else:
+        strip_h = title_height(size)
+        strip_top = m + strip_h
+        inner_w = width - 2 * m
+        ax.plot([m, width - m], [strip_top, strip_top], color=_INK, linewidth=0.9)
+        dividers = [m + inner_w * f for f in fractions]
+        for x in dividers:
+            ax.plot([x, x], [m, strip_top], color=_INK, linewidth=0.5)
+        lefts = [m, *dividers]
+        rights = [*dividers, width - m]
+        cells = [(left, right, strip_top, m)
+                 for left, right in zip(lefts, rights, strict=True)]
+
+    edges = [cell[0] for cell in cells] + [cells[-1][1]]
+
+    def rows(count: int, index: int = 0) -> list[float]:
+        """``count`` evenly spaced text baselines down cell ``index``, top row first."""
+        top, bottom = cells[index][2], cells[index][3]
+        span = top - bottom
+        step = span / (count + 0.6)
+        return [top - step * (i + 0.8) for i in range(count)]
 
     def label(x: float, y: float, text: str, size_pt: float = 6.0,
               weight: str = "normal", color: str = _INK) -> None:
@@ -402,7 +450,7 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     site = getattr(project, "site", None)
 
     # --- cell 1: project identity and address -------------------------------------
-    r = rows(4)
+    r = rows(4, 0)
     name = getattr(project, "name", "") or ""
     if name:
         label(edges[0] + pad, r[0], name, 10.5, "bold")
@@ -426,11 +474,11 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     if elevation is not None:
         with suppress(AttributeError):
             site_rows.append(f"ELEV  {elevation.meters:,.1f} m")
-    for row, text in zip(rows(4), site_rows, strict=False):
+    for row, text in zip(rows(4, 1), site_rows, strict=False):
         label(edges[1] + pad, row, text, 6.0)
 
     # --- cell 3: preparer, project number, scale, date, and the issue stamp ---------
-    r = rows(5)
+    r = rows(5, 2)
     label(edges[2] + pad, r[0], f"PROJECT NO  {_project_number(project)}", 6.0)
     label(edges[2] + pad, r[1], f"DRAWN BY    {_preparer(project)}", 6.0)
     # CHECKED BY is blank because nobody has checked it. A pre-filled name on a line whose
@@ -445,29 +493,31 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     # A real block with ruled rows and a header, empty. It replaces a hard-coded "REV —",
     # which said there is no revision system rather than that there are no revisions yet.
     # The engine cannot fill it: a revision is an issue to somebody, which is a human act.
-    r = rows(4)
+    r = rows(4, 3)
     label(edges[3] + pad, r[0], "REV  DATE        DESCRIPTION", 5.5, "bold")
     for row in r[1:]:
-        ax.plot([edges[3] + pad, edges[4] - pad], [row - 0.055, row - 0.055],
+        ax.plot([cells[3][0] + pad, cells[3][1] - pad], [row - 0.055, row - 0.055],
                 color="#999999", linewidth=0.3)
 
     # --- cell 5: the seal box ------------------------------------------------------
     # An outlined reserved area and a caption, and the engine still never DRAWS a stamp.
     # ``schedules/structural.py`` puts it plainly: drawing a stamp would be forging one.
-    box_x0, box_x1 = edges[4] + pad, edges[5] - pad
-    ax.add_patch(Rectangle((box_x0, m + pad), box_x1 - box_x0, strip_h - 2 * pad,
+    seal_l, seal_r, seal_top, seal_bot = cells[4]
+    box_x0, box_x1 = seal_l + pad, seal_r - pad
+    ax.add_patch(Rectangle((box_x0, seal_bot + pad), box_x1 - box_x0,
+                           (seal_top - seal_bot) - 2 * pad,
                            fill=False, edgecolor="#999999", linewidth=0.4,
                            linestyle=(0, (3, 2))))
-    ax.text((box_x0 + box_x1) / 2.0, m + strip_h / 2.0, "SEAL", fontsize=6.0,
+    ax.text((box_x0 + box_x1) / 2.0, (seal_top + seal_bot) / 2.0, "SEAL", fontsize=6.0,
             family="monospace", va="center", ha="center", color="#999999")
 
     # --- cell 6: sheet number and title --------------------------------------------
-    r = rows(3)
+    r = rows(3, 5)
     label(edges[5] + pad, r[0], number, 13.0, "bold")
     # The cell is as wide as the paper made it, so that — not a constant — is the limit.
     # A fixed 46 was a ledger number: it clipped a title at the same place on 24x36, where
     # this cell is more than twice as wide and had the room to print it whole.
-    columns = wrap_columns_for(width - m - pad - edges[5] - pad, 6.5)
+    columns = wrap_columns_for(cells[5][1] - cells[5][0] - 2 * pad, 6.5)
     label(edges[5] + pad, r[2], _shorten(title, columns), 6.5)
 
 

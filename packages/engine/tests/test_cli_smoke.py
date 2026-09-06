@@ -19,7 +19,8 @@ from _helpers import CATLIN, copy_house
 EXPECTED_COMMANDS = {
     "build", "calcs", "check", "compare", "diff", "doctor", "energy",
     "engineering", "explain", "export", "fmt",
-    "import", "import-project", "ls", "millwork", "new", "permit-check", "print", "render",
+    "import", "import-project", "ls", "millwork", "new", "permit-check", "print",
+    "record", "render",
     "serve", "takeoff", "tasks", "version",
 }
 
