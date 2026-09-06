@@ -389,7 +389,12 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
 
 
 #: ``FramingPreferences.corner`` -> how many supplemental corner studs that style builds.
-_CORNER_STYLE_STUD_COUNT = {"3-stud": 1, "4-stud": 2}
+#: ``"california"`` builds ONE supplemental stick, the same count as ``"3-stud"`` — it
+#: differs only in that the stick is laid FLAT (``orient=normal(d)``), which is a shape the
+#: member carries, not a count this check can see. So the count comparison below is already
+#: right for it; what a california corner would need if this check ever grew teeth about
+#: orientation is the member's ``orient``, not its tally.
+_CORNER_STYLE_STUD_COUNT = {"3-stud": 1, "4-stud": 2, "california": 1}
 
 
 @check(Tier.STRUCTURAL, "structural.corner_style_matches_preference")
@@ -419,9 +424,9 @@ def corner_style_matches_preference(ctx: CheckContext) -> list[Finding]:
         return [_advisory(
             "structural.corner_style_matches_preference",
             f"preferences.toml [framing] corner = {rules.corner!r} is not a style the "
-            "framing solver speaks (\"3-stud\" or \"4-stud\")",
+            "framing solver speaks (\"3-stud\", \"4-stud\" or \"california\")",
             (), Result.UNKNOWN,
-            fix_hint="set [framing] corner to \"3-stud\" or \"4-stud\"",
+            fix_hint="set [framing] corner to \"3-stud\", \"4-stud\" or \"california\"",
         )]
     corners = corner_junctions(ctx.model)
     out: list[Finding] = []
