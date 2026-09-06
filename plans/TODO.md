@@ -539,6 +539,40 @@ the future.
 
 ## Found while doing the 2026-09-06 TODO batch — by the new checks, on their first run
 
+- **DONE 2026-09-06 — the `CATLIN_` prefix is gone from all 34 assemblies**, along with 126
+  files of references and 54 golden filenames that embed an assembly name. Two names could
+  not simply lose the prefix, because the stripped form already names a Slab ELEMENT in
+  `params/sunken_garden.py`: `CATLIN_GARDEN_SLAB` is **`GARDEN_COURT_SLAB`** (its own source
+  prose calls it the court floor) and `CATLIN_GARDEN_FIELD` is **`GARDEN_PUTTING_GREEN`**
+  (it is a USGA putting-green profile). Leaving them bare would have put two identically
+  named constants in one package.
+  - **A purely mechanical rename would have shipped four silent regressions**, which is the
+    reason to write this down rather than treat the next one as find-and-replace:
+    1. **`condition_pattern` globs stop matching.** `"opening_perimeter:CATLIN_EXT_*"` and
+       `"CATLIN_BASEMENT_*"` matched nothing afterwards and **every exterior opening lost
+       its Transition binding**. `integrity.condition_coverage` caught it.
+    2. **Then the widened glob over-matches.** A bare `BASEMENT_*` also swallows
+       `BASEMENT_BRICK_VENEER`, whose perimeter `TR-CATLIN-VENEER-OPENING` deliberately
+       SUPPRESSES (an open segmental arch has no perimeter work), and a detail sheet
+       appeared for it. The pattern is **`BASEMENT_[0-9]*`** now — `matches()` is `fnmatch`,
+       so the character class works — with a comment saying the `[0-9]` is load-bearing.
+    3. **Condition keys pair assembly names ALPHABETICALLY.** `CATLIN_INT_2X6_BRG` sorted
+       before `FOUNDATION_WALL_12_INT`; `INT_2X6_BRG` sorts after it. Three authored
+       override keys, four test keys and 11 golden filenames were left naming a pair that no
+       longer derives. The 4-way plant-room key needed its internal order fixed too.
+    4. **Detail sheets are numbered in sorted order**, so **141 of the 258 changed golden
+       lines are renumbering** (`A-522` -> `A-521`), not names. Callouts and the sheet index
+       renumbered coherently and the whole detail suite passes — but the drawing set's
+       numbers really did move, which matters to anyone holding a printed sheet.
+  - Evidence nothing was gained or lost: the `assembly_change` condition set is **16 keys
+    before and after**, the same 16 re-sorted; `haus check` is unchanged at 962 pass / 2 fail
+    / 1016 rules; the takeoff prices everything with no "could not be priced" section.
+  - **Nothing was promoted to `library/`.** `CONTRIBUTING.md`'s criterion 2 is "generally
+    reusable", and these encode catlin's specific stack — `BASEMENT_8_GARDEN`'s protection
+    band, `GARDEN_PUTTING_GREEN`'s 11.48" rootzone. Promotion is a per-assembly review with
+    a card-render smoke test, not a side effect of a rename. Left open deliberately.
+
+
 - **The level-2 ERV radials are NOT on 4" centres, and six pairs overlap.**
   `plan/mep_erv.py` says in prose that "the twelve lanes leave the closet on 4" centres". For
   two pairs it is **2"**, with 3" ducts: `DU-M-ERV-R-BED`/`R-KITCH` (lanes at x 3'-10" and
