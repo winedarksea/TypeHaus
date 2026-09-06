@@ -50,8 +50,16 @@ gains a ply re-orders wider tape instead of silently under-covering.
 fourteen ply seams outright — a glulam arrives as one member. They keep the wide roll all
 the same, at their own 3-1/2" width: an exposed framing top in weather wants a bonded
 membrane whatever the member is made of, and 3-1/2" still rules out the 3 1/8" roll. The
-seam argument now applies to the four PORCH beams only, and the same trade is available
-there for the same money — it was not taken because nothing about the porch forced it.
+seam argument now applies to the four PORCH beams only.
+
+**The porch beams stay 3-ply KDAT 2x12 — decided 2026-09-06.** The same glulam trade is
+available there for the same money, and it was declined: the porch beams are **fully
+covered** by items 1 and 2 of this detail — `butyl-tape-beam` bonded over the whole 4 1/2"
+framing top, then a formed 5 1/2" aluminium cap lapping 1/2" past each face and turning
+down 1 1/2". A seam that never sees rain is not the defect that moved the balcony. The
+balcony's beams were a different case: they carry the deck plank and were being re-sectioned
+anyway. Revisit only if the porch is reworked, and re-check the 9" joist-span headroom in
+`plans/TODO.md` before changing any porch beam section.
 
 **2. Formed aluminium cap, on all seven garden beams.** `TR-SG-CAP-*`, 69 LF over two
 widths since the balcony's three went to glulam: 40 LF of 5 1/2" cap on the porch's

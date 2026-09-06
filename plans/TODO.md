@@ -19,11 +19,36 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face` grades
   a device. The floor-heat polygon beside it went into the wall the same way, and that has
   no face check either.
-  - **STILL OPEN, and it is what actually removes the trap:** give `ResolvedRoom` a second
-    polygon that IS the finish face, so the honest number is available to author from. Note
-    that `resolve/floor_heat.py` falls back to `room.clear_face` when no zone is authored,
-    so the fallback carries the trap into every unauthored mat. That change moves every
-    room's area and every `clear_face`-derived check at once and is its own pass.
+  - **DEFERRED — explicitly not in the 2026-09-06 TODO batch, in either form.** The fix that
+    actually removes the trap is a second `ResolvedRoom` polygon that IS the finish face, so
+    the honest number is available to author from. It is deferred because of its blast
+    radius, which has now been measured **twice** — this inventory is recorded here so it is
+    not rediscovered a third time:
+
+    | Where | `clear_face` references |
+    |---|---|
+    | `packages/engine/src/` | **126**, across **51** modules |
+    | `packages/engine/tests/` | 43 |
+    | `houses/` | 93 |
+    | `ui/src/` | 17 |
+    | **total** | **279** |
+
+    The 51 engine modules are not a tail — they are every layer at once: `resolve/`
+    (`rooms`, `room_walls`, `room_floor`, `room_openings`, `ceilings`,
+    `construction_ceiling`, `construction_rim`, `paneling`, `placeables`, `floor_heat`,
+    `site_earth`, `model`), 20 check modules spanning code/MEP/building-science/advisory,
+    the drawing emitters (`floorplan`, `plan_labels`, `section_annotate`,
+    `foundation_schedule`, `detail_components/wall_base`), both exporters (glTF, IFC), four
+    `server/` JSON modules, two `source/` macro modules, and five takeoffs. Because
+    `clear_face` is what `room_floor.py` measures, the change moves **every room's area**
+    and therefore every area-derived check in one commit.
+
+    Two traps to carry forward: `resolve/floor_heat.py` falls back to `room.clear_face` when
+    no zone is authored, so the fallback pushes the error into every unauthored mat; and
+    nothing grades a *fixture* against a wall face the way
+    `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`
+    grades a device, so the trap is silent at 0 FAIL. See
+    `.claude/.../memory/clear-face-is-not-the-finish-face.md`.
 
 - **Zoning height, after the lift — now 2'-10" (raised 2026-08-18, grew 2026-08-21).**
   Grade moved to -2'-6" so the house stands out of the ground, and to -2'-10" when the
@@ -62,10 +87,14 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 - Orientation tuned glass (particularly second story south facing windows)
 
-- **The four porch beams are still 3-ply KDAT 2x12 with eight ply seams** that hold water and
-  grit and freeze ~100x/year (`notes/beam_water_protection.md`). The balcony beams were moved
-  to treated SYP structural glulam for the same defect; the same trade is available on the
-  porch and hasn't been taken because nothing about the porch redesign forced the question.
+- **DECIDED 2026-09-06 — the four porch beams stay 3-ply KDAT 2x12.** The eight ply seams
+  are real, but the water argument that moved the balcony beams to glulam is **overstated
+  here because the porch beams are fully covered**: butyl `butyl-tape-beam` on the framing
+  top and a formed 5 1/2" aluminium `TR-SG-CAP-*` over it, so the seams never see rain.
+  The glulam trade remains available at roughly the same money if the porch is ever
+  reworked, but nothing is owed today. `notes/beam_water_protection.md` carries the same
+  decision. **The 9" joist-span knife-edge above is unaffected and stays live** — any change
+  to a PORCH beam section still has to be re-checked against it.
 
 - **2D-edit sync — fix design proposed** (investigated 2026-08-02). Root cause confirmed: a
   PatchOp rewrites one constructor; derived data recomputes, authored cross-references
