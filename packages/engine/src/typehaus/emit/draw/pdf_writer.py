@@ -58,6 +58,10 @@ _LAYER_STYLE = {
     # Keynote bubbles. Drawn heavier than the note text they key, because a bubble is a
     # navigation aid a reader scans the drawing for — the same reason a door mark is.
     "A-ANNO-KEYN": ("#204070", 0.7),
+    # Braced wall lines. Heaviest thing on S-103 by design: the line IS the drawing, and
+    # the ghosted plan under it is only there to locate it.
+    "S-WALL-BRCE": ("#8a1c1c", 1.6),
+    "A-ANNO-REFR": ("#204070", 0.6),
     "A-FLR-HEAT": ("#c05030", 0.35),
     "A-FIXT": ("#4d7080", 0.55),
     "A-SITE-ROOF": ("#2d3b46", 0.8),

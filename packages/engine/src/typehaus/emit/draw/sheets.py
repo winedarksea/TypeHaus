@@ -14,6 +14,10 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from typehaus.emit.draw.bracedwallplan import (
+    build_braced_wall_plan,
+    has_braced_wall_content,
+)
 from typehaus.emit.draw.details import (
     DerivedDetail,
     build_authored_detail_scene,
@@ -188,6 +192,19 @@ def build_sheet_index(model: ResolvedModel,
                  else f"Framing plan — {floor.storey} · {floor.tag}")
         sheets.append(SheetSpec(number, title,
                                 scene=partial(build_framing_plan, floor_tag=floor.tag),
+                                north_arrow=True))
+
+    # S-103.n — the braced wall plan, one per storey that has a braced wall line. MNSPECT
+    # requires it per floor and runs a discrete braced-wall inspection against it; this set
+    # had none. It sits in the S-10x plan series beside the framing plans it belongs with,
+    # after them because a reader locates a line on the framing plan first.
+    braced_storeys = [s.tag for s in sorted(model.plan.storeys,
+                                            key=lambda s: s.elevation.meters)
+                      if has_braced_wall_content(model, s.tag)]
+    for index, storey_tag in enumerate(braced_storeys, start=1):
+        number = "S-103" if len(braced_storeys) == 1 else f"S-103.{index}"
+        sheets.append(SheetSpec(number, f"Braced wall plan — {storey_tag}",
+                                scene=partial(build_braced_wall_plan, storey=storey_tag),
                                 north_arrow=True))
 
     # Roof framing gets its own S-102 series rather than joining the S-101 floor series: a

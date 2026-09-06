@@ -56,6 +56,8 @@ _LAYER_STYLE = {
     "A-ANNO-TEXT": (2, 18),
     "A-ANNO-SYMB": (6, 18),
     "A-ANNO-KEYN": (1, 20),   # keynote bubbles
+    "A-ANNO-REFR": (1, 18),   # detail callout bubbles
+    "S-WALL-BRCE": (1, 70),   # braced wall lines
     "S-FNDN": (9, 60),
     "S-FNDN-FTNG": (9, 25),
     "A-SLAB": (9, 25),
