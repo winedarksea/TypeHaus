@@ -258,7 +258,20 @@ This is the part of the pass with a deadline on it.
   its shower valve must stay inside the thermal envelope on an interior partition.
 - **A GFCI receptacle at each washlet toilet**, 6–12" AFF, offset to the rear-left cord exit,
   on **one 20 A circuit per bath** — not both washlet baths ganged. An instant-heat seat
-  draws 1.2–1.4 kW while heating.
+  draws 1.2–1.4 kW while heating. **Built 2026-09-06** as `ED-M-BATH1-WC-RC` /
+  `ED-M-BATH2-WC-RC` on `CKT-WASHLET-BATH1` / `-BATH2`; both boxes are in the one clear stud
+  bay of `W-M-HS1` (x 8⅛"–15"), one on each face, because that bay is the only cavity beside
+  either bowl that the DuoFit carrier and the vanity do not already claim.
+- **The warm water is electrical, not plumbing, and this is the one thing about a washlet
+  that is routinely got wrong.** An S5 has an instantaneous tankless heater and runs off the
+  **cold** supply. There is no hot connection to a bidet toilet, which is why every WC in
+  this house is `WATER_COLD` only and none should ever be teed to hot — a hot run to a
+  cistern is a stagnant dead leg and buys nothing the seat does not already do.
+- **The heated SEAT is deliberately left off, and that changes nothing you buy.** Owner's
+  call, 2026-09-06: the floors are heated, so a warm seat earns little. Seat heat and warm
+  wash water are the same appliance and the same purchase — the seat heater is a setting on
+  the S5's panel, not a SKU, so turning it off saves standby watts and not one dollar of the
+  order. There is no "warm water, cold seat" model in the line to buy instead.
 - **A concealed GFCI receptacle behind the lit mirror**, plus a full-width flat 2× blocking
   band (the outer brackets sit only ±5" from the centreline) and a conductor for a **second
   switch leg**, because the defogger must be switched independently of the lights.

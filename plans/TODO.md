@@ -394,38 +394,57 @@ the future.
   the numbers are knowable, so here they are —
   `code.R303_1_light_and_ventilation` prints them for every habitable room, pass or fail:
 
+  <!-- Refreshed 2026-09-06: the three exterior FRENCH60 doors (D-S-DECK-E, D-M-BALC,
+       D-B-PATIO) are glazed fenestration and were counted by nothing — 33.3 sf apiece.
+       See `resolve/room_openings.room_glazed_doors`. -->
+
   | room | glazing | floor | ratio | openable | ratio |
   |---|---:|---:|---:|---:|---:|
-  | RM-S-PLANT | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
-  | RM-S-STUDY2 | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
-  | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.2% |
+  | RM-S-STUDY2 | 62.3 sf | 159 sf | **39.2%** | 31.2 sf | 19.6% |
+  | RM-S-PLANT | 36.7 sf | 159 sf | **23.1%** | 0.0 sf | 0.0% |
+  | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.3% |
+  | RM-M-LIVING | 81.7 sf | 748 sf | **10.9%** | 40.9 sf | 5.5% |
+  | RM-B-GYM | 33.3 sf | 324 sf | **10.3%** | 16.7 sf | 5.1% |
   | RM-S-BED3 | 12.2 sf | 129 sf | **9.4%** | 6.1 sf | 4.7% |
   <!-- BED3 read 9.8 sf / 7.6% and leaned on R303.1 Exception 1 until 2026-09-06, when
        WIN-S-BED3-N (WT-1424 at x 34'-0", sill 4'-0") completed the north-east corner
        pair with WIN-S-BED3 on the east wall, over WIN-M-KITCH-N below. It clears 8%/4%
        outright now. (An earlier WT-1436 at x 23'-4" carried the same tag for a few hours
        the same day and was withdrawn — see plans/pattern_language_review.md.) -->
-  | RM-A-STUDY | 15.0 sf | 159 sf | **9.4%** | 7.5 sf | 4.7% |
-  | RM-S-SUITE | 13.5 sf | 154 sf | **8.8%** | 6.7 sf | 4.4% |
-  | RM-S-BED1 | 10.0 sf | 120 sf | **8.3%** | 5.0 sf | 4.2% |
-  | RM-S-BED2 | 10.0 sf | 124 sf | **8.1%** | 5.0 sf | 4.0% |
-  | RM-M-LIVING | 49.3 sf | 766 sf | 6.4% | — | — |
-  | RM-M-STUDY | 0.0 sf | 19 sf | 0% | — | — |
-  | RM-B-GYM | 0.0 sf | 324 sf | 0% | — | — |
-  | RM-B-PLAY-N | 0.0 sf | 324 sf | 0% | — | — |
+  | RM-S-SUITE | 13.5 sf | 154 sf | **8.7%** | 6.7 sf | 4.4% |
+  | RM-A-STUDY | 13.6 sf | 165 sf | **8.3%** | 6.8 sf | 4.1% |
+  | RM-S-BED1 | 9.0 sf | 120 sf | 7.5% | 4.5 sf | 3.8% |
+  | RM-S-BED2 | 9.0 sf | 124 sf | 7.2% | 4.5 sf | 3.6% |
+  | RM-A-STUDIO | 13.6 sf | 356 sf | 3.8% | 6.8 sf | 1.9% |
+  | RM-M-STUDY | 0.0 sf | 19 sf | 0% | 0.0 sf | 0% |
+  | RM-B-PLAY-N | 0.0 sf | 324 sf | 0% | 0.0 sf | 0% |
 
-  The top eight clear R303.1's 8% glazing and 4% openable outright, and two of them do it
-  twice over. **The bottom four pass under R303.1 Exception 1** — artificial light plus
-  mechanical ventilation — and they are where the question actually lives:
-  - **RM-M-LIVING at 6.4%** is the one worth arguing about. It is a 766 sf open plan and it
-    is 12 sf of glass short of the code line, which on a room that size is one more window.
-  - **RM-S-BED2 at 8.1% and RM-S-BED1 at 8.3%** clear by 0.1 and 0.4 sf. That is not comfort,
-    that is a rounding margin — and `houses/catlin/CLAUDE.md` already records that growing
-    either room's clear face fails R303.1 again.
-  - **RM-B-GYM and RM-B-PLAY-N have no glass at all** and are lit to 7.4 fc. They are
-    basement rooms and always were; whether that is acceptable is a use question, not a
-    daylight one.
+  The top seven clear R303.1's 8% glazing and 4% openable outright. **The bottom six pass
+  under R303.1 Exception 1** — artificial light plus mechanical ventilation — and they are
+  where the question actually lives:
+  - **RM-S-PLANT is short on the OPENABLE half only** — 23.1% glazed and not one operable
+    sash, because every plant-room unit is fixed. Light is not its problem.
+  - **RM-S-BED2 at 7.2% and RM-S-BED1 at 7.5%** are the two bedrooms that spend Exception 1
+    on daylight, by ~1 sf of glass each — the WT-2754 → WT-2748 retype's documented trade.
+  - **RM-A-STUDIO at 3.8% on a 356 sf floor** is the largest daylight gap left in the house.
+  - **RM-B-PLAY-N has no glass at all** and is lit to 7.4 fc. It is a basement room and
+    always was; whether that is acceptable is a use question, not a daylight one. **Its
+    neighbour RM-B-GYM is no longer on that list**: D-B-PATIO's French pair is 33.3 sf of
+    glazing to the sunken garden and carries the room outright.
   - **RM-M-STUDY's 19 sf** is a nook, not a room. Ignore the 0%.
+  - **RM-M-LIVING is off this list too**, at 10.9% — D-M-BALC is 33.3 sf of it. The "one
+    more window" this entry used to ask for is not owed to the code; it is only a question
+    about how the room feels.
+
+  **Two glazing numbers still leave the French doors out, and both want product data the
+  house has not stated:**
+  - `checks/building_science/energy_load.py` gives a door a UA and **no solar gain** —
+    `DoorType` has no `shgc` field, so ~100 sf of south and east glass contributes nothing
+    to the cooling load, which is 63% window solar. Adding the field is easy; the number for
+    `DT-EXT-FRENCH60` is a product decision, and inventing one would be worse than the gap.
+  - `checks/code/mn_energy.py` grades every `WindowType` against `window_u_max` and **no
+    `DoorType` at all**. The three glazed exterior types are authored at U-0.20 / U-0.25 and
+    would pass; nothing checks that they do.
 
  - Basement under the stairs storage closet
 

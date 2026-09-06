@@ -38,6 +38,35 @@ proposing any design change.
   enclosure, 240V/EV/spa devices, conduit trunks, NEC 210.52 fill receptacles.
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
+  **BOTH MAIN-FLOOR WATER CLOSETS ARE BIDET TOILETS, AND THE ELECTRICAL FOR THEM IS TWO
+  CIRCUITS THAT MUST NEVER BE GANGED.** `FX-M-BATH1-WC` is a TOTO SP wall-hung on a DuoFit
+  carrier — **the carrier brand IS the bidet decision**, because only TOTO's frame carries
+  the concealed WASHLET+ supply — and `FX-M-BATH2-WC` is a Carlyle II whose `AT40` suffix is
+  that same readiness. Two WASHLET S5 seats ride on them (`plumbing-bidet-seats`, the seats
+  only). `CKT-WASHLET-BATH1`/`-BATH2` at slots 25 and 28 feed `ED-M-BATH1-WC-RC` /
+  `ED-M-BATH2-WC-RC`, one outlet each, GFCI at the DEVICE (a washlet trips a Class A GFCI
+  now and then and a reset in the basement for a toilet seat is the failure mode the
+  convention avoids), no AFCI (210.12 exempts bathrooms), `load_va=0`.
+  - **Both boxes are in ONE stud bay and there is no second candidate.** `W-M-HS1` is the
+    wet wall between the two baths and carries both bowls; the resolved framing leaves
+    exactly one clear 2x6 cavity beside them, x 8 1/8"..15" between `stud-000` and the
+    carrier's west king. Everything east is the 19 3/4" carrier bay, then the vanity at
+    x=41 1/2" on the north face and the tub deck on the south. The two boxes are back to
+    back on opposite faces of that one bay — a 4" device cannot be offset inside 6 7/8" —
+    with ~1 1/2" of air between them. **Confirm the bay is still free of MEP before putting
+    anything else in it**: today no pipe, conduit, duct, sleeve or accessory has a vertex in
+    x 4"..22", y 258"..278", and the west end of a wet wall is exactly where a plumber
+    reaches for a spare bay.
+  - **`load_va=0` IS A COINCIDENCE JUDGEMENT, NOT AN OMISSION** (owner's call). Each seat is
+    ~1,400 VA and only while its instantaneous heater runs — seconds per use. At the other
+    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 191.4 A ->
+    196.1 A against the 200 A service and still passes, so this is not load-hiding to make a
+    check green. **Revisit it if anything with a real duty cycle joins these circuits.**
+  - **THE WARM WATER IS THE ELECTRICITY.** An S5 heats from the COLD supply instantaneously.
+    No WC in this house takes a hot run and none should — `needs` is `WATER_COLD` on all six
+    and every `PR-*-HW-*` deliberately omits the WC. The heated SEAT is switched off by
+    owner's choice (heated floors); it is a setting on the same appliance, so it is worth no
+    line in the order either way.
 - `plan/lighting.py` — `# haus: editable` luminaire/LED-run/control *instances*, room by
   room. Every light names its switch(es) in `controlled_by`; 24V runs name a `psu_ref`
   instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were

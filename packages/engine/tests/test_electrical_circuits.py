@@ -202,7 +202,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # a plumbing fixture has ever asked for. Then MINUS CKT-HP1-STRIP: System 1's 2 kW
     # inline duct heater became a factory heat kit inside the air handler's cabinet, fed and
     # staged from the unit, so it rides CKT-HP1-AH and the panel gets its spare 2-pole back.
-    assert len(rows) == 37
+    # Then PLUS CKT-WASHLET-BATH1/BATH2, the two dedicated 20 A circuits the main-floor
+    # WASHLET S5 bidet seats need — deliberately two and not one, so do not let this count
+    # come back to 38 by ganging them (plan/circuits.py says why).
+    assert len(rows) == 39
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -510,8 +513,8 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     assert main[0] <= main[1] and backup[0] <= backup[1]
     # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, CKT-BATH2-TUB spent
     # one more for the drop-in bath's heated surface, and CKT-HP1-STRIP's deletion gave a
-    # 2-pole back. Eleven spare.
-    assert main == (43, 54)
+    # 2-pole back, and the two washlet circuits spent two more. Nine spare.
+    assert main == (45, 54)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -636,9 +639,10 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit_schedule"] == conduit_schedule(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    # 37: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
-    # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface.
-    assert len(payload["panel_schedule"]) == 37
+    # 39: the 36 that survived the microgrid refactor plus CKT-DISPOSAL, minus CKT-WH-HP
+    # folded into CKT-WH-240, plus CKT-BATH2-TUB for the drop-in bath's Bask heated surface,
+    # plus the two washlet circuits.
+    assert len(payload["panel_schedule"]) == 39
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

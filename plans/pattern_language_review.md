@@ -669,9 +669,11 @@ product rather than of its location — and `code.R308_4_safety_glazing` now gra
 the encoded rule count 851 → 852 and the passes 754 → 755.
 
 **Stated honestly: this buys the ROOM daylight; it does not buy the CHECK anything.**
-`_room_windows` skips doors, so R303.1 still reports 0.0 sf of glazing here and still passes
-the room on Exception 1. That is the correct accounting — R303.1's 8% is measured on glazing
-to the outdoors, and a borrowed-light leaf is not that. `office` is not a sleeping occupancy,
+R303.1 still reports 0.0 sf of glazing here and still passes the room on Exception 1. That is
+the correct accounting — R303.1's 8% is measured on glazing to the outdoors, and a
+borrowed-light leaf is not that. **(2026-09-06: the reason is now the leaf, not the schema.
+`room_glazed_doors` counts glazing in an EXTERIOR door — see the erratum in §5 — and skips an
+interior one on exactly the reasoning in this paragraph.)** `office` is not a sleeping occupancy,
 so there is no R310 exposure, and since §3.1 there could not be one anyway.
 
 ## 3.3 `params/raised_garden.py` asserted a fact that stopped being true on 2026-08-21
@@ -755,6 +757,21 @@ So raising south SHGC makes the *measured* number worse and shows no measured be
 claim about winter gain has to be sourced externally, not "measured" — and honestly, at ~20 sf
 of unshaded south glass a ΔSHGC of 0.15 is single-digit dollars a year. **If an SHGC retype is
 worth doing it is worth doing for winter sun in the room, not for the meter.**
+
+> ⚠ **ERRATUM, 2026-09-06 — every glazing number in §5 and §6 below was taken before
+> glazed doors were counted, and the three exterior French pairs are 33.3 sf of fenestration
+> apiece.** IRC R202 measures *glazing area* over glazed **fenestration**, which its own
+> definition says includes glazed doors, and `D-S-DECK-E`, `D-M-BALC` and `D-B-PATIO` reached
+> no glazing number in the engine at all. `resolve/room_openings.room_glazed_doors` counts
+> them now (exterior only — a borrowed-light interior leaf is not light to the outdoors).
+> What moves: **`RM-M-LIVING` 48.4 → 81.7 sf (10.9%)**, **`RM-B-GYM` 0.0 → 33.3 sf (10.3%)**
+> — both come off Exception 1 outright — and **`RM-S-STUDY2` 29.0 → 62.3 sf**. Facade WWR
+> becomes **N 1.32 / E 2.83 / S 8.11 / W 2.58 %**. The check totals do not move — 964 pass /
+> 29 not evaluable either side of the change, and the whole report differs by exactly three
+> R303.1 findings (the two FAILs standing in the tree on the day are another branch's in-flight
+> work: `SL-G-STEP-0`'s guard and `RM-B-GYM`'s receptacle spacing, neither of them glazing). **Read §6's G1/G2 with that in front of them: the
+> living room's R303.1 shortfall was the arithmetic those two options were sized against, and
+> it does not exist. Their Pattern-222 sitting-sill argument is untouched.**
 
 ## Daylight: eight rooms on IRC Exception 1, not two
 

@@ -133,7 +133,9 @@ def room_glazed_doors(plan: Any, model: Any, room) -> list:
     fenestration", and its definition of fenestration names glazed doors alongside windows;
     the area is the opening "including sash, curbing or other framing elements", so the
     whole rough opening counts, exactly as it does for a window. Leaving these out understated
-    `RM-M-LIVING`, `RM-S-STUDY2` and `RM-B-GYM`'s neighbours by a 5'-0" x 6'-8" unit apiece.
+    ``RM-M-LIVING`` (48.4 → 81.7 sf), ``RM-S-STUDY2`` (29.0 → 62.3) and ``RM-B-GYM`` (0.0 →
+    33.3, which is a room that read as windowless from behind a glass wall) by one 5'-0" x
+    6'-8" pair apiece.
 
     **Exterior only.** R303.1 measures light *to the outdoors*, and a borrowed-light interior
     leaf — the study's ``DT-INT-SWING30-GLAZED`` — is not that.

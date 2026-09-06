@@ -241,3 +241,38 @@ def test_the_patio_door_swings_clear_of_the_landing_it_steps_down_to(catlin_mode
         f"{PATIO_DOOR} swings toward the court it steps down into; R311.3.2's one-riser "
         "allowance needs the leaf clear of its landing (drop `flip_swing`)"
     )
+
+
+# The three exterior French pairs, and the room each one lights. Every one of them is a
+# DT-EXT-FRENCH60 — 5'-0" x 6'-8" = 33.33 sf of glazed fenestration (IRC R202), which
+# reached no glazing number in the engine at all until 2026-09-06.
+FRENCH_DOORS = {"D-B-PATIO": "RM-B-GYM", "D-M-BALC": "RM-M-LIVING",
+                "D-S-DECK-E": "RM-S-STUDY2"}
+FRENCH_DOOR_SF = 33.33
+
+
+def test_the_french_doors_count_as_glazing_in_the_rooms_they_light(catlin_plan,
+                                                                  catlin_model_ro):
+    """Each exterior French pair is glazing, and lands in exactly one room's total.
+
+    The failure this pins is silent and it lasted: ``room_windows`` skipped every door, so
+    ``RM-B-GYM`` read 0.0 sf of glazing and passed R303.1 on Exception 1's electric-light
+    substitute while standing behind a 33 sf glass wall onto the sunken garden.
+    """
+    from typehaus.resolve.room_openings import room_glazed_doors
+
+    found = {room.tag: [d.tag for d in room_glazed_doors(catlin_plan, catlin_model_ro, room)]
+             for room in catlin_model_ro.rooms}
+    for door, room_tag in FRENCH_DOORS.items():
+        assert found.get(room_tag) == [door], f"{door} should be {room_tag}'s glazing"
+        room = next(r for r in catlin_model_ro.rooms if r.tag == room_tag)
+        assert room.glazed_area_m2 * 10.7639104167 >= FRENCH_DOOR_SF
+    # ...and every other room is left alone: no door is credited twice, and the two glazed
+    # INTERIOR leaves (D-M-STUDY, D-S-PLANT) are borrowed light, not light to the outdoors.
+    assert not [tag for tag, doors in found.items() if doors and tag not in FRENCH_DOORS.values()]
+
+
+def test_the_glazed_interior_leaves_are_not_daylight(catlin_model_ro):
+    """`RM-M-STUDY`'s door is glazed and its room still reads 0.0 sf — deliberately."""
+    study = next(r for r in catlin_model_ro.rooms if r.tag == "RM-M-STUDY")
+    assert study.glazed_area_m2 == pytest.approx(0.0)

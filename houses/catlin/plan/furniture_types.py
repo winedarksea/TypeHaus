@@ -785,6 +785,45 @@ MANTEL_WALNUT_46 = FurnitureType(
 )
 
 
+# --- the porch's two lounge chairs (2026-09-06) -----------------------------------------
+#
+# `plans/TODO.md` line 241: the porch "is roofed, fanned, lit, wired and curtained, and has
+# nothing on it". A named product, not a generic FURN-ARMCHAIR-35, because the whole point
+# is to read the real scale of two people lounging inside a 19'-0" x 8'-8" enclosure.
+#
+# ** THE PRODUCT: Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG (Charcoal Grey). **
+# Recycled-HDPE, made in Duluth. Chosen over the two obvious alternates for the one thing
+# this porch actually demands — it stays out all winter under a curtained, unheated roof:
+#   * no cushion to carry in, no fabric, no fastener to rust (aluminium inserts, 304 bolts);
+#   * 37 lbs, heavy enough not to walk in the wind that gets past the mesh;
+#   * arms wide enough to be the side table this pair does not have yet.
+# The alternates, both from the same maker and the same material, if the owner wants a
+# higher and more upright seat: Lago (30 x 25 3/4 x 28, seat 16 1/4", $795) and No. 9
+# (23 x 29 1/4 x 28 1/4, seat 11 3/4", arms 21"). Swapping is a one-line `type_ref` edit
+# plus the [furnishings] row; nothing else in the porch moves.
+#
+# Dimensions are the manufacturer's own cutsheet (lollygagger-outdoor-lounge-chair-
+# cutsheet.pdf), NOT a retailer listing — 2Modern publishes 38 x 35 x 33 for the sibling
+# Lago against Loll's own 30 x 25 3/4 x 28, and the retailer is the one that is wrong.
+# Overall 27" W x 29 1/2" D x 29 1/2" H; seat 21 1/2" x 17", 11 3/4" off the deck; arms
+# 18 1/2". The colour is an owner selection and costs nothing either way — all thirteen
+# HDPE colours are one price.
+#
+# ** NO CLEARANCE ZONE, deliberately. ** FURN-ARMCHAIR-35 carries none and neither does
+# this: the leg space in front of a reclined chair here is 4'-9" of open deck to the guard,
+# so a `front_zone` would only add a rectangle nothing can encroach on.
+PORCH_LOUNGE_27 = FurnitureType(
+    tag="FT-PORCH-LOUNGE-27", name="Porch lounge chair (Loll Lollygagger)",
+    footprint=(inch(27), inch(29.5)), height=inch(29.5),
+    plan_symbol="armchair",
+    source="Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG; manufacturer cutsheet "
+           "27\" W x 29 1/2\" D x 29 1/2\" H, seat 21 1/2\" x 17\" at 11 3/4\", arm "
+           "18 1/2\", 37 lbs, recycled HDPE with aluminium inserts and 304 stainless "
+           "bolts, rated to stay outdoors year-round. lolldesigns.com/products/"
+           "lollygagger-outdoor-lounge-chair",
+)
+
+
 FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
@@ -794,4 +833,4 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_BAR_BASE_2418,
-                   MANTEL_WALNUT_46)
+                   MANTEL_WALNUT_46, PORCH_LOUNGE_27)

@@ -2408,7 +2408,9 @@
 "FX-TOTO-SP-WH" = { material = { low = 600, high = 1100 }, labour = { low = 210, high = 500 } }  # 1 ea
 # The WASHLET S5 bidet seat rides on the two showpieces and is a SEPARATE purchase from the
 # bowl (~$682 ea), so it is not inside these rows. It is `plumbing-bidet-seats` in
-# [allowances] with the GFCI receptacle it needs.
+# [allowances] — the SEAT ONLY since 2026-09-06. The GFCI outlet each one needs and the
+# dedicated 20 A circuit behind it are modelled elements now (ED-M-BATH1-WC-RC /
+# ED-M-BATH2-WC-RC on CKT-WASHLET-BATH1/BATH2) and bill through the electrical sections.
 "FX-TOTO-CARLYLE-II" = { material = { low = 700, high = 1250 }, labour = { low = 110, high = 260 } }  # 1 ea
 "FX-TOTO-AQUIA-IV" = { material = { low = 500, high = 900 }, labour = { low = 110, high = 260 } }  # 2 ea
 # The workhorse, and the reason the four are not all Aquia IVs: all-Aquia is $2,152 against
@@ -5583,10 +5585,18 @@ finish-cabinet-pulls = { low = 200, high = 750 }
 # instantaneous tankless heater replaces the old reservoir and PREMIST wets the bowl before
 # use, which is a direct cleanability win. ** The C5/C2 seats are DISCONTINUED ** and
 # remaining stock clears at inflated prices, so do not let a supplier substitute one; the S7A
-# adds a motorised lid, which on a cleanability brief is a negative. The high end carries the
-# GFCI receptacle each one needs at 6"-12" AFF — one 20 A circuit per bath, NOT both washlet
-# baths ganged, because an instant-heat seat draws 1.2-1.4 kW while heating.
-plumbing-bidet-seats = { low = 1364, high = 1900 }
+# adds a motorised lid, which on a cleanability brief is a negative.
+#
+# ** THIS ROW IS THE TWO SEATS AND NOTHING ELSE, AS OF 2026-09-06. ** Its high end used to
+# carry "the GFCI receptacle each one needs" because there was no receptacle in the model to
+# carry it. There is now: ED-M-BATH1-WC-RC and ED-M-BATH2-WC-RC on CKT-WASHLET-BATH1/BATH2
+# (plan/electrical.py, plan/circuits.py), which bill as two ED-T-RECEPTACLE-GFCI devices,
+# two `electrical-afci-gfci-breakers` and ~195 LF of conductor — about $307-650 delivered.
+# Leaving the old high in place would have billed the same two outlets twice, which is the
+# `also_in_sheet_goods` trap in a different costume. The high is re-based to a supplier
+# spread on the seats alone. ** The warm water IS the electrical **: an S5 heats from the
+# COLD supply instantaneously, so no toilet in this house takes a hot run and none should.
+plumbing-bidet-seats = { low = 1364, high = 1700 }
 # ** FAUCETS AND THE TUB FILLER WERE IN NO ROW EITHER. ** The vanity rows in [placeables] buy
 # a cabinet and a top; the shower rows buy a valve and its trim. Nothing bought the deck
 # fittings. ** SCOPED SO IT CANNOT DOUBLE-COUNT: ** shower valves, shower trim and showerheads

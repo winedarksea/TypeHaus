@@ -401,17 +401,29 @@ CIRCUITS = (
     # the convention exists to avoid. Contrast CKT-BATH2-TUB, which IS breaker-protected
     # because its outlet is sealed inside the tub deck. No AFCI: 210.12 exempts bathrooms.
     #
-    # ** load_va IS THE NAMEPLATE, and it lands in 220.82(B)(3). ** A washlet is cord-and-plug
-    # but it is "located on a specific circuit", which is (B)(3)'s third limb — the same
-    # reading that put 65 VA on CKT-BATH2-TUB. 1,400 VA is the top of the researched
-    # 1.2-1.4 kW band. It is NOT free: `electrical.service_load` had 8.6 A of margin against
-    # the 200 A service, and 2 x 1,400 VA through 220.82(B)'s 40% remainder factor spends
-    # about 4.7 A of it. Read that check's number after any further load is added here.
+    # ** load_va IS 0, AND THE NAMEPLATE IS RECORDED HERE SO THE ZERO IS A DECISION AND NOT
+    # AN OMISSION. ** Each seat is ~1,400 VA at the top of the researched 1.2-1.4 kW band,
+    # but only while the instantaneous heater is running — seconds per use, a few times a
+    # day, and never a load the house sits at. Two readings of 220.82 are available and this
+    # is the one taken (owner's call, 2026-09-06): a bathroom RECEPTACLE circuit is not in
+    # 220.82(B)(1)'s list and 220.82(B)(1)'s own 3 VA/ft2 term is deemed to cover general
+    # receptacle outlets already, which is exactly the reasoning CKT-BATH-ATTIC above is
+    # authored on. The other reading is 220.82(B)(3)'s "located on a specific circuit" limb,
+    # which would take the nameplate — the same limb that put 65 VA on CKT-BATH2-TUB, though
+    # that one is a fixed appliance rather than something plugged into a bathroom outlet.
+    #
+    # ** WHAT THE OTHER READING COSTS, MEASURED RATHER THAN ESTIMATED: ** at load_va=1400 on
+    # both, `electrical.service_load` goes 191.4 A -> 196.1 A against the 200 A service —
+    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, more than half the margin left.
+    # It still PASSES. So this zero is not load-hiding to make a check go green; it is a
+    # coincidence judgement, and the revert is two numbers. ** Revisit it if anything with a
+    # real duty cycle ever joins these circuits ** — they are 20 A and they feed one outlet
+    # each today, and that is the assumption the zero rests on.
     Circuit(tag="CKT-WASHLET-BATH1", slot=25, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1400,
+            load_va=0,
             description="Bidet seat — RM-M-BATH1 water closet (FX-M-BATH1-WC, WASHLET S5)"),
     Circuit(tag="CKT-WASHLET-BATH2", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1400,
+            load_va=0,
             description="Bidet seat — RM-M-BATH2 water closet (FX-M-BATH2-WC, WASHLET S5)"),
 )
 

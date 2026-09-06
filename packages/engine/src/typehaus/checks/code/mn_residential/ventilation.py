@@ -218,8 +218,11 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
                          f"{need_openable:.1f} sf (4%)")
             verdict, why = _exception_1(ctx, room, area_sf)
             if verdict == "pass":
-                out.append(_pass(cid, f"{room.tag} is short of glazing ({glazed_sf:.1f} sf "
-                                 f"of {need_glazed:.1f} sf) and is {why}", code))
+                # ``short``, not a glazing sentence of its own: a room can reach here on the
+                # *openable* half alone (RM-S-PLANT is 36.7 sf glazed against 12.7 required
+                # and has not one operable sash), and saying it was "short of glazing" then
+                # printed a false number.
+                out.append(_pass(cid, f"{short}, and it is {why}", code))
             elif verdict == "unknown":
                 out.append(_unknown(cid, f"{short} — {why}", (room.tag,), code))
             else:

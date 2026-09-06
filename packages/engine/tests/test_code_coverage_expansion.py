@@ -274,6 +274,10 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
                                         kind=EquipmentKind.ERV, type_ref="ERV-T"))
     plan = SimpleNamespace(
         library=SimpleNamespace(window_types=[window_type] if window_type_resolves else [],
+                                # No doors in this fixture, but the library must carry the
+                                # field: `room_glazing_areas` totals glazed EXTERIOR doors
+                                # alongside the sash (IRC R202 fenestration).
+                                door_types=[],
                                 electrical_device_types=device_types,
                                 equipment_types=equipment_types),
         all_elements=lambda: elements)

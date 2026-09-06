@@ -1005,6 +1005,49 @@ MAIN_PLACEABLES = [
               position=pt(ft(27), ft(-4, -10)), rotation=deg(90),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
 
+    # --- the porch's two lounge chairs (2026-09-06) ---------------------------------------
+    #
+    # `plans/TODO.md` 241: the porch is roofed, fanned, lit, wired and curtained and has
+    # NOTHING on it — 19'-0" x 8'-8" of deck reading as empty in the 3D. Two real chairs, a
+    # named product at its real size (`FT-PORCH-LOUNGE-27` in plan/furniture_types.py).
+    #
+    # ** THE WEST BAY, BECAUSE PT-SG-BR2 ALREADY SPLITS THIS PORCH IN TWO. ** The centre
+    # rear pillar stands at x 17'-9 1/4"..18'-2 3/4", y -2'-8 3/4"..-2'-3 1/4". East of it is
+    # circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
+    # RL-SG-PORCH's 3'-0" guard opening at x 27'-6", y -6'-0"..-9'-0", so the door-to-stair
+    # diagonal owns the east bay. West of it is a dead end, and that is where seating goes.
+    # The pair is centred on x=13'-0" in the 9'-0 3/4" between the west guard (x 8'-6") and
+    # that pillar's connector face (x 17'-6 3/4"): 19 1/2" of margin west, 20 1/4" east,
+    # 15" between the two chairs — a gap a Lollygagger side table (18") would NOT fit, which
+    # is deliberate; the arms are the table until the owner buys one and the chairs slide.
+    #
+    # ** y = -3'-6" IS SET BY THE HOSE BIB, NOT BY THE VIEW. ** FX-M-PORCH-HYD is on W-M-S1
+    # at x=12'-0", 24" up — directly behind the west chair. The back edge at -2'-3 1/4" keeps
+    # 22 1/4" of clear deck between chair and cladding face (-0'-5"), which is reach-in room
+    # for a hose. In front there is 4'-9 1/4" to the guard.
+    #
+    # ** `elevation=inch(1)`, and it is not optional. ** The porch walking surface is the
+    # composite plank laid ON the 0'-0" joist tops (`_porch_walking_surface`, params/
+    # sunken_garden.py), so a FLOOR mount with no elevation would bury both chairs 1" in the
+    # deck — the RL-SG-PORCH posts start at the same 1".
+    #
+    # rotation 0 = back at +y: both face south, over the guard into the sunken garden. The
+    # 43" guard top is picket, so a seated eye at ~3'-6" looks through it, not at it.
+    #
+    # NO `room=` — the porch is not a Room, the FURN-M-PORCH-TRACK-* precedent.
+    #
+    # ** KNOWN, AND LEFT: THE FAN IS NOT OVER THE CHAIRS. ** ED-M-PORCH-FAN hangs at
+    # x=18'-0", y=-4'-10" — centred on the whole porch, i.e. on the pillar line. Its 60"
+    # sweep reaches x 15'-6", which catches the east chair's outer arm and misses the west
+    # chair by 1'-9". Moving the fan west to ~x 14'-6" would put it over the seats and off
+    # the porch's centre; that is an owner call, not a plan error, and it is in plans/TODO.md.
+    Furniture(uid="KG1WAJESNZ", tag="FURN-M-PORCH-LOUNGE-W", type_ref="FT-PORCH-LOUNGE-27",
+              position=pt(ft(11, 3), ft(-3, -6)), rotation=deg(0),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(1))),
+    Furniture(uid="KG4PRNB28W", tag="FURN-M-PORCH-LOUNGE-E", type_ref="FT-PORCH-LOUNGE-27",
+              position=pt(ft(14, 9), ft(-3, -6)), rotation=deg(0),
+              mount=Mount(kind=MountKind.FLOOR, elevation=inch(1))),
+
     # --- the dedicated closets' shelf-and-rod runs ----------------------
     #
     # plans/TODO.md: "wire shelves and racks in the dedicated closets", aimed at jackets in
