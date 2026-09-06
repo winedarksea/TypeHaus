@@ -74,9 +74,8 @@ def _outward_band(ctx: CheckContext, wall, rooms_by_storey):
 @check(Tier.BUILDING_SCIENCE, _CHECK_ID)
 def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
     """A wall whose foot ponds stands its declared step above the surface outside it."""
-    required = {element.tag: element.min_threshold_step
-                for element in ctx.plan.all_elements()
-                if getattr(element, "min_threshold_step", None) is not None}
+    required = {element.tag: step for element in ctx.plan.all_elements()
+                if (step := getattr(element, "min_threshold_step", None)) is not None}
     if not required:
         return [not_applicable(_CHECK_ID, "no wall in this plan declares that the exterior "
                                "surface at its foot ponds, so there is no flood step to "
