@@ -149,7 +149,13 @@ def print_sheets(
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run
     from typehaus.checks.run import resolve_profile
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
-    from typehaus.emit.draw.sheet_writer import PAPER_SUFFIX, resolve_paper
+    from typehaus.emit.draw.sheet_writer import (
+        FOR_PLAN_CHECK,
+        NOT_FOR_CONSTRUCTION,
+        PAPER_SUFFIX,
+        resolve_paper,
+        set_issue_status,
+    )
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -203,10 +209,17 @@ def print_sheets(
         for path in write_plan_dxfs(model, out / "sheets"):
             console.print(f"wrote {path}")
     if fmt in ("pdf", "both"):
+        # The issue stamp every sheet carries is decided by the SAME gate that decided
+        # whether to print at all, a few lines up — so the stamp cannot claim a status the
+        # gate refused. Past the draft gate a set is fit for plan check; only a fresh
+        # professional seal takes "NOT FOR CONSTRUCTION" off it, and this engine never
+        # writes engineering.toml, so that word can only come from a person.
+        issue = FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION
         name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
-        path, _ = write_permit_set(model, out / name, preferences,
-                                   profile=jurisdiction, details=details, paper=size,
-                                   house_dir=d)
+        with set_issue_status(issue):
+            path, _ = write_permit_set(model, out / name, preferences,
+                                       profile=jurisdiction, details=details, paper=size,
+                                       house_dir=d)
         console.print(f"wrote {path}")
     if handoff:
         _write_handoff_bundle(d, model, preferences, jurisdiction, size)

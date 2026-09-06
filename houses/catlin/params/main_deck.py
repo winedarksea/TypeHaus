@@ -425,6 +425,11 @@ EAST_FLOOR = FloorSystem(
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _BAND_Y),
+    # RM-M-LIVING's fireplace surround passes through this deck: W-M-FIRE's brick starts on
+    # W-B-E1's pour and rises 13 7/16" through the joist zone, so three or four joists are cut
+    # and headed over 45 1/2" of y. The opening, the R502.10 reading and the I-joist
+    # manufacturer's-table caveat are all on FO-M-FIRE in plan/storeys/main.py.
+    openings=("FO-M-FIRE",),
     source="catlin main floor, east half south of y=13' — same joists as FS-M-WEST, "
            "spanning 18'-0\" from the x=18' bearing line to W-B-E1",
 )

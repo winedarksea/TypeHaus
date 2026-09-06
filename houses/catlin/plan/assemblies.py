@@ -1054,6 +1054,44 @@ BASEMENT_BRICK_VENEER = Assembly(
     source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 6\" ventilated airgap on the grade beam W-SG-BRKBM (not the house footing toe), TMS 402 engineered ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
 )
 
+# --- RM-M-LIVING's fireplace surround --------------------------------------------------
+#
+# One 3 5/8" wythe of white face brick standing IN FRONT OF W-M-E1, in the pier between
+# WIN-M-LIV-E1 and WIN-M-LIV-E2. Full brick, not slips (owner's call): it starts on
+# W-B-E1's pour at -1'-1 7/16", rises 13 7/16" through FS-M-EAST's joist zone and stops at
+# 5'-4", where the walnut mantel caps it. notes/east_breast_bearing.md carries the load
+# path and the floor-opening framing.
+#
+# ** ONE LAYER, 3 5/8", AND THE THINNESS IS LOAD-BEARING ON THE CHECKS. **
+# `checks/building_science/condensation.py::_nearest_along_each_face` keeps, per room face,
+# only the NEAREST candidate wall — so a surround authored as one thick wall aligned to the
+# room face would sit close enough to the face to become RM-M-LIVING's east bounding wall
+# and DROP W-M-E1 for the whole 36' elevation. The room's east assembly would then be bare
+# brick: no vapour retarder, no insulation, and `energy_scope` following it. At 3 5/8" the
+# axis lands ~3 11/16" off the finish face against a 1 13/16" half-thickness, so
+# `resolve/room_walls.bounding_walls` never picks it up and W-M-E1 survives untouched.
+# BASEMENT_BRICK_VENEER above is the existing freestanding-wythe precedent.
+#
+# STRUCTURE, not CLADDING, for BASEMENT_BRICK_VENEER's reason: the backer is a *different
+# wall*, so this layer has to be the structure layer or `integrity.assembly_layers` finds
+# none. CLADDING would also drag the surround into the Glaser scope
+# (`condensation` screens on `any(layer.function == "cladding")`), and a brick panel
+# standing inside a conditioned room is not an envelope assembly to grade.
+#
+# No MasonrySpec: BASEMENT_BRICK_VENEER carries none either, and the unit takeoff a
+# MasonrySpec turns on would replace the $/SF `white-brick` row this house already prices.
+# Modular coursing is 2 2/3" (three courses to 8") and every datum in the elevation lands on
+# a whole course — see the surround's note in plan/storeys/main.py.
+_FIREPLACE_WYTHE = inch(3.625)
+FIREPLACE_BRICK_WYTHE = Assembly(
+    tag="FIREPLACE_BRICK_WYTHE",
+    layers=(
+        Layer(name="brick", material_ref="white-brick", thickness=_FIREPLACE_WYTHE,
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="RM-M-LIVING fireplace surround (2026-09-06) — one 3 5/8\" wythe of white face brick with grey mortar, ASTM C216, running modular coursing (2 2/3\" per course) off W-B-E1's pour at -1'-1 7/16\" and stopping at 5'-4\" under the walnut mantel. Full brick, not slips (owner's call). Ties back to W-M-E1's studs through the 1 7/8\" behind the wythe; the load path is brick to concrete and is worked in notes/east_breast_bearing.md",
+)
+
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
 # core fill and no rebar — an SRW wall of this height is held by unit weight, batter and
 # the granular backfill behind it, which is exactly why it is the *outer* face here while
@@ -3893,6 +3931,7 @@ ASSEMBLIES = [
     SG_VENEER_BEAM_14,
     SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,
+    FIREPLACE_BRICK_WYTHE,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
     BREEZEWAY_ROOF_GLAZING,

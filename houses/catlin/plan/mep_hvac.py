@@ -161,9 +161,18 @@ REGISTER_TYPES = (
     # into the same plenum through its own drop — is 279 fpm, under Manual D SS4-10's 300 fpm
     # for a grille carrying the filter. At the full 750 it would be 321 fpm, under the 350
     # for a plain return grille; either reading clears.
+    #
+    # ** THE FILTER AND THE FACE ARE NOW TYPED, NOT ONLY PROSE. ** `filter_nominal_size` /
+    # `filter_merv` / `service_face` (model/types.py::AirHandlingProductFacts) say in fields
+    # what the `source` string below has always said in a sentence: a 28 x 12 x 1 MERV 13
+    # filter behind a hinged face that opens DOWNWARD out of the ceiling. It is the only
+    # filter and the only serviceable face on System 1 — EQ-S-HP1-AH hangs in SF-S-HP1 with
+    # no filter cabinet of its own — so this is the row an owner's maintenance schedule is
+    # built from and the size that gets ordered four times a year.
     RegisterType(tag="REG-T-HP-RET", name="Heat-pump return grille, 28x12, filter-back",
                  footprint=(inch(28), inch(12)), height=inch(1),
                  plan_symbol="register",
+                 filter_nominal_size="28x12x1", filter_merv=13, service_face="bottom",
                  source="Filter-back return grille, 28 x 12 nominal (336 in2 gross), hinged face, MERV 13 1\" filter behind it. Sized to Manual D SS4-10's 300 fpm figure for a filter grille at the 650 cfm of room air System 1 draws through it (279 fpm), the ERV's 100 cfm entering the same plenum separately. It was 30 x 16 until 2026-09-04, when the grille was sized down to sit wholly inside EQ-S-ERV-MIX rather than lapping the plenum, the duct and 120 in2 of open cavity.",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),

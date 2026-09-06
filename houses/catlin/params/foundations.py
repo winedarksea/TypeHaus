@@ -193,7 +193,11 @@ _SOUTH_TOE_TRIM = inch(2)
 
 
 def _toe_offset(tag: str) -> Length | None:
-    """How far this strip's centre sits north of its wall axis — see the two blocks above."""
+    """How far this strip's centre sits north of the line ``center_on`` picks.
+
+    Only the garden-end four take one, and they are the four that stay on the node line —
+    see the two blocks above, and ``_center_on`` below.
+    """
     if tag in _GARDEN_END_TRIMMED:
         return _GARDEN_END_TOE_TRIM
     if tag in _TOE_TRIMMED:
@@ -201,10 +205,58 @@ def _toe_offset(tag: str) -> Length | None:
     return None
 
 
+# --- what the strip is centred on -------------------------------------------------
+#
+# ``center_on="wall"`` centres the strip on the midline of the wall's RESOLVED layer band
+# rather than on the raw node line. Every concrete wall here aligns on
+# ``face("concrete-ext")``, so its pour runs entirely INBOARD of that line and a strip
+# centred on it threw all of its toe outboard. Measured on the resolved model before this
+# change: an 8" segment (the N/W runs) had **10" of toe outside the pour and 2" inside**,
+# and on the 12" segments (W-B-E1/E2) the wall's inboard face stood **2" PAST the footing
+# altogether** — the wall was not all on its own footing.
+#
+# ** THE BAND IS NOT THE CONCRETE, AND THAT IS THE WHOLE CAVEAT. ** ``band_axis`` is handed
+# EVERY layer's polygon, so the datum is the midline of the entire stack — the 4" of
+# exterior XPS and its coating included, not the pour's midline. Measured: the new datum
+# sits 1 29/32" inboard of the node line on the 8" walls and 3 29/32" on the 12" ones,
+# which is 2 3/32" outboard of the concrete's own midline in both cases. So the toes go
+# 10"/2" -> 8 3/32"/3 29/32" on an 8" wall and 10"/-2" -> 6 3/32"/1 29/32" on a 12" one:
+# the eccentricity halves and every wall lands on its footing, but it is NOT symmetric and
+# cannot be made so from here. Closing the last 2 3/32" means centring on the STRUCTURE
+# layer, which is an engine change and not this one.
+#
+# TWO GROUPS STAY ON THE NODE LINE, and neither is an oversight.
+#
+# 1. **The four garden-end strips.** Their south face is pinned at -4" by the closure joint
+#    against FT-SG-W1/E1 (see ``_GARDEN_END_TOE_TRIM`` above, and
+#    ``test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing``). With the
+#    face pinned and the width fixed at 20" the strip occupies -4"..+16" **whatever** datum
+#    its offset is measured from, so re-centring them buys no geometry whatever — it only
+#    re-expresses the same strip against a worse datum. Worse, because their band centres
+#    do not agree with each other: measured, +1 29/32" on S1/S4 (CATLIN_BASEMENT_8),
+#    +1 3/4" on S2 (SAUNA_LINER_ON_GARDEN_CURB, whose band includes the sauna's shiplap
+#    liner) and -1/32" on S3 (CATLIN_GARDEN_CURB_6). One trim constant could no longer put
+#    three different walls on one face, and S2's footing would move the next time an
+#    interior sauna finish changed thickness.
+# 2. **The four framed walls** — W-B-CS, W-B-STR, W-B-STR3, W-B-STR3B. A stud wall is
+#    already centred on its own node line (each one's stud layer is within 1/4" of it), so
+#    there is nothing to correct, and its band is dominated by finishes, so correcting
+#    anyway makes it worse. W-B-CS is the case that shows it: its shiplap liner and
+#    foil-polyiso would pull the strip **1 7/16" off the studs it carries**.
+_FRAMED_WALLS = {"W-B-CS", "W-B-STR", "W-B-STR3", "W-B-STR3B"}
+
+
+def _center_on(tag: str) -> str:
+    """``"wall"`` for the pours; ``"axis"`` where the node line is already the right line."""
+    if tag in _GARDEN_END_TRIMMED or tag in _FRAMED_WALLS:
+        return "axis"
+    return "wall"
+
+
 HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
-            offset=_toe_offset(t),
+            center_on=_center_on(t), offset=_toe_offset(t),
             assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "CATLIN_FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]

@@ -19,9 +19,15 @@ railing resolver measure against.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
-from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
+from typehaus.checks.code.mn_residential._common import (
+    _fail,
+    _na,
+    _pass,
+    _unknown,
+)
 from typehaus.checks.code.mn_residential.fall_protection import _GUARD_TRIGGER_DROP
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
@@ -179,3 +185,182 @@ def _outboard(near: tuple[float, float], far: tuple[float, float]) -> Any:
         return Point(near)
     step = _OUTBOARD_STEP_M / run
     return Point(near[0] + (near[0] - far[0]) * step, near[1] + (near[1] - far[1]) * step)
+
+
+# --- R311.7.1 at a stair head that lands on a WALL TOP ---------------------------------
+#: R311.7.1's minimum stairway width, which the landing at the head of a flight owes too.
+_WALL_TOP_LANDING_MIN_WIDTH = inch(36)
+#: How far the arrival elevation may sit off the wall's own top and still be that top. A
+#: threshold board's thickness: ``ST-SG-PORCH`` arrives 1" over ``W-SG-E1`` because 12" of
+#: wall top is decked flush with the porch plank beside it.
+_WALL_TOP_ARRIVAL_TOL_M = inch(3).meters
+#: A guard is not an obstruction. R311.7.1 lets a handrail project into the required width
+#: and ``code.R311_7_1_stair_width`` already grades that projection; what this rule asks is
+#: what *else* stands on the wall top, which is a different question with a different answer.
+_GUARD_SOLID_CATEGORIES = ("railing", "railing_infill", "railing_glass")
+#: A solid must rise above the wall top to obstruct it — flashing let into the top does not.
+_STANDS_PROUD_M = inch(1).meters
+
+
+def _arrival_of(stair) -> tuple[tuple[float, float], tuple[float, float],
+                                tuple[float, float], float] | None:
+    """``(a, b, travel, z)`` for the top flight's arrival station, or ``None``.
+
+    ``travel`` is the unit plan direction the flight is going when it arrives — the
+    direction the landing extends in, which is the whole point of deriving it here rather
+    than from ``run_direction``: a winder or a switchback arrives on a lane of its own.
+    """
+    from typehaus.resolve.stairs.walkline import flight_stations
+
+    best = None
+    for stations in flight_stations(stair).values():
+        if len(stations) < 2:
+            continue
+        if best is None or stations[-1][2] > best[-1][2]:
+            best = stations
+    if best is None:
+        return None
+    (a0, b0, _z0), (a1, b1, z1) = best[-2], best[-1]
+    mid0 = ((a0[0] + b0[0]) / 2.0, (a0[1] + b0[1]) / 2.0)
+    mid1 = ((a1[0] + b1[0]) / 2.0, (a1[1] + b1[1]) / 2.0)
+    run = math.hypot(mid1[0] - mid0[0], mid1[1] - mid0[1])
+    if run < 1e-9:
+        return None
+    travel = ((mid1[0] - mid0[0]) / run, (mid1[1] - mid0[1]) / run)
+    return a1, b1, travel, (stair.arrival_elevation_m
+                            if stair.arrival_elevation_m is not None else z1)
+
+
+#: Cross-sections taken along the landing when measuring its clear width. A dozen over a
+#: foot of threshold resolves a round column's waist without pretending to sub-millimetre
+#: precision on a hand-poured wall top.
+_LANDING_SECTIONS = 12
+
+
+def _clear_across(region, a, b, travel) -> float:
+    """The narrowest clear width the landing offers **across** the direction of travel.
+
+    Not ``_min_clear_width``: that erosion returns the narrowest corridor in *any*
+    direction, which on a 12"-deep threshold is the 12" depth — R311.7.6's dimension, not
+    R311.7.1's. Width is measured square to travel, section by section, and the answer at
+    each section is the WIDEST contiguous run across it: a column standing mid-landing
+    leaves two passages and you walk through one of them, not through their sum.
+    """
+    from shapely.geometry import LineString
+
+    if region.is_empty:
+        return 0.0
+    minx, miny, maxx, maxy = region.bounds
+    reach = math.hypot(maxx - minx, maxy - miny) + 1.0
+    across = (b[0] - a[0], b[1] - a[1])
+    run = math.hypot(*across)
+    if run < 1e-9:
+        return 0.0
+    across = (across[0] / run, across[1] / run)
+    depth = max((travel[0] * (x - a[0]) + travel[1] * (y - a[1]))
+                for x, y in region.exterior.coords) if hasattr(region, "exterior") else max(
+        (travel[0] * (x - a[0]) + travel[1] * (y - a[1]))
+        for piece in region.geoms for x, y in piece.exterior.coords)
+    widest_per_section = []
+    for index in range(1, _LANDING_SECTIONS + 1):
+        station = depth * index / (_LANDING_SECTIONS + 1)
+        centre = ((a[0] + b[0]) / 2.0 + travel[0] * station,
+                  (a[1] + b[1]) / 2.0 + travel[1] * station)
+        cut = LineString([(centre[0] - across[0] * reach, centre[1] - across[1] * reach),
+                          (centre[0] + across[0] * reach, centre[1] + across[1] * reach)])
+        sliced = region.intersection(cut)
+        if sliced.is_empty:
+            return 0.0
+        widest_per_section.append(max((part.length
+                                       for part in getattr(sliced, "geoms", [sliced])),
+                                      default=0.0))
+    return min(widest_per_section, default=0.0)
+
+@check(Tier.CODE, "code.R311_7_1_wall_top_landing")
+def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
+    """R311.7.1 — a flight whose head lands on a WALL TOP gets 36" of clear landing there.
+
+    The shape of the rule with nothing on either end of it. ``code.R311_7_1_stair_width``
+    measures the flight; ``code.R311_7_6_landing_depth`` measures a landing that is an
+    element. A stair that springs from the top of a concrete wall has neither: the wall top
+    it crosses is a walking surface that no ``FloorSystem`` and no ``Slab`` models, and the
+    board decking it may be trim with nothing to frame under it — ``ST-SG-PORCH``'s is 3 sf
+    of composite plank, deliberately not an element, priced with the porch it matches.
+
+    So the rule is driven off the **wall top**, never off a landing element. The head of the
+    top flight is put inside a ``ResolvedWall`` footprint whose ``z1_m`` is the arrival
+    elevation, with no floor deck or slab covering it; the landing is then that wall's own
+    footprint, banded to the stair's width and swept the way the flight is travelling. Every
+    solid standing proud of the wall top is cut out of it and what remains is measured with
+    the same erosion R311.6 uses on a hallway.
+
+    Drawn in the sunken garden's north strip, ``ST-SG-PORCH``'s threshold ran straight
+    through ``PT-SG-BR3`` — a 12" ROUND column on a 12" wall, edge to edge, leaving 10" of
+    passage one side and 14" the other — at zero findings, because the column's east face is
+    exactly tangent to the stair's head and there was no threshold *element* to overlap.
+    Guards are excused from the subtraction on purpose: R311.7.1 admits a handrail's
+    projection and ``code.R311_7_1_stair_width`` is where that is graded.
+    """
+    from shapely.geometry import Point, Polygon
+    from shapely.ops import unary_union
+
+    cid, code = "code.R311_7_1_wall_top_landing", "R311.7.1"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    modelled = [(Polygon(floor.deck_outline), floor.deck_z1_m) for floor in ctx.model.floors
+                if floor.deck_outline and len(floor.deck_outline) >= 3]
+    modelled += [(Polygon(solid.outline), solid.z1_m) for solid in ctx.model.solids
+                 if solid.category == "slab" and len(solid.outline) >= 3]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        arrival = _arrival_of(stair)
+        if arrival is None:
+            continue
+        a, b, travel, z = arrival
+        # A step forward of the arrival riser line, so a head sitting exactly on the wall's
+        # own face is asked about the wall it is entering rather than about the boundary.
+        step = (( a[0] + b[0]) / 2.0 + travel[0] * _STANDS_PROUD_M,
+                (a[1] + b[1]) / 2.0 + travel[1] * _STANDS_PROUD_M)
+        probe = Point(step)
+        if any(abs(top - z) <= _WALL_TOP_ARRIVAL_TOL_M and poly.covers(probe)
+               for poly, top in modelled):
+            continue  # it arrives on a modeled walking surface; other rules measure that
+        wall = next((w for w in ctx.model.walls
+                     if abs(w.z1_m - z) <= _WALL_TOP_ARRIVAL_TOL_M and w.layers
+                     and unary_union([Polygon(layer.polygon)
+                                      for layer in w.layers]).covers(probe)), None)
+        if wall is None:
+            continue
+        top = unary_union([Polygon(layer.polygon) for layer in wall.layers])
+        reach = max(top.bounds[2] - top.bounds[0], top.bounds[3] - top.bounds[1]) + 1.0
+        band = Polygon([a, b, (b[0] + travel[0] * reach, b[1] + travel[1] * reach),
+                        (a[0] + travel[0] * reach, a[1] + travel[1] * reach)])
+        landing = top.intersection(band)
+        if landing.is_empty or landing.area <= 1e-9:
+            continue
+        blockers = [solid for solid in ctx.model.solids
+                    if solid.category not in _GUARD_SOLID_CATEGORIES
+                    and len(solid.outline) >= 3
+                    and abs(solid.z0_m - wall.z1_m) <= _WALL_TOP_ARRIVAL_TOL_M
+                    and solid.z1_m > wall.z1_m + _STANDS_PROUD_M
+                    and Polygon(solid.outline).intersects(landing)]
+        clear_of = landing
+        for solid in blockers:
+            clear_of = clear_of.difference(Polygon(solid.outline))
+        clear = _clear_across(clear_of, a, b, travel)
+        names = ", ".join(sorted(solid.tag for solid in blockers)) or "nothing"
+        where = (f"{stair.tag}'s head lands on {wall.tag}'s top at "
+                 f"{z / .3048:.2f}' with no floor or slab modeled there")
+        if clear + 1e-9 < _WALL_TOP_LANDING_MIN_WIDTH.meters:
+            out.append(_fail(cid, f"{where}; {names} leave{'' if len(blockers) == 1 else ''} "
+                             f"{clear / .0254:.1f}\" of clear width across it, under "
+                             f"R311.7.1's 36\"", (stair.tag, wall.tag,
+                                                  *(s.tag for s in blockers)), code))
+        else:
+            out.append(_pass(cid, f"{where}, and {names} standing on it leaves "
+                             f"{clear / .0254:.1f}\" clear (>= 36\")", code))
+    if not out:
+        return [_na(cid, "N/A — no stair in the plan lands its head on a wall top; every "
+                    "flight arrives on a floor deck or a slab, which "
+                    "code.R311_7_6_landing_depth measures", (), code)]
+    return out

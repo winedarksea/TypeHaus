@@ -411,6 +411,25 @@ def joist_line_stations(floor) -> list[float]:
     return sorted({(m.p0[1] if along_x else m.p0[0]) for m in bay_edge_members(floor)})
 
 
+def clear_bay_width_m(floor) -> float | None:
+    """The clear width between two of this floor's joists, derived from the resolved lines.
+
+    ``duct_bay_occupancy`` takes its spacing from the caller because it is grading one run
+    against an authored ``JoistSpec``; a reader that has only a ``ResolvedFloor`` — the
+    duct-against-duct occupancy check — has to recover it from the members. The *median*
+    line-to-line step, not the minimum: an end strip and a doubled line at an opening are
+    both narrower than the field and neither is the bay a duct rides in. None when the floor
+    has fewer than two bay edges and there is therefore no bay.
+    """
+    lines = joist_line_stations(floor)
+    edges = bay_edge_members(floor)
+    if len(lines) < 2 or not edges:
+        return None
+    steps = sorted(lines[i + 1] - lines[i] for i in range(len(lines) - 1))
+    breadths = {cross_section(m.profile).width_m for m in edges}
+    return steps[len(steps) // 2] - max(breadths)
+
+
 def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m: float,
                        routing: DuctRouting, floor, bearing_walls: list,
                        spacing_m: float) -> tuple[list[str], list[tuple[float, float]], bool]:

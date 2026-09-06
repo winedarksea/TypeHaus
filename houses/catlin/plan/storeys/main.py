@@ -187,9 +187,16 @@ WINDOW_TYPES = [
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 48" — the same bearing cap as WT-2736 at WT-3048's height, for the one
     # bearing-wall unit whose head line had to survive the narrowing:
-    # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-6" sill and
-    # 6'-6" head while the width comes off. Third break of "one height per family", and
+    # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-8" sill and
+    # 6'-8" head while the width comes off. Third break of "one height per family", and
     # the cheapest of the three — a retype that moves neither datum.
+    #
+    # ** THE DATUMS ARE 2'-8" / 6'-8", NOT 2'-6" / 6'-6". ** Commit c2ed5b9d ("Close the
+    # sunken garden's structural loop") moved all three east sills 2'-6" -> 2'-8" in one
+    # silent hunk of a retaining-wall change, and every comment that quoted the old pair went
+    # stale at once. The row's head is therefore 6'-8" — THE HOUSE'S OWN DOOR-HEAD LINE — which
+    # is a better fact than the one it replaced, not merely a correction. Corrected here,
+    # at the row in OPENINGS, and in houses/catlin/CLAUDE.md on 2026-09-06.
     WindowType(tag="WT-2748", width=inch(27), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 54" — the bearing-wall BEDROOM size. WIN-S-BED1/BED2 are
@@ -442,6 +449,44 @@ NODES = [
     Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 6.25), ft(16, 4.625))),
     Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 8.615), ft(16, 4.625)),
          open_end=True),
+    # --- RM-M-LIVING's fireplace surround, W-M-FIRE -------------------------------------
+    #
+    # Two nodes, one wall, no loop: a 45 1/2" panel of white face brick standing IN FRONT OF
+    # W-M-E1 in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2. Both ends are `open_end=True`
+    # for N-M-TUBDK-N/-E's reason — `integrity.wall_loop_open` is an ERROR on a node with one
+    # wall edge, and these two genuinely stop in mid-room with the flanking BESTA banks hard
+    # against them.
+    #
+    # ** THE PIER, MEASURED. ** W-M-E1's interior finish face is x=35'-5 3/8".
+    # WIN-M-LIV-E1's RO is y 34.5"..61.5" (centre 4'-0"), WIN-M-LIV-E2's is y 146.5"..173.5"
+    # (centre 13'-4"); both are 27" because W-M-E1 is BEARING (preferences.toml
+    # `max_window_ro_bearing_in`), so each carries a 3" jack+king pack and the framing-clear
+    # pier is y 64.5"..143.5" = 6'-7". Its centre is y=104" = 8'-8", and 104 mod 16 = 8 — a
+    # BAY CENTRE on this wall's own grid off N-M-SE. ** NO WINDOW MOVES FOR THIS. **
+    #
+    # ** WIDTH IS SET BY THE BRICK MODULE AND COMES OUT EXACT. ** The Amantii
+    # BI-30-XTRASLIM is trimless (its face is only 3/8" wider than its body), so the brick
+    # runs to the glass edge, which is the whole point of a masonry surround: masonry opening
+    # 29 1/2", plus one whole brick and one head joint each side (7 5/8" + 3/8" = 8"), gives
+    # 45 1/2" with ZERO CUT CLOSERS. Centred on y=104" the panel spans y 81 1/4"..126 3/4",
+    # clearing each king face by 16 3/4" and each RO by 19 3/4", symmetric to 0".
+    # A 47 1/4" panel (two BESTA modules) was considered and rejected: it leaves 8 7/8"
+    # returns, i.e. a whole brick plus a 7/8" sliver on every course at the firebox edge
+    # where the eye goes, recoverable only with a 1 1/8" steel reveal frame that throws away
+    # the trimless unit's one advantage. All eight BESTA units are kept either way.
+    #
+    # ** THE AXIS IS x=35'-1 11/16" AND THAT IS A CHECK DECISION, NOT A DIMENSION. **
+    # FIREPLACE_BRICK_WYTHE is ONE 3 5/8" layer, so the centreline sits 3 11/16" off the
+    # room's finish face against a 1 13/16" half-thickness. `resolve/room_walls.bounding_walls`
+    # therefore does NOT pick it up, and `condensation._nearest_along_each_face` does not drop
+    # W-M-E1 for the whole 36' elevation — which is what a single thick wall aligned to the
+    # room face would have done, leaving RM-M-LIVING's east assembly as bare brick with no
+    # vapour retarder and no insulation. See the assembly's note in plan/assemblies.py.
+    # The face lands at x=34'-11 7/8" and the back at x=35'-3 1/2", 1 7/8" shy of the gwb:
+    # that gap is the tie space and the firebox's own framing, and it is why the whole
+    # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8".
+    Node(tag="N-M-FIRE-S", position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
+    Node(tag="N-M-FIRE-N", position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
 ]
 
 # --- board & batten on the north and south elevations -----------------------
@@ -850,6 +895,59 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="HGVY43DYQH", tag="W-M-PAN-E", start_node="N-M-PAN2", end_node="N-M-PAN3",
          assembly="INT_2X4_PARTITION", top=ft(9)),
+    # --- the fireplace surround ----------------------------------------------------------
+    #
+    # See the nodes above for the pier arithmetic and the 3 5/8"-wythe reasoning. This is the
+    # elevation, and every datum lands on a whole modular course (2 2/3" per course, three
+    # courses to 8"):
+    #
+    #     BESTA counter line                          29 3/4"      —
+    #     window sills = firebox opening bottom       32"          course 12
+    #     flame centre                                42 3/16"     —
+    #     opening top (20 3/8" unit)                  52 3/8"      —
+    #     lintel band (rowlock or steel angle)  52 3/8"..56"       course 21
+    #     mantel shelf underside                      64"          course 24  <- WALL TOP
+    #     mantel top (2 1/4", one brick bed)          66 1/4"      —
+    #
+    # ** 32" IS NOT A COINCIDENCE. ** It is the east row's own sill line — WIN-M-LIV-E1/-E2
+    # and WIN-M-EAST-MID all sit at 2'-8" (see the row's note in OPENINGS below; the 2'-6"
+    # that comment used to claim was stale) — so one datum serves four openings, and the
+    # BESTA counter dies into the brick 2 1/4" below the firebox sill, the identical 2 1/4"
+    # the three window sills clear it by. Flame at 42 3/16" against a seated eye of ~46-48":
+    # you look slightly DOWN at a fire, which is right. It is a 14" rise on the old unit's
+    # 28" top.
+    #
+    # ** IT STOPS AT THE MANTEL, AND THAT IS THE OWNER'S CALL ABOUT WHAT THE OBJECT IS. ** A
+    # breast running to the 9'-0" ceiling would be a chimney breast. One stopping 16" below
+    # the 6'-8" door-head line is a low brick surround with a shelf — smaller, lighter, and
+    # what "minimalistic" was asked for. The compositional argument for full height is that a
+    # breast stopped AT the head line reads as a wainscot band that got cut off; 64" is
+    # clearly below that line and reads as its own element, which is why 64" works and 80"
+    # would not.
+    #
+    # ** base_elevation TAKES THE BRICK OFF THE FLOOR AND ONTO THE POUR. ** -1'-1 7/16" is
+    # W-B-E1's bearing seat, so `top` is a HEIGHT of 6'-5 7/16" (77 7/16") off that seat and
+    # not off the storey datum. The brick rises 13 7/16" through FS-M-EAST's joist zone —
+    # FO-M-FIRE below is that hole — and nothing shows in RM-B-GYM, whose ceiling is under
+    # the joists. **Result: zero brick load on the floor**, which is why
+    # preferences.toml's 50 plf wood-borne masonry limit does not arise here; a floor-borne
+    # full-brick surround this size would have run 222-274 plf, 4-5.5x over it.
+    # notes/east_breast_bearing.md works the a/L arithmetic and names the I-joist reference.
+    #
+    # No hearth extension: an electric firebox is outside NFPA 211, a hearth pad would be
+    # decoration and it would eat the walk lane. And keeping the appliance ELECTRIC is what
+    # keeps IRC R1001.2 — a 12" footing on undisturbed earth below frost, with no wood-floor
+    # exception — off the table entirely. Put a real firebox in this and no detail survives.
+    #
+    # NONBEARING and no FramingSpec: the assembly is one masonry layer, there are no studs to
+    # place. `guard` stays False — this is not an edge protection wall, so
+    # `structural.masonry_guard_bearing` (which walks `Wall.guard` walls only) does not look
+    # at it. NOTHING IN `haus check` GRADES THIS DETAIL: that check is scoped to guards and
+    # `checks/code/mn_residential/profile.py` explicitly disclaims IRC R1001-R1004. A 0-FAIL
+    # report here means nothing looked, which is why the note exists.
+    Wall(tag="W-M-FIRE", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(-13.4375),
+         top=inch(77.4375), structural_role=StructuralRole.NONBEARING),
 ]
 
 OPENINGS = [
@@ -1058,13 +1156,25 @@ OPENINGS = [
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
     # over between-storey stacking here, so this row runs as even as its own grid allows —
     # 4'-0" / 12'-0" (the true-even 11'-8" middle isn't a stud line on W-M-E1). Both sills
-    # stay 2'-6": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
-    # countertop by 1/4".
+    # stay 2'-8": the BESTA run tops out at 29 3/4" (placeables.py), clearing the
+    # countertop by 2 1/4" — the old "1/4"" here was the 2'-6" sill's number and went stale
+    # with it (see the WT-2748 note in WINDOW_TYPES).
     #
     # 2026-08-27: both retyped WT-2736 -> WT-2748, 36" -> 48" tall. Same 27" bearing width,
     # so the near-jamb offsets and the row's 4'-0"/12'-0" beat are untouched; the head
-    # moves 5'-6" -> 6'-6", onto WIN-M-EAST-MID's line. The sill stays 2'-6" over the BESTA
+    # moves 5'-6" -> 6'-8", onto WIN-M-EAST-MID's line. The sill stays 2'-8" over the BESTA
     # run, and the row now carries one head line where it carried two.
+    #
+    # ** 2026-09-06: E1'S SILL CONDITION CHANGED WITHOUT E1 MOVING. ** The fireplace left the
+    # SE corner for the pier between this window and E2 (W-M-FIRE in WALLS), and the BESTA run
+    # was re-laid over the freed corner — so this window goes from having 3 1/2" of counter
+    # under it to ALL 27", joining the condition E2 and WIN-M-EAST-MID already had. Clearance
+    # is the same 2 1/4" at all three (32" sill less the 29 3/4" counter top).
+    #
+    # ** WATCH THE STOOL, NOT THE SILL. ** out/milling.md schedules a 1 1/2" x 10.135" oak
+    # stool for all three east windows; on a 32" sill its underside is ~30 1/2", i.e. 3/4" over
+    # the BESTA counter, projecting 10" into a 16 1/2"-deep top. Buildable and ordinary — but
+    # now true at THREE windows instead of two, and nothing in `haus check` looks at it.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2748", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 8)),
@@ -1089,7 +1199,7 @@ OPENINGS = [
     # list, and the rewritten Rows bullet, before reading the blank as still intended.
     # NARROWED 30" -> 27": W-M-E1 is a BEARING wall, and the bearing rung of
     # the RO ladder is 27" — a 30" RO there cannot take its jacks without pushing the kings
-    # off the module. Retype only: WT-2748 holds the 2'-6" sill and the 6'-6" head, so this
+    # off the module. Retype only: WT-2748 holds the 2'-8" sill and the 6'-8" head, so this
     # window's place in the east row is untouched. The near-jamb offset moved +1 1/2"
     # (17'-5" -> 17'-6 1/2") because ``from_node`` is the NEAR JAMB, not the centre: half
     # of 3" of lost width, which keeps the CENTRE on y=18'-8", the same stud line the
@@ -1478,6 +1588,42 @@ FLOOR_OPENINGS = [
     # tile it carries, and it must be re-struck off the template before anyone cuts. The
     # basin top (55 9/16" x 28 3/8") is NOT the cutout and must not be used as one — it is
     # the water, not the shell.
+    # --- the fireplace surround's slot through FS-M-EAST ---------------------------------
+    #
+    # W-M-FIRE's brick starts on W-B-E1's pour at -1'-1 7/16" and has to pass THROUGH the
+    # floor structure to reach the room. `params/main_deck.py`'s FS-M-EAST frames
+    # 11 7/8" I-joists at 16" o.c. running EAST-WEST and bearing on W-B-E1 — which is the
+    # reason this wall was always the right wall (notes/east_breast_bearing.md) and also the
+    # reason the joists are in the way: their ENDS bear on the mudsill at x 426"..431 1/2",
+    # and inboard of 426" they are in span. The brick face at x=34'-11 7/8" cuts them short of
+    # that bearing, so over this 45 1/2" of y no joist can reach it and the whole strip from
+    # the brick face to the wall line is joist-free. Three or four joists are cut and headed.
+    #
+    # ** UNDER 4'-0", WHICH IS THE THRESHOLD THAT MATTERS. ** At 3'-9 1/2" this is IRC
+    # R502.10's single-header, single-trimmer case — prescriptive framing, not a design.
+    # ** BUT THESE ARE I-JOISTS AND R502.10 IS A SAWN-LUMBER RULE. ** Cutting and heading
+    # 11 7/8" I-joists follows the MANUFACTURER's header table and needs their specified
+    # hangers and web stiffeners. That is still a published table rather than a PE stamp, and
+    # it is the one thing in this detail that must be confirmed against the joist maker's
+    # literature before framing. It is named in the note and on the drawing.
+    #
+    # `purpose=CHASE`: a closed enum of STAIR|CHASE|HATCH, and "a hole for something to pass
+    # through" is what this is — the same reading FO-M-TUBDK below takes.
+    #
+    # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: that edge is the x=36'-0"
+    # wall line, and W-B-E1's 12" pour runs x 420"..432" for y 0..18'-0", so
+    # `_opening_edge_has_declared_bearing` finds the whole edge carried. The other three edges
+    # are framing — one header on the west and two trimmer joists north and south — and
+    # `structural.floor_opening_header` is expected to have an opinion about them.
+    #
+    # ** ALL OF THIS IS CHEAP ONLY WHILE THE BASEMENT CEILING IS OPEN **, the same warning
+    # params/main_deck.py already carries about work in this bay.
+    FloorOpening(tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(34, 11.875), ft(6, 9.25)),
+                          pt(ft(36), ft(6, 9.25)),
+                          pt(ft(36), ft(10, 6.75)),
+                          pt(ft(34, 11.875), ft(10, 6.75))),
+                 bearing_refs=("W-B-E1",)),
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(4, 9.685), ft(16, 11.926)),
                           pt(ft(7, 7.435), ft(16, 11.926)),

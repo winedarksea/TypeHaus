@@ -182,7 +182,7 @@ def corner_stud_stations(end: WallEndFraming, at_start: bool, stud_thickness_m: 
         if stud_depth_m is None:
             raise ValueError("a california corner needs stud_depth_m: its backer is laid "
                              "flat and occupies its depth along the wall axis")
-        widths = (stud_depth_m,)
+        widths: tuple[float, ...] = (stud_depth_m,)
         laid_flat = True
     else:
         widths = (stud_thickness_m,) * (2 if corner_style == "4-stud" else 1)

@@ -114,6 +114,10 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Stair geometry and headroom",
                        ("code.R311_7_stair_geometry", "code.R311_7_2_stair_headroom",
                         "code.R311_7_1_stair_width", "code.R311_7_6_landing_depth",
+                        # The width rule measures the flight and the landing rule measures a
+                        # landing that is an element; a head that lands on a wall TOP is
+                        # neither, and had no rule at all — see stair_guards.py.
+                        "code.R311_7_1_wall_top_landing",
                         "structural.stair_riser_uniformity"),
                        ("IRC R311.7", "IRC R311.7.5.1")),
         PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),

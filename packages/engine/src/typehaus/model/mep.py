@@ -262,6 +262,23 @@ class Equipment(Element):
     # the indirect waste that empties the pan.
     drain_pan: bool = False
     pan_drain_ref: str | None = None
+    # --- Installation facts: how the unit is got at once the ceiling is closed -----------
+    # A machine concealed behind a removable panel is serviceable; the same machine behind
+    # a taped ceiling is not, and nothing else in this model distinguishes them. Shaped
+    # exactly like ``drain_pan``/``pan_drain_ref`` above: the flag says the condition
+    # exists, the ref names the element that satisfies it (a Door, a Placeable access
+    # panel). Documentation, not a graded rule — deciding whether a panel is *big enough*
+    # needs a service envelope and a body position this model does not carry.
+    behind_access_panel: bool = False
+    access_panel_ref: str | None = None
+    # The other unit whose blower this one's operation is interlocked with — an ERV naming
+    # the air handler it shares a return plenum with, or the reverse. It is a *behaviour*,
+    # authored because it can be authored nowhere else: the mixing box's backdraft damper is
+    # geometry, but "these two fans start together" is a control sequence, and it is the
+    # sequence a commissioning agent balances the house against. Never inferred from a
+    # shared plenum: two machines can share a plenum and run on independent schedules, which
+    # is exactly what this house does.
+    blower_interlock_ref: str | None = None
     # The modeled ``Soffit`` this unit is installed inside, mirroring ``DuctRun.soffit_ref``.
     # Two things follow from it and neither could be said before: the placeable hangs off the
     # soffit's underside instead of the storey's default ceiling plane (an air handler in a

@@ -225,7 +225,34 @@ class ApplianceType(FurnitureType):
     quick_closing: bool = False
 
 
-class EquipmentType(FurnitureType):
+class AirHandlingProductFacts(HausModel):
+    """Product facts an air-side part carries that decide how it is *serviced*.
+
+    A mixin rather than fields on ``FurnitureType`` because a bookcase has no filter, and
+    rather than fields on ``EquipmentType`` alone because in this house the filter is not in
+    the machine: the air handler hung in a soffit has no filter cabinet, and the only filter
+    in System 1 lives behind ``REG-T-HP-RET``'s hinged face. The part that carries the filter
+    is a *register* and the part that is opened to reach it is the same register, so the
+    facts have to be sayable of both families or they have nowhere to live.
+
+    All three are documentation the schedules and the O&M sheet print. Nothing grades them,
+    deliberately: a rule that decides whether a filter can be *reached* needs a swing
+    envelope and a standing position, which this model does not have, and a MERV rule needs
+    a design pressure drop the catalog does not state.
+    """
+
+    #: Nominal filter size as it is ordered, e.g. ``"28x12x1"``. A string and not three
+    #: Lengths: it is a purchased size off a shelf, and 20x25x1 is one SKU, not a rectangle.
+    filter_nominal_size: str | None = None
+    #: ASHRAE 52.2 MERV of the filter this part is specified with.
+    filter_merv: int | None = None
+    #: Which face of the part is opened to service it, in the type's own local frame — the
+    #: same frame ``ServicePort.position`` and the plan symbols use, ``+y`` toward the back.
+    #: A ceiling grille's hinged face is ``"bottom"``; a cabinet's door is ``"front"``.
+    service_face: Literal["front", "back", "left", "right", "top", "bottom"] | None = None
+
+
+class EquipmentType(FurnitureType, AirHandlingProductFacts):
     needs: frozenset[Service] = frozenset()
     # Rated heating output (Btu/h at the AHRI 47 °F point), for heat-producing equipment.
     heating_capacity_btuh: float | None = None
@@ -269,7 +296,7 @@ class EquipmentType(FurnitureType):
     pv_input_kw: float | None = None
 
 
-class RegisterType(FurnitureType):
+class RegisterType(FurnitureType, AirHandlingProductFacts):
     needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
     # A ventilation terminal (the ERV's fresh-air/stale-air grilles) rather than a
     # conditioned-air register. Same product family, different sizing basis — a ventilation
