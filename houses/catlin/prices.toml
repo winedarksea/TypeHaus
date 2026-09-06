@@ -1995,6 +1995,11 @@
 # day does not shrink with the lumber.
 "FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 1 ea
 "FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
+# The 3'-0" sibling on the south liner (2026-09-05). Material scales off the 54" row by
+# carcass length (36/54 = 0.67); labour is held at three-quarters rather than two-thirds,
+# for the reason the 2T-60 row gives above — scribing a bench between a bench and a heater
+# is setting-out time, and setting-out does not shrink with the lumber.
+"FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 535 }, labour = { low = 60, high = 225 } }  # 1 ea
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
@@ -4174,6 +4179,15 @@
 
 [drainage]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of run, material only, hangers/straps/elbows
+# and end caps folded into the rate. Owner's call for now: RAW ALUMINIUM, to be refined.
+# Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
+# sit above those because half the run is not K-style stock but formed dark box gutter and
+# 4" leaders (`metal-dark-exterior`), which is fabricated, not off the shelf.
+#   gutter    123.2 LF, ALL dark now (2026-09-05: the garage and balcony runs took the same
+#             colour as the house eaves; nothing mill-finished is left on the building) —
+#             74.4 LF shop-formed box + 48.8 LF prefinished K-style.
+#   downspout  56.0 LF over FOUR drops, likewise all dark — 38.6 LF formed + 17.4 LF K-style.
+# Both are priced per PRODUCT rather than by colour; see the block below.
 # `french_drain` is a ZERO ROW, not an absent one, and that is the difference from `drywell`
 # below: a FrenchDrain carries a real length_ft, so with no row at all it would sit on
 # `haus takeoff`'s unpriced list forever while being fully priced twice over elsewhere — the
@@ -4181,13 +4195,6 @@
 # around it as [concrete] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
 # third time. The zero says "priced, elsewhere, on purpose".
 "french_drain" = { low = 0, high = 0 }  # 19.7 LF — bills in [concrete], twice over already
-# and end caps folded into the rate. Owner's call for now: RAW ALUMINIUM, to be refined.
-# Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
-# sit above those because half the run is not K-style stock but formed dark box gutter and
-# 4" leaders (`metal-dark-exterior`), which is fabricated, not off the shelf.
-#   gutter    122.0 LF — 48.3 LF plain aluminium (4" and 5") + 73.7 LF dark box gutter.
-#   downspout  67.0 LF over FOUR drops — 17.4 LF 3" aluminium + 49.6 LF 4" dark.
-# Both are now priced per product rather than blended; see the block below.
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
 # zero-quantity row is not reported as unpriced either. The 4.35 cy of washed stone bills in
@@ -4210,33 +4217,49 @@
 # file. Total money is within 3% of the blended rates it replaces — this is a legibility change.
 # $/LF of run, by "category:product"
 
-# Seamless K-style aluminium — 21.0 LF of 4" (sunken garden) + 26.8 LF of 5" (garage low eave).
+# --- 2026-09-05: COLOUR IS NOT A PRODUCT --------------------------------------------------
+# The two seamless runs went black with the rest of the drainage that day. For a few hours they
+# also went to the box-gutter rate below, +$800-1,800, because [drainage] is qualified on the
+# row's MATERIAL TAG and they had taken `metal-dark-exterior` — which made this table say that
+# painting a gutter triples it. It does not: black is a stock colour-card coil in every K-style
+# line, roll-formed on site the same way mill finish is. So the profile now owns a tag of its
+# own (`metal-dark-kstyle`, plan/assemblies.py, identical #1c1f24), the two keys below carry a
+# modest PREFINISHED premium over the mill rate they replace, and `gutter:aluminum` /
+# `downspout:aluminum` are GONE rather than left at zero: nothing on this house is mill-finished,
+# and if a run ever goes back to it, the unpriced list is the right place to find out.
+#
+# Seamless K-style, prefinished dark — 22.0 LF of 4" (sunken garden) + 26.8 LF of 5" (garage
+# low eave) = 48.8 LF, plus its two 3" leaders below.
 # MERGED ON PURPOSE, not for want of research: K-style is roll-formed ON SITE from coil off the
 # back of the truck, so there is no moment at which a material price and a labour price exist
 # separately, and every Minneapolis quote comes back as one installed $/LF. Inventing a split
 # here would read exactly like a real one. It costs a little tax base (see [tax]) and that is
 # the correct trade — `haus takeoff` prints how much of the total sits in `merged` for this
 # reason. Hangers, end caps, mitres and outlets are in the rate.
-"gutter:aluminum" = { low = 8, high = 15, basis = "installed" }  # 48.3 LF
+# Premium over the $8-15 mill-finish rate this replaces: prefinished coil runs roughly a
+# dollar a foot over mill, and nothing else about the run changes — same truck, same former,
+# same hangers. $9-17, not the $22-47 below.
+"gutter:metal-dark-kstyle" = { low = 9, high = 17, basis = "installed" }  # 48.8 LF
 
-# Fabricated dark box gutter — 73.7 LF, the house's east and west eaves. Genuinely split,
+# Fabricated dark box gutter — 74.4 LF, the house's east and west eaves. Genuinely split,
 # because this one IS two purchases: heavier prefinished gauge brake-formed and mitred in a
 # shop, then delivered and set. It must be hung to a true line in a way K-style need not be,
 # because a box profile shows every wave along its face.
-"gutter:metal-dark-exterior" = { material = { low = 10, high = 25 }, labour = { low = 12, high = 22 } }  # 73.7 LF
+"gutter:metal-dark-exterior" = { material = { low = 10, high = 25 }, labour = { low = 12, high = 22 } }  # 74.4 LF
 
-# 3" stock aluminium leaders — 2 drops, 17.4 LF (TR-G-LEADER-E, TR-SG-LEADER-SE). It was
-# 26.4 LF until 2026-08-21: TR-SG-LEADER-SE used to drop the full storey to the sunken
-# garden floor, and now hangs outside the east retaining wall and stops at the terrace.
-"downspout:aluminum" = { material = { low = 5, high = 9 }, labour = { low = 2, high = 4 } }  # 17.4 LF / 2 drops
+# 3" stock leaders in the same prefinished coil — 2 drops, 17.4 LF (TR-G-LEADER-E,
+# TR-SG-LEADER-SE). It was 26.4 LF until 2026-08-21: TR-SG-LEADER-SE used to drop the full
+# storey to the sunken garden floor, and now hangs outside the east retaining wall and stops at
+# the terrace. Material carries the same ~$1/LF prefinished premium; labour is unchanged.
+"downspout:metal-dark-kstyle" = { material = { low = 6, high = 10 }, labour = { low = 2, high = 4 } }  # 17.4 LF / 2 drops
 
-# 4" dark formed leaders — 2 drops, 49.6 LF (TR-RF-LEADER-E/W), so ~25 ft each.
+# 4" dark formed leaders — 2 drops, 38.6 LF (TR-RF-LEADER-E/W), so ~19 ft each.
 # The "downspouts are quoted PER DROP at $30-75" note that used to sit here has been WITHDRAWN,
 # not just moved: `drainage` reports `count` explicitly and it is 4 drops, not the 5-7 that note
 # guessed. Per-drop pricing describes a 10-ft leader off a one-storey eave; these average 19 ft
 # down a two-storey walk-out and are formed to match the box gutter, so the foot is the right
 # unit and $30-75 a drop would understate them by 4x.
-"downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 49.6 LF / 2 drops
+"downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 38.6 LF / 2 drops
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's

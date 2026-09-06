@@ -28,10 +28,10 @@ from typehaus.model import m
 BASEMENT_FIXTURES = (
     # Pan x 14'-5 3/4"..17'-5 3/4", y 6'-1 3/16"..9'-1 3/16" — snug into the liner faces.
     Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36",
-            room="RM-B-SAUNA", position=pt(inch(191.75), inch(91.1875)),
+            room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
             wall_ref="W-B-CS"),
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
-            room="RM-B-SAUNA", position=pt(ft(13, 6), inch(91.1875)),
+            room="RM-B-SAUNA", position=pt(ft(13, 6), inch(98.1875)),
             wall_ref="W-B-CS"),
     # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-3 15/16" x 7'-1 1/4"**
     # between finish faces (x 10'-3 3/8"..13'-7 5/16" off W-B-STR2/W-B-STR3B and W-B-BA-E,

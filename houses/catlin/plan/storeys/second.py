@@ -827,31 +827,57 @@ ROOMS = [
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
     # The suite is the source's L: the full west strip plus the arm that reaches the centre
     # line between the walk-in and the suite bath.
+    # ** 2026-09-05: CARPET -> WALNUT. ** The suite and its walk-in are one continuous 181.7 SF
+    # field of `walnut-floor` — the same 4/4 T&G board as RM-M-STUDY's wainscot, off the
+    # family's own milled stock (plan/assemblies.py says why it is a separate material tag, and
+    # prices.toml [floor_finishes] says what milling that stock costs, which is not $0).
+    # The walk-in went with it rather than staying carpet or going oak: it opens off the
+    # bedroom through a 27 SF doorway, and a species change there buys a reducer strip and a
+    # second sand-and-finish set-up for 27 SF.
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+         occupancy=Occupancy.BEDROOM, floor_finish="walnut-floor"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet"),
-    # LVP through the wet rooms and the circulation: one continuous plank floor from the
-    # stair head through both hallways and into all three second-storey baths, so the
-    # traffic route has no thresholds in it and the baths get a waterproof plank instead of
-    # tile. RM-S-BATH1 puts LVP over the FH-S-BATH1 electric radiant zone — allowed, but
-    # surface-temperature limited, which advisory.floor_finish_over_radiant flags.
+         occupancy=Occupancy.STORAGE, floor_finish="walnut-floor"),
+    # LVP through the unheated wet rooms and the circulation: one continuous plank floor
+    # from the stair head through both hallways and into the two baths with no radiant in
+    # them, so the traffic route has no thresholds in it and those baths get a waterproof
+    # plank instead of tile.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
+    # ** RM-S-BATH1 IS TILE, NOT PLANK (2026-09-05), AND FH-S-BATH1 IS THE WHOLE REASON. **
+    # It carried the hall's LVP over the electric radiant zone, which
+    # advisory.floor_finish_over_radiant flagged: plank is surface-temperature limited at
+    # 80-85 F, so the one heated floor on this storey was the one covering that throttles
+    # the heat it is there to deliver. Tile has no such cap and is the mat's mass.
+    # Spec is the mudroom's cheap porcelain (prices.toml [floor_finishes] `tile`), not a
+    # designer tile — with one difference the mudroom does not have: the uncoupling
+    # membrane under a heated floor is the DITRA-HEAT variant, the cable's own base, not
+    # the plain 1/8" sheet the takeoff's companion row prices. See that row's note.
+    # The cost of the change is one threshold at D-S-BATH1, tile ~5/16" proud of the hall
+    # plank — the same dirt-step detail D-M-MUD already builds downstairs.
+    #
+    # ** THE DECK UNDER IT IS NOT THE MUDROOM'S, AND THAT IS THE ONE THING TO VERIFY. **
+    # The mudroom's tile sits on FS-M-MECH, a 9.9' span. This room sits on FS-S-WEST, an
+    # 11-7/8" open-web truss at 16" o.c. spanning 17.9' — 97% of the 18.5' table limit
+    # (structural.ijoist_span). That table is an L/360 live-load basis, which is TCNA's
+    # bare minimum for ceramic and no margin at all; the uncoupling membrane is crack
+    # ISOLATION and does not stiffen a substrate. Ask the truss supplier for the design
+    # deflection on this bay (floor trusses are commonly run at L/480, and L/600 is the
+    # usual tile spec) before the tile is ordered. Nothing in the engine grades this.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
+         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     # RM-S-HALL is the source's single 181.02 sf "Hallway" again: taking the centre line
     # out between y 22'-4" and 30'-10" left one polygonized face spanning the old hall,
     # landing and open stair well, so RM-S-LANDING/RM-S-STAIR were retired into this claim
     # rather than billing the same face three times. RL-S-STAIR guards the well's east edge.
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
          occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
-    # Both walk-ins are carpet — a closet floor is never walked on in shoes, and carpet
-    # continues out of the bedroom it opens off.
+    # RM-S-NCLOSET opens off the hall, not a bedroom (D-S-NCLOSET hosts on W-S-CLN-S), so
+    # the hall's LVP runs straight in — no threshold, and the linen shelving sits on plank.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
-         occupancy=Occupancy.STORAGE, floor_finish="carpet"),
+         occupancy=Occupancy.STORAGE, floor_finish="lvp"),
 ]
 
 ALARMS = [
@@ -872,6 +898,11 @@ ALARMS = [
 # 120V mat at a 3" serpentine. `in_slab` is just the enum mode name — this floor is
 # FS-SECOND's I-joists/plywood, and the mat lies in the thinset above it. CKT-FH-BATH1 and
 # ED-S-BATH1-FH-STAT carry it.
+#
+# The covering over it is TILE as of 2026-09-05 (see RM-S-BATH1 above) — it was plank, and
+# plank caps the surface at 80-85 F. That also names the base: DITRA-HEAT, the dimpled
+# membrane whose studs hold the cable, rather than the plain uncoupling sheet the takeoff's
+# companion row prices for the mudroom's unheated tile. See prices.toml's note on that row.
 #
 # The zone is drawn to the fixtures (plan/fixtures.py's de-overlapped WC/lav/shower
 # positions), not the room outline, holding 3" off every fixture: total 31.6 ft2 across a

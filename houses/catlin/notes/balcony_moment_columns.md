@@ -130,16 +130,23 @@ Category II. Height is measured from the **sunken garden court surface**, the gr
 beneath this structure, not from the site grade nine feet higher — the conservative reading
 and the physical one.
 
-**That ground dropped 4 11/16" on 2026-09-03 and this demand rose with it.**
+**That ground has now moved twice, and on 2026-09-05 it came back up.**
 `balcony_wind.ground_below_ft` takes the lowest of the site's spot elevations, and the two
-over the court now read -9'-8 11/16": the court fell 7 1/4" for the flood step at
-`D-B-PATIO`, and the annotation it was read from had been 1 7/16" stale before that. `z`
-grew, `K_z` with it, and every figure below moved about half a per cent. A *lower* floor is a
-*taller* structure — the wrong direction to be wrong in, which is why this reads the court
-and not the grade.
+over the court govern it. They read -9'-4" (stale by 1 7/16") until 2026-09-03, then
+-9'-8 11/16" when the court fell 7 1/4" for the flood step at `D-B-PATIO`, and now
+**-9'-1 7/16"**: `court_step_down_in` went back to 0 and the court is flush with the
+basement floor plane again, so the whole court is one surface with a single riser at the
+door. `h` fell 23.3' -> **22.7'**, `K_z` with it, and q_h 18.8 -> **18.6 psf**.
+
+A *lower* floor is a *taller* structure, so this last move is the SAFE direction — the
+demand fell about 1% and no column is re-sized by it. It is written down anyway, because
+the failure this figure is exposed to is not a wrong number but a stale one: these spot
+elevations are *drafting annotation everywhere else on this site*, and `plan/site.py`
+carried a comment asserting exactly that until this edit. They are a structural input here
+and nowhere else, which is precisely how one goes stale unnoticed.
 
 ```
-q_h at h = 23.3'                        18.8 psf        (typehaus/wind.py)
+q_h at h = 22.7'                        18.6 psf        (typehaus/wind.py)
 G (rigid, §26.11.1)                     0.85
 ASD factor (§2.4.1)                     0.6
 ```
@@ -168,9 +175,9 @@ adequate at 1.80 is adequate for any legitimate reading of the figure.
 
 ```
 F = 0.6 × q_h × G × C_f × A_s
-  = 0.6 × 18.8 × 0.85 × 1.80 × 35.94  =  619 lb   storey shear, E-W
-split over 4 fixed columns             =  155 lb  each, delivered at the deck plane
-base moment  M_w = 155 × 9.01'         =  1,395 lb-ft
+  = 0.6 × 18.6 × 0.85 × 1.80 × 35.94  =  614 lb   storey shear, E-W
+split over 4 fixed columns             =  153.4 lb each, delivered at the deck plane
+base moment  M_w = 153.4 × 9.03'       =  1,385 lb-ft
 ```
 
 **The three-beam band is an over-count and is kept deliberately.** Three N-S beams seen from
@@ -180,7 +187,7 @@ already did with the rails, and at d/c 0.07 the margin is not worth an argument 
 shielding factors.
 
 (The rear row `PT-SG-BR1/BR3` stands 2" proud for the deck's drainage crown, so its lever is
-9.18' and its wind moment **1,421 lb-ft**. The guard case still governs both rows.)
+9.18' and its wind moment **1,410 lb-ft**. The guard case still governs both rows.)
 
 ### 2c. Guard — IRC R301.5, and it is what governs
 

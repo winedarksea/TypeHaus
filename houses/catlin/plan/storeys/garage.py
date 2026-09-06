@@ -318,8 +318,9 @@ ROOMS = [
 # soffit is what keeps an overhang from reading as a shadow. A vented PVC soffit closes the
 # overhang and feeds the vent channel. Elevations derive from the resolved roof plane so the
 # raised-heel lift carries the trim with it.
-# The SOUTH eave gets a 5" aluminum gutter: that slope faces the 4' breezeway gap and the
-# house wall people walk under, and now also catches what sheds off the breezeway roof.
+# The SOUTH eave gets a 5" gutter in the house's dark exterior coil (params/roof_trim.py
+# ::_CHAIN_MATERIAL — mill aluminium read as a pale band under a dark edge): that slope
+# faces the 4' breezeway gap and the house wall people walk under, and now also catches what sheds off the breezeway roof.
 # North eave stays free-draining onto open ground. Declared here rather than in params/
 # for the same reason as the fascia — the raised-heel truss lifts the deck plane at the
 # envelope stage, so an absolute elevation would drift off the eave.
@@ -327,7 +328,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="metal-copper-penny", thickness=inch(1), depth=inch(6))),
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
-    gutter=EaveGutter(material="aluminum", depth=inch(5), thickness=inch(5),
+    gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("south",),
                       slope="1/16 in/ft to the east downspout",
                       downspout_ref="TR-G-LEADER-E"),
@@ -346,7 +347,7 @@ _GARAGE_LEADER = Downspout(
     # its own if the roof does; these are the two numbers that have to follow it by hand.
     top_elevation=ft(7, 6),             # inside the trough floor
     bottom_elevation=ft(-1, -6),        # splash block, a foot above the apron
-    diameter=inch(3), material="aluminum", gutter_ref="RF-GARAGE",
+    diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
 )
 
 ROOFS = [

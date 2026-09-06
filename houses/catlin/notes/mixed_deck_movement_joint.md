@@ -36,13 +36,13 @@ to ignore against a rigid floor finish:
 Along y = 13'-0" the two midspans are 18' apart in the span direction but adjacent across
 the line, so the differential shows up as a hinge. Two consequences to draw:
 
-1. **A continuous wood run across the line will telegraph.** The plank read here until
-   2026-09-05 and the south bay is solid oak now, which makes the point sharper, not softer:
-   floating plank is at least forgiving in-plane, and a nailed-down 3/4" strip floor is not.
-   Either way a joint that opens and closes 1/2" per footfall works the edge loose and the
-   seam nearest the line opens first. Break the run on the line — which since 2026-09-05 is
-   a **9/16" reducer** rather than a T, because oak finishes that far above the cap — and
-   let each field float within its own structure.
+1. **A continuous wood run across the line will telegraph.** The plank reads here, and a
+   joint that opens and closes 1/2" per footfall works the edge loose: the seam nearest the
+   line opens first. Break the run on the line with a **flush T** and let each field float
+   within its own structure. The south bay was solid oak for part of 2026-09-05, which made
+   this point sharper rather than softer — floating plank is at least forgiving in-plane and
+   a nailed-down 3/4" strip floor is not — and it is plank again, so the softer case is the
+   one that applies. Break it anyway: the differential is in the structure, not the finish.
 2. **Tile must not cross it at all.** `FH-M-DINING` (x 22'-11" to 30'-11", y 13'-9" to
    21'-0") sits wholly inside the concrete band, 9" clear of the line, which is deliberate —
    a thinset bed over the cured cap has nothing to accommodate. If a tile field ever grows
@@ -65,9 +65,11 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
   band, and `RM-M-LIVING`'s `floor_finish="lvp"` is the field finish over the wood bays
   only. The resolver intersects the slab with each room's clear face and emits the result as
   a finish zone, so the boundary is stated once — `_BAND_Y` in `params/main_deck.py` — and
-  the finish moves when it does. Since 2026-09-05 the wood half is no longer one material:
-  410.2 SF of polish, an authored 231.7 SF **oak** zone over the south bay, and 123.9 SF of
-  plank field left in the stair lane and the hall, in one room.
+  the finish moves when it does. As of 2026-09-05 that is the ONLY zone in the room: 410.2
+  SF of polish, and 355.6 SF of plank field over everything else — south bay, stair lane and
+  hall band alike. Both of the authored zones this room briefly carried (a `vinyl-sheet` hall
+  band, then an `oak` south bay) are gone, which is worth keeping that way: a derived zone
+  follows `_BAND_Y` when the boundary moves, and an authored one has to be chased.
 
 ## What the model still cannot hold
 
@@ -87,9 +89,10 @@ hall takes the room's own field `lvp`, so the whole 13.6 lf is 6 mm SPC against 
 +0.986" to +0.9375", **1/64" proud**. A plain flush T, specified for movement it does not
 have. This leg got better, and there is nothing here to trim for height.
 
-**The y = 13' leg is a 9/16" reducer now, and that is deliberate.** The south bay
-(x 18'..36', y 0'..13') went to 3/4" solid oak on 2026-09-05, so this leg is oak at
-**+1.500"** meeting the polished cap at **+0.9375"**. It cannot be flushed from either side:
+**The y = 13' leg is flush too, and that took a decision rather than a detail.** The south
+bay (x 18'..36', y 0'..13') went to 3/4" solid oak on 2026-09-05 and came back to plank the
+same day. Oak finishes at **+1.500"** against the polished cap's **+0.9375"**, and that
+9/16" cannot be flushed from either side:
 
 - *Not from the concrete.* `structural.mixed_deck_bearing_seat`
   (`checks/structural/bearing_seat.py`) FAILs when cap-top and subfloor-top differ by more
@@ -99,10 +102,15 @@ have. This leg got better, and there is nothing here to trim for height.
 - *Not from the wood side.* Furring the whole south bay up 9/16" would move a subfloor plane
   that the bearing seat, the wall bases and the stair rise all read.
 
-So it is a **reducer**, and it lands on the one leg that already has to break: this is the
-movement joint, the oak has to be let float on both sides of it regardless, and a reducer
-does that at least as well as a T. Specify it for the movement first and the height second.
-The other 13.6 lf take a flush T as above.
+So oak here was a **reducer** or nothing, and the reducer was not wanted: 17.9 lf of ramped
+moulding across the middle of the main living space, on the one line that also has to break
+for movement. **The finish gave way instead of the detail.** The bay is 6 mm SPC like the
+rest of the room, +0.986" against the cap — the same 1/64" as the x = 18' leg, the same
+flush T, and the room reads as one floor across all 31.5 lf. It still needs the T: the
+differential is in the structure and does not care what is laid over it. Oak stays the two
+studies' floor, where nothing meets a concrete cap. Cost of the reversion, measured
+line-to-line on `haus takeoff --csv`: **-$1,980 to -$2,751** delivered, against which the
+`oak` row in `prices.toml` falls back under its sand-and-finish mobilisation minimum.
 
 That 3/16" of cap over plywood is deliberate and it is derived, not dialled. The deck is
 14 3/8" (10" beam + 4 3/8" cover) against the wood bay's 14 3/16" to the same seat
@@ -112,14 +120,28 @@ cap top moves with it — `structural.mixed_deck_bearing_seat` allows a quarter 
 which is roughly a floor finish, and FAILs past it. Check the resolved elevations before
 ordering the moulding, not this paragraph.
 
-**A third junction, off this L entirely: the mudroom doorway.** `RM-M-MUDROOM` went to
+**The one junction that is NOT flush, off this L entirely: the mudroom doorway.** `RM-M-MUDROOM` went to
 porcelain over a 1/8" uncoupling membrane in the same change, so its walking surface is
-~**+1.3125"** where the hall's plank is +0.986" — a ~5/16" **transition strip** at the
-entry, and the only new threshold the change creates. It is wanted: a dirt step at the door
-people come in through in boots. It also improves the *exterior* side, which no check can
-see — `FS-BW-FLOOR`'s composite plank tops at +1.000", so the mudroom floor now stands 5/16"
-**above** the breezeway deck instead of ~1/6" below it, and water runs out rather than in.
-R311.3.1's 1 1/2" is untouched.
+~**+1.3125"** where the hall's plank is +0.986" — a ~5/16" **transition strip** at `D-M-MUD`,
+and with the south bay back on plank it is the **only** threshold left on this storey. It is wanted: a dirt step at the door people
+come in through in boots.
+
+**That "only" is bought by tiling the two closets, and it was nearly missed.** `RM-M-MECH`
+and `RM-M-MUD-CLOSET` are carved out of the mudroom's own footprint and **both of their
+doors open into it** — `D-M-MECH` is hosted on `W-M-MECH-S` and `D-M-MUDC` on `W-M-MUDC-N`,
+each facing the mudroom, and neither opens off the hall. So plank in either does not join
+the LVP spine; it cuts this tile field into an island with **three** strips through it. Both
+are tiled. The decisive one is `D-M-MUDC`, a `DT-INT-BYPASS48`: a bypass slider runs on a
+**bottom guide**, and a 5/16" ramp under a sliding track is a detail nobody wants to build.
+`RM-M-MECH` is the weaker case on its own — a hinged utility door opened twice a year, and
+plank is marginally easier to open up around its riser penetration — and is tiled anyway,
+because 15 SF is thin ground on which to break a dirt-containment field. Delivered cost of
+the pair, measured line-to-line on `haus takeoff --csv`: **+$298 to +$627**.
+
+The change also improves the *exterior* side, which no check can see — `FS-BW-FLOOR`'s
+composite plank tops at +1.000", so the mudroom floor now stands 5/16" **above** the
+breezeway deck instead of ~1/6" below it, and water runs out rather than in. R311.3.1's
+1 1/2" is untouched.
 
 **And a second step, in the ceiling below — 2 1/16".** The gypsum
 is continuous across the boundary but the two faces are not coplanar: on the wood side the
@@ -177,7 +199,7 @@ The engine has no element for a floor-finish movement joint. The *finish* half i
 now — the band knows what it is, and bills and draws as its own material — but the **joint**
 is not. A `Transition` binds to a *derived boundary condition* and there is no condition for
 "two decks meet in plan"; a `ConstructionRule` bills a return along a wall or a ceiling, not
-along a line between two floor elements. So the reducer, the soft joint and the ceiling
+along a line between two floor elements. So the flush T, the soft joint and the ceiling
 control joint are a note and a drawing instruction, and nothing in `haus check` will notice
 if the finish is run straight through. If the mixed deck outlives this house — and the
 depth-matching that makes it work is general — the condition worth deriving is

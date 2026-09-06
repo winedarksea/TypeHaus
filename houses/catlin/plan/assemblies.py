@@ -2639,7 +2639,7 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
     source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing CATLIN_MUDROOM_INT_2X6_EXPOSED",
 )
 
-# ** The same wall where it forms RM-B-UNDERSTAIR's west side (2026-09-05). ** W-B-STR3's
+# ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's
 # whole 5'-6" run is that closet now, and R302.7 asks for gypsum on the ENCLOSED side of an
 # enclosed usable space under a stair — which is precisely where this family puts its 3/4"
 # cabinet plywood. A layer cannot be added over it: the wall pins `face("stud-ext",
@@ -2670,7 +2670,7 @@ CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall where it encloses RM-B-UNDERSTAIR (W-B-STR3), 2026-09-05: CATLIN_STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
+    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: CATLIN_STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
 )
 
 # The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf on the closet
@@ -3312,6 +3312,17 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
+    # The SAME dark, on seamless K-style stock. It exists only because it is a different
+    # PRODUCT, and prices.toml qualifies [drainage] on the material tag: the garage low eave
+    # and the balcony run are roll-formed on site from prefinished coil off the truck, which
+    # every manufacturer's colour card carries, while the house eaves are shop-brake-formed
+    # box gutter at 3x the foot. Sharing `metal-dark-exterior` with those billed 47.8 LF of
+    # colour-card stock as fabrication. Colour is deliberately identical — the eave line must
+    # read continuous — so every palette entry for it points at the same ink.
+    Material(tag="metal-dark-kstyle", name="Near-black prefinished K-style gutter coil",
+             r_per_inch=0.0, density=2700.0, perm_rating=0.0, hatch="metal",
+             color="#1c1f24",
+             source="garage south eave + balcony gutter/leaders, prefinished aluminium coil"),
     # The garage's base skin, and since 2026-09-03 it is the ONLY thing on it: the 24" band
     # on the ICF stem, all four walls, plus the stem-top Z at the corrugated panel base.
     # The 4'-0" east wainscot this material also clad was deleted that day. Painted

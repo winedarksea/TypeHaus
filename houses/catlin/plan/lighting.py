@@ -94,18 +94,20 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-B-UNDERSTAIR, the under-stair closet (new 2026-09-05). ED-T-LT-SPOT-SW is the
+    # The under-stair storage (new 2026-09-05). ED-T-LT-SPOT-SW is the
     # house's integral-switch down-spot — the same article ED-A-STUDIO-SCONCE uses — which
-    # is the right fixture for a 17.5 sf closet: NEC 210.70 wants a lighting outlet with a
-    # switch you can reach, and `integral_switch=True` is what exempts it from
-    # `electrical.lighting_controls` (lighting_types.py says so on the type).
+    # is the right fixture for a low space you reach into rather than stand in: NEC 210.70
+    # wants a lighting outlet with a switch you can reach, and `integral_switch=True` is
+    # what exempts it from `electrical.lighting_controls` (lighting_types.py says so on the
+    # type). `room` is RM-B-STAIR since the closet stopped being a `Room` of its own the
+    # same day (storeys/basement.py ROOMS) — the fixture did not move an inch.
     #
     # On W-B-STR3's Type X face (x=10'-3 1/4") 2" proud of it, 2'-0" north of D-B-CLOSET's
     # far jamb, at 4'-6" AFF. The elevation is set by the RAKE, not by habit: the flight
     # overhead is 6'-1 5/8" up at this y, and a 9" fixture at 54" tops out 10 5/8" under it.
     ElectricalDevice(uid="JYMY6WGGP3", tag="ED-B-CLOSET-LT", kind=DeviceKind.LIGHT,
                      position=pt(inch(125.25), ft(28, 8)), type_ref="ED-T-LT-SPOT-SW",
-                     circuit="CKT-LT-BACKUP", room="RM-B-UNDERSTAIR", rotation=deg(90),
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
     # RM-B-SAUNA had NO LIGHT AND NO SWITCH until 2026-09-05 — the room was drawn, rotated
@@ -197,8 +199,8 @@ BASEMENT_LIGHTING = [
     # ** A KNOWN LIMIT, MADE VISIBLE BY THE 2026-09-05 CLOSET AND NOT CAUSED BY IT. **
     # `LightRun` carries ONE `Mount` elevation for its whole path, and 34" is measured off
     # the SLAB, not off the raking nosing line — so this tape does not climb with the flight
-    # it lights. From y=25'-8" to y=31'-0" it lies under the arriving flight, which is
-    # RM-B-UNDERSTAIR's volume now; north of that it is under the landing deck. Nothing
+    # it lights. From y=25'-8" to y=31'-0" it lies under the arriving flight, which is the
+    # under-stair storage; north of that it is under the landing deck. Nothing
     # grades a light run's room, so no check says this. Fixing it needs a raked run, which
     # the schema does not have (see `serves_stair` on Railing for the same problem solved
     # for guards).
@@ -210,8 +212,8 @@ BASEMENT_LIGHTING = [
     # The AC/DC supply in a ceiling box, at the head of the run it feeds (notes: "Box in
     # ceiling for AC/DC power supply"). 9'-5" of tape at 3 W/ft is 28 W; x1.25 = 35 W, so
     # the 60 W supply is the catalog size above it. **It moved to the lower landing's
-    # ceiling on 2026-09-05**: (11', 26') is inside RM-B-UNDERSTAIR now, and a stair light's
-    # supply does not belong in a locked storage closet.
+    # ceiling on 2026-09-05**: (11', 26') is inside the under-stair storage, and a stair
+    # light's supply does not belong behind the stored goods.
     ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(15, 6), ft(33)), type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",

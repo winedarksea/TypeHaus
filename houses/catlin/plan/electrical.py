@@ -571,8 +571,7 @@ BASEMENT_EQUIPMENT = [
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH",
-                          "RM-B-UNDERSTAIR")),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
     # ** MOVED TO THE SOUTH-EAST CORNER BY THE 2026-09-05 SHRINK. ** It used to stand at the
     # west end of the south liner, 2'-1" west of WIN-B-SAUNA's west jamb; that station is
     # 4" inside the new west wall. East of the window there is 4'-2 3/4" of south liner and
@@ -1529,7 +1528,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="WSTK6T5E4K", tag="ED-B-GYM-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(inch(220.375), ft(13, 4)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(m(5.6079), m(3.07239)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     # RC3/RC4 are on the gym side of W-B-CE, a 6 3/4" staggered partition on the y=18'-0"

@@ -118,8 +118,19 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
             # room-less holes in a wall union that a builder absolutely does price, and
             # keeping those cost the attic 97 sf. `open_excavation_floors` is the plan's own
             # positive statement that a surface is exterior ground at its own elevation.
+            #
+            # ** OVERLAP, NOT `contains(representative_point())`. ** That was the first
+            # spelling and it under-kept: one floor yields ONE representative point, so a
+            # floor spanning several rings anchors only the ring that point happens to land
+            # in and the rest get filled. The sunken court is exactly that shape —
+            # `W-SG-ARCH` crosses it and splits the void into a porch bay and a field bay,
+            # both of them SL-SG-FLOOR. It went unnoticed only because SL-SG-STOOP sat in
+            # the other bay and anchored it; retiring the stoop on 2026-09-05 filled 281 sf
+            # of open court and put it on the basement's gross area. Area overlap asks the
+            # question actually meant — "is this ring open excavated ground?" — and does not
+            # depend on how many elements the ground was modelled as.
             interiors = [ring for ring in poly.interiors
-                         if any(Polygon(ring).contains(floor.representative_point())
+                         if any(Polygon(ring).intersection(floor).area > 0.0
                                 for floor in open_ground)]
             shell = Polygon(poly.exterior, interiors)
             # **An enclosure counts only if it encloses a Room.** The retaining walls of the

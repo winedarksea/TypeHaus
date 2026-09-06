@@ -307,6 +307,10 @@ _FINISH_BASE: dict[str, str] = {
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.
     "metal-dark-exterior": _EXTERIOR_DARK,
+    # Prefinished K-style gutter coil: a separate tag only so [drainage] can price it as
+    # colour-card stock rather than shop fabrication. Same ink on purpose — the eave line
+    # has to read continuous. Mirrors FINISH_BASE in ui/src/nordic/palette.ts.
+    "metal-dark-kstyle": _EXTERIOR_DARK,
     # The balcony 6x6 pillars' painted-lumber material (POST_WHITE_PAINT's structure
     # layer), now also carried by the knee-brace diagonals as a FramedMember material.
     # No family needle matches the ref, so without an entry the brace member path falls

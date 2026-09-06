@@ -1732,13 +1732,14 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # It was BURIED until 2026-09-03: its top was the garden floor's underside. The court
     # dropped 7 1/4" for the flood step at D-B-PATIO and the beam DID NOT FOLLOW — a 10 1/4"
     # section fails as a strut (d/c 1.02) and lowering its bottom instead puts its bed under
-    # DRW-SG-MAIN. So it now stands 3 3/4" proud of the court as a mow strip on the
-    # paved-bay/gravel-field boundary, with FO-SG-ARCH cutting the rim around it. What must
-    # stay true is that it is still nowhere near underfoot on the PORCH: its top is below the
+    # DRW-SG-MAIN. It stood 3 3/4" proud of the dropped court as a mow strip for two days;
+    # since the court came back flush on 2026-09-05 its top IS the rim slab's underside, so
+    # the court floor bears on it, nothing shows, and FO-SG-ARCH is retired. What must stay
+    # true either way is that it is nowhere near underfoot on the PORCH: its top is below the
     # porch deck by the whole basement depth.
     beam = next(w for w in walls if w.tag == "W-SG-ARCH")
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
-    assert (beam.z1_m - court.z1_m) / 0.0254 == pytest.approx(3.75, abs=1e-6)
+    assert (court.z1_m - beam.z1_m) / 0.0254 == pytest.approx(3.5, abs=1e-6)
     assert beam.z1_m < 0.0
     assert all(w.is_foundation for w in walls)
     # Every court wall is the same 12" pour, and W-SG-BRKBM is that pour PLUS a 2" board —
@@ -1875,12 +1876,33 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     assert "FT-B-BRICK" not in tags
     assert not any(b.tag == "FB-B-BRICK" for b in catlin_model.footing_beddings)
 
-    # The wythe bears on the beam's CONCRETE over its whole width, and the cavity that
-    # bought that position is 6".
+    # The wythe bears on the beam's CONCRETE over its whole width. Its position is the
+    # invariant of this whole detail: the beam's north face cannot pass -10", so the brick
+    # sits at -10.05..-13.675 and NOTHING may move it. What fills the 6" behind it has
+    # already changed twice and may change again — 6" of bare air on 2026-09-04, then 2" of
+    # EPS on the backup wall plus a 4" cavity on 2026-09-05.
     brick = catlin_model.wall("W-B-BRICK")
     faces = {ly.name: span_in(ly.polygon) for ly in brick.layers}
     assert faces["brick"] == pytest.approx((-13.675, -10.05), abs=1e-6)
-    assert faces["air-gap"] == pytest.approx((-10.05, -4.05), abs=1e-6)
+    assert faces["air-gap"] == pytest.approx((-10.05, -6.05), abs=1e-6)
+
+    # ** NO UNDESCRIBED VOID BETWEEN THE BACKUP AND THE CAVITY. ** This detail has fallen
+    # into that trap once already: on 2026-09-04 the south wall's parge was deleted and
+    # N-B-BRICK-W/-E did not follow it, leaving 0.5" no layer described — the model said 1"
+    # of cavity where the builder would have found 1-1/2". W-B-BRICK aligns on
+    # face("air-gap-int"), so the cavity's inboard face has to land exactly on the backup's
+    # outermost layer, whatever either of them happens to be on the day.
+    for backup in ("W-B-S2", "W-B-S3", "W-B-S2-FR", "W-B-S3-FR"):
+        outermost = catlin_model.wall(backup).layers[-1]
+        assert span_in(outermost.polygon)[0] == pytest.approx(-6.05, abs=1e-6), backup
+    assert faces["air-gap"][1] == pytest.approx(-6.05, abs=1e-6)
+
+    # And the backup's face must stay INBOARD of the wall standing on its seat: the basement
+    # skin tucks under CATLIN_EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
+    # upper one turns that lap into an upward-facing ledge. 4" of EPS did exactly that at
+    # -8.05" and nothing in `haus check` noticed.
+    main_face = min(y for ly in catlin_model.wall("W-M-S1").layers for _x, y in ly.polygon)
+    assert -6.05 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
     beam_lo, beam_hi = span_in(layers["concrete"].polygon)
     assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi, \
         "the wythe must sit wholly on the beam, not overhang its north edge"
@@ -2221,40 +2243,6 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     # unaffected.
     assert before == pytest.approx(392.7, abs=0.5)
     assert before - after == pytest.approx(7.0 * 17.9, rel=0.05)
-
-
-def test_the_oak_bays_north_edge_is_the_deck_boundary(catlin_model):
-    """The oak zone is AUTHORED, so nothing derives it — this test is what pins it.
-
-    ``RM-M-LIVING``'s south bay went to 3/4" solid oak on 2026-09-05, and it had to be a
-    ``FinishZone`` rather than a second Room: the living room is one polygonized face and a
-    second seed in it would bill the floor twice. Three of the zone's four edges are
-    over-extended past the room and clipped by ``resolve/rooms.py``, so they cannot go stale.
-    The NORTH edge cannot be over-extended — north of it is ``SL-M-DECK``'s polished cap —
-    and it is a literal, because ``plan/storeys/main.py`` is editable-dialect and cannot
-    import ``params/main_deck._BAND_Y``.
-
-    So the two numbers are pinned here. Move ``_BAND_Y`` without moving the zone and the oak
-    either runs 9/16" proud over the concrete or leaves a strip of plank behind it, and
-    nothing else in the build would say so — the finish has no thickness in the model.
-    """
-    import re
-
-    source = (CATLIN_DIR / "params" / "main_deck.py").read_text()
-    band = re.search(r"^_BAND_Y = ft\((\d+)\)$", source, re.M)
-    assert band is not None, "_BAND_Y is no longer a bare ft() literal — re-read this test"
-    band_y_m = ft(float(band.group(1))).meters
-
-    living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
-    oak = [z for z in living.finish_zones if z.material_ref == "oak"]
-    assert len(oak) == 1 and oak[0].source_ref is None, "the oak zone is authored, not derived"
-    north = max(y for _, y in oak[0].outline)
-    assert north == pytest.approx(band_y_m, abs=1e-6), (
-        "the oak zone's north edge and the concrete/wood boundary have drifted apart")
-    # And the zone really does stop there rather than being clipped short of it: the room's
-    # clear face reaches past y = 13' (the polished band is the rest of this same room), so a
-    # zone edge on the boundary is the edge that bills.
-    assert oak[0].area_m2 * 10.7639104 == pytest.approx(231.7, abs=0.5)
 
 
 def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_model):

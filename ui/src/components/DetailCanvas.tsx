@@ -145,6 +145,9 @@ const DETAIL_FILL: Record<string, string> = {
   // the near-white fallback and the box gutter drew as a pale ghost beside the apron
   // flashing it laps. Same ink as the five metal skins above, for the reason stated there.
   "metal-dark-exterior": "#2f2f2f",
+  // The same dark on prefinished K-style stock (a separate tag for pricing only).
+  // Mirrors emit/draw/palette.py DETAIL_FILL.
+  "metal-dark-kstyle": "#2f2f2f",
   // Pressure-treated: the catlin truss wall's outer girts and its block-2 course are KDAT,
   // and with no entry every one of them drew as a blank box — the wet-cycling half of a
   // wall whose whole point is which stick is treated. Greener and greyer than `spf` so the
@@ -154,6 +157,9 @@ const DETAIL_FILL: Record<string, string> = {
   // glulam is a manufactured member with visible laminations and a clear finish, not a
   // green-cast treated stick. Mirrors emit/draw/palette.py DETAIL_FILL.
   "glulam-treated": "#c8a877",
+  // White-painted PT lumber — the garden's pillars, knee braces and the two decks' rim
+  // bands. Mirrors emit/draw/palette.py DETAIL_FILL.
+  "post-paint-white": "#eeeae2",
   // The roof stack, which is the eave detail's whole subject and drew as four near-white
   // boxes in the app. The two membranes are DELIBERATELY different inks: the deck vapour
   // barrier is vapour-TIGHT and the field underlayment must stay vapour-OPEN, and a detail

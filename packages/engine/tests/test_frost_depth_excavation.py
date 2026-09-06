@@ -59,9 +59,12 @@ def test_local_grade_drops_to_the_garden_floor_beside_it(catlin_model):
         open_excavation_floors(catlin_model), heated_floor_footprint(catlin_model))
     assert source == "SL-SG-FLOOR"
     assert grade_m == pytest.approx(garden.z1_m)
-    # 8" until 2026-09-03, when the court dropped 7 1/4" for the flood step at D-B-PATIO.
-    # The footing did not move; the ground beside it did, and the cover went with it.
-    assert (grade_m - south.z0_m) / 0.0254 == pytest.approx(0.75, abs=0.5)
+    # 8", then 3/4" from 2026-09-03 when the court dropped 7 1/4" for the flood step at
+    # D-B-PATIO, and 8" again from 2026-09-05 when `court_step_down_in` went back to 0. The
+    # footing has never moved through any of it; the ground beside it did, twice, and the
+    # cover went with it both times. This is the number that made the R403.3 wings load-
+    # bearing on the argument, and it is the reason raising the court is a frost IMPROVEMENT.
+    assert (grade_m - south.z0_m) / 0.0254 == pytest.approx(8.0, abs=0.5)
 
 
 def test_an_interior_footing_under_a_heated_slab_keeps_the_site_grade(catlin_model):
@@ -263,7 +266,7 @@ def test_the_sheet_note_no_longer_claims_every_footing_bears_42_below_grade(catl
     assert "SL-SG-FLOOR" in notes
     # 8" until the court dropped 7 1/4" on 2026-09-03. The note reads the model, so what
     # this pins is that a real per-footing number reaches the sheet — not which number.
-    assert 'FT-B-S2 (1" COVER)' in notes
+    assert 'FT-B-S2 (8" COVER)' in notes
 
 
 def _frost_by_tag(model):

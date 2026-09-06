@@ -220,8 +220,8 @@ DRAINS = [
     # line. It ties into the main's under-slab leg at -13 9/16", between that pipe's
     # -16 15/16" invert and its -12 15/16" crown.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(inch(191.75), inch(91.1875)), pt(inch(191.75), inch(91.1875)),
-                  pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), ft(4)),
+            path=(pt(inch(191.75), inch(98.1875)), pt(inch(191.75), inch(98.1875)),
+                  pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), ft(4)),
                   pt(ft(3), ft(4))),
             diameter=inch(2), material="pvc",
             # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow.
@@ -233,7 +233,7 @@ DRAINS = [
     # separately (not as a vertex on the branch) so `mep.sleeve_coverage` sees a run actually
     # passing through the cast stub rather than a stale or mis-routed sleeve.
     PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
-            path=(pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), inch(91.1875))),
+            path=(pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875))),
             diameter=inch(2), material="pvc",
             elevations=(ft(0), inch(-9.324)),
             serves=("FX-B-SAUNA-FD",)),
@@ -382,8 +382,8 @@ ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
                   pt(ft(2, 11), ft(13, 3)),
-                  pt(ft(13), ft(13, 3)), pt(ft(13), inch(91.1875)),
-                  pt(ft(13), inch(91.1875))),
+                  pt(ft(13), ft(13, 3)), pt(ft(13), inch(98.1875)),
+                  pt(ft(13), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
@@ -395,7 +395,7 @@ ERV_CONDENSATE = [
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
-                  pt(ft(13, 6), inch(91.1875)), pt(ft(13, 6), inch(91.1875))),
+                  pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # The 0.3"/ft the comment above states, authored as the grade it is: the two
             # intermediate inverts solve to exactly the numbers that were hand-written here.

@@ -664,11 +664,21 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
         bell = _solid(catlin_model, bell_tag)
         post = _solid(catlin_model, post_tag)
         beam = _solid(catlin_model, beam_tag)
-        # The bell bears a full frost depth under the court floor its cover is measured
-        # from — which is the whole point: ``structural.frost_depth`` grades these two on
-        # COVER now, in its plain "at least 42 inches below their lowest adjacent grade"
+        # The bell bears AT LEAST a full frost depth under the court floor its cover is
+        # measured from — which is the whole point: ``structural.frost_depth`` grades these
+        # two on COVER, in its plain "at least 42 inches below their lowest adjacent grade"
         # bucket, not on the soil replacement the five wall footings still rely on.
-        assert bell.z0_m == pytest.approx(floor_top - frost_m)
+        #
+        # ** `>=`, NOT `==`, SINCE 2026-09-05. ** `_pier_bell_bottom_ft` used to derive off
+        # `_court_top_in`, so the bells tracked the court exactly. When the court came back
+        # up 7 1/4" (`court_step_down_in` -> 0) that expression would have lifted both bells
+        # with it — correct, and worth about 0.1 cy of shaft across the pair, against
+        # re-opening every hand-worked term in notes/porch_pier_*.md that
+        # test_pier_calcs / test_pier_section_calcs reproduce. So the bells were pinned at
+        # the elevation they were augered to and now carry 49 1/4" of cover. More cover can
+        # only make this check happier; less would be the failure, which is what `>=` says.
+        assert bell.z0_m <= floor_top - frost_m + 1e-9, bell_tag
+        assert (floor_top - bell.z0_m) / INCH == pytest.approx(49.25, abs=0.05), bell_tag
         assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" bell, not 42\""
         # The shaft picks up exactly where the bell stops...
         assert post.z0_m == pytest.approx(bell.z1_m)

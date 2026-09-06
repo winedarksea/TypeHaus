@@ -84,7 +84,14 @@ def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_m
         wall = catlin_model.wall(tag)
         assert not any(ly.name == _PANEL for ly in wall.layers), tag
         names = [ly.name for ly in wall.layers]
-        assert names[-1] == "xps-b", tag
+        # The outermost layer is the 4" EPS since 2026-09-05, not `xps-b`. The assertion
+        # this test is making has NOT been relaxed: what must not be out here is a
+        # *protective skin* (`_PANEL`, checked just above), and the reason is unchanged —
+        # this foam lives inside W-B-BRICK's ventilated cavity where there is no UV and no
+        # impact. EPS outboard of XPS is more insulation, not a finish. Its 2" thickness is
+        # bounded by the wall above (see test_catlin_contract_m3), not by anything here.
+        assert names[-1] == "eps-ci", tag
+        assert names[-2] == "xps-b", tag
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
@@ -234,7 +241,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
 
 _WYTHE_IN = 3.625
 #: The cavity, set by where W-SG-BRKBM can put its north face — not by R703.8.4.
-_CAVITY_IN = 6.0
+_CAVITY_IN = 4.0
 
 
 def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
@@ -247,15 +254,22 @@ def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
     their own in ``test_emitter_band_parity.py`` rather than being deleted; the slot is still
     a live feature.
 
-    What is pinned here is the depth itself. The wythe is still one 3 5/8" layer; the CAVITY
-    is now 6", and that number is a foundation fact rather than a rainscreen one. The veneer
-    was re-founded on 2026-09-05 onto the grade beam W-SG-BRKBM, whose concrete north face
-    can reach y=-10" and no further (FT-B-S2/S3 hold the 2" isolation board north of it), and
-    growing this layer is what walks the wythe south to meet it. It was 1-1/2" while the
-    brick stood on a plinth cast on the house footing's own toe, and 1" before that.
+    What is pinned here is the depth itself. The wythe is still one 3 5/8" layer, and the
+    open CAVITY is 4".
 
-    6" is past IRC R703.8.4's 4-1/2" prescriptive airspace, so the ties are engineered — see
-    houses/catlin/notes/sunken_garden_veneer_beam.md.
+    The 2" is not a loosened 6". The wythe's position is a foundation fact: it was re-founded
+    2026-09-05 onto the grade beam W-SG-BRKBM, whose concrete north face can reach y=-10" and
+    no further (FT-B-S2/S3 hold the 2" isolation board north of it), which leaves a FIXED 6"
+    slot between the backup's structural face and the brick. That slot was briefly 6" of bare
+    air; it is now 2" of EPS on the backup wall plus 4" of drained cavity here, so this wall
+    got thinner by exactly what the four court walls got thicker. The brick did not move — 
+    test_catlin_contract_m3.test_the_veneer_beam_isolates_the_house_footing is what pins that,
+    in absolute coordinates, and it is the assertion that actually matters.
+
+    4" is four times IRC R703.8.4's 1" minimum and still inside its 4-1/2" ceiling. The anchors
+    are engineered anyway, because the beam holds the wythe ~10" off the sheathing — see
+    houses/catlin/notes/sunken_garden_veneer_beam.md Sec. 5.1. It was 1-1/2" of cavity while
+    the brick stood on a plinth cast on the house footing's own toe, and 1" before that.
     """
     wall = catlin_model.wall("W-B-BRICK")
     assert [ly.name for ly in wall.layers] == ["air-gap", "brick"]

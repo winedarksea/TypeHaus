@@ -198,23 +198,22 @@ def test_the_footings_grew_inboard_only_and_the_apron_did_not_move(catlin_model)
         assert span == pytest.approx(8.0, abs=1e-6), tag
 
 
-def test_the_grade_beam_holds_its_section_and_stands_proud_of_the_dropped_court(
+def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(
         catlin_model) -> None:
-    """W-SG-ARCH is 17 1/2" deep, bottomed flush with the footings, and it did NOT follow the
-    court down.
+    """W-SG-ARCH is 17 1/2" deep, bottomed flush with the footings, and its TOP never moves.
 
-    **This test promised the opposite until 2026-09-03** — "``SL-SG-FLOOR`` must not move at
-    all" — and that promise is retired, not merely renumbered. The court dropped 7 1/4" so
-    heavy rain ponds outside ``D-B-PATIO`` instead of crossing its threshold, and the floor
-    is now a rim around an open field at -9'-8 11/16".
+    The court has now been at two elevations and the beam has sat through both, which is the
+    point. It dropped 7 1/4" on 2026-09-03 for a flood step, leaving this beam standing
+    3 3/4" proud as a mow strip with FO-SG-ARCH cutting the rim around it; it came back flush
+    on 2026-09-05 (`court_step_down_in` -> 0, one riser at D-B-PATIO instead of two), and the
+    beam is buried again with the rim bearing directly on it and FO-SG-ARCH retired.
 
-    What the beam cannot do is follow it. Its bottom is the retaining footings' underside —
-    one excavation, one stone plane — and holding that while dropping the top to the new rim
-    leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c 1.02, it fails**
-    (notes/sunken_garden_court_free_body.md). Lowering the bottom instead puts its 42" bed
-    below DRW-SG-MAIN. So the top stays where it was and the beam stands 3 3/4" proud of the
-    court as a mow strip on the paved-bay/gravel-field boundary, with FO-SG-ARCH cutting the
-    rim around it.
+    **The top is fixed by the strut, not by the floor.** Its bottom is the retaining
+    footings' underside — one excavation, one stone plane — and dropping the top while
+    holding that leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c 1.02,
+    it fails** (notes/sunken_garden_court_free_body.md). Lowering the bottom instead puts its
+    42" bed below DRW-SG-MAIN. 17 1/2" at this elevation is the only version that works, so
+    the court moves around it and it does not move at all.
 
     The 17 1/2" is the assertion that matters: it is the section §7 of the note grades.
     """
@@ -224,10 +223,12 @@ def test_the_grade_beam_holds_its_section_and_stands_proud_of_the_dropped_court(
 
     assert beam.z0_m == pytest.approx(footing.z0_m, abs=1e-9)
     assert (beam.z1_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(17.5, abs=1e-6)
-    # Proud of the court's walking surface, not buried under it, and by a mow strip's height.
-    assert (beam.z1_m - court.z1_m) / _M_PER_FT * 12 == pytest.approx(3.75, abs=1e-6)
-    # The court fell exactly one flood step below the basement floor plane it used to share.
-    assert court.z1_m / _M_PER_FT * 12 == pytest.approx(-116.6875, abs=1e-6)
+    # Buried: its top IS the rim slab's underside, so the court floor bears on it. Both
+    # sides of this are the same expression in params/sunken_garden (`_grade_beam_top` and
+    # `_rim_underside_in`), and that is exactly why FO-SG-ARCH could be retired.
+    assert (court.z1_m - beam.z1_m) / _M_PER_FT * 12 == pytest.approx(3.5, abs=1e-6)
+    # The court is flush with the basement floor plane again.
+    assert court.z1_m / _M_PER_FT * 12 == pytest.approx(-109.4375, abs=1e-6)
     # The curb over that floor is the flood step, and it is 7 1/4" whatever happens here.
     curb = next(w for w in catlin_model.plan.all_elements()
                 if getattr(w, "tag", None) == "W-B-S2")

@@ -293,7 +293,7 @@ VENT_BRANCHES_BASEMENT = [
     # arm. Above the sauna's hung ceiling the run leaves the build-up north over W-B-SA-N,
     # crosses the workshop west at y=10'-6", and passes W-B-CW at x=9'.
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(17, 4), inch(91.1875)), pt(ft(17, 4), inch(91.1875)),
+            path=(pt(ft(17, 4), inch(98.1875)), pt(ft(17, 4), inch(98.1875)),
                   pt(ft(17, 4), ft(10, 6)), pt(ft(9), ft(10, 6)),
                   pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), material="pvc",

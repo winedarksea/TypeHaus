@@ -156,6 +156,9 @@ DETAIL_FILL: dict[str, str] = {
     # apron flashing it laps. Same ink as the five seam profiles above, for the reason stated
     # there — the drawing shows metal, and formed dark coil is metal.
     "metal-dark-exterior": "#2f2f2f",
+    # Prefinished K-style gutter coil — the same dark on a different product (it is a
+    # separate tag so [drainage] can price it), so the same ink. Mirrors DetailCanvas.tsx.
+    "metal-dark-kstyle": "#2f2f2f",
     # Pressure-treated lumber: the catlin truss wall's outer girts and its block-2 course are
     # KDAT, and with no entry here (no ``_FAMILY_NEEDLES`` needle hits "kdat" either) every
     # one of them drew as a blank cream box with no hatch — the wet-cycling half of a wall
@@ -166,6 +169,12 @@ DETAIL_FILL: dict[str, str] = {
     # glulam is a manufactured member with visible laminations and a clear finish, not a
     # green-cast treated stick, and the two stand side by side in the garden's section.
     "glulam-treated": "#c8a877",
+    # White-painted PT lumber — the garden's pillars, knee braces and the two decks' rim
+    # bands (``JoistSpec.rim_material``). Without an entry here the member path below reads
+    # "has a material, and no hatch table row" as METAL: a painted 2x8 band hatched as steel
+    # in every detail that cuts it. It is lumber, and it is the one lumber in this house
+    # drawn near-white.
+    "post-paint-white": "#eeeae2",
     "rubber": "#3a3a3a",
     "glass": "#bee3f8",
     "gutter": "#8b8b8b",
@@ -226,8 +235,10 @@ DETAIL_HATCH: dict[str, str] = {
     "pbr-panel-26": "metal",
     "board-batten-24": "metal",
     "metal-dark-exterior": "metal",
+    "metal-dark-kstyle": "metal",
     "kdat": "lumber",
     "glulam-treated": "lumber",
+    "post-paint-white": "lumber",
     "aggregate": "gravel",
     "river-rock": "gravel",
     "soil": "soil",

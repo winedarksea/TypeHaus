@@ -87,7 +87,10 @@ export const WOOD_PLANK_STYLES: Readonly<Record<string, PlankStyle>> = {
 // `familyOf` substring table in nordic/palette.ts has no wood-species needles at all (it
 // returns null for `oak`, `sauna-shiplap`, `walnut-tg` and `cedar-tg` alike), and adding some there
 // would move colour resolution too — plus its Python mirror in emit/draw/palette.py.
-const STRIP_FLOOR_REFS = new Set(["oak", "lvp"]);
+// `walnut-floor` is the suite's site-milled walnut (houses/catlin) and is a strip floor for
+// the same reason `oak` is; it authors `finish: "strip-floor"` too, but this set is what
+// `isWoodPlank` gates on, so without the needle the recipe is never asked for.
+const STRIP_FLOOR_REFS = new Set(["oak", "lvp", "walnut-floor"]);
 
 /**
  * True when a solid-board paneling ref. The library names T&G `<species>-tg` by convention;

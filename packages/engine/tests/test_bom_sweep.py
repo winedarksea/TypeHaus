@@ -199,7 +199,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
         "carpet", "lvp", "oak", "tile", "sealed-concrete", "polished-concrete", "rubber",
-        "vinyl-sheet", None}
+        "vinyl-sheet", "walnut-floor", None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
@@ -233,14 +233,17 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     # intent if that slab outline ever moves, not a field finish. It is in the room list
     # because the list is by authored finish; the sqft assertions elsewhere are what pin
     # that it adds nothing.
-    # 2026-09-05: the four main-floor rooms off the hall — RM-M-BATH1, RM-M-LAUNDRY,
-    # RM-M-MECH and RM-M-MUD-CLOSET — retyped off `vinyl-sheet` onto this plank when the
-    # hall's own vinyl FinishZone was deleted, so the spine bills as one floor.
+    # 2026-09-05: the two main-floor rooms off the hall — RM-M-BATH1 and RM-M-LAUNDRY —
+    # retyped off `vinyl-sheet` onto this plank when the hall's own vinyl FinishZone was
+    # deleted, so the spine bills as one floor. RM-M-MECH and RM-M-MUD-CLOSET were in that
+    # list for a few hours the same day and are TILE: they open into RM-M-MUDROOM, not onto
+    # the hall (see test_floor_finishes). RM-S-BATH1 left the same day and for a different
+    # reason again — FH-S-BATH1's radiant mat, which plank caps at 80-85 F — so the second
+    # storey's plank is the circulation plus the two baths with no heat in the floor.
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
-                                 "RM-S-VANITY", "RM-S-BATH1",
+                                 "RM-S-VANITY",
                                  "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY",
-                                 "RM-M-BATH1", "RM-M-LAUNDRY", "RM-M-MECH",
-                                 "RM-M-MUD-CLOSET"}
+                                 "RM-M-BATH1", "RM-M-LAUNDRY", "RM-S-NCLOSET"}
     # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
     # SL-M-DECK, whose polished cap is the finished floor there, so the plank stops at the
     # band. Summing room areas alone would order LVP for a floor nobody covers.
@@ -250,7 +253,13 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     # Rows round to a tenth of a square foot, which is the tolerance here.
     assert float(lvp["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
     carpet = next(row for row in bom["floor_finishes"] if row["finish"] == "carpet")
-    assert {"RM-S-CLOSET", "RM-S-NCLOSET"} <= set(carpet["rooms"])
+    # 2026-09-05: NO closet is on carpet any more, and no second-storey bedroom but the three
+    # on the east. RM-S-SUITE and RM-S-CLOSET went to `walnut-floor` as one field; RM-S-NCLOSET
+    # opens onto the hall and took the hall's plank, so it is in the lvp row above.
+    assert set(carpet["rooms"]) == {"RM-B-PLAY-N", "RM-M-BED", "RM-M-CLOSET",
+                                    "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
+    walnut = next(row for row in bom["floor_finishes"] if row["finish"] == "walnut-floor")
+    assert set(walnut["rooms"]) == {"RM-S-SUITE", "RM-S-CLOSET"}
 
 
 def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):

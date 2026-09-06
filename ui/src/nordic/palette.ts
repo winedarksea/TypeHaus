@@ -143,6 +143,10 @@ export function familyOf(materialRef: string | null | undefined): string | null 
 // added here and forgotten there is a .glb that disagrees with the viewer, silently.
 const FINISH_BASE: Readonly<Record<string, string>> = {
   "metal-dark-exterior": "#1c1f24",
+  // Prefinished K-style gutter coil: a separate tag only so prices.toml can bill it as
+  // colour-card stock, not fabrication. Same ink on purpose. Mirrors _FINISH_BASE in
+  // emit/gltf/palette.py.
+  "metal-dark-kstyle": "#1c1f24",
   // The exposed-fastener PBR panel: the same white as the seamed skin (0xE8E8E2), which is
   // what createStandingSeamMaterial paints it. Mirrors _FINISH_BASE in emit/gltf/palette.py.
   "ribbed-panel": "#e8e8e2",

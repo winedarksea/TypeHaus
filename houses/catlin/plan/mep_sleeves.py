@@ -68,10 +68,10 @@ SLAB_STUBS = [
     # drain's is the drain body itself, which is why its position and the fixture's are the
     # same point with no `drain_position` override on either.
     SleevePenetration(uid="CBP905AAAA", tag="SP-B-SAUNA-SH", host_ref="SL-B-FLOOR",
-                      position=pt(inch(191.75), inch(91.1875)), pipe_diameter=inch(2),
+                      position=pt(inch(191.75), inch(98.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-SH"),
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
-                      position=pt(ft(13, 6), inch(91.1875)), pipe_diameter=inch(2),
+                      position=pt(ft(13, 6), inch(98.1875)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Where the ceiling collector turns down to become the under-slab building drain; 4",
     # matching the building drain. `mep.sleeve_coverage` holds the crossing.

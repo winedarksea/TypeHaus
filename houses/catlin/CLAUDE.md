@@ -461,23 +461,37 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   **The floor finish follows the deck**: `SL-M-DECK.floor_finish` is `polished-concrete` (the cap's top
   *is* the finished floor), `RM-M-LIVING.floor_finish="lvp"` is the field finish over the
   wood bays only, and the split is derived — moving `_BAND_Y` moves the finish with it.
-  That room also carries a second, **authored** zone, and since **2026-09-05** it is the
-  **south bay in 3/4" solid oak** (x 18'-36', y 0'-13') — not the sheet-vinyl hall band it
-  was. That band's zone is deleted outright: the hall simply takes the room's field `lvp`,
-  and `RM-M-BATH1`, `RM-M-LAUNDRY`, `RM-M-MECH` and `RM-M-MUD-CLOSET` retyped onto the same
-  plank, so `vinyl-sheet` has left this storey. `RM-M-MUDROOM` is the one room that breaks
-  the plank, in porcelain over an uncoupling membrane —
-  `integrity.concrete_finish_needs_concrete_deck` is still what keeps it off a concrete
-  finish, since `FS-M-MECH`'s I-joists and plywood are what is under it.
-  **Three walking planes, and one of them steps**: oak +1 1/2", tile ~+1 5/16", plank
-  +0.986" against the polished cap's +15/16". So the `y=13'` leg is a **9/16" reducer** —
-  deliberate, and on the leg that has to break for differential deflection anyway, because
-  `structural.mixed_deck_bearing_seat` leaves the cap 1/16" of lift, not 9/16". The `x=18'`
-  leg **improved** to a flush T (1/64"), and the mudroom doorway takes a ~5/16" transition
-  strip. Only the oak zone's NORTH edge is a real literal — it duplicates `_BAND_Y`, which
-  the editable dialect cannot import, and `test_catlin_contract_m3` pins the two together;
-  the other three edges are over-extended and clipped to the clear face.
-  `notes/mixed_deck_movement_joint.md` has all three junctions, the L-shaped
+  **That derived band is the room's ONLY zone**, and as of **2026-09-05** nothing is authored
+  here at all. It carried a sheet-vinyl hall band until that day, then a solid-oak south bay
+  for part of it; both are deleted rather than replaced. The hall simply takes the room's
+  field `lvp`, `RM-M-BATH1` and `RM-M-LAUNDRY` retyped onto the same plank so `vinyl-sheet`
+  has left this storey, and the south bay is that same plank. What breaks the plank is the **mudroom suite** — `RM-M-MUDROOM` plus BOTH its
+  closets, `RM-M-MECH` and `RM-M-MUD-CLOSET` — in porcelain over an uncoupling membrane.
+  `integrity.concrete_finish_needs_concrete_deck` is still what keeps all three off a
+  concrete finish, since `FS-M-MECH`'s I-joists and plywood are what is under them.
+  **The two closets are tiled because of the doors they open off, not because they are wet.**
+  Both are carved out of the mudroom's own footprint and both doors open INTO it (`D-M-MECH`
+  on `W-M-MECH-S`, `D-M-MUDC` on `W-M-MUDC-N`); neither opens off the hall. Put either back
+  on plank and the entry's tile becomes an island with three transition strips through it
+  rather than the one at `D-M-MUD` — one of them under `D-M-MUDC`'s bypass-slider bottom
+  guide, which is the detail that decided it. They took LVP for a few hours on 2026-09-05
+  before that adjacency was checked; +$298-627 delivered to put them right.
+  **Two walking planes, and they meet flush**: plank at +0.986" against the polished cap's
+  +15/16" — 1/64" — on BOTH legs of the L, `y=13'` (17.9 lf) and `x=18'` (13.6 lf). Only the
+  mudroom breaks it, at ~+1 5/16", and its ~5/16" strip at `D-M-MUD` is the one threshold on
+  the storey. **The oak bay is why that is worth stating.** Oak finishes at +1 1/2", so the
+  `y=13'` leg would have been a **9/16" reducer**, and it could not be designed out —
+  `structural.mixed_deck_bearing_seat` leaves the cap 1/16" of lift, not 9/16". The height
+  difference was not wanted, so the finish gave way: the bay went back to plank the same day,
+  -$1,980 to -$2,751 delivered, and the `oak` row fell back under its sand-and-finish
+  mobilisation minimum. Oak is still the two studies' floor, where nothing meets a cap.
+  **And that zone left a bug behind worth knowing about.** Its outline was deliberately
+  over-extended past the room on three sides, on the documented promise that
+  `resolve/rooms.py` clips a zone — which it did for the AREA and not for the drawn ring, so
+  the living-room floor rendered a foot outside the east and south walls at 0 FAIL. Fixed in
+  the engine on 2026-09-05: an authored zone is now drawn clipped, like a derived one always
+  was. Before authoring a zone here, prefer a derived one — it follows `_BAND_Y` on its own.
+  `notes/mixed_deck_movement_joint.md` has every junction, the L-shaped
   transition and the cream-polish spec — whose "no fibres" clause was **superseded
   2026-09-03** by micro-MONOFILAMENT PP at ~1.5 lb/cy (`CATLIN_POLISHED_MIX`). Macro fibre
   is still excluded here, and so is steel; the distinction is the whole finding.
@@ -1984,7 +1998,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     line off their bearing edge, at y = -12.76". That pushes the brick to -15.95" and opens
     an 11.9" slot to the house: a 19-ft-long, 11.5-ft-deep snow trap with no way to reach the
     bottom. **A beam that SPANS needs no soil bearing, so that constraint does not apply** —
-    which is the whole reason this shape was chosen and the reason the cavity can be 6".
+    which is the whole reason this shape was chosen and the reason the gap can be 6".
   - **It reinforces nothing, and do not let anyone say it does.** The tempting story is that
     a beam closing the court's north end props the side walls. It does not: `W-SG-W1`/`E1`
     are already restrained top and bottom (porch beams pocketed in HUCQ410-SDS hangers, the
@@ -2005,15 +2019,65 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     curb and three storeys of framed wall standing at y = 0..+9 1/2", moving toward the load
     *reduces* the eccentricity they already had. Their south face is at **-8"** now, and the
     board occupies -8"..-10". Anything that re-centres these footings has to keep that face.
-  - **The wythe moved 4 1/2" south and the reveals did not move at all.** The 6" cavity is
-    authored as `BASEMENT_BRICK_VENEER`'s `air-gap` THICKNESS, never as a node position,
-    because `AO-B-BRICK-WIN`/`-DOOR` are placed `from_node` along the wall AXIS — a y-move
-    leaves them concentric and `integrity.reveal_concentric` still passes.
+  - **The wythe moved 4 1/2" south and the reveals did not move at all.** On 2026-09-04 the
+    6" was taken entirely in `BASEMENT_BRICK_VENEER`'s `air-gap` THICKNESS with the nodes
+    held still; on 2026-09-05 the EPS moved the backup's face and `N-B-BRICK-W`/`-E` followed
+    it to **-8.05"** while `air-gap` came down to 2", the opposite bookkeeping. Either way
+    the invariant is the BRICK's own y, which the beam fixes at -10.05..-13.675" and nothing
+    else may move. The reveals are safe under both because `AO-B-BRICK-WIN`/`-DOOR` are
+    placed `from_node` along the wall AXIS — a y-move leaves them concentric and
+    `integrity.reveal_concentric` still passes.
     `N-B-BRICK-E` did have to come in from 28'-0" to 27'-6": 28'-0" is `W-SG-E1`'s axis, and
     the move walked the wythe's east 6" *inside* that retaining wall — 4.25 SF of brick
     billed into solid concrete, at 0 FAIL, because nothing grades masonry against a pour.
-  - **6" is past IRC R703.8.4's 4-1/2" prescriptive airspace**, so the veneer ties are an
-    ENGINEERED item under TMS 402. The note does not design them and neither does the engine.
+  - **2" of EPS went into that cavity 2026-09-05, and it is on the BACKUP wall, not in
+    `BASEMENT_BRICK_VENEER`.** The 6" is fixed — the beam's north face cannot pass -10" —
+    so the only question was how to split it, and it is now 2" EPS + 4" of drained air.
+    The foam is a layer of `_GARDEN_CURB_CORE` / `_GARDEN_FRAMED_OUTBOARD`, the two outboard
+    tuples the four backup walls share and **nothing else uses**, so the blast radius is
+    exactly `W-B-S2`/`S3`/`S2-FR`/`S3-FR`. Putting it in the veneer's own stack would have
+    been worse than untidy: `code.energy_prescriptive` grades one assembly at a time, so
+    foam parked there earns the wall no R and the check keeps reading R-37.0. It reads
+    R-45.0 now (R-58.4 sauna, R-29.3/R-43.3 curbs), each exactly +8.0.
+    - **The energy is a rounding error and is not the reason.** The backup was already
+      R-37/R-50 framed, not the R-21.5 a `CATLIN_BASEMENT_8` reading suggests — about
+      **$2/year** at 124.9 SF. The $250-487 buys a *designable anchor*: the beam already
+      forced a ~10" brick-to-stud reach, and 6" of that was unbraced air. Now 6" is foam
+      and 4" is cavity. **The anchor is still engineered** — see the note, §5.1.
+    - **EPS and not more XPS, deliberately.** The stack is already 4" XPS plus damp-proofing
+      at ~0.13 perm and can only dry inward; EPS at ~2 perms over 2" adds R without adding a
+      second vapour shutter and lets the wall dry OUT into the vented cavity. It also beats
+      XPS in long-term ground contact, and this run's foot is in a court that can pond.
+      ASTM C578 **Type II** (15 psi) — do not substitute Type I.
+    - **`IRC R703.15`'s 4" foam limit does NOT govern here, and the trap is real**, because
+      `plans/cost-options.md` §6 kills a *different* foam swap in this house on exactly that
+      limit — and this wall now carries 6". R703.15 covers cladding whose dead weight hangs
+      on a fastener in bending, and it **explicitly excepts anchored masonry veneer to
+      R703.8**. This wythe stands on the beam; its anchors take wind only.
+    - **2" AND NOT 4", AND NOTHING GRADED EITHER BOUND.** 4" was built first and sat at
+      0 FAIL. It was wrong twice over. (a) `CATLIN_EXT_2X6` stands on this wall's seat with
+      its cladding face at **-7.25"**; 4" put the basement's face at -8.05", 0.8" PROUD of
+      the wall above, turning the Z-flashing lap that the basement skin is supposed to tuck
+      under into an upward-facing ledge. 2" lands at -6.05", a 1.2" setback. (b)
+      `resolve/stacking.py` fires `stack_width_change` on |total thickness| against a 0.5"
+      `_TOL`, so any thickness added here reshuffles **which junctions get a detail drawn**:
+      4" pushed `CATLIN_GARDEN_CURB_6` inside the tolerance and 3" pushed
+      `CATLIN_GARDEN_FRAMED_2X6` inside it, each silently deleting a live junction's
+      drawing. **2" is the only purely ADDITIVE value** — every HEAD golden survives and the
+      two sauna walls gain the detail they now warrant. The golden SET drift is what caught
+      this; no check did.
+    - **`eps:2.0` is a new price key, for LABOUR not thickness.** 2" is what the bare `eps`
+      row was already researched at, so the material rate carries across untouched; what
+      does not is open-wall CI labour. This board is set in a slot behind a wythe laid after
+      it, held by the veneer anchors, its bottom course worked out of an 11-1/2 ft hole:
+      $1.10-2.10. `envelope_layers` qualifies on `thickness_in` only, so any other 2" EPS in
+      this house would silently inherit the cavity labour. There is none today.
+  - **Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut the anchor count.** It cannot
+    carry: unreinforced 3-5/8" brick spanning 18'-8" horizontally runs ~400 psi of flexural
+    tension at 20 psf against ~50 psi allowable parallel to the bed joints. And it is the
+    wrong detail regardless — brick grows, concrete shrinks, and BIA TN 18 puts ~0.15" of
+    movement across that run. Those two ends want a **soft joint**, not an anchor. The model
+    carries no soft joint and nothing in the engine grades one.
   - **Two engine bugs fell out of this and are fixed.** `local_grade_elevation_m` sheltered a
     footing whose CENTROID sat inside the heated slab, so trimming a perimeter toe 2" walked
     it over the line and turned 3/4" of frost cover into a reported 83" — whole-polygon
@@ -2021,6 +2085,59 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     invisible only while the court was a *disjoint* polygon; the beam connects it to the
     house, and 610 sf of open sky became basement floor area until holes over an open
     excavation floor were kept.
+
+- **The court is ONE surface again, with a single 7 1/4" riser at `D-B-PATIO`** (2026-09-05).
+  `SPEC.court_step_down_in` is back to **0**, so `SL-SG-FLOOR` is flush with the basement
+  floor plane and the whole 532 sf reads as one floor. Owner's call. It had been dropped
+  7 1/4" on 2026-09-03 as a flood step, which is why there were four elevations in a 19'
+  court: the court, a 23.7 sf stoop a riser above it, `W-SG-ARCH` standing 3 3/4" proud as a
+  mow strip, and the veneer beam.
+  - **What it costs is half the freeboard, and that is the trade that was taken.** Water
+    climbs 7 1/4" to the threshold instead of 14 1/2" — 321 cf of ponding over the court
+    rather than 643, against ~191 cf of direct 100-year/24-hour rain, so about **1.7x**
+    where it was 3.4x with the drywell assumed fully failed. The case to watch is not summer
+    rain but **snowmelt over a frozen grate**, where DRW-SG-MAIN contributes nothing by
+    definition. The 7 1/4" curb is now the entire dam.
+  - **7 1/4" is not a preference, it is the only legal court elevation.** R311.3.2 allows one
+    riser of 7 3/4" (`_MAX_NONREQUIRED_STEP_DOWN`) at a non-required door that swings inward.
+    Lower the court and the step needs a landing; that is exactly what `SL-SG-STOOP` was, and
+    why it existed for two days. **The stoop is retired** (uid `SGS503AAAA`, never reuse) —
+    the court IS the landing, and `code.R311_3_exterior_landing` now reads "D-B-PATIO lands
+    on SL-SG-FLOOR, 7.3" below the threshold".
+  - **`W-SG-ARCH` did not move and must not.** It is the only real strut here — it carries
+    Pu 62,051 lb and closes the walls' loop before backfill — and dropping its top to the rim
+    underside gives phi-Pn 60,712, **d/c 1.02**. Its top and `_rim_underside_in` are now the
+    same expression, so the rim bears on it and **`FO-SG-ARCH` is retired** with the stoop.
+    `W-SG-BRKBM`, by contrast, carries nothing structural: it is the veneer's thermal
+    foundation only.
+  - **Two things were PINNED rather than allowed to follow the court up**, both because the
+    derivation was right and the churn was not worth it:
+    - `_pier_bell_bottom_ft` was `_court_top_in - frost_depth_in`. Following the court would
+      have lifted both belled piers 7 1/4" — still 42" of cover, perfectly legal — for about
+      **0.1 cy** of shaft, at the cost of re-opening every hand-worked term in the two porch
+      pier notes that `test_pier_calcs` / `test_pier_section_calcs` reproduce. Pinned; they
+      carry **49 1/4"** of cover now. `structural.frost_depth` grades on cover, so more can
+      only help.
+    - `_veneer_beam_bottom` was the garden slab's underside. Flush, that gives a 10 1/2"
+      beam over a 19'-0" span, under ACI 318-19 Table 9.3.1.1's L/16 = 14 1/4" minimum depth.
+      Held at -120 3/16" so the graded 17 3/4" section survives; the beam is simply buried.
+  - **Frost got BETTER, which is the quiet win.** `FT-B-S2`/`S3`'s cover below `SL-SG-FLOOR`
+    goes 1" -> **8"**. The R403.3 wings still do the work, but they are no longer carrying it
+    on a fingernail.
+  - **`plan/site.py`'s two garden spot elevations had to follow** (-9'-8 11/16" ->
+    -9'-1 7/16"), and the comment beside them claiming *"nothing structural reads spot
+    elevations — they are drafting annotation"* **was false**.
+    `engineering/balcony_wind.ground_below_ft` takes the lowest spot on the site and these
+    two win it, so they set `z` for the balcony columns: h 23.3' -> 22.7', q_h 18.8 -> 18.6
+    psf, wind base moment 1,395 -> 1,385 lb-ft. Safe direction, no column re-sized, and the
+    guard case (2,502 lb-ft) governs regardless — but `notes/balcony_moment_columns.md` and
+    `test_pier_calcs`'s schedule both had to move with it.
+  - **A latent bug in `space_summary` surfaced here.** The interior-hole filter I added on
+    2026-09-04 kept a ring only if it `contains(floor.representative_point())` — ONE point
+    per floor — so a floor spanning several rings anchored only one. `W-SG-ARCH` splits the
+    court into two bays, both `SL-SG-FLOOR`, and the stoop happened to anchor the second;
+    retiring it filled **281 sf** of open court onto the basement's gross area. It is an
+    area-overlap test now, which asks the question actually meant.
 
 - **The sunken garden's veneer is one flat field of unglazed buff brick** (2026-09-04).
   `W-B-BRICK` has now worn three faces: one flat field of `glazed-green-brick` (`#1b4332`),

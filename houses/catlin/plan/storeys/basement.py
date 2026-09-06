@@ -151,8 +151,8 @@ NODES = [
     # SAUNA_LINER_ON_BASEMENT_8 with it, returns FT-B-S1 to one unsplit strip, and hands the
     # workshop's west bay the four feet it gives up. The room is ~8'-3 7/8" x 8'-2" clear,
     # which is what EQ-T-SAUNA-HEATER's 9 kW was always sized for (see electrical.py).
-    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(8, 10), ft(9, 5))),
-    Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), ft(9, 5))),
+    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(8, 10), ft(10))),
+    Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), ft(10))),
     # Stair-foot bathroom's north partition (2026-07-30), spanning the shaft's full 7'-0"
     # clear width so it tees into both concrete walls' node lines (x=10', x=18"). y=21'-9 3/8"
     # is back-calculated: 3'-0" clear off W-B-CW2's north face (18'-6") plus half of
@@ -207,11 +207,19 @@ NODES = [
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6), ft(36))),
     Node(uid="BT88F385N4", tag="N-B-ESS-SW", position=pt(ft(6), ft(31))),
     Node(uid="GXJ9S72CKH", tag="N-B-ESS-SE", position=pt(ft(10), ft(31))),
-    # ** RM-B-UNDERSTAIR's north-east corner, new 2026-09-05. ** x is N-B-BA-NE's — the
-    # stair well's partition centreline — and y=31'-0" is N-B-ESS-SE's, so the closet's north
-    # wall lands exactly on the existing W-B-STR3/W-B-STR split and needs no second node on
-    # the x=10' line. Both new walls (W-B-WELL, W-B-CL-N) meet here.
-    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.6875), ft(31))),
+    # ** W-B-WELL's north end, and it is an OPEN END since 2026-09-05 (round three). ** It
+    # was the under-stair closet's north-east corner, where the well partition met
+    # W-B-CL-N; that cross wall is gone (see WALLS) and the storage under the flight runs
+    # north past this point to the landing instead of stopping at it. x stays N-B-BA-NE's —
+    # the stair well's partition centreline — and y=31'-0" stays N-B-ESS-SE's, so the
+    # partition still ends on the W-B-STR3/W-B-STR split and needs no second node on the
+    # x=10' line.
+    #
+    # `open_end=True` is the honest description and not a silencer: a wall that dies in the
+    # middle of a stair well has one edge at this node, which is `integrity.wall_loop_open`'s
+    # whole subject, and the flag is how the model says "this end is meant to be free".
+    Node(uid="SQZSP1P9DC", tag="N-B-CL-NE", position=pt(inch(166.6875), ft(31)),
+         open_end=True),
     # Glazed-brick veneer over the exposed south wall (W-B-BRICK): a freestanding wythe off
     # the concrete, both ends ``open_end`` like the sunken garden's N-SG-NW/NE (not part of
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
@@ -221,7 +229,22 @@ NODES = [
     # independent of the pour thickness; the veneer stands off that finished face, hence
     # the -4.55".
     #
-    # The stand-off is 4.05" — the south stack's finished face, bare XPS. It was 4.55" while
+    # ** THE STAND-OFF IS 8.05" SINCE 2026-09-05, NOT 4.05". ** The court walls' outboard
+    # tail grew 4" when `_GARDEN_CURB_CORE` / `_GARDEN_FRAMED_OUTBOARD` picked up their EPS
+    # (plan/assemblies.py), and this node is pinned to that finished face, so it followed.
+    # The BRICK does not move: `BASEMENT_BRICK_VENEER`'s `air-gap` came down 6" -> 2" in the
+    # same edit and the two cancel, leaving the wythe on W-SG-BRKBM at -10.05..-13.675"
+    # exactly where the beam puts it. The reveals are `from_node` along the AXIS, so a
+    # y-move leaves them concentric — `integrity.reveal_concentric` is unmoved by this.
+    #
+    # Note this is the OPPOSITE bookkeeping from 2026-09-04, when the cavity absorbed the
+    # change and the node held still. Whichever side moves, the invariant to protect is the
+    # brick's own y, which the grade beam fixes and nothing else may.
+    #
+    # The history below is the 4.05" era and is kept because the trap it records is live:
+    # a face that moves without its node leaves a void no layer describes.
+    #
+    # The stand-off was 4.05" — the south stack's finished face, bare XPS. It was 4.55" while
     # the south wall carried a 1/2" parge, because the wall aligns on face("air-gap-int")
     # and that face sat on the parge. **When the parge was deleted the node did not follow
     # it, and that left a 0.5" void between the XPS at -4.05" and the veneer's air-gap layer
@@ -233,7 +256,7 @@ NODES = [
     # The two edits cancel at the air gap's outboard face: the wythe stays at -5.55..-9.175",
     # so the two arched reveals, the veneer's own footing and every garage-relative literal
     # downstream are all untouched. Only the 0.5" of nothing becomes something.
-    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.05)),
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-6.05)),
          open_end=True),
     # ** 27'-6", NOT 28'-0", SINCE 2026-09-05. ** 28'-0" is W-SG-E1's AXIS, and while the
     # wythe stood at y -5.55..-9.175" that was harmless: it ended north of the retaining
@@ -247,7 +270,7 @@ NODES = [
     # The reveals do NOT move: they are positioned `from_node("N-B-BRICK-W", ...)`, measured
     # from the WEST node, so shortening the east end leaves every station where it was.
     # `integrity.reveal_concentric` is what proves that, and it still passes.
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-4.05)),
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-6.05)),
          open_end=True),
 ]
 
@@ -712,8 +735,10 @@ WALLS = [
     # says so in as many words).
     # ** RETYPED 2026-09-05 to the UNDERSTAIR variant. ** Same uid, same alignment, same
     # interior_room, same BEARING role — only the finish leaf changes, from 3/4" stair
-    # plywood to 5/8" Type X, because this whole run is RM-B-UNDERSTAIR's west wall now and
-    # R302.7 wants gypsum on the enclosed side. See plan/assemblies.py for what it costs.
+    # plywood to 5/8" Type X, because this whole run walls the storage under the arriving
+    # flight and R302.7 wants gypsum on that side. See plan/assemblies.py for what it costs.
+    # The closet stopped being its own `Room` later the same day (ROOMS) and the check went
+    # quiet with the label; the wall does NOT go back to plywood — see ROOMS for why.
     Wall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
          end_node="N-B-BA-NW", assembly="CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
@@ -798,40 +823,35 @@ WALLS = [
     Wall(uid="CBW125AAAA", tag="W-B-ESS-S", start_node="N-B-ESS-SW",
          end_node="N-B-ESS-SE", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
-    # ================= THE STAIR WELL'S PARTITION, AND THE CLOSET UNDER THE FLIGHT
-    # =================
+    # ================= THE STAIR WELL'S PARTITION =================
     #
-    # Two walls that between them turn 17.5 sf of unreachable floor into a closet, and draw
-    # a divider the model has always reserved space for and never built.
+    # One wall, drawing a divider the model has always reserved space for and never built,
+    # and putting the floor under the arriving flight to work as storage.
+    #
+    # ** IT USED TO BE TWO. ** W-B-CL-N closed this space off at y=31'-0" and made it a
+    # 17.5 sf closet, RM-B-UNDERSTAIR; both are gone (2026-09-05, round three). The storage
+    # runs the full length of the flight now — north past y=31'-0" and on under the landing
+    # deck — and the volume is part of RM-B-STAIR again, reached through D-B-CLOSET from the
+    # furnace room and open to the stair foot at its north end. See ROOMS for why it is no
+    # longer a `Room`: with nothing closing it, a second seed in the same face resolved the
+    # SAME 114.8 sf polygon twice, and nothing grades that.
     #
     # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and emits no
     # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is
     # the thing the stair already made room for. CATLIN_STAIRWELL_PARTITION_4H is 4 1/2"
     # exactly for that reason (plan/assemblies.py). It runs from N-B-BA-NE — the bathroom's
     # north-east corner, slid onto this same centreline in the same edit — north to
-    # N-B-CL-NE, so W-B-BA-E and this wall are ONE PLANE 13 feet long.
+    # N-B-CL-NE, so W-B-BA-E and this wall are ONE PLANE 13 feet long. There is no gap
+    # between them to close: the partition starts ON the bathroom's north-east corner.
+    # Its north end is free now (`open_end` on N-B-CL-NE) — the reserved slot ends where
+    # the two flights stop being two, and nothing north of that is a wall line.
     #
     # top=ft(8) is the basement's bearing seat, like every other partition down here. Above
     # it is FO-M-STAIR's void, not joists, so nothing lands on it and it is not BEARING.
     # It carries no framing of its own — see the assembly.
     Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-BA-NE",
          end_node="N-B-CL-NE", assembly="CATLIN_STAIRWELL_PARTITION_4H", top=ft(8),
-         interior_room="RM-B-UNDERSTAIR"),
-    # The closet's north wall, and **it is NOT full height.** Two things are overhead: the
-    # arriving flight, whose stringer underside on this line is 52.9" over the slab, and —
-    # 1 1/2" of the way along it — `ledger-W-B-STR-landing-rim-upper-0`, the 2x10 carrying
-    # the upper landing off W-B-STR, which occupies 47.6"..56.9". The ledger is the binding
-    # one and it is the lower: **47" tops out 5/8" under it**. (52" would have cleared the
-    # stringer by 1.2" and driven straight into the ledger; the first build said so.)
-    # Ordinary INT_2X4_PARTITION: this wall is not in the stair's reserved slot, nothing
-    # else frames it, and it needs its own studs. It does make N-B-ESS-SE a four-way — a
-    # 2x6 bearing wall running through, a steel-stud ESS partition west, this one east —
-    # and `_through_pair` used to pick its through run alphabetically, which chose the two
-    # partitions and called the node mixed-assembly. That was an engine bug and is fixed in
-    # resolve/topology.py; the node classifies off the bearing pair now.
-    Wall(uid="3GQXK314FQ", tag="W-B-CL-N", start_node="N-B-ESS-SE",
-         end_node="N-B-CL-NE", assembly="INT_2X4_PARTITION", top=inch(47),
-         interior_room="RM-B-UNDERSTAIR"),
+         interior_room="RM-B-STAIR"),
     # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
     # garden is dug against them — everywhere else this wall is buried and the parge is a
     # below-grade coating nobody sees; here it's the house's most-looked-at elevation.
@@ -911,7 +931,7 @@ OPENINGS = [
     # It swings east into the gym on the default (left-hand normal of W-B-CS3's
     # north-to-south direction).
     Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-C1", ft(0, 7.8125)), flip_swing=False, flip_hinge=False),
+         position=from_node("N-B-C1", ft(0, 2.5625)), flip_swing=False, flip_hinge=False),
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, and on 2026-09-05 the bathroom
     # rotated north-south, so this leaf (same uid, same 32" width) is on the room's east
@@ -923,7 +943,7 @@ OPENINGS = [
     # and clear both fixtures' footprints; hinge at the south jamb, latch at the north where
     # ED-B-BATH-SW is.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=True),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=False),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post
@@ -933,10 +953,12 @@ OPENINGS = [
     # stands clear of the swing.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-ESS-SW", ft(1, 4))),
-    # ** RM-B-UNDERSTAIR's door, new 2026-09-05 — the thing that makes 17.5 sf of floor
-    # reachable. ** In W-B-STR3, opening WEST into RM-B-FURNACE: W-B-STR3 runs
-    # north-to-south, so its default left-hand normal is east — into 17.5 sf under a rake,
-    # where no leaf can open. `flip_swing` sends it into the mechanical room instead.
+    # ** The under-stair storage's door, new 2026-09-05 — the thing that makes the floor
+    # under the arriving flight reachable without walking the well. ** In W-B-STR3, opening
+    # WEST into RM-B-FURNACE: W-B-STR3 runs north-to-south, so its default left-hand normal
+    # is east — into the space under a rake, where no leaf can open. `flip_swing` sends it
+    # into the mechanical room instead. It stays the way in now that the storage is open to
+    # the stair foot at its north end: this is the end you actually carry things to.
     #
     # 10" off N-B-BA-NW, not 4", for exactly D-B-ESS's reason two lines up: at 4" the king
     # stud clashes with the corner post. That puts the leaf at y 26'-4"..28'-4", and the far
@@ -960,7 +982,7 @@ OPENINGS = [
     # D-B-PATIO's inswing arc and the shower pan in the sauna's NE corner, far enough south
     # to keep clear of D-B-GYM. Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-SA-NE", ft(4, 3.3125)), flip_hinge=True),
+         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
     # Hosted on the framed wall, and `sill_height` is inch(0) — NOT because the threshold
     # dropped, but because the datum did. A sill is measured from the host wall's own base,
@@ -1057,27 +1079,33 @@ ROOMS = [
     # `integrity.room_unclaimed`. The hall is the same room, so the seed only has to find it.
     Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(inch(186), ft(22)),
          occupancy=Occupancy.STAIR, floor_finish="sealed-concrete"),
-    # ** RM-B-UNDERSTAIR, new 2026-09-05: 17.5 sf that nobody could reach until this edit. **
-    # The volume under ST-B2M's arriving flight was inside RM-B-STAIR's polygon, so the model
-    # counted it as floor, but the bathroom is south of it, the well partition east,
-    # W-B-STR3 west and the flight overhead: no way in and no check that could say so,
-    # because the well partition was not a wall. It is one now (W-B-WELL above), the closet's
-    # north wall closes the last side, and D-B-CLOSET in W-B-STR3 opens it to the furnace
-    # room. x 10'-3 3/8"..13'-8 7/16" (3'-5 1/16") by y 25'-8 3/8"..30'-9 3/4" (5'-1 3/8").
+    # ** THE VOLUME UNDER THE ARRIVING FLIGHT IS PART OF THIS ROOM AGAIN (2026-09-05,
+    # round three), AND IT IS NOT A `Room` OF ITS OWN. ** It was RM-B-UNDERSTAIR, a 17.5 sf
+    # closet walled off at y=31'-0" by W-B-CL-N. That wall is gone: the storage runs the
+    # length of the flight now and on under the landing deck, which is what it is for, and
+    # W-B-WELL's north end is free.
     #
-    # ** DO NOT AUTHOR `ceiling`, AND DO NOT PUT A `Soffit` UNDER THE FLIGHT. ** The real
-    # head here rakes from 96.7" at the south end to 54.8" at the north, and no field in this
-    # engine can say that: `_clear_head` (resolve/rooms.py) reads ceiling decks and
-    # ResolvedSoffits, and a raking stringer is neither, so `clear_height_m` resolves to the
-    # main-floor deck at ~96.9" and passes R305.1.1's 80" basement minimum. An authored 53"
-    # ceiling, or a flat soffit at 53", would be taken VERBATIM and FAIL
-    # `code.R305_ceiling_height` for a storage closet the code does not measure. The rake is
-    # recorded here, in prose, because that is the only place the model can hold it.
+    # A second `Room` cannot survive that. With nothing closing the north side, both seeds
+    # land in ONE face and RM-B-STAIR and RM-B-UNDERSTAIR each resolved the same 114.8 sf
+    # polygon — the whole shaft counted twice, in every area, finish and load that walks
+    # rooms, at 0 FAIL. So the closet gives up its label and keeps its use: D-B-CLOSET in
+    # W-B-STR3 still opens it to the furnace room, ED-B-CLOSET-LT still lights it, and
+    # W-B-STR3 keeps its Type X leaf.
     #
-    # STORAGE is in `_UNDER_STAIR_OCCUPANCIES` (checks/code/mn_residential/illumination.py),
-    # which is what puts this closet in front of R302.7 — see W-B-STR3's retype in WALLS.
-    Room(uid="R58W0DMTJ5", tag="RM-B-UNDERSTAIR", seed=pt(ft(12), ft(28)),
-         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
+    # ** W-B-STR3 IS NOT RETYPED BACK. ** `code.R302_7_understair` now passes on "no
+    # enclosed usable space" — the check keys on a room's occupancy and STAIR is not in
+    # `_UNDER_STAIR_OCCUPANCIES` — but the reason for the gypsum did not go away with the
+    # room label: this is still combustible framing under a flight with stored goods against
+    # it. The code hook went quiet; the wall stays as built.
+    #
+    # ** DO NOT AUTHOR `ceiling`, AND DO NOT PUT A `Soffit` UNDER THE FLIGHT. ** The head
+    # under the arriving flight rakes from 96.7" at y=25'-8" to 54.8" at y=30'-10" and lower
+    # still under the landing, and no field in this engine can say that: `_clear_head`
+    # (resolve/rooms.py) reads ceiling decks and ResolvedSoffits, and a raking stringer is
+    # neither. An authored ceiling, or a flat soffit at 53", would be taken VERBATIM for the
+    # WHOLE room and FAIL `code.R305_ceiling_height` for a stair the code measures at its
+    # nosing line. The rake is recorded here, in prose, because that is the only place the
+    # model can hold it.
     # Stair-foot bathroom, ROTATED NORTH-SOUTH 2026-09-05: it runs down the framed stair
     # wall (x 10'-3 3/8"..13'-7 5/16", y 18'-2 3/8"..25'-3 5/8", 3'-3 15/16" x 7'-1 1/4"
     # between finish faces) rather than across the shaft's south 3'-0". It is still under

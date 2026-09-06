@@ -43,7 +43,7 @@ BASEMENT_PLACEABLES = [
     # west one, where a 96" carcass would have fitted and left the air gaps standing in the
     # open.
     Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-60",
-              room="RM-B-SAUNA", position=pt(inch(141.25), inch(88.1875)), rotation=deg(0)),
+              room="RM-B-SAUNA", position=pt(inch(141.25), inch(95.1875)), rotation=deg(0)),
     # The foot bench returns along the WEST liner, back to it (rotation 90 turns the 54"
     # carcass into the y direction), running y 1'-0"..5'-6" with a 2 1/2" scribe at the south
     # liner and 1 3/16" clear of the two-tier bench's south face. Its top is 18";
@@ -51,6 +51,24 @@ BASEMENT_PLACEABLES = [
     # loop the sauna's two dampered terminals drive. It moved 3'-10" east with the liner.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
               room="RM-B-SAUNA", position=pt(inch(119.8125), inch(39)), rotation=deg(90)),
+    # ** THE SOUTH LINER'S OWN FOOT BENCH, NEW 2026-09-05. ** The third bench, and the one
+    # that closes the L: it butts the west foot bench's east face at x=10'-9 13/16" and runs
+    # 3'-0" east to x=13'-9 13/16", scribed to the south liner at y=0'-9 1/2". `rotation=180`
+    # puts its back at -y, against that liner — the opposite of the north bench's 0.
+    #
+    # ** ITS LENGTH IS THE HEATER'S CLEARANCE, NOT THE WALL'S. ** There is 3'-7 15/16" of
+    # liner between the foot bench and EQ-B-SAUNA-HTR's west face (x=14'-5 3/4"), and a 3'-0"
+    # carcass spends 7 15/16" of it on the gap to the heater. Nothing in this engine grades
+    # that clearance — `EquipmentType` carries no `clearances` for the sauna heater — so it
+    # is taken here, deliberately, and a longer bench must not eat it.
+    # FURN-SAUNA-BENCH-36 was minted in `library/` for this: the 54" carcass does not fit.
+    #
+    # It sits UNDER WIN-B-SAUNA (x 12'-1"..13'-3", sill 3'-0 3/4"), which is the reason it is
+    # an 18" foot bench and not a tier: the top clears the sill by 1'-6 3/4" and the glass
+    # stays glass. The 2 1/2" of liner showing at the west end is the neighbouring bench's
+    # own scribe, not a gap in this one.
+    Furniture(uid="V218FXRSH2", tag="FURN-B-SAUNA-BENCH-SW", type_ref="FURN-SAUNA-BENCH-36",
+              room="RM-B-SAUNA", position=pt(inch(147.8125), inch(19.5)), rotation=deg(180)),
 
     # RM-B-WORKSHOP's two benches. The room is still L-shaped, with the legs redrawn twice
     # on 2026-09-05: a west bay **7'-10 3/16" clear (x 0'-8"..8'-6 3/16")** running from the

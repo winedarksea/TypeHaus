@@ -69,40 +69,46 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 ```
 column   PIER_CONCRETE_12                       0.84 cy
 column   SUNKEN_GARDEN_COLUMN_12                1.27
-footing  CATLIN_FOOTING_20                     10.46
+footing  CATLIN_FOOTING_20                     10.28
 footing  CATLIN_PIER_BASE_12                    0.57
 footing  CATLIN_PORCH_FOOTING_84                5.71
 footing  CATLIN_RETAINING_FOOTING_96           16.79
-footing  FOOTING_FPSF_20                        1.73
+footing  FOOTING_FPSF_20                        1.48
 pad      CATLIN_PIER_BASE_12                    0.26
 slab     CATLIN_DECK_EPS_INT                   18.37
 slab     CATLIN_GARAGE_STEP_6                   0.17
-slab     CATLIN_GARDEN_SLAB                     3.96
-slab     CATLIN_GARDEN_STOOP                    0.53
+slab     CATLIN_GARDEN_SLAB                     3.92
 slab     CATLIN_SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
-slab     HP_PAD_ON_GRADE                        0.58
-                                     solids   80.51 cy
+slab     HP_PAD_ON_GRADE                        0.56
+                                     solids   79.49 cy
 
 SUNKEN_GARDEN_WALL                            30.21
 CATLIN_BASEMENT_8                             17.55
 CATLIN_BASEMENT_12                            10.67
-GARAGE_ICF_6                                   8.82
-FOUNDATION_WALL_12_INT                         5.25
+GARAGE_ICF_6                                    8.82
+FOUNDATION_WALL_12_INT                         6.57
+SG_VENEER_BEAM_14                              1.10
 the two garden curbs                           0.21
-                                      walls   72.71 cy
+                                      walls   75.13 cy
 
-                                      TOTAL  153.22 cy
+                                      TOTAL  154.62 cy
 ```
 
-**`CATLIN_GARDEN_SLAB` fell 5.75 -> 3.96 cy on 2026-09-03** and two rows appeared beside
-it. The court dropped 7 1/4" so heavy rain ponds outside `D-B-PATIO` instead of crossing it,
-and the floor became a **rim** around an open field: `FO-SG-FIELD` and `FO-SG-ARCH` void
-1.79 cy out of the pour, `CATLIN_GARDEN_STOOP` (the door's landing, left at the old floor
-plane) puts 0.53 back, and the two belled piers' shafts grew with the step. `SL-SG-FIELD` —
-5.43 cy of sand, fabric and stone — does **not** appear above and must not be added to it:
-this filter takes a STRUCTURE layer of material `concrete`, and `CATLIN_GARDEN_FIELD` has
-neither.
+**`CATLIN_GARDEN_SLAB` is 3.92 cy and the court has moved twice under it.** It fell
+5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
+became a **rim** around an open field, with `CATLIN_GARDEN_STOOP` adding 0.53 back as the
+door's landing. On **2026-09-05 the court came back flush** (`court_step_down_in` -> 0, one
+riser at D-B-PATIO instead of two): the stoop is retired, `FO-SG-ARCH` is retired with it —
+`W-SG-ARCH`'s top is now the rim's underside, so the slab bears on the beam rather than
+being cut around it — and only `FO-SG-FIELD` and `FO-SG-BRKBM` still void the pour. The
+belled piers did NOT follow the court up; they are pinned at their augered elevation and
+simply carry 49 1/4" of cover instead of 42" (params/sunken_garden `_pier_bell_bottom_ft`).
+
+`SG_VENEER_BEAM_14` (1.10 cy) is the veneer's grade beam, new 2026-09-05, and
+`FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — 5.43 cy of sand, fabric and
+stone — does **not** appear above and must not be added to it: this filter takes a STRUCTURE
+layer of material `concrete`, and `CATLIN_GARDEN_FIELD` has neither.
 
 **Two things the filter tells you that a hand count would have hidden.**
 

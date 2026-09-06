@@ -235,6 +235,14 @@ SAUNA_BENCH_54 = FurnitureType(
     footprint=(ft(4, 6), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
     source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
 )
+# The 3'-0" sibling, added 2026-09-05: the run of south liner a heater and a foot bench
+# leave between them is under four feet, and the 4'-6" carcass above does not fit it. Same
+# height, same depth, same symbol — this is the 54" bench cut short, not a different article.
+SAUNA_BENCH_36 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-36", name='Sauna foot bench, 3\'-0"',
+    footprint=(ft(3), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
+    source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
+)
 
 # A workbench and a shoe-changing bench are generic furniture, not house-specific joinery:
 # both were authored in catlin's own catalog only because nothing shared existed. (The
@@ -267,6 +275,6 @@ STARTER_FURNITURE_TYPES = (
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
-    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_54,
+    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_54, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36,
 )

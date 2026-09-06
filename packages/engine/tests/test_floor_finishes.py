@@ -23,7 +23,7 @@ from typehaus.emit.draw.palette import material_color
 # (SL-M-DECK's polished cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "polished-concrete"}
+                    "vinyl-sheet", "polished-concrete", "walnut-floor"}
 
 
 def _library(catlin_model):
@@ -93,20 +93,29 @@ def test_an_unfinished_or_unknown_finish_falls_back_rather_than_raising(catlin_m
 # --- 3. the second storey the user asked for ----------------------------------------------
 
 def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model):
-    """LVP through both hallways, the stair landing and all three baths — one continuous
-    plank floor with no thresholds on the traffic route."""
+    """LVP through both hallways, the stair landing and the two UNHEATED baths — one
+    continuous plank floor with no thresholds on the traffic route.
+
+    RM-S-BATH1 left it on 2026-09-05: it is the one floor on this storey with a radiant mat
+    under it (FH-S-BATH1), and plank caps that mat's surface at 80-85 F. It is tile now, and
+    the one threshold that buys is at D-S-BATH1."""
     finishes = {room.tag: room.floor_finish
                 for room in catlin_model.rooms if room.storey == "second"}
     # RM-S-LANDING and RM-S-STAIR are gone as separate claims: with the centre line open
     # under BM-S-HALL between y 22'-4" and 30'-10", the hall, the landing and the stair
     # well polygonize as one face, and RM-S-HALL is the seed that claims it.
     assert {tag for tag, finish in finishes.items() if finish == "lvp"} == {
-        "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-BATH1"}
+        "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-NCLOSET"}
+    assert finishes["RM-S-BATH1"] == "tile"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
-    # Both walk-ins are carpet, continuing out of the bedrooms they open off.
-    assert finishes["RM-S-CLOSET"] == "carpet"
-    assert finishes["RM-S-NCLOSET"] == "carpet"
+    # The suite and its walk-in are one continuous walnut field (2026-09-05, was carpet): the
+    # closet opens off the bedroom, so the floor continues in rather than changing species for
+    # 27 SF. RM-S-NCLOSET is not a walk-in off a bedroom: it opens onto the hall, so it takes
+    # the hall's plank.
+    assert finishes["RM-S-SUITE"] == "walnut-floor"
+    assert finishes["RM-S-CLOSET"] == "walnut-floor"
+    assert finishes["RM-S-NCLOSET"] == "lvp"
     # Everything else on the storey is untouched. RM-S-PLANT left tile for heat-welded
     # sheet vinyl — the plant room's floor and walls are one coved tray (notes/plant_room.md),
     # which tile cannot be.
@@ -159,16 +168,26 @@ def test_finish_zones_survive_resolve(catlin_model, project):
     assert carried.material_ref == "tile"
     # Clipped to the room: 2' x 4' of the authored 4' x 4' pad.
     assert carried.area_m2 == pytest.approx(ft(2).meters * ft(4).meters, rel=1e-6)
-    # ...but the authored outline is preserved, so the drawing still shows what was drawn.
+    # ** AND THE CLIPPED RING IS WHAT IS DRAWN. ** Until 2026-09-05 the authored outline was
+    # carried through instead, so this pad billed 2'x4' and drew 4'x4' — two feet of tile on
+    # the wrong side of the wall, in the .glb, the viewer and every plan drawing. It surfaced
+    # as a living-room floor sticking a foot out of the catlin house, past walls that were
+    # never near the zone's real edges, and no check saw it because the AREA was right.
     assert Polygon(carried.outline).area == pytest.approx(
-        ft(4).meters * ft(4).meters, rel=1e-6)
+        ft(2).meters * ft(4).meters, rel=1e-6)
+    assert Polygon(resolved.clear_face).buffer(1e-6).contains(Polygon(carried.outline))
 
 
 # --- 5. the advisory ----------------------------------------------------------------------
 
 def test_radiant_under_a_limited_finish_is_advised(catlin_model):
-    """LVP over FH-S-BATH1 is legal but surface-temperature limited, which is a
-    commissioning decision and so is advised.
+    """Nothing in this house puts radiant under a limited finish any more — and the case
+    that used to is why the check exists.
+
+    FH-S-BATH1 ran under RM-S-BATH1's LVP until 2026-09-05 and this check is what said so:
+    plank is capped at 80-85 F, so the covering was throttling the mat. The room is tile now
+    and the advisory is silent, which is the outcome an advisory is for. The synthetic loop
+    in the next test is what keeps the mechanism itself pinned.
 
     FH-M-DINING is the case the polygon match exists for — it carries no ``room_ref`` at
     all, so a ref lookup would miss it entirely — and it is also why the check reads
@@ -183,12 +202,7 @@ def test_radiant_under_a_limited_finish_is_advised(catlin_model):
     findings = floor_finish_over_radiant(CheckContext(
         plan=catlin_model.plan, model=catlin_model, preferences=Preferences(),
         profile=MN_2024))
-    assert {tuple(sorted(f.element_tags)) for f in findings} == {
-        ("FH-S-BATH1", "RM-S-BATH1"),
-    }
-    assert all(f.severity.value == "warn" for f in findings)
-    # FH-M-BATH2 is under tile, which is what radiant wants — no advisory for it.
-    assert not any("FH-M-BATH2" in f.element_tags for f in findings)
+    assert findings == []
 
 
 # A loop from x 23' to 30', y 11' to 16', wholly inside RM-M-LIVING and straddling
@@ -204,12 +218,12 @@ def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(
     surface-temperature limited, and reading either the field finish alone or the zone alone
     would report exactly one of the two wrongly.
 
-    South of `_BAND_Y` is the authored OAK zone since 2026-09-05, so the half this reports
-    is oak rather than the plank it was — a **stronger** advisory, not a different mechanism:
-    solid wood is moisture-limited as well as temperature-limited. The catlin house does not
-    actually put radiant under that bay (FH-M-DINING is wholly over the cap, and
-    ``haus check`` reports nothing here); this loop is synthetic, and the assertion is about
-    which SIDE the check reads, not about a real condition.
+    South of `_BAND_Y` is the room's FIELD finish, `lvp`. It was briefly an authored oak zone
+    on 2026-09-05 and this assertion read "oak floor" for those few hours; the bay is plank
+    again, so it reads the field once more. Either way the mechanism is the same and it is
+    the mechanism being pinned. The catlin house does not actually put radiant under that bay
+    (FH-M-DINING is wholly over the cap, and ``haus check`` reports nothing here); this loop
+    is synthetic, and the assertion is about which SIDE the check reads, not a real condition.
     """
     from dataclasses import replace
 
@@ -224,7 +238,7 @@ def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(
         plan=model.plan, model=model, preferences=Preferences(), profile=MN_2024))
     messages = [f.message for f in findings if "RM-M-LIVING" in f.element_tags]
     assert len(messages) == 1, messages
-    assert "oak floor" in messages[0]
+    assert "lvp floor" in messages[0]
 
 
 # --- 4. the finish follows the deck ------------------------------------------------------
@@ -238,19 +252,19 @@ _M2_TO_FT2 = 10.7639104
 
 
 def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_model):
-    """One derived zone taken from the slab, one authored oak zone, and the field is what
-    is left of the room after both."""
+    """One derived zone taken from the slab, and the field is what is left of the room."""
     living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
     assert living.floor_finish == "lvp", "the room's own string stays the FIELD finish"
-    # TWO zones: the derived concrete band below, and an AUTHORED oak
-    # rectangle over the south bay. They do not overlap — the oak stops at y=13' and
-    # SL-M-DECK starts there — so neither zone is cut against the other.
-    #
-    # It was the derived band plus an authored `vinyl-sheet` HALL band until 2026-09-05.
-    # That zone is deleted rather than replaced: the hall's finish is now the room's own
-    # field `lvp`, which is also what the rooms off it carry, so there is nothing left for a
-    # zone to override.
-    assert len(living.finish_zones) == 2
+    # ONE zone, and it is DERIVED. This room carried an authored `vinyl-sheet` hall band
+    # until 2026-09-05, then an authored `oak` south bay for part of that same day; both are
+    # deleted rather than replaced. The hall's finish is the room's own field `lvp`, which is
+    # what the rooms off it carry too, and the south bay is that same `lvp` — the oak would
+    # have stood 9/16" proud of the polished cap at y=13' and the concrete cannot be raised
+    # to meet it (``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the
+    # subfloor). Nothing is left for an authored zone to override, which is the state this
+    # room is easiest to keep honest in: a derived zone follows its slab and cannot go stale.
+    assert len(living.finish_zones) == 1
+    assert all(z.source_ref is not None for z in living.finish_zones)
     zone = next(z for z in living.finish_zones if z.source_ref is not None)
     assert zone.material_ref == "polished-concrete"
     # Derived, not authored — and it names the slab, which is the answer to "why is this
@@ -270,34 +284,26 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # test_the_billed_finishes_move_with_the_split is 410.2 before and after, and does not
     # move when this number does.
     #
-    # UNMOVED by the 2026-09-05 finishes change, and that is the point: the oak is south of
-    # _BAND_Y and the concrete is north of it, so nothing was taken off the band.
+    # UNMOVED by either 2026-09-05 finishes change, and that is the point: both touched only
+    # what is SOUTH of _BAND_Y, and the band is north of it.
     assert zone.area_m2 * _M2_TO_FT2 == pytest.approx(392.7, abs=0.5)
-    oak = next(z for z in living.finish_zones if z.source_ref is None)
-    assert oak.material_ref == "oak"
-    # The whole south bay: x 18'..36' (the centre bearing line to the east wall) by
-    # y 0'..13' (the south wall to _BAND_Y), less the wall linings the clear face takes off.
-    # Only the north edge is authored as a real number — the other three are over-extended
-    # past the room and clipped (test_catlin_contract_m3 pins that north edge to _BAND_Y).
-    assert oak.area_m2 * _M2_TO_FT2 == pytest.approx(231.7, abs=0.5)
-    # 355.1 until the hall zone; 307.0 with it. 123.9 now: the hall's 48.5 sf came BACK to
-    # the field when the vinyl zone was deleted, and the oak took 231.7 off it. What is left
-    # of the plank in this room is the stair lane and the hall band it runs into.
-    field = (living.area_m2 - zone.area_m2 - oak.area_m2) * _M2_TO_FT2
-    assert field == pytest.approx(123.9, abs=0.5)
+    # 355.1 until the hall zone, 307.0 with it, 123.9 with the oak bay taken out as well.
+    # Back to 355.6 now that both authored zones are gone: everything in this room that is
+    # not over SL-M-DECK is one plank floor — south bay, stair lane and hall band alike.
+    field = (living.area_m2 - zone.area_m2) * _M2_TO_FT2
+    assert field == pytest.approx(355.6, abs=0.5)
 
 
 def test_a_derived_zone_is_clipped_to_the_room_not_drawn_as_the_slab(catlin_model):
-    """An authored zone draws as authored and bills clipped; a derived one has no reason to
-    be drawn proud of the room, so its outline IS the clipped ring. Here that is an L —
-    the slab runs to x=36' and y=36', the room's clear face stops short of both."""
+    """Every zone's outline is the clipped ring — a derived one never had a reason to be
+    drawn proud of the room, and since 2026-09-05 an authored one is held to the same face.
+    Here that is an L: the slab runs to x=36' and y=36', the clear face stops short of both."""
     from shapely.geometry import Polygon
 
     living = next(room for room in catlin_model.rooms if room.tag == "RM-M-LIVING")
-    # Selected by ``source_ref``, not by index: the room carries an authored OAK zone, and
-    # an authored ring is exactly the thing this test does NOT hold to the clear face — it
-    # draws as drawn and bills clipped. The oak's ring is deliberately drawn well outside
-    # the room on three sides, so it would fail the containment below.
+    # Still selected by ``source_ref`` rather than by index, though the room carries only
+    # this one zone today: what is asserted below is the DERIVED contract, and an authored
+    # zone arriving here later should be pinned by its own test with its own reasoning.
     derived = next(z for z in living.finish_zones if z.source_ref is not None)
     ring = Polygon(derived.outline)
     face = Polygon(living.clear_face)
@@ -320,33 +326,52 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert rows["polished-concrete"]["coating"] is True
     assert rows["polished-concrete"]["waste_pct"] == 0.0
     assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(410.2, abs=0.5)
-    # ** 2026-09-05, the main-floor finishes. ** 694.3 -> 590.1 of LVP. Two moves in
-    # opposite directions and the oak is the bigger one:
-    #   * -231.7  the living room's south bay went to the authored oak zone
+    # ** 2026-09-05, the main-floor finishes. ** 694.3 -> 808.2 of LVP. The plank GAINED,
+    # in three moves:
     #   * +48.5   the hall band's vinyl-sheet zone was DELETED, so the corridor falls back
     #             to the room's own field finish
-    #   * +79.0   RM-M-BATH1, RM-M-LAUNDRY, RM-M-MECH and RM-M-MUD-CLOSET retyped off
-    #             vinyl-sheet onto the plank the hall now carries
-    # RM-M-MUDROOM went the other way, to tile, and is the one room on this floor that
-    # deliberately breaks the plank.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(590.1, abs=0.5)
+    #   * +46.0   RM-M-BATH1 and RM-M-LAUNDRY retyped off vinyl-sheet onto the plank the
+    #             hall now carries
+    #   * +231.7  the south bay, which went to an authored oak zone earlier the same day and
+    #             came back — oak stood 9/16" proud of the polished cap and LVP lands 1/64"
+    #             proud of it, which is flush (main.py, RM-M-LIVING)
+    # The mudroom SUITE went the other way, to tile — see the tile assertion below for why
+    # its two closets are not in this list.
+    # Then +19.3 off the second storey: RM-S-NCLOSET, the hall linen closet, left carpet.
+    # Then -84.9 back off it later the same day: RM-S-BATH1 went to tile, the one second-
+    # storey floor with a radiant mat under it. 808.2 -> 723.3.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(723.3, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
-    # The oak was RM-A-STUDY + RM-S-STUDY2 (the two studies) and is now those plus the
-    # living room's south bay: 324.3 -> 555.9. That crosses a real threshold in the
-    # ESTIMATE, not just in the model — houses/catlin/prices.toml's oak row carried a
-    # standing warning that its quantity was under a sand-and-finish mobilisation minimum.
-    assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-M-LIVING", "RM-S-STUDY2"}
-    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(555.9, abs=0.5)
+    # The oak is the two studies and nothing else. It reached 555.9 across three rooms for
+    # part of 2026-09-05, when the living room's south bay was oak — enough to clear the
+    # sand-and-finish mobilisation minimum that houses/catlin/prices.toml warns this row is
+    # under. Reverting the bay puts that warning back, and that was priced before the call.
+    assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2"}
+    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(324.2, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the three rooms
     # that are genuinely wet or genuinely cheap-and-washable, on three different storeys:
     # RM-S-PLANT (the spec that started it), RM-A-STUBATH and RM-B-BATH.
     assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-B-BATH", "RM-S-PLANT"}
     assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(228.8, abs=0.5)
-    # Tile is RM-M-BATH2 (its radiant zone's mass) plus RM-M-MUDROOM (dirt containment at
-    # the entry). RM-B-BATH is NOT in it — 30.2 sf under the basement stair with no radiant
+    # Tile is RM-M-BATH2 (its radiant zone's mass) plus the whole mudroom SUITE — the
+    # mudroom itself and BOTH its closets.
+    #
+    # ** THE CLOSETS ARE THE POINT OF THIS ASSERTION. ** RM-M-MECH and RM-M-MUD-CLOSET took
+    # LVP with the spine for a few hours on 2026-09-05, on the argument that 33 SF is not
+    # worth its own finish. That argument was made against the wrong adjacency: both closets
+    # are carved out of RM-M-MUDROOM's footprint and both doors open INTO it (D-M-MECH on
+    # W-M-MECH-S, D-M-MUDC on W-M-MUDC-N), so plank in them cut the entry's tile into an
+    # island with THREE transition strips instead of the one at D-M-MUD — one of them under
+    # a bypass slider's bottom guide. Put either back on lvp and this test is what says so.
+    # RM-B-BATH is NOT in it — 30.2 sf under the basement stair with no radiant
     # zone went to vinyl-sheet on 2026-09-02, and that decision is untouched here.
-    assert set(rows["tile"]["rooms"]) == {"RM-M-BATH2", "RM-M-MUDROOM"}
+    #
+    # RM-S-BATH1 joined them later on 2026-09-05, and for the same reason RM-M-BATH2 is
+    # here: its radiant zone. Plank over FH-S-BATH1 was surface-temperature limited, which
+    # is a covering throttling the only heat the room's floor has.
+    assert set(rows["tile"]["rooms"]) == {"RM-M-BATH2", "RM-M-MUDROOM", "RM-M-MECH",
+                                          "RM-M-MUD-CLOSET", "RM-S-BATH1"}
     # And the membrane follows the tile, one for one. Both tile floors in this house are
     # over a wood deck, and neither billed an uncoupling layer before 2026-09-05 —
     # ``takeoff/finishes._COMPANIONS``.
@@ -377,16 +402,14 @@ def test_no_room_claims_a_concrete_finish_over_a_deck_that_is_not_concrete(catli
 
 def test_the_three_retyped_mudroom_rooms_carry_a_hard_finish_over_their_wood_deck(catlin_model):
     """The retype that this section guards is *off* sealed-concrete, and what it lands on
-    has moved once since: all three were sheet vinyl from 2026-08-21, and on 2026-09-05 the
-    mudroom took porcelain (dirt containment at the entry, on FS-M-MECH's 10'-0" span) while
-    the two closets joined the LVP spine. What must not change is that none of them claims a
-    concrete finish — there is no slab under any of them."""
+    has moved once since: all three were sheet vinyl from 2026-08-21, and on 2026-09-05 all
+    three took porcelain — dirt containment at the entry, on FS-M-MECH's 10'-0" span, which
+    is the same deck under all of them. What must not change is that none of them claims a
+    concrete finish: there is no slab under any of them."""
     retyped = {"RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET"}
     finishes = {room.tag: room.floor_finish for room in catlin_model.rooms
                 if room.tag in retyped}
-    assert finishes == {"RM-M-MUDROOM": "tile",
-                        "RM-M-MECH": "lvp",
-                        "RM-M-MUD-CLOSET": "lvp"}
+    assert finishes == {tag: "tile" for tag in retyped}
 
 
 def test_a_sealer_over_a_wood_deck_fails(catlin_model):

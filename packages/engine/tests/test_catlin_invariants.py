@@ -96,13 +96,15 @@ def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model)
 # --- the flood threshold at the sunken-garden door ----------------------------
 PATIO_DOOR = "D-B-PATIO"
 GARDEN_FLOOR = "SL-SG-FLOOR"
-# ** THE LANDING IS NO LONGER THE COURT FLOOR. ** On 2026-09-03 the court dropped 7 1/4" so
-# heavy rain ponds in it rather than crossing this threshold, and SL-SG-STOOP — the piece of
-# the old flush floor the door stands on — became the landing R311.3 measures. The step from
-# the threshold is the SAME 7 1/4" it always was; what changed is that there is now a second
-# riser from the landing down to the court. Measuring the step against SL-SG-FLOOR would
-# read 14 1/2" and report a code failure where the design put a step.
-PATIO_LANDING = "SL-SG-STOOP"
+# ** THE LANDING IS THE COURT FLOOR AGAIN (2026-09-05). ** It was SL-SG-FLOOR, then
+# SL-SG-STOOP for two days, and is SL-SG-FLOOR once more. The court dropped 7 1/4" on
+# 2026-09-03 for a flood step, which left the threshold 14 1/2" over the floor in front of
+# it — past R311.3's allowance with no landing — so a 23.7 sf block of the old flush floor
+# (SL-SG-STOOP) was left standing where the door needed it. `court_step_down_in` went back
+# to 0 on 2026-09-05, the whole 532 sf court is that plane again, and the stoop was retired
+# as redundant. The step from the threshold has been the SAME 7 1/4" throughout all three
+# arrangements — it is the curb, and the curb never moved.
+PATIO_LANDING = "SL-SG-FLOOR"
 # checks/code/mn_residential/egress.py::_MAX_NONREQUIRED_STEP_DOWN. Restated rather than
 # imported on purpose: this test is a statement about the HOUSE, and it must fail if the
 # engine's constant moves under it rather than move with it.
@@ -149,11 +151,18 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
     This is the pin that makes raising the threshold a conscious trade rather than a
     surprise, and the reason the two live in one test file.
 
-    **The landing is SL-SG-STOOP since 2026-09-03, not the court floor**, and the 7 1/4"
-    below is the same 7 1/4" this test has always measured — the court fell away from the
-    landing, the landing did not fall away from the door. The second assertion is what keeps
-    that honest: the court has to be a FURTHER riser down, or the stoop has quietly gone
-    flush and the flood reservoir with it.
+    **The landing is the court floor again since 2026-09-05.** SL-SG-STOOP is retired and
+    `court_step_down_in` is back to 0, so the court is one 532 sf surface flush with the
+    basement floor plane and this 7 1/4" curb is the ONLY riser between it and the house.
+
+    The second assertion changed sides with it, and deliberately. It used to demand a
+    further 7 1/4" riser from landing to court — the flood step — and now demands the
+    opposite: that the court and the landing are the SAME plane. The flood reservoir is not
+    gone, but it is now 7 1/4" deep rather than 14 1/2", and the curb is the whole dam. That
+    was an owner's decision taken on a stated trade (about 3.4x -> 1.7x a 100-year 24-hour
+    rain with the drywell fully failed), and this is where it is pinned: if the court ever
+    drifts BELOW this plane again the step exceeds one riser and R311.3 fails, and if it
+    drifts above, the dam is gone entirely.
     """
     door = next(o for o in catlin_model.openings if o.tag == PATIO_DOOR)
     wall = next(w for w in catlin_model.walls if w.tag == door.host_wall)
@@ -166,11 +175,11 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
         f"R311.3.1 allows {MAX_NONREQUIRED_STEP_DOWN_IN}\" for a door that is not the "
         "required egress door"
     )
-    # And the court is a second riser below the landing — the flood step itself.
-    assert (landing.z1_m - garden.z1_m) / INCH == pytest.approx(7.25, abs=0.05), (
+    # And the court IS the landing: one surface, no second riser anywhere in it.
+    assert (landing.z1_m - garden.z1_m) / INCH == pytest.approx(0.0, abs=0.05), (
         f"{PATIO_LANDING} stands {(landing.z1_m - garden.z1_m) / INCH:.2f}\" over "
-        f"{GARDEN_FLOOR}; the court is the building's flood reservoir and that step is the "
-        "dam (params/sunken_garden.SPEC.court_step_down_in)"
+        f"{GARDEN_FLOOR}; the court is one plane and the 7 1/4\" curb is the whole flood "
+        "dam (params/sunken_garden.SPEC.court_step_down_in, back to 0 on 2026-09-05)"
     )
 
 

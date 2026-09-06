@@ -21,7 +21,10 @@ one that needs a seal.
 > `structural.foundation_unbalanced_fill` on the last published row of IRC Table
 > R404.1.2(8). This beam is a thermal device that happens to be made of concrete.
 
-> ⚠ **A 6" cavity is outside IRC R703.8.4.** The prescriptive airspace stops at 4-1/2".
+> ⚠ **The veneer anchor is an engineered item.** The airspace itself is 2" and compliant,
+> but the beam holds the wythe ~10" off the backup's structural face and no prescriptive
+> table reaches that. See §5.1 — including why IRC R703.15's 4" foam limit does *not*
+> apply here, and why the wythe must NOT be anchored to the side retaining walls.
 > The ties are an engineered item under TMS 402 and are NOT designed in this note (§5).
 
 ---
@@ -58,7 +61,10 @@ condition sat at 0 FAIL.
 | isolation board | 2" XPS, 40 psi, north face | −8" … −10" |
 | `FT-B-S2/S3` south face | 20" strip, `offset` 2" off axis | −8" |
 | wythe | 3-5/8", on the beam's north edge | −10.05" … −13.675" |
-| cavity | wall XPS face (−4.05") to wythe | **6.0"** |
+| backup finished face | EPS face, since 2026-09-05 | −6.05" |
+| open cavity | EPS face (−6.05") to wythe | **4.0"** |
+| foam behind the wythe | 4" XPS + 2" EPS | 6.0" |
+| anchor reach | brick back to sheathing/stud | ~10.05" |
 
 Top and bottom are both borrowed, not invented: the top **is** `W-B-BRICK`'s authored
 underside (−8'-6 7/16") and the bottom **is** the garden slab's (−10'-0 3/16"), so the beam
@@ -93,7 +99,8 @@ is the binding number, not the moment. Mirror 2-#5 top for the pocket restraint 
 ## 4. Torsion from the eccentric wythe
 
 The wythe sits on the beam's north edge, not its centreline, because centring it would cost
-the 6" cavity:
+the cavity (the wythe's position is set by the beam and did not change
+on 2026-09-05, so this is unaffected by the EPS):
 
 ```
 e  = beam centre (-16") - wythe centre (-11.86")   = 4.14 in
@@ -108,11 +115,41 @@ below the cracking threshold; T_cr for a 12×17.75 section at f'c 4000 is on the
 
 ## 5. What is NOT graded here, and what needs a seal
 
-1. **The veneer ties.** A 6" airspace is past IRC R703.8.4's 4-1/2" prescriptive limit, so
-   the ties are a TMS 402 engineered item: eccentric compression on the tie wire, and the
-   wythe's own out-of-plane bending between tie rows. **Not designed in this note.** The
-   engine has no masonry-tie calculation and does not pretend to — nothing in
-   `haus engineering` will ever report a ratio for it.
+1. **The veneer ties — still engineered, but for a different reason since 2026-09-05.**
+   The airspace is **4"** now, not 6", which is inside IRC R703.8.4's 1"-minimum and inside
+   the 4-1/2" the prescriptive tables stop at. That is not what makes this hard. The beam
+   fixes the wythe's foot 6" off the backup's structural face, so the anchor must reach
+   **~10" from brick to stud** whatever fills the gap, and no prescriptive table contemplates
+   a standoff like that. It stays a TMS 402 engineered item: eccentric compression on the
+   anchor, buckling over its unbraced length, and the wythe's out-of-plane bending between
+   anchor rows. **Not designed in this note** — the engine has no masonry-anchor calculation
+   and nothing in `haus engineering` will ever report a ratio for it.
+
+   What the 2026-09-05 EPS bought is that the problem became *designable*. Of the 10", 8" is
+   now solid foam and only 4" is open air; before, 6" was unbraced. Specify a two-piece
+   adjustable anchor rated for the full insulation thickness and **confirm the manufacturer
+   publishes that thickness** — 6" is at the top of the standard catalog.
+   That confirmation is a procurement item, not an assumption this note is entitled to make.
+
+   **`IRC R703.15` does not govern this wall, and the distinction matters** because
+   `plans/cost-options.md` §6 kills a different foam swap in this house on R703.15's 4"
+   limit — and this wall now carries 6". R703.15 covers cladding *attached through* foam,
+   where the fastener carries the cladding's dead weight in bending; it explicitly excepts
+   anchored masonry veneer to R703.8. This wythe carries its own weight to **this beam**, so
+   the anchors take wind only. Different load, different section, and the 4" limit is not
+   this wall's. (The board is ASTM C578 Type II at 15 psi, so it would satisfy R703.15's
+   compressive floor regardless.)
+
+   **Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to reduce anchor count.** Two reasons,
+   and the second is the real one. (a) It cannot work: unreinforced 3-5/8" brick spanning
+   18'-8" horizontally develops roughly 400 psi of flexural tension at a 20 psf wind, against
+   an allowable near 50 psi parallel to the bed joints — an order of magnitude short, and no
+   anchor pattern at the ends changes it. (b) It is the wrong detail even if it did: clay
+   brick grows irreversibly and concrete shrinks, so over 18'-8" the run wants roughly 0.15"
+   of moisture plus thermal movement (BIA TN 18). Those two ends need a **soft joint**, not
+   an anchor. Restraining a long wythe between two rigid concrete returns is how you crack
+   it. The end condition is a sealant joint over compressible filler; **the model does not
+   carry one and nothing in the engine grades it.**
 2. **The pocket bearing** into `W-SG-W1`/`W-SG-E1`: 6" of bearing on a 12" wall, chipped and
    doweled into an existing pour. Reaction 5.0 k over 12"×6" = 139 psi against 4000 psi
    concrete is not the question; the question is the dowel development into a wall that was
@@ -132,5 +169,12 @@ below the cracking threshold; T_cr for a 12×17.75 section at f'c 4000 is on the
 - IRC 2018 R404.1.2(8) — the table `W-SG-W1`/`E1` already satisfy.
 - ACI 318-19 §9.6.1.2 (minimum flexural steel), §22.5 (one-way shear), §22.7.1
   (compatibility torsion).
-- TMS 402/602-16 §6.2 — anchored veneer, the engineered path a 6" airspace requires.
+- TMS 402/602-16 §6.2 — anchored veneer, and the engineered path a ~10" anchor reach requires.
+- IRC 2021 R703.15 — cladding attachment over foam sheathing; **excepts anchored masonry
+  veneer to R703.8**, which is why the 4" foam limit in `plans/cost-options.md` §6 is not
+  this wall's limit. Note the Airspace column of Table R703.8.4(1) could NOT be sourced:
+  ICC publishes the table with the rows "not shown for brevity" and the full text is
+  paywalled. The 1" minimum is confirmed; the 4-1/2" ceiling rests on TMS 402, not on a
+  quoted IRC row.
+- BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
 - `notes/sunken_garden_court_free_body.md` — the court's own free body, unchanged by this.

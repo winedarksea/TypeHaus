@@ -132,11 +132,11 @@ _CORNER_PIERS = ("PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
 # A lower floor is a taller structure: z 23.0' -> 23.3', q_h 18.7 -> 18.8 psf. The guard case
 # still governs both rows, so no capacity comparison changes.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1395.1, "guard_lb_ft": 2502.1},
-    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1395.1, "guard_lb_ft": 2502.1},
+    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
+    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
     # The rear row runs 2" proud for the deck's drainage crown.
-    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1421.0, "guard_lb_ft": 2535.4},
-    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1421.0, "guard_lb_ft": 2535.4},
+    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1410.3, "guard_lb_ft": 2535.4},
+    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1410.3, "guard_lb_ft": 2535.4},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 _CORNER_PHI_MN_LB_FT = 20_900.0

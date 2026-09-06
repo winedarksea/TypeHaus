@@ -178,15 +178,28 @@ SITE = Site(
         # planter bed once stood). The plane these two stations sit on is the wall top itself.
         # Both are inside the apron's U (x 4'..32', y -33.33'..-9.5') and stay there.
         #
-        # None of these four move with grade: they are the tops of structures, not readings
-        # of the soil plane, and those structures stay put.
-        # The garden floor reads -9'-8 11/16" — the court surface, rim and field alike, one
-        # 7 1/4" flood step below the basement floor plane (params/sunken_garden._court_top).
-        # It read -9'-4" until 2026-09-03 and that was already stale by 1 7/16" before the
-        # court dropped. Nothing structural reads spot elevations — they are drafting
-        # annotation — which is exactly why a stale one can survive unnoticed.
-        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -8.6875)),
-        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -8.6875)),
+        # None of these four move with GRADE: they are the tops of structures, not readings
+        # of the soil plane. But they must move when those structures do, and the first two
+        # just did.
+        #
+        # ** THE GARDEN FLOOR READS -9'-1 7/16" SINCE 2026-09-05 — THE FLUSH COURT. **
+        # `params/sunken_garden.SPEC.court_step_down_in` went back to 0, so the court surface
+        # (rim and field alike) is the basement floor plane again and these two stations
+        # follow it up 7 1/4". History, because this station has been stale twice already:
+        # it read -9'-4" until 2026-09-03 (already 1 7/16" wrong), then -9'-8 11/16" while
+        # the flood step existed.
+        #
+        # ** AND THE CLAIM THAT USED TO SIT HERE — "nothing structural reads spot
+        # elevations, they are drafting annotation" — WAS FALSE. **
+        # `engineering/balcony_wind.ground_below_ft` takes the LOWEST spot elevation on the
+        # site and it is these two that win it, so this pair sets `z` for the balcony
+        # columns' wind demand (notes/balcony_moment_columns.md). Raising them shortens `z`
+        # by 7 1/4", which lowers K_z and lowers the demand — the safe direction, and the
+        # reason the columns need no re-sizing. Do not restore that comment: a station here
+        # is a structural input, and the stale-annotation trap it warned about is exactly
+        # the one it was itself an instance of.
+        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -1.4375)),
+        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
         SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6)),
     ),

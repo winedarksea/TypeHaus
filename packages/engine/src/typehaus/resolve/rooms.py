@@ -221,7 +221,12 @@ def _finish_zones(plan: PlanModel, storey_tag: str, room,
     """In-room finish overrides — authored on the room, then derived from the floor under it.
 
     Clipping is what makes the areas subtractable — a hearth pad drawn a little proud of
-    the wall must not bill more tile than the room has floor.
+    the wall must not bill more tile than the room has floor. The clipped ring is also what
+    is DRAWN. Until 2026-09-05 an authored zone billed clipped but carried its authored
+    outline downstream, so a zone deliberately over-extended past the room — the idiom that
+    keeps a zone edge from going stale when a wall moves, since only the edges that are real
+    numbers have to be authored — put its finish on every drawing a foot outside the house.
+    The area was right the whole time, which is why nothing caught it.
 
     The derived half answers a room that spans two structures. ``Room.floor_finish`` is one
     string, so a room half over a joisted deck and half over a slab whose cap *is* the
@@ -241,10 +246,15 @@ def _finish_zones(plan: PlanModel, storey_tag: str, room,
         if clipped.is_empty or clipped.area <= 0.0:
             continue
         authored.append(outline)
-        zones.append(ResolvedFinishZone(
-            outline=[(x, y) for x, y in outline.exterior.coords[:-1]],
-            material_ref=zone.material_ref, area_m2=clipped.area,
-        ))
+        # One zone per clipped piece: a pad the room's own geometry cuts in two is two
+        # rings to draw, and the areas still sum to what the single zone billed before.
+        for piece in getattr(clipped, "geoms", (clipped,)):
+            if piece.geom_type != "Polygon" or piece.area <= 0.0:
+                continue
+            zones.append(ResolvedFinishZone(
+                outline=[(x, y) for x, y in piece.exterior.coords[:-1]],
+                material_ref=zone.material_ref, area_m2=piece.area,
+            ))
     zones.extend(_derived_finish_zones(plan, storey_tag, room, clear, authored))
     return tuple(zones)
 
@@ -259,9 +269,9 @@ def _derived_finish_zones(plan: PlanModel, storey_tag: str, room, clear: Polygon
                           authored: list[Polygon]) -> list[ResolvedFinishZone]:
     """Zones taken from the slabs under the room whose own top face is the finished floor.
 
-    Unlike the authored path — which draws as authored and bills clipped — a derived zone's
-    outline is the *clipped* ring. It has no reason to be drawn proud of the room: it is not
-    a thing someone laid out, it is the part of the room that sits on that slab.
+    A derived zone's outline is the clipped ring, as an authored one's now is too. It has no
+    reason to be drawn proud of the room: it is not a thing someone laid out, it is the part
+    of the room that sits on that slab.
     """
     out: list[ResolvedFinishZone] = []
     blocked = unary_union(authored) if authored else None
