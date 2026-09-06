@@ -85,7 +85,15 @@ def test_the_catlin_eave_is_a_two_page_detail(catlin_model):
 
 
 def test_the_notes_are_logical_lines_not_pre_wrapped(catlin_model):
-    """One string per bullet. Wrapping is the writer's, at the width it prints into."""
+    """One string per bullet. Wrapping is the writer's, at the width it prints into.
+
+    The assertion is the *source's* hard wraps, not the writer's. A note file wraps at
+    column 100 for its own readability, and until ``note_text.logical_bullets`` landed,
+    each of those physical lines became a separate ``Scene.notes`` entry — so a sentence
+    broke mid-clause on the sheet, at a column nothing on the sheet had. Rejoining makes
+    bullets *longer*, which is why the old ">100 chars" reading still holds while now
+    testing the opposite property: no bullet is a fragment of another.
+    """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
@@ -97,6 +105,22 @@ def test_the_notes_are_logical_lines_not_pre_wrapped(catlin_model):
         "notes arrived pre-wrapped; the writer can no longer choose its own column"
     assert not [line for line in scene.notes if line.startswith("  ")], \
         "continuation lines are a wrapped artefact and must not be in the IR"
+    # A source hard wrap resumed mid-sentence, so the continuation opened lowercase or on
+    # a bare punctuation mark. Every bullet is now a whole authored bullet.
+    fragments = [b for b in bullets if b[2:3].islower() or b[2:3] in ",;)"]
+    assert not fragments, f"source hard wraps reached the IR: {fragments[:2]}"
+
+
+def test_no_markdown_or_repository_path_reaches_the_notes(catlin_model):
+    """The acceptance property, at the one detail with the most note text."""
+    from typehaus.emit.draw.details import build_detail, derive_detail_slices
+
+    derived = next(d for d in derive_detail_slices(catlin_model)
+                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+    scene, _ = build_detail(catlin_model, derived)
+    joined = "\n".join(scene.notes)
+    for artefact in ("**", "`", "](", ".md", ".py", "::"):
+        assert artefact not in joined, f"{artefact!r} printed onto a permit sheet"
 
 
 def test_pagination_does_not_touch_the_drawing(catlin_model):

@@ -29,16 +29,20 @@ import re
 #: something a builder standing at the wall can follow.
 _LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 
-#: A backticked span that *is* a path or a test id — dropped whole, along with any
-#: immediately preceding "see"/"per" preposition it was the object of. A bare
-#: ``test_garage_overhead_door_opens_from_the_slab_at_grade`` has no extension and no
-#: ``::``, and it printed on the garage detail anyway.
-_CODE_PATH = re.compile(
-    r"`(?:[^`]*(?:\.(?:md|py|toml|json|ts|tsx)|::|/)[^`]*|test_[A-Za-z0-9_]*)`")
-
-#: Remaining backticks: the span is an identifier a reader may still want (an assembly tag,
-#: a field name). Keep the text, drop the ticks.
+#: A code span. Every one is matched by this and then *classified* by
+#: :func:`_is_repo_reference`. Deciding with one pattern per outcome was tried and is
+#: subtly wrong: a "drop" pattern anchored on ``/`` matched from the backtick that CLOSES
+#: one span to the backtick that OPENS the next, swallowing the prose between them —
+#: ``CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry ... (`coating-acrylic``
+#: came out of the basement detail as ``CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8coating``.
 _CODE_ANY = re.compile(r"`([^`]*)`")
+
+#: A code span that is a *repository* reference — a path, a pytest id, a module — and so
+#: means nothing to a builder at the wall. Dropped whole. A bare
+#: ``test_garage_overhead_door_opens_from_the_slab_at_grade`` has neither an extension nor
+#: a ``::``, and it printed on the garage detail anyway.
+_REPO_REF = re.compile(
+    r"^(?:[^\s]*(?:\.(?:md|py|toml|json|ts|tsx)\b|::)[^\s]*|test_[A-Za-z0-9_]*)$")
 
 #: Bold/italic runs. Longest first, so ``**x**`` does not leave a stray pair behind.
 _EMPH = re.compile(r"\*{1,3}(?=\S)(.+?)(?<=\S)\*{1,3}")
@@ -84,11 +88,21 @@ def fold_ascii(text: str) -> str:
     return "".join(ch for ch in text if ch == "•" or ord(ch) < 128)
 
 
+def _uncode(match: re.Match[str]) -> str:
+    """One code span: dropped if it is a repository reference, unticked otherwise.
+
+    An identifier a reader can still act on — an assembly tag, a material ref, a field
+    name — keeps its text, because a builder holding the drawing and the schedule can look
+    ``CATLIN_BASEMENT_8`` up. ``plan/storeys/basement.py`` they cannot.
+    """
+    body = match.group(1)
+    return "" if _REPO_REF.match(body.strip()) else body
+
+
 def strip_markdown(text: str) -> str:
     """Links, code spans and emphasis out; the sentence's words left standing."""
     text = _LINK.sub(r"\1", text)
-    text = _CODE_PATH.sub("", text)
-    text = _CODE_ANY.sub(r"\1", text)
+    text = _CODE_ANY.sub(_uncode, text)
     text = _EMPH.sub(r"\1", text)
     return text
 
@@ -97,12 +111,18 @@ def collapse_space(text: str) -> str:
     """One space between words; no space before punctuation an empty span left orphaned."""
     text = _LEADING_PREP.sub("", text)
     text = re.sub(r"\s+", " ", text)
-    text = re.sub(r"\(\s*\)", "", text)
+    # A parenthetical whose whole content was a dropped path leaves "( -- )" or "(,)".
+    text = re.sub(r"\s*\(\s*(?:--|[-,;:])?\s*\)", "", text)
+    text = re.sub(r"\s*--\s*([,.;)])", r"\1", text)
+    text = re.sub(r"\.\s*\.(?=\s|$)", ".", text)
     text = re.sub(r"\s+([,;.:)])", r"\1", text)
     text = re.sub(r"\(\s+", "(", text)
     text = re.sub(r"(?:,\s*){2,}", ", ", text)
     text = re.sub(r"\s*--\s*--\s*", " -- ", text)
-    return text.strip(" \t,;")
+    # A dropped opener ("See `notes/x.md`. The cavity...") leaves the sentence starting
+    # on its predecessor's full stop. Only the *leading* period goes — a trailing one
+    # ends a real sentence.
+    return text.lstrip(" \t,;.").rstrip(" \t,;")
 
 
 def clean(text: str) -> str:

@@ -23,6 +23,7 @@ from typehaus.emit.draw.detail_derive import (
 from typehaus.emit.draw.joints import build_joint_plan
 from typehaus.emit.draw.scene import Leader, Scene, Text
 from typehaus.emit.draw.section import build_section
+from typehaus.emit.draw.sheet_notes import parse_sheet_notes
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.findings import Finding
 from typehaus.model.views import Slice
@@ -306,35 +307,24 @@ def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
 
 
 def _load_markdown_notes(path) -> list[str]:
-    """Front-matter-stripped, bulleted note lines — **one string per bullet**.
+    """Front-matter-stripped, sanitized note lines — **one string per logical bullet**.
 
     Deliberately *not* wrapped. Wrapping here meant guessing a column count (42) that no
     writer actually prints into, and then every writer re-joined the pieces and re-wrapped
     them to its own width — ``pdf_writer._rewrap_notes`` existed for exactly that. Wrapping
     once, at the writer, from the band it is printing into, is the whole of B6.
-    """
-    raw = path.read_text(encoding="utf-8").splitlines()
-    i = 0
-    if raw and raw[0].strip() == "---":
-        i = 1
-        while i < len(raw) and raw[i].strip() != "---":
-            i += 1
-        i = min(i + 1, len(raw))
 
-    out: list[str] = ["NOTES:"]
-    for line in raw[i:]:
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if stripped.startswith("#"):
-            # The column already carries a "NOTES:" header; markdown headings would
-            # only duplicate it.
-            continue
-        if stripped.startswith(("- ", "* ")):
-            out.append(f"• {stripped[2:].strip()}")
-            continue
-        out.append(stripped)
-    return out
+    The *content* now comes from :mod:`typehaus.emit.draw.sheet_notes`: a file carrying a
+    ``## Sheet notes`` section prints that section and nothing else, and a file without one
+    falls back to its whole body, sanitized. Both paths go through the same sanitizer, so
+    markdown, repository paths and pytest ids no longer reach a sheet either way.
+
+    The name and signature are unchanged on purpose — G-002, ``detail_payload`` and
+    ``schedules/architectural.py`` all import this function, and ``list[str]`` keeps the
+    ``Scene`` IR exactly as it was.
+    """
+    return parse_sheet_notes(path.read_text(encoding="utf-8"),
+                             source=getattr(path, "name", "")).sheet_lines()
 
 
 def _frame(derived: DerivedDetail):

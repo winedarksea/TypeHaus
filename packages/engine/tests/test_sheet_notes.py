@@ -162,3 +162,33 @@ def test_legacy_keeps_the_bullet_marker() -> None:
 
 def test_wrapped_line_count_is_ceiling_division() -> None:
     assert wrapped_line_count(["x" * 43, "x" * 44, "", "y"], columns=43) == 5
+
+
+def test_a_dropped_path_never_fuses_its_neighbours() -> None:
+    """The basement detail's regression.
+
+    A "drop" pattern anchored on ``/`` matched from the backtick that *closes* one code
+    span to the one that *opens* the next, eating the prose between them. The output read
+    ``CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8foundation-coating-acrylic``.
+    """
+    got = note_text.clean(
+        '`CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` carry a 1/8" coating over mesh '
+        '(`foundation-coating-acrylic`, a stock grey) with a `Layer.extent`.')
+    assert got == ('CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8 carry a 1/8" coating over '
+                   'mesh (foundation-coating-acrylic, a stock grey) with a Layer.extent.')
+
+
+def test_a_slash_between_two_tags_survives() -> None:
+    assert note_text.clean("`W-B-S1`/`W-B-S4` -- the buried ends.") == (
+        "W-B-S1/W-B-S4 -- the buried ends.")
+
+
+def test_a_parenthetical_that_was_only_a_path_disappears() -> None:
+    got = note_text.clean(
+        "the storey datum (the convention is a known split — see `plans/TODO.md`), and on")
+    assert got == "the storey datum (the convention is a known split), and on"
+
+
+def test_a_dropped_opener_does_not_leave_its_full_stop_behind() -> None:
+    assert note_text.clean("See `notes/x.md`. The cavity was 6\" of air.") == (
+        'The cavity was 6" of air.')
