@@ -1,0 +1,39 @@
+{
+  "type": "FeatureCollection",
+  "note": "Survey basemap in project-north feet (NOT lon/lat). Elevations are feet above the main-floor 0 datum. Placeholder survey; a real C-101 topo replaces it.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "role": "parcel", "name": "Catlin parcel" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-32, -60], [68, -60], [68, 105], [-32, 105], [-32, -60]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "role": "contour", "elevation": 0 },
+      "geometry": { "type": "LineString", "coordinates": [[-32, 40], [0, 39], [36, 39], [68, 40]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "role": "contour", "elevation": -0.5 },
+      "geometry": { "type": "LineString", "coordinates": [[-32, 52], [0, 51], [36, 51], [68, 52]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "role": "contour", "elevation": -1 },
+      "geometry": { "type": "LineString", "coordinates": [[-32, 66], [0, 64], [36, 64], [68, 66]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "role": "contour", "elevation": -1.5 },
+      "geometry": { "type": "LineString", "coordinates": [[-32, 84], [16, 82], [68, 84]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "role": "contour", "elevation": -9 },
+      "geometry": { "type": "LineString", "coordinates": [[8, -12], [8, -27], [28, -27], [28, -12]] }
+    }
+  ]
+}

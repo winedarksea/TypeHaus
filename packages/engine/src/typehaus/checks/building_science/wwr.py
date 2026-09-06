@@ -77,8 +77,12 @@ def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
     for wall in model.walls:
         facade = _facade_for_wall(wall, model)
         buckets[facade][0] += _wall_length(wall) * (wall.z1_m - wall.z0_m)
+    # A glazed door is fenestration (IRC R202), so a French pair belongs in the ratio the
+    # same way a sash does — the three exterior French doors are 100 sf of south and east
+    # glass between them. An unglazed leaf is not: it is opaque wall as far as WWR goes.
+    glazed_doors = {item.tag for item in model.plan.library.door_types if item.glazed}
     for opening in model.openings:
-        if opening.is_door:
+        if opening.is_door and opening.type_ref not in glazed_doors:
             continue
         wall = wall_by_tag.get(opening.host_wall)
         if wall is not None:

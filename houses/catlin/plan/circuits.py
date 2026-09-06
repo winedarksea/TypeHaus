@@ -196,7 +196,7 @@ CIRCUITS = (
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500,
             # ** IT LEFT THE SE CORNER 2026-09-06. ** EQ-M-FIREPLACE is now in the brick
-            # surround in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2 (W-M-FIRE,
+            # surround in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2 (W-M-FIRE-*,
             # plan/storeys/main.py). The unit is a real product now — an Amantii
             # BI-30-XTRASLIM — and it is still 120 V / 1,500 W / 12.5 A, so everything above
             # holds unchanged: same breaker, same slot, same pole count, same load. A 240 V
@@ -374,6 +374,45 @@ CIRCUITS = (
     Circuit(tag="CKT-BATH2-TUB", slot=27, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=65,
             description="Bask heated surface — RM-M-BATH2 drop-in bath (FX-M-BATH2-TUB)"),
+    # ------------------------------------------------------------------------------------
+    # THE TWO WASHLET CIRCUITS (2026-09-06)
+    # ------------------------------------------------------------------------------------
+    # Both main-floor bowls were bought WASHLET+-ready — FX-TOTO-SP-WH on a DuoFit carrier
+    # (the frame was chosen over a Geberit *for* this), FX-TOTO-CARLYLE-II's AT40 suffix IS
+    # the readiness — and `[allowances] plumbing-bidet-seats` has been buying two TOTO
+    # WASHLET S5 seats since the fixtures were selected. ** THE ELECTRICAL FOR THEM EXISTED
+    # NOWHERE. ** Each bath had exactly one receptacle, a 44" vanity outlet on CKT-RC-MAIN,
+    # and two 1.4 kW seats on a general storey circuit is ~23 A on a 20 A breaker before
+    # anything else is plugged in. Nothing reported it: the engine has no E3901 branch-circuit
+    # rule (see CKT-BATH-ATTIC above) and nothing ties a Product to a device.
+    #
+    # ** TWO CIRCUITS, NOT ONE, AND DO NOT GANG THEM LATER. ** An instantaneous seat draws
+    # 1.2-1.4 kW the whole time it is heating and both baths are used at the same hour of the
+    # morning; one 20 A circuit carrying both is a nuisance-trip design, and it is what
+    # notes/interior_selections.md has asked against since the seats were specified.
+    # Slots 25 and 28 are two of the eleven spare 1-pole spaces (count from the loaded plan
+    # via `electrical.panel_spaces`, never by hand) and are deliberately in different panel
+    # ROWS so an electrician can land them on opposite bus legs — the engine models no legs,
+    # so that is an instruction to the field, not a modelled fact.
+    #
+    # ** GFCI AT THE DEVICE, NOT THE BREAKER. ** The house convention for an outlet a person
+    # actually uses (ED-M-BATH2-RC1's note): a washlet's own leakage trips a Class A GFCI
+    # from time to time, and a reset in the basement for a toilet seat is the failure mode
+    # the convention exists to avoid. Contrast CKT-BATH2-TUB, which IS breaker-protected
+    # because its outlet is sealed inside the tub deck. No AFCI: 210.12 exempts bathrooms.
+    #
+    # ** load_va IS THE NAMEPLATE, and it lands in 220.82(B)(3). ** A washlet is cord-and-plug
+    # but it is "located on a specific circuit", which is (B)(3)'s third limb — the same
+    # reading that put 65 VA on CKT-BATH2-TUB. 1,400 VA is the top of the researched
+    # 1.2-1.4 kW band. It is NOT free: `electrical.service_load` had 8.6 A of margin against
+    # the 200 A service, and 2 x 1,400 VA through 220.82(B)'s 40% remainder factor spends
+    # about 4.7 A of it. Read that check's number after any further load is added here.
+    Circuit(tag="CKT-WASHLET-BATH1", slot=25, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=1400,
+            description="Bidet seat — RM-M-BATH1 water closet (FX-M-BATH1-WC, WASHLET S5)"),
+    Circuit(tag="CKT-WASHLET-BATH2", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=1400,
+            description="Bidet seat — RM-M-BATH2 water closet (FX-M-BATH2-WC, WASHLET S5)"),
 )
 
 # --- Load management (NEC 625.42 / 220.82) ---------------------------------------------

@@ -13,7 +13,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch, m
 from typehaus.resolve.floor_ends import floor_ends
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, is_sawn_lumber
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 
@@ -29,20 +29,54 @@ _ENGINEERED_HEADER_PLIES = 3
 # The two trimmer plies of an opening edge. Doubled trimmer joists are the standard
 # prescriptive answer (IRC R502.10) for the edge that carries a header end.
 _TRIMMER_PLIES = 2
+# IRC R502.10.1: a header joist spanning 4 ft or less may be a *single* member the same
+# size as the floor joist, and its trimmers stay single too — the doubling in R502.10.2
+# starts past that line. Only above 4 ft does the opening need the engineered header the
+# prescriptive table sizes.
+_SINGLE_MEMBER_SPAN_FT = 4.0
+_SINGLE_MEMBER_SPAN_M = inch(_SINGLE_MEMBER_SPAN_FT * 12.0).meters
+
+
+def _prescriptive_short_opening(span_m: float, member: str) -> bool:
+    """Whether R502.10.1's short-opening allowance governs this edge.
+
+    **The allowance is restricted to sawn-lumber floors on purpose.** R502.10 is a
+    sawn-lumber table; "a single member the same size as the floor joist" on an I-joist or
+    floor-truss deck means a single *I-joist used as a header*, hung on both faces and
+    needing web stiffeners and backer blocks — a manufacturer's table, not a code one, and
+    the engine has no such table to grade it against. Emitting the light member here and
+    labelling the gap with an advisory would put an ungraded member in the frame and a
+    saving in the bill on the strength of a citation that does not cover it, so the
+    engineered header is kept for every non-sawn deck instead. Catlin (all
+    ``11.875 I-joist`` and ``11.875 floor truss``) therefore sees no change; that is the
+    honest answer, not an oversight.
+    """
+    return span_m <= _SINGLE_MEMBER_SPAN_M + 1e-9 and is_sawn_lumber(member)
+
+
+def _trimmer_plies(span_m: float, member: str) -> int:
+    """Plies in an opening's trimmer pair — single under R502.10.1, doubled past it."""
+    return 1 if _prescriptive_short_opening(span_m, member) else _TRIMMER_PLIES
 
 
 def _member_depth_m(member: str) -> float:
     return cross_section(member).depth_m
 
 
-def opening_header_profile(span_m: float, band_depth_m: float) -> str:
-    """Multi-ply LVL header profile for a floor opening of ``span_m``.
+def opening_header_profile(span_m: float, band_depth_m: float, member: str = "") -> str:
+    """Header profile for a floor opening of ``span_m`` in a deck framed of ``member``.
 
     Emitting the deck's own ``JoistSpec.member`` here left every opening header a single
     *unsized* joist ply — a 3'-4" attic header and an 11'-0" stair header drawn identically,
     and neither of them a header. The prescriptive table sizes the ply count; the deck's
     joist depth sizes the member, so the header sits flush in the band.
+
+    The one exception is R502.10.1's short opening, which really does name the joist itself
+    — see :func:`_prescriptive_short_opening` for why that path is sawn-lumber only.
+    ``member`` defaults to empty so the old two-argument call keeps its old answer.
     """
+    if _prescriptive_short_opening(span_m, member):
+        return member
     prescriptive = header_size(m(span_m))
     plies = (_ENGINEERED_HEADER_PLIES if prescriptive == ENGINEERED_LVL
              else int(prescriptive.split("-", 1)[0]))
@@ -136,7 +170,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                       perp0, perp1, cross_section(rim_profile).width_m,
                       cant_start_m, cant_end_m)
     # Width of a regular joist AND of one trimmer ply — both are ``spec.member``, so a
-    # doubled trimmer pair's outboard face reaches ``_TRIMMER_PLIES * trimmer_ply_width``
+    # trimmer pair's outboard face reaches ``_trimmer_plies(...) * trimmer_ply_width``
     # past the opening edge (see the trim_specs loop below). A narrow-flange I-joist never
     # reaches the next regular joist line; a wide-chord floor truss can (see the position
     # loop's opening-band check).
@@ -184,14 +218,15 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             for _opening, minx, maxx, miny, maxy in opening_boxes:
                 opening_perp0, opening_perp1 = (miny, maxy) if along_x else (minx, maxx)
                 opening_axis0, opening_axis1 = (minx, maxx) if along_x else (miny, maxy)
-                # A doubled-trimmer band, one on each parallel edge, reaches
-                # ``_TRIMMER_PLIES * trimmer_ply_width`` past the opening edge (trim_specs
-                # below) — a wide-chord member (e.g. a floor truss) can put that band's
+                # A trimmer band, one on each parallel edge, reaches
+                # ``_trimmer_plies(...) * trimmer_ply_width`` past the opening edge
+                # (trim_specs below) — a wide-chord member (e.g. a floor truss) can put that band's
                 # outboard face past the *next* regular joist line's centre, which is a real
                 # plan clash (structural.member_interference) rather than a drafting one.
                 # The nearest regular line the band would reach is absorbed into the
                 # trimmer pair instead of being drawn twice.
-                trim_band = _TRIMMER_PLIES * trimmer_ply_width
+                trim_band = _trimmer_plies(
+                    opening_perp1 - opening_perp0, spec.member) * trimmer_ply_width
                 in_opening = opening_perp0 - 1e-9 <= perp <= opening_perp1 + 1e-9
                 in_trim_band = (opening_perp0 - trim_band - 1e-9 <= perp < opening_perp0 - 1e-9
                                or opening_perp1 + 1e-9 < perp <= opening_perp1 + trim_band + 1e-9)
@@ -231,7 +266,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             span = abs((p1[1] - p0[1]) if along_x else (p1[0] - p0[0]))
             members.append(FramedMember(
                 system.uid, f"header-{opening.tag}-{edge_index}", "header",
-                opening_header_profile(span, depth), p0, p1, z0, z1, span,
+                opening_header_profile(span, depth, spec.member), p0, p1, z0, z1, span,
             ))
         # Parallel opening edges retain the header ends and prevent the adjacent joist
         # line from rolling.  They are doubled to model the usual trimmer pair — plies laid
@@ -241,9 +276,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                       (((minx, maxy), (maxx, maxy)), (0.0, 1.0))) if along_x else (
             (((minx, miny), (minx, maxy)), (-1.0, 0.0)),
             (((maxx, miny), (maxx, maxy)), (1.0, 0.0)))
+        # Both trimmers of an opening retain the same header, so the ply count is a
+        # property of the opening's header span (its extent across the joists), not of the
+        # trimmer's own length along them.
+        header_span = (maxy - miny) if along_x else (maxx - minx)
+        plies = _trimmer_plies(header_span, spec.member)
         for edge_index, ((p0, p1), outboard) in enumerate(trim_specs):
             span = abs((p1[0] - p0[0]) if along_x else (p1[1] - p0[1]))
-            for ply in range(_TRIMMER_PLIES):
+            for ply in range(plies):
                 t0, t1 = _shift(p0, p1, outboard, ply * trimmer_ply_width)
                 members.append(FramedMember(
                     system.uid, f"trimmer-{opening.tag}-{edge_index}-{ply}", "trimmer",

@@ -81,11 +81,19 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # neither a pour nor a stair partition, and it is here for BASEMENT_BRICK_VENEER's exact
     # reason: a freestanding wythe's backer is a *different wall*, so its one layer has to be
     # STRUCTURE or `integrity.assembly_layers` finds none — and a STRUCTURE layer with no
-    # `FramingSpec` reads as monolithic and bills its gross volume here. **The gross is the
-    # point and is deliberate**: neither the 29" x 20 3/8" firebox opening nor the 13 7/16"
-    # below the finished floor is deducted, because on 24.5 SF a mason bills the panel.
-    # prices.toml says so on the row. See notes/east_breast_bearing.md.
-    assert len({tag for row in rows for tag in row["tags"]}) == 40
+    # `FramingSpec` reads as monolithic and bills its gross volume here.
+    # **44 LATER THE SAME DAY, and the four extra tags BILL LESS, not more.** That one wall
+    # is five — W-M-FIRE-STUB / -PLINTH / -JAMB-S / -JAMB-N / -HEAD, stacked on one axis with
+    # its own `open_end` node pair each — because a single Wall resolves to a 4-point
+    # rectangle and there is no `voids` path on a Wall short of a Window or a Door, both of
+    # which would be lies about a firebox. Split, the 29 1/2" x 20 5/8" masonry opening is a
+    # real gap between the jamb piers and the quantity falls **24.8 -> 20.4 SF**. The $/SF
+    # rate is deliberately unchanged: on a job this small a mason bills the panel, and
+    # cutting to the opening is fussier per SF than the field, so prices.toml carries the
+    # difference in the rate and says so rather than re-rating down and deducting twice.
+    # The 14 3/8" of buried stub below the finished floor IS still billed — the mason lays
+    # it. See notes/east_breast_bearing.md.
+    assert len({tag for row in rows for tag in row["tags"]}) == 44
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -98,7 +106,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # the veneer is one flat `brown-brick` field now. Both Materials are still in the
     # catalog, unreferenced and deliberately so (plan/assemblies.py), so a material dropping
     # out of this set is again not evidence it dropped out of the catalog.
-    # `white-brick` ARRIVED 2026-09-06 with W-M-FIRE, and it is the second brick in this set
+    # `white-brick` ARRIVED 2026-09-06 with W-M-FIRE-*, and it is the second brick in this set
     # rather than a replacement for the first: `brown-brick` is still the sunken garden's
     # veneer. The material had been in the catalog and unreferenced since the porch parapet
     # was retired.

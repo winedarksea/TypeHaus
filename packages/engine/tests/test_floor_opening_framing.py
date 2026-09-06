@@ -129,3 +129,51 @@ def test_beyond_prescriptive_header_is_reported():
     for header in _members(ctx.model, "header"):
         if header.length_m / inch(12).meters <= 8.0 + 1e-9:
             assert not any(header.child_key in finding.message for finding in failures)
+
+
+# ------------------------------------------------ R502.10.1: the short-opening allowance
+# IRC R502.10.1 lets a header joist spanning 4 ft or less be a single member the same size
+# as the floor joist, with single trimmers; the doubling starts past that line. The engine
+# threw the prescriptive answer away except for its leading ply digit, so 36", 48" and 49"
+# all emitted the same 2-ply LVL.
+#
+# The allowance is deliberately SAWN-LUMBER ONLY. On an I-joist or floor-truss deck "the
+# same size as the floor joist" means a single I-joist used as a header, hung on both
+# faces — a manufacturer's table, not R502.10's — so the engineered header is kept there.
+# Catlin is all-engineered and therefore unchanged by this rule; that is the honest answer.
+
+def test_short_sawn_opening_takes_a_single_joist_sized_header():
+    band = cross_section("2x8").depth_m
+    assert opening_header_profile(ft(3, 4).meters, band, "2x8") == "2x8"
+    assert opening_header_profile(ft(4).meters, band, "2x8") == "2x8"
+
+
+def test_past_four_feet_a_sawn_opening_is_back_on_the_prescriptive_header():
+    band = cross_section("2x8").depth_m
+    header = cross_section(opening_header_profile(ft(4, 1).meters, band, "2x8"))
+    assert header.plies == 2
+
+
+def test_engineered_decks_keep_the_engineered_header_at_every_span():
+    """The strength guard: R502.10 is a sawn-lumber table and does not reach an I-joist."""
+    band = cross_section("11.875 I-joist").depth_m
+    for member in ("11.875 I-joist", "11.875 floor truss", "11.875 TJI 230"):
+        short = cross_section(opening_header_profile(ft(3).meters, band, member))
+        assert short.plies == 2, member
+        assert short.depth_m == pytest.approx(band), member
+
+
+def test_trimmer_plies_follow_the_same_line():
+    from typehaus.resolve.floors import _trimmer_plies
+    assert _trimmer_plies(ft(3, 4).meters, "2x8") == 1
+    assert _trimmer_plies(ft(4, 1).meters, "2x8") == 2
+    assert _trimmer_plies(ft(3, 4).meters, "11.875 I-joist") == 2
+
+
+def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model):
+    """Every catlin deck is engineered, so every trimmer stays a doubled pair."""
+    trimmers = {member.child_key for member in _members(catlin_model, "trimmer")}
+    assert trimmers
+    assert {key for key in trimmers if key.endswith("-1")}, "doubled pairs survive"
+    for key in trimmers:
+        assert key.endswith(("-0", "-1")), key

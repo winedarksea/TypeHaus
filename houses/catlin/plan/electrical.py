@@ -384,7 +384,7 @@ EQUIPMENT_TYPES = (
     # ** A REAL PRODUCT SINCE 2026-09-06: the Amantii BI-30-XTRASLIM (BI-X190030-1). ** It was
     # a generic 48" x 7" big-box cabinet; it is now the ~30" unit the owner asked for, and the
     # footprint authored here is the ROUGH OPENING (29" x 4 1/2" x 20 3/8" high), because the
-    # rough opening is the hole cut in W-M-FIRE's brick and is therefore the thing that can
+    # rough opening is the hole cut in the W-M-FIRE-* brick and is therefore the thing that can
     # interfere with something. The body is 29 1/8 x 19 7/8 x 4" and the face only 3/8" wider
     # than the body.
     #
@@ -1052,7 +1052,7 @@ MAIN_EQUIPMENT = [
     # eye level, reading as fire at 11 feet, with a dark surround and the seats turned onto it.
     #
     # It now sits in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2, centred on y=8'-8", in a
-    # 45 1/2" white-facebrick surround stopping at a walnut mantel — W-M-FIRE in
+    # 45 1/2" white-facebrick surround stopping at a walnut mantel — W-M-FIRE-* in
     # plan/storeys/main.py carries the pier arithmetic and the whole elevation ladder, and
     # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The BESTA run was re-laid about it
     # (all eight kept) and the seating turned onto it (plan/placeables.py).
@@ -1068,16 +1068,21 @@ MAIN_EQUIPMENT = [
     # faces in the viewer, which z-fights and reads as a torn hole in the surround.
     # y=8'-8" is the pier centre.
     #
-    # ** HOW IT ACTUALLY SITS IN THE WYTHE, measured off the resolved bodies. ** The 29" rough
-    # opening leaves ** 8 1/4" of brick as a jamb on each side ** of a 45 1/2" panel. Modular
-    # brick is a 8" module (7 5/8" plus a 3/8" head joint), so each jamb is one full brick and
-    # a 1/4" — a fat head joint or a lightly cut closer, every course, both sides. It is
-    # buildable and it is not automatic; the mason should be shown the elevation rather than
-    # left to find it. The opening's HEAD is worse and unavoidable: 20 3/8" of rough opening
-    # is not a whole number of 2 2/3" courses, so it lands at 19.6 courses and the brick is
-    # CUT along the head. That is normal for a trimless unit — the brick is being cut to the
-    # opening anyway, since there is no flange to hide a joint under — but it is the reason
-    # the lintel over this opening wants to be a steel angle rather than a rowlock course.
+    # ** HOW IT ACTUALLY SITS IN THE WYTHE, measured off the resolved bodies. ** The jambs are
+    # 8" of brick each side — ONE WHOLE BRICK AND ONE HEAD JOINT (7 5/8" + 3/8"), ZERO CUT
+    # CLOSERS. The masonry opening is 29 1/2" and 45 1/2" less 29 1/2" is 16", exactly two
+    # modules. W-M-FIRE-JAMB-S/-N are authored at that 8" (plan/storeys/main.py).
+    #
+    # ** ERRATUM (2026-09-06). ** This paragraph used to say "8 1/4" of brick as a jamb… a fat
+    # head joint or a lightly cut closer, every course". That measured to the APPLIANCE's 29",
+    # not to the masonry opening, and it contradicted the whole reason the panel is 45 1/2" —
+    # `plan/storeys/main.py`'s derivation of 29 1/2" + 8" + 8", whose entire point is that no
+    # closer is cut anywhere on this panel. Nothing was ever wrong but the sentence.
+    #
+    # The opening's HEAD is a cut course and that one IS unavoidable: 52 5/8" AFF is 19.7
+    # courses of 2 2/3", so the brick is CUT along the head. That is normal for a trimless
+    # unit — the brick is being cut to the opening anyway, there being no flange to hide a
+    # joint under — and it is why the lintel here is a steel angle rather than a rowlock.
     # Below the opening the coursing is exact: 32" AFF is 12 courses off the floor line.
     #
     # `elevation` is the BASE of the
@@ -1087,7 +1092,7 @@ MAIN_EQUIPMENT = [
     # wall and opens it west into the room.
     #
     # ** `recessed_into_host_surface=True` IS THE HONEST FLAG AND IT MATTERS. ** The body is
-    # let INTO W-M-FIRE's brick, not stood in front of it, so its 4 1/2" of depth is a cavity
+    # let INTO the W-M-FIRE-* brick, not stood in front of it, so its 4 1/2" of depth is a cavity
     # behind the face rather than a protrusion into the room — which is what
     # `resolve/placeable_clear_floor_obstruction` needs to know. Without it the model reads a
     # 29" x 4 1/2" box lapping 105 sq in of the wythe, i.e. two solids in the same air, and
@@ -1891,6 +1896,58 @@ NEC_FILL_MAIN = [
                      position=pt(inch(67.625), inch(275.75)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN", room="RM-M-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(44))),
+    # ------------------------------------------------------------------------------------
+    # THE TWO WASHLET OUTLETS (2026-09-06) — one stud bay, both baths.
+    # ------------------------------------------------------------------------------------
+    # `[allowances] plumbing-bidet-seats` buys two TOTO WASHLET S5 seats for the two
+    # main-floor showpieces and had bought them for a fortnight with no receptacle anywhere
+    # near either bowl. The requirement is written in three places (fixture_types_wc.py's
+    # FX-TOTO-CARLYLE-II source, prices.toml, notes/interior_selections.md): a GFCI outlet
+    # 6-12" AFF at each toilet, on its own 20 A circuit, NOT ganged. See plan/circuits.py.
+    #
+    # ** BOTH LIVE IN ONE STUD BAY OF W-M-HS1 — x 8 1/8" to 15", the wall's west bay — and
+    # that bay is the only place either of them could go. ** W-M-HS1 is the wet wall between
+    # the two baths and carries BOTH bowls: FX-M-BATH1-WC hangs on its north face, on the
+    # DuoFit carrier, and FX-M-BATH2-WC's tank stands against its south face. The resolved
+    # framing leaves exactly one clear bay beside them: stud-000 at x=7.39" against
+    # carrier-0-stud-0 at x=15.78", 6 7/8" of clear cavity, full 5 1/2" deep (both are 2x6 —
+    # the staggered run does not start until x=40"). Everything east of it is spoken for —
+    # the 19 3/4" carrier bay, then 1 1/2" of clear before FX-M-BATH1-LAV's cabinet at
+    # x=41 1/2" on the north face and the tub deck on the south.
+    #
+    # It is provably free of MEP: no pipe run, conduit, duct, sleeve or pipe accessory has a
+    # vertex anywhere in x 4"..22", y 258"..278" on this storey. Confirm that again before
+    # putting anything else in it — a wet wall's west end is exactly where a plumber would
+    # reach for a spare bay.
+    #
+    # ** THE TWO BOXES ARE BACK TO BACK AND THAT IS DELIBERATE. ** A 4" device in a 6 7/8"
+    # bay can only be roughly centred, so two of them cannot both be offset; they are on
+    # OPPOSITE FACES of a 5 1/2" cavity with about 1 1/2" of air between the box backs, and
+    # the wall either side of the bay is bathroom-to-bathroom, so nothing is being shorted
+    # acoustically that the room next door does not already hear. Do not "fix" this by
+    # sliding one east into the carrier bay: that bay is purpose-framed around an 880 lb
+    # point load and a header, and there is no cavity in it to put a box in.
+    #
+    # 8" AFF is the base (Mount.elevation is the BASE, and the type is 2" tall), so the body
+    # sits 8"..10" — inside the 6-12" band with room either side, and matching
+    # ED-M-BATH2-TUB-RC's height. y is the wall's own finish face plus the device's 1"
+    # half-depth, the same arithmetic as ED-M-BATH2-RC1 above; rotation 0 runs the 4" box
+    # along an east-west wall.
+    #
+    # ** CORD REACH IS WHAT MAKES THIS WORK AND NOTHING GRADES IT. ** A WASHLET's cord exits
+    # the seat's rear-left (viewed facing the fixture, i.e. the west side of both of these
+    # bowls) on about 4 ft of lead. From the SP's west china edge at x=18.91" the run is
+    # ~7"; from the Carlyle II's at x=20.875" it is ~9". Move either bowl east and re-measure
+    # rather than assuming — no check in this engine compares a device to the fixture it
+    # feeds, and an out-of-reach outlet builds and checks clean.
+    ElectricalDevice(uid="FZ7A2MC93E", tag="ED-M-BATH1-WC-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(11.5), inch(272.385)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-WASHLET-BATH1", room="RM-M-BATH1",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
+    ElectricalDevice(uid="90BE5BHPAX", tag="ED-M-BATH2-WC-RC", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(inch(11.5), inch(263.615)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-WASHLET-BATH2", room="RM-M-BATH2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
     # y is on W-M-STOS's north face. It's inside RM-M-MUD-CLOSET, kept on purpose: NEC
     # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
     # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI

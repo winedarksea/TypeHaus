@@ -399,13 +399,12 @@ the future.
   | RM-S-PLANT | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-S-STUDY2 | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.2% |
-  | RM-S-BED3 | 9.8 sf | 129 sf | **7.6%** | 4.9 sf | 3.8% |
-  <!-- BED3 was briefly at 13.3 sf on 2026-09-06, when WIN-S-BED3-N (WT-1436, x 23'-4")
-       was added to fill the north facade's empty lower-east corner. That window was
-       withdrawn the same day: the facade was squared by MOVING the four windows already
-       there onto one rectangle (12'-0" / 24'-0" on both storeys) rather than adding a
-       fifth off the module. BED3 stays on R303.1 Exception 1, half a square foot short.
-       Adding glazing here is still open — it just has to be a retype, not a new unit. -->
+  | RM-S-BED3 | 12.2 sf | 129 sf | **9.4%** | 6.1 sf | 4.7% |
+  <!-- BED3 read 9.8 sf / 7.6% and leaned on R303.1 Exception 1 until 2026-09-06, when
+       WIN-S-BED3-N (WT-1424 at x 34'-0", sill 4'-0") completed the north-east corner
+       pair with WIN-S-BED3 on the east wall, over WIN-M-KITCH-N below. It clears 8%/4%
+       outright now. (An earlier WT-1436 at x 23'-4" carried the same tag for a few hours
+       the same day and was withdrawn — see plans/pattern_language_review.md.) -->
   | RM-A-STUDY | 15.0 sf | 159 sf | **9.4%** | 7.5 sf | 4.7% |
   | RM-S-SUITE | 13.5 sf | 154 sf | **8.8%** | 6.7 sf | 4.4% |
   | RM-S-BED1 | 10.0 sf | 120 sf | **8.3%** | 5.0 sf | 4.2% |
@@ -536,6 +535,68 @@ the future.
   now, but **the test that guarded it was asserting the wrong number too** — see
   `test_catlin_bath2_vanity_heat_and_joists.py`, which still measures against the 21".
   Worth a sweep: any other place a dimension was justified against IRC's plumbing chapters.
+
+## Found while doing the 2026-09-06 fireplace-surround batch
+
+- **DONE — the engine implements IRC R502.10.1, and the interesting half is what it REFUSES
+  to do.** `resolve/floors.py::opening_header_profile` asked `framing/tables.header_size` for
+  a prescriptive answer and then threw it away except for the leading ply digit — and every
+  table row to 8 ft starts with `"2-"` — so 36", 48" and 49" openings all emitted the same
+  `2-1.75x11.875 LVL`. R502.10.1's real allowance (a header joist spanning 4 ft or less may be
+  a single member the same size as the floor joist, with the trimmer doubling of R502.10.2
+  starting only past that line) was implemented nowhere. It is now, together with a
+  span-driven `_trimmer_plies` — and the constant it replaces also drives `trim_band`, so
+  joist counts and positions move with it, which is the real blast radius.
+  - **The allowance is restricted to SAWN-LUMBER decks, deliberately, and that was the
+    decision to make rather than the cheap one.** R502.10 is a sawn-lumber table. On an
+    I-joist or floor-truss deck "a single member the same size as the floor joist" means a
+    single I-joist used as a header, hung on both faces and wanting web stiffeners and backer
+    blocks — a manufacturer's table, not a code one, and this engine has none to grade it
+    against. Emitting the light member with an advisory naming the gap would have put an
+    ungraded member in the frame and a saving in the bill on the strength of a citation that
+    does not cover it. `profiles.is_sawn_lumber` is the gate (and a nominal-looking size
+    `LUMBER_ACTUAL` does not publish, like `"16x16"`, is deliberately NOT sawn lumber for this
+    purpose — it already resolves to a guessed section).
+  - **So catlin sees no saving at all**, every deck here being `11.875 I-joist` or
+    `11.875 floor truss` — the honest outcome, and the reason no framing golden or takeoff row
+    moved. `test_floor_opening_framing.py` pins both halves, including that catlin's trimmers
+    are still doubled pairs.
+  - **OPEN, and worth knowing before the next sawn-lumber floor is authored:** nothing yet
+    grades a single-member header against a span table at all — `structural.floor_opening_header`
+    only reports past the prescriptive 8 ft ceiling. The R502.10.1 path is a geometry change
+    with no capacity check behind it.
+
+- **DONE — a masonry wall can have a real opening, and the way is FIVE WALLS, not a schema
+  change.** `W-M-FIRE` resolved to a plain 4-point rectangle, so the 3D showed a solid brick
+  panel with the appliance box stuck on its face. There is no `voids` path on a `Wall` short
+  of a `Window` or a `Door`, and both would be lies about a firebox. It is
+  `W-M-FIRE-STUB/-PLINTH/-JAMB-S/-JAMB-N/-HEAD` now, stacked on one axis with **its own
+  `open_end` node pair each**, and the 29 1/2" x 20 5/8" masonry opening is the gap between
+  them. Five thin walls on one axis behave exactly as one did for
+  `condensation._nearest_along_each_face` — re-verified rather than assumed, because dropping
+  `W-M-E1` as RM-M-LIVING's east bounding wall is the failure this design was shaped around.
+  - **STILL OPEN, and this is a workaround rather than a fix:** a `Wall.voids` field (or a
+    `RoughOpening` that can host on a wall with no door or window in it) would say the same
+    thing in one element. Five walls is buildable and readable, but the elevations are five
+    hand-worked pairs of numbers and nothing grades their continuity — author one `top` wrong
+    and the panel has a horizontal slot in it at 0 FAIL.
+
+- **DONE — the mantel has geometry, and the general shape of the gap is worth keeping.** A
+  `ResolvedShelfBank` carries width/depth/thickness/count and **no position**; no emitter
+  reads `model.shelf_banks` and the only consumer in the engine is `takeoff/hardwood.py`. So
+  `SB-M-FIRE-MANTEL` was a cut list with no body — invisible to the 3D, to the sections and to
+  every interference and clearance check. Re-hosting it on a wall-mounted `Furniture`
+  (`FURN-M-FIRE-MANTEL` / `FT-MANTEL-WALNUT-46`) is the house's existing idiom and fixes it
+  without engine work, and it closes the accounting gap too: a wall-hosted bank has no priced
+  host row, a placeable-hosted one does. **Any ShelfBank hosted on a Wall has both problems**,
+  and there are none left in catlin.
+  - **A trap found in the doing, and it is not fireplace-specific.** `Mount.elevation` is
+    added to `resolve/room_floor.room_floor_elevation`, which returns the wall's
+    `base_ref_z_m` — the SUBFLOOR datum. On a storey with a finished floor above that datum
+    (RM-M-LIVING is +15/16") every "AFF" number authored on a placeable is short by the floor
+    finish. Authoring the mantel at a plain 64" buried it 15/16" into `W-M-FIRE-HEAD` at
+    0 FAIL. It is the same 15/16" that the wall `top` lost earlier the same day. **Nothing
+    warns**, and every placeable in the house is authored against the same datum.
 
 ## Found while doing the 2026-09-06 TODO batch — by the new checks, on their first run
 
@@ -789,3 +850,40 @@ Two pricing decisions that are correct today and become double bills the moment 
   (`library/assemblies.py:170`) bills in `[envelope_layers]` as `air-barrier`. Either the
   concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in
   the 2026-08-30 pass because it is a rate re-derivation, not a defect fix.
+
+## Items to Fix
+Seven items that are not stylistic. Each one is ungraded by haus check — the house reports 951 passing rules with every one of these live — and each one shows up in the finished room.
+
+A thermostat is specified inside a window opening
+ED-M-DINING-FH-STAT sits at y=17′-9″, 48″ AFF, on the great room's east wall. WIN-M-EAST-MID occupies y 17′-6½″ → 19′-9½″ at 32″–80″ AFF. The device falls inside the rough opening in both plan and elevation.
+
+The comment beside it places it in a clear pier between two windows — but that pier is gone: the window it was measured against was retired on 24 Aug and replaced by a unit centred on y=18′-8″. The note was not re-measured. I confirmed nothing in the rule set catches it; there is no check that grades a wall device against an opening.
+relocate the stat, or the glazing schedule is wrong
+
+Six recessed cans are specified into the concrete deck
+Buildability
+ED-B-PLAY-N-CAN1–4 and ED-B-GYM-CAN3/4 all carry recessed_into_host_surface=True and all fall inside SL-M-DECK's footprint — the EPS stay-in-place form under a 4-3/8″ structural cap, with the gypsum thermal barrier R316.4 requires below it. A 6″ IC housing has nowhere to go: it would have to be buried in the foam form, past the steel ribs, with no access to its junction box.
+
+Thirteen more cans are cut into the unvented hot roof, where a 6″ housing consumes the entire 6-7/8″ batt zone and breaches the only continuous air barrier R806.5 compliance depends on — and the catalog carries no sloped-ceiling housing at all, though the file header claims one.
+surface or semi-recessed fittings below the decka sloped IC housing SKU for the cathedral
+The kitchen's main light switch is behind a cabinet
+
+Fix
+ED-M-KITCH-SW at y=26′-6″ is covered by FURN-M-KIT-PANTRYC. The plan source states it outright and declines to fix it as a pre-existing condition. It is the switch for the kitchen's general lighting.
+A GFCI device is sealed behind a hardwired mirror
+
+Fix
+ED-S-BATH1-RC-MIRROR at 54″ sits behind a mirror spanning 42″–78″. Its circuit is deliberately not GFCI at the breaker, so the test/reset button is the only protection in the path — and it cannot be reached. The codebase states the correct principle for this exact case elsewhere and then takes the opposite decision here.
+The double vanity has no receptacle
+
+Code
+RM-S-VANITY has two basins and no outlet anywhere in the room. NEC 210.52(D) requires one within 36″ of each basin's outside edge. Known, and parked. It is a permit item, not a nicety — and the bowls are also spaced at exactly 30.00″ on centre, the code floor to the hundredth.
+The suite's tub-shower stands in two walls
+
+Water
+FX-TUBSHOWER-60 in RM-S-SUITEBATH is a flanged alcove insert with its south end open by 10.4″. The hall bath solved the identical problem by using a shelf carcass as the third return; that fix does not transfer here, and the source explicitly leaves the question open. An unresolved open end on a flanged insert is water management, not trim.
+Two small estimate defects
+
+Estimate
+The four playroom bookcases price at $0: the price key is FURN-BOOKCASE-32 and the type was renamed to FT-BOOKCASE-32-90. haus takeoff lists it under "not priced" and the row was never chased — about $320–2,000 missing. Separately, finish-transitions-and-stair-nosings bills 143.4 lf where its own note says the conditioned-only driver should give 131.4, so the garage flight is being billed.
+

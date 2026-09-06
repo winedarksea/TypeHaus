@@ -124,6 +124,24 @@ _RE_PANEL = re.compile(
 )
 
 
+def is_sawn_lumber(profile: str) -> bool:
+    """True when ``profile`` names milled dimension lumber — ``"2x8"``, ``"3-2x10"``.
+
+    The prescriptive tables (IRC R502.10 among them) are sawn-lumber tables: their
+    allowances do not transfer to an I-joist, an LSL rim or a fabricated truss, whose
+    capacities come from a manufacturer's own literature. Callers that want to apply a
+    prescriptive allowance ask here first.
+
+    A nominal-looking size that ``LUMBER_ACTUAL`` does not publish (``"16x16"``) is *not*
+    sawn lumber for this purpose: it already resolves to a fallback section, and handing it
+    a code allowance on top of a guessed dimension compounds the guess.
+    """
+    text = profile.strip().split(":", 1)[0]
+    if match := _RE_MULTI_NOMINAL.match(text):
+        return match["nominal"] in LUMBER_ACTUAL
+    return bool(_RE_NOMINAL.match(text)) and text in LUMBER_ACTUAL
+
+
 def roof_truss_profile(span_m: float, gable: bool = False) -> str:
     """The ``"<span in whole feet> roof truss"`` profile for a shop-fabricated roof truss.
 

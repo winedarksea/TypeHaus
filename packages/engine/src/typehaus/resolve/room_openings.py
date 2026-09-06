@@ -95,6 +95,11 @@ def room_windows(model: Any, room, *, exterior_only: bool = False) -> list:
     ``storey``: ``resolve_rooms`` calls this while building the very dataclass the checks
     later hand back, so it cannot require the finished object.
     """
+    return _openings_on_boundary(model, room, doors=False, exterior_only=exterior_only)
+
+
+def _openings_on_boundary(model: Any, room, *, doors: bool, exterior_only: bool) -> list:
+    """The openings of one kind whose centre falls in this room's boundary band."""
     from shapely.geometry import Point, Polygon
 
     if room is None or not getattr(room, "clear_face", None):
@@ -104,9 +109,9 @@ def room_windows(model: Any, room, *, exterior_only: bool = False) -> list:
     # Built once per call, not once per opening: `wall_is_exterior` rebuilds every room
     # polygon in the house when it is handed no index, and this loop asks it 80 times.
     index = rooms_by_storey(model) if exterior_only else None
-    windows = []
+    found = []
     for opening in model.openings:
-        if opening.is_door or opening.type_ref is None:
+        if bool(opening.is_door) != doors or opening.type_ref is None:
             continue
         wall = model.wall(opening.host_wall)
         if wall is None or wall.storey != room.storey:
@@ -117,8 +122,37 @@ def room_windows(model: Any, room, *, exterior_only: bool = False) -> list:
         if point is None:
             continue
         if boundary_band.covers(Point(*point)):
-            windows.append(opening)
-    return windows
+            found.append(opening)
+    return found
+
+
+def room_glazed_doors(plan: Any, model: Any, room) -> list:
+    """Exterior glazed doors on this room's bounding wall — fenestration, not windows.
+
+    **A French door is glazing.** IRC R202 measures *glazing area* over "glazed
+    fenestration", and its definition of fenestration names glazed doors alongside windows;
+    the area is the opening "including sash, curbing or other framing elements", so the
+    whole rough opening counts, exactly as it does for a window. Leaving these out understated
+    `RM-M-LIVING`, `RM-S-STUDY2` and `RM-B-GYM`'s neighbours by a 5'-0" x 6'-8" unit apiece.
+
+    **Exterior only.** R303.1 measures light *to the outdoors*, and a borrowed-light interior
+    leaf — the study's ``DT-INT-SWING30-GLAZED`` — is not that.
+
+    ** ``DoorType.exterior``, NOT ``wall_is_exterior``, and that is not a shortcut. ** This
+    runs during ``resolve_rooms``, which appends each room as it finishes it, so the room
+    index the probe walks is *incomplete* — a wall whose far-side room has not been resolved
+    yet reads as exterior, and a wall neither of whose rooms exists yet reads as interior.
+    Measured: it credited the interior ``D-M-STUDY`` to the study and dropped every one of the
+    three French doors. ``room_windows``' ``exterior_only`` flag is safe only because its
+    callers are checks, which run on a finished model.
+    """
+    types = {item.tag: item for item in plan.library.door_types}
+    out = []
+    for opening in _openings_on_boundary(model, room, doors=True, exterior_only=False):
+        door_type = types.get(opening.type_ref)
+        if door_type is not None and door_type.glazed and door_type.exterior:
+            out.append(opening)
+    return out
 
 
 def room_glazing_areas(plan: Any, model: Any, room) -> tuple[float, float] | None:
@@ -130,6 +164,9 @@ def room_glazing_areas(plan: Any, model: Any, room) -> tuple[float, float] | Non
     A single "glazing fraction" would collapse them, and applying the halving here would bake
     a code rule into the geometry. So this reports what the *building* has: the total glass,
     and how much of that glass is in an operable unit. The halving belongs to the check.
+
+    **Glazed exterior doors count**, and their whole rough opening does (R202) — see
+    ``room_glazed_doors``.
 
     ``None`` rather than zero when a window's type does not resolve. A room whose glazing
     cannot be totalled is not a room with no glazing, and the caller reports UNKNOWN — the
@@ -149,4 +186,9 @@ def room_glazing_areas(plan: Any, model: Any, room) -> tuple[float, float] | Non
         glazed += area
         if getattr(operation, "value", operation) != "fixed":
             operable += area
+    # And the glazed exterior doors — see ``room_glazed_doors``. Every ``DoorOperation`` is
+    # an operable one (there is no fixed door), so a glazed leaf is openable area too.
+    for opening in room_glazed_doors(plan, model, room):
+        glazed += opening.width_m * opening.height_m
+        operable += opening.width_m * opening.height_m
     return glazed, operable

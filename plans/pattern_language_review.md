@@ -758,8 +758,8 @@ worth doing it is worth doing for winter sun in the room, not for the meter.**
 
 ## Daylight: eight rooms on IRC Exception 1, not two
 
-The review plan recorded two. The current tree has **eight**, including **three of the five
-bedrooms**:
+The review plan recorded two. The current tree has **seven** (it was eight until BED3 was
+glazed on 2026-09-06), including **two of the five bedrooms**:
 
 | room | occupancy | glazing | required |
 |---|---|---|---|
@@ -769,7 +769,7 @@ bedrooms**:
 | `RM-M-STUDY` | office | 0.0 sf | 1.5 sf |
 | `RM-S-BED1` | bedroom | 9.0 sf | 9.6 sf |
 | `RM-S-BED2` | bedroom | 9.0 sf | 9.9 sf |
-| `RM-S-BED3` | bedroom | 9.8 sf | 10.3 sf |
+| ~~`RM-S-BED3`~~ | bedroom | ~~9.8 sf~~ → **12.2 sf** | 10.3 sf — **fixed 2026-09-06** |
 | **`RM-A-STUDIO`** | **bedroom** | **13.6 sf** | **28.5 sf** |
 
 **Three of these are deliberate, documented trades, not regressions**, and the report treats
@@ -779,16 +779,20 @@ what is spent here, not compliance itself."* BED3 followed on 2026-08-27 to comp
 three-storey 14" east column. Whether those were the right calls at ~0.5 sf of glass apiece is
 a fair pattern-language question — it is not a bug report.
 
-**BED3 came off this list on 2026-09-06 and went back on the same day.** `WIN-S-BED3-N`
-(WT-1436, x 23'-4", sill 3'-0") was added to the room's north wall to fill the north
-facade's empty lower-east corner, taking the room to 13.33 sf glazed / 6.67 sf openable and
-off the exception. It was then withdrawn: the facade was squared instead by moving the four
-windows already in the wall onto one rectangle (`WIN-A-N1` / `WIN-S-STAIR-N` to 12'-0",
-`WIN-A-N2` / `WIN-S-HALL-N` to 24'-0"), which is a better elevation and needs no fifth unit
-off the module. **The daylight question is therefore still open for BED3, and the cheapest
-answer is now a retype rather than a new opening** — `WIN-S-BED3` is a WT-1424 held at 14"
-by a three-storey east column, but `WIN-S-HALL-N` at its new station is a WT-3036 in a
-nonbearing wall, where height is free. 0.49 sf is about 2" of it.
+**BED3 is off this list as of 2026-09-06, on the second attempt.** The first was
+`WIN-S-BED3-N` as a WT-1436 at x 23'-4", added to fill the north facade's empty lower-east
+corner; it closed the glazing gap but was withdrawn the same day, because the facade was
+better squared by moving the four windows already in the wall onto one rectangle
+(`WIN-A-N1` / `WIN-S-STAIR-N` to 12'-0", `WIN-A-N2` / `WIN-S-HALL-N` to 24'-0") than by
+adding a fifth unit off the module.
+
+What actually fixed the room was **the same tag on a different argument**: a WT-1424 at
+x 34'-0", sill 4'-0", completing the north-east **corner pair** with `WIN-S-BED3` on the
+east wall — the pair `WIN-M-KITCH-N` / `WIN-M-KIT-E` already makes one storey down — and
+columning over `WIN-M-KITCH-N` besides. The room reads 12.2 sf glazed / 6.1 sf openable
+against 10.32 required and passes R303.1 outright. **The lesson is the one this document
+keeps arriving at: the glazing shortfalls are cheapest to close where a window is wanted
+for a compositional reason anyway.** The list is **seven**, and two of the five bedrooms.
 
 `RM-M-LIVING`'s shortfall has a specific cause, and it is also a deliberate facade decision:
 **`WIN-M-LIV-S2` (a WT-3048-T, 10 sf) was deleted on 2026-08-24** because *"the south face

@@ -534,16 +534,21 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # header, no jacks and no kings. There is simply one fewer place in the house that needs
     # a unit too small to break a stud.
     #
-    # ** 13 ON 2026-09-06, AND BACK TO 12 THE SAME DAY. ** WIN-S-BED3-N (WT-1436 at
-    # x 23'-4" on W-S-N1) was added to fill the lower-east corner the three existing north
-    # windows left empty, then withdrawn when the facade was solved a better way: rather
-    # than adding a fourth unit off the module, WIN-S-HALL-N moved west from 29'-4" to
-    # 24'-0" and WIN-A-N2 east from 22'-8" to the same 24'-0", with WIN-A-N1 and
-    # WIN-S-STAIR-N moving west 13'-4" -> 12'-0" to keep the pair mirrored on the 18'-0"
-    # ridge. Four windows already in the house now make an exact rectangle, so the corner
-    # is filled by a MOVE and the 14" family is back to its 12. See storeys/attic.py's
-    # north-gable note for why 12'-0" / 24'-0" is buildable under the 6:12 rake.
-    assert len(framed) == 12, [o.tag for o in framed]
+    # ** 12 -> 13 -> 12 -> 13 ON 2026-09-06, AND THE TAG IS THE SAME ONE TWICE. ** A
+    # WIN-S-BED3-N was first added as a WT-1436 at x 23'-4" to fill the lower-east corner
+    # the three existing north windows left empty, then withdrawn: the facade was squared
+    # instead by MOVING the four windows already there onto one rectangle (WIN-A-N1 /
+    # WIN-S-STAIR-N to 12'-0", WIN-A-N2 / WIN-S-HALL-N to 24'-0"). See storeys/attic.py's
+    # north-gable note for why that is buildable under the 6:12 rake.
+    #
+    # The 13th is the WIN-S-BED3-N that stands now: a WT-1424 at x 34'-0" on W-S-N1, the
+    # twin of WIN-S-BED3 on the same room's east wall, wrapping the north-east corner the
+    # way WIN-M-KITCH-N and WIN-M-KIT-E wrap it one storey down. It is in THIS list rather
+    # than the header list for the family's usual reason and nothing special: 408" is
+    # 8 mod 16, so the 14" RO falls wholly inside one bay. Same tag, different station,
+    # different type, different argument — and this one took RM-S-BED3 off R303.1
+    # Exception 1, which the 23'-4" unit had also done and the moves had given back.
+    assert len(framed) == 13, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

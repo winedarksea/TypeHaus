@@ -217,6 +217,19 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     24.00", zero is the one with the most exact hits by a clear margin; the runners-up trade
     5 fewer slivers for all 13 of them. If a window moves, both numbers move — re-sweep
     rather than nudging the bound.
+
+    ** RE-SWEPT 2026-09-06 for WIN-S-BED3-N, and both numbers moved: 13/30 -> 14/31. **
+    A WT-1424 at a 4'-0" sill on W-S-N1 puts its HEAD on 72", an exact hit, and its sill
+    course at 44.5", 3-1/2" under the field course at 48" — a sliver. That pairing is
+    forced, not a bad station: a 24"-tall unit holds its sill course bottom and its head
+    27-1/2" apart, so on a 24" module one edge is always exact and the other always 3-1/2"
+    off. The 4'-0" sill is the house's rule for the 14" family and puts the head on the
+    second storey's own 6'-0" line; a 3'-0" sill would have cast no sliver but hit nothing
+    either (32.5" and 60" are both 8-1/2"+ from a course), so it trades the exact hit away
+    for nothing. The sweep was re-run at 1/8" from -16" to +8" over the current model and
+    ``course_offset = 0`` still wins on exact hits by a clear margin — the runner-up at
+    +4.5" buys a 15th exact hit for TEN more slivers (41), and the next phases at +8" and
+    -16" match 14 exact with 38. Zero remains the phase; nothing was re-phased for this.
     """
     conflicts: list[tuple[str, str, float]] = []
     exact = 0
@@ -234,8 +247,8 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
                     exact += 1
                 elif gap < _CONFLICT_IN - 1e-6:
                     conflicts.append((wall.tag, f"{opening.tag} {name}", round(gap, 2)))
-    assert exact >= 13, f"only {exact} opening edges land on a course line"
-    assert len(conflicts) <= 30, (
+    assert exact >= 14, f"only {exact} opening edges land on a course line"
+    assert len(conflicts) <= 31, (
         f"{len(conflicts)} field courses in the shadow of an opening's own course "
-        f"(30 is the swept optimum at 24\" o.c. among the phases that keep every bay "
+        f"(31 is the swept optimum at 24\" o.c. among the phases that keep every bay "
         f"within the module): {sorted(conflicts)[:8]}")
