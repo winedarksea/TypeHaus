@@ -25,13 +25,17 @@ from typehaus.engineering.retaining_system import KIND
 _M_PER_FT = 0.3048
 
 # §4 of the note, at the graded case (at-rest 60 psf/ft, 110 pcf, mu 0.35 on the stone bed).
-_NOTE_RESULTANT_LB = 77_563.0
-_NOTE_CAPACITY_LB = 122_520.0
-_NOTE_CANCELLED_LB = 142_199.0
-_NOTE_SYSTEM_FS = 1.58
+# Re-oracled by hand 2026-09-05, when the three retaining footings rose 9" to become the
+# court's walking surface: the stem shortens 10.37' -> 9.62' and H 11.37' -> 10.62'. Thrust
+# goes as H^2 while the resisting weights fall linearly, so every one of these moves the
+# right way.
+_NOTE_RESULTANT_LB = 67_668.0
+_NOTE_CAPACITY_LB = 115_380.0
+_NOTE_CANCELLED_LB = 124_058.0
+_NOTE_SYSTEM_FS = 1.71
 # §7: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span.
-_NOTE_STRUT_PU_LB = 62_051.0
+_NOTE_STRUT_PU_LB = 54_134.0
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
 
 
@@ -50,7 +54,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert record.status is Status.OK, record.summary
 
     states = {state.name: state for state in record.limit_states}
-    # 1.58 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
+    # 1.71 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
     assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
     assert states["sliding"].demand == pytest.approx(1.5)
     assert states["sliding"].ok
@@ -88,12 +92,16 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.13 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.22 and does NOT check.
 
-    **This assertion pins a failure and that is the point.** The whole margin between 1.13
-    and 1.58 is the washed-stone bed, and the bed is an authored claim
+    **This assertion pins a failure and that is the point.** The whole margin between 1.22
+    and 1.71 is the washed-stone bed, and the bed is an authored claim
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.58 as robust.
+    so out loud; this says so in the suite, so that nobody later reads 1.71 as robust.
+
+    Raising the footings 9" on 2026-09-05 moved this row from 1.13 to 1.22 and changed
+    nothing about the argument: it is still short of 1.50, and 0.35 versus 0.25 is still the
+    difference between a court that stands and one that does not.
     """
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_system import _free_body, _loops, _members
@@ -113,7 +121,7 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     site = presumptive("GM").friction_coefficient
     assert site == pytest.approx(0.25)
     on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(1.13, abs=0.01)
+    assert on_site / on_stone_demand == pytest.approx(1.22, abs=0.01)
     assert on_site / on_stone_demand < 1.5
 
 
@@ -200,28 +208,34 @@ def test_the_footings_grew_inboard_only_and_the_apron_did_not_move(catlin_model)
 
 def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(
         catlin_model) -> None:
-    """W-SG-ARCH is 17 1/2" deep, bottomed flush with the footings, and its TOP never moves.
+    """W-SG-ARCH is 17 1/2" deep and NEITHER face moves — which now costs it its flushness.
 
-    The court has now been at two elevations and the beam has sat through both, which is the
-    point. It dropped 7 1/4" on 2026-09-03 for a flood step, leaving this beam standing
-    3 3/4" proud as a mow strip with FO-SG-ARCH cutting the rim around it; it came back flush
-    on 2026-09-05 (`court_step_down_in` -> 0, one riser at D-B-PATIO instead of two), and the
-    beam is buried again with the rim bearing directly on it and FO-SG-ARCH retired.
+    The court has been at three configurations and the beam has sat through all of them. It
+    dropped 7 1/4" on 2026-09-03 for a flood step, leaving this beam standing 3 3/4" proud as
+    a mow strip with FO-SG-ARCH cutting the rim around it; it came back flush on 2026-09-05
+    (`court_step_down_in` -> 0), and the beam was buried again with the rim bearing directly
+    on it and FO-SG-ARCH retired; and later the same day the three retaining footings rose 9"
+    to become the court's walking surface.
 
-    **The top is fixed by the strut, not by the floor.** Its bottom is the retaining
-    footings' underside — one excavation, one stone plane — and dropping the top while
-    holding that leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c 1.02,
-    it fails** (notes/sunken_garden_court_free_body.md). Lowering the bottom instead puts its
-    42" bed below DRW-SG-MAIN. 17 1/2" at this elevation is the only version that works, so
-    the court moves around it and it does not move at all.
+    **BOTH faces are fixed by the strut, and that is the assertion here.** Dropping the TOP
+    to a lowered floor leaves a 10 1/4" section: phi-Pn 60,712 lb against Pu 62,051, **d/c
+    1.02, it fails**. Raising the BOTTOM with the retaining footings leaves 8 1/2", Ag
+    102 in^2, phi-Pn ~50,300 lb against Pu 54,134 — **d/c ~1.08, it fails too**. So
+    `_grade_beam_bottom` is now DECOUPLED from `_wall_bottom` and held, and the beam
+    deliberately stands 9" proud below the footings it used to be flush with. The
+    "one excavation, one stone plane" that flushness used to buy is gone; §8 of
+    notes/sunken_garden_court_free_body.md says what replaces it.
 
-    The 17 1/2" is the assertion that matters: it is the section §7 of the note grades.
+    The 17 1/2" is the assertion that matters: it is the section §8 of the note grades.
     """
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     footing = next(s for s in catlin_model.solids if s.tag == "FT-SG-W2")
 
-    assert beam.z0_m == pytest.approx(footing.z0_m, abs=1e-9)
+    # NOT flush any more, and by exactly the 9" the footings rose.
+    assert (footing.z0_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(9.0, abs=1e-6)
+    # The footings' TOPS are the court's walking surface: the rim voids over them.
+    assert footing.z1_m == pytest.approx(court.z1_m, abs=1e-9)
     assert (beam.z1_m - beam.z0_m) / _M_PER_FT * 12 == pytest.approx(17.5, abs=1e-6)
     # Buried: its top IS the rim slab's underside, so the court floor bears on it. Both
     # sides of this are the same expression in params/sunken_garden (`_grade_beam_top` and

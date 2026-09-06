@@ -39,11 +39,11 @@ _SCHEDULE = {
     ("column", "#5", "hdg-a767"): 309.8,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
-    ("foundation wall", "#4", "hdg-a767"): 588.8,
+    ("foundation wall", "#4", "hdg-a767"): 546.2,
     ("foundation wall", "#5", "hdg-a767"): 216.9,
-    ("foundation wall", "#6", "hdg-a767"): 1153.5,
+    ("foundation wall", "#6", "hdg-a767"): 1076.9,
 }
-_TOTAL_LB = 4175.6
+_TOTAL_LB = 4056.4
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
@@ -132,9 +132,9 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(154.35, rel=0.02), (
+    assert total_cy == pytest.approx(151.10, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
     total_lb = sum(r["weight_lb"] for r in reinforcement_takeoff(catlin_model))
-    assert total_lb / total_cy == pytest.approx(27.0, rel=0.03)
+    assert total_lb / total_cy == pytest.approx(26.85, rel=0.03)

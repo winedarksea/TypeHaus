@@ -31,10 +31,18 @@ rate.
 | column | #5 | hdg-a767 | 297.0 LF | 309.8 lb | all ten cast columns, verticals |
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
-| foundation wall | #4 | hdg-a767 | 881.4 LF | 588.8 lb | `W-SG-W2/E2/S` horizontal |
+| foundation wall | #4 | hdg-a767 | 817.7 LF | 546.2 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 208.0 LF | 216.9 lb | the eight 8" basement runs |
-| foundation wall | #6 | hdg-a767 | 768.0 LF | 1,153.5 lb | `W-SG-*` verticals |
-| | | | | **4,176 lb** | **2.09 ton** |
+| foundation wall | #6 | hdg-a767 | 717.0 LF | 1,076.9 lb | `W-SG-*` verticals |
+| | | | | **4,056 lb** | **2.03 ton** |
+
+**The two `foundation wall` rows lost 119.2 lb on 2026-09-05, and no schedule changed.** The
+three retaining footings rose 9" so their tops could become the court's walking surface
+(`params/sunken_garden._wall_bottom`), which shortened the stems above them 10.37' -> 9.62'.
+Steel authored as a SPACING is `area / spacing`, so a foot off a 57'-0" run of wall is 4.75
+sf of plane gone from both the horizontal (#4) and the vertical (#6) mats. The bar sizes and
+spacings are exactly what §6 and §7 of `sunken_garden_court_free_body.md` selected; there is
+simply less wall.
 
 `column #5` gained 4.9 LF / 5.1 lb on 2026-09-03: the court dropped 7 1/4" and
 `_pier_bell_bottom_ft` followed it, so both belled piers' shafts — and the four #5 verticals
@@ -77,13 +85,13 @@ footing  FOOTING_FPSF_20                        1.48
 pad      CATLIN_PIER_BASE_12                    0.26
 slab     CATLIN_DECK_EPS_INT                   18.37
 slab     CATLIN_GARAGE_STEP_6                   0.17
-slab     CATLIN_GARDEN_SLAB                     3.92
+slab     CATLIN_GARDEN_SLAB                     1.95
 slab     CATLIN_SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
 slab     HP_PAD_ON_GRADE                        0.56
                                      solids   79.49 cy
 
-SUNKEN_GARDEN_WALL                            30.21
+SUNKEN_GARDEN_WALL                            28.64
 CATLIN_BASEMENT_8                             17.55
 CATLIN_BASEMENT_12                            10.67
 GARAGE_ICF_6                                    8.82
@@ -92,10 +100,10 @@ SG_VENEER_BEAM_14                              1.10
 the two garden curbs                           0.21
                                       walls   75.13 cy
 
-                                      TOTAL  154.62 cy
+                                      TOTAL  151.10 cy
 ```
 
-**`CATLIN_GARDEN_SLAB` is 3.92 cy and the court has moved twice under it.** It fell
+**`CATLIN_GARDEN_SLAB` is 1.95 cy and the court has moved three times under it.** It fell
 5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
 became a **rim** around an open field, with `CATLIN_GARDEN_STOOP` adding 0.53 back as the
 door's landing. On **2026-09-05 the court came back flush** (`court_step_down_in` -> 0, one
@@ -105,10 +113,20 @@ being cut around it — and only `FO-SG-FIELD` and `FO-SG-BRKBM` still void the 
 belled piers did NOT follow the court up; they are pinned at their augered elevation and
 simply carry 49 1/4" of cover instead of 42" (params/sunken_garden `_pier_bell_bottom_ft`).
 
+**Then, later on 2026-09-05, it halved: 3.92 -> 1.95 cy.** The three retaining footings rose
+9" so that their tops ARE the court's walking surface, and `FO-SG-TOE-W/E/S` void the rim
+over all three. What is left of the pour is the porch bay and the beam's own line — about
+184 sf of the court's 532. The SLAB ITSELF was deliberately NOT deleted: `resolve/site_earth`,
+`egress._landing_surfaces`, `server/space_summary` and `_frost_protection_footprints` all gate
+on `category == "slab"`, and voids are invisible to the first two, so `SL-SG-FLOOR`'s outline
+still spans all 532 sf while its volume bills net. The 1.97 cy that came off is concrete that
+was being poured on top of footings, over fill, for nothing.
+
 `SG_VENEER_BEAM_14` (1.10 cy) is the veneer's grade beam, new 2026-09-05, and
-`FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — 5.43 cy of sand, fabric and
-stone — does **not** appear above and must not be added to it: this filter takes a STRUCTURE
-layer of material `concrete`, and `CATLIN_GARDEN_FIELD` has neither.
+`FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — now **8.15 cy** of sand, gravel
+and fabric, the USGA profile having gone from 12" to 18" the same day — does **not** appear
+above and must not be added to it: this filter takes a STRUCTURE layer of material
+`concrete`, and `CATLIN_GARDEN_FIELD` has neither.
 
 **Two things the filter tells you that a hand count would have hidden.**
 
@@ -132,11 +150,11 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          4,176 lb / 153.22 cy   =  27.3 lb/cy
-register ~5 t  10,000 lb / 153.22 cy   =  65.3 lb/cy
+billed          4,056 lb / 151.10 cy   =  26.8 lb/cy
+register ~5 t  10,000 lb / 151.10 cy   =  66.2 lb/cy
 ```
 
-At a black-bar material price of $1.05-1.35/lb, **4,176 lb is $4,385-5,638.** The allowance
+At a black-bar material price of $1.05-1.35/lb, **4,056 lb is $4,259-5,476.** The allowance
 register (`plans/cost-options.md`, `prices.toml` `[allowances]`) carries rebar at
 **$10,000-18,000**, and the plan's acceptance condition is explicit:
 
@@ -149,9 +167,12 @@ billing 42% of the steel would make the estimate FALL by the difference — the 
 type drops from the BOM and the saving looks real when it is an artifact" hazard, arriving
 from the other direction and for about $6,000.
 
-27.3 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
-40-80 lb/cy; the register's 65.3 sits inside that and this house — with three 10'-tall
-retaining walls at `#6 @ 10"` both ways — has no business being below it.
+26.8 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
+40-80 lb/cy; the register's 66.2 sits inside that and this house — with three retaining
+walls at `#6 @ 10"` both ways — has no business being below it. The 2026-09-05 footing rise
+moved the ratio 27.3 -> 26.8 and it moved BOTH terms: 119 lb of steel and 3.5 cy of concrete
+came out together, and the ratio fell because the concrete that left (the rim's voided
+2 cy) carried no steel at all.
 
 ## 4. Where the missing ~2.9 tons is
 

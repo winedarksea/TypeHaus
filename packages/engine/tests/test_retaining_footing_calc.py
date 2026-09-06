@@ -9,7 +9,7 @@ The assertions worth reading before changing any of them:
 
 * :func:`test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete` is the finding that
   produced this whole calculation, pinned as a regression on the CALCULATION rather than on
-  the house. A 4'-0" toe under 1,275 psf is a real flexural cantilever, and a 12" plain strip
+  the house. A 4'-0" toe under 1,038 psf is a real flexural cantilever, and a 12" plain strip
   carries a fifth of it. If a future change makes that pass without steel, the change is
   wrong.
 * :func:`test_the_plain_branch_gives_up_two_inches_of_its_thickness` pins ACI 318-19
@@ -26,20 +26,20 @@ import pytest
 
 # §7a-§7e, worked by hand against §4's governing at-rest / 110 pcf case.
 _TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 4.0, 3.0, 8.0, 1.0
-_Q_TOE, _Q_HEEL = 1275.2, 269.2
+_Q_TOE, _Q_HEEL = 1038.2, 416.1
 
 #: `SUNKEN_GARDEN_WALL` states `CATLIN_EXPOSED_MIX`, so every capacity below is on the
 #: 5,000 psi the pour SPECIFIES, not the presumptive 3,000 the engine used to assume.
 _FC_PSI = 5000.0
 
 _ORACLE = {
-    "toe flexure": (14176.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
-    "heel flexure": (9293.0, 19755.0),
-    "footing one-way shear": (5612.0, 10978.0),  # lb/ft, reinforced branch at d
+    "toe flexure": (11963.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
+    "heel flexure": (8699.0, 19755.0),
+    "footing one-way shear": (4781.0, 10978.0),  # lb/ft, reinforced branch at d
 }
 #: §7b/§7c/§7d as the PLAIN section the house had before 2026-09-03.
 _PLAIN_CAPACITY = 3536.0
-_PLAIN_SHEAR = (5452.0, 6788.0)
+_PLAIN_SHEAR = (4637.0, 6788.0)
 
 _WALLS = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 
@@ -106,7 +106,7 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     """§7b — the finding that produced this calculation, pinned on the CALCULATION.
 
     This must never come out passing. If a future change lets an unreinforced 4'-0" toe under
-    1,275 psf report OK, that change has broken the check rather than fixed the footing —
+    1,038 psf report OK, that change has broken the check rather than fixed the footing —
     and the house would silently lose the mat it is now designed with.
     """
     from typehaus.engineering.retaining_basis import _Geometry, footing_states
@@ -115,11 +115,11 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     bare = _Geometry(**{**geometry.__dict__, "footing_reinforcement": None})
     toe = _state(footing_states(bare, case), "toe flexure")
     assert toe.capacity == pytest.approx(_PLAIN_CAPACITY, rel=0.002)
-    assert toe.demand / toe.capacity == pytest.approx(4.01, rel=0.01)
+    assert toe.demand / toe.capacity == pytest.approx(3.38, rel=0.01)
     assert not toe.ok
 
     heel = _state(footing_states(bare, case), "heel flexure")
-    assert heel.demand / heel.capacity == pytest.approx(2.63, rel=0.01)
+    assert heel.demand / heel.capacity == pytest.approx(2.46, rel=0.01)
     assert not heel.ok
 
     # SHEAR, by contrast, PASSES as plain once the real 5,000 psi mix is read (it was 1.04

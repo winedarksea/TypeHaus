@@ -386,10 +386,13 @@ _y_ax_s = _y_in_s - _half
 # ``basement_depth_ft`` — the rim's top, the field's top, the frost wings, the pier bells.
 _court_top_in = -(SPEC.basement_depth_ft * 12.0) - SPEC.court_step_down_in  # -109.4375
 _court_top = inch(_court_top_in)
-# The rim pour's underside, -112 15/16". It LAPS the FT-SG-* toes by 1 3/4"/2 3/4" and that
-# is deliberate, not a collision: ``structural.concrete_interference`` grades only isolated
-# pours, every FT-SG-* carries ``under=``, and SL-B-FLOOR already laps every FT-B-* by
-# 3 1/2". No footing moves for this.
+# The rim pour's underside, -112 15/16". Since 2026-09-05 it no longer laps the three
+# RETAINING toes at all: their tops are the court plane 3 1/2" above this, and
+# `FO-SG-TOE-W/E/S` void the rim over them, so the two do not share a cubic inch. It still
+# laps the two PORCH strips (FT-SG-W1/E1, tops at -117 7/16") by 4 1/2", and that is
+# deliberate rather than a collision: ``structural.concrete_interference`` grades only
+# isolated pours, every FT-SG-* carries ``under=``, and SL-B-FLOOR already laps every FT-B-*
+# by 3 1/2". No footing moves for this.
 _rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 
 # ** THE THREE RETAINING FOOTINGS ARE THE COURT'S WALKING SURFACE (2026-09-05). **
@@ -776,7 +779,8 @@ WALLS = [
     # with these walls' own tops at +0'-6" — standing 3'-0" out from their outer faces and
     # holding a terrace of soil at that level *against them*. Grade is a plane, and a plane
     # cannot describe a terrace sitting 3'-4" above it. The real retained height is the
-    # wall's full top-to-footing dimension, **10.37'**.
+    # wall's full top-to-footing dimension, **9.62'** (10.37' until 2026-09-05, when these
+    # three footings rose 9" to become the court's walking surface).
     #
     # It is deliberately written as the same arithmetic `_wall_bottom` and `_ret_top` are
     # built from rather than as a literal, so it moves with either. There is no separate
@@ -785,14 +789,14 @@ WALLS = [
     # copy would be exactly the divergence the "publish, do not re-derive" note further down
     # this file exists to prevent.
     #
-    # Both 7.0' and 10.37' are far past the 48" at which R404.1.1 sends a wall to an
+    # Both 7.0' and 9.62' are far past the 48" at which R404.1.1 sends a wall to an
     # engineered design, so the correction cannot flip the verdict — all three stay UNKNOWN,
     # engineered — but it changes what the engineer is asked to design for by nearly half
     # again, which is the whole point. `notes/sunken_garden_retaining_screening.md` works
     # the consequences.
     #
     # ** `lateral_support="base"`, NOT "unsupported". ** These three are free retaining
-    # walls, open to the sky along their whole top, holding 10'-4" of fill with nothing
+    # walls, open to the sky along their whole top, holding 9'-7" of fill with nothing
     # bracing the head — IRC R404.4's case exactly. `"base"` routes to the same R404.4
     # engineered handoff (`checks/structural/foundation.py::_grade_one`); Table R404.1.2(8),
     # a *basement* wall table whose footnote g presumes bracing top AND bottom, must not be
@@ -1114,7 +1118,7 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
         BarSpec(role="bottom-x", bar=6, spacing=inch(10.0),
                 note="transverse, resists the 4'-0\" toe cantilever; hook the toe end"),
         BarSpec(role="top-x", bar=6, spacing=inch(10.0),
-                note="transverse, resists the 3'-0\" heel carrying 10.37' of soil"),
+                note="transverse, resists the 3'-0\" heel carrying 9.62' of soil"),
         BarSpec(role="bottom-y", bar=4, spacing=inch(18.0),
                 note="longitudinal distribution steel; carries no graded limit state"),
     ),

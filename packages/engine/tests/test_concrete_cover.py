@@ -220,10 +220,11 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
     """§6a of ``notes/sunken_garden_court_free_body.md``, both halves.
 
     The 3" is a durability decision above the 2" Code minimum, and it is paid for in section:
-    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.81 -> 0.90. Pinned because a
-    later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 11% of capacity
-    back and put the note's whole selection table out of date — `#6 @ 12"` does not carry
-    this moment at 3" cover, and did at 2".
+    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.64 -> 0.72 (re-oracled
+    2026-09-05, when the stem shortened 10.37' -> 9.62' and the demand fell with it). Pinned
+    because a later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 11%
+    of capacity back — and because the 3" is what keeps the note's selection table honest
+    about how much margin `#6 @ 10"` really carries over `#6 @ 12"`.
     """
     from typehaus.engineering import EngineeringContext, EngineeringResults
 
@@ -234,4 +235,4 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
                     if s.name == "stem flexure")
         assert 'cover 3.00"' in stem.citation, stem.citation
         assert stem.capacity == pytest.approx(19_755, rel=0.002)
-        assert stem.ratio == pytest.approx(0.903, abs=0.005)
+        assert stem.ratio == pytest.approx(0.721, abs=0.005)

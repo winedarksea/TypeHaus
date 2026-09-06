@@ -24,7 +24,7 @@ from typehaus.engineering.retaining_wall import KIND, _Geometry, analyse
 from typehaus.engineering.soil import presumptive
 
 # §2 of the note, ON THE NOTE'S OWN CONVENTION: 12" stem 9'-4 7/16" tall on a 7'-0" x 1'-0"
-# footing centred on the wall axis, retaining 10.37' with the toe buried 6 1/2".
+# footing centred on the wall axis, retaining 9.62' with the toe top AT the court floor.
 #
 # **This is deliberately no longer "as modelled", and it must not be re-synced.** The
 # screening note read -9'-10 7/16" as the footing's underside when it is the footing's top
@@ -138,8 +138,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         assert record.status is Status.OK, record.summary
         assert record.governing is not None
         assert record.governing.name == "base restraint", record.summary
-        # 1.58 against 1.50. Carried as required/achieved, so the ratio is under 1.
-        assert record.ratio == pytest.approx(1.5 / 1.58, abs=0.02)
+        # 1.71 against 1.50. Carried as required/achieved, so the ratio is under 1.
+        assert record.ratio == pytest.approx(1.5 / 1.71, abs=0.02)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
