@@ -2,7 +2,7 @@
 title: "Outie Window in a Truss Wall — detail and build order"
 applied_to:
   - detail: outie_window_truss_detail
-  - assembly: CATLIN_EXT_2X6
+  - assembly: EXT_2X6
   - assembly: PLANT_EXT_2X6_HUMID
   - transition: TR-CATLIN-FRAMED-OPENING
 tags:
@@ -13,7 +13,7 @@ tags:
   - water-management
   - sequencing
 source:
-  - plan/assemblies.py CATLIN_EXT_2X6
+  - plan/assemblies.py EXT_2X6
   - resolve/framing/truss_wall.py
   - resolve/framing/truss_girts.py
   - resolve/framing/truss_common.py
@@ -53,7 +53,7 @@ source:
 
 ## What the wall is
 
-`CATLIN_EXT_2X6` is a **catlin truss wall**, ONE girt tier.
+`EXT_2X6` is a **catlin truss wall**, ONE girt tier.
 Outboard of the 2x6 studs and their 1/2" plywood sheathing there is 4" of 2 lb closed-cell
 spray foam, and the cladding stands off on **one tier of flat horizontal girts on 4-1/2"
 blocks** — all 2x4 stock, all laid flat, nothing on edge:
@@ -110,10 +110,10 @@ lap-screwed to the tab.
 `resolve/framing/truss_frame.py` and its branch of the pass are untouched and still selected
 by their own predicate (`laid="edge"` + vertical); the girt frame is a SIBLING selected by
 `standoff="block"`; the corner box is still there; and the old layer tuple is kept verbatim in
-`plan/assemblies.py` as **`CATLIN_EXT_2X6_SWINBURNE`**, referenced by nothing, like
+`plan/assemblies.py` as **`EXT_2X6_SWINBURNE`**, referenced by nothing, like
 `glazed-green-brick`. Reverting is three edits:
 
-1. give `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID` that assembly's layer tuple;
+1. give `EXT_2X6` and `PLANT_EXT_2X6_HUMID` that assembly's layer tuple;
 2. restore `_WALL_OUTBOARD_IN` (`params/roof_trim.py`) and `_HOUSE_CLADDING_Y`
    (`params/breezeway.py`) to their 5.5"-proud values, and the garage lines 1" south;
 3. uncomment the Swinburne rows in `prices.toml` (`2-2x4`, `5x0.5 panel`, `5x0.375 panel`,
@@ -287,7 +287,7 @@ them again would be a second, disagreeing picture of the same wood.
 
 ## Why the change, honestly
 
-**Not R-value, and the model's own card overstates it.** `haus explain CATLIN_EXT_2X6 --card`
+**Not R-value, and the model's own card overstates it.** `haus explain EXT_2X6 --card`
 reads **R-43.5**; the honest number is **≈ R-39.8** wood-only, or **≈ R-37.9** once the girt
 screws are counted the same isothermal-planes way the blocks are — the blocks are framed by
 the resolver rather than authored as a `CavityFill`, so band A reads as unbroken foam, and the

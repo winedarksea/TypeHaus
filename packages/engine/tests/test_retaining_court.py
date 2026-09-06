@@ -351,7 +351,7 @@ def test_a_cross_member_with_no_concrete_is_incomplete(tmp_path) -> None:
     plan = _mutated(tmp_path, [(
         '''                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''',
-        '''                   end_node="N-SG-ME", assembly="CATLIN_EXT_2X6",
+        '''                   end_node="N-SG-ME", assembly="EXT_2X6",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''')])
     record = _court(plan)
     assert record.status is Status.INCOMPLETE, record.summary

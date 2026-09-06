@@ -140,7 +140,7 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
 
 
 def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model):
-    """`CATLIN_GARDEN_FIELD` said "draining to DRW-SG-MAIN" in a `source=` string for as
+    """`GARDEN_PUTTING_GREEN` said "draining to DRW-SG-MAIN" in a `source=` string for as
     long as it existed, and until 2026-09-05 NO element implemented it — the exact failure
     `checks/mep/drainage.py`'s docstring is written about. This test is what stops it
     reverting to prose."""

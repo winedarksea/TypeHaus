@@ -10,7 +10,7 @@ tags:
   - vapor-barrier
   - insulation
 source:
-  - plan/assemblies.py CATLIN_ROOF
+  - plan/assemblies.py ROOF
   - params/roof_trim.py
 ---
 

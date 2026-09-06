@@ -1,6 +1,6 @@
 """The eave detail is a contract between four things that used to disagree (→ 30 §Details).
 
-``wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF`` is the junction the whole slice-the-IR migration was
+``wall_roof:EXT_2X6|ROOF`` is the junction the whole slice-the-IR migration was
 about, because it is where every re-derivation met: the section had its own roof plane, its own
 layer stack, its own birdsmouth and its own idea of where the wall's foam stopped, and all four
 were wrong in a different direction. Each individual piece can be right and the drawing still
@@ -34,7 +34,7 @@ from typehaus.resolve.roof_edge_geometry import (
 from typehaus.resolve.roof_geometry import roof_height_at
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
-_KEY = "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF"
+_KEY = "wall_roof:EXT_2X6|ROOF"
 _ROOF_TAG = "RF-HOUSE"
 
 
@@ -44,9 +44,9 @@ def eave(catlin_model):
     scene, _findings = build_detail(catlin_model, derived)
     wall = next(w for w in catlin_model.walls if w.tag in derived.condition.element_tags)
     # ** THE CONDITION NAMES THE PLATE; THE SKIN BELONGS TO THE WALL UNDER IT. **
-    # The attic's eave is a 1 1/2" CATLIN_RAFTER_PLATE laid flat on the deck, and
+    # The attic's eave is a 1 1/2" RAFTER_PLATE laid flat on the deck, and
     # `envelope._roof_wall_conditions` keys the condition on the assembly whose faces
-    # actually meet the roof — the CATLIN_EXT_2X6 run the plate `stacks_on` — while still
+    # actually meet the roof — the EXT_2X6 run the plate `stacks_on` — while still
     # naming the plate in `element_tags`, because the plate is the element that terminates
     # at the roof. This fixture wants the SKIN, so it follows the same authored link.
     bearing = wall

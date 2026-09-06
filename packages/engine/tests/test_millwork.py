@@ -55,16 +55,16 @@ def test_a_window_type_can_carry_a_frame_depth(catlin_plan) -> None:
 # --- the derivation ------------------------------------------------------------------------
 
 def test_stools_derive_only_for_the_assemblies_the_standard_scopes(stools, catlin_model_ro):
-    """33 of 40 windows. The plant room, the sauna and the garage are deliberately out."""
-    assert {stool.assembly for stool in stools} == {"CATLIN_EXT_2X6"}
-    # Seven of the 40 are out of scope, and each is out because of the wall it sits in
+    """32 of 39 windows. The plant room, the sauna and the garage are deliberately out."""
+    assert {stool.assembly for stool in stools} == {"EXT_2X6"}
+    # Seven of the 39 are out of scope, and each is out because of the wall it sits in
     # rather than because of anything about the window: WIN-S-PLANT1..4 in the plant room's
     # sealed PLANT_EXT_2X6_HUMID liner, WIN-B-SAUNA in the sauna's, and WIN-G-N1/S1 in
     # GARAGE_WALL_2X6. Oak on a humid liner or in an unconditioned garage is the wrong
-    # material, so the standard scopes itself to CATLIN_EXT_2X6 and those seven get none.
-    assert len(stools) == 33
+    # material, so the standard scopes itself to EXT_2X6 and those seven get none.
+    assert len(stools) == 32
     windows = [o for o in catlin_model_ro.openings if o.kind == "window"]
-    assert len(windows) == 40, "the seven out-of-scope windows still exist; they get no oak"
+    assert len(windows) == 39, "the seven out-of-scope windows still exist; they get no oak"
     assert all(stool.derived for stool in stools)
     assert all(stool.material_ref == "oak-stool" for stool in stools)
 
@@ -104,7 +104,7 @@ def test_the_four_host_assemblies_derive_four_different_returns(catlin_model_ro)
     assert len(set(returns.values())) == 4, f"returns collapsed: {returns}"
     # The two truss walls differ by exactly the plant room's extra liner and furring, which
     # is the whole point: the same window in the two walls needs two different boards.
-    assert returns["PLANT_EXT_2X6_HUMID"] > returns["CATLIN_EXT_2X6"]
+    assert returns["PLANT_EXT_2X6_HUMID"] > returns["EXT_2X6"]
 
 
 def test_the_mount_plane_ignores_furring_on_the_inside_face(catlin_model_ro):
@@ -130,11 +130,11 @@ def test_a_stools_length_is_the_opening_plus_two_horns(stools, catlin_model_ro):
 
 
 def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
-    """33 stools, three sizes — which is what makes them worth milling from few setups."""
+    """32 stools, three sizes — which is what makes them worth milling from few setups."""
     sizes = {round(stool.length_m * M_TO_IN, 2) for stool in stools}
     assert len(sizes) == 3
     counts = _by_assembly(stools)
-    assert sum(len(v) for v in counts.values()) == 33
+    assert sum(len(v) for v in counts.values()) == 32
 
 
 # --- shelf banks --------------------------------------------------------------------------

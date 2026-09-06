@@ -212,7 +212,7 @@ reads `Assembly.stc`, and `preferences.toml` has no acoustic key.
   areas (119.7 / 124.3 / 129.0 sf) do not move at all. BED1 is already the tight one — its
   north walk zone goes 18" → ~16.4".
 - **Cheaper on depth if that matters:** a house-local `CATLIN_INT_2X4_BEDROOM` at two layers
-  of 5/8" each side (**STC 45**, +1.25" total), following the `CATLIN_INT_2X6_BRG_PLUMBING`
+  of 5/8" each side (**STC 45**, +1.25" total), following the `INT_2X6_BRG_PLUMBING`
   precedent. Do **not** use resilient channel: one screw into the stud behind kills it, and
   nobody will ever measure it after drywall.
 - **Durability / envelope:** zero, both directions. Interior partitions cross no control
@@ -434,7 +434,7 @@ be sat in.
   and two cripples come out. **`WT-1448` already exists** (`main.py:155`) and is already
   priced (`prices.toml:2218`); a `WT-1448-FIX` follows the `WT-1424-FIX` / `WT-3660-FIX`
   precedent. R308.4 does not bite: 4.67 sf pane (< 9 sf), bottom edge 24" AFF (> 18").
-- **Free with the retype:** `MW-STANDARD` scopes `CATLIN_EXT_2X6`, so the 1-1/2" 8/4 oak stool
+- **Free with the retype:** `MW-STANDARD` scopes `EXT_2X6`, so the 1-1/2" 8/4 oak stool
   re-derives at the new sill. A ~9-3/8" oak return 6" above the seat **is** the ledge — the
   deep reveal the house already paid for finally does something a body touches.
 - **Envelope:** +2.33 sf of glass. ΔUA = 0.53 Btu/h·°F ≈ **45 Btu/h** at the 85 °F design ΔT,
@@ -758,8 +758,8 @@ worth doing it is worth doing for winter sun in the room, not for the meter.**
 
 ## Daylight: eight rooms on IRC Exception 1, not two
 
-The review plan recorded two. The current tree has **seven** (it was eight until BED3 was
-glazed on 2026-09-06), including **two of the five bedrooms**:
+The review plan recorded two. The current tree has **eight**, including **three of the five
+bedrooms**:
 
 | room | occupancy | glazing | required |
 |---|---|---|---|
@@ -769,7 +769,7 @@ glazed on 2026-09-06), including **two of the five bedrooms**:
 | `RM-M-STUDY` | office | 0.0 sf | 1.5 sf |
 | `RM-S-BED1` | bedroom | 9.0 sf | 9.6 sf |
 | `RM-S-BED2` | bedroom | 9.0 sf | 9.9 sf |
-| ~~`RM-S-BED3`~~ | bedroom | ~~9.8 sf~~ → **13.3 sf** | 10.3 sf — **fixed 2026-09-06** |
+| `RM-S-BED3` | bedroom | 9.8 sf | 10.3 sf |
 | **`RM-A-STUDIO`** | **bedroom** | **13.6 sf** | **28.5 sf** |
 
 **Three of these are deliberate, documented trades, not regressions**, and the report treats
@@ -779,10 +779,16 @@ what is spent here, not compliance itself."* BED3 followed on 2026-08-27 to comp
 three-storey 14" east column. Whether those were the right calls at ~0.5 sf of glass apiece is
 a fair pattern-language question — it is not a bug report.
 
-**BED3 is off this list as of 2026-09-06.** `WIN-S-BED3-N` (WT-1436, x 23'-4", sill 3'-0")
-was added to the room's north wall to fill the north facade's empty lower-east corner, and it
-takes the room to 13.33 sf glazed / 6.67 sf openable — it passes R303.1 outright and no
-longer leans on Exception 1. The list is **seven**, and two of the five bedrooms.
+**BED3 came off this list on 2026-09-06 and went back on the same day.** `WIN-S-BED3-N`
+(WT-1436, x 23'-4", sill 3'-0") was added to the room's north wall to fill the north
+facade's empty lower-east corner, taking the room to 13.33 sf glazed / 6.67 sf openable and
+off the exception. It was then withdrawn: the facade was squared instead by moving the four
+windows already in the wall onto one rectangle (`WIN-A-N1` / `WIN-S-STAIR-N` to 12'-0",
+`WIN-A-N2` / `WIN-S-HALL-N` to 24'-0"), which is a better elevation and needs no fifth unit
+off the module. **The daylight question is therefore still open for BED3, and the cheapest
+answer is now a retype rather than a new opening** — `WIN-S-BED3` is a WT-1424 held at 14"
+by a three-storey east column, but `WIN-S-HALL-N` at its new station is a WT-3036 in a
+nonbearing wall, where height is free. 0.49 sf is about 2" of it.
 
 `RM-M-LIVING`'s shortfall has a specific cause, and it is also a deliberate facade decision:
 **`WIN-M-LIV-S2` (a WT-3048-T, 10 sf) was deleted on 2026-08-24** because *"the south face

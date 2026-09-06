@@ -15,7 +15,7 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
          crop=(pt(ft(-2), ft(-12)), pt(ft(3), ft(1))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
-    # 9" SL-M-DECK seated on the 12" basement concrete cross-wall (CATLIN_INT_2X6_BRG
+    # 9" SL-M-DECK seated on the 12" basement concrete cross-wall (INT_2X6_BRG
     # above) — same y=18' cut, cropped to the center bearing line at x=18'.
     Slice(uid="CVD902AAAA", tag="SL-D-DECKBRG", kind=SliceKind.DETAIL,
          title="Deck bearing detail",

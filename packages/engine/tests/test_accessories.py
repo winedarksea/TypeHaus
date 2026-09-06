@@ -416,7 +416,7 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
     riser_x = ft(9, 7.5).meters  # the jogged station — see chase_offset above
     expected = roof_height_at(roof, (riser_x, ft(37).meters)) + skin + inch(12).meters
-    # eave_z_m is the deck plane, and the CATLIN_ROOF skin (zip + vapour barrier +
+    # eave_z_m is the deck plane, and the ROOF skin (zip + vapour barrier +
     # foam + nailbase deck + underlayment + vent mat + standing seam) adds ~7.975" above
     # that deck plane, so the derived termination rides that much higher than the bare-plate
     # datum. The skin is summed here rather than written down, so a roof rebuild moves the

@@ -85,7 +85,7 @@ def test_a_procedure_is_on_the_spec_sheet_and_not_on_the_detail(catlin_model_ro)
     assert "bucks before spraying" in spec_text
 
     derived = next(d for d in derive_detail_slices(catlin_model_ro)
-                   if d.key == "opening_perimeter:CATLIN_EXT_2X6")
+                   if d.key == "opening_perimeter:EXT_2X6")
     scene, _ = build_detail(catlin_model_ro, derived)
     assert "bucks before spraying" not in " ".join(scene.notes)
 

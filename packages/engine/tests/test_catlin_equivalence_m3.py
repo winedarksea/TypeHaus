@@ -368,7 +368,7 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
     """
     # ** THE FOUR ATTIC KNEE WALLS ARE OUT OF SCOPE. ** The reference drew
     # them as 7-layer exterior stud walls 5'-0" tall; what stands there now is
-    # CATLIN_RAFTER_PLATE — one structure layer, 1 1/2" of 2x6 laid flat on the deck, with
+    # RAFTER_PLATE — one structure layer, 1 1/2" of 2x6 laid flat on the deck, with
     # no lining, sheathing or cladding because a plate on a subfloor has no faces. Comparing
     # its layer count to a stud wall's is a category error, not a regression: the wall did
     # not lose six layers, it stopped being a wall. The gables and every other storey are

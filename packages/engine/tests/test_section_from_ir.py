@@ -132,7 +132,7 @@ def test_the_roof_structure_is_drawn_once(catlin_model):
     from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _findings = build_detail(catlin_model, derived)
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
@@ -168,14 +168,14 @@ def test_the_bay_fill_still_draws_under_the_rafters(catlin_model):
     """The fills share the bay's depth, so the IR gives them no solid — and a roof that reads
     as 11-7/8" of solid timber is not what the section is cut to show.
 
-    BOTH of them: CATLIN_ROOF is flash-and-batt, and drawing only the first fill would put
+    BOTH of them: ROOF is flash-and-batt, and drawing only the first fill would put
     the batt on the section and leave the 5" of ccSPF bonded to the deck — the layer the
     whole R806.5 argument rests on — invisible.
     """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _findings = build_detail(catlin_model, derived)
     drawn = {node.material for node in scene.nodes if isinstance(node, Hatch)}
     assert {"fiberglass-r30c", "closed-cell-spray-foam"} <= drawn
@@ -262,7 +262,7 @@ def test_the_default_joint_plan_is_empty(catlin_model):
     from typehaus.emit.draw.joints import build_joint_plan
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     plan = build_joint_plan(catlin_model, derived.condition, None,
                             derived.direction, derived.station)
     assert plan.terminations == {}
@@ -277,7 +277,7 @@ def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _findings = build_detail(catlin_model, derived)
     wedges = [node for node in scene.nodes
               if isinstance(node, Polyline) and node.tag == "spray-foam-wedge"]
@@ -285,7 +285,7 @@ def test_the_spray_foam_wedge_sits_in_the_foam_mismatch(catlin_model):
 
     # ``condition_walls`` rather than element_tags: the attic eave's condition NAMES the
     # rafter plate (the element that terminates at the roof) but is KEYED on
-    # CATLIN_EXT_2X6 (the stack that meets it, one storey down). A plate has no insulation
+    # EXT_2X6 (the stack that meets it, one storey down). A plate has no insulation
     # layer at all, so reading element_tags here found a wall with no CI.
     from typehaus.emit.draw.detail_components.geometry import condition_walls
 

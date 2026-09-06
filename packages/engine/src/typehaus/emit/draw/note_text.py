@@ -33,8 +33,8 @@ _LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 #: :func:`_is_repo_reference`. Deciding with one pattern per outcome was tried and is
 #: subtly wrong: a "drop" pattern anchored on ``/`` matched from the backtick that CLOSES
 #: one span to the backtick that OPENS the next, swallowing the prose between them —
-#: ``CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` therefore carry ... (`coating-acrylic``
-#: came out of the basement detail as ``CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8coating``.
+#: ``BASEMENT_12` and `BASEMENT_8` therefore carry ... (`coating-acrylic``
+#: came out of the basement detail as ``BASEMENT_12 and CATLIN_BASEMENT_8coating``.
 _CODE_ANY = re.compile(r"`([^`]*)`")
 
 #: A code span that is a *repository* reference — a path, a pytest id, a module — and so
@@ -93,7 +93,7 @@ def _uncode(match: re.Match[str]) -> str:
 
     An identifier a reader can still act on — an assembly tag, a material ref, a field
     name — keeps its text, because a builder holding the drawing and the schedule can look
-    ``CATLIN_BASEMENT_8`` up. ``plan/storeys/basement.py`` they cannot.
+    ``BASEMENT_8`` up. ``plan/storeys/basement.py`` they cannot.
     """
     body = match.group(1)
     return "" if _REPO_REF.match(body.strip()) else body

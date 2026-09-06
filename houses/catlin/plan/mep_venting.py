@@ -58,9 +58,10 @@ VENT_BRANCHES_MAIN = [
                     "FX-M-BATH2-TUB", "FX-M-BATH1-LAV", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. W-M-N1 continues to the storey above at this x (W-S-N1 stacks on it,
     # into RM-S-BED3's wall), so `mep.vent_reachability` is satisfied by the wet-wall path.
-    # x=32'-8" stays clear of WIN-M-KITCH's RO (28'-2 1/2".."30'-5 1/2"), WIN-M-KITCH-N's RO
-    # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (28'-1".."30'-7") — rather than
-    # under the sink itself, which sits inside two stacked window ROs. From there it turns
+    # x=32'-8" stays clear of WIN-M-KITCH's RO (28'-2 1/2".."30'-5 1/2") and WIN-M-KITCH-N's
+    # RO (33'-5".."34'-7") — rather than under the sink itself, which sits inside
+    # WIN-M-KITCH's. (WIN-S-HALL-N one storey up used to stack on it and be the second RO in
+    # this argument; it moved to 24'-0" on 2026-09-06 and is no longer anywhere near.) From there it turns
     # west in the same joist bay (FS-S-EAST here, FS-S-WEST once it crosses x=18'), y=24'-8"
     # (bays are 8"+n*16"; this one passes south of FO-S-STAIR, which starts at y=25'-2 3/8",
     # and north of both trunk ducts at 20'-8" and 23'-4"), then north to the shared
@@ -186,12 +187,14 @@ VENT_BRANCHES_ATTIC = [
 # was: exit at 23'-10" through the gable, 2'-6" out, up the cladding to a derived
 # termination. NO ROOF PENETRATION ANYWHERE, which was the point.
 #
-# THE RISER IS AT x=9'-7 1/2", WEST OF WIN-A-N1 AND ON THE WET WALL. At x=13'-4" the riser
-# would stand on top of that window: WT-3036 is 30" wide, and since the 2026-09-03 move its
-# centre IS 13'-4", so its rough opening runs x 12'-1"..14'-7" and the riser — a PAIR of 3"
-# pipes straddling its station, about 7 3/4" overall — would sit dead centre in the glass. Nothing fails, because
-# no check grades a riser against a window it runs beside, but it is unbuildable: the
-# standoff straps have no cladding to land on and the window trim has nowhere to die.
+# THE RISER IS AT x=9'-7 1/2", WEST OF WIN-A-N1 AND ON THE WET WALL. At x=13'-4" — the
+# station the stub bath's own line would suggest — the riser would land on that window's
+# trim: WT-3036 is 30" wide, its centre moved 13'-4" -> 12'-0" on 2026-09-06, so the rough
+# opening now runs x 10'-9"..13'-3" and a PAIR of 3" pipes straddling 13'-4" (about 7 3/4"
+# overall, x 13'-0 1/8"..13'-7 7/8") would lap its east jamb by 3". Before that move the
+# same station sat dead centre in the glass. Nothing fails either way, because no check
+# grades a riser against a window it runs beside, but it is unbuildable: the standoff
+# straps have no cladding to land on and the window trim has nowhere to die.
 #
 # MN 1303.2402 subp. 5 wants the exhaust 2'-0" over WIN-A-N1's 25'-0" head or 10'-0" away in
 # plan; the termination sits 12" over the rake, which measures 27'-8 3/4" at this station and
@@ -201,7 +204,10 @@ VENT_BRANCHES_ATTIC = [
 # 9'-7 1/2" is chosen from inside that band because it is **PR-A-STUBATH-VENT's own wet-wall
 # line**. Landing on it deletes that run's last leg outright: the bath vent goes up the wet
 # wall and straight into the stack instead of turning east for 3'-8" to meet it. Measured:
-#   * riser pair x 9'-3 5/8"..9'-11 3/8", so 2'-1 5/8" clear of WIN-A-N1's west jamb;
+#   * riser pair x 9'-3 5/8"..9'-11 3/8", so 9 5/8" clear of WIN-A-N1's west jamb — it was
+#     2'-1 5/8" until the window moved a bay west on 2026-09-06, and this is now the
+#     tightest thing about the station. A further move west of that window has nowhere to
+#     go (see attic.py's rake note), but if one is ever attempted, check this first;
 #   * termination 27'-8 3/4", 2'-8 3/4" over the window head (subpart 5 wants 2'-0");
 #   * the under-deck jog is 8'-7 1/2" of 3" PVC in the FS-ATTIC band.
 #

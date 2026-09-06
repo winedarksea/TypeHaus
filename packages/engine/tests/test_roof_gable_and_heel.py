@@ -708,7 +708,7 @@ def test_an_unvented_but_clad_roof_gets_a_closed_ridge_cap():
     slopes still meet in an open joint that a covering has to be closed over.
 
     The cap is the same piece either way; what changes is ``connection``. Deleting
-    CATLIN_ROOF's vent mat once silently took 37 LF of ridge cap off a standing-seam roof
+    ROOF's vent mat once silently took 37 LF of ridge cap off a standing-seam roof
     with nothing reporting it — the mistake this pins.
     """
     unvented = EaveTrim(

@@ -422,7 +422,7 @@ NEMA_BOX = [
 # penetrations precisely so that fixings like this one are covered by it.
 #
 # Restoring the seam cladding means restoring this connector — see git, and see
-# CATLIN_EXT_2X6_SWINBURNE in plan/assemblies.py, which is the rest of that revert.
+# EXT_2X6_SWINBURNE in plan/assemblies.py, which is the rest of that revert.
 NEMA_CLAMP = []
 
 # --- Downspout securement: through-panel straps on the PBR siding ---------------------

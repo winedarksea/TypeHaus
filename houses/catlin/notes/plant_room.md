@@ -99,7 +99,7 @@ condensed below about +13 °F outdoors — most of a Minnesota winter.
 for every one of the four units.
 
 **The existing wall does not need re-engineering.**
-`CATLIN_EXT_2X6`'s exterior insulation is
+`EXT_2X6`'s exterior insulation is
 4" of 2 lb closed-cell spray foam at 1.6 perm-in, which runs **≈ 0.4 perm: Class II**,
 in one bonded seamless application. There is no board in this wall, so there is nothing to
 specify wrongly; the sprayed foam's 1.6 perm-in is authored
@@ -143,7 +143,7 @@ and the three assemblies that carry it:
 
 | tag | where | outboard of the liner |
 |---|---|---|
-| `PLANT_EXT_2X6_HUMID` | `W-S-S1`, `W-S-W4` | the whole `CATLIN_EXT_2X6` stack |
+| `PLANT_EXT_2X6_HUMID` | `W-S-S1`, `W-S-W4` | the whole `EXT_2X6` stack |
 | `PLANT_INT_2X6_BRG_HUMID` | `W-S-C1` (x=18' bearing line) | 2x6 + gypsum on the study side |
 | `PLANT_INT_2X4_HUMID` | `W-S-PS1`, `W-S-PS2` | 2x4 + gypsum on the study side |
 

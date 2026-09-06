@@ -329,7 +329,7 @@ OPENINGS = [
 # outside, and what makes `electrical.receptacle_spacing` evaluate this room at all.
 #
 # ** LEAVE ALL THREE AT THE `NORMAL` HUMIDITY DEFAULT. ** Every other bath in the house is NORMAL;
-# only RM-B-SAUNA is WET. Setting WET here would pull CATLIN_ROOF into the humid-room condensation
+# only RM-B-SAUNA is WET. Setting WET here would pull ROOF into the humid-room condensation
 # walk on a hot roof, and would demand a vapour liner and non-paper board on all five bounding
 # surfaces — a new building-science surface bought for nothing, on a shower one storey above three
 # identical NORMAL ones. It was authored WET first and taken back out; do not "fix" it again.

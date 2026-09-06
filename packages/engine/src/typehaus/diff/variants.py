@@ -7,14 +7,14 @@ that make it different, declared in the house's ``variants.toml`` next to ``pref
 [[variant]]
 name = "2x4-ci"
 description = "thinner studs, the insulation moved outboard"
-assembly_swaps = { CATLIN_EXT_2X6 = "CATLIN_EXT_2X4" }
+assembly_swaps = { EXT_2X6 = "CATLIN_EXT_2X4" }
 
 [[variant]]
 name = "thicker-ci"
 description = "3in exterior polyiso instead of 2in"
 
   [[variant.layer_thickness]]
-  assembly = "CATLIN_EXT_2X6"
+  assembly = "EXT_2X6"
   layer = "polyiso"
   thickness_in = 3.0
 ```

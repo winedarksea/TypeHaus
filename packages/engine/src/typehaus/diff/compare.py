@@ -32,7 +32,7 @@ class VariantSelection:
 
     The simplest selection is just a house directory. To compare the *same* plan under a
     different assembly selection, add ``swaps`` mapping an authored assembly tag to the tag
-    that should replace it on every wall before resolve (e.g. ``{"CATLIN_EXT_2X6":
+    that should replace it on every wall before resolve (e.g. ``{"EXT_2X6":
     "CATLIN_EXT_2X4"}``), and/or ``layer_thickness`` overrides retuning one layer of one
     assembly. Both are the override vocabulary a declared ``variants.toml`` entry carries
     (→ :mod:`typehaus.diff.variants`).
@@ -131,7 +131,7 @@ def apply_assembly_swaps(plan: PlanModel, swaps: dict[str, str]) -> PlanModel:
 
     Any element that references an assembly tag directly (walls, foundation walls, …) is a
     pure, localized rewrite target; unmatched elements are left untouched. Selecting a variant
-    is therefore just naming the swap, e.g. ``{"CATLIN_EXT_2X6": "CATLIN_EXT_2X4"}``.
+    is therefore just naming the swap, e.g. ``{"EXT_2X6": "CATLIN_EXT_2X4"}``.
 
     The replacement must be an assembly the plan's library actually carries. Swapping to a tag
     the plan cannot resolve does not produce a thinner wall — it produces *no* wall, and a

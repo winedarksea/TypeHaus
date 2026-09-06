@@ -245,7 +245,7 @@ def test_a_detail_chooses_a_real_architectural_scale(catlin_model):
     from typehaus.emit.draw.sheet_writer import ARCH_SCALES
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     assert scene.frame is not None, "a rendered detail has no paper"
     assert scene.frame.scale in {s for s, _label in ARCH_SCALES}, \
@@ -262,7 +262,7 @@ def test_notes_cannot_change_the_chosen_scale(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     assert scene.notes, "this detail is the two-page notes case"
     loud = scene.model_copy(update={
@@ -295,7 +295,7 @@ def test_the_chrome_is_paper_and_the_cut_is_model(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     paper = [n for n in scene.nodes if n.space == "paper"]
     assert paper, "no chrome reached paper space"
@@ -356,7 +356,7 @@ def test_the_dxf_gets_a_real_paper_layout(catlin_model, tmp_path):
     from typehaus.emit.draw.dxf_writer import write_dxf
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     doc = ezdxf.readfile(str(write_dxf(scene, tmp_path / "eave.dxf")))
 

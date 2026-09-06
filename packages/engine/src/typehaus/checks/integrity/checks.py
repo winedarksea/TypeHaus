@@ -71,7 +71,7 @@ def element_assembly_resolves(ctx: CheckContext) -> list[Finding]:
     reverts to the bare-pour behaviour, which is what it had before anyone named an assembly
     at all, and looks exactly like success.
 
-    **This was found the hard way.** `CATLIN_FOOTING_20` was authored, referenced by 26
+    **This was found the hard way.** `FOOTING_20` was authored, referenced by 26
     footings, and left out of the house's assembly list. The takeoff's group label read the
     tag straight off the element and printed it, `haus check` was clean at 0 FAIL, and the
     `ConcreteSpec` those 26 pours were supposed to be stating — their mix, their exposure
@@ -446,7 +446,7 @@ def slab_thickness_matches_assembly(ctx: CheckContext) -> list[Finding]:
 
     A wall has no such check because it needs none: a wall's thickness *is* its layer sum,
     derived. A :class:`~typehaus.model.floors.Slab` authors ``thickness`` independently of
-    the assembly it names, because the two measure different things — ``CATLIN_SLAB_FLOOR``
+    the assembly it names, because the two measure different things — ``SLAB_FLOOR``
     is a 3.5" pour over 3" of XPS that is *under* the slab, not part of it, and a deck
     assembly carries a gypsum thermal barrier hanging below its soffit. So the rule cannot
     be "thickness == sum of layers".

@@ -222,10 +222,13 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # courses pack around, and the block count follows the blocks, not a literal here — the
     # assertion above already ties it to the resolved model, and this one is the tripwire
     # that says a change of this size happened at all.
-    # 1118 since 2026-09-06: WIN-S-BED3-N, the north facade's fourth window (WT-1436 at
-    # x 23'-4" on W-S-N1). A 14" RO breaks no stud and takes no header, but the girt courses
-    # still pack their blocks around the opening, and four more blocks is four more screws.
-    assert row["count"] == 1118 and furring[0]["count"] == 224
+    # 1110 since 2026-09-06: the north facade's four windows moved onto one rectangle —
+    # WIN-A-N1 / WIN-S-STAIR-N 13'-4" -> 12'-0" and WIN-A-N2 22'-8" / WIN-S-HALL-N 29'-4"
+    # -> 24'-0". No opening was added or removed and no width changed, but a 30" RO packs
+    # girt blocks against its own jambs, so four stations moving is four blocks fewer and
+    # four screws with them. The girt courses themselves are unchanged
+    # (structural.girt_course_spacing passes, test_truss_girt_courses holds its ceiling).
+    assert row["count"] == 1110 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

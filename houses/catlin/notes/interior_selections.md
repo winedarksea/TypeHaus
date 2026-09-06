@@ -252,7 +252,7 @@ This is the part of the pass with a deadline on it.
 - **Order every vanity top drilled single-hole, in writing.** All eight lavatory faucets are
   single-hole. Field-drilling a cast top chips it and voids its warranty.
 - **`RM-M-BATH1`'s carrier must be on an interior partition.** A concealed cistern in a
-  `CATLIN_EXT_2X6` bay displaces insulation, sits outboard of the vapour control and puts
+  `EXT_2X6` bay displaces insulation, sits outboard of the vapour control and puts
   standing water in the coldest part of a Minnesota wall.
 - **`RM-A-STUBATH` is the highest-consequence rough-in in the house.** Every supply line and
   its shower valve must stay inside the thermal envelope on an interior partition.

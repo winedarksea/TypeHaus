@@ -240,7 +240,7 @@ def test_the_roof_ladder_steps_the_same_way_the_roof_stacks(catlin_model):
     rungs = [(n.at[1], n.anchor.xy[1]) for n in scene.nodes
              if isinstance(n, Leader) and n.layer == "A-ANNO-TEXT"
              and rung_text.match(n.text) and abs(n.at[1] - n.anchor.xy[1]) > 1e-9]
-    # CATLIN_ROOF is four layers and two bay fills. The property under test is the ORDER of
+    # ROOF is four layers and two bay fills. The property under test is the ORDER of
     # the rungs, not how many there are; the >= 5 floor only guards against the ladder
     # collapsing to nothing.
     assert len(rungs) >= 5, f"the eave should ladder its whole roof stack, got {len(rungs)}"
@@ -441,7 +441,7 @@ def test_a_keyed_note_off_this_detail_draws_nothing_and_reports_nothing(catlin_m
     That is the binding working, not an authoring error, so it must not produce a finding.
     """
     derived = next(d for d in derive_detail_slices(catlin_model_ro)
-                   if d.key == "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT")
+                   if d.key == "wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG")
     scene, findings = build_detail(catlin_model_ro, derived)
     assert any(line.startswith("K") for line in scene.notes), "the legend still prints"
     assert not [f for f in findings if "anchor" in f.check_id]

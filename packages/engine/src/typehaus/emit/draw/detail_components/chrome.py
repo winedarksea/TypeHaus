@@ -42,7 +42,7 @@ def _participating_layers(model, derived):
     tags = derived.condition.element_tags
     for roof in model.roofs:
         # By **assembly** as well as by element tag. A wall/roof condition is keyed on the
-        # two assemblies it joins (``CATLIN_EXT_2X6|CATLIN_ROOF``), never on the roof
+        # two assemblies it joins (``EXT_2X6|ROOF``), never on the roof
         # element's own tag (``RF-HOUSE``), so matching tag alone misses roof-heavy details
         # like the eave, dropping layers such as the underlayment and the vent mat.
         if roof.tag not in tags and roof.assembly not in tags:

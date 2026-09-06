@@ -216,20 +216,20 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     # schematic pair is exercised on the garage eave, which has no authored trim yet.
     ("wall_roof:GARAGE_ROOF", "box-gutter"),
     ("wall_roof:GARAGE_ROOF", "drip-edge"),
-    ("wall_roof:CATLIN_EXT_2X6", "apron-flashing"),
+    ("wall_roof:EXT_2X6", "apron-flashing"),
     # There is no ``insect-screen`` row here, which is a coverage loss worth stating rather
     # than quietly dropping. The screen closes the eave end of an OVER-DECK VENT CHANNEL,
-    # and no assembly in this house has one: CATLIN_ROOF has no vent mat, and the garage is
+    # and no assembly in this house has one: ROOF has no vent mat, and the garage is
     # vented through its soffits into a truss space, not through a channel over its deck.
     # The vocabulary itself is untouched and still fires for any stack with an AIRGAP or
     # FURRING band above the deck — this parametrization simply has no such stack left to
     # point at. Restore the row the moment one exists again.
-    ("wall_foundation:CATLIN_BASEMENT_12", "z-flashing"),
-    ("wall_foundation:CATLIN_BASEMENT_12", "l-flashing"),
-    ("wall_foundation:CATLIN_BASEMENT_12", "sealant-bead"),
-    ("wall_foundation:CATLIN_BASEMENT_12", "sill-gasket"),
+    ("wall_foundation:BASEMENT_12", "z-flashing"),
+    ("wall_foundation:BASEMENT_12", "l-flashing"),
+    ("wall_foundation:BASEMENT_12", "sealant-bead"),
+    ("wall_foundation:BASEMENT_12", "sill-gasket"),
     # The rainscreen's base vent/insect strip — the same closure the resolver bills.
-    ("wall_foundation:CATLIN_BASEMENT_12", "bug-screen"),
+    ("wall_foundation:BASEMENT_12", "bug-screen"),
     # The unheated slab-on-grade base: water on the stem's interior face is turned in
     # onto the sloped slab (``garage_wall_detail_side_ifc.png``).
     ("wall_foundation:GARAGE_ICF_6", "interior-drip-flashing"),
@@ -256,14 +256,14 @@ def test_rim_band_air_seal_draws_the_air_control_vocabulary(catlin_model):
     Reference: the basement→framed notes' "prioritize air sealing at sill plate (sealant +
     spray foam)", applied at every floor line rather than only the first.
     """
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X6")
+    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
     tags = _component_tags(scene)
     assert {"rim-air-barrier", "rim-cavity-foam", "rim-sealant-bead"} <= tags
 
 
 def test_rim_band_seals_at_both_plate_lines(catlin_model):
     """Two beads, not one: the plate below and the plate above are separate joints."""
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X6")
+    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:EXT_2X6")
     beads = _component_nodes(scene, "rim-sealant-bead")
     elevations = sorted({round(min(z for _u, z in bead.points), 3) for bead in beads})
     assert len(elevations) == 2, f"expected a bead at each plate line, got {elevations}"
@@ -272,7 +272,7 @@ def test_rim_band_seals_at_both_plate_lines(catlin_model):
 def test_interior_partition_rim_gets_no_air_seal(catlin_model):
     """An interior partition has conditioned space on both sides — nothing to seal against."""
     _derived, scene = _exact_detail_scene(catlin_model,
-                                          "storey_stack:rim:CATLIN_INT_2X6_BRG")
+                                          "storey_stack:rim:INT_2X6_BRG")
     assert not _component_tags(scene) & {
         "rim-air-barrier", "rim-cavity-foam", "rim-sealant-bead"}
 
@@ -377,7 +377,7 @@ def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
 
     (The perimeter stands 2'-6" out of the ground — see the test below.)"""
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:CATLIN_EXT_2X6|CATLIN_GARDEN_CURB_6")
+        catlin_model, "wall_foundation:EXT_2X6|GARDEN_CURB_6")
     assert "foam-protection-board" not in _component_tags(scene)
 
 
@@ -388,7 +388,7 @@ def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model)
     from typehaus.quantities import M_PER_IN
 
     _derived, scene = _exact_detail_scene(
-        catlin_model, "wall_foundation:CATLIN_BASEMENT_12|CATLIN_EXT_2X6")
+        catlin_model, "wall_foundation:BASEMENT_12|EXT_2X6")
     board = _component_nodes(scene, "foam-protection-board")[0]
     grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
     # Drawn from the resolved layer: its head is the top of the wall, where the Z-flashing
@@ -430,7 +430,7 @@ def test_suspended_deck_base_gets_no_interior_drip(catlin_model):
     ``SL-M-DECK`` is 9" of suspended structural concrete with rooms beneath it, not a
     slab-on-grade — it drains to no apron, so drawing the drip there would be fiction.
     """
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_12")
     assert "interior-drip-flashing" not in _component_tags(scene)
 
 
@@ -465,10 +465,10 @@ def test_sill_gasket_is_the_compressed_sixteenth(catlin_model):
     assert uncompressed == pytest.approx(0.25)
     assert BASEMENT_TO_FRAMED_WALL.sill_gasket_in == pytest.approx(0.0625)
 
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:BASEMENT_12")
     gasket = _component_nodes(scene, "sill-gasket")[0]
     height = (max(z for _u, z in gasket.points) - min(z for _u, z in gasket.points))
-    # CATLIN_EXT_2X6 authors the same 1/16" on its own FramingSpec, so the drawn joint and
+    # EXT_2X6 authors the same 1/16" on its own FramingSpec, so the drawn joint and
     # the config fallback agree — as they must, or the seat and the drawing disagree.
     assert height == pytest.approx(0.0625, abs=1e-6)
 
@@ -564,13 +564,13 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     the resolved ridge-beam member.
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
-    assert "opening_perimeter:CATLIN_EXT_2X6" in keys
+    assert "opening_perimeter:EXT_2X6" in keys
     # The south wall's openings (D-B-PATIO, WIN-B-SAUNA) are all in the sunken-garden face,
     # a FRAMED assembly, so the key follows it. The door's perimeter is bound by
     # TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
     # 2x6 wall, `window-head-jamb-sill`); the sauna window's is still
     # TR-CATLIN-SAUNA-OPENING, whose `SAUNA_*` pattern reaches the framed variant unchanged.
-    assert "opening_perimeter:CATLIN_GARDEN_FRAMED_2X6" in keys
+    assert "opening_perimeter:GARDEN_FRAMED_2X6" in keys
     assert "roof_ridge:RF-HOUSE" in keys
 
 
@@ -581,7 +581,7 @@ def test_opening_crop_holds_sill_and_head(catlin_model):
     from typehaus.quantities import M_PER_IN
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "opening_perimeter:CATLIN_EXT_2X6")
+                   if d.key == "opening_perimeter:EXT_2X6")
     opening = condition_opening(catlin_model, derived.condition)
     host = catlin_model.wall(opening.host_wall)
     (_u0, cz0), (_u1, cz1) = derived.view.crop[0].xy_m, derived.view.crop[1].xy_m
@@ -595,7 +595,7 @@ def test_opening_cut_station_crosses_the_opening(catlin_model):
     from typehaus.emit.draw.detail_components import condition_opening
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "opening_perimeter:CATLIN_EXT_2X6")
+                   if d.key == "opening_perimeter:EXT_2X6")
     opening = condition_opening(catlin_model, derived.condition)
     host = catlin_model.wall(opening.host_wall)
     (x0, y0), (x1, y1) = host.axis
@@ -610,7 +610,7 @@ def test_opening_cut_station_crosses_the_opening(catlin_model):
 
 
 def test_framed_weather_opening_draws_head_flashing_and_sill_pan(catlin_model):
-    _derived, scene = _exact_detail_scene(catlin_model, "opening_perimeter:CATLIN_EXT_2X6")
+    _derived, scene = _exact_detail_scene(catlin_model, "opening_perimeter:EXT_2X6")
     tags = _component_tags(scene)
     assert {"opening-head-flashing", "opening-sill-pan", "opening-sealant"} <= tags
 

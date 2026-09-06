@@ -182,7 +182,7 @@ ALLOWANCE_KEY_FIELD = "item"
 #: WHY THE SET NAMES ONLY ENGINEERED AND TREATED LUMBER, not every wood tag in the library:
 #: ``spf`` is the STRUCTURE material of ordinary stud-wall assemblies, and a solid that is
 #: not lumber at all can carry one — catlin's rainscreen vent strip is a ``bug_screen``
-#: solid holding ``CATLIN_EXT_2X6``, whose structure layer is spf studs. So ``spf`` on a
+#: solid holding ``EXT_2X6``, whose structure layer is spf studs. So ``spf`` on a
 #: solid does not mean "this solid is a stick of timber", while ``lvl``/``lsl``/``kdat`` are
 #: only ever authored on a member that really is one. A house whose own wood tag should bill
 #: here either uses one of these or prices the row by QUALIFIED key, exactly as the elm

@@ -231,9 +231,10 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     # the other three sit inside. Pinned to the exact station rather than loosened to a
     # wider tolerance: the reason it moved is a column, and a column is an equality.
     # RM-S-BED3 pays 4.4 sf of glazing for it; its R310 egress was never this window's job
-    # (WIN-S-HALL-N carries it). It joined BED1/BED2 on R303.1 Exception 1 until 2026-09-06,
-    # when WIN-S-BED3-N was added on the north wall — the room is at 13.33 sf glazed /
-    # 6.67 sf openable against 10.32 required and passes outright.
+    # (WIN-S-HALL-N carries it, and still does from its new 24'-0" station). It sits with
+    # BED1/BED2 on R303.1 Exception 1: 9.83 sf glazed against 10.32 required, half a square
+    # foot short, lit at 13.4 fc and ventilated on 210 cfm. The "2.33 sf" once claimed for
+    # this room in second.py was arithmetic that forgot WIN-S-HALL-N; corrected 2026-09-06.
     x, y = centres["WIN-S-BED3"]
     assert x == pytest.approx(ft(36).meters, abs=ft(1).meters)
     assert y == pytest.approx(ft(34).meters, abs=TOL_M)

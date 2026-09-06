@@ -1,5 +1,5 @@
 # haus: editable
-# Second floor — CATLIN_EXT_2X6 on the same sheathing plane (2x6 on every framed
+# Second floor — EXT_2X6 on the same sheathing plane (2x6 on every framed
 # storey), three east bedrooms, west suite, plant room + study south, duct soffit (WP3.1).
 #
 # Every interior partition is set to the Sensopia survey `catlin_floorplan/Colin House -
@@ -141,7 +141,7 @@ NODES = [
 # note above WALLS in plan/storeys/main.py, and the Material in plan/assemblies.py.
 WALLS = [
     # --- exterior loop (2x6, same stack as main) -------------------------------
-    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID, not CATLIN_EXT_2X6:
+    # The plant room's two exterior walls carry PLANT_EXT_2X6_HUMID, not EXT_2X6:
     # same stack outboard of the sheathing, a sealed PVC/membrane liner inboard of the
     # studs (plan/assemblies.py, notes/plant_room.md). `alignment=face("sheathing-ext")` is
     # unchanged on purpose — the sheathing datum does not move (decision #43) and the liner
@@ -155,13 +155,13 @@ WALLS = [
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S1"),
     Wall(uid="CSW102AAAA", tag="W-S-S2", start_node="N-S-S1", end_node="N-S-SE",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S2"),
     Wall(uid="CSW103AAAA", tag="W-S-E1", start_node="N-S-SE", end_node="N-S-E1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW102BAAA", tag="W-S-E2", start_node="N-S-E1", end_node="N-S-E2",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     # stacks_on repointed to W-M-E1: main.py merged W-M-E1/E2 into one wall
     # for WIN-M-EAST-MID, retiring the W-M-E2 tag. The resolver links only one upper wall
@@ -169,14 +169,14 @@ WALLS = [
     # STOREY_STACK/WALL_FOUNDATION boundary condition is dropped rather than merely
     # repointed — see the note on the merged wall in main.py.
     Wall(uid="CSW104AAAA", tag="W-S-E3", start_node="N-S-E2", end_node="N-S-E3",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW105AAAA", tag="W-S-E4", start_node="N-S-E3", end_node="N-S-NE",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
     # Re-pointed W-M-N1 -> W-M-N1B: the main storey's north wall split at
     # x=24'-4" for RM-M-PANTRY's east partition, and this segment (x 21'-11"..18'-0") sits
@@ -185,35 +185,35 @@ WALLS = [
     # wall per lower — so the segment actually over it would have lost the edge.
     Wall(uid="CSW135AAAA", tag="W-S-N1B", start_node="N-S-B5", end_node="N-S-N1",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1B"),
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
     # Split at N-S-CH2, where the mechanical chase's east wall tees into the north wall
     # (moved to the NW corner 2026-07-28 — see the node comment above).
     Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-CH2",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
     Wall(uid="CSW153AAAA", tag="W-S-N3B", start_node="N-S-CH2", end_node="N-S-NW",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3B"),
     # Split at N-S-CH3, where the chase's south wall tees into the west wall
     #.
     Wall(uid="CSW154AAAA", tag="W-S-W1B", start_node="N-S-NW", end_node="N-S-CH3",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W1B"),
     Wall(uid="CSW110AAAA", tag="W-S-W1", start_node="N-S-CH3", end_node="N-S-W1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W1"),
     Wall(uid="CSW111AAAA", tag="W-S-W2", start_node="N-S-W1", end_node="N-S-W2",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W2"),
     Wall(uid="CSW112AAAA", tag="W-S-W3", start_node="N-S-W2", end_node="N-S-W3",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W3"),
     Wall(uid="CSW113AAAA", tag="W-S-W4", start_node="N-S-W3", end_node="N-S-SW",
          assembly="PLANT_EXT_2X6_HUMID", alignment=face("sheathing-ext"), top=ft(9),
@@ -236,20 +236,20 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW138AAAA", tag="W-S-C2B", start_node="N-S-C2", end_node="N-S-C2B",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C2"),
     Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C3"),
     # y 22'-4" .. 30'-10" IS NOT A WALL — it is the BM-S-HALL flitch of LVL below.
     # W-S-C3 / W-S-C3C / W-S-C4 used to stand here; the whole 8'-6" is now open so the
     # hall, the landing and the stair well read as one room. The bearing
     # stack is unbroken because the beam is *in* it: see BEAMS below.
     Wall(uid="CSW140AAAA", tag="W-S-C4B", start_node="N-S-C3D", end_node="N-S-N1",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
     # --- south band north wall, y=9'-0" (source 9.035): plant room | study2 ------
     # These two are the plant room's north side, so they leave INT_2X4_PARTITION for
@@ -451,9 +451,9 @@ WALLS = [
          assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # Retyped and declared BEARING on 2026-08-29 with the two x=10' segments below: it
     # carries BM-S-BATH-E's north end at N-S-BA1. Same swap, same reason, same price —
-    # plan/assemblies.py's CATLIN_INT_2X6_BRG_PLUMBING has the whole argument.
+    # plan/assemblies.py's INT_2X6_BRG_PLUMBING has the whole argument.
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
-         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-STOS2"),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
@@ -469,7 +469,7 @@ WALLS = [
     #
     # The assembly changed with the role, and that is not decoration —
     # `structural.wet_wall_bearing` FAILs any BEARING wall framed with staggered studs.
-    # CATLIN_INT_2X6_BRG_PLUMBING is the same 6.77" total, so no face moves, no room area
+    # INT_2X6_BRG_PLUMBING is the same 6.77" total, so no face moves, no room area
     # changes, and FX-S-BATH1-LAV's `wall_ref` is untouched. Read that assembly's own note.
     #
     # `stacks_on="W-M-STRW"` is MANDATORY, not decorative: `resolve/stacking.py` walks each
@@ -491,10 +491,10 @@ WALLS = [
     # W-M-STRW too; that is the ambiguity the tiebreaker exists to resolve, from the other
     # side.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
-         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
          structural_role=StructuralRole.BEARING),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
-         assembly="CATLIN_INT_2X6_BRG_PLUMBING", top=ft(9),
+         assembly="INT_2X6_BRG_PLUMBING", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-STRW"),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
@@ -678,10 +678,13 @@ OPENINGS = [
     # 34'-0" centre, matching WIN-M-KIT-E below in both size and station so the two column.
     # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33 from THIS window) and joined
     # BED1/BED2 on R303.1 Exception 1; its R310 egress was never this window's job —
-    # WIN-S-HALL-N carries it. 2026-09-06: that exception is spent. The resolver credits
-    # WIN-S-HALL-N (a BED3 window despite the tag) to the room, so BED3 was never at
-    # 2.33 sf but at 9.83 against 10.32 required — 0.49 sf short, not 8. WIN-S-BED3-N adds
-    # 3.5 sf and takes it to 13.33 glazed / 6.67 openable: it passes R303.1 outright now.
+    # WIN-S-HALL-N carries it. 2026-09-06: the ARITHMETIC here was wrong, though the
+    # exception is real. The resolver credits WIN-S-HALL-N (a BED3 window despite the tag)
+    # to the room, so BED3 was never at 2.33 sf but at 9.83 against 10.32 required — 0.49 sf
+    # short, not 8. A fourth north window was added that day to close the 0.49 and then
+    # withdrawn when the facade was solved by moving windows instead (see WIN-S-HALL-N
+    # below), so the room stays on Exception 1 — over it by half a square foot, lit at
+    # 13.4 fc and ventilated on 210 cfm.
     # WIN-A-E-N moved 32'-8" -> 34'-0" the same day (attic.py) to complete a three-storey
     # 14" column on the east face. ``from_node`` is the near jamb, so 34'-0" - 7" = 33'-5"
     # off N-S-E3 at y=26'-8" -> 6'-9". The east second-storey row is now three units, and
@@ -755,53 +758,40 @@ OPENINGS = [
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(4)),
-    # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass), then back to 29'-4"
-    # when the whole three-storey column returned there to bring WIN-M-KITCH onto the
-    # kitchen sink below. WIN-A-N2 above moved with it, so the north facade keeps its one
-    # exact three-storey column at the new station.
+    # ** MOVED 29'-4" -> 24'-0" ON 2026-09-06, AND THE THREE-STOREY COLUMN IS SPENT. **
+    # It was at 29'-4" to column with WIN-M-KITCH over the kitchen sink below; the 6:12 rake
+    # had already pulled WIN-A-N2 off that station in 2026-09-03, so what remained was a
+    # two-storey stack, and this move gives it up entirely. WIN-M-KITCH now stands alone on
+    # the main storey — it cannot follow, being dead-centred on the sink run.
+    #
+    # What is bought is the whole upper facade. The north face carried three units that
+    # almost made a rectangle with the lower-east corner empty. Rather than adding a fourth
+    # unit at 23'-4" — the only station the module and node N-S-B5 left, 8" off the ideal
+    # and off every column — the four windows already in the house moved onto ONE rectangle:
+    # this one and WIN-A-N2 to 24'-0", WIN-A-N1 and WIN-S-STAIR-N to 12'-0". Both stations
+    # are 16" multiples, which is what a 30" RO needs (it breaks studs and so cannot take a
+    # bay centre), and they mirror on the 18'-0" ridge, so each attic unit stacks EXACTLY on
+    # its second-storey partner.
+    #
+    # 24'-0" clears node N-S-B5 (x 21'-11", the closet/BED3 partition): the RO runs
+    # 22'-9"..25'-3", so the west jamb has 10" to the node — enough for the jamb pack, which
+    # 22'-8" itself would not have had at any width. FURN-S-BED3-WARD stood 6'-6" tall right
+    # here (x 22'-1.5"..24'-1.5") and swaps slots with FURN-S-DESK3 in placeables.py.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
+           position=from_node("N-S-NE", ft(10, 9)), sill_height=ft(3)),       # ctr x 24'-0"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
-    # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so 3'-5" off N-S-N1 is a
-    # near jamb at 12'-1" and a CENTRE at x 13'-4" (RO 145"-175" in model.json) — a stud
-    # line, which is what a 30" RO must have. WIN-A-N1 on the gable above is at that same
-    # 13'-4", so the two are exactly stacked. (This note read "12'-8"" and claimed an 8"
-    # miss against WIN-A-N1 until 2026-09-06; the offset was always right, the prose was
-    # not. Nothing moved to fix it.)
+    # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so the offset is measured
+    # east-to-west and 4'-9" off N-S-N1 is a near jamb at 13'-3", a CENTRE at x 12'-0" and
+    # an RO of 10'-9"..13'-3" — a stud line, which is what a 30" RO must have. WIN-A-N1 on
+    # the gable above is at that same 12'-0", so the two are exactly stacked.
+    #
+    # ** MOVED 13'-4" -> 12'-0" ON 2026-09-06 **, one stud bay west, as the west half of
+    # the facade rectangle described at WIN-S-HALL-N above. The west jamb lands 9" off node
+    # N-S-N2 (x 10'-0"), which the jamb pack fits. (This note read "12'-8"" and claimed an
+    # 8" miss against WIN-A-N1 until 2026-09-06; the offset always resolved to 13'-4" and
+    # the prose was simply wrong. The move below is a real move; that correction was not.)
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
-           position=from_node("N-S-N1", ft(3, 5)), sill_height=ft(3)),        # ctr x 13'-4"
-    # 2026-09-06: THE FOURTH NORTH WINDOW. The north facade carried three units that almost
-    # made a rectangle — WIN-A-N1/N2 at 13'-4"/22'-8" over WIN-S-STAIR-N at 13'-4" and
-    # WIN-S-HALL-N at 29'-4" — with the lower-east corner empty. This fills it as near to
-    # x 22'-8" as the module and the room behind it allow.
-    #
-    # Not 22'-8" itself: a 30" RO there spans 21'-5"..23'-11" and node N-S-B5 (x 21'-11",
-    # the closet/BED3 partition) splits W-S-N1 from W-S-N1B. An opening cannot cross a node
-    # (integrity.opening_fits, ERROR). Every north wall is CATLIN_EXT_2X6 with
-    # layout_origin="line", so stations are absolute: a 30" RO centres on a 16" multiple, a
-    # 14" RO on a bay centre (8 mod 16). The nearest legal pair is 23'-4" (14") and 24'-0"
-    # (30").
-    #
-    # 23'-4" wins on the jamb: its east jamb at 23'-11" is FLUSH with WIN-A-N2's east jamb
-    # one storey up — 8" off the ideal centre instead of the 30" unit's 16", and 24'-0"'s
-    # east jamb (25'-3") aligns with nothing. Sill 3'-0" and head 6'-0" are both neighbours'
-    # own lines (WIN-S-STAIR-N and WIN-S-HALL-N are WT-3036 at exactly those), so the second
-    # storey now reads as one row on one sill and one head. Jamb for jamb this is WIN-A-S3
-    # on the south gable: same type, same 22'-9"/23'-11".
-    #
-    # 36" tall, not 24": the girt sweep, not taste. WT-1424 at sill 4'-0" makes a 31st girt
-    # conflict and breaks the conflicts <= 30 ceiling in test_truss_girt_courses.py — a
-    # 24" unit puts its sill course bottom and its head 27-1/2" apart, so on the 24" course
-    # module one is always on a course and the other always 3-1/2" off. At 36" the head
-    # (72") is an exact course hit and the sill course bottom (32.5") is 8.5" from the
-    # nearest course, outside the 7" window. Sweep: exact hits 13 -> 14, conflicts stay 30.
-    #
-    # A 14" RO on a bay centre breaks no stud: no header, no jacks, no kings. WT-1436 is
-    # already in service (WIN-A-S2/S3) and already priced. The wall is BED3's — WIN-S-HALL-N
-    # is a legacy misnomer — and FURN-S-BED3-WARD stood 6'-6" tall against it over
-    # x 22'-1.5"..24'-1.5"; it swaps slots with FURN-S-DESK3 in placeables.py to clear it.
-    Window(uid="0H39YW9P4X", tag="WIN-S-BED3-N", host="W-S-N1", type_ref="WT-1436",
-           position=from_node("N-S-NE", ft(12, 1)), sill_height=ft(3)),       # ctr x 23'-4"
+           position=from_node("N-S-N1", ft(4, 9)), sill_height=ft(3)),        # ctr x 12'-0"
 ]
 
 ROOMS = [
@@ -1261,7 +1251,7 @@ FLOOR = []
 
 # The suite bedroom's four "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
 # elm timbers standing in W-S-W3's stud line, flush with the drywall plane. Deliberately
-# NOT a change to CATLIN_EXT_2X6 — each post is a deviation within the stud line, so the
+# NOT a change to EXT_2X6 — each post is a deviation within the stud line, so the
 # wall assembly is untouched. Centre x=3-9/16" off the sheathing-ext plane; cut 8'-11 1/4"
 # to top out flush with the 9' plate. y-positions keep >6" clear of both WT-2736 ROs.
 POSTS = [

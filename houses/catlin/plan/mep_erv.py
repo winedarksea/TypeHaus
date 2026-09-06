@@ -222,7 +222,7 @@ EQUIPMENT_ERV_SECOND = [
 #
 # ** THE NORTH GABLE IS NOT A VIABLE ROUTE FOR THESE. ** A horizontal leg at +23'-0" would
 # pass squarely through the rough openings of BOTH gable windows — WIN-A-N1 (x
-# 12'-1"..14'-7") and WIN-A-N2 (x 21'-5"..23'-11"), each sill +22'-0", head +25'-0" — 8"
+# 10'-9"..13'-3") and WIN-A-N2 (x 22'-9"..25'-3"), each sill +22'-0", head +25'-0" — 8"
 # above the sill, 100% inside the glass, across 2'-6" of each unit. WIN-A-N1 is the only
 # window daylighting FO-A-HALL's double-height stair void (storeys/attic.py), so the duct
 # would cross it 13'-0" above the second-storey hall, in full view. Nothing in the engine

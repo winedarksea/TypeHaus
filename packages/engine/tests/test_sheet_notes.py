@@ -188,12 +188,12 @@ def test_a_dropped_path_never_fuses_its_neighbours() -> None:
 
     A "drop" pattern anchored on ``/`` matched from the backtick that *closes* one code
     span to the one that *opens* the next, eating the prose between them. The output read
-    ``CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8foundation-coating-acrylic``.
+    ``BASEMENT_12 and CATLIN_BASEMENT_8foundation-coating-acrylic``.
     """
     got = note_text.clean(
-        '`CATLIN_BASEMENT_12` and `CATLIN_BASEMENT_8` carry a 1/8" coating over mesh '
+        '`BASEMENT_12` and `BASEMENT_8` carry a 1/8" coating over mesh '
         '(`foundation-coating-acrylic`, a stock grey) with a `Layer.extent`.')
-    assert got == ('CATLIN_BASEMENT_12 and CATLIN_BASEMENT_8 carry a 1/8" coating over '
+    assert got == ('BASEMENT_12 and BASEMENT_8 carry a 1/8" coating over '
                    'mesh (foundation-coating-acrylic, a stock grey) with a Layer.extent.')
 
 

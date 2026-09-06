@@ -67,7 +67,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # already generates the studs between the two flights and a second set interpenetrates
     # them — and `frames_as_members` is the same predicate this table partitions on, so a
     # structure layer that does not frame reads as monolithic and bills its gross volume.
-    # `prices.toml` therefore prices `CATLIN_STAIRWELL_PARTITION_4H` at zero and says why:
+    # `prices.toml` therefore prices `STAIRWELL_PARTITION_4H` at zero and says why:
     # those sticks are already in `[framing]`. That is the one row in this table which is
     # not a pour, and it is the reason the material set below gained "spf".
     # **39 later the same day**: W-SG-BRKBM, the veneer's grade beam, on its own
@@ -175,20 +175,20 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     are both `concrete` and they are not the same order or the same price."""
     by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
-                     "BASEMENT_BRICK_VENEER", "CATLIN_BASEMENT_12",
-                     "CATLIN_BASEMENT_8"):
+                     "BASEMENT_BRICK_VENEER", "BASEMENT_12",
+                     "BASEMENT_8"):
         assert assembly in by_assembly, f"{assembly} lost its own row"
-    house = by_assembly["CATLIN_BASEMENT_12"]
+    house = by_assembly["BASEMENT_12"]
     garden = by_assembly["SUNKEN_GARDEN_WALL"]
     assert set(house["tags"]).isdisjoint(garden["tags"])
     # And the 2026-08-21 pour split bills separately too, which is the whole point of it:
     # the 12" row is the deck-bearing east wall alone, and the eight thinned segments order
     # their own 8" concrete at their own rate (houses/catlin/prices.toml).
     assert set(house["tags"]) == {"W-B-E1", "W-B-E2"}
-    # One row since 2026-09-02: CATLIN_BASEMENT_8_GARDEN lost its last two walls with the
+    # One row since 2026-09-02: BASEMENT_8_GARDEN lost its last two walls with the
     # stucco retirement and is unreferenced (kept in plan/assemblies.py for the revert).
-    assert "CATLIN_BASEMENT_8_GARDEN" not in by_assembly
-    thinned = set(by_assembly["CATLIN_BASEMENT_8"]["tags"])
+    assert "BASEMENT_8_GARDEN" not in by_assembly
+    thinned = set(by_assembly["BASEMENT_8"]["tags"])
     # W-B-N4 is the west 6'-0" of the old W-B-N3, split off on 2026-08-23 for the ESS
     # closet's west partition. Same assembly, same thickness, its own strip footing.
     # W-B-S4 is the east 8'-0" of the old W-B-S3, split off on 2026-08-28 at the excavation
@@ -231,8 +231,8 @@ def test_openings_are_deducted_from_area_and_volume(catlin_model) -> None:
 
 def test_icf_and_masonry_walls_are_both_caught(catlin_model) -> None:
     """The three-armed predicate, pinned. GARAGE_ICF_6 is concrete *with* a `masonry=`
-    spec and CATLIN_BASEMENT_12 is concrete *without* one, so neither "is masonry" nor
+    spec and BASEMENT_12 is concrete *without* one, so neither "is masonry" nor
     "is not masonry" alone selects the right set — only "no masonry AND has framing"
     frames, and everything else bills here."""
     assemblies = {row["assembly"] for row in wall_structure_takeoff(catlin_model)}
-    assert {"GARAGE_ICF_6", "CATLIN_BASEMENT_12"} <= assemblies
+    assert {"GARAGE_ICF_6", "BASEMENT_12"} <= assemblies

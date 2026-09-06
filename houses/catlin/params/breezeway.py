@@ -126,7 +126,7 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 # North face of the house's outsulated wall: the y=36' sheathing plane plus the whole
 # catlin-truss stack — 1 1/2" band A foam, the 1 1/2" inner girt, 1" of band C foam, the
 # 1/2" vent gap, the 1 1/2" outer girt and 1 1/4" of PBR panel (plan/assemblies.py
-# CATLIN_EXT_2X6, and params/roof_trim.py::_WALL_OUTBOARD_IN, which is the same number).
+# EXT_2X6, and params/roof_trim.py::_WALL_OUTBOARD_IN, which is the same number).
 # This is what the breezeway's south end butts. When this stack's thickness changes, the
 # garage moves with it (plan/storeys/garage.py) so the slot below does not lose its reveal.
 _HOUSE_CLADDING_Y = 36.0 + 7.25 / 12.0  # 36.6042'
@@ -188,7 +188,7 @@ _FRAME_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.4167'
 #
 # The band a pad may live in is measured at PAD DEPTH, not at grade:
 #   * house side — the basement wall's outboard XPS face, y = 36' sheathing plane +
-#     CATLIN_BASEMENT_8's 4.05" of damp-proof + 2x 2" XPS (plan/assemblies.py). The
+#     BASEMENT_8's 4.05" of damp-proof + 2x 2" XPS (plan/assemblies.py). The
 #     protection panel outboard of it stops 6" below grade, ~3' above these pads, so it is
 #     not what a pad has to clear.
 #   * garage side — the ICF stem's outboard EPS face, which is the node line itself
@@ -328,7 +328,7 @@ PADS = [
         # Bearing at -6'-0", which is frost depth: these never freeze, so the BURIED mix's
         # F0 is earned rather than assumed. Shared with the sunken garden's two belled
         # footings — one 12" plain pour at two plan shapes.
-        assembly="CATLIN_PIER_BASE_12")
+        assembly="PIER_BASE_12")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 

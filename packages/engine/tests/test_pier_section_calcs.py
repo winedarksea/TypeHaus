@@ -62,7 +62,7 @@ _ORACLE = {
 # when a deck beam's share stopped being "the deck area over its post count". No capacity
 # changed. See notes/sunken_garden_piers.md §2.
 #
-# §5a: both bells name CATLIN_PIER_BASE_12 -> CATLIN_BURIED_MIX as of 2026-09-03. Every
+# §5a: both bells name PIER_BASE_12 -> BURIED_MIX as of 2026-09-03. Every
 # capacity in §5c-§5e goes as sqrt(f'c), so all of them are 29.1% larger than the figures this
 # oracle carried while the bells named no assembly and the engine substituted 3,000 psi. The
 # demands are unchanged: soil pressure does not care what the concrete is.

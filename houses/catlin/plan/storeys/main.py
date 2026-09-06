@@ -1,6 +1,6 @@
 # haus: editable
 # Main floor — 36'x36' at sheathing, 16" o.c. module, east half open living (WP3.1).
-# Exterior walls: CATLIN_EXT_2X6, sheathing exterior face on the 0/36 lines.
+# Exterior walls: EXT_2X6, sheathing exterior face on the 0/36 lines.
 # Bearing lines: west wall, center N-S wall (x=18), east wall (18' I-joist spans, E-W).
 # Windows follow the RO ladder (preferences.toml [framing]), which is arithmetic on the
 # 16" module and a 1.5" stud — each rung is how wide the RO can get before it costs one
@@ -68,7 +68,7 @@ DOOR_TYPES = [
     # retype in place and keep its uid and IFC GlobalId. See source= for the trimless trap.
     DoorType(tag="DT-INT-BOOKCASE30", width=ft(2, 6), height=ft(6, 8), core="solid",
              trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
-             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (CATLIN_INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING30-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
+             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING30-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
@@ -176,7 +176,7 @@ WINDOW_TYPES = [
     # the "BELOW A STOCK LINE'S MINIMUM SIZE" note in prices.toml.
     # Catalog-only: WT-2764 took over both juliets when the pair widened again (24" -> 27"
     # each), and WT-2464 is now referenced by nothing. Kept rather than
-    # deleted, the convention WT-3660, glazed-green-brick and CATLIN_EXT_2X6_SWINBURNE are
+    # deleted, the convention WT-3660, glazed-green-brick and EXT_2X6_SWINBURNE are
     # all held under — a retired size is a priced, available product, not dead code.
     WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25), frame_depth=inch(3.25),
                shgc=0.35, vt=0.5, operation="casement"),
@@ -436,7 +436,7 @@ NODES = [
     #
     # The consequence to know about: an unclosed component has no recoverable winding, so
     # `resolve/orientation.py` falls back to `outward_sign = +1` for both of these walls.
-    # CATLIN_TUBDECK_INT_2X4 is symmetric (1/2" ply both faces) precisely so that fallback
+    # TUBDECK_INT_2X4 is symmetric (1/2" ply both faces) precisely so that fallback
     # is unobservable — see its note in plan/assemblies.py before making that stack
     # asymmetric.
     #
@@ -499,7 +499,7 @@ NODES = [
 #
 # ** NO SIBLING ASSEMBLY, and that is the point. ** A second Assembly tag would silently
 # strip the oak window stools from every window in a B&B wall (plan/millwork.py scopes them
-# to `("CATLIN_EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` /
+# to `("EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` /
 # `wall_foundation:` detail keys and goldens, break the exact-key star overrides in
 # plan/transitions.py, and add a key to every table keyed by assembly. `layer_materials`
 # substitutes a material and nothing else — thickness, framing, banding and every derived
@@ -516,11 +516,11 @@ WALLS = [
     # --- exterior loop (CCW), sheathing-ext on the line -----------------------
     Wall(uid="CMW101AAAA", tag="W-M-S1", start_node="N-M-SW", end_node="N-M-S1",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="CMW102AAAA", tag="W-M-S2", start_node="N-M-S1", end_node="N-M-SE",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6",
+         assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # W-M-E1/W-M-E2 merged into one wall so WIN-M-EAST-MID could land inside
@@ -533,7 +533,7 @@ WALLS = [
     # fixed; re-splitting the second storey's own east wall to restore it would undo the
     # 2026-08-15 mirror-rhythm tuning that keeps WIN-S-BED1/BED2 on their stud lines.
     Wall(uid="CMW103AAAA", tag="W-M-E1", start_node="N-M-SE", end_node="N-M-NE",
-         assembly="CATLIN_EXT_2X6",
+         assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING),
     # Split at N-M-PAN3, where RM-M-PANTRY's east partition tees into the north wall
@@ -553,15 +553,15 @@ WALLS = [
     # for. Second storey: W-S-N1B is re-pointed to W-M-N1B for the same reason (second.py).
     Wall(uid="CMW105AAAA", tag="W-M-N1", start_node="N-M-NE", end_node="N-M-PAN3",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="R0STSQM95Y", tag="W-M-N1B", start_node="N-M-PAN3", end_node="N-M-N1",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N1"),
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
     # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
     # (2026-07-28, MEP shaft closet). W-M-N3B carries the actual NW building corner —
@@ -569,7 +569,7 @@ WALLS = [
     # per-wall override (2026-08-25, see houses/catlin/CLAUDE.md's corner section).
     Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-MECH3",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6",
+         assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
     # stacks_on W-B-N4, not W-B-N3: the basement's north wall was split at this same
@@ -577,13 +577,13 @@ WALLS = [
     # two storeys now break in the same place and each main segment has one wall under it.
     Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
          layer_materials=(LayerMaterial(layer="cladding", material="board-batten-24"),),
-         assembly="CATLIN_EXT_2X6",
+         assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N4"),
     # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall
     # (2026-07-28, MEP shaft closet).
     Wall(uid="CMW136AAAA", tag="W-M-W1B", start_node="N-M-NW", end_node="N-M-MECH1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     # Split again at N-M-MUDC1, where RM-M-MUD-CLOSET's north partition tees into the
     # west wall — the same endpoint-only junction rule that forced the
@@ -591,23 +591,23 @@ WALLS = [
     # segment, and the segment's start node (N-M-MECH1) is unchanged, so its stud grid
     # and the window's bay position do not move.
     Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-MECH1", end_node="N-M-MUDC1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="WM8EB2TX38", tag="W-M-W1C", start_node="N-M-MUDC1", end_node="N-M-W1",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW109AAAA", tag="W-M-W2", start_node="N-M-W1", end_node="N-M-W2",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW110AAAA", tag="W-M-W3", start_node="N-M-W2", end_node="N-M-W3",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     Wall(uid="CMW111AAAA", tag="W-M-W4", start_node="N-M-W3", end_node="N-M-SW",
-         assembly="CATLIN_EXT_2X6",
+         assembly="EXT_2X6",
          alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W2"),
     # --- center bearing wall (2x6), stacks on the basement concrete line ------
-    # W-M-C1 is the ONE segment of the centreline on CATLIN_INT_2X6_BRG_RC:
+    # W-M-C1 is the ONE segment of the centreline on INT_2X6_BRG_RC:
     # RM-M-BED west, RM-M-LIVING east, so it gets a resilient channel on the BEDROOM face
     # and fibreglass in the bay. Still 2x6, still BEARING, still on the line's stud module.
     # `interior_room` is what puts the channel on the bedroom side — layer 0 is the
@@ -617,14 +617,14 @@ WALLS = [
     # axis slides 1/4" and W-S-C1's `stacks_on` is inside `_axis_match`'s tolerance of
     # dropping. Both are explained in full at the assembly (plan/assemblies.py).
     Wall(uid="CMW112AAAA", tag="W-M-C1", start_node="N-M-S1", end_node="N-M-C1",
-         assembly="CATLIN_INT_2X6_BRG_RC", interior_room="RM-M-BED", top=ft(9),
+         assembly="INT_2X6_BRG_RC", interior_room="RM-M-BED", top=ft(9),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS"),
     Wall(uid="CMW113AAAA", tag="W-M-C2", start_node="N-M-C1", end_node="N-M-E4",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     Wall(uid="CMW114AAAA", tag="W-M-C3", start_node="N-M-E4", end_node="N-M-C2",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
     # y 21'-8" .. 25'-10" IS NOT A WALL — it is the BM-M-HALL flitch of LVL, the main-storey
     # twin of BM-S-HALL directly above it. W-M-C4 / W-M-C4B used to stand here; the whole
@@ -639,10 +639,10 @@ WALLS = [
     # untouched — both halves are the same assembly, the same role and the same
     # ``stacks_on``, so the load path is unchanged and only the junction framing is new.
     Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-PAN1",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     Wall(uid="A5K4RVWPWW", tag="W-M-C5B", start_node="N-M-PAN1", end_node="N-M-N1",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
     # W-M-STRW carries the cut second-floor joists and stacks over the basement concrete
@@ -661,13 +661,13 @@ WALLS = [
     # delete it) and the whole ~9'-4" west edge reads as unsupported and gets a full LVL
     # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
     #
-    # Both segments are CATLIN_MUDROOM_INT_2X6_EXPOSED, appearance-grade DF studs open to the
+    # Both segments are MUDROOM_INT_2X6_EXPOSED, appearance-grade DF studs open to the
     # mudroom (coat nooks) with 3/4" cabinet plywood on the stair face — `interior_room` picks
     # the mudroom side as layer 0. Until 2026-07-30 the mudroom segment was plain
-    # CATLIN_INT_2X6_BRG (spf vs. df-select-s4s), which `integrity.junction_fallback` flagged
+    # INT_2X6_BRG (spf vs. df-select-s4s), which `integrity.junction_fallback` flagged
     # at N-M-STRJ.
     #
-    # ALIGNMENT: this stack is 6 1/4" vs. CATLIN_INT_2X6_BRG's 6 3/4". The axis is pinned
+    # ALIGNMENT: this stack is 6 1/4" vs. INT_2X6_BRG's 6 3/4". The axis is pinned
     # 3 3/8" inboard of the plywood's stair face (not centred) because FO-S-STAIR's west edge
     # and both flights' stringers are authored off that exact face (second.py) — the 1/2"
     # thickness change is taken entirely out of the mudroom side (9'-8 5/8" -> 9'-9 1/8").
@@ -676,7 +676,7 @@ WALLS = [
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
     # 34'-8", so no stud is cut and no header is needed.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
-         end_node="N-M-STRJ", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         end_node="N-M-STRJ", assembly="MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
@@ -691,7 +691,7 @@ WALLS = [
     # the vertical load path either as W-M-STRW2 (this wall) or its predecessor. Its job is
     # FO-S-STAIR's bearing_refs, not the stack.
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
-         end_node="N-M-STR1", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         end_node="N-M-STR1", assembly="MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR3"),
@@ -831,7 +831,7 @@ WALLS = [
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one
     # in this house that must NEVER be swapped to fiberglass; the reasoning is on
-    # CATLIN_TUBDECK_INT_2X4 in plan/assemblies.py and is a moisture argument, not a
+    # TUBDECK_INT_2X4 in plan/assemblies.py and is a moisture argument, not a
     # thermal one.
     #
     # ELEVATION ARITHMETIC, which is the whole of the detail:
@@ -860,11 +860,11 @@ WALLS = [
     # two, taking 19.8 ft2 out of its area. As drawn, these are dangles inside the room's
     # face and the room still reads 72.8 ft2.
     Wall(uid="TD5N23A4SZ", tag="W-M-TUBDK-W", start_node="N-M-TUBDK-N",
-         end_node="N-M-TUBDK-C", assembly="CATLIN_TUBDECK_INT_2X4",
+         end_node="N-M-TUBDK-C", assembly="TUBDECK_INT_2X4",
          base_elevation=inch(0.75), top=inch(19.25),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="9HX5HSKNWD", tag="W-M-TUBDK-S", start_node="N-M-TUBDK-C",
-         end_node="N-M-TUBDK-E", assembly="CATLIN_TUBDECK_INT_2X4",
+         end_node="N-M-TUBDK-E", assembly="TUBDECK_INT_2X4",
          base_elevation=inch(0.75), top=inch(19.25),
          structural_role=StructuralRole.NONBEARING),
     # --- bedroom north wall ------------------------------------------------------
@@ -926,12 +926,29 @@ WALLS = [
     # would not.
     #
     # ** base_elevation TAKES THE BRICK OFF THE FLOOR AND ONTO THE POUR. ** -1'-1 7/16" is
-    # W-B-E1's bearing seat, so `top` is a HEIGHT of 6'-5 7/16" (77 7/16") off that seat and
-    # not off the storey datum. The brick rises 13 7/16" through FS-M-EAST's joist zone —
+    # W-B-E1's bearing seat, so `top` is a HEIGHT of 6'-6 3/8" (78 3/8") off that seat and
+    # not off the storey datum.
+    #
+    # ** THAT HEIGHT WAS 77 7/16" UNTIL 2026-09-06 AND IT WAS SHORT BY THE FLOOR FINISH. **
+    # Every elevation in this design is quoted AFF and RM-M-LIVING's finished floor is not the
+    # storey datum: 3/4" subfloor plus 3/16" lvp puts it at +15/16". A `top` of 77 7/16" landed
+    # the mantel at 64" above the DATUM, i.e. 5'-3 1/16" AFF — and with it went all three of
+    # the numbers this design is built on. 78 3/8" restores them together, which is the tell
+    # that they were always one number:
+    #   * mantel underside 5'-4" AFF, as designed;
+    #   * 24 modular courses of VISIBLE brick (64" / 2 2/3"), exactly;
+    #   * 11 5/8" from the firebox head to the mantel — the clearance quoted on
+    #     SB-M-FIRE-MANTEL's `clear_height` and checked against Amantii's 4" rule. It was
+    #     really 10 11/16".
+    # The odd 14 3/8" between the pour and the floor line is where the fraction goes, and that
+    # is the right place for it: it is buried in the floor, the mason never sees it, and the
+    # visible coursing gets to start clean off the floor line.
+    #
+    # The brick rises 14 3/8" through FS-M-EAST's joist zone —
     # FO-M-FIRE below is that hole — and nothing shows in RM-B-GYM, whose ceiling is under
     # the joists. **Result: zero brick load on the floor**, which is why
     # preferences.toml's 50 plf wood-borne masonry limit does not arise here; a floor-borne
-    # full-brick surround this size would have run 222-274 plf, 4-5.5x over it.
+    # full-brick surround this size would have run 193-236 plf, 3.9-4.7x over it.
     # notes/east_breast_bearing.md works the a/L arithmetic and names the I-joist reference.
     #
     # No hearth extension: an electric firebox is outside NFPA 211, a hearth pad would be
@@ -947,7 +964,7 @@ WALLS = [
     # report here means nothing looked, which is why the note exists.
     Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
          assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(-13.4375),
-         top=inch(77.4375), structural_role=StructuralRole.NONBEARING),
+         top=inch(78.375), structural_role=StructuralRole.NONBEARING),
 ]
 
 OPENINGS = [
@@ -1433,7 +1450,7 @@ FLOOR_HEAT = [
     # answer is a bigger MAT, not a smaller wattage.
     #
     # The load it has to carry, at the -15 F of plan/site.py: RM-M-BATH2 has one exterior
-    # surface, the west wall, and one window in it. 76.4 ft2 of CATLIN_EXT_2X6 at R-40.7
+    # surface, the west wall, and one window in it. 76.4 ft2 of EXT_2X6 at R-40.7
     # over an 85 F delta is 160 BTU/h; WIN-M-BATH2 is 6.75 ft2 of U-0.25 glass at 143 BTU/h.
     # Ceiling and floor are both interior. ** ~303 BTU/h, which is small because the
     # envelope is very good. **
@@ -1548,7 +1565,7 @@ FLOOR_HEAT = [
 # footprint's east limit, which is what `_opening_edge_has_declared_bearing` tests to a
 # 1e-9 tolerance; if a header ever emits here, back it off to ft(10, 3.25) — 1/8" of deck
 # lip is framing, not a design change. **It emitted on 2026-09-05 and the west edge is
-# ft(10, 3.25) now**: W-B-STR3 was retyped to CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR so its
+# ft(10, 3.25) now**: W-B-STR3 was retyped to STAIRWALL_INT_2X6_BRG_UNDERSTAIR so its
 # closet face could carry Type X instead of stair plywood (R302.7), and 5/8" board finishes
 # 1/8" shy of where 3/4" ply did. `structural.floor_opening_header` FAILed with a 9'-0" LVL
 # within the same build, as promised. North
@@ -1608,9 +1625,13 @@ FLOOR_OPENINGS = [
     # that bearing, so over this 45 1/2" of y no joist can reach it and the whole strip from
     # the brick face to the wall line is joist-free. Three or four joists are cut and headed.
     #
-    # ** UNDER 4'-0", WHICH IS THE THRESHOLD THAT MATTERS. ** At 3'-9 1/2" this is IRC
-    # R502.10's single-header, single-trimmer case — prescriptive framing, not a design.
-    # ** BUT THESE ARE I-JOISTS AND R502.10 IS A SAWN-LUMBER RULE. ** Cutting and heading
+    # ** THIS OPENING IS 4'-1" AND SO IT IS OVER IRC R502.10's 4'-0" LINE — see the y-edge
+    # note below for why it had to grow past it. ** That line is R502.10's single-header,
+    # single-trimmer case, and crossing it costs nothing here for three separate reasons: the
+    # resolver had already given this hole a DOUBLED trimmer each side and a 2-ply LVL header;
+    # it did not change that header's section when the span grew from 3'-9 1/2"; and R502.10
+    # does not govern the floor in the first place.
+    # ** THESE ARE I-JOISTS AND R502.10 IS A SAWN-LUMBER RULE. ** Cutting and heading
     # 11 7/8" I-joists follows the MANUFACTURER's header table and needs their specified
     # hangers and web stiffeners. That is still a published table rather than a PE stamp, and
     # it is the one thing in this detail that must be confirmed against the joist maker's
@@ -1632,6 +1653,33 @@ FLOOR_OPENINGS = [
     #     35'-10 3/4" is the rim's inboard face: the trimmers die on it, which is how a
     #     trimmer meets a rim.
     #
+    # ** THE y EDGES ARE SET BY THE TRIMMERS THE SAME WAY, AND THIS IS WHERE THE FIRST
+    # AUTHORING OF THIS OPENING WAS WRONG. ** The outline first ran y=6'-9 1/4"..10'-6 3/4",
+    # i.e. exactly the brick's own 45 1/2" — which reads as "the hole is the size of the
+    # thing going through it" and is the natural thing to write. It is not buildable. The
+    # resolver puts the FIRST trimmer ply's axis ON the opening edge (resolve/floors.py:
+    # "the trimmer pair's first ply retains its ends there. Only the second trimmer ply
+    # moves, and it moves outboard"), so a 2 1/2" I-joist ply centred on the edge reaches
+    # 1 1/4" INTO the hole at each end. ** The brick's last 1 1/4" at each end was in the
+    # same air as a trimmer, top to bottom of the joist zone. **
+    #
+    # Nothing catches that. `structural.member_interference` walks FRAMING against FRAMING;
+    # a wall's masonry layer is not a member, so brick-through-joist is invisible to it, and
+    # the whole thing sat at 0 FAIL. It was found by reading the resolved member boxes.
+    #
+    # So the edges are pushed out 1 3/4" each way — 1 1/4" for the trimmer ply, plus 1/2" of
+    # mason's clearance to the ply's inboard face:
+    #   * south y=6'-7 1/2" -> ply face at 6'-8 3/4", brick starts 6'-9 1/4"
+    #   * north y=10'-8 1/2" -> ply face at 10'-7 1/4", brick ends 10'-6 3/4"
+    # ** COST: THE HEADER NOW SPANS 4'-1", NOT 3'-9 1/2". ** That crosses IRC R502.10's 4'-0"
+    # line, so the "under 4'-0", prescriptively framable" reading this opening was authored
+    # under NO LONGER HOLDS. In practice it changes nothing, because the header was never
+    # prescriptive: it is a 2-ply LVL that `structural.floor_opening_header` sizes, in an
+    # I-joist floor R502.10 does not govern at all, and the joist maker's own table was
+    # already the stated authority (above, and in the note). The claim in the note was
+    # corrected rather than the opening shrunk — 1/2" of clearance to lay brick against is
+    # already the minimum a mason would accept.
+    #
     # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: it stands over W-B-E1's 12"
     # pour (x 420"..432", y 0..18'-0"), so `_opening_edge_has_declared_bearing` finds the whole
     # edge carried and no second header is emitted there. The other three edges are framing —
@@ -1643,14 +1691,14 @@ FLOOR_OPENINGS = [
     # figure of speech here: `FS-M-EAST.ceiling_below` is RM-B-GYM's 5/8" gypsum, and this
     # opening CUTS IT. No brick shows in the gym (the wythe is entirely inside the floor
     # depth, and the ceiling plane is below the joists), but the board has to be closed back
-    # around the 3 5/8" wythe. The three CATLIN_BASEMENT_12/CATLIN_EXT_2X6 section goldens
+    # around the 3 5/8" wythe. The three BASEMENT_12/EXT_2X6 section goldens
     # were re-blessed on 2026-09-06 for exactly that: the gym's ceiling boundary now stops at
     # the header.
     FloorOpening(uid="93FDVPTK2R", tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(34, 10.125), ft(6, 9.25)),
-                          pt(ft(35, 10.75), ft(6, 9.25)),
-                          pt(ft(35, 10.75), ft(10, 6.75)),
-                          pt(ft(34, 10.125), ft(10, 6.75))),
+                 outline=(pt(ft(34, 10.125), ft(6, 7.5)),
+                          pt(ft(35, 10.75), ft(6, 7.5)),
+                          pt(ft(35, 10.75), ft(10, 8.5)),
+                          pt(ft(34, 10.125), ft(10, 8.5))),
                  bearing_refs=("W-B-E1",)),
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(4, 9.685), ft(16, 11.926)),
@@ -1679,7 +1727,7 @@ SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK",
          outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 8.615), ft(16, 2.375)),
                   pt(ft(7, 8.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
-         thickness=inch(2.25), assembly="CATLIN_TUBDECK_INT_PLY_CAP",
+         thickness=inch(2.25), assembly="TUBDECK_INT_PLY_CAP",
          top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
 ]
 
@@ -1872,7 +1920,7 @@ PANELING = [
 #
 # Geometry: 3" outboard of each RO edge is the king stud's outer face, where the strap
 # lies clear of the pack it restrains. `_JAMB_Y_*` centres them 3 1/4" into the 5 1/2"
-# stud layer (measured from CATLIN_EXT_2X6's sheathing-ext plane); the dialect allows no
+# stud layer (measured from EXT_2X6's sheathing-ext plane); the dialect allows no
 # arithmetic, so each offset is written as the number it lands on. Elevation is
 # sill-plate mid-height.
 #

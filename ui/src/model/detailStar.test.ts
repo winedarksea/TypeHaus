@@ -21,7 +21,7 @@ function entry(fields: Partial<DetailIndexEntry> & { key: string }): DetailIndex
   };
 }
 
-const RIM = "storey_stack:rim:CATLIN_EXT_2X6";
+const RIM = "storey_stack:rim:EXT_2X6";
 const INT = "storey_stack:rim:INT_2X4_PARTITION";
 
 export function runDetailStarTests() {

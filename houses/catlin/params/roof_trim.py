@@ -49,7 +49,7 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   == roof footprint edge, where eave_z_m is defined) — and the footprint runs to that same
   face in **y** as well, which is how far the eave runs have to reach to close the corner;
 - RAFTER-PLATE top at 20'-2 1/4" (attic datum 20'-0" + 3/4" subfloor + 1 1/2" of 2x6 laid
-  flat, no knee wall — see plan/assemblies.py's CATLIN_RAFTER_PLATE); deck plane (eave_z_m)
+  flat, no knee wall — see plan/assemblies.py's RAFTER_PLATE); deck plane (eave_z_m)
   rides the I-joist rise above it: 11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is
   20'-11 3/8";
 - roof stack above the deck (perpendicular): 5/8" CDX plywood (deck surface at 0.625") ->
@@ -60,7 +60,7 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   continuous skin), 0.665" perpendicular above the deck plane.
 
 The roof is 5/8" plywood straight on the I-joists with a fully-adhered butyl membrane on it
-and the panel clipped to that (plan/assemblies.py CATLIN_ROOF, flash-and-batt in the bay
+and the panel clipped to that (plan/assemblies.py ROOF, flash-and-batt in the bay
 under IRC R806.5 item 5.3).
 
 **The chain itself does not change — only the plane it hangs from.** The drip flashing lies
@@ -90,7 +90,7 @@ _HOUSE_FT = 36.0
 #
 # **The one constant the cladding face is measured by**, and deliberately spelled as the
 # stack it is: 1 1/2" band A foam + 1 1/2" inner girt + 1" band C foam + 1/2" vent gap +
-# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py CATLIN_EXT_2X6). A ribbed panel
+# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py EXT_2X6). A ribbed panel
 # stands off by its rib height, where a snap-lock pan stands off by its pan. Every param in
 # this house that measures off the cladding moves with it.
 #
@@ -103,7 +103,7 @@ _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
 # ** 20'-2 1/4", NOT 25'-0". ** The eave is a 2x6 laid FLAT on the attic deck
-# (CATLIN_RAFTER_PLATE, no knee wall), so the plate top is the attic datum plus 3/4" of
+# (RAFTER_PLATE, no knee wall), so the plate top is the attic datum plus 3/4" of
 # subfloor plus 1 1/2" of plate. Everything in this module hangs off it.
 _PLATE_TOP = ft(20, 2.25)
 _DECK_RISE_IN = 11.875 - 5.5 * (6.0 / 12.0)  # I-joist depth - 2x6 seat drop = 9.125"

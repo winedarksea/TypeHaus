@@ -20,7 +20,7 @@ from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
 pytest.importorskip("matplotlib")
 
-_KEY = "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF"
+_KEY = "wall_roof:EXT_2X6|ROOF"
 
 
 @pytest.fixture(scope="module")

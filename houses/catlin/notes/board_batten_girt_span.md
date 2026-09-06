@@ -11,7 +11,7 @@ bending check passes and is not the question.
 
 Subject: `board-batten-24` — 24 ga concealed-fastener steel board & batten, 20" net
 coverage — on the twenty north/south walls of the house, spanning the KDAT girt course at
-**24" o.c.** (`CATLIN_EXT_2X6`, `PLANT_EXT_2X6_HUMID`).
+**24" o.c.** (`EXT_2X6`, `PLANT_EXT_2X6_HUMID`).
 
 The east and west walls keep `pbr-panel-26` and are **not** subjects here. **ESR-4729 does
 not cover this wall at all.** It is Western States' report, it covers ROOF panels only, and

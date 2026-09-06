@@ -534,16 +534,16 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # header, no jacks and no kings. There is simply one fewer place in the house that needs
     # a unit too small to break a stud.
     #
-    # ** 13 ON 2026-09-06: WIN-S-BED3-N, THE NORTH FACADE'S FOURTH UNIT. ** WT-1436 at
-    # x 23'-4" on W-S-N1, filling the lower-east corner the three existing north windows
-    # left empty. It is here rather than in the header list for the family's usual reason
-    # and one more: x 22'-8" — the station that would have stacked it under WIN-A-N2 — is
-    # unreachable at any width, because a 30" RO there would cross node N-S-B5 and a 14" RO
-    # sits on a bay centre, and 23'-4" is the nearest bay centre to it. The unit's east jamb
-    # lands flush with WIN-A-N2's at 23'-11" instead, which is the alignment that was
-    # available. 36" tall rather than 24" so the head lands on a girt course; the framing
-    # rule this test states is indifferent to height and unchanged by it.
-    assert len(framed) == 13, [o.tag for o in framed]
+    # ** 13 ON 2026-09-06, AND BACK TO 12 THE SAME DAY. ** WIN-S-BED3-N (WT-1436 at
+    # x 23'-4" on W-S-N1) was added to fill the lower-east corner the three existing north
+    # windows left empty, then withdrawn when the facade was solved a better way: rather
+    # than adding a fourth unit off the module, WIN-S-HALL-N moved west from 29'-4" to
+    # 24'-0" and WIN-A-N2 east from 22'-8" to the same 24'-0", with WIN-A-N1 and
+    # WIN-S-STAIR-N moving west 13'-4" -> 12'-0" to keep the pair mirrored on the 18'-0"
+    # ridge. Four windows already in the house now make an exact rectangle, so the corner
+    # is filled by a MOVE and the 14" family is back to its 12. See storeys/attic.py's
+    # north-gable note for why 12'-0" / 24'-0" is buildable under the 6:12 rake.
+    assert len(framed) == 12, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

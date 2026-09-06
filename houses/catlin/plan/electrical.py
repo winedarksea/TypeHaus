@@ -29,7 +29,7 @@
 # mid-air. Enforced by
 # `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`,
 # except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
-# pillar). CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
+# pillar). EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
 # face 6 1/2" outboard of that.
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
@@ -818,7 +818,7 @@ MAIN_DEVICES = [
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the
-    # nearest real wall — east wall interior face x=35'-5 3/8" (CATLIN_EXT_2X6's inside face
+    # nearest real wall — east wall interior face x=35'-5 3/8" (EXT_2X6's inside face
     # is 6 5/8" in from the 36' sheathing plane). ** WIN-M-DIN-E2 IS GONE, AND THE STRETCH IT
     # NAMED WITH IT. ** It was retired 2026-08-24 with the old WIN-M-LIV-E2 and replaced by
     # WIN-M-EAST-MID at y=18'-8" (plan/storeys/main.py), so the "5'-1" clear stretch between
@@ -1003,7 +1003,7 @@ MAIN_EQUIPMENT = [
     # multi's outdoor unit (CKT-HP2 feeds EQ-M-HP2-OD, interconnects run from there).
     #
     # ** y MOVED 0'-6" -> 0'-11 1/8" ON 2026-09-06, AND IT IS A CORRECTION. ** W-M-S2's
-    # interior face is y=6 5/8" (CATLIN_EXT_2X6 aligned on the 0'-0" sheathing plane), and a
+    # interior face is y=6 5/8" (EXT_2X6 aligned on the 0'-0" sheathing plane), and a
     # 9" body centred at y=6" spans y 1 1/2"..10 1/2" — ** 5 1/8" of both heads was drawn
     # inside the studs. ** 6 5/8" + 4 1/2" puts each case's BACK on the finish face, which is
     # where a surface-mounted head hangs. Nothing grades this: the wall-face test in
@@ -1057,9 +1057,30 @@ MAIN_EQUIPMENT = [
     # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The BESTA run was re-laid about it
     # (all eight kept) and the seating turned onto it (plan/placeables.py).
     #
-    # ** POSITION. ** x=35'-2 1/8" puts the 4 1/2"-deep rough opening's FRONT on the brick face
-    # at x=34'-11 7/8" and its back at 35'-4 3/8", inside the 1 7/8" of framing between the
-    # wythe's back and the gwb. y=8'-8" is the pier centre. `elevation` is the BASE of the
+    # ** POSITION. ** x=35'-1 7/8" stands the 4 1/2"-deep body's FACE 1/4" PROUD of the brick
+    # at x=34'-11 5/8", with its back at 35'-4 1/8" — 5/8" through the wythe's back face and
+    # into the 1 7/8" of framing behind it, which is where a 4 1/2" appliance in a 3 5/8"
+    # wythe has to go. ** The 1/4" is a real dimension, not a drafting fudge. ** The
+    # XtraSlim is TRIMLESS and its face is published 3/8" wider than the body: there is a
+    # thin face flange that laps whatever the finish is, so on brick the glass plane sits
+    # proud of the brick plane by about the flange, not flush with it. Flush was authored
+    # first and it was wrong twice over — wrong about the product, and it put two coplanar
+    # faces in the viewer, which z-fights and reads as a torn hole in the surround.
+    # y=8'-8" is the pier centre.
+    #
+    # ** HOW IT ACTUALLY SITS IN THE WYTHE, measured off the resolved bodies. ** The 29" rough
+    # opening leaves ** 8 1/4" of brick as a jamb on each side ** of a 45 1/2" panel. Modular
+    # brick is a 8" module (7 5/8" plus a 3/8" head joint), so each jamb is one full brick and
+    # a 1/4" — a fat head joint or a lightly cut closer, every course, both sides. It is
+    # buildable and it is not automatic; the mason should be shown the elevation rather than
+    # left to find it. The opening's HEAD is worse and unavoidable: 20 3/8" of rough opening
+    # is not a whole number of 2 2/3" courses, so it lands at 19.6 courses and the brick is
+    # CUT along the head. That is normal for a trimless unit — the brick is being cut to the
+    # opening anyway, since there is no flange to hide a joint under — but it is the reason
+    # the lintel over this opening wants to be a steel angle rather than a rowlock course.
+    # Below the opening the coursing is exact: 32" AFF is 12 courses off the floor line.
+    #
+    # `elevation` is the BASE of the
     # opening at 32" — the east row's own sill line, so one datum serves four openings — which
     # puts the opening top at 52 3/8" and the flame centre at 42 3/16" against a seated eye of
     # ~46-48". ** That is a 14" RISE on the old unit's 28" top. ** rotation -90 backs it to the
@@ -1079,7 +1100,7 @@ MAIN_EQUIPMENT = [
     # old unit at x=35'-8" with a 7" body had its BACK at 35'-11 1/2", so ** the fireplace has
     # been buried 6 1/8" inside the studs for as long as that comment has existed. **
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(35, 2.125), ft(8, 8)), footprint=(inch(29), inch(4.5)),
+              position=pt(ft(35, 1.875), ft(8, 8)), footprint=(inch(29), inch(4.5)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
               circuit="CKT-FIREPLACE",
               mount=Mount(kind=MountKind.WALL, elevation=inch(32),
@@ -1235,14 +1256,17 @@ PV_JBOX = [
     #
     # ** THE STATION HAS TO CLEAR BOTH THE RAKE AND A WINDOW, AND THE BAND IS NARROW. **
     # The rake wants x >= 9'-1 1/4" (the gable plane is 20'-11 3/8" + x/2, and this box
-    # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 12'-1"..14'-7",
-    # framing bumper 11'-11"..14'-9", sill +22'-0", head +25'-0") wants x <= 11'-11" or
-    # x >= 14'-9". The 2026-09-03 window move east opened this band: the ROOF UNDERSIDE
-    # (20'-1 1/2" + x/2, the plane `integrity.element_above_roof` reads, a foot below the
-    # cladding plane) needs x >= 10'-10" to carry a 25'-6" riser, and 10'-10"..11'-11" now
-    # clears both. The box is LEFT at x=10'-2", elevation 25'-0", where the underside is
-    # 25'-4" and there is 4" of clearance — wholly west of the window on the facade, which
-    # is the better elevation anyway, and moving it would only re-run conduit for nothing.
+    # needs 25'-6" of cladding to grip); WIN-A-N1's rough opening (x 10'-9"..13'-3",
+    # framing bumper 10'-7"..13'-5", sill +22'-0", head +25'-0") wants x <= 10'-7" or
+    # x >= 13'-5". ** THE 2026-09-06 MOVE WEST CLOSED THE EASTWARD BAND AGAIN. ** The
+    # 2026-09-03 move east had opened 10'-10"..11'-11" between the roof underside's
+    # x >= 10'-10" (20'-1 1/2" + x/2, the plane `integrity.element_above_roof` reads, a foot
+    # below the cladding) and the old bumper at 11'-11"; the window has since come back a
+    # bay west and that band is inside the glass. None of it matters, because the box was
+    # LEFT at x=10'-2" through both moves: elevation 25'-0" where the underside is 25'-4",
+    # 4" of clearance, and 5" west of the bumper — wholly west of the window on the facade,
+    # which is the better elevation anyway. It is a tighter 5" than it was, and it is the
+    # number to re-check if this window is ever asked to move again.
     #
     # Going east instead (x >= 14'-11") clears the window at 25'-6" and costs 2'-6" of
     # 1 1/2" EMT to reach a worse station: further from VR-M-RADON-VENT's riser, and out
@@ -2102,7 +2126,7 @@ NEC_FILL_SECOND = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     # Slid 26'-9 7/8" -> 29'-2" east along the same south wall, 2026-09-06.
     # FURN-S-BED3-WARD moved onto this wall (x 293.5..341.5) to clear the north wall for
-    # WIN-S-BED3-N, and at 321 7/8" the box ended up BEHIND the case. Nothing would have
+    # WIN-S-HALL-N's move west to 24'-0", and at 321 7/8" the box ended up BEHIND the case. Nothing would have
     # caught it: `_fixed_cabinet_intervals` in checks/mep/electrical.py only breaks wall
     # space for a placeable with `work_surface is False`, and FURN-WARDROBE-48 leaves it
     # None, so electrical.receptacle_spacing passes either way and the room just quietly

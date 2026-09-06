@@ -40,7 +40,7 @@ TRANSITIONS = (
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
                star=True,
                unstarred_conditions=(
-                   "wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
+                   "wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG",
                )),
     # Same curation as the foundation above: the rim band is a sheet because it is where
     # the air barrier and the insulation cross a floor line. An interior partition's rim
@@ -49,22 +49,22 @@ TRANSITIONS = (
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
                continuity=AIR_WATER_THERMAL, star=True,
                unstarred_conditions=(
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT",
+                   "storey_stack:rim:FOUNDATION_WALL_12_INT|INT_2X6_BRG",
                    # The stair-wall stack, framed-on-framed. Two keys, one per leaf: W-B-STR
                    # carries the ESS closet's Type X and W-B-STR3 the under-stair closet's
                    # (2026-09-05 — the plain BRG key stopped deriving with that retype, and
                    # `integrity.condition_star_override` said so within the same build).
-                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
-                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG",
+                   "storey_stack:rim:MUDROOM_INT_2X6_EXPOSED|STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
+                   "storey_stack:rim:MUDROOM_INT_2X6_EXPOSED|STAIRWALL_INT_2X6_BRG_TYPEX",
+                   "storey_stack:rim:INT_2X6_BRG",
                    # W-M-C1 on W-B-CS. This pair IS that one stack; the old key stopped
                    # deriving entirely, and `integrity.condition_star_override` said so.
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG_RC|SAUNA_LINER_INT_2X6_BRG",
+                   "storey_stack:rim:INT_2X6_BRG_RC|SAUNA_LINER_INT_2X6_BRG",
                    # Same rim, same reason to leave it off the primary set — a different
                    # assembly on top of it (plan/assemblies.py).
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   "storey_stack:rim:INT_2X6_BRG_PLUMBING|MUDROOM_INT_2X6_EXPOSED",
                    # W-S-BD-N1B over W-M-STOS2, the other half of the same retype.
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG_PLUMBING|INT_2X4_PARTITION",
+                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_BRG_PLUMBING",
                    # SN3 is INT_2X6_STAGGERED_PLUMBING now — the suite bath's real wet wall
                    # (plan/storeys/second.py) — so that stack derives the paired key below.
                    "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
@@ -74,8 +74,8 @@ TRANSITIONS = (
                    # carrying a Class I barrier across the joist ends, not an air seal).
                    # Both transitions match these keys, which is legal; unstarring them here
                    # is what keeps ONE sheet per condition in the primary set.
-                   "storey_stack:rim:CATLIN_EXT_2X6|PLANT_EXT_2X6_HUMID",
-                   "storey_stack:rim:CATLIN_INT_2X6_BRG|PLANT_INT_2X6_BRG_HUMID",
+                   "storey_stack:rim:EXT_2X6|PLANT_EXT_2X6_HUMID",
+                   "storey_stack:rim:INT_2X6_BRG|PLANT_INT_2X6_BRG_HUMID",
                )),
     # No notes= here, deliberately: this condition pattern is a wildcard over every
     # stack-width change in the house (partition-to-partition, sauna liner, plant room,
@@ -91,20 +91,24 @@ TRANSITIONS = (
     # pan from the sheathing face — draws neither piece where it now goes.
     # `outie-window-truss` is its sibling.
     Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_EXT_*",
+               condition_pattern="opening_perimeter:EXT_*",
                notes="notes/outie_window_truss_detail.md", overlay="outie-window-truss",
                continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
                condition_pattern="opening_perimeter:FOUNDATION_WALL_*_INT",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
-    # ``CATLIN_BASEMENT_*`` covers every perimeter foundation assembly: the N/W wall with
+    # ``BASEMENT_[0-9]*`` covers every perimeter foundation assembly: the N/W wall with
     # its above-grade protection band, the 12" east wall, and the two buried ends of the
     # south wall. They differ in what covers the exterior XPS, a field condition well
     # outside an opening's perimeter, and in the pour depth — but the buck, the frame and
     # the flashing at a window in cast concrete are the same detail at 8" as at 12" (only
     # the jamb gets 4" shallower), and one sheet is what draws them.
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_BASEMENT_*",
+               # The [0-9] is load-bearing, not decoration: a bare ``BASEMENT_*`` also
+               # swallows BASEMENT_BRICK_VENEER, whose perimeter is an open segmental arch
+               # that TR-CATLIN-VENEER-OPENING deliberately SUPPRESSES. Widening this glob
+               # silently re-adds a detail sheet for a perimeter with no perimeter work.
+               condition_pattern="opening_perimeter:BASEMENT_[0-9]*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
     # Starred: the garage/breezeway threshold condition — both doors open onto the slab
     # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
@@ -122,13 +126,13 @@ TRANSITIONS = (
     # The sunken garden's framed walkout. D-B-PATIO is an ordinary innie opening in a 2x6
     # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
-    # CATLIN_EXT_* walls take: there is no truss plane down here, the unit sits in the stud
+    # EXT_* walls take: there is no truss plane down here, the unit sits in the stud
     # plane, and the wall's water plane is the damp-proofing over the sheathing.
     # SAUNA_LINER_ON_GARDEN_FRAMED needs nothing here — WIN-B-SAUNA's perimeter is the
     # vapour-control return TR-CATLIN-SAUNA-OPENING already draws, and its `SAUNA_*`
     # pattern reaches the framed variant unchanged.
     Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_GARDEN_FRAMED_2X6",
+               condition_pattern="opening_perimeter:GARDEN_FRAMED_2X6",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL),
     # ** IT DECLARES ITS OWN CONTINUITY, and it is not AIR_WATER_THERMAL. ** GARAGE_WALL_2X6
@@ -154,17 +158,17 @@ TRANSITIONS = (
     Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
                condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG",
+               condition_pattern="opening_perimeter:INT_2X6_BRG",
                overlay="bearing-partition-opening"),
     # D-A-STUDY's opening in the study bookcase wall. It needs its OWN binding rather than
     # falling under TR-CATLIN-INTERIOR-OPENING's `INT_*` glob, for the same reason
-    # CATLIN_INT_2X6_BRG does: the tag starts "CATLIN_", so the glob never sees it.
+    # INT_2X6_BRG does: the tag starts "CATLIN_", so the glob never sees it.
     # The overlay is the interior-opening sheet, which is the right drawing — what is
     # different here is not the perimeter detail but the LEAF (a ~250 lb bookcase door) and
     # the hinge-side jamb behind it, and neither is a perimeter condition. Both are recorded
     # on DT-INT-BOOKCASE30 and on W-A-SN.
     Transition(uid="QZCDFYBATE", tag="TR-CATLIN-BOOKCASE-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_INT_2X4_BOOKCASE_12",
+               condition_pattern="opening_perimeter:INT_2X4_BOOKCASE_12",
                overlay="interior-opening"),
     # D-S-BATH1's opening in the hall bath's east wet wall, which is BEARING and was
     # retyped with it. Its own binding, same reason as the others: the tag starts
@@ -172,7 +176,7 @@ TRANSITIONS = (
     # the bearing partition's, not the plain interior one — the jack/king studs at a door in
     # a wall carrying an attic joist field are the point of the sheet.
     Transition(uid="KNP02ZZ5WC", tag="TR-CATLIN-WETWALL-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_PLUMBING",
+               condition_pattern="opening_perimeter:INT_2X6_BRG_PLUMBING",
                overlay="bearing-partition-opening"),
     # D-B-CLOSET's opening in W-B-STR3, the under-stair closet's door (2026-09-05). Its own
     # binding for the same reason as the four above: the tag starts "CATLIN_", so
@@ -180,18 +184,18 @@ TRANSITIONS = (
     # and not the plain interior sheet — W-B-STR3 is BEARING (FS-M-MECH and FS-M-STAIR both
     # name it), so the jack/king pack at this door is exactly what the sheet is for.
     Transition(uid="4K0XA3X1TX", tag="TR-CATLIN-UNDERSTAIR-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
+               condition_pattern="opening_perimeter:STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
                overlay="bearing-partition-opening"),
     # D-M-BED2's opening in W-M-C1, the bedroom segment of the centreline. Same reason as
     # the others: the tag starts "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob
     # never sees it. An exact binding rather than widening TR-CATLIN-CENTER-OPENING to
-    # `CATLIN_INT_2X6_BRG*`, because that glob would also swallow
-    # CATLIN_INT_2X6_BRG_PLUMBING above and put two transitions on one condition. Same
+    # `INT_2X6_BRG*`, because that glob would also swallow
+    # INT_2X6_BRG_PLUMBING above and put two transitions on one condition. Same
     # `bearing-partition-opening` overlay as the plain centreline: the jack/king pack at
     # this door is the sheet's subject and the resilient channel does not change it — a
     # channel dies into the opening's return and carries no load.
     Transition(uid="2M8HCPVAXB", tag="TR-CATLIN-CENTER-RC-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG_RC",
+               condition_pattern="opening_perimeter:INT_2X6_BRG_RC",
                overlay="bearing-partition-opening"),
     # Two legitimate in-plan assembly changes survive the resolver's derivation gates
     # (the sauna liner starting along the interior concrete run, and the masonry railing

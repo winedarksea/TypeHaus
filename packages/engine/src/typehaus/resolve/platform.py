@@ -264,7 +264,7 @@ def _lift(model: ResolvedModel, lower: Any, z1: float,
     to absolute elevations, and this pass runs after it, so a band on a lifted wall would
     otherwise stay pinned to the pre-lift top — including a ``top=None`` band, which means
     "run it out to the wall top" and had already been frozen to the *old* wall top. Latent
-    until now only because ``CATLIN_EXT_2X6`` bands nothing (→ ``layer_bands.reband``).
+    until now only because ``EXT_2X6`` bands nothing (→ ``layer_bands.reband``).
     """
     index = next(i for i, w in enumerate(model.walls) if w is lower)
     grade_m = site_grade_elevation_m_from_plan(model.plan)

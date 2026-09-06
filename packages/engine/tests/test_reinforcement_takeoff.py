@@ -77,7 +77,7 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
     neither ``SUNKEN_GARDEN_COLUMN_12`` nor ``PIER_CONCRETE_12`` carried a ``ConcreteSpec``,
     so the galvanizing on five of the ten cages was an authored fact with nowhere else to
     live and was stated per-bar via ``BarSpec.coating`` — while the other five read black.
-    ``PIER_CONCRETE_12`` now names ``CATLIN_EXPOSED_MIX`` and its five inherit A767 from the
+    ``PIER_CONCRETE_12`` now names ``EXPOSED_MIX`` and its five inherit A767 from the
     pour. ``SUNKEN_GARDEN_COLUMN_12`` still keeps its per-bar override (its mix is the
     deferred half of that migration), which is why this asserts a UNIFORM result reached by
     two different routes: the whole house is galvanized, and no scope carries both.

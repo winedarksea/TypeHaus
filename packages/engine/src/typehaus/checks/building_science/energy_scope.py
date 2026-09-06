@@ -28,7 +28,7 @@ _M2_TO_FT2 = 10.7639104167
 # "W-B-BRICK" is not a freestanding *structure* like the sunken garden or raised garden — it
 # is a brick veneer wythe standing 1" off the basement's south wall — but it is freestanding
 # in the only sense this list cares about: the envelope it appears to be is already counted.
-# The thermal boundary there is CATLIN_BASEMENT_12 behind it (W-B-S2/W-B-S3), and the real
+# The thermal boundary there is BASEMENT_12 behind it (W-B-S2/W-B-S3), and the real
 # glazing is WIN-B-SAUNA / D-B-PATIO in that wall. Without this the veneer adds its own
 # nine-foot wall area plus two unglazed rough openings to the load, and the openings have no
 # window type, so they land in ``unknown_inputs`` and take the sizing verdict with them.

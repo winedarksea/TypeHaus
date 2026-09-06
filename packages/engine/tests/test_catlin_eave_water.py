@@ -124,7 +124,7 @@ def test_corner_trim_hangs_outboard_of_the_wall_it_laps(eave) -> None:
     # ** W-S-E1, NOT W-A-E1. ** The attic's east eave wall is a 1 1/2"
     # rafter plate now and carries no skin at all, so the closure band the roof edge laps is
     # the one belonging to the wall the plate STANDS ON — the second storey's own
-    # CATLIN_EXT_2X6 run (`roof_edge.skin_stand_ins`, keyed off the authored `stacks_on`).
+    # EXT_2X6 run (`roof_edge.skin_stand_ins`, keyed off the authored `stacks_on`).
     # The band is in the same place it always was; only the member's parent changed.
     cladding = eave.member("W-S-E1-closure-0-cladding")
     assert cladding[1] <= trim[0] + 1e-6, "the wall panels run up inboard of the trim"

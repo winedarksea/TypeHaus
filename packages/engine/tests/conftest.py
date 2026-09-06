@@ -128,7 +128,7 @@ def catlin_areas(catlin_model_ro):
 
 @pytest.fixture(scope="module")
 def swinburne_model(catlin_plan):
-    """A two-wall L of ``CATLIN_EXT_2X6_SWINBURNE`` walls with one window.
+    """A two-wall L of ``EXT_2X6_SWINBURNE`` walls with one window.
 
     The Swinburne truss wall is no longer a *catlin* wall — the house is on the catlin
     truss's horizontal girts now — but the vertical outrigger frame it defines is still
@@ -162,9 +162,9 @@ def swinburne_model(catlin_plan):
     from typehaus.model.refs import centered
     from typehaus.resolve import resolve
 
-    assembly = catlin_plan.library.resolve_assembly("CATLIN_EXT_2X6_SWINBURNE")
+    assembly = catlin_plan.library.resolve_assembly("EXT_2X6_SWINBURNE")
     assert assembly is not None, (
-        "CATLIN_EXT_2X6_SWINBURNE is the documented one-swap revert from the catlin truss; "
+        "EXT_2X6_SWINBURNE is the documented one-swap revert from the catlin truss; "
         "if it is gone, the revert is gone with it")
     library = Library(materials=catlin_plan.library.materials, assemblies=(assembly,),
                       window_types=(WindowType(tag="WT-SW", width=ft(3), height=ft(4),
@@ -185,9 +185,9 @@ def swinburne_model(catlin_plan):
     )
     walls = (
         Wall(uid="W00000005b1", tag="W-S", start_node="N-SW", end_node="N-SE",
-             assembly="CATLIN_EXT_2X6_SWINBURNE", top=ft(9)),
+             assembly="EXT_2X6_SWINBURNE", top=ft(9)),
         Wall(uid="W00000005b2", tag="W-E", start_node="N-SE", end_node="N-NE",
-             assembly="CATLIN_EXT_2X6_SWINBURNE", top=ft(9)),
+             assembly="EXT_2X6_SWINBURNE", top=ft(9)),
     )
     window = Window(uid="WN0000005b1", tag="WIN-SW", host="W-S", type_ref="WT-SW",
                     position=centered(), sill_height=ft(3))

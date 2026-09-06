@@ -89,23 +89,23 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 ```
 column   PIER_CONCRETE_12                       0.82 cy
 column   SUNKEN_GARDEN_COLUMN_12                1.25
-footing  CATLIN_FOOTING_20                     10.30
-footing  CATLIN_PIER_BASE_12                    0.57
-footing  CATLIN_PORCH_FOOTING_84                5.27
-footing  CATLIN_RETAINING_FOOTING_96           16.79
+footing  FOOTING_20                     10.30
+footing  PIER_BASE_12                    0.57
+footing  PORCH_FOOTING_84                5.27
+footing  RETAINING_FOOTING_96           16.79
 footing  FOOTING_FPSF_20                        1.48
-pad      CATLIN_PIER_BASE_12                    0.26
-slab     CATLIN_DECK_EPS_INT                   18.37
-slab     CATLIN_GARAGE_STEP_6                   0.17
-slab     CATLIN_GARDEN_SLAB                     1.31
-slab     CATLIN_SLAB_FLOOR                     14.00
+pad      PIER_BASE_12                    0.26
+slab     DECK_EPS_INT                   18.37
+slab     GARAGE_STEP_6                   0.17
+slab     GARDEN_COURT_SLAB                     1.31
+slab     SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
 slab     HP_PAD_ON_GRADE                        0.56
                                      solids   76.42 cy
 
 SUNKEN_GARDEN_WALL                            27.44
-CATLIN_BASEMENT_8                             17.55
-CATLIN_BASEMENT_12                            10.67
+BASEMENT_8                             17.55
+BASEMENT_12                            10.67
 GARAGE_ICF_6                                    8.82
 FOUNDATION_WALL_12_INT                         6.57
 SG_VENEER_BEAM_14                              1.10
@@ -117,16 +117,16 @@ the two garden curbs                           0.21
 
 **2.32 cy came out on 2026-09-05's second pass, and every yard of it was concrete poured on
 top of something.** `SUNKEN_GARDEN_WALL` -1.20 (4" off five wall tops at the 36" cap, 8" off
-the two porch walls' bottoms); `CATLIN_GARDEN_SLAB` -0.64 (`FO-SG-TOE-N-W/E` void the rim over
+the two porch walls' bottoms); `GARDEN_COURT_SLAB` -0.64 (`FO-SG-TOE-N-W/E` void the rim over
 the porch strips, which are the court's walking surface now like the other three, and the
-W/E toes were extended 6" north to the footings they are cut for); `CATLIN_PORCH_FOOTING_84`
+W/E toes were extended 6" north to the footings they are cut for); `PORCH_FOOTING_84`
 -0.44 (FT-SG-W1/E1 back to the shared 12" from a one-off 13"); the two column rows -0.04
 (shafts 7 1/4" shorter as the bells came back up to 42"). The excavation fell further than
 the pour did: 9" across the whole under-porch footprint, and the same 9" off `DRW-SG-MAIN`.
 
-**`CATLIN_GARDEN_SLAB` is 1.95 cy and the court has moved three times under it.** It fell
+**`GARDEN_COURT_SLAB` is 1.95 cy and the court has moved three times under it.** It fell
 5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
-became a **rim** around an open field, with `CATLIN_GARDEN_STOOP` adding 0.53 back as the
+became a **rim** around an open field, with `GARDEN_STOOP` adding 0.53 back as the
 door's landing. On **2026-09-05 the court came back flush** (`court_step_down_in` -> 0, one
 riser at D-B-PATIO instead of two): the stoop is retired, `FO-SG-ARCH` is retired with it —
 `W-SG-ARCH`'s top is now the rim's underside, so the slab bears on the beam rather than
@@ -147,11 +147,11 @@ was being poured on top of footings, over fill, for nothing.
 `FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — now **8.15 cy** of sand, gravel
 and fabric, the USGA profile having gone from 12" to 18" the same day — does **not** appear
 above and must not be added to it: this filter takes a STRUCTURE layer of material
-`concrete`, and `CATLIN_GARDEN_FIELD` has neither.
+`concrete`, and `GARDEN_PUTTING_GREEN` has neither.
 
 **Two things the filter tells you that a hand count would have hidden.**
 
-`CATLIN_DECK_EPS_INT` is in there at **18.37 cy** — the largest single pour in the house, and
+`DECK_EPS_INT` is in there at **18.37 cy** — the largest single pour in the house, and
 one whose steel is billed at zero (§4 item 3). It is 12% of the concrete and it is exactly
 the hole.
 
@@ -159,7 +159,7 @@ And **the denominator grew by 6.54 cy on 2026-09-03 without a cubic inch of conc
 added to the building.** This filter can only count a pour whose assembly confirms it is
 concrete, and three sets of real pours named no assembly at all: the two sunken-garden porch
 strips `FT-SG-W1/E1` (5.71 cy), the two belled pier footings (0.57), and the four breezeway
-pads (0.26). They now name `CATLIN_PORCH_FOOTING_84` and `CATLIN_PIER_BASE_12`, so they are
+pads (0.26). They now name `PORCH_FOOTING_84` and `PIER_BASE_12`, so they are
 counted — and **the rebar ratio in §3 got worse, 28.2 to 27.0 lb/cy, which is the honest
 direction.** What was found was more unreinforced concrete, not more steel. A gap that
 flatters a ratio by hiding from it is the worst kind.
@@ -209,19 +209,19 @@ the model has nowhere to state it, or states it in a form nothing can read.
 2. **The garage ICF stems' vertical steel**, `GARAGE_ICF_6`, 8.82 cy. Stated only as
    `MasonrySpec.rebar_spacing = 16"` — a spacing with **no bar size**, which is not a
    readable schedule. That field is marked superseded and read by nothing.
-3. **`SL-M-DECK`'s cap steel.** `CATLIN_DECK_EPS_INT`'s own source cites BuildDeck's table at
+3. **`SL-M-DECK`'s cap steel.** `DECK_EPS_INT`'s own source cites BuildDeck's table at
    "4,000 psi concrete and 60 ksi rebar", so there is rebar in the 4 5/8" cap. The model
    carries no rib width or spacing for the EPS T-beam form, so the flexural schedule cannot
    be derived and was not guessed.
 4. **Dowels** — every wall-to-footing and column-to-wall lap. Deliberately not billed: a
    dowel's length is a lap into the pour below and nothing in this model carries it.
 5. **`FT-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. All six
-   now name `CATLIN_PIER_BASE_12` and so have a mix, but no steel: the bells are graded as
+   now name `PIER_BASE_12` and so have a mix, but no steel: the bells are graded as
    PLAIN concrete and pass (`notes/sunken_garden_piers.md` §5), which ACI 318-19 §14.1.4
    expressly permits in a footing. Correct rather than missing.
 6. **`FT-SG-W1`/`E1`** and the 26 house/garage strip footings are plain by design (IRC Table
    R403.1), so they are genuinely zero and not a gap. `FT-SG-W1/E1` gained an assembly on
-   2026-09-03 (`CATLIN_PORCH_FOOTING_84`) and remain deliberately unreinforced.
+   2026-09-03 (`PORCH_FOOTING_84`) and remain deliberately unreinforced.
 
 **Not a gap, and worth saying so:** the slabs-on-grade carry no mesh any more. Fibre replaces
 it, and `[basis_notes] concrete` prices "wire mesh $0.20-0.50/SF" inside the $/cy rate.
@@ -229,13 +229,13 @@ it, and `[basis_notes] concrete` prices "wire mesh $0.20-0.50/SF" inside the $/c
 the cut is finally made.
 
 **That sentence used to name the wrong mix, and the correction is a real one.** It read
-"(`CATLIN_INTERIOR_MIX`, `CATLIN_EXPOSED_MIX`)". `CATLIN_EXPOSED_MIX` carries MACRO-synthetic
+"(`CATLIN_INTERIOR_MIX`, `EXPOSED_MIX`)". `EXPOSED_MIX` carries MACRO-synthetic
 fibre at 4 lb/cy, which ACI 544.4R does recognise as a mesh replacement for drying-shrinkage
 and thermal crack control, so the garage and garden slabs were correctly described. The
 interior mix carried MICRO-monofilament at 1.5 lb/cy, which targets plastic shrinkage in the
 first hours, carries no post-crack residual and **replaces nothing** — `SL-B-FLOOR`, 14 CY of
 basement slab on grade, had neither mesh nor a fibre that does the job the mesh was deleted
-for. Split into `CATLIN_POLISHED_MIX` (micro, `SL-M-DECK`) and `CATLIN_INTERIOR_SLAB_MIX`
+for. Split into `POLISHED_MIX` (micro, `SL-M-DECK`) and `INTERIOR_SLAB_MIX`
 (macro, `SL-B-FLOOR`) on 2026-09-03. Control joints are still required on that slab and are
 not modelled anywhere.
 

@@ -129,7 +129,7 @@ def test_the_deck_cavity_is_mineral_wool_and_must_stay_that_way():
     house-wide `mineral-wool` -> `fiberglass` sweep must not take it, and nothing else in
     the repo would notice if it did."""
     plan = _plan()
-    box = plan.library.resolve_assembly("CATLIN_TUBDECK_INT_2X4")
+    box = plan.library.resolve_assembly("TUBDECK_INT_2X4")
     stud = next(layer for layer in box.layers if layer.name == "stud")
     assert stud.cavity is not None
     assert stud.cavity.material_ref == "mineral-wool", (
@@ -144,7 +144,7 @@ def test_the_deck_cavity_is_mineral_wool_and_must_stay_that_way():
     # The `INT` token is what keeps mn_energy off both of these. It has to be a whole
     # `_`-delimited token — `_is_interior_assembly` splits, it does not substring-match —
     # so this reproduces that split rather than asserting on the literal.
-    for tag in ("CATLIN_TUBDECK_INT_2X4", "CATLIN_TUBDECK_INT_PLY_CAP"):
+    for tag in ("TUBDECK_INT_2X4", "TUBDECK_INT_PLY_CAP"):
         assert "INT" in tag.split("_"), f"{tag} would be graded against MN Zone 6"
 
 
@@ -153,7 +153,7 @@ def test_the_deck_cap_is_plywood_over_blocking_and_the_bath_hole_is_cut_out_of_i
     layer over a STRUCTURE one; and the hole has to come out of that area or the estimate
     orders a deck with no bath in it."""
     plan = _plan()
-    cap = plan.library.resolve_assembly("CATLIN_TUBDECK_INT_PLY_CAP")
+    cap = plan.library.resolve_assembly("TUBDECK_INT_PLY_CAP")
     functions = {layer.name: layer.function.value for layer in cap.layers}
     assert functions == {"deck-block": "structure", "deck-ply": "sheathing"}
 

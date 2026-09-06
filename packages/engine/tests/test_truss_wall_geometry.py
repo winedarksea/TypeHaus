@@ -20,7 +20,7 @@ here.
 changed.** catlin is on the catlin truss — flat horizontal girts, ``truss_girts.py``,
 ``test_truss_girt_geometry.py`` — so there is no longer a Swinburne wall in the house to
 measure. The frame is not gone and is deliberately not gone: it is one assembly swap away
-(``CATLIN_EXT_2X6_SWINBURNE``), and a revert path nothing exercises is a revert path that
+(``EXT_2X6_SWINBURNE``), and a revert path nothing exercises is a revert path that
 does not work. ``conftest.swinburne_model`` is a two-wall L built on that very tuple, so
 every assertion below still tests the real retired assembly rather than a copy of it.
 
@@ -95,7 +95,7 @@ def _opening_spans(model, wall):
 def test_the_house_has_truss_walls_at_all(swinburne_model):
     """Guard the rest of the module: every assertion below is vacuous without these."""
     walls = _truss_walls(swinburne_model)
-    assert len(walls) == 2, "the fixture is a two-wall L of CATLIN_EXT_2X6_SWINBURNE"
+    assert len(walls) == 2, "the fixture is a two-wall L of EXT_2X6_SWINBURNE"
 
 
 def test_an_outrigger_lands_on_the_stud_line_it_is_screwed_to(swinburne_model):

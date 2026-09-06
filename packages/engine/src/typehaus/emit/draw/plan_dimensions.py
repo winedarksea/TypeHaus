@@ -10,7 +10,7 @@ This is the third tier, and three things about it are deliberate:
 **It measures FACES, not axes.** A partition's centreline is not a number anyone pulls a
 tape to; the room's clear dimension is face to face, and both faces come straight off
 ``ResolvedWall``'s resolved layer polygons, so a wall whose assembly changes thickness moves
-its own dimension with it. (``INT_2X6_STAGGERED_PLUMBING`` → ``CATLIN_INT_2X6_BRG_PLUMBING``
+its own dimension with it. (``INT_2X6_STAGGERED_PLUMBING`` → ``INT_2X6_BRG_PLUMBING``
 on the second storey is exactly that case: same 6.77" total, so this string does not move,
 which is the honest report.)
 

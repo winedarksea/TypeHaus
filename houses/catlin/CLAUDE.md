@@ -177,7 +177,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   via `Footing.center_on="wall"`, not the node line.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
-- The side-wall stack is 2x6 throughout — one `CATLIN_EXT_2X6` on main, second and
+- The side-wall stack is 2x6 throughout — one `EXT_2X6` on main, second and
   attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
   the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
   assembly's `source`, not a separate assembly).
@@ -258,7 +258,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **The Swinburne truss is one swap away.** Nothing vertical was deleted:
     `resolve/framing/truss_frame.py` and its branch of the pass are untouched behind their own
     predicate (`laid="edge"` + vertical), the girt frame is a sibling selected by
-    `standoff="block"`, and the old layer tuple is kept verbatim as `CATLIN_EXT_2X6_SWINBURNE`,
+    `standoff="block"`, and the old layer tuple is kept verbatim as `EXT_2X6_SWINBURNE`,
     referenced by nothing. `notes/outie_window_truss_detail.md` has the three-edit revert.
   **The card reads R-43.5 and the honest number is ≈R-39.8 wood-only / ≈R-37.9 with the girt
   screws counted** — the blocks are framed rather than authored as a `CavityFill`, and the
@@ -274,7 +274,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   the 2.7-point shortfall for $4,500-6,300, and the other 1.8 was never in the bay at all.
   **Where mineral wool is KEPT and must not be swept next time:** the tub deck, all three
   sauna assemblies, all three plant-room assemblies, and the shared `_GARDEN_FRAMED_STUD`.
-  That list and its reasoning live in `plan/assemblies.py` above `CATLIN_EXT_2X6_SWINBURNE`.
+  That list and its reasoning live in `plan/assemblies.py` above `EXT_2X6_SWINBURNE`.
 - **`INT_2X4_PARTITION` HAS NO INSULATION AT ALL, AND ONE WALL LEFT IT.**
   The owner's reasoning: none of the 27 walls still on the preset is somewhere sound
   isolation is worth buying, and where it IS, the answer is `INT_2X4_RC` (STC 48, resilient
@@ -310,7 +310,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   and **nothing else** — no sibling assembly, no moved geometry, no new detail keys.
   - **A sibling assembly was the obvious move and is the wrong one.** It would strip the oak
     window stools from every window in a B&B wall (`plan/millwork.py` scopes them to
-    `("CATLIN_EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` / `wall_foundation:`
+    `("EXT_2X6",)`), mint new `opening_perimeter:` / `wall_roof:` / `wall_foundation:`
     keys and goldens, break the exact-key star overrides in `plan/transitions.py`, and add a
     key to every table keyed by assembly. `W-S-S1` is `PLANT_EXT_2X6_HUMID` while `W-S-W4` on
     the other line is too — the plant room straddles the split, and the override handles it
@@ -376,7 +376,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     truss: the girts are horizontal, so what phase-locks to the 16" module now is their
     BLOCKS rather than the band itself, and the promise is the same one — the screw lands
     on the stud.
-  - **The house's corner is 4-stud, not 3.** `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`
+  - **The house's corner is 4-stud, not 3.** `EXT_2X6` and `PLANT_EXT_2X6_HUMID`
     (the only two truss-wall assemblies) both carry `corner_style="4-stud"` on the STRUCTURE
     `FramingSpec`, and `preferences.toml`'s `[framing] corner` states it once for the whole
     house. The APA/BASC thermal objection to a solid 4-stud post (an insulable void inside
@@ -401,7 +401,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     courses are horizontal and **butt at the corner**, so each course closes its own band as
     it goes and there is nothing full-height to cap. `FramingSpec.corner_cap` and
     `TrussFrame.corner_box` are untouched and still fire for any band that asks for them;
-    `CATLIN_EXT_2X6_SWINBURNE` still does.
+    `EXT_2X6_SWINBURNE` still does.
   - **The 1/2" sheathing lap at the corner is still undeclared** (all layers mitre 45°
     today; a real lap has one wall's sheet run long and the other stop short by its
     thickness) — logged in `plans/TODO.md`, not built.
@@ -412,7 +412,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   now, so all three are declared `structural_role=BEARING` — and **the assembly had to change
   with the role.** All three were `INT_2X6_STAGGERED_PLUMBING`, and
   `structural.wet_wall_bearing` FAILs any BEARING wall framed with staggered studs: neither
-  face's studs carry the plates' load. They are `CATLIN_INT_2X6_BRG_PLUMBING` — continuous
+  face's studs carry the plates' load. They are `INT_2X6_BRG_PLUMBING` — continuous
   2x6 studs plus the 5 1/2" fiberglass batt the staggered wall's cavity had, so the swap does
   not silently strip the insulation as bare `INT_2X6_PLUMBING` would. Total thickness is
   identical (6.77" both ways), so **no face moved, no room area changed, and
@@ -493,7 +493,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   was. Before authoring a zone here, prefer a derived one — it follows `_BAND_Y` on its own.
   `notes/mixed_deck_movement_joint.md` has every junction, the L-shaped
   transition and the cream-polish spec — whose "no fibres" clause was **superseded
-  2026-09-03** by micro-MONOFILAMENT PP at ~1.5 lb/cy (`CATLIN_POLISHED_MIX`). Macro fibre
+  2026-09-03** by micro-MONOFILAMENT PP at ~1.5 lb/cy (`POLISHED_MIX`). Macro fibre
   is still excluded here, and so is steel; the distinction is the whole finding.
 - **The second floor's deck is mixed too, and for a different reason than the basement's:
   services, not a concrete/wood boundary.** `FS-S-WEST` (x 0'-18') is 11 7/8" open-web
@@ -545,7 +545,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   room; it was fixed in the same pass that removed the knee walls. With the knee walls gone the pitch was free
   to be whatever the headroom wanted, and 6:12 is the shallowest standard pitch that carries
   the rooms. **The building got 1'-9 1/2" SHORTER** (ridge 32'-0 5/8" -> 30'-3"), the
-  envelope lost ~572 sf of `CATLIN_EXT_2X6` for +89 sf of roof, and six windows came out.
+  envelope lost ~572 sf of `EXT_2X6` for +89 sf of roof, and six windows came out.
   Measured, not asserted: `haus takeoff --csv` before and after puts the redesign at
   **-$19,400 to -$36,200**. (The same before/after run also moves by three PRICING fixes
   found in passing and unrelated to the attic — an `icf-eps` double-bill removed, and the
@@ -602,7 +602,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `wall_ref="W-A-STU-W"`, the shower included, and the vent **starts over the shower**:
     starting it at the wet-wall axis gives that fixture a 6'-7" trap arm against Table 1002.2's
     5'-0" for 2". **No `humidity_class`** — every other bath in the house is `NORMAL`, and `WET`
-    would pull `CATLIN_ROOF` into the humid-room condensation walk for nothing.
+    would pull `ROOF` into the humid-room condensation walk for nothing.
   - **`RM-A-POCKET`**, x 0..9'-7 1/2", y 22'-4"..36' — `STORAGE`, bare deck, entered through
     `D-A-POCKET` in `W-A-STU-N`. **The door is in the SOUTH wall, not the x=10' one**: the far
     side of that wall is the void, a shaft. Its station is set by HEADROOM — the wall is raked
@@ -674,7 +674,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `code.N1103_6_whole_house_ventilation` to **210 cfm provided against 203 required**. A
     seventh bedroom, or ~250 sf more conditioned floor, fails it and wants a bigger machine.
 - **`W-A-SN` IS A 12 3/4" BOOKCASE WALL, AND ITS SOUTH FACE IS PINNED**
-  (`CATLIN_INT_2X4_BOOKCASE_12`). That face is the only thing covering `FO-A-STAIR`'s north
+  (`INT_2X4_BOOKCASE_12`). That face is the only thing covering `FO-A-STAIR`'s north
   edge: move the wall north and `code.R312_1_guard` FAILs with ~14'-3" of unguarded well.
   So the wall was **thickened, never moved** — the face stayed at 8'-9 5/8" and the depth
   grew north, which is the whole reason `N-A-C2`/`N-A-E1` sit at **y=9'-4"**
@@ -853,7 +853,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   since the attic's 6:12 rake shortened the juliets to WT-2754 and the gable
   flankers to WT-1436; WT-2464 is also catalog-only, having been an 18"
   WT-1864 family before. A retired size stays priced, which is the convention
-  `glazed-green-brick` and `CATLIN_EXT_2X6_SWINBURNE` are also held under. The bearing
+  `glazed-green-brick` and `EXT_2X6_SWINBURNE` are also held under. The bearing
   cap is the width every bearing wall has to meet, so when an opening needs area, a head
   line or composition, HEIGHT is the only dimension left to spend. That is a consequence of
   the ladder, not a drift away from "one type per width family" — but the exception list
@@ -915,7 +915,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     fourth height on the 27" family rather than a sixth width — same trade as the others.
 - Facade rules. Windows line up or they are not there:
   - **ONE GRID PER FACADE. The residue rule is dead — read this instead.**
-    `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID` both set `layout_origin="line"`, so a wall
+    `EXT_2X6` and `PLANT_EXT_2X6_HUMID` both set `layout_origin="line"`, so a wall
     segment lays its studs out from its **layout line** — the derived chain of collinear,
     stacked walls (`resolve/layout_lines.py`) — not from its own start node. Every segment
     on a facade, on every storey, is therefore on one 16" grid measured from the house
@@ -962,10 +962,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     - **AND THE INSIDE OF THE HOUSE, TOO.** The two
       rounds above were both about facades, and the house is not a facade. Five interior
       bearing assemblies now set `layout_origin="line"` on their STRUCTURE layer:
-      `CATLIN_INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` (the x=18'-0" **centreline**,
+      `INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` (the x=18'-0" **centreline**,
       `W-M-C1..C5B` / `W-S-C1..C4B` / `W-A-C1..C2`), and
-      `CATLIN_STAIRWALL_INT_2X6_BRG`, `CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX`,
-      `CATLIN_MUDROOM_INT_2X6_EXPOSED` (the **stair line**, `W-B-STR/STR2/STR3` under
+      `STAIRWALL_INT_2X6_BRG`, `STAIRWALL_INT_2X6_BRG_TYPEX`,
+      `MUDROOM_INT_2X6_EXPOSED` (the **stair line**, `W-B-STR/STR2/STR3` under
       `W-M-STRW/STRW2`). The centreline is the one that actually matters: it is what carries
       `RB-HOUSE` continuously to the footings, so a continuous load path is worth more there
       than on any facade. **No code compels it**, and an earlier draft of this passage wrongly
@@ -1026,12 +1026,17 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     off it and **the backing is complete again**. The west attic pair sits at 4'-8" /
     31'-4", symmetric about y=18'-0"; it caps the outer lower-floor groups without
     introducing another width family.
-    The north face stacks one column, at x=29'-4" (WIN-M-KITCH / WIN-S-HALL-N, moved there
-    from x=28'-0"), to bring WIN-M-KITCH onto FURN-M-KIT-SINKBASE below. It was a
-    three-storey column until the 6:12 rake pulled `WIN-A-N2` off 29'-4" and inboard to the
-    gable (see **Gables**); `WIN-A-N1` stacks EXACTLY on `WIN-S-STAIR-N` at 13'-4" instead,
-    and since 2026-09-06 `WIN-A-N2` sits 8" off `WIN-S-BED3-N` with their east jambs
-    flush at 23'-11" — the facade reads as a rectangle of four.
+    **The north face has no column any more, and that was a trade taken on purpose.** It
+    stacked one at x=29'-4" (WIN-M-KITCH / WIN-S-HALL-N, moved there from x=28'-0") to bring
+    WIN-M-KITCH onto FURN-M-KIT-SINKBASE below; it was a three-storey column until the 6:12
+    rake pulled `WIN-A-N2` off 29'-4" and inboard to the gable (see **Gables**), leaving a
+    two-storey stack. On **2026-09-06** `WIN-S-HALL-N` moved west to 24'-0" and the stack
+    went too. What it bought is the whole upper facade: all four upper windows now sit on
+    one rectangle — `WIN-A-N1` / `WIN-S-STAIR-N` at **12'-0"** and `WIN-A-N2` /
+    `WIN-S-HALL-N` at **24'-0"**, each attic unit stacked EXACTLY on its second-storey
+    partner and the pair mirrored about the 18'-0" ridge. `WIN-M-KITCH` stands alone below;
+    it cannot follow, being dead-centred on the sink run. **A rectangle of four beat a
+    column of two here — that is the precedent, not a general rule.**
     The sink is the harder-pinned of the two: its counter run is
     exactly full (5/8" scribe + B15 + DW + SINK-36 + B30, pantry wall to corner, no slack
     to slide it), while the window has 16" stations to choose from — so the column moved to
@@ -1075,7 +1080,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **Knee band — GONE.** The east and west knee walls each carried a WT-1424
     pair, mirrored at 3'-4" / 32'-8"; the walls are 1 1/2" rafter plates now and a plate has
     nothing to glaze, so `WIN-A-W-S`, `WIN-A-W-N`, `WIN-A-E-S` and `WIN-A-E-N` are all
-    deleted. That is where most of the ~572 sf of deleted `CATLIN_EXT_2X6` goes, and with it
+    deleted. That is where most of the ~572 sf of deleted `EXT_2X6` goes, and with it
     four units, four bucks, four flashings and eight jamb returns. The east/west facades now
     stop at the second storey — `test_each_facade_block_grid_is_one_grid_on_every_storey`
     expects two storeys there and three on the gables. **The stair well's east edge lost its
@@ -1091,27 +1096,42 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     with it to hold the mirror about x=18'-0". Then the rake moved it again: WT-3036 on
     the gable's 2'-0" sill puts the head at 5'-0", which needs 2 x (60 + 2) = 124" of
     clearance to the outer jamb, and 6'-8" gives 65". That landed the pair on
-    12'-0" / 24'-0". **It sits at 13'-4" / 22'-8" now** (2026-09-03), one bay further in, and
-    **`WIN-A-N1` stacks EXACTLY on `WIN-S-STAIR-N`, which is also at 13'-4"**. This passage
-    said the stair window was at 12'-8" and argued an 8" miss until **2026-09-06**; it never
-    was. `second.py`'s `from_node("N-S-N1", ft(3, 5))` on a wall running 18'-0" -> 10'-0" is
-    a near jamb at 12'-1" and a centre at 13'-4" (RO 145"-175" in `model.json`). Nothing
-    moved when the prose was corrected — 160" is a stud line, which is what a 30" RO must
-    have, and 272" mirrors it about the 18'-0" ridge. The rake is not
-    binding here: the outer jambs sit 145" from their eaves against the 124" it allows.
-    **The facade's fourth window arrived the same day**: `WIN-S-BED3-N`, a WT-1436 at
-    x 23'-4" on `W-S-N1` with sill 3'-0" and head 6'-0" — the second storey's own two lines
-    — filling the lower-east corner the other three left empty. x 22'-8" is unbuildable
-    there (a 30" RO would cross node `N-S-B5`, `integrity.opening_fits`, ERROR) and a 14" RO
-    sits on a bay centre, so 23'-4" is the nearest station; its east jamb lands flush with
-    `WIN-A-N2`'s at 23'-11", which is the alignment actually available. 36" rather than 24"
-    because at 24" the sill course and the head cannot both sit clear of a girt course.
-    It takes `RM-S-BED3` off R303.1 Exception 1 (13.33 sf glazed / 6.67 openable against
-    10.32 required) and cost `FURN-S-BED3-WARD` its wall — the wardrobe and `FURN-S-DESK3`
-    swapped slots.
-    `WIN-A-N1` rehosted W-A-N2 -> W-A-N2B on the earlier move; at x=13'-4" it fronts
-    `FO-A-HALL` and daylights the double-height stair void rather than a room, which is an
-    amenity and not a code problem.
+    12'-0" / 24'-0". It went one bay further in to 13'-4" / 22'-8" (2026-09-03) and
+    **came back out to 12'-0" / 24'-0" on 2026-09-06, where it is now.**
+
+    **The return outboard is what squares the facade.** With `WIN-S-STAIR-N` moved to
+    12'-0" and `WIN-S-HALL-N` in from 29'-4" to 24'-0", both gable units stack EXACTLY on a
+    second-storey partner and the north face reads as one rectangle of four (see
+    **Columns**). 144" and 288" are stud lines, which is what a 30" RO must have — it
+    breaks studs, so it cannot take a bay centre the way the 14" family does — and they
+    mirror about the 18'-0" ridge.
+
+    **The rake is binding at this station and holds by 5".** The outer jambs land 129" from
+    their eaves against the 124" the 5'-0" head needs (the 145" once quoted here was the
+    slack the inboard 13'-4" / 22'-8" pair had). `structural.truss_wall_opening_support`
+    confirms both jamb pairs still bear on an outrigger within 1", but there is no third bay
+    outboard: **this pair cannot move out again without a shorter unit.** Two other things
+    tightened with it and are the numbers to re-check before any further move — the radon
+    riser is now 9 5/8" clear of `WIN-A-N1`'s west jamb rather than 2'-1 5/8"
+    (`mep_venting.py`), and the PV junction box 5" clear of its framing bumper
+    (`electrical.py`).
+
+    A fourth window (`WIN-S-BED3-N`, a WT-1436 at x 23'-4") was built on 2026-09-06 to fill
+    the lower-east corner instead, and **withdrawn the same day in favour of the moves
+    above** — 23'-4" was the only station the module and node `N-S-B5` allowed, 8" off the
+    ideal and aligned with no column. Its one lasting mark is in `placeables.py`:
+    `FURN-S-BED3-WARD` and `FURN-S-DESK3` swapped slots to clear the north wall, and the
+    swap is still needed, because the wardrobe stood over x 22'-1.5"..24'-1.5" and
+    `WIN-S-HALL-N`'s new RO is 22'-9"..25'-3". `RM-S-BED3` is back on R303.1 Exception 1
+    (9.83 sf glazed against 10.32 required) — see `plans/pattern_language_review.md`.
+
+    This passage said the stair window was at 12'-8" and argued an 8" miss until 2026-09-06;
+    it never was — the authored offset always resolved to 13'-4", and correcting that prose
+    moved nothing. The move to 12'-0" is a real one.
+    `WIN-A-N1` rehosted W-A-N2 -> W-A-N2B on an earlier move and stays there: its RO runs
+    10'-9"..13'-3", clearing the x=10'-0" split by 9". At x=12'-0" it fronts `FO-A-HALL` and
+    daylights the double-height stair void rather than a room, which is an amenity and not a
+    code problem.
 
     **The south gable carries FOUR openings** (used to be six), exactly mirrored
     about x=18' and reading west→east as S2, JUL-W, JUL-E, S3. The tags gap at S1/S4 rather
@@ -1510,7 +1530,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `resolve/stairs/u_split.py` already GENERATES the 2x4 plates and studs between the two
     flights — the plan this was written from said it emitted nothing, and the first build
     answered with twelve `structural.member_interference` FAILs. So
-    `CATLIN_STAIRWELL_PARTITION_4H`'s structure layer carries **no `FramingSpec`**, which
+    `STAIRWELL_PARTITION_4H`'s structure layer carries **no `FramingSpec`**, which
     `framing/solver.frames_as_members` reads as monolithic — so the wall lands in
     `[wall_structure]` billing 0.47 cy of "placed spf", and `prices.toml` prices it at
     **zero** and says why. Its thickness must stay locked to
@@ -1529,7 +1549,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       passes R305.1.1 honestly. An authored 53" ceiling would be taken verbatim and FAIL.
     - `DT-INT-CLOSET24` is **2'-0" x 6'-0"** and the far jamb is why: at y=28'-4" there is
       76.5" of head, a 6'-8" leaf plus header wants 82", a 6'-0" one wants 74".
-    - `W-B-STR3` was retyped to `CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR` — 5/8" Type X in
+    - `W-B-STR3` was retyped to `STAIRWALL_INT_2X6_BRG_UNDERSTAIR` — 5/8" Type X in
       place of the 3/4" stair plywood, per R302.7. **That cost the exposed-plywood stair face
       on this segment** (a `Wall` carries one leaf) and moved `FO-M-STAIR`'s west edge to
       `ft(10, 3.25)`, exactly as that opening's own comment predicted it would have to.
@@ -1620,7 +1640,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.
   All four compose off `library/`'s `FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a house-local
   skin layer, so the core cannot drift between them.
-  - *The skin, and there is only one.* `CATLIN_BASEMENT_12`/`_8` cover the
+  - *The skin, and there is only one.* `BASEMENT_12`/`_8` cover the
     XPS with a 1/8" `foundation-coating-acrylic` banded from 6" below grade to the top of
     the wall — a trowel-applied acrylic coat over reinforcing mesh, authored as a
     `Layer.extent` off the `GRADE` datum, so a grade lift grows it without an edit here.
@@ -1631,18 +1651,18 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     was authored; a seamless lamina is gradeable and both walls now PASS. Installed, the
     coating bills slightly *above* the board. The board and its price row survive as the
     named alternate, so the revert is one `material_ref` edit.
-    `W-B-S1`/`W-B-S4` are on `CATLIN_BASEMENT_8`, which
+    `W-B-S1`/`W-B-S4` are on `BASEMENT_8`, which
     retired the stucco: their exposure genuinely *is* a grade band (6'-4" of fill,
     2'-2 9/16" out of the ground), so they get ~37 SF of coating. The court segments in
     between get **no skin at all** — their XPS is inside `W-B-BRICK`'s ventilated cavity,
     with no UV and no impact on it, and 273.7 SF of parge was buying a plasterer's
-    mobilization to finish a surface nobody sees. `CATLIN_BASEMENT_8_GARDEN` and
+    mobilization to finish a surface nobody sees. `BASEMENT_8_GARDEN` and
     `_GARDEN_PARGE` survive unreferenced in `plan/assemblies.py`, documented, so the revert
     is two `assembly=` edits.
   - *The pour.* 12" used to be earned wherever a cast concrete deck landed on the
     wall top beside the sill plate and needed a bearing seat inboard of it. After the
     basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which bears on the
-    east wall and the centre line — so `W-B-E1/E2` stay `CATLIN_BASEMENT_12` and the other
+    east wall and the centre line — so `W-B-E1/E2` stay `BASEMENT_12` and the other
     nine segments are 8" carrying `#5 @ 41" o.c.` vertical steel, which IRC Table
     R404.1.2(8) requires at 8" where 12" reads NR (it was `#6 @ 48"` before the flat
     bearing seat made the pour exactly 8'-0", which is the table's 8'-unsupported row
@@ -2123,7 +2143,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     foam parked there earns the wall no R and the check keeps reading R-37.0. It reads
     R-45.0 now (R-58.4 sauna, R-29.3/R-43.3 curbs), each exactly +8.0.
     - **The energy is a rounding error and is not the reason.** The backup was already
-      R-37/R-50 framed, not the R-21.5 a `CATLIN_BASEMENT_8` reading suggests — about
+      R-37/R-50 framed, not the R-21.5 a `BASEMENT_8` reading suggests — about
       **$2/year** at 124.9 SF. The $250-487 buys a *designable anchor*: the beam already
       forced a ~10" brick-to-stud reach, and 6" of that was unbraced air. Now 6" is foam
       and 4" is cavity. **The anchor is still engineered** — see the note, §5.1.
@@ -2138,14 +2158,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       on a fastener in bending, and it **explicitly excepts anchored masonry veneer to
       R703.8**. This wythe stands on the beam; its anchors take wind only.
     - **2" AND NOT 4", AND NOTHING GRADED EITHER BOUND.** 4" was built first and sat at
-      0 FAIL. It was wrong twice over. (a) `CATLIN_EXT_2X6` stands on this wall's seat with
+      0 FAIL. It was wrong twice over. (a) `EXT_2X6` stands on this wall's seat with
       its cladding face at **-7.25"**; 4" put the basement's face at -8.05", 0.8" PROUD of
       the wall above, turning the Z-flashing lap that the basement skin is supposed to tuck
       under into an upward-facing ledge. 2" lands at -6.05", a 1.2" setback. (b)
       `resolve/stacking.py` fires `stack_width_change` on |total thickness| against a 0.5"
       `_TOL`, so any thickness added here reshuffles **which junctions get a detail drawn**:
-      4" pushed `CATLIN_GARDEN_CURB_6` inside the tolerance and 3" pushed
-      `CATLIN_GARDEN_FRAMED_2X6` inside it, each silently deleting a live junction's
+      4" pushed `GARDEN_CURB_6` inside the tolerance and 3" pushed
+      `GARDEN_FRAMED_2X6` inside it, each silently deleting a live junction's
       drawing. **2" is the only purely ADDITIVE value** — every HEAD golden survives and the
       two sauna walls gain the detail they now warrant. The golden SET drift is what caught
       this; no check did.

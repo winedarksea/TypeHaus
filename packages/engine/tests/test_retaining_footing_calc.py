@@ -32,7 +32,7 @@ _TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 4.0, 3.0, 8.0, 1.0
 # pressure falls with e and the heel pressure RISES, which is why these two move opposite ways.
 _Q_TOE, _Q_HEEL = 944.0, 470.3
 
-#: `SUNKEN_GARDEN_WALL` states `CATLIN_EXPOSED_MIX`, so every capacity below is on the
+#: `SUNKEN_GARDEN_WALL` states `EXPOSED_MIX`, so every capacity below is on the
 #: 5,000 psi the pour SPECIFIES, not the presumptive 3,000 the engine used to assume.
 _FC_PSI = 5000.0
 

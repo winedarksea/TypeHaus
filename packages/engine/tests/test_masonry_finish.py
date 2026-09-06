@@ -132,7 +132,7 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
     for brick in bricks:
         assert _centroid(brick.polygon)[1] < gap_y, \
             f"{brick.name} must sit outboard (south) of the cavity"
-        # And clear of the wall it faces: CATLIN_BASEMENT_12's parge ends at -4.55".
+        # And clear of the wall it faces: BASEMENT_12's parge ends at -4.55".
         assert max(p[1] for p in brick.polygon) <= inch(-4.55).meters + 1e-9
 
 

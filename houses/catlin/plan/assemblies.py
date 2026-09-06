@@ -71,7 +71,7 @@ from library import (
 #
 # w/cm 0.40 rather than a strength-only spec: it is what 5,000 psi wants anyway, and W1
 # durability is bought by permeability and not by cylinder strength.
-CATLIN_BURIED_MIX = ConcreteSpec(
+BURIED_MIX = ConcreteSpec(
     fc_psi=5000.0,
     w_cm_max=0.40,
     exposure_f="F0",
@@ -92,7 +92,7 @@ CATLIN_BURIED_MIX = ConcreteSpec(
     source="strip footings and buried stems below frost depth: MN Rules 1309.0402's 5,000 psi FOOTINGS amendment to IRC Table R402.2, ACI 318-19 Table 19.3.2.1 for F0/W1/C1, and 3\" cover per Table 20.5.1.3.1(a) cast against and permanently in contact with ground",
 )
 
-CATLIN_EXPOSED_MIX = ConcreteSpec(
+EXPOSED_MIX = ConcreteSpec(
     fc_psi=5000.0,
     w_cm_max=0.40,
     air_content_pct=6.0,
@@ -121,10 +121,10 @@ CATLIN_EXPOSED_MIX = ConcreteSpec(
 #
 # One mix serving both meant SL-B-FLOOR — 14 CY of basement slab on grade — had nothing at all
 # controlling drying shrinkage: no mesh, and a fibre that does not do that job. The house
-# elsewhere claims "fibre replaces the mesh", and for CATLIN_EXPOSED_MIX's garage and garden
+# elsewhere claims "fibre replaces the mesh", and for EXPOSED_MIX's garage and garden
 # slabs that is true. It was not true here, and the fix is a second mix rather than a quieter
 # claim.
-CATLIN_POLISHED_MIX = ConcreteSpec(
+POLISHED_MIX = ConcreteSpec(
     fc_psi=4000.0,
     w_cm_max=0.45,
     exposure_f="F0",
@@ -142,7 +142,7 @@ CATLIN_POLISHED_MIX = ConcreteSpec(
 # 302.1R §5.7.1: "Entrained air is not recommended for concrete to be given a smooth, dense,
 # hard-troweled finish because blistering and delamination may occur" — the entrained air
 # slows bleed water's rise, the trowel seals a surface over water still coming up, and the
-# risk climbs with every percent of air. At the 6% CATLIN_EXPOSED_MIX carries it is already
+# risk climbs with every percent of air. At the 6% EXPOSED_MIX carries it is already
 # a bad bet.
 #
 # F0/W0/C0 is what makes omitting it safe: there is no freeze-thaw indoors to need the air
@@ -151,7 +151,7 @@ CATLIN_POLISHED_MIX = ConcreteSpec(
 # float finish. `structural.concrete_mix_matches_exposure` agrees by construction, because F0
 # is not in its air-required set; nothing yet grades the converse, and a rule that says "an
 # F1-F3 pour must not be hard-trowelled" has nowhere to read the finish from today.
-CATLIN_INTERIOR_SLAB_MIX = ConcreteSpec(
+INTERIOR_SLAB_MIX = ConcreteSpec(
     fc_psi=4000.0,
     w_cm_max=0.45,
     exposure_f="F0",
@@ -160,7 +160,7 @@ CATLIN_INTERIOR_SLAB_MIX = ConcreteSpec(
     bar_coating="black",
     fiber=FiberSpec(kind="macro-synthetic", dose_pcy=4.0),
     max_aggregate=inch(0.75),
-    source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre CATLIN_EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here",
+    source="the basement slab on grade SL-B-FLOOR: same 4,000 psi F0/W0/C0 as the polished cap, and the same dose of the same macro-synthetic fibre EXPOSED_MIX carries, so the house buys one macro product and not two. Macro rather than micro because this slab has no mesh and something has to carry drying shrinkage and thermal movement (ACI 544.4R); it is a service floor with a covering over it, so the surface visibility that rules macro out of SL-M-DECK does not apply. Control joints are still required and are not modelled here",
 )
 
 
@@ -249,8 +249,8 @@ ACCENT_GWB_LINING = (
 # authoring convenience. ``PLANT_EXT_2X6_HUMID`` sets `layout_origin="line"` too: W-S-S1
 # and W-S-W4 are members of the south and west lines, and one wall left on wall-start
 # origin puts a jog in a line that is otherwise continuous. See CLAUDE.md, Facade rules.
-CATLIN_EXT_2X6 = Assembly(
-    tag="CATLIN_EXT_2X6",
+EXT_2X6 = Assembly(
+    tag="EXT_2X6",
     layers=(
         # Four-stud outside corners: the thermal objection APA/BASC raise against a solid
         # corner post does not apply here — the primary insulation is the continuous
@@ -264,7 +264,7 @@ CATLIN_EXT_2X6 = Assembly(
         # these are at 16"), and with a double top plate no alignment is required at all —
         # this is the ordinary trusses-at-24-over-studs-at-16 condition, which catlin's own
         # garage already builds. The plate that matters is THIS one, under
-        # CATLIN_RAFTER_PLATE's flat 2x6: a 2x6 laid flat has little bending capacity of its
+        # RAFTER_PLATE's flat 2x6: a 2x6 laid flat has little bending capacity of its
         # own and does not distribute an off-stud reaction; the doubled plate below it does.
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -272,7 +272,7 @@ CATLIN_EXT_2X6 = Assembly(
                                   layout_origin="line", corner_style="4-stud",
                                   double_top_plate=True),
               # FIBREGLASS, not mineral wool (owner). See the batt note under
-              # CATLIN_EXT_2X6_SWINBURNE below for the whole argument; the short form is
+              # EXT_2X6_SWINBURNE below for the whole argument; the short form is
               # that the library `fiberglass` tag's 3.7/in IS the high-density R-21 batt
               # value for a 5-1/2" bay (see the `fiberglass-r19` material comment), so this
               # is the correct 2x6 SKU and not a downgrade to a lofted R-19.
@@ -369,7 +369,7 @@ CATLIN_EXT_2X6 = Assembly(
 # than carrying a weather skin of its own.
 #
 # 5.5" of structure is not a coincidence: `deck_rise_m` cuts the birdsmouth as
-# structure_depth x pitch, so this depth has to match CATLIN_EXT_2X6's stud layer or the
+# structure_depth x pitch, so this depth has to match EXT_2X6's stud layer or the
 # seat lands off the wall below. That coupling is why the assembly belongs to the house
 # and not to `library/`.
 #
@@ -377,18 +377,18 @@ CATLIN_EXT_2X6 = Assembly(
 # wall and framing a top plate inside the bottom plate with negative-length studs between.
 #
 # **`double_top_plate=False` here is NOT the double plate the 24" o.c. roof needs** — that
-# one belongs to the stud wall underneath (CATLIN_EXT_2X6, where it is now stated rather
+# one belongs to the stud wall underneath (EXT_2X6, where it is now stated rather
 # than defaulted, with the reasoning). This element is a single flat 2x6 bearing plate lying
 # on the attic subfloor; doubling *it* would raise the deck plane, the ridge and every PV
 # clamp by 1 1/2" and answer a question nobody asked. The load path is rafter -> this plate
 # -> 3/4" subfloor -> the second storey's DOUBLE top plate -> studs at 16" o.c.
-CATLIN_RAFTER_PLATE = Assembly(
-    tag="CATLIN_RAFTER_PLATE",
+RAFTER_PLATE = Assembly(
+    tag="RAFTER_PLATE",
     layers=(
         Layer(name="plate", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               # corner_style is inert here — a plate frames no studs to pack a corner
-              # with — but it is stated to match CATLIN_EXT_2X6 so the junction solver
+              # with — but it is stated to match EXT_2X6 so the junction solver
               # sees one rule at N-A-NE/NW/SE/SW rather than two that disagree.
               framing=FramingSpec(member="2x6", wall_frame="plate", corner_style="4-stud",
                                   double_top_plate=False, layout_origin="line")),
@@ -398,7 +398,7 @@ CATLIN_RAFTER_PLATE = Assembly(
 
 # --- the Swinburne truss wall, kept one swap away --------------------------------
 #
-# What CATLIN_EXT_2X6 was before the girt band, verbatim: a 3-piece chiral pack — a 2x4
+# What EXT_2X6 was before the girt band, verbatim: a 3-piece chiral pack — a 2x4
 # flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger stood on edge and
 # lap-screwed to the tab, vertical, 16" o.c. — inside 4" of ccSPF. It works. It is fussy to
 # build (tab lap-screws that were never even billed, a pack the engine has to slide and
@@ -406,7 +406,7 @@ CATLIN_RAFTER_PLATE = Assembly(
 # horizontal nailer at all, which is why the girts replaced it.
 #
 # **Referenced by nothing, and that is the point** — like `glazed-green-brick`, it is here so
-# the revert is a swap and not an archaeology exercise. To go back: give CATLIN_EXT_2X6 and
+# the revert is a swap and not an archaeology exercise. To go back: give EXT_2X6 and
 # PLANT_EXT_2X6_HUMID this layer tuple, restore `_WALL_OUTBOARD_IN` in params/roof_trim.py
 # and `_HOUSE_CLADDING_Y` in params/breezeway.py to their 5.5"-proud values, and uncomment
 # the corresponding rows in prices.toml. `resolve/framing/truss_frame.py` and its branch of
@@ -428,7 +428,7 @@ CATLIN_RAFTER_PLATE = Assembly(
 #
 # **Where mineral wool IS kept, and why** — every one of these is a damp, hot or wet case
 # the owner accepted, not an oversight the next sweep should finish:
-#   * `CATLIN_TUBDECK_INT_2X4` — the tub deck box. The long-standing documented exception.
+#   * `TUBDECK_INT_2X4` — the tub deck box. The long-standing documented exception.
 #   * `SAUNA_2X4`, `SAUNA_LINER_INT_2X6_BRG`, `SAUNA_LINER_ON_GARDEN_FRAMED` — non-
 #     combustible and dimensionally stable beside a 10.5 kW heater through repeated
 #     180 F / loyly humidity cycling.
@@ -436,7 +436,7 @@ CATLIN_RAFTER_PLATE = Assembly(
 #     RH against -15 F. The 0.05-perm liner is the control layer and the bay is dry BY
 #     DESIGN; the hydrophobic, non-slumping batt is the insurance if that liner is ever
 #     breached. ~446 SF, under $1k, and the owner bought it deliberately.
-#   * `_GARDEN_FRAMED_STUD` — SHARED by CATLIN_GARDEN_FRAMED_2X6 and
+#   * `_GARDEN_FRAMED_STUD` — SHARED by GARDEN_FRAMED_2X6 and
 #     SAUNA_LINER_ON_GARDEN_FRAMED. The sauna half must stay mineral wool per the line
 #     above, and forking one Layer constant into two so the walkout half could save
 #     $80-112 would put two halves of ONE framed run on two sources of truth. It is also a
@@ -451,14 +451,14 @@ CATLIN_RAFTER_PLATE = Assembly(
 # `wall_r = 40` was already unmet at 38.2 for reasons that have nothing to do with the
 # batt — see notes/catlin_truss_engineering.md section 7, which is the number to quote.
 # Do not read the card's R-40.4 as "still on target".
-CATLIN_EXT_2X6_SWINBURNE = Assembly(
-    tag="CATLIN_EXT_2X6_SWINBURNE",
+EXT_2X6_SWINBURNE = Assembly(
+    tag="EXT_2X6_SWINBURNE",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="2x6", sill_gasket=inch(0.0625),
                                   layout_origin="line", corner_style="4-stud"),
-              # Kept in step with CATLIN_EXT_2X6 above, which is the whole point of this
+              # Kept in step with EXT_2X6 above, which is the whole point of this
               # assembly: a revert that silently reintroduced mineral wool would undo the
               # fiberglass batt sweep the day anyone took it.
               cavity=CavityFill(material_ref="fiberglass")),
@@ -494,7 +494,7 @@ CATLIN_EXT_2X6_SWINBURNE = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     default_lining=_GWB_LINING,
-    source="the 2026-08-23 CATLIN_EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
+    source="the 2026-08-23 EXT_2X6 outrigger stack, retired 2026-08-26 in favour of the catlin truss; kept unreferenced so the revert is a swap",
 )
 
 # --- hot roof (unvented; flash-and-batt in the bay — → 30 §WP3.11) ------------
@@ -561,8 +561,8 @@ CATLIN_EXT_2X6_SWINBURNE = Assembly(
 # hangers: confirm in ForteWEB, and see notes/roof_flash_and_batt.md.
 #
 # The metal itself is unchanged: 24 ga mechanically field-seamed, hidden floating clips.
-CATLIN_ROOF = Assembly(
-    tag="CATLIN_ROOF",
+ROOF = Assembly(
+    tag="ROOF",
     layers=(
         Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
@@ -655,7 +655,7 @@ CATLIN_ROOF = Assembly(
 # buy no skin at all**, because the sunken garden's foam is not exposed — it is inside
 # W-B-BRICK's ventilated cavity, with no UV and no impact on it. What is genuinely exposed
 # on the south is 6" of nobody's business either side of the excavation, so W-B-S1 and
-# W-B-S4 took the ordinary CATLIN_BASEMENT_8 coated band and the court segments took
+# W-B-S4 took the ordinary BASEMENT_8 coated band and the court segments took
 # nothing. See `_GARDEN_PARGE` below for the retirement in full.
 #
 # So the two are no longer the same tail. The banded walls carry 4.175" outboard of the
@@ -704,7 +704,7 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
                           extent=LayerExtent(
                               bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
 
-# **UNREFERENCED. Kept for the revert**, on the CATLIN_EXT_2X6_SWINBURNE precedent above:
+# **UNREFERENCED. Kept for the revert**, on the EXT_2X6_SWINBURNE precedent above:
 # putting the parge back is two `assembly=` edits in plan/storeys/basement.py plus four
 # `_GARDEN_PARGE,` lines here. Be honest about what that buys — every consumer in this
 # house derives from *walls*, so an unreferenced assembly saves no test churn at all. It
@@ -739,11 +739,11 @@ _GARDEN_PARGE = Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
 # (``FOUNDATION_WALL_XPS4_OUTBOARD``, published for exactly this). Slicing the core at the
 # point of use is not available: this file is the constrained editable dialect and
 # subscripting is forbidden in it. The thicknesses are the library's, unchanged.
-CATLIN_BASEMENT_12 = Assembly(
-    tag="CATLIN_BASEMENT_12",
+BASEMENT_12 = Assembly(
+    tag="BASEMENT_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _PROTECTION_PANEL,
     ),
@@ -752,11 +752,11 @@ CATLIN_BASEMENT_12 = Assembly(
 )
 
 # The west and north walls (W-B-W1/W2, W-B-N1/N2/N3) — wood floor only, so 8" reinforced.
-CATLIN_BASEMENT_8 = Assembly(
-    tag="CATLIN_BASEMENT_8",
+BASEMENT_8 = Assembly(
+    tag="BASEMENT_8",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _PROTECTION_PANEL,
     ),
@@ -766,14 +766,14 @@ CATLIN_BASEMENT_8 = Assembly(
 
 # The south wall, which the sunken garden opens to the air over its whole 9'.
 #
-# **UNREFERENCED** — W-B-S1 and W-B-S4 moved to CATLIN_BASEMENT_8 with the stucco
+# **UNREFERENCED** — W-B-S1 and W-B-S4 moved to BASEMENT_8 with the stucco
 # retirement, and they were its only two instances. Kept, with `_GARDEN_PARGE`, so the
 # revert is two `assembly=` edits in plan/storeys/basement.py.
-CATLIN_BASEMENT_8_GARDEN = Assembly(
-    tag="CATLIN_BASEMENT_8_GARDEN",
+BASEMENT_8_GARDEN = Assembly(
+    tag="BASEMENT_8_GARDEN",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
         *FOUNDATION_WALL_XPS4_OUTBOARD,
         _GARDEN_PARGE,
     ),
@@ -805,11 +805,11 @@ CATLIN_BASEMENT_8_GARDEN = Assembly(
 # the classic cause of curling; below the foam it still separates the slab from ground
 # moisture and the slab can dry downward into the foam joints. (IRC R506.2.3 permits either;
 # ACI 302.2R is where the preference comes from.)
-CATLIN_SLAB_FLOOR = Assembly(
-    tag="CATLIN_SLAB_FLOOR",
+SLAB_FLOOR = Assembly(
+    tag="SLAB_FLOOR",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_INTERIOR_SLAB_MIX),
+              function=LayerFunction.STRUCTURE, concrete=INTERIOR_SLAB_MIX),
         Layer(name="xps-below", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="vapour-retarder", material_ref="polyethylene", thickness=inch(0.01),
@@ -846,13 +846,13 @@ CATLIN_SLAB_FLOOR = Assembly(
 # BuildDeck's published table takes an 8" form to a 20' clear span at a 4" cap with 4,000
 # psi concrete and 60 ksi rebar under 15 psf dead + 40 psf live; the span here is 18'-0".
 #
-# Layers read top-down like CATLIN_SLAB_FLOOR. The gypsum is not optional trim: IRC R316.4
+# Layers read top-down like SLAB_FLOOR. The gypsum is not optional trim: IRC R316.4
 # requires a thermal barrier over foam plastic on the room side, and this is it.
-CATLIN_DECK_EPS_INT = Assembly(
-    tag="CATLIN_DECK_EPS_INT",
+DECK_EPS_INT = Assembly(
+    tag="DECK_EPS_INT",
     layers=(
         Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.375),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_POLISHED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=POLISHED_MIX),
         Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(10.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # The form's own integral steel rib, which is what the ceiling screws to — the same
@@ -872,7 +872,7 @@ SUNKEN_GARDEN_WALL = Assembly(
     tag="SUNKEN_GARDEN_WALL",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="catlin-house sunken_garden_retaining_wall_detail.py",
@@ -912,7 +912,7 @@ SG_VENEER_BEAM_14 = Assembly(
         # simply the truth about the pour: the board is a form face applied to a side of the
         # concrete, not something the concrete sits on.
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
         Layer(name="xps-break", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
@@ -1244,7 +1244,7 @@ POST_WHITE_PAINT_DF = Assembly(
 # The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood): same pattern as
 # POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
 # wood_surfaces takeoff. 6.125" body = the custom timber, sheathing to drywall face, a
-# deviation within W-S-W3's stud line, deliberately not a change to CATLIN_EXT_2X6.
+# deviation within W-S-W3's stud line, deliberately not a change to EXT_2X6.
 ELM_TIMBER = Assembly(
     tag="ELM_TIMBER",
     layers=(
@@ -1376,11 +1376,11 @@ POST_KDAT = Assembly(
 # concrete_mix_matches_exposure` sees it the moment they are a `ConcreteSpec`, which is what
 # that check is for.
 #
-# Resolved by pouring these five from `CATLIN_EXPOSED_MIX` — F3/C2 at 5,000 — rather than by
+# Resolved by pouring these five from `EXPOSED_MIX` — F3/C2 at 5,000 — rather than by
 # minting a compliant fourth mix at F2/4,500. Two reasons, and the second is the real one:
 #   * these are 0.82 CY in total. A separate ticket for four fifths of a yard is a delivery
 #     charge and a batching risk to save nothing;
-#   * PT-SG-COL stands in the sunken garden, which is the salt-splash court `CATLIN_EXPOSED_MIX`
+#   * PT-SG-COL stands in the sunken garden, which is the salt-splash court `EXPOSED_MIX`
 #     exists for. Grading it F2 was always the generous reading of where it sits.
 # The four breezeway piers get a richer mix than their exposure needs. That is the price of
 # one ticket instead of two, and at this volume it is not a price worth arguing about.
@@ -1395,7 +1395,7 @@ PIER_CONCRETE_12 = Assembly(
     tag="PIER_CONCRETE_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
     # One of these five, PT-SG-COL, is the only pier in the set with WOOD landing on it: the
@@ -1405,7 +1405,7 @@ PIER_CONCRETE_12 = Assembly(
     # gusset angle rather than the wood-to-wood H-tie that used to be drawn here. The other
     # four take breezeway posts on ABU66SS standoff bases and need none of it.
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; CATLIN_EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, an SS316-SHIM-35 standoff shim pack under the KDAT soffit (modeled at CN-SG-STDF-COL), and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
+    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, an SS316-SHIM-35 standoff shim pack under the KDAT soffit (modeled at CN-SG-STDF-COL), and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
 )
 
 RAILING_DARK_METAL = Assembly(
@@ -1463,7 +1463,7 @@ GARAGE_ICF_6 = Assembly(
         Layer(name="eps-int", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX,
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX,
               masonry=MasonrySpec(unit_size="ICF-6", core_fill=True,
                                   rebar_spacing=inch(16))),
         Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
@@ -1569,7 +1569,7 @@ GARAGE_ICF_6 = Assembly(
 # and R-4.9 is not generosity: 1" is the thinnest XPS anyone stocks, the labour and the
 # excavation are identical at either thickness, and a band sitting exactly on a table minimum
 # has nothing left if the design AFI is revised upward. 40 psi, the same slab-bearing grade
-# as CATLIN_SLAB_FLOOR's, because the garden slab is cast on top of it.
+# as SLAB_FLOOR's, because the garden slab is cast on top of it.
 SG_FROST_WING_XPS1 = Assembly(
     tag="SG_FROST_WING_XPS1",
     role="band",
@@ -1598,7 +1598,7 @@ SG_FROST_WING_XPS2 = Assembly(
 # residential basement wall delivers on the order of 1,500-2,000 psf to the bearing plane,
 # i.e. **10-14 psi**, against 40 psi XPS. The foam is loaded to roughly a third of its rated
 # compressive strength at 10% deformation, and creep at that ratio is what the rating exists
-# to bound. Same board, same grade, as the 3" under CATLIN_SLAB_FLOOR.
+# to bound. Same board, same grade, as the 3" under SLAB_FLOOR.
 #
 # The wall bears on concrete, not on foam: the insulation is the bottom layer and the top of
 # the strip is the pour. The vertical faces of the form are insulated too in the built
@@ -1612,7 +1612,7 @@ SG_FROST_WING_XPS2 = Assembly(
 # pour had nowhere to state a mix and ``structural_solids`` grouped it with every other
 # bare pour under one blended $/cy. Naming it costs nothing in the estimate — ``[concrete]``
 # keys on the solid CATEGORY qualified by assembly, and ``cli/prices.candidate_keys`` falls
-# ``footing:CATLIN_FOOTING_20`` back to ``footing`` — and it is what lets the mix be said.
+# ``footing:FOOTING_20`` back to ``footing`` — and it is what lets the mix be said.
 #
 # No reinforcement, deliberately. These are plain strips under IRC Table R403.1, which is a
 # prescriptive answer to a prescriptive question; a 4-6" projection on an 8" depth satisfies
@@ -1642,7 +1642,7 @@ SG_FROST_WING_XPS2 = Assembly(
 # CARRIES NO MIX — a deliberate stopping point, not an oversight. ** Restating that assembly
 # house-locally so it could name a house mix was written and then dropped: the
 # three walls' tag appears in `plan/transitions.py` condition keys
-# (`wall_foundation:CATLIN_INT_2X6_BRG|FOUNDATION_WALL_12_INT` and the storey-stack rim), so
+# (`wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG` and the storey-stack rim), so
 # retagging them moves detail keys and the section-card goldens with them. Against that: the
 # walls are inside the conditioned envelope with soil on neither face, so there is no
 # chloride, no freeze-thaw, and black bar at the code-minimum mix is the right answer anyway.
@@ -1652,11 +1652,11 @@ SG_FROST_WING_XPS2 = Assembly(
 # comfortable with it: `structural.concrete_cover_meets_minimum` grades a pour's cover
 # only where a `ReinforcementSpec` says there is bar to cover, and these three carry
 # none, so the rule that would have cared is not being deprived of a subject.
-CATLIN_GARDEN_SLAB = Assembly(
-    tag="CATLIN_GARDEN_SLAB",
+GARDEN_COURT_SLAB = Assembly(
+    tag="GARDEN_COURT_SLAB",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
 )
@@ -1698,10 +1698,10 @@ CATLIN_GARDEN_SLAB = Assembly(
 # `with_spec`, and that check's UNKNOWN branch only fires when NO pour in the house states a
 # mix) and out of `concrete_cover_meets_minimum`. Every layer is a `_BILLABLE` function, so
 # all 147 sf of each bills through `envelope_layer_takeoff`; prices.toml carries a zero
-# `slab:CATLIN_GARDEN_FIELD` row so `structural_solids_takeoff` does not ALSO order 8.15 cy
+# `slab:GARDEN_PUTTING_GREEN` row so `structural_solids_takeoff` does not ALSO order 8.15 cy
 # of concrete that does not exist. Irrigation is an `[allowances]` line, not a layer.
-CATLIN_GARDEN_FIELD = Assembly(
-    tag="CATLIN_GARDEN_FIELD",
+GARDEN_PUTTING_GREEN = Assembly(
+    tag="GARDEN_PUTTING_GREEN",
     role="band",
     layers=(
         Layer(name="turf", material_ref="kbg-sod", thickness=inch(0.5),
@@ -1731,41 +1731,41 @@ CATLIN_GARDEN_FIELD = Assembly(
 # D-B-PATIO's landing: the piece of the old flush garden floor the door still stands on,
 # now a 7 1/4" block cast on the dropped court (params/sunken_garden.GARDEN_STOOP).
 #
-# Its own assembly rather than CATLIN_GARDEN_SLAB because `integrity.slab_thickness` wants a
+# Its own assembly rather than GARDEN_COURT_SLAB because `integrity.slab_thickness` wants a
 # layer boundary at the authored thickness, and 7 1/4" is not 3 1/2". Same mix, same
 # exposure, same reasoning as the court floor — this is the same pour on the same day.
-CATLIN_GARDEN_STOOP = Assembly(
-    tag="CATLIN_GARDEN_STOOP",
+GARDEN_STOOP = Assembly(
+    tag="GARDEN_STOOP",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(7.25),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="sunken-garden court: D-B-PATIO's landing, one 7 1/4\" riser above the court and 7 1/4\" below the threshold (IRC R311.3.2). Sky-exposed, F3+C2 mix; its base is the court floor",
 )
 
-CATLIN_GARAGE_STEP_6 = Assembly(
-    tag="CATLIN_GARAGE_STEP_6",
+GARAGE_STEP_6 = Assembly(
+    tag="GARAGE_STEP_6",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="the garage service door's exterior landing (IRC R311.7.6): 6\" outdoors, salt-splashed off the drive, F3+C2 mix. Its base course is not modelled",
 )
 
-CATLIN_RETAINING_FOOTING_96 = Assembly(
-    tag="CATLIN_RETAINING_FOOTING_96",
+RETAINING_FOOTING_96 = Assembly(
+    tag="RETAINING_FOOTING_96",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="the sunken-garden court's 8'-0\" x 1'-0\" retaining strips, reinforced #6 @ 10\" transverse top and bottom (notes/sunken_garden_court_free_body.md §7)",
 )
 
-CATLIN_FOOTING_20 = Assembly(
-    tag="CATLIN_FOOTING_20",
+FOOTING_20 = Assembly(
+    tag="FOOTING_20",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
     ),
     source="the ordinary 20\" x 8\" cast strip under the house and garage walls (IRC Table R403.1), poured against the bedding prep",
 )
@@ -1775,24 +1775,24 @@ CATLIN_FOOTING_20 = Assembly(
 # because they are one detail at two plan shapes — a plain, unreinforced 12" pour bearing at
 # frost depth, which is what puts them on the BURIED mix's F0 rather than the court's F3. The
 # bells carry 42" of true cover and the pads bottom at -6'-0"; neither ever freezes, and F0 is
-# earned by that and not assumed (see CATLIN_BURIED_MIX above).
+# earned by that and not assumed (see BURIED_MIX above).
 #
 # These six named no assembly at all until 2026-09-03. That is not a cosmetic gap: with no
 # assembly there is no `structure_material`, so `resolve/concrete.concrete_spec_for` returned
 # None, every calc fell back to the presumptive 3,000 psi, `structural.concrete_mix_matches_
 # exposure` could not see them, and the takeoff could not confirm they were concrete — about
 # 6 CY of real pour sitting outside both the durability report and the priced bill.
-CATLIN_PIER_BASE_12 = Assembly(
-    tag="CATLIN_PIER_BASE_12",
+PIER_BASE_12 = Assembly(
+    tag="PIER_BASE_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
     ),
     source="the 12\" plain bases under the round piers — the sunken garden's two belled footings and the four breezeway pads, all bearing at or below frost depth (IRC R403.1.4); unreinforced by design and graded as plain concrete under ACI 318-19 §14.1.4, see notes/sunken_garden_piers.md §5",
 )
 
 # The two braced porch walls' strips, FT-SG-W1/E1. A separate type from
-# CATLIN_RETAINING_FOOTING_96 because they are a different footing: 84" wide against 96", and
+# RETAINING_FOOTING_96 because they are a different footing: 84" wide against 96", and
 # 13" deep against 12" — the extra inch is the one params/sunken_garden.py takes to keep their
 # undersides level with the retaining strips' after the porch bearing rose.
 #
@@ -1800,11 +1800,11 @@ CATLIN_PIER_BASE_12 = Assembly(
 # this court stands INSIDE the excavation, 8" under a garden floor that is itself 9' below
 # site grade, and is frost-protected by drained NFS stone rather than by depth. Concrete in
 # the freezing zone is F3 concrete however it got protected.
-CATLIN_PORCH_FOOTING_84 = Assembly(
-    tag="CATLIN_PORCH_FOOTING_84",
+PORCH_FOOTING_84 = Assembly(
+    tag="PORCH_FOOTING_84",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(13.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="the sunken-garden porch strips FT-SG-W1/E1 — 7'-0\" x 1'-1\", braced walls above rather than cantilevers, frost-protected on ASCE 32 soil replacement like the rest of the court",
 )
@@ -1813,7 +1813,7 @@ FOOTING_FPSF_20 = Assembly(
     tag="FOOTING_FPSF_20",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
         Layer(name="xps-bearing", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
@@ -1858,7 +1858,7 @@ GARAGE_WALL_2X6 = Assembly(
                                          ControlLayer.VAPOR, ControlLayer.THERMAL})),
         # Ordinary 5/8" CDX, NOT the house's shear-rated `struct-1-plywood` (see that
         # material's comment). It carries NO `control` set on purpose: the ccSPF behind it
-        # is the air, water and vapour plane, exactly the division CATLIN_EXT_2X6 draws, and
+        # is the air, water and vapour plane, exactly the division EXT_2X6 draws, and
         # a bare sheathing panel that claimed those layers would be a WRB nobody is buying.
         #
         # NO WRB, and that is a decision rather than an omission (owner). IRC
@@ -1874,7 +1874,7 @@ GARAGE_WALL_2X6 = Assembly(
         # through its crowns straight into the studs, and the corrugation itself IS the
         # drainage and vent cavity — 7/8" of continuous open flute behind every sheet, which
         # is more free area than the 3/8" 1x4 vertical furring this once carried ever gave
-        # it. It is a GARAGE-only move: CATLIN_EXT_2X6 keeps its girts, because there the
+        # it. It is a GARAGE-only move: EXT_2X6 keeps its girts, because there the
         # cladding has to be held off 4" of exterior foam and has no sheathing face to bear
         # on.
         #
@@ -1911,7 +1911,7 @@ GARAGE_WALL_2X6 = Assembly(
 # carries VEHICLE wheel loads, and a loaded wheel is a small contact patch, not a
 # distributed floor load. 40 psi (ASTM C578 Type VI, e.g. Foamular 400) is the same
 # slab-bearing grade SG_FROST_WING_XPS1/2 and FOOTING_FPSF_20 carry, so it is a grade
-# already on the order. See CATLIN_SLAB_FLOOR above for why the psi lives in `source=`:
+# already on the order. See SLAB_FLOOR above for why the psi lives in `source=`:
 # there is one `xps` material tag with no compressive field, and prices.toml keys XPS on
 # THICKNESS alone — so a 40 psi board and a 25 psi board cost the same in this estimate and
 # do not in the yard.
@@ -1924,10 +1924,10 @@ GARAGE_SLAB_ON_GRADE = Assembly(
         # in the one place in the house that is never rinsed. Grading this as an interior
         # pour because it is under a roof is the classic version of this mistake.
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
         Layer(name="xps-below", material_ref="xps", thickness=inch(1.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # Same stack, same reasoning, as CATLIN_SLAB_FLOOR above. R506.2.3 exempts a garage
+        # Same stack, same reasoning, as SLAB_FLOOR above. R506.2.3 exempts a garage
         # from the vapour retarder; the foam does not care and the stone under it is
         # required either way, and an insulated garage floor is being asked to stay dry for
         # the same reason a basement floor is.
@@ -1962,7 +1962,7 @@ HP_PAD_ON_GRADE = Assembly(
     tag="HP_PAD_ON_GRADE",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(4.0),
-              function=LayerFunction.STRUCTURE, concrete=CATLIN_EXPOSED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
         Layer(name="capillary-break", material_ref="capillary-break-stone", thickness=inch(4.0),
               function=LayerFunction.SHEATHING),
     ),
@@ -2041,7 +2041,7 @@ GARAGE_ROOF = Assembly(
 # face as `paint-a`/`paint-b`. Both faces separate conditioned rooms, so there's no vapour
 # drive to control — the paint is here purely for the finish takeoff. Deliberately unpainted
 # elsewhere: SAUNA_* (T&G/foil-polyiso is already the vapour/air control, no paint in a
-# löyly room), CATLIN_MUDROOM_INT_2X6_EXPOSED (exposed wood faces, already hardwax-oil
+# löyly room), MUDROOM_INT_2X6_EXPOSED (exposed wood faces, already hardwax-oil
 # finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies.py for why it doesn't get layers added).
@@ -2066,8 +2066,8 @@ GARAGE_ROOF = Assembly(
 # (~46 walls — bearing lines first), and the staggered assemblies, which have a live
 # rounding trap in `solver.py`'s face-parity rule that a non-zero phase would wake. See
 # plans/TODO.md.
-CATLIN_INT_2X6_BRG = Assembly(
-    tag="CATLIN_INT_2X6_BRG",
+INT_2X6_BRG = Assembly(
+    tag="INT_2X6_BRG",
     layers=(
         _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
@@ -2119,14 +2119,14 @@ CATLIN_INT_2X6_BRG = Assembly(
 # That row is also the through-bolt line for the bookcase door's hinge-side jamb.
 #
 # No CavityFill (the cavity is the shelf), no `default_lining` and no paint layer (the study
-# face is millwork — the CATLIN_MUDROOM_INT_2X6_EXPOSED precedent above), and no `stc=`:
+# face is millwork — the MUDROOM_INT_2X6_EXPOSED precedent above), and no `stc=`:
 # STC in this house is a transcribed lab test, never a computed number.
 # The "INT" token is load-bearing as everywhere else (`_is_interior_assembly` in
 # --- the bedroom half of the centreline -------------------------------------
 #
 # ** W-M-C1 ONLY, AND IT IS THE SAME BEARING WALL. ** RM-M-BED on the west, RM-M-LIVING on
 # the east, and a living room on the other side of a sleeping wall is the one place on the
-# x=18'-0" centreline where the plain `CATLIN_INT_2X6_BRG` is not enough. Two additions and
+# x=18'-0" centreline where the plain `INT_2X6_BRG` is not enough. Two additions and
 # nothing else: a resilient channel on the BEDROOM face, and the fibreglass this family has
 # never carried. `W-M-C2`..`C5B` above and below stay on the plain assembly — this is a
 # portion of the line, not a retype of it.
@@ -2163,11 +2163,11 @@ CATLIN_INT_2X6_BRG = Assembly(
 # bay is a deeper cavity than that test had, not a shallower one. Treat 48 as the floor of
 # what this build is worth and do not write a number into the model without a test.
 #
-# The batt is FIBREGLASS, per the sweep (see the note above CATLIN_EXT_2X6_SWINBURNE):
+# The batt is FIBREGLASS, per the sweep (see the note above EXT_2X6_SWINBURNE):
 # nothing about this cavity is damp, and the acoustic work here is done by the channel's
 # decoupling, not by which wool sits behind it.
-CATLIN_INT_2X6_BRG_RC = Assembly(
-    tag="CATLIN_INT_2X6_BRG_RC",
+INT_2X6_BRG_RC = Assembly(
+    tag="INT_2X6_BRG_RC",
     layers=(
         _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
@@ -2185,12 +2185,12 @@ CATLIN_INT_2X6_BRG_RC = Assembly(
         _PAINT_FINISH_B,
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin-house centreline bearing wall at RM-M-BED (W-M-C1), 2026-08-31: CATLIN_INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on the bedroom face and 5-1/2 in. fibreglass in the bay; same 2x6 studs, same bearing role, same layout line",
+    source="catlin-house centreline bearing wall at RM-M-BED (W-M-C1), 2026-08-31: INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on the bedroom face and 5-1/2 in. fibreglass in the bay; same 2x6 studs, same bearing role, same layout line",
 )
 
 # mn_energy.py splits the tag on "_") — without it an uninsulated bay grades against R-21.
-CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
-    tag="CATLIN_INT_2X4_BOOKCASE_12",
+INT_2X4_BOOKCASE_12 = Assembly(
+    tag="INT_2X4_BOOKCASE_12",
     layers=(
         Layer(name="stud-case", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE,
@@ -2247,11 +2247,11 @@ CATLIN_INT_2X4_BOOKCASE_12 = Assembly(
 # untouched. `plan/fixtures.py`'s comment already described this wall AS INT_2X6_PLUMBING;
 # the swap makes that true rather than aspirational.
 #
-# `layout_origin` is deliberately left at its default, unlike CATLIN_INT_2X6_BRG: this is a
+# `layout_origin` is deliberately left at its default, unlike INT_2X6_BRG: this is a
 # 5.5" cavity a 3" stack runs down, and phase-locking its studs to a global line is the one
 # thing that could put a stud where the drain has to go.
-CATLIN_INT_2X6_BRG_PLUMBING = Assembly(
-    tag="CATLIN_INT_2X6_BRG_PLUMBING",
+INT_2X6_BRG_PLUMBING = Assembly(
+    tag="INT_2X6_BRG_PLUMBING",
     layers=(
         _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
@@ -2348,7 +2348,7 @@ SAUNA_2X4 = Assembly(
 # W-B-CS, the sauna's east face on the x=18' bearing line — **framed**, where it was 12"
 # of cast concrete (``SAUNA_LINER_ON_CONCRETE``, retired with it). Since the sauna rotated
 # onto the garden wall (2026-09-05) this wall is the room's east face for y 0'-0"..10'-0"
-# only; CATLIN_INT_2X6_BRG carries the same line north of it as W-B-CS3.
+# only; INT_2X6_BRG carries the same line north of it as W-B-CS3.
 #
 # basement.py's WALLS header had already written the argument down: this segment "carries
 # wood on both faces and COULD go to 8"". The honest reading is that it needs no concrete
@@ -2374,7 +2374,7 @@ SAUNA_2X4 = Assembly(
 # and never needed one — a 12" interior pour is not in that table's population — which is
 # exactly the kind of thing that only bites on the day the assembly changes.
 #
-# ``layout_origin="line"`` matches CATLIN_INT_2X6_BRG above it, so the studs on the x=18'
+# ``layout_origin="line"`` matches INT_2X6_BRG above it, so the studs on the x=18'
 # line stack basement-to-attic instead of each segment restarting its own module.
 SAUNA_LINER_INT_2X6_BRG = Assembly(
     tag="SAUNA_LINER_INT_2X6_BRG",
@@ -2424,7 +2424,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # where forming two openings in a pour is the very cost this swap removes. The modelled
 # saving is the floor, not the number.
 #
-# **The stack is the concrete one with studs where the pour was**, not CATLIN_EXT_2X6: the
+# **The stack is the concrete one with studs where the pour was**, not EXT_2X6: the
 # outboard face has to stay exactly where it is. The damp-proofing and the 4" of XPS continue
 # from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.05" off its own footing with two
 # arched reveals dimensioned to it. `alignment=face("sheathing-ext")` puts the sheathing's
@@ -2469,7 +2469,7 @@ _GARDEN_FRAMED_OUTBOARD = (
     # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
     # at 4", at 3" and at 2" alike.
     #
-    #   1. `CATLIN_EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
+    #   1. `EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
     #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
     #      UNDER the main storey's rainscreen Z-flashing (see
     #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
@@ -2477,8 +2477,8 @@ _GARDEN_FRAMED_OUTBOARD = (
     #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
     #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
     #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
-    #      junctions get a width-change DETAIL DRAWN. 4" pushed `CATLIN_GARDEN_CURB_6`
-    #      inside the tolerance and 3" pushed `CATLIN_GARDEN_FRAMED_2X6` inside it — each
+    #      junctions get a width-change DETAIL DRAWN. 4" pushed `GARDEN_CURB_6`
+    #      inside the tolerance and 3" pushed `GARDEN_FRAMED_2X6` inside it — each
     #      silently deleting the drawing of a junction that still exists. 2" is the one
     #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
     #      walls gain the detail they now genuinely warrant. Re-run the goldens.
@@ -2515,7 +2515,7 @@ _GARDEN_FRAMED_STUD = Layer(
 # subscripting. They are the same damp-proofing and 2 x 2" of XPS, in the same order.
 _GARDEN_CURB_CORE = (
     Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
-          function=LayerFunction.STRUCTURE, concrete=CATLIN_BURIED_MIX),
+          function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
     Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
@@ -2543,7 +2543,7 @@ _GARDEN_CURB_CORE = (
     # first and reading what moved. Neither is graded by any check; the house sat at 0 FAIL
     # at 4", at 3" and at 2" alike.
     #
-    #   1. `CATLIN_EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
+    #   1. `EXT_2X6` stands on this wall's seat at -13 7/16" with its cladding face
     #      at **-7.25"**, and this tail may not pass it. The basement skin's head TUCKS
     #      UNDER the main storey's rainscreen Z-flashing (see
     #      notes/basement_to_framed_wall_detail.md); a lower wall standing PROUD of the one
@@ -2551,8 +2551,8 @@ _GARDEN_CURB_CORE = (
     #      0.8" proud. 2" lands at -6.05", a 1.2" setback the flashing can actually cover.
     #   2. `resolve/stacking.py` raises `stack_width_change` on the |total thickness|
     #      difference against a 0.5" `_TOL`, so ANY thickness added here reshuffles which
-    #      junctions get a width-change DETAIL DRAWN. 4" pushed `CATLIN_GARDEN_CURB_6`
-    #      inside the tolerance and 3" pushed `CATLIN_GARDEN_FRAMED_2X6` inside it — each
+    #      junctions get a width-change DETAIL DRAWN. 4" pushed `GARDEN_CURB_6`
+    #      inside the tolerance and 3" pushed `GARDEN_FRAMED_2X6` inside it — each
     #      silently deleting the drawing of a junction that still exists. 2" is the one
     #      value that is purely ADDITIVE: every golden at HEAD survives and the two sauna
     #      walls gain the detail they now genuinely warrant. Re-run the goldens.
@@ -2568,8 +2568,8 @@ _GARDEN_CURB_CORE = (
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
 )
 
-CATLIN_GARDEN_CURB_6 = Assembly(
-    tag="CATLIN_GARDEN_CURB_6",
+GARDEN_CURB_6 = Assembly(
+    tag="GARDEN_CURB_6",
     layers=(
         *_GARDEN_CURB_CORE,
     ),
@@ -2590,11 +2590,11 @@ SAUNA_LINER_ON_GARDEN_CURB = Assembly(
         *_GARDEN_CURB_CORE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin sunken-garden curb under the sauna (W-B-S2), 2026-08-28: CATLIN_GARDEN_CURB_6 with the sauna liner carried down over its face so the hot side's vapour control is continuous to the slab",
+    source="catlin sunken-garden curb under the sauna (W-B-S2), 2026-08-28: GARDEN_CURB_6 with the sauna liner carried down over its face so the hot side's vapour control is continuous to the slab",
 )
 
-CATLIN_GARDEN_FRAMED_2X6 = Assembly(
-    tag="CATLIN_GARDEN_FRAMED_2X6",
+GARDEN_FRAMED_2X6 = Assembly(
+    tag="GARDEN_FRAMED_2X6",
     layers=(
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
@@ -2626,7 +2626,7 @@ SAUNA_LINER_ON_GARDEN_FRAMED = Assembly(
         *_GARDEN_FRAMED_OUTBOARD,
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement sauna south wall (W-B-S2-FR), framed 2026-08-28: the sauna liner over CATLIN_GARDEN_FRAMED_2X6's studs and outboard tail",
+    source="catlin basement sauna south wall (W-B-S2-FR), framed 2026-08-28: the sauna liner over GARDEN_FRAMED_2X6's studs and outboard tail",
 )
 
 # --- mudroom exposed-stud wall ---------------------------------------------------
@@ -2640,8 +2640,8 @@ SAUNA_LINER_ON_GARDEN_FRAMED = Assembly(
 # `layout_origin="line"`: W-M-STRW/STRW2 are the main storey of the stair line, standing on
 # W-B-STR/STR2/STR3 below. The exposed studs are the ones you can see from the mudroom, so
 # they were always the ones a broken module showed up on.
-CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
-    tag="CATLIN_MUDROOM_INT_2X6_EXPOSED",
+MUDROOM_INT_2X6_EXPOSED = Assembly(
+    tag="MUDROOM_INT_2X6_EXPOSED",
     layers=(
         Layer(name="stud", material_ref="df-select-s4s", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -2657,13 +2657,13 @@ CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
 # W-B-STR3 / W-B-STR, the last two 12" interior pours on the x=10' line, framed instead.
 # They carry no earth; what they carry is FS-M-MECH/FS-M-STAIR's short
 # joists and the W-M-STRW/W-M-STRW2 stack above, which is a stud-wall job on a footing.
-# Both continue CATLIN_MUDROOM_INT_2X6_EXPOSED's plywood plane on the stair face, so the
+# Both continue MUDROOM_INT_2X6_EXPOSED's plywood plane on the stair face, so the
 # well's west face is one plywood surface from the basement floor to the main-storey
 # ceiling — but with plain `spf` studs: nothing down here is exposed to a finished room.
 # The "INT" token is load-bearing exactly as it is there (`_is_interior_assembly` in
 # mn_energy.py keeps an uninsulated bay out of the R-21 exterior table).
-CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
-    tag="CATLIN_STAIRWALL_INT_2X6_BRG",
+STAIRWALL_INT_2X6_BRG = Assembly(
+    tag="STAIRWALL_INT_2X6_BRG",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -2674,7 +2674,7 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing CATLIN_MUDROOM_INT_2X6_EXPOSED",
+    source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing MUDROOM_INT_2X6_EXPOSED",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's
@@ -2687,7 +2687,7 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
 # to 123 1/4" and clearing the stringer by 1/8".
 #
 # ** What this costs: the exposed-plywood stair face, on this segment only. ** The ply is
-# CATLIN_MUDROOM_INT_2X6_EXPOSED continued up the stairway, and a triangular strip of it —
+# MUDROOM_INT_2X6_EXPOSED continued up the stairway, and a triangular strip of it —
 # about 32" tall at the landing end, dying out around y=27'-1" where the stringer top meets
 # the wall's 8'-0" head — was visible from the upper flight. A `Wall` carries one leaf, so
 # protecting the closet below and exposing ply above is not authorable. W-B-STR (north of
@@ -2696,8 +2696,8 @@ CATLIN_STAIRWALL_INT_2X6_BRG = Assembly(
 # `code.R302_7_under_stair_protection` PASSED before this retype and would pass after
 # reverting it — it screens for gypsum on ANY bounding wall, and the closet has four other
 # gypsum-lined faces. This is the rule read properly rather than the check satisfied.
-CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
-    tag="CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
+STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
+    tag="STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -2708,14 +2708,14 @@ CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: CATLIN_STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
+    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
 )
 
 # The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf on the closet
 # face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
 # concrete is no longer there to satisfy it. Same `gwb-x` material as INT_ESS_CLOSET_STEEL.
-CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
-    tag="CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX",
+STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
+    tag="STAIRWALL_INT_2X6_BRG_TYPEX",
     layers=(
         Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
               function=LayerFunction.FINISH),
@@ -2728,7 +2728,7 @@ CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: CATLIN_STAIRWALL_INT_2X6_BRG with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
+    source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: STAIRWALL_INT_2X6_BRG with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
 )
 
 # ** THE U-STAIR'S WELL PARTITION, GIVEN FACES AND A ROOM SIDE 2026-09-05. **
@@ -2752,8 +2752,8 @@ CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
 # (u_split.py), so it runs y 26'-8 1/4"..30'-4 1/2" while this wall runs 25'-6"..31'-0".
 # About 8" at each end is board with no generated stud behind it. The framer blocks it; the
 # model cannot say so, because the engine owns the sticks and the house owns the faces.
-CATLIN_STAIRWELL_PARTITION_4H = Assembly(
-    tag="CATLIN_STAIRWELL_PARTITION_4H",
+STAIRWELL_PARTITION_4H = Assembly(
+    tag="STAIRWELL_PARTITION_4H",
     layers=(
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
               function=LayerFunction.FINISH),
@@ -2876,7 +2876,7 @@ MATERIALS = [
              hatch="masonry", color="#f0eeea",
              product_ref="PROD-TILEBAR-BRONX-WHITE",
              source="TileBar Bronx White 12x24 matte rectified, DCOF 0.5 (owner selection 2026-09-06). Smooth matte deliberately: a DEEPLY textured matte holds soap film and a gloss glaze shows every drip. Grout is SPECTRALOCK PRO epoxy on the walls and in the pan. ** COLOUR-MATCHED 100% SILICONE AT EVERY CHANGE OF PLANE (TCNA EJ171), 5-6 tubes from one lot: ** grouting a perimeter hard defeats the uncoupling membrane you paid for, and sanded ACRYLIC caulk sits right beside the grout in matching colours and is not a movement joint. ** TRIMLESS EDGES, WITH THREE EXCEPTIONS: ** profile on the shower CURB only (the most abused edge in the house -- never mitre a curb); mitre the shower outside corner if the setter has a portfolio of them; and no profile where the wall tile stops -- use a drywall shadow-gap reveal, because a horizontal bead at eye level is a visible ledge and a dust-catcher. Return field tile into the niche rather than trimming it, size the niche to the 12x24 module so the back is full pieces, and SLOPE THE SILL: a flat niche sill is a permanent puddle and the most common niche failure."),
-    # The EPS stay-in-place deck form (CATLIN_DECK_EPS_INT). Deliberately *not* `icf-eps`,
+    # The EPS stay-in-place deck form (DECK_EPS_INT). Deliberately *not* `icf-eps`,
     # whose R-4.0/inch is the bead EPS on its own: this section is ribbed, and the concrete
     # that fills the ribs bridges it. BuildDeck publishes R-25 for the 8" section as
     # installed, which is R-3.125/inch through the finished deck — the number that belongs
@@ -2885,7 +2885,7 @@ MATERIALS = [
              perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
              source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- the sunken-garden court's field build-up ---------------------------------
-    # Five house-local materials, all specific to `CATLIN_GARDEN_FIELD`. None appears in any
+    # Five house-local materials, all specific to `GARDEN_PUTTING_GREEN`. None appears in any
     # other assembly, so retiring the turf field retires them with it. Every one of them is
     # a USGA *specification*, not a product: the gravel's bridging factor is computed against
     # the actual sand purchased, and the rootzone is qualified by an A2LA lab against USGA
@@ -2915,7 +2915,7 @@ MATERIALS = [
              r_per_inch=0.0, vapor_permeance_perms=5.0, color="#2e4a44",
              finish="matte-latex", coating=True,
              source="same film as latex-paint (IRC R702.7.1 Class III over gypsum); only the colour differs — a second Material tag is how a wall says it is a different colour, since Layer has no colour slot"),
-    # The roof's DECK vapour barrier (CATLIN_ROOF), over the taped ZIP and under the foam.
+    # The roof's DECK vapour barrier (ROOF), over the taped ZIP and under the foam.
     # This is the layer that makes the roof a "perfect wall": all four control layers land
     # outboard of the structure, so the interior is paint and nothing else.
     #
@@ -2944,7 +2944,7 @@ MATERIALS = [
              source="the vapour path through an open nylon-matrix mat is the air in it, so it is rated as `resilient-channel` above is: UAF 'Air, still' 120 perm-in"),
     # **The membrane that replaced all three of them** — the deck vapour barrier above,
     # the vent mat above it and the permeable synthetic below are all UNREFERENCED, kept
-    # here so the nine-layer stack is a revert and not a re-derivation (see CATLIN_ROOF).
+    # here so the nine-layer stack is a revert and not a re-derivation (see ROOF).
     #
     # High-temp self-adhered BUTYL, rated >= 240 F, over the whole deck rather than as an
     # eave band (Grace Ultra / Henry Blueskin PE200HT class). Butyl rather than SBS for one
@@ -2995,7 +2995,7 @@ MATERIALS = [
     # Thermal/vapour numbers are the plywood series' — this is the same veneer panel as
     # `struct-1-plywood` and `plywood-subfloor`, and nothing hygric moves with the grade.
     # It carries NO `control` set in the assembly: the ccSPF in the bays behind it is the
-    # air/water plane now, exactly as CATLIN_EXT_2X6 does it, and a bare CDX sheet is not
+    # air/water plane now, exactly as EXT_2X6 does it, and a bare CDX sheet is not
     # a WRB and must not be authored as one.
     Material(tag="cdx-plywood", name="5/8\" CDX sheathing plywood",
              r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
@@ -3151,7 +3151,7 @@ MATERIALS = [
     # $5,000-18,000.
     #
     #   `standing-seam` (library/materials.py) — 24 ga, MECHANICALLY FIELD-SEAMED.
-    #       CATLIN_ROOF and nothing else. Every seam takes a separate powered-seamer pass:
+    #       ROOF and nothing else. Every seam takes a separate powered-seamer pass:
     #       +$1.50-3.00/SF of labour and ~50% more crew-hours than a hand-closed profile,
     #       plus a seamer rental. It is on the main house roof on purpose — this is the roof
     #       that carries the PV array, sheds onto occupied ground, and must not be re-roofed
@@ -3160,7 +3160,7 @@ MATERIALS = [
     #       seamed roof, but the male and female legs engage under hand pressure, so there
     #       is no seaming pass. Roughly $2-4/SF cheaper installed than mechanical seam.
     #       It clad the house walls before the truss girts and is now taken by nothing but
-    #       CATLIN_EXT_2X6_SWINBURNE, the revert wall — which is exactly what keeps the
+    #       EXT_2X6_SWINBURNE, the revert wall — which is exactly what keeps the
     #       swap back to it a one-line `material_ref` change.
     #   `standing-seam-nailstrip` — 24 ga, NAIL-STRIP. GARAGE_ROOF only. Nail strip has NO
     #       concealed clips at all: an integral flange is face-fastened to the deck and the
@@ -3213,7 +3213,7 @@ MATERIALS = [
              color="#2f5233", finish="classic-green-seam",
              skin_family="standing-seam",
              source="26 ga. PVDF-coated steel, nail-strip seam profile, Western States Metal Roofing \"Classic Green\" (westernstatesmetalroofing.com/classic-green) — an accent colourway for the garage's overhead-door (east) wall only; every other garage wall stays standing-seam-nailstrip-26 white"),
-    # `pbr-panel-26` — 26 ga, EXPOSED-FASTENER PBR. The house walls, CATLIN_EXT_2X6 and
+    # `pbr-panel-26` — 26 ga, EXPOSED-FASTENER PBR. The house walls, EXT_2X6 and
     # PLANT_EXT_2X6_HUMID, taking over from `standing-seam-snaplock`. The fifth metal skin
     # and the only one that is not a concealed-fixing product: 36" net coverage with
     # 1-1/4" major ribs at 12" o.c., screwed through its face into the girts.
@@ -3320,7 +3320,7 @@ MATERIALS = [
     Material(tag="blown-fiberglass", name="Blown (loose-fill) fiberglass", r_per_inch=2.5,
              perm_rating=116.0, hatch="batt", color="#f6d9e1",
              source="NAIMA/manufacturer published loose-fill glass wool R-2.2-2.7 per inch at attic settled density; midpoint. Permeance as `fiberglass` above — loose-fill glass wool is air-permeable at any density"),
-    # The roof cavity batt (CATLIN_ROOF). A separate tag from `fiberglass` because the
+    # The roof cavity batt (ROOF). A separate tag from `fiberglass` because the
     # library's 3.7/in is a HIGH-DENSITY value — right for an R-21 batt squeezed into 5.5",
     # wrong for a standard R-19 that reaches R-19 only by lofting to 6.25". Reusing the
     # library tag at 6.25" would read R-23 and overstate this roof by R-4. House-local until
@@ -3347,7 +3347,7 @@ MATERIALS = [
              name="Fiberglass cathedral batt, R-30C compressed to 6-7/8\"",
              r_per_inch=3.78, perm_rating=116.0, hatch="batt", color="#f3c6d0",
              source="manufacturer compressed-batt R-value charts (Owens Corning / CertainTeed) for an R-30 8-1/4\" batt: R-27 at 7-1/4\" and R-25 at 6-1/4\", so R-26 at 6-7/8\" = 3.78/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
-    # The roof's field underlayment (CATLIN_ROOF), over the nailbase top deck.
+    # The roof's field underlayment (ROOF), over the nailbase top deck.
     #
     # **Vapour-PERMEABLE synthetic, and that is not a preference.** High-temp peel-and-stick
     # over the whole field is the obvious choice under metal and it fails the condensation
@@ -3602,7 +3602,7 @@ MATERIALS = [
              name="Marble-look cast shower wall panel (1/2\")",
              r_per_inch=0.0, density=1600.0, hatch="stone", color="#efece6",
              source="RM-M-BATH2 shower surround, 2026-09-02; \"marble-look\" spans cultured marble, cast solid surface and acrylic and the product family is an OPEN OWNER SELECTION — see prices.toml [wood_surfaces] for the price spread that collapses when it is made"),
-    # The above-grade foundation band on CATLIN_BASEMENT_8/_12: a trowel-applied acrylic
+    # The above-grade foundation band on BASEMENT_8/_12: a trowel-applied acrylic
     # coating over the exposed XPS, on the Styro Industries Tuff II product data
     # (styro.net / totalwall.com "Applying TUFF II Over Rigid Foam & ICF"). It is the option
     # notes/basement_to_framed_wall_detail.md named first and always has ("protect with
@@ -3647,7 +3647,7 @@ MATERIALS = [
              name="Trowel-applied acrylic foundation coating over mesh (1/8\")",
              r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0,
              coating=True, hatch="concrete", color="#8e8f8c",
-             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_8, CATLIN_BASEMENT_12) - Styro Industries Tuff II, 100% acrylic, 1/8\" over Sticky Mesh HD, 80 SF/5-gal pail, 10 stock colours, permitted below grade (product data + \"Applying TUFF II Over Rigid Foam & ICF\"). Styro publishes NO ASTM E96 value and neither does this product class, so 5.0 perms is a band midpoint and is quoted as one: buildingscience.com Info-500 gives exterior acrylic paint 5.5 perms and polymer-modified stucco 2-3 perms where latex-finished, and the UAF/ASHRAE table gives 11-20 perms for 3/4\" plaster. A 1/8\" acrylic lamina sits between a film and a render and the band brackets it; what the number has to carry is that it is far more open than the 4\" of XPS beneath it (~0.28 perms), which decides the Glaser walk. Colour is Styro's stock grey approximated - no hex is published, a chip governs"),
+             source="above-grade band over basement exterior XPS, N/E/W (BASEMENT_8, BASEMENT_12) - Styro Industries Tuff II, 100% acrylic, 1/8\" over Sticky Mesh HD, 80 SF/5-gal pail, 10 stock colours, permitted below grade (product data + \"Applying TUFF II Over Rigid Foam & ICF\"). Styro publishes NO ASTM E96 value and neither does this product class, so 5.0 perms is a band midpoint and is quoted as one: buildingscience.com Info-500 gives exterior acrylic paint 5.5 perms and polymer-modified stucco 2-3 perms where latex-finished, and the UAF/ASHRAE table gives 11-20 perms for 3/4\" plaster. A 1/8\" acrylic lamina sits between a film and a render and the band brackets it; what the number has to carry is that it is far more open than the 4\" of XPS beneath it (~0.28 perms), which decides the Glaser walk. Colour is Styro's stock grey approximated - no hex is published, a chip governs"),
     # **UNREFERENCED since 2026-09-04. The named alternate**, on the `glazed-green-brick`
     # convention: an aluminium-faced 1/2" rigid protection board, the other half of the
     # detail note's "rigid metal/PVC trim", fastened into the XPS with washered pins. Its
@@ -3730,10 +3730,10 @@ _HUMID_LINER = (
 )
 
 # The two exterior walls, W-S-S1 and W-S-W4. Everything outboard of the liner is
-# CATLIN_EXT_2X6 verbatim, restated rather than composed because the editable dialect has
+# EXT_2X6 verbatim, restated rather than composed because the editable dialect has
 # no way to splice one assembly's layers into another. Keep the two in step by hand.
 #
-# CATLIN_EXT_2X6 needs no re-engineering for this room and deliberately gets none: the
+# EXT_2X6 needs no re-engineering for this room and deliberately gets none: the
 # truss wall's 4" of 2 lb ccSPF at 1.6 perm-in runs
 # about 0.4 perm — the SAME Class II the polyiso+EPS stack it replaced read, slow but real
 # outward drying. The warning the CI stack carried (never foil-faced polyiso, which at 0.03
@@ -3827,7 +3827,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),
-    source="notes/plant_room.md — CATLIN_EXT_2X6 outboard of a sealed PVC/membrane liner; the sheathing datum does not move (decision #43), the liner grows inward",
+    source="notes/plant_room.md — EXT_2X6 outboard of a sealed PVC/membrane liner; the sheathing datum does not move (decision #43), the liner grows inward",
 )
 
 # W-S-C1, the x=18' bearing line. Liner on the plant-room face, ordinary painted gypsum on
@@ -3907,8 +3907,8 @@ PLANT_INT_2X4_HUMID = Assembly(
 # floor tile, which is a finish-schedule fact about RM-M-BATH2 (`Room.floor_finish`), and
 # the 1/2" of tile + thinset is the difference between the cap's 21 1/2" top and the tub
 # rim's 22" — see the elevation arithmetic on SL-M-TUBDK in plan/storeys/main.py.
-CATLIN_TUBDECK_INT_2X4 = Assembly(
-    tag="CATLIN_TUBDECK_INT_2X4",
+TUBDECK_INT_2X4 = Assembly(
+    tag="TUBDECK_INT_2X4",
     layers=(
         Layer(name="ply-room", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -3942,8 +3942,8 @@ CATLIN_TUBDECK_INT_2X4 = Assembly(
 # The tub does not bear on any of this. Kohler is explicit that the rim carries no load and
 # the bath sits on a 1"-2" mortar bed on the subfloor, so the cap carries only itself, its
 # tile, and whoever sits on the deck.
-CATLIN_TUBDECK_INT_PLY_CAP = Assembly(
-    tag="CATLIN_TUBDECK_INT_PLY_CAP",
+TUBDECK_INT_PLY_CAP = Assembly(
+    tag="TUBDECK_INT_PLY_CAP",
     layers=(
         Layer(name="deck-block", material_ref="spf", thickness=inch(1.5),
               function=LayerFunction.STRUCTURE,
@@ -4042,15 +4042,15 @@ CONSTRUCTION_RULES = [
 ]
 
 ASSEMBLIES = [
-    CATLIN_EXT_2X6,
-    CATLIN_RAFTER_PLATE,
-    CATLIN_EXT_2X6_SWINBURNE,
-    CATLIN_ROOF,
-    CATLIN_BASEMENT_12,
-    CATLIN_BASEMENT_8,
-    CATLIN_BASEMENT_8_GARDEN,
-    CATLIN_SLAB_FLOOR,
-    CATLIN_DECK_EPS_INT,
+    EXT_2X6,
+    RAFTER_PLATE,
+    EXT_2X6_SWINBURNE,
+    ROOF,
+    BASEMENT_12,
+    BASEMENT_8,
+    BASEMENT_8_GARDEN,
+    SLAB_FLOOR,
+    DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
     SG_VENEER_BEAM_14,
@@ -4080,19 +4080,19 @@ ASSEMBLIES = [
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,
-    CATLIN_FOOTING_20,
-    CATLIN_RETAINING_FOOTING_96,
-    CATLIN_PORCH_FOOTING_84,
-    CATLIN_PIER_BASE_12,
-    CATLIN_GARDEN_SLAB,
-    CATLIN_GARDEN_FIELD,
-    CATLIN_GARDEN_STOOP,
-    CATLIN_GARAGE_STEP_6,
+    FOOTING_20,
+    RETAINING_FOOTING_96,
+    PORCH_FOOTING_84,
+    PIER_BASE_12,
+    GARDEN_COURT_SLAB,
+    GARDEN_PUTTING_GREEN,
+    GARDEN_STOOP,
+    GARAGE_STEP_6,
     GARAGE_ROOF,
-    CATLIN_INT_2X6_BRG,
-    CATLIN_INT_2X6_BRG_RC,
-    CATLIN_INT_2X6_BRG_PLUMBING,
-    CATLIN_INT_2X4_BOOKCASE_12,
+    INT_2X6_BRG,
+    INT_2X6_BRG_RC,
+    INT_2X6_BRG_PLUMBING,
+    INT_2X4_BOOKCASE_12,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
@@ -4105,18 +4105,18 @@ ASSEMBLIES = [
     INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_INT_2X6_BRG,
-    CATLIN_GARDEN_CURB_6,
+    GARDEN_CURB_6,
     SAUNA_LINER_ON_GARDEN_CURB,
-    CATLIN_GARDEN_FRAMED_2X6,
+    GARDEN_FRAMED_2X6,
     SAUNA_LINER_ON_GARDEN_FRAMED,
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
     PLANT_INT_2X4_HUMID,
-    CATLIN_MUDROOM_INT_2X6_EXPOSED,
-    CATLIN_STAIRWALL_INT_2X6_BRG,
-    CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX,
-    CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR,
-    CATLIN_STAIRWELL_PARTITION_4H,
-    CATLIN_TUBDECK_INT_2X4,
-    CATLIN_TUBDECK_INT_PLY_CAP,
+    MUDROOM_INT_2X6_EXPOSED,
+    STAIRWALL_INT_2X6_BRG,
+    STAIRWALL_INT_2X6_BRG_TYPEX,
+    STAIRWALL_INT_2X6_BRG_UNDERSTAIR,
+    STAIRWELL_PARTITION_4H,
+    TUBDECK_INT_2X4,
+    TUBDECK_INT_PLY_CAP,
 ]

@@ -420,7 +420,7 @@ WALLS = [
     # and the two buried segments keep ``#5 @ 41" o.c.`` The two zero-fill segments drop
     # the bar with the load — see W-B-S2 below.
     #
-    # **W-B-S1 and W-B-S4 carry CATLIN_BASEMENT_8**, not CATLIN_BASEMENT_8_GARDEN. That is
+    # **W-B-S1 and W-B-S4 carry BASEMENT_8**, not BASEMENT_8_GARDEN. That is
     # the same fill table read a second way: these two segments are the only south run whose
     # exposure is an ordinary grade line — 6'-4" of backfill with 2'-2 9/16" of wall standing
     # out of it — which is exactly the condition _PROTECTION_PANEL's GRADE-banded extent was
@@ -430,7 +430,7 @@ WALLS = [
     # See plan/assemblies.py for the whole stucco retirement.
 
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
-                   end_node="N-B-S1", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-S1", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
@@ -490,7 +490,7 @@ WALLS = [
                    min_threshold_step=inch(7.25),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
-                   end_node="N-B-S3", assembly="CATLIN_GARDEN_CURB_6",
+                   end_node="N-B-S3", assembly="GARDEN_CURB_6",
                    interior_room="RM-B-GYM",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(0),
@@ -522,7 +522,7 @@ WALLS = [
          base_elevation=inch(-102.1875), top=inch(88.75),
          structural_role=StructuralRole.BEARING),
     Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
-         assembly="CATLIN_GARDEN_FRAMED_2X6",
+         assembly="GARDEN_FRAMED_2X6",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-GYM",
          base_elevation=inch(-102.1875), top=inch(88.75),
@@ -533,7 +533,7 @@ WALLS = [
     # ``params/foundations._FROST_FORMED`` with it, or FT-B-S4 loses the insulated
     # FOOTING_FPSF_20 form the garden floor's low adjacent grade is the reason for.
     FoundationWall(uid="72HXFS8M11", tag="W-B-S4", start_node="N-B-S3",
-                   end_node="N-B-SE", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-SE", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(6, 4),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
@@ -541,24 +541,24 @@ WALLS = [
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
-                   end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-E1", assembly="BASEMENT_12",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
-                   end_node="N-B-NE", assembly="CATLIN_BASEMENT_12",
+                   end_node="N-B-NE", assembly="BASEMENT_12",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
-                   end_node="N-B-N1", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-N1", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
-                   end_node="N-B-N2", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-N2", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
@@ -572,28 +572,28 @@ WALLS = [
     # W-B-N4 is the west 6'-0" under W-M-N3B, and x=6'-0" is N-M-MECH3's line so the two
     # storeys split in the same place.
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
-                   end_node="N-B-ESS-N", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-ESS-N", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="HEX0ZDQZEN", tag="W-B-N4", start_node="N-B-ESS-N",
-                   end_node="N-B-NW", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-NW", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
-                   end_node="N-B-W1", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-W1", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#5 @ 41" o.c.',
                    reinforcement=_B8_STEEL),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
-                   end_node="N-B-SW", assembly="CATLIN_BASEMENT_8",
+                   end_node="N-B-SW", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
                    lateral_support="top_and_bottom",
@@ -644,7 +644,7 @@ WALLS = [
     # segment D-B-GYM moved onto — a framed host in place of the 12" pour it used to be
     # formed through — which is the whole point of the rotation.
     Wall(uid="NJ21M7MF6R", tag="W-B-CS3", start_node="N-B-C1",
-         end_node="N-B-SA-NE", assembly="CATLIN_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-SA-NE", assembly="INT_2X6_BRG", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
@@ -769,7 +769,7 @@ WALLS = [
     # a 5/8" Type X leaf on the closet face. W-B-N3 (the closet's north side) is still
     # concrete and still passes on mass.
     Wall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
-         end_node="N-B-ESS-SE", assembly="CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX", top=ft(8),
+         end_node="N-B-ESS-SE", assembly="STAIRWALL_INT_2X6_BRG_TYPEX", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-ESS",
          structural_role=StructuralRole.BEARING),
@@ -785,7 +785,7 @@ WALLS = [
     # The closet stopped being its own `Room` later the same day (ROOMS) and the check went
     # quiet with the label; the wall does NOT go back to plywood — see ROOMS for why.
     Wall(uid="1H4KR79N9M", tag="W-B-STR3", start_node="N-B-ESS-SE",
-         end_node="N-B-BA-NW", assembly="CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR", top=ft(8),
+         end_node="N-B-BA-NW", assembly="STAIRWALL_INT_2X6_BRG_UNDERSTAIR", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
@@ -794,7 +794,7 @@ WALLS = [
     # bathroom's north partition and N-B-BA-W. The plywood face lands on the bathroom over
     # this stretch, which is what W-B-STR2's note below already says about its own run.
     Wall(uid="VZPMT59XVQ", tag="W-B-STR3B", start_node="N-B-BA-NW",
-         end_node="N-B-BA-W", assembly="CATLIN_STAIRWALL_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-BA-W", assembly="STAIRWALL_INT_2X6_BRG", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
@@ -812,7 +812,7 @@ WALLS = [
     # ceiling-level crossings (vent, hot, cold) are bored, as they have been since the pour
     # went away.
     Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
-         end_node="N-B-STR", assembly="CATLIN_STAIRWALL_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-STR", assembly="STAIRWALL_INT_2X6_BRG", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced
@@ -885,7 +885,7 @@ WALLS = [
     #
     # `resolve/stairs/common.py` budgets 4 1/2" between ST-B2M's two flights and emits no
     # member, so W-B-WELL fills a RESERVED VOID: it is not colliding with the stair, it is
-    # the thing the stair already made room for. CATLIN_STAIRWELL_PARTITION_4H is 4 1/2"
+    # the thing the stair already made room for. STAIRWELL_PARTITION_4H is 4 1/2"
     # exactly for that reason (plan/assemblies.py). It runs from N-B-BA-NE — the bathroom's
     # north-east corner, slid onto this same centreline in the same edit — north to
     # N-B-CL-NE, so W-B-BA-E and this wall are ONE PLANE 13 feet long. There is no gap
@@ -897,7 +897,7 @@ WALLS = [
     # it is FO-M-STAIR's void, not joists, so nothing lands on it and it is not BEARING.
     # It carries no framing of its own — see the assembly.
     Wall(uid="9AYPA03VAE", tag="W-B-WELL", start_node="N-B-BA-NE",
-         end_node="N-B-CL-NE", assembly="CATLIN_STAIRWELL_PARTITION_4H", top=ft(8),
+         end_node="N-B-CL-NE", assembly="STAIRWELL_PARTITION_4H", top=ft(8),
          interior_room="RM-B-STAIR"),
     # Unglazed buff brick veneer over the exposed run of W-B-S2/W-B-S3, where the sunken
     # garden is dug against them — everywhere else this wall is buried and the parge is a
@@ -1248,7 +1248,7 @@ SLABS = [
     Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
-         thickness=inch(3.5), assembly="CATLIN_SLAB_FLOOR",
+         thickness=inch(3.5), assembly="SLAB_FLOOR",
          perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1))),
 ]
 

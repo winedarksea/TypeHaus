@@ -54,7 +54,7 @@ _SCREEN_THRESHOLD_FT = 4.0
 def _structural_thickness_in(ctx: CheckContext, assembly_tag: str) -> float | None:
     """The nominal thickness of the assembly's concrete STRUCTURE layer, in inches.
 
-    The wall's *total* thickness is the wrong number: CATLIN_BASEMENT_12 is 12" of concrete
+    The wall's *total* thickness is the wrong number: BASEMENT_12 is 12" of concrete
     plus damp-proofing plus 4" of XPS, and the foam retains nothing.
     """
     assembly = next((a for a in ctx.plan.library.assemblies if a.tag == assembly_tag), None)

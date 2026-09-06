@@ -139,7 +139,7 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     ("column:POST_WHITE_PAINT", "framing"),
     ("glazing:BREEZEWAY_GLAZED_WALL", "openings"),
     ("glazing:BREEZEWAY_ROOF_GLAZING", "openings"),
-    ("bug_screen:CATLIN_EXT_2X6", "openings"),
+    ("bug_screen:EXT_2X6", "openings"),
     ("drywell", "drainage"),
     ("drain_tile", "drainage"),
     ("sump", "drainage"),
@@ -152,7 +152,7 @@ def test_a_solid_that_is_not_a_pour_is_not_filed_as_concrete(key, trade) -> None
     assert code.csi != "03 30 00"
 
 
-@pytest.mark.parametrize("key", ["footing", "slab", "pad", "slab:CATLIN_DECK_EPS_INT",
+@pytest.mark.parametrize("key", ["footing", "slab", "pad", "slab:DECK_EPS_INT",
                                  "thermal_break"])
 def test_an_actual_pour_still_files_as_concrete(key) -> None:
     assert cost_code("concrete", key).trade == "concrete"
@@ -167,7 +167,7 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
                      material="composite-deck").trade == "floors"
     assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
                      material="aluminum-deck").trade == "floors"
-    assert cost_code("concrete", "slab:CATLIN_DECK_EPS_INT",
+    assert cost_code("concrete", "slab:DECK_EPS_INT",
                      material="concrete").trade == "concrete"
     assert cost_code("concrete", "slab", material=None).trade == "concrete"
 

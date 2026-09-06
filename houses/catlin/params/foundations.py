@@ -233,9 +233,9 @@ def _toe_offset(tag: str) -> Length | None:
 #    face pinned and the width fixed at 20" the strip occupies -4"..+16" **whatever** datum
 #    its offset is measured from, so re-centring them buys no geometry whatever — it only
 #    re-expresses the same strip against a worse datum. Worse, because their band centres
-#    do not agree with each other: measured, +1 29/32" on S1/S4 (CATLIN_BASEMENT_8),
+#    do not agree with each other: measured, +1 29/32" on S1/S4 (BASEMENT_8),
 #    +1 3/4" on S2 (SAUNA_LINER_ON_GARDEN_CURB, whose band includes the sauna's shiplap
-#    liner) and -1/32" on S3 (CATLIN_GARDEN_CURB_6). One trim constant could no longer put
+#    liner) and -1/32" on S3 (GARDEN_CURB_6). One trim constant could no longer put
 #    three different walls on one face, and S2's footing would move the next time an
 #    interior sauna finish changed thickness.
 # 2. **The four framed walls** — W-B-CS, W-B-STR, W-B-STR3, W-B-STR3B. A stud wall is
@@ -257,13 +257,13 @@ HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8),
             center_on=_center_on(t), offset=_toe_offset(t),
-            assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "CATLIN_FOOTING_20")
+            assembly="FOOTING_FPSF_20" if t in _FROST_FORMED else "FOOTING_20")
     for i, t in _HOUSE_WALL_TAGS
 ]
 
 # Bearing prep below every house footing: 7" undercut, geotextile, drain tile, compacted
 # washed stone — a drained bearing surface that also breaks footing-to-wet-clay thermal
-# contact. 4" perimeter foam matches CATLIN_BASEMENT_12's exterior XPS.
+# contact. 4" perimeter foam matches BASEMENT_12's exterior XPS.
 # One bedding per footing, sharing the footing's own permanent index for the same reason.
 #
 # ** THE TILE FALLS TO SM-B-RADON, NOT TO DAYLIGHT (corrected 2026-09-05). ** It said
@@ -412,7 +412,7 @@ GARAGE_STEM_WALLS = [
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
-                       assembly="CATLIN_FOOTING_20")
+                       assembly="FOOTING_20")
 
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
@@ -472,7 +472,7 @@ GARAGE_STEPS = [
          outline=(pt(_STEP_X0, GARAGE_Y_SOUTH), pt(_STEP_X1, GARAGE_Y_SOUTH),
                   pt(_STEP_X1, GARAGE_Y_SOUTH + ft(_STEP_LANDING_FT)),
                   pt(_STEP_X0, GARAGE_Y_SOUTH + ft(_STEP_LANDING_FT))),
-         thickness=inch(6), top_elevation=ft(0), assembly="CATLIN_GARAGE_STEP_6"),
+         thickness=inch(6), top_elevation=ft(0), assembly="GARAGE_STEP_6"),
 ]
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------

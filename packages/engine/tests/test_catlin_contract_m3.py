@@ -39,7 +39,7 @@ GRID_FT = 18.0
 ATTIC_FULL_BAY_FT = 17.812
 WEST_TRUSS_FT = 17.917
 EAST_BAY_FT = 17.792
-# What stands on the attic deck at the eave is a 2x6 laid FLAT — CATLIN_RAFTER_PLATE, 1 1/2"
+# What stands on the attic deck at the eave is a 2x6 laid FLAT — RAFTER_PLATE, 1 1/2"
 # on 3/4" of subfloor — so the bearing datum is 20'-2 1/4" rather than 25'-0". PLATE_FT is
 # that 2.25" expressed in feet above the attic datum.
 PLATE_FT = 2.25 / 12.0
@@ -280,14 +280,14 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             # PLANT_INT_2X6_BRG_HUMID is the same 2x6 bearing line with the plant room's
             # humid liner on its west face — a finish decision on one segment, not a break
             # in the stack, so it counts toward the run like any other segment.
-            # CATLIN_INT_2X6_BRG_RC (W-M-C1 only) is the identical case one storey down: the
+            # INT_2X6_BRG_RC (W-M-C1 only) is the identical case one storey down: the
             # same 2x6 studs on the same layout line, with a resilient channel and a batt
             # added on the RM-M-BED face. A channel is finish furring carrying nothing, and
             # the wall's `alignment` holds its studs on x=18'-0" exactly where the plain
             # assembly had them, so the run is unbroken.
             if w.storey == storey
-            and w.assembly in ("CATLIN_INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID",
-                               "CATLIN_INT_2X6_BRG_RC")
+            and w.assembly in ("INT_2X6_BRG", "PLANT_INT_2X6_BRG_HUMID",
+                               "INT_2X6_BRG_RC")
             and abs(w.axis[0][0] - center_x) < 1e-6 and abs(w.axis[1][0] - center_x) < 1e-6
         ]
         assert segments, storey
@@ -493,17 +493,17 @@ def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
     plan = load_plan(CATLIN_DIR).plan
     report = run(plan, CATLIN_DIR, tier=None)
     gate = [f for f in report.findings
-            if f.check_id == CHECK_ID and "CATLIN_ROOF" in f.element_tags]
-    assert gate, "the condensation gate never evaluated CATLIN_ROOF"
+            if f.check_id == CHECK_ID and "ROOF" in f.element_tags]
+    assert gate, "the condensation gate never evaluated ROOF"
     assert all(f.result is Result.NOT_APPLICABLE for f in gate), [f.message for f in gate]
     assert all(R806_5_CHECK_ID in f.message for f in gate), [f.message for f in gate]
 
     coded = [f for f in report.findings
-             if f.check_id == R806_5_CHECK_ID and "CATLIN_ROOF" in f.message]
+             if f.check_id == R806_5_CHECK_ID and "ROOF" in f.message]
     assert coded, "nothing graded R806.5 on the assembly the gate handed to it"
     assert all(f.result is Result.PASS for f in coded), [f.message for f in coded]
 
-    r = assembly_r_value(plan.library.resolve_assembly("CATLIN_ROOF"), plan.library)
+    r = assembly_r_value(plan.library.resolve_assembly("ROOF"), plan.library)
     assert r.value is not None and not r.unknown_materials
     assert r.value.r_us >= 50.0
 
@@ -657,7 +657,7 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     # the x=10'-0" split, on W-A-N2B — the raked wall to check, since W-A-N2 carries no
     # window.
     plate_h = inch(1.5).meters
-    top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
+    top_plates = 2  # EXT_2X6 double top plate, not advanced framing
     checked = 0
 
     for tag in ("W-A-N1", "W-A-N2B"):
@@ -942,7 +942,7 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
     # The attic pair is gone; the column is two storeys now. WIN-A-W-S/WIN-A-W-N hung on the
     # 5'-0" knee walls at y 4'-8"/31'-4" — the one place in the house the 14" family was
     # chosen for HEIGHT rather than width, because a 5' wall at a 2'-6" sill has exactly 24"
-    # under its plate. Those walls are 1 1/2" rafter plates now (CATLIN_RAFTER_PLATE) and a
+    # under its plate. Those walls are 1 1/2" rafter plates now (RAFTER_PLATE) and a
     # plate has nothing to glaze. Asserted as an ABSENCE rather than deleted silently: if a
     # future pass puts glazing back on this facade's top storey it has to come back through
     # this test.
@@ -1051,7 +1051,7 @@ def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_c
     plan = load_plan(CATLIN_DIR).plan
     baseline, baseline_findings = resolve(plan)
     assert not [finding for finding in baseline_findings if finding.severity.value == "error"]
-    base_assembly = next(item for item in plan.library.assemblies if item.tag == "CATLIN_EXT_2X6")
+    base_assembly = next(item for item in plan.library.assemblies if item.tag == "EXT_2X6")
     thicker_layers = tuple(
         layer.model_copy(update={"thickness": inch(3)}) if layer.name == "spray-foam" else layer
         for layer in base_assembly.layers
@@ -1287,9 +1287,9 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
 # the sauna's south face on the buried 8" pour west of the excavation, and the shrink that
 # followed pulled the room east to the excavation edge, so the whole south face is the
 # garden curb again and W-B-S1 is one unsplit segment.
-_BURIED_ASSEMBLIES = ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_8")
-_COURT_ASSEMBLIES = ("CATLIN_GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
-                     "CATLIN_GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
+_BURIED_ASSEMBLIES = ("BASEMENT_12", "BASEMENT_8")
+_COURT_ASSEMBLIES = ("GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
+                     "GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
 _PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
 
 
@@ -1317,10 +1317,10 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     # Three of the six carry the sauna's liner inboard.
     south = [w for w in perimeter if w.tag.startswith("W-B-S")]
     assert len(south) == 6, sorted(w.tag for w in south)
-    # The buried pours carry CATLIN_BASEMENT_8 — the same assembly the N/E/W walls carry,
+    # The buried pours carry BASEMENT_8 — the same assembly the N/E/W walls carry,
     # because the same thing is true of them: their exposure is a grade band. No liner
-    # variant of it has an instance now, and neither does CATLIN_BASEMENT_8_GARDEN.
-    assert {w.tag for w in south if w.assembly == "CATLIN_BASEMENT_8"} == {"W-B-S1", "W-B-S4"}
+    # variant of it has an instance now, and neither does BASEMENT_8_GARDEN.
+    assert {w.tag for w in south if w.assembly == "BASEMENT_8"} == {"W-B-S1", "W-B-S4"}
     assert not [w for w in south if w.assembly.startswith("SAUNA_LINER_ON_BASEMENT_8")]
     assert not [w for w in south if w.assembly.endswith("BASEMENT_8_GARDEN")]
     for wall in perimeter:
@@ -1943,7 +1943,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     assert faces["air-gap"][1] == pytest.approx(-6.05, abs=1e-6)
 
     # And the backup's face must stay INBOARD of the wall standing on its seat: the basement
-    # skin tucks under CATLIN_EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
+    # skin tucks under EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
     # upper one turns that lap into an upward-facing ledge. 4" of EPS did exactly that at
     # -8.05" and nothing in `haus check` noticed.
     main_face = min(y for ly in catlin_model.wall("W-M-S1").layers for _x, y in ly.polygon)
@@ -2467,7 +2467,7 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     does not — 26 stations at 16" o.c. on every facade of every storey, unbroken.
     """
     # The east and west facades stop at the second storey: their attic segments are 1 1/2"
-    # of 2x6 laid flat (CATLIN_RAFTER_PLATE), which carries no cladding, no girt and so no
+    # of 2x6 laid flat (RAFTER_PLATE), which carries no cladding, no girt and so no
     # block grid. The north and south facades are gables and still run all three storeys,
     # which is what keeps this test honest — it would otherwise be asserting nothing.
     expected = ({"main", "second"} if wall_tag in ("W-M-E1", "W-M-W1")
@@ -2561,7 +2561,7 @@ def test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey(catlin_mod
     Three storeys used to lay this line out on three different phases, and every one of its
     twelve segments restarted the 16" module at its own start node — on the house's primary
     load path, where "studs directly over the studs below" is a bearing requirement and not
-    a facade preference. `CATLIN_INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` now set
+    a facade preference. `INT_2X6_BRG` and `PLANT_INT_2X6_BRG_HUMID` now set
     `layout_origin="line"`, so all three read off one grid.
 
     The line's origin lands on the house origin here — `_orient` puts it at the extreme

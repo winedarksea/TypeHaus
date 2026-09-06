@@ -197,7 +197,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
       of class C that actually protects the bar), the cementitious material TYPE the S rows
       require (and `exposure_s` is unset on every mix, deliberately, because no soil sulfate
       test has been run), and the SCM caps for an F3 mix exposed to deicing chemicals.
-      `CATLIN_EXPOSED_MIX` sits exactly at the 25% fly-ash cap — correct, and by coincidence
+      `EXPOSED_MIX` sits exactly at the 25% fly-ash cap — correct, and by coincidence
       rather than by a rule. ASR/aggregate reactivity (ASTM C1778) is unaddressed; the 25%
       Class F fly ash is the standard mitigation, so the mix is probably right and nothing
       records or grades it;
@@ -399,10 +399,13 @@ the future.
   | RM-S-PLANT | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-S-STUDY2 | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.2% |
-  | RM-S-BED3 | 13.3 sf | 129 sf | **10.3%** | 6.7 sf | 5.2% |
-  <!-- BED3 read 9.8 sf / 7.6% and leaned on R303.1 Exception 1 until 2026-09-06,
-       when WIN-S-BED3-N (WT-1436, x 23'-4") filled the north facade's empty
-       lower-east corner. It clears 8%/4% outright now. -->
+  | RM-S-BED3 | 9.8 sf | 129 sf | **7.6%** | 4.9 sf | 3.8% |
+  <!-- BED3 was briefly at 13.3 sf on 2026-09-06, when WIN-S-BED3-N (WT-1436, x 23'-4")
+       was added to fill the north facade's empty lower-east corner. That window was
+       withdrawn the same day: the facade was squared by MOVING the four windows already
+       there onto one rectangle (12'-0" / 24'-0" on both storeys) rather than adding a
+       fifth off the module. BED3 stays on R303.1 Exception 1, half a square foot short.
+       Adding glazing here is still open — it just has to be a retype, not a new unit. -->
   | RM-A-STUDY | 15.0 sf | 159 sf | **9.4%** | 7.5 sf | 4.7% |
   | RM-S-SUITE | 13.5 sf | 154 sf | **8.8%** | 6.7 sf | 4.4% |
   | RM-S-BED1 | 10.0 sf | 120 sf | **8.3%** | 5.0 sf | 4.2% |
@@ -747,7 +750,7 @@ Two pricing decisions that are correct today and become double bills the moment 
   documented at both ends. It is the strongest "could be authored as real elements" candidate
   in the file. **If it is ever authored, cut the `[concrete]` rates the same day** — nothing
   enforces that, and nothing can.
-- **`CATLIN_BASEMENT_12`'s all-in $/cy note says its rate absorbs damp-proofing** on the
+- **`BASEMENT_12`'s all-in $/cy note says its rate absorbs damp-proofing** on the
   argument that damp-proofing is "not in the model at all". It is now: `damp-proof`
   (`library/assemblies.py:170`) bills in `[envelope_layers]` as `air-barrier`. Either the
   concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in

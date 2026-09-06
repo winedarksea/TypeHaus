@@ -173,7 +173,7 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
     ids = {finding.check_id for finding in foundation_sheet_findings(catlin_model)}
     assert {"sheet.foundation.slab_reinforcement",
             "sheet.foundation.sill_anchorage"} <= ids
-    # `sheet.foundation.vapour_retarder` is NOT in that set: CATLIN_SLAB_FLOOR and
+    # `sheet.foundation.vapour_retarder` is NOT in that set: SLAB_FLOOR and
     # GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745 Class A retarder over a 4" capillary
     # break, and the exterior slabs that never needed one — the garden floor, the garage
     # step landing — are out of R506.2.3's scope rather than failing it.

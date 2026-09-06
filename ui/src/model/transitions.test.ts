@@ -17,11 +17,11 @@ export function runTransitionTests() {
   // against that whole key (model/patterns.py). These are catlin's real keys and patterns.
   assert(globMatches("wall_roof:*", "wall_roof:GARAGE_ROOF|GARAGE_WALL_2X6"),
     "A trailing wildcard covers a whole condition kind");
-  assert(globMatches("storey_stack:rim:*", "storey_stack:rim:CATLIN_BASEMENT_12|CATLIN_EXT_2X6"),
+  assert(globMatches("storey_stack:rim:*", "storey_stack:rim:BASEMENT_12|EXT_2X6"),
     "A pattern may narrow within a kind — the key prefix must not be double-counted");
-  assert(!globMatches("storey_stack:rim:*", "storey_stack:sill:CATLIN_BASEMENT_12"),
+  assert(!globMatches("storey_stack:rim:*", "storey_stack:sill:BASEMENT_12"),
     "A narrowed pattern must not swallow the rest of its kind");
-  assert(globMatches("opening_perimeter:CATLIN_EXT_*", "opening_perimeter:CATLIN_EXT_2X6"),
+  assert(globMatches("opening_perimeter:CATLIN_EXT_*", "opening_perimeter:EXT_2X6"),
     "Wildcards work mid-key");
   assert(!globMatches("opening_perimeter:CATLIN_EXT_*", "opening_perimeter:CATLIN_CONC_12_INT"),
     "A prefix that does not match is not covered");
@@ -39,9 +39,9 @@ export function runTransitionTests() {
 
   const transitions = [transition("TR-EAVE", "wall_roof:*"), transition("TR-RIM", "storey_stack:rim:*")];
   const conditions = [
-    condition("wall_roof", "wall_roof:CATLIN_ROOF|INT_2X4_PARTITION"),
-    condition("storey_stack", "storey_stack:rim:CATLIN_BASEMENT_12|CATLIN_EXT_2X6"),
-    condition("roof_ridge", "roof_ridge:CATLIN_ROOF"),
+    condition("wall_roof", "wall_roof:ROOF|INT_2X4_PARTITION"),
+    condition("storey_stack", "storey_stack:rim:BASEMENT_12|EXT_2X6"),
+    condition("roof_ridge", "roof_ridge:ROOF"),
   ];
   const coverage = transitionCoverage(transitions, conditions);
   assert(coverage.matchesByTransition.get("TR-EAVE")?.length === 1, "Each transition reports its own matches");

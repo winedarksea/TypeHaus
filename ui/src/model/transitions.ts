@@ -1,6 +1,6 @@
 // Transition ↔ condition matching, mirroring the engine (model/patterns.py::matches, used by
 // checks/integrity, the detail emitter, and the scaffolder). A `Condition.key` already carries
-// its kind as a prefix — "storey_stack:rim:CATLIN_BASEMENT_12|CATLIN_EXT_2X6" — and a
+// its kind as a prefix — "storey_stack:rim:BASEMENT_12|EXT_2X6" — and a
 // Transition's `condition_pattern` is an fnmatch glob over that whole key. Getting this wrong
 // does not fail loudly; it just reports the wrong coverage, so the semantics are mirrored here
 // rather than approximated.

@@ -67,7 +67,7 @@ from typehaus import Connector, ConnectorKind, ft, pt
 # `exposed_fastener_cladding_screw_rows` bills 640 over the four garage walls (500 field +
 # 140 sidelap), where the retired grid was 16 clamps at two levels. The NAME survives as an
 # empty list rather than being deleted: `plan/manifest.py` splices it, and the swap back —
-# `CATLIN_EXT_2X6_SWINBURNE`'s convention — is then re-authoring the sixteen constructors
+# `EXT_2X6_SWINBURNE`'s convention — is then re-authoring the sixteen constructors
 # here and nothing else. The `S-5-N` PRICE ROW stays too, because the garage ROOF is still
 # nail strip and still carries 12 of them.
 GARAGE_WALL_WIND_CLAMPS = []

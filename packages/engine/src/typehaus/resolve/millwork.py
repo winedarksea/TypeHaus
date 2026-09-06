@@ -265,7 +265,7 @@ def _pocket_depth_m(wall: ResolvedWall) -> float | None:
     """A built-in's clear case pocket: the wall's ``AIRGAP`` band plus its stud bay.
 
     A bookcase wall is authored as a void inside the assembly (the reference house's
-    ``CATLIN_INT_2X4_BOOKCASE_12`` carries a ``case-pocket`` AIRGAP over its stud layer),
+    ``INT_2X4_BOOKCASE_12`` carries a ``case-pocket`` AIRGAP over its stud layer),
     so the depth a shelf is cut to is the depth of that void — never the wall's overall
     thickness, which includes the case back and the finish on the far side.
     """

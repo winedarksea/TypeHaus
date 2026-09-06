@@ -139,5 +139,5 @@ def test_wall_comparison_pairs_the_authored_wall_variants(catlin_model):
     # The exterior stack is 2x6 on every storey, so the only remaining authored 2x4-framed
     # wall stock is the interior partition family.
     assert comparison["baseline_assembly"] == "INT_2X4_PARTITION"
-    assert comparison["upgrade_assembly"] == "CATLIN_EXT_2X6"
+    assert comparison["upgrade_assembly"] == "EXT_2X6"
     assert comparison["heating_savings_btu_per_hour"] > 0

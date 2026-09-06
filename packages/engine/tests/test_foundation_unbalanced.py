@@ -263,7 +263,7 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # check's own, not the house's.
     assert fails == ""
     # The east wall, the only perimeter run SL-M-DECK bears on, is still 12" and still NR.
-    assert "CATLIN_BASEMENT_12" in passes
+    assert "BASEMENT_12" in passes
     assert "needs no vertical reinforcement" in passes
     assert "GARAGE_ICF_6" in passes
     # The other nine segments are 8", which the same table permits ONLY with vertical
@@ -280,14 +280,14 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # an assembly leaves this list by ceasing to retain earth, and W-B-S4 (the east 8'-0" of
     # the old W-B-S3, split off at the excavation edge) is the segment that still does.
     #
-    # ONE assembly, not two. CATLIN_BASEMENT_8_GARDEN's last two walls —
-    # W-B-S1 and W-B-S4, the segments named above — moved to CATLIN_BASEMENT_8 with the
-    # stucco retirement, and the check's two rows merged into one "8 CATLIN_BASEMENT_8
+    # ONE assembly, not two. BASEMENT_8_GARDEN's last two walls —
+    # W-B-S1 and W-B-S4, the segments named above — moved to BASEMENT_8 with the
+    # stucco retirement, and the check's two rows merged into one "8 BASEMENT_8
     # wall(s)". Nothing about the grading changed: identical 8" pour, 45 psf/ft, 8.0' wall,
     # 6.3' backfill and the same #5 @ 41" o.c., which is precisely why the rows could merge.
-    assert "CATLIN_BASEMENT_8" in passes
-    assert "CATLIN_BASEMENT_8_GARDEN" not in passes
-    assert "8 CATLIN_BASEMENT_8 wall(s)" in passes
+    assert "BASEMENT_8" in passes
+    assert "BASEMENT_8_GARDEN" not in passes
+    assert "8 BASEMENT_8 wall(s)" in passes
     assert 'is reinforced #5 @ 41" o.c. against the #5 @ 41" o.c.' in passes
     assert "the 8' wall x 7' backfill row" in passes
     # The three free retaining walls, named by R404.4 rather than graded by the table.

@@ -33,7 +33,7 @@ def test_panels_ride_the_roof_plane(catlin_model):
     edge measures its true 44.6" while its plan projection is foreshortened.
 
     **The bounds are DERIVED from the roof's own stack, not transcribed.** They were a
-    literal 0.18..0.32 m band until 2026-08-31, and the day CATLIN_ROOF's six inches of
+    literal 0.18..0.32 m band until 2026-08-31, and the day ROOF's six inches of
     outsulation were deleted the modules came down with the roof and the band failed —
     correctly reporting a change that was not a defect. What is actually invariant is the
     sandwich: ``roof_height_at`` is the DECK plane, the module rides the above-structure

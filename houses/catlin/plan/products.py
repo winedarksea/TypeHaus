@@ -108,7 +108,7 @@ BROAN_B210E75RT = Product(
 
 # The study's bookcase door (DT-INT-BOOKCASE30, W-A-SN's built-in). A model rather than a
 # bare brand because the flush-mount case DEPTH is the number the assembly was drawn to:
-# CATLIN_INT_2X4_BOOKCASE_12's 6 3/8" case-pocket plus its 3 1/2" stud-case give 9 7/8" of
+# INT_2X4_BOOKCASE_12's 6 3/8" case-pocket plus its 3 1/2" stud-case give 9 7/8" of
 # clear shelf, and the leaf has to equal the fixed cases or the run does not read continuous.
 # ** THAT DEPTH IS THE ONE NUMBER TO CONFIRM AGAINST THE ORDER. ** Murphy Door's published
 # flush-mount case depths were not verifiable when this was written; the assembly's note
@@ -118,7 +118,7 @@ MURPHY_BOOKCASE_30 = Product(
     tag="PROD-MURPHY-BOOKCASE-30", brand="Murphy Door", model="Flush Mount Bookcase Door",
     name="Flush-mount bookcase door, 2'-6\" x 6'-8\", solid core",
     source="Murphy Door product line — identity only; the case DEPTH has not been confirmed "
-           "against a datasheet, and CATLIN_INT_2X4_BOOKCASE_12's 6 3/8\" case-pocket is "
+           "against a datasheet, and INT_2X4_BOOKCASE_12's 6 3/8\" case-pocket is "
            "what the order has to match (see that assembly's note for the fallback).",
 )
 
@@ -128,7 +128,7 @@ MURPHY_BOOKCASE_30 = Product(
 # the M3 fixture pass. It is a MODEL choice and not just a brand one in three ways that the
 # plan has to answer, which is exactly why it earns a Product record:
 #
-#   * it is a DROP-IN, so it needs a framed deck (CATLIN_TUBDECK_INT_2X4) rather than the
+#   * it is a DROP-IN, so it needs a framed deck (TUBDECK_INT_2X4) rather than the
 #     three-sided alcove FX-TUB-60 assumed;
 #   * the "-W1" suffix IS the Bask heated surface, and that is a 120 V / 15 A dedicated
 #     GFCI circuit (CKT-BATH2-TUB) with a receptacle behind the bath - a plain K-5713 has

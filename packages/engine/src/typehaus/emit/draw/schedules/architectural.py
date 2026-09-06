@@ -28,7 +28,7 @@ _INDEX_PITCH_IN = 0.135
 _INDEX_COLUMN_IN = 2.95
 
 #: Widest index column, inches. A derived detail's title carries the assembly pair that
-#: distinguishes it ("TR-CATLIN-RIM-BAND · CATLIN_EXT_2X6 / CATLIN_ROOF"), which is what a
+#: distinguishes it ("TR-CATLIN-RIM-BAND · EXT_2X6 / ROOF"), which is what a
 #: column this wide is for; past it the eye stops associating a number with its title.
 _INDEX_COLUMN_MAX_IN = 6.2
 

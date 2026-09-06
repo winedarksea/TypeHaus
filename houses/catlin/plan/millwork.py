@@ -17,7 +17,7 @@
 from typehaus import ft, inch
 from typehaus.model import MillworkStandard, ShelfBank, ShelfBay
 
-# The one declaration. Scope is CATLIN_EXT_2X6 alone — 39 of the 45 windows:
+# The one declaration. Scope is EXT_2X6 alone — 39 of the 45 windows:
 #   * PLANT_EXT_2X6_HUMID (3) is the plant room, which runs at 70% RH by design. Oak in
 #     that room is a cupped stool and a black tannin stain, not millwork.
 #   * SAUNA_LINER_ON_GARDEN_FRAMED (1) is lined in basswood for a burn-safety reason
@@ -39,7 +39,7 @@ MILLWORK = [
         # 1" of horn each side. The apron and the casing legs die onto it.
         stool_horn=inch(1),
         stool_profile="eased",
-        stool_assemblies=("CATLIN_EXT_2X6",),
+        stool_assemblies=("EXT_2X6",),
         # 28 oak treads: ST-M2S (13) and ST-S2A (15, three of them winders). ST-B2M is the
         # basement flight and is carpeted, ST-G-SERVICE is the garage's.
         tread_material_ref="oak-tread",
@@ -50,7 +50,7 @@ MILLWORK = [
 
 # --- the attic study built-in, W-A-SN --------------------------------------------------
 #
-# CATLIN_INT_2X4_BOOKCASE_12: a 9 7/8" clear pocket (the `case-pocket` AIRGAP over the
+# INT_2X4_BOOKCASE_12: a 9 7/8" clear pocket (the `case-pocket` AIRGAP over the
 # `stud-case` bay), 12'-9 3/8" of run. The BOM legitimately sees only the case-back sheet
 # and the nailers — this is the shelf stock it never saw.
 #
@@ -310,9 +310,34 @@ MAIN_SHELVES = [
     # why `depth` is authored here and deliberately omitted on the study and mudroom boards.
     # `resolve/millwork.py::_pocket_depth_m` gives a wall host the depth of its CASE POCKET —
     # its AIRGAP plus stud bay — which is the right answer for a bookcase wall and the wrong
-    # one for a 3 5/8" masonry wythe with no pocket at all. 10" is measured: from W-M-E1's gwb
-    # at x=35'-5 3/8" out to x=34'-7 3/8", i.e. dying on the wall behind and projecting 4 1/2"
-    # past the brick face at x=34'-11 7/8".
+    # one for a 3 5/8" masonry wythe with no pocket at all. 11 1/2" is measured: from W-M-E1's
+    # gwb at x=35'-5 3/8" out to x=34'-5 7/8", i.e. dying on the wall behind and projecting a
+    # 6" shelf past the brick face at x=34'-11 7/8". (It was 10"/4 1/2" until 2026-09-06; 4 1/2"
+    # is a reveal, not a mantel — nothing stands on it.)
+    #
+    # ** THE MANTEL MUST BE TIED BACK INTO W-M-E1, AND IT IS NOT A DETAIL THAT CAN BE SKIPPED.
+    # ** Work the free body about the brick's front bearing edge at x=34'-11 7/8". The board
+    # bears on 3 5/8" of wythe, spans the 1 7/8" gap behind it and dies on the gwb, so its
+    # centroid sits 1/4" IN FRONT of that edge: ** at 25.9 lb it overturns under its own
+    # weight ** — it does not need a load on it, it needs only to not be held down. At the old
+    # 10" depth the centroid was 1/2" behind the edge and a 2.5 lb tip load did it, which is
+    # not meaningfully better. So: screws through the gwb into flat blocking laid in W-M-E1's
+    # stud bay behind the wythe, taking the back edge down. The lever is 5 1/2" (bearing edge
+    # to gwb), so 100 lb leaned on the front lip is 109 lb of tension in that line of
+    # fasteners — nothing, once it exists.
+    #
+    # ** THE BOARD ITSELF IS NOT THE QUESTION. ** 45 1/2" x 2 1/4" gives S = 38.4 in3, so the
+    # same 100 lb at 6" is 600 in-lb and 16 psi against walnut's ~1,000 psi Fb — a factor of
+    # 60. Every bit of the margin here is in the hold-down and none of it is in the wood, so
+    # sizing the shelf thicker would answer a question nobody asked.
+    #
+    # ** AND NOTHING IN `haus check` GRADES ANY OF THAT. ** A ShelfBank resolves to width,
+    # depth, thickness and a count and NOTHING ELSE — `ResolvedShelfBank` carries no position
+    # and no elevation, so the mantel has no geometry anywhere in the engine: it is absent
+    # from the 3D and the sections, and no interference, clearance or bearing check can see
+    # it. That is the element family's design (it feeds `takeoff/hardwood.py`), not a bug to
+    # work around here. It does mean this comment and notes/east_breast_bearing.md are the
+    # ONLY place the hold-down is recorded, so they have to be right.
     #
     # `shelf_count=1` for SB-M-STUDY-BENCH's reason: a ShelfBay counts horizontal boards
     # INCLUDING the case top, and here the mantel IS the top. `clear_height` is the void under
@@ -346,7 +371,7 @@ MAIN_SHELVES = [
         host="W-M-FIRE",
         material_ref="walnut-mantel-12q",
         thickness=inch(2.25),
-        depth=inch(10),
+        depth=inch(11.5),
         profile="S4S",
         bays=(ShelfBay(width=inch(45.5), clear_height=inch(11.625), shelf_count=1),),
     ),

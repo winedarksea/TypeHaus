@@ -121,7 +121,7 @@ def test_a_declared_split_scales_with_the_quantity(tmp_path) -> None:
 # has to be able to price it, or the estimate can only ever report it as a hole.
 
 _MIXED_SOLIDS = {"structural_solids": [
-    {"category": "slab", "assembly": "CATLIN_DECK_EPS_INT",
+    {"category": "slab", "assembly": "DECK_EPS_INT",
      "structure_material": "concrete", "volume_cubic_yards": 10.0},
     {"category": "slab", "assembly": "BALCONY_DECK_ALUMINUM",
      "structure_material": "aluminum-deck", "volume_cubic_yards": 2.0},

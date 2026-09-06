@@ -67,7 +67,7 @@ def test_no_wall_layer_overlaps_another(catlin_model):
 def test_cavity_r_value_is_parallel_path_not_series(catlin_model):
     """Framing and fill are two paths through one depth — summing both overstates the wall."""
     library = catlin_model.plan.library
-    asm = library.resolve_assembly("CATLIN_EXT_2X6")
+    asm = library.resolve_assembly("EXT_2X6")
     stud = next(ly for ly in asm.layers if ly.name == "stud")
     assert stud.cavity is not None
 

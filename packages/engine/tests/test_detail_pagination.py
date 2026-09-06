@@ -91,7 +91,7 @@ def test_a_card_that_outgrows_its_band_gets_a_second_page(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     band = scene.frame.bands["notes"]
     assert len(note_pages(scene.notes, band)) == 1, \
@@ -116,7 +116,7 @@ def test_the_notes_are_logical_lines_not_pre_wrapped(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     bullets = [line for line in scene.notes if line.startswith("• ")]
     assert bullets
@@ -133,7 +133,7 @@ def test_no_markdown_or_repository_path_reaches_the_notes(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     joined = "\n".join(scene.notes)
     for artefact in ("**", "`", "](", ".md", ".py", "::"):
@@ -145,7 +145,7 @@ def test_pagination_does_not_touch_the_drawing(catlin_model):
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model, derived)
     longer = scene.model_copy(update={"notes": scene.notes + _lines(500)})
     assert longer.frame == scene.frame

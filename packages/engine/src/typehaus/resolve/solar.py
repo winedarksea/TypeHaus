@@ -77,7 +77,7 @@ def _resolve_panel(model: ResolvedModel, panel: SolarPanel, storey_tag: str) -> 
 
     # ``roof_height_at`` is the structural deck plane; the clamps grip the standing seam
     # on top of the full above-structure layer stack (8.5" of insulation + roofing on
-    # CATLIN_ROOF), so the module rides skin + standoff off the deck, perpendicular.
+    # ROOF), so the module rides skin + standoff off the deck, perpendicular.
     assembly = model.plan.library.resolve_assembly(roof.assembly)
     skin = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
             if assembly is not None else 0.0)

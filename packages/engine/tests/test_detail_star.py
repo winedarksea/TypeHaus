@@ -110,7 +110,7 @@ def test_per_condition_overrides_curate_the_primary_sheet_set(catlin_model):
     # when the partitions either side of that rim stopped matching each other; the house's
     # own overrides moved to the pairs at the same time (plan/transitions.py).
     interior = "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB"
-    exterior = "storey_stack:rim:CATLIN_EXT_2X6"
+    exterior = "storey_stack:rim:EXT_2X6"
     # Same transition, same pattern-wide star, opposite effective answers.
     assert rows[interior]["transition"] == rows[exterior]["transition"]
     assert rows[interior]["transition_star"] is rows[exterior]["transition_star"] is True
@@ -175,4 +175,4 @@ def test_per_condition_override_writes_back_to_source(tmp_path):
     eave = next(t for t in result.plan.library.transitions if t.tag == "TR-CATLIN-EAVE")
     assert eave.unstarred_conditions == (key,)
     assert eave.star is True and eave.stars(key) is False
-    assert eave.stars("wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF") is True
+    assert eave.stars("wall_roof:EXT_2X6|ROOF") is True

@@ -209,7 +209,7 @@ design on that same claim (`structural.frost_depth`, ASCE 32 soil replacement, 2
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
 | stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
 | footing reinforcement | **`#6 @ 10" o.c.` transverse, top AND bottom**, 3" cover — sized in §7; `#4 @ 18"` longitudinal |
-| mix | **`CATLIN_EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar, macro-synthetic fibre |
+| mix | **`EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar, macro-synthetic fibre |
 
 ### Why the footing grew INBOARD and not symmetrically
 
@@ -460,7 +460,7 @@ The wall still passes at 0.65, and the structure's governing limit state is unch
 restraint at FS 1.77, d/c 0.85 (§4). Nothing about this trade moves the number that governs.
 
 It is authored on the **schedule** (`_RET_STEM_STEEL.cover`) and not on the mix, and that
-distinction is load-bearing. `CATLIN_EXPOSED_MIX` pours the footings under these walls too,
+distinction is load-bearing. `EXPOSED_MIX` pours the footings under these walls too,
 where 3" is the Code figure and free; on the stem it costs 11%. One mix, two faces, two
 covers — which is exactly why `resolve/concrete.cover_for` reads the element's schedule
 before its mix.
@@ -517,7 +517,7 @@ unreinforced.
 Added to `engineering/retaining_basis.py::footing_states` on 2026-09-03. Same case as §4
 and §6 throughout — **at-rest, 110 pcf**, because grading the footing on a different load
 case from the stem it holds up would be two designs of one wall. And the same mix: f'c
-**5,000 psi**, `CATLIN_EXPOSED_MIX` (§3), so `√f'c = 70.711`.
+**5,000 psi**, `EXPOSED_MIX` (§3), so `√f'c = 70.711`.
 
 ### 7a. The pressure diagram
 
@@ -800,7 +800,7 @@ added:
   (footnote g allows 2,500 with an approved water/vapour-resistance admixture; footnote h
   exempts deck/porch post footings, wood foundations and floating slabs — none of which is a
   retaining-wall strip footing). **ANSWERED 2026-09-03, and the model can now say so.**
-  `ConcreteSpec` gives a pour somewhere to state its mix, `CATLIN_BURIED_MIX` states
+  `ConcreteSpec` gives a pour somewhere to state its mix, `BURIED_MIX` states
   5,000 psi at w/cm 0.40 for every strip footing, and `stem_flexure` reads it instead of the
   presumptive 3,000. What is *not* yet changed is the arithmetic in this note: f'c below is
   still the 3,000 psi the wall row requires, which is the safe direction for a stem and is

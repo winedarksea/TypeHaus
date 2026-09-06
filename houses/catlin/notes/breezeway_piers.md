@@ -15,11 +15,11 @@ why that is not a doubt about the section.
 Same shape as `notes/sunken_garden_piers.md` §1–§5, and deliberately so: these are the same
 12" round section out of the same assembly (`PIER_CONCRETE_12`), so §4 and §5 are the same
 arithmetic with the same answer. Since 2026-09-03 that assembly names a real mix —
-`CATLIN_EXPOSED_MIX`, 5,000 psi — instead of the presumptive 3,000 the engine used to
+`EXPOSED_MIX`, 5,000 psi — instead of the presumptive 3,000 the engine used to
 substitute, and §4's capacity below moves with it.
 
 **These four get a richer mix than their exposure needs, and that is deliberate.** A
-breezeway pier is not the salt-splash court `CATLIN_EXPOSED_MIX` was written for. But
+breezeway pier is not the salt-splash court `EXPOSED_MIX` was written for. But
 `PIER_CONCRETE_12` also pours `PT-SG-COL`, which is; the five piers together are 0.82 CY;
 and the mix these four used to name — "4,000 psi, class F2" — was not a legal mix at all,
 because ACI Table 19.3.2.1 asks 4,500 psi of class F2. One ticket that is right beats two

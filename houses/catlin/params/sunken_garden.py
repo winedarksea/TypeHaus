@@ -94,7 +94,7 @@ class SunkenGardenSpec:
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
     gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
     # The house's real BELOW-GRADE outboard face, on the south run: 0.05" damp-proofing +
-    # 2" + 2" XPS + 0.125" acrylic foundation coating over CATLIN_BASEMENT_8's pour
+    # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
     # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
     # same way `basement_depth_ft` is. `house_ext_layers_in = 5.0` above is the
     # ABOVE-GRADE stack (polyiso + EPS + furring + cladding) and is why `_y_ax_n` landed
@@ -184,7 +184,7 @@ class SunkenGardenSpec:
     # separately from ``slab_thickness_in`` because that one still sets the frost wings'
     # datum arithmetic and the grade beam's top, and the two must be free to differ.
     rim_thickness_in: float = 3.5
-    # The open centre's build-up, a USGA putting-green profile (``CATLIN_GARDEN_FIELD``):
+    # The open centre's build-up, a USGA putting-green profile (``GARDEN_PUTTING_GREEN``):
     # 12" rootzone / 2" intermediate choker sand / 4" bridging gravel / subgrade fabric.
     #
     # ** 18", not 12", and the extra 6" is all excavated DOWNWARD. ** USGA's cut is 16" when
@@ -1210,10 +1210,10 @@ FOOTINGS = [
             reinforcement=_RETAINING_FOOTING_MAT if w.tag in _RETAINING else None,
             # Two footing types, and the branch is the same `_RETAINING` set that already
             # decides width, offset and mat: the three cantilever strips are 96" x 12", the
-            # two braced porch strips 84" x 13". Both pour from CATLIN_EXPOSED_MIX — every
+            # two braced porch strips 84" x 13". Both pour from EXPOSED_MIX — every
             # footing in this court is inside the excavation and in the freezing zone.
-            assembly=("CATLIN_RETAINING_FOOTING_96" if w.tag in _RETAINING
-                      else "CATLIN_PORCH_FOOTING_84"),
+            assembly=("RETAINING_FOOTING_96" if w.tag in _RETAINING
+                      else "PORCH_FOOTING_84"),
             depth=inch(SPEC.footing_thickness_in))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
@@ -1231,14 +1231,14 @@ FOOTINGS.append(
     Footing(uid="SGF199AAAA", tag="FT-SG-COL", under="PT-SG-COL",
             width=inch(_col_footing_width_in),
             depth=inch(SPEC.footing_thickness_in),
-            assembly="CATLIN_PIER_BASE_12",
+            assembly="PIER_BASE_12",
             bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 FOOTINGS.append(
     Footing(uid="SGF198AAAA", tag="FT-SG-FCOL", under="PT-SG-FCOL",
             width=inch(_front_footing_width_in),
             depth=inch(SPEC.footing_thickness_in),
-            assembly="CATLIN_PIER_BASE_12",
+            assembly="PIER_BASE_12",
             bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 
@@ -1546,7 +1546,7 @@ GARDEN_OVERFLOW = FrenchDrain(
 )
 
 GARDEN_SLAB = Slab(
-    uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="CATLIN_GARDEN_SLAB",
+    uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="GARDEN_COURT_SLAB",
     outline=(pt(ft(_x_in_w), ft(_y_in_s)), pt(ft(_x_in_e), ft(_y_in_s)),
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.rim_thickness_in),
@@ -1663,17 +1663,17 @@ GARDEN_FLOOR_OPENINGS = [
 
 # ** THE OPEN CENTRE IS A USGA PUTTING-GREEN PROFILE, ISOLATED BEHIND ONE ASSEMBLY. **
 # 18" deep, topping out on the rim's own plane; the whole build-up lives in
-# `CATLIN_GARDEN_FIELD` and changing what the court's middle is remains a one-line
+# `GARDEN_PUTTING_GREEN` and changing what the court's middle is remains a one-line
 # `assembly=` change.
 #
-# `CATLIN_GARDEN_FIELD` is authored `role="band"`, the same as the frost wings, and the
+# `GARDEN_PUTTING_GREEN` is authored `role="band"`, the same as the frost wings, and the
 # reasoning is written out at the assembly. In short: a band carries no STRUCTURE layer,
 # which `integrity.assembly_layers` requires of an `enclosure` and this build-up has none of;
 # and a band is invisible to `resolve/site_earth._is_a_floor`, which is free here because
 # SL-SG-FLOOR's outline already spans the whole court, and which removes the hazard of a
 # frost finding ever naming SL-SG-FIELD instead of SL-SG-FLOOR.
 GARDEN_FIELD = Slab(
-    uid="SGS502AAAA", tag="SL-SG-FIELD", assembly="CATLIN_GARDEN_FIELD",
+    uid="SGS502AAAA", tag="SL-SG-FIELD", assembly="GARDEN_PUTTING_GREEN",
     outline=(pt(ft(_field_x_w), ft(_field_y_s)), pt(ft(_field_x_e), ft(_field_y_s)),
              pt(ft(_field_x_e), ft(_field_y_n)), pt(ft(_field_x_w), ft(_field_y_n))),
     thickness=inch(SPEC.field_depth_in),
@@ -1694,8 +1694,8 @@ GARDEN_FIELD = Slab(
 # strip (the insulation gap to the house) can never be covered by anything, which caps any
 # surface here at 87%, and the rim slab covers the patch's full width the way the stoop did.
 #
-# `CATLIN_GARDEN_STOOP` goes unreferenced with it. Kept in plan/assemblies.py on the
-# CATLIN_EXT_2X6_SWINBURNE precedent — an unreferenced assembly saves no test churn, it
+# `GARDEN_STOOP` goes unreferenced with it. Kept in plan/assemblies.py on the
+# EXT_2X6_SWINBURNE precedent — an unreferenced assembly saves no test churn, it
 # preserves the reasoning — and its prices.toml row falls to 0 SF.
 
 # --- FPSF wing insulation under the garden slab, along the house ------------------------
@@ -3446,7 +3446,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
 # `TrimKind.BUG_SCREEN` rather than a new kind: the enum is "vented insect closure", which
 # is exactly this piece's job, and minting a kind that means the same thing would split one
 # $/LF rate across two price keys. It is not a rainscreen base (the case the enum comment
-# was written for), so it does NOT collide with the derived `bug_screen:CATLIN_EXT_2X6`
+# was written for), so it does NOT collide with the derived `bug_screen:EXT_2X6`
 # rows in [openings] — those come off wall layers, this is an authored `_EdgeRun` billed by
 # the foot in [edge_trim].
 #

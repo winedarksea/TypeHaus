@@ -74,7 +74,7 @@ def test_every_detail_sheet_says_which_sheet_it_is(catlin_model_ro):
 
     numbers = detail_sheet_numbers(catlin_model_ro)
     derived = next(d for d in derive_detail_slices(catlin_model_ro)
-                   if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
+                   if d.key == "wall_roof:EXT_2X6|ROOF")
     scene, _ = build_detail(catlin_model_ro, derived)
     printed = {n.content for n in scene.nodes if isinstance(n, Text)}
     assert f"SHEET {numbers[derived.key]}" in printed

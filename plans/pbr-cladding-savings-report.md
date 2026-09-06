@@ -5,13 +5,13 @@
 coverage, 1-1/4" major ribs at 12" o.c.), face-fastened with Simpson **T09150HWAM** #9 x
 1-1/2" 316 stainless panel screws with bonded EPDM washers.
 
-Two assemblies moved: `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`. `CATLIN_EXT_2X6_SWINBURNE`
+Two assemblies moved: `EXT_2X6` and `PLANT_EXT_2X6_HUMID`. `EXT_2X6_SWINBURNE`
 keeps the snap-lock layer as the one-line revert.
 
 **The garage was excluded.** `GARAGE_WALL_2X6` has no furring — cladding sits straight on
 Zip-R — so PBR there needs a whole new girt layer plus through-insulation structural screws,
 and that cost cancels the saving over 631 SF. It keeps `standing-seam-nailstrip-26` and its
-28 `S-5-N` wind clamps. Both roofs (`CATLIN_ROOF`, `GARAGE_ROOF`) are untouched.
+28 `S-5-N` wind clamps. Both roofs (`ROOF`, `GARAGE_ROOF`) are untouched.
 
 ---
 

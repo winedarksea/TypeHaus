@@ -450,7 +450,7 @@ def test_envelope_bills_more_than_the_sheathing(bom):
     assert "sheathing" in functions
     # The overlap with sheet_goods is flagged, so a caller summing both cannot double-count —
     # and only where there IS one. `sheet_goods_takeoff` walks walls, roofs and floor systems
-    # and has never walked a slab, so the 4" capillary break under CATLIN_SLAB_FLOOR (a
+    # and has never walked a slab, so the 4" capillary break under SLAB_FLOOR (a
     # SHEATHING layer, and #57 stone rather than a sheet good at all) bills here and nowhere
     # else. Flagging it would point a reader at a row that does not exist.
     sheathing = [row for row in bom["envelope_layers"] if row["function"] == "sheathing"]
@@ -465,7 +465,7 @@ def test_envelope_bills_more_than_the_sheathing(bom):
 def test_a_roof_ceiling_bills_off_the_bearing_plane_not_the_deck(catlin_model, bom):
     """A roof's ``default_lining`` and its layers' ``CavityFill`` were read by nothing.
 
-    The roof loop walked bare ``assembly.layers``, so the gypsum ceiling under CATLIN_ROOF's
+    The roof loop walked bare ``assembly.layers``, so the gypsum ceiling under ROOF's
     rafters, its 5.5" cavity batts, and the garage attic's blown fill all reached no order —
     the same class of miss as ``ceiling_below`` above, one plane further up.
 

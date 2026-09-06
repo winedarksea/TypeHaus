@@ -264,7 +264,7 @@ def test_the_mat_is_sized_to_the_room_with_no_headroom_left():
     plan = _plan()
     lib = plan.library
     wall_r = assembly_r_value(next(a for a in lib.assemblies
-                                   if a.tag == "CATLIN_EXT_2X6"), lib).value.r_us
+                                   if a.tag == "EXT_2X6"), lib).value.r_us
     window_u = next(t for t in lib.window_types if t.tag == "WT-2736-T").u_factor.u_us
     delta_f = 70 - (-15)
 

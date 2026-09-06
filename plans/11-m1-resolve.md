@@ -112,7 +112,7 @@ checked like every other boundary.
      aligns stud layout grids along stack edges. *Built 2026-08-25* as
      `FramingSpec.layout_origin: "wall-start" | "line"`, default `"wall-start"` so every
      existing wall is unchanged byte for byte. *Catlin opted in the same day* —
-     `CATLIN_EXT_2X6` and `PLANT_EXT_2X6_HUMID`, stud layer and outrigger layer both — which
+     `EXT_2X6` and `PLANT_EXT_2X6_HUMID`, stud layer and outrigger layer both — which
      is what turned the option into evidence: 20 window ROs had to move 3"–8" onto the
      unified grid, and doing so took the house from 2 `haus check` FAILs to **0** and
      dissolved four separately-documented facade defects that had each been recorded as

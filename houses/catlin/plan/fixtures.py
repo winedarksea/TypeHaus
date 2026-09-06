@@ -370,7 +370,7 @@ MAIN_FIXTURES = (
     # x=29'-4": dead-centred under WIN-M-KITCH, which moved its own column onto this station
     # when the base run was re-composed (storeys/main.py's OPENINGS, plan/placeables.py's
     # kitchen header). y=34'-5 3/8" is 24" counter depth. W-M-N1 is the wet wall
-    # (CATLIN_EXT_2X6 — see mep.py's PR-M-KITCH-VENT). The 27" mount is restated here (not
+    # (EXT_2X6 — see mep.py's PR-M-KITCH-VENT). The 27" mount is restated here (not
     # just on the type) because the resolver reads the instance Mount; it lands the rim on
     # the 36" counter with 9" of bowl below.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
@@ -726,7 +726,7 @@ ATTIC_FIXTURES = (
 # escutcheon is outdoors; leaving `room` unset would trade that for a worse
 # `advisory.fixture_room_unassigned` FAIL with a blank permit-schedule cell.
 #
-# Mount is WALL/24" from the type. The pierced wall is CATLIN_EXT_2X6 with 4" continuous
+# Mount is WALL/24" from the type. The pierced wall is EXT_2X6 with 4" continuous
 # exterior insulation, so the hydrant's seat and feed stay on the warm side of the thermal
 # break — a cavity-only wall would freeze this detail.
 PORCH_HYDRANT = (

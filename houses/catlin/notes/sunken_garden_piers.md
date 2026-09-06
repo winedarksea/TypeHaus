@@ -76,7 +76,7 @@ is derived from the 42" rule again rather than held. Every self-weight, slendern
 pressure figure below is back at the height it had before any of this — the shaft is
 128.1875" again, exactly — and the geometry of the bell, the cage and the mix are untouched — the assemblies state a thickness and a material and nothing else. They
 carry different assemblies for a reason that is not the section — though as of 2026-09-03 it
-is no longer a reason about the concrete. `PIER_CONCRETE_12` now names `CATLIN_EXPOSED_MIX`,
+is no longer a reason about the concrete. `PIER_CONCRETE_12` now names `EXPOSED_MIX`,
 the same 5,000 psi F3+C2 galvanized-bar mix `SUNKEN_GARDEN_COLUMN_12` is specified from in
 prose. **What it named before was a mix that did not exist:** its source string said
 "4,000 psi ... ACI 318-19 class F2", and Table 19.3.2.1 asks 4,500 psi of class F2. Nothing
@@ -282,7 +282,7 @@ anyone reverting to a 20" round will re-derive them.
 
 The galvanizing and the 2" cover come with the balcony redesign's F3+C2 durability case and
 are specified for every cast column in this structure; see `notes/balcony_moment_columns.md`
-§7. `PT-SG-COL` was aligned onto `CATLIN_EXPOSED_MIX` on 2026-09-03 (§2); its exposed grout
+§7. `PT-SG-COL` was aligned onto `EXPOSED_MIX` on 2026-09-03 (§2); its exposed grout
 island is still an open follow-up.
 
 Both cages are the **minimum the Code permits**, which is the answer the "cheapest concrete"
@@ -297,7 +297,7 @@ phi P_n,max = phi x 0.80 x [ 0.85 f'c (A_g - A_st) + f_y A_st ]
               phi = 0.65, compression-controlled tied (Table 21.2.2).
               f_y = 60,000 psi. f'c is now READ PER POUR, and the two differ — see §2.
 
-COL   f'c 5,000 (CATLIN_EXPOSED_MIX, via PIER_CONCRETE_12)
+COL   f'c 5,000 (EXPOSED_MIX, via PIER_CONCRETE_12)
              0.85 x 5,000 x 111.857 = 475,392  +  60,000 x 1.24 =  74,400
              P_o = 549,792 lb
              phi P_n,max = 0.65 x 0.80 x 549,792 = 285,893 lb
@@ -443,8 +443,8 @@ Three Code decisions carry the whole derivation, and each is easy to get wrong:
   perimeter and turns about no column face. §3 includes it because bearing is exactly the
   question of what the soil feels; here it would inflate every demand by about a tenth.
 
-`f'c` is **5,000 psi**. Both bells name `CATLIN_PIER_BASE_12` as of 2026-09-03 — the 12"
-plain pour shared with the four breezeway pads — which carries `CATLIN_BURIED_MIX`. Until
+`f'c` is **5,000 psi**. Both bells name `PIER_BASE_12` as of 2026-09-03 — the 12"
+plain pour shared with the four breezeway pads — which carries `BURIED_MIX`. Until
 then neither `Footing` named an assembly at all and every capacity below was worked at the
 presumptive 3,000; **each one in §5c-§5e is therefore 29.1% larger than the figure this note
 previously carried**, because every one of them goes as `sqrt(f'c)` and
@@ -452,7 +452,7 @@ previously carried**, because every one of them goes as `sqrt(f'c)` and
 the concrete is. `sqrt(5000) = 70.711`. `phi = 0.60` throughout, ACI Table 21.2.1.
 
 F0 rather than the court's F3 is earned, not inherited: these two bells carry 42" of true
-cover and do not freeze (§5a's levelling-course diagram, and `CATLIN_BURIED_MIX`'s own note).
+cover and do not freeze (§5a's levelling-course diagram, and `BURIED_MIX`'s own note).
 
 ### 5b. Net pressure
 
@@ -597,8 +597,8 @@ re-check it after the fact.
   pour's assembly is read instead, and every limit state's prose says which of the two it
   used. `f_y` is still 60,000 psi Grade 60, authored in the cage string and assumed by the
   calculation. MN Rules 1309.0402's **5,000 psi FOOTINGS row** is stated for the strip
-  footings and, since 2026-09-03, for the two bells as well (`CATLIN_PIER_BASE_12` ->
-  `CATLIN_BURIED_MIX`); whether an augered pier BELL is a "footing" for that amendment is
+  footings and, since 2026-09-03, for the two bells as well (`PIER_BASE_12` ->
+  `BURIED_MIX`); whether an augered pier BELL is a "footing" for that amendment is
   still not a question this note answers, and at 5,000 psi either way the answer cannot bind.
   **The one pour still graded on the presumptive value is `SUNKEN_GARDEN_COLUMN_12`** — see
   §2 and §4d.

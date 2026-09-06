@@ -109,7 +109,7 @@ _ORACLE = {
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
-        # §4d: PIER_CONCRETE_12 names CATLIN_EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
+        # §4d: PIER_CONCRETE_12 names EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
         # this column is no longer graded on the presumptive 3,000 its sibling still is.
         # 187,011 -> 285,893 lb, and E_c goes as sqrt(f'c) so the magnifier eases with it.
         # THE TWO COLUMNS ARE POURED FROM THE SAME 5,000 psi; the split is the unfinished

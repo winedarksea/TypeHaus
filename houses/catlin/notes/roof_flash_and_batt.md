@@ -1,4 +1,4 @@
-# CATLIN_ROOF — flash-and-batt, worked by hand (2026-08-31)
+# ROOF — flash-and-batt, worked by hand (2026-08-31)
 
 ## Why this note exists
 
@@ -14,7 +14,7 @@ says.
 
 ## 1. The assembly
 
-Interior → exterior, as authored in `plan/assemblies.py::CATLIN_ROOF`:
+Interior → exterior, as authored in `plan/assemblies.py::ROOF`:
 
 | # | layer | thickness | R/in | R |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ U = 0.05/14.844 + 0.95/58.488
 0.682 + 0.000 + 0.563 + 50.991 + 0.781 + 0.000 + 0.000 + 0.170  =  R 53.19
 ```
 
-> **ORACLE — `haus explain CATLIN_ROOF houses/catlin` reports `R-value: R-53.2`.** Agreement
+> **ORACLE — `haus explain ROOF houses/catlin` reports `R-value: R-53.2`.** Agreement
 > to the printed precision. Code minimum is R-49 (MN 2024 / IRC Table N1102.1.2, CZ6), so
 > the margin is **R-4.2**, and the assembly is 6.81" (perpendicular) shallower than the
 > nine-layer stack it replaced, which read R-55.1.
@@ -176,7 +176,7 @@ Zone 7 is in the table deliberately: Minnesota holds both zones and the Duluth h
 was first read against is CZ7. R-32.5 clears both rows, so the AHJ conversation cannot go
 wrong on the zone.
 
-> **ORACLE — `haus check` reports:** `PASS code.R806_5_unvented_roof: CATLIN_ROOF: item 5.3 —
+> **ORACLE — `haus check` reports:** `PASS code.R806_5_unvented_roof: ROOF: item 5.3 —
 > R-32.5 of air-impermeable insulation in direct contact with the sheathing underside, rated
 > Class II; Table R806.5 zone 6 = R-25 (also clears the zone-7 row, R-30); no ceiling-side
 > Class I retarder (item 2)`.

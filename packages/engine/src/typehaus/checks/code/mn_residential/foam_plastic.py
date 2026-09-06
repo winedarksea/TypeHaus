@@ -5,7 +5,7 @@ face an occupied room: R316.4 asks for 1/2" gypsum wallboard, 5/8" wood structur
 a material meeting the NFPA 275 acceptance criteria, between the foam and the interior.
 
 Nothing enforced it here, and catlin has 8" of EPS deck form over its dining end whose only
-protection is a single 5/8" gypsum layer at the bottom of ``CATLIN_DECK_EPS_INT``. Deleting
+protection is a single 5/8" gypsum layer at the bottom of ``DECK_EPS_INT``. Deleting
 that layer — a plausible edit; it is the last line of a four-line stack and it changes no
 R-value the energy check grades — would have been silent.
 
@@ -65,7 +65,7 @@ def _interior_first(ctx: CheckContext, assembly: Assembly) -> bool:
     """Is layer 0 the interior face of this stack?
 
     The catalog's convention is interior -> exterior and that is what a wall follows. A
-    FLOOR or deck assembly does not: ``CATLIN_DECK_EPS_INT`` runs cap, foam, furring rib,
+    FLOOR or deck assembly does not: ``DECK_EPS_INT`` runs cap, foam, furring rib,
     gypsum — top to bottom — because the room it faces is the one UNDER it. Reading the
     convention literally there would put the concrete cap against the ceiling and grade the
     stack backwards, which is the sort of quiet inversion that makes a fire check useless.

@@ -57,7 +57,7 @@ not apply to a screwed nailbase assembly. It is the standard's "other attachment
 branch rather than a deviation from it, and it wants a PE letter to say so.
 
 **It closes by ceasing to exist.** The roof deletes the nailbase and the foam it would be
-screwed through (`plan/assemblies.py::CATLIN_ROOF`, `notes/roof_flash_and_batt.md`).
+screwed through (`plan/assemblies.py::ROOF`, `notes/roof_flash_and_batt.md`).
 There is ONE deck — 5/8" CDX plywood nailed straight to the TJI rafters — which is the
 ordinary condition §4.2.2 is written for, and RSRS-01 ring-shank nailing at 4" o.c. applies
 to it directly with nothing to explain. **No PE letter is needed for this item.** Item 1

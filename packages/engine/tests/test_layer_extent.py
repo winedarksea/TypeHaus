@@ -50,14 +50,14 @@ _SOUTH_BANDED = {
     # W-B-S1B, the 3'-10" the 2026-09-05 replan split off W-B-S1 for the rotated sauna's
     # south face, held the same band for one afternoon and went away with the shrink that
     # put the whole room on the garden curb. Two entries again, and never three for long.
-    "W-B-S1": "CATLIN_BASEMENT_8",
-    "W-B-S4": "CATLIN_BASEMENT_8",
+    "W-B-S1": "BASEMENT_8",
+    "W-B-S4": "BASEMENT_8",
 }
 _SOUTH_COURT = {
     "W-B-S2": "SAUNA_LINER_ON_GARDEN_CURB",
     "W-B-S2-FR": "SAUNA_LINER_ON_GARDEN_FRAMED",
-    "W-B-S3": "CATLIN_GARDEN_CURB_6",
-    "W-B-S3-FR": "CATLIN_GARDEN_FRAMED_2X6",
+    "W-B-S3": "GARDEN_CURB_6",
+    "W-B-S3-FR": "GARDEN_FRAMED_2X6",
 }
 _SOUTH_ASSEMBLIES = {**_SOUTH_BANDED, **_SOUTH_COURT}
 
@@ -231,7 +231,7 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # And it is *not* also a layer of the wall type's set, which would double-describe it
     # and make the set thicker than the geometry it belongs to.
     layer_set = next(s for s in model.by_type("IfcMaterialLayerSet")
-                     if s.LayerSetName == "CATLIN_BASEMENT_8")
+                     if s.LayerSetName == "BASEMENT_8")
     assert _PANEL not in [ly.Name for ly in layer_set.MaterialLayers]
 
 
@@ -383,7 +383,7 @@ def test_an_open_topped_region_still_refuses_to_overlap():
 # runs in the same stage, but after every storey has resolved). A band pinned to the
 # pre-lift top is a layer that stops a joist depth below the wall it belongs to — including
 # a ``top=None`` band, whose whole meaning is "run it out to the wall top" and which resolves
-# to a number rather than staying open. Latent on catlin only because ``CATLIN_EXT_2X6``
+# to a number rather than staying open. Latent on catlin only because ``EXT_2X6``
 # bands nothing.
 
 

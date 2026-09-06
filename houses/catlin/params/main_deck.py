@@ -174,7 +174,7 @@ MAIN_FINISHED_FLOOR_LVP = inch(MAIN_FINISHED_FLOOR.inches + _LVP.inches)
 # The mudsill is the framed wall's own 2x6 sill, shared: one board carries the studs above
 # and the joists beside it, which is why the sill return is authored over the *union* of the
 # two runs rather than as two rules that would double-bill the same plate.
-# The same number ``FramingSpec.sill_gasket`` states on CATLIN_EXT_2X6 (and the same one
+# The same number ``FramingSpec.sill_gasket`` states on EXT_2X6 (and the same one
 # ``BasementToFramedWallConfig.sill_gasket_in`` falls back to) — the seat is derived here,
 # and the field is what the wall-base detail draws.
 _SILL_GASKET_COMPRESSED = inch(0.0625)   # EPDM sill seal, compressed thickness
@@ -192,7 +192,7 @@ BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
 #   * The manufacturer's span table governs the cover, not the seat: a thinner cover to hit
 #     some other seat needs the 18'-0" clear span re-checked, not just a thinner pour.
 #   * ``plan/assemblies.py`` is editable-dialect — literals only, no imports from params —
-#     so CATLIN_DECK_EPS_INT's two structural layers cannot read these and must be edited to
+#     so DECK_EPS_INT's two structural layers cannot read these and must be edited to
 #     match. ``integrity.slab_thickness`` fails the build if they drift apart, and
 #     ``structural.mixed_deck_bearing_seat`` fails it if the seat itself drifts.
 EPS_FORM_DEPTH = inch(10.0)   # LiteDeck 8" base + 2" top hat
@@ -439,7 +439,7 @@ EAST_FLOOR = FloorSystem(
 DECK = Slab(
     uid="CMS501AAAA", tag="SL-M-DECK",
     outline=_rect(_CENTRE_X, _BAND_Y, _HOUSE, _HOUSE),
-    thickness=DECK_DEPTH, assembly="CATLIN_DECK_EPS_INT",
+    thickness=DECK_DEPTH, assembly="DECK_EPS_INT",
     # The cap's own top is the finished floor: a cream polish, no covering, no subfloor.
     # Every room that sits on this outline resolves a derived finish zone from it
     # (``resolve/rooms.py``), so RM-M-LIVING keeps LVP as its FIELD finish over the wood

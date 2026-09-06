@@ -60,7 +60,7 @@ TOTO_SP_WALL_HUNG = TOILET_WALL_HUNG.model_copy(update={
               '19.3" depth is the library allowance\'s figure, carried unchanged, and the '
               'clearance envelope is drawn off it. Confirm before the carrier is set. '
               '** THE CARRIER MUST BE ON AN INTERIOR PARTITION. ** A concealed cistern in a '
-              'CATLIN_EXT_2X6 bay displaces insulation, sits outboard of the vapour control '
+              'EXT_2X6 bay displaces insulation, sits outboard of the vapour control '
               'and puts standing water in the coldest part of a Minnesota wall. ** CARRIER '
               'DEPTH IS A DIFFERENT PART NUMBER, not an adjustment ** (Geberit 111.597.00.1 '
               'for 2x4 against 111.902.00.5 for 2x6), and the wall carries an 880 lb point '
