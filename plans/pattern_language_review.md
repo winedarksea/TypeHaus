@@ -758,8 +758,8 @@ worth doing it is worth doing for winter sun in the room, not for the meter.**
 
 ## Daylight: eight rooms on IRC Exception 1, not two
 
-The review plan recorded two. The current tree has **eight**, including **three of the five
-bedrooms**:
+The review plan recorded two. The current tree has **seven** (it was eight until BED3 was
+glazed on 2026-09-06), including **two of the five bedrooms**:
 
 | room | occupancy | glazing | required |
 |---|---|---|---|
@@ -769,7 +769,7 @@ bedrooms**:
 | `RM-M-STUDY` | office | 0.0 sf | 1.5 sf |
 | `RM-S-BED1` | bedroom | 9.0 sf | 9.6 sf |
 | `RM-S-BED2` | bedroom | 9.0 sf | 9.9 sf |
-| `RM-S-BED3` | bedroom | 9.8 sf | 10.3 sf |
+| ~~`RM-S-BED3`~~ | bedroom | ~~9.8 sf~~ → **13.3 sf** | 10.3 sf — **fixed 2026-09-06** |
 | **`RM-A-STUDIO`** | **bedroom** | **13.6 sf** | **28.5 sf** |
 
 **Three of these are deliberate, documented trades, not regressions**, and the report treats
@@ -778,6 +778,11 @@ them as such. BED1/BED2 landed on Exception 1 in the WT-2754 → WT-2748 retype
 what is spent here, not compliance itself."* BED3 followed on 2026-08-27 to complete a
 three-storey 14" east column. Whether those were the right calls at ~0.5 sf of glass apiece is
 a fair pattern-language question — it is not a bug report.
+
+**BED3 is off this list as of 2026-09-06.** `WIN-S-BED3-N` (WT-1436, x 23'-4", sill 3'-0")
+was added to the room's north wall to fill the north facade's empty lower-east corner, and it
+takes the room to 13.33 sf glazed / 6.67 sf openable — it passes R303.1 outright and no
+longer leans on Exception 1. The list is **seven**, and two of the five bedrooms.
 
 `RM-M-LIVING`'s shortfall has a specific cause, and it is also a deliberate facade decision:
 **`WIN-M-LIV-S2` (a WT-3048-T, 10 sf) was deleted on 2026-08-24** because *"the south face

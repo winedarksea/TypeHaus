@@ -14,10 +14,14 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Room
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.ceiling_over import ceiling_regions
-from typehaus.resolve.framing.profiles import cross_section
+# ``_RE_PANEL`` is the profile grammar's own pattern for a swept sheet good. Spelling it a
+# second time here is how two readings of one question drift apart (the same argument
+# ``resolve/framing/roof._bearing_stiffeners`` makes for asking the profile table).
+from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
+from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
 
 _M2_TO_FT2 = 10.7639104167
 _SHEET_AREA_FT2 = 32.0
@@ -160,7 +164,16 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
 
 
 def _board_feet_per_ft(profile: str) -> float | None:
-    """Nominal board-feet per lineal foot for a dimensional/built-up profile, or None."""
+    """Nominal board-feet per lineal foot for a dimensional/built-up profile, or None.
+
+    A ``panel`` profile is not dimensional lumber and has no board-foot figure, whatever it
+    is made of: a board foot is 144 cubic inches of SAWN stock, and neither a sheet good nor
+    a coil trim band nor a sprayed foam return is bought that way. ``_PROFILE_RE`` matches
+    the leading ``6x0.375`` of ``"6x0.375 panel"`` perfectly happily, which is how 156 window
+    bucks came to carry 93 board feet, so the panel grammar is asked FIRST.
+    """
+    if _RE_PANEL.match(profile) is not None:
+        return None
     match = _PROFILE_RE.match(profile)
     if match is None:
         return None
@@ -185,6 +198,11 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # bought in pieces it cannot be built from.
     splice: dict[tuple[str, str, str], bool] = {}
     for member in model.all_members():
+        if rip_stock(member.profile, member.material) is not None:
+            # A plywood rip is ordered by the SHEET (``takeoff/sheet_rips``) and bills in
+            # ``sheet_goods``. Leaving it here as well would order the same wood twice, once
+            # as sheets and once as 8-ft sticks of a profile no yard stocks.
+            continue
         key = (member.profile, member.category, member.material or "")
         cuts[key].append(member.length_m * _M_TO_FT)
         splice[key] = splice.get(key, True) and member.continuously_supported
@@ -421,9 +439,20 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for layer in plan_room.ceiling_lining:
             areas[("ceiling", layer.material_ref, layer.thickness.meters)] += room.area_m2
 
-    return [
+    rows = [
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),
          "net_area_sqft": round(area * _M2_TO_FT2, 1),
          "sheets_4x8": math.ceil(area * _M2_TO_FT2 / _SHEET_AREA_FT2)}
         for (scope, material, thickness), area in sorted(areas.items())
     ]
+    # The panel-profile MEMBERS — a window buck, a web stiffener, a plywood furring rip. Every
+    # row above is a layer bought as a flat sheet and hung; these are bought as the same sheet
+    # and cut up, which is a different order and (until this existed) was billed as 8-ft
+    # STICKS of a profile no lumber yard has ever stocked. ``framing_takeoff`` drops exactly
+    # this set, so nothing is billed twice.
+    rips = [(member, stock, member.length_m * _M_TO_FT)
+            for member in model.all_members()
+            if (stock := rip_stock(member.profile, member.material)) is not None]
+    return sorted(rows + rip_sheet_rows(rips),
+                  key=lambda row: (str(row["scope"]), str(row["material"]),
+                                   float(row["thickness_in"])))

@@ -468,15 +468,16 @@ OPENINGS = [
     # 6'-8" there are 65".
     #
     # They went to 12'-0" / 24'-0" first, then INBOARD ONE MORE BAY to 13'-4" / 22'-8"
-    # (2026-09-03) to stack the pair as nearly as the module allows on WIN-S-STAIR-N below
-    # (x 12'-8"). 12'-8" itself is unreachable here: a 30" RO BREAKS studs and so must centre
-    # on a STUD LINE — on layout line LL-W-A-N1 those are 144", 160", 176"… — unlike the 14"
-    # family, which sits on a bay CENTRE (8 mod 16), which is exactly what 12'-8" is. 13'-4"
-    # (160") is the nearest legal station, 8" east of the stair window, and 22'-8" (272") is
-    # its mirror about the 18'-0" ridge. Retyping to WT-1436 would have hit 12'-8" exactly and
-    # made the north gable a literal twin of the south pair, but it buys the alignment with
-    # glass. The rake is not the binding constraint at this station: the outer jambs land at
-    # 145" from their eaves against the 124" it allows (129" at the old 12'-0" / 24'-0").
+    # (2026-09-03) to stack the pair on WIN-S-STAIR-N below. 13'-4" (160") is a stud line on
+    # layout line LL-W-A-N1, which is what a 30" RO needs — it BREAKS studs, so it cannot sit
+    # on a bay centre (8 mod 16) the way the 14" family does — and 22'-8" (272") is its
+    # mirror about the 18'-0" ridge. WIN-S-STAIR-N is at 13'-4" too, so WIN-A-N1 stacks on it
+    # EXACTLY. (This paragraph read "12'-8"" for the stair window and argued an 8" miss until
+    # 2026-09-06; the offset in second.py always resolved to 13'-4" and neither window moved
+    # when the prose was corrected.) The rake is not the binding constraint at this station:
+    # the outer jambs land at 145" from their eaves against the 124" it allows (129" at the
+    # old 12'-0" / 24'-0"). 2026-09-06: WIN-S-BED3-N (WT-1436, ctr 23'-4") now fills the
+    # lower-east corner of the facade, its east jamb flush with WIN-A-N2's at 23'-11".
     #
     # ** WIN-A-N1 REHOSTS W-A-N2 -> W-A-N2B. ** x=13'-4" is east of N-A-N3 (x=10'-0"), where
     # the north wall split, so the window is simply on the other piece now.

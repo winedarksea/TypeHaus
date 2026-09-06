@@ -676,8 +676,12 @@ OPENINGS = [
            position=from_node("N-S-E2", ft(3, 10.5)), sill_height=ft(3)),   # y 22'-8"
     # BED3 MOVED OFF THE ROW: retyped WT-2736 -> WT-1424 and moved 32'-0" ->
     # 34'-0" centre, matching WIN-M-KIT-E below in both size and station so the two column.
-    # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33) and joins BED1/BED2 on R303.1
-    # Exception 1; its R310 egress was never this window's job — WIN-S-HALL-N carries it.
+    # RM-S-BED3 loses 4.4 sf of glass by it (6.75 -> 2.33 from THIS window) and joined
+    # BED1/BED2 on R303.1 Exception 1; its R310 egress was never this window's job —
+    # WIN-S-HALL-N carries it. 2026-09-06: that exception is spent. The resolver credits
+    # WIN-S-HALL-N (a BED3 window despite the tag) to the room, so BED3 was never at
+    # 2.33 sf but at 9.83 against 10.32 required — 0.49 sf short, not 8. WIN-S-BED3-N adds
+    # 3.5 sf and takes it to 13.33 glazed / 6.67 openable: it passes R303.1 outright now.
     # WIN-A-E-N moved 32'-8" -> 34'-0" the same day (attic.py) to complete a three-storey
     # 14" column on the east face. ``from_node`` is the near jamb, so 34'-0" - 7" = 33'-5"
     # off N-S-E3 at y=26'-8" -> 6'-9". The east second-storey row is now three units, and
@@ -758,13 +762,46 @@ OPENINGS = [
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
            position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
-    # entry column to x=21'-11". Centre x 12'-8" is the stud line inside the arriving
-    # upper flight's lane. WIN-A-N1 above aims at this station but CANNOT reach it: on the
-    # gable's layout line a 30" RO must centre on a stud line (144", 160", 176"…) while
-    # 12'-8" is a bay centre, so it sits 8" east at 13'-4" and mirrors WIN-A-N2 at 22'-8"
-    # about the ridge (2026-09-03; see storeys/attic.py's north-gable note).
+    # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so 3'-5" off N-S-N1 is a
+    # near jamb at 12'-1" and a CENTRE at x 13'-4" (RO 145"-175" in model.json) — a stud
+    # line, which is what a 30" RO must have. WIN-A-N1 on the gable above is at that same
+    # 13'-4", so the two are exactly stacked. (This note read "12'-8"" and claimed an 8"
+    # miss against WIN-A-N1 until 2026-09-06; the offset was always right, the prose was
+    # not. Nothing moved to fix it.)
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
-           position=from_node("N-S-N1", ft(3, 5)), sill_height=ft(3)),        # x 12'-8"
+           position=from_node("N-S-N1", ft(3, 5)), sill_height=ft(3)),        # ctr x 13'-4"
+    # 2026-09-06: THE FOURTH NORTH WINDOW. The north facade carried three units that almost
+    # made a rectangle — WIN-A-N1/N2 at 13'-4"/22'-8" over WIN-S-STAIR-N at 13'-4" and
+    # WIN-S-HALL-N at 29'-4" — with the lower-east corner empty. This fills it as near to
+    # x 22'-8" as the module and the room behind it allow.
+    #
+    # Not 22'-8" itself: a 30" RO there spans 21'-5"..23'-11" and node N-S-B5 (x 21'-11",
+    # the closet/BED3 partition) splits W-S-N1 from W-S-N1B. An opening cannot cross a node
+    # (integrity.opening_fits, ERROR). Every north wall is CATLIN_EXT_2X6 with
+    # layout_origin="line", so stations are absolute: a 30" RO centres on a 16" multiple, a
+    # 14" RO on a bay centre (8 mod 16). The nearest legal pair is 23'-4" (14") and 24'-0"
+    # (30").
+    #
+    # 23'-4" wins on the jamb: its east jamb at 23'-11" is FLUSH with WIN-A-N2's east jamb
+    # one storey up — 8" off the ideal centre instead of the 30" unit's 16", and 24'-0"'s
+    # east jamb (25'-3") aligns with nothing. Sill 3'-0" and head 6'-0" are both neighbours'
+    # own lines (WIN-S-STAIR-N and WIN-S-HALL-N are WT-3036 at exactly those), so the second
+    # storey now reads as one row on one sill and one head. Jamb for jamb this is WIN-A-S3
+    # on the south gable: same type, same 22'-9"/23'-11".
+    #
+    # 36" tall, not 24": the girt sweep, not taste. WT-1424 at sill 4'-0" makes a 31st girt
+    # conflict and breaks the conflicts <= 30 ceiling in test_truss_girt_courses.py — a
+    # 24" unit puts its sill course bottom and its head 27-1/2" apart, so on the 24" course
+    # module one is always on a course and the other always 3-1/2" off. At 36" the head
+    # (72") is an exact course hit and the sill course bottom (32.5") is 8.5" from the
+    # nearest course, outside the 7" window. Sweep: exact hits 13 -> 14, conflicts stay 30.
+    #
+    # A 14" RO on a bay centre breaks no stud: no header, no jacks, no kings. WT-1436 is
+    # already in service (WIN-A-S2/S3) and already priced. The wall is BED3's — WIN-S-HALL-N
+    # is a legacy misnomer — and FURN-S-BED3-WARD stood 6'-6" tall against it over
+    # x 22'-1.5"..24'-1.5"; it swaps slots with FURN-S-DESK3 in placeables.py to clear it.
+    Window(uid="0H39YW9P4X", tag="WIN-S-BED3-N", host="W-S-N1", type_ref="WT-1436",
+           position=from_node("N-S-NE", ft(12, 1)), sill_height=ft(3)),       # ctr x 23'-4"
 ]
 
 ROOMS = [

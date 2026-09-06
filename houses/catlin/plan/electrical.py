@@ -2100,8 +2100,15 @@ NEC_FILL_SECOND = [
                      position=pt(ft(35, 4.375), ft(28, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
+    # Slid 26'-9 7/8" -> 29'-2" east along the same south wall, 2026-09-06.
+    # FURN-S-BED3-WARD moved onto this wall (x 293.5..341.5) to clear the north wall for
+    # WIN-S-BED3-N, and at 321 7/8" the box ended up BEHIND the case. Nothing would have
+    # caught it: `_fixed_cabinet_intervals` in checks/mep/electrical.py only breaks wall
+    # space for a placeable with `work_surface is False`, and FURN-WARDROBE-48 leaves it
+    # None, so electrical.receptacle_spacing passes either way and the room just quietly
+    # loses a usable outlet. 29'-2" (350") is 8 1/2" clear of the case's east end.
     ElectricalDevice(uid="NEC040AAAA", tag="ED-S-BED3-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26, 9.875), ft(26, 11.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(29, 2), ft(26, 11.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RC2 is on the suite's east wall, not the arm's south wall — x=13'-1" there is inside

@@ -1032,15 +1032,18 @@ SECOND_PLACEABLES = [
               position=pt(m(7.3692), m(5.88414)), rotation=deg(0)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
               position=pt(m(7.38828), m(6.31867)), rotation=deg(0)),
-    # BED3's pair sits 1'-3" west of where the other two rooms put theirs. The
-    # bed in this room is the one that faces north rather than west, so its west side-access
-    # zone runs down x=28'-6" instead of along a wall, and the desk's east end stood 1'-2"
-    # inside it. Moving the desk west is free: it stops 4 1/2" clear of FURN-S-BED3-WARD and
-    # the pull-out zone still lands in open floor.
+    # BED3's pair SWAPPED SLOTS WITH THE WARDROBE, 2026-09-06, to clear the north wall for
+    # WIN-S-BED3-N (second.py, ctr x 23'-4", sill 3'-0"). The room has exactly two 48" slots
+    # off that wall and two objects wanting them, so the swap is forced: the 6'-6" case takes
+    # the slot furthest from glass and the 30" desk goes under a window, which is where a desk
+    # belongs — and it makes BED3's study pair match BED1's, back to back on the west wall.
+    # The desk takes the wardrobe's authored numbers verbatim; resolved it is
+    # x 265.5..289.5, y 376.1..424.1. North wall is then clear across x 273..303 above
+    # 30" AFF, and the 3'-0" sill clears the desk top outright.
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
-              position=pt(m(8.05211), m(10.4735)), rotation=deg(0)),
+              position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
-              position=pt(m(8.03685), m(10.0705)), rotation=deg(180)),
+              position=pt(m(7.6327), m(10.1621)), rotation=deg(-90)),
     # Compact two-person table in Study 2, against the south wall. It sits partly under
     # WIN-S-STUDY1 (centre 28'-0", sill 2'-8" — a
     # couple inches above the table top, which is the pleasant place for a table). Its
@@ -1071,7 +1074,9 @@ SECOND_PLACEABLES = [
     # wardrobe each, on a north or south partition. Neither the east wall (bed heads against
     # it) nor the west/hall wall (doors own the only long runs) can take one; every candidate
     # 4'-0 x 2'-0 slot was checked against resolved footprints, clearance rings and door
-    # swings. BED2 north and BED3 south each had a clean slot. BED1 did not:
+    # swings. BED2 north and BED3 south each had a clean slot — BED3's is the one it actually
+    # stands in since 2026-09-06, when the case came off the north wall to make room for
+    # WIN-S-BED3-N and swapped slots with FURN-S-DESK3 above. BED1 did not:
     # its door swing (y 13'-11"..16'-5") left only 3'-5 3/4" of clear wall, too short for the
     # case. Fixed by moving both the bed (7" east, head now 1/2" off the east wall) and the
     # case (15" east, 2" north) — clears the swing, foot zone and side zones outright.
@@ -1082,8 +1087,12 @@ SECOND_PLACEABLES = [
               room="RM-S-BED1", position=pt(m(8.12003), m(5.03458)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.36477), m(7.8429)), rotation=deg(0)),
+    # BED3's slot is EXACT, not approximate: resolved x 293.5..341.5, y 322.5..346.5 on the
+    # south wall, with 0.500" to D-S-BED3's swing arc and 0.524" to the bed's west side zone.
+    # Any later move of FURN-S-BED3, D-S-BED3 or the 18" zones re-opens
+    # integrity.door_swing_conflict / integrity.placeable_recommended_clearance_conflict.
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED3", position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
+              room="RM-S-BED3", position=pt(m(8.0645), m(8.4963)), rotation=deg(180)),
 
     # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
     # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has

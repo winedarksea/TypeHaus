@@ -351,7 +351,10 @@ the future.
   | RM-S-PLANT | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-S-STUDY2 | 26.7 sf | 159 sf | **16.8%** | 13.4 sf | 8.4% |
   | RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.2% |
-  | RM-S-BED3 | 14.2 sf | 129 sf | **11.0%** | 7.1 sf | 5.5% |
+  | RM-S-BED3 | 13.3 sf | 129 sf | **10.3%** | 6.7 sf | 5.2% |
+  <!-- BED3 read 9.8 sf / 7.6% and leaned on R303.1 Exception 1 until 2026-09-06,
+       when WIN-S-BED3-N (WT-1436, x 23'-4") filled the north facade's empty
+       lower-east corner. It clears 8%/4% outright now. -->
   | RM-A-STUDY | 15.0 sf | 159 sf | **9.4%** | 7.5 sf | 4.7% |
   | RM-S-SUITE | 13.5 sf | 154 sf | **8.8%** | 6.7 sf | 4.4% |
   | RM-S-BED1 | 10.0 sf | 120 sf | **8.3%** | 5.0 sf | 4.2% |

@@ -166,7 +166,18 @@
 # "0.375x0.375 panel" = { low = 0.05, high = 0.1 }  # was 108 LF — 3/8" furring, plywood rip
 # "0.416667x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 # "0.416667x4.11038 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
-"0.5x0.5 panel" = { low = 0.022, high = 0.04 }  # 498 LF — plywood-rip share only; see above
+# 2026-09-06: **176 LF, not 498.** The `sheathing` half of this profile (96 LF, material
+# `struct-1-plywood`) is a genuine plywood rip and left for `sheet_goods` scope
+# "sheathing rip" with the bucks and the stiffeners — 3.3 SF of strip, one 1/2" sheet. What
+# is left here is the `airgap` half on material `air-barrier`, which is the vent gap the
+# catlin truss authors as a layer of its own; the blended rate is unchanged because it was
+# always the rip's own area share and the airgap strip is the same section. Re-derive the
+# rate if this row ever becomes something other than a 1/2" square strip.
+"0.5x0.5 panel" = { low = 0.022, high = 0.04 }  # 176 LF (airgap only) — plywood-rip share basis; see above
+# `0.625x0.625 panel` (96 LF, `sheathing`, cdx-plywood) has never had a row here and was
+# silently unpriced. It is a 5/8" plywood rip, so as of 2026-09-06 it bills per sheet as
+# `sheet_goods` scope "sheathing rip" on the [sheet_goods] "cdx-plywood" row — one sheet.
+# That is a $46-86 RISE in the estimate and it is a fix, not an inflation.
 # 2026-08-26: the row's composition changed and its TOTAL did not. The 147 LF that used to
 # come in as a 1/2" `furring` closure band now comes in as a 1/2" `airgap` one — the catlin
 # truss authors the vent as a layer of its own, so the eave/rake return that closes it is
@@ -242,7 +253,17 @@
 #     that reason: each end is two blocks cut to the 6:12 bevel and 8 nails, 4-7 minutes of
 #     a framer at $55-85/hr loaded. 76 ends, so $280-600 all in.
 # CONFIDENCE: MEDIUM on labour (a time estimate, not a quote), HIGH on material.
-"4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # 76 LF — 76 pairs at both rafter ends
+# RE-BASISED 2026-09-06 FROM PER-LF TO PER-SHEET, same pass as the "6x0.375 panel" buck row
+# below and for the same reason: this is 23/32" plywood, not a stick. The modelled member is
+# the PAIR, so `takeoff/sheet_rips.py` reads its 1-7/16" thickness as 2 plies of 23/32" and
+# orders 152 pieces of 4"-wide rip — 11 strips to a sheet at 1/8" kerf, **2 sheets**, billing
+# as `sheet_goods` scope "bearing stiffener rip" on the "struct-1-plywood" row.
+# Commented out rather than deleted; it would multiply against 0 LF.
+#
+# Same open item as the buck row: the $280-600 of PIECEWORK this row's labour half was
+# explicitly basised on (76 ends x 4-7 min) does not survive into 2 sheets x $16-34 = $32-68.
+# The material half does (2 sheets x $27-42 = $54-84 against the retired $88-128).
+# "4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # was 76 LF (76 pairs) -> 2 sheets
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
 # delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
 # I-joist row above. Material above the I-joist's $3.50-5.50 (fabricated open-web at this
@@ -412,7 +433,25 @@
 #   3/8" struct-1 at $30-46/sheet -> $0.47-0.72/LF of 6" strip, plus the rip.
 # Labour is the fastening, not the stock: a buck is a four-sided frame set square in the RO
 # before the foam goes on.
-"6x0.375 panel" = { material = { low = 0.47, high = 0.72 }, labour = { low = 0.9, high = 1.8 } }  # 560 LF
+# RE-BASISED 2026-09-06 FROM PER-LF TO PER-SHEET, AND THEREFORE RETIRED FROM THIS TABLE.
+# A buck is a plywood RIP, and 156 of them are not 62 eight-foot sticks of a "6x0.375"
+# profile no yard stocks — they are **9 sheets of 3/8" Structural 1**, ripped 7 strips to the
+# sheet (48" less six 1/8" kerfs) and crosscut out of each 8-ft strip.
+# `takeoff/sheet_rips.py` derives that; the members now bill as `sheet_goods` scope
+# "buck rip", which prices on the `[sheet_goods]` "struct-1-plywood" row below at
+# $27-42 + $16-34 the sheet. This row would multiply against 0 LF, so it is commented out
+# and kept for the rate, the `glazed-green-brick` convention.
+#
+# ** THE PER-SHEET RATE DOES NOT CARRY THE INSTALL LABOUR, AND THAT IS AN OPEN ITEM. **
+# $16-34 a sheet is what it costs to HANG a sheet; setting 156 four-sided buck frames square
+# in their ROs is piecework, and the retired rate said $0.90-1.80 x 445.6 LF of member =
+# **$401-802** of framer time that 9 sheets x $16-34 = $144-306 does not reach. The material
+# half carries across correctly ($297-462 of ply against the retired $233-357 over 496
+# fictional feet). Closing it wants a `scope` qualifier on `[sheet_goods]` (one line in
+# `cli/prices.QUALIFIED_KEY_FIELD`, exactly as `[envelope_layers]` qualifies on thickness),
+# then a `"struct-1-plywood:buck rip"` row here. Not taken in this pass: `cli/prices.py` was
+# out of scope for it.
+# "6x0.375 panel" = { material = { low = 0.47, high = 0.72 }, labour = { low = 0.9, high = 1.8 } }  # was 496 LF (fiction: 62 x 8' sticks) -> 9 sheets
 # RETIRED 2026-08-26 with the catlin truss, all three. The 5" strips were the Swinburne
 # truss's plywood TABS (1/2") and its 5"-deep window BUCKS (3/8"); the girt wall has no tab
 # at all and its buck is the 6" row above. The three-ply JAMB FILLER closed a gap between an
@@ -3827,7 +3866,7 @@
 # rake). 50 UI, INSIDE the 0-71 UI band, so it prices between WT-1424's 38 UI and WT-1448's
 # 62 UI on the same glass-and-frame curve — a third height in a width family whose buck,
 # header (none — a 14" RO lands inside a bay) and flashing are already bought.
-"WT-1436" = { material = { low = 535, high = 1025 }, labour = { low = 125, high = 255 } }  # 2 ea — 50 UI
+"WT-1436" = { material = { low = 535, high = 1025 }, labour = { low = 125, high = 255 } }  # 3 ea — 50 UI
 "WT-1448" = { material = { low = 550, high = 1050 }, labour = { low = 135, high = 275 } }  # 0 ea — CATALOG-ONLY since 2026-08-29, when both gable flankers shortened to WT-1436 for the 6:12 rake. Kept priced, like WT-2464 below, so the retired size stays an orderable option
 "WT-2464" = { material = { low = 760, high = 1430 }, labour = { low = 170, high = 370 } }  # 0 ea — 88 UI, over the band. CATALOG-ONLY since 2026-08-27, when both juliets retyped to WT-2764; kept priced so the retired size stays an orderable option. Was WT-1864 (18x64, 82 UI) until 2026-08-24; +6" of width is ~8% of material here, and 24" clears Andersen 400's 20-11/16" casement minimum, so this row is no longer an availability risk
 # 27x64, the juliet size since 2026-08-27 (WT-2464 + 3" of width). 91 UI, the widest unit

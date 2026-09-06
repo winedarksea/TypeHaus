@@ -13,6 +13,12 @@ from typehaus.takeoff import (
     structural_solids_takeoff,
 )
 from typehaus.takeoff.framing import _bucket_cut_lengths
+from typehaus.takeoff.sheet_rips import (
+    rip_sheet_rows,
+    rip_stock,
+    rips_per_sheet,
+    strips_for_cuts,
+)
 
 from _helpers import frames_structure
 
@@ -32,6 +38,11 @@ def test_board_feet_parses_dimensional_and_builtup_profiles() -> None:
     assert _board_feet_per_ft("2x6") == 1.0            # 2*6/12
     assert _board_feet_per_ft("2-2x8") == 8.0 / 3.0    # 2 plies * 2*8/12
     assert _board_feet_per_ft("11.875 I-joist") is None  # engineered, not dimensional
+    # A sheet good swept as a member is not sawn stock and has no board-foot figure, even
+    # though ``_PROFILE_RE`` matches the leading "6x0.375" of it perfectly happily.
+    assert _board_feet_per_ft("6x0.375 panel") is None
+    assert _board_feet_per_ft("4x1.4375 stiffener panel") is None
+    assert _board_feet_per_ft("12x5 panel") is None
 
 
 def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
@@ -40,11 +51,18 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
 
     rows = framing_takeoff(catlin_model)
     # Every (profile, category, material) triple is present exactly once and total pieces
-    # reconcile 1:1. Material is part of the key because a KDAT 2x4 outrigger and an SPF 2x4
-    # stud are the same profile and not the same purchase.
+    # reconcile 1:1 with the members this table is responsible for. Material is part of the
+    # key because a KDAT 2x4 outrigger and an SPF 2x4 stud are the same profile and not the
+    # same purchase.
     keys = [(row["profile"], row["category"], row["material"]) for row in rows]
     assert len(keys) == len(set(keys))
-    assert sum(int(row["pieces"]) for row in rows) == len(members)
+    # The one family this table does NOT bill: a panel member cut from a sheet good, which
+    # is ordered by the SHEET in `sheet_goods` (→ takeoff/sheet_rips.py). Billing it here as
+    # well would order the plywood twice. Everything else still reconciles piece for piece.
+    ripped = [m for m in members if rip_stock(m.profile, m.material) is not None]
+    assert ripped, "catlin has plywood bucks and web stiffeners; this should not be empty"
+    assert sum(int(row["pieces"]) for row in rows) == len(members) - len(ripped)
+    assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
         # Sticks, not pieces: short cuts nest several to a stock length, so a group's bucket
@@ -209,8 +227,11 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     # dropped, so a section that empties for any OTHER reason still fails this line.
     empty = {name for name, section in bom.items() if not section}
     assert empty <= {"freeze_protection"}, f"BOM section(s) came back empty: {sorted(empty)}"
-    # The framing section still reconciles 1:1 with the resolved members.
-    assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
+    # The framing section still reconciles 1:1 with the resolved members, less the panel
+    # members that bill by the sheet in `sheet_goods` instead.
+    members = catlin_model.all_members()
+    ripped = sum(1 for m in members if rip_stock(m.profile, m.material) is not None)
+    assert sum(int(row["pieces"]) for row in bom["framing"]) == len(members) - ripped
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
