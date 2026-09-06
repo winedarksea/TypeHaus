@@ -120,6 +120,18 @@ class LimitState:
     #: count". No engineer would say that. They are still graded, still printed, and still
     #: fail the item when they go over — they are only excluded from ``governing``.
     is_detailing: bool = False
+    #: The named load combination this demand came from, as a reviewer would cite it:
+    #: ``"ASCE 7-22 2.4.1(6b) D + 0.75L + 0.75(0.6W)"``. Every sealed residential package
+    #: sampled identifies the governing combination BY NUMBER at each member, because
+    #: "the wind case" is not checkable and a numbered combination is — a reviewer can
+    #: reproduce the factors from the standard without asking what was assumed.
+    #:
+    #: Empty is the honest default and is what almost every state carries today: this
+    #: engine's kinds mostly compute one demand from one case, and writing a combination
+    #: number beside a demand that was never combined would be a claim about the arithmetic
+    #: that the arithmetic does not support. Populating it is per-kind work, and a kind that
+    #: sets it is asserting the demand really is that combination.
+    combination: str = ""
 
     @property
     def ratio(self) -> float:

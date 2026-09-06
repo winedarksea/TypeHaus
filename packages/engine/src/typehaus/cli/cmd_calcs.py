@@ -31,6 +31,10 @@ def calcs(
         None, "--item", help="Write the sheet for one item only, plus the front matter."),
     profile: str | None = typer.Option(
         None, "--profile", help="Jurisdiction profile (default: preferences.toml)."),
+    pdf: bool = typer.Option(
+        False, "--pdf",
+        help="Also write a flattened, page-anchored PDF beside the markdown. No "
+             "jurisdiction accepts Markdown, and a seal has to bind to a flattened file."),
 ) -> None:
     """Emit the engineering calculation package: cover, criteria, register, and one sheet
     per engineered item.
@@ -84,6 +88,22 @@ def calcs(
         path.write_text(text, encoding="utf-8", newline="")
     console.print(f"wrote {root} ({len(files)} files, {len(item_ids)} engineered item(s))",
                   soft_wrap=True)
+    if pdf:
+        # Markdown stays the source of truth — see ``takeoff/calc_pdf`` for why this
+        # exists at all, and ``docs/calc-package-format.md`` for why the markdown does.
+        from typehaus.takeoff.calc_pdf import PdfInputs, paginate, write_calc_pdf
+
+        target = root.with_suffix(".pdf") if root.suffix else root.parent / "calcs.pdf"
+        pages = write_calc_pdf(files, target, PdfInputs(
+            house=ctx.model.plan.project.name or directory.name,
+            generated=date.today().isoformat(),
+            engine_version=engine_version(),
+            content_hash=loaded.content_hash,
+            code_edition=ctx.profile.edition,
+            scope=f"Structural calculations for {len(item_ids)} engineered requirement(s) "
+                  f"outside the prescriptive tables.",
+        ))
+        console.print(f"wrote {pages} ({len(paginate(files)) + 1} pages)", soft_wrap=True)
     unresolved = [i for i in item_ids if ctx.engineering[i].status.value != "ok"]
     if unresolved:
         console.print(f"[yellow]{len(unresolved)} item(s) are not finished — see "

@@ -103,10 +103,16 @@ def _analysis(record: EngineeringRecord) -> str:
         rows.append([
             ("**" + state.name + "**") if state is governing else state.name,
             state.demand, state.capacity, state.unit,
-            f"{state.ratio:.3f}", kind, state.citation,
+            f"{state.ratio:.3f}", kind,
+            # A numbered load combination is what makes a demand checkable — a reviewer can
+            # reproduce the factors from the standard without asking what was assumed. Most
+            # states here carry none and print "—" rather than a guess: see
+            # ``LimitState.combination`` for why an unpopulated one must stay empty.
+            state.combination or "—",
+            state.citation,
         ])
     body = table(["Limit state", "Demand", "Capacity", "Unit", "Ratio", "Basis of ratio",
-                  "Citation"], rows)
+                  "Load combination", "Citation"], rows)
     if governing is not None:
         body += ("\n\nThe **bold** row governs — it is the worst ratio among the states "
                  "that carry load, and the one an engineer would name if asked what "
@@ -129,8 +135,9 @@ def _result(record: EngineeringRecord) -> str:
     if governing is None:
         return f"**{STATUS_LABEL[record.status]}.** {record.summary}"
     verdict = "PASS" if governing.ok else "**OVER CAPACITY**"
+    combination = f", {governing.combination}" if governing.combination else ""
     line = (f"**d/c = {governing.ratio:.2f}, governed by {governing.name} "
-            f"({governing.citation}) — {verdict}.**")
+            f"({governing.citation}{combination}) — {verdict}.**")
     if record.status is Status.INCOMPLETE:
         line += ("\n\nThis ratio is **not the whole answer**: the item is INCOMPLETE, and "
                  "the limit states it could not reach are listed under **Open inputs**.")
