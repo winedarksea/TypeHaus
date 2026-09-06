@@ -12,6 +12,39 @@ source:
   - garage_wall_detail_side.py
 ---
 
+## Sheet notes
+
+### General
+- ICF stem: 42" below grade to frost, 22" above. 8'-0" max per IRC Table R404.1.4.2.
+- Stem footing: 12"x6" over compacted stone per IRC R403.1 and R403.4.1.
+- Slab: 3-1/2" min, 3,500 psi min per IRC R506.1, sloped to the overhead door.
+- Wood wall: 2x6 studs at 24" o.c., 5/8" CDX sheathing, 2" of 2 lb closed-cell foam in each bay.
+- Cladding: 7/8" corrugated 26 ga PVDF steel, house white, screwed through the crowns into the studs on #9 x 1-1/2" 316 stainless gasketed screws.
+- Stem band: PVDF-painted aluminium sheet, 0.040" min, 2" below grade to the stem top, all four walls.
+- Interior finish: 5/8" drywall on the wood wall, 5/8" exterior-rated gypsum on the stem.
+- Roof: gable trusses at 24" o.c., OSB deck, underlayment, metal roofing on 16" o.c. supports.
+
+### Keyed
+- [K1] Stem band standoff: 1/4" vented, continuous, into the ICF webs. Hem each edge.
+- [K2] Closures: vented inside at the base, solid outside under the head and rake. ~192 LF each.
+- [K3] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the corrugated panel.
+- [K4] Isolate steel panel from aluminium band: sealant or EPDM between, no metal-to-metal lap.
+- [K5] Curb cap: up-turned flashing behind the drywall, sloped into the room, drip inboard.
+- [K6] Sill: PT plate on gasket over a capillary break, sealed. Anchors per IRC R403.1.6, 3"x3" washers.
+- [K7] Overhead door header: 2-ply 14" LVL on jamb packs sized from the 16'-0" opening.
+- [K8] Slab-to-driveway joint: 1" XPS with 1/2" traffic-rated polyurethane sealant.
+- [K9] Seal the top plate to sheathing and drywall, continuous.
+
+### Spec 03 11 00
+- Install ICF forms conforming to ASTM E2634, per the manufacturer's instructions.
+
+### Spec 07 42 13
+- Keep aluminium off concrete and fresh mortar: alkali strips the oxide film.
+- Rip stem-band metal from 48" x 120" architectural sheet, two 24" bands per sheet.
+
+### Spec 07 84 00
+- Seal for a 1-hour rating per IBC Table 722.6.2(1) and 722.6.2(2), or use a listed 1-hour wall. Seal penetrations with ASTM E814 sealant.
+
 # Notes
 
 - ICF stem wall: 42" below grade to frost level with minimum 6" stem wall above grade (goal: 22" above grade here). Total ICF stem wall height should not exceed 8' per IRC Table R404.1.4.2. and ICF forms must conform to ASTM E2634 and be installed per manufacturer instructions.
