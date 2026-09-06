@@ -269,16 +269,25 @@
 # billed as stick lumber. That is the same error the 2026-08-29 attic measurement had to
 # correct by hand for the main house; it was live in the garage and nobody had noticed.
 #
-# "24 roof truss" — RF-GARAGE, live. 4:12, 2x4 fink, 9 1/4" energy heel, 24" o.c., 13
-# trusses (11 field + 2 gable-end drop trusses; the gable studs are separate members and
-# stay in the 2x4 row, which is honest — they are stick-framed infill, not plate work).
+# "24 roof truss" — RF-GARAGE, live. 4:12, 2x4 fink, 9 1/4" energy heel, 24" o.c., 11 field
+# trusses; the two gable ends are their own row below.
 # $4.50-8.00 per SF of the 576 SF bearing footprint, delivered and set, which is a 24'
-# residential fink a little under the 36' rate per SF; 312 LF of span carries it, so
+# residential fink a little under the 36' rate per SF; 312 LF of span (all 13 trusses,
+# gable ends included — they are the same package) carries it, so
 # $8.30-14.75 per LF all in, split 80/20 material/labour the way the 36' row below is.
 # Per truss that reads $160-283 delivered and $40-71 to set, which is the sanity check.
 # CONFIDENCE: MEDIUM. No fabricator quote — an energy heel and a 4:12 are both ordinary,
 # but a truss package is quoted, not looked up, and the spread is where that shows.
-"24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 312 LF — RF-GARAGE, 13 trusses at 24'-0"
+"24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 264 LF — RF-GARAGE, 11 field trusses at 24'-0"
+# "24 gable roof truss" — the two drop trusses at the ends of the same package. A gable end
+# is not a fink: it is the same span plated with verticals at stud spacing so the end can be
+# sheathed like a wall, and it arrives that way rather than as a truss plus a bundle of
+# loose studs to infill on site. More lumber, no plated web joints, and the same handling —
+# the plants that publish a differential put it at roughly 10-15% over the field truss, so
+# this is the row above plus 12%, on the identical per-LF-of-span basis. Setting it is the
+# same crane pick, so the labour side is not marked up. CONFIDENCE: MEDIUM, and it inherits
+# the row above's — change one of these and check the other still agrees with it.
+"24 gable roof truss" = { material = { low = 7.45, high = 13.20 }, labour = { low = 1.65, high = 2.95 } }  # 48 LF — RF-GARAGE, 2 gable ends at 24'-0"
 # "36 roof truss" — STILL DORMANT, and now for the only honest reason: nothing in this
 # house spans 36'. It is the trussed-cold-attic alternative in plans/cost-options.md, whose
 # $5.00-9.00 per SF OF ROOF FOOTPRINT over a 36' x 36' plan is the anchor both rows use.
@@ -338,7 +347,7 @@
 # course and jamb post, 571 LF of block-1, 192 LF of inner head/sill course, and the SPF
 # offcuts that went with them — and hands nothing back, because everything outboard of the
 # sheathing is KDAT now. This is the single largest material line change in the wall.
-"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # 6192 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above)
+"2x4" = { material = { low = 0.55, high = 0.8 }, labour = { low = 0.65, high = 1.2 } }  # ~5100 LF — SPF, ordinary framing only (-80 LF on 2026-09-02: the roof's web stiffeners are plywood, see the stiffener panel row above; -1016 LF on 2026-09-06 when RF-GARAGE's chords/webs/heels became one member per truss and moved to the "24 roof truss" row — they were never ordinary 2x4 framing, they were shop-plated lumber billing at the stick rate)
 # 2026-08-30, with the INT_2X4_RC retype of the five sleeping-side partitions
 # (plan/storeys/second.py). This is the SAME product [construction_returns] prices as
 # `resilient-channel` and it is deliberately the same number — single-leg RC-1 in 12' sticks,

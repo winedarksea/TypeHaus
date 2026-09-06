@@ -166,6 +166,13 @@ function sectionSummary(located: LocatedMember): string {
     const opening = member.depth_m - 2 * member.flange_thickness_m;
     return `Floor truss ${formatFtIn(member.depth_m)} deep, ${formatFtIn(opening)} chord-to-chord opening`;
   }
+  // One member per truss, so `depth_m` is its CHORD (1 1/2 x 3 1/2) and the heel-to-peak
+  // height is the member's own z extent. Falling through to the nominal line below would
+  // print a 24-foot truss as a 2x4.
+  if (member.shape === "roof_truss") {
+    const span = Math.hypot(member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]);
+    return `Roof truss ${formatFtIn(span)} span, ${formatFtIn(member.z1_m - member.z0_m)} plate to ridge`;
+  }
   const plies = member.plies > 1 ? ` (${member.plies} ply)` : "";
   return `${formatFtIn(member.width_m)} × ${formatFtIn(member.depth_m)}${plies}`;
 }
