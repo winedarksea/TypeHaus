@@ -77,12 +77,18 @@ def test_crosscuts_pack_into_eight_foot_strips() -> None:
     assert strips_for_cuts([]) == 0
 
 
-def test_every_allowlisted_material_is_in_the_library() -> None:
-    """The allowlist names real ``library/materials.py`` tags, or it silently stops working."""
-    from library.materials import STARTER_MATERIALS
+def test_every_allowlisted_material_is_a_real_tag(catlin_plan) -> None:
+    """The allowlist names real material tags, or it silently stops working.
 
-    known = {material.tag for material in STARTER_MATERIALS}
-    assert SHEET_RIP_MATERIALS <= known, sorted(SHEET_RIP_MATERIALS - known)
+    A typo here is invisible: the member simply stays on the lineal ladder and bills as
+    8-ft sticks again, which is the exact defect the allowlist exists to end. Resolved
+    against the shared library AND the house's own catalog, because a wood panel product
+    may be authored either place (``cdx-plywood`` and ``plywood-underlayment-sanded`` are
+    catlin-local; ``struct-1-plywood`` and ``osb`` are shared).
+    """
+    unknown = sorted(tag for tag in SHEET_RIP_MATERIALS
+                     if catlin_plan.library.material(tag) is None)
+    assert not unknown, unknown
 
 
 def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:

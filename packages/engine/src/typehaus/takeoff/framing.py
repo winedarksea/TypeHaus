@@ -14,9 +14,6 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Room
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.ceiling_over import ceiling_regions
-# ``_RE_PANEL`` is the profile grammar's own pattern for a swept sheet good. Spelling it a
-# second time here is how two readings of one question drift apart (the same argument
-# ``resolve/framing/roof._bearing_stiffeners`` makes for asking the profile table).
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
@@ -172,6 +169,8 @@ def _board_feet_per_ft(profile: str) -> float | None:
     the leading ``6x0.375`` of ``"6x0.375 panel"`` perfectly happily, which is how 156 window
     bucks came to carry 93 board feet, so the panel grammar is asked FIRST.
     """
+    # ``_RE_PANEL`` is the profile grammar's own pattern for a swept sheet good; spelling it
+    # a second time here is how two readings of one question drift apart.
     if _RE_PANEL.match(profile) is not None:
         return None
     match = _PROFILE_RE.match(profile)
@@ -455,4 +454,4 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             if (stock := rip_stock(member.profile, member.material)) is not None]
     return sorted(rows + rip_sheet_rows(rips),
                   key=lambda row: (str(row["scope"]), str(row["material"]),
-                                   float(row["thickness_in"])))
+                                   float(str(row["thickness_in"]))))

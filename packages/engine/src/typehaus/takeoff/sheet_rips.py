@@ -26,9 +26,14 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from typehaus.resolve.framing.profiles import _RE_PANEL
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import FramedMember
 
 #: Sheet stock everything here is ripped from: 4 ft x 8 ft, the only size a residential
 #: panel order is placed in. A house that buys 5x10 industrial stock would state it.
@@ -158,7 +163,9 @@ def strips_for_cuts(lengths_ft: list[float]) -> int:
     return whole + len(offcuts)
 
 
-def rip_sheet_rows(members) -> list[dict[str, object]]:
+def rip_sheet_rows(
+    members: Iterable[tuple[FramedMember, RipStock, float]],
+) -> list[dict[str, object]]:
     """Sheet rows for every panel member ripped from stock, one per (scope, sheet).
 
     ``scope`` is the member CATEGORY — "buck rip", "bearing stiffener rip" — because that is

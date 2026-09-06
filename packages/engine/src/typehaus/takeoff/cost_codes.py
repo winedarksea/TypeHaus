@@ -71,7 +71,19 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     # I-joist web stiffeners: a plywood rip that the framer cuts and nails with the roof,
     # not trim and not glazing. Same account as the joist it reinforces, ahead of the
     # "*panel*" catch-all for the same reason the corner box above is.
+    #
+    # 2026-09-06: a panel member whose MATERIAL is a wood structural panel no longer reaches
+    # this section at all — it is ordered by the sheet and bills in ``sheet_goods``
+    # (``takeoff/sheet_rips``), which files it at 2000 / 06 16 00 / framing. Both rows kept:
+    # they still catch a house whose stiffener or buck is authored on some other material,
+    # and a plywood rip filed as rough carpentry rather than as the "*panel*" catch-all's
+    # 08 80 00 GLAZING is the point either table makes.
     ("framing", "* stiffener panel", CostCode("2000", "06 17 00", "framing")),
+    # NOTE the trade consequence of that routing, because ``haus tasks`` builds work packages
+    # at (trade x storey): a window BUCK used to land here, on 2400 / 08 80 00 / openings, and
+    # now files as framing. That is the honest reading — a plywood buck is set square in the
+    # RO by the framer, before the foam and long before a window arrives — but it does move
+    # the money between two people's packages, so it is stated rather than left to be found.
     ("framing", "*panel*", CostCode("2400", "08 80 00", "openings")),
     # Sheet goods: roof and wall sheathing bill to the same account as the framing they
     # skin, insulated sheathing to insulation.
