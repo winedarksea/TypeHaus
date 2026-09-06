@@ -153,11 +153,28 @@ HOUSE_FOOTINGS = [
 # washed stone — a drained bearing surface that also breaks footing-to-wet-clay thermal
 # contact. 4" perimeter foam matches CATLIN_BASEMENT_12's exterior XPS.
 # One bedding per footing, sharing the footing's own permanent index for the same reason.
+#
+# ** THE TILE FALLS TO SM-B-RADON, NOT TO DAYLIGHT (corrected 2026-09-05). ** It said
+# `discharge="daylight"` for as long as it existed, and that was never true on this lot:
+# the bedding's underside is -124 7/16", which is 7'-6 1/2" BELOW the -2'-10" site grade.
+# There is no point on this property the perimeter tile can gravity-daylight to. It passed
+# silently because `discharge` is free text and `checks/mep/drainage.py` short-circuits the
+# literal "daylight" as always-valid — it names nothing, so there is nothing to resolve.
+#
+# SM-B-RADON is the only collector below this invert: a sealed pit whose bottom is
+# -136 15/16", 12 1/2" below the tile, on CKT-SUMP with a 1/3 hp submersible that lifts to
+# daylight. Re-checked when this load was added: a 1/3 hp cast-iron submersible moves
+# ~40 gpm at the ~12' of head this lift needs, against a 36'x36' footprint's perimeter
+# infiltration, and it draws well under the 20 A CKT-SUMP already carries for it. The pump
+# was always the thing doing this work; the model just said otherwise.
+#
+# The sunken garden's own FT-SG-* beds are NOT changed: they keep DRW-SG-MAIN, which is
+# 4'-0" below them and takes their water by gravity with no pump in the path.
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{t[2:]}", host_ref=f"FT-{t[2:]}",
                    undercut=inch(7), perimeter_insulation=inch(4),
                    drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
-                                             discharge="daylight"))
+                                             discharge="SM-B-RADON"))
     for i, t in _HOUSE_WALL_TAGS
 ]
 

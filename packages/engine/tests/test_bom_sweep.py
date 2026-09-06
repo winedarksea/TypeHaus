@@ -347,10 +347,12 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
         assert float(tile_row["drain_tile_diameter_in"]) == pytest.approx(4.0, abs=0.01)
         assert tile_row["drain_tile_sock"] is True
         assert "HDPE" in str(tile_row["drain_tile_material"])
-    # And where a run discharges is part of the key, not a note: the house tile daylights,
-    # the sunken garden's cannot — its floor is 9' down — so it falls to DRW-SG-MAIN. Those
-    # are two different runs of the same pipe and the take-off has to keep them apart.
-    assert {r["drain_tile_discharge"] for r in tile_rows} == {"daylight", "DRW-SG-MAIN"}
+    # And where a run discharges is part of the key, not a note. NEITHER run daylights, and
+    # that was the correction of 2026-09-05: the house tile's invert is -124 7/16", which is
+    # 7'-6 1/2" BELOW site grade, so it falls to the SM-B-RADON pit and is pumped up; the
+    # sunken garden's floor is 9' down, so it falls to DRW-SG-MAIN by gravity. Those are two
+    # different runs of the same pipe and the take-off has to keep them apart.
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {"SM-B-RADON", "DRW-SG-MAIN"}
     garden = next(r for r in tile_rows if r["drain_tile_discharge"] == "DRW-SG-MAIN")
     assert all(tag.startswith("FB-SG-") for tag in garden["tags"]), garden["tags"]
 

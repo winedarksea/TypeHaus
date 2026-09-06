@@ -1084,6 +1084,13 @@
 # WORTH DOING: have the driver spot the drywell stone off the 97 cy #57 order and this drops
 # to about $275 for the aggregate.
 "drywell" = { low = 150, high = 350 }  # 4.71 cy — was $70-180
+# The two sunken-garden trenches (FD-SG-FIELD, FD-SG-OVERFLOW), 2026-09-05. Same washed
+# stone as the drywell and the same $88-110/cy at the pit, but a quarter of a yard is a
+# hand-barrowed quantity 9' down a court with no truck access, so the placement dominates
+# the material by a wide margin and the range is wider than the drywell's for it. The 4"
+# pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot, like
+# every other run in the house.
+"french_drain" = { low = 400, high = 1100 }  # 0.24 cy in two hand-dug trenches
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -4167,6 +4174,13 @@
 
 [drainage]
 # RESEARCHED 2026-08-08b — [low, high] $/LF of run, material only, hangers/straps/elbows
+# `french_drain` is a ZERO ROW, not an absent one, and that is the difference from `drywell`
+# below: a FrenchDrain carries a real length_ft, so with no row at all it would sit on
+# `haus takeoff`'s unpriced list forever while being fully priced twice over elsewhere — the
+# 4" pipe inside it as [concrete] `drain_tile` ($/LF, open-trench installed) and the stone
+# around it as [concrete] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
+# third time. The zero says "priced, elsewhere, on purpose".
+"french_drain" = { low = 0, high = 0 }  # 19.7 LF — bills in [concrete], twice over already
 # and end caps folded into the rate. Owner's call for now: RAW ALUMINIUM, to be refined.
 # Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
 # sit above those because half the run is not K-style stock but formed dark box gutter and
@@ -4499,8 +4513,12 @@ concrete-driveway-apron-and-walks = { material = { low = 7200, high = 17600 }, l
 #   rock envelope  — billed by the yard in [footing_bedding], which the drain_tile note also
 #                    says in as many words.
 #   sump pit       — [concrete] `sump`, 1 ea at $400-1,200: basin, sealed lid, riser, patch.
-# The DAYLIGHT OUTLET is the residual and is real: the solid run out to daylight on the sunken
-# garden's low side, its rodent grate, the headwall and the splash pad. Nothing else buys it.
+# The DAYLIGHT OUTLET is the residual and is still real, but it is a DIFFERENT OUTLET as of
+# 2026-09-05. It used to be described as "the solid run out to daylight on the sunken garden's
+# low side" — and the sunken garden has no low side, which is the whole reason the perimeter
+# tile now falls to SM-B-RADON instead of claiming a daylight it could never reach. What this
+# buys is the pump's PRESSURE discharge: the solid line up out of the pit, its check valve, the
+# run to grade, the rodent grate, the headwall and the splash pad. Nothing else buys it.
 site-drain-tile-daylight-outlet = { low = 1500, high = 4000 }
 # ** THE SINGLE MOST-FORGOTTEN LINE IN RESIDENTIAL CONCRETE. ** Ready-mix suppliers never
 # include it and flatwork subs quote "pump by others". Two live 2026 rate sheets agree at

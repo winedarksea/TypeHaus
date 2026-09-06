@@ -827,7 +827,7 @@ def test_french_drain_draws_the_authored_diameter():
 
 
 def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
-    """Every house footing's bedding authors the 4" socked daylight tile now."""
+    """Every house footing's bedding authors the 4" socked tile, falling to SM-B-RADON."""
     from typehaus.emit.draw.detail_components.below_grade import drain_tile_spec_for
 
     # House strip footings — the ones with a tiled bedding. FT-B-BRICK shared the prefix and
@@ -842,7 +842,10 @@ def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
     for footing in footings:
         spec = drain_tile_spec_for(catlin_model, footing)
         assert spec is not None, footing.tag
-        assert spec.diameter == inch(4) and spec.sock and spec.discharge == "daylight"
+        # `discharge` was "daylight" until 2026-09-05 and it was never true: this tile's
+        # invert is 7'-6 1/2" BELOW site grade. It falls to the sealed radon pit, which
+        # pumps it up to grade.
+        assert spec.diameter == inch(4) and spec.sock and spec.discharge == "SM-B-RADON"
 
 
 def test_sill_gasket_prefers_the_authored_framing_spec():

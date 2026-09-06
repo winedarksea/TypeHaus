@@ -66,6 +66,7 @@ from typehaus import (
     Footing,
     FootingBedding,
     FoundationWall,
+    FrenchDrain,
     Gutter,
     JoistReinforcement,
     JoistSpec,
@@ -1250,7 +1251,10 @@ GARDEN_DRYWELL = Drywell(
     position=pt(ft(_cx), ft((_y_in_s + _y_in_n) / 2.0)),
     diameter=ft(5), depth=ft(6), geotextile=True,
     top_elevation=_SG_DRYWELL_TOP,
-    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING),
+    # Every FT-SG-* bearing bed, plus the field's own underdrain. FD-SG-FIELD is named as a
+    # string rather than swept up, because the field's plan coordinates are derived below
+    # this point and the well is what they are derived towards.
+    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING) + ("FD-SG-FIELD",),
 )
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
@@ -1282,6 +1286,83 @@ _field_x_e = (_x_in_e + _half) - _ret_toe_reach_ft   # 23.5
 _field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -24.833
 # The grade beam's south face. North of it is the porch bay, which stays paved.
 _field_y_n = _y_ax_mid - _half                       # -11.5
+_field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
+
+# --- the field's underdrain, and the court's overflow leg --------------------------
+#
+# ** THE ASSEMBLY SAID "draining to DRW-SG-MAIN" AND NOTHING IMPLEMENTED IT. ** Until
+# 2026-09-05 that was prose in a `source=` string with no element behind it — the exact
+# failure `checks/mep/drainage.py`'s own docstring was written about. These two runs are
+# the claim made real.
+#
+# `FrenchDrain` and not a `FootingBedding`'s derived tile: a bedding's tile follows the
+# excavation under a footing, while this is "a run somebody put where the water goes".
+#
+# ** ONE LATERAL, AND THAT IS THE CHEAPEST ANSWER THAT IS ALSO THE RIGHT ONE. ** USGA caps
+# lateral spacing at 15'-0". The field is 11'-0" wide, so a single centre lateral on the
+# long (13'-4") axis leaves 5'-6" of reach each side, inside the cap with room over. USGA
+# wants >=0.5% fall, which over 13'-4" is 0.8" — trivial against the drop into the well.
+#
+# ** NO PERIMETER "SMILE" DRAIN, DELIBERATELY. ** USGA's trench is 6" wide x 8" deep cut
+# INTO the subgrade, which here bottoms at -135 7/16" — 5" below W-SG-ARCH's underside. Run
+# hard against the walls, as USGA's perimeter detail wants, it would undermine the grade
+# beam that is the court's only real strut. Down the centre it is clear of everything. The
+# omission is a decision, not an oversight.
+#
+# ** NO WICKING BARRIER, AND THAT IS EARNED. ** USGA's optional perimeter membrane exists to
+# stop a porous rootzone bleeding sideways into a fine-textured native surround. This field
+# is bounded on all four sides by concrete — three retaining strips and the grade beam. The
+# concrete IS the barrier.
+#
+# ** `sock=False`, AND IT IS THE ONLY TILE IN THIS HOUSE THAT CARRIES IT. ** USGA is
+# explicit that "any piping encased in geotextile sleeves are not recommended", and PNW 675
+# agrees: a sock in a sand profile clogs with fines and seals the line. The FT-SG-* and
+# FB-* beds keep `sock=True` — a bearing course in clay is a different job, and there the
+# sock is what stops the clay entering the pipe. Here the graded sand above IS the filter.
+#
+# uid minted by hand, deliberately: `haus fmt` does not visit `params/*.py`.
+GARDEN_UNDERDRAIN = FrenchDrain(
+    uid="SGFD01AAAA", tag="FD-SG-FIELD",
+    # South end of the field to the well, on the field's own centreline, derived off the
+    # `_field_*` names so it cannot drift from the field it drains.
+    path=(pt(ft(_field_x_mid), ft(_field_y_s)),
+          pt(ft(_field_x_mid), ft((_y_in_s + _y_in_n) / 2.0))),
+    # The trench floor: 8" into the subgrade below the profile's underside, derived from
+    # the court plane and the profile depth. NEVER a literal — `SPEC.field_depth_in` moves.
+    invert=_court_top - inch(SPEC.field_depth_in) - inch(8),
+    trench_width=inch(6), trench_depth=inch(8),
+    tile=DrainTile(diameter=inch(4), sock=False, discharge="DRW-SG-MAIN"),
+    discharge_ref="DRW-SG-MAIN",
+)
+
+# ** THE OVERFLOW LEG: THE COURT'S SECOND WAY OUT. ** DRW-SG-MAIN is a soakaway in glacial
+# till, and MPCA's own numbers say that is a detention structure rather than an infiltration
+# one (HSG D, 0.06 in/hr design rate). The case the freeboard note names as the one to watch
+# is snowmelt onto a frozen court over a frozen grate, where the well contributes nothing by
+# definition — and that note currently answers it by assuming the well FULLY FAILED. This
+# leg raises that margin instead of restating it.
+#
+# ** Its invert is ABOVE FD-SG-FIELD's tee and BELOW the profile. ** -131 7/16": 4" above
+# the underdrain's trench floor, 4" below the gravel blanket's underside. Storage in a
+# soakaway is only the volume beneath its inlet, so the well must fill and SPILL — never
+# back up into the gravel, which would drown the rootzone from below.
+#
+# ** THE TRENCH STOPS AT THE GRADE BEAM'S NORTH FACE, AND THAT IS THE POINT. ** The leg from
+# the well north to here is a 4" pipe SLEEVED through W-SG-ARCH at mid-depth, not an
+# excavation: a stone trench crossing the beam at this invert would undermine the strut the
+# free-body note holds the whole court together with. `FrenchDrain` has no way to say
+# "sleeve", so the modelled trench is only the part that really is one, and the sleeve is
+# this comment. North of the court it ties into the house perimeter collector, which as of
+# today falls to the same sump.
+GARDEN_OVERFLOW = FrenchDrain(
+    uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
+    path=(pt(ft(_field_x_mid), ft(_field_y_n + 1.0)),
+          pt(ft(_field_x_mid), ft(_y_in_n))),
+    invert=_court_top - inch(SPEC.field_depth_in) - inch(4),
+    trench_width=inch(6), trench_depth=inch(8),
+    tile=DrainTile(diameter=inch(4), sock=False, discharge="SM-B-RADON"),
+    discharge_ref="SM-B-RADON",
+)
 
 GARDEN_SLAB = Slab(
     uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="CATLIN_GARDEN_SLAB",
@@ -2995,7 +3076,8 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
-                     *FOOTING_BEDDING, GARDEN_DRYWELL, *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
+                     *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
+                     *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")

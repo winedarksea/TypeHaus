@@ -155,9 +155,13 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     # number was never the wrong part — the word "GRADE" was.
     assert '42" MIN BELOW THE LOWEST ADJACENT FINISHED GRADE' in notes
     assert "SL-SG-FLOOR, NOT THE SITE GRADE PLANE" in notes
-    # The note reads the tile's authored discharge — every DrainTile on the project
-    # discharges to daylight.
-    assert "DRAIN TILE" in notes and "DRAINING TO DAYLIGHT" in notes
+    # The note reads the tile's authored discharge, and as of 2026-09-05 NOTHING on this
+    # project discharges to daylight: the house tile falls to the SM-B-RADON pit (its invert
+    # is 7'-6 1/2" below site grade, so daylight was never available to it) and the sunken
+    # garden's falls to DRW-SG-MAIN. Two destinations, both named on the sheet.
+    assert "DRAIN TILE" in notes
+    assert "DRAINING TO DRW-SG-MAIN, SM-B-RADON" in notes
+    assert "DAYLIGHT" not in notes
     assert "STEP FOOTING" in notes
     # step callouts are placed at real adjacencies, not at every elevation pair
     steps = footing_steps(catlin_model)

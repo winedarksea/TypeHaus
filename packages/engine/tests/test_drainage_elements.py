@@ -139,10 +139,58 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
     assert plan_well.inlet_refs, "the perimeter bedding still drains here"
 
 
+def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model):
+    """`CATLIN_GARDEN_FIELD` said "draining to DRW-SG-MAIN" in a `source=` string for as
+    long as it existed, and until 2026-09-05 NO element implemented it — the exact failure
+    `checks/mep/drainage.py`'s docstring is written about. This test is what stops it
+    reverting to prose."""
+    plan_drain = catlin_model.plan.by_tag("FD-SG-FIELD")
+    assert plan_drain is not None, "the field's underdrain is an element, not a sentence"
+    assert plan_drain.discharge_ref == "DRW-SG-MAIN"
+
+    # It lies in the blanket the field is built on: the trench floor is 8" below the
+    # profile's underside, which is `field_depth_in` below the court plane.
+    field = next(s for s in catlin_model.solids if s.tag == "SL-SG-FIELD")
+    invert_ft = plan_drain.invert._m / 0.3048
+    assert invert_ft == pytest.approx(field.z0_m / 0.3048 - 8.0 / 12.0, abs=0.01), \
+        "the trench is cut INTO the subgrade below the gravel, not floating in it"
+
+    # And it is clear of the grade beam, which is the court's only real strut: the trench
+    # runs down the field's centreline, not USGA's perimeter "smile".
+    xs = {round(point.x._m, 6) for point in plan_drain.path}
+    assert len(xs) == 1, "one straight lateral on the centreline"
+
+    # ** `sock=False` — the only tile in this house that carries it. ** USGA: "any piping
+    # encased in geotextile sleeves are not recommended"; a sock in a sand profile clogs
+    # with fines and seals the line. Every bearing bed in clay keeps its sock.
+    assert plan_drain.tile is not None and plan_drain.tile.sock is False
+    beds = [b for b in catlin_model.footing_beddings if b.drain_tile_spec is not None]
+    assert beds and all(b.drain_tile_spec.sock for b in beds)
+
+    # The well knows about it, so `drainage.discharge_consistency` grades both ends.
+    assert "FD-SG-FIELD" in catlin_model.plan.by_tag("DRW-SG-MAIN").inlet_refs
+
+
+def test_the_house_perimeter_tile_falls_to_the_sump_it_can_actually_reach(catlin_model):
+    """All 30 house beddings claimed `discharge="daylight"` with an invert 7'-6 1/2" BELOW
+    site grade. It passed silently because "daylight" names nothing and the check
+    short-circuits it. There is no daylight available to this tile anywhere on the lot."""
+    house = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-B-")]
+    assert house
+    assert {b.drain_tile_spec.discharge for b in house} == {"SM-B-RADON"}
+    assert catlin_model.plan.by_tag("SM-B-RADON") is not None
+    # The garden's own beds are NOT redirected: DRW-SG-MAIN is below them and takes their
+    # water with no pump in the path.
+    garden = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
+    assert {b.drain_tile_spec.discharge for b in garden} == {"DRW-SG-MAIN"}
+
+
 def test_the_radon_sump_carries_its_pump(catlin_plan):
     sump = catlin_plan.by_tag("SM-B-RADON")
     assert sump.pump is not None
     assert sump.pump.circuit_ref == "CKT-SUMP"
+    # The PUMP still daylights — it lifts to grade, which is the one leg on this lot that
+    # can. What changed in 2026-09-05 is what feeds the pit, not what leaves it.
     assert sump.pump.discharge == "daylight"
 
 
@@ -168,7 +216,10 @@ def test_a_french_drain_resolves_a_trench_and_the_tile_inside_it(catlin_plan):
     model, findings = resolve(_minimal_plan_with(catlin_plan, run))
     assert not [f for f in findings if f.severity.value == "error"]
 
-    trench = [s for s in model.solids if s.category == "french_drain"]
+    # Scoped to FD-TEST: the Catlin plan carries two real FrenchDrains of its own since
+    # 2026-09-05 (FD-SG-FIELD, FD-SG-OVERFLOW), and this test is about the resolver.
+    trench = [s for s in model.solids
+              if s.category == "french_drain" and s.tag.startswith("FD-TEST")]
     assert len(trench) == 1
     assert (trench[0].z1_m - trench[0].z0_m) == pytest.approx(inch(24).meters)
     # The pipe is not the trench: it is the product inside it, billed and drawn separately.
