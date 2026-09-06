@@ -308,18 +308,39 @@ the future.
 - **Floor truss GLB/IFC exports still keep the one-box representation**, even though the
   viewer draws chords + end blocks + diagonal webs (`ui/src/three/floorTruss.ts`). Only
   worth doing if it ever matters.
-- The house's own strip footings are eccentric under their walls, the same way the garage
-  stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
-  under a `face("concrete-ext")` wall whose concrete runs inboard from it. **The -2" north
-  toe in this note is stale**: that wall went 12" -> 8" on 2026-08-21 and only its inside
-  face moved, so the south toe is 10" and the north one is now **+2"**, not -2".
-  `Footing.center_on="wall"` now exists to
-  fix it, and the obstacle that used to stand in the way is gone: the plinth `FT-B-BRICK`,
-  whose derivation leaned on that 10" toe being there to bear on, was retired 2026-09-05 when
-  the veneer was re-founded on `W-SG-BRKBM`. What the toe now carries is `SG_VENEER_BEAM_14`'s
-  2" isolation board at -8"..-10", reached by an `offset` rather than a re-centring — so a
-  future `center_on="wall"` pass has to keep that face where it is, or the beam's concrete
-  meets the footing again.
+- **DONE 2026-09-06 — `FT-B-*` on `center_on="wall"`, with one residue left open.** The
+  house's strip footings were eccentric under their walls the way the garage stem's were
+  before 2026-08-15: a 20" strip on the raw y=0 node line under a `face("concrete-ext")`
+  wall whose pour runs inboard of it. Measured before the change, an 8" segment had 10" of
+  toe outside the pour and 2" inside, and on the 12" segments (`W-B-E1`/`E2`) the wall's
+  inboard face stood **2" past the footing altogether** — the wall was not all on its own
+  footing, at 0 FAIL. That is the defect this item was really about, and it is fixed: eight
+  strips (N1-N4, W1/W2, E1/E2) now centre on the resolved section, and the three interior
+  12" pours (CS2/CN/CN2) carry the flag and do not move.
+  - **The residue is an ENGINE item, not a house one.** `band_axis` is handed every layer's
+    polygon, so the 4" of exterior XPS pulls the datum 2 3/32" outboard of the pour's
+    midline: the toes land at 8 3/32"/3 29/32" on an 8" wall and 6 3/32"/1 29/32" on a 12"
+    one, not a symmetric 6"/6". Closing it means centring on the STRUCTURE layer, which no
+    house edit can reach.
+  - **Eight strips deliberately stay on the node line**, and the reasoning is worth keeping.
+    The four garden-end strips are pinned at -4" by the closure joint against
+    `FT-SG-W1/E1` — the old note's "keep that face where it is, or the beam's concrete meets
+    the footing again" constraint, which still holds. With that face pinned and the width
+    fixed at 20" the strip occupies -4"..+16" *whatever datum the offset is measured from*,
+    so re-centring buys no geometry and only re-expresses the same number against a worse
+    datum. Worse because their band centres disagree (+1 29/32" S1/S4, +1 3/4" S2, -1/32"
+    S3) so one trim constant could no longer land three walls on one face — and S2's would
+    move the next time someone changed the **sauna's shiplap liner thickness**, which is in
+    its band. The four framed walls are excluded for the same class of reason: the node line
+    already is the stud centre, and `W-B-CS`'s liner would pull its strip 1 7/16" off the
+    studs it carries.
+  - `_GARDEN_END_TOE_TRIM` therefore stays at 6". Concrete is unchanged (`haus takeoff`
+    byte-identical, 0.00 cy delta — re-centring translates a strip without resizing it), and
+    `haus check --only all` is byte-identical, `structural.frost_depth` and
+    `structural.concrete_interference` included. The two section goldens that moved are pure
+    coordinate translations of the footing/bedding/undercut, no annotation or layer change.
+    `test_catlin_contract_m3.test_the_house_strip_footings_sit_under_the_walls_they_carry`
+    now pins all 19 strips' toes.
 * **Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** Still
   open, and deliberately: 8% is the code minimum, not an answer about how a room feels. But
   the numbers are knowable, so here they are —
