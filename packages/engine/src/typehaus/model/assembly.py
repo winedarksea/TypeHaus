@@ -122,7 +122,9 @@ class FramingSpec(HausModel):
     # Swinburne outrigger, which frames on a tab, not on blocks — and
     # ``integrity.assembly_layers`` refuses the pair.
     standoff: Literal["none", "block"] = "none"
-    corner_style: Literal["3-stud", "4-stud"] = "3-stud"
+    # "california" is the drywall-backer corner: the same stick count as "3-stud", but the
+    # supplemental stud is laid FLAT, leaving the corner cavity open to insulation.
+    corner_style: Literal["3-stud", "4-stud", "california"] = "3-stud"
     # FURRING only — the Larsen/Swinburne plywood corner box (FHB Jan 2024) that closes an
     # owned L corner's two outboard faces outboard of the sheathing, where the band's own
     # mitre otherwise leaves a full-height void with no framed member in it. "none" (the

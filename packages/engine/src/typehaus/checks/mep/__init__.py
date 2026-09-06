@@ -16,6 +16,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     lighting,
     plumbing,
     pockets,
+    port_service,
     power_sources,
     routing,
     supply_protection,

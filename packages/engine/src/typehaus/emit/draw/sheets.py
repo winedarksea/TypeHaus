@@ -38,13 +38,14 @@ from typehaus.emit.draw.schedules import (
     _write_cover,
     _write_data_schedule,
     _write_energy_sheet,
+    _write_engineering_register,
     _write_framing_bom,
     _write_general_notes,
-    _write_engineering_register,
     _write_hardware_schedule,
     _write_luminaire_schedule,
     _write_opening_schedule,
     _write_panel_schedule,
+    _write_room_finish_schedule,
     write_compare_sheet,
 )
 from typehaus.emit.draw.section import build_center_section, build_section
@@ -147,9 +148,18 @@ def build_sheet_index(model: ResolvedModel,
     is not just a bigger picture — ``select_scale`` gets a bigger viewport, so the drawing
     climbs the ladder for free: catlin's A-101 goes from 1/16" = 1'-0" on ledger to
     3/16" = 1'-0" on ARCH D, and its main floor plan from 1/8" to 3/8"."""
-    sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
+    # NCS discipline order is G -> C -> S -> A -> P -> M -> E, and the second digit is the
+    # SHEET TYPE: 0 general, 1 plans, 2 elevations, 3 sections, 4 large-scale views,
+    # 5 details, 6 schedules, 7-8 user-defined, 9 3D. Sequence within a type is
+    # deliberately non-consecutive so a sheet can be inserted without renumbering the set.
+    # The cover is G-001, not A-000: a cover is general information, not architectural.
+    sheets: list[SheetSpec] = [SheetSpec("G-001", "Cover / code summary")]
     sheets.append(SheetSpec("G-002", "General notes",
                             page=partial(_write_general_notes, profile=profile)))
+    # G-004, not EN-1. "EN" is not an NCS discipline designator at all — the energy summary
+    # is general project information and belongs with the code summary it restates.
+    sheets.append(SheetSpec("G-004", "Energy compliance summary",
+                            page=partial(_write_energy_sheet, preferences=preferences)))
     sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
                             north_arrow=True))
 
@@ -180,21 +190,21 @@ def build_sheet_index(model: ResolvedModel,
                                 north_arrow=True))
 
     if model.all_members():
-        sheets.append(SheetSpec("S-103", "Framing schedule / bill of materials",
+        sheets.append(SheetSpec("S-601", "Framing schedule / bill of materials",
                                 page=_write_framing_bom))
 
     # Hardware gets its own sheet rather than a second page under S-103: a PageFn that
     # emits two pages would put the cover's printed index one page out of step with the
     # emitted set, which ``build_sheet_index`` exists to prevent.
     if hardware_takeoff(model):
-        sheets.append(SheetSpec("S-104", "Connection hardware schedule",
+        sheets.append(SheetSpec("S-602", "Connection hardware schedule",
                                 page=_write_hardware_schedule))
 
     # S-105 only where the house actually has engineering in it. A set answered entirely by
     # prescriptive tables gets no page saying so — an empty register reads as an omission,
     # and the cover already states the checklist verdict for that case.
     if _has_engineered_items(model, house_dir):
-        sheets.append(SheetSpec("S-105", "Engineering register",
+        sheets.append(SheetSpec("S-603", "Engineering register",
                                 page=partial(_write_engineering_register,
                                              house_dir=house_dir)))
 
@@ -208,6 +218,14 @@ def build_sheet_index(model: ResolvedModel,
 
     sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",
                             scene=build_roof_plan, north_arrow=True))
+    # Elevations BEFORE sections: the type digit is the order (2 then 3), and the set was
+    # emitting A-301 first. A reviewer works outside-in — what the building looks like, then
+    # what it is cut open to show — and the numbering already said so.
+    for number, facing in (("A-201", "north"), ("A-202", "south"),
+                           ("A-203", "east"), ("A-204", "west")):
+        sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
+                                scene=partial(build_elevation, facing=facing)))
+
     sheets.append(SheetSpec("A-301", "Building section", scene=build_center_section))
     # Authored SECTION slices join the A-301 series right after the auto centre section —
     # one sheet per authored cut, in authoring order (→ Permit-ready plan set Phase 6).
@@ -216,14 +234,14 @@ def build_sheet_index(model: ResolvedModel,
     for index, view in enumerate(sections, start=1):
         sheets.append(SheetSpec(f"A-301.{index}", view.title or view.tag,
                                 scene=partial(build_section, view=view)))
-    for number, facing in (("A-201", "north"), ("A-202", "south"),
-                           ("A-203", "east"), ("A-204", "west")):
-        sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
-                                scene=partial(build_elevation, facing=facing)))
 
+    # The 5 series, not the 4. NCS 4 is LARGE-SCALE VIEWS — an enlarged plan of a kitchen or
+    # a stair at 1/2" = 1'-0", the same drawing type as the plan it comes from. A junction
+    # cut at 1-1/2" = 1'-0" is a DETAIL and belongs in 5. This set has no large-scale views,
+    # so the 4 series is simply absent, which is what a non-consecutive sequence is for.
     authored_details = [item for item in model.plan.elements_of_kind("Slice")
                         if item.kind.value == "detail"]
-    next_detail = 401
+    next_detail = 501
     for detail in authored_details:
         sheets.append(SheetSpec(f"A-{next_detail}", detail.title or detail.tag,
                                 scene=partial(build_authored_detail_scene, view=detail)))
@@ -241,7 +259,14 @@ def build_sheet_index(model: ResolvedModel,
                                 primary=starred))
         next_detail += 1
 
-    sheets.append(SheetSpec("A-601", "Door / window schedule", page=_write_opening_schedule))
+    # A-601 used to be doors, windows AND fixtures on one sheet. They are three schedules
+    # with three readers — a door supplier, a glazing supplier, and whoever is setting
+    # plumbing — and NCS gives each its own sheet in the 6 series.
+    sheets.append(SheetSpec("A-601", "Door schedule",
+                            page=partial(_write_opening_schedule, kinds="door")))
+    sheets.append(SheetSpec("A-602", "Window schedule",
+                            page=partial(_write_opening_schedule, kinds="window")))
+    sheets.append(SheetSpec("A-603", "Room finish schedule", page=_write_room_finish_schedule))
 
     plumbing_storeys = [s.tag for s in storeys if has_plumbing_content(model, s.tag)]
     for index, storey_tag in enumerate(plumbing_storeys, start=1):
@@ -289,8 +314,6 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
                                 page=_write_data_schedule))
 
-    sheets.append(SheetSpec("EN-1", "Energy compliance summary",
-                            page=partial(_write_energy_sheet, preferences=preferences)))
     return [replace(sheet, paper=paper) for sheet in sheets]
 
 
@@ -334,7 +357,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
     # which paper the *set* is on (→ sheet_writer.schedule_sheet).
     with PdfPages(output) as pdf, set_paper(paper):
         for sheet in sheets:
-            if sheet.number == "A-000":
+            if sheet.number == "G-001":
                 _write_cover(pdf, model, index, profile, preferences)
             elif sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)

@@ -32,50 +32,121 @@ _WINDOW_FALL_SILL = inch(24)
 _WINDOW_FALL_DROP = inch(72)
 
 
-def _edge_cover_intervals(edge_across: float, along0: float, along1: float, across: int,
-                          along: int, walls, railings, stair_quads):
-    """(covered, short_guards): interval cover along one well edge, and any railing that
-    runs the edge but is too short to be a guard."""
+def _segment_cover_intervals(p0, p1, walls, railings, stair_quads, *,
+                             plane_tol_m: float, wall_face_tol_m: float):
+    """(covered, short, used): what covers an arbitrary plan segment, in stations along it.
+
+    The one coverage derivation behind every guard rule. Stations are metres from ``p0``
+    along the segment's own axis, so nothing here assumes an axis-aligned edge: a wall's
+    footprint, a railing's sub-segments and a stair throat's arrival quad are each projected
+    onto the segment's ``unit``/``normal`` frame (``resolve/geometry``). An edge that runs
+    at 30 degrees is measured exactly the way a north-south one is.
+
+    * a **wall** covers the stretch its layer polygons span, when that footprint straddles
+      the segment's own line (read off the polygons, not ``axis`` +/- half the thickness —
+      an ``alignment=face(...)`` wall's axis is not its centreline);
+    * a **railing** covers each sub-segment of its path whose two ends both lie within
+      ``plane_tol_m`` of the segment line, and is returned in ``short`` instead when it runs
+      the segment under guard height;
+    * a **stair quad** covers where the flight crosses — that side is the stairway, R311's
+      problem rather than an open side.
+    """
     from shapely.geometry import LineString
 
-    from typehaus.resolve.floors import _wall_footprint_span
+    from typehaus.resolve.geometry import normal, project_onto_axis, sub, unit
 
+    span = sub(p1, p0)
+    axis = unit(span)
+    across = normal(axis)
     covered: list[tuple[float, float]] = []
     short: list = []
     used: set[str] = set()
     for wall in walls:
-        span_across = _wall_footprint_span(wall, across)
-        span_along = _wall_footprint_span(wall, along)
-        if span_across is None or span_along is None:
+        points = [point for layer in wall.layers for point in layer.polygon]
+        if not points:
             continue
-        if not (span_across[0] - _GUARD_WALL_FACE_TOL_M <= edge_across
-                <= span_across[1] + _GUARD_WALL_FACE_TOL_M):
+        offsets = [project_onto_axis(point, p0, across) for point in points]
+        if not (min(offsets) - wall_face_tol_m <= 0.0 <= max(offsets) + wall_face_tol_m):
             continue
-        covered.append(span_along)
+        stations = [project_onto_axis(point, p0, axis) for point in points]
+        covered.append((min(stations), max(stations)))
     for railing, tall_enough in railings:
-        for p, q in zip(railing.path, railing.path[1:], strict=False):
-            pa, qa = p.xy_m, q.xy_m
-            if (abs(pa[across] - edge_across) > _GUARD_PLANE_TOL_M
-                    or abs(qa[across] - edge_across) > _GUARD_PLANE_TOL_M):
+        for a, b in zip(railing.path, railing.path[1:], strict=False):
+            pa, qa = a.xy_m, b.xy_m
+            if (abs(project_onto_axis(pa, p0, across)) > plane_tol_m
+                    or abs(project_onto_axis(qa, p0, across)) > plane_tol_m):
                 continue
-            lo, hi = sorted((pa[along], qa[along]))
+            lo, hi = sorted((project_onto_axis(pa, p0, axis),
+                             project_onto_axis(qa, p0, axis)))
             if tall_enough:
                 covered.append((lo, hi))
                 used.add(railing.tag)
             else:
                 short.append(railing)
-    edge_line = LineString([(edge_across, along0), (edge_across, along1)]
-                           if across == 0 else
-                           [(along0, edge_across), (along1, edge_across)])
+    line = LineString([p0, p1])
     for quad in stair_quads:
-        inter = edge_line.intersection(quad)
+        inter = line.intersection(quad)
         if inter.is_empty or getattr(inter, "length", 0.0) <= 1e-6:
             continue
-        values = [pt[along] for geom in getattr(inter, "geoms", [inter])
-                  for pt in geom.coords]
-        covered.append((min(values), max(values)))
+        stations = [project_onto_axis(point, p0, axis)
+                    for geom in getattr(inter, "geoms", [inter]) for point in geom.coords]
+        covered.append((min(stations), max(stations)))
     return covered, short, used
 
+
+def _uncovered_runs(p0, p1, walls, railings, stair_quads, *, gap_tol_m: float,
+                    plane_tol_m: float, wall_face_tol_m: float):
+    """The stretches of ``p0``->``p1`` nothing guards, as ``(station0, station1)`` pairs.
+
+    Runs at or under ``gap_tol_m`` are dropped: a corner lap or a resolution sliver is not
+    an open side.
+    """
+    from typehaus.resolve.floors import _subtract_interval
+    from typehaus.resolve.geometry import length, sub
+
+    run = length(sub(p1, p0))
+    covered, short, used = _segment_cover_intervals(
+        p0, p1, walls, railings, stair_quads,
+        plane_tol_m=plane_tol_m, wall_face_tol_m=wall_face_tol_m)
+    remaining = [(0.0, run)]
+    for lo, hi in covered:
+        remaining = _subtract_interval(remaining, lo, hi)
+    return [(lo, hi) for lo, hi in remaining if hi - lo > gap_tol_m], short, used
+
+
+def _stair_throat_quads(ctx: CheckContext, surface: float) -> list:
+    """The plan quads where a flight arrives at (or leaves through) ``surface``.
+
+    Where a stair enters an edge, that side is the stairway and R311 adjudicates it — it is
+    not an open side wanting a guard. Shared by the stair-well rule and the raised-surface
+    rule, which ask the same question of a well edge and of a deck edge.
+    """
+    from shapely.geometry import Polygon as _ShapelyPolygon
+
+    quads = []
+    for stair in ctx.model.stairs:
+        for stations in _flight_stations(stair).values():
+            pairs = list(zip(stations, stations[1:], strict=False))
+            for index, ((a0, b0, z0), (a1, b1, z1)) in enumerate(pairs):
+                if max(z0, z1) < surface - _GUARD_THROAT_Z_WINDOW_M:
+                    continue
+                if index == len(pairs) - 1:
+                    # The nosing line's extrapolated arrival station lands a tread short of
+                    # the finished edge (a well is cut to the trimmer, not to the top
+                    # nosing; a threshold board over a wall top is not an element at all);
+                    # stretch the final quad along the travel direction so the throat
+                    # actually reaches the edge it enters through. Along travel only —
+                    # never sideways, which would eat into genuinely open sides beside it.
+                    run = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
+                    if run > 1e-9:
+                        ux, uy = (a1[0] - a0[0]) / run, (a1[1] - a0[1]) / run
+                        reach = _GUARD_THROAT_REACH_M
+                        a1 = (a1[0] + ux * reach, a1[1] + uy * reach)
+                        b1 = (b1[0] + ux * reach, b1[1] + uy * reach)
+                quad = _ShapelyPolygon([a0, b0, b1, a1])
+                if quad.is_valid and quad.area > 1e-6:
+                    quads.append(quad)
+    return quads
 
 
 #: A well edge under a roof lower than this is not an open side. R312.1.1 scopes guards to
@@ -89,22 +160,24 @@ _ROOF_CLOSES_EDGE_M = _GUARD_TRIGGER_DROP.meters
 _ROOF_SAMPLE_STEP_M = 0.25
 
 
-def _roof_closed_interval(ctx: CheckContext, across: int, edge_across: float,
-                          lo: float, hi: float, surface: float) -> bool:
-    """Is this whole stretch of a well edge roofed too low to stand or walk in?
+def _roof_closed_run(ctx: CheckContext, p0, p1, surface: float) -> bool:
+    """Is this whole stretch of an edge roofed too low to stand or walk in?
 
     Sampled rather than tested at the ends: the underside is linear along a rake but an
     edge may run across the ridge, where the ends are the two LOWEST points. Sampling
     catches that; two-point testing would exempt a full-height opening under a peak.
     """
+    import math as _math
+
     from typehaus.resolve.roof_geometry import roof_bearing_footprint, roof_underside_at
 
-    if hi - lo <= 0:
+    run = _math.hypot(p1[0] - p0[0], p1[1] - p0[1])
+    if run <= 0:
         return True
-    steps = max(2, int((hi - lo) / _ROOF_SAMPLE_STEP_M) + 1)
+    steps = max(2, int(run / _ROOF_SAMPLE_STEP_M) + 1)
     for index in range(steps + 1):
-        station = lo + (hi - lo) * index / steps
-        point = ((edge_across, station) if across == 0 else (station, edge_across))
+        t = index / steps
+        point = (p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t)
         clear = None
         for roof in ctx.model.roofs:
             footprint = roof_bearing_footprint(ctx.model, roof)
@@ -133,11 +206,10 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
     edge under 36" fails on height rather than counting as coverage, and a house with
     no stair wells reports UNKNOWN — never PASS by absence.
     """
-    from shapely.geometry import Polygon as _ShapelyPolygon
 
     from typehaus.model.floors import FloorOpening, FloorOpeningPurpose, FloorSystem
     from typehaus.model.structure import Railing
-    from typehaus.resolve.floors import _rectangular_opening_box, _subtract_interval
+    from typehaus.resolve.floors import _rectangular_opening_box
 
     cid, code = "code.R312_1_guard", "R312.1"
     openings_by_tag = {e.tag: e for e in ctx.plan.all_elements()
@@ -173,29 +245,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
         railings = [(r, r.height.meters + 1e-9 >= _GUARD_MIN_HEIGHT.meters)
                     for r in all_railings
                     if abs(r.base_elevation.meters - surface) < _GUARD_BASE_TOL_M]
-        stair_quads = []
-        for stair in ctx.model.stairs:
-            for stations in _flight_stations(stair).values():
-                pairs = list(zip(stations, stations[1:], strict=False))
-                for index, ((a0, b0, z0), (a1, b1, z1)) in enumerate(pairs):
-                    if max(z0, z1) < surface - _GUARD_THROAT_Z_WINDOW_M:
-                        continue
-                    if index == len(pairs) - 1:
-                        # The nosing line's extrapolated arrival station lands a tread
-                        # short of the finished well edge (the void is cut to the
-                        # trimmer, not to the top nosing); stretch the final quad along
-                        # the travel direction so the throat actually reaches the edge
-                        # it enters through. Along travel only — never sideways, which
-                        # would eat into genuinely open sides beside the flight.
-                        run = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-                        if run > 1e-9:
-                            ux, uy = (a1[0] - a0[0]) / run, (a1[1] - a0[1]) / run
-                            reach = _GUARD_THROAT_REACH_M
-                            a1 = (a1[0] + ux * reach, a1[1] + uy * reach)
-                            b1 = (b1[0] + ux * reach, b1[1] + uy * reach)
-                    quad = _ShapelyPolygon([a0, b0, b1, a1])
-                    if quad.is_valid and quad.area > 1e-6:
-                        stair_quads.append(quad)
+        stair_quads = _stair_throat_quads(ctx, surface)
 
         edges = (("west", 0, minx, miny, maxy), ("east", 0, maxx, miny, maxy),
                  ("south", 1, miny, minx, maxx), ("north", 1, maxy, minx, maxx))
@@ -204,18 +254,20 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
         short_guards: list = []
         guarding_tags: set[str] = set()
         for name, across, edge_across, along0, along1 in edges:
-            along = 1 - across
-            covered, short, used = _edge_cover_intervals(
-                edge_across, along0, along1, across, along, walls, railings, stair_quads)
+            p0 = (edge_across, along0) if across == 0 else (along0, edge_across)
+            p1 = (edge_across, along1) if across == 0 else (along1, edge_across)
+            runs, short, used = _uncovered_runs(
+                p0, p1, walls, railings, stair_quads, gap_tol_m=_GUARD_GAP_TOL_M,
+                plane_tol_m=_GUARD_PLANE_TOL_M, wall_face_tol_m=_GUARD_WALL_FACE_TOL_M)
             short_guards.extend(short)
             guarding_tags |= used
-            remaining = [(along0, along1)]
-            for lo, hi in covered:
-                remaining = _subtract_interval(remaining, lo, hi)
-            for lo, hi in remaining:
-                if hi - lo <= _GUARD_GAP_TOL_M:
-                    continue
-                if _roof_closed_interval(ctx, across, edge_across, lo, hi, surface):
+            # Stations are metres from ``p0``; the edges are authored low-to-high along
+            # their own axis, so the station is the offset from ``along0``.
+            for station0, station1 in runs:
+                lo, hi = along0 + station0, along0 + station1
+                q0 = (edge_across, lo) if across == 0 else (lo, edge_across)
+                q1 = (edge_across, hi) if across == 0 else (hi, edge_across)
+                if _roof_closed_run(ctx, q0, q1, surface):
                     roof_closed.append(f"{name} edge {lo / .3048:.2f}'..{hi / .3048:.2f}'")
                     continue
                 gaps.append(f"{name} edge {lo / .3048:.2f}'..{hi / .3048:.2f}' "
@@ -252,40 +304,90 @@ _EDGE_RAILING_PLANE_TOL_M = 0.20
 _EDGE_GAP_TOL_M = 0.30
 
 
+#: How far a wall's footprint may stand off a deck edge and still be the wall that closes
+#: it. 6", not the well rule's 2": a *well* void is cut to the finished wall face, whereas a
+#: deck's own outline is the subfloor sheet, which stops at the framing and leaves the
+#: finish, the ledger and the framing gap between it and the resolved wall polygon —
+#: FS-SG-PORCH's north edge stands 2 3/4" off W-M-S1's cladding face and is plainly closed
+#: by it.
+_EDGE_WALL_FACE_TOL_M = 0.15
+#: Steps outboard of an edge at which to ask what walking surface is beside it. Two floor
+#: systems of one storey abut across the wall or beam between them, so their deck outlines
+#: never touch; a foot of reach spans that and no more.
+_EDGE_NEIGHBOUR_PROBE_M = (0.08, 0.16, 0.24, 0.32)
+
+
+def _outward_normals(ring) -> list[tuple[float, float]]:
+    """The outward unit normal of every edge of a plan ring, in ring order.
+
+    Signed area fixes the winding first, so a ring authored either way answers the same.
+    Which side is *out* is what makes "what is beside this edge" answerable at all.
+    """
+    area = sum(ring[i][0] * ring[(i + 1) % len(ring)][1]
+               - ring[(i + 1) % len(ring)][0] * ring[i][1]
+               for i in range(len(ring))) / 2.0
+    sign = 1.0 if area >= 0 else -1.0
+    out: list[tuple[float, float]] = []
+    for a, b in zip(ring, ring[1:] + ring[:1], strict=True):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        run = math.hypot(dx, dy)
+        out.append((0.0, 0.0) if run < 1e-12 else (sign * dy / run, -sign * dx / run))
+    return out
+
+
 @check(Tier.CODE, "code.R312_1_guard_height")
 def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     """R312.1.1 — a walking surface more than 30" above what is below it needs a 36" guard.
 
     Between them, ``code.R312_1_guard`` (stair wells) and ``structural.deck_guard`` (decks)
     covered two shapes of the same requirement and left the general one unmeasured: any
-    raised floor edge. A loft, a mezzanine, an open landing, a floor that steps down to a
-    lower one — all of them are R312.1.1 and none had a rule.
+    raised walking surface. A loft, a mezzanine, an open landing, a floor that steps down to
+    a lower one, **a slab step** — all of them are R312.1.1 and none had a rule.
 
-    The drop is measured against what is actually beneath the edge: the highest floor deck
-    below it, or the site grade for an edge with nothing under it. Where an exterior edge
-    has no grade datum to fall to, this reports UNKNOWN — a 30" trigger cannot be evaluated
-    without knowing where the bottom is.
+    The census is every framed floor deck *and* every ``slab`` solid. There is no
+    ``ResolvedModel.slabs``, and a raised slab is the same walking surface a framed deck is:
+    ``SL-G-STEP-0``'s 34" drop was in neither this rule's census nor ``code.R312_1_guard``'s
+    and so was graded by nothing at all.
+
+    **Coverage, not proximity.** Each edge is graded run by run through
+    :func:`_uncovered_runs`, the derivation ``code.R312_1_guard`` uses. The predicate this
+    rule started with was a plain ``LineString`` distance from the guard path to the *whole*
+    edge, which a guard satisfies by covering the midpoint however much of either end is
+    open: ``RL-SG-PORCH``'s east leg carries a 3'-0" doorway to ``ST-SG-PORCH`` and that
+    test reported PASS with the doorway, without it, and would have with a 12'-0" one.
+
+    An uncovered run is then put to three questions, each of which can end it:
+
+    * **What is beside it?** Probed *outboard*, not at the midpoint on the edge itself. Two
+      floor systems of one storey abut across the wall between them and their deck outlines
+      never touch, so an on-the-line probe reads every interior seam as a fall to grade.
+    * **How far is the fall?** To the highest surface out there, or to the site grade when
+      nothing is modeled under it. With no grade datum this is an UNKNOWN, never a PASS: a
+      30" trigger cannot be evaluated without knowing where the bottom is.
+    * **Is it roofed too low to stand in?** The attic deck's gable edges run out under the
+      eaves, where there is no walking surface on either side to guard.
     """
     from shapely.geometry import LineString, Point, Polygon
 
     from typehaus.model.structure import Railing
 
     cid, code = "code.R312_1_guard_height", "R312.1.1"
-    decks = [floor for floor in ctx.model.floors
-             if floor.deck_outline and len(floor.deck_outline) >= 3]
-    if not decks:
-        return [_unknown(cid, "no floor decks resolve, so there is no raised walking "
-                         "surface to measure", (), code)]
+    surfaces = [(floor.tag, list(floor.deck_outline), floor.deck_z1_m)
+                for floor in ctx.model.floors
+                if floor.deck_outline and len(floor.deck_outline) >= 3]
+    surfaces += [(solid.tag, list(solid.outline), solid.z1_m)
+                 for solid in ctx.model.solids
+                 if solid.category == "slab" and len(solid.outline) >= 3]
+    if not surfaces:
+        return [_unknown(cid, "no floor decks or slabs resolve, so there is no raised "
+                         "walking surface to measure", (), code)]
     grade = ctx.plan.project.site.grade
     railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
     out: list[Finding] = []
-    for deck in decks:
-        surface = deck.deck_z1_m
-        ring = list(deck.deck_outline)
-        lower = [(Polygon(other.deck_outline), other.deck_z1_m)
-                 for other in decks
-                 if other.tag != deck.tag and other.deck_outline
-                 and other.deck_z1_m < surface - 1e-6]
+    for tag, ring, surface in surfaces:
+        neighbours = [(Polygon(other_ring), other_z)
+                      for other_tag, other_ring, other_z in surfaces if other_tag != tag]
+        outward = _outward_normals(ring)
         # Deliberately **not** filtered by storey. A storey tag is a filing convention, not
         # a level: this project's freestanding structures share tags with whatever house
         # storey they were convenient to file on (the sunken garden's masonry guards are on
@@ -296,67 +398,62 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
         walls = [w for w in ctx.model.walls
                  if w.z0_m <= surface + 0.1
                  and w.z1_m >= surface + _GUARD_MIN_HEIGHT.meters - 0.02]
-        near_railings = [r for r in railings
-                         if abs(r.base_elevation.meters - surface) < _EDGE_RAILING_BASE_TOL_M]
+        near_railings = [(r, r.height.meters + 1e-9 >= _GUARD_MIN_HEIGHT.meters)
+                         for r in railings
+                         if abs(r.base_elevation.meters - surface)
+                         < _EDGE_RAILING_BASE_TOL_M]
+        quads = _stair_throat_quads(ctx, surface)
         unguarded: list[str] = []
         unknown_edges: list[str] = []
         short: list[str] = []
-        for a, b in zip(ring, ring[1:] + ring[:1], strict=True):
+        for index, (a, b) in enumerate(zip(ring, ring[1:] + ring[:1], strict=True)):
             seg = LineString([a, b])
             if seg.length <= _EDGE_GAP_TOL_M:
                 continue
-            mid = seg.interpolate(0.5, normalized=True)
-            probe = Point(mid.x, mid.y)
-            below = max([z for poly, z in lower if poly.covers(probe)], default=None)
-            if below is None:
-                if grade is None:
-                    unknown_edges.append(f"({mid.x / .3048:.0f}', {mid.y / .3048:.0f}')")
-                    continue
-                below = grade.meters
-            if surface - below <= _GUARD_TRIGGER_DROP.meters + 1e-9:
-                continue  # under 30" — no guard required
-            if any(seg.distance(_wall_line(w)) <= w.thickness_m / 2.0 + 0.05 for w in walls):
-                continue  # a full-height wall stands on this edge
-            guarding = [r for r in near_railings
-                        if _railing_runs_edge(r, seg)]
-            if not guarding:
-                unguarded.append(f"({mid.x / .3048:.0f}', {mid.y / .3048:.0f}') "
-                                 f"{(surface - below) / .3048:.1f}' drop")
-            else:
-                low = [r for r in guarding
-                       if r.height.meters + 1e-9 < _GUARD_MIN_HEIGHT.meters]
-                short.extend(r.tag for r in low)
+            runs, low, _used = _uncovered_runs(
+                a, b, walls, near_railings, quads, gap_tol_m=_EDGE_GAP_TOL_M,
+                plane_tol_m=_EDGE_RAILING_PLANE_TOL_M,
+                wall_face_tol_m=_EDGE_WALL_FACE_TOL_M)
+            short.extend(r.tag for r in low)
+            nx, ny = outward[index]
+            for station0, station1 in runs:
+                start, stop = seg.interpolate(station0), seg.interpolate(station1)
+                mx, my = (start.x + stop.x) / 2.0, (start.y + stop.y) / 2.0
+                beside = [z for step in _EDGE_NEIGHBOUR_PROBE_M for poly, z in neighbours
+                          if poly.covers(Point(mx + nx * step, my + ny * step))]
+                below = max(beside) if beside else None
+                if below is not None and below >= surface - _GUARD_TRIGGER_DROP.meters:
+                    continue  # the walking surface carries on across this edge
+                if below is None:
+                    if grade is None:
+                        unknown_edges.append(f"({mx / .3048:.0f}', {my / .3048:.0f}')")
+                        continue
+                    below = grade.meters
+                if surface - below <= _GUARD_TRIGGER_DROP.meters + 1e-9:
+                    continue  # under 30" — no guard required
+                if _roof_closed_run(ctx, (start.x, start.y), (stop.x, stop.y), surface):
+                    continue  # roofed under 30" — no walking surface on either side of it
+                unguarded.append(
+                    f"({start.x / .3048:.1f}', {start.y / .3048:.1f}')..."
+                    f"({stop.x / .3048:.1f}', {stop.y / .3048:.1f}') "
+                    f"{(station1 - station0) / .3048:.1f}' of open side over a "
+                    f"{(surface - below) / .3048:.1f}' drop")
         if unguarded:
-            out.append(_fail(cid, f"{deck.tag}: unguarded edge(s) over a 30\" drop — "
-                             f"{'; '.join(unguarded)}", (deck.tag,), code))
+            out.append(_fail(cid, f'{tag}: unguarded edge(s) over a 30" drop — '
+                             f"{'; '.join(unguarded)}", (tag,), code))
         elif short:
             names = sorted(set(short))
-            out.append(_fail(cid, f"{deck.tag}: guard(s) {', '.join(names)} stand under the "
-                             "36\" R312.1.2 minimum", (deck.tag, *names), "R312.1.2"))
+            out.append(_fail(cid, f"{tag}: guard(s) {', '.join(names)} stand under the "
+                             '36" R312.1.2 minimum', (tag, *names), "R312.1.2"))
         elif unknown_edges:
-            out.append(_unknown(cid, f"{deck.tag}: edge(s) at {', '.join(unknown_edges)} "
+            out.append(_unknown(cid, f"{tag}: edge(s) at {', '.join(unknown_edges)} "
                                 "have nothing modeled beneath them and the site states no "
-                                "grade datum, so the 30\" trigger cannot be evaluated",
-                                (deck.tag,), code))
+                                'grade datum, so the 30" trigger cannot be evaluated',
+                                (tag,), code))
         else:
-            out.append(_pass(cid, f"{deck.tag}: every edge over a 30\" drop is closed by a "
-                             "wall or a 36\" guard", code))
+            out.append(_pass(cid, f'{tag}: every edge over a 30" drop is closed by a '
+                             'wall, a 36" guard or a stair entry', code))
     return out
-
-
-def _wall_line(wall):
-    from shapely.geometry import LineString
-
-    return LineString(wall.axis)
-
-
-def _railing_runs_edge(railing, seg) -> bool:
-    from shapely.geometry import LineString
-
-    points = [p.xy_m for p in railing.path]
-    if len(points) < 2:
-        return False
-    return LineString(points).distance(seg) <= _EDGE_RAILING_PLANE_TOL_M
 
 
 @check(Tier.CODE, "code.R312_2_window_fall_protection")

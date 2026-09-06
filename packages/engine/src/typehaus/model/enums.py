@@ -277,6 +277,13 @@ class PipeAccessoryKind(Enum):
     WATER_HAMMER_ARRESTOR = "water_hammer_arrestor"  # P2903.5 — quick-closing valves
     RO_STUB = "ro_stub"                      # capped tee, provision for a future RO tap
     PENETRATION_SEAL = "penetration_seal"    # the gasket/bracket/foam kit at an envelope pass
+    # P2717.2 / IPC 1002.4 — the small line that keeps a seldom-used floor drain's trap
+    # sealed. A dry trap is an open hole into the DWV system, and the only thing that
+    # distinguishes a floor drain in a room nobody washes down from a vent terminal is
+    # whether one of these feeds it. The member exists so a primer can be modeled at all;
+    # no rule reads it yet, deliberately (a "dry room needs a primer" rule needs a notion
+    # of which rooms are wetted, which this model does not have).
+    TRAP_PRIMER = "trap_primer"
 
 
 class DuctSystem(Enum):
@@ -310,6 +317,22 @@ class DuctSystem(Enum):
     # plumbing vent — apply to it and to nothing else. Filed as SUPPLY it would be counted
     # as conditioned air delivered to a room by every ventilation check in the house.
     OUTDOOR_AIR = "outdoor_air"
+
+
+#: Which air-side ``DuctSystem`` a ``ServicePort``'s ``Service`` has to be reached by.
+#:
+#: The two enums grew independently — ``Service`` describes what a *product* connects to,
+#: ``DuctSystem`` what a *run* belongs to — and nothing had ever needed to state the
+#: correspondence, which is why an ERV could stand with four declared air ports and no duct
+#: arriving at any of them while every check passed. Air services only: POWER/DRAIN/GAS
+#: ports are connected by something that is not a duct, and a map entry for them would be
+#: a claim this table cannot make.
+AIR_SERVICE_DUCT_SYSTEM = {
+    Service.SUPPLY_AIR: DuctSystem.SUPPLY,
+    Service.RETURN_AIR: DuctSystem.RETURN,
+    Service.EXHAUST_AIR: DuctSystem.EXHAUST,
+    Service.OUTDOOR_AIR: DuctSystem.OUTDOOR_AIR,
+}
 
 
 class DuctRouting(Enum):

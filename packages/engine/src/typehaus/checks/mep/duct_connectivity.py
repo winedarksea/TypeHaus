@@ -58,16 +58,20 @@ from typehaus.checks._authoring import failed, not_applicable, passed
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN, inch
-from typehaus.resolve.mep_soffit import segment_meets_box
+from typehaus.resolve.mep_soffit import (
+    DUCT_JOINT_TOLERANCE_M,
+    duct_joint_index,
+    plan_distance_to_segment,
+    segment_meets_box,
+)
 
 if TYPE_CHECKING:
     from typehaus.resolve.model import ResolvedDuct
 
-#: How far apart two duct vertices may be in plan and still be one joint. A duct is drawn on
-#: its centreline and authored to the inch, so this is fabrication slop, not a routing
-#: allowance: 3" is under the radius of every trunk in this house, which means two runs this
-#: close in plan are inside one another's section and a fitting genuinely joins them.
-JOINT_TOLERANCE_M = inch(3).meters
+#: The joint tolerance, owned by ``resolve/mep_soffit`` so that the check that *requires* a
+#: joint and the occupancy checks that *excuse* one share a single definition of it. Kept
+#: under the local name every message in this module formats.
+JOINT_TOLERANCE_M = DUCT_JOINT_TOLERANCE_M
 
 #: How far a register may sit from the end of the run it names and still be its boot. The
 #: flex tail from a hard-duct take-off to a ceiling grille is a real, ordinary piece of the
@@ -88,22 +92,6 @@ def _ends_outdoors(ctx: CheckContext, point: tuple[float, float]) -> bool:
     return True
 
 
-def _plan_distance_to_segment(point: tuple[float, float], a: tuple[float, float],
-                             b: tuple[float, float]) -> tuple[float, float]:
-    """``(distance, t)`` from a plan point to the segment ``a``->``b``, ``t`` in [0, 1].
-
-    A degenerate segment — the two ends of a riser, which share a plan point — returns the
-    distance to that point at ``t = 0``, which is what a riser needs: its whole z span is
-    the segment's, and ``t`` has nothing to say about where along it a branch lands.
-    """
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    length_sq = dx * dx + dy * dy
-    t = 0.0 if length_sq == 0.0 else max(0.0, min(1.0, ((point[0] - a[0]) * dx
-                                                        + (point[1] - a[1]) * dy) / length_sq))
-    near = (a[0] + t * dx, a[1] + t * dy)
-    return ((point[0] - near[0]) ** 2 + (point[1] - near[1]) ** 2) ** 0.5, t
-
-
 def _meets_another_duct(ctx: CheckContext, duct: ResolvedDuct, z: float | None,
                         point: tuple[float, float]) -> str | None:
     """Another run passing this plan point, at an elevation this end can reach.
@@ -118,20 +106,12 @@ def _meets_another_duct(ctx: CheckContext, duct: ResolvedDuct, z: float | None,
     for other in ctx.model.ducts:
         if other.tag == duct.tag or len(other.path) < 2:
             continue
-        for index in range(len(other.path) - 1):
-            span, _ = _plan_distance_to_segment(point, other.path[index], other.path[index + 1])
-            if span > JOINT_TOLERANCE_M:
-                continue
-            if z is None or len(other.z_m) <= index + 1:
-                return other.tag
-            low = min(other.z_m[index], other.z_m[index + 1])
-            high = max(other.z_m[index], other.z_m[index + 1])
-            if low - JOINT_TOLERANCE_M <= z <= high + JOINT_TOLERANCE_M:
-                return other.tag
+        if duct_joint_index(point, z, other.path, other.z_m) is not None:
+            return other.tag
     return None
 
 
-def _case_height(ctx: CheckContext, type_ref: str | None) -> float | None:
+def case_height(ctx: CheckContext, type_ref: str | None) -> float | None:
     """The height of a placeable's type, in metres, across every type collection.
 
     ``FurnitureType.height`` is required, so this is None only for an object that names no
@@ -170,7 +150,7 @@ def _meets_equipment(ctx: CheckContext, z: float | None,
                (y0 - JOINT_TOLERANCE_M, y1 + JOINT_TOLERANCE_M))
         if not segment_meets_box(point, point, box):
             continue
-        height = _case_height(ctx, obj.type_ref)
+        height = case_height(ctx, obj.type_ref)
         if z is None or height is None:
             return obj.tag
         # ``z_m`` is the object's base — a ceiling-hung ERV at a 6'-0" mount resolves to the
@@ -221,7 +201,7 @@ def _capped_past_a_takeoff(ctx: CheckContext, duct: ResolvedDuct,
     leg = ((duct.path[-2], duct.path[-1]) if point == duct.path[-1]
            else (duct.path[0], duct.path[1]))
     for tag, at in _takeoffs(ctx, duct):
-        span, _ = _plan_distance_to_segment(at, leg[0], leg[1])
+        span, _ = plan_distance_to_segment(at, leg[0], leg[1])
         if span <= BOOT_REACH_M:
             return tag
     return None

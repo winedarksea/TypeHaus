@@ -25,6 +25,11 @@ CORNER_ROLE_OWNER = "owner"
 #: This wall's framing stops at the near face of the owner's band and butts it.
 CORNER_ROLE_BUTTING = "butting"
 
+#: The one corner style whose supplemental stud is laid FLAT. Named rather than counted
+#: because it builds the same *number* of sticks as ``"3-stud"`` and differs only in how
+#: the backer is turned — a count would not distinguish them.
+CORNER_STYLE_CALIFORNIA = "california"
+
 _MIDPOINT_FRACTION = 0.5  # framing may never be inset past the wall's own midpoint
 
 
@@ -39,6 +44,38 @@ class WallEndFraming:
 
     plate_station_m: float
     end_stud_station_m: float
+
+
+@dataclass(frozen=True)
+class CornerStud:
+    """One supplemental stud in a corner pack: where it stands and how it is turned.
+
+    ``along_axis_m`` is the plan dimension the stud consumes along the wall axis — its
+    thickness on edge, its depth laid flat — and is what the next stud in the pack, the
+    midpoint guard and the caller's module-clearance limit all measure against.
+    ``laid_flat`` is the orientation the caller emits (``normal(d)`` rather than ``d``).
+    """
+
+    station_m: float
+    along_axis_m: float
+    laid_flat: bool = False
+
+
+def corner_pack_limit(end_stud_station_m: float, studs: tuple[CornerStud, ...],
+                      stud_thickness_m: float, at_start: bool) -> float:
+    """Innermost station a module stud must clear, stated in ON-EDGE stud terms.
+
+    The module loop keeps one stud thickness between a module station and the pack, which
+    is a face-to-face reading only while everything in the pack is one thickness wide. A
+    flat backer is wider, so its station is reported shifted inboard by the extra half —
+    the module then clears the backer's real face, not its centre line.
+    """
+    direction_sign = 1.0 if at_start else -1.0
+    limits = [end_stud_station_m]
+    limits.extend(stud.station_m
+                  + direction_sign * (stud.along_axis_m - stud_thickness_m) / 2.0
+                  for stud in studs)
+    return max(limits) if at_start else min(limits)
 
 
 def invert_corner_role(role: str | None) -> str | None:
@@ -123,24 +160,48 @@ def wall_end_framing(structure_polygon: Ring, axis_start, direction, axis_len_m:
 
 
 def corner_stud_stations(end: WallEndFraming, at_start: bool, stud_thickness_m: float,
-                         corner_style: str, axis_len_m: float) -> tuple[float, ...]:
-    """Supplemental corner-stud stations, packed face-to-face inboard of the end stud.
+                         corner_style: str, axis_len_m: float,
+                         stud_depth_m: float | None = None) -> tuple[CornerStud, ...]:
+    """Supplemental corner studs, packed face-to-face inboard of the end stud.
 
     One for the default 3-stud corner (end stud + this one + the neighbour's end stud), two
-    for the ``4-stud`` box-corner variant. They are deliberately off the regular module: the
-    module studs keep their continuity for sheathing, standing-seam panels and floor framing.
+    for the ``4-stud`` box-corner variant, and one *laid flat* for the ``california`` corner
+    — the drywall-backer corner, whose backer turns its wide face to the wall axis so the
+    corner cavity stays open to insulation instead of being filled with lumber. They are
+    deliberately off the regular module: the module studs keep their continuity for
+    sheathing, standing-seam panels and floor framing.
+
+    Each stud reports the dimension it actually occupies **along the axis** — a flat stud
+    eats its depth (3-1/2"), not its thickness (1-1/2") — because the pack arithmetic, the
+    midpoint guard and the caller's module clearance all measure face to face, and a single
+    constant is only right while every stud in the pack stands on edge.
+
+    ``stud_depth_m`` is required for ``"california"``; the on-edge styles never read it.
     """
-    count = 2 if corner_style == "4-stud" else 1
+    if corner_style == CORNER_STYLE_CALIFORNIA:
+        if stud_depth_m is None:
+            raise ValueError("a california corner needs stud_depth_m: its backer is laid "
+                             "flat and occupies its depth along the wall axis")
+        widths = (stud_depth_m,)
+        laid_flat = True
+    else:
+        widths = (stud_thickness_m,) * (2 if corner_style == "4-stud" else 1)
+        laid_flat = False
     direction_sign = 1.0 if at_start else -1.0
     midpoint = axis_len_m * _MIDPOINT_FRACTION
-    stations = []
-    for index in range(1, count + 1):
-        station = end.end_stud_station_m + direction_sign * index * stud_thickness_m
+    studs: list[CornerStud] = []
+    cursor, previous_width = end.end_stud_station_m, stud_thickness_m
+    for width in widths:
+        station = cursor + direction_sign * (previous_width + width) / 2.0
+        cursor, previous_width = station, width
         # Never past the wall's own midpoint: on a stub wall the two ends would otherwise
-        # pack studs through each other.
-        if (station <= midpoint) == at_start:
-            stations.append(station)
-    return tuple(stations)
+        # pack studs through each other. Graded at the stud's INBOARD FACE, so a wide flat
+        # backer is held to the same line a narrow on-edge stud is.
+        inboard_face = station + direction_sign * width / 2.0
+        if (inboard_face <= midpoint) == at_start:
+            studs.append(CornerStud(station_m=station, along_axis_m=width,
+                                    laid_flat=laid_flat))
+    return tuple(studs)
 
 
 @dataclass(frozen=True)

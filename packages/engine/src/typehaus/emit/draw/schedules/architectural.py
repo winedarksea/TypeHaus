@@ -311,8 +311,9 @@ def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str,
             y -= step  # blank line between blocks
 
 
-def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    """A-601, keyed to the plan.
+def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
+                            kinds: str = "all") -> None:
+    """A-601 (doors) / A-602 (windows), keyed to the plan.
 
     The Mark column is what makes the floor plan's bubbled ``D1``/``W3`` mean something: the
     plan stopped printing raw opening tags because a field of ``WIN-M-EAST-MID``-class text
@@ -320,29 +321,85 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -
     only half of that trade. Marks come from ``plan_marks.opening_type_marks``, so the two
     cannot drift — the plan and the schedule read one mapping.
 
-    A fixture or appliance has no mark: it is not an opening, carries no plan bubble, and
-    rides this sheet only because it has nowhere else to be scheduled yet.
+    ``kinds`` splits what used to be one sheet. Doors, windows and plumbing fixtures were
+    scheduled together and they have three different readers; a door supplier reading down a
+    Mark column past nine windows and a bathtub is reading the wrong sheet. Fixtures leave
+    the opening schedules entirely — they are not openings, carry no plan bubble, and were
+    only ever here because they had nowhere else to go. They are on A-603 now, with the
+    rooms they stand in.
     """
     from typehaus.emit.draw.plan_marks import opening_type_marks
 
+    want_doors = kinds in ("all", "door")
+    want_windows = kinds in ("all", "window")
     with schedule_sheet(pdf, model, number, name) as fig:
         marks = opening_type_marks(model)
         rows = [(marks.get(opening.type_ref or "", "—"), opening.tag,
                  "Door" if opening.is_door else "Window", opening.type_ref or "RO",
                  f"{opening.width_m / M_PER_IN:.0f}\" × {opening.height_m / M_PER_IN:.0f}\"")
-                for opening in sorted(model.openings, key=lambda item: item.tag)]
-        types = {item.tag: item for item in (*model.plan.library.fixture_types,
-                                             *model.plan.library.appliance_types)}
-        rows.extend(
-            ("—", fixture.tag, fixture.element_kind, fixture.type_ref,
+                for opening in sorted(model.openings, key=lambda item: item.tag)
+                if (opening.is_door and want_doors) or (not opening.is_door and want_windows)]
+        _add_table(fig, rows, ("Mark", "Tag", "Kind", "Type", "Nominal footprint"),
+                   bbox=(0.04, 0.11, 0.92, 0.80))
+
+
+def _write_room_finish_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """A-603 — the room finish schedule, and the fixtures that stand in each room.
+
+    A finish schedule is one of the two or three things a residential plan check looks for
+    and this set had none: floor, base, walls and ceiling per room, which is where a builder
+    reads what to order and an inspector reads what was promised. Every column is DERIVED —
+    ``Room.floor_finish``, the ceiling the resolver worked out per deck region, and the
+    bounding walls' own assemblies — so it cannot disagree with the model that priced it.
+
+    ``—`` is printed where a room states nothing, never a guess. An unstated floor finish on
+    catlin's guest studio is a real decision (bare sanded deck) and a schedule that filled it
+    in with a plausible default would be inventing scope.
+    """
+    rooms = sorted(model.rooms, key=lambda r: (r.storey or "", r.tag))
+    types = {item.tag: item for item in (*model.plan.library.fixture_types,
+                                         *model.plan.library.appliance_types)}
+    with schedule_sheet(pdf, model, number, name) as fig:
+        section(fig, 0.04, 0.93, "ROOM FINISH SCHEDULE")
+        rows = [(room.tag, (room.storey or "—"), _finish(room, "floor_finish"),
+                 _finish(room, "base_finish"), _finish(room, "wall_finish"),
+                 _ceiling_finish(room), f"{room.area_m2 * 10.7639:,.0f}")
+                for room in rooms]
+        _add_table(fig, rows,
+                   ("Room", "Storey", "Floor", "Base", "Walls", "Ceiling", "Area (ft2)"),
+                   bbox=(0.04, 0.50, 0.92, 0.41))
+
+        section(fig, 0.04, 0.46, "FIXTURES AND APPLIANCES")
+        fixture_rows = [
+            (fixture.tag, getattr(fixture, "room", None) or "—", fixture.element_kind,
+             fixture.type_ref,
              f"{types[fixture.type_ref].footprint[0].inches:.0f}\" × "
              f"{types[fixture.type_ref].footprint[1].inches:.0f}\"")
             for storey in model.plan.storeys
             for fixture in model.plan.storey_elements(storey.tag)
             if fixture.element_kind in {"Fixture", "Appliance"} and fixture.type_ref in types
-        )
-        _add_table(fig, rows, ("Mark", "Tag", "Kind", "Type", "Nominal footprint"),
-                   bbox=(0.04, 0.11, 0.92, 0.80))
+        ]
+        _add_table(fig, fixture_rows, ("Tag", "Room", "Kind", "Type", "Nominal footprint"),
+                   bbox=(0.04, 0.11, 0.92, 0.32))
+
+
+def _finish(room, field: str) -> str:
+    """A room's stated finish, or ``—``. Never a default — see the schedule's docstring."""
+    value = getattr(room, field, None)
+    return str(value) if value else "—"
+
+
+def _ceiling_finish(room) -> str:
+    """The ceiling a room actually resolved, which may be more than one.
+
+    ``resolve/ceilings.py`` derives a ceiling per DECK REGION, not per room, so catlin's gym
+    has two — 234 sf under the I-joists and 90 sf under the cast deck, 1 9/16" apart. The
+    schedule states both rather than picking one.
+    """
+    ceilings = getattr(room, "ceilings", None) or ()
+    names = sorted({getattr(c, "finish", None) or getattr(c, "material_ref", "") or ""
+                    for c in ceilings} - {""})
+    return " / ".join(names) if names else _finish(room, "ceiling_finish")
 
 
 def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,

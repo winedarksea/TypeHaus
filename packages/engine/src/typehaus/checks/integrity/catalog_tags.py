@@ -85,3 +85,67 @@ def unknown_product_ref(ctx: CheckContext) -> list[Finding]:
                 result=Result.FAIL,
             ))
     return findings
+
+
+@check(Tier.INTEGRITY, "integrity.register_duct_ref")
+def register_duct_ref(ctx: CheckContext) -> list[Finding]:
+    """``Register.duct_ref`` names a real ``DuctRun``, or the register says why it needs none.
+
+    The field is a bare string and every consumer reads it defensively — ``_takeoffs`` in
+    ``mep.duct_connectivity``, the boot reach, the register schedule — so a typo does not
+    error anywhere. It simply reads as "no register names this run", which is the same
+    reading as a run that genuinely has no take-off: the grille loses its duct and the trunk
+    loses its cap excuse, both silently, and the plan set prints a schedule row pointing at
+    nothing.
+
+    ``duct_ref is None`` is reported too, and it is the half that was completely invisible.
+    The one honest absence is a ``TRANSFER`` louver: a passive opening between two spaces
+    belongs to no ducted system and carries no ``duct_ref`` by construction (see
+    ``DuctSystem.TRANSFER``), so it is skipped rather than excused — there is nothing there
+    to connect.
+    """
+    from typehaus.model.enums import DuctSystem
+
+    runs = {element.tag for element in ctx.plan.all_elements()
+            if element.element_kind == "DuctRun"}
+    findings: list[Finding] = []
+    for element in ctx.plan.all_elements():
+        if element.element_kind != "Register":
+            continue
+        if getattr(element, "kind", None) is DuctSystem.TRANSFER:
+            continue
+        ref = getattr(element, "duct_ref", None)
+        if ref is None:
+            findings.append(Finding(
+                severity=Severity.WARN,
+                check_id="integrity.register_duct_ref",
+                message=(f"register {element.tag} names no duct_ref, so nothing in the model "
+                         "says which run feeds it — the grille is drawn and scheduled with "
+                         "no duct behind it"),
+                element_tags=(element.tag,),
+                fix_hint=("author duct_ref=<DuctRun tag> on the register, or file a passive "
+                          "opening as DuctSystem.TRANSFER, which carries no duct by design"),
+                result=Result.UNKNOWN,
+            ))
+            continue
+        if ref not in runs:
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="integrity.register_duct_ref",
+                message=(f"register {element.tag} names duct_ref {ref!r}, which no DuctRun "
+                         "in this plan defines; every consumer reads the field defensively, "
+                         "so the typo shows up as an unserved run rather than as an error"),
+                element_tags=(element.tag,),
+                fix_hint=f"correct the reference, or add a DuctRun(tag={ref!r}, ...)",
+                result=Result.FAIL,
+            ))
+    if not findings:
+        findings.append(Finding(
+            severity=Severity.WARN,
+            check_id="integrity.register_duct_ref",
+            message=(f"every register naming a duct names one of the {len(runs)} DuctRuns in "
+                     "this plan, and every register without one is a TRANSFER louver"),
+            element_tags=(),
+            result=Result.PASS,
+        ))
+    return findings

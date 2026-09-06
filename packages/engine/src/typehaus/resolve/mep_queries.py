@@ -388,6 +388,29 @@ def is_parallel_to_floor(path: list[tuple[float, float]], floor) -> bool:
     return True
 
 
+def bay_edge_members(floor) -> list:
+    """The floor members that actually bound a joist bay.
+
+    Reading every member manufactures phantom bay edges out of blocking (which sits
+    mid-bay by definition) and out of the rim, and a phantom edge inside a bay is what
+    turns a legal parallel run into a "straddles a joist line" conflict.
+    """
+    return [m for m in floor.members if m.category in _BAY_EDGE_CATEGORIES]
+
+
+def joist_line_stations(floor) -> list[float]:
+    """Sorted stations of this floor's joist lines, on the axis *across* the joists.
+
+    Public because two checks need the same lines from opposite directions:
+    ``duct_bay_occupancy`` below asks whether one run straddles one, and
+    ``mep.duct_joist_bay_occupancy`` asks whether one lies *between* two runs — a joist
+    between two ducts is what makes them two bays' worth of air rather than a hanger-gap
+    conflict.
+    """
+    along_x = floor.direction == "x"
+    return sorted({(m.p0[1] if along_x else m.p0[0]) for m in bay_edge_members(floor)})
+
+
 def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m: float,
                        routing: DuctRouting, floor, bearing_walls: list,
                        spacing_m: float) -> tuple[list[str], list[tuple[float, float]], bool]:
@@ -400,12 +423,8 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     on both sides of a bearing line) — they become a drawing note, never a conflict.
     """
     along_x = floor.direction == "x"
-    # Only the members that actually bound a bay. Reading every member manufactured phantom
-    # bay edges out of blocking (which sits mid-bay by definition) and out of the rim, and a
-    # phantom edge inside a bay is what turns a legal parallel run into a "straddles a joist
-    # line" conflict.
-    edges = [m for m in floor.members if m.category in _BAY_EDGE_CATEGORIES]
-    joist_lines = sorted({(m.p0[1] if along_x else m.p0[0]) for m in edges})
+    edges = bay_edge_members(floor)
+    joist_lines = joist_line_stations(floor)
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
     # From a JOIST, not from ``members[0]``, which was whichever member the resolver happened

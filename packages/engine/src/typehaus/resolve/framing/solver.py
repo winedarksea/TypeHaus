@@ -24,6 +24,7 @@ from typehaus.resolve.framing.corners import (
     CORNER_ROLE_BUTTING,
     CORNER_ROLE_OWNER,
     corner_junctions,
+    corner_pack_limit,
     corner_stud_stations,
     invert_corner_role,
     neighbour_band_insets,
@@ -108,8 +109,9 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     ``_continuation_roles``.
 
     ``corner_style_start``/``corner_style_end`` are the authored per-end overrides
-    (``Wall.corner_style_start``/``corner_style_end``): ``"3-stud"``/``"4-stud"`` at the
-    end that hosts the supplemental studs, ``None`` to follow the assembly's
+    (``Wall.corner_style_start``/``corner_style_end``): ``"3-stud"``/``"4-stud"``/
+    ``"california"`` at the end that hosts the supplemental studs, ``None`` to follow the
+    assembly's
     ``FramingSpec.corner_style``. Per-end because a corner belongs to two walls and the
     override lives on the owning end, so two walls never fight over one corner's style.
     """
@@ -135,6 +137,9 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     plate_member = spec.plate_member or member
     frame_member = plate_member if staggered else member
     thickness = member_actual(member)[0] * 0.0254  # stud face dimension along the wall
+    # The other plan dimension of the same stick: what a stud laid FLAT (a california
+    # corner's backer) occupies along the wall axis instead of its thickness.
+    depth = member_actual(member)[1] * 0.0254
     stagger_offset = 0.0
     if staggered:
         plate_depth = member_actual(plate_member)[1] * 0.0254
@@ -209,22 +214,26 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # A supplemental stud at each owned corner: with the neighbour's end stud butting the
     # far side of the corner square, this is the third stud of the 3-stud pack. Placed
     # before the module studs because the pack it forms is what they have to clear.
-    corner_stations = {
+    corner_studs = {
         endpoint: (corner_stud_stations(end, at_start, thickness,
-                                        style or spec.corner_style, axis_len)
+                                        style or spec.corner_style, axis_len,
+                                        stud_depth_m=depth)
                    if (corner_start if at_start else corner_end) else ())
         for endpoint, at_start, end, style in (
             ("start", True, start_end, corner_style_start),
             ("end", False, far_end, corner_style_end))
     }
-    for endpoint, stations in corner_stations.items():
-        for index, station in enumerate(stations):
+    for endpoint, studs in corner_studs.items():
+        for index, stud in enumerate(studs):
             suffix = "" if index == 0 else f"-{index + 1}"
-            point = add(p0, scale(d, station))
-            corner_top = top_at(station)
+            point = add(p0, scale(d, stud.station_m))
+            corner_top = top_at(stud.station_m)
+            # A california backer turns its wide face to the wall axis; every other corner
+            # stud stands on edge like the module.
             members.append(FramedMember(rw.uid, f"corner-{endpoint}{suffix}", "corner",
                                         frame_member, point, point, stud_z0, corner_top,
-                                        corner_top - stud_z0, orient=d))
+                                        corner_top - stud_z0,
+                                        orient=normal(d) if stud.laid_flat else d))
 
     # Standard framing practice puts a stud at both ends of every wall; the module loop
     # only reaches the far end when axis_len is an exact multiple of the module, and at a
@@ -238,8 +247,10 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     module_stations = sorted(_module_stations(
         axis_len, module_spacing, thickness,
         (start_end.end_stud_station_m, far_end.end_stud_station_m),
-        (max((start_end.end_stud_station_m, *corner_stations["start"])),
-         min((far_end.end_stud_station_m, *corner_stations["end"]))),
+        (corner_pack_limit(start_end.end_stud_station_m, corner_studs["start"],
+                           thickness, at_start=True),
+         corner_pack_limit(far_end.end_stud_station_m, corner_studs["end"],
+                           thickness, at_start=False)),
         phase=module_phase,
         continuations=(continuation_start, continuation_end)))
     stud_stations = [station for station in module_stations

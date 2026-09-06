@@ -68,10 +68,13 @@ def _overlap(a: tuple[float, float], b: tuple[float, float]) -> float:
     return min(a[1], b[1]) - max(a[0], b[0])
 
 
-def _segment_band(a: tuple[float, float], b: tuple[float, float], width_m: float,
-                  depth_m: float, riser_width_axis: str | None = None
-                  ) -> tuple[tuple[float, float], tuple[float, float]] | None:
+def segment_band(a: tuple[float, float], b: tuple[float, float], width_m: float,
+                 depth_m: float, riser_width_axis: str | None = None
+                 ) -> tuple[tuple[float, float], tuple[float, float]] | None:
     """The plan rectangle one duct segment sweeps, as ``((x0, x1), (y0, y1))``.
+
+    Public and soffit-free: ``mep.duct_joist_bay_occupancy`` sweeps the same rectangle for a
+    run in a joist bay. Nothing here knows what box the segment is in.
 
     Width lies perpendicular to travel, which is the whole reason this is per-segment: the
     same 10x8 branch is 10" wide in y where it runs east and 10" wide in x where it turns
@@ -113,7 +116,7 @@ def _segment_band(a: tuple[float, float], b: tuple[float, float], width_m: float
     return None
 
 
-def _riser_width_axis(path: list[tuple[float, float]], index: int) -> str | None:
+def riser_width_axis(path: list[tuple[float, float]], index: int) -> str | None:
     """Which plan axis a riser's *width* lies along, inherited from its neighbours.
 
     An elbow does not twist the duct: the dimension that was perpendicular to travel stays
@@ -164,8 +167,8 @@ def duct_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
         for index in range(len(duct.path) - 1):
             a, b = duct.path[index], duct.path[index + 1]
             vertical = (abs(b[0] - a[0]) <= 1e-9 and abs(b[1] - a[1]) <= 1e-9)
-            band = _segment_band(a, b, duct.width_m, duct.depth_m,
-                                 _riser_width_axis(duct.path, index) if vertical else None)
+            band = segment_band(a, b, duct.width_m, duct.depth_m,
+                                riser_width_axis(duct.path, index) if vertical else None)
             if band is None:
                 if abs(b[0] - a[0]) > 1e-9 and abs(b[1] - a[1]) > 1e-9:
                     problems.append(
@@ -251,6 +254,79 @@ def connected(model: ResolvedModel, machine: SoffitOccupant,
     box = _plan_ring_bbox(obj.footprint)
     return any(segment_meets_box(a, b, box)
                for a, b in zip(duct.path[:-1], duct.path[1:], strict=False))
+
+
+#: How far apart two duct centrelines may be in plan and still be one joint. A duct is
+#: drawn on its centreline and authored to the inch, so this is fabrication slop, not a
+#: routing allowance: 3" is under the radius of every trunk in this house, which means two
+#: runs this close in plan are inside one another's section and a fitting joins them.
+#:
+#: Public and shared. ``checks/mep/duct_connectivity`` asks "does this end land on another
+#: run?" to *require* the joint; ``_pair_is_plumbed`` below and the joist-bay occupancy
+#: check ask the same question to *excuse* an overlap. One tolerance, so the two can never
+#: disagree about what a tee is.
+DUCT_JOINT_TOLERANCE_M = inch(3).meters
+
+
+def plan_distance_to_segment(point: tuple[float, float], a: tuple[float, float],
+                             b: tuple[float, float]) -> tuple[float, float]:
+    """``(distance, t)`` from a plan point to the segment ``a``->``b``, ``t`` in [0, 1].
+
+    A degenerate segment — the two ends of a riser, which share a plan point — returns the
+    distance to that point at ``t = 0``, which is what a riser needs: its whole z span is
+    the segment's, and ``t`` has nothing to say about where along it a branch lands.
+    """
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length_sq = dx * dx + dy * dy
+    t = 0.0 if length_sq == 0.0 else max(0.0, min(1.0, ((point[0] - a[0]) * dx
+                                                        + (point[1] - a[1]) * dy) / length_sq))
+    near = (a[0] + t * dx, a[1] + t * dy)
+    return ((point[0] - near[0]) ** 2 + (point[1] - near[1]) ** 2) ** 0.5, t
+
+
+def duct_joint_index(point: tuple[float, float], z: float | None,
+                     path: list[tuple[float, float]] | tuple[tuple[float, float], ...],
+                     elevations: list[float] | tuple[float, ...]) -> int | None:
+    """Index of the segment of ``path`` this point joins, or None if it joins none.
+
+    The z test is what separates a joint from a coincidence: two runs on different floors
+    share a plan point all the time. The comparison is against the matched *segment's* z
+    range rather than one vertex's elevation, so a riser spanning a storey still meets the
+    trunk it joins anywhere along its span. An end with no elevation at all falls back to
+    the plan test, which is what the model actually knows about it.
+    """
+    for index in range(len(path) - 1):
+        span, _ = plan_distance_to_segment(point, path[index], path[index + 1])
+        if span > DUCT_JOINT_TOLERANCE_M:
+            continue
+        if z is None or len(elevations) <= index + 1:
+            return index
+        low = min(elevations[index], elevations[index + 1])
+        high = max(elevations[index], elevations[index + 1])
+        if low - DUCT_JOINT_TOLERANCE_M <= z <= high + DUCT_JOINT_TOLERANCE_M:
+            return index
+    return None
+
+
+def ducts_are_joined(model: ResolvedModel, first_tag: str, second_tag: str) -> bool:
+    """Whether either run *ends on* the other — a tee, an elbow, a riser into a trunk.
+
+    Two ducts sharing a box are a hanger-gap conflict; two ducts joined by a fitting are
+    one duct with a bend in it. Only an END counts: two runs crossing mid-span are two runs
+    crossing, and that is the case these occupancy checks exist to report.
+    """
+    by_tag = {duct.tag: duct for duct in model.ducts}
+    first, second = by_tag.get(first_tag), by_tag.get(second_tag)
+    if first is None or second is None:
+        return False
+    for near, far in ((first, second), (second, first)):
+        if len(near.path) < 1 or len(far.path) < 2:
+            continue
+        for point, z in ((near.path[0], near.z_m[0] if near.z_m else None),
+                         (near.path[-1], near.z_m[-1] if near.z_m else None)):
+            if duct_joint_index(point, z, far.path, far.z_m) is not None:
+                return True
+    return False
 
 
 def segment_meets_box(a: tuple[float, float], b: tuple[float, float],
@@ -351,4 +427,11 @@ def _pair_is_plumbed(model: ResolvedModel, first: SoffitOccupant,
         return connected(model, first, second.tag)
     if second.kind == "equipment" and first.kind == "duct":
         return connected(model, second, first.tag)
+    if first.kind == "duct" and second.kind == "duct":
+        # A REAL TEE IS NOT A HANGER GAP. This branch returned False unconditionally, so a
+        # branch teeing off a trunk inside a soffit — which is where a branch tees off a
+        # trunk — read as two things crowding one box with 0" between them. The predicate
+        # is the one ``mep.duct_connectivity`` uses to decide an end has landed on
+        # something, asked with the sign flipped.
+        return ducts_are_joined(model, first.tag, second.tag)
     return False

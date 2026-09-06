@@ -349,7 +349,7 @@ def _expected_drain_point(model: ResolvedModel,
         backing = backing_wall(model.plan, model, fixture, fixture_type)
         if port is not None:
             local = (port.position[0].meters, port.position[1].meters)
-            point = _rotate_into_plan(fixture, local)
+            point = rotate_into_plan(fixture, local)
             # The port's set-back is a PRODUCT nominal, measured off the frame's own face:
             # "1 3/4" behind the frame" says nothing about how thick the gypsum in front of
             # it is, and the type cannot know. What is actually true of the pipe is that it
@@ -371,16 +371,21 @@ def _expected_drain_point(model: ResolvedModel,
     return _project_onto_line(fixture.position.xy_m, wall.axis)
 
 
-def _rotate_into_plan(fixture, local: tuple[float, float]) -> tuple[float, float]:
-    """A point in the product's local frame, placed at the fixture's position/rotation.
+def rotate_into_plan(placeable, local: tuple[float, float]) -> tuple[float, float]:
+    """A point in the product's local frame, placed at the placeable's position/rotation.
 
     The same frame every placeable symbol is drawn in (``model/placeable_symbols/_frame``):
     origin at the footprint centre, ``+y`` toward the object's back.
+
+    Public, and named for a placeable rather than a fixture, because a
+    :class:`~typehaus.model.placeables.ServicePort` is not a plumbing idea: an ERV's four
+    air ports are stated in exactly this frame, and ``checks/mep/port_service`` places them
+    with this function rather than a second copy of the same two lines of trigonometry.
     """
-    radians = math.radians(_fixture_degrees(fixture))
+    radians = math.radians(_fixture_degrees(placeable))
     cos, sin = math.cos(radians), math.sin(radians)
     x, y = local
-    px, py = fixture.position.xy_m
+    px, py = placeable.position.xy_m
     return (px + x * cos - y * sin, py + x * sin + y * cos)
 
 

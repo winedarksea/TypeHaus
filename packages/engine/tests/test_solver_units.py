@@ -254,3 +254,137 @@ def test_staggered_wall_module_studs_clear_the_jamb_pack():
     for stud in stations.get("stud", []):
         for pack in stations.get("king", []) + stations.get("jack", []):
             assert abs(stud - pack) >= thickness - 1e-9, (stud, pack)
+
+
+# --- california corners ------------------------------------------------------------
+#
+# The third corner style: the same stick count as "3-stud", but the supplemental stud is
+# laid FLAT so the corner cavity stays open to insulation. Two things follow, and both are
+# pinned here because neither shows up in a member count: the backer is turned across the
+# wall axis, and it eats its DEPTH (3-1/2") of that axis rather than its thickness.
+
+_INCH_M = 0.0254
+_STUD_THICKNESS_M = 1.5 * _INCH_M
+_STUD_DEPTH_M = 3.5 * _INCH_M
+
+
+def test_california_corner_style_validates_on_the_schema():
+    """The literal is spelled the same way in all three places that speak it."""
+    from typehaus.model.elements import Wall
+
+    spec = FramingSpec(member="2x4", corner_style="california")
+    assert spec.corner_style == "california"
+    wall = Wall(tag="W-X", start_node="N1", end_node="N2", assembly="EXT",
+                corner_style_start="california", corner_style_end="california")
+    assert (wall.corner_style_start, wall.corner_style_end) == ("california", "california")
+
+
+def test_california_corner_emits_one_flat_supplemental_stud():
+    plan, rw = _wall_and_plan("california")
+    corners = [m for m in frame_wall(plan, rw, openings=[], corner_start=True)
+               if m.category == "corner"]
+    assert [m.child_key for m in corners] == ["corner-start"]
+    # Laid flat: turned across the wall axis, which runs +x here.
+    assert corners[0].orient == (0.0, 1.0)
+
+
+def test_on_edge_corner_styles_keep_the_wall_axis_orientation():
+    for style in ("3-stud", "4-stud"):
+        plan, rw = _wall_and_plan(style)
+        corners = [m for m in frame_wall(plan, rw, openings=[], corner_start=True)
+                   if m.category == "corner"]
+        assert corners and all(m.orient == (1.0, 0.0) for m in corners), style
+
+
+def test_california_backer_consumes_its_depth_of_the_wall_axis():
+    """3-1/2" of axis, not 1-1/2": the backer's centre sits half a thickness plus half a
+    depth inboard of the end stud, so the two faces touch."""
+    from typehaus.resolve.framing.corners import WallEndFraming, corner_stud_stations
+
+    end = WallEndFraming(plate_station_m=0.0, end_stud_station_m=_STUD_THICKNESS_M / 2.0)
+    (backer,) = corner_stud_stations(end, True, _STUD_THICKNESS_M, "california",
+                                     axis_len_m=4.0, stud_depth_m=_STUD_DEPTH_M)
+    assert backer.laid_flat is True
+    assert backer.along_axis_m == _STUD_DEPTH_M
+    expected = end.end_stud_station_m + (_STUD_THICKNESS_M + _STUD_DEPTH_M) / 2.0
+    assert backer.station_m == expected
+    # Faces touch: the end stud's inboard face and the backer's outboard face coincide.
+    assert abs((backer.station_m - _STUD_DEPTH_M / 2.0)
+               - (end.end_stud_station_m + _STUD_THICKNESS_M / 2.0)) < 1e-12
+
+
+def test_corner_stud_stations_reports_stations_and_orientation_for_every_style():
+    from typehaus.resolve.framing.corners import WallEndFraming, corner_stud_stations
+
+    end = WallEndFraming(plate_station_m=0.0, end_stud_station_m=_STUD_THICKNESS_M / 2.0)
+    kwargs = dict(axis_len_m=4.0, stud_depth_m=_STUD_DEPTH_M)
+
+    three = corner_stud_stations(end, True, _STUD_THICKNESS_M, "3-stud", **kwargs)
+    assert [(s.station_m, s.along_axis_m, s.laid_flat) for s in three] == [
+        (end.end_stud_station_m + _STUD_THICKNESS_M, _STUD_THICKNESS_M, False)]
+
+    four = corner_stud_stations(end, True, _STUD_THICKNESS_M, "4-stud", **kwargs)
+    assert [(s.station_m, s.along_axis_m, s.laid_flat) for s in four] == [
+        (end.end_stud_station_m + _STUD_THICKNESS_M, _STUD_THICKNESS_M, False),
+        (end.end_stud_station_m + 2 * _STUD_THICKNESS_M, _STUD_THICKNESS_M, False)]
+
+    cal = corner_stud_stations(end, True, _STUD_THICKNESS_M, "california", **kwargs)
+    assert [(s.along_axis_m, s.laid_flat) for s in cal] == [(_STUD_DEPTH_M, True)]
+
+
+def test_corner_stud_stations_runs_inboard_from_the_far_end():
+    """``at_start=False`` packs toward decreasing station — same arithmetic, mirrored."""
+    from typehaus.resolve.framing.corners import WallEndFraming, corner_stud_stations
+
+    axis_len = 4.0
+    end = WallEndFraming(plate_station_m=axis_len,
+                         end_stud_station_m=axis_len - _STUD_THICKNESS_M / 2.0)
+    (backer,) = corner_stud_stations(end, False, _STUD_THICKNESS_M, "california",
+                                     axis_len_m=axis_len, stud_depth_m=_STUD_DEPTH_M)
+    assert backer.station_m == end.end_stud_station_m - (_STUD_THICKNESS_M
+                                                         + _STUD_DEPTH_M) / 2.0
+
+
+def test_midpoint_guard_drops_a_backer_that_would_reach_past_the_wall_centre():
+    """The guard grades the stud's INBOARD FACE, so it measures the flat backer's 3-1/2"
+    and not some single constant — a stub wall that comfortably holds an on-edge stud can
+    still be too short for a california backer."""
+    from typehaus.resolve.framing.corners import WallEndFraming, corner_stud_stations
+
+    # 7" stub: midpoint at 3.5". The on-edge stud's inboard face lands at 3" (kept); the
+    # flat backer's at 5" (dropped), as does the 4-stud pack's second stud at 4.5".
+    axis_len = 7.0 * _INCH_M
+    end = WallEndFraming(plate_station_m=0.0, end_stud_station_m=_STUD_THICKNESS_M / 2.0)
+    kwargs = dict(axis_len_m=axis_len, stud_depth_m=_STUD_DEPTH_M)
+    assert len(corner_stud_stations(end, True, _STUD_THICKNESS_M, "3-stud", **kwargs)) == 1
+    assert corner_stud_stations(end, True, _STUD_THICKNESS_M, "california", **kwargs) == ()
+    # ...and the second stud of a 4-stud pack goes the same way, at 3.75".
+    assert len(corner_stud_stations(end, True, _STUD_THICKNESS_M, "4-stud", **kwargs)) == 1
+
+
+def test_california_corner_needs_a_stud_depth():
+    """The flat backer has no station without one; a silent fallback to the thickness
+    would place it 1" out and nothing downstream would notice."""
+    import pytest
+
+    from typehaus.resolve.framing.corners import WallEndFraming, corner_stud_stations
+
+    end = WallEndFraming(plate_station_m=0.0, end_stud_station_m=_STUD_THICKNESS_M / 2.0)
+    with pytest.raises(ValueError):
+        corner_stud_stations(end, True, _STUD_THICKNESS_M, "california", axis_len_m=4.0)
+
+
+def test_module_studs_clear_the_flat_backers_face_not_its_centre():
+    """A module stud is kept one stud thickness off the pack. Measured from the backer's
+    CENTRE that clearance would cut 1" into its face, so the california wall's first
+    module stud stands further in than the 3-stud wall's."""
+    plan, rw = _wall_and_plan("california")
+    california = frame_wall(plan, rw, openings=[], corner_start=True)
+    plan, rw = _wall_and_plan("3-stud")
+    three = frame_wall(plan, rw, openings=[], corner_start=True)
+
+    def first_module(members):
+        return min(m.p0[0] for m in members
+                   if m.category == "stud" and m.p0[0] > inch(1).meters)
+
+    assert first_module(california) >= first_module(three)

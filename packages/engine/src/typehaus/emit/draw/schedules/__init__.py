@@ -13,6 +13,7 @@ from typehaus.emit.draw.schedules.architectural import (
     _write_energy_sheet,
     _write_general_notes,
     _write_opening_schedule,
+    _write_room_finish_schedule,
 )
 from typehaus.emit.draw.schedules.compare import write_compare_sheet
 from typehaus.emit.draw.schedules.electrical import (
@@ -22,8 +23,8 @@ from typehaus.emit.draw.schedules.electrical import (
     _write_panel_schedule,
 )
 from typehaus.emit.draw.schedules.structural import (
-    _write_framing_bom,
     _write_engineering_register,
+    _write_framing_bom,
     _write_hardware_schedule,
 )
 from typehaus.emit.draw.schedules.tables import _add_table
@@ -40,6 +41,7 @@ __all__ = [
     "_write_hardware_schedule",
     "_write_luminaire_schedule",
     "_write_opening_schedule",
+    "_write_room_finish_schedule",
     "_write_panel_schedule",
     "write_compare_sheet",
 ]

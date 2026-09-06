@@ -35,8 +35,9 @@ class FramingPreferences:
     """Module and opening rules that keep framing, panels, and openings coordinated."""
 
     module_in: float = 16.0
-    # "3-stud" | "4-stud" — the live vocabulary ``Wall.corner_style_start/end`` and
-    # ``FramingSpec.corner_style`` speak; "three-stud" is never read anywhere.
+    # "3-stud" | "4-stud" | "california" — the live vocabulary
+    # ``Wall.corner_style_start/end`` and ``FramingSpec.corner_style`` speak;
+    # "three-stud" is never read anywhere.
     # ``structural.corner_style_matches_preference`` is what compares this field against
     # the framing solver's own vocabulary.
     corner: str = "3-stud"
