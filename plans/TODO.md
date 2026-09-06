@@ -126,25 +126,60 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   pre-existing gap independent of the first. And nothing in the engine lays out sheathing
   sheets at all, so a "sheet break lands >=1/2" onto a stud" check has no home yet.
 
-- **California corners as the next `corner_style` value.** `corner_stud_stations`
-  (`resolve/framing/corners.py:125-143`) packs supplemental studs face-to-face with
-  `orient=d` — the wall direction, same as the module studs. A California corner is one stud
-  turned **flat** instead — `orient=normal(d)` — so it stands the same way a batten laid flat
-  does, closing more of the corner cavity to a batt but landing a bay off the drywall
-  screw-line. The extension is a third `Literal` value (`FramingSpec.corner_style` and
-  `Wall.corner_style_start/end`) plus an orientation flag threaded through
-  `corner_stud_stations`, not just a count change like 3-stud -> 4-stud was.
+- **DONE 2026-09-06 — California corners ship as a third `corner_style`.** The literal is
+  `"california"` (`CORNER_STYLE_CALIFORNIA`), not a count name: the style builds the SAME one
+  supplemental stick `"3-stud"` does and differs only in that it is laid flat, so
+  `"2-stud"` would collide and `"3-stud-flat"` would mislead. **Catlin is unchanged** —
+  `FramingPreferences.corner` stays `"3-stud"` and all 38 resolved corner members are
+  byte-identical, `orient` included. The capability shipped, not a house change.
+  - `corner_stud_stations` now returns `tuple[CornerStud, ...]` — `station_m`,
+    `along_axis_m` and `laid_flat` — because a flat stud occupies its **depth** (3 1/2")
+    along the axis, not its thickness (1 1/2"). `stud_depth_m` RAISES when the style needs it
+    and it is absent; a silent fall back to the thickness would place the backer 1" out and
+    nothing downstream would notice.
+  - The non-obvious part was not the orientation but `_module_stations`' pack limit, which
+    kept one *thickness* off the pack. That reads as face-to-face only while every stud is
+    1 1/2" wide, so the first module stud would have cut 1" into the flat backer's face. It
+    is `corner_pack_limit(...)` now. The midpoint guard also moved from grading the stud's
+    centre to its inboard face, which is stricter for `3-stud`/`4-stud` too and bites nowhere
+    in catlin.
+  - `structural.corner_style_matches_preference` knows the style
+    (`_CORNER_STYLE_STUD_COUNT["california"] = 1`), so a house opting in gets a comparison
+    rather than an UNKNOWN advisory.
 
-- **Plywood ordered by the sheet.** `takeoff/framing.py:117-141` bills every framing member
-  by lineal foot, so a panel-profile member is billed as nested 8-ft sticks of
-  `"NxN panel"` with a board-foot figure. There is no member-fed sheet-goods path
-  (`sheet_goods_takeoff` at `takeoff/framing.py:253-310` reads **layers** only, never
-  `model.all_members()`). Ordering plywood by the sheet — nesting panel-profile members onto
-  4x8 stock the way `_bucket_cut_lengths` nests lumber onto stock lengths — is separate work.
-  **Shrunk on 2026-08-26 by the catlin truss**, which is why this is worth less than it was:
-  the corner box and the plywood tab both went with the Swinburne outrigger band, so the
-  only panel members left on an exterior wall are the 176 window **bucks** (`6x0.375 panel`,
-  560 LF ordered). The item stands, but it is now a ~$300 line, not a ~$1,200 one.
+- **DONE 2026-09-06 — plywood is ordered by the sheet** (`takeoff/sheet_rips.py`). Panel
+  members never reached `sheet_goods_takeoff`, which reads layers only, so they fell through
+  `framing_takeoff` and billed as nested 8-ft sticks with a meaningless board-foot figure:
+  156 window bucks ordered as 496 lineal feet of a thing nobody sells.
+  - **The model is rip-then-crosscut**, not 1-D nesting. Rip yield is
+    `floor((48 + kerf) / (width + kerf))` and the kerf is only free when the width divides
+    48 evenly — a 4" rip yields **11** strips per sheet, not the 12 that `48/4` promises,
+    because twelve strips need eleven kerfs. Then first-fit-decreasing crosscuts per rip,
+    and sheets are summed as fractions across rip widths *within* a row, because a framer
+    really does rip a 6" and a 4" strip off one sheet.
+  - **Two things worth not rediscovering.** The web stiffener is authored `4 x 1.4375`
+    because one modelled member IS the pair straddling the I-joist web, and
+    1.4375 = 2 x 23/32 — so 76 members are 152 pieces of real 23/32" rip, and ordering a
+    1-7/16" sheet would be ordering a product that does not exist. And the routing predicate
+    is the **material** (`SHEET_RIP_MATERIALS`), not the profile grammar, because coil trim,
+    sprayed foam and treated furring all wear `panel` profiles and are genuinely bought by
+    the foot. 12 such rows were deliberately left on the lineal ladder.
+  - `0.625x0.625 panel` sheathing LEFT the "could not be priced" list — 96 LF that had been
+    billing at $0.
+  - **STILL OPEN, and it is the real remainder: the per-sheet rate does not carry per-piece
+    install labour.** $16-34/sheet is what it costs to *hang* a sheet; setting 156 four-sided
+    buck frames square in their ROs and nailing 152 bevelled stiffener plies is piecework.
+    The retired rows were basised on exactly that ($0.90-1.80/LF x 445.6 LF is $401-802 for
+    the bucks alone), and 13 sheets x $16-34 = $208-442 does not reach it. **So the ~$500-1,000
+    the construction total fell is essentially all labour, and it is understated, not saved.**
+    The material half carries across correctly ($297-462 of ply against the retired $233-357).
+    The fix is one line — `"sheet_goods": "scope"` in `cli/prices.QUALIFIED_KEY_FIELD`, the
+    pattern `[envelope_layers]` already uses for `thickness_in` — plus
+    `"struct-1-plywood:buck rip"` rows in `prices.toml`. The numbers are written into both
+    retired rows' comments so they cannot be lost.
+  - Cost-code note: the buck **moves trade**, 2400 / 08 80 00 / openings to framing. A framer
+    sets a buck before the foam and long before a window arrives, so that is the honest
+    reading, but it moves money between two `haus tasks` work packages.
 
 **Deliberately not done, and why:**
 
@@ -198,13 +233,26 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### Found in passing, 2026-08-30 (System 1's south branch)
 
-- **Nothing validates that a duct actually connects to anything.** No check tests that a
-  `DuctRun` endpoint reaches equipment or another run, and `Register.duct_ref` is an
-  unvalidated string. The whole `DU-S-HP-SOUTH`/`DU-A-HP-STUDY` tree was joined to nothing
-  for a fortnight and every check passed. The only duct-to-equipment geometry in the
-  codebase, `resolve/mep_soffit.py::_pair_is_plumbed`, exists to *suppress* a clash — the
-  same predicate run the other way round is the check that was missing.
-- **The AH/ERV blower interlock has nowhere to live in the schema.** With the ERV running
+- **DONE 2026-09-06 — `Register.duct_ref` is validated** (`integrity.register_duct_ref`,
+  an arm on `checks/integrity/catalog_tags.py`). It reports a typo AND a `None`, which was
+  invisible before because every consumer read the field defensively and a bad ref simply
+  read as "run unserved". All 35 catlin runs reference correctly; `REG-M-XFER-MUD` is the one
+  register with no `duct_ref` and it is a TRANSFER louver, skipped by design.
+  The duct-to-duct joint predicate was also factored out of `_meets_another_duct` and
+  `resolve/mep_soffit.py::_pair_is_plumbed` — which returned `False` unconditionally for a
+  duct-to-duct pair — now uses it, so a real tee in a soffit stops reading as a hanger-gap
+  conflict. `mep.duct_joist_bay_occupancy` is the joist-bay analog of the soffit rule, and it
+  found something (below).
+- **DONE 2026-09-06 (the schema half).** `Equipment` gained `behind_access_panel`,
+  `access_panel_ref` and `blower_interlock_ref`; an `AirHandlingProductFacts` mixin
+  (`filter_nominal_size`, `filter_merv`, `service_face`) went onto **both** `EquipmentType`
+  and `RegisterType` — the latter because the only filter on System 1 sits behind a
+  *register*, so the product facts had to be sayable of one. `REG-T-HP-RET` carries catlin's
+  values. `PipeAccessoryKind.TRAP_PRIMER` exists now; the `RM-S-PLANT` floor drain and the
+  "dry room needs a primer" rule are deliberately NOT authored in that pass. The controls
+  fact below is what the interlock field now records:
+
+- **The AH/ERV blower interlock (the fact itself, now recordable).** With the ERV running
   and the air handler off, 100 cfm enters a still return chamber and leaves through
   `REG-S-HP-RET` into `RM-S-STUDY2`, the only low-resistance path; distribution to the rest
   of the house needs the blower turning (continuously, or on ERV call). That is a controls
@@ -379,39 +427,56 @@ the future.
 
  - Basement under the stairs storage closet
 
-- **The R312.1.1 guard on the garage stair's 34" landing.** An owner decision with a cost
-  and a look to it, flagged in `plan/storeys/garage.py`. It comes with an engine gap worth
-  its own item: `code.R312_1_guard_height` censuses `FloorSystem`s and `code.R312_1_guard`
-  censuses `FloorOpening`s, so `SL-G-STEP-0` — a `Slab` — is in neither census and its 34"
-  drop is graded by nothing. A rule that walks slab edges would close it.
-- **A guard opening at the END of a deck edge is invisible to `code.R312_1_guard_height`**
-  (2026-09-03, same shape as the item above). `_railing_runs_edge`
-  (`checks/code/mn_residential/fall_protection.py:353`) is a plain `LineString` distance test
-  of the guard path against the WHOLE edge segment, so a guard that covers the segment's
-  midpoint satisfies it however much of either end is missing. `RL-SG-PORCH`'s east leg was
-  shortened 3'-0" on 2026-09-03 to open `ST-SG-PORCH`'s doorway and the check reports PASS
-  either way — with the opening, without it, and with a 12'-0" opening it has never seen.
-  The guard return at the opening is on the author (`PORCH_STAIR_THRESHOLD_RAILS` is that
-  return, and `notes/porch_stair.md` says so). The fix is the same shape as the slab-edge
-  rule: grade the guard's COVERAGE of each edge, not its distance from it. **Confirmed
-  worse on 2026-09-04**: the flight moved to the middle of that leg, `RL-SG-PORCH` split into
-  itself plus `RL-SG-PORCH-NE`, and the check still reports PASS — now with the two pieces
-  straddling a hole it cannot see at all.
-- **A stair whose head lands on a WALL TOP is graded against nothing that stands on that
-  top** (2026-09-04). `ST-SG-PORCH` springs from `W-SG-E1`'s top and crosses 12" of it as a
-  threshold. Drawn in the pocket's north strip, that threshold ran straight through
-  `PT-SG-BR3` — a 12" ROUND column on a 12" wall, so it filled the top edge to edge and left
-  10" of passage one side and 14" the other. **Zero findings.** Two things have to be true at
-  once for a check to catch it and neither is: the threshold board is 3 sf of trim over
-  concrete with nothing to frame, so it is deliberately not an element and there was nothing
-  to overlap; and the flight itself starts at the wall's east face, x 28'-6", which is
-  *exactly* the column's east face, so the two solids are tangent and
-  `structural.member_interference` reports no interference because there is none. The stair
-  moved to y -9'-0"..-6'-0" between the two columns instead. The rule that would close it:
-  for any stair whose top landing is a wall top rather than a `FloorSystem`, project the
-  landing's plan rectangle and grade the CLEAR WIDTH left by every solid standing on that
-  wall, against R311.7.1's 36". It is the same missing idea as the two items above — the
-  engine grades distances and overlaps, and what these three want is *coverage*.
+- **DONE 2026-09-06 — the guard/coverage trio is closed by one shared helper.** All three
+  items below wanted the same idea: the engine grades **distances and overlaps**, and what
+  these needed was **coverage**. `checks/code/mn_residential/edge_coverage.py` now projects
+  railing sub-segments, wall footprint spans, stair throat quads and glazing closures onto an
+  arbitrary segment's own axis (the old helper only handled axis-aligned edges) and reports
+  each uncovered run.
+  - **`_railing_runs_edge` is deleted.** It was a bare `LineString.distance(seg) <= 0.20`
+    boolean over the WHOLE segment, so a guard covering the midpoint satisfied it however
+    much of either end was missing. `RL-SG-PORCH`'s 3'-0" east-leg opening now measures: the
+    split guard covers 0'-5.2' and 8.2'-8.7', and the 3'-0" between is credited to
+    `ST-SG-PORCH`'s stair throat — the same principle `code.R312_1_guard` has always used for
+    a well. A test asserts the credit is EARNED by removing the throat and confirming the
+    36.0" opening reappears. `PORCH_STAIR_THRESHOLD_RAILS` was already authored (2026-09-04),
+    so no house edit was owed.
+  - **The slab-edge census landed** on `code.R312_1_guard_height` rather than as a new id, so
+    the permit checklist is untouched. **`SL-G-STEP-0` now FAILS** — see the open decision
+    below.
+  - **`code.R311_7_1_wall_top_landing` is new** and grades a stair whose head lands on a wall
+    top: it projects the landing rectangle, subtracts every solid standing on that top, and
+    grades the remainder against R311.7.1's 36". `ST-SG-PORCH` PASSES at 36.0" clear, and a
+    unit test proves the abandoned north-strip drawing (the 12" round column) would have
+    reported 18". It drives off the wall top, not off a landing element, because the
+    threshold board is deliberately not an element.
+  - **Four false positives had to be fixed in the new rule itself**, each a real gap: two
+    floor systems of one storey abut across the wall between them so their deck outlines
+    never touch (every main-floor seam read as a fall to grade — the drop is probed outboard
+    now); attic gable edges run out under the eaves; a deck outline is the subfloor sheet and
+    stands off the finished wall face (FS-SG-PORCH is 2 3/4" off W-M-S1, hence a 6"
+    tolerance); and **the breezeway** — `FS-BW-FLOOR` is 35" over grade with no wall and no
+    railing, but it is a glazed vestibule, so glazing solids are credited as closures. It
+    FAILed without that and PASSes with it.
+  - **Severity correction:** `code.R312_1_guard_height` was declared `blocking=False` on the
+    permit checklist but raised ERROR — a contradiction invisible until it first fired, and
+    one that would have closed catlin's permit gate. Its findings are advisory (WARN
+    severity, FAIL result) now: still printed as FAIL, still exit 1 from `haus check`.
+
+- **OPEN DECISION — the R312.1.1 guard on the garage stair's 34" landing.** Now that a rule
+  walks slab edges, the engine asks the question `plan/storeys/garage.py:465-474` wrote down
+  and declined to answer ("**Nothing in the engine will ask**" — it does now):
+  ```
+  FAIL code.R312_1_guard_height: SL-G-STEP-0: unguarded edge(s) over a 30" drop —
+  (9.5', 41.3')...(9.5', 43.7') 2.4' of open side over a 2.8' drop;
+  (9.5', 43.7')...(8.0', 43.7') 1.5' of open side over a 2.8' drop
+  ```
+  ~4 LF on the east and north sides. Still an owner decision with a cost and a look —
+  deliberately NOT authored around and NOT suppressed. Until it is decided, catlin carries
+  this FAIL, and `test_cli_check_output.py::test_catlin_carries_no_failures` names it. That
+  test's `accepted` allow-list is exactly the place for an owner-decided advisory FAIL with a
+  design-record citation, if the answer is "leave it".
+
 - **`FT-SG-*`'s frost cover**, 12"-21" below the sunken garden's own floor against 42".
   `structural.frost_depth` routes all seven to UNKNOWN — a structure retaining the
   excavation it stands in is an engineered design under IRC R404.4, and
@@ -469,13 +534,60 @@ the future.
   `test_catlin_bath2_vanity_heat_and_joists.py`, which still measures against the 21".
   Worth a sweep: any other place a dimension was justified against IRC's plumbing chapters.
 
+## Found while doing the 2026-09-06 TODO batch — by the new checks, on their first run
+
+- **The level-2 ERV radials are NOT on 4" centres, and six pairs overlap.**
+  `plan/mep_erv.py` says in prose that "the twelve lanes leave the closet on 4" centres". For
+  two pairs it is **2"**, with 3" ducts: `DU-M-ERV-R-BED`/`R-KITCH` (lanes at x 3'-10" and
+  3'-8") and `DU-M-ERV-R-LIVING`/`R-BATH1` (3'-2"/3'-0") overlap by 1", and
+  `DU-M-ERV-R-STUDY`/`R-LAUNDRY` share the 20'-8" bay centre outright, overlapping 3" over
+  48-70". `mep.duct_joist_bay_occupancy` reports one UNKNOWN on `FS-S-WEST` for it — UNKNOWN
+  rather than FAIL because the 12.5" clear bay does hold both and this model gives a run one
+  centreline per bay. The drawing says something that is not true; that is the part to fix.
+
+- **Three stair luminaires sit below the nosing line they are supposed to light**, found by
+  the new z window on `_lights_near` (which was plan-only — a 4 ft plan buffer with **no z
+  filter at all**). None causes a FAIL, because another luminaire still lights each stair:
+  - `ST-B2M`: `ED-B-CLOSET-LT` 32.4" below; `LR-B-STAIR-RAIL` **68.1"** below.
+  - `ST-M2S`: `ED-M-PANTRY-LT` 41.1" below.
+  `LR-B-STAIR-RAIL` is the interesting one: `plan/lighting.py:200-207` documents this exact
+  limitation in prose — a `LightRun` carries ONE mount elevation, so the handrail tape lies
+  flat at 34" while the flight climbs away — and ends "Nothing grades a light run's room, so
+  no check says this." The engine says it now.
+  - Two calibrations in that check are load-bearing and should not be "simplified" away: the
+    synthetic **arrival** station is one riser above the top nosing and must be excluded
+    (`include_arrival=False`) or a correct fixture reads 7.5" buried; and a **one-riser
+    allowance** is required because `ED-M-STAIR-LT` is authored 8" under the wall top on
+    purpose — `plan/` says "-0'-8" IS A STEP LIGHT, AND THAT IS THE POINT".
+
+- **`resolve/mep_queries.py` is 509 lines**, just over the 500-line rule in `AGENTS.md`,
+  after the joist-line extraction. Splitting it was out of that pass's scope.
+
+- **The garage eave detail lost its heel.**
+  `detail_wall_roof-GARAGE_ROOF-GARAGE_WALL_2X6` used to draw the bottom chord, the raked top
+  chord and the 9 1/4" energy heel; with one member per truss it draws one 26" rectangle with
+  two chord lines. That is the specified treatment for a fabricated shape
+  (`section_members.py`), but the raised-heel eave is precisely the detail where the heel is
+  the point. Closing it means teaching the section cutter to cut the **fink** rather than the
+  member envelope. The golden was blessed rather than expand that pass's scope.
+
 ## Found while doing the 2026-09-01 batch — recorded so they are not rediscovered
 
-- **No check validates that every equipment port naming a service is reached by a run of that
-  service.** `mep.duct_connectivity` grades duct ENDS against terminations (another duct,
-  a machine footprint, a register, or a cap), so a manifold with nothing arriving at it has
-  no end to orphan and is invisible to it — `EQ-B-ERV` once had no duct to either manifold and
-  nothing reported it. The missing companion rule is not written.
+- **DONE 2026-09-06 — `mep.equipment_port_service` is the missing companion rule.**
+  `mep.duct_connectivity` grades duct ENDS against terminations, so a manifold with nothing
+  arriving at it has no end to orphan and is invisible to it. The new rule grades **at the
+  service level, not positionally** — catlin authors all four ERV ports at the same local
+  `(0, 0, 21.6")`, so a positional match would be vacuous — via a new `Service` ->
+  `DuctSystem` map (SUPPLY_AIR->SUPPLY, RETURN_AIR->RETURN, EXHAUST_AIR->EXHAUST,
+  OUTDOOR_AIR->OUTDOOR_AIR). `_rotate_into_plan` was made public to do it. 7 PASS, 3 UNKNOWN.
+  - **OPEN DECISION — the 3 UNKNOWNs are one reversible casting typed once.**
+    `EQ-B-ERV-MAN-EXH` and `EQ-A-ERV-MAN-EXH` use `EQ-T-ERV-MANIFOLD-6`, which declares a
+    SUPPLY_AIR trunk but is placed as an **extract** manifold; `EQ-S-ERV-HOOD-EA` uses
+    `EQ-T-ERV-HOOD-6`, which declares OUTDOOR_AIR but is reached by the EXHAUST run
+    `DU-ERV-EA`. Graded UNKNOWN rather than FAIL deliberately: a FAIL would report the
+    catalog's shape, not the building. Minting `*-EXH` sibling types takes all three to PASS
+    — but a minted type with no `prices.toml` row is **silently dropped from the bill**, so
+    the rows have to land with it.
 
   **The machine had to come down 18" before any of it could be drawn.**
   `EQ-T-BROAN-B210E75RT`'s four air ports are all 6" round on its TOP face. Hung at 6'-0" the
