@@ -370,7 +370,8 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
     if el.foam_thickness is not None:
         ft_m = el.foam_thickness.meters
         fh = (el.foam_height.meters if el.foam_height is not None else inch(12).meters)
-        block_along_joint = max(row_span + 8 * dia, inch(12).meters)
+        block_along_joint = (el.foam_length.meters if el.foam_length is not None
+                             else max(row_span + 8 * dia, inch(12).meters))
         half_x, half_y = (block_along_joint / 2.0, ft_m / 2.0) if el.axis == "y" else \
             (ft_m / 2.0, block_along_joint / 2.0)
         model.solids.append(ResolvedSolid(

@@ -353,6 +353,15 @@ class Dowel(Element):
     connects: tuple[str, ...] = ()  # the two footing tags doweled together
     foam_thickness: Length | None = None  # XPS thermal-break block thickness (along axis)
     foam_height: Length | None = None  # block height (defaults to footing thickness)
+    #: Block length ALONG the joint. Unset derives it from the bar row
+    #: (``row_span + 8 x diameter``, min 12"), which is right when the dowels are the whole
+    #: of the joint — a 12" wall's end face, say. It is wrong wherever the block is a
+    #: continuous thermal break that the bars merely pass through: the break's length is the
+    #: length of the two pours' shared FACE, and it has nothing to do with how many bars
+    #: cross it. Catlin's closure found this the hard way — a 21" block derived off three
+    #: bars, sitting in an 84" footing-to-footing joint, with 63" of solid concrete either
+    #: side of it and no check anywhere that grades a thermal break for continuity.
+    foam_length: Length | None = None
     foam_psi: float = 40.0  # XPS compressive rating
 
 

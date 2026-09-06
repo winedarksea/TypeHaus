@@ -1276,12 +1276,43 @@
 # $2,100-6,300/cy that price had to be disguised as. Same money, checkable rate.
 "sump" = { low = 400, high = 1200, unit = "ea" }  # 1 ea — basin, sealed lid, riser, slab patch
 # 2026-08-20: RE-UNITED, and REPRICED — the old rate was not just mis-keyed, it was wrong.
-# A structural thermal break (Armatherm FRR, Foamglas Perinsul) is sold per LF of bearing at
-# $15-60/LF. These are three pads under the sunken-garden column and drywell bearings, ~0.3 SF
-# each; `unit = "ea"` reads `count`. At $15-60/LF a pad with roughly 2 LF of bearing perimeter,
-# cut and set, is $25-90 each — against the $9-15 TOTAL the $/cy rate was quietly producing for
-# all three. Small money, but it was wrong by 10x in the direction that hides scope.
-"thermal_break" = { low = 25, high = 90, unit = "ea" }  # 3 ea — column/drywell bearing pads
+# It read $15-60/LF for a structural bearing break (Armatherm FRR, Foamglas Perinsul) under
+# three ~0.3 SF pads at the sunken-garden column and drywell, giving $25-90 each against the
+# $9-15 TOTAL the $/cy rate was quietly producing. Small money, wrong by 10x in the direction
+# that hides scope.
+#
+# ** RE-BASED 2026-09-05: THOSE PADS ARE GONE AND THESE ARE A DIFFERENT PRODUCT. ** Every
+# `thermal_break` solid in this house is now one of the sunken garden's four closure boards
+# — plain 2" XPS at 40 psi, not a proprietary structural break — and they are much bigger
+# than the pads the old rate was written for:
+#
+#     DW-SG-W1/E1-FOAM        84" x  8"   =  4.67 SF each   (the footing joint)
+#     DW-SG-W1/E1-STEM-FOAM   12" x 109"  =  9.12 SF each   (the wall's end face)
+#                                            27.6 SF total, 0.17 cy
+#
+# 2" 40 psi XPS is $3.00-5.50/SF, so $83-152 of board; the rest is cutting, fitting and
+# bracing it against a pour at the bottom of a 9'-deep court, $10-25/SF. **$13.00-30.50 per
+# SF of board face**, which is $359-842 for the set.
+#
+# ** BILLED PER CUBIC FOOT, NOT PER BOARD (2026-09-05, corrected the same day). ** The row
+# was `unit = "ea"` at $90-210 for one afternoon, and this comment argued that averaging
+# four boards of two sizes was the honest weakness of the only unit available. **It was not
+# the only unit available.** `ALTERNATE_UNITS["concrete"]` carries `"cuft" -> volume_cuft`
+# beside the "SF" that reads a plan area, and volume is exactly the right handle for a board:
+# at a constant 2" thickness a $/cf rate IS the $/SF face rate, times the 6 SF of face in a
+# cubic foot of 2" board. $13.00-30.50/SF x 6 = **$78-183/cf**, and 4.59 cf of board still
+# comes to $358-841 — the same money, now measured rather than averaged.
+#
+# What the average was hiding, per board:
+#
+#     footing block   0.78 cf   $61-142    (`ea` billed it $90-210 — over by ~45%)
+#     stem block      1.52 cf   $118-278   (`ea` billed it $90-210 — under by ~24%)
+#
+# The set total was right and every line in it was wrong, which is the failure mode an `ea`
+# rate has whenever the things it counts are not interchangeable. It also could not survive a
+# change of size: the stem board is as tall as the wall it closes, so re-levelling the court
+# re-prices it, and under `ea` it would not have moved by a cent.
+"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 4.59 cf — the garden closure boards
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
 # structural_solids is the only table that reaches these rows, and until today [concrete]
 # refused them because their structure_material is not "concrete" (cli/prices.MATERIAL_ONLY —

@@ -54,6 +54,8 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `landing_post_bearing` (scoped to resolver-generated stair landing posts) reaches a post
   standing on a slab — and their anchors, not their bearing, are what actually governs.
 
+- PR-B-KITCHEN-DRAIN-RUN is right through the middle of the theater. It should likely run more west first, bypassing the theater/media room as much as possible.
+
 - **The four porch beams are still 3-ply KDAT 2x12 with eight ply seams** that hold water and
   grit and freeze ~100x/year (`notes/beam_water_protection.md`). The balcony beams were moved
   to treated SYP structural glulam for the same defect; the same trade is available on the
@@ -543,4 +545,3 @@ Two pricing decisions that are correct today and become double bills the moment 
   (`library/assemblies.py:170`) bills in `[envelope_layers]` as `air-barrier`. Either the
   concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in
   the 2026-08-30 pass because it is a rate re-derivation, not a defect fix.
-

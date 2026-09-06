@@ -2251,6 +2251,49 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `notes/sunken_garden_court_free_body.md` §4/§6/§7 are re-worked term by term rather than
     recomputed from the engine.
 
+- **The closure's thermal break was 21" long in an 84" joint** (2026-09-05, third pass).
+  The two porch side walls meet the house only through a 2" XPS board on -6 3/16"..-4 3/16",
+  and the intent — written out at `DW-SG-*-STEM` — is *one continuous board from the house
+  footing's underside to the top of the porch wall*. It was not continuous, in two
+  independent ways that hid each other, and **nothing in this engine grades a thermal break
+  for continuity**, so it read as a designed detail at 0 FAIL.
+  - **The block was sized against the WALL, not the FOOTING.** `_resolve_dowel` derives a
+    foam block's length along the joint from the bar row — `max(row_span + 8*dia, 12")` —
+    which is exactly right for the stem block (12", flush with a 12" wall's end face) and
+    wrong for the footing block, which separates an 84"-wide strip. Three bars at 8" gave
+    21", leaving **63" of footing-to-footing concrete** running from a heated basement
+    footing into a wall that stands in an open court. `Dowel.foam_length` is new for this:
+    unset it derives as before, so nothing else in the repo moved. **Do not tidy the two
+    blocks into one rule — they are sized against different pours.**
+  - **And where the board was missing there was no room for it.** `FT-SG-W1`'s 84" north end
+    faces `FT-B-S1` over its outer 52" and `FT-B-S2` over its inner 32". S1/S4 took a 6" toe
+    trim on 2026-09-05 and cleared it by 2 3/16"; S2/S3 kept the 2" `offset` bought for
+    `W-SG-BRKBM`'s isolation board and **lapped it by 1 13/16" of solid concrete** — a plan
+    lap until the porch footings rose to the court plane, a real 0.406 sf x 8" volume after.
+    Which strip a given inch of that joint faces is an accident of where `W-B-S1` stops at
+    x = 8'-10"; no thermal detail should turn on that. **All four south strips are on one
+    face at -4" now**, `_TOE_TRIMMED` is empty and `_SOUTH_TOE_TRIM` is superseded.
+  - **The beam's own board is not weakened by the retreat.** It still separates the veneer
+    pour from the house pour, across 4" of bedding stone in series with the same 2" of XPS,
+    and `W-SG-BRKBM` bears nothing on that toe — it spans between the side walls. What the
+    2" was genuinely load-bearing for is the BEAM's north face at -10", which is a fact
+    about the beam and did not move.
+  - Frost re-checked after the trim, because moving a footing north is exactly how one buys
+    a false pass: all four still read **"8" below SL-SG-FLOOR"** on the R403.3 branch, not
+    the ~86" `sheltered_by` answer. `test_the_veneer_beam_isolates_the_house_footing` now
+    pins the 84" board, the full 8" depth, and a zero plan lap against every house strip —
+    both halves, because each passed on its own while the pair was broken.
+  - `prices.toml`'s `thermal_break` row was re-based with it: it priced three ~0.3 SF
+    structural bearing pads that no longer exist, and now bills the four closure boards
+    (27.6 SF of 2" 40 psi XPS) at $90-210 each. The four are not the same size, so check the
+    total against the SF rather than the count.
+  - **Concrete does not move for any of this**, and that is worth knowing before reading a
+    takeoff diff across this date: the toe trim is an `offset`, so each strip slides north
+    with its full 20" of bearing intact. Measured by ablation against HEAD — every assembly
+    row identical, total 149.31 cy either way — with the thermal break the only quantity
+    that changes, 3.43 -> 4.60 cf. Any concrete delta seen across today belongs to another
+    change, not this one.
+
 - **The sunken garden's veneer is one flat field of unglazed buff brick** (2026-09-04).
   `W-B-BRICK` has now worn three faces: one flat field of `glazed-green-brick` (`#1b4332`),
   then the Ishtar Gate — a lapis field with golden-yellow register bands over an unglazed

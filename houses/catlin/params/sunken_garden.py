@@ -2927,6 +2927,20 @@ _dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 # these: at x 8'-0" the opposing strip is FT-B-S1, at x 28'-0" it is FT-B-S4 (which reaches
 # west to 27'-2" since the framed run was pulled clear of the court — storeys/basement.py).
 # The tag is carried in the tuple now, so a third literal cannot drift from the geometry.
+# ** AND THE BLOCK WAS 21" LONG IN AN 84" JOINT. FIXED 2026-09-05 (second pass). **
+# `foam_length` is authored, and it is the FOOTING's width. Without it
+# `resolve/accessories._resolve_dowel` derives the block's length along the joint from the
+# BAR ROW — `max(row_span + 8*dia, 12")` = max(16 + 5, 12) = 21" — which is the right rule
+# for the stem block below (a 12" wall's end face, where the bars really are the joint) and
+# the wrong one here. The stem block was sized against the WALL and this one inherited its
+# reasoning, but the pour it separates is not the wall: it is the 84"-wide strip footing
+# under it. 21" of board in an 84" joint left **63" of footing-to-footing concrete** with no
+# break in it at all, running straight from a heated basement footing into a wall that
+# stands in an open court — and NOTHING in this engine grades a thermal break for
+# continuity, so it read as a designed detail.
+#
+# `SPEC.footing_width_in`, not a literal: the block is the joint, and the joint is as wide
+# as the footing. Widen the footing and the board follows it.
 _DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1"), ("E1", _x_ax_e, "FT-B-S4"))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
@@ -2935,7 +2949,8 @@ DOWELS = [
           count=3, spacing=inch(8),
           connects=(f"FT-SG-{name}", house_footing),
           foam_thickness=inch(SPEC.closure_break_in),
-          foam_height=inch(_HOUSE_FOOTING_DEPTH_IN), foam_psi=40.0)
+          foam_height=inch(_HOUSE_FOOTING_DEPTH_IN),
+          foam_length=inch(SPEC.footing_width_in), foam_psi=40.0)
     for i, (name, x, house_footing) in enumerate(_DOWEL_AT, start=1)
 ]
 
@@ -2951,10 +2966,13 @@ DOWELS = [
 # stem block -109 7/16"..0. Together they are ONE continuous board from the house footing's
 # underside to the top of the porch wall, on one plane (-6 3/16"..-4 3/16").
 #
-# ** count=2 @ 6" IS NOT ARBITRARY. ** The block's length along the joint is
-# `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12", i.e. exactly the wall's own
-# thickness, so the foam lands flush with both faces of the 12" pour. The footing rows'
-# `count=3 @ 8"` would resolve to 16 + 5 = 21" and throw 4 1/2" of foam past each face.
+# ** count=2 @ 6" IS NOT ARBITRARY, AND THIS BLOCK IS THE ONE THAT KEEPS THE DERIVED
+# LENGTH. ** `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12", i.e. exactly the wall's
+# own thickness, so the foam lands flush with both faces of the 12" pour. The footing rows'
+# `count=3 @ 8"` would resolve to 21" and throw 4 1/2" past each face — which is why they
+# now author `foam_length` outright and stop reading the bar row at all. Here the bars
+# really ARE the joint, so the derivation is the right one and is left alone. Do not
+# "tidy" the two blocks into one rule: they are sized against different pours.
 #
 # ** Two GFRP bars is a detail decision, not a rounding. ** They hold the board captive
 # during the pour and give the closure a positive tie into the house wall — without a

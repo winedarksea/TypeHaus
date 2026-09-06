@@ -1860,16 +1860,52 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     assert span_in(layers["xps-break"].polygon) == pytest.approx((-10.0, -8.0), abs=1e-6)
     assert span_in(layers["concrete"].polygon) == pytest.approx((-22.0, -10.0), abs=1e-6)
 
-    # And the toe it faces gave up exactly that 2" — an `offset`, so the strip keeps its
-    # full 20" of bearing and simply sits further under the house.
-    for tag in ("FT-B-S2", "FT-B-S3"):
+    # And the toes it faces are clear of it — an `offset`, so each strip keeps its full 20"
+    # of bearing and simply sits further under the house.
+    #
+    # ** ALL FOUR SOUTH STRIPS ARE ON ONE FACE AT -4" SINCE 2026-09-05 (second pass). **
+    # S2/S3 used to sit at -8", flush against this beam's board, which is what their 2"
+    # `offset` was bought for; S1/S4 took 6" for the closure at the sunken garden's side
+    # walls. Two south faces on one line is what broke: `FT-SG-W1`'s 84"-wide north end
+    # faces S1 over its outer 52" and S2 over its inner 32", so the closure's 2" board had
+    # room on one stretch and **-1 13/16"** on the other — a solid concrete lap once the
+    # porch footings rose to the court plane. Which strip a given inch of that joint faces
+    # is an accident of where W-B-S1 stops (x = 8'-10"); no thermal detail should turn on it.
+    #
+    # The beam's own board is not weakened by the retreat. It still separates the veneer
+    # pour from the house pour, now across 4" of bedding stone IN SERIES with the same 2" of
+    # XPS, and the beam bears nothing on that toe — it spans between the side walls.
+    for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
         strip = next(s for s in catlin_model.solids if s.tag == tag)
         south_in = min(y for _x, y in strip.outline) / inch_m
-        assert south_in == pytest.approx(-8.0, abs=1e-6), tag
+        assert south_in == pytest.approx(-4.0, abs=1e-6), tag
         assert (strip.z1_m - strip.z0_m) / inch_m == pytest.approx(8.0, abs=1e-3), tag
 
-    # No concrete-to-concrete anywhere on that plane: 2" of board, and nothing else.
-    assert -8.0 - (-10.0) == pytest.approx(2.0)
+    # No concrete-to-concrete anywhere on that plane: 2" of board, then 4" of bedding stone.
+    assert -4.0 - (-10.0) == pytest.approx(6.0)
+
+    # ** THE CLOSURE JOINT, END TO END. ** The board between each garden footing and the
+    # house strips it faces must cover the WHOLE 84" of that joint, and it must have room to
+    # be there. Both halves are asserted, because each passed on its own while the pair was
+    # broken: the block was 21" (derived off a 3-bar row, `Dowel.foam_length` unset) in a
+    # joint 84" wide, and where it was missing there was concrete on both sides of the line.
+    from shapely.geometry import Polygon
+    for garden, block in (("FT-SG-W1", "DW-SG-W1-FOAM"), ("FT-SG-E1", "DW-SG-E1-FOAM")):
+        strip = next(s for s in catlin_model.solids if s.tag == garden)
+        foam = next(s for s in catlin_model.solids if s.tag == block)
+        xs = [x for x, _y in strip.outline]
+        fxs = [x for x, _y in foam.outline]
+        assert (max(fxs) - min(fxs)) / inch_m == pytest.approx(84.0, abs=1e-6), block
+        assert (max(xs) - min(xs)) / inch_m == pytest.approx(84.0, abs=1e-6), garden
+        assert min(fxs) == pytest.approx(min(xs), abs=1e-6), block
+        # ...and it fills the full depth of the two pours' shared face.
+        assert (foam.z1_m - foam.z0_m) / inch_m == pytest.approx(8.0, abs=1e-3), block
+        # Nothing on the far side of it is concrete: no house strip reaches the garden one.
+        garden_plan = Polygon(strip.outline)
+        for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
+            house = next(s for s in catlin_model.solids if s.tag == tag)
+            lap = garden_plan.intersection(Polygon(house.outline)).area
+            assert lap == pytest.approx(0.0, abs=1e-9), (garden, tag)
 
     # The plinth and its bed are gone, not merely unreferenced.
     tags = {s.tag for s in catlin_model.solids}

@@ -59,12 +59,22 @@ condition sat at 0 FAIL.
 | beam section | `SPEC.wall_thickness_in` × (`_veneer_beam_top` − `_veneer_beam_bottom`) | 12" × 17-3/4" |
 | beam concrete faces | −10" (north) … −22" (south) | |
 | isolation board | 2" XPS, 40 psi, north face | −8" … −10" |
-| `FT-B-S2/S3` south face | 20" strip, `offset` 2" off axis | −8" |
+| `FT-B-S2/S3` south face | 20" strip, `offset` **6"** off axis since 2026-09-05 | −4" |
 | wythe | 3-5/8", on the beam's north edge | −10.05" … −13.675" |
 | backup finished face | EPS face, since 2026-09-05 | −6.05" |
 | open cavity | EPS face (−6.05") to wythe | **4.0"** |
 | foam behind the wythe | 4" XPS + 2" EPS | 6.0" |
 | anchor reach | brick back to sheathing/stud | ~10.05" |
+
+**The strip retreated to −4" and the board did not follow it.** All four south strips are
+on one face now, because the sunken garden's side-wall closure needs 2" of board across the
+whole 84" of its own joint and could not have it while S2/S3 stood at −8" (see
+`params/foundations._GARDEN_END_TRIMMED`). This beam's board stays at −8"…−10", so between
+it and the house strip there are now 4" of bedding stone rather than a flush bearing. That
+is a longer path through a worse insulator **in series with** the same 2" of XPS, so the
+break is no weaker; and the beam bears nothing on that toe — it spans to the side walls,
+which §2 is about. What the 2" trim was genuinely load-bearing for is the BEAM's own north
+face at −10", and that is a fact about this beam and does not move with the strip.
 
 Top and bottom are both borrowed, not invented: the top **is** `W-B-BRICK`'s authored
 underside (−8'-6 7/16") and the bottom **is** the garden slab's (−10'-0 3/16"), so the beam

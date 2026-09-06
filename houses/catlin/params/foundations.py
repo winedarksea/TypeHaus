@@ -122,21 +122,41 @@ _HOUSE_WALL_TAGS = (
 # insulated form and the `SL-SG-FROST-W` wings under the garden slab are for. See the header
 # note on `structural.frost_depth` above.
 _FROST_FORMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
-# The two the veneer stands over — see `_SOUTH_TOE_TRIM`. S1 and S4 are not in this set,
-# but they are no longer untrimmed: they take a 6" trim of their own for a different
-# reason, immediately below. A jog between the two trims is a footing step, which is an
-# ordinary thing to build.
-_TOE_TRIMMED = {"W-B-S2", "W-B-S3"}
-# ** S1 AND S4 ARE TRIMMED TOO NOW, AND BY 6" (2026-09-05). **
+# ** THIS SET IS EMPTY, AND `_SOUTH_TOE_TRIM` IS SUPERSEDED (2026-09-05, second pass). **
+# W-B-S2/S3 took a 2" trim, putting their south face on -8" — flush against
+# SG_VENEER_BEAM_14's isolation board, which is what that trim was bought for. S1/S4 then
+# took 6" for a different reason (below), and the "jog between the two trims is a footing
+# step" this comment used to end on was exactly the mistake: a jog leaves TWO south faces on
+# one line, and the closure board that has to run past both can only be flush with one.
+#
+# The 32" of FT-SG-W1's north end that faces FT-B-S2 (and the mirror at E1/S3) had **-1 13/16"
+# of clearance** — a solid concrete lap, at the same elevation since the porch footings rose
+# to the court plane, with the 2" board unable to enter it. All four south strips take the
+# 6" trim now, one face at -4" across the whole south line, and the board runs its full 84".
+#
+# What the 2" bought is not lost. The beam's board still separates the veneer pour from the
+# house pour; it now does it across 4" of bedding stone rather than flush against the strip,
+# which is a longer path through a worse insulator IN SERIES with the same 2" of XPS — so
+# the break is if anything better, and the beam bears nothing on that toe (it spans between
+# the side walls, see notes/sunken_garden_veneer_beam.md). What the 2" WAS load-bearing for
+# — the beam's concrete north face reaching -10" so W-B-BRICK gets its cavity — is a fact
+# about the BEAM and does not move with this strip at all.
+_TOE_TRIMMED: set[str] = set()
+# ** S1 AND S4 WERE TRIMMED BY 6" ON 2026-09-05; S2 AND S3 JOINED THEM THE SAME DAY. **
 # The rationale block above is kept because its reasoning about the BEAM is still right; its
 # conclusion about these two is not, and this is why.
 #
 # The sunken garden's side walls run north to the house across a 2" XPS board since this
 # date (params/sunken_garden._y_wall_end), ending on -6 3/16". FT-SG-W1/E1 are hosted
 # (``Footing.under``) so they come with the wall — and an untrimmed 20" strip on the wall
-# axis puts FT-B-S1/FT-B-S4's south face on -10", which would have left the two footings
-# lapping by nearly 4" of solid concrete. Nothing grades that: ``concrete_interference``
-# sees isolated pours only.
+# axis puts a house strip's south face on -10", which would leave the two footings lapping
+# by nearly 4" of solid concrete. Nothing grades that: ``concrete_interference`` sees
+# isolated pours only.
+#
+# **S2/S3 were left out of this on the first pass and should not have been.** The garden
+# footing is 84" wide and only its outer 52" faces S1/S4; the inner 32" faces S2/S3, which
+# sat at -8" and lapped it by 1 13/16". Which strip a given inch of the closure faces is an
+# accident of where W-B-S1 stops (x = 8'-10"), and no thermal detail should turn on that.
 #
 # 6", not the beam's 2", because the board has to be a board at footing level as well as at
 # stem level: -4" leaves the full 2" between the strips, so DW-SG-W1/E1-FOAM and the stem
@@ -152,8 +172,10 @@ _TOE_TRIMMED = {"W-B-S2", "W-B-S3"}
 # oversails it (x 8'-0"..8'-10"); at -4" it does not, and FT-B-S4 — which now reaches west
 # to 27'-2" and would have picked up the identical lap — never gets it.
 _GARDEN_END_TOE_TRIM = inch(6)
-_GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S4"}
+_GARDEN_END_TRIMMED = {"W-B-S1", "W-B-S2", "W-B-S3", "W-B-S4"}
 
+# ** SUPERSEDED — KEPT FOR ITS REASONING, WHICH IS STILL WHY THE TRIM GOES NORTH AND NOT
+# SOUTH. `_TOE_TRIMMED` IS EMPTY, SO THIS CONSTANT IS NOW UNUSED. **
 # ** THE FOUR GARDEN-FACE STRIPS ARE SHIFTED 2" OFF THE WALL AXIS, AND IT COSTS NOTHING. **
 # `offset` moves the strip square to its wall without changing its width, so all 20" of
 # bearing is still there — it is the same footing, sitting 2" further under the house.

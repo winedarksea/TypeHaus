@@ -326,6 +326,55 @@ def test_foam_thermal_break_follows_an_east_west_dowel(catlin_model) -> None:
         del model.solids[before:]
 
 
+def test_foam_length_overrides_the_bar_row_and_defaults_to_it(catlin_model) -> None:
+    """``Dowel.foam_length`` — the block is the JOINT, not the fastener schedule.
+
+    Unset, the block's length along the joint is derived from the bar row
+    (``row_span + 8 x diameter``, min 12"), which is right where the dowels ARE the joint —
+    a 12" wall's end face takes two bars at 6" and lands flush on both faces. It is wrong
+    wherever the block is a continuous thermal break the bars merely pass through: there the
+    length is the two pours' shared face and has nothing to do with how many bars cross it.
+
+    Catlin found that the expensive way. Its porch closure resolved a 21" block — three #5
+    bars at 8" — into an 84"-wide footing-to-footing joint, leaving 63" of solid concrete
+    running out of a heated basement footing into a wall standing in an open court, at
+    0 FAIL. Nothing in this engine grades a thermal break for continuity, so the only guard
+    available is that the number is authored and pinned.
+
+    Both branches are asserted here: an override that is not obeyed and a default that
+    silently changes are the same defect from opposite sides.
+    """
+    from typehaus.resolve.accessories import _resolve_dowel
+
+    model = catlin_model
+    common = dict(position=pt(ft(0), ft(0)), axis="y", length=inch(24),
+                  diameter=inch(0.625), elevation=ft(0), count=3, spacing=inch(8),
+                  foam_thickness=inch(2))
+
+    def _run_along_joint(dowel):
+        before = len(model.solids)
+        try:
+            _resolve_dowel(model, dowel, "basement")
+            block = next(s for s in model.solids if s.tag == f"{dowel.tag}-FOAM")
+            xs = [x for x, _ in block.outline]
+            return max(xs) - min(xs)
+        finally:
+            del model.solids[before:]
+
+    derived = Dowel(uid="AAAAAAAAAD", tag="DW-DERIVED", **common)
+    assert _run_along_joint(derived) == pytest.approx(inch(21).meters), \
+        "row_span 16\" + 8 x 0.625\" = 21\" — the rule the stem blocks still rely on"
+
+    authored = Dowel(uid="AAAAAAAAAE", tag="DW-AUTHORED", foam_length=inch(84), **common)
+    assert _run_along_joint(authored) == pytest.approx(inch(84).meters), \
+        "an authored length must not be diluted by the bar row"
+
+    # The bar row is what it overrides, so changing the bars must not move it.
+    denser = Dowel(uid="AAAAAAAAAF", tag="DW-DENSE", foam_length=inch(84),
+                   **{**common, "count": 9, "spacing": inch(10)})
+    assert _run_along_joint(denser) == pytest.approx(inch(84).meters)
+
+
 def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     from typehaus.resolve.roof_geometry import roof_height_at
     from typehaus.resolve.roof_layer_setbacks import above_structure_layers
