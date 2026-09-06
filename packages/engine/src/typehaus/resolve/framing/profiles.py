@@ -91,7 +91,9 @@ _RE_FLOOR_TRUSS = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+floor truss$")
 # has no single depth (it grows from the heel to the peak), and span is the dimension a
 # truss plant quotes, prices and names a truss by. ``houses/<name>/prices.toml`` keys the
 # [framing] row on this same string, so "24 roof truss" is both the profile and the order.
-_RE_ROOF_TRUSS = re.compile(r"^(?P<span_ft>\d+(?:\.\d+)?)\s+roof truss$")
+# A gable end is the same fabricated assembly at the same span, plated with verticals
+# instead of a web pattern, so it parses to the identical section and prices as its own row.
+_RE_ROOF_TRUSS = re.compile(r"^(?P<span_ft>\d+(?:\.\d+)?)\s+(?:gable )?roof truss$")
 #: A roof truss's chord/web stock. Not derivable from the profile string (which carries the
 #: span), so the ordinary 2x4 chord is assumed: it is what every prescriptive residential
 #: fink is plated from, and what the raised-heel garage truss here is. A 2x6-chorded truss
@@ -122,15 +124,19 @@ _RE_PANEL = re.compile(
 )
 
 
-def roof_truss_profile(span_m: float) -> str:
+def roof_truss_profile(span_m: float, gable: bool = False) -> str:
     """The ``"<span in whole feet> roof truss"`` profile for a shop-fabricated roof truss.
 
     Rounded to the nearest whole foot: a truss is designed, quoted and priced by its span,
     and a bearing line derived to 23.996' is the same 24' truss. Rounding rather than
     ceiling because the span is a design dimension, not a cut length — and a house whose
     walls land a hair either side of the foot must not silently split into two price rows.
+
+    ``gable`` names the drop truss at each end, which the plant ships with its verticals
+    plated in: a different assembly at the same span, and its own ``prices.toml`` row.
     """
-    return f"{math.floor(span_m / 0.3048 + 0.5):g} roof truss"
+    kind = "gable roof truss" if gable else "roof truss"
+    return f"{math.floor(span_m / 0.3048 + 0.5):g} {kind}"
 
 
 def panel_profile(width_in: float, thickness_in: float, label: str | None = None) -> str:
@@ -308,6 +314,20 @@ def cross_section(profile: str) -> CrossSection:
         return _rect(1.5, 11.25)
 
     return _rect(*_FALLBACK_ACTUAL_IN)
+
+
+#: A truss roof with no authored heel gets the standard energy heel.
+DEFAULT_TRUSS_HEEL_M = inch(9.25).meters
+
+
+def truss_heel_height_m(spec: FramingSpec) -> float:
+    """Authored raised-heel height, or the standard energy heel.
+
+    Beside :func:`truss_chord_depth_m` and for the same reason: ``roof_geometry`` lifts the
+    deck plane by it and ``resolve.framing.roof_gable`` hands it to the viewer, and only one
+    of those two may own the number.
+    """
+    return spec.heel_height.meters if spec.heel_height is not None else DEFAULT_TRUSS_HEEL_M
 
 
 def truss_chord_depth_m(spec: FramingSpec) -> float:

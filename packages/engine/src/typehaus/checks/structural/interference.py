@@ -131,12 +131,10 @@ _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
 # with each other at the panel points do not exist any more.
 #
 # What the single member brings instead is an ENVELOPE — bearing to bearing, plate top to
-# ridge — and everything the fabricator builds inside that envelope now shares volume with
-# it by construction. That is the gable end's infill studs, which stand between its chords
-# and are part of the same fabricated end frame; ``_TRUSS_FABRICATED_INFILL`` is that set,
-# and it is excused only against a truss of the SAME roof.
+# ridge — and everything the fabricator builds inside it (chords, webs, and the gable end's
+# plated verticals) is now *inside* that one member rather than beside it, so there is
+# nothing left here to excuse against it but the wall top it bears on.
 _TRUSS_KINDS = frozenset({"roof_truss"})
-_TRUSS_FABRICATED_INFILL = frozenset({"stud"})
 # Non-structural envelope skin and trim emitted at the roof edge (resolve/roof_edge.py +
 # resolve/roof_trim.py): the sheathing/rainscreen/cladding band carrying a wall past its
 # plate to the roof underside, and the fascia/soffit/gutter/ridge-cap/corner-trim hung off
@@ -227,13 +225,9 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     wall_top_kinds = _PLATE_KINDS | _STUD_KINDS
     if kinds & {"rafter", "ridge_beam"} and kinds & wall_top_kinds:
         return True
-    # A fabricated truss: whatever the plant builds inside its own envelope (the gable end's
-    # infill studs) belongs to the truss it is plated into, and the whole truss bears down
-    # onto the wall top plate it lands on. The box IR carries no gusset plate or heel seat,
-    # so those read as shared volume — all intended joinery, never an elevation bug.
-    if (kinds & _TRUSS_KINDS and same_parent
-            and kinds <= (_TRUSS_KINDS | _TRUSS_FABRICATED_INFILL)):
-        return True
+    # A fabricated truss bears down onto the wall top plate it lands on. The box IR carries
+    # no gusset plate or heel seat, so that reads as shared volume — intended joinery, never
+    # an elevation bug.
     if kinds & _TRUSS_KINDS and kinds & wall_top_kinds:
         return True
     # eave web stiffener bonded to its own rafter.

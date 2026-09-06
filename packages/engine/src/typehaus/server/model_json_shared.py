@@ -60,6 +60,12 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         # than a bounding box across the plate it bears on.
         "seat": ({"plate_top_z_m": m.seat.plate_top_z_m, "heel": list(m.seat.heel),
                   "seat_run_m": m.seat.seat_run_m} if m.seat is not None else None),
+        # The truss inside a ``roof_truss`` member's envelope — the raised heel, the eave
+        # tails, and whether it is a studded gable end. Null on every other member; the
+        # viewer draws chords and webs from it, which no model here resolves.
+        "truss": ({"heel_m": m.truss.heel_m, "tail_lo_m": m.truss.tail_lo_m,
+                   "tail_hi_m": m.truss.tail_hi_m, "gable": m.truss.gable}
+                  if m.truss is not None else None),
         "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
         "flange_width_m": section.flange_width_m,
         "flange_thickness_m": section.flange_thickness_m,

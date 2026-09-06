@@ -70,10 +70,24 @@ export interface Layer {
 // "roof_truss" is a WHOLE shop-fabricated truss as one member, the same call the engine
 // makes for a floor truss. Its p0/p1 are its two bearings and z0_m/z1_m its plate top and
 // ridge, so the member is the truss's ENVELOPE; the chords and webs inside it are a
-// drawing convention (three/roofTruss.ts), not model geometry. flange_thickness_m is the
+// drawing convention (three/roofTruss.ts) — except the three facts `truss` carries, which
+// are the designer's and so are model. flange_thickness_m is the
 // chord depth, and depth_m is that same chord — never the heel-to-peak height, which is
 // z1_m - z0_m and varies along the span.
 export type MemberShape = "rect" | "i_joist" | "floor_truss" | "roof_truss";
+
+// The truss inside a `roof_truss` member's envelope: what the envelope alone cannot say.
+// `heel_m` is the raised heel, plate top to top-chord underside at the bearing (the deck
+// plane was lifted by exactly this). `tail_lo_m`/`tail_hi_m` are the eave overhangs past
+// the p0 and p1 bearings — part of the truss the plant ships, outside the member because
+// the member's ends are its bearings, which is what the uplift take-off ties down.
+// `gable` is a drop truss: plated verticals at stud spacing, not a web pattern.
+export interface MemberTruss {
+  heel_m: number;
+  tail_lo_m: number;
+  tail_hi_m: number;
+  gable: boolean;
+}
 
 export interface MemberSeat {
   plate_top_z_m: number;
@@ -113,6 +127,8 @@ export interface Member {
   // over `seat_run_m` from the plumb `heel` toward the member's nearer end. Its depth is not
   // carried because it is not independent — it is the run times the member's own slope.
   seat?: MemberSeat | null;
+  // The truss inside a fabricated roof truss's envelope; null on every other member.
+  truss?: MemberTruss | null;
   shape: MemberShape;
   width_m: number;
   depth_m: number;

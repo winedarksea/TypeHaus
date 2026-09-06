@@ -146,38 +146,49 @@ def test_to_roof_wall_reaches_the_lifted_plane_not_the_pre_lift_one(resolved):
 
 # --- 2. gable-end truss + rake framing -----------------------------------------------------
 
-def test_gable_ends_are_drop_trusses_with_studs(resolved):
-    """Every station is one fabricated truss; only the two ends carry stud infill.
+def test_gable_ends_are_dropped_gable_trusses(resolved):
+    """Every station is one fabricated truss; the two ends are the gable version of it.
 
-    The chords, webs and king post are inside the member now, so the tell of a gable end is
-    no longer "webs replaced by studs" — it is that studs exist there at all, and that the
-    end truss is dropped below the field trusses by the outlooker depth.
+    The chords, webs and verticals are all inside the member now, so the tell of a gable end
+    is not "webs replaced by studs" — nothing here frames a stud at all. It is that the end
+    truss is dropped below the field trusses by the outlooker depth, and that it is a
+    different assembly: plated with verticals, and priced on its own row.
     """
     members = _roof(resolved).members
     trusses = [m for m in members if m.category == "roof_truss"]
-    keys = {m.child_key for m in members}
     ends = ("truss-000", f"truss-{len(trusses) - 1:03d}")
-    for end in ends:
-        assert any(key.startswith(f"{end}-gable-stud-") for key in keys), end
-    # No interior station carries stud infill, and none of them is dropped.
     interior = [m for m in trusses if m.child_key not in ends]
-    assert interior and not [key for key in keys
-                             if key.startswith("truss-001-gable-stud-")]
+    assert interior
+    # A gable end is not stick-infilled beside its own truss: it arrives plated.
+    assert not [m for m in members if m.category == "stud"]
     drop = cross_section("2x4").depth_m  # the outlooker the gable truss drops for
     for end in ends:
         end_truss = next(m for m in trusses if m.child_key == end)
+        assert end_truss.truss is not None and end_truss.truss.gable
+        assert "gable roof truss" in end_truss.profile
         assert end_truss.z1_m == pytest.approx(interior[0].z1_m - drop, abs=1e-9)
+    for m in interior:
+        assert m.truss is not None and not m.truss.gable
+        assert "gable" not in m.profile
 
 
-def test_gable_studs_stop_under_the_dropped_top_chord(resolved):
+def test_a_truss_carries_the_heel_and_the_eave_tails_its_envelope_cannot_state(resolved):
+    """The member runs bearing to bearing, so the heel and the overhang ride ``TrussShape``.
+
+    Without them a drawing of the truss springs its top chords off the bottom chord and
+    stops them at the bearing, which leaves the eaves with no lumber under them.
+    """
     roof = _roof(resolved)
-    chord_depth = cross_section(CHORD).depth_m
-    drop = cross_section("2x4").depth_m  # outlooker depth
-    for stud in (m for m in _roof(resolved).members
-                 if m.category == "stud" and "gable-stud" in m.child_key):
-        expected = roof_height_at(roof, stud.p0) - drop - chord_depth
-        assert stud.z1_m == pytest.approx(expected, abs=1e-9)
-        assert stud.z1_m > stud.z0_m
+    foot_lo = min(p[1] for p in roof.footprint)
+    foot_hi = max(p[1] for p in roof.footprint)
+    for truss in (m for m in roof.members if m.category == "roof_truss"):
+        assert truss.truss is not None
+        assert truss.truss.heel_m == pytest.approx(HEEL.meters)
+        # The ends ARE the bearings — the uplift take-off ties them to the wall they land on.
+        span_lo, span_hi = sorted((truss.p0[1], truss.p1[1]))
+        assert span_lo > foot_lo + 1e-9 and span_hi < foot_hi - 1e-9
+        assert truss.truss.tail_lo_m == pytest.approx(span_lo - foot_lo)
+        assert truss.truss.tail_hi_m == pytest.approx(foot_hi - span_hi)
 
 
 def test_rake_overhang_carries_outlookers_and_a_barge_rafter(resolved):
@@ -387,7 +398,7 @@ def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
     roof = _roof(stacked)
     framing = {m.category for m in roof.members if is_roof_framing_member(m)}
     skin = {m.category for m in roof.members if not is_roof_framing_member(m)}
-    assert {"roof_truss", "stud", "fascia"} <= framing
+    assert {"roof_truss", "fascia"} <= framing
     assert skin == {"sheathing", "cladding", "soffit", "ridge_cap"}
     assert not framing & skin
 
@@ -914,19 +925,17 @@ def test_a_mixed_material_flush_edge_keeps_the_band(flush):
     assert not [m for m in _roof(flush).members if m.category == "corner_trim"]
 
 
-# --- 14. gable studs must stay inside the end-truss plane ----------------------------------
+# --- 14. the gable end is one purchased assembly ------------------------------------------
 
-def test_gable_studs_lie_flat_in_the_drop_truss_plane(resolved):
-    """A drop truss is a planar 1.5in assembly: its stud infill lies in the chord plane."""
-    from typehaus.resolve.framing.footprint import member_footprint
+def test_a_gable_end_bills_as_one_assembly_not_a_truss_plus_loose_studs(resolved):
+    """A plant ships the gable end with its verticals plated in, at the same span.
 
+    Emitting a drop truss AND a bundle of infill studs billed the same wood twice: once
+    inside the truss's own price, once as stick lumber.
+    """
     members = _roof(resolved).members
-    chord = next(m for m in members if m.child_key == "truss-000")
-    ring, _, _ = member_footprint(chord)
-    lo, hi = min(x for x, _ in ring), max(x for x, _ in ring)
-    studs = [m for m in members if m.child_key.startswith("truss-000-gable-stud-")]
-    assert studs
-    for stud in studs:
-        stud_ring, _, _ = member_footprint(stud)
-        assert min(x for x, _ in stud_ring) >= lo - 1e-9
-        assert max(x for x, _ in stud_ring) <= hi + 1e-9
+    end = next(m for m in members if m.child_key == "truss-000")
+    field = next(m for m in members if m.child_key == "truss-001")
+    assert end.profile.split(" ", 1)[0] == field.profile.split(" ", 1)[0]  # the same span
+    assert end.profile != field.profile                                    # a different row
+    assert not [m for m in members if m.child_key.startswith("truss-000-gable-stud-")]

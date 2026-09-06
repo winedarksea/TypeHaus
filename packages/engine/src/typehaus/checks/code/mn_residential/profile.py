@@ -381,6 +381,15 @@ MN_2024 = JurisdictionProfile(
         ("mep.hydrant_freeze_depth",
          "a fixture-durability rule (a yard hydrant's own freeze protection), not a "
          "permit-plan review item; it stays in the full check report"),
+        # Not a CODE-tier check, and listed here for exactly that reason: it is registered,
+        # it runs, and it is deliberately not a permit line. No IRC article states how far a
+        # threshold must stand ABOVE a surface that holds water — R311.3.1 bounds the same
+        # subtraction only from above — so the premise is authored on the wall
+        # (``Wall.min_threshold_step``) and the finding is the builder's, not the reviewer's.
+        ("building_science.flood_step_threshold",
+         "a durability rule on an authored premise (this court ponds), not a code article: "
+         "no IRC section sets a minimum threshold height over standing water, so it stays "
+         "in the full check report rather than on the permit checklist"),
         ("mep.pocket_occupancy",
          "a coordination rule between trades, not a code article: a pocket-door cavity has "
          "no stud to fasten to and no depth to recess into, so nothing may be hosted in it. "

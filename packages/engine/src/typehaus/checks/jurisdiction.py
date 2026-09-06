@@ -61,8 +61,10 @@ class JurisdictionProfile:
     soil_class: str | None = None
     # The permit checklist this jurisdiction gates on, in print order.
     permit_items: tuple[PermitItemSpec, ...] = ()
-    # (check_id, reason) for registered CODE-tier checks this profile deliberately does not
-    # put on the checklist. An unlisted, unreferenced check is a coverage hole, not a choice.
+    # (check_id, reason) for registered checks this profile deliberately does not put on the
+    # checklist. An unlisted, unreferenced check is a coverage hole, not a choice. The
+    # coverage test gates CODE-tier ids; a check from another tier may be listed here too,
+    # to say out loud that it runs and is not a permit line.
     permit_exclusions: tuple[tuple[str, str], ...] = ()
     # The prescriptive envelope table this jurisdiction's climate zone imposes. ``None``
     # means the profile states none, and the energy check reports UNKNOWN rather than

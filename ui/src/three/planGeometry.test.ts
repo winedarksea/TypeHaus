@@ -240,30 +240,68 @@ function checkMemberVerticalExtents() {
   // A roof truss is ONE member for a whole plated assembly, so the box the engine sends is
   // the truss's ENVELOPE — bearing to bearing, plate top to ridge. Drawn as a bar it would
   // fill the attic with wood that is not there, so it draws as a fink inside that envelope:
-  // chords, a king post and two diagonals, all inside the stated extent.
+  // a bottom chord, two top chords out to their eave tails, and the four webs of the W.
   const roofChord = 0.0889;      // 2x4 on edge: 3 1/2" chord
   const plateTop = 2.2352;
   const ridgeTop = 3.77825;
-  const roofTruss = new THREE.Group();
-  buildMembers(roofTruss, [member({
-    key: "truss-005", category: "roof_truss", profile: "24 roof truss", shape: "roof_truss",
-    p0: [0, 12.41], p1: [0, 19.73], z0_m: plateTop, z1_m: ridgeTop,
+  const tail = 16 * 0.0254;      // the eave overhang past each bearing
+  const roofSpan = 19.73 - 12.41;
+  const roofTrussMember = {
+    key: "truss-005", category: "roof_truss", profile: "24 roof truss",
+    shape: "roof_truss" as const,
+    p0: [0, 12.41] as [number, number], p1: [0, 19.73] as [number, number],
+    z0_m: plateTop, z1_m: ridgeTop,
     width_m: 0.0381, depth_m: roofChord, flange_width_m: 0.0381,
     flange_thickness_m: roofChord, web_thickness_m: 0.0381, orient: null,
-  })], center, "schematic", PALETTE, "TESTOWNER");
+    truss: { heel_m: 9.25 * 0.0254, tail_lo_m: tail, tail_hi_m: tail, gable: false },
+  };
+  const roofTruss = new THREE.Group();
+  buildMembers(roofTruss, [member(roofTrussMember)], center, "schematic", PALETTE,
+    "TESTOWNER");
   const roofMeshes = roofTruss.children as THREE.InstancedMesh[];
   if (roofMeshes.length !== 1) {
     throw new Error(`A roof truss draws in one mesh, received ${roofMeshes.length}`);
   }
-  // Bottom chord, two top chords, king post, two diagonals.
-  if (roofMeshes[0].count !== 6) {
-    throw new Error(`Expected a 6-piece fink, drew ${roofMeshes[0].count}`);
+  // Bottom chord, two top chords, and the fink's four webs.
+  if (roofMeshes[0].count !== 7) {
+    throw new Error(`Expected a 7-piece fink, drew ${roofMeshes[0].count}`);
   }
   const fink = boundsForObject(roofMeshes[0]);
   closeTo(fink.min.y, plateTop, "the bottom chord sits on the plate the member names");
-  if (fink.max.y > ridgeTop + 1e-6) {
-    throw new Error("no piece of the truss may stand above its own ridge elevation");
+  // The chords close on the ridge: their plumb-cut apex corner lands a fraction of a chord
+  // under the deck plane (a raking 2x4 cut plumb does), never a quarter span away from it.
+  if (fink.max.y > ridgeTop + 1e-6 || fink.max.y < ridgeTop - roofChord / 2) {
+    throw new Error(`the top chords must meet at the stated ridge, reached ${fink.max.y}`);
   }
+  // The regression this pins: the top chords were placed a quarter-span OUTSIDE the truss
+  // and inverted, so the drawing was a bottom chord with two chords flying off the eaves
+  // and no apex at all — and a bounds check on y alone could not see it. The run is the
+  // span plus the two eave tails, and nothing may reach past them.
+  const run = Math.max(fink.max.x - fink.min.x, fink.max.z - fink.min.z);
+  const corner = roofChord;  // a raking box's corner reaches a little past its own end
+  if (run < roofSpan + 2 * tail - 1e-6 || run > roofSpan + 2 * tail + corner) {
+    throw new Error(`A truss runs its span plus both eave tails, drew ${run}m`);
+  }
+  disposeGroup(roofTruss);
+
+  // A gable end is the same envelope plated with verticals at stud spacing rather than a
+  // web pattern, so it sheathes like a wall. The verticals are inside the one member — the
+  // engine stopped emitting them as studs beside it, which billed the same wood twice.
+  const gableEnd = new THREE.Group();
+  buildMembers(gableEnd, [member({
+    ...roofTrussMember, key: "truss-000",
+    truss: { ...roofTrussMember.truss, gable: true },
+  })], center, "schematic", PALETTE, "TESTOWNER");
+  const gableMesh = (gableEnd.children as THREE.InstancedMesh[])[0];
+  if (gableMesh.count <= roofMeshes[0].count) {
+    throw new Error(`A gable end infills at 16" o.c., drew ${gableMesh.count} pieces`);
+  }
+  const gable = boundsForObject(gableMesh);
+  if (gable.max.y > ridgeTop + 1e-6 || gable.max.y < ridgeTop - roofChord / 2) {
+    throw new Error("a gable end closes on the same ridge");
+  }
+  disposeGroup(gableEnd);
+  disposeGroup(roofTruss);
 
   // Roof members split two ways: sticks under the framing toggle, skin with the shell.
   // Fascia counts as framing: trim by category, but a nailer on the rafter tails by trade.

@@ -520,8 +520,11 @@ def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
     assert "ridge_beam" not in categories
     trusses = [m for m in garage_roof.members if m.category == "roof_truss"]
     assert len(trusses) == 13  # 24' bearing line at 24" o.c., both gable ends included
+    # The two gable ends are the same span plated with verticals: their own assembly, and
+    # their own price row, rather than a field truss plus a bundle of loose infill studs.
+    assert len([t for t in trusses if t.profile == "24 gable roof truss"]) == 2
     for truss in trusses:
-        assert truss.profile == "24 roof truss"
+        assert truss.profile in ("24 roof truss", "24 gable roof truss")
         assert truss.z0_m == pytest.approx(garage_roof.bearing_z_m)
         # Plate top to ridge: the raised heel is inside that height, not a member of its own.
         assert truss.z1_m - truss.z0_m > 1.0

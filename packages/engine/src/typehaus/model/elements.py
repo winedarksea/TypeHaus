@@ -49,6 +49,16 @@ class Wall(Element):
     # solver measures plates and studs from, what ``base_ref_z_m`` (and so every opening
     # sill) is datumed on, and what ``Footing.under`` reads for its own top.
     base_elevation: Length | None = None
+    # The exterior surface at the foot of this wall PONDS, and nothing may reach the
+    # interior over this wall less than this far above it. Authored, not derived, for the
+    # same reason ``WindowType.fall_protection`` is: whether a court holds water is a
+    # drainage judgement about a bowl, an outlet and a storm, and a model that guessed it
+    # from geometry would be inventing the premise rather than grading it. What the engine
+    # can hold to, once the premise is stated, is the arithmetic — see
+    # ``building_science.flood_step_threshold``, which grades this wall's TOP against the
+    # highest surface below it outside. A curb built to a bare literal is a number in a
+    # comment; this is the same number the checker can defend.
+    min_threshold_step: Length | None = None
     # Vertical stacking (#43).
     vertical_datum: FaceRef | None = None  # None => storey default
     stacks_on: str | None = None  # tiebreaker: tag of the wall below

@@ -473,12 +473,21 @@ WALLS = [
     # D-B-PATIO's old raised threshold — the door used to carry `sill_height=inch(7)` off
     # this same base — so the curb top IS the threshold now and the door's sill_height
     # goes to zero rather than to 7 1/4" (see D-B-PATIO in OPENINGS).
+    #
+    # `min_threshold_step` is the 7 1/4" above, stated where a checker can read it. Until
+    # it was authored the curb height was a literal in two `top_elevation` values and a
+    # paragraph of prose: raise the court floor, lower the curb, or split either wall, and
+    # the water line moves with nothing in the engine saying so.
+    # `building_science.flood_step_threshold` grades each wall's TOP against the highest
+    # surface below it outside — SL-SG-FLOOR, the court floor at -109 7/16" — so both
+    # curbs are held, not only the one D-B-PATIO happens to stand over.
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_GARDEN_CURB",
                    interior_room="RM-B-SAUNA",
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(0),
                    top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
+                   min_threshold_step=inch(7.25),
                    lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
                    end_node="N-B-S3", assembly="CATLIN_GARDEN_CURB_6",
@@ -486,6 +495,7 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    unbalanced_fill=ft(0),
                    top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
+                   min_threshold_step=inch(7.25),
                    lateral_support="top_and_bottom"),
     # The framed run itself: base on the curb top (-102 3/16"), 88 3/4" to the same
     # -13 7/16" bearing seat every other wall in this basement stops on. `base_elevation`

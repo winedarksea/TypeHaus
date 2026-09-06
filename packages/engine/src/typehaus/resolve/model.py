@@ -136,6 +136,31 @@ class SeatCut:
 
 
 @dataclass(frozen=True)
+class TrussShape:
+    """What a truss ENVELOPE cannot say about the truss inside it.
+
+    One member per truss states the bearings and the plate-top/ridge extent, and nothing
+    else: the chords, webs and heel are the fabricator's plate layout. These are the three
+    facts that are the *designer's*, not the plant's, so a drawing of the truss can put its
+    top chords where the roof actually put them:
+
+    * ``heel_m`` — the raised heel, plate top to top-chord underside at the bearing. The
+      same number ``roof_geometry.truss_heel_lift_m`` lifted the deck plane by.
+    * ``tail_lo_m`` / ``tail_hi_m`` — the eave overhang past each bearing, in plan, past
+      ``p0`` and ``p1`` respectively. The tails are part of the truss the plant ships; they
+      are outside the member because the member's ENDS are its bearings, which is where the
+      uplift take-off ties it down.
+    * ``gable`` — a drop truss, infilled with verticals at stud spacing rather than a web
+      pattern, and sheathed like a wall.
+    """
+
+    heel_m: float
+    tail_lo_m: float
+    tail_hi_m: float
+    gable: bool = False
+
+
+@dataclass(frozen=True)
 class FramedMember:
     """A framing member as a lightweight record (no geometry kernel) until emit (risk 6)."""
 
@@ -203,6 +228,9 @@ class FramedMember:
     # cannot reach. ``None`` keeps the derived classification, which is right for every
     # prismatic member.
     plan_width_m: float | None = None
+    # The truss inside the envelope, on a ``roof_truss`` member and nothing else. Read by the
+    # viewer, which draws chords/webs the model does not resolve; ``None`` everywhere else.
+    truss: TrussShape | None = None
 
 
 @dataclass(frozen=True)
