@@ -32,6 +32,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
     wall_cut_bounds_m,
 )
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 
@@ -82,13 +83,13 @@ def _walled_sides(model, direction: str, station: float, u_lo_m: float, u_hi_m: 
 def shower_recess(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
     """The 4" curbless recess: a mortar bed dropped into the floor, draining at center."""
     nodes = rect_region(u_lo, floor_z - cfg.SHOWER_RECESS_IN, u_hi, floor_z,
-                        "shower-recess", "sealant", None, lineweight=0.35)
+                        "shower-recess", "sealant", None, lineweight=PROFILE)
     center = (u_lo + u_hi) / 2.0
     nodes += rect_region(center - cfg.SHOWER_DRAIN_WIDTH_IN / 2.0,
                          floor_z - cfg.SHOWER_RECESS_IN - cfg.SHOWER_DRAIN_DEPTH_IN,
                          center + cfg.SHOWER_DRAIN_WIDTH_IN / 2.0,
                          floor_z - cfg.SHOWER_RECESS_IN + cfg.SHOWER_DRAIN_DEPTH_IN,
-                         "shower-drain", "metal-dark", "SOLID", lineweight=0.4)
+                         "shower-drain", "metal-dark", "SOLID", lineweight=PROFILE)
     return nodes
 
 
@@ -109,14 +110,14 @@ def shower_wall_lining(u_lo: float, u_hi: float, floor_z: float, height: float,
             continue
         backer_in = face_u + in_sign * cfg.SHOWER_BACKER_IN
         nodes += rect_region(face_u, z0, backer_in, z1,
-                             "shower-backer", "gwb", "gypsum", lineweight=0.3)
+                             "shower-backer", "gwb", "gypsum", lineweight=PROFILE)
         nodes += rect_region(backer_in, z0, backer_in + in_sign * cfg.SHOWER_TILE_IN, z1,
-                             "shower-tile", "tile", "metal", lineweight=0.35)
+                             "shower-tile", "tile", "metal", lineweight=PROFILE)
         linings[side] = cfg.SHOWER_BACKER_IN + cfg.SHOWER_TILE_IN
     # Pan surface: tile across the recess top, between whatever wall linings exist.
     nodes += rect_region(u_lo + linings["low"], floor_z - cfg.SHOWER_TILE_IN,
                          u_hi - linings["high"], floor_z,
-                         "shower-tile", "tile", "metal", lineweight=0.35)
+                         "shower-tile", "tile", "metal", lineweight=PROFILE)
     return nodes
 
 
@@ -129,7 +130,7 @@ def shower_glass(u_lo: float, u_hi: float, floor_z: float, height: float,
             continue
         nodes += rect_region(edge_u, floor_z + cfg.SHOWER_GLASS_GAP_IN,
                              edge_u + in_sign * cfg.SHOWER_GLASS_IN, floor_z + height,
-                             "shower-glass", None, "glass", lineweight=0.35)
+                             "shower-glass", None, "glass", lineweight=PROFILE)
     return nodes
 
 
@@ -170,7 +171,7 @@ def shower_hrv_duct(model, direction: str, station: float, u_lo_m: float, u_hi_m
         depth = duct.depth_m / M_PER_IN
         z0 = top_z_in + cfg.SHOWER_HRV_CLEAR_IN
         nodes += rect_region(u - width / 2.0, z0, u + width / 2.0, z0 + depth,
-                             "shower-hrv-duct", "metal", "metal", lineweight=0.35)
+                             "shower-hrv-duct", "metal", "metal", lineweight=PROFILE)
     return nodes
 
 

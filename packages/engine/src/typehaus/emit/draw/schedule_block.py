@@ -22,6 +22,7 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from itertools import combinations
 
+from typehaus.emit.draw.lineweights import LIGHT
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, LEADER_WRAP_COLUMNS
 
@@ -322,4 +323,4 @@ def _pad_row(cells: tuple[str, ...], widths: list[int]) -> str:
 
 def _rule(b: SceneBuilder, x0: float, y: float, width: float) -> None:
     b.add(Polyline(points=((x0, y), (x0 + width, y)), layer=SCHEDULE_GRID_LAYER,
-                   lineweight=0.2))
+                   lineweight=LIGHT))

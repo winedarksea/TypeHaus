@@ -34,6 +34,7 @@ from shapely.geometry import Point, Polygon
 
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, DIM_TEXT_PT, model_in_per_pt
 from typehaus.quantities import M_PER_IN
@@ -114,7 +115,7 @@ def emit_opening_mark(b: SceneBuilder, mark: str, center: tuple[float, float],
          uz + BUBBLE_RADIUS_IN * math.sin(phase + 2 * math.pi * i / sides))
         for i in range(sides)
     )
-    b.add(Polyline(points=points, layer=MARK_LAYER, closed=True, lineweight=0.18, uid=uid))
+    b.add(Polyline(points=points, layer=MARK_LAYER, closed=True, lineweight=REFERENCE, uid=uid))
     b.add(Text(anchor=(ux, uz), content=mark, height_pt=DIM_TEXT_PT,
                layer=MARK_LAYER, align="center"))
     radius_m = BUBBLE_RADIUS_IN * M_PER_IN

@@ -13,6 +13,7 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 
 from __future__ import annotations
 
+from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.palette import aia_layer, detail_hatch
 from typehaus.emit.draw.scene import Frame, Hatch, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.section_annotate import annotate_building_section
@@ -181,7 +182,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                 clipped = clip_polygon(profile.outline, crop)
                 if len(clipped) >= 3:
                     points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-                    b.add(Polyline(points=points, layer=aia, closed=True, lineweight=0.18,
+                    b.add(Polyline(points=points, layer=aia, closed=True, lineweight=REFERENCE,
                                    uid=wall.uid, tag=tag))
                     if pattern:
                         b.add(Hatch(boundary=points, pattern=pattern, layer="A-WALL-PATT",
@@ -254,7 +255,7 @@ def _emit_glazing_lines(b, model, wall, plane: CutPlane, crop, is_detail) -> Non
                     continue
                 mid = (ru0 + ru1) / 2 / M_PER_IN
                 b.add(Polyline(points=((mid, z0 / M_PER_IN), (mid, z1 / M_PER_IN)),
-                               layer="A-GLAZ", lineweight=0.18,
+                               layer="A-GLAZ", lineweight=REFERENCE,
                                uid=wall.uid, tag=f"{wall.tag}-void"))
 
 
@@ -278,7 +279,7 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
                 clipped = clip_polygon(profile.outline, crop)
                 if len(clipped) >= 3:
                     points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-                    b.add(Polyline(points=points, layer=layer, closed=True, lineweight=0.18,
+                    b.add(Polyline(points=points, layer=layer, closed=True, lineweight=REFERENCE,
                                    uid=solid.uid, tag=solid.tag))
                     if material:
                         b.add(Hatch(boundary=points, pattern=material,
@@ -331,7 +332,7 @@ def _emit_roof_cut(b, model, roof, plane: CutPlane, crop, joints=None,
                 continue
             pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
             b.add(Polyline(points=pts, layer="A-ROOF", closed=True,
-                           lineweight=0.18 if detail else 0.35,
+                           lineweight=REFERENCE if detail else 0.35,
                            uid=roof.uid, tag=f"{roof.tag}/{catalog.name}"))
             b.add(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
                         uid=roof.uid, material=catalog.material_ref))

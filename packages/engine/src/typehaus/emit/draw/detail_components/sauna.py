@@ -33,6 +33,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_cut_bounds_m,
     wall_in_frame,
 )
+from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
@@ -68,7 +69,7 @@ def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
     board_top = slab_top + cfg.SAUNA_BASEBOARD_IN
 
     nodes = rect_region(lo, slab_top, hi, board_top,
-                        "sauna-baseboard", "fiber-cement", "metal", lineweight=0.35)
+                        "sauna-baseboard", "fiber-cement", "metal", lineweight=PROFILE)
     band_width = abs(hi - lo)
     flash = path_from_steps((hot_face - in_sign * band_width,
                              board_top + cfg.SAUNA_FLASH_IN),
@@ -77,7 +78,7 @@ def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
     nodes += flashing_nodes(flash, tag="sauna-baseboard-flashing")
     nodes += rect_region(hot_face, slab_top, hot_face - in_sign * cfg.SAUNA_MEMBRANE_IN,
                          board_top, "sauna-membrane", "air-barrier", "membrane",
-                         lineweight=0.25)
+                         lineweight=LIGHT)
     return nodes
 
 
@@ -157,9 +158,9 @@ def sauna_benches(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
         z_top = floor_z + top_in
         z_bottom = z_top - cfg.SAUNA_BENCH_THK_IN
         nodes += rect_region(front, z_bottom, wall_u, z_top,
-                             "sauna-bench", "sauna-shiplap", "lumber", lineweight=0.4)
+                             "sauna-bench", "sauna-shiplap", "lumber", lineweight=PROFILE)
         nodes += rect_region(front, floor_z, front + cfg.SAUNA_BENCH_THK_IN, z_bottom,
-                             "sauna-bench-leg", "sauna-shiplap", "lumber", lineweight=0.3)
+                             "sauna-bench-leg", "sauna-shiplap", "lumber", lineweight=PROFILE)
     return nodes
 
 
@@ -171,7 +172,7 @@ def sauna_heater_clearance(u_lo: float, _u_hi: float, floor_z: float) -> list[IR
     """
     return [Polyline(points=rect_points(u_lo, floor_z, u_lo + cfg.SAUNA_HEATER_W_IN,
                                         floor_z + cfg.SAUNA_HEATER_H_IN),
-                     layer=LAYER, closed=True, lineweight=0.35, linetype="DASHED",
+                     layer=LAYER, closed=True, lineweight=PROFILE, linetype="DASHED",
                      tag="detail-component:sauna-heater")]
 
 
@@ -185,11 +186,11 @@ def sauna_floor_slope(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
     rise = min(cfg.SAUNA_FLOOR_RISE_IN,
                width / cfg.SAUNA_FLOOR_RUN_IN * cfg.SAUNA_FLOOR_RISE_IN)
     nodes = closed_region(((u_lo, floor_z), (u_hi, floor_z), (u_lo, floor_z + rise)),
-                          "sauna-floor-slope", "sealant", None, lineweight=0.35)
+                          "sauna-floor-slope", "sealant", None, lineweight=PROFILE)
     nodes += rect_region(u_hi - cfg.SAUNA_FLOOR_DRAIN_WIDTH_IN,
                          floor_z - cfg.SAUNA_FLOOR_DRAIN_DEPTH_IN, u_hi,
                          floor_z + cfg.SAUNA_FLOOR_DRAIN_LIP_IN,
-                         "sauna-floor-drain", "metal-dark", "SOLID", lineweight=0.4)
+                         "sauna-floor-drain", "metal-dark", "SOLID", lineweight=PROFILE)
     return nodes
 
 
@@ -203,11 +204,11 @@ def sauna_drop_ceiling(u_lo: float, u_hi: float,
     z_top = ceiling_underside_z - cfg.SAUNA_DROP_GAP_IN
     z_bottom = z_top - cfg.SAUNA_DROP_DEPTH_IN
     nodes = rect_region(u_lo, z_bottom, u_hi, z_top,
-                        "sauna-drop-ceiling", "sauna-shiplap", "lumber", lineweight=0.4)
+                        "sauna-drop-ceiling", "sauna-shiplap", "lumber", lineweight=PROFILE)
     for fraction in cfg.SAUNA_HANGER_FRACTIONS:
         u = u_lo + (u_hi - u_lo) * fraction
         nodes.append(Polyline(points=((u, z_top), (u, ceiling_underside_z)),
-                              layer=LAYER, lineweight=0.2,
+                              layer=LAYER, lineweight=LIGHT,
                               tag="detail-component:sauna-ceiling-hanger"))
     return nodes
 

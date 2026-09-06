@@ -20,6 +20,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     path_from_steps,
     rect_region,
 )
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode, Leader, NamedPoint
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
@@ -224,7 +225,7 @@ def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: 
     inboard = clad_out - out_sign * 2.0
     height = max((hi - lo) * slope, cfg.screen_band_in)
     return rect_region(min(clad_out, inboard), band_z, max(clad_out, inboard),
-                       band_z + height, "insect-screen", None, "rigid", lineweight=0.3)
+                       band_z + height, "insect-screen", None, "rigid", lineweight=PROFILE)
 
 
 # How far from where a label is expected to land a candidate solid may sit and still be

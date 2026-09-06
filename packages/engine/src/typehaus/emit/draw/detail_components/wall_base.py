@@ -30,6 +30,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     vent_face,
     wall_cut_bounds_m,
 )
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
@@ -69,7 +70,7 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
         # to the writers, and an outline alone reads as an empty gap in the drawing.
         gasket_in = sill_gasket_in(model, framed)
         nodes += rect_region(stud[0], junction_z, stud[1], junction_z + gasket_in,
-                             "sill-gasket", "rubber", "metal", lineweight=0.35)
+                             "sill-gasket", "rubber", "metal", lineweight=PROFILE)
 
     if concrete is not None:
         # Discrete 1" break where a slab edge meets the foundation wall, protection over
@@ -105,7 +106,7 @@ def _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z) -> l
     bead_back = foam_out - out_sign * cfg.sealant_bead_in
     nodes += rect_region(bead_back, junction_z, foam_out,
                          junction_z + cfg.sealant_bead_height_in,
-                         "sealant-bead", "spray-foam", "foam", lineweight=0.3)
+                         "sealant-bead", "spray-foam", "foam", lineweight=PROFILE)
     return nodes
 
 
@@ -150,7 +151,7 @@ def _z_flashing_and_screen(wall, intervals, is_outboard_high, out_sign,
     gap_in = vent_face(wall, furring, is_outboard_high)
     nodes += rect_region(gap_in, junction_z + cfg.screen_rise_in, fur_out,
                          junction_z + cfg.screen_rise_in + BUG_SCREEN_HEIGHT_IN,
-                         "bug-screen", BUG_SCREEN_MATERIAL, "rigid", lineweight=0.3)
+                         "bug-screen", BUG_SCREEN_MATERIAL, "rigid", lineweight=PROFILE)
     return nodes
 
 
@@ -206,9 +207,9 @@ def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
         slab_bottom = max(slab_bottom, slab_top - spec.depth.meters / M_PER_IN)
     inner_edge = face + in_sign * thickness_in
     nodes = rect_region(face, slab_bottom, inner_edge, slab_top,
-                        "thermal-break", "xps", "rigid", lineweight=0.35)
+                        "thermal-break", "xps", "rigid", lineweight=PROFILE)
     nodes += rect_region(face, slab_top, inner_edge, slab_top + SLAB_EDGE.sealant_cap_in,
-                         "thermal-break-sealant", "sealant", "metal", lineweight=0.3)
+                         "thermal-break-sealant", "sealant", "metal", lineweight=PROFILE)
     return nodes
 
 
@@ -371,4 +372,4 @@ def foam_protection_board(model, wall, crop, direction, station) -> list[IRNode]
     return rect_region(face_in, exposed_bottom / M_PER_IN,
                        face_in + out_sign * thickness_in,
                        exposed_top / M_PER_IN,
-                       "foam-protection-board", "metal-dark", "SOLID", lineweight=0.4)
+                       "foam-protection-board", "metal-dark", "SOLID", lineweight=PROFILE)

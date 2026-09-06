@@ -16,6 +16,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_points,
     wall_cut_bounds_m,
 )
+from typehaus.emit.draw.lineweights import CUT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
 
@@ -26,7 +27,7 @@ def grade_line(u0: float, u1: float, grade_z: float, wall_face_u: float) -> list
     if start >= u1:
         return []
     return [Polyline(points=((start, grade_z), (u1, grade_z)), layer="L-SITE-GRAD",
-                     lineweight=0.5, tag="detail-component:grade-line")]
+                     lineweight=CUT, tag="detail-component:grade-line")]
 
 
 def soil_body(u0: float, u1: float, grade_z: float, z_bottom: float) -> list[IRNode]:
@@ -65,7 +66,7 @@ def french_drain(center_u: float, invert_z: float,
          (center_u + radius, center_z - flat), (center_u + radius, center_z + flat),
          (center_u + flat, center_z + radius), (center_u - flat, center_z + radius),
          (center_u - radius, center_z + flat), (center_u - radius, center_z - flat)),
-        "french-drain", "aggregate", None, lineweight=0.35,
+        "french-drain", "aggregate", None, lineweight=PROFILE,
     ))
     return nodes
 
@@ -148,7 +149,7 @@ def build_below_grade_components(model, wall, crop, direction: str,
     nodes += soil_body(soil_lo, soil_hi, grade_in, bottom_in)
     if soil_lo < soil_hi:
         nodes.append(Polyline(points=((soil_lo, grade_in), (soil_hi, grade_in)),
-                              layer="L-SITE-GRAD", lineweight=0.5,
+                              layer="L-SITE-GRAD", lineweight=CUT,
                               tag="detail-component:grade-line"))
 
     # The perimeter drain sits on the footing bedding. Only draw it when the footing is

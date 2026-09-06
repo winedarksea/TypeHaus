@@ -29,6 +29,7 @@ import math
 
 from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.model.electrical import luminaire_types
 from typehaus.model.placeable_symbols import place_local, plan_symbol_strokes
@@ -116,7 +117,7 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
     for run in runs_on_storey:
         forms_present.add("strip")
         b.add(Polyline(points=tuple(_in(point) for point in run.path),
-                       layer="E-LITE-COVE", lineweight=0.6, uid=run.uid, tag=run.tag))
+                       layer="E-LITE-COVE", lineweight=CUT, uid=run.uid, tag=run.tag))
         mark = getattr(types.get(run.type_ref), "type_mark", None) or run.type_ref
         mid = run.path[len(run.path) // 2]
         b.add(Text(anchor=_in((mid[0] + 0.15, mid[1] + 0.15)),
@@ -162,7 +163,7 @@ def _emit_switch_legs(b: SceneBuilder, loads: list, positions: dict) -> None:
             if target is None:
                 continue  # a switch on another storey (3-way up a stair) — off this sheet
             b.add(Polyline(points=(_in(origin), _in(target)), layer="E-LITE-CIRC",
-                           lineweight=0.2, linetype="DASHED"))
+                           lineweight=LIGHT, linetype="DASHED"))
 
 
 _TICK_HALF_LEN_M = 0.075  # a short hash mark, legible without reading as part of the run
@@ -189,7 +190,7 @@ def _emit_light_run_ticks(b: SceneBuilder, run) -> None:
         nx, ny = -direction[1], direction[0]
         a = (point[0] - nx * _TICK_HALF_LEN_M, point[1] - ny * _TICK_HALF_LEN_M)
         b_pt = (point[0] + nx * _TICK_HALF_LEN_M, point[1] + ny * _TICK_HALF_LEN_M)
-        b.add(Polyline(points=(_in(a), _in(b_pt)), layer="E-LITE-COVE", lineweight=0.4))
+        b.add(Polyline(points=(_in(a), _in(b_pt)), layer="E-LITE-COVE", lineweight=PROFILE))
 
 
 def _sub(a: tuple[float, float], c: tuple[float, float]) -> tuple[float, float]:
@@ -213,7 +214,7 @@ def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict) -> No
             continue
         origin = min(run.path, key=lambda point: math.dist(point, target))
         b.add(Polyline(points=(_in(origin), _in(target)), layer="E-LITE-COVE",
-                       lineweight=0.2, linetype="DASHED"))
+                       lineweight=LIGHT, linetype="DASHED"))
         if psu in drawn_psus:
             continue
         drawn_psus.add(psu)
@@ -221,7 +222,7 @@ def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict) -> No
         box = [(target[0] - half, target[1] - half), (target[0] + half, target[1] - half),
                (target[0] + half, target[1] + half), (target[0] - half, target[1] + half)]
         b.add(Polyline(points=tuple(_in(p) for p in box), layer="E-LITE-COVE",
-                       lineweight=0.3, closed=True))
+                       lineweight=PROFILE, closed=True))
         b.add(Text(anchor=_in((target[0] + half + 0.05, target[1])), content="PSU",
                    height=1.8, layer="E-LITE-COVE"))
 
@@ -251,7 +252,7 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
         product = exemplar.get(form)
         if form == "strip":
             b.add(Polyline(points=(_in((origin[0] - 0.25, y)), _in((origin[0] + 0.25, y))),
-                           layer="E-LITE-COVE", lineweight=0.6))
+                           layer="E-LITE-COVE", lineweight=CUT))
         elif product is not None:
             # Normalised to one size, aspect ratio kept: a 60" fan and a 3" can drawn at
             # their true sizes make a legend that is mostly fan.

@@ -25,6 +25,7 @@ from typehaus.emit.draw.foundation_schedule import (
     foundation_walls,
     slabs_on_grade,
 )
+from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
 from typehaus.emit.draw.plumbingplan import storey_above
 from typehaus.emit.draw.scene import (
     ArchDimension,
@@ -142,7 +143,7 @@ def _emit_footings_and_pads(b: SceneBuilder, model: ResolvedModel, marks: Founda
     for solid in bearing_solids(model):
         b.add(Polyline(
             points=tuple(_in(p) for p in solid.outline), layer="S-FNDN-FTNG",
-            closed=True, lineweight=0.25, linetype="HIDDEN2",
+            closed=True, lineweight=LIGHT, linetype="HIDDEN2",
             uid=solid.uid, tag=solid.tag,
         ))
         mark = marks.footing.get(solid.tag) or marks.pad.get(solid.tag, "")
@@ -172,7 +173,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, marks: FoundationMarks) -
     for solid in slabs_on_grade(model):
         b.add(Polyline(
             points=tuple(_in(p) for p in solid.outline), layer="A-SLAB",
-            closed=True, lineweight=0.3, uid=solid.uid, tag=solid.tag,
+            closed=True, lineweight=PROFILE, uid=solid.uid, tag=solid.tag,
         ))
         cx, cy = outline_center(solid.outline)
         b.add(Text(anchor=_in((cx, cy)),
@@ -193,7 +194,7 @@ def _emit_posts_and_beams(b: SceneBuilder, model: ResolvedModel, storey: str | N
                        (x + _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M),
                        (x - _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M))
             b.add(Polyline(points=tuple(_in(p) for p in outline), layer="S-COLS",
-                           closed=True, lineweight=0.4, uid=element.uid, tag=element.tag))
+                           closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
             b.add(Symbol(name="post", insert=_in((x, y)), layer="S-COLS"))
             b.add(Leader(
                 anchor=NamedPoint(xy=_in((x, y)), name=element.tag),
@@ -209,7 +210,7 @@ def _emit_posts_and_beams(b: SceneBuilder, model: ResolvedModel, storey: str | N
         if start is None or end is None:
             continue
         b.add(Polyline(points=(_in(start.position.xy_m), _in(end.position.xy_m)),
-                       layer="S-BEAM", lineweight=0.5, uid=element.uid, tag=element.tag))
+                       layer="S-BEAM", lineweight=CUT, uid=element.uid, tag=element.tag))
 
 
 def _emit_step_callouts(b: SceneBuilder, model: ResolvedModel) -> None:

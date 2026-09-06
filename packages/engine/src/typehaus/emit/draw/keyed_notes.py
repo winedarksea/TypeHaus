@@ -27,6 +27,7 @@ from __future__ import annotations
 import math
 
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
+from typehaus.emit.draw.lineweights import LIGHT
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.emit.draw.typography import CHAR_ASPECT, DIM_TEXT_PT, model_in_per_pt
 
@@ -65,7 +66,7 @@ def bubble_nodes(key: str, at: tuple[float, float], scale: float | None = None) 
         for i in range(_SEGMENTS)
     )
     return [
-        Polyline(points=points, layer=KEY_LAYER, closed=True, lineweight=0.25),
+        Polyline(points=points, layer=KEY_LAYER, closed=True, lineweight=LIGHT),
         Text(anchor=(ux, uz), content=key, height_pt=DIM_TEXT_PT, layer=KEY_LAYER,
              align="center"),
     ]

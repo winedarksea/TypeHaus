@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
@@ -69,7 +70,7 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         layer = "P-SANR-PIPE" if run.system in _DRAIN_VENT else "P-DOMW-PIPE"
         linetype = "DASHED" if run.system in _DRAIN_VENT else "CONTINUOUS"
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
-                       lineweight=0.35, linetype=linetype, uid=run.uid, tag=run.tag))
+                       lineweight=PROFILE, linetype=linetype, uid=run.uid, tag=run.tag))
         mid = run.path[len(run.path) // 2]
         diameter_in = run.diameter_m / M_PER_IN
         if run.z_start_m is not None and run.z_end_m is not None and run.length_m > 1e-9:

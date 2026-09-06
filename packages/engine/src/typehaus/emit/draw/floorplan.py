@@ -26,6 +26,7 @@ from typehaus.emit.draw.door_symbols import (
     symbol_is_centre_anchored,
     symbol_name_for_operation,
 )
+from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
 from typehaus.emit.draw.plan_dimensions import emit_interior_dimension_chains
 from typehaus.emit.draw.plan_labels import emit_room_blocks
 from typehaus.emit.draw.plan_marks import (
@@ -213,7 +214,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             return
         seen_outlines.add(outline_key)
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="A-SLAB",
-                       closed=True, lineweight=0.35, uid=uid, tag=tag))
+                       closed=True, lineweight=PROFILE, uid=uid, tag=tag))
         cx = sum(p[0] for p in outline) / len(outline)
         cy = sum(p[1] for p in outline) / len(outline)
         # ONLY A SURFACE NO ROOM ALREADY NAMES. A slab under a room is that room's floor,
@@ -325,7 +326,7 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                 continue  # a vertical member (post/newel) is a point in plan, not a line
             if member.plan_outline is not None:
                 b.add(Polyline(points=tuple(_in(p) for p in member.plan_outline), closed=True,
-                               layer="A-STAIR", lineweight=0.25, uid=stair.uid,
+                               layer="A-STAIR", lineweight=LIGHT, uid=stair.uid,
                                tag=member.child_key))
                 continue
             if member.category == "landing":
@@ -333,7 +334,7 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                 # board with a width, and one centreline down the middle of a platform is
                 # the "weird split on the landing".
                 b.add(Polyline(points=tuple(_in(p) for p in _member_footprint(member)),
-                               closed=True, layer="A-STAIR", lineweight=0.25,
+                               closed=True, layer="A-STAIR", lineweight=LIGHT,
                                uid=stair.uid, tag=member.child_key))
                 continue
             # A tread's mark is its riser face, not its board centreline: the centreline
@@ -343,12 +344,12 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             a, c = member.riser_line if member.riser_line is not None else (member.p0,
                                                                             member.p1)
             b.add(Polyline(points=(_in(a), _in(c)), layer="A-STAIR",
-                           lineweight=0.25, uid=stair.uid, tag=member.child_key))
+                           lineweight=LIGHT, uid=stair.uid, tag=member.child_key))
         start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)
         end = (maxx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, maxy)
         if stair.run_reversed:
             start, end = end, start
-        b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=0.5,
+        b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=CUT,
                        uid=stair.uid, tag=f"{stair.tag}-direction"))
         # Which way the flight goes is a fact about the READER's storey, not about the
         # stair. A stair is authored departing ``storey`` and arriving ``to_storey``, and it
@@ -408,7 +409,7 @@ def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             continue
         seen.add(key)
         b.add(Polyline(points=tuple(_in(point) for point in solid.outline), closed=True,
-                       layer="A-RAIL", lineweight=0.25, uid=solid.uid, tag=solid.tag))
+                       layer="A-RAIL", lineweight=LIGHT, uid=solid.uid, tag=solid.tag))
 
 
 #: Candidate caption offsets around an alarm glyph, in glyph-radii, first that clears wins.

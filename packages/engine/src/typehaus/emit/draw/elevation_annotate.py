@@ -36,6 +36,7 @@ from typehaus.emit.draw.elevation_project import (
     VisiblePiece,
     split_at_grade,
 )
+from typehaus.emit.draw.lineweights import CUT_HEAVY, LIGHT
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Leader,
@@ -140,7 +141,7 @@ def emit_grade_profile(b: SceneBuilder, model: ResolvedModel, view: ElevationVie
     profile the same way round as the building it belongs to."""
     points = grade_profile_points(model, view, facade_depth, lo_u, hi_u)
     poly = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in points)
-    b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=0.7))
+    b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=CUT_HEAVY))
     emit_grade_hatch(b, points)
     b.add(Text(anchor=(poly[0][0], poly[0][1] - ANNO_HEIGHT_IN), content="GRADE",
                height=ANNO_HEIGHT_IN, layer="L-SITE-GRAD"))
@@ -156,7 +157,7 @@ def emit_grade_hatch(b: SceneBuilder, points: list[tuple[float, float]]) -> None
         z = interpolate_profile(points, u)
         b.add(Polyline(points=((u / M_PER_IN, z / M_PER_IN),
                                ((u - 0.15) / M_PER_IN, (z - 0.15) / M_PER_IN)),
-                       layer="L-SITE-GRAD", lineweight=0.25))
+                       layer="L-SITE-GRAD", lineweight=LIGHT))
         u += tick_spacing_m
 
 

@@ -95,7 +95,7 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
     by prescriptive tables gets no empty page (``build_sheet_index``).
     """
     from typehaus.checks import run_from_model
-    from typehaus.engineering import Freshness, Status, load_register
+    from typehaus.engineering import Freshness, load_register
 
     with schedule_sheet(pdf, model, number, name) as fig:
         report = run_from_model(model, [], house_dir)

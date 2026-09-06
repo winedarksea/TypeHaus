@@ -37,6 +37,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
     wall_cut_bounds_m,
 )
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 
@@ -96,7 +97,7 @@ def rim_band_air_seal(model, walls, crop, direction, station) -> list[IRNode]:
         nodes += rect_region(sheath_out, band_z0 - cfg.air_barrier_lap_in,
                              sheath_out + out_sign * cfg.air_barrier_thickness_in,
                              band_z1 + cfg.air_barrier_lap_in,
-                             "rim-air-barrier", "air-barrier", "membrane", lineweight=0.3)
+                             "rim-air-barrier", "air-barrier", "membrane", lineweight=PROFILE)
 
     if stud is not None:
         stud_in = face_of(stud, is_outboard_high, outer=False)
@@ -105,13 +106,13 @@ def rim_band_air_seal(model, walls, crop, direction, station) -> list[IRNode]:
         # Spray foam filling the rim cavity, applied to the inboard face of the rim board.
         nodes += rect_region(stud_out, band_z0, stud_out + in_sign * cfg.cavity_foam_in,
                              band_z1, "rim-cavity-foam", "spray-foam", "foam",
-                             lineweight=0.3)
+                             lineweight=PROFILE)
         # A bead at each plate line — the top plate of the wall below and the sole plate of
         # the wall above are two separate joints and both leak if only one is sealed.
         for bead_z in (band_z0, band_z1):
             nodes += rect_region(stud_in, bead_z, stud_out,
                                  bead_z + cfg.sealant_bead_in,
-                                 "rim-sealant-bead", "sealant", "foam", lineweight=0.3)
+                                 "rim-sealant-bead", "sealant", "foam", lineweight=PROFILE)
     return nodes
 
 

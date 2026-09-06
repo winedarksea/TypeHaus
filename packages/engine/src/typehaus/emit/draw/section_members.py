@@ -9,6 +9,7 @@ assembly ones.
 
 from __future__ import annotations
 
+from typehaus.emit.draw.lineweights import FAINT, PROFILE
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.emit.draw.section_clip import (
@@ -177,7 +178,7 @@ def _emit_member_profile(b, profile, crop, uid, tag, member_profile, pattern,
     if len(clipped) < 3:
         return
     points = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
-    b.add(Polyline(points=points, layer="S-FRAM", closed=True, lineweight=0.35,
+    b.add(Polyline(points=points, layer="S-FRAM", closed=True, lineweight=PROFILE,
                    uid=uid, tag=tag))
     b.add(Hatch(boundary=points, pattern=pattern, layer="A-WALL-PATT",
                 uid=uid, material=material or "spf"))
@@ -219,7 +220,7 @@ def _emit_raked_flanges(b, profile, crop, uid, tag, member_profile) -> None:
         (su0, sz0), (su1, sz1) = segment
         b.add(Polyline(points=((su0 / M_PER_IN, sz0 / M_PER_IN),
                                (su1 / M_PER_IN, sz1 / M_PER_IN)),
-                       layer="S-FRAM", lineweight=0.13, uid=uid, tag=f"{tag}/flange"))
+                       layer="S-FRAM", lineweight=FAINT, uid=uid, tag=f"{tag}/flange"))
 
 
 def _emit_member_cuts(b, model, plane, crop, walls_and_floors=True) -> None:
@@ -261,6 +262,6 @@ def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
     nodes: list = []
     for z in (z0 + ft, z1 - ft):
         nodes.append(Polyline(points=((u0 / M_PER_IN, z / M_PER_IN), (u1 / M_PER_IN, z / M_PER_IN)),
-                              layer="S-FRAM", lineweight=0.13, uid=uid,
+                              layer="S-FRAM", lineweight=FAINT, uid=uid,
                               tag=f"{tag}/flange"))
     return nodes

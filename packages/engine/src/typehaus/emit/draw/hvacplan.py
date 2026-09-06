@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_floor_heat, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import FAINT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import rect_between
@@ -45,7 +46,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
         if floor.tag in occupied_floors:
             for member in floor.members:
                 b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="S-FRAM",
-                               lineweight=0.13, uid=floor.uid, tag=member.child_key))
+                               lineweight=FAINT, uid=floor.uid, tag=member.child_key))
 
     for duct in model.ducts:
         if duct.storey != storey:
@@ -55,7 +56,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
             outline = rect_between(duct.path[i], duct.path[i + 1],
                                    -duct.width_m / 2, duct.width_m / 2)
             b.add(Polyline(points=tuple(_in(p) for p in outline), layer=layer, closed=True,
-                           lineweight=0.35, uid=duct.uid, tag=f"{duct.tag}-seg{i}"))
+                           lineweight=PROFILE, uid=duct.uid, tag=f"{duct.tag}-seg{i}"))
         mid = duct.path[len(duct.path) // 2]
         label = (f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
                 f'{duct.system.upper()}')
@@ -95,6 +96,6 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
                    (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="M-HVAC-EQPM",
-                       closed=True, lineweight=0.4, uid=element.uid, tag=element.tag))
+                       closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
         b.add(Text(anchor=_in((x, y)), content=element.kind.value.upper(), height=2.5,
                    layer="M-HVAC-EQPM", align="center"))

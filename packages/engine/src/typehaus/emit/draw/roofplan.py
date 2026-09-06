@@ -10,6 +10,7 @@ parallel bearing walls) cannot produce them — nothing is fabricated.
 from __future__ import annotations
 
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT
 from typehaus.emit.draw.scene import (
     ArchDimension,
     NamedPoint,
@@ -38,7 +39,7 @@ def build_roof_plan(model: ResolvedModel) -> Scene:
     b = SceneBuilder(name="roof-plan", units="in")
     for roof in model.roofs:
         footprint = tuple(_in(p) for p in roof.footprint)
-        b.add(Polyline(points=footprint, layer="A-ROOF", closed=True, lineweight=0.45,
+        b.add(Polyline(points=footprint, layer="A-ROOF", closed=True, lineweight=CUT,
                        uid=roof.uid, tag=roof.tag))
         xs = [point[0] for point in roof.footprint]
         ys = [point[1] for point in roof.footprint]
@@ -48,7 +49,7 @@ def build_roof_plan(model: ResolvedModel) -> Scene:
         else:
             ridge = (((minx + maxx) / 2, miny), ((minx + maxx) / 2, maxy))
         b.add(Polyline(points=tuple(_in(p) for p in ridge), layer="A-ROOF",
-                       lineweight=0.8, linetype="DASHED",
+                       lineweight=CUT_HEAVY, linetype="DASHED",
                        uid=roof.uid, tag=f"{roof.tag}-ridge"))
         authored = model.plan.by_tag(roof.tag)
         pitch = getattr(authored, "pitch", None)
@@ -124,7 +125,7 @@ def _emit_overhangs(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
     if max(overhangs.values()) / M_PER_IN >= _MIN_OVERHANG_IN:
         b.add(Polyline(points=(_in((cx0, cy0)), _in((cx1, cy0)),
                                _in((cx1, cy1)), _in((cx0, cy1))),
-                       layer="A-WALL-BELW", closed=True, lineweight=0.25,
+                       layer="A-WALL-BELW", closed=True, lineweight=LIGHT,
                        linetype="DASHED", uid=roof.uid, tag=f"{roof.tag}-wall-below"))
     edge_order = (("south", "north", "west", "east") if roof.ridge_direction == "x"
                   else ("west", "east", "south", "north"))

@@ -23,6 +23,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
+from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.model.patterns import matches
 from typehaus.quantities import M_PER_IN
@@ -122,7 +123,7 @@ def _spray_foam_wedge(plan: JointPlan, model, wall: ResolvedWall, roof: Resolved
             Hatch(boundary=points, pattern="spray-foam", layer="A-DETL-TRMT",
                   uid=f"trmt:{wall.uid}:wedge-{index}"))
         plan.treatments.append(
-            Polyline(points=points, layer="A-DETL-TRMT", closed=True, lineweight=0.18,
+            Polyline(points=points, layer="A-DETL-TRMT", closed=True, lineweight=REFERENCE,
                      tag="spray-foam-wedge"))
 
 

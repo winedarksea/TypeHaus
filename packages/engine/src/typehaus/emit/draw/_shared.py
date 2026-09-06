@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.annotate import DODGE_GAP_PT, LabelSpec, PlacedLabel, dodge, label_box
 from typehaus.emit.draw.annotate import model_in_per_pt as annotate_model_in_per_pt
+from typehaus.emit.draw.lineweights import CUT, LIGHT
 from typehaus.emit.draw.scene import (
     ArchDimension,
     FaceAnchor,
@@ -117,7 +118,7 @@ def emit_wall(
         for m in wall.members:
             b.add(Polyline(
                 points=(to_in(m.p0), to_in(m.p1)),
-                layer="S-FRAM", lineweight=0.5, uid=wall.uid, tag=m.child_key,
+                layer="S-FRAM", lineweight=CUT, uid=wall.uid, tag=m.child_key,
             ))
 
 
@@ -168,7 +169,7 @@ def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str,
             continue
         layer = layers.get(item.domain, "A-FIXT")
         b.add(Polyline(points=tuple(to_in(point) for point in item.footprint),
-                       layer=layer, closed=True, lineweight=0.25,
+                       layer=layer, closed=True, lineweight=LIGHT,
                        uid=item.uid, tag=item.tag))
         strokes = symbols.get(item.type_ref or "", ())
         for stroke in strokes:
@@ -202,7 +203,7 @@ def emit_floor_heat(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             y = min(maxy, miny + index * zone.spacing_m)
             points.extend(((minx, y), (maxx, y)) if index % 2 == 0 else ((maxx, y), (minx, y)))
         b.add(Polyline(points=tuple(to_in(point) for point in points), layer="A-FLR-HEAT",
-                       lineweight=0.25, uid=zone.uid, tag=zone.tag))
+                       lineweight=LIGHT, uid=zone.uid, tag=zone.tag))
         b.add(Text(anchor=to_in(((minx + maxx) / 2, (miny + maxy) / 2)),
                    content=f"{zone.tag} {zone.wire_length_m / 0.3048:.0f} LF",
                    height_pt=TEXT_PT, layer="A-ANNO-TEXT", align="center"))

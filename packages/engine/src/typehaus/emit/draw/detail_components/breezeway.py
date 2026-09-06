@@ -29,7 +29,8 @@ from typehaus.emit.draw.detail_components.config import (
     BREEZEWAY_GLAZING as CFG,
 )
 from typehaus.emit.draw.detail_components.config import LAYER
-from typehaus.emit.draw.detail_components.geometry import closed_region, rect_region
+from typehaus.emit.draw.detail_components.geometry import rect_region
+from typehaus.emit.draw.lineweights import CUT, PROFILE
 from typehaus.emit.draw.scene import IRNode, Polyline
 from typehaus.quantities import M_PER_IN
 
@@ -82,7 +83,7 @@ def weeping_u_channel(u_center: float, z_top: float, crop_in) -> list[IRNode]:
     half = CFG.weep_diameter_in / 2.0
     nodes.append(Polyline(
         points=((u_center - half, z_top - lip), (u_center + half, z_top - lip)),
-        layer=LAYER, closed=False, lineweight=0.5,
+        layer=LAYER, closed=False, lineweight=CUT,
         tag="detail-component:breezeway-weep-hole"))
     return nodes
 
@@ -162,7 +163,7 @@ def gasketed_fastener(u: float, z_top: float, crop_in) -> list[IRNode]:
                          u + CFG.fastener_washer_in / 2.0, z_top,
                          "breezeway-panel-fastener-washer", "rubber", None)
     nodes.append(Polyline(points=((u, z_top), (u, z_top - CFG.fastener_shank_in)),
-                          layer=LAYER, closed=False, lineweight=0.3,
+                          layer=LAYER, closed=False, lineweight=PROFILE,
                           tag="detail-component:breezeway-panel-fastener-shank"))
     return nodes
 

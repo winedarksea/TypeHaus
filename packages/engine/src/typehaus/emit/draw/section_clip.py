@@ -12,6 +12,7 @@ IR's inches.
 
 from __future__ import annotations
 
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import Hatch, Polyline
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import SectionProfile
@@ -107,7 +108,7 @@ def rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag, outline: bool = True,
     nodes: list = []
     if outline:
         nodes.append(Polyline(points=pts, layer=layer, closed=True,
-                              lineweight=0.35 if layer == "A-WALL" else 0.18,
+                              lineweight=PROFILE if layer == "A-WALL" else 0.18,
                               uid=uid, tag=tag))
     if pattern:
         nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
@@ -127,7 +128,7 @@ def quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
     nodes: list = []
     if outline:
         nodes.append(Polyline(points=pts, layer=layer, closed=True,
-                              lineweight=0.35 if layer == "A-WALL" else 0.18,
+                              lineweight=PROFILE if layer == "A-WALL" else 0.18,
                               uid=uid, tag=tag))
     if pattern:
         nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",

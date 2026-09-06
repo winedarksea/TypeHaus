@@ -20,6 +20,7 @@ from typehaus.emit.draw.framing_schedule import (
     framing_sheet_findings,
     joist_label,
 )
+from typehaus.emit.draw.lineweights import CUT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
@@ -53,7 +54,7 @@ def build_framing_plan(model: ResolvedModel, floor_tag: str) -> Scene:
     _emit_walls_below(b, model, level)
     for member in level.floor.members:
         b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="S-FRAM",
-                       lineweight=0.4, uid=level.floor.uid, tag=member.child_key))
+                       lineweight=PROFILE, uid=level.floor.uid, tag=member.child_key))
 
     plan_points = _drawn_plan_points(model, level)
     metrics = metrics_for(plan_points)
@@ -130,7 +131,7 @@ def _emit_floor_openings(b: SceneBuilder, model: ResolvedModel, level: FramedLev
             continue
         outline = [point.xy_m for point in opening.outline]
         b.add(Polyline(points=tuple(_in(point) for point in outline), layer="S-FRAM-OPEN",
-                       closed=True, lineweight=0.3, uid=opening.uid, tag=opening.tag))
+                       closed=True, lineweight=PROFILE, uid=opening.uid, tag=opening.tag))
         cx, cy = outline_center(outline)
         label = f"{opening.tag}\nHEADER / TRIMMER {keyed}" if keyed else \
             f"{opening.tag}\nHEADER / TRIMMER BY SUPPLIER"
@@ -146,7 +147,7 @@ def _emit_beams_and_posts(b: SceneBuilder, model: ResolvedModel, level: FramedLe
         if start is None or end is None:
             continue
         p0, p1 = start.position.xy_m, end.position.xy_m
-        b.add(Polyline(points=(_in(p0), _in(p1)), layer="S-BEAM", lineweight=0.6,
+        b.add(Polyline(points=(_in(p0), _in(p1)), layer="S-BEAM", lineweight=CUT,
                        uid=beam.uid, tag=beam.tag))
         midpoint = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
         emit_mark(b, _in(midpoint), level.marks[beam.tag], metrics, layer="S-BEAM")
@@ -161,7 +162,7 @@ def _emit_beams_and_posts(b: SceneBuilder, model: ResolvedModel, level: FramedLe
                    (x + _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M),
                    (x - _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M))
         b.add(Polyline(points=tuple(_in(point) for point in outline), layer="S-COLS",
-                       closed=True, lineweight=0.4, uid=post.uid, tag=post.tag))
+                       closed=True, lineweight=PROFILE, uid=post.uid, tag=post.tag))
         b.add(Symbol(name="post", insert=_in((x, y)), layer="S-COLS"))
         emit_mark(b, _in((x, y)), level.marks[post.tag], metrics, layer="S-COLS")
 
@@ -171,7 +172,7 @@ def _emit_headers(b: SceneBuilder, level: FramedLevel, metrics: BlockMetrics) ->
     for wall, member, _opening in level.headers:
         midpoint = ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
         b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="S-BEAM",
-                       lineweight=0.45, uid=wall.uid, tag=member.child_key))
+                       lineweight=CUT, uid=wall.uid, tag=member.child_key))
         emit_mark(b, _in(midpoint), level.marks[f"{wall.tag}/{member.child_key}"], metrics,
                   layer="S-BEAM")
 

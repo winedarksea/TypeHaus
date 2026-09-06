@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     ArchDimension,
     NamedPoint,
@@ -54,7 +55,7 @@ def _emit_contours(builder: SceneBuilder, site) -> None:
         if len(pts) < 2:
             continue
         builder.add(Polyline(points=tuple(_in(p) for p in pts), layer="C-TOPO-MINR",
-                             lineweight=0.18, linetype="CONTINUOUS"))
+                             lineweight=REFERENCE, linetype="CONTINUOUS"))
         elevation_ft = contour.elevation.meters * 3.280839895
         builder.add(Text(anchor=_in((pts[0][0], pts[0][1])),
                          content=f"{elevation_ft:+.1f}'", height=1.6,
@@ -89,7 +90,7 @@ def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) 
         tail, tip = (foot.x, foot.y), spot.position.xy_m
         slope = (grade_m - spot.elevation.meters) / distance_m
         builder.add(Polyline(points=(_in(tail), _in(tip)), layer="C-TOPO-GRAD",
-                             lineweight=0.3))
+                             lineweight=PROFILE))
         builder.add(Symbol(name="span-arrow", insert=_in(tip),
                            rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
                            scale=10.0, layer="C-TOPO-GRAD"))
@@ -120,7 +121,7 @@ def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) 
         if len(verts) < 2:
             continue
         builder.add(Polyline(points=tuple(_in(v) for v in verts), closed=True,
-                             layer="C-TOPO-IMPV", lineweight=0.3, linetype="DASHED"))
+                             layer="C-TOPO-IMPV", lineweight=PROFILE, linetype="DASHED"))
         dists = [boundary.distance(Point(v)) for v in verts]
         near_i = min(range(len(verts)), key=dists.__getitem__)
         far_i = max(range(len(verts)), key=dists.__getitem__)
@@ -129,7 +130,7 @@ def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) 
             continue
         tail, tip = verts[near_i], verts[far_i]
         slope = (surface.near_elevation.meters - surface.far_elevation.meters) / run_m
-        builder.add(Polyline(points=(_in(tail), _in(tip)), layer="C-TOPO-IMPV", lineweight=0.3))
+        builder.add(Polyline(points=(_in(tail), _in(tip)), layer="C-TOPO-IMPV", lineweight=PROFILE))
         builder.add(Symbol(name="span-arrow", insert=_in(tip),
                            rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
                            scale=10.0, layer="C-TOPO-IMPV"))
@@ -160,7 +161,7 @@ def _emit_roofs_or_wall_footprints(builder: SceneBuilder, model: ResolvedModel) 
     roofs_by_storey = {roof.storey for roof in model.roofs}
     for roof in model.roofs:
         builder.add(Polyline(points=tuple(_in(point) for point in roof.footprint), closed=True,
-                             layer="A-SITE-ROOF", lineweight=0.6, uid=roof.uid, tag=roof.tag))
+                             layer="A-SITE-ROOF", lineweight=CUT, uid=roof.uid, tag=roof.tag))
         _label(builder, roof.tag, roof.footprint)
 
     # A freestanding concrete garden can have no roof. The lowest wall loop provides its
@@ -169,15 +170,16 @@ def _emit_roofs_or_wall_footprints(builder: SceneBuilder, model: ResolvedModel) 
         if wall.storey in roofs_by_storey or wall.storey not in {"basement", "main", "garage"}:
             continue
         builder.add(Polyline(points=(_in(wall.axis[0]), _in(wall.axis[1])), layer="A-SITE-WALL",
-                             lineweight=0.45, uid=wall.uid, tag=wall.tag))
+                             lineweight=CUT, uid=wall.uid, tag=wall.tag))
 
 
 def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedModel) -> None:
     for solid in model.solids:
         if solid.category not in {"footing", "pad"}:
             continue
-        builder.add(Polyline(points=tuple(_in(point) for point in solid.outline), closed=True,
-                             layer="A-SITE-FOUND", lineweight=0.3, uid=solid.uid, tag=solid.tag))
+        builder.add(Polyline(points=tuple(_in(point) for point in solid.outline),
+                             closed=True, layer="A-SITE-FOUND", lineweight=PROFILE,
+                             uid=solid.uid, tag=solid.tag))
 
 
 #: Buried stormwater draws dashed; the hung/surface family (gutter, leader, pit cover)
@@ -205,7 +207,7 @@ def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
         if len(points) < 2:
             continue
         builder.add(Polyline(
-            points=points, closed=True, layer="C-STRM-DRAN", lineweight=0.3,
+            points=points, closed=True, layer="C-STRM-DRAN", lineweight=PROFILE,
             linetype="DASHED" if category in _BURIED_DRAINAGE else "CONTINUOUS",
             uid=solid.uid, tag=solid.tag))
         # Pits and wells get a name — they are the destinations the arrows on this sheet
@@ -224,14 +226,14 @@ def _emit_parcel_and_setbacks(builder: SceneBuilder, model: ResolvedModel, site)
     if len(parcel) < 3:
         return
     builder.add(Polyline(points=tuple(_in(p) for p in parcel), closed=True, layer="C-PROP",
-                         lineweight=0.5, linetype="PHANTOM"))
+                         lineweight=CUT, linetype="PHANTOM"))
     n = len(parcel)
     footprint_pts = [p for wall in model.walls for p in (wall.axis[0], wall.axis[1])]
     for spec in site.setbacks:
         a, b = parcel[spec.edge % n], parcel[(spec.edge + 1) % n]
         offset_a, offset_b = _offset_edge(a, b, spec.distance.meters)
         builder.add(Polyline(points=(_in(offset_a), _in(offset_b)), layer="C-PROP-SETB",
-                             lineweight=0.3, linetype="DASHED"))
+                             lineweight=PROFILE, linetype="DASHED"))
         mid = ((offset_a[0] + offset_b[0]) / 2, (offset_a[1] + offset_b[1]) / 2)
         builder.add(Text(anchor=_in(mid), content=f"{spec.label} SETBACK", height=2.5,
                          layer="C-PROP-SETB", align="center"))
@@ -252,7 +254,7 @@ def _emit_utilities(builder: SceneBuilder, site) -> None:
             continue
         layer = f"C-UTIL-{line.kind.value.upper()}"
         builder.add(Polyline(points=tuple(_in(p) for p in path), layer=layer,
-                             lineweight=0.3, linetype="DASHED"))
+                             lineweight=PROFILE, linetype="DASHED"))
         entry = line.entry.xy_m
         builder.add(Symbol(name="utility-entry", insert=_in(entry), layer=layer))
         builder.add(Text(anchor=_in((entry[0] + 0.5, entry[1] + 0.5)),
@@ -278,7 +280,7 @@ def _emit_spot_elevations_and_drainage(builder: SceneBuilder, site) -> None:
             continue
         (dx, dy), _ = min(candidates, key=lambda item: math.hypot(item[0][0] - x, item[0][1] - y))
         builder.add(Polyline(points=(_in((x, y)), _in((dx, dy))), layer="C-TOPO-ARRW",
-                             lineweight=0.25))
+                             lineweight=LIGHT))
         builder.add(Symbol(name="span-arrow", insert=_in(((x + dx) / 2, (y + dy) / 2)),
                            rotation=math.degrees(math.atan2(dy - y, dx - x)), scale=12.0,
                            layer="C-TOPO-ARRW"))
@@ -292,7 +294,7 @@ def _emit_north_arrow(builder: SceneBuilder, model: ResolvedModel) -> None:
     origin = (min_x - 2.0, max_y - 1.0)
     radians = model.plan.project.site.true_north.radians
     tip = (origin[0] + math.sin(radians) * 3.0, origin[1] + math.cos(radians) * 3.0)
-    builder.add(Polyline(points=(_in(origin), _in(tip)), layer="A-SITE-ANNO", lineweight=0.7))
+    builder.add(Polyline(points=(_in(origin), _in(tip)), layer="A-SITE-ANNO", lineweight=CUT_HEAVY))
     builder.add(Text(anchor=_in((tip[0], tip[1] + 0.4)), content="N", height=4.0,
                      layer="A-SITE-ANNO", align="center"))
 

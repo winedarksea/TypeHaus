@@ -44,6 +44,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
     vent_face,
 )
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 
@@ -97,7 +98,7 @@ def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> lis
         # Sealant at the cladding-to-frame joint, tucked under the flashing's drip.
         nodes += rect_region(clad_out - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_out, head_z,
-                             "opening-sealant", "sealant", "metal", lineweight=0.3)
+                             "opening-sealant", "sealant", "metal", lineweight=PROFILE)
     if _in_crop_z(sill_z, crop):
         stud = outermost_with_function(intervals, "structure")
         back = (face_of(stud, is_outboard_high, outer=False) if stud is not None
@@ -186,7 +187,7 @@ def outie_window_truss(model, wall, opening, crop, direction, station) -> list[I
         # joint is at the mount plane now, which is the cladding's own inner face.
         nodes += rect_region(clad_in - out_sign * cfg.sealant_bead_in,
                              head_z - cfg.sealant_bead_in, clad_in, head_z,
-                             "opening-sealant", "sealant", "metal", lineweight=0.3)
+                             "opening-sealant", "sealant", "metal", lineweight=PROFILE)
     if _in_crop_z(sill_z, crop):
         pan = path_from_steps((sheath_out, sill_z + cfg.sill_pan_back_dam_in), [
             (0.0, -cfg.sill_pan_back_dam_in),
@@ -216,14 +217,14 @@ def concrete_opening_bucks(model, wall, opening, crop, direction, station) -> li
     nodes: list[IRNode] = []
     if _in_crop_z(head_z, crop):
         nodes += rect_region(lo, head_z - cfg.buck_in, hi, head_z,
-                             "opening-buck", "spf", "lumber", lineweight=0.35)
+                             "opening-buck", "spf", "lumber", lineweight=PROFILE)
         for face_u, in_sign in ((lo, 1.0), (hi, -1.0)):
             nodes += rect_region(face_u, head_z - cfg.buck_in,
                                  face_u + in_sign * cfg.sealant_bead_in, head_z,
-                                 "opening-sealant", "sealant", "metal", lineweight=0.3)
+                                 "opening-sealant", "sealant", "metal", lineweight=PROFILE)
     if opening.sill_m > 0.0 and _in_crop_z(sill_z, crop):
         nodes += rect_region(lo, sill_z, hi, sill_z + cfg.buck_in,
-                             "opening-buck", "spf", "lumber", lineweight=0.35)
+                             "opening-buck", "spf", "lumber", lineweight=PROFILE)
     return nodes
 
 
@@ -251,11 +252,11 @@ def sauna_liner_opening_return(model, wall, opening, crop, direction,
     if _in_crop_z(head_z, crop):
         nodes += rect_region(lo, head_z - SAUNA_MEMBRANE_IN, hi, head_z,
                              "sauna-foil-return", "air-barrier", "membrane",
-                             lineweight=0.3)
+                             lineweight=PROFILE)
     if opening.sill_m > 0.0 and _in_crop_z(sill_z, crop):
         nodes += rect_region(lo, sill_z, hi, sill_z + SAUNA_MEMBRANE_IN,
                              "sauna-foil-return", "air-barrier", "membrane",
-                             lineweight=0.3)
+                             lineweight=PROFILE)
     return nodes
 
 
@@ -292,13 +293,13 @@ def humid_liner_opening_return(model, wall, opening, crop, direction,
     if _in_crop_z(head_z, crop):
         nodes += rect_region(lo, head_z - SAUNA_MEMBRANE_IN, hi, head_z,
                              "humid-membrane-return", "air-barrier", "membrane",
-                             lineweight=0.3)
+                             lineweight=PROFILE)
     if _in_crop_z(sill_z, crop):
         nodes += rect_region(lo, sill_z, hi, sill_z + SAUNA_MEMBRANE_IN,
                              "humid-membrane-return", "air-barrier", "membrane",
-                             lineweight=0.3)
+                             lineweight=PROFILE)
         nodes += rect_region(lo, sill_z + SAUNA_MEMBRANE_IN, hi,
                              sill_z + SAUNA_MEMBRANE_IN + OPENING_DETAIL.sill_pan_lip_in,
                              "humid-sill-pan", "metal-dark-exterior", "flashing",
-                             lineweight=0.35)
+                             lineweight=PROFILE)
     return nodes

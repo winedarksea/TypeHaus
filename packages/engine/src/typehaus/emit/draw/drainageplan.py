@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.trades import DRAINAGE_CATEGORIES
 from typehaus.resolve.model import ResolvedModel
@@ -73,7 +74,7 @@ def build_drainage_plan(model: ResolvedModel, storey: str) -> Scene:
         points = tuple(_in(p) for p in solid.outline)
         if len(points) < 2:
             continue
-        b.add(Polyline(points=points, closed=True, layer=layer, lineweight=0.35,
+        b.add(Polyline(points=points, closed=True, layer=layer, lineweight=PROFILE,
                        linetype=linetype, uid=solid.uid, tag=solid.tag))
         base = (solid.tag or "").rstrip("0123456789").rstrip("-")
         if base and base not in labelled:
@@ -85,7 +86,7 @@ def build_drainage_plan(model: ResolvedModel, storey: str) -> Scene:
 
     for roof, member in _derived_gutter_members(model, storey):
         b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="P-STRM-GUTR",
-                       lineweight=0.35, uid=f"{roof.uid}-{member.child_key}",
+                       lineweight=PROFILE, uid=f"{roof.uid}-{member.child_key}",
                        tag=f"{roof.tag}:{member.child_key}"))
         mid = ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
         b.add(Text(anchor=_in((mid[0], mid[1])), content=f"{roof.tag} EAVE GUTTER",

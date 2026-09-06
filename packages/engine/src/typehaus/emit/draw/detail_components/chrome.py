@@ -20,6 +20,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     outermost_with_function,
     rect_points,
 )
+from typehaus.emit.draw.lineweights import LIGHT
 from typehaus.emit.draw.scene import ArchDimension, Hatch, IRNode, NamedPoint, Polyline, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
@@ -149,7 +150,7 @@ def material_legend(model, derived, u_left: float, z_top: float,
         boundary = rect_points(u_left, y0, u_left + LEGEND_SWATCH_IN, y1)
         nodes.append(Hatch(boundary=boundary, pattern=pattern, layer=LAYER,
                            material=material))
-        nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=0.2))
+        nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=LIGHT))
         nodes.append(Text(anchor=(u_left + LEGEND_SWATCH_IN + 1.5, (y0 + y1) / 2),
                           content=_legend_label(material, seen[material]),
                           height=TEXT_HEIGHT_IN, layer="A-ANNO-TEXT"))
@@ -198,7 +199,7 @@ def _paper_legend(model, derived, band, drawn=None) -> list[IRNode]:
         boundary = rect_points(cx, cy, cx + _SWATCH_IN, cy + _SWATCH_IN)
         nodes.append(Hatch(boundary=boundary, pattern=detail_hatch(material) or "metal",
                            layer=LAYER, material=material, space="paper"))
-        nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=0.2,
+        nodes.append(Polyline(points=boundary, layer=LAYER, closed=True, lineweight=LIGHT,
                               space="paper"))
         nodes.append(Text(anchor=(cx + _SWATCH_IN + 0.06, cy + _SWATCH_IN / 2),
                           content=_legend_label(material, thickness),

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.lineweights import CUT, PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.draw.schedule_block import (
     BlockMetrics,
@@ -61,12 +62,12 @@ def build_roof_framing_plan(model: ResolvedModel, roof_tag: str) -> Scene:
         return b.build()
 
     b.add(Polyline(points=tuple(_in(point) for point in roof.footprint), layer="A-ROOF",
-                   closed=True, lineweight=0.4, uid=roof.uid, tag=roof.tag))
+                   closed=True, lineweight=PROFILE, uid=roof.uid, tag=roof.tag))
     _emit_bearing_walls(b, model, roof)
     for member in _drawn_members(roof):
         layer = "S-BEAM" if member.category == _RIDGE_CATEGORY else "S-FRAM"
         b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer=layer,
-                       lineweight=0.5 if layer == "S-BEAM" else 0.35,
+                       lineweight=CUT if layer == "S-BEAM" else 0.35,
                        uid=roof.uid, tag=member.child_key))
 
     plan_points = [_in(point) for point in roof.footprint]

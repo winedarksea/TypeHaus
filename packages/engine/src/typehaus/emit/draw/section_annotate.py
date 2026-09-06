@@ -43,6 +43,7 @@ from typehaus.emit.draw.elevation_annotate import (
     merged_levels,
 )
 from typehaus.emit.draw.elevation_project import ElevationView, view_for
+from typehaus.emit.draw.lineweights import CUT_HEAVY
 from typehaus.emit.draw.plan_labels import room_display_name
 from typehaus.emit.draw.scene import (
     IRNode,
@@ -244,7 +245,7 @@ def _emit_grade(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
     segments = [segment for segment in _outboard_profiles(points, footprint) if segment]
     for segment in segments:
         poly = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in segment)
-        b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=0.7))
+        b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=CUT_HEAVY))
         emit_grade_hatch(b, segment)
     caption = None
     if segments:
