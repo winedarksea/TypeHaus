@@ -11232,7 +11232,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11264,7 +11264,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11296,7 +11296,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11328,7 +11328,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11360,7 +11360,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11392,7 +11392,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11424,7 +11424,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
@@ -11456,7 +11456,7 @@
       "height_pt": 5.95,
       "rotation": 0.0,
       "style": "ARCH",
-      "layer": "A-AREA-IDEN",
+      "layer": "A-ANNO-DIMS",
       "align": "center",
       "uid": null
     },
