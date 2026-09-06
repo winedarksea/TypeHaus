@@ -12,6 +12,40 @@ source:
   - basement_to_framed_wall_detail.py
 ---
 
+## Sheet notes
+
+### General
+- Framed wall above: 2x6 at 16" o.c., R-19 bays, 4" continuous exterior.
+- Basement wall: 8" pour, #5 at 41" o.c. vertical, aligned on the concrete face.
+- Basement CI: 4" XPS in two layers, seams staggered, outer layer taped.
+- Exposed XPS band: 1/8" acrylic coating over mesh, 276.3 SF.
+- Coating band: 6" below grade to the top of the wall.
+- Bearing seat: pour tops at -13 7/16". Mudsill, gasket and 11 7/8" rim above it.
+- Sill: one shared 2x6 PT mudsill, 370.0 LF, on a 1/16" compressed EPDM gasket.
+- Interior slab: 3-1/2" at 3,500 psi over 3" XPS at 40 psi, 10 mil poly, 4" gravel.
+- Footing drain: 4" perforated pipe in lined washed stone beside the footing.
+- Grade: 6" fall in the first 10 feet per IRC R401.3.
+
+### Keyed
+- [K1] Liquid membrane on sheathing and concrete; lap it across the sill and rim.
+- [K2] Bond the XPS with foam-compatible mastic to the damp-proofing. No anchors.
+- [K3] Coating head tucks under the rainscreen Z-flashing; foot buries 6" in soil.
+- [K4] Z-flashing with drip at the outrigger base, set to the 1" vent, not 3-1/2".
+- [K5] Insect mesh above the Z-flashing, stapled to the outriggers, run behind it.
+- [K6] L-flashing from sheathing base onto the basement foam; seal its outer end.
+- [K7] Mudsill anchors per IRC R403.1.6. Plate joint: peel-and-stick on the envelope, foam elsewhere.
+- [K8] Slab perimeter: 1" XPS thermal break with 1/2" polyurethane sealant.
+- [K9] Veneer cavity: 2" EPS on the backup wall, 4" clear air, weeps at the beam.
+- [K10] Veneer anchors: two-piece adjustable, rated for the full 6" of insulation.
+- [K11] Soft joint at each veneer end against the retaining wall. Do not anchor.
+
+### Spec 07 21 00
+- Use XPS with published low water absorption; confirm compressive strength for below-grade use.
+- Fill each remaining void and transition with low-expansion foam for air-barrier continuity.
+
+### Spec 04 21 13
+- Keep the veneer cavity clear of mortar droppings.
+
 # Notes
 
 - Detail intent: schematic section showing basement exterior wall and transition to wood-framed exterior wall above.
