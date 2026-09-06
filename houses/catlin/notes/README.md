@@ -10,10 +10,16 @@ verified.* They are worked by hand, from the authored geometry and the published
 numbers. `haus calcs` prints the note beside every result, so a reviewer holding the
 calculation package can reach the hand pass behind it.
 
-**Detail notes** carry `applied_to:` YAML frontmatter. They are *drawing content*: their
-prose renders onto G-002 and the A-4xx detail sheets and is byte-pinned by
-`tests/test_section_goldens.py`. Editing one is a deliverable change, not a documentation
-change. They are listed at the bottom and are outside this document's normalisation.
+**Detail notes** are named by a `Transition.notes=` in `plan/transitions.py`. Those, and
+only those, are *drawing content*: their prose renders onto the detail sheets and G-002 and
+is byte-pinned by `tests/test_section_goldens.py`. Editing one is a deliverable change, not
+a documentation change. `applied_to:` frontmatter is **not** the test — several notes carry
+it and render nowhere, which is what this README used to get wrong. They are listed at the
+bottom and are outside this document's normalisation.
+
+A detail note's drawing content lives under a `## Sheet notes` heading, split three ways
+(`### General` / `### Keyed` / `### Spec <section>`) per `emit/draw/sheet_notes.py`;
+everything below `# Notes` is the design record and prints nowhere.
 
 `TEMPLATE.md` is the shape a new calculation note takes. `superseded/` holds notes whose
 design is not built; each opens with a `⛔ SUPERSEDED` banner naming what replaced it, and
@@ -59,13 +65,18 @@ reproduces them; they are here because the reasoning is worth keeping.
 
 ## Detail notes — drawing content, byte-pinned
 
-**Do not edit these as documentation.** Their prose renders onto G-002 and the A-4xx sheets
-and is pinned by `tests/test_section_goldens.py`.
+**Do not edit these as documentation.** Their prose renders onto the detail sheets and
+G-002 and is pinned by `tests/test_section_goldens.py`. Exactly six files reach a drawing —
+grep `notes=` in `plan/transitions.py` for the list, which is the only authority:
 
-`backup_power.md` · `balcony_irrigation.md` · `basement_to_framed_wall_detail.md` ·
-`garage_hydrant.md` · `garage_wall_detail_side.md` · `outie_window_truss_detail.md` ·
-`plant_room.md` · `roof_wall_eave_detail.md` · `sauna_basement_wall_detail.md` ·
-`sauna_shower_basement_detail.md` · `shower_niche.md`
+`basement_to_framed_wall_detail.md` · `garage_wall_detail_side.md` ·
+`outie_window_truss_detail.md` · `plant_room.md` · `roof_wall_eave_detail.md` ·
+`sauna_basement_wall_detail.md`
+
+Five files this section used to name — `backup_power.md`, `balcony_irrigation.md`,
+`garage_hydrant.md`, `sauna_shower_basement_detail.md`, `shower_niche.md` — are referenced
+from `plan/*.py` **comments only** and render nowhere. They are design notes, and they are
+free to be edited as documentation.
 
 ## Superseded
 
