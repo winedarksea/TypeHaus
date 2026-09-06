@@ -34,6 +34,7 @@ from typehaus.cli.cmd_tasks import costs_import, tasks  # noqa: E402,F401
 from typehaus.cli.cmd_millwork import millwork  # noqa: E402,F401
 from typehaus.cli.cmd_engineering import engineering  # noqa: E402,F401
 from typehaus.cli.cmd_calcs import calcs  # noqa: E402,F401
+from typehaus.cli.cmd_record import record  # noqa: E402,F401
 
 
 def main() -> None:
