@@ -287,3 +287,77 @@ def test_composed_sheet_honours_the_frame_it_is_given(catlin_model):
     x0, x1 = ax.get_xlim()
     assert (x1 - x0) / width_in == pytest.approx(12.0 / 0.0625)
     assert "1/16\" = 1'-0\"" in _fig_texts(fig)
+
+
+# --- the title block ---------------------------------------------------------
+
+
+def test_the_title_block_scales_with_the_paper():
+    """A fixed height cannot serve both papers.
+
+    1.9" of block is right on the 24"-tall ARCH D deliverable and eats a fifth of an
+    11"-tall ledger review print. It must also stay clear of figure fraction 0.11, which is
+    where every schedule page starts laying its content out.
+    """
+    from typehaus.emit.draw.sheet_writer import LEDGER, title_height
+
+    for paper in (LEDGER, (17.0, 11.0), (36.0, 24.0), (24.0, 36.0)):
+        h = title_height(paper)
+        assert 0.75 <= h <= 1.90
+        assert h + 0.25 < 0.11 * paper[1], f"{paper}: the block reaches schedule content"
+    assert title_height((36.0, 24.0)) > title_height((17.0, 11.0))
+
+
+def test_the_issue_stamp_is_never_more_than_the_gate_allows(catlin_model):
+    """The stamp and the print gate read one decision.
+
+    Default is NOT FOR CONSTRUCTION and it takes an explicit `set_issue_status` — which
+    only `haus print` makes, and only past its own gate — to say anything else. There is no
+    path to a sheet claiming it is sealed, because the engine never writes engineering.toml.
+    """
+    from typehaus.emit.draw import sheet_writer as sw
+
+    assert sw._ISSUE.get() == sw.NOT_FOR_CONSTRUCTION
+    with sw.set_issue_status(sw.FOR_PLAN_CHECK):
+        assert sw._ISSUE.get() == sw.FOR_PLAN_CHECK
+    assert sw._ISSUE.get() == sw.NOT_FOR_CONSTRUCTION
+
+
+def test_the_title_block_carries_the_cells_a_permit_set_needs(catlin_model):
+    """Identity, project number, preparer, revision block, seal box, issue status.
+
+    Read off the composed figure rather than asserted against the source, so a cell that
+    stops being DRAWN fails here even while its code still exists.
+    """
+    import matplotlib.pyplot as plt
+
+    from typehaus.emit.draw.sheet_writer import sheet_chrome
+
+    fig = plt.figure(figsize=(36.0, 24.0))
+    try:
+        sheet_chrome(fig, catlin_model, "A-101", "Main floor plan",
+                     scale_label='1/4" = 1\'-0"', size=(36.0, 24.0))
+        printed = " | ".join(t.get_text() for ax in fig.axes for t in ax.texts)
+    finally:
+        plt.close(fig)
+    for fragment in ("Catlin House", "PROJECT NO", "DRAWN BY", "CHECKED BY",
+                     "REV", "DESCRIPTION", "SEAL", "NOT FOR CONSTRUCTION",
+                     "A-101", "Main floor plan"):
+        assert fragment in printed, f"the title block does not print {fragment!r}"
+
+
+def test_the_seal_box_is_reserved_and_never_drawn_in(catlin_model):
+    """`schedules/structural.py` puts it plainly: drawing a stamp would be forging one."""
+    import matplotlib.pyplot as plt
+
+    from typehaus.emit.draw.sheet_writer import sheet_chrome
+
+    fig = plt.figure(figsize=(36.0, 24.0))
+    try:
+        sheet_chrome(fig, catlin_model, "A-101", "Main floor plan", size=(36.0, 24.0))
+        texts = [t.get_text() for ax in fig.axes for t in ax.texts]
+    finally:
+        plt.close(fig)
+    assert texts.count("SEAL") == 1
+    # Nothing that could read as a licence, a name against a stamp, or a state.
+    assert not [t for t in texts if "P.E." in t or "LICENSE" in t.upper()]

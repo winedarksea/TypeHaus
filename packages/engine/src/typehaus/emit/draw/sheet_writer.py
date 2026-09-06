@@ -378,7 +378,10 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     # it and what it may be used for, then what changed, then who is answerable, then which
     # sheet this is. The sheet number is last because it is what a reader's thumb finds on
     # the bottom-right corner of a stack.
-    cuts = (0.26, 0.42, 0.60, 0.76, 0.86)
+    # Widths are what each cell has to SAY, measured off the printed sheet rather than
+    # split evenly: identity is a name and up to two address lines, the revision block needs
+    # room for a description, and the seal box wants to be nearly square.
+    cuts = (0.18, 0.32, 0.52, 0.76, 0.87)
     dividers = [m + inner_w * f for f in cuts]
     for x in dividers:
         ax.plot([x, x], [m, strip_top], color=_INK, linewidth=0.5)
