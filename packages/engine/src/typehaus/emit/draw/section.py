@@ -143,8 +143,75 @@ def build_center_section(model: ResolvedModel) -> Scene:
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")
     scene = build_section(model, view)
-    return annotate_building_section(scene, model,
-                                     CutPlane(axis="x", station_m=station))
+    scene = annotate_building_section(scene, model,
+                                      CutPlane(axis="x", station_m=station))
+    callouts = _detail_callouts(model, scene, CutPlane(axis="x", station_m=station))
+    if callouts:
+        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(callouts)})
+    return scene
+
+
+def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane) -> list:
+    """A split-circle callout on the section for every detail this cut passes through.
+
+    A set with details in it and no way to reach them is a set of unrelated drawings, and
+    that is what this one was: 76 detail sheets and not one reference to any of them. The
+    callout is the half of the cross-reference a reader starts from — they are looking at
+    the building, they see a junction, and the bubble says which sheet draws it.
+
+    Only conditions whose own cut is PERPENDICULAR to this one are called out. A derived
+    detail carries the station it was cut at; a detail cut on the same axis as the section
+    is somewhere along the section's own line of sight, not at a point on it, and a bubble
+    for it would be pointing at nothing in particular.
+    """
+    from typehaus.emit.draw.callouts import callout_nodes, detail_sheet_numbers
+    from typehaus.emit.draw.details import derive_detail_slices
+
+    sheets = detail_sheet_numbers(model)
+    placed: list[tuple[float, float]] = []
+    out: list = []
+    for derived in derive_detail_slices(model):
+        sheet = sheets.get(derived.key)
+        # Star is the curation the house has already done — the details a builder actually
+        # opens. Bubbling all 76 would put more callouts on the section than section.
+        if not sheet or derived.transition is None \
+                or not derived.transition.stars(derived.key):
+            continue
+        if derived.direction == plane.axis:
+            continue
+        anchor = _condition_point(model, derived, plane)
+        if anchor is None or _too_close(anchor, placed):
+            continue
+        placed.append(anchor)
+        number = sheet.split("-")[-1][-1]
+        out.extend(callout_nodes(anchor, number, sheet, scene.frame.scale
+                                 if scene.frame is not None else None))
+    return out
+
+
+def _condition_point(model: ResolvedModel, derived, plane: CutPlane):
+    """Where this detail's condition lands in the section's own frame, or ``None``.
+
+    The section's in-plane coordinate is world **y** for an ``x`` cut, and the derived
+    detail's ``station`` is a coordinate on ITS cut axis — which, for a perpendicular
+    detail, is exactly that y. The elevation comes from the walls the condition names.
+    """
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    walls = condition_walls(model, derived.condition)
+    if not walls:
+        return None
+    tops = [w.top_z1_m if w.top_z1_m is not None else w.z1_m for w in walls]
+    return (derived.station / M_PER_IN, max(tops) / M_PER_IN)
+
+
+#: Two callouts closer than this (model inches) would overprint each other's bubble.
+_CALLOUT_MIN_GAP_IN = 30.0
+
+
+def _too_close(point, placed) -> bool:
+    return any(abs(point[0] - p[0]) < _CALLOUT_MIN_GAP_IN
+               and abs(point[1] - p[1]) < _CALLOUT_MIN_GAP_IN for p in placed)
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,

@@ -249,17 +249,30 @@ def _detail_title(model: ResolvedModel, derived: DerivedDetail) -> tuple[str, st
 
 
 def _paper_title_block(model: ResolvedModel, derived: DerivedDetail, band) -> list:
-    """Project, detail identity and attribution, stacked in the title strip."""
+    """Project, detail identity, sheet number, scale and attribution, in the title strip.
+
+    The sheet number and the scale are here because a detail has to be self-identifying:
+    NCS puts the scale with the DRAWING and not only in the title block, since a sheet may
+    carry several drawings at several scales and a block can state only one. And a detail
+    pulled off a pile that cannot say which sheet it is has broken the cross-reference at
+    the only end a reader is holding.
+    """
+    from typehaus.emit.draw.callouts import detail_sheet_numbers
+
     x, y, _w, h = band
     title, overlay = _detail_title(model, derived)
+    sheet = detail_sheet_numbers(model).get(derived.key, "")
     lines = [
         (model.plan.project.name, 13.0),
         (f"{title}  ·  {overlay}".strip().rstrip(" ·"), 8.0),
+        (f"SHEET {sheet}" if sheet else "", 7.0),
         ("Type:Haus — derived transition detail", 6.5),
     ]
     out: list = []
     z = y + h
     for content, size_pt in lines:
+        if not content:
+            continue
         z -= (size_pt + 4.0) / 72.0
         out.append(Text(anchor=(x, z), content=content, height_pt=size_pt,
                         layer="A-ANNO-TEXT", space="paper"))

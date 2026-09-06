@@ -972,7 +972,23 @@
       "node": "text",
       "anchor": [
         0.5,
-        7.451388888888889
+        7.444444444444445
+      ],
+      "content": "SHEET A-563",
+      "height": 3.0,
+      "height_pt": 7.0,
+      "rotation": 0.0,
+      "style": "ARCH",
+      "layer": "A-ANNO-TEXT",
+      "align": "left",
+      "uid": null
+    },
+    {
+      "space": "paper",
+      "node": "text",
+      "anchor": [
+        0.5,
+        7.298611111111112
       ],
       "content": "Type:Haus — derived transition detail",
       "height": 3.0,
