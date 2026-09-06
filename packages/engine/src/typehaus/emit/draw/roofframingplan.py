@@ -38,10 +38,11 @@ from typehaus.wind import wind_basis
 ROOF_MEMBER_CATEGORIES = (
     ("rafter", "R", "RAFTER"),
     ("ridge_beam", "RB", "RIDGE BEAM"),
-    ("top_chord", "TC", "TRUSS TOP CHORD"),
-    ("bottom_chord", "BC", "TRUSS BOTTOM CHORD"),
-    ("truss_web", "TW", "TRUSS WEB"),
-    ("truss_heel", "TH", "TRUSS RAISED HEEL"),
+    # One member per truss (resolve/framing/roof_gable.truss_member), which is also how a
+    # truss roof's framing plan is drawn: one line per truss on its bearing, not the plate
+    # layout inside it. The chord/web/heel rows this replaced were never separately keyed
+    # on a real sheet.
+    ("roof_truss", "T", "ROOF TRUSS"),
     ("outlooker", "OL", "GABLE OUTLOOKER"),
     ("barge_rafter", "BR", "BARGE RAFTER"),
     ("stud", "GS", "GABLE-END STUD"),

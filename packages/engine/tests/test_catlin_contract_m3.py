@@ -509,16 +509,22 @@ def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
 
 
 def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
-    """The garage roof is framed as raised-heel trusses: top + bottom chords, web members,
-    and a raised heel at each eave bearing. A truss carries its own ridge, so it needs no
-    authored ridge Beam and must not raise the ridge_support advisory."""
+    """The garage roof is framed as raised-heel trusses: ONE member per truss, spanning its
+    two bearings and standing from the plate top to the ridge. A truss carries its own ridge,
+    so it needs no authored ridge Beam and must not raise the ridge_support advisory."""
     garage_roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     categories = {m.category for m in garage_roof.members}
-    assert {"top_chord", "bottom_chord", "truss_web", "truss_heel"} <= categories
+    assert "roof_truss" in categories
+    # The chords, webs and heel are inside the fabricated member, not beside it.
+    assert not categories & {"top_chord", "bottom_chord", "truss_web", "truss_heel"}
     assert "ridge_beam" not in categories
-    # The raised heel lifts the top chord above the plate at the bearing.
-    heels = [m for m in garage_roof.members if m.category == "truss_heel"]
-    assert heels and all(m.z1_m - m.z0_m > 0.2 for m in heels)  # ~9.25" energy heel
+    trusses = [m for m in garage_roof.members if m.category == "roof_truss"]
+    assert len(trusses) == 13  # 24' bearing line at 24" o.c., both gable ends included
+    for truss in trusses:
+        assert truss.profile == "24 roof truss"
+        assert truss.z0_m == pytest.approx(garage_roof.bearing_z_m)
+        # Plate top to ridge: the raised heel is inside that height, not a member of its own.
+        assert truss.z1_m - truss.z0_m > 1.0
     _, resolve_findings = resolve(load_plan(CATLIN_DIR).plan)
     ridge = [f for f in resolve_findings if f.check_id == "structural.ridge_support"]
     assert not [f for f in ridge if f.element_tags == ("RF-GARAGE",)]

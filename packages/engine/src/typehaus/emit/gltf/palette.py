@@ -91,10 +91,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "outlooker": (0.722, 0.549, 0.361, 1.0),     # 0xb88c5c
     "barge_rafter": (0.549, 0.384, 0.220, 1.0),  # 0x8c6238
     # roof truss members + the birdsmouth seat cut
-    "top_chord": (0.70, 0.52, 0.33, 1.0),
-    "bottom_chord": (0.66, 0.48, 0.30, 1.0),
-    "truss_web": (0.74, 0.57, 0.38, 1.0),
-    "truss_heel": (0.60, 0.42, 0.26, 1.0),
+    # One member per truss, so one colour where four chord/web/heel tones used to be.
+    "roof_truss": (0.70, 0.52, 0.33, 1.0),
     "seat_cut": (0.58, 0.40, 0.24, 1.0),
     "floor": (0.82, 0.80, 0.76, 1.0),
     "roof": (0.35, 0.37, 0.40, 1.0),

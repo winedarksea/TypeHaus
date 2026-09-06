@@ -16,6 +16,7 @@ regardless of the member's plan orientation.
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -83,6 +84,19 @@ _TJI_SERIES_IN: dict[str, tuple[float, float, float]] = {
 }
 # Open-web trimmable floor truss, fabricated to depth: "11.875 floor truss".
 _RE_FLOOR_TRUSS = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+floor truss$")
+# Shop-fabricated ROOF truss, one member per truss: "24 roof truss".
+#
+# The number is the SPAN IN FEET, not a depth — the one place this catalog's "<number>
+# <name>" convention means something other than inches, and deliberately so. A roof truss
+# has no single depth (it grows from the heel to the peak), and span is the dimension a
+# truss plant quotes, prices and names a truss by. ``houses/<name>/prices.toml`` keys the
+# [framing] row on this same string, so "24 roof truss" is both the profile and the order.
+_RE_ROOF_TRUSS = re.compile(r"^(?P<span_ft>\d+(?:\.\d+)?)\s+roof truss$")
+#: A roof truss's chord/web stock. Not derivable from the profile string (which carries the
+#: span), so the ordinary 2x4 chord is assumed: it is what every prescriptive residential
+#: fink is plated from, and what the raised-heel garage truss here is. A 2x6-chorded truss
+#: draws and cuts as a 2x4 one until the profile grows a second field.
+_ROOF_TRUSS_CHORD_IN = (1.5, 3.5)  # (thickness across the truss, chord depth)
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
 # Actual (already-milled) rectangular dimensions, e.g. a custom 6.125x6.125 timber post.
@@ -106,6 +120,17 @@ _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
 _RE_PANEL = re.compile(
     r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+(?:(?P<label>[a-z]+)\s+)?panel$"
 )
+
+
+def roof_truss_profile(span_m: float) -> str:
+    """The ``"<span in whole feet> roof truss"`` profile for a shop-fabricated roof truss.
+
+    Rounded to the nearest whole foot: a truss is designed, quoted and priced by its span,
+    and a bearing line derived to 23.996' is the same 24' truss. Rounding rather than
+    ceiling because the span is a design dimension, not a cut length — and a house whose
+    walls land a hair either side of the foot must not silently split into two price rows.
+    """
+    return f"{math.floor(span_m / 0.3048 + 0.5):g} roof truss"
 
 
 def panel_profile(width_in: float, thickness_in: float, label: str | None = None) -> str:
@@ -234,6 +259,20 @@ def cross_section(profile: str) -> CrossSection:
             shape="floor_truss", width_m=inch(3.5).meters,
             depth_m=inch(depth_in).meters, flange_width_m=inch(3.5).meters,
             flange_thickness_m=inch(1.5).meters, web_thickness_m=inch(1.5).meters,
+        )
+
+    if _RE_ROOF_TRUSS.match(text):
+        # ONE MEMBER PER TRUSS (the floor-truss precedent), so this section is the truss's
+        # own thickness and chord, never its heel-to-peak height: that height varies along
+        # the span and is carried by the member's z extent, which is real geometry. The
+        # "flange_*" fields are the chord, reusing the i_joist convention so every consumer
+        # of "two lines inboard of the edges" — the section drawing, the UI inspector —
+        # works unchanged.
+        thickness_in, chord_in = _ROOF_TRUSS_CHORD_IN
+        return CrossSection(
+            shape="roof_truss", width_m=inch(thickness_in).meters,
+            depth_m=inch(chord_in).meters, flange_width_m=inch(thickness_in).meters,
+            flange_thickness_m=inch(chord_in).meters, web_thickness_m=inch(thickness_in).meters,
         )
 
     if match := _RE_MULTI_NOMINAL.match(text):

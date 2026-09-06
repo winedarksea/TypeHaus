@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
 from typehaus.checks._authoring import advisory, not_applicable
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
@@ -11,6 +14,9 @@ from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.mep import is_parallel_to_floor
+
+if TYPE_CHECKING:
+    from typehaus.resolve.model import ResolvedDuct, ResolvedFloor
 
 
 # WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
@@ -203,6 +209,13 @@ def duct_soffit_occupancy(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+#: The plan rectangle a segment sweeps, and one leg of a run reduced to what decides
+#: whether it shares a bay: ``(tag, travel axis, section width, x band, y band, z band)``.
+_Band = tuple[tuple[float, float], tuple[float, float]]
+_Occupant = tuple[str, str, float, tuple[float, float], tuple[float, float],
+                  tuple[float, float]]
+
+
 @check(Tier.STRUCTURAL, "mep.duct_joist_bay_occupancy")
 def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
     """Two runs drawn through the same joist bay at the same station and the same height.
@@ -249,7 +262,7 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
 
     cid = "mep.duct_joist_bay_occupancy"
     floors = {floor.tag: floor for floor in ctx.model.floors}
-    by_floor: dict[str, list] = {}
+    by_floor: dict[str, list[ResolvedDuct]] = {}
     for duct in ctx.model.ducts:
         if duct.routing != "joist_bay" or duct.floor_ref not in floors:
             continue
@@ -278,7 +291,8 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
         elif drawn_over:
             out.append(_unknown(
                 cid, f"floor {floor_tag}: " + "; ".join(drawn_over)
-                     + f" — the bay's {clear_m / M_PER_IN:.1f}\" clear width holds them "
+                     + f" — the bay's {(clear_m or 0.0) / M_PER_IN:.1f}\" clear width "
+                       "holds them "
                        "both, but this model gives each run one centreline per bay, so it "
                        "cannot place two lanes side by side and cannot confirm they were",
                 (floor_tag,)))
@@ -295,15 +309,14 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _bay_occupants(runs, segment_band) -> list[tuple[str, str, float, tuple[float, float],
-                                                     tuple[float, float],
-                                                     tuple[float, float]]]:
+def _bay_occupants(runs: list[ResolvedDuct],
+                   segment_band: Callable[..., _Band | None]) -> list[_Occupant]:
     """``(tag, travel axis, width, x band, y band, z band)`` for every horizontal bay leg.
 
     Vertical and oblique legs are dropped rather than squared off: a riser's neighbours are a
     different question, and an oblique leg's bounding box claims bay it never enters.
     """
-    occupants = []
+    occupants: list[_Occupant] = []
     for duct in runs:
         if not duct.z_m or len(duct.z_m) != len(duct.path):
             continue
@@ -322,8 +335,9 @@ def _bay_occupants(runs, segment_band) -> list[tuple[str, str, float, tuple[floa
     return occupants
 
 
-def _bay_pair_overlap(ctx, floor, lines, clear_m, first, second, joined
-                      ) -> tuple[bool, str] | None:
+def _bay_pair_overlap(ctx: CheckContext, floor: ResolvedFloor, lines: list[float],
+                      clear_m: float | None, first: _Occupant, second: _Occupant,
+                      joined: Callable[..., bool]) -> tuple[bool, str] | None:
     """``(the bay holds both, message)`` for two parallel legs sharing one bay, else None."""
     tag, axis, width, x_band, y_band, z_band = first
     other_tag, other_axis, other_width, other_x, other_y, other_z = second

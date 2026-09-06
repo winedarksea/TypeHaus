@@ -246,7 +246,17 @@ def floor_bearing_grid(ctx: CheckContext) -> list[Finding]:
 # open-web truss lands on its bottom chord over a block and BCSI/SBCA ask 3". Grading all
 # three at 1 1/2" passed catlin's x=18' line, where a centreline split gave a truss and an
 # I-joist 2 3/4" each. It is now split 3 1/2" / 2" (``params/second_deck.py``).
-_MIN_SEAT_IN = {"floor_truss": 3.0, "i_joist": 1.75}
+#
+# ``roof_truss`` is here for completeness of the shape set rather than because this rule
+# reaches one today: BCSI-B2 asks a roof truss for 1 1/2" on wood at these spans — less than
+# a floor truss's 3", because it lands on its heel over the full plate width — which is also
+# the sawn default, so a roof truss can never be graded by a number it does not already own.
+# The rule walks ``model.floors``, so a roof truss reaches it only if a FloorSystem is ever
+# authored on one.
+_MIN_SEAT_IN = {"floor_truss": 3.0, "roof_truss": 1.5, "i_joist": 1.75}
+#: How each shape is spelled in the PASS message — the shape names are code, not prose.
+_SEAT_SHAPE_LABEL = {"floor_truss": "floor truss", "roof_truss": "roof truss",
+                     "i_joist": "I-joist"}
 _MIN_SEAT_DEFAULT_IN = 1.5
 _SEAT_TOL_M = 1e-4
 
@@ -287,8 +297,9 @@ def floor_end_bearing(ctx: CheckContext) -> list[Finding]:
         out.append(Finding(
             severity=Severity.WARN, check_id="integrity.floor_end_bearing",
             message=(f"{graded} deck end(s) seated, each on at least the bearing its own "
-                     f"member needs (sawn {_MIN_SEAT_DEFAULT_IN:g}\", I-joist "
-                     f"{_MIN_SEAT_IN['i_joist']:g}\", floor truss "
-                     f"{_MIN_SEAT_IN['floor_truss']:g}\")"),
+                     f"member needs (sawn {_MIN_SEAT_DEFAULT_IN:g}\", "
+                     + ", ".join(f"{_SEAT_SHAPE_LABEL.get(shape, shape)} {need:g}\""
+                                 for shape, need in sorted(_MIN_SEAT_IN.items()))
+                     + ")"),
             element_tags=(), result=Result.PASS))
     return out

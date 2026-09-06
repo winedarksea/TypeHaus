@@ -485,8 +485,8 @@ NODES = [
     # The face lands at x=34'-11 7/8" and the back at x=35'-3 1/2", 1 7/8" shy of the gwb:
     # that gap is the tie space and the firebox's own framing, and it is why the whole
     # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8".
-    Node(tag="N-M-FIRE-S", position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
-    Node(tag="N-M-FIRE-N", position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
+    Node(uid="8B5HVCT933", tag="N-M-FIRE-S", position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
+    Node(uid="ZBDG33XN7Y", tag="N-M-FIRE-N", position=pt(ft(35, 1.6875), ft(10, 6.75)), open_end=True),
 ]
 
 # --- board & batten on the north and south elevations -----------------------
@@ -945,7 +945,7 @@ WALLS = [
     # at it. NOTHING IN `haus check` GRADES THIS DETAIL: that check is scoped to guards and
     # `checks/code/mn_residential/profile.py` explicitly disclaims IRC R1001-R1004. A 0-FAIL
     # report here means nothing looked, which is why the note exists.
-    Wall(tag="W-M-FIRE", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
+    Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
          assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(-13.4375),
          top=inch(77.4375), structural_role=StructuralRole.NONBEARING),
 ]
@@ -1481,11 +1481,20 @@ FLOOR_HEAT = [
     # off the canvas object now (checks/advisory/checks.py), which is what lets the polygon
     # follow the room instead of the bug. A zone drawn to the phantom also *passed* while
     # running under the actual tub, which is the more dangerous half of that defect.
+    #
+    # ** THE WATER-CLOSET BITE MOVED 2" SOUTH ON 2026-09-06 ** (234.615" -> 232.615"), and
+    # for the same reason the vanity narrowed: the bowl stopped being a 28"-deep allowance
+    # and became a real TOTO Carlyle II at 30". Its south face went from y=236.615" to
+    # y=234.615", which left the old bite with ** zero ** of Schluter's 2" keepout instead of
+    # two inches of it. Widening the bite is the safe direction -- it shrinks the polygon
+    # from 17.85 ft2 to ~17.5 ft2, still comfortably over the DHEHK12016's 16.0 ft2 of
+    # coverage. ** Do NOT reclaim the 3" the narrowed vanity freed at y=214.375": ** that
+    # would GROW the zone, and this polygon is sized to one purchased cable SKU.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
               zone=(pt(inch(29.635), inch(160.375)), pt(inch(54.615), inch(160.375)),
                     pt(inch(54.615), inch(192.375)), pt(inch(50), inch(192.375)),
                     pt(inch(50), inch(262.615)), pt(inch(42), inch(262.615)),
-                    pt(inch(42), inch(234.615)), pt(inch(18), inch(234.615)),
+                    pt(inch(42), inch(232.615)), pt(inch(18), inch(232.615)),
                     pt(inch(18), inch(262.615)), pt(inch(8.635), inch(262.615)),
                     pt(inch(8.635), inch(214.375)), pt(inch(29.635), inch(214.375))),
               # ** 3 5/8", NOT THE 3" THE OTHER TWO ZONES CARRY, AND IT IS THE PRODUCT'S
@@ -1610,19 +1619,38 @@ FLOOR_OPENINGS = [
     # `purpose=CHASE`: a closed enum of STAIR|CHASE|HATCH, and "a hole for something to pass
     # through" is what this is — the same reading FO-M-TUBDK below takes.
     #
-    # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: that edge is the x=36'-0"
-    # wall line, and W-B-E1's 12" pour runs x 420"..432" for y 0..18'-0", so
-    # `_opening_edge_has_declared_bearing` finds the whole edge carried. The other three edges
-    # are framing — one header on the west and two trimmer joists north and south — and
-    # `structural.floor_opening_header` is expected to have an opinion about them.
+    # ** BOTH x EDGES ARE SET BY MEMBERS, NOT BY THE BRICK, and both were measured off the
+    # resolved framing rather than guessed. ** The resolver puts a member's AXIS on the
+    # opening edge, so:
+    #   * west  x=34'-10 1/8" — the 2-ply 1 3/4" x 11 7/8" LVL header the resolver emits is
+    #     3 1/2" wide, so an axis here lands its EAST FACE exactly on the brick face at
+    #     x=34'-11 7/8". Author the edge on the brick face instead and the header sits inside
+    #     the wythe, which is not buildable.
+    #   * east  x=35'-10 3/4" — FS-M-EAST's rim (1 1/4" x 11 7/8", axis x=35'-11 3/8") occupies
+    #     x 430 3/4"..432", so running the opening to the 36'-0" wall line drove all four
+    #     trimmers through the rim and `structural.member_interference` FAILed four times.
+    #     35'-10 3/4" is the rim's inboard face: the trimmers die on it, which is how a
+    #     trimmer meets a rim.
+    #
+    # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: it stands over W-B-E1's 12"
+    # pour (x 420"..432", y 0..18'-0"), so `_opening_edge_has_declared_bearing` finds the whole
+    # edge carried and no second header is emitted there. The other three edges are framing —
+    # one header on the west and a DOUBLED trimmer north and south — and
+    # `structural.floor_opening_header` is content with them at this size.
     #
     # ** ALL OF THIS IS CHEAP ONLY WHILE THE BASEMENT CEILING IS OPEN **, the same warning
-    # params/main_deck.py already carries about work in this bay.
-    FloorOpening(tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(34, 11.875), ft(6, 9.25)),
-                          pt(ft(36), ft(6, 9.25)),
-                          pt(ft(36), ft(10, 6.75)),
-                          pt(ft(34, 11.875), ft(10, 6.75))),
+    # params/main_deck.py already carries about work in this bay — and the ceiling is not a
+    # figure of speech here: `FS-M-EAST.ceiling_below` is RM-B-GYM's 5/8" gypsum, and this
+    # opening CUTS IT. No brick shows in the gym (the wythe is entirely inside the floor
+    # depth, and the ceiling plane is below the joists), but the board has to be closed back
+    # around the 3 5/8" wythe. The three CATLIN_BASEMENT_12/CATLIN_EXT_2X6 section goldens
+    # were re-blessed on 2026-09-06 for exactly that: the gym's ceiling boundary now stops at
+    # the header.
+    FloorOpening(uid="93FDVPTK2R", tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(34, 10.125), ft(6, 9.25)),
+                          pt(ft(35, 10.75), ft(6, 9.25)),
+                          pt(ft(35, 10.75), ft(10, 6.75)),
+                          pt(ft(34, 10.125), ft(10, 6.75))),
                  bearing_refs=("W-B-E1",)),
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(4, 9.685), ft(16, 11.926)),

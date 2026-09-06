@@ -23,6 +23,7 @@ saying a model number twice would churn every schedule and its tests for no gain
 
 from __future__ import annotations
 
+from plan.products_interior import INTERIOR_PRODUCTS
 from typehaus.model import Product
 
 # --- the LG kitchen and laundry ---------------------------------------------------------
@@ -164,10 +165,14 @@ KOHLER_CLEARFLO_7272 = Product(
 )
 
 
+# The machines above, then the 2026-09-06 interior-selection pass (plan/products_interior.py).
+# One catalog to every ``product_ref`` and to the manifest; two files only because of the
+# 500-line rule.
 PRODUCTS = (
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_30,
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
+    *INTERIOR_PRODUCTS,
 )

@@ -421,6 +421,51 @@ the future.
   check that walks the step would catch a future regression a literal can't.
 - The french drains can likely be a type of form-a-drain product (a drain that doubles as footing form). We also can probably have fewer drains slightly.
 
+## Found while doing the 2026-09-06 interior-selections batch — two schema gaps, deliberately not closed
+
+- **A countertop is not an element, and cannot be measured.** `library/placeables/casework.py`
+  is explicit about it — "Countertops are not separate elements... continuous 1-inch white
+  countertop" — and until this pass that docstring line was the *entire* record of countertops
+  in the repo: no material, no price row, unpriced scope. The selections pass closed the
+  material half (`quartz-counter` / `oak-counter` in `plan/assemblies.py`, with real
+  `product_ref`s — the first Materials in the repo to use that field) and the money half
+  (`finish-countertops-quartz` and `finish-peninsula-oak-bar-top` in `[allowances]`), but the
+  GEOMETRY half is a schema change and was left alone.
+
+  What that costs, concretely: the countertop's ~63 SF is a hand figure in a `prices.toml`
+  comment rather than a model quantity, so it does not move when the casework moves. It is
+  also why the peninsula's overhang problem had to be caught by reading Caesarstone's rule
+  against `CASE-PENINSULA-120`'s footprint by hand — **nothing in `haus check` grades a
+  cantilevered stone top, because there is no top.** A `Countertop` element hosted on a
+  `FurnitureType` with a `material_ref`, a thickness and an overhang would make all three of
+  those measurable at once, and would let `advisory` grade the ⅓-of-depth rule.
+
+- **Door hardware has no vocabulary in the schema at all.** `DoorType` carries no lockset,
+  hinge, lever, function or finish field, and hardware is one `[allowances]` lump. This pass
+  chose the products (Schlage Latitude on a square rose in 619, a Yale Assure Lock 2 on the
+  one door that earns a smart lock, purpose-built pocket-door privacy latches) and recorded
+  them as `Product` records plus prose plus a retuned allowance — deliberately NOT as new
+  `DoorType` fields, because a schema change is not a selections pass.
+
+  The gap has a specific cost and this pass measured it: **the $84–306/ea allowance is right
+  on average and wrong in distribution.** It is generous on the thirteen swing doors and short
+  by $100–200 on each privacy POCKET door, which needs a mechanism rather than a plate, plus
+  two pulls (a flush pull on the face *and* an edge pull on the leading edge — once the door
+  is three-quarters into the pocket the face pull is unreachable). A `function` field on
+  `DoorType` — passage / privacy / entry / pocket-privacy — would let the allowance be driven
+  per function instead of averaged, and it is the smallest change that fixes it.
+
+- **Nothing grades a fixture against a code clearance it was authored to clear by a quarter
+  inch, because nothing re-checks it when the fixture changes size.** `RM-M-BATH2`'s 54"
+  vanity was sized to the water closet's **21" IRC P2705.1** front clearance — a code
+  Minnesota deletes (`Minn. R. 1309.0010` subp. 3.D) — and cleared the envelope that is
+  actually drawn and enforced, **UPC 402.5's 24"**, by 0.24". The check was correct all along;
+  the fixture was an allowance. The moment it became a real product (every TOTO one-piece
+  skirted bowl is 28½"–30" deep) the cabinet stood inside a code envelope. The vanity is 51"
+  now, but **the test that guarded it was asserting the wrong number too** — see
+  `test_catlin_bath2_vanity_heat_and_joists.py`, which still measures against the 21".
+  Worth a sweep: any other place a dimension was justified against IRC's plumbing chapters.
+
 ## Found while doing the 2026-09-01 batch — recorded so they are not rediscovered
 
 - **No check validates that every equipment port naming a service is reached by a run of that
@@ -559,7 +604,9 @@ number, the pattern and the reasoning against every one of these; the rows with 
 number are ready to move to `plans/cost-options.md` whenever the owner wants them):
 
 Implement now:
-Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it a dark surround, and turn the seats toward it (181/185). Likely a small section of oak, walnut, or cherry wainscot.
+~~Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it a dark surround, and turn the seats toward it (181/185).~~ **DONE 2026-09-06.** The fire left the SE corner for the pier between `WIN-M-LIV-E1` and `WIN-M-LIV-E2`: a 45 1/2" white-facebrick surround (`W-M-FIRE`) centred on y=8'-8", starting on `W-B-E1`'s pour and rising through `FS-M-EAST`, stopping at a one-piece walnut mantel at 5'-4". Flame centre 42 3/16" — **a 14" rise** — against a seated eye of ~46-48". The unit is a real product now, an Amantii BI-30-XTRASLIM, chosen because it is the only *trimless* one in the whole 26-32"-wide, <=6"-deep, hardwireable field, so the brick runs to the glass edge. All eight BESTA units kept, re-laid three south and five north; sofa and two new armchairs turned onto it. **The surround is white, not dark** — the review asked for dark and the owner's call was full white facebrick, which is what a house of white standing seam wanted. Two things it does not fix: no evidence distinguishes any unit in this class at 11 ft (nobody publishes viewing-distance data, and neither Amantii glass is low-iron or anti-glare — the brick reveal and the mantel's shadow are what solve glare here), and turning the sofa east means it no longer addresses `FURN-M-MEDIA`. See `notes/east_breast_bearing.md`.
+
+**Open, and deliberately left as owner calls:** retire `FURN-M-MEDIA` outright (the 98" screen is in the basement and the console duplicates seven BESTA units of storage); move `ED-M-DINING-FH-STAT`, which was found sitting 2 1/2" inside `WIN-M-EAST-MID`'s rough opening and is unrelated to the fireplace; and get four things from Amantii in writing before framing (mantel projection, bottom/side/back clearances, junction-block serviceability, and which manual revision ships) — all four are listed on `EQ-T-FIREPLACE-EL` in `houses/catlin/plan/electrical.py`.
 
 Deferred:
 Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has nothing on it (241).

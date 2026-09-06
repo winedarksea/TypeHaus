@@ -205,18 +205,38 @@ DEVICE_TYPES = (
 
 EQUIPMENT_TYPES = (
     # RM-B-SAUNA's heated zone measures 555 cf off the resolved liner faces (8'-3 15/16" x
-    # 8'-10 11/16" x 7'-6"); trade rule ~1kW/45-50cf wants 11.1-12.3 kW... but the room is
-    # BASSWOOD-LINED OVER FOIL-POLYISO ON ALL SIX SURFACES, which is the low end of that
-    # band, and the notes' heater is rated 9 kW to 600 cf. The "~513 cf" this comment used to
-    # claim was right for the sauna as originally drawn and stale for the 745 cf the
-    # 2026-09-05 rotation grew it to; the same day's shrink brought it back to 519, and
-    # round three's push north to y=10'-0" took it to 555. 9 kW stands, matching the detail
-    # notes' "240V, 50A GFCI breaker ... max 10.5 kW", and CKT-SAUNA (circuits.py, 50A/2p,
-    # 9000 VA) does not move — but **600 cf is the wall this room is now 45 cf from**, and a
-    # deeper sauna is a bigger heater and a bigger circuit, not a free change.
-    EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 9 kW",
-                  footprint=(inch(18), inch(16)), height=inch(30),
+    # 8'-10 11/16" x 7'-6").
+    #
+    # ** THE 9 kW WAS UNDERSIZED, AND IT WAS THE "600 cf" CLAIM THAT WAS WRONG (2026-09-06).
+    # ** The comment this replaces held 9 kW on the argument that the trade rule
+    # (~1 kW / 45-50 cf, wanting 11.1-12.3 kW here) could be taken at its low end because the
+    # room is basswood over foil-polyiso on all six surfaces, and that "the notes' heater is
+    # rated 9 kW to 600 cf". No manufacturer researched publishes a 9 kW to 600 cf: every
+    # one of their own tables puts 9 kW at 283-494 cf, and HUUM voids its warranty outright
+    # if the room is dimensioned wrong. The glass partition in
+    # notes/sauna_shower_basement_detail.md adds notional volume on top of the 555. The
+    # comment even names the wall it is standing on — "600 cf is the wall this room is now
+    # 45 cf from" — and the wall was in the wrong place.
+    #
+    # 10.5 kW, and it is a cascade rather than a swap. CKT-SAUNA moves 50 A -> 60 A and
+    # 9000 -> 10500 VA (circuits.py), and the two sauna detail notes' sheet lines move with
+    # it, because "240 V, 50 A, 10.5 kW max" was never arithmetic that closed: NEC 424.3(B)
+    # makes this a continuous load at 125%, so 10500/240 = 43.75 A x 1.25 = 54.7 A and 50 A
+    # will not carry it. (The 50 A WAS right for 9 kW — 37.5 x 1.25 = 46.9 A. It is the kW
+    # that was wrong, not the sizing.)
+    #
+    # ** THE BODY IS 45" TALL AND FLOOR-STANDING, WHICH IS THE OTHER HALF OF THE CORRECTION.
+    # ** The authored 18" x 16" x 30" was a placeholder box, and 30" is a height no heater in
+    # this class has: they want 22-28" of width including listed clearance to combustibles
+    # and 35-47" of CLEAR SPACE ABOVE. There is no heater niche in this model and none is
+    # wanted — the placeholder was the heater itself — so this is a straight body-size
+    # correction. The Cilindro's own numbers: 3.94" clearance all round, 37.4" of headroom
+    # above, 78" minimum ceiling. RM-B-SAUNA is 7'-6" (90") clear, so the headroom closes.
+    EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 10.5 kW",
+                  footprint=(inch(16), inch(15)), height=inch(45),
                   plan_symbol="sauna-heater",
+                  product_ref="PROD-HARVIA-PC110E",
+                  source="Harvia Cilindro PC110E, 10.5 kW at 240 V 1-phase, 43.75 A nominal, rated 141-636 cf, ETL listed, 16 x 15 x 45 in., 264 lb of stone. The Xenio CX170 control (PROD-HARVIA-CX170) is MANDATORY and mounts outside the hot room - there is no built-in-control variant of this heater.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # The ERV is EQ-T-BROAN-B210E75RT in plan/mep_erv.py — an ERV with a modeled intake and
@@ -357,13 +377,77 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # 1,500W/120V = 12.5A; x1.25 continuous = 15.6A needs a 20A breaker (not 15A). Hard-wired
-    # Equipment, not a receptacle. Rated 5,100 Btu/h (1,500W x 3.412, no cold-weather derate).
+    # Equipment, not a receptacle. Rated 5,118 Btu/h (1,500W x 3.412, no cold-weather derate).
     # `supplemental_heat` so it never opens its own HVAC zone — counts toward RM-M-LIVING's
     # zone (takeoff/hvac.py supplemental_heat_by_room).
-    EquipmentType(tag="EQ-T-FIREPLACE-EL", name="Electric fireplace, 1.5 kW linear wall-mount",
-                  footprint=(inch(48), inch(7)), height=inch(21),
-                  heating_capacity_btuh=5100, heating_capacity_at_design_btuh=5100,
+    #
+    # ** A REAL PRODUCT SINCE 2026-09-06: the Amantii BI-30-XTRASLIM (BI-X190030-1). ** It was
+    # a generic 48" x 7" big-box cabinet; it is now the ~30" unit the owner asked for, and the
+    # footprint authored here is the ROUGH OPENING (29" x 4 1/2" x 20 3/8" high), because the
+    # rough opening is the hole cut in W-M-FIRE's brick and is therefore the thing that can
+    # interfere with something. The body is 29 1/8 x 19 7/8 x 4" and the face only 3/8" wider
+    # than the body.
+    #
+    # ** EVERY UNIT ON THE MARKET THAT IS 26-32" WIDE AND <= 6" DEEP AND HARDWIREABLE IS AN
+    # AMANTII. ** That is the whole population, not a preference. Swept and ruled out: all
+    # Modern Flames (nearest shallow unit 44"), Dimplex (the Multi-Fire SL Slim 36" is the
+    # closest miss; the 30" Ignite Aspire is 18" DEEP), SimpliFire, Napoleon (Cineview 30 is
+    # 7 3/4"), Flamerite, the 230 V British makers, and the Amazon-tier 30" units — which have
+    # no hardwire procedure and no UL 2021 "fixed and location dedicated" listing.
+    # ** FIELD-CONVERTING A CORD-CONNECTED APPLIANCE VOIDS ITS LISTING **, so that tier is out
+    # on principle and not on price. Touchstone's Sideline 28 (80028, ~$359) is disqualified in
+    # writing: manual rev 251114 p.17 says "the 80028 Sideline 28\" Electric Fireplace cannot be
+    # hardwired"; the p.12 "Plug-in or Hardwire" drawing is boilerplate shared across models and
+    # the model-named sentence governs.
+    #
+    # ** WHY THIS ONE AND NOT THE TRD-30-XTRASLIM. ** It is TRIMLESS, so the brick runs to the
+    # glass edge — the entire point of a masonry surround — and it is the only unit in the
+    # field with a published mantel rule. The TRD has 57% more glass but lands a 31 1/4" steel
+    # flange on the brick face and demands a 10" floor clearance plus a PERMANENT AIR-INTAKE
+    # SLOT CUT INTO THE MASONRY.
+    #
+    # ** 240 V WAS CONSIDERED AND BUYS NOTHING. ** No 26-32" unit at <= 6" depth exists in
+    # 208/240 V at all: the 30"-class 240 V units are 11 5/8"-18" deep and the shallow 240 V
+    # units start at 42". And 240 V is WATTAGE ONLY — Dimplex's XLF50 is the same SKU at
+    # 1500 W/5118 Btu (120 V) and 2500 W/8530 Btu (240 V), SimpliFire ships one firebox with an
+    # internal voltage selector, and Modern Flames' USA and 230 V manuals list identical
+    # `LED 12V` and `12 VDC stepper motor` rows. The extra ~1,000-1,300 W would be resistance
+    # heat at roughly 3x the heat pump's cost per Btu in a room the heat pump already serves.
+    # Staying at 120 V also leaves the ServicePort POWER_120, CKT-FIREPLACE at poles=1 and
+    # plan/circuits.py's whole 1,500 W / 12.5 A / 20 A justification untouched.
+    #
+    # ** NO ClearanceZone, AND THAT IS EARNED, NOT SKIPPED. ** A ClearanceZone is a PLAN
+    # rectangle. Every clearance this unit publishes is VERTICAL — "mantel 4 inches from the
+    # trim", combustible facing allowed, no floor clearance and no air slot — so any plan zone
+    # authored here would be inventing a requirement the manufacturer does not state. The
+    # mantel clearance is held instead by the elevation: SB-M-FIRE-MANTEL's underside at 64"
+    # against the opening top at 52 3/8" is 11 5/8", about 3x the published 4".
+    #
+    # ** FOUR THINGS TO CONFIRM IN WRITING FROM AMANTII BEFORE FRAMING: ** (1) the mantel
+    # PROJECTION the 4" is quoted at — unpublished industry-wide; ask specifically whether 4"
+    # holds for a solid walnut shelf projecting 7-8". (2) Bottom, side and back combustible
+    # clearances, which the manual simply omits. (3) That the left-side L/N/G junction block
+    # stays serviceable through the glass opening once the unit is bricked in. (4) ** That the
+    # unit ships with the 2022 CSA manual revision ** — the older manual under the same model
+    # number says 1465 W / 5000 Btu and has NO mantel and NO hardwire section at all, i.e. an
+    # inspector would find no permission to hardwire it. Note the Panorama warranty excludes
+    # tray, front and back glass; and beware HVACDirect, which labels the APPLIANCE dimensions
+    # "Framing Dimensions" (framing to those is too small) and sells a "BI-30-XTRASLIM-LUMINA"
+    # at 110 lb that Amantii does not list — the manual weight is 50.7 lb.
+    #
+    # ** ON LOOKS, HONESTLY: no reliable evidence distinguishes any of these at 9-10 ft. **
+    # Every "most realistic flame" page in this category is a retailer or an affiliate and none
+    # addresses viewing distance. What IS verifiable is that neither Amantii publishes
+    # anti-glare or low-iron glass — both are plain clear tempered and BOTH WILL MIRROR THE TWO
+    # WINDOWS FLANKING THEM. Here glare is solved by the brick reveal and the mantel's shadow,
+    # not by model choice. (The one glossy-LCD shallow unit with a verified owner glare
+    # complaint, Modern Flames' HelioVision, starts at 52" and never reaches this decision.)
+    EquipmentType(tag="EQ-T-FIREPLACE-EL",
+                  name="Amantii BI-30-XTRASLIM electric fireplace, 1.5 kW built-in",
+                  footprint=(inch(29), inch(4.5)), height=inch(20.375),
+                  heating_capacity_btuh=5118, heating_capacity_at_design_btuh=5118,
                   supplemental_heat=True,
+                  source="Amantii BI-30-XTRASLIM (BI-X190030-1), Panorama built-in series, from the 2022 CSA-revision installation manual: rough opening 29 x 20 3/8 x 4 1/2 in, appliance 29 1/8 x 19 7/8 x 4 in, trimless face 3/8 in wider than the body, viewing glass 25 1/4 x 11 7/8 in (300 sq in), 50.7 lb. Electrical 120 V, 1500 W, 5118 Btu/h, 12.5 A, dedicated 15 A circuit preferred (this house gives it a 20 A — see plan/circuits.py); HARDWIREABLE via an L/N/G block on the left side. Clearances: mantel 4 in from the trim, combustible facing allowed, no floor clearance and no air-intake slot. $1,499-1,539. Chosen because it is the only trimless unit in the 26-32 in x <= 6 in deep hardwireable field, which is entirely Amantii; the alternative TRD-30-XTRASLIM lands a 31 1/4 in steel flange on the brick and wants a permanent air slot cut into it. Replaced a generic 48 x 7 in 1.5 kW big-box insert on 2026-09-06",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 1's electric heat kit (retyped from EQ-T-DUCT-HEATER-2KW, and it is a different
@@ -735,8 +819,19 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the
     # nearest real wall — east wall interior face x=35'-5 3/8" (CATLIN_EXT_2X6's inside face
-    # is 6 5/8" in from the 36' sheathing plane). Sits in the 5'-1" clear stretch between
-    # WIN-M-LIV-E2 and WIN-M-DIN-E2, 10" clear of ED-M-LIVING-RC3 at y=16'-11".
+    # is 6 5/8" in from the 36' sheathing plane). ** WIN-M-DIN-E2 IS GONE, AND THE STRETCH IT
+    # NAMED WITH IT. ** It was retired 2026-08-24 with the old WIN-M-LIV-E2 and replaced by
+    # WIN-M-EAST-MID at y=18'-8" (plan/storeys/main.py), so the "5'-1" clear stretch between
+    # WIN-M-LIV-E2 and WIN-M-DIN-E2" this comment used to describe has not existed for two
+    # weeks. The real clear stretch is now y 14'-5 1/2"..17'-6 1/2", 3'-1" of it.
+    #
+    # ** AND THE STAT IS NOT IN IT: at y=17'-9" it stands 2 1/2" INSIDE WIN-M-EAST-MID's rough
+    # opening ** (y 17'-6 1/2"..19'-10 1/2"), at 48" between that window's 32" sill and 80"
+    # head. Found 2026-09-06 while correcting the sentence above; ** NOT MOVED HERE **, because
+    # relocating a thermostat is a device decision of its own and this pass was the fireplace.
+    # The move is small — anywhere in y 14'-8"..17'-4" keeps it on wall and clear of
+    # ED-M-LIVING-RC3 at y=16'-11 1/8" — and nothing in `haus check` will ask for it: no rule
+    # grades a wall device against an opening.
     # FX-M-BATH2-TUB's Bask outlet. Kohler: "A qualified electrician must
     # install a GFCI-protected, 120 V, 15 A, grounded outlet. Locate the outlet BEHIND THE
     # BATH and WITHIN 24 in. of the power supply." The bath ships cord-and-plug with its
@@ -906,8 +1001,17 @@ MAIN_EQUIPMENT = [
     # --- System 2's main-floor heads: high on the south wall either side of the centre wall
     # at x=18', backs south, blowing north. Neither carries `circuit` — power comes off the
     # multi's outdoor unit (CKT-HP2 feeds EQ-M-HP2-OD, interconnects run from there).
+    #
+    # ** y MOVED 0'-6" -> 0'-11 1/8" ON 2026-09-06, AND IT IS A CORRECTION. ** W-M-S2's
+    # interior face is y=6 5/8" (CATLIN_EXT_2X6 aligned on the 0'-0" sheathing plane), and a
+    # 9" body centred at y=6" spans y 1 1/2"..10 1/2" — ** 5 1/8" of both heads was drawn
+    # inside the studs. ** 6 5/8" + 4 1/2" puts each case's BACK on the finish face, which is
+    # where a surface-mounted head hangs. Nothing grades this: the wall-face test in
+    # `test_catlin_contract_m3.py` walks ElectricalDevices only, so Equipment floats or buries
+    # in silence. Same class of error as the fireplace's own 35'-11 3/8" erratum below, found
+    # and fixed in the same pass.
     Equipment(uid="CEE028AAAA", tag="EQ-M-HP2-BED", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(16), ft(0, 6)), footprint=(inch(35), inch(9)),
+              position=pt(ft(16), ft(0, 11.125)), footprint=(inch(35), inch(9)),
               room="RM-M-BED", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
@@ -915,7 +1019,7 @@ MAIN_EQUIPMENT = [
               zone_rooms=("RM-M-BED", "RM-M-BATH1", "RM-M-BATH2", "RM-M-CLOSET",
                           "RM-M-LAUNDRY", "RM-M-STUDY")),
     Equipment(uid="CEE029AAAA", tag="EQ-M-HP2-LIVING", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(20), ft(0, 6)), footprint=(inch(35), inch(9)),
+              position=pt(ft(20), ft(0, 11.125)), footprint=(inch(35), inch(9)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
@@ -939,15 +1043,47 @@ MAIN_EQUIPMENT = [
               outdoor_ref="EQ-M-HP3-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
-    # SE corner of the living room, east wall. 7" mount: WIN-M-LIV-E1's RO (sill 30")
-    # crosses the cabinet band, so the 21" cabinet (tops at 28") reads as a hearth under the
-    # glass instead. 48" cabinet spans y 0'-10"..4'-10", clear of ED-M-LIVING-RC4 at
-    # y=5'-6 1/2". rotation -90 backs it to the wall (interior face x=35'-11 3/8").
+    # --- the fire, moved out of the SE corner 2026-09-06 --------------------------------
+    #
+    # ** IT WAS TOO LOW, NOTHING FACED IT, AND IT COULD NOT BE RAISED WHERE IT STOOD. ** In the
+    # SE corner the 7" mount existed precisely to duck under WIN-M-LIV-E1's rough opening,
+    # which sits directly over it — so the flame sat a foot below the seated eye and there was
+    # no lifting it in place. `plans/pattern_language_review.md` C9/C10 asked for it at seated
+    # eye level, reading as fire at 11 feet, with a dark surround and the seats turned onto it.
+    #
+    # It now sits in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2, centred on y=8'-8", in a
+    # 45 1/2" white-facebrick surround stopping at a walnut mantel — W-M-FIRE in
+    # plan/storeys/main.py carries the pier arithmetic and the whole elevation ladder, and
+    # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The BESTA run was re-laid about it
+    # (all eight kept) and the seating turned onto it (plan/placeables.py).
+    #
+    # ** POSITION. ** x=35'-2 1/8" puts the 4 1/2"-deep rough opening's FRONT on the brick face
+    # at x=34'-11 7/8" and its back at 35'-4 3/8", inside the 1 7/8" of framing between the
+    # wythe's back and the gwb. y=8'-8" is the pier centre. `elevation` is the BASE of the
+    # opening at 32" — the east row's own sill line, so one datum serves four openings — which
+    # puts the opening top at 52 3/8" and the flame centre at 42 3/16" against a seated eye of
+    # ~46-48". ** That is a 14" RISE on the old unit's 28" top. ** rotation -90 backs it to the
+    # wall and opens it west into the room.
+    #
+    # ** `recessed_into_host_surface=True` IS THE HONEST FLAG AND IT MATTERS. ** The body is
+    # let INTO W-M-FIRE's brick, not stood in front of it, so its 4 1/2" of depth is a cavity
+    # behind the face rather than a protrusion into the room — which is what
+    # `resolve/placeable_clear_floor_obstruction` needs to know. Without it the model reads a
+    # 29" x 4 1/2" box lapping 105 sq in of the wythe, i.e. two solids in the same air, and
+    # nothing in `haus check` catches that on its own.
+    #
+    # ** ERRATUM, AND IT PREDATES THIS CHANGE: the east wall's interior face is 35'-5 3/8",
+    # NOT 35'-11 3/8". ** The comment this replaces claimed the latter — the gwb had been
+    # subtracted from the wrong side — and `electrical.py`'s own FH-M-DINING note,
+    # plan/placeables.py and plan/millwork.py all say 35'-5 3/8". The consequence was live: the
+    # old unit at x=35'-8" with a 7" body had its BACK at 35'-11 1/2", so ** the fireplace has
+    # been buried 6 1/8" inside the studs for as long as that comment has existed. **
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(35, 8), ft(2, 10)), footprint=(inch(48), inch(7)),
+              position=pt(ft(35, 2.125), ft(8, 8)), footprint=(inch(29), inch(4.5)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
               circuit="CKT-FIREPLACE",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(7))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(32),
+                          recessed_into_host_surface=True)),
 ]
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------

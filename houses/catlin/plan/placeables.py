@@ -157,40 +157,105 @@ BASEMENT_PLACEABLES = [
               position=pt(ft(33, 8), ft(18, 9.375)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
-    Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",
-              position=pt(m(7.87848), m(2.69813))),
+    # --- the sitting circle, turned onto the fire (2026-09-06) ---------------------------
+    #
+    # `plans/pattern_language_review.md` C9 (The Fire) / C10 (Sitting circle): the electric
+    # fireplace was a foot below the seated eye in the SE corner and NOTHING FACED IT. This
+    # turns the seats onto it. The fire is now W-M-FIRE at x=34'-11 7/8", centred on y=8'-8"
+    # (plan/storeys/main.py), and the convention on this floor is rotation 0 = back at +y, so
+    # deg(90) = back WEST / opens EAST. The sofa is west of the fire, so it takes deg(90);
+    # the two armchairs flank it and mirror exactly about y=104".
+    #
+    # Seat to flame: sofa 9'-9 3/8", armchairs 5'-2 1/8". The review's complaint was that the
+    # unit "reads flat at the 11 ft where the sofa is" — geometry has now fixed the half of
+    # that it can, and the unit itself is the other half (plan/electrical.py).
+    #
+    # ** RE-AUTHORED IN FEET. ** The sofa was `pt(m(7.87848), m(2.69813))`, a metric literal
+    # nobody could read against a plan dimensioned in inches.
+    #
+    # ** THE TWO BINDING CLEARANCES ARE BOTH ABOUT 1", AND BOTH SHOULD BE RE-CHECKED AFTER
+    # ANY NUDGE HERE: ** the sofa's 30" front band against the armchairs' west edge, and
+    # armchair N's north edge against the dining chairs' 36" use margin at y=148 1/2".
+    #
+    # ** THE TYPE IS HOUSE-LOCAL AND THE INSET IS THE REASON. ** FT-SOFA-84-SEAT-BAND is
+    # FURN-SOFA-84 in every dimension and differs only in `front_zone(..., inset=0.72)`, which
+    # narrows the walk band to the width of the SEAT rather than the width of the arms — the
+    # FT-DINING-8-OPEN-CORNERS precedent (plan/furniture_types.py): retype, never reduce the
+    # reach. Without it the finding is `integrity.placeable_recommended_clearance_conflict` at
+    # WARN/UNKNOWN, which does not break the 0-FAIL gate but does put a line in a clean report.
+    #
+    # ** NO COFFEE TABLE. ** Anything standing in the sofa's front band is an encroachment by
+    # definition, and this band is now the walk lane to the fire.
+    Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FT-SOFA-84-SEAT-BAND",
+              room="RM-M-LIVING", position=pt(ft(24, 4.5), ft(8, 8)), rotation=deg(90)),
+    Furniture(uid="808W2W6TPA", tag="FURN-M-ARMCHAIR-N", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
+              position=pt(ft(29, 10), ft(10, 10)), rotation=deg(90)),
+    Furniture(uid="G5QQNW9448", tag="FURN-M-ARMCHAIR-S", type_ref="FURN-ARMCHAIR-35", room="RM-M-LIVING",
+              position=pt(ft(29, 10), ft(6, 6)), rotation=deg(90)),
+    # ** SAY THE COST OUT LOUD: TURNING THE SOFA EAST MEANS IT NO LONGER ADDRESSES THIS. **
+    # The fire and this console now sit 90 degrees apart, and a 64" mantel with brick above it
+    # cannot take a panel — so no screen can go over the fire either.
+    # `plans/pattern_language_review.md` C9/C10 named that trade; it is a real choice and not a
+    # deferral. It costs less than it sounds: ** THERE IS NO TV IN THIS ROOM AT ALL. ** The 98"
+    # screen is FURN-B-PLAY-TV in the basement, so this console is holding storage that seven
+    # BESTA units two feet away already hold.
+    #
+    # ** RETIRING IT OUTRIGHT IS DEFENSIBLE AND IS LEFT AS AN OWNER CALL. ** Kept for now
+    # because deleting a 5' console is a furniture decision, not a consequence of moving a
+    # fireplace; the cost of keeping it is written above so the call can be made on the facts.
     Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
               position=pt(ft(26, 11), ft(1, 10)), rotation=deg(180)),
-    # East living-room storage: EIGHT 23 5/8" BESTA units fill the 15'-10 3/8" clear span
-    # from the fireplace's north edge at y=4'-10" to FURN-M-KIT-PANTRY-S2's south face at
-    # y=21'-2 3/8". Their backs sit directly on the east wall's interior face at x=35'-5 3/8".
-    # Rotation -90 puts each unit's back against the east wall and opens it toward the room.
+    # East living-room storage: EIGHT 23 5/8" BESTA units, RE-LAID 2026-09-06 about the
+    # fireplace surround. Their backs sit directly on the east wall's interior face at
+    # x=35'-5 3/8"; rotation -90 puts each back against that wall and opens it toward the room.
+    #
+    # ** THE RUN IS NOW TWO BANKS, THREE SOUTH AND FIVE NORTH, WITH W-M-FIRE BETWEEN THEM. **
+    # Available wall is y 6 5/8" (the south interior face) to y 254 3/8"
+    # (FURN-M-KIT-PANTRY-S2's south face). The surround takes y 81 1/4"..126 3/4", leaving:
+    #     south  74 5/8"  ->  3 units, y 10 3/8"..81 1/4",  3 3/4" left to the wall
+    #     north  127 5/8" ->  5 units, y 126 3/4"..244 7/8", 9 1/2" left to the pantry
+    # Total 8 — every unit retained, every uid below kept, none added and none deleted. The
+    # freed SE corner (the old fireplace's y 10"..58") is what pays for it, and BOTH BANKS RUN
+    # HARD INTO THE MASONRY: 0" gap on each side.
+    #
+    # ** WHAT "MIRRORED" CAN HONESTLY MEAN HERE. ** 3 south vs 5 north is not a mirror and no
+    # centred surround can make it one: the wall south of the pier is 73 3/4" and north of it
+    # 126 3/4", a 53" asymmetry the pier centre cannot absorb. For the RUN to be symmetric the
+    # surround would have to centre on y=130 1/2", which drives its north edge into
+    # WIN-M-LIV-E2's rough opening. Impossible. What IS achieved, and is the part that reads:
+    # the surround is exactly centred in the pier (16 3/4" to each king face); both banks die
+    # into it with no gap; and the two units flanking it mirror exactly about y=104" — centres
+    # 69 7/16" and 138 9/16", both 34 9/16" off centre to the thousandth.
     #
     # ** EIGHT, NOT NINE. ** A ninth unit would overlap FURN-M-KIT-PANTRY-S2's carcass
-    # (whose south edge runs to y=21'-2 3/8") by 1.86 SF, two solid bodies in the same air —
-    # the alternative of sliding all nine south into the fireplace was rejected.
+    # (whose south edge runs to y=21'-2 3/8"), two solid bodies in the same air.
     #
-    # ** NOTHING IN `haus check` CATCHES THIS, and that is worth knowing. ** The advisory
-    # clearance rules grade a declared CLEARANCE ZONE against a body; two bodies simply
-    # occupying the same volume is not something any current check walks. The 1'-4 5/8"
-    # residual between BESTA-08's north end and the tall bank is slack, not a gap to fill —
-    # a tenth unit does not fit in it either.
+    # ** THE OLD COMMENT HERE WAS WRONG THREE TIMES, AND TWO OF THEM PREDATE THIS CHANGE. **
+    # It called the span "15'-10 3/8"" (the run is 15'-9", the available span was 16'-4 3/8");
+    # it called the residual to the pantry "1'-4 5/8"" when it was 7 3/8" (the conclusion "a
+    # tenth unit does not fit" was right for the wrong reason); and it was keyed to a fireplace
+    # in the SE corner that has now left. Only the third was this change's doing.
+    #
+    # ** NOTHING IN `haus check` CATCHES TWO BODIES IN THE SAME AIR, and that is worth
+    # knowing. ** The advisory clearance rules grade a declared CLEARANCE ZONE against a body;
+    # two solids simply occupying one volume is not something any current check walks. The 0"
+    # gaps against W-M-FIRE above were measured by hand and have to be re-measured by hand.
     Furniture(uid="CMB801AAAA", tag="FURN-M-LIVING-BESTA-01", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(5, 9.8125)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(1, 10.1875)), rotation=deg(-90)),
     Furniture(uid="CMB802AAAA", tag="FURN-M-LIVING-BESTA-02", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(7, 9.4375)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(3, 9.8125)), rotation=deg(-90)),
     Furniture(uid="CMB803AAAA", tag="FURN-M-LIVING-BESTA-03", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(9, 9.0625)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(5, 9.4375)), rotation=deg(-90)),
     Furniture(uid="CMB804AAAA", tag="FURN-M-LIVING-BESTA-04", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(11, 8.6875)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(11, 6.5625)), rotation=deg(-90)),
     Furniture(uid="CMB805AAAA", tag="FURN-M-LIVING-BESTA-05", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(13, 8.3125)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(13, 6.1875)), rotation=deg(-90)),
     Furniture(uid="CMB806AAAA", tag="FURN-M-LIVING-BESTA-06", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(15, 7.9375)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(15, 5.8125)), rotation=deg(-90)),
     Furniture(uid="CMB807AAAA", tag="FURN-M-LIVING-BESTA-07", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(17, 7.5625)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(17, 5.4375)), rotation=deg(-90)),
     Furniture(uid="CMB808AAAA", tag="FURN-M-LIVING-BESTA-08", type_ref="FURN-BESTA-2358",
-              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 7.1875)), rotation=deg(-90)),
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 5.0625)), rotation=deg(-90)),
     # Dining at 17'-4" (south of where the 48" pantry once took the east wall to 22'-8" —
     # that pantry is gone, see the BESTA run above). Table
     # x 23'-0 1/2"..31'-0 1/2", y 15'-4 1/2"..18'-10 1/2"; the 36" chair-use margin reaches
@@ -579,6 +644,24 @@ MAIN_PLACEABLES = [
     # overlaps (the tall bank and the overhang are coplanar at y=25'-2 3/8") and no check
     # fires, because casework carries no clearance zones here. THREE stools is the honest
     # count either way, which is what is authored below.
+    # ** THE TOP IS TWO MATERIALS, AND THE 15" IS WHY (2026-09-06). ** Caesarstone's rule for
+    # engineered quartz is max overhang = 1/3 of depth and not more than 15", with up to 14"
+    # unsupported in 3 cm. 15" on a 24" carcass is 38% of depth — outside the rule and
+    # outside the warranty, which is a fact about the CANTILEVER and not about this
+    # placement. The owner's call: keep quartz as the counter, put the owner's own white oak
+    # on the overhang. So the 24" work surface is Silestone (`quartz-counter`) and the 15"
+    # bar top is oak milled to 1 3/16" to sit flush with 3 cm stone (`oak-counter`), meeting
+    # at the carcass face on a colour-matched silicone MOVEMENT joint — never grout or hard
+    # caulk, because 39" of solid oak moves hard between a Minnesota January and July.
+    #
+    # It also deletes the jumbo-slab problem in the same move: a 120" x 39" seamless quartz
+    # top needs a jumbo (a standard slab is 57" x 120", i.e. ZERO cutting margin) and eats
+    # 35-45% waste on a slab paid for in full, where a 24"-deep strip cuts out of a standard
+    # slab with ordinary yield.
+    #
+    # ** THE OAK TOP RUNS THE WESTERN ~96" ONLY. ** The east 24" is not overhang at all —
+    # FURN-M-KIT-MIXER-GARAGE stands full-depth on it, as the note below this one records,
+    # and a counter-to-ceiling cabinet cannot stand on a cantilever.
     Furniture(uid="PD9W4Q86MD", tag="FURN-M-KIT-PENINSULA", type_ref="CASE-PENINSULA-120", room="RM-M-LIVING",
               position=pt(ft(30, 5.375), ft(26, 9.875))),
     # 24" per seat (NKBA), tucked under the 15" overhang at y=24'-10".

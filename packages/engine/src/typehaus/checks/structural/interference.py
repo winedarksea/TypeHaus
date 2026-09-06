@@ -125,11 +125,18 @@ _STAIR_BORNE = frozenset({"stringer", "landing", "landing_framing", "newel"})
 # (studs, plates, headers, T-backing blocking, and the rafters/ridge landing on a gable).
 _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
                      | frozenset({"header", "blocking", "rafter", "ridge_beam"}))
-# The members of a fabricated roof truss (top/bottom chords, web members, the raised heel):
-# all share the roof's ``parent_uid`` and meet at panel points, so their shared volume there
-# is the fabricated joint, never an elevation bug. The seat-cut solid is the birdsmouth seat
-# a rafter/chord bears on the plate with — bonded to its member, seated on the wall top.
-_TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"})
+# A shop-fabricated roof truss. It is now ONE member per truss
+# (``resolve/framing/roof_gable.truss_member``), so this set no longer names the chords,
+# webs and heel it used to: those were the *inside* of the truss, and the pairs they made
+# with each other at the panel points do not exist any more.
+#
+# What the single member brings instead is an ENVELOPE — bearing to bearing, plate top to
+# ridge — and everything the fabricator builds inside that envelope now shares volume with
+# it by construction. That is the gable end's infill studs, which stand between its chords
+# and are part of the same fabricated end frame; ``_TRUSS_FABRICATED_INFILL`` is that set,
+# and it is excused only against a truss of the SAME roof.
+_TRUSS_KINDS = frozenset({"roof_truss"})
+_TRUSS_FABRICATED_INFILL = frozenset({"stud"})
 # Non-structural envelope skin and trim emitted at the roof edge (resolve/roof_edge.py +
 # resolve/roof_trim.py): the sheathing/rainscreen/cladding band carrying a wall past its
 # plate to the roof underside, and the fascia/soffit/gutter/ridge-cap/corner-trim hung off
@@ -220,11 +227,12 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     wall_top_kinds = _PLATE_KINDS | _STUD_KINDS
     if kinds & {"rafter", "ridge_beam"} and kinds & wall_top_kinds:
         return True
-    # A fabricated truss: its own chords/webs/heel meet at panel points (same roof parent),
-    # and the whole truss bears down onto the wall top plate it lands on. The box IR carries
-    # no gusset plate or heel seat, so those read as shared volume — all intended joinery,
-    # never an elevation bug.
-    if kinds <= _TRUSS_KINDS and same_parent:
+    # A fabricated truss: whatever the plant builds inside its own envelope (the gable end's
+    # infill studs) belongs to the truss it is plated into, and the whole truss bears down
+    # onto the wall top plate it lands on. The box IR carries no gusset plate or heel seat,
+    # so those read as shared volume — all intended joinery, never an elevation bug.
+    if (kinds & _TRUSS_KINDS and same_parent
+            and kinds <= (_TRUSS_KINDS | _TRUSS_FABRICATED_INFILL)):
         return True
     if kinds & _TRUSS_KINDS and kinds & wall_top_kinds:
         return True

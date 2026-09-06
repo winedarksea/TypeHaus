@@ -67,7 +67,13 @@ export interface Layer {
 // "floor_truss" is an open-web member: it reuses the same flange_*/web_thickness_m
 // fields for its chords deliberately, so every "two lines inboard of the edges"
 // consumer (2D section, this inspector) works unchanged.
-export type MemberShape = "rect" | "i_joist" | "floor_truss";
+// "roof_truss" is a WHOLE shop-fabricated truss as one member, the same call the engine
+// makes for a floor truss. Its p0/p1 are its two bearings and z0_m/z1_m its plate top and
+// ridge, so the member is the truss's ENVELOPE; the chords and webs inside it are a
+// drawing convention (three/roofTruss.ts), not model geometry. flange_thickness_m is the
+// chord depth, and depth_m is that same chord — never the heel-to-peak height, which is
+// z1_m - z0_m and varies along the span.
+export type MemberShape = "rect" | "i_joist" | "floor_truss" | "roof_truss";
 
 export interface MemberSeat {
   plate_top_z_m: number;
@@ -110,9 +116,9 @@ export interface Member {
   shape: MemberShape;
   width_m: number;
   depth_m: number;
-  flange_width_m: number | null; // i_joist / floor_truss only
-  flange_thickness_m: number | null; // i_joist / floor_truss only
-  web_thickness_m: number | null; // i_joist / floor_truss only
+  flange_width_m: number | null; // i_joist / floor_truss / roof_truss only
+  flange_thickness_m: number | null; // i_joist / floor_truss / roof_truss only
+  web_thickness_m: number | null; // i_joist / floor_truss / roof_truss only
   plies: number;
   // Plan-frame axis a vertical member (p0 == p1) is oriented along, e.g. a stud's wall
   // direction — null for horizontal/sloped members, which carry their own axis in p0->p1.

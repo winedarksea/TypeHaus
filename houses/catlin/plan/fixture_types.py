@@ -16,6 +16,7 @@ Nothing here duplicates the library.
 from __future__ import annotations
 
 from library.placeables._zones import front_zone
+from plan.fixture_types_wc import WC_AND_SHOWER_TYPES
 from typehaus.model import FixtureType, Service, inch
 
 # The Kohler K-5713-W1-0 Underscore, RM-M-BATH2 (plan/products.py carries brand + model).
@@ -56,13 +57,24 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 
 # RM-M-BATH2's vanity, replacing a borrowed FX-KITCHEN-SINK-33 that billed as a kitchen
 # sink, drew a two-bowl symbol on the bathroom plan, and gave the room no cabinet at all.
-# The owner wants one basin and as much drawer and shelf as 54" can hold, so this is a
+# The owner wants one basin and as much drawer and shelf as the wall can hold, so this is a
 # vanity type rather than a sink type.
 #
-# 54" x 21" is set by the room, not by a catalogue: the west wall gives ** 57 1/4" ** of
-# clear run between W-M-BDN1's finish face (y=13'-2 3/8") and the start of FX-M-BATH2-WC's
-# 21" P2705.1 front clearance (y=17'-11 5/8"), and 54" leaves 3 1/4" of that rather than
-# butting a cabinet into a code envelope. ** Measure that run off the WALLS' finish faces
+# ** 54" WAS WRONG, AND IT WAS WRONG AGAINST THE WRONG CODE (revised 2026-09-06). ** The
+# original sizing measured the run to the start of FX-M-BATH2-WC's **21" IRC P2705.1** front
+# clearance at y=17'-11 5/8" and reported 3 1/4" of slack. But this file's own header says
+# why IRC P2705.1 has no force in Minnesota -- Minn. R. 1309.0010 subp. 3.D deletes IRC
+# chapters 25-33 -- and the envelope actually drawn and actually enforced is **UPC 402.5's
+# 24"**, which is three inches nearer. Against that, 54" cleared by ** 0.24" **, and the
+# instant the water closet became a real product rather than a 28"-deep allowance the cabinet
+# stood inside a code envelope. TOTO's one-piece skirted bowls run 28 1/2" (Nexus) to 30"
+# (Carlyle II); there is no real toilet the 54" survives.
+#
+# So: 51" x 21", which clears the Carlyle II's envelope by 1 3/4" instead of a quarter inch.
+# The 3" comes out of the drawer bank (24" -> 21"), not the sink base. What is left is still
+# five drawers and a full 30" sink base, and the alternative -- a shallower bowl -- would
+# have bought back two inches of cabinet by giving up the skirt, which is the cleanability
+# feature the room exists to have. ** Measure that run off the WALLS' finish faces
 # and never off `Room.clear_face` ** -- the latter is inset from the wall AXIS, which on
 # this 13 7/8" exterior wall reads six inches out. 21" is the standard manufactured vanity
 # depth (KraftMaid, and the 20"-23" band every mass-market line sits in); the counter
@@ -76,7 +88,7 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # inches, so no round inch value lands on 36.000"; 41 1/2" is the closest orderable one.
 # Change this number and the counter moves -- it is not a round one by accident.
 #
-# ** ONE BASIN, AND THE STORAGE IS THE POINT. ** 24" four-drawer bank at the SOUTH end,
+# ** ONE BASIN, AND THE STORAGE IS THE POINT. ** 21" four-drawer bank at the SOUTH end,
 # 30" sink base at the NORTH end with the basin over it, so the counter runs unbroken from
 # the drawer bank to the basin rim rather than being cut in half by a second bowl. The
 # basin centreline lands at y=16'-3 5/8" -- 39" off W-M-BDN1's face, comfortably past
@@ -96,24 +108,29 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # gives 30 5/8" of aisle between this face and the tub deck's west face, so the
 # recommendation IS met in fact -- but authoring 30" as a REQUIRED zone would make a
 # guideline read as code in every clearance finding, which it is not.
-BATH2_VANITY_54 = FixtureType(
-    tag="FX-VANITY-54-SINGLE",
-    name='Vanity, 54" single basin with drawer bank',
-    footprint=(inch(54), inch(21)),
+BATH2_VANITY_51 = FixtureType(
+    tag="FX-VANITY-51-SINGLE",
+    name='Vanity, 51" single basin with drawer bank',
+    footprint=(inch(51), inch(21)),
     height=inch(41.5),
     plan_symbol="vanity",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(54), inch(21), inch(21), "lavatory front clearance"),),
-    source="RM-M-BATH2 vanity, owner selection 2026-08-29; cabinetry by owner. 54 x 21 in. "
-           "carcass, 22 in. counter with a 1 in. overhang, finished counter 36 in. "
-           "(comfort height, NKBA Bathroom Planning Guideline 7 allows 32-43 in.). ONE "
-           "basin: a single rectangular undermount, model 20 x 15 1/2 in. overall with a "
-           "17 1/4 x 13 in. cutout and a 5 1/4 in. bowl (Kohler Verticyl K-2882 class). "
-           "Cabinet breakdown: 24 in. bank of four drawers at the south end (6/9/9/9 in. "
+    clearances=(front_zone(inch(51), inch(21), inch(21), "lavatory front clearance"),),
+    source="RM-M-BATH2 vanity, owner selection 2026-08-29, narrowed 54 in. to 51 in. on "
+           "2026-09-06 when the water closet became a real product. 51 x 21 in. carcass, "
+           "22 in. counter with a 1 in. overhang, finished counter 36 in. (comfort height, "
+           "NKBA Bathroom Planning Guideline 7 allows 32-43 in.). ONE basin: a single "
+           "rectangular undermount, 20 x 15 1/2 in. overall with a 17 1/4 x 13 in. cutout "
+           "and a 5 1/4 in. bowl -- Kohler Caxton K-20000-0 (PROD-KOHLER-K-20000), chosen "
+           "over the Verticyl K-2882 this first named, whose vertical sides and tight "
+           "corner radii are exactly what stops a cloth reaching the corner in one pass. "
+           "Cabinet breakdown: 21 in. bank of four drawers at the south end (6/9/9/9 in. "
            "fronts, 19 in. boxes) + 30 in. sink base at the north end with a pair of doors "
            "and one interior shelf (SB-M-BATH2-VAN), the trap kept high and tight to the "
-           "wall so the base stays usable. Six drawers plus the shelf is the storage this "
-           "type exists for; a wider single-bowl unit will not fit the west wall.",
+           "wall so the base stays usable. QUARTZ with an undermount rather than the "
+           "integral solid-surface top the four small vanities take: this and the 48 in. "
+           "hall-bath unit are the two busiest decks and the two that are fabricated "
+           "rather than bought boxed."
 )
 
 # ---------------------------------------------------------------------------
@@ -131,8 +148,8 @@ BATH2_VANITY_54 = FixtureType(
 # with a 22" top). ``-SHALLOW`` is 18" deep and is NOT a premium product: the cheap big-box
 # combos -- the ones that arrive boxed with the top and bowl already on them -- measure
 # 18.6"-18.75" deep, so 18" is what is on the pallet. Three of these rooms cannot take 21"
-# and lose nothing by it. (``FX-VANITY-54-SINGLE`` above predates the suffix convention and
-# is 54" x 21"; it reads correctly under it.)
+# and lose nothing by it. (``FX-VANITY-51-SINGLE`` above predates the suffix convention and
+# is 51" x 21"; it reads correctly under it.)
 #
 # ** WIDTHS ARE THE CHEAP STOCK LADDER: 24 / 30 / 36 / 48 / 60. ** Those five are stocked
 # by every big-box and every builder cabinet line, assembled, no lead time. 18", 42", 54"
@@ -190,10 +207,11 @@ VANITY_24_SHALLOW = FixtureType(
     footprint=(inch(24), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
+    product_ref="PROD-SWAN-CONTOUR",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(24), inch(18), inch(21), "lavatory front clearance"),),
     source='Small-bath vanity, owner selection 2026-08-30. 24" x 18" carcass, 25" x 19" '
-           'cultured-marble top with an integral single bowl, finished counter 36" '
+           'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36" '
            '(comfort height; NKBA Bathroom Planning Guideline 7 allows 32"-43"). One sink '
            'base, two doors, one full-depth adjustable shelf (SB-M-BATH1-VAN). This is the '
            'big-box combo tier -- Glacier Bay GB24P2 class, 25" x 18.6", cabinet and top '
@@ -212,10 +230,11 @@ VANITY_30_SHALLOW = FixtureType(
     footprint=(inch(30), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
+    product_ref="PROD-SWAN-CONTOUR",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(30), inch(18), inch(21), "lavatory front clearance"),),
     source='Vanity, owner selection 2026-08-30. 30" x 18" carcass, 31" x 19" '
-           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf. TWO of these stand side '
            'by side in RM-S-VANITY under one 61" double top -- which is how a 60" double '
            'vanity is actually built and bought, and it keeps two drains, two traps and '
@@ -231,11 +250,12 @@ VANITY_30_SINGLE = FixtureType(
     footprint=(inch(30), inch(21)),
     height=inch(41.5),
     plan_symbol="vanity",
+    product_ref="PROD-SWAN-CONTOUR",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(30), inch(21), inch(21), "lavatory front clearance"),),
     source='Primary-suite bath vanity, owner selection 2026-08-30. 30" x 21" carcass '
            '(Menards Quality One VDB3021 / KraftMaid vanity sink base class), 31" x 22" '
-           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf (SB-S-SUITEBATH-VAN).',
 )
 
@@ -250,10 +270,11 @@ VANITY_36_SHALLOW = FixtureType(
     footprint=(inch(36), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
+    product_ref="PROD-SWAN-CONTOUR",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(36), inch(18), inch(21), "lavatory front clearance"),),
     source='Vanity, owner selection 2026-08-30. 36" x 18" carcass, 37" x 19" '
-           'cultured-marble top with an integral single bowl, finished counter 36". One '
+           'one-piece SOLID-SURFACE top with an integral coved bowl, finished counter 36". One '
            'sink base, two doors, one full-depth adjustable shelf. 36" is the widest of '
            'the three volume stock sizes (24/30/36) and the last one before the price step '
            'up to 48". Used twice: RM-B-BATH and RM-A-STUBATH.',
@@ -273,8 +294,10 @@ VANITY_48_SINGLE = FixtureType(
     plan_symbol="vanity",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(inch(48), inch(21), inch(21), "lavatory front clearance"),),
-    source='Hall-bath vanity, owner selection 2026-08-30. 48" x 21" carcass, 49" x 22" '
-           'cultured-marble top with an integral single bowl, finished counter 36". '
+    source='Hall-bath vanity, owner selection 2026-08-30, top revised 2026-09-06. 48" x '
+           '21" carcass, 49" x 22" QUARTZ top with a Kohler Caxton K-20000-0 undermount '
+           '(PROD-KOHLER-K-20000) -- this and the 51" are the two busiest decks and the '
+           'only two that are fabricated rather than bought boxed. Finished counter 36". '
            'Cabinet breakdown: 30" sink base at the SOUTH end with two doors and one '
            'full-depth adjustable shelf (SB-S-BATH1-VAN), plus an 18" three-drawer bank at '
            'the NORTH end. The drawer bank is the ~1.5x-per-inch cabinet in the house and '
@@ -282,7 +305,34 @@ VANITY_48_SINGLE = FixtureType(
            'every other bathroom takes doors and a shelf instead.',
 )
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_54,
+# ---------------------------------------------------------------------------
+# THE TOPS CHANGED, AND IT IS THE BEST CLEANABILITY-PER-DOLLAR MOVE IN THE HOUSE (2026-09-06)
+# ---------------------------------------------------------------------------
+#
+# The integral-versus-undermount split above was right on the cleanability axis and is kept:
+# a coved integral bowl has no caulk joint, no clip reveal and no silicone ring to mildew.
+# ** WHAT WAS WRONG WAS THE MATERIAL. ** Cultured marble is a ~0.020" clear gelcoat over
+# filled polyester -- hot hair tools scorch it permanently, it yellows in sun, and a refinish
+# lays down a THINNER gelcoat than the original. Compression-moulded solid surface (Swan
+# Contour, PROD-SWAN-CONTOUR) is the same integral coved bowl at the same price band in a
+# HOMOGENEOUS material: a scratch or a scorch sands back to new instead of cutting through a
+# skin, and its matte finish reads better against white oak and hides water spots.
+#
+# The 48" and 51" keep quartz with a Kohler Caxton K-20000-0 undermount (PROD-KOHLER-K-20000,
+# chosen over the Verticyl K-2882 first specified: Verticyl's selling point is vertical sides
+# and tight corner radii, which is exactly what stops a cloth reaching the corner in one
+# pass). Those two are the busiest decks and the 51" is fabricated regardless, so they carry
+# no ``product_ref`` -- a fabricated top is not a purchased SKU.
+#
+# ** ORDER EVERY TOP DRILLED SINGLE-HOLE, IN WRITING. ** All eight lavatory faucets are
+# single-hole (Delta Arvo 15840LF-SP): one deck penetration instead of three, in the splash
+# zone, cheaper in brushed nickel. Stock tops are drilled single-hole or 4" centerset at the
+# factory and 8" widespread is a special-order drilling -- and FIELD-drilling a cast top
+# chips it and voids its warranty. Swan Contour ships single-hole with 4"/8" knockouts you
+# simply never break out; plugging holes with a deck plate afterwards defeats the whole point.
+
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_51,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
-                 VANITY_36_SHALLOW, VANITY_48_SINGLE)
+                 VANITY_36_SHALLOW, VANITY_48_SINGLE,
+                 *WC_AND_SHOWER_TYPES)
 

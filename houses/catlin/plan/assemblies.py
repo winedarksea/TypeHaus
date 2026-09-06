@@ -2768,6 +2768,114 @@ CATLIN_STAIRWELL_PARTITION_4H = Assembly(
 
 MATERIALS = [
     *STARTER_MATERIALS,
+    # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
+    #
+    # ** THE FIRST MATERIALS IN THIS REPO TO CARRY A ``product_ref``. ** The field has existed
+    # on ``Material`` since it was added for every other catalog and no material has used it,
+    # because a stud is a stud. A slab and a tile are different: they are BOUGHT, by model,
+    # finish and lot, and the whole point of ``plan/products_interior.py`` is that "what did we
+    # actually buy" should be readable by the estimate rather than parsed out of prose.
+    # ``takeoff/product_labels.py`` already joins ``envelope_layers`` and ``floor_finishes``
+    # to product labels, so these reach the bill with no engine change.
+
+    # ** COUNTERTOPS DID NOT EXIST IN THIS MODEL AT ALL. ** Until now the only statement about
+    # them anywhere in the repo was one docstring line in library/placeables/casework.py:
+    # "continuous 1-inch white countertop" — no element, no material, no price row, i.e.
+    # unpriced scope. This tag is the material half of the fix; the price row is keyed to it
+    # in prices.toml and driven off casework lineal feet, because a countertop is still not a
+    # modelled ELEMENT and this pass deliberately does not invent one (see plans/TODO.md).
+    #
+    # 3 cm, no debate: 2 cm's saving evaporates into a plywood subtop plus a laminated edge,
+    # and it cannot do a good mitre. Eased edge is included in the fabrication; a 2-3" mitred
+    # apron on the exposed run is the most visible upgrade available in a minimalist kitchen,
+    # and a WATERFALL is $700-1,200 to kill the knee space at one end of a three-stool run.
+    #
+    # ** SILICA IS A REAL CONSIDERATION AND HERE IT IS ALSO FREE. ** Silestone is now HybriQ
+    # at <=40% crystalline silica against 90-95% for conventional quartz including Cambria;
+    # Cal/OSHA voted 2026-05-21 to initiate a prohibition on fabricating engineered stone over
+    # 1% silica after 592 silicosis cases, 65 lung transplants and 31 deaths among California
+    # fabricators since 2019, and Australia banned it outright. There is NO Minnesota or
+    # federal ban and quartz buys with zero friction here — but the low-silica slab is also
+    # the cheaper one, so the choice costs nothing. What it does NOT do is protect the
+    # fabricator by itself: vet the SHOP, not the showroom — wet cutting on every operation
+    # including hand edge-work, respirators on faces, and OSHA silica exposure monitoring on
+    # file. That is the strongest argument against the big-box route, which subs the cut to an
+    # undisclosed shop you can neither inspect nor hold to a cantilevered overhang.
+    Material(tag="quartz-counter", name="Engineered quartz countertop, 3 cm",
+             density=2400.0, hatch="masonry", color="#f2efe9", finish="polished",
+             product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD",
+             source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's 24\" work surface. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
+    # ** THE PENINSULA'S OVERHANG IS THE ONE PLACE THE STONE STOPS, AND IT IS AN ENGINEERING
+    # LIMIT RATHER THAN A PREFERENCE. ** CASE-PENINSULA-120 is a 24" carcass carrying a 15"
+    # knee (NKBA's figure for a 36" counter). Caesarstone's own rule for engineered quartz is
+    # max overhang = 1/3 of depth and not more than 15", with up to 14" unsupported in 3 cm —
+    # and 15" on a 24" carcass is 38% of depth, outside the rule and outside the warranty.
+    # Steel plate would buy it back; so does putting a different material on the cantilever.
+    #
+    # The owner mills white oak off family land in southern Minnesota at ~$2/sf in 4/4 and
+    # 8/4 up to 18" wide, and 1.5-1.75" of solid oak cantilevers 15" without an argument. So
+    # the peninsula is quartz on the 24" work surface and oak on the 15" bar top, meeting at
+    # the carcass face. That also deletes the jumbo-slab problem in the same move: a 120" x
+    # 39" seamless quartz top needs a jumbo (a standard slab is 57" x 120", i.e. ZERO cutting
+    # margin) and consumes 39" of a 65" slab for 35-45% waste on a slab paid for in full,
+    # while a 24"-deep strip cuts out of a standard slab with ordinary yield.
+    #
+    # ** MILL IT TO 1 3/16" SO THE TWO TOPS ARE FLUSH ** — 3 cm is 1.181", and neither 4/4
+    # (13/16" dressed) nor 8/4 (1 3/4") lands there on its own. Strips run the LONG way,
+    # fastened with slotted screws or figure-8s because 39" of solid oak moves hard between a
+    # Minnesota January and July, and ** finish all six faces equally including the underside
+    # ** — that is the detail that fails on shop-built tops. The joint between stone and wood
+    # is a colour-matched silicone MOVEMENT joint, never grout or hard caulk. The EAST 24" of
+    # the peninsula is not overhang at all (FURN-M-KIT-MIXER-GARAGE stands full-depth on it),
+    # so the oak top runs the western ~96" only.
+    Material(tag="oak-counter", name='White oak bar top, 1 3/16", site-milled',
+             r_per_inch=1.0, density=750.0, hatch="lumber", color="#c9a978",
+             finish="hardwax-oil",
+             source="Owner's own white oak, milled to match 3 cm quartz flush. The peninsula's 15\" seating overhang ONLY -- see the quartz-counter note above for why the stone stops at the carcass face. The 36\" kitchen sink base stays quartz: do not put water and wood together."),
+    # ** THE FLOOR TILE, AND THE SELECTION IS ARITHMETIC BEFORE IT IS TASTE. ** Grout length
+    # per square foot is 144 x (1/a + 1/b): a 24x24 gives 1.0 lineal ft/sf, a 3x12 subway
+    # gives 5.0, a penny round gives 24+. Large-format is ~3x easier to keep clean than
+    # subway and ~9x easier than mosaic, and THAT is the cleanability decision; grout colour
+    # and grout chemistry come second and third.
+    #
+    # ** "RECTIFIED" IS THE HIGHEST-LEVERAGE WORD ON THE SPEC SHEET. ** ANSI A108.02 4.3.8.1:
+    # tile with any side over 15" takes a 1/8" minimum joint if rectified and 3/16" if not —
+    # so a non-rectified 24x24 gives the same look and three times the grout area. Confirm it
+    # on the spec sheet and not in the sales copy. The price of rectified is that square
+    # arrises show lippage: budget a levelling-clip system and a flat substrate.
+    #
+    # ** PATTERN IS STACK BOND, 0% OFFSET, AND A 50% RUNNING BOND IS OUT OF STANDARD HERE. **
+    # There is no "TCNA 5% rule" — the governing text is ANSI A108.02 4.3.8.2: where the
+    # offset side exceeds 15" nominal, only offsets of 33% or less shall be specified. So a
+    # third is the MAXIMUM permitted and a half is not available without an owner-approved
+    # mock-up (long tiles crown slightly, and a 50% offset lands the neighbour's edge at the
+    # peak). Stack bond is simultaneously the lowest-lippage install, the easiest to mop and
+    # the correct minimalist language. Align wall and floor joints at the base of the wall
+    # where geometry allows; that single move is what makes a room read designed.
+    Material(tag="tile-floor-24", name='Porcelain floor tile, 24x24 matte rectified',
+             hatch="masonry", color="#e8e4dc",
+             product_ref="PROD-MARAZZI-MF01",
+             source="Marazzi Modern Formation Peak White MF01, 24x24 matte rectified, DCOF >=0.42, absorption <0.5%, USA made (owner selection 2026-09-06). A warm limestone-look white sits right next to white oak where a cool 'pure white' porcelain fights it and reads clinical. The MUDROOM takes the same tile in TEXTURED for a higher wet DCOF against snowmelt, salt and grit. ** V3 HIGH SHADE VARIATION: lay out eight pieces from a full box before committing. ** Grout is PERMACOLOR Select in a warm light-to-mid grey, one to one-and-a-half shades darker than the tile -- NOT bright white (MN road salt blooms white over black grime, and a rectified arris micro-abrades and lays a PERMANENT grey shadow along every joint by year three) and NOT charcoal, which merely inverts the problem: hard water, soap film and dried cleaner all dry to a WHITE haze. Make a grouted sample board at the real joint width and look at it dry, at 72 hours, lying flat, under the actual fixtures."),
+    # The wall tile. A flat quiet white with NO veining, because the oak is the thing in the
+    # room that should have figure. 12x24 rather than 24x24 on a wall: the same 1/8"
+    # rectified joint, half the sheet weight to hang, and it modules better against a niche.
+    #
+    # ** THE SHOWER PAN IS A DELIBERATE HEDGE. ** Schluter's own copy notes that a
+    # single-plane slope to KERDI-LINE lets large format run into the pan, which would cut
+    # grout from ~12.8 lf/sf to 1.5. Take the linear drain and the single-slope pan, but
+    # still take the tile down to 2x2 in the pan itself: DCOF >=0.42 is an ANSI A326.3
+    # threshold for LEVEL surfaces, and a sloped soapy floor is past what it contemplates.
+    # The pan is 12-16 sf, so the grout accepted is trivial and the traction is not.
+    #
+    # ** EPOXY THE SHOWER, CEMENT THE FLOORS, AND NEVER EPOXY THE MUDROOM. ** At a 1/8" joint
+    # on rectified 24x24 the grout is ~1% of the floor; epoxy's advantage is per unit of
+    # grout SURFACE, matte warm-white porcelain is the worst possible haze substrate, and
+    # PERMACOLOR needs no sealer ever. Epoxying the floors is a $1,200-1,800 decision to
+    # improve 1% of the floor at ~2.5x the grouting labour.
+    Material(tag="tile-wall-1224", name='Porcelain wall tile, 12x24 matte rectified',
+             hatch="masonry", color="#f0eeea",
+             product_ref="PROD-TILEBAR-BRONX-WHITE",
+             source="TileBar Bronx White 12x24 matte rectified, DCOF 0.5 (owner selection 2026-09-06). Smooth matte deliberately: a DEEPLY textured matte holds soap film and a gloss glaze shows every drip. Grout is SPECTRALOCK PRO epoxy on the walls and in the pan. ** COLOUR-MATCHED 100% SILICONE AT EVERY CHANGE OF PLANE (TCNA EJ171), 5-6 tubes from one lot: ** grouting a perimeter hard defeats the uncoupling membrane you paid for, and sanded ACRYLIC caulk sits right beside the grout in matching colours and is not a movement joint. ** TRIMLESS EDGES, WITH THREE EXCEPTIONS: ** profile on the shower CURB only (the most abused edge in the house -- never mitre a curb); mitre the shower outside corner if the setter has a portfolio of them; and no profile where the wall tile stops -- use a drywall shadow-gap reveal, because a horizontal bead at eye level is a visible ledge and a dust-catcher. Return field tile into the niche rather than trimming it, size the niche to the 12x24 module so the back is full pieces, and SLOPE THE SILL: a flat niche sill is a permanent puddle and the most common niche failure."),
     # The EPS stay-in-place deck form (CATLIN_DECK_EPS_INT). Deliberately *not* `icf-eps`,
     # whose R-4.0/inch is the bead EPS on its own: this section is ribbed, and the concrete
     # that fills the ribs bridges it. BuildDeck publishes R-25 for the 8" section as
@@ -2961,6 +3069,23 @@ MATERIALS = [
              density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
              species="walnut", nominal_quarters=8, milling_profile="S4S",
              source="plans/TODO.md — RM-M-STUDY call booth. 8/4 because both pieces are structural millwork on a 45-5/8\" and a 30-5/8\" span with no stiffener: a bench seat someone sits on and a fixed desk top someone leans on"),
+    # RM-M-LIVING's fireplace mantel, SB-M-FIRE-MANTEL. Same species, same finish and same
+    # bought-not-milled accounting as the walnut above; ** 12/4 AND NOT 8/4, WHICH IS THE
+    # WHOLE REASON IT IS A SEPARATE MATERIAL. ** The mantel finishes 2 1/4" — one brick bed
+    # height, so it reads as a course pulled out of the wythe — and 8/4 dresses to 1 1/2".
+    # `takeoff/hardwood.py` catches exactly that ("2.25\" finished cannot come out of 8/4"),
+    # which is how this tag came to exist: the board was authored on `walnut-shelf-8q` first
+    # and `haus millwork` refused to pretend. 12/4 dresses to 2 1/2", so 2 1/4" comes off it
+    # with a skim to spare.
+    #
+    # No `stock_bf_per_sqft`, like the walnut above: this is a PIECE good cut to a finished
+    # T x W x L, not a coverage good. Its dollars are NOT here and not in `haus millwork`
+    # either — see `finish-fireplace-mantel-walnut` in prices.toml [allowances], and the
+    # note on SB-M-FIRE-MANTEL for why a wall-hosted ShelfBank has no host row to carry them.
+    Material(tag="walnut-mantel-12q", name="Black walnut mantel shelf, 12/4 S4S", hatch="lumber",
+             density=610.0, color="#5d4433", finish="clear-satin-hardwax-oil",
+             species="walnut", nominal_quarters=12, milling_profile="S4S",
+             source="RM-M-LIVING fireplace mantel (2026-09-06). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Bought walnut, not the family's oak stock"),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
     # of RM-M-STUDY. ** NO `species`. ** That one field is the gate on `haus millwork`
     # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is

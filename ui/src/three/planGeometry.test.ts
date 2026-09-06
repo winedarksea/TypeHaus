@@ -237,10 +237,38 @@ function checkMemberVerticalExtents() {
   }
   disposeGroup(truss);
 
+  // A roof truss is ONE member for a whole plated assembly, so the box the engine sends is
+  // the truss's ENVELOPE — bearing to bearing, plate top to ridge. Drawn as a bar it would
+  // fill the attic with wood that is not there, so it draws as a fink inside that envelope:
+  // chords, a king post and two diagonals, all inside the stated extent.
+  const roofChord = 0.0889;      // 2x4 on edge: 3 1/2" chord
+  const plateTop = 2.2352;
+  const ridgeTop = 3.77825;
+  const roofTruss = new THREE.Group();
+  buildMembers(roofTruss, [member({
+    key: "truss-005", category: "roof_truss", profile: "24 roof truss", shape: "roof_truss",
+    p0: [0, 12.41], p1: [0, 19.73], z0_m: plateTop, z1_m: ridgeTop,
+    width_m: 0.0381, depth_m: roofChord, flange_width_m: 0.0381,
+    flange_thickness_m: roofChord, web_thickness_m: 0.0381, orient: null,
+  })], center, "schematic", PALETTE, "TESTOWNER");
+  const roofMeshes = roofTruss.children as THREE.InstancedMesh[];
+  if (roofMeshes.length !== 1) {
+    throw new Error(`A roof truss draws in one mesh, received ${roofMeshes.length}`);
+  }
+  // Bottom chord, two top chords, king post, two diagonals.
+  if (roofMeshes[0].count !== 6) {
+    throw new Error(`Expected a 6-piece fink, drew ${roofMeshes[0].count}`);
+  }
+  const fink = boundsForObject(roofMeshes[0]);
+  closeTo(fink.min.y, plateTop, "the bottom chord sits on the plate the member names");
+  if (fink.max.y > ridgeTop + 1e-6) {
+    throw new Error("no piece of the truss may stand above its own ridge elevation");
+  }
+
   // Roof members split two ways: sticks under the framing toggle, skin with the shell.
   // Fascia counts as framing: trim by category, but a nailer on the rafter tails by trade.
   // Mirrors ROOF_SKIN_CATEGORIES in emit/gltf/members.py.
-  for (const category of ["rafter", "top_chord", "truss_web", "stud", "outlooker", "fascia"]) {
+  for (const category of ["rafter", "roof_truss", "stud", "outlooker", "fascia"]) {
     if (!isRoofFramingMember(member({ category }))) {
       throw new Error(`${category} is a stick and belongs in the framing trade`);
     }

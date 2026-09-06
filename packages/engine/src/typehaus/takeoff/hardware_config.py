@@ -129,7 +129,7 @@ class HangerDetectionRules:
     carrier_solid_categories: frozenset = frozenset({"beam"})
     # Members that can hang off a carrier.
     hangable_member_categories: frozenset = frozenset(
-        {"joist", "rafter", "rim", "landing", "landing_framing", "stringer", "top_chord"})
+        {"joist", "rafter", "rim", "landing", "landing_framing", "stringer", "roof_truss"})
     # A hung member's cut end stops short of the carrier centreline by about half the
     # carrier width; this bounds that gap (a 3-ply LVL is ~2.6" of it).
     end_gap_tolerance_in: float = 6.0
@@ -180,10 +180,14 @@ class UpliftTieRules:
     that **bear**, which is every other end in the house and none of the same ones.
     """
 
-    # A rafter roof seats on its rafters. A truss roof seats on its HEELS: a truss's top
-    # chord runs on past the plate to the overhang and crosses it more than a foot up, so a
-    # rule that tied top chords would tie the wrong member at the wrong elevation.
-    tied_roof_categories: frozenset = frozenset({"rafter", "truss_heel"})
+    # A rafter roof seats on its rafters; a truss roof seats on the truss. One member per
+    # truss (``resolve/framing/roof_gable.truss_member``) makes that one category rather
+    # than the heel block it used to have to name: the member's own ends ARE its two
+    # bearings, at the plate top, so this ties the right member at the right elevation
+    # without the old caveat about top chords crossing the plate a foot up on their way to
+    # the overhang. It also ties the two GABLE-END trusses, which had no heel block and so
+    # went untied.
+    tied_roof_categories: frozenset = frozenset({"rafter", "roof_truss"})
     # Floors tie the joist only. A rim closes the joist ends and a trimmer frames an
     # opening; neither lands on a bearing line of its own.
     tied_floor_categories: frozenset = frozenset({"joist"})

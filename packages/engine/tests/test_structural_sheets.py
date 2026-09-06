@@ -273,10 +273,13 @@ def test_s102_carries_roof_members_ridge_and_pitch(catlin_model):
     assert "RIDGE" in _joined(scene)
 
 
-def test_s102_schedules_truss_chords_for_a_truss_roof(catlin_model):
+def test_s102_schedules_the_truss_for_a_truss_roof(catlin_model):
+    """One member per truss, so one schedule mark: the sheet says "T1", not a chord/web
+    breakdown the fabricator's own plate layout owns."""
     roof = next(item for item in catlin_model.roofs if item.tag == "RF-GARAGE")
     marks = {row[0] for row in build_roof_framing_schedule(catlin_model, roof).rows}
-    assert {"TC1", "BC1", "TW1"} <= marks
+    assert "T1" in marks
+    assert not {mark for mark in marks if mark.startswith(("TC", "BC", "TW", "TH"))}
 
 
 def test_s102_names_its_missing_inputs(catlin_model):

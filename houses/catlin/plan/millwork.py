@@ -299,6 +299,57 @@ MAIN_SHELVES = [
     # money is already in its `[placeables]` row in prices.toml, which is written to
     # include the seat — the same accounting as FT-STUDY-BENCH, not the owner-milled
     # family-stock case the pantry shelves are.
+    # --- RM-M-LIVING's fireplace mantel, W-M-FIRE ---------------------------------------
+    #
+    # A custom-milled walnut shelf, 2 1/4" thick — one brick bed height, so it reads as a
+    # single course pulled out — with its underside at 5'-4" and PROUD, not let-in, so the
+    # coursing behind it is continuous and never breaks. It caps the surround: 2 1/4" over
+    # 64" puts the top of the whole object at 66 1/4".
+    #
+    # ** THE HOST IS A WALL, WHICH IS THE FIRST ShelfBank IN THIS HOUSE THAT IS **, and it is
+    # why `depth` is authored here and deliberately omitted on the study and mudroom boards.
+    # `resolve/millwork.py::_pocket_depth_m` gives a wall host the depth of its CASE POCKET —
+    # its AIRGAP plus stud bay — which is the right answer for a bookcase wall and the wrong
+    # one for a 3 5/8" masonry wythe with no pocket at all. 10" is measured: from W-M-E1's gwb
+    # at x=35'-5 3/8" out to x=34'-7 3/8", i.e. dying on the wall behind and projecting 4 1/2"
+    # past the brick face at x=34'-11 7/8".
+    #
+    # `shelf_count=1` for SB-M-STUDY-BENCH's reason: a ShelfBay counts horizontal boards
+    # INCLUDING the case top, and here the mantel IS the top. `clear_height` is the void under
+    # it, and the number that matters is the appliance clearance: 64" less the firebox opening
+    # top at 52 3/8" is 11 5/8", against the Amantii BI-30-XTRASLIM's published 4" mantel rule
+    # — about 3x. That margin is why the projection question (the 4" is quoted with NO
+    # projection qualifier anywhere in the industry) is a formality here rather than a risk. It
+    # is still on the list of things to get from Amantii in writing; see EQ-T-FIREPLACE-EL.
+    #
+    # ** 12/4 STOCK, NOT THE STUDY'S 8/4, AND `haus millwork` IS WHAT SAID SO. ** Authored on
+    # `walnut-shelf-8q` first, the schedule printed that 2 1/4" finished cannot come out of
+    # 8/4, which dresses to 1 1/2" — so the material is `walnut-mantel-12q`
+    # (plan/assemblies.py), which dresses to 2 1/2". Same species, same finish, same
+    # bought-not-owner-milled accounting; only the nominal stock differs, and it has to.
+    #
+    # ** ONE BOARD, GENUINELY. ** 45 1/2" x 10" is inside MW-STANDARD.max_board_width (18")
+    # even after jointing loss, so this is a one-piece milled mantel and not an edge-glued
+    # panel — the only large walnut piece in the house that is. `takeoff/hardwood.py` runs the
+    # grain along the LONGER plan dimension, which here is the 45 1/2" length, and that is
+    # correct: a mantel's grain runs its length.
+    #
+    # ** THE MONEY IS NOT HERE AND MUST NOT BE. ** `haus millwork` is an UNPRICED VIEW and a
+    # "shelf" row may reference no other priced section (a test enforces it). For
+    # SB-M-STUDY-BENCH/-DESK the walnut's dollars live in the `[placeables]` rows of their host
+    # FurnitureTypes — but ** A ShelfBank ON A WALL HAS NO HOST ROW ANYWHERE **, so that
+    # accounting has nothing to hang on and the most expensive board in the room would bill at
+    # $0. It is carried instead by `finish-fireplace-mantel-walnut` in prices.toml
+    # [allowances], which is the one table for scope no other section prices.
+    ShelfBank(
+        uid="TPJ2J8VXZJ", tag="SB-M-FIRE-MANTEL",
+        host="W-M-FIRE",
+        material_ref="walnut-mantel-12q",
+        thickness=inch(2.25),
+        depth=inch(10),
+        profile="S4S",
+        bays=(ShelfBay(width=inch(45.5), clear_height=inch(11.625), shelf_count=1),),
+    ),
     ShelfBank(
         uid="STDXY9J49R", tag="SB-M-MUD-BENCH",
         host="FURN-M-MUD-BENCH",

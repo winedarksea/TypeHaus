@@ -146,15 +146,27 @@ def test_to_roof_wall_reaches_the_lifted_plane_not_the_pre_lift_one(resolved):
 
 # --- 2. gable-end truss + rake framing -----------------------------------------------------
 
-def test_gable_ends_are_drop_trusses_with_studs_not_fink_webs(resolved):
-    keys = {member.child_key for member in _roof(resolved).members}
-    ends = ("truss-000", f"truss-{len([k for k in keys if k.endswith('-bc')]) - 1:03d}")
+def test_gable_ends_are_drop_trusses_with_studs(resolved):
+    """Every station is one fabricated truss; only the two ends carry stud infill.
+
+    The chords, webs and king post are inside the member now, so the tell of a gable end is
+    no longer "webs replaced by studs" — it is that studs exist there at all, and that the
+    end truss is dropped below the field trusses by the outlooker depth.
+    """
+    members = _roof(resolved).members
+    trusses = [m for m in members if m.category == "roof_truss"]
+    keys = {m.child_key for m in members}
+    ends = ("truss-000", f"truss-{len(trusses) - 1:03d}")
     for end in ends:
         assert any(key.startswith(f"{end}-gable-stud-") for key in keys), end
-        assert not any(key.startswith(f"{end}-web-") or key.startswith(f"{end}-king")
-                       for key in keys), end
-    # Interior stations keep the Fink pattern.
-    assert any(key.startswith("truss-001-web-") for key in keys)
+    # No interior station carries stud infill, and none of them is dropped.
+    interior = [m for m in trusses if m.child_key not in ends]
+    assert interior and not [key for key in keys
+                             if key.startswith("truss-001-gable-stud-")]
+    drop = cross_section("2x4").depth_m  # the outlooker the gable truss drops for
+    for end in ends:
+        end_truss = next(m for m in trusses if m.child_key == end)
+        assert end_truss.z1_m == pytest.approx(interior[0].z1_m - drop, abs=1e-9)
 
 
 def test_gable_studs_stop_under_the_dropped_top_chord(resolved):
@@ -375,7 +387,7 @@ def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
     roof = _roof(stacked)
     framing = {m.category for m in roof.members if is_roof_framing_member(m)}
     skin = {m.category for m in roof.members if not is_roof_framing_member(m)}
-    assert {"top_chord", "bottom_chord", "truss_web", "stud", "fascia"} <= framing
+    assert {"roof_truss", "stud", "fascia"} <= framing
     assert skin == {"sheathing", "cladding", "soffit", "ridge_cap"}
     assert not framing & skin
 
@@ -545,7 +557,7 @@ def test_fascia_carries_the_framing_trade_so_a_framing_toggle_shows_it(stacked):
     # The panels it trims are not framing, and neither is ordinary lumber (its category
     # already files it there).
     assert {m.trade for m in _members(stacked, "soffit")} == {None}
-    assert {m.trade for m in _members(stacked, "top_chord")} == {None}
+    assert {m.trade for m in _members(stacked, "roof_truss")} == {None}
 
 
 # --- 9. the derived gutter -----------------------------------------------------------------
@@ -909,7 +921,7 @@ def test_gable_studs_lie_flat_in_the_drop_truss_plane(resolved):
     from typehaus.resolve.framing.footprint import member_footprint
 
     members = _roof(resolved).members
-    chord = next(m for m in members if m.child_key == "truss-000-bc")
+    chord = next(m for m in members if m.child_key == "truss-000")
     ring, _, _ = member_footprint(chord)
     lo, hi = min(x for x, _ in ring), max(x for x, _ in ring)
     studs = [m for m in members if m.child_key.startswith("truss-000-gable-stud-")]

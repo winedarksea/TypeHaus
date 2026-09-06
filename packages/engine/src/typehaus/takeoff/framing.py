@@ -17,6 +17,7 @@ from typehaus.resolve.ceiling_over import ceiling_regions
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.fabrication import FABRICATED_SHAPES
 
 _M2_TO_FT2 = 10.7639104167
 _SHEET_AREA_FT2 = 32.0
@@ -39,15 +40,19 @@ _PROFILE_RE = re.compile(r"^(?:(\d+)-)?(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)")
 def _order_length_ft(length_ft: float, profile: str | None = None) -> int:
     """Round a cut length up to the stock length it would be purchased in.
 
-    A ``floor_truss`` is fabricated, not milled dimensional lumber: it charges to the
-    18'/20' trimmable ladder only within each stock's trim window; a length outside both
-    windows (or a member clipped short by an opening) is fabricated to its own length and
-    buckets at its own whole-foot ceiling rather than the next stock size up.
+    A FABRICATED member is not milled dimensional lumber and never rides the stock ladder.
+    A ``floor_truss`` charges to the 18'/20' trimmable ladder only within each stock's trim
+    window; a length outside both windows (or a member clipped short by an opening) is
+    fabricated to its own length and buckets at its own whole-foot ceiling rather than the
+    next stock size up. A ``roof_truss`` has no trimmable stock at all — it is designed and
+    plated to one span — so it always buckets at its own length.
     """
-    if profile is not None and cross_section(profile).shape == "floor_truss":
-        for stock in _TRUSS_STOCK_FT:
-            if stock - _TRUSS_TRIM_ALLOWANCE_FT - 1e-6 <= length_ft <= stock + 1e-6:
-                return stock
+    shape = None if profile is None else cross_section(profile).shape
+    if shape in FABRICATED_SHAPES:
+        if shape == "floor_truss":
+            for stock in _TRUSS_STOCK_FT:
+                if stock - _TRUSS_TRIM_ALLOWANCE_FT - 1e-6 <= length_ft <= stock + 1e-6:
+                    return stock
         return int(math.ceil(length_ft - 1e-9))
     for stock in _STOCK_LENGTHS_FT:
         if length_ft <= stock + 1e-6:
@@ -108,8 +113,9 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
 
     Long pieces bucket one-for-one. Short ones are packed first-fit-
     decreasing into the shortest stock, kerf included, so the order reflects the sticks a
-    framer carries to the saw rather than one per cut. A fabricated member (a floor truss)
-    is never nested: it is made to its length, and two of them do not come off one blank.
+    framer carries to the saw rather than one per cut. A fabricated member (a floor or roof
+    truss) is never nested: it is made to its length, and two of them do not come off one
+    blank.
 
     ``spliceable`` is the third case and the newest: a member the model has derived to be
     ``continuously_supported`` is bought in stock lengths and joined on site, rather than
@@ -118,7 +124,7 @@ def _bucket_cut_lengths(lengths: list[float], profile: str | None,
     """
     buckets: Counter = Counter()
     stock = _STOCK_LENGTHS_FT[0]
-    fabricated = profile is not None and cross_section(profile).shape == "floor_truss"
+    fabricated = profile is not None and cross_section(profile).shape in FABRICATED_SHAPES
     nestable: list[float] = []
     own_stick: list[float] = []
     for cut_ft in lengths:

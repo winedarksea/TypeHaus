@@ -38,6 +38,7 @@ from typehaus.resolve.framing.roof_gable import (
     build_truss_layout,
     gable_end_members,
     is_gable_end_position,
+    truss_member,
 )
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import (
@@ -382,69 +383,26 @@ def _bearing_plate_top(model: ResolvedModel, roof: ResolvedRoof) -> float | None
 def _frame_trusses(
     model: ResolvedModel, roof: ResolvedRoof, spec: FramingSpec
 ) -> tuple[FramedMember, ...]:
-    """Raised-heel trusses: top + bottom chords, king post + diagonal webs, heel blocks.
+    """Raised-heel trusses: **one member per truss**, plus the gable ends' rake framing.
 
-    The roof plane arrives already lifted by its raised heel (``apply_truss_heel_lift`` in
-    the envelope stage), so the top chords simply lie on ``roof.eave_z_m``/``ridge_z_m``.
-    The two end stations are gable-end drop trusses with rake framing (``roof_gable``).
+    A truss is bought and set as one plated assembly, so it is resolved, billed and exported
+    as one member (``roof_gable.truss_member``) rather than as its chords, webs and heel —
+    the same call ``FloorSystem`` already makes for an open-web floor truss. The roof plane
+    arrives already lifted by its raised heel (``apply_truss_heel_lift`` in the envelope
+    stage), so the member's top rides ``roof.ridge_z_m`` with no heel arithmetic here. The
+    two end stations are gable-end drop trusses with rake framing (``roof_gable``).
     Emits nothing if the bearing geometry cannot be resolved.
     """
     layout = build_truss_layout(model, roof, spec)
     if layout is None:
         return ()
-    cd, wd = layout.chord_depth_m, layout.web_depth_m
-    plate_top = layout.plate_top_m
-    span_mid = layout.span_mid
-    eave, ridge = layout.eave_z_m, layout.ridge_z_m
-    orient = layout.truss_orient
-
     members: list[FramedMember] = []
-    top_at_lo = layout.plane_z(layout.bear_lo)
-    top_at_hi = layout.plane_z(layout.bear_hi)
     for ti, pos in enumerate(layout.positions):
         tag = f"truss-{ti:03d}"
         if is_gable_end_position(layout, ti):
             members.extend(gable_end_members(layout, ti, tag))
             continue
-        # Bottom chord (ceiling): horizontal, bearing-to-bearing on the top plates.
-        members.append(FramedMember(
-            roof.uid, f"{tag}-bc", "bottom_chord", layout.chord,
-            layout.plan_pt(pos, layout.bear_lo), layout.plan_pt(pos, layout.bear_hi),
-            plate_top, plate_top + cd, abs(layout.bear_hi - layout.bear_lo),
-        ))
-        # Top chords: eave tail → apex, lying on the (lifted) deck plane.
-        apex = layout.plan_pt(pos, span_mid)
-        for side, foot in (("lo", layout.foot_lo), ("hi", layout.foot_hi)):
-            members.append(FramedMember(
-                roof.uid, f"{tag}-tc-{side}", "top_chord", layout.chord,
-                layout.plan_pt(pos, foot), apex, eave - cd, eave,
-                math.hypot(span_mid - foot, ridge - eave),
-                z0_end_m=ridge - cd, z1_end_m=ridge,
-            ))
-        # Raised-heel blocks: plate top → top-chord underside at each bearing.
-        for side, bear, top_at in (("lo", layout.bear_lo, top_at_lo),
-                                   ("hi", layout.bear_hi, top_at_hi)):
-            pt = layout.plan_pt(pos, bear)
-            heel_top = max(plate_top + cd, top_at - cd)
-            members.append(FramedMember(
-                roof.uid, f"{tag}-heel-{side}", "truss_heel",
-                layout.web, pt, pt, plate_top, heel_top, heel_top - plate_top, orient=orient,
-            ))
-        # King post: bottom-chord top → apex underside.
-        members.append(FramedMember(
-            roof.uid, f"{tag}-king", "truss_web", layout.web, apex, apex,
-            plate_top + cd, ridge - cd, (ridge - cd) - (plate_top + cd), orient=orient,
-        ))
-        # Diagonal webs: bottom-chord quarter points → apex (a simple Fink reading).
-        for side, bear in (("lo", layout.bear_lo), ("hi", layout.bear_hi)):
-            quarter = (bear + span_mid) / 2.0
-            members.append(FramedMember(
-                roof.uid, f"{tag}-web-{side}", "truss_web", layout.web,
-                layout.plan_pt(pos, quarter), apex,
-                plate_top + cd, plate_top + cd + wd,
-                math.hypot(span_mid - quarter, (ridge - cd) - (plate_top + cd)),
-                z0_end_m=ridge - cd - wd, z1_end_m=ridge - cd,
-            ))
+        members.append(truss_member(layout, pos, tag))
     return tuple(members)
 
 

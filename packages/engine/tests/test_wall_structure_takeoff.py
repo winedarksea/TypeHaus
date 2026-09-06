@@ -75,7 +75,17 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # W-B-BRICK's cold out of FT-B-S2/S3. The board is NOT in this table (it is an
     # INSULATION layer and this one partitions on STRUCTURE); it bills as `xps:2.0` through
     # `takeoff/envelope.py`, which is the whole reason the break was authored as a Layer.
-    assert len({tag for row in rows for tag in row["tags"]}) == 39
+    # **40 since 2026-09-06**: W-M-FIRE, RM-M-LIVING's fireplace surround — a 3 5/8" wythe of
+    # `white-brick` on `FIREPLACE_BRICK_WYTHE`, standing in front of W-M-E1 in the pier
+    # between WIN-M-LIV-E1 and WIN-M-LIV-E2. It is the first tag in this table that is
+    # neither a pour nor a stair partition, and it is here for BASEMENT_BRICK_VENEER's exact
+    # reason: a freestanding wythe's backer is a *different wall*, so its one layer has to be
+    # STRUCTURE or `integrity.assembly_layers` finds none — and a STRUCTURE layer with no
+    # `FramingSpec` reads as monolithic and bills its gross volume here. **The gross is the
+    # point and is deliberate**: neither the 29" x 20 3/8" firebox opening nor the 13 7/16"
+    # below the finished floor is deducted, because on 24.5 SF a mason bills the panel.
+    # prices.toml says so on the row. See notes/east_breast_bearing.md.
+    assert len({tag for row in rows for tag in row["tags"]}) == 40
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -88,8 +98,12 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # the veneer is one flat `brown-brick` field now. Both Materials are still in the
     # catalog, unreferenced and deliberately so (plan/assemblies.py), so a material dropping
     # out of this set is again not evidence it dropped out of the catalog.
+    # `white-brick` ARRIVED 2026-09-06 with W-M-FIRE, and it is the second brick in this set
+    # rather than a replacement for the first: `brown-brick` is still the sunken garden's
+    # veneer. The material had been in the catalog and unreferenced since the porch parapet
+    # was retired.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "spf"}
+        "concrete", "retaining-block", "brown-brick", "white-brick", "spf"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is

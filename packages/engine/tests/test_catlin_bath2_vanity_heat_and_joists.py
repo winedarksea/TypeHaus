@@ -2,7 +2,7 @@
 
 Three changes landed together and each is silently breakable from somewhere else:
 
-  * the sink is a 54" ONE-BASIN VANITY, not the double-bowl kitchen sink that stood in for
+  * the sink is a 51" ONE-BASIN VANITY, not the double-bowl kitchen sink that stood in for
     it, and it fits the west wall only because the water closet's code clearance leaves
     exactly 59";
   * the radiant mat is the room's ONLY heat source and is sized to a real purchasable
@@ -69,19 +69,19 @@ def test_the_vanity_is_one_basin_and_no_longer_a_kitchen_sink():
     kitchen sink; it drew two bowls on a bathroom plan and billed as a kitchen sink."""
     plan = _plan()
     sink = _element(plan, "main", "FX-M-BATH2-SINK")
-    assert sink.type_ref == "FX-VANITY-54-SINGLE"
+    assert sink.type_ref == "FX-VANITY-51-SINGLE"
 
-    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-54-SINGLE"]
+    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-51-SINGLE"]
     assert vanity.plan_symbol == "vanity"
     width, depth = (v.meters / M_PER_IN for v in vanity.footprint)
-    assert (round(width, 4), round(depth, 4)) == (54.0, 21.0)
+    assert (round(width, 4), round(depth, 4)) == (51.0, 21.0)
     # The kitchen sink type survives, because the KITCHEN still uses it.
     assert _element(plan, "main", "FX-M-KITCH-SINK").type_ref == "FX-KITCHEN-SINK-33"
 
 
 def test_the_vanity_stands_on_the_floor_rather_than_hanging_on_the_wall():
     """The old instance carried `Mount(WALL, 27")` to drag a kitchen deck down to lavatory
-    height. A vanity is a floor-standing cabinet; that mount would float a 54" carcass 27"
+    height. A vanity is a floor-standing cabinet; that mount would float a 51" carcass 27"
     up the wall with its toe kick in mid-air."""
     sink = _element(_plan(), "main", "FX-M-BATH2-SINK")
     assert sink.mount.kind.value == "floor"
@@ -94,7 +94,7 @@ def test_the_counter_lands_at_thirty_six_inches():
     Change the height and the counter moves; this is the arithmetic that says by how much."""
     from typehaus.model.placeable_symbols.plumbing import _deck_height
 
-    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-54-SINGLE"]
+    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-51-SINGLE"]
     deck_m, _faucet = _deck_height(vanity.height.meters)
     # 41.5" less the builder's fixed 0.14 m (5.512") faucet band is 35.99", i.e. 36" to
     # within a hundredth. There is no height that lands on 36.000" in round inches.
@@ -102,30 +102,40 @@ def test_the_counter_lands_at_thirty_six_inches():
 
 
 def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
-    """The 54" is set by this: the run from the south wall to the start of
-    FX-M-BATH2-WC's 21" IRC P2705.1 front clearance is 59", and a cabinet may not stand in
-    a code envelope. If the water closet ever moves west or south, this is what breaks."""
+    """The 51" is set by this, and the number it is set against was WRONG until 2026-09-06.
+
+    A cabinet may not stand in a code envelope, and the envelope this room is graded on is
+    ** UPC 402.5's 24" **, not IRC P2705.1's 21": Minn. R. 1309.0010 subp. 3.D deletes IRC
+    chapters 25-33 and 1309.0307 sends fixtures to Minn. R. ch. 4714, which adopts the 2018
+    UPC. This test used to measure against the 21" and assert 3 1/4" of slack, which was
+    true and irrelevant -- against the 24" the old 54" cabinet cleared by 0.24", so the
+    first REAL water closet (every TOTO one-piece skirted bowl is 28 1/2"-30" deep against
+    the allowance's 28") put the cabinet inside the envelope and `haus check` failed.
+
+    Measured the right way now. If the water closet ever moves west or south, or grows
+    deeper again, this is what breaks."""
     model = _model()
     south_face = _finish_face(model, "W-M-BDN1", "y", "max")
 
     vanity = Polygon(_canvas(model, "FX-M-BATH2-SINK").footprint)
     vx0, vy0, vx1, vy1 = (v / M_PER_IN for v in vanity.bounds)
-    assert round(vy1 - vy0, 2) == 54.0        # the 54" runs north/south, so rotation applied
+    assert round(vy1 - vy0, 2) == 51.0        # the 51" runs north/south, so rotation applied
     assert round(vx1 - vx0, 2) == 21.0
     assert abs(vy0 - south_face) < 0.05       # hard into the room's south-west corner
 
-    # The bowl faces south (rotation 0), so P2705.1's 21" reaches south off its front edge.
+    # The bowl faces south (rotation 0), so UPC 402.5's 24" reaches south off its front edge.
     wc = Polygon(_canvas(model, "FX-M-BATH2-WC").footprint)
-    envelope_starts = min(p[1] for p in wc.exterior.coords) / M_PER_IN - 21.0
+    envelope_starts = min(p[1] for p in wc.exterior.coords) / M_PER_IN - 24.0
     assert vy1 < envelope_starts, "the cabinet stands in the water closet's code envelope"
-    # ...and the slack is real but small: the run is 57 1/4", so 54" leaves 3 1/4".
-    assert 2.5 < envelope_starts - vy1 < 4.5
+    # ...and the slack is a real margin now rather than a rounding error: 1 3/4", where the
+    # 54" cabinet this replaced left 0.24" and the next deeper bowl would have eaten it.
+    assert 1.0 < envelope_starts - vy1 < 3.5
 
 
 def test_the_vanity_backs_onto_the_wall_face_not_the_rooms_clear_face():
     """** THE REGRESSION THIS FILE EXISTS FOR MOST. ** A first cut of this cabinet was
     placed off `Room.clear_face`, which is inset from the wall AXIS rather than from the
-    finished face — so a 54" vanity stood SIX INCHES inside W-M-W3's studs, and the whole
+    finished face — so a 51" vanity stood SIX INCHES inside W-M-W3's studs, and the whole
     house still checked 0 FAIL, because nothing grades a fixture against a wall face. The
     same mistake put the floor-heat polygon in the wall beside it."""
     model = _model()
@@ -158,7 +168,7 @@ def test_the_vanity_has_a_receptacle_within_reach_of_the_basin():
 
 def test_the_vanity_clears_the_window_over_it():
     """WIN-M-BATH2's 3'-0" sill is the SAME plane as this 36" counter, so the two would
-    collide if the cabinet ran north. It stops ~11 7/8" short of the opening."""
+    collide if the cabinet ran north. It stops well short of the opening."""
     model = _model()
     window = next(o for o in model.openings if o.tag == "WIN-M-BATH2")
     wall = next(w for w in model.walls if w.tag == "W-M-W3")
@@ -172,7 +182,8 @@ def test_the_vanity_clears_the_window_over_it():
 
     vanity_north = max(p[1] for p in _canvas(model, "FX-M-BATH2-SINK").footprint)
     assert lo > vanity_north
-    assert 12.0 < (lo - vanity_north) / M_PER_IN < 16.0
+    # 17 1/8" since the cabinet narrowed to 51" on 2026-09-06; it was 14 1/8" at 54".
+    assert 15.0 < (lo - vanity_north) / M_PER_IN < 20.0
 
 
 def test_the_bathroom_door_swings_out_and_clears_the_vanity():

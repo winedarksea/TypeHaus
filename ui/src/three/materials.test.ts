@@ -271,7 +271,9 @@ export function runMemberColorTests() {
   // Roof sticks + truss vocabulary: lumber, not the neutral fallback.
   for (const category of [
     "rafter", "blocking", "outlooker", "barge_rafter",
-    "top_chord", "bottom_chord", "truss_web", "truss_heel", "seat_cut",
+    // One member per truss since 2026-09-06: "roof_truss" is where the chord/web/heel
+    // categories went (resolve/framing/roof_gable.truss_member).
+    "roof_truss", "seat_cut",
     "king", "jack", "cripple", "sill", "bearing_stiffener",
     // Rainscreen/liner strapping: lumber on its own grid, not the grey fallback.
     "strapping",

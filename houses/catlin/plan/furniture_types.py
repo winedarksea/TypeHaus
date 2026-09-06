@@ -9,6 +9,8 @@ exist to be *scheduled and billed*, and to sit in 3D at the height someone build
 
 from __future__ import annotations
 
+from library.placeables._zones import front_zone
+
 from typehaus.model import (
     ClearancePolicy,
     ClearanceZone,
@@ -595,6 +597,33 @@ DINING_8_OPEN_CORNERS = FurnitureType(
 )
 
 
+# --- RM-M-LIVING's sofa, retyped for the turn onto the fire ---------------------------------
+#
+# Identical to library FURN-SOFA-84 in every dimension — 7'-0" x 2'-11", 2'-10" high — and
+# differs only in the shape of its recommended walk band. It is house-local rather than a
+# change to the shared type for FT-DINING-8-OPEN-CORNERS' reason above: the shared zone is
+# every sofa's and loveseat's rule, and the full-width band is right for a sofa in a corner.
+#
+# `inset=0.72` narrows the 30" front band from the width of the ARMS to the width of the SEAT
+# — 84" x 0.72 = 60 1/2", so with the sofa at y=8'-8" the band runs y 6'-1 3/4"..11'-2 1/4"
+# instead of y 5'-2"..12'-2". That is the walk path in front of where someone actually sits,
+# which is what the band is for; the two armchairs facing the fire either side of it are
+# seating in the circle, not obstructions in a corridor.
+#
+# ** RETYPE, DO NOT REDUCE THE REACH. ** Cutting 30" to 18" would clear the same conflict
+# while quietly unpolicing the walk path itself, which is the one thing this zone exists to
+# hold. Same discipline, same reason, as the dining table's open corners.
+SOFA_84_SEAT_BAND = FurnitureType(
+    tag="FT-SOFA-84-SEAT-BAND", name="Standard sofa (seat-width walk band)",
+    footprint=(ft(7), ft(2, 11)), height=ft(2, 10), plan_symbol="sofa",
+    source=("plans/furniture_size_reference.md (US residential averages) — FURN-SOFA-84's "
+            "dimensions with a seat-width rather than arm-width walk band, for "
+            "RM-M-LIVING's sitting circle on the fireplace"),
+    clearances=(front_zone(ft(7), ft(2, 11), ft(2, 6), "walk path in front of seating",
+                           inset=0.72),),
+)
+
+
 # --- Closet shelf-and-rod, the four dedicated closets --------------------------------------
 #
 # Ventilated ("wire") shelving on a rod, the standard closet fit-out, and the reason it is
@@ -731,7 +760,7 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
-                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS,
+                   PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
                    CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_BAR_BASE_2418)

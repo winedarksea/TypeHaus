@@ -41,7 +41,9 @@ _MINIMUM_EXTENT_M = 1e-4
 # enum has no closer term for any of them.
 _MEMBER_PREDEFINED_TYPE = {
     "rafter": "RAFTER", "barge_rafter": "RAFTER", "outlooker": "PURLIN",
-    "top_chord": "CHORD", "bottom_chord": "CHORD", "truss_web": "STRUT",
+    # A whole fabricated truss. IfcMemberTypeEnum has no "TRUSS" — CHORD is the closest
+    # term IFC4 offers for a plated assembly, and it is what the chords used to carry.
+    "roof_truss": "CHORD",
     "stud": "STUD", "plate": "PLATE", "post": "POST",
     # Wall framing: the opening pack's verticals are studs by trade and by function; the
     # sill and the raked plate are plates laid on or under them.

@@ -66,8 +66,30 @@ CIRCUITS = (
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR
     # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
-    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=50, poles=2,
-            gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
+    # ** 50 A / 9000 VA -> 60 A / 10500 VA, 2026-09-06, and the driver is the heater, not
+    # the circuit. ** plan/electrical.py's EQ-T-SAUNA-HEATER note carries the finding: 9 kW
+    # covers 283-494 cf on every manufacturer's own table and RM-B-SAUNA is 555. NEC
+    # 424.3(B) makes fixed electric space heating a continuous load at 125%, so
+    # 10500 / 240 = 43.75 A x 1.25 = ** 54.7 A **, which 50 A will not carry. 60 A does.
+    #
+    # ** PULL #6 THHN IN CONDUIT, AND DO NOT BELIEVE THE "#8 AWG" SEVERAL RETAILERS AND AT
+    # LEAST ONE MANUFACTURER'S OWN SHEET PRINT FOR THIS CIRCUIT. ** NEC 334.80 forces NM-B
+    # to the 60 C ampacity column, which makes #8 NM-B a 40 A conductor — below even the
+    # 46.9 A the ORIGINAL 9 kW needed. #6 in conduit also keeps both breaker ratings open,
+    # so a future change costs a breaker rather than a re-pull.
+    #
+    # ** GFCI IS OFF, DELIBERATELY, AND THE MANUAL GOES TO PLAN REVIEW. ** The NEC does not
+    # require it here: 210.8(A) governs receptacles, 210.8(D)'s appliance list does not
+    # include sauna heaters, and Article 680 is pools and spas. The manufacturers advise
+    # against it in writing — HUUM's manual says verbatim "It is recommended to connect the
+    # unit to the mains without an earth-leakage circuit breaker" — because moisture absorbed
+    # into the magnesium-oxide fill of the sheathed elements causes nuisance trips. The fix
+    # is a 2-4 hour DRY BURN-IN before final inspection. If the AHJ insists anyway, take a
+    # 30 mA GFPE, which catches a real fault without the nuisance trips. ** The sauna LIGHTS
+    # are a different question and DO need GFCI ** under 210.8(A)(5), which is why lights and
+    # heater are on separate circuits.
+    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=60, poles=2,
+            gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
     # CKT-WH-240 moved to the backup subpanel — see the SHED tier below. Slot 25 is a
     # spare on the main panel now.
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
@@ -173,7 +195,15 @@ CIRCUITS = (
     # would need it — the reason both are modeled as Equipment on their own circuit.
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500,
-            description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
+            # ** IT LEFT THE SE CORNER 2026-09-06. ** EQ-M-FIREPLACE is now in the brick
+            # surround in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2 (W-M-FIRE,
+            # plan/storeys/main.py). The unit is a real product now — an Amantii
+            # BI-30-XTRASLIM — and it is still 120 V / 1,500 W / 12.5 A, so everything above
+            # holds unchanged: same breaker, same slot, same pole count, same load. A 240 V
+            # unit would have moved all four (and the ServicePort, and the panel balance);
+            # plan/electrical.py's EQ-T-FIREPLACE-EL note says why none exists at this size.
+            description="Electric fireplace, living room east wall, in the brick "
+                        "surround between WIN-M-LIV-E1 and WIN-M-LIV-E2 (EQ-M-FIREPLACE)"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
             description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),

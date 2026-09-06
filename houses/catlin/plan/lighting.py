@@ -862,11 +862,46 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # ** THE PRIMARY SUITE'S MIRROR BECAME THE LIT ONE ON 2026-09-06 (owner's call), AND
+    # THAT ALSO FIXES A ROOM MISMATCH THAT HAD BEEN SITTING IN THIS FILE. **
+    # ED-T-LT-MIRROR-RING's own comment called it "the master's lit mirror" and the only
+    # instance of it stood in RM-S-BATH1, the hall bath. The owner wants the integrated LED
+    # mirror — not a plain mirror flanked by sconces — in the PRIMARY bath, so the type comes
+    # here and the hall bath keeps its own (a second P1; the two rooms are the two that were
+    # ever candidates for one).
+    #
+    # 30" round over a 30" vanity is the right size, and this is a MIRROR rather than a bar
+    # above one, which matters: a bar over a mirror sits above the brow line and casts
+    # brow/nose/chin shadows DOWN onto the thing you are trying to see, where a front-lit
+    # mirror cross-lights at eye height. Running both would be redundant, so the bar goes.
+    #
+    # ``elevation`` drops from 6'-6" (a bar ABOVE a mirror) to 3'-6" (the BASE of a 30"
+    # mirror, putting its centre at 5'-0"), matching how ED-S-BATH1-MIRROR is authored.
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 10), ft(21, 11.625)), type_ref="ED-T-LT-MIRROR",
+                     # y = 264.625" (W-S-SBN's bath face) less half of the Robern's 1 3/4"
+                     # body. The bar this replaced was 3" deep and sat at 263.625".
+                     position=pt(ft(13, 10), inch(263.75)), type_ref="ED-T-LT-MIRROR-RING",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
+    # ** THE ROBERN IS CORD-AND-PLUG, so it needs a receptacle CONCEALED BEHIND THE GLASS **
+    # — this is not the same outlet as ED-S-SUITEBATH-RC1, which is the NEC 210.52(D)
+    # counter-height one and stays. Same pattern and the same 54" band as
+    # ED-S-BATH1-RC-MIRROR. GFCI at the receptacle, not just at the breaker (210.8(A)(1)).
+    #
+    # ** IT MUST NOT LAND WHERE A MOUNTING CLEAT OR THE BOTTOM BRACKET GOES, and the mirror's
+    # own install sheet is the authority on where those are ** (the round unit's cleat
+    # spacing was not confirmable and has to be read off the sheet in the carton). Two things
+    # for the framer and the electrician before the wall closes: block a FULL-WIDTH flat 2x
+    # band, because the two outer brackets sit only about +/-5" from the centreline and will
+    # not find 16" o.c. studs at an arbitrary vanity centre; and pull a conductor for a
+    # SECOND switch leg, because Robern requires the defogger to be switched independently
+    # of the lights.
+    ElectricalDevice(uid="CE0KDETNZH", tag="ED-S-SUITEBATH-RC-MIRROR",
+                     kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(13, 10), ft(21, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
     # In W-S-C2C, the alcove wall that's neither glazed south nor a door: 2'-4" of head
     # channel centred on the alcove (y 17'-0"..22'-0") at y=19'-6", x=17'-9" (3" proud of
@@ -911,7 +946,11 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000KAAA", tag="ED-S-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9, 7.125), ft(31)), type_ref="ED-T-LT-MIRROR-RING",
+                     # x moved 5/8" east on 2026-09-06: the Robern's body is 1 3/4" deep
+                     # where the authored ring was 3", so the old centre left the glass
+                     # floating 0.6" off W-S-BD-E's face. The FACE has not moved (9'-8 5/8");
+                     # the centre is face less half the new depth.
+                     position=pt(inch(115.75), ft(31)), type_ref="ED-T-LT-MIRROR-RING",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),

@@ -46,7 +46,11 @@ Panel lights
 	Kitchen
 	Fitness Room
 	Workshop, Furnace
-Recessed cans, Recessed lighting (replaceable bulbs, 4" housing, recessed baffle trim, black baffle)
+Recessed cans, Recessed lighting (4" housing, deeply regressed WHITE trim — the black baffle
+this line asked for was retired 2026-09-06, see `houses/catlin/notes/interior_selections.md`:
+the glare argument holds, but a regressed reflector solves it by geometry instead of with a
+dark absorbing ring, so the trim disappears into a white ceiling rather than reading as a row
+of dark holes, and there is no ribbed baffle to trap dust)
 	Living room section
 	Hallways (main floor)
 	Bathrooms (moisture/water tolerant)
@@ -102,8 +106,14 @@ plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
 			right answer: no cable under a closet flange or a shower pan.
 		Two 1,500 W / 120V units, 20A each and no GFCI (hard-wired equipment, and
 			210.8(A) protects receptacles):
-			EQ-M-FIREPLACE  linear electric fireplace, east wall at the living room's SE
-				corner (the south wall has only 2'-1" of clear wall there)   CKT-FIREPLACE
+			EQ-M-FIREPLACE  Amantii BI-30-XTRASLIM electric fireplace, east wall, in the
+				brick surround W-M-FIRE between WIN-M-LIV-E1 and WIN-M-LIV-E2,
+				opening bottom at 32" AFF   CKT-FIREPLACE
+				Moved out of the SE corner 2026-09-06. The parenthetical that used to
+				sit here — "the south wall has only 2'-1" of clear wall there" — was
+				the reason it went to that corner and no longer governs anything.
+				Still 120 V / 1,500 W / 12.5 A, so the 20A reasoning below is
+				untouched; no 240 V unit exists at this size (see plan/electrical.py).
 			EQ-G-HEATER     garage infrared heater lamp, west wall at 6'-0"   CKT-GAR-HEAT
 		20A rather than 15A on those two is not a preference: 1,500 W = 12.5A, and a
 			continuous load is figured at 125% = 15.6A, which needs the 16A a 20A breaker

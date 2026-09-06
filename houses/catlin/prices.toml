@@ -249,26 +249,45 @@
 # depth costs more per foot); labour *below* it (no web-hole layout on site, faster to
 # hang than an I-joist that still needs blocking/hole-boring for services).
 "11.875 floor truss" = { material = { low = 6.0, high = 9.0 }, labour = { low = 0.8, high = 1.6 } }
-# ** SHOP-FABRICATED ROOF TRUSS, ADDED 2026-08-30. DORMANT BY DESIGN — read this before
-# using it. ** The trussed-cold-attic alternative in plans/cost-options.md has now had to
-# hand-source a roof-truss rate TWICE, because this file had none. It has one now.
+# ** SHOP-FABRICATED ROOF TRUSS. Added 2026-08-30 as a recorded price; LIVE since
+# 2026-09-06, when one-member-per-truss landed. Read this before touching either row. **
 #
-# The number is $5.00-9.00 per SF OF ROOF FOOTPRINT, delivered and set: $90-175 per 36'-0"
-# 4:12 energy-heel truss plus $5-10 to set one, at 24" o.c. over a 36' x 36' plan. That is
-# the axis a truss plant quotes on, and it is NOT the axis this section bills on — [framing]
-# is $/LF of member. The rate below is therefore the same money expressed per lineal foot of
-# truss lumber (2,368 LF over a 1,296 SF footprint = 1.83 LF/SF), so the two agree.
+# ** THE KEY IS THE SPAN IN FEET, AND THE RATE IS PER LINEAL FOOT OF THAT SPAN. ** A truss
+# resolves as ONE member per truss (`resolve/framing/roof_gable.truss_member`), the way an
+# open-web floor truss already did, and its `length_m` is its bearing-to-bearing span. So
+# 13 garage trusses bill as 13 x 24'-0" = 312 LF, NOT as the 908 LF of chord/web/heel
+# lumber inside them. Anything quoted per truss divides by the span; anything quoted per SF
+# of roof footprint divides by (span x count / footprint), which at 24" o.c. is close to
+# 0.5 LF/SF because one truss covers two feet of building.
 #
-# ** NOTHING MATCHES THIS KEY TODAY AND NOTHING CAN. ** This house is rafter-framed; and even
-# a house that were not could not reach this row, because `resolve/framing/profiles.py` has
-# exactly one fabricated-member profile — `_RE_FLOOR_TRUSS`, `"<depth> floor truss"` — and no
-# roof-truss shape at all. A `CATLIN_TRUSS_ROOF` authored today resolves its chords as plain
-# `"2x4"` sticks and bills at $1.20-2.00/LF, which is why the 2026-08-29 attic measurement
-# had to be corrected by hand: it billed 36'-0" shop trusses as stick lumber and made the
-# framing swap look like a wash.
-# So this row is a RECORDED PRICE, not a live one. The profile shape is the engine gap and
-# it is logged in plans/TODO.md; the day it lands, this row starts working with no edit.
-"36 roof truss" = { material = { low = 2.20, high = 3.90 }, labour = { low = 0.55, high = 1.05 } }  # 0 LF — dormant, see above
+# THE HISTORY THIS REPLACES, because it was wrong in a way worth naming: until 2026-09-06
+# this note said "nothing matches this key today and nothing can" and "this house is
+# rafter-framed". Both were false. RF-HOUSE is rafter-framed; RF-GARAGE
+# (`plan/storeys/garage.py`, GARAGE_ROOF in `plan/assemblies.py`) has been a 24'-span
+# raised-heel truss roof the whole time, and its chords, webs and heel blocks were merging
+# into the house-wide anonymous "2x4" row at $1.20-2.00/LF — 908 LF of shop-plated truss
+# billed as stick lumber. That is the same error the 2026-08-29 attic measurement had to
+# correct by hand for the main house; it was live in the garage and nobody had noticed.
+#
+# "24 roof truss" — RF-GARAGE, live. 4:12, 2x4 fink, 9 1/4" energy heel, 24" o.c., 13
+# trusses (11 field + 2 gable-end drop trusses; the gable studs are separate members and
+# stay in the 2x4 row, which is honest — they are stick-framed infill, not plate work).
+# $4.50-8.00 per SF of the 576 SF bearing footprint, delivered and set, which is a 24'
+# residential fink a little under the 36' rate per SF; 312 LF of span carries it, so
+# $8.30-14.75 per LF all in, split 80/20 material/labour the way the 36' row below is.
+# Per truss that reads $160-283 delivered and $40-71 to set, which is the sanity check.
+# CONFIDENCE: MEDIUM. No fabricator quote — an energy heel and a 4:12 are both ordinary,
+# but a truss package is quoted, not looked up, and the spread is where that shows.
+"24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 312 LF — RF-GARAGE, 13 trusses at 24'-0"
+# "36 roof truss" — STILL DORMANT, and now for the only honest reason: nothing in this
+# house spans 36'. It is the trussed-cold-attic alternative in plans/cost-options.md, whose
+# $5.00-9.00 per SF OF ROOF FOOTPRINT over a 36' x 36' plan is the anchor both rows use.
+# 19 trusses x 36' = 684 LF of span over 1,296 SF, so $9.45-17.05 per LF, 80/20 material to
+# labour. RE-BASISED 2026-09-06: the old numbers (2.20-3.90 / 0.55-1.05) were the same
+# money spread over 2,368 LF of truss LUMBER, which is what the old stick-framed resolution
+# billed. One member per truss bills the span, so the per-LF rate is 3.46x the old one for
+# exactly the same $/SF. Change one of these rows and check the other still agrees with it.
+"36 roof truss" = { material = { low = 7.60, high = 13.60 }, labour = { low = 1.90, high = 3.40 } }  # 0 LF — dormant, nothing here spans 36'
 # "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
 # "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
@@ -1601,13 +1620,57 @@
 #            $1,000-2,300 with stacked pairs at the top.
 #   CASE-*   RTA/stock casework at $75-200/LF of run (nextdaycabinets.com 2026 RTA guide,
 #            yardandgardenguru.com), converted to a per-box price by the box's own width.
+#
+#            ** THE SYSTEM IS NAMED NOW (2026-09-06), AND THE BAND ABOVE STILL BRACKETS IT.
+#            ** IKEA SEKTION boxes (PROD-IKEA-SEKTION) with VOXTORP matt white slab fronts
+#            (PROD-IKEA-VOXTORP-WH) lands at $4,000-5,500 for this kitchen; Semihandmade
+#            Supermatte White on the same boxes is $6,500-8,000 and is the best-value
+#            splurge available here (real pulls, a crisper edge); Barker's US-made plywood
+#            in the same layout is $9,000-12,000. No product_ref on the CASE-* types
+#            themselves: those are LIBRARY types and a house may not stamp its own purchase
+#            onto the shared catalog, so the identity lives in plan/products_interior.py
+#            and the money lives here.
+#
+#            ** THE TARIFF IS WHY SEKTION AND NOT AN RTA COMPETITOR. ** Section 232 puts
+#            25% on wooden cabinets, vanities AND PARTS THEREOF from 2025-10-14 (the
+#            scheduled 50% was delayed to 2027-01-01; the EU cap is 15%), and SEKTION
+#            CARCASSES ARE MANUFACTURED IN THE US -- so the box half of the kitchen is
+#            structurally insulated from it where nearly every RTA competitor eats it.
+#            Fronts are imported and the German hinge and drawer mechanisms are expected up
+#            10-15%. ** Time the order to the IKEA kitchen event, historically Feb-April,
+#            worth 15-20%; there is no SEKTION offer running now. **
+#
+#            ** ALL WHITE, SLAB, MATTE -- and the door line is a cleanability decision, not
+#            a colour one. ** Ranked for a kitchen with an induction range: matte
+#            foil/laminate > matte-lacquered wood > satin painted MDF > SHAKER of any
+#            material (the inside corner of the rail is where cooking grease lives) > high
+#            gloss > open-pore unfinished oak. So AXSTAD loses despite being durable,
+#            RINGHULT high gloss is the worst possible surface beside an induction range,
+#            and BODBYN's painted MDF chips (IKEA sells touch-up paint for exactly that
+#            reason). VOXTORP's one weakness is its integrated edge pull, which collects
+#            grease on the underside where you cannot see it -- which is why real pulls are
+#            still bought (`finish-cabinet-pulls` in [allowances]).
+#
+#            ** THE OAK GOES ON THE PENINSULA, NOT ON OPEN SHELVING OVER THE RANGE. ** Open
+#            shelving there is a grease magnet and fails the owner's top criterion outright.
+#            Vertical, away from the cooktop, is where the mill amortises anyway: a molder
+#            setup pays for itself across a 120" run and nowhere else. Stackers to the
+#            ceiling stay matte white -- the point of a stacker is to disappear. ** Do NOT
+#            pay IKEA $459 a door for VEDHAMN oak when the family mills oak at ~$2/sf. **
 #   ED-T-*   device and fixture retail: receptacles/switches ~$3-9, GFCI $18-45, 4" LED cans
 #            $25-75, a 225A load centre $250-700. faradaycrew.com 2026 electrical pricing
 #            guide, homedepot.com / destinationlighting.com listings.
 #   EQ-T-*   named products where the plan names one: EG4 12kPV $3,156.88 (signaturesolar /
 #            currentconnected), EG4 PowerPro 14.3 kWh $2,400/module, HPWH unit $1,500-3,000
 #            (todayshomeowner 2026), whole-house ERV $800-2,000 for a 100-300 CFM unit
-#            (pickcomfort.com), 9 kW electric sauna heater $700-2,200 (tahoesaunacompany).
+#            (pickcomfort.com). ** THE SAUNA HEATER IS 10.5 kW NOW, NOT 9 (2026-09-06): **
+#            Harvia Cilindro PC110E $1,379 + the MANDATORY Xenio CX170 control $1,035 +
+#            264 lb of stone $474 + guard $82 = ~$2,970, against the old 9 kW class
+#            band of $700-2,200 (tahoesaunacompany). It is $121 CHEAPER than a Harvia
+#            Virta HL90E that holds less than half the stone and is also undersized --
+#            rock mass is what decides loyly quality and whether the room recovers when
+#            somebody opens the door. The control is not an accessory: no
+#            built-in-control variant of this heater exists.
 #            The Gree line was repriced 2026-08-08b off the actual model numbers the plan
 #            names in its EquipmentType `source` fields, so these are no longer scaled
 #            guesses: SAP09HP230V1R32AO $1,955 and SAP09HP230V1R32AH $977 (hvacdirect, the
@@ -1630,7 +1693,7 @@
 # FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to furnishings, which is priced
 # and reported BESIDE the construction total rather than inside it. The line the owner drew
 # is fixed-and-price-stable vs loose-and-volatile, not the FURN- tag: what stays here is the
-# eight FURN-* rows that are effectively built in — the nine BESTA wall units, both sauna
+# eight FURN-* rows that are effectively built in — the EIGHT BESTA wall units, both sauna
 # benches, the mudroom bench, the garage workbench, the wall rack and the three wardrobes —
 # because those are bought once with the house and do not swing. A sofa does.
 # FURN-WARDROBE-48 is the borderline one: kept here on the reading that it is a PAX-style
@@ -1740,21 +1803,70 @@
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
 "ED-T-JBOX" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LT-CAN3" = { material = { low = 25, high = 70 }, labour = { low = 52, high = 108 } }  # 16 ea
-"ED-T-LT-CAN4" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 49 ea
+# ** REPRICED 2026-09-06 TO A NAMED PRODUCT. ** Lotus LL4SR-30K-WH at $64.40 -- a 4"
+# deeply regressed WHITE trim, IC, airtight, wet + IP54, 14.5 W / 900 lm / 3000 K / 90+
+# CRI. The old $25-75 was a class band for a black-baffle can. The same SKU serves the
+# wet locations (ED-T-LT-CAN4-WET), so mark B is a schedule row rather than a second
+# product and there is NO separate wet trim to colour-match or to price.
+# ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
+# set wrong constantly and one can at the wrong temperature in a run of eight is a visible
+# defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
+"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 49 ea
 "ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
 "ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 9 ea
-"ED-T-LT-CHANDELIER" = { material = { low = 300, high = 1500 }, labour = { low = 150, high = 450 } }  # 1 ea
+# Kuzco Samar CH57514-CH/OP at $398. ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** it
+# hangs over a 20'-4" void. ** A CHANDELIER LIFT WAS PRICED AND REJECTED at $2,700-3,100 **
+# -- over this void one needs ~14 ft of travel, so a cascade whose bottom globe hangs 8 ft
+# below its canopy ends up BELOW THE FLOOR before the canopy is reachable, and a lift also
+# wants 3 ft of accessible level cavity plumb above, which a peaked trussed ridge does not
+# have. 3 x replaceable E26 makes the relamp a $6 part instead.
+"ED-T-LT-CHANDELIER" = { material = { low = 380, high = 700 }, labour = { low = 150, high = 450 } }  # 1 ea
 "ED-T-LT-FAN52" = { material = { low = 150, high = 500 }, labour = { low = 120, high = 260 } }  # 2 ea
 # 2026-08-18: the same 52" fan in a wet-location listed housing — sealed non-ferrous
 # motor, gasketed light kit. A ~30-40% adder over the damp-rated version, which is the
 # spread the outdoor-rated fan listings carry over their indoor twins.
 "ED-T-LT-FAN52-WET" = { material = { low = 200, high = 700 }, labour = { low = 155, high = 320 } }  # 1 ea
-"ED-T-LT-FAN60" = { material = { low = 200, high = 600 }, labour = { low = 155, high = 320 } }  # 1 ea
+# Craftmade Force XL FXL60DGT3 at $270 -- the only current, in-stock, genuinely cETLus
+# WET-rated 60" fan with an integrated 3000 K light that could be found. ** WET, NOT DAMP,
+# AND THE PREMIUM IS NOT OPTIONAL IN MINNESOTA: ** the failure is a 30 mph wind packing snow
+# up under an open-sided porch roof into the motor housing, solar gain melting it onto the
+# windings, then 40-70 freeze-thaw cycles a season. Installing a damp-rated fixture subject
+# to direct weather is an NEC 410.10 violation, so the cheaper band is not available here.
+"ED-T-LT-FAN60" = { material = { low = 270, high = 650 }, labour = { low = 155, high = 320 } }  # 1 ea
 "ED-T-LT-FLOOD-NARROW" = { material = { low = 80, high = 250 }, labour = { low = 65, high = 145 } }  # 1 ea
-"ED-T-LT-MIRROR" = { material = { low = 120, high = 450 }, labour = { low = 60, high = 135 } }  # 5 ea
-"ED-T-LT-MIRROR-RING" = { material = { low = 150, high = 500 }, labour = { low = 60, high = 135 } }  # 1 ea
+# 5 ea -> 4 ea on 2026-09-06: RM-S-SUITEBATH's bar became the second lit mirror. A bar
+# ABOVE a mirror sits above the brow line and casts brow/nose/chin shadows DOWN onto the
+# thing you are trying to see, so running a bar AND a front-lit mirror in one room is
+# worse than either alone. Kuzco Jane-Slim VL6224 at $118 is the pick where a bar stays:
+# 24", 3000 K, CRI 90, damp, ADA, a plain acrylic extrusion with no shade cavity and no
+# upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
+# CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
+# or take Modern Forms Loft WS-3624-BN at $143.
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 4 ea
+# ** REPRICED AND RE-SCOPED 2026-09-06: two of them now, and the second is the primary
+# suite's (owner's call -- an integrated LED mirror, not sconces). ** Robern Vitality
+# YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
+# band was a class allowance for a spec that described no real product: 36", tunable and
+# CRI 95 do not co-exist in this market.
+# ** FRONT-LIT IS WHAT THE MONEY BUYS. ** The $90-400 tier is almost entirely BACKLIT -- a
+# halo thrown at the wall behind the glass that contributes nothing to a face -- and it
+# puts a capacitive touch button ON the mirror face, which is a permanently smudged
+# fingerprint target that also mis-triggers when you wipe it. That single feature is the
+# strongest argument against the cheap tier on this owner's top criterion.
+# ** IT IS A CONSUMABLE AND THE BUDGET SHOULD SAY SO: ** the LED module is permanently
+# enclosed, the warranty is ONE YEAR, and reported failures cluster at five to six years
+# (the driver cooking in a sealed 1 3/4" cavity, not the LEDs). Electric Mirror's Fusion
+# has replaceable LED strips and a 7-year warranty at ~$1,429 but makes no round.
+"ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 2 ea
 "ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 6 ea
-"ED-T-LT-PENDANT" = { material = { low = 90, high = 400 }, labour = { low = 70, high = 160 } }  # 1 ea
+# ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
+# 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
+# to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
+# DRIVER WITH THE ORDER ** -- a captive proprietary driver is the part that dies at 12-20
+# years and on an import there is no replacement channel at all. The labour high end is its
+# own Lutron DVELV-300P: this fixture must NOT be ganged with the kitchen cans, and a 23 W
+# fixture on a 600 W forward-phase dimmer is the #1 cause of "my chandelier flickers".
+"ED-T-LT-PENDANT" = { material = { low = 250, high = 1500 }, labour = { low = 70, high = 200 } }  # 1 ea
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 2 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 2 ea — ED-G-EXT-LT at the garage door, and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
@@ -1766,10 +1878,23 @@
 # — the article is a shaded IP65 wall luminaire, not a sconce with a gasket — so the material
 # band sits above the ordinary sconce rows despite the lower output. Labour is a plain
 # sconce's: one box, one gasketed backplate, on a liner the joiner has already blocked.
-"ED-T-LT-SAUNA-VT" = { material = { low = 90, high = 300 }, labour = { low = 48, high = 115 } }  # 1 ea
+# ** NOT A SCONCE ANY MORE, AND THAT IS WHY THE NUMBER MOVES SO FAR. ** Nothing sold in the
+# US is both IP65 and 125 C -- LED sconces top out at 60-93 C -- so the only construction
+# that clears a loyly peak is FIBRE OPTIC, which puts no electronics in the hot zone at all.
+# Cariitti Premium Glass Fiber 8-spot at $1,300 + a Harvia Legend SAS21107 shade at $159.
+# One instance, but it is an eight-ferrule KIT, not one fixture.
+# ** CE-MARKED, NOT NRTL-LISTED: ** if the inspector wants an NRTL listing inside the hot
+# room this is the most likely permit snag in the house. Confirm before ordering.
+"ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 1 ea
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
 "ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 2 ea
-"ED-T-LT-SHOP4" = { material = { low = 30, high = 80 }, labour = { low = 45, high = 100 } }  # 2 ea
+# ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
+# rated to -4 F and some to +14 F; it is the DRIVER, not the LEDs. The category that
+# reliably publishes a cold rating is vaportight/cold-storage, because it sells into freezer
+# warehouses: Westgate LVTE-4FT-30-46W-MCTP at $93, IP66. ** HARDWIRE IT ** -- plug-in
+# linkable cords crack in cold and that is where the failures start, which also means this
+# row's labour is an electrician rather than a hook and a plug.
+"ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 2 ea
 "ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 1 ea
 "ED-T-LT-TUBE6" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
@@ -1844,7 +1969,21 @@
 # 6" penetration through a truss wall with 4" of closed-cell foam in it, which is most of it.
 "EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 2 ea
 "EQ-T-ESS-BATT" = { material = { low = 3000, high = 4400 }, labour = { low = 800, high = 1800 } }  # 1 ea
-"EQ-T-FIREPLACE-EL" = { material = { low = 300, high = 900 }, labour = { low = 100, high = 300 } }  # 1 ea
+# ** RE-RATED 2026-09-06, AND RAISING IT IS THE POINT, NOT A SIDE EFFECT. ** This row was
+# $300-900 material because the type was a generic 48" x 7" big-box insert. It is now a named
+# product — the Amantii BI-30-XTRASLIM (BI-X190030-1) — with a published street price of
+# $1,499-1,539, and that price is what buys the two things the design actually needs: a
+# TRIMLESS face, so the brick runs to the glass edge, and a published mantel clearance. The
+# whole hardwireable field at 26-32" wide and <= 6" deep is Amantii (plan/electrical.py has the
+# sweep), so there is no cheaper compliant unit to fall back on: the Amazon-tier 30" units have
+# no hardwire procedure and no UL 2021 "fixed and location dedicated" listing, and field-
+# converting a cord-connected appliance voids its listing.
+# Material $1,450-1,650 is the street range plus freight on a 51 lb crated glass appliance.
+# Labour $250-600 is more than the $100-300 it replaces because the install changed: this unit
+# is set into a masonry opening in W-M-FIRE with the mason's work already done, levelled to the
+# brick reveal, and HARDWIRED to a left-side L/N/G block that has to stay serviceable through
+# the glass opening afterwards. The circuit itself is priced in [conductors]/[conduit].
+"EQ-T-FIREPLACE-EL" = { material = { low = 1450, high = 1650 }, labour = { low = 250, high = 600 } }  # 1 ea — Amantii BI-30-XTRASLIM
 "EQ-T-GARAGE-HEATER" = { material = { low = 80, high = 250 }, labour = { low = 120, high = 300 } }  # 1 ea
 # The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
 # figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
@@ -1875,7 +2014,14 @@
 # which is the labour line there: it is a two-person set onto a balcony stand at +10'.
 "EQ-T-GREE-FLEXX-ULTRA-24-AH" = { material = { low = 1750, high = 2500 }, labour = { low = 1150, high = 2400 } }  # 1 ea — FXU24HP230V1R32AH, 1.0 in. w.c. ESP, 760 cfm, 135.6 lb
 "EQ-T-GREE-FLEXX-ULTRA-24-OD" = { material = { low = 2100, high = 3000 }, labour = { low = 560, high = 1250 } }  # 1 ea — FXU24HP230V1R32AO, 187.4 lb, MCA 21 / MOCP 25
-"EQ-T-SAUNA-HEATER" = { material = { low = 700, high = 2200 }, labour = { low = 630, high = 1370 } }  # 1 ea
+# ** REPRICED 2026-09-06 WITH THE kW CORRECTION. ** The old band was a 9 kW class allowance
+# and the 9 kW was undersized (plan/electrical.py carries the finding: every manufacturer's
+# own table puts 9 kW at 283-494 cf and RM-B-SAUNA is 555). The named heater is Harvia
+# Cilindro PC110E at $1,379 + the MANDATORY Xenio CX170 control at $1,035 + 264 lb of stone
+# at $474 + a guard at $82 = ~$2,970 -- all four are one order and none is optional, so the
+# low end is that package rather than the heater alone. Labour rises with the circuit: this
+# is a 60 A 2-pole home run in #6 THHN in conduit, not a 50 A NM-B pull.
+"EQ-T-SAUNA-HEATER" = { material = { low = 2970, high = 4200 }, labour = { low = 780, high = 1700 } }  # 1 ea
 # One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
 # carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
 "EQ-T-WATER-HEATER" = { material = { low = 1900, high = 3000 }, labour = { low = 550, high = 1300 } }  # 1 ea
@@ -2098,7 +2244,7 @@
 # band this section already uses. ** The oak shelf inside the sink base is NOT here ** — it
 # is SB-M-BATH2-VAN and bills as owner-milled hardwood, so counting it again would be a
 # double-bill of the one part of this cabinet the owner is making.
-"FX-VANITY-54-SINGLE" = { material = { low = 950, high = 2900 }, labour = { low = 300, high = 720 } }  # 1 ea
+"FX-VANITY-51-SINGLE" = { material = { low = 950, high = 2900 }, labour = { low = 300, high = 720 } }  # 1 ea
 # ** THE OTHER FIVE BATHROOMS' VANITIES (2026-08-30). ** Same basis as the 54" row above and
 # as FX-LAV-24 before it: each row is the WHOLE assembly -- cabinet, counter, basin and
 # faucet -- because no CASE-* row covers a bathroom anywhere in this file, so a bowl-only
@@ -2171,6 +2317,61 @@
 # two lines together (this row + the allowance) before concluding anything about what a
 # wall-hung WC costs.
 "FX-TOILET-WH" = { material = { low = 230, high = 1000 }, labour = { low = 210, high = 500 } }  # 1 ea
+
+# ------------------------------------------------------------------------------------------
+# THE CHOSEN WATER CLOSETS AND SHOWERING TRIM (2026-09-06)
+# ------------------------------------------------------------------------------------------
+# Six bowls, four models, and the six generic instances above are gone: FX-TOILET-STD's `# 4
+# ea` and FX-TOILET-WH's `# 1 ea` no longer resolve to anything, so those two rows are dead
+# allowances kept only as the band the real numbers are read against. They still price
+# nothing, because nothing references them.
+#
+# ** THE CARRIER ALLOWANCE FOLLOWED THE RETYPE. ** `plumbing-wall-hung-wc-carrier`'s driver
+# now reads `placeables.count[type=FX-TOTO-SP-WH]`; leaving it on FX-TOILET-WH would have
+# resolved to zero and reported the row unpriced, which is the trap
+# `unpriced-type-drops-from-takeoff` describes — the total FALLS and the saving is an
+# artifact. Read that allowance together with FX-TOTO-SP-WH below, exactly as its own comment
+# says: this row is the bowl and the hour of setting it, and the frame is over there.
+#
+# Material lows are 2026 street where a real listing was seen; highs carry the supplier
+# spread, because none of these was quoted. TOTO SP bowl $646 + DuoFit WT173M ~$577 (the
+# frame is in the allowance); Carlyle II $796; Aquia IV $538; Drake $261. Labour is unchanged
+# from the class rows above — setting a skirted one-piece is not a different hour from
+# setting a two-piece.
+"FX-TOTO-SP-WH" = { material = { low = 600, high = 1100 }, labour = { low = 210, high = 500 } }  # 1 ea
+# The WASHLET S5 bidet seat rides on the two showpieces and is a SEPARATE purchase from the
+# bowl (~$682 ea), so it is not inside these rows. It is `plumbing-bidet-seats` in
+# [allowances] with the GFCI receptacle it needs.
+"FX-TOTO-CARLYLE-II" = { material = { low = 700, high = 1250 }, labour = { low = 110, high = 260 } }  # 1 ea
+"FX-TOTO-AQUIA-IV" = { material = { low = 500, high = 900 }, labour = { low = 110, high = 260 } }  # 2 ea
+# The workhorse, and the reason the four are not all Aquia IVs: all-Aquia is $2,152 against
+# $1,598 for the split, for a skirt that earns nothing in an attic guest bath used a few
+# weeks a year or a basement sauna rinse. Seat is a Kohler Cachet K-4636-0 (~$40), inside
+# this material band.
+"FX-TOTO-DRAKE" = { material = { low = 240, high = 520 }, labour = { low = 110, high = 260 } }  # 2 ea
+# ** THE THREE SHOWERING ROWS ARE THE ALLOWANCE ROWS PLUS THE VALVE, AND THE VALVE IS WHY
+# THEY SPLIT. ** Geometry is identical to FX-SHOWER-36 / FX-TUBSHOWER-60 above — same pan,
+# same surround, same mortar bed, so those rows' basis carries over unchanged and the delta
+# is trim. Delta MultiChoice R10000-UNBX rough is $53-65 in all five wet walls (one part,
+# five walls, and the pressure-balance-vs-thermostatic choice stays reversible from outside
+# the tile). What differs per room is the outlet count:
+#
+#   -COMBO     one outlet. Single-function trim + a Moen Engage Magnetix 26010SRN two-in-one
+#              head (~$90). No diverter, no second riser, no blocking. RM-B-SAUNA, RM-A-STUBATH.
+#   -DIVERTED  two outlets. Adds a diverter rough (~$183 list) + two-handle trim + a slide
+#              bar. RM-M-BATH2, the primary shower.
+#   TUBSHOWER  two outlets, but the fixed head arrives inside the trim: Delta T14459-SS is a
+#              COMPLETE tub-and-shower trim (valve trim + H2Okinetic head + tub spout in one
+#              box), MSRP $428 and street $270-310, so these two rooms buy no separate head.
+#
+# ** DELTA PRICES -SS STAINLESS AT PARITY WITH CHROME across most of the line, so the
+# brushed-nickel premium budgeted elsewhere in this file largely does not exist inside
+# Delta. ** The risk is stock, not money: Delta is thinning its stainless SHOWERING line and
+# several sibling SKUs came back discontinued. If -SS has gone, the substitute is Moen Spot
+# Resist Brushed Nickel throughout at roughly the same band.
+"FX-SHOWER-36-COMBO" = { material = { low = 450, high = 1200 }, labour = { low = 220, high = 510 } }  # 2 ea
+"FX-SHOWER-36-DIVERTED" = { material = { low = 700, high = 1600 }, labour = { low = 260, high = 600 } }  # 1 ea
+"FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2600 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
 # THE CHOSEN BATH — Kohler K-5713-W1-0 Underscore with the Bask heated surface, RM-M-BATH2
 # (plan/products.py, plan/fixture_types.py). This row is a real product, not a class
@@ -3041,7 +3242,14 @@
 #
 # The `# 422.1 SF` below was stale — live was 273.7 SF at retirement.
 # "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # was 273.7 SF
-"white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 133.8 SF — labour is really a $2,000-3,500 minimum-mobilisation lump
+# ** UNREFERENCED FROM THIS SECTION, AND THE 133.8 SF IS STALE. ** It was the porch parapet's
+# outer wythe; that parapet is retired, and no CLADDING or FINISH layer in this house names
+# `white-brick` today. The material IS live again since 2026-09-06 — it is RM-M-LIVING's
+# fireplace surround — but a freestanding wythe's only layer is STRUCTURE, so it bills through
+# [wall_structure] on "FIREPLACE_BRICK_WYTHE:white-brick", not here. This row is kept, not
+# deleted, for the same reason the sofa's is: the day a white-brick cladding layer exists again,
+# an unpriced material drops from the bill silently.
+"white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 0 SF live — see [wall_structure] FIREPLACE_BRICK_WYTHE
 # ** XPS IS THICKNESS-QUALIFIED SINCE 2026-08-31, AND IT HAD TO BE. ** `envelope_layers`
 # qualifies its price key on `thickness_in` (cli/prices.py QUALIFIED_KEY_FIELD), and this
 # file carried only the bare key — so 1", 2" and 3" boards all priced at ONE $/SF blend.
@@ -3168,6 +3376,38 @@
 # its own rate, and is re-based to the same field rate — there is no glaze left to price up.
 # Ties, flashing, weeps and the shelf angle are in the rate; the concrete backup is the wall
 # this veneers, priced on its own row.
+# --- RM-M-LIVING's fireplace surround, NEW 2026-09-06 --------------------------------------
+# ** SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER ABOVE — there is no ready-mix in this row —
+# and the SAME $/SF-of-face unit, for the same reason. ** What is different is the SIZE, and the
+# size is the whole story: 24.5 SF of face (45 1/2" wide x 6'-5 7/16" of rise, from W-B-E1's
+# pour at -1'-1 7/16" to the mantel at 5'-4"). That is a fifth of the basement veneer, and
+# ** IT IS FAR BELOW ANY MASON'S MINIMUM CALL-OUT. ** This file has already written the floor
+# down twice — see BASEMENT_BRICK_VENEER above ("a mason will not set up scaffold for under
+# roughly $2,500-4,000") and the retired `stucco` row ("$1,500-2,500 whatever the $/SF
+# arithmetic says"). Taking the standard-veneer market rate here would bill $19-30 x 24.5 SF =
+# $465-735 for a job nobody will quote at that price, and the estimate would be wrong by a
+# factor of four in the direction that hurts.
+#
+# So the labour half IS the mobilisation, expressed per SF so the row still moves if the
+# surround changes size: $75-130/SF x 24.5 SF = $1,838-3,185. Material $8-16/SF is a small-
+# quantity white face brick (one pallet minimum against ~4 SF of actual need), grey mortar,
+# ties into W-M-E1's studs, and the lintel over the firebox opening — a rowlock course or a
+# steel angle. Interior work with the room finished is dearer per unit than a wall on scaffold
+# outside, which is the other reason not to reach for the exterior rate.
+#
+# ** THE 24.5 SF IS GROSS: the 29" x 20 3/8" firebox opening (4.1 SF) is NOT deducted, and
+# neither is the 13 7/16" below the finished floor (4.2 SF) that nobody ever sees. ** The model
+# has no way to cut a hole in a wythe short of authoring a Window or a Door in it, and both
+# would be lies about what that opening is. On a job this small a mason bills the panel, not the
+# net face, so the gross number is closer to the invoice than a deducted one would be — but say
+# it out loud rather than let a reader assume the takeoff deducted.
+#
+# ** WHAT THIS ROW DOES NOT COVER: ** the floor opening and its I-joist header, trimmers,
+# hangers and web stiffeners (that is [framing] and [hardware], and FO-M-FIRE already bills a
+# 2-ply LVL header and four trimmers); the walnut mantel (an [allowances] lump —
+# `finish-fireplace-mantel-walnut`); and the appliance ([placeables] EQ-T-FIREPLACE-EL).
+"FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 75, high = 130 }, unit = "SF" }  # fallback; 24.5 SF of face
+"FIREPLACE_BRICK_WYTHE:white-brick" = { material = { low = 8, high = 16 }, labour = { low = 75, high = 130 }, unit = "SF" }  # 24.5 SF, the whole panel
 "BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 129.2 SF of face
 "BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 129.2 SF, the whole field
 # RETIRED 2026-09-04 with the Ishtar scheme. Kept for the revert, NOT dead weight to tidy up:
@@ -4456,7 +4696,7 @@
 # Basis: 2026 mainstream retail (IKEA / Wayfair / Article class) low end to mid-specified
 # high end, unit only, no delivery or assembly.
 # $ each, by catalog type tag
-"FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 1 ea
+"FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 3 ea — 2 main (the sitting circle on the fire) + 1 second (RM-S-PLANT)
 "FURN-BAR-STOOL" = { low = 60, high = 350 }  # 3 ea
 # ADDED 2026-08-22 with the media room's furnishings. All three are owner-furnished loose
 # pieces, so [furnishings] and not [placeables] — a type must land in exactly one of the two
@@ -4491,7 +4731,13 @@
 "FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
-"FURN-SOFA-84" = { low = 500, high = 3000 }  # 1 ea
+# FURN-SOFA-84 is UNREFERENCED since 2026-09-06 — RM-M-LIVING's sofa was retyped house-local to
+# FT-SOFA-84-SEAT-BAND when the seating turned onto the fire, and the retype is a clearance-zone
+# shape and nothing else (plan/furniture_types.py). Both rows are identical and both stay: an
+# unpriced type is SILENTLY DROPPED from the bill, so the day this row is the live one again it
+# has to already carry a number.
+"FURN-SOFA-84" = { low = 500, high = 3000 }  # 0 ea — kept live for the revert
+"FT-SOFA-84-SEAT-BAND" = { low = 500, high = 3000 }  # 1 ea — same sofa, seat-width walk band
 
 
 # --- WHAT THESE NUMBERS INCLUDE ---------------------------------------------------------
@@ -5122,7 +5368,7 @@ plumbing-condensate-drains-and-pumps = { low = 600, high = 1600 }
 # ladder — waste, contingency, markup and tax — identical to what the un-split fixture row
 # produced. Splitting is legal here because the two halves ARE separately known; this is not
 # the forbidden move of dividing a merged installed price.
-plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour = { low = 150, high = 320 }, unit = "ea", driver = "placeables.count[type=FX-TOILET-WH]" }
+plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour = { low = 150, high = 320 }, unit = "ea", driver = "placeables.count[type=FX-TOTO-SP-WH]" }
 electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 8000 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }
@@ -5153,6 +5399,24 @@ paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low 
 # and the garage, plus the standards, brackets and end caps the placeable prices treat as part
 # of a unit rather than as stock.
 cabinet-closet-shelving-and-rod = { low = 600, high = 1500 }
+# ** RM-M-LIVING'S WALNUT MANTEL, AND IT IS HERE BECAUSE IT HAS NOWHERE ELSE TO BE. **
+# SB-M-FIRE-MANTEL (plan/millwork.py) is 45 1/2" x 10" x 2 1/4" of 8/4 walnut, one board, on
+# W-M-FIRE. `haus millwork` is an UNPRICED VIEW and a "shelf" row may reference no other priced
+# section — a test enforces it — so every other board in that file gets its dollars from its
+# host's own row: the pantry and bath shelves come off the family's white oak at ~$2/sf and cost
+# nothing, and the two study boards and the mudroom seat are walnut BOUGHT, with their money
+# written into the `[placeables]` rows of the FurnitureTypes that host them. ** A ShelfBank
+# hosted on a WALL has no such row anywhere. ** Left alone, the most expensive board in the room
+# bills at $0 — the exact failure plan/millwork.py's own note warns about.
+#
+# It is an allowance and not a rate because it satisfies this table's one rule cleanly: no other
+# section prices it, and nothing in the model measures a mantel. `haus millwork` schedules it at
+# 11.5 bf ROUGH of 12/4 walnut (2 1/4" finished needs 12/4, not the study's 8/4) at $12-20/bf =
+# $140-230 of stock; the rest is a one-piece milled, sanded
+# and finished shelf with concealed steel supports let into the brick before it is laid, which
+# is a joiner's day plus the mason's coordination. NOT owner-milled: the walnut is bought (see
+# the retired `walnut-floor` tombstone in [floor_finishes] for why the family stock is oak).
+finish-fireplace-mantel-walnut = { low = 450, high = 1100 }
 # DRIVEN 2026-08-27 off CONDITIONED area — 5,113 SF, not gross: the garage slab is the finish
 # and takes no prep under one. $0.88-2.29/SF is the retired lump over that area.
 finish-floor-prep-and-self-levelling = { low = 0.88, high = 2.29, unit = "SF", driver = "space_summary.conditioned_sf" }
@@ -5188,6 +5452,129 @@ finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
 # operation is neither overhead nor pocket), so the exclusion is a predicate on the row and the
 # rate is a rate again. Same 35 sets, same money — and adding or removing a door no longer
 # silently drifts the line, which the ratio did every time.
+# ==========================================================================================
+# THE 2026-09-06 INTERIOR SELECTIONS PASS — THREE ROWS THAT DID NOT EXIST AT ALL
+# ==========================================================================================
+# ** COUNTERTOPS WERE UNPRICED SCOPE UNTIL THIS DATE, and that is the single largest hole
+# this pass closes. ** The only statement about them anywhere in the repo was one docstring
+# line in library/placeables/casework.py — "continuous 1-inch white countertop" — with no
+# element, no material and no row. The material tag now exists (`quartz-counter` /
+# `oak-counter` in plan/assemblies.py); this is the money. It stays an ALLOWANCE and not a
+# rate joined to a BOM quantity because a countertop is still not a modelled ELEMENT: there
+# is no surface in the model to measure, and this pass deliberately did not invent one (see
+# plans/TODO.md). It satisfies this table's one rule cleanly — no other section prices it.
+#
+# The arithmetic behind the band, so the next reader can re-derive it rather than trust it:
+#   kitchen perimeter + sink run  ~28 SF of 3 cm Silestone, fabricated and installed
+#   peninsula work surface        24" x 120" = 20 SF of the same
+#   vanity tops                   the 48" and 51" only (49x22 + 52x22 ~ 15 SF); the other
+#                                 four are one-piece SOLID SURFACE bought with the cabinet
+#                                 and priced in [placeables], NOT here
+#   ~63 SF at $50-95/SF installed for a fabricated low-silica quartz with an eased edge
+# The oak bar top is NOT in this row: 15" x ~96" of the owner's own white oak at ~$2/sf is
+# $150-300 of stock plus a joiner's day, and it is `finish-peninsula-oak-bar-top` below.
+#
+# ** THIS ROW IS WHY THE ESTIMATE TOTAL RISES ON THIS PASS, and the rise is real rather than
+# a re-pricing: ** it is scope the house always had and the bill never carried.
+finish-countertops-quartz = { low = 3200, high = 6000 }
+# ** THE PENINSULA'S OVERHANG IS AN ENGINEERING LIMIT, NOT A STYLE CHOICE, AND THIS ROW IS
+# THE CHEAPEST WAY OUT OF IT. ** CASE-PENINSULA-120 is a 24" carcass carrying a 15" knee.
+# Caesarstone's rule for engineered quartz is max overhang = 1/3 of depth and not more than
+# 15", with up to 14" unsupported in 3 cm — and 15" on 24" is 38%, outside the rule and
+# outside the warranty. Steel plate buys it back; so does putting wood on the cantilever,
+# which is free here because the owner mills it. The same move deletes the jumbo-slab
+# problem: a 120" x 39" seamless quartz top needs a jumbo (a standard slab is 57" x 120",
+# i.e. ZERO cutting margin) at 35-45% waste on a slab paid for in full, where a 24"-deep
+# strip cuts out of a standard slab with ordinary yield.
+#
+# ~$150-300 of stock, milled to 1 3/16" so it sits flush with 3 cm quartz, plus the joinery:
+# strips the long way on slotted screws or figure-8s, and all six faces finished including
+# the underside. The high end is a cabinetmaker; the low end is the owner's own mill and a
+# good carpenter.
+finish-peninsula-oak-bar-top = { low = 400, high = 1100 }
+# ** CABINET PULLS WERE ALSO UNPRICED. ** ~50 pulls, Top Knobs Solid Bar SS304 at $14.20 list
+# with 20-30% off at a dealer. SS304 is the same alloy as the appliances, so it matches
+# without a finish-code hunt, and there is NO PLATING TO WEAR THROUGH — budget plated-brass
+# "satin nickel" wears to yellow at the thumb contact point in five to eight years. The low
+# end of this band is the Amazon-tier multipack at $2-4/pull and is priced here only so the
+# spread is visible; ** if you go there, buy one pack first and check c-to-c with calipers **
+# (the risks are SS201, which pits, and hole-spacing tolerance across a 25-pack, which shows
+# up as crooked pulls down a drawer bank), and do not MIX tiers — a kitchen plus peninsula is
+# one sightline. The hardware splurge belongs on the door levers, which is what people touch.
+finish-cabinet-pulls = { low = 200, high = 750 }
+# ** THE BIDET SEATS ARE A SEPARATE PURCHASE FROM THE BOWLS ** and were inside no row. Two
+# TOTO WASHLET S5 (SW3446#01) at ~$682, on the two main-floor showpieces only. The
+# instantaneous tankless heater replaces the old reservoir and PREMIST wets the bowl before
+# use, which is a direct cleanability win. ** The C5/C2 seats are DISCONTINUED ** and
+# remaining stock clears at inflated prices, so do not let a supplier substitute one; the S7A
+# adds a motorised lid, which on a cleanability brief is a negative. The high end carries the
+# GFCI receptacle each one needs at 6"-12" AFF — one 20 A circuit per bath, NOT both washlet
+# baths ganged, because an instant-heat seat draws 1.2-1.4 kW while heating.
+plumbing-bidet-seats = { low = 1364, high = 1900 }
+# ** FAUCETS AND THE TUB FILLER WERE IN NO ROW EITHER. ** The vanity rows in [placeables] buy
+# a cabinet and a top; the shower rows buy a valve and its trim. Nothing bought the deck
+# fittings. ** SCOPED SO IT CANNOT DOUBLE-COUNT: ** shower valves, shower trim and showerheads
+# are inside FX-SHOWER-36-* / FX-TUBSHOWER-60-DIVERTED and are NOT here.
+#
+#   8 x Delta Arvo 15840LF-SP lavatory, SpotShield Brushed Nickel   $105 ea   $840
+#   1 x Delta Essa 9113-AR-DST kitchen, Arctic Stainless            $175      $175
+#   1 x Moen Adler 87233SRS laundry, Spot Resist Stainless          $169      $169
+#   1 x Delta Trinsic T2759-SS Roman tub filler trim                $599      $599
+#   1 x Delta R2707 Roman tub rough-in body                         $221      $221
+#
+# ** SINGLE-HOLE ON ALL EIGHT LAVATORIES ** -- one deck penetration in the splash zone
+# instead of three, and cheaper in brushed nickel besides. That puts a requirement on the TOP
+# order: every top DRILLED SINGLE-HOLE, in writing (field-drilling a cast top chips it and
+# voids its warranty). Both faucets ship with a deck plate covering a 3-hole 4" top, which is
+# the recovery from the likeliest ordering error and part of why they were chosen.
+#
+# The kitchen faucet is Delta rather than Moen for one reason: ** MagnaTite magnetic docking
+# has no wear surface **, where a counterweight-and-collar is the mechanism behind the
+# near-universal five-to-ten-year sagging-wand complaint. The runner-up (Moen Arbor 7594SRS,
+# $332) wins on exactly one axis -- the Moen 1255 is the most widely stocked faucet cartridge
+# in North America -- and an all-Moen house at ~$1,885 would put ONE cartridge in every
+# lavatory and the laundry, which is ~$700 for parts commonality. Defensible; not taken.
+#
+# ** THE LAUNDRY BRIEF CANNOT BE MET BY A FAUCET. ** No mainstream pull-down sprayer is
+# hose-threaded (sprayheads use proprietary threads) and every 3/4"-hose-threaded utility
+# faucet is a two-handle rigid spout with no spray. Take the sprayer and TEE A 1/2" HOSE BIBB
+# OFF THE COLD AT THE LAUNDRY BOX (~$15-25) -- a rough-in item, not a trim item, and it has to
+# reach the plumber before the wall closes. The high end of this row carries it.
+#
+# ** ORDER THE R2707 BODY WITH THE TRIM. ** They ship from different warehouses and the body
+# is needed months earlier; ordering trim alone is the classic failure here. It was showing
+# out of stock on Delta's site when this was priced, and Delta's own T2759-SS page
+# confusingly claims the trim includes a hand shower, which contradicts its being 3-hole --
+# confirm both before ordering.
+plumbing-faucets-and-tub-filler = { low = 2004, high = 3400 }
+# ** WALL TILE HAS NO ELEMENT TO MEASURE ** — [floor_finishes] carries the floors and a shower
+# surround is not a modelled finish, which is the same reason `finish-tile-surrounds-and-
+# waterproofing` above stays a lump. This row is the MATERIAL for the chosen 12x24 (TileBar
+# Bronx White at $5.95/SF) plus the 2x2 pan mosaic at $15.28/SF, so that the product choice
+# reaches the bill; the setting labour and the waterproofing stay in that row and are NOT
+# duplicated here. ** Read the two together before concluding what tile costs. **
+finish-wall-tile-material = { low = 900, high = 1800 }
+# ** RETUNED 2026-09-06: THE BAND IS RIGHT ON AVERAGE AND WRONG IN DISTRIBUTION. ** Schlage
+# Latitude on a SQUARE rose in satin nickel 619 is ~$39 passage / ~$45 privacy, which sits
+# near the low end and is the correct product for a trimless house (a round rose on a flush
+# jamb reads as a leftover, and that upcharge is essentially what the Custom collection
+# sells). So the swing doors are generous at $84. ** The POCKET doors are short by $100-200
+# each: ** a privacy pocket needs a purpose-built pocket-door privacy latch with a turn one
+# side and an emergency release the other — a mechanism, not a plate, $150-300 an opening —
+# and ** every pocket door needs TWO pulls, ** a flush pull on the face AND an edge pull on
+# the leading edge, because once the door is three-quarters into the pocket the face pull is
+# unreachable. That is the single most common omission in this scope. Where the leaf is a
+# Cavity Sliders CS For Wood, buy THEIR hardware: it is designed around their jamb geometry.
+#
+# Whole-house lands at ~$1,800-2,400 either way, so the range is kept rather than re-cut —
+# what changes is that the distribution is now written down. Hinges are ball-bearing over
+# ~35 lb or in daily use, 5/8" corner radius for prehung, 3.5" interior and 4" solid-core;
+# at $4-9 each across ~54 they are not a place to spend, but the ** finish code is a trap:
+# satin nickel is US15 = 619, and US15A is ANTIQUE nickel and a different colour. ** Buy
+# levers and hinges in the same finish family and the same lot.
+#
+# The Murphy Door bookcase leaf ships as a complete unit and draws from this row not at all;
+# confirm a TOUCH-LATCH release at order, since any visible pull defeats a flush bookcase.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
 # DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
 # already four out of date, which is the point). It was $73-164 per window covering stool

@@ -48,6 +48,9 @@ reporting the catalog's shape rather than the house's.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
 from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.mep.duct_connectivity import JOINT_TOLERANCE_M, case_height
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -57,10 +60,15 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_sleeves import rotate_into_plan
 from typehaus.resolve.mep_soffit import segment_meets_box
 
+if TYPE_CHECKING:
+    from typehaus.model.placeables import ServicePort
+    from typehaus.resolve.model import ResolvedCanvasObject
+
 CHECK_ID = "mep.equipment_port_service"
 
 
-def _case_box(footprint) -> tuple[tuple[float, float], tuple[float, float]]:
+def _case_box(footprint: Sequence[tuple[float, float]]
+              ) -> tuple[tuple[float, float], tuple[float, float]]:
     """The plan bounds of a resolved footprint, widened by the joint tolerance."""
     xs = [point[0] for point in footprint]
     ys = [point[1] for point in footprint]
@@ -80,7 +88,7 @@ def _reaches_vertically(z: float | None, base_m: float, height_m: float | None) 
     return base_m - JOINT_TOLERANCE_M <= z <= base_m + height_m + JOINT_TOLERANCE_M
 
 
-def _arrivals(ctx: CheckContext, obj, height_m: float | None
+def _arrivals(ctx: CheckContext, obj: ResolvedCanvasObject, height_m: float | None
               ) -> tuple[dict[str, str], dict[str, str]]:
     """``(ends, pass_throughs)``: duct system value -> the tag of a run arriving that way."""
     box = _case_box(obj.footprint)
@@ -117,7 +125,7 @@ def _arrivals(ctx: CheckContext, obj, height_m: float | None
     return ends, through
 
 
-def _port_stations(element, ports) -> str:
+def _port_stations(element: object, ports: list[ServicePort]) -> str:
     """Where the declared ports land in plan, for the message. Never the verdict.
 
     They are placed with the same ``rotate_into_plan`` the plan symbols and the drain-drop

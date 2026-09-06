@@ -21,7 +21,9 @@ from dataclasses import dataclass
 from typehaus.model.assembly import FramingSpec
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import cross_section, truss_chord_depth_m
+from typehaus.resolve.framing.profiles import (
+    cross_section, roof_truss_profile, truss_chord_depth_m,
+)
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof
 
@@ -39,6 +41,10 @@ BARGE_RAFTER_PROFILE = "2x6"
 # rafter, and no drop, because there is nothing cantilevering past the gable wall.
 _FLUSH_RAKE_TOLERANCE_M = inch(0.5).meters
 _MIN_GABLE_STUD_M = inch(1.5).meters
+#: One member per truss: the category both the field trusses (``roof.py``) and the gable-end
+#: drop trusses here emit. Consumers that used to name ``top_chord``/``bottom_chord``/
+#: ``truss_web``/``truss_heel`` name this instead.
+ROOF_TRUSS_CATEGORY = "roof_truss"
 
 
 @dataclass(frozen=True)
@@ -63,6 +69,9 @@ class TrussLayout:
     eave_z_m: float
     ridge_z_m: float
     chord: str
+    #: The web stock the assembly names. Nothing frames a web stick any more — the truss is
+    #: one member — but the plate layout it stands for is still what a fabricator prices, so
+    #: the layout keeps stating what the assembly asked for.
     web: str
     chord_depth_m: float
     web_depth_m: float
@@ -141,6 +150,35 @@ def is_gable_end_position(layout: TrussLayout, index: int) -> bool:
     return index in (0, len(layout.positions) - 1)
 
 
+def truss_member(layout: TrussLayout, pos: float, key: str,
+                 drop: float = 0.0) -> FramedMember:
+    """A whole shop-fabricated truss as **one** member — the floor-truss precedent.
+
+    A truss is engineered, plated, delivered and set as one assembly, and that is what is
+    ordered and priced, so it is one member here rather than the 8-10 chord/web/heel sticks
+    this used to emit. Where those sticks went:
+
+    * **quantities** — the BOM bills one ``"<span> roof truss"`` per truss at its span (the
+      dimension a truss plant quotes on), not the sum of its lumber. ``prices.toml`` carries
+      the matching per-lineal-foot-of-span rate.
+    * **geometry** — the member's envelope is bearing to bearing in plan and plate top to
+      ridge in elevation. The chords, webs and heel are the fabricator's plate layout, which
+      no model here holds; the viewer draws a conventional fink inside this envelope
+      (``ui/src/three/roofTruss.ts``), the way it already does for a floor truss.
+
+    ``drop`` is the gable-end set-down that lets the outlookers pass over (``roof_gable``);
+    a field truss takes 0.0. The overhang TAILS are outside the member: they run past the
+    bearing to the eave, and putting the member's ends out there would move the bearing ends
+    the uplift take-off ties off the wall they land on.
+    """
+    span = abs(layout.bear_hi - layout.bear_lo)
+    return FramedMember(
+        layout.roof_uid, key, ROOF_TRUSS_CATEGORY, roof_truss_profile(span),
+        layout.plan_pt(pos, layout.bear_lo), layout.plan_pt(pos, layout.bear_hi),
+        layout.plate_top_m, layout.ridge_z_m - drop, span,
+    )
+
+
 def gable_end_members(layout: TrussLayout, index: int, key: str) -> tuple[FramedMember, ...]:
     """The full gable end at truss station ``index``: drop truss + rake framing."""
     station = layout.positions[index]
@@ -152,7 +190,7 @@ def gable_end_members(layout: TrussLayout, index: int, key: str) -> tuple[Framed
     # An interior truss straddles its station, but the gable truss's *outboard face* is that
     # plane — it is what the gable sheathing lands on — so it sits half a chord inboard.
     pos = station - outward * cross_section(layout.chord).width_m / 2.0
-    members = list(_drop_truss(layout, pos, key, drop))
+    members: list[FramedMember] = [_drop_truss(layout, pos, key, drop)]
     members.extend(_gable_studs(layout, pos, key, drop))
     if overhang > _FLUSH_RAKE_TOLERANCE_M:
         members.extend(_outlookers(layout, pos, key, rake_edge, drop, outward))
@@ -160,28 +198,9 @@ def gable_end_members(layout: TrussLayout, index: int, key: str) -> tuple[Framed
     return tuple(members)
 
 
-def _drop_truss(
-    layout: TrussLayout, pos: float, key: str, drop: float
-) -> tuple[FramedMember, ...]:
-    """Bottom chord + the two dropped top chords of a gable-end truss."""
-    cd = layout.chord_depth_m
-    apex = layout.plan_pt(pos, layout.span_mid)
-    ridge_top = layout.ridge_z_m - drop
-    eave_top = layout.eave_z_m - drop
-    rise = layout.ridge_z_m - layout.eave_z_m
-    chords = [FramedMember(
-        layout.roof_uid, f"{key}-bc", "bottom_chord", layout.chord,
-        layout.plan_pt(pos, layout.bear_lo), layout.plan_pt(pos, layout.bear_hi),
-        layout.plate_top_m, layout.plate_top_m + cd, abs(layout.bear_hi - layout.bear_lo),
-    )]
-    for side, foot in (("lo", layout.foot_lo), ("hi", layout.foot_hi)):
-        chords.append(FramedMember(
-            layout.roof_uid, f"{key}-tc-{side}", "top_chord", layout.chord,
-            layout.plan_pt(pos, foot), apex, eave_top - cd, eave_top,
-            math.hypot(layout.span_mid - foot, rise),
-            z0_end_m=ridge_top - cd, z1_end_m=ridge_top,
-        ))
-    return tuple(chords)
+def _drop_truss(layout: TrussLayout, pos: float, key: str, drop: float) -> FramedMember:
+    """The gable-end drop truss, as one fabricated member (see :func:`truss_member`)."""
+    return truss_member(layout, pos, key, drop=drop)
 
 
 def _gable_studs(

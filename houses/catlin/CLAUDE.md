@@ -63,7 +63,7 @@ proposing any design change.
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
   movable instances that reference them live in the editable modules above. **`plan/
   fixture_types.py` holds SEVEN selections** — `FX-KOHLER-UNDERSCORE-6036`
-  (the drop-in bath) and `FX-VANITY-54-SINGLE` (RM-M-BATH2's vanity), plus
+  (the drop-in bath) and `FX-VANITY-51-SINGLE` (RM-M-BATH2's vanity), plus
   the five vanities that replaced this house's remaining bare lavatories:
   `FX-VANITY-24-SHALLOW` (RM-M-BATH1), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
   double alcove is two 30" bases under one 61" top, which is how one is actually built and
@@ -892,8 +892,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     would drop the south head off the 6'-8" door-head line the whole face is built on.
   - **WT-2748** (`WIN-M-EAST-MID`): the east living row's feature window had to
     come 30" → 27" for the bearing cap, and the 27" family's committed 36" would have
-    dropped its head from 6'-6" to 5'-6". 48" makes the narrowing a pure retype — same
-    2'-6" sill, same 6'-6" head, only the width moves. The cheapest of the four.
+    dropped its head from 6'-8" to 5'-8". 48" makes the narrowing a pure retype — same
+    2'-8" sill, same 6'-8" head, only the width moves. The cheapest of the four.
+    **The datums are 2'-8"/6'-8", not the 2'-6"/6'-6" this entry claimed until 2026-09-06.**
+    Commit `c2ed5b9d` ("Close the sunken garden's structural loop") moved all three east
+    sills 2'-6" → 2'-8" in one silent hunk of a retaining-wall change, and every comment
+    quoting the old pair went stale at once. **The row's head is therefore 6'-8" — the
+    house's own door-head line** — which is a better fact than the one it replaced, not
+    merely a correction.
   - **WT-2754** (`WIN-S-BED1`/`BED2`): the same 27" cap, but these are
     single-window BEDROOMS, so R303.1 binds on area and 27x48 is 9.00 sf against BED2's
     9.945 sf requirement — it would FAIL. 54" is the height that makes 27" legal
@@ -1040,12 +1046,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     margin is 0.05 sf) and growing BED3 (which has two windows). Those node positions are
     now incidental — the grid no longer depends on them — but the room sizes they set are
     real and still govern.
-    **The east MAIN row reads 4'-0" / 12'-0" / 18'-8" / 34'-0", and the last of those is
-    the blank kitchen stretch being deliberately ended.** N-M-E1 and W-M-E2 went when the wall was
+    **The east MAIN row reads 4'-0" / 13'-4" / 18'-8" / 34'-0", and the last of those is
+    the blank kitchen stretch being deliberately ended.** (`WIN-M-LIV-E2` moved 12'-0" →
+    13'-4" on 2026-08-27, one stud line north, so it stacks under `WIN-S-BED1`; this bullet
+    said 12'-0" until 2026-09-06.) N-M-E1 and W-M-E2 went when the wall was
     merged for WIN-M-EAST-MID, and WIN-M-DIN-E2, the window the blank was measured north of,
     was retired with them. **Look at `out/render/elev_east.png` before touching this.** What
-    the row now does, and what it costs: the first three are the row proper — two 27" units
-    and a 30" one on one 2'-6" sill — and WIN-M-KIT-E is a 14" unit at a 3'-6" sill, so it
+    the row now does, and what it costs: the first three are the row proper — three 27"
+    units on one 2'-8" sill and one 6'-8" head — and WIN-M-KIT-E is a 14" unit at a 3'-6" sill, so it
     joins neither the beat nor the head line. It reads as a smaller service window closing
     the row at the north end rather than as a fourth beat, which is the honest description
     and was the trade: the kitchen wanted a second window over its counter more than the
@@ -1053,6 +1061,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     16") so it breaks no stud and takes no header — see the 8" rule above for why a 14" unit
     can never column with the 27"/30" family beside it. WIN-S-STUDY3 at 4'-0" still columns
     with WIN-M-LIV-E1.
+    **2026-09-06: the pier between `WIN-M-LIV-E1` and `WIN-M-LIV-E2` is now the fireplace.**
+    `W-M-FIRE` is a 45 1/2" white-facebrick surround centred on y=8'-8", stopping at a
+    walnut mantel at 5'-4", with the eight BESTA units re-laid three south and five north of
+    it and the seating turned onto it. **No window moved for it** — the 27" ROs and the
+    4'-0"/13'-4" beat are untouched, and the pier centre is a bay centre on `W-M-E1`'s own
+    grid. The 2'-8" sill IS the firebox opening's bottom, so one datum serves four openings.
+    `notes/east_breast_bearing.md` carries the bearing and the floor opening; nothing in
+    `haus check` grades either.
   - **Knee band — GONE.** The east and west knee walls each carried a WT-1424
     pair, mirrored at 3'-4" / 32'-8"; the walls are 1 1/2" rafter plates now and a plate has
     nothing to glaze, so `WIN-A-W-S`, `WIN-A-W-N`, `WIN-A-E-S` and `WIN-A-E-N` are all

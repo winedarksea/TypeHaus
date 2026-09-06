@@ -18,7 +18,9 @@ from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import (
+    FramedMember,
     ResolvedConduitRun,
+    ResolvedFloor,
     ResolvedModel,
     ResolvedPipeRun,
     Ring,
@@ -388,7 +390,7 @@ def is_parallel_to_floor(path: list[tuple[float, float]], floor) -> bool:
     return True
 
 
-def bay_edge_members(floor) -> list:
+def bay_edge_members(floor: ResolvedFloor) -> list[FramedMember]:
     """The floor members that actually bound a joist bay.
 
     Reading every member manufactures phantom bay edges out of blocking (which sits
@@ -398,7 +400,7 @@ def bay_edge_members(floor) -> list:
     return [m for m in floor.members if m.category in _BAY_EDGE_CATEGORIES]
 
 
-def joist_line_stations(floor) -> list[float]:
+def joist_line_stations(floor: ResolvedFloor) -> list[float]:
     """Sorted stations of this floor's joist lines, on the axis *across* the joists.
 
     Public because two checks need the same lines from opposite directions:
@@ -411,7 +413,7 @@ def joist_line_stations(floor) -> list[float]:
     return sorted({(m.p0[1] if along_x else m.p0[0]) for m in bay_edge_members(floor)})
 
 
-def clear_bay_width_m(floor) -> float | None:
+def clear_bay_width_m(floor: ResolvedFloor) -> float | None:
     """The clear width between two of this floor's joists, derived from the resolved lines.
 
     ``duct_bay_occupancy`` takes its spacing from the caller because it is grading one run

@@ -1,16 +1,24 @@
-"""R312.1.1 at the open side of a *flight* — the shape of the rule nothing measured.
+"""Two stair rules with no home anywhere else, both about a surface no element models.
+
+R312.1.1 at the open side of a *flight*, and R311.7.1 at a head that lands on a **wall
+top**. Both exist because the walking surface in question belongs to no ``FloorSystem``,
+no ``FloorOpening`` and no landing element, so every rule keyed to one of those looked
+straight past it.
 
 ``code.R312_1_guard`` grades the four edges of a stair well against the deck that hosts it,
 and ``code.R312_1_guard_height`` grades the ring of every floor deck. A flight's own side is
 neither: it is a sloped walking surface that climbs out of one floor without belonging to
-any deck ring — the one raised walking surface in the model this module covers.
-Catlin's ST-S2A stood 30"-120" over the study it climbs out of, open on the
+any deck ring. Catlin's ST-S2A stood 30"-120" over the study it climbs out of, open on the
 south side for 10'-0", at a clean 0-FAIL report.
 
 The two rules divide on one line, and it is the stair's own ``outline`` — the well. Inside
 it, an unguarded edge is the well's and ``code.R312_1_guard`` adjudicates it edge by edge.
 Outside it, the flight has left the shaft and stands in a room, which is this rule. No
 overlap, no seam.
+
+``code.R311_7_1_wall_top_landing`` is the other half of the same idea, one storey up: a
+flight springing from the top of a concrete wall crosses a threshold that no element models
+and that ``code.R311_7_6_landing_depth`` therefore cannot see.
 
 Every input is resolved output: the nosing stations of
 :mod:`typehaus.resolve.stairs.walkline`, the same derivation the R311.7 rules and the
@@ -257,10 +265,12 @@ def _clear_across(region, a, b, travel) -> float:
     if run < 1e-9:
         return 0.0
     across = (across[0] / run, across[1] / run)
-    depth = max((travel[0] * (x - a[0]) + travel[1] * (y - a[1]))
-                for x, y in region.exterior.coords) if hasattr(region, "exterior") else max(
-        (travel[0] * (x - a[0]) + travel[1] * (y - a[1]))
-        for piece in region.geoms for x, y in piece.exterior.coords)
+    parts = [piece for piece in getattr(region, "geoms", [region])
+             if getattr(piece, "geom_type", "") == "Polygon" and not piece.is_empty]
+    if not parts:
+        return 0.0
+    corners = [point for piece in parts for point in piece.exterior.coords]
+    depth = max(travel[0] * (x - a[0]) + travel[1] * (y - a[1]) for x, y in corners)
     widest_per_section = []
     for index in range(1, _LANDING_SECTIONS + 1):
         station = depth * index / (_LANDING_SECTIONS + 1)
@@ -319,19 +329,19 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
         a, b, travel, z = arrival
         # A step forward of the arrival riser line, so a head sitting exactly on the wall's
         # own face is asked about the wall it is entering rather than about the boundary.
-        step = (( a[0] + b[0]) / 2.0 + travel[0] * _STANDS_PROUD_M,
+        step = ((a[0] + b[0]) / 2.0 + travel[0] * _STANDS_PROUD_M,
                 (a[1] + b[1]) / 2.0 + travel[1] * _STANDS_PROUD_M)
         probe = Point(step)
         if any(abs(top - z) <= _WALL_TOP_ARRIVAL_TOL_M and poly.covers(probe)
                for poly, top in modelled):
             continue  # it arrives on a modeled walking surface; other rules measure that
-        wall = next((w for w in ctx.model.walls
-                     if abs(w.z1_m - z) <= _WALL_TOP_ARRIVAL_TOL_M and w.layers
-                     and unary_union([Polygon(layer.polygon)
-                                      for layer in w.layers]).covers(probe)), None)
-        if wall is None:
+        tops = ((w, unary_union([Polygon(layer.polygon) for layer in w.layers]))
+                for w in ctx.model.walls
+                if abs(w.z1_m - z) <= _WALL_TOP_ARRIVAL_TOL_M and w.layers)
+        found = next(((w, poly) for w, poly in tops if poly.covers(probe)), None)
+        if found is None:
             continue
-        top = unary_union([Polygon(layer.polygon) for layer in wall.layers])
+        wall, top = found
         reach = max(top.bounds[2] - top.bounds[0], top.bounds[3] - top.bounds[1]) + 1.0
         band = Polygon([a, b, (b[0] + travel[0] * reach, b[1] + travel[1] * reach),
                         (a[0] + travel[0] * reach, a[1] + travel[1] * reach)])
@@ -352,10 +362,10 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
         where = (f"{stair.tag}'s head lands on {wall.tag}'s top at "
                  f"{z / .3048:.2f}' with no floor or slab modeled there")
         if clear + 1e-9 < _WALL_TOP_LANDING_MIN_WIDTH.meters:
-            out.append(_fail(cid, f"{where}; {names} leave{'' if len(blockers) == 1 else ''} "
-                             f"{clear / .0254:.1f}\" of clear width across it, under "
-                             f"R311.7.1's 36\"", (stair.tag, wall.tag,
-                                                  *(s.tag for s in blockers)), code))
+            out.append(_fail(cid, f"{where}; {names} leaves {clear / .0254:.1f}\" of "
+                             "clear width across it, under R311.7.1's 36\"",
+                             (stair.tag, wall.tag,
+                              *(blocker.tag for blocker in blockers)), code))
         else:
             out.append(_pass(cid, f"{where}, and {names} standing on it leaves "
                              f"{clear / .0254:.1f}\" clear (>= 36\")", code))

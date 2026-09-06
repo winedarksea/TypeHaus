@@ -679,8 +679,16 @@ def test_catlin_furnished_rooms_resolve_against_the_shared_starter_catalog() -> 
     model, findings = resolve(plan)
     assert not [item for item in findings if item.severity.value == "error"
                 and "placeable" in item.check_id]
-    sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
-    assert sofa.room == "RM-M-LIVING" and len(sofa.footprint) == 4
+    # ** THE WITNESS WAS `FURN-SOFA-84` UNTIL 2026-09-06 AND HAD TO MOVE. ** RM-M-LIVING's
+    # sofa was retyped house-local to `FT-SOFA-84-SEAT-BAND` when the seating turned onto the
+    # new fireplace — same dimensions, a narrower recommended walk band — which left catlin
+    # with no instance of the shared sofa at all. Taking the house-local type as the witness
+    # would have quietly inverted what this test asserts, since the whole point is that a
+    # catlin room furnishes from the SHARED starter catalog. `FURN-ARMCHAIR-35` is that
+    # catalog's type, catlin has three of them, and two stand in RM-M-LIVING.
+    chair = next(item for item in model.canvas_objects
+                 if item.type_ref == "FURN-ARMCHAIR-35" and item.room == "RM-M-LIVING")
+    assert len(chair.footprint) == 4
     symbols = {item["tag"]: item["plan_strokes"] for item in canvas_object_types(plan)}
     # The shared fixtures opted in too, so the very first render shows a real glyph.
     assert symbols["FX-LAV-24"] and symbols["EQ-T-BROAN-B210E75RT"] and symbols["ED-T-PANEL"]

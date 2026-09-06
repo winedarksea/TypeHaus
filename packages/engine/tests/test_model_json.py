@@ -48,9 +48,30 @@ def test_every_member_carries_shape_width_depth(catlin_payload):
     members = list(_all_members(catlin_payload))
     assert members
     for member in members:
-        assert member["shape"] in ("rect", "i_joist", "floor_truss")
+        assert member["shape"] in ("rect", "i_joist", "floor_truss", "roof_truss")
         assert member["width_m"] > 0
         assert member["depth_m"] > 0
+
+
+def test_a_roof_truss_serializes_as_one_member_with_its_chord_section(catlin_payload):
+    """One member per truss, and the section it carries is the CHORD, not the truss.
+
+    The viewer draws the fink inside the member's envelope (ui/src/three/roofTruss.ts), so
+    what it needs from the section is the chord depth and the truss's own thickness; the
+    heel-to-peak height is z1_m - z0_m and belongs to the member, never to the profile.
+    """
+    garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
+    trusses = [m for m in garage["members"] if m["category"] == "roof_truss"]
+    assert len(trusses) == 13
+    for truss in trusses:
+        assert truss["shape"] == "roof_truss"
+        assert truss["profile"] == "24 roof truss"
+        assert truss["flange_thickness_m"] == pytest.approx(3.5 * 0.0254)
+        assert truss["width_m"] == pytest.approx(1.5 * 0.0254)
+        # The envelope stands well past its own chord: that is the truss, not a 2x4.
+        assert truss["z1_m"] - truss["z0_m"] > 1.0
+    assert not [m for m in garage["members"]
+                if m["category"] in {"top_chord", "bottom_chord", "truss_web", "truss_heel"}]
 
 
 def test_member_key_is_unique_within_its_parent(catlin_payload):

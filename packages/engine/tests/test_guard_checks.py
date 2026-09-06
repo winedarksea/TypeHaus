@@ -359,6 +359,7 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     flight's throat removed the same edge reports the doorway as unguarded, so the PASS is
     earned by the stair being there and not by the old midpoint accident.
     """
+    from typehaus.checks.code.mn_residential import edge_coverage as ec
     from typehaus.checks.code.mn_residential import fall_protection as fp
     from typehaus.model.structure import Railing
     from typehaus.quantities import inch as _inch
@@ -368,18 +369,16 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     ring = list(deck.deck_outline)
     east = next((a, b) for a, b in zip(ring, ring[1:] + ring[:1], strict=True)
                 if a[0] == b[0] and a[0] == max(p[0] for p in ring))
-    walls = [w for w in catlin_ctx.model.walls
-             if w.z0_m <= surface + 0.1
-             and w.z1_m >= surface + _inch(36).meters - 0.02]
+    closures = ec._closures_at(catlin_ctx, surface)
     rails = [(r, r.height.meters + 1e-9 >= _inch(36).meters)
              for r in catlin_ctx.plan.all_elements()
              if isinstance(r, Railing) and abs(r.base_elevation.meters - surface) < 0.15]
     kwargs = dict(gap_tol_m=fp._EDGE_GAP_TOL_M, plane_tol_m=fp._EDGE_RAILING_PLANE_TOL_M,
                   wall_face_tol_m=fp._EDGE_WALL_FACE_TOL_M)
-    quads = fp._stair_throat_quads(catlin_ctx, surface)
-    with_stair, _s, _u = fp._uncovered_runs(*east, walls, rails, quads, **kwargs)
+    quads = ec._stair_throat_quads(catlin_ctx, surface)
+    with_stair, _s, _u = ec._uncovered_runs(*east, closures, rails, quads, **kwargs)
     assert with_stair == []
-    without_stair, _s, _u = fp._uncovered_runs(*east, walls, rails, [], **kwargs)
+    without_stair, _s, _u = ec._uncovered_runs(*east, closures, rails, [], **kwargs)
     opening = max(hi - lo for lo, hi in without_stair)
     assert opening == pytest.approx(inch(36).meters, abs=0.02)
 
@@ -451,3 +450,33 @@ def test_a_column_on_the_wall_top_splits_the_threshold():
     assert _clear_across(landing, a, b, travel) == pytest.approx(inch(36).meters, abs=1e-4)
     assert (_clear_across(landing.difference(column), a, b, travel)
             == pytest.approx(inch(18).meters, abs=1e-4))
+
+
+def test_a_glazed_vestibule_closes_its_own_edges(catlin_ctx):
+    """The breezeway is a glazed bridge, and glass closes an edge the way a wall does.
+
+    Its deck stands 35" over the site's grade datum — over R312.1.1's trigger — and it
+    carries no ``Railing`` and no ``Wall`` on either long side. What it carries is
+    ``GL-BW-WALL-W``/``-E``, 8'-0" of glazing running the full length of both, and a guard
+    inside a wall of glass is a rail inside a wall. Credit the glass and it PASSes; drop the
+    glazing category and both sides come back as 4'-0" of open side, which is the assertion
+    that keeps this a derivation rather than a coincidence.
+    """
+    from typehaus.checks.code.mn_residential import fall_protection as fp
+
+    findings = {f.message.split(":")[0]: f
+                for f in fp.raised_surface_guard_height(catlin_ctx)}
+    assert findings["FS-BW-FLOOR"].result is Result.PASS, findings["FS-BW-FLOOR"].message
+
+    deck = next(f for f in catlin_ctx.model.floors if f.tag == "FS-BW-FLOOR")
+    closing = _closing_tags(catlin_ctx, deck.deck_z1_m)
+    assert {"GL-BW-WALL-W", "GL-BW-WALL-E"} <= closing, sorted(closing)
+
+
+def _closing_tags(ctx, surface):
+    from typehaus.checks.code.mn_residential import edge_coverage as ec
+
+    return {solid.tag for solid in ctx.model.solids
+            if solid.category in ec._ENCLOSING_SOLID_CATEGORIES
+            and solid.z0_m <= surface + 0.1
+            and solid.z1_m >= surface + inch(36).meters - 0.02}

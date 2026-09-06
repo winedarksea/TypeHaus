@@ -23,6 +23,12 @@ _IJOIST_SPAN_FT: dict[str, float] = {
     # I-joist's L/360), but this table is explicitly advisory, so borrowing the
     # I-joist number here is the honest placeholder until a fabricator table replaces it.
     "11.875 floor truss": 18.5,
+    # NO ROOF-TRUSS ROW, and there cannot be one. A ``"<span> roof truss"`` profile
+    # (``resolve/framing/profiles.py``) already names the span it was designed for, at a
+    # roof's snow/dead load rather than this table's 40 psf residential floor — asking a
+    # floor span table whether a 24' roof truss spans 24' would be answering with the
+    # question. This check walks ``model.floors`` only, so the one way a roof truss reaches
+    # it is a FloorSystem authored on one, which correctly reports UNKNOWN below.
     "14 I-joist": 22.0,
     "16 I-joist": 25.0,
     "2x6": 9.9,

@@ -30,7 +30,7 @@ BASEMENT_FIXTURES = (
     # It moved 7" north with W-B-SA-N on 2026-09-05 (round three) to stay in the corner, and
     # the floor drain, both sleeves, PR-B-SAUNA-DRAIN's first three vertices, the two
     # condensate air gaps over the grate and PR-B-SAUNA-VENT's riser all moved with it.
-    Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36",
+    Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36-COMBO",
             room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
             wall_ref="W-B-CS"),
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
@@ -55,7 +55,7 @@ BASEMENT_FIXTURES = (
     # 25'-3 5/8"; UPC 402.5's 24" front envelope then reaches y=20'-11 5/8" and its 15"
     # side clearances land 10'-9"..13'-3", inside the room both ways — 5 5/8" of slack at the
     # west face and 4 5/16" at the east, down from 5 5/8" when the east wall moved.
-    Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOILET-STD",
+    Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOTO-DRAKE",
             room="RM-B-BATH", position=pt(ft(12), inch(289.625)),
             wall_ref="W-B-BA-E"),
     # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
@@ -183,7 +183,7 @@ BASEMENT_FIXTURES = (
 # `test_catlin_fixtures_all_reach_a_vent_chase`, which asserts this fixture is in the
 # CHASE-vented set specifically.
 MAIN_FIXTURES = (
-    Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
+    Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOTO-SP-WH", room="RM-M-BATH1",
             position=pt(m(0.670778), m(7.138289)), rotation=deg(180), wall_ref="W-M-BAE",
             mount=Mount(kind=MountKind.WALL, elevation=inch(1.375))),
     # `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other` holds this fixture
@@ -226,8 +226,8 @@ MAIN_FIXTURES = (
     #
     # No `drain_position`: the convention (under the bowl) is correct, and PR-B-WC2-DRAIN
     # follows the bowl to its new flange rather than the reverse.
-    Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET-STD", room="RM-M-BATH2",
-            position=pt(ft(2, 6), ft(20, 10.615)), rotation=deg(0), wall_ref="W-M-HS1"),
+    Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOTO-CARLYLE-II", room="RM-M-BATH2",
+            position=pt(ft(2, 6), inch(249.615)), rotation=deg(0), wall_ref="W-M-HS1"),
     # BATH2 has separate bathing fixtures: the 36" shower at the south end of the east
     # plumbing wall, the drop-in bath north of it. Intentionally separate instances/types
     # rather than a tub-shower combination, so the permit schedule and future owner
@@ -243,7 +243,7 @@ MAIN_FIXTURES = (
     # `drain_position` is unchanged and is NOT the pan's centre — it never was; it is where
     # PR-B-SH2-DRAIN picks the waste up on its way to the stack. Left alone deliberately:
     # the pan moved 4 1/4", which does not move a trap that is already offset.
-    Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36", room="RM-M-BATH2",
+    Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-DIVERTED", room="RM-M-BATH2",
             position=pt(ft(6, 2.615), ft(14, 8.375)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
     # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:
@@ -326,8 +326,8 @@ MAIN_FIXTURES = (
     # falls inside that rectangle, 2 3/8" north of the basin centreline and effectively on
     # its x centre. Re-pointing the pipe would put PR-B-SINK2-DRAIN into a diagonal trap arm
     # 2 3/8" off PR-B-SH2-DRAIN's line for nothing.
-    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-54-SINGLE",
-            room="RM-M-BATH2", position=pt(inch(17.135), inch(185.375)), rotation=deg(90),
+    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-51-SINGLE",
+            room="RM-M-BATH2", position=pt(inch(17.135), inch(183.875)), rotation=deg(90),
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(16, 6))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
@@ -399,7 +399,7 @@ MAIN_FIXTURES = (
 # with a 2x4 framed behind it for the flange to nail to. The west side is also real: the
 # chase's south corners run the tub's full 30" (storeys/second.py, NODES).
 SECOND_FIXTURES = (
-    Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET-STD", room="RM-S-BATH1",
+    Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOTO-AQUIA-IV", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
     # ** A 48" VANITY -- THE BIGGEST IN THE HOUSE AFTER RM-M-BATH2'S. ** The bowl backs the
     # EAST wall, so `rotation=deg(-90)` — `deg(90)` points a fixture's back at -x, the wrong
@@ -429,7 +429,7 @@ SECOND_FIXTURES = (
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-VANITY-48-SINGLE",
             room="RM-S-BATH1", position=pt(inch(106.12), inch(369.88)), rotation=deg(-90),
             wall_ref="W-S-BA-E1B"),
-    Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60", room="RM-S-BATH1",
+    Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60-DIVERTED", room="RM-S-BATH1",
             position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01sf). D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW
     # quadrant clear, so WC sits north of the swing against the north wall, lav east of it
@@ -450,7 +450,7 @@ SECOND_FIXTURES = (
     # `PR-A-STUBATH-DRAIN` drops 10'-0" inside it and `PR-A-CW/HW-STUBATH` rise through it
     # into W-A-STU-W. Retyping DC2 to a 2x4 assembly (e.g. for resilient channel) would
     # leave those with nowhere to run.
-    Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET-STD",
+    Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOTO-AQUIA-IV",
             room="RM-S-SUITEBATH", position=pt(inch(134.81), inch(250.625)),
             wall_ref="W-S-SN3"),
     # ** A 30" VANITY. ** The NORTH wall (W-S-SN3) gives 31.76" between the water closet's
@@ -489,7 +489,7 @@ SECOND_FIXTURES = (
     # decision (furr the whole 10.4" out, move W-S-SBS, or accept a two-wall install and
     # detail the open end) and not a modelling one. Left for the owner rather than decided
     # here; a shelf like FURN-S-BATH1-SHELF will not fit the leftover.
-    Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60",
+    Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60-DIVERTED",
             room="RM-S-SUITEBATH", position=pt(m(4.99282), m(5.96387)), rotation=deg(-90),
             wall_ref="W-S-C2C"),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
@@ -643,7 +643,7 @@ GARAGE_FIXTURES = (
 # of the water closet as well, which is new.
 ATTIC_FIXTURES = (
     # Floor-mount, not FX-TOILET-WH: a wall-hung carrier costs a 6" chase this room need not buy.
-    Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOILET-STD", room="RM-A-STUBATH",
+    Fixture(uid="WCM0PV9H71", tag="FX-A-STUBATH-WC", type_ref="FX-TOTO-DRAKE", room="RM-A-STUBATH",
             position=pt(ft(11, 0.875), ft(19, 4)), rotation=deg(90),
             wall_ref="W-A-STU-W"),
     # 18" x 14", the cheapest lavatory in the catalog — not the 24" FX-LAV-24 the second storey
@@ -656,7 +656,7 @@ ATTIC_FIXTURES = (
     # three nailable walls (the 2026-08-21 alcove audit above), and a guest suite does not want
     # a tub. R305 is not the constraint here either: the roof underside over this corner is
     # 10'-6" and up.
-    Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36", room="RM-A-STUBATH",
+    Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36-COMBO", room="RM-A-STUBATH",
             position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W"),
     # ** THE WET BAR'S SINK, BACK-TO-BACK WITH THE BATH THROUGH THE SAME WET WALL. ** It is on
     # W-A-STU-W's WEST face, so the bar and the bathroom share one stack, one vent and one

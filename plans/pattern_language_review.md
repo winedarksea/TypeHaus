@@ -44,7 +44,7 @@ held 0 FAIL. **Researched** = a cited external basis, no bid.
 | **A3** | Tile the mudroom | 248 | **+$33–360** | MEASURED |
 | **A4** | Acetylated jamb posts + copper-naphthenate end seal | 207 | $1,100–2,100 | researched |
 | **A5** | An exterior stair off the porch — the first route to the ground | 168, 120 | $2,600–4,200 | researched |
-| **G1** | East living row WT-2748 → WT-2764 | 192, 128 | **+$269–562** | MEASURED |
+| **G1** | ~~East living row WT-2748 → WT-2764~~ **RETIRED 2026-09-06 — conflicts with C9** | 192, 128 | ~~+$269–562~~ | MEASURED |
 | **G2** | Main-floor south sill to 18" — *takes the great room off IRC Exception 1* | 222, 180, 202 | $540–1,900 | researched\* |
 | **G3** | Orientation-tuned glass (the product exists; the plant-room note is backwards) | 128 | $0–800 | researched |
 | **G4** | Dimmers in the bedrooms and studies (99 of 128 fixtures are on a plain toggle) | 252, 135 | $407–996 | MEASURED count |
@@ -516,10 +516,48 @@ be sat in.
   to lap to.** Instead: buy a unit that reads as fire at 11 feet (**+$600–2,600**), raise the
   mount from 7" to 18–24" so the flame sits at seated eye level, give it a dark `WallPaneling`
   surround (**$1,400–3,000**), and turn the seats toward it.
+  > **CLOSED 2026-09-06, and here is what the estimate above got right and wrong.** The fire
+  > moved out of the SE corner — it could never have been raised there, because
+  > `WIN-M-LIV-E1`'s rough opening sits directly over it and the 7" mount existed to duck
+  > under that glass. It is now in the pier between `WIN-M-LIV-E1` and `WIN-M-LIV-E2`, in a
+  > 45 1/2" full-brick surround (`W-M-FIRE`) bearing on `W-B-E1`'s pour, capped by a
+  > one-piece walnut mantel at 5'-4". **Flame centre 42 3/16" — a 14" rise, past the 18–24"
+  > mount this asked for**, because the surround's own coursing set the datums.
+  > * *"buy a unit that reads as fire at 11 feet (+$600–2,600)"* — the unit is an **Amantii
+  >   BI-30-XTRASLIM at $1,499–1,539**, inside that range, but **not for the reason given.**
+  >   No reliable evidence distinguishes any unit in this class at 9–10 ft: every "most
+  >   realistic flame" source is a retailer or an affiliate and none addresses viewing
+  >   distance. It was chosen because it is the only **trimless** unit in the entire
+  >   26–32"-wide, ≤6"-deep, hardwireable field (which is entirely Amantii), so the brick
+  >   runs to the glass edge. Neither Amantii glass is low-iron or anti-glare; **both will
+  >   mirror the two windows flanking them**, and the brick reveal and the mantel's shadow
+  >   are what answer that, not the model choice.
+  > * *"a dark `WallPaneling` surround ($1,400–3,000)"* — **overruled by the owner: full
+  >   white facebrick, not slips, not panelling.** `FIREPLACE_BRICK_WYTHE` bills $2,034–3,577
+  >   for 24.5 SF of face, which lands in the same range for a different thing. Note the
+  >   labour half of that rate IS a mason's minimum call-out; 24.5 SF is far below any real
+  >   quote and the $/SF market rate would have under-billed it four-fold.
+  > * *"turn the seats toward it"* — done, and **it costs the media console**: the fire and
+  >   `FURN-M-MEDIA` now sit 90° apart, and a 64" mantel with brick above cannot take a
+  >   panel. That is cheaper than it sounds — **there is no TV in this room at all**, the
+  >   98" screen is `FURN-B-PLAY-TV` in the basement — but it is a real choice, not a
+  >   deferral. Retiring the console outright is defensible and is left open.
+  >
+  > The one thing this review could not have known: the brick is carried **off the concrete,
+  > around the joists and up**, so no masonry load lands on wood and no engineered item
+  > arises. That is only possible because the surround is *minimal*: at 5 1/2" proud its
+  > whole footprint stands over `W-B-E1`'s 12" pour. See `notes/east_breast_bearing.md`.
 - **C10. Sitting circle (185).** 747.6 sf of common room, **three seats** — one 84" sofa —
   against eight sleeping places. The house already knows how to do this and did it in the
   basement, where a sectional is authored with `rotation=deg(180)` explicitly *"to make it
   face the screen."* Two armchairs, **$800–3,000**, zero construction cost. Pairs with C9.
+  > **CLOSED 2026-09-06 with C9.** `FURN-M-ARMCHAIR-N` / `-S` are authored, mirrored exactly
+  > about y=104" and turned onto the fire at `deg(90)`; the sofa joins them, re-authored in
+  > feet (it was a metric literal) and turned. Cost landed at **$400–2,400** for the pair.
+  > The sofa needed a house-local retype — `FT-SOFA-84-SEAT-BAND`, `front_zone(inset=0.72)`
+  > — so its walk band is the width of the seat rather than the arms; that is the
+  > `FT-DINING-8-OPEN-CORNERS` move, retype rather than reduce the reach. **No coffee
+  > table**: anything in that band is an encroachment by definition.
 - **C11. Glazed interior doors for borrowed light (237).** `DT-INT-SWING30-GLAZED` exists and
   is used twice. `RM-B-PLAY-N` (324 sf) and `RM-B-GYM` (324 sf) have **zero glazing** and pass
   R303.1 only under Exception 1. A retype moves nothing (see the direct change below);
@@ -754,7 +792,21 @@ this remediable at all. The glazing review's ranked answer to it is in §6.
 Kept as its own section because it is the largest single thread in the review and because two
 of its items were **measured**, not estimated.
 
-## G1. The east living row, retyped — MEASURED: +$269 – $562, 0 FAIL
+## G1. The east living row, retyped — **RETIRED 2026-09-06** (was MEASURED: +$269 – $562, 0 FAIL)
+
+> ⚠ **RETIRED, NOT DEFERRED, AND THE REASON IS C9.** The fireplace surround built on
+> 2026-09-06 (`W-M-FIRE`) is keyed to the east row's **2'-8" sill**: 32" is course 12 of the
+> brick, it is the firebox opening's bottom, and it is what lets one datum serve four
+> openings and lets the BESTA counter die into the brick 2 1/4" below the firebox on both
+> sides. Taking the head to 7'-10" does not move the sill — but this option was measured
+> *before* the surround existed, and re-pricing it now has to include what a taller row does
+> to a masonry composition it did not have to answer to. If it is ever revived, **re-measure
+> it against the surround**, not against the numbers below. The two window arithmetic facts
+> below are also stale in the same way every pre-2026-09-06 comment was: **the row's sill is
+> 2'-8" and its head 6'-8", not 2'-6"/6'-6"** (commit `c2ed5b9d`), and `WIN-M-LIV-E2` is at
+> **13'-4"**, not 12'-0" (2026-08-27). The +$269–562 stands as a window-cost measurement and
+> as nothing else.
+
 
 `WIN-M-LIV-E1`, `WIN-M-LIV-E2` and `WIN-M-EAST-MID` all **WT-2748 → WT-2764** (27" x 48" →
 27" x 64"). **WT-2764 already exists in the catalog and is already priced**

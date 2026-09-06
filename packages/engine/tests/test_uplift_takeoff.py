@@ -93,21 +93,24 @@ def test_every_rafter_is_tied_at_its_eave(catlin_model_ro, connections) -> None:
     assert {c.support_tag for c in tied} == {"W-A-W1", "W-A-W1B", "W-A-E1", "W-A-E2"}
 
 
-def test_a_truss_roof_is_tied_at_its_heels_not_its_top_chords(catlin_model_ro,
-                                                              connections) -> None:
-    """The garage bears on its heels; its top chords cross the plate a foot and a half up.
+def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
+                                                          connections) -> None:
+    """A truss is one member with two bearings, and both of them get a tie.
 
-    This is the whole reason ``tied_roof_categories`` names two member categories rather than
-    one. A rule that tied ``top_chord`` would find the garage's chords passing over W-G-S on
-    their way to the 16" overhang and tie them at the wrong elevation, or — with a tight
-    tolerance — miss the garage roof entirely.
+    This used to tie ``truss_heel``, because the multi-stick truss's top chords crossed the
+    plate a foot and a half up on their way to the 16" overhang and tying those would have
+    tied the wrong member at the wrong elevation. One member per truss removes the problem
+    rather than working around it: the member's own ends ARE its bearings, at the plate top.
+    It also picks up the two GABLE-END trusses, which carried no heel block and so went
+    untied — 26 ties over 13 trusses where there were 22 over 11.
     """
     roof = next(roof for roof in catlin_model_ro.roofs if roof.tag == "RF-GARAGE")
-    heels = [m for m in roof.members if m.category == "truss_heel"]
-    tied = [c for c in connections if c.member_category == "truss_heel"]
-    assert len(tied) == len(heels) > 0
+    trusses = [m for m in roof.members if m.category == "roof_truss"]
+    tied = [c for c in connections if c.member_category == "roof_truss"]
+    assert len(tied) == 2 * len(trusses) > 0
     assert {c.support_tag for c in tied} == {"W-G-S", "W-G-N"}
-    assert not [c for c in connections if c.member_category == "top_chord"]
+    assert not [c for c in connections
+                if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]
 
 
 def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro,

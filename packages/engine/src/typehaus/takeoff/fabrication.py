@@ -9,6 +9,12 @@ So, per deck and per distinct length: overall length, clear span (face of suppor
 support, what the truss is designed for), the seat at each end, and the clear chord-to-chord
 opening — on this house the reason the member was specified at all. All read off the
 resolved members and ``ResolvedFloor.ends``, so schedule and geometry cannot disagree.
+
+Roof trusses are fabricated too (``FABRICATED_SHAPES`` names them, and ``takeoff/framing``
+orders them by that set), but they do not appear here: every field below the first two is a
+FLOOR DECK's — a clear span read off ``ResolvedFloor.ends``, the seat at each end, the
+chord-to-chord opening a service crosses. A roof truss's equivalent sheet is the S-102 roof
+framing schedule, which already carries its span, spacing and count.
 """
 
 from __future__ import annotations
@@ -21,9 +27,11 @@ from typehaus.resolve.floor_ends import FloorEnds
 from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
 from typehaus.resolve.model import ResolvedModel
 
-#: Shapes bought fabricated to length rather than cut from stock. Mirrors the fabricated
-#: branch of ``takeoff/framing.py::_order_length_ft`` — the two read the same shape name.
-FABRICATED_SHAPES = frozenset({"floor_truss"})
+#: Shapes bought fabricated to length rather than cut from stock. ``takeoff/framing.py``
+#: imports it, so the ordering rule and this schedule cannot disagree about what is bought
+#: made-to-order. ``roof_truss`` is one member per truss for exactly the same reason
+#: ``floor_truss`` is (``resolve/framing/roof_gable.truss_member``).
+FABRICATED_SHAPES = frozenset({"floor_truss", "roof_truss"})
 #: Lengths within this of each other are the same piece. A hundredth of an inch: the model
 #: works in metres and a shared bearing line reaches the same tip by two float paths.
 _LENGTH_TOL_M = 0.01 * M_PER_IN
