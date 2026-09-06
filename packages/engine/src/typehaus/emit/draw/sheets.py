@@ -46,8 +46,10 @@ from typehaus.emit.draw.schedules import (
     _write_opening_schedule,
     _write_panel_schedule,
     _write_room_finish_schedule,
+    _write_specifications,
     write_compare_sheet,
 )
+from typehaus.emit.draw.schedules.architectural import specification_sections
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.sheet_writer import (
     LEDGER,
@@ -163,6 +165,15 @@ def build_sheet_index(model: ResolvedModel,
     sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
                             north_arrow=True))
 
+    # S-002 / A-002 — the specification sheets. Type 0 is general information within a
+    # discipline, which is what a specification is: it governs the whole of that
+    # discipline's work rather than any one drawing. They come first in their series for
+    # the same reason a project manual comes before the drawings.
+    if specification_sections(model):
+        sheets.append(SheetSpec("S-002", "Structural specifications",
+                                page=partial(_write_specifications,
+                                             disciplines=("03", "05"))))
+
     if has_foundation_content(model):
         sheets.append(SheetSpec("S-100", "Foundation plan",
                                 scene=partial(build_foundation_plan, profile=profile),
@@ -207,6 +218,10 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("S-603", "Engineering register",
                                 page=partial(_write_engineering_register,
                                              house_dir=house_dir)))
+
+    if specification_sections(model):
+        sheets.append(SheetSpec("A-002", "Architectural specifications",
+                                page=_write_specifications))
 
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
