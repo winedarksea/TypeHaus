@@ -3,7 +3,12 @@
 With the lettering fixed by definition, a note column that does not fit has exactly two
 honest outcomes: shrink the type until nobody can read it, or print another page. The
 behaviour this replaces was a third — silently dropping the tail of a permit set's
-construction notes. Catlin's eave is a live two-page case at 108 bullets.
+construction notes.
+
+Catlin *was* the live two-page case: its eave carried 108 bullets of design rationale.
+Since the note files split into sheet notes and a design record it is not, and no catlin
+detail is — which is the objective, and is why the overflow case below is manufactured on
+a real card rather than found on one.
 """
 
 from __future__ import annotations
@@ -73,26 +78,40 @@ def test_no_notes_is_no_pages():
     assert note_pages((), _NARROW) == []
 
 
-def test_the_catlin_eave_is_a_two_page_detail(catlin_model):
+def test_a_card_that_outgrows_its_band_gets_a_second_page(catlin_model):
+    """The behaviour this module exists for, on a real card with synthetic notes.
+
+    It used to read the catlin eave, which carried 108 bullets of design rationale and
+    needed two pages to print them. That is no longer true and should not be: the eave's
+    notes are now 46 rows of the band's 48, because the rationale moved below `# Notes`
+    and stopped being drawing content (``emit/draw/sheet_notes.py``). A house whose
+    details each fit one page is the objective, not a reason to delete the pagination —
+    so the *card* stays real and the overflow is manufactured.
+    """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
     derived = next(d for d in derive_detail_slices(catlin_model)
                    if d.key == "wall_roof:CATLIN_EXT_2X6|CATLIN_ROOF")
     scene, _ = build_detail(catlin_model, derived)
     band = scene.frame.bands["notes"]
-    assert len(note_pages(scene.notes, band)) > 1, \
-        "this detail is the case the pagination exists for"
+    assert len(note_pages(scene.notes, band)) == 1, \
+        "a migrated detail's notes fit one page"
+    assert len(note_pages(tuple(scene.notes) + _lines(200), band)) > 1, \
+        "notes that outgrow the band paginate rather than truncate"
 
 
 def test_the_notes_are_logical_lines_not_pre_wrapped(catlin_model):
     """One string per bullet. Wrapping is the writer's, at the width it prints into.
 
-    The assertion is the *source's* hard wraps, not the writer's. A note file wraps at
+    The property is about the *source's* hard wraps, not length. A note file wraps at
     column 100 for its own readability, and until ``note_text.logical_bullets`` landed,
-    each of those physical lines became a separate ``Scene.notes`` entry — so a sentence
-    broke mid-clause on the sheet, at a column nothing on the sheet had. Rejoining makes
-    bullets *longer*, which is why the old ">100 chars" reading still holds while now
-    testing the opposite property: no bullet is a fragment of another.
+    each physical line became a separate ``Scene.notes`` entry — so a sentence broke
+    mid-clause on the sheet, at a column nothing on the sheet had.
+
+    This used to assert "some bullet is over 100 characters", which was a proxy for the
+    same thing and stopped being one: a migrated note file is authored in short imperative
+    notes, so every bullet is legitimately short now. The fragment test below is the
+    property that was always meant.
     """
     from typehaus.emit.draw.details import build_detail, derive_detail_slices
 
@@ -101,8 +120,6 @@ def test_the_notes_are_logical_lines_not_pre_wrapped(catlin_model):
     scene, _ = build_detail(catlin_model, derived)
     bullets = [line for line in scene.notes if line.startswith("• ")]
     assert bullets
-    assert max(len(line) for line in bullets) > 100, \
-        "notes arrived pre-wrapped; the writer can no longer choose its own column"
     assert not [line for line in scene.notes if line.startswith("  ")], \
         "continuation lines are a wrapped artefact and must not be in the IR"
     # A source hard wrap resumed mid-sentence, so the continuation opened lowercase or on

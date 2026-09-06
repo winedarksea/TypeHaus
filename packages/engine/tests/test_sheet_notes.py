@@ -164,6 +164,25 @@ def test_wrapped_line_count_is_ceiling_division() -> None:
     assert wrapped_line_count(["x" * 43, "x" * 44, "", "y"], columns=43) == 5
 
 
+def test_the_row_budget_matches_what_the_writer_actually_prints() -> None:
+    """MAX_SHEET_LINES is measured, not chosen — so measure it here too.
+
+    The number this work started from was 51, which counted the band's height against the
+    lettering size and forgot the header, the inter-block air and LINE_SPACING. It is a
+    third of a page out, which is exactly the gap between a detail that fits and one that
+    silently takes two.
+    """
+    from typehaus.emit.draw.detail_card import card_for_crop
+    from typehaus.emit.draw.pdf_writer import note_pages
+    from typehaus.emit.draw.sheet_notes import MAX_SHEET_LINES, NOTE_COLUMNS
+    from typehaus.emit.draw.typography import NOTES_PT, wrap_columns_for
+
+    band = card_for_crop(96.0, 120.0, (0.0, 0.0)).bands["notes"]
+    assert wrap_columns_for(band[2], NOTES_PT) == NOTE_COLUMNS
+    page = note_pages(tuple(f"row {i}" for i in range(400)), band)[0]
+    assert sum(len(column) for column in page) == MAX_SHEET_LINES
+
+
 def test_a_dropped_path_never_fuses_its_neighbours() -> None:
     """The basement detail's regression.
 

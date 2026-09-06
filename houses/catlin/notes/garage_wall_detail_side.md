@@ -15,25 +15,27 @@ source:
 ## Sheet notes
 
 ### General
-- ICF stem: 42" below grade to frost, 22" above. 8'-0" max per IRC Table R404.1.4.2.
+- ICF stem: 42" below grade to frost, 22" above. 8'-0" max, IRC R404.1.4.2.
 - Stem footing: 12"x6" over compacted stone per IRC R403.1 and R403.4.1.
-- Slab: 3-1/2" min, 3,500 psi min per IRC R506.1, sloped to the overhead door.
-- Wood wall: 2x6 studs at 24" o.c., 5/8" CDX sheathing, 2" of 2 lb closed-cell foam in each bay.
-- Cladding: 7/8" corrugated 26 ga PVDF steel, house white, screwed through the crowns into the studs on #9 x 1-1/2" 316 stainless gasketed screws.
-- Stem band: PVDF-painted aluminium sheet, 0.040" min, 2" below grade to the stem top, all four walls.
-- Interior finish: 5/8" drywall on the wood wall, 5/8" exterior-rated gypsum on the stem.
-- Roof: gable trusses at 24" o.c., OSB deck, underlayment, metal roofing on 16" o.c. supports.
+- Slab: 3-1/2" min, 3,500 psi min per IRC R506.1, sloped to the door.
+- Wood wall: 2x6 at 24" o.c., 5/8" CDX, 2" of 2 lb closed-cell foam per bay.
+- Cladding: 7/8" corrugated 26 ga PVDF steel, house white, screwed at the crowns.
+- Stem band: PVDF aluminium sheet, 0.040" min, 2" below grade to the stem top.
+- Interior: 5/8" drywall on the wall, 5/8" exterior gypsum on the stem.
+- Roof: gable trusses at 24" o.c., OSB deck, underlayment, standing-seam metal.
 
 ### Keyed
-- [K1] Stem band standoff: 1/4" vented, continuous, into the ICF webs. Hem each edge.
-- [K2] Closures: vented inside at the base, solid outside under the head and rake. ~192 LF each.
-- [K3] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the corrugated panel.
-- [K4] Isolate steel panel from aluminium band: sealant or EPDM between, no metal-to-metal lap.
-- [K5] Curb cap: up-turned flashing behind the drywall, sloped into the room, drip inboard.
-- [K6] Sill: PT plate on gasket over a capillary break, sealed. Anchors per IRC R403.1.6, 3"x3" washers.
-- [K7] Overhead door header: 2-ply 14" LVL on jamb packs sized from the 16'-0" opening.
-- [K8] Slab-to-driveway joint: 1" XPS with 1/2" traffic-rated polyurethane sealant.
-- [K9] Seal the top plate to sheathing and drywall, continuous.
+- [K1] Stem band on a 1/4" vented standoff into the ICF webs. Hem each edge.
+- [K2] Closures: vented inside at base, solid outside at head and rake. ~192 LF.
+- [K3] Z-flashing at the wall base: aluminium, drip edge, upper leg behind the panel.
+- [K4] Isolate steel panel from aluminium band: EPDM between, no metal contact.
+- [K5] Curb cap: up-turned flashing behind the drywall, sloped in, drip inboard.
+- [K6] Sill: PT plate on gasket and capillary break. Anchors per IRC R403.1.6.
+- [K7] Overhead door header: 2-ply 14" LVL on packs sized from the 16'-0" opening.
+- [K8] Slab-to-driveway joint: 1" XPS, 1/2" traffic-rated polyurethane sealant.
+
+### Spec 07 27 00
+- Seal the top plate to the sheathing and the drywall, continuous.
 
 ### Spec 03 11 00
 - Install ICF forms conforming to ASTM E2634, per the manufacturer's instructions.

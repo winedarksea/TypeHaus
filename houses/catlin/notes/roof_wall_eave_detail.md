@@ -14,6 +14,38 @@ source:
   - params/roof_trim.py
 ---
 
+## Sheet notes
+
+### General
+- Roof framing: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
+- Roof cavity: 5" closed-cell foam to the deck, R-30C batt below it.
+- Air and vapour barrier is the foam. Interior is paint on gypsum only.
+- Deck: 5/8" CDX, 40/20, oversailing the last rafter at the eave.
+- Membrane: self-adhered butyl, 240 F min, full field over the whole deck.
+- Roofing: 24 ga standing seam on concealed floating clips, field-seamed.
+- Wall: 2x6, 1/2" sheathing, 4" foam around a 2x4 truss at 16" o.c. No WRB.
+
+- Cladding face stands 5-1/2" proud of the sheathing; the foam is the water plane.
+
+### Keyed
+- [K1] Birdsmouth seat: beveled stiffeners per APA D710 10h, or beveled plate 10q.
+- [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
+- [K3] Eave bay blocking: rigid foam in the sheathing plane, sealed to web and plate.
+- [K4] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
+- [K5] Drip flange on the deck, 1-1/2" back, underside 0.70" up. Turn down at the trough mid-width.
+- [K6] Lap the membrane over the drip. Nothing else reaches that plane.
+- [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the trim.
+- [K8] Corner trim, not fascia and soffit.
+
+### Spec 07 21 00
+- Hold point: verify the plywood under 16% MC, bay by bay, before spraying foam.
+- Batt arrives oversized: friction-fit the flange pockets and pack each bay solid.
+- Hold point: inspect every bay for voids before the batts go in.
+
+### Spec 07 61 00
+- Measure every eave offset off the corner trim face.
+- Build order: block the bays, deck, drip edge, membrane, standing seam, gutter. Insulate from inside afterward.
+
 # Notes
 
 **FLASH-AND-BATT.** What follows

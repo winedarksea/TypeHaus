@@ -40,18 +40,31 @@ discipline. The caller reads the file.
 from __future__ import annotations
 
 import re
+import textwrap
 from dataclasses import dataclass
 
 from typehaus.emit.draw.note_text import banned_terms, clean, logical_bullets
 
-#: The notes band a detail card actually prints into is 51 rows of 43 columns
-#: (``detail_card.bands`` at ``NOTES_W_IN = 3.4`` through ``typography.wrap_columns_for``).
-#: Every budget below is derived from that measurement, not chosen.
+#: The notes band a detail card actually prints into, **measured**: ask
+#: ``pdf_writer.note_pages`` how many rows it puts on one page of the band
+#: ``detail_card.bands`` gives at ``NOTES_W_IN = 3.4``. It is 36 rows of 43 columns.
+#:
+#: 51 rows was the number this work started from and it is wrong — it counted the band's
+#: height against the lettering size without the header, the inter-block air or the
+#: ``LINE_SPACING`` the writer actually advances by. The difference is a third of the page,
+#: which is the difference between a detail that fits and one that silently takes two.
+#:
+#: The permit *sheet* has more room (``sheet_writer._draw_notes_panel``: ~47 rows on
+#: ledger, ~180 on ARCH D) so the card is the binding constraint, and the card is what
+#: ``haus render --view details`` prints. Budget against the tighter of the two.
 NOTE_COLUMNS = 43
-MAX_SHEET_LINES = 48        #: wrapped rows, leaving the header and air
-MAX_BULLET_CHARS = 200      #: ~4.6 wrapped rows; CSI's <=25 words lands well inside it
-MAX_GENERAL = 10
-MAX_KEYED = 16
+MAX_SHEET_LINES = 36        #: one card page, measured
+#: Three rows of chrome (header, blank, "KEYED NOTES:") leave 33 for notes. Sixteen notes
+#: of two rows each is 32 — so two rows, ~86 characters, is one note's real budget, and
+#: CSI's "<=25 words" is the same number from the other direction.
+MAX_BULLET_CHARS = 150
+MAX_GENERAL = 8
+MAX_KEYED = 10
 
 _SECTION = re.compile(r"^\s*##\s+Sheet\s+notes\s*$", re.IGNORECASE)
 _SUBHEAD = re.compile(r"^\s*###\s+(.+?)\s*$")
@@ -256,11 +269,18 @@ def legacy_notes(text: str) -> list[str]:
 
 
 def wrapped_line_count(lines: list[str], columns: int = NOTE_COLUMNS) -> int:
-    """Rows these logical lines occupy once wrapped into a ``columns``-wide band."""
+    """Rows these logical lines occupy once wrapped into a ``columns``-wide band.
+
+    Word-wrapped, with the bullet's hanging indent — the same ``textwrap.wrap`` call
+    ``sheet_writer._scene_note_lines`` and ``pdf_writer.note_pages`` make. Ceiling division
+    on the character count was tried and reads two rows short on a 16-note detail: it
+    assumes a break mid-word, and every real break gives up part of a row to a space.
+    """
     total = 0
     for line in lines:
         if not line:
             total += 1
             continue
-        total += max(1, -(-len(line) // columns))
+        indent = "  " if line.startswith("• ") else ""
+        total += len(textwrap.wrap(line, width=columns, subsequent_indent=indent) or [line])
     return total
