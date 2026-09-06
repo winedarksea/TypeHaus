@@ -199,7 +199,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
         "carpet", "lvp", "oak", "tile", "sealed-concrete", "polished-concrete", "rubber",
-        "vinyl-sheet", "walnut-floor", None}
+        "vinyl-sheet", None}
 
 
 def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
@@ -254,12 +254,15 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     assert float(lvp["net_area_sqft"]) == pytest.approx(lvp_area, abs=0.05)
     carpet = next(row for row in bom["floor_finishes"] if row["finish"] == "carpet")
     # 2026-09-05: NO closet is on carpet any more, and no second-storey bedroom but the three
-    # on the east. RM-S-SUITE and RM-S-CLOSET went to `walnut-floor` as one field; RM-S-NCLOSET
-    # opens onto the hall and took the hall's plank, so it is in the lvp row above.
+    # on the east. RM-S-SUITE and RM-S-CLOSET left as one field — briefly for a site-milled
+    # walnut floor, and by the end of the day for the oak asserted below; RM-S-NCLOSET opens
+    # onto the hall and took the hall's plank, so it is in the lvp row above.
     assert set(carpet["rooms"]) == {"RM-B-PLAY-N", "RM-M-BED", "RM-M-CLOSET",
                                     "RM-S-BED1", "RM-S-BED2", "RM-S-BED3"}
-    walnut = next(row for row in bom["floor_finishes"] if row["finish"] == "walnut-floor")
-    assert set(walnut["rooms"]) == {"RM-S-SUITE", "RM-S-CLOSET"}
+    # The oak is now two storeys plus the attic study: the suite pair joined RM-S-STUDY2 and
+    # RM-A-STUDY, which is what puts the second storey on one sand-and-finish set-up.
+    oak = next(row for row in bom["floor_finishes"] if row["finish"] == "oak")
+    assert set(oak["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2", "RM-S-SUITE", "RM-S-CLOSET"}
 
 
 def test_a_finish_is_ordered_with_its_waste_not_at_bare_polygon_area(bom):

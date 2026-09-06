@@ -90,7 +90,8 @@ WEST_FLOOR = FloorSystem(
     outline=_rect(_ZERO, _ZERO, _CENTRE_X, _HOUSE),
     openings=("FO-S-STAIR",),
     source="catlin second floor, west half — 11 7/8\" open-web floor trusses at 16\" o.c. "
-           "spanning 18'-0\" from W-M-W2 to the x=18' bearing line, chosen for the "
+           "spanning 18'-0\" from W-M-W2 to the x=18' bearing line south of FO-S-STAIR, "
+           "and 10'-3 3/8\" to that opening's west header north of it, chosen for the "
            "plumbing/HVAC crossings this half carries",
 )
 

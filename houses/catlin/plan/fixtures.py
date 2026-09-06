@@ -12,7 +12,7 @@ from typehaus.model import m
 # (see plan/mep.py SLAB_STUBS).
 #
 # **The sauna rotated onto the garden wall on 2026-09-05** — long axis east-west, clear box
-# x 5'-3 13/16"..17'-5 3/4", y 0'-11 1/2"/0'-9 1/2"..9'-1 3/16" between liner faces (the 2"
+# x 5'-3 13/16"..17'-5 3/4", y 0'-11 1/2"/0'-9 1/2"..9'-8 3/16" between liner faces (the 2"
 # jog in the south face is where the buried pour hands over to the framed walkout at
 # x=8'-10"). The two fixtures moved with the room and kept their corner: the 36"x36" curbed
 # pan is still in the NE corner, still the only corner with both sides finished wall, and
@@ -26,7 +26,10 @@ from typehaus.model import m
 # stack path via W-M-C1 above. advisory.wet_wall_depth's 5.5" cavity requirement is a
 # house preference, not code — it is not what drives this wall choice.
 BASEMENT_FIXTURES = (
-    # Pan x 14'-5 3/4"..17'-5 3/4", y 6'-1 3/16"..9'-1 3/16" — snug into the liner faces.
+    # Pan x 14'-5 3/4"..17'-5 3/4", y 6'-8 3/16"..9'-8 3/16" — snug into the liner faces.
+    # It moved 7" north with W-B-SA-N on 2026-09-05 (round three) to stay in the corner, and
+    # the floor drain, both sleeves, PR-B-SAUNA-DRAIN's first three vertices, the two
+    # condensate air gaps over the grate and PR-B-SAUNA-VENT's riser all moved with it.
     Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36",
             room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
             wall_ref="W-B-CS"),

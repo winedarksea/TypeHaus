@@ -23,7 +23,7 @@ DETAIL_SLICES = [
          crop=(pt(ft(15), ft(-2)), pt(ft(21), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
     # Typical exterior wall section — south wall, full height (cut x=9', away from the
-    # sunken garden's x-extent). Since the sauna rotated it passes W-B-SA-N (y=9'-5")
+    # sunken garden's x-extent). Since the sauna rotated it passes W-B-SA-N (y=10'-0")
     # rather than W-B-SA-W; the section goldens moved with it.
     # The crop's south edge was -6" until 2026-09-05 and now reaches -2'-0". W-B-BRICK moved
     # 4 1/2" south that day (its cavity grew to 6" to meet the grade beam W-SG-BRKBM), which

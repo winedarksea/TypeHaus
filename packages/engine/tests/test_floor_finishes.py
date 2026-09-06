@@ -23,7 +23,7 @@ from typehaus.emit.draw.palette import material_color
 # (SL-M-DECK's polished cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "polished-concrete", "walnut-floor"}
+                    "vinyl-sheet", "polished-concrete"}
 
 
 def _library(catlin_model):
@@ -109,12 +109,14 @@ def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model)
     assert finishes["RM-S-BATH1"] == "tile"
     assert "RM-S-LANDING" not in finishes
     assert "RM-S-STAIR" not in finishes
-    # The suite and its walk-in are one continuous walnut field (2026-09-05, was carpet): the
-    # closet opens off the bedroom, so the floor continues in rather than changing species for
+    # The suite and its walk-in are one continuous oak field (2026-09-05, was carpet, then
+    # site-milled walnut for a few hours — walnut photo-lightens under the suite's west
+    # windows and is soft for a floor; it went to WP-S-SUITE-HEADBOARD instead). The closet
+    # opens off the bedroom, so the floor continues in rather than changing species for
     # 27 SF. RM-S-NCLOSET is not a walk-in off a bedroom: it opens onto the hall, so it takes
     # the hall's plank.
-    assert finishes["RM-S-SUITE"] == "walnut-floor"
-    assert finishes["RM-S-CLOSET"] == "walnut-floor"
+    assert finishes["RM-S-SUITE"] == "oak"
+    assert finishes["RM-S-CLOSET"] == "oak"
     assert finishes["RM-S-NCLOSET"] == "lvp"
     # Everything else on the storey is untouched. RM-S-PLANT left tile for heat-welded
     # sheet vinyl — the plant room's floor and walls are one coved tray (notes/plant_room.md),
@@ -343,12 +345,15 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(723.3, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
-    # The oak is the two studies and nothing else. It reached 555.9 across three rooms for
-    # part of 2026-09-05, when the living room's south bay was oak — enough to clear the
-    # sand-and-finish mobilisation minimum that houses/catlin/prices.toml warns this row is
-    # under. Reverting the bay puts that warning back, and that was priced before the call.
-    assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2"}
-    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(324.2, abs=0.5)
+    # The oak is the two studies plus the suite pair. It reached 555.9 across three rooms
+    # for part of 2026-09-05, when the living room's south bay was oak — enough to clear the
+    # sand-and-finish mobilisation minimum that houses/catlin/prices.toml warned this row was
+    # under; reverting the bay to LVP put that warning back at 324.2. RM-S-SUITE and
+    # RM-S-CLOSET arriving later the same day (+181.7, off the reverted walnut floor) clears
+    # it again on the merits, and the second storey alone now carries ~341 sf of it.
+    assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
+                                         "RM-S-SUITE", "RM-S-CLOSET"}
+    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(506.0, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the three rooms
     # that are genuinely wet or genuinely cheap-and-washable, on three different storeys:
     # RM-S-PLANT (the spec that started it), RM-A-STUBATH and RM-B-BATH.

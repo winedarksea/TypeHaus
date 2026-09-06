@@ -283,7 +283,7 @@ VENT_BRANCHES_BASEMENT = [
             elevations=(ft(1, 3.4375), ft(7, 5.4375), ft(7, 7.4375), ft(7, 9.9375),
                         ft(7, 10.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 7'-7 3/16") — inside
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
     # centre line and clear of the mixer's two supply drops. That is both fixtures' declared
     # wet wall (plan/fixtures.py) and the one basement wet wall that carries a framed wall on

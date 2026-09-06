@@ -2309,7 +2309,7 @@ SAUNA_2X4 = Assembly(
 
 # W-B-CS, the sauna's east face on the x=18' bearing line — **framed**, where it was 12"
 # of cast concrete (``SAUNA_LINER_ON_CONCRETE``, retired with it). Since the sauna rotated
-# onto the garden wall (2026-09-05) this wall is the room's east face for y 0'-0"..9'-5"
+# onto the garden wall (2026-09-05) this wall is the room's east face for y 0'-0"..10'-0"
 # only; CATLIN_INT_2X6_BRG carries the same line north of it as W-B-CS3.
 #
 # basement.py's WALLS header had already written the argument down: this segment "carries
@@ -2899,27 +2899,16 @@ MATERIALS = [
              finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
              nominal_quarters=4, milling_profile="T&G",
              source="plans/TODO.md — first-floor study walnut paneling to 36\""),
-    # RM-S-SUITE and its walk-in, 2026-09-05. ** THE SAME WALNUT AS THE WAINSCOT ABOVE, AND
-    # DELIBERATELY NOT THE SAME TAG. ** Species, stock and profile are identical — one 4/4 T&G
-    # run off the family's own milled stock, the mill sets up once — but a tag is what the
-    # price join keys on, and `walnut-tg` is priced in prices.toml [wood_surfaces] because the
-    # wainscot is billed nowhere else. Give the floor that same tag and `takeoff/wood_surfaces.py`
-    # emits a second row (kind "floor") under it, the [wood_surfaces] rate lands on that row
-    # too, and 182 SF of floor bills once there and again in [floor_finishes]. A separate tag
-    # is the whole fix, and it follows the library's own `oak`, which is a flooring tag and not
-    # a paneling one for exactly this reason.
-    #
-    # `finish="strip-floor"` is a RENDER recipe, not the coating (the coating is the wainscot's
-    # hardwax oil, and prices.toml carries it): it is the one key `plankStyleFor` knows for a
-    # floor, so the boards draw with staggered butt end joints instead of the wainscot's
-    # continuous V-grooved run. `walnut-floor` is also named in `STRIP_FLOOR_REFS`
-    # (ui/src/three/plankMaterial.ts) — without that needle `isWoodPlank` never asks for a
-    # recipe at all and the suite renders as flat fill.
-    Material(tag="walnut-floor", name="Black walnut T&G strip flooring (4/4)", r_per_inch=1.1,
-             density=610.0, hatch="lumber", color="#5d4433",
-             finish="strip-floor", species="walnut", stock_bf_per_sqft=1.0,
-             nominal_quarters=4, milling_profile="T&G",
-             source="owner's family milled walnut stock, dried and run T&G — the same board as the RM-M-STUDY wainscot; 4/4, so board feet = square feet"),
+    # ** TOMBSTONE: `walnut-floor` (added and removed 2026-09-05). ** For a few hours the
+    # suite and its walk-in were a 181.7 SF field of site-milled walnut strip flooring under
+    # its own tag (a separate tag from `walnut-tg` so 182 SF would not bill in both
+    # [floor_finishes] and [wood_surfaces]). It lost on three counts, all in
+    # plan/storeys/second.py at RM-S-SUITE: walnut photo-LIGHTENS under the west windows'
+    # UV, it is soft underfoot (~1010 Janka vs oak's ~1360), and flooring is the most
+    # demanding cut off a family log pile for the least-seen surface. The floor is `oak`;
+    # the walnut is WP-S-SUITE-HEADBOARD, a 6'-0" band on W-S-SN1/SN2 under `walnut-tg`.
+    # If it ever comes back it needs its own tag again, `finish="strip-floor"`, and a
+    # `STRIP_FLOOR_REFS` needle in ui/src/three/plankMaterial.ts.
     # The call booth's bench seat and desk top, the same walnut as the wainscot
     # they sit against. ** `nominal_quarters=8` IS REQUIRED, not decoration: ** both pieces
     # finish 1-1/2", 4/4 dresses to 3/4", and `takeoff/hardwood.py` flags a finished piece

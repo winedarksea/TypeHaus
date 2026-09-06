@@ -213,19 +213,21 @@ DRAINS = [
             elevations=(ft(1, 6), inch(-8)),
             serves=("FX-B-BATH-LAV",)),
     # The sauna group: the curbed pan's drop at the NE corner, west along the pan's own
-    # centre line to the floor drain at (13'-6", 7'-7 3/16"), then south to y=4'-0" and west
+    # centre line to the floor drain at (13'-6", 8'-2 3/16"), then south to y=4'-0" and west
     # under the sauna and the workshop to the main. One 2" branch carries both (4 DFU vs.
     # the 6 a 2" branch takes) and crosses no footing — W-B-SA-W is a framed partition, and
     # the run stops at x=3'-0", 2'-2" clear of FT-B-W2's edge and outside its 45° influence
-    # line. It ties into the main's under-slab leg at -13 9/16", between that pipe's
-    # -16 15/16" invert and its -12 15/16" crown.
+    # line. It ties into the main's under-slab leg at -13 3/4" — it was -13 9/16" until
+    # W-B-SA-N went north on 2026-09-05 and lengthened the drain leg 7"; the tie-in follows
+    # the grade, not the other way round — between that pipe's -16 15/16" invert and its
+    # -12 15/16" crown.
     PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(191.75), inch(98.1875)), pt(inch(191.75), inch(98.1875)),
                   pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), ft(4)),
                   pt(ft(3), ft(4))),
             diameter=inch(2), material="pvc",
             # As PR-B-BATH-DRAIN: the grade is authored and the intermediate inverts follow.
-            elevations=(ft(0, 2), inch(-8.58), None, None, inch(-13.55)),
+            elevations=(ft(0, 2), inch(-8.58), None, None, inch(-13.728)),
             slope_in_per_ft=0.3,
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
     # The floor drain's own drop through the slab: a floor drain has no trap arm above the
@@ -368,16 +370,19 @@ LAUNDRY_MAIN = [
 # it are 66.45" and 63.275". Monotonic from 72" to 9", 0.3"/ft on every horizontal segment.
 #
 # ** THE DROP FOLLOWS THE DRAIN, AND ITS OFFSET IS IN x, NOT y. ** FX-B-SAUNA-FD sits at
-# y=12'-0 3/16" (FX-B-SAUNA-SH's centre line), so this line stops the east leg 6" short at
-# x=13'-0" and jogs 1'-2 13/16" south to the drain's own horizontal. The 6" separation from
-# PR-B-COND's drop is west of it rather than north, and both air gaps are over the grate.
+# y=8'-2 3/16" (FX-B-SAUNA-SH's centre line) since W-B-SA-N went north on 2026-09-05, so
+# this line stops the east leg 6" short at x=13'-0" and runs 5'-0 13/16" south from y=13'-3"
+# to the drain's own horizontal. The 6" separation from PR-B-COND's drop is west of it
+# rather than north, and both air gaps are over the grate.
 #
-# The 6" is taken in x deliberately: a drop at (13'-6", 12'-6 3/16") would land its last
+# The 6" is taken in x deliberately: a drop at (13'-6", 8'-2 3/16") would land its last
 # vertex ON PR-B-SAUNA-DRAIN's new north jog in plan and above its invert, which is exactly
 # what `resolve/mep_queries.drain_tie_ins` reads as a connection. An air gap that resolves
 # as a tie-in is no longer an air gap (test_plumbing_pass::test_drain_loads_roll_up...).
 # The long leg at x=2'-11" stays in the lane vetted above and crosses nothing new; 0.3"/ft
-# throughout puts the two intermediate inverts at 63.42" and 63.05".
+# throughout puts the two intermediate inverts at 63.42" and 63.05". The last horizontal
+# leg is 5'-0 13/16" and its authored end came up 43.73" -> 43.905" with the drain's move,
+# so the 0.3"/ft this paragraph claims is still true of every leg.
 ERV_CONDENSATE = [
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
@@ -389,7 +394,7 @@ ERV_CONDENSATE = [
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
             # is 0.3"/ft the whole way, and the tie-in at FX-B-SAUNA-FD is 9".
             elevations=(inch(54), inch(53.7), inch(48.45), inch(45.425),
-                        inch(43.73), inch(9))),
+                        inch(43.905), inch(9))),
 ]
 
 CONDENSATE = [
@@ -401,7 +406,7 @@ CONDENSATE = [
             # intermediate inverts solve to exactly the numbers that were hand-written here.
             # path[3] is the top of the boxed chase's drop and stays authored — a vertical
             # leg has no plan run to fall over.
-            elevations=(ft(7, 5.3375), None, None, inch(84.867), ft(0, 9)),
+            elevations=(ft(7, 5.3375), None, None, inch(85.042), ft(0, 9)),
             slope_in_per_ft=0.3),
 ]
 

@@ -154,22 +154,49 @@ def test_envelope_layers_stays_gross_of_the_splash(catlin_model, bom):
 
 def test_the_study_wainscot_reconciles_with_the_rooms_bounding_walls(catlin_model, bom):
     """Walnut = the shared runs of RM-M-STUDY's bounding walls x 36", minus D-M-STUDY's
-    punch through the band; 4/4 stock makes board feet equal the ordered square feet."""
+    punch through the band; 4/4 stock makes board feet equal the ordered square feet.
+
+    2026-09-05: `walnut-tg` is no longer only the study. WP-S-SUITE-HEADBOARD carries the
+    same board on the same tag (one mill order, one row), so the row-vs-resolved
+    reconciliation stays HOUSE-WIDE while the perimeter sanity bound is scoped to the
+    study's own records — one `ResolvedPaneling` per wall, each naming its `room`."""
     walnut = next(row for row in bom["wood_surfaces"] if row["material"] == "walnut-tg")
     assert walnut["kind"] == "paneling"
     assert walnut["species"] == "walnut"
-    resolved = sum(p.area_m2 for p in catlin_model.panelings
-                   if p.material_ref == "walnut-tg") * _M2_TO_FT2
+    records = [p for p in catlin_model.panelings if p.material_ref == "walnut-tg"]
+    resolved = sum(p.area_m2 for p in records) * _M2_TO_FT2
     assert float(walnut["net_area_sqft"]) == pytest.approx(resolved, abs=0.05)
+    study = sum(p.area_m2 for p in records if p.room == "RM-M-STUDY") * _M2_TO_FT2
     # Sanity-bound against the room's own clear face: perimeter x 3' is the ceiling
     # (nothing subtracted), and the door punch (2'-6" x 3') is the only deduction.
     room = next(r for r in catlin_model.rooms if r.tag == "RM-M-STUDY")
     ring = list(room.clear_face)
     perimeter = sum(length(sub(ring[i], ring[i - 1])) for i in range(len(ring)))
     ceiling = perimeter * _M_TO_FT * 3.0
-    assert ceiling - 7.5 - 3.0 < float(walnut["net_area_sqft"]) < ceiling - 7.5 + 3.0
+    assert ceiling - 7.5 - 3.0 < study < ceiling - 7.5 + 3.0
     assert float(walnut["board_feet"]) == pytest.approx(
         float(walnut["order_area_sqft"]), abs=0.05)
+
+
+def test_the_suite_headboard_band_is_the_sound_walls_full_run_to_six_feet(catlin_model):
+    """WP-S-SUITE-HEADBOARD: the walnut that used to be the suite FLOOR, stood up behind
+    the bed. Two walls only (`walls=` is not optional — `room=` alone would panel all eight
+    bounding walls of the L, including the window wall and its four flush elm tudor posts),
+    a band 0 to 6'-0", and no opening deductions: neither W-S-SN1 nor W-S-SN2 is punched
+    inside the band. Pinned separately from the study's so the two cannot cover for each
+    other in the shared `walnut-tg` row."""
+    band = [p for p in catlin_model.panelings if p.room == "RM-S-SUITE"]
+    assert {p.wall_tag for p in band} == {"W-S-SN1", "W-S-SN2"}
+    assert all(p.material_ref == "walnut-tg" for p in band)
+    assert all(not p.replaces_wall_finish for p in band)
+    for p in band:
+        assert p.band_z0_m == pytest.approx(0.0, abs=1e-6)
+        assert p.band_z1_m * _M_TO_FT == pytest.approx(6.0, abs=1e-6)
+    area = sum(p.area_m2 for p in band) * _M2_TO_FT2
+    assert area == pytest.approx(57.8, abs=0.5)
+    # No punches, so the band is exactly its run x 6'.
+    run = sum(p.run_m for p in band) * _M_TO_FT
+    assert area == pytest.approx(run * 6.0, abs=0.05)
 
 
 # --- the elm tudor posts -------------------------------------------------------------------
@@ -202,7 +229,7 @@ def test_a_custom_actual_profile_parses_as_stated_dimensions() -> None:
 # --- the species floors --------------------------------------------------------------------
 
 def test_the_oak_floor_mirrors_floor_finishes_room_for_room(catlin_model, bom):
-    """Solid oak retreated to the studies on 2026-08-02 — RM-A-STUDY plus RM-S-STUDY2 — and
+    """Solid oak is the two studies plus RM-S-SUITE and its walk-in (2026-09-05) — and
     the mirror row must equal the floor_finishes oak row to the digit, whichever way the
     area got there.
 
@@ -217,10 +244,11 @@ def test_the_oak_floor_mirrors_floor_finishes_room_for_room(catlin_model, bom):
     and the next species zone anyone authors will need it."""
     oak = next(row for row in bom["wood_surfaces"] if row["material"] == "oak")
     assert oak["kind"] == "floor"
-    assert oak["tags"] == ["RM-A-STUDY", "RM-S-STUDY2"]
+    assert oak["tags"] == ["RM-A-STUDY", "RM-S-CLOSET", "RM-S-STUDY2", "RM-S-SUITE"]
     assert oak["also_in_floor_finishes"] is True
     primary = next(row for row in bom["floor_finishes"] if row["finish"] == "oak")
-    assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2"}
+    assert set(primary["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
+                                     "RM-S-SUITE", "RM-S-CLOSET"}
     assert float(oak["net_area_sqft"]) == pytest.approx(
         float(primary["net_area_sqft"]), abs=0.05)
 

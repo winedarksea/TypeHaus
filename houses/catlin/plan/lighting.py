@@ -113,7 +113,8 @@ BASEMENT_LIGHTING = [
     # RM-B-SAUNA had NO LIGHT AND NO SWITCH until 2026-09-05 — the room was drawn, rotated
     # and shrunk without one, and nothing in this engine grades a missing lighting outlet
     # (there is no NEC 210.70 check), so it stayed invisible. One fixture, in the south-west
-    # corner on the south liner at 5'-0" AFF: diagonally opposite EQ-B-SAUNA-HTR in the
+    # corner on the south liner at 5'-0" AFF: the far end of that liner from EQ-B-SAUNA-HTR
+    # (which is on the east one now) and in the
     # room's coolest corner, west of WIN-B-SAUNA's west jamb (x=12'-1"), and 3'-6" above
     # FURN-B-SAUNA-BENCH-S's 18" top so nothing shades it.
     ElectricalDevice(uid="AEYMMW1KDG", tag="ED-B-SAUNA-LT", kind=DeviceKind.LIGHT,

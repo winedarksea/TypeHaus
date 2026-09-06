@@ -324,7 +324,7 @@ SUPPLY = [
     # W-B-SA-N's framed stud bay (no cast sleeve needed) to the valve inside W-B-CS's liner.
     # The rotation moved the pan to the room's NORTH-EAST corner, so the drops land at
     # y 6'-6"/6'-2" — inside the pan and 1'-1" clear of PR-B-SAUNA-VENT's riser at
-    # 7'-7 3/16", which shares this build-up.
+    # 8'-2 3/16", which shares this build-up.
     # No supply to FX-B-SAUNA-FD: a floor drain has none.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 6)),

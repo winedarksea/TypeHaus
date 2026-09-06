@@ -130,13 +130,13 @@ def test_band_thickness_comes_from_the_material_stock(bands):
                 "tile states no board stock, so the band takes the default"
 
 
-def test_the_catlin_bands_are_the_four_authored_ones(bands):
+def test_the_catlin_bands_are_the_five_authored_ones(bands):
     """A guard on scope: the reference house authors exactly these, at these heights."""
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
     assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
-                           "WP-M-BATH2-SURR"}
+                           "WP-M-BATH2-SURR", "WP-S-SUITE-HEADBOARD"}
     # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
     assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
     for band in by_tag["WP-B-SAUNA-SPLASH"]:
@@ -174,6 +174,20 @@ def test_the_catlin_bands_are_the_four_authored_ones(bands):
         # A cast panel states no board stock, so it takes the 1/2" default — which is,
         # again, the panel's own thickness.
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
+    # RM-S-SUITE's headboard band (2026-09-05): the walnut that was briefly the suite FLOOR,
+    # stood up behind the bed on the two staggered-stud sound walls between the suite and the
+    # vanity. Two walls and not the room's other six — `walls=` is what keeps the band off
+    # W-S-W3, whose four flush elm tudor posts the model cannot scribe around — and the band
+    # is 0 to 6'-0", `height` again being a band height and not a top elevation.
+    assert len(by_tag["WP-S-SUITE-HEADBOARD"]) == 2
+    assert {b.wall_tag for b in by_tag["WP-S-SUITE-HEADBOARD"]} == {"W-S-SN1", "W-S-SN2"}
+    # ``z0_m``/``z1_m`` here are ABSOLUTE, so the second storey's 10'-0" datum is in them.
+    for band in by_tag["WP-S-SUITE-HEADBOARD"]:
+        assert band.z1_m - band.z0_m == pytest.approx(72 * _IN, abs=1e-6)
+        assert band.z0_m == pytest.approx(120 * _IN, abs=1e-3)
+        assert not band.replaces_wall_finish
+        # 4/4 walnut T&G dresses to 3/4", which the material's own stock states.
+        assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
 
 
 def test_the_bands_still_bill_what_they_billed(bands):

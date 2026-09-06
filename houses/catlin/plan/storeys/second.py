@@ -47,6 +47,7 @@ from typehaus import (
     StructuralRole,
     Wall,
     WallLiningException,
+    WallPaneling,
     Window,
     face,
     from_node,
@@ -827,17 +828,27 @@ ROOMS = [
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
     # The suite is the source's L: the full west strip plus the arm that reaches the centre
     # line between the walk-in and the suite bath.
-    # ** 2026-09-05: CARPET -> WALNUT. ** The suite and its walk-in are one continuous 181.7 SF
-    # field of `walnut-floor` — the same 4/4 T&G board as RM-M-STUDY's wainscot, off the
-    # family's own milled stock (plan/assemblies.py says why it is a separate material tag, and
-    # prices.toml [floor_finishes] says what milling that stock costs, which is not $0).
-    # The walk-in went with it rather than staying carpet or going oak: it opens off the
-    # bedroom through a 27 SF doorway, and a species change there buys a reducer strip and a
-    # second sand-and-finish set-up for 27 SF.
+    # ** 2026-09-05: CARPET -> WALNUT -> OAK, AND THE WALNUT WENT UP THE WALL. ** The suite
+    # and its walk-in were briefly one 181.7 SF field of site-milled `walnut-floor`. Three
+    # things killed it, all specific to THIS room:
+    #   * Walnut photo-LIGHTENS — it fades toward honey-grey under UV — and WIN-S-SUITE1/2
+    #     are on W-S-W3, the WEST exterior wall, the harshest afternoon load in the house.
+    #     Rugs and furniture would print permanent ghost marks into the floor.
+    #   * It is soft for a floor: ~1010 Janka against white oak's ~1360.
+    #   * It is the worst use of the family stock. 200 SF of flooring wants long, wide, clear
+    #     boards — the most demanding cut off a log pile — for the one surface that lives
+    #     under a bed and a rug.
+    # None of that applies to a vertical surface at eye level, so the walnut moved to
+    # WP-S-SUITE-HEADBOARD (see PANELING below) and the floor is `oak`, matching RM-S-STUDY2
+    # and RM-A-STUDY. That also puts the second storey's oak on one sand-and-finish set-up
+    # (~340 SF here) instead of a trip for a single room; prices.toml [floor_finishes] `oak`
+    # carries the mobilisation arithmetic. The walk-in follows the suite for the same reason
+    # it followed the walnut: a species change in a 27 SF doorway buys a reducer strip and a
+    # second set-up for nothing.
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
-         occupancy=Occupancy.BEDROOM, floor_finish="walnut-floor"),
+         occupancy=Occupancy.BEDROOM, floor_finish="oak"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
-         occupancy=Occupancy.STORAGE, floor_finish="walnut-floor"),
+         occupancy=Occupancy.STORAGE, floor_finish="oak"),
     # LVP through the unheated wet rooms and the circulation: one continuous plank floor
     # from the stair head through both hallways and into the two baths with no radiant in
     # them, so the traffic route has no thresholds in it and those baths get a waterproof
@@ -858,14 +869,18 @@ ROOMS = [
     # The cost of the change is one threshold at D-S-BATH1, tile ~5/16" proud of the hall
     # plank — the same dirt-step detail D-M-MUD already builds downstairs.
     #
-    # ** THE DECK UNDER IT IS NOT THE MUDROOM'S, AND THAT IS THE ONE THING TO VERIFY. **
-    # The mudroom's tile sits on FS-M-MECH, a 9.9' span. This room sits on FS-S-WEST, an
-    # 11-7/8" open-web truss at 16" o.c. spanning 17.9' — 97% of the 18.5' table limit
-    # (structural.ijoist_span). That table is an L/360 live-load basis, which is TCNA's
-    # bare minimum for ceramic and no margin at all; the uncoupling membrane is crack
-    # ISOLATION and does not stiffen a substrate. Ask the truss supplier for the design
-    # deflection on this bay (floor trusses are commonly run at L/480, and L/600 is the
-    # usual tile spec) before the tile is ordered. Nothing in the engine grades this.
+    # ** THE DECK UNDER IT IS THE SHORT END OF FS-S-WEST, NOT THE 18' BAY. ** FO-S-STAIR
+    # takes x 10'-3 3/8"..17'-8 5/8" out of this deck from y=26'-0 3/8" north, so the eight
+    # trusses over this room land on that opening's west header instead of running through
+    # to the x=18' line: 10'-1 5/8" tip to tip, ~9'-9" clear, against the 17'-11" the twenty
+    # trusses south of the well really do span. `structural.ijoist_span` grades a deck by its
+    # WORST joist and so prints 17.9' for FS-S-WEST — that number is the south half and says
+    # nothing about this room. `resolve/floor_ends.py` already cuts these eight correctly;
+    # the BOM and the fabrication schedule have the short length.
+    #
+    # Which is why the tile is comfortable here and it is worth writing down: ~9'-9" is
+    # roughly the mudroom's own 9.9' span, and at half the table limit the L/360 basis
+    # is no longer the binding number it would have been out in the 18' field.
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     # RM-S-HALL is the source's single 181.02 sf "Hallway" again: taking the centre line
@@ -1238,6 +1253,35 @@ STAIRS = [
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
+PANELING = [
+    # The suite's headboard band: the family's milled walnut, on the one surface in this
+    # room that earns it. `walnut-tg` is DELIBERATELY the study wainscot's own tag — same
+    # 4/4 T&G board, one mill order, one [wood_surfaces] row. (Unlike the floor it replaces,
+    # there is no double-billing trap: both bands are wall area on the same table.)
+    #
+    # ** `walls=` IS NOT OPTIONAL. ** `room=` alone panels every bounding wall of the L —
+    # all eight, ~50 lineal feet — including the window wall with its four flush elm tudor
+    # posts (P-S-TUDOR1..4, `within_wall="W-S-W3"`), which the model cannot scribe around.
+    #
+    # ** `height` IS A BAND HEIGHT ADDED TO `offset`, NOT A TOP ELEVATION ** — see
+    # resolve/paneling.py, which computes `offset + height` and clamps to the wall top.
+    # `offset` defaults to 0, so ft(6) is a band 0 -> 6'-0". WP-M-STUDY-FELT in main.py
+    # shouts the same thing for the same reason.
+    #
+    # `replaces_wall_finish` stays False: W-S-SN1/SN2 are INT_2X4_STAGGERED_GWB, which
+    # carries its gypsum in `layers` and not in `default_lining`, so there is nothing to
+    # replace — the reasoning main.py already records for WP-M-STUDY-FELT on this assembly.
+    # Those two are also the staggered-stud SOUND wall between the suite and the vanity, so
+    # 3/4" of solid wood on them adds a little mass to a wall built for exactly that.
+    #
+    # ED-S-SUITE-RC5 (16" AFF on W-S-SN1) sits inside the band: ordinary, but 3/4" of
+    # combustible finish means a box extender per NEC 314.20. Nothing grades that; it is an
+    # ordering note. The cap is unmodelled trim, as the study wainscot's is.
+    WallPaneling(uid="0D53MRPGKZ", tag="WP-S-SUITE-HEADBOARD", room="RM-S-SUITE",
+                 material_ref="walnut-tg", height=ft(6),
+                 walls=("W-S-SN1", "W-S-SN2")),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
             *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *STAIR_HANDRAILS, *FLOOR, *POSTS,
-            *STAIRS]
+            *STAIRS, *PANELING]

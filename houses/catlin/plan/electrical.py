@@ -204,14 +204,16 @@ DEVICE_TYPES = (
 )
 
 EQUIPMENT_TYPES = (
-    # RM-B-SAUNA's heated zone measures 519 cf off the resolved liner faces (8'-3 15/16" x
-    # 8'-3 11/16" x 7'-6"); trade rule ~1kW/45-50cf wants 10.4-11.5 kW... but the room is
+    # RM-B-SAUNA's heated zone measures 555 cf off the resolved liner faces (8'-3 15/16" x
+    # 8'-10 11/16" x 7'-6"); trade rule ~1kW/45-50cf wants 11.1-12.3 kW... but the room is
     # BASSWOOD-LINED OVER FOIL-POLYISO ON ALL SIX SURFACES, which is the low end of that
     # band, and the notes' heater is rated 9 kW to 600 cf. The "~513 cf" this comment used to
     # claim was right for the sauna as originally drawn and stale for the 745 cf the
-    # 2026-09-05 rotation grew it to; the same day's shrink brought it back to 519. 9 kW
-    # stands, matching the detail notes' "240V, 50A GFCI breaker ... max 10.5 kW", and
-    # CKT-SAUNA (circuits.py, 50A/2p, 9000 VA) does not move.
+    # 2026-09-05 rotation grew it to; the same day's shrink brought it back to 519, and
+    # round three's push north to y=10'-0" took it to 555. 9 kW stands, matching the detail
+    # notes' "240V, 50A GFCI breaker ... max 10.5 kW", and CKT-SAUNA (circuits.py, 50A/2p,
+    # 9000 VA) does not move — but **600 cf is the wall this room is now 45 cf from**, and a
+    # deeper sauna is a bigger heater and a bigger circuit, not a free change.
     EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 9 kW",
                   footprint=(inch(18), inch(16)), height=inch(30),
                   plan_symbol="sauna-heater",
@@ -478,13 +480,18 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(4, 6), ft(35, 3)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR (footprint x
-    # 14'-5 3/4"..15'-11 3/4"), low like the heater terminals. It followed the heater onto
-    # the garden wall when the room rotated on 2026-09-05 and into the south-east corner
-    # when the room shrank; west rather than east because east of the heater is the east
-    # liner, 2" away.
+    # On the sauna's SOUTH liner immediately WEST of EQ-B-SAUNA-HTR, low like the heater
+    # terminals. It followed the heater onto the garden wall when the room rotated on
+    # 2026-09-05, into the south-east corner when the room shrank, and 2'-0" further east
+    # (x 15'-5 3/4"..15'-11 3/4") when the heater turned onto the east liner: it butts the
+    # heater's west face, which is what "immediately west" has meant throughout.
+    #
+    # ** IT STAYS LOW AND IT STAYS OUT OF THE BENCH. ** 18" is the box's BASE, exactly
+    # FURN-B-SAUNA-BENCH-SW's top, so the bench stops 7 15/16" short of it rather than
+    # running under it. Raising the box over the bench would buy that back and is the wrong
+    # trade in a room that stratifies: a junction box belongs in the coolest air there is.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(inch(167.75), inch(12.5)), type_ref="ED-T-SAUNA-JB",
+                     position=pt(inch(188.75), inch(12.5)), type_ref="ED-T-SAUNA-JB",
                      circuit="CKT-SAUNA", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
@@ -572,16 +579,27 @@ BASEMENT_EQUIPMENT = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
-    # ** MOVED TO THE SOUTH-EAST CORNER BY THE 2026-09-05 SHRINK. ** It used to stand at the
-    # west end of the south liner, 2'-1" west of WIN-B-SAUNA's west jamb; that station is
-    # 4" inside the new west wall. East of the window there is 4'-2 3/4" of south liner and
-    # nothing on it — the pan is north of y=6'-1", D-B-SAUNA's leaf is at y 3'-1 11/16"..
-    # 5'-1 11/16", and the foot bench stops at x=9'-11 13/16". So the heater takes x
-    # 14'-5 3/4"..15'-11 3/4", 2" off the liner, diagonally opposite the benches and clear
-    # of every one of them.
+    # ** ON THE EAST LINER SINCE 2026-09-05 (round three), AND IT TURNED TO GET THERE. **
+    # It stood on the SOUTH liner at x 14'-5 3/4"..15'-11 3/4" from the shrink until the
+    # south bench grew: with the heater in the middle of that wall the bench could be 2'-6"
+    # and no longer. Against the east liner instead — `rotation=deg(270)` turns the 18"
+    # face to the wall and the 16" depth into the room, since local -y is a placeable's
+    # front — it takes x 15'-11 3/4"..17'-3 3/4" by y 0'-11 1/2"..2'-5 1/2" and hands the
+    # whole middle of the south liner back. The bench went 2'-6" -> 4'-0" on it
+    # (plan/placeables.py).
+    #
+    # 2" off the east liner and 2" off the south, the same stand-off it always carried.
+    # **It is deliberately NOT pushed north against D-B-SAUNA's jamb**, which would free
+    # another foot and a half of bench: that puts a 30" stove at the doorway you walk past
+    # in the dark, and nothing in this engine grades clearance to a sauna heater —
+    # `EquipmentType` carries no `clearances` at all.
+    #
+    # Clear of everything, and every one of these gaps is hand-held: 1'-1 15/16" to the
+    # south bench's east end, 8 1/4" north to D-B-SAUNA's leaf (y 3'-1 11/16"..5'-1 11/16"),
+    # and 4'-3 11/16" to FX-B-SAUNA-SH's pan.
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
-              position=pt(inch(182.75), inch(19.5)), footprint=(inch(18), inch(16)),
-              room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER",
+              position=pt(inch(199.75), inch(20.5)), footprint=(inch(18), inch(16)),
+              room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(270),
               circuit="CKT-SAUNA"),
 ]
 

@@ -363,14 +363,16 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # the corner here — the hot side's vapour control is continuous on all four faces or
         # it is not vapour control — which is exactly what this key exists to put on a sheet.
         "assembly_change:CATLIN_INT_2X6_BRG|SAUNA_LINER_INT_2X6_BRG",
-        # N-B-ESS-SE, and it is a FOUR-assembly key since 2026-09-05: the stair wall's own
-        # split (W-B-STR's Type X leaf on the ESS closet's face against W-B-STR3's, which is
-        # Type X on the under-stair closet's), the steel-stud ESS partition arriving from the
-        # west, and the closet's north partition leaving east. Four constructions meeting at
-        # one node is exactly the drawing a builder needs.
+        # N-B-ESS-SE. It was a FOUR-assembly key for one afternoon on 2026-09-05 — the two
+        # partitions arriving here, INT_ESS_CLOSET_STEEL from the west and W-B-CL-N's plain
+        # INT_2X4_PARTITION leaving east, joined the stair wall's own split. **W-B-CL-N is
+        # deleted** (the under-stair storage runs on past y=31'-0" now) and the ESS closet's
+        # south partition dies into the bearing wall rather than crossing it, so what is
+        # left is the split that was always here: W-B-STR's Type X leaf on the ESS closet's
+        # face against W-B-STR3's, which is Type X on the storage side. One rated leaf
+        # stopping against another is still a change of construction on one line.
         ("assembly_change:CATLIN_STAIRWALL_INT_2X6_BRG_TYPEX|"
-         "CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR|INT_2X4_PARTITION|"
-         "INT_ESS_CLOSET_STEEL"),
+         "CATLIN_STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
         # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
         # the family's stair plywood — the leaf stops here because the closet does.
         ("assembly_change:CATLIN_STAIRWALL_INT_2X6_BRG|"

@@ -74,7 +74,7 @@ from library.placeables.furniture import (
                                            OFFICE_CHAIR,
                                            QUEEN_BED,
                                            ROUND_DINING_TABLE,
-                                           SAUNA_BENCH_36,
+                                           SAUNA_BENCH_48,
                                            SAUNA_BENCH_54,
                                            SAUNA_BENCH_TIERED_60,
                                            SAUNA_BENCH_TIERED_102,
@@ -99,7 +99,7 @@ __all__ = [
     "DRESSER", "CHEST", "NIGHTSTAND", "SIX_SEAT_DINING_TABLE", "EIGHT_SEAT_DINING_TABLE",
     "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "DESK_CHAIR",
     "SAUNA_BENCH_TIERED_102", "SAUNA_BENCH_TIERED_60", "SAUNA_BENCH_54",
-    "SAUNA_BENCH_36", "WORKBENCH_60",
+    "SAUNA_BENCH_48", "WORKBENCH_60",
     "MUDROOM_BENCH_36",
     # casework
     "BESTA_UNIT", "BASE_15", "BASE_24", "BASE_30", "BASE_36", "SINK_BASE_36",

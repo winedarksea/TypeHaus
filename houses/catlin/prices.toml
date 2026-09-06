@@ -1536,12 +1536,19 @@
 # RESEARCHED 2026-08-08 — [low, high] $/LF of heating CABLE, material only, thermostat
 # excluded (the stats bill separately as placeables:ED-T-FLOOR-STAT). Derivation: electric
 # radiant material is quoted per square foot of floor, $5-12/SF; cable at 3" o.c. is 4 LF
-# per SF, so $/LF = $/SF / 4 = $1.25-3.00. The 393 LF billed works out to ~98 SF of heated
-# floor across the two baths and the dining area, which is the right order of magnitude.
+# per SF, so $/LF = $/SF / 4 = $1.25-3.00. The 381.5 LF now billed works out to 103.2 SF of
+# heated floor across the two baths and the dining area, which is the right order of magnitude.
 # Sources: homeguide.com radiant floor heating cost 2026, homewyse.com radiant floor heat,
 # heattechproducts.com per-SF system cost.
+# ** 2026-09-05: THE $/SF THIS WAS DERIVED FROM IS A SYSTEM PRICE, AND SYSTEM USUALLY MEANS
+# MEMBRANE-AND-CABLE. ** Read against [floor_finishes]'s `tile-uncoupling-membrane` note,
+# which does the arithmetic: the overlap is at most the 45.2 SF of cable that is actually
+# under tile (FH-M-BATH2 + FH-S-BATH1), ~$160-230, and the membrane row is short $640-820 the
+# other way, so the pair is NET UNDER-BILLED. The other 232 LF is FH-M-DINING, embedded in
+# the SL-M-DECK pour with no membrane at all — for which a per-SF surface-system price is
+# simply the wrong basis. Split the quote cable-only vs. kit before this row is trusted.
 # $/LF of element/wire, by system
-"electric" = { material = { low = 1.25, high = 3 }, labour = { low = 1.5, high = 3.25 } }  # 393 LF. NOT IN THIS LINE: the 3 floor sensors/thermostats at $150-300 each — ED-T-FLOOR-STAT covers the stat but not its sensor install
+"electric" = { material = { low = 1.25, high = 3 }, labour = { low = 1.5, high = 3.25 } }  # 381.5 LF. NOT IN THIS LINE: the 3 floor sensors/thermostats at $150-300 each — ED-T-FLOOR-STAT covers the stat but not its sensor install
 
 [placeables]
 # RESEARCHED 2026-08-08, LABOUR ADDED 2026-08-20, FX-* REPRICED 2026-08-21 — [low, high] $
@@ -1995,11 +2002,11 @@
 # day does not shrink with the lumber.
 "FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 1 ea
 "FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
-# The 3'-0" sibling on the south liner (2026-09-05). Material scales off the 54" row by
-# carcass length (36/54 = 0.67); labour is held at three-quarters rather than two-thirds,
-# for the reason the 2T-60 row gives above — scribing a bench between a bench and a heater
-# is setting-out time, and setting-out does not shrink with the lumber.
-"FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 535 }, labour = { low = 60, high = 225 } }  # 1 ea
+# The 4'-0" sibling on the south liner (2026-09-05). Material scales off the 54" row by
+# carcass length (48/54 = 0.89); labour is held level with it, for the reason the 2T-60 row
+# gives above — scribing a bench between a bench and a junction box is setting-out time, and
+# setting-out does not shrink with the lumber.
+"FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 1 ea
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
@@ -2208,8 +2215,10 @@
 # dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
 # ** 2026-09-05c: 1295 -> 1074 SF ordered. ** RM-S-SUITE (154.3 sf net) and RM-S-CLOSET (27.4)
-# went to `walnut-floor` — see that row at the bottom of this section. What is left is the
-# three second-storey bedrooms, RM-M-BED and its closet, and RM-B-PLAY-N.
+# left carpet — briefly for a site-milled walnut floor, and by the end of the day for `oak`
+# (see that row, and the tombstone at the bottom of this section). Neither room is coming
+# back to carpet, so this quantity stands. What is left is the three second-storey bedrooms,
+# RM-M-BED and its closet, and RM-B-PLAY-N.
 "carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1074 SF — labour INCLUDES pad and tack strip
 "carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1074 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
 # ** 2026-09-05b: 889 -> 796 SF ordered. ** RM-S-BATH1 left for tile — it is the one
@@ -2234,19 +2243,25 @@
 # — but the labour floor is 0 because when a separate pad IS used it rolls out ahead of the
 # plank at almost no marginal time. Resolve the spec before ordering.
 "lvp-underlayment" = { material = { low = 0.25, high = 0.75 }, labour = { low = 0, high = 0.25 } }  # 796 SF
-# ** 2026-09-05: 351 -> 612 -> 357 SF, and the warning below is BACK. ** RM-M-LIVING's south
-# bay (231.7 sf net over FS-M-EAST) joined the two studies for part of that day and was then
-# reverted to LVP: oak tops 9/16" above the polished cap it meets at y=13' and the cap cannot
-# be raised to it (`structural.mixed_deck_bearing_seat`), so the bay bought a reducer along
-# its whole north edge. The height difference was not wanted, and 357 SF is the price of not
-# having it — this row went back under the $1,200-1,800 sand-and-finish mobilisation minimum
-# it briefly cleared, which is the honest cost of the call and was known before it was made.
-# ** So expect a LUMP, not the $/SF arithmetic: ** two rooms on two storeys is two set-ups
-# for the sander and two trips per coat, on a quantity a floor sub will not travel for at
-# the rate below. (357, not the 351 this note used to carry before the bay: the two studies'
-# own clear faces have drifted since that figure was blessed, and nothing in this reversion
-# moved them. Re-blessed from `haus takeoff --csv`, like every other quantity here.)
-"oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 357 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
+# ** 2026-09-05: 351 -> 612 -> 357 -> 557 SF, AND THE MOBILISATION ARGUMENT REVERSES. **
+# Two moves in one day, in this order:
+#   1. RM-M-LIVING's south bay (231.7 sf net over FS-M-EAST) joined the two studies and was
+#      then reverted to LVP: oak tops 9/16" above the polished cap it meets at y=13' and the
+#      cap cannot be raised to it (`structural.mixed_deck_bearing_seat`), so the bay bought
+#      a reducer along its whole north edge. That took the row to 357 and put it back UNDER
+#      the $1,200-1,800 sand-and-finish mobilisation minimum it had briefly cleared.
+#   2. RM-S-SUITE and RM-S-CLOSET arrived (181.7 sf net) off the reverted walnut floor —
+#      see the tombstone at the bottom of this section — and 557 SF clears that minimum
+#      again on the merits.
+# ** So the LUMP warning this row used to carry is retired. ** The quantity is not the whole
+# of it: the SECOND STOREY ALONE now goes from RM-S-STUDY2's 159 SF to ~341 (STUDY2 + SUITE +
+# CLOSET), which is one sander set-up and one trip per coat for that storey instead of a
+# mobilisation for a single room. RM-A-STUDY's ~165 SF up in the attic is still its own trip;
+# ask for it to be scheduled with the second storey's coats rather than quoted separately.
+# (557, not the 351 this note used to carry before the bay: the two studies' own clear faces
+# have drifted since that figure was blessed. Re-blessed from `haus takeoff`, like every
+# other quantity here — 506 sf net, 557 ordered at the 10% waste.)
+"oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 557 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
 # 2026-08-21: SL-M-DECK's cap. A polish is not a covering and not the sealer above it —
 # it is a mechanical grind, 4-6 passes on progressively finer diamonds, with a lithium
 # densifier between passes and a guard coat at the end. The slab itself is billed in
@@ -2301,20 +2316,39 @@
 # same day, and is inside the rate above. The high end carries the case where it is a
 # separate mobilisation. Material: DITRA is $1.50-2.20/SF at the big boxes in 2026; the
 # generic dimpled sheets run lower and the DITRA-XL/HEAT variants much higher — this is the
-# plain 1/8" sheet, NOT the heated variant (that is priced in [floor_heat]).
-# ** 2026-09-05b, AND THE 287 SF IS NOT ALL THE SAME PRODUCT. ** RM-S-BATH1's tile is over
-# FH-S-BATH1, so its membrane is the DITRA-HEAT variant — the same dimpled sheet with the
-# cable-retaining studs, which is the heating cable's own base rather than an underlayment
-# beneath it. `takeoff/finishes._COMPANIONS` maps the finish `tile` to ONE membrane row and
-# cannot split it, so RM-S-BATH1's share (84.9 SF net, 98 SF ordered at tile's 15%) is
-# priced here at the plain sheet's rate and is UNDER-BILLED by roughly $3.50-5.50/SF —
-# DITRA-HEAT is $5-7/SF against DITRA's $1.50-2.50 — call it $340-540. Before ordering:
-#   1. Order DITRA-HEAT (or -HEAT-DUO) for RM-S-BATH1 and plain DITRA for the mudroom suite.
-#   2. Check it against [floor_heat]'s `electric` row, which is $/LF derived from a $5-12/SF
-#      SYSTEM price. If the quote that number came from was a membrane-and-cable kit, the
-#      heated base is already inside it and adding a full DITRA-HEAT rate here double-bills
-#      the 89 SF. The rows cannot both be right; resolve it against a real kit quote.
-"tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }  # 287 SF — plain 1/8" sheet rate; ~89 SF of it is really DITRA-HEAT, see above
+# plain 1/8" sheet rate. It was written believing the heated variant was already priced in
+# [floor_heat]; that was never verified and is mostly not true — see the next note.
+# ** 2026-09-05b, AND THE 287 SF IS NOT ALL THE SAME PRODUCT — MOST OF IT IS THE HEATED ONE. **
+# `takeoff/finishes._COMPANIONS` maps the finish `tile` to ONE membrane row and cannot split
+# it, so this row prices every tile floor in the house at the plain sheet's rate. Two of the
+# five are over an electric mat and want the DITRA-HEAT variant instead — the same dimpled
+# sheet with cable-retaining studs, which is the heating cable's own BASE rather than an
+# underlayment beneath it:
+#   RM-M-BATH2   72.8 SF net, over FH-M-BATH2 (17.9 SF of cable)   — heated since long
+#                                                                    before the tile row existed
+#   RM-S-BATH1   84.9 SF net, over FH-S-BATH1 (27.3 SF of cable)   — new 2026-09-05
+#   ------------------------------------------------------------
+#   157.7 SF net, ** 182 SF ordered at tile's 15% — 63% of this row **, leaving 105 SF of
+#   plain sheet for the mudroom suite (RM-M-MUDROOM/MECH/MUD-CLOSET).
+# It is the whole room each time, not the zone: an uncoupling membrane goes wall to wall and
+# is not patched around the cable, so all 182 SF is DITRA-HEAT even though only 45.2 SF of it
+# carries wire. UNDER-BILLED by $3.50-4.50/SF against DITRA-HEAT's $5-7 — call it $640-820.
+#
+# ** The double-count worry is real but a QUARTER the size, and it is bounded. ** [floor_heat]'s
+# `electric` row is $/LF derived from a $5-12/SF SYSTEM price divided by 4 LF/SF, so whatever
+# membrane is baked into that number rides the CABLE ZONE only — 45.2 SF here, not 182. And of
+# that row's 381.5 LF, 232 LF is FH-M-DINING: cable embedded in the SL-M-DECK pour under
+# POLISHED CONCRETE, with no membrane and no tile within it (which is also why
+# advisory.floor_finish_over_radiant is silent about it — the loop is inside the slab band's
+# FinishZone, not on RM-M-LIVING's plank). Only 149.5 LF of the row is under tile at all.
+# So the overlap is at most 45.2 SF, ~$160-230, against a $640-820 shortfall: net still
+# ** short $400-660 **, and the two rows are reconcilable rather than contradictory.
+# Before ordering:
+#   1. Quote 182 SF of DITRA-HEAT (or -HEAT-DUO) and 105 SF of plain DITRA, not 287 of either.
+#   2. Take the cable for those two baths as CABLE ONLY, net of its base, so the membrane is
+#      paid once. `electric`'s $5-12/SF derivation is the wrong basis for FH-M-DINING's 232 LF
+#      regardless — slab-embed cable is a different product and a different install.
+"tile-uncoupling-membrane" = { material = { low = 1.5, high = 2.5 }, labour = { low = 0, high = 0.5 } }  # 287 SF at the plain 1/8" sheet rate; 182 SF of it is really DITRA-HEAT, ~$400-660 short, see above
 # 2026-08-18: RM-S-PLANT. Sheet vinyl itself is cheap — commercial homogeneous sheet runs
 # $2.50-5/SF — but this floor is not just the goods: the seams are heat-welded and it turns
 # a 6" integral flash cove up every wall, which is a specialist install and roughly doubles
@@ -2346,36 +2380,19 @@
 # mobilisation-dominated scope again, and the resilient crew is walking a stair between each
 # one. Expect a LUMP, and read the $/SF below as a floor on it, not as the price.
 "vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 257 SF
-# ** 2026-09-05c: RM-S-SUITE AND RM-S-CLOSET, CARPET -> WALNUT. ** 181.7 SF net, 200 ordered:
-# the master suite and its walk-in as one continuous field, the same 4/4 T&G board as
-# RM-M-STUDY's wainscot. The carpet row above lost the same rooms (1274 -> 1074 SF ordered).
-#
-# ** THE STOCK IS THE OWNER'S AND THE MATERIAL RATE IS STILL NOT $0. ** This is the third
-# accounting shape walnut takes in this house and they must not be mixed up:
-#   `walnut-shelf-8q`  BOUGHT S4S at $12-20/bf, and its dollars live in [placeables]
-#   `walnut-tg`        the wainscot, rated in [wood_surfaces] at a bought $8-18/SF
-#   `walnut-floor`     THIS ROW — family stock, but a log is not a floor
-# What the rough stock still has to buy before it can be nailed down: kiln drying to 6-8% MC
-# ($0.35-0.75/bf at a custom kiln, and this is the one step that cannot be skipped — walnut
-# laid wet shrinks into gaps every board), and a moulder run to profile tongue, groove and
-# back relief ($0.75-1.50/bf, or a shop minimum if the run is small). Call the stock itself
-# $2/sf, the way the pantry's oak is valued in plan/millwork.py. That is $3-4.25 at the low
-# end; the high end is the case where the family stock does not yield 200 SF of clear 4/4 and
-# the balance is bought — hence a top that reaches the [floor_finishes] `oak` row's.
-#
-# ** ORDER MORE THAN 200 SF. ** The 10% in that number is an INSTALL waste for a
-# factory-graded product. Site-milled stock is culled at the moulder, not at the rack: 25-30%
-# over net is the normal figure for running your own flooring, and the mill order should be
-# taken off `haus millwork` (200 bf rough, 4/4 walnut, T&G) with that allowance on top. The
-# engine's per-finish waste table is engine code and does not know whose stock this is.
-#
-# LABOUR is above the oak row's and the reason is the same milling: boards off a small moulder
-# vary in width and end-match, so the floor is racked and fitted rather than run, and the
-# finish is the wainscot's hardwax oil (2 coats, buffed) rather than a 3-coat poly build.
-# CONFIDENCE: MEDIUM-LOW on material — no quote; the drying and moulding rates are custom-mill
-# survey figures, and the yield of the family stock has not been measured. Get the kiln and
-# the moulder quoted TOGETHER before this is treated as a saving over buying walnut flooring.
-"walnut-floor" = { material = { low = 3, high = 8 }, labour = { low = 8, high = 14 } }  # 200 SF — owner's stock, but drying + moulding + nail-down + hardwax oil are all real
+# ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
+# and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
+# here at $3-8 material (stock valued at $2/sf plus kiln drying and a moulder run) over
+# $8-14 labour. The research that killed it is in plan/storeys/second.py at RM-S-SUITE:
+# walnut photo-LIGHTENS under the west windows' UV and would ghost-mark under rugs, it is
+# soft underfoot (~1010 Janka vs oak's ~1360), and 200 SF of flooring is the most demanding
+# cut a family log pile can be asked for. The rooms are `oak` above; the walnut is a 6'-0"
+# headboard band on W-S-SN1/SN2 (WP-S-SUITE-HEADBOARD), priced in [wood_surfaces] under
+# `walnut-tg` with the study wainscot.
+# ** If site-milled flooring is ever revisited, the two facts worth keeping are: ** kiln
+# drying to 6-8% MC ($0.35-0.75/bf) is the step that cannot be skipped — walnut laid wet
+# shrinks into gaps every board — and 25-30% over net, not the engine's 10% install waste,
+# is the real order quantity for stock culled at the moulder rather than at the rack.
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -3395,8 +3412,7 @@
 # mirrors: this table shares three of its five materials with tables that already price them,
 # and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
 # only `walnut-tg` is billed nowhere else.
-#   oak          also_in_floor_finishes  -> priced in [floor_finishes], 351 SF, same number
-#   walnut-floor also_in_floor_finishes  -> priced in [floor_finishes], 200 SF (added 2026-09-05)
+#   oak          also_in_floor_finishes  -> priced in [floor_finishes], 557 SF, same number
 #   sauna-shiplap also_in_envelope_layers -> priced in [envelope_layers]
 #   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
 #   tile         the RM-B-SAUNA override — see the correction below, it is NOT a mirror
@@ -3406,12 +3422,7 @@
 # designtransitionstudio.com walnut price guide, homewyse.com wall paneling 2026.
 # $/SF on the order quantity, by material tag
 # "elm-timber" =    # 0 SF — timber, bills in structural_solids
-# "oak" =    # 351 SF — billed in [floor_finishes]
-# ** DO NOT RATE THIS ROW. ** `walnut-floor` is the same board as `walnut-tg` below and the
-# temptation is to give it the same $/SF. It is the suite FLOOR and [floor_finishes] prices it;
-# a rate here bills those 200 SF twice. The two tags exist to keep them apart — see
-# plan/assemblies.py.
-# "walnut-floor" =    # 200 SF — billed in [floor_finishes]
+# "oak" =    # 557 SF — billed in [floor_finishes]
 # "sauna-shiplap" =    # 278 SF — billed in [envelope_layers]
 # ** THE "billed in [floor_finishes]" CLAIM ON THIS ROW WAS FALSE, and is corrected here
 # rather than repeated (2026-09-02). ** [floor_finishes]'s `tile` is FLOOR area in other
@@ -3422,7 +3433,18 @@
 # RM-M-BATH2's floor. Rate it here only if that section ever moves to true $/SF bidding, or
 # the same square feet get bought twice.
 # "tile" =    # 52 SF — NOT billed in [floor_finishes]; see above
-"walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 51 SF
+# ** 2026-09-05: 51 -> 115 SF, and the second band raises a question this rate does not
+# answer. ** WP-S-SUITE-HEADBOARD joined RM-M-STUDY's wainscot on this tag — the same 4/4
+# T&G board, one mill order, one row (57.8 sf net on W-S-SN1/SN2, 0 to 6'-0"). Both are wall
+# area on this table, so there is no double-billing trap of the kind the tombstone in
+# [floor_finishes] describes.
+# ** THE RATE BELOW IS A BOUGHT WALNUT RATE ($8-18/SF material). ** If the suite band comes
+# off the family stock — which is why the walnut is in this house at all — its material half
+# is really the stock + kiln + moulder ladder that the retired `walnut-floor` row spelled
+# out, not $8-18. The same question applies to the study's existing 52 SF and always did.
+# Resolve it against a real kiln-and-moulder quote before ordering. Do not silently reprice:
+# a bought rate over-states a stock band, and the stock ladder under-states a bought one.
+"walnut-tg" = { material = { low = 8, high = 18 }, labour = { low = 6, high = 12 } }  # 115 SF ordered / 104.2 net — RM-M-STUDY wainscot (46.4 net) + WP-S-SUITE-HEADBOARD (57.8 net)
 # ADDED 2026-08-29 with RM-M-STUDY's call booth. WP-M-STUDY-FELT, 1/2" recycled-PET acoustic
 # felt board on the south and north walls, band 3'-0" to 9'-0". It is billed here and nowhere
 # else — the material is in no assembly layer and no floor finish, so it carries no

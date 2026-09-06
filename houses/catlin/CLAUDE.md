@@ -1489,7 +1489,8 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     **zero** and says why. Its thickness must stay locked to
     `resolve/stairs/common._WELL_PARTITION_THICKNESS_M` (4 1/2"): `INT_2X4_PARTITION`'s
     4 3/4" pushes 1/8" into each inner stringer.
-  - **`RM-B-UNDERSTAIR`, 17.5 sf that nobody could reach.** The volume under the arriving
+  - **`RM-B-UNDERSTAIR`, 17.5 sf that nobody could reach** — *superseded by round three
+    below, which deleted `W-B-CL-N` and the room with it.* The volume under the arriving
     flight was inside `RM-B-STAIR`'s polygon, so the model called it floor. `W-B-WELL` closes
     the east side, `W-B-CL-N` the north (**47" tall, not the 52" the stringer allows — the
     upper landing's ledger is the lower obstruction and it starts at 47 5/8"**), and
@@ -1532,6 +1533,61 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `room=` said `RM-B-SAUNA` and never was (it is 6'-7" north of the sauna); fixed.
   - **Still unresolved and not this change's:** `CD-B-SPA`'s east leg at y=1'-0", 61" over
     the slab, appears to run **through** the rotated sauna.
+
+- **ROUND THREE, THE SAME DAY: the under-stair closet loses its north wall, and the sauna
+  takes 7" off the workshop.** Two owner calls, and between them they say something about
+  this model worth keeping: **both changes are bounded by things no check grades.**
+  - **`W-B-CL-N` is deleted and `RM-B-UNDERSTAIR` with it.** The storage under the arriving
+    flight runs the full length of it now and on under the landing deck, instead of stopping
+    at y=31'-0". `W-B-WELL` keeps the east side and its north end is free — `open_end=True`
+    on `N-B-CL-NE`, which is what `integrity.wall_loop_open` is for and the only honest way
+    to say a partition dies in the middle of a stair well.
+    - **The `Room` could not survive it.** With nothing closing the north side both seeds
+      land in ONE face, and `RM-B-STAIR` and `RM-B-UNDERSTAIR` each resolved the **same
+      114.8 sf polygon** — the whole shaft counted twice in every area, finish and load that
+      walks rooms, at 0 FAIL. So the closet gives up its label and keeps its use:
+      `D-B-CLOSET` still opens it to the furnace room, `ED-B-CLOSET-LT` still lights it (its
+      `room=` is `RM-B-STAIR` now, the fixture did not move), and `EQ-B-HP2-GYM`'s
+      `zone_rooms` drops the tag.
+    - **`W-B-STR3` is NOT retyped back.** `code.R302_7_under_stair_protection` now passes on
+      "no enclosed usable space" — the check keys on a room's occupancy and `STAIR` is not in
+      `_UNDER_STAIR_OCCUPANCIES` — but the reason for the Type X did not go away with the
+      label. The code hook went quiet; the wall stays as built.
+  - **`W-B-SA-N` went north 9'-5" → 10'-0", and `D-B-GYM` is what stops it there.** The room
+    is 8'-3 15/16" x **8'-10 11/16"** clear, 555 cf against `EQ-T-SAUNA-HEATER`'s 600 cf
+    rating — 45 cf of margin, so a deeper sauna from here is a bigger heater and a bigger
+    circuit, not a free change. The workshop's north strip pays for it: 8'-7" → 8'-0".
+    - **The binding constraint is an opening, and nothing grades it.** The east end of this
+      wall lands on `W-B-CS3`, the 4'-5" of framed x=18' line between the sauna and the
+      y=13'-10" pour, and `D-B-GYM`'s rough opening starts at y=10'-11 7/16". At 10'-0" the
+      wall's north face leaves 7 5/8" for the jamb pack. At **10'-6" the two overlap
+      outright and `haus check` says nothing** — no rule tests a tee wall landing beside an
+      opening. The coupling runs both ways: if `D-B-GYM` goes back south, this wall follows.
+    - **Everything dimensioned off the north liner moved 7" with it**, and none of it would
+      have been reported: `FURN-B-SAUNA-BENCH-E`, `FX-B-SAUNA-SH` (the pan stays in its
+      corner), `FX-B-SAUNA-FD`, both `SP-B-SAUNA-*` sleeves, `PR-B-SAUNA-DRAIN`'s first
+      three vertices, `PR-B-SAUNA-FD-DROP`, both condensate air gaps and
+      `PR-B-SAUNA-VENT`'s riser. `D-B-SAUNA` is `from_node("N-B-SA-NE", …)` and DID report:
+      it rode the node north and `structural.door_framing_module` FAILed on the stud module
+      within the same build. Its offset grew 7" to hold the leaf still.
+  - **A third bench, on the south liner: `FURN-B-SAUNA-BENCH-SW`, and the heater moved to
+    let it grow.** `EQ-B-SAUNA-HTR` stood in the middle of the south liner and left
+    3'-7 15/16" of it, which is a 2'-6" bench. On the **east liner** — `rotation=deg(270)`,
+    18" face to the wall, 16" depth into the room, 2" off both liners as before — it leaves
+    4'-7 15/16" and the bench is **4'-0"**. `ED-B-SAUNA-JB` came east with it and butts its
+    west face; `REG-B-SUP3` and `DU-B-ERV-R-SAUNA-SUP`'s east leg followed, because "over
+    the stones" is a position, not a label.
+    - **What stops the bench is `ED-B-SAUNA-JB`**, not the wall: the box's base is at 18"
+      AFF, exactly the bench top, so a 4'-6" carcass would reach under it and put a fixed
+      seat in front of a live 9 kW junction box. 4'-0" leaves 7 15/16" to the box and
+      1'-1 15/16" to the heater. Raising the box over the bench would buy that back and is
+      the wrong trade in a room that stratifies.
+    - **The heater is deliberately not pushed north against `D-B-SAUNA`'s jamb**, which
+      would free another 1'-6" of bench and put a 30" stove at the doorway. Nothing grades
+      any of this: `EquipmentType` carries no `clearances` and no rule tests a placeable
+      against a wall device or an equipment footprint against a door approach.
+    - `FURN-SAUNA-BENCH-48` was minted in `library/` and priced in `prices.toml` — **an
+      unpriced type is silently dropped from the takeoff.**
 
 - **Four basement assemblies, and every split is a condition, not a preference.** Two
   independent axes cross here: what covers the exterior XPS, and how thick the pour is.

@@ -339,7 +339,7 @@ WEST_FLOOR = FloorSystem(
     uid="CMFS01AAAA", tag="FS-M-WEST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      # x=0': W-B-W2 carries y 0..18', W-B-W1 the rest. x=18': W-B-CS
-                     # carries y 0..9'-5" since the sauna rotated (2026-09-05), W-B-CS3
+                     # carries y 0..10'-0" since the sauna rotated (2026-09-05), W-B-CS3
                      # to 13'-10", W-B-CS2 to 18', W-B-CN2 to the node line.
                      # All five are true bearing; the three on x=18' resolve to one
                      # boundary (integrity.floor_bearing_grid holds them there).
@@ -393,7 +393,7 @@ EAST_FLOOR = FloorSystem(
     uid="CMFS02AAAA", tag="FS-M-EAST",
     joists=JoistSpec(member=_JOIST, spacing=_JOIST_OC, direction="x",
                      # This bay is south of y=13'-10", so its west bearing is the framed
-                     # pair W-B-CS (y 0..9'-5") and W-B-CS3 (9'-5"..13'-10") — W-B-CS2 runs
+                     # pair W-B-CS (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10") — W-B-CS2 runs
                      # y 13'-10"..18' and this deck never touches it.
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),

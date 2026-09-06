@@ -588,11 +588,13 @@ REGISTERS_BASEMENT = [
             position=pt(inch(110), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
-    # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (south liner,
-    # plan/electrical.py) at 7'-0" — below the 8' ceiling so the boot doesn't fight the drop
-    # ceiling the condensate line already runs above.
+    # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (the EAST liner
+    # since 2026-09-05 round three, plan/electrical.py) at 7'-0" — below the 8' ceiling so
+    # the boot doesn't fight the drop ceiling the condensate line already runs above. It
+    # moved 1'-5" east with the heater, and DU-B-ERV-R-SAUNA-SUP's east leg moved with both:
+    # the register sits on the heater's own centre, which is what "over the stones" means.
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
-            position=pt(inch(182.75), inch(19.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
+            position=pt(inch(199.75), inch(20.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-ERV-SAUNA-SUP", design_cfm=12,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike

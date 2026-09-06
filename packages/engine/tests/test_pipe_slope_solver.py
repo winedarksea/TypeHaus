@@ -154,10 +154,17 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: vertices from four (it goes straight south to y=15'-6" and west, with no jog); the sauna
 #: branch turns south at its floor drain instead of running on; PR-B-COND's chase follows
 #: the receptor.
+#:
+#: ** RE-PINNED AGAIN the same day, when W-B-SA-N went north 9'-5" -> 10'-0". ** The sauna's
+#: pan and floor drain moved 7" with it, so PR-B-SAUNA-DRAIN's second leg and PR-B-COND's
+#: chase leg both changed LENGTH — and a solved run whose length changes lands its last
+#: authored elevation on a different grade. Both authored ends were re-cut to hold the
+#: 0.3"/ft their comments declare (-13.55" -> -13.728" on the sauna branch, 84.867" ->
+#: 85.042" on the condensate chase); only the free vertex at index 3 moves in either.
 _PINNED_FT = {
-    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.04754, -8.36979],
+    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.03296, -8.36979],
     "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -10.01636, -10.20396],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89677, -9.98674, -10.24896],
+    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89677, -10.00133, -10.26379],
 }
 
 #: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to

@@ -70,8 +70,9 @@ from typehaus import (
 # Both are gone. What replaced them, on the owner's call:
 #
 #   * **The sauna rotated onto the south (garden) wall**, long axis east-west,
-#     x 8'-10"..18'-0" by y 0'-0"..9'-5" on the node lines — an 8'-3 15/16" x 8'-3 11/16"
-#     clear box against the 8'-1" x 12'-7" it was. It keeps WIN-B-SAUNA and is entered FROM
+#     x 8'-10"..18'-0" by y 0'-0"..10'-0" on the node lines — an 8'-3 15/16" x 8'-10 11/16"
+#     clear box against the 8'-1" x 12'-7" it was. (The north wall went to 10'-0" on
+#     2026-09-05, round three; the node block below says what stopped it there.) It keeps WIN-B-SAUNA and is entered FROM
 #     THE GYM through framed W-B-CS, a short walk from D-B-PATIO and the sunken garden,
 #     which is what the brief asks the room for. (The rotation drew it x 4'-8"..18'-0", a
 #     12'-2" box straddling two substrates; ROUND TWO the same afternoon pulled the west
@@ -140,8 +141,25 @@ NODES = [
     # west wall tees into it rather than dying in the middle of the furnace room.
     Node(uid="CBN013AAAA", tag="N-B-STR", position=pt(ft(10), ft(18))),
     # Sauna box, rotated onto the south (garden) wall 2026-09-05: long axis east-west,
-    # y 0'-0"..9'-5", entered from the gym instead of the workshop. N-B-SA1 (the old NW
+    # y 0'-0"..10'-0", entered from the gym instead of the workshop. N-B-SA1 (the old NW
     # corner at 8'-10", 13'-10") is gone with the north-south box.
+    #
+    # ** THE NORTH LINE WENT 9'-5" -> 10'-0" ON 2026-09-05 (round three), AND D-B-GYM IS
+    # WHAT STOPS IT THERE. ** The room wanted the depth and the heater had room for it —
+    # 555 cf against EQ-T-SAUNA-HEATER's 600 cf rating (plan/electrical.py) — but the east
+    # end of this line has to land on W-B-CS3, the 4'-5" of framed x=18' wall between the
+    # sauna and the y=13'-10" pour, and D-B-GYM is in it. The door's rough opening starts at
+    # y=10'-11 7/16", so at 10'-0" this wall's north face (10'-3 13/16") leaves 7 5/8" of
+    # wall for the jamb pack; every inch further north is an inch off that.
+    # **The coupling runs the other way too: if D-B-GYM ever goes back south, this wall has
+    # to come south with it.** Nothing grades a tee wall landing beside an opening — no
+    # check fired at 10'-6", where the two overlap outright — so this is the only place the
+    # constraint is written down.
+    #
+    # The other two limits, neither of them binding at 10'-0": PR-B-SAUNA-VENT crosses the
+    # workshop west at y=10'-6", 2 3/16" clear of the north face; and W-M-BDN1 sits at
+    # y=13'-0" on the storey above, which `resolve/platform._platform_above` would read as
+    # one wall line within half the two thicknesses.
     #
     # **Shortened east to x=8'-10" on 2026-09-05 (round two).** The west wall used to stand
     # at 4'-8", which put the sauna's south face across two substrates — the buried 8" pour
@@ -594,7 +612,7 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.75)),
          interior_room="RM-B-SAUNA",
          structural_role=StructuralRole.BEARING),
-    # The x=18' line north of the rotated sauna, y 9'-5"..13'-10": the same 2x6 bearing
+    # The x=18' line north of the rotated sauna, y 10'-0"..13'-10": the same 2x6 bearing
     # wall with no liner on it, because the room behind it is the workshop now. It is the
     # segment D-B-GYM moved onto — a framed host in place of the 12" pour it used to be
     # formed through — which is the whole point of the rotation.
@@ -777,10 +795,12 @@ WALLS = [
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA-NW", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
-    # The sauna's cold north face, x 8'-10"..18'-0" at y=9'-5" since the shrink. It used
-    # to sit on y=13'-10", where W-M-BDN1 at y=13'-4" fell inside `resolve/platform.py`'s
-    # same-wall-line tolerance and topped it out at the deck instead of its authored 7'-6";
-    # that partition moved to 13'-0" then and this wall is now four feet clear of it.
+    # The sauna's cold north face, x 8'-10"..18'-0" at y=10'-0" since 2026-09-05 round
+    # three (9'-5" between the shrink and that; see the node block for what fixes 10'-0").
+    # It used to sit on y=13'-10", where W-M-BDN1 at y=13'-4" fell inside
+    # `resolve/platform.py`'s same-wall-line tolerance and topped it out at the deck instead
+    # of its authored 7'-6"; that partition moved to 13'-0" then and this wall still stands
+    # three feet clear of it.
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA-NW",
          end_node="N-B-SA-NE", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
@@ -1146,7 +1166,7 @@ ROOMS = [
     # accepted condition over a sealed, drained slab in a room that dries between sessions,
     # not a hidden failure.
     # The floor is SEALED CONCRETE, not tile. SL-B-FLOOR already runs flat and
-    # sloped 1/8"/ft to FX-B-SAUNA-FD (13'-6", 7'-7 3/16") under the whole room, and
+    # sloped 1/8"/ft to FX-B-SAUNA-FD (13'-6", 8'-2 3/16") under the whole room, and
     # FX-B-SAUNA-SH is a curbed
     # liner pan — the pan brings its own waterproof floor, so nothing outside it needs a
     # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
