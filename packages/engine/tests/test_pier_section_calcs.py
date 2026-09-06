@@ -27,25 +27,31 @@ import math
 import pytest
 
 # §5b-§5e of the note, worked by hand. Demands in lb (shear) and lb-in (flexure).
+#
+# REVISED 2026-09-05: `_pier_bell_bottom_ft` is derived from the 42"-below-the-court rule
+# again rather than pinned where the flood step left it, so both shafts are 7 1/4" shorter,
+# each sheds 71 lb of its own concrete, and P_u falls 0.8%. Every DEMAND here is a net soil
+# pressure times a geometry that did not move, so all four fall by that same 0.8% and no
+# capacity changes at all. If one of them ever moves on its own, the geometry moved too.
 _ORACLE = {
     "PT-SG-COL": {
         "bell_in": 30.0,
-        "pressure_psi": 15.363,
-        "punching_demand": 4318.0,
+        "pressure_psi": 15.242,
+        "punching_demand": 4284.0,
         "punching_capacity": 93150.0,
         # §5d: the critical section at h from the face lands 15.32" out on a 15" radius.
         "one_way_demand": 0.0,
-        "flexure_demand": 12141.0,
+        "flexure_demand": 12046.0,
         "flexure_capacity": 99172.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
-        "pressure_psi": 10.667,
-        "punching_demand": 6316.0,
+        "pressure_psi": 10.583,
+        "punching_demand": 6266.0,
         "punching_capacity": 93150.0,
-        "one_way_demand": 367.0,
+        "one_way_demand": 364.0,
         "one_way_capacity": 10697.0,
-        "flexure_demand": 17995.0,
+        "flexure_demand": 17855.0,
         "flexure_capacity": 121594.0,
     },
 }

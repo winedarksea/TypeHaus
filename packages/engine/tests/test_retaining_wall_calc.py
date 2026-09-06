@@ -138,8 +138,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         assert record.status is Status.OK, record.summary
         assert record.governing is not None
         assert record.governing.name == "base restraint", record.summary
-        # 1.71 against 1.50. Carried as required/achieved, so the ratio is under 1.
-        assert record.ratio == pytest.approx(1.5 / 1.71, abs=0.02)
+        # 1.77 against 1.50. Carried as required/achieved, so the ratio is under 1.
+        assert record.ratio == pytest.approx(1.5 / 1.77, abs=0.02)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.

@@ -136,16 +136,15 @@ class SunkenGardenSpec:
     # 109.4375" is ``params/main_deck.BASEMENT_DATUM``; this module may import, but it is one
     # house-wide number transcribed rather than a second derivation, and
     # ``integrity.basement_bearing_seat`` checks the two agree. This is the BASEMENT floor
-    # plane and only that: ``SL-SG-FLOOR`` no longer tops out on it. The court sits
-    # ``court_step_down_in`` BELOW it (``_court_top_in``), and D-B-PATIO gets SL-SG-STOOP —
-    # a 3 1/2" stoop 1 1/2" under the threshold — so the required-egress landing keeps
-    # R311.3's strict branch and the flood step is taken as one 5 3/4" riser off the stoop.
-    # W-B-S2/W-B-S3 are 7 1/4" curbs (``storeys/basement.py``); W-B-S3-FR stands on one at
-    # ``base_elevation=inch(-102.1875)`` and carries the door at ``sill_height=inch(0)``.
+    # plane, and ``SL-SG-FLOOR`` tops out on it again: ``court_step_down_in`` is back to 0,
+    # SL-SG-STOOP is retired, and D-B-PATIO takes its single 7 1/4" riser off the court
+    # itself. W-B-S2/W-B-S3 are 7 1/4" curbs (``storeys/basement.py``); W-B-S3-FR stands on
+    # one at ``base_elevation=inch(-102.1875)`` and carries the door at
+    # ``sill_height=inch(0)``.
     #
-    # The retained height on W-SG-E2/S/W2 is 7.09', well past the 48" that sends R404.1.1 to
-    # an engineered design, so those three walls stay engineered and
-    # ``structural.foundation_unbalanced_fill`` keeps reporting them UNKNOWN.
+    # The retained height on W-SG-E2/S/W2 is 9.29', far past the 48" that sends R404.1.1 to
+    # an engineered design, so those three walls stay engineered — PASS with a d/c, not
+    # UNKNOWN, since ``engineering/retaining.py`` started grading them.
     basement_depth_ft: float = 109.4375 / 12.0
     slab_thickness_in: float = 3.5
     # ** THE FLOOD STEP IS BACK TO ZERO (2026-09-05), AND THE CURB IS NOW THE WHOLE DAM. **
@@ -190,7 +189,24 @@ class SunkenGardenSpec:
     field_depth_in: float = 18.0
     porch_top_ft: float = 0.0  # top of the porch concrete walls = porch floor / railing base
     railing_height_ft: float = 3.5  # 42" guard above the porch walking surface
-    retaining_top_ft: float = 0.5
+    # ``plan/site.py`` authors ``grade=ft(-2, -10)``. Transcribed rather than imported for
+    # the same reason ``basement_depth_ft`` is: this file is a params module and the plan
+    # imports it, not the other way round. If site grade ever moves, this moves with it —
+    # ``test_retaining_court`` asserts the two agree so it cannot drift silently.
+    site_grade_in: float = -34.0
+    # ** 36" ABOVE GRADE IS A CAP, AND IT SETS FOUR WALL TOPS AND ONE WALL BASE AT ONCE. **
+    # Owner's call (2026-09-05): the sunken-garden retaining run may stand no more than
+    # 36" out of the yard. It used to be +0'-6", which is 40" over the -2'-10" grade.
+    #
+    # This one constant is the terrace plane for the whole south side. ``raised_garden.py``
+    # reads it through ``RETAINING_WALL_TOP_FT`` as its apron TOP and derives its BASE as
+    # ``TOP - drop_ft``; with the drop at 3'-0" that base lands on -34" — site grade
+    # exactly. Before this change the apron's base sat at -30", 4" PROUD of the yard it is
+    # supposed to spring from, while the comment beside it claimed "their base is grade".
+    # Nothing grades a freestanding wall's base against the ground plane, so five SRW legs
+    # floated 4" in the air at 0 FAIL. Capping the top at 36" pins the base to grade as a
+    # consequence, and the 3'-0" drop stays a whole number of 6" courses either way.
+    retaining_top_ft: float = (site_grade_in + 36.0) / 12.0
     # porch framing
     column_diameter_in: float = 12.0  # sonotube back-beam support
     # Sonotube centre set south of the deck's north-edge line. Centred on that line, the 12"
@@ -388,11 +404,12 @@ _court_top_in = -(SPEC.basement_depth_ft * 12.0) - SPEC.court_step_down_in  # -1
 _court_top = inch(_court_top_in)
 # The rim pour's underside, -112 15/16". Since 2026-09-05 it no longer laps the three
 # RETAINING toes at all: their tops are the court plane 3 1/2" above this, and
-# `FO-SG-TOE-W/E/S` void the rim over them, so the two do not share a cubic inch. It still
-# laps the two PORCH strips (FT-SG-W1/E1, tops at -117 7/16") by 4 1/2", and that is
-# deliberate rather than a collision: ``structural.concrete_interference`` grades only
-# isolated pours, every FT-SG-* carries ``under=``, and SL-B-FLOOR already laps every FT-B-*
-# by 3 1/2". No footing moves for this.
+# The five `FO-SG-TOE-*` openings void the rim over all five wall footings, so no two of
+# them share a cubic inch: the three retaining strips take W/E/S, and the two porch strips
+# take N-W/N-E now that they top out on this plane as well. Measured after the cut — the
+# net rim polygon's intersection with every FT-SG-* footprint is 0.000 sf, which is the
+# assertion worth keeping, because ``structural.concrete_interference`` grades only ISOLATED
+# pours and every FT-SG-* carries ``under=``: a lap here reads as 0 FAIL and bills twice.
 _rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 
 # ** THE THREE RETAINING FOOTINGS ARE THE COURT'S WALKING SURFACE (2026-09-05). **
@@ -406,27 +423,34 @@ _rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 # ** RAISING THE TOP *IS* RAISING THIS CONSTANT, and that is not a stylistic choice. **
 # `resolve/envelope.py` sets a wall-hosted footing's `z1 = wall.z0_m` and lets `depth` push
 # only `z0` down; `bottom_elevation` is explicitly IGNORED on that branch. There is no way to
-# lift a wall-hosted footing's top without lifting the wall bottom above it. So the three
-# retaining walls shorten 10.37' -> 9.62', their footing undersides rise 9" from -130 7/16"
-# to -121 7/16", and the excavation under the whole retaining footprint falls 9" with them.
-# That saving is the reason this is worth doing.
+# lift a wall-hosted footing's top without lifting the wall bottom above it. So the walls
+# shorten, their footing undersides rise 9" from -130 7/16" to -121 7/16", and the
+# excavation under the whole footprint falls 9" with them. That saving is the reason this is
+# worth doing, and as of the second pass it is taken on all five walls rather than three.
 #
 # ** WHAT DOES *NOT* FOLLOW IT: the grade beam. ** See `_grade_beam_bottom` below, which is
 # now decoupled and held.
 _wall_bottom = _court_top
-# ** THE TWO PORCH SIDE WALLS STAY WHERE THEY ARE, and are now 8" DEEPER than the free
-# retaining run rather than 1" shallower. ** They were trimmed to exactly 10'-0" because
-# IRC Table R404.1.2(8) stops there and that is the row their reinforcement is carried up
-# from; the three retaining walls south of here are not graded against that table at all
-# (`lateral_support="base"` → IRC R404.4, engineered), so raising them costs the porch walls
-# nothing and this constant is what keeps it that way.
+# ** THE TWO PORCH SIDE WALLS NOW BOTTOM OUT HERE TOO (2026-09-05, second pass). **
+# They were held back when the three retaining strips rose, on the reading that IRC Table
+# R404.1.2(8)'s last published row (10'-0") was a height they had to KEEP. It is a ceiling,
+# not a target: a shorter braced wall over less unbalanced fill sits further inside the same
+# table, not outside it. Holding them left the whole under-porch stack — wall foot, the two
+# 13"-thick footings, and FB-SG-W1/E1's 42" beds — sitting 9" deeper than the identical
+# stack 10 feet south of it, for nothing.
 #
-# `_PORCH_FOOTING_THICKNESS_IN` below still puts the trimmed inch straight back into
-# FT-SG-W1/E1, so those two footing UNDERSIDES do not move — which is what keeps their 21"
-# of cover and the whole R403.3 frost design at the house edge exactly where it was. Their
-# TOPS stay 8" below the court plane too, so unlike the three retaining strips they are
-# still buried under rim concrete, and no `FO-SG-TOE-*` is cut over them.
-_porch_wall_bottom = ft(-(SPEC.basement_depth_ft + 8.0 / 12.0))
+# So there is no separate porch bottom any more: all five walls in this court bear on
+# `_wall_bottom`, their footings are all `SPEC.footing_thickness_in` thick, and the two
+# porch strips become the porch bay's walking surface exactly as the three retaining strips
+# became the court's — `FO-SG-TOE-N-W/E` below void the rim over them.
+#
+# What it costs to check, and what was checked: the walls shorten 9'-9 7/16" -> 9'-1 7/16"
+# and their unbalanced fill falls with the footing underside, so R404.1.2(8) can only get
+# happier (`structural.foundation_unbalanced_fill` still PASSES both). The footing
+# undersides rise 9" from -11'-1" to -10'-4", and the frost design at the house edge is
+# unchanged in kind: these two were never on cover, they are on ASCE 32 soil replacement
+# through FB-SG-W1/E1's 42" of drained NFS stone, and 42" of stone under a raised footing
+# is the same 42" of stone.
 _porch_top = ft(SPEC.porch_top_ft)  # storey datum = top of joist; the masonry bears here
 _ret_top = ft(SPEC.retaining_top_ft)
 # Top of wall to underside of footing — the true unbalanced fill on the three free retaining
@@ -641,15 +665,20 @@ WALLS = [
     # both directions at both ends, which is what R404.1.2(8) presumes and what the free
     # retaining walls south of here (W2/E2/S) do not have.
     #
-    # These walls resolve EXACTLY 10'-0" tall over 7'-2" of unbalanced fill, which is the
-    # last row IRC Table R404.1.2(8) publishes; R404.1.3's no-seal prescriptive path reaches
-    # it, and `structural.foundation_unbalanced_fill` PASSES both walls.
+    # These walls resolve 9'-1 7/16" tall over 6.3' of unbalanced fill, which the check
+    # answers on Table R404.1.2(8)'s 10' wall x 7' backfill row — the last one it publishes,
+    # reached from BELOW. R404.1.3's no-seal prescriptive path gets there and
+    # `structural.foundation_unbalanced_fill` PASSES both walls.
     #
-    # The inch that keeps them at 10'-0" (rather than 10'-1") came out of the WALL and not
-    # out of the ground: `_porch_wall_bottom` raised the bearing and FT-SG-W1/E1 went
-    # 12" -> 13" thick to hold their undersides at the same -11'-1", so the 21" of frost
-    # cover the R403.3 wing insulation is sized against did not move. Verified before and
-    # after.
+    # ** THE 10'-0" WAS A CEILING, NOT A TARGET, AND HOLDING THEM AT IT COST 9". ** They
+    # stood at 9'-9 7/16" on a 13"-thick footing for one day, expressly to keep the table's
+    # last row and the footing undersides where the frost design had left them. Both
+    # arguments were weaker than they looked: a SHORTER wall over LESS fill sits further
+    # inside the same row, and the frost answer at this edge was never cover — it is ASCE 32
+    # soil replacement through FB-SG-W1/E1's 42" of drained NFS stone, which is the same 42"
+    # of stone whatever elevation the footing above it starts at. Meanwhile the whole
+    # under-porch excavation — wall foot, footing, and a 42" bed — sat 9" deeper than the
+    # identical stack ten feet south. It does not any more.
     #
     # `#6 @ 38" o.c.` is kept, and it is now MORE than the table asks: at 10' x 8' backfill
     # a 12" wall of 4,000 psi concrete needs no vertical reinforcement at all under footnote
@@ -659,7 +688,7 @@ WALLS = [
     # call, not this file's.
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
+                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
                    reinforcement=_BRACED_STEM_STEEL),
@@ -674,7 +703,7 @@ WALLS = [
     # layer — which is exactly what the retired masonry railing above them was.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_porch_top, bottom_elevation=_porch_wall_bottom,
+                   top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
                    reinforcement=_BRACED_STEM_STEEL),
@@ -774,16 +803,21 @@ WALLS = [
     #
     # ** THE FILL AGAINST THESE THREE IS AUTHORED. ** Left derived,
     # `structural.foundation_unbalanced_fill` measures from the single global `Site.grade`
-    # (-2'-10") down to the footing and reports **7.0'** — wrong here, because `params/
-    # raised_garden.py` builds an SRW apron whose `TOP = ft(RETAINING_WALL_TOP_FT)` — level
-    # with these walls' own tops at +0'-6" — standing 3'-0" out from their outer faces and
+    # (-2'-10") down to the footing and reports the fill below that plane — wrong here,
+    # because `params/raised_garden.py` builds an SRW apron whose `TOP =
+    # ft(RETAINING_WALL_TOP_FT)` — level with these walls' own tops at +0'-2", which is 36"
+    # over the yard — standing 3'-0" out from their outer faces and
     # holding a terrace of soil at that level *against them*. Grade is a plane, and a plane
-    # cannot describe a terrace sitting 3'-4" above it. The real retained height is the
-    # wall's full top-to-footing dimension, **9.62'** (10.37' until 2026-09-05, when these
-    # three footings rose 9" to become the court's walking surface).
+    # cannot describe a terrace sitting 3'-0" above it. The real retained height is the
+    # wall's full top-to-footing dimension, **9.29'** — 10.37' until 2026-09-05, when these
+    # three footings rose 9" to become the court's walking surface (9.62') and the run was
+    # then capped at 36" above grade, taking 4" off the top.
     #
     # It is deliberately written as the same arithmetic `_wall_bottom` and `_ret_top` are
-    # built from rather than as a literal, so it moves with either. There is no separate
+    # built from rather than as a literal, so it moves with either — and both ends HAVE
+    # moved: the bottom rose 9" when the footings became the court floor, and the top fell
+    # 4" when the run was capped at 36" out of the yard. Stem 10.37' -> 9.62' -> 9.29';
+    # engineered retained height H 11.37' -> 10.62' -> 10.29'. There is no separate
     # "terrace top" number and there must not be: `SPEC.retaining_top_ft` IS the terrace top,
     # because `raised_garden.py` reads that very constant to place its own apron. A second
     # copy would be exactly the divergence the "publish, do not re-derive" note further down
@@ -933,28 +967,26 @@ _front_footing_width_in = 36.0
 # ``under`` is a Post, so it misses the R404.4 branch and the nearest frost wing is 62" away.
 # FT-SG-COL would have passed for the wrong reason, shielded at distance 0 by a foam board it
 # happens to sit under. Re-derived, cover is exactly 42.0" again.
-# ** HELD AT -13'-2 11/16" WHEN THE COURT CAME BACK UP (2026-09-05). NOT DERIVED. **
-# This read `_court_top_in/12 - frost_depth_in/12` — 42" below the garden floor, which is
-# the rule these two bells exist to satisfy. When `court_step_down_in` went back to 0 that
-# expression lifted both bells 7 1/4", and it was not WRONG: 42" below the flush court is
-# still 42" of cover. It was not worth taking.
+# ** DERIVED AGAIN, AND BACK ON 42" EXACTLY (2026-09-05, second pass). **
+# It was pinned at -13'-2 11/16" for one day, on the argument that 49 1/4" of cover is more
+# conservative than 42" and that re-opening notes/porch_pier_*.md was not worth the 0.1 cy
+# of shaft it saves. Owner's call reverses that: the bells come back up to the rule they
+# exist to satisfy. A pinned literal here is also the kind of number that goes quietly
+# wrong the next time the court moves — which is precisely how it got to 49 1/4".
 #
-# What it costs to take: PT-SG-COL and PT-SG-FCOL are the two items in this house whose
-# bearing, punching shear, flexure, slenderness and cage are all hand-worked in
-# notes/porch_pier_*.md and reproduced term by term by test_pier_calcs /
-# test_pier_section_calcs. Moving the bells re-opens every one of them.
-# What it buys: a 12" and a 20" shaft each 7 1/4" shorter — about **0.1 cy of concrete**
-# across both piers. That is the wrong 0.1 cy to chase.
+# So it is the rule again, written as the rule: `frost_depth_in` below the court surface,
+# which is what `structural.frost_depth` measures cover against for a footing standing
+# inside this excavation. 42" below -9'-1 7/16" is -12'-7 7/16".
 #
-# So the bells stay where they were augered and simply carry 49 1/4" of cover instead of
-# 42" — strictly more conservative, and `structural.frost_depth` grades them on cover, so
-# it can only get happier. If these ever DO need to move, the note re-derivation is the
-# work, not this line.
-_pier_bell_bottom_ft = -158.6875 / 12.0
-# ** NEW CLEARANCE TO WATCH. ** The bells' 7" levelling beds now bottom at -13'-9 11/16"
-# against `_SG_DRYWELL_TOP` at -14'-4 7/16": 6 3/4" clear, down from 14". Still positive,
-# and it is the exact collision the FOOTING_BEDDING block below warns about — asserted in
-# test_catlin_outdoor_structures.py so it cannot close silently.
+# The consequence to keep an eye on is the clearance BELOW, not the cover above — see
+# `_pier_bell_top_ft`, where it is worked out against a well that rose 9" the same day.
+_pier_bell_bottom_ft = (_court_top_in - SPEC.frost_depth_in) / 12.0
+# ** THE CLEARANCE TO WATCH. ** The bells' 7" levelling beds bottom at -13'-2 7/16" against
+# `_SG_DRYWELL_TOP` at -13'-7 7/16": 5" clear. Both ends of that gap moved this pass — the
+# bells rose 7 1/4" to 42" cover and the well rose 9" onto the wall beds — so it is smaller
+# than either change alone suggests. It is the exact collision the FOOTING_BEDDING block
+# below warns about, asserted in test_catlin_outdoor_structures.py so it cannot close
+# silently, and the two bodies are 4'-3" apart in plan in any case.
 _pier_bell_top_ft = _pier_bell_bottom_ft + SPEC.footing_thickness_in / 12.0
 # How much further down the bell top sits than the garden floor it is flush with in plan.
 # Every shaft above a bell grows by exactly this, so no column top moves — the beam soffit
@@ -1056,13 +1088,11 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
 _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
                      "W-SG-W2": "SGF104AAAA", "W-SG-E2": "SGF105AAAA",
                      "W-SG-S": "SGF106AAAA"}
-# FT-SG-W1/E1 are 13" thick, not the 12" the other three carry. That extra inch is the one
-# the porch walls gave up when they were trimmed to 10'-0" (see `_porch_wall_bottom`): a
-# footing's top follows the wall bottom above it, so without this the two footings would
-# have RISEN an inch and lost an inch of the 21" of cover that IRC R403.3 wing insulation
-# under SL-SG-FLOOR is sized against. Thickening instead of raising keeps every underside,
-# every bedding undercut and every cover figure where the frost design left them.
-_PORCH_FOOTING_THICKNESS_IN = {"W-SG-W1": 13.0, "W-SG-E1": 13.0}
+# ** ALL FIVE WALL FOOTINGS ARE 12" (2026-09-05, second pass). ** FT-SG-W1/E1 used to be
+# 13": the odd inch was the one the porch walls gave up when they were trimmed to 10'-0",
+# put back into the footing so its UNDERSIDE would not move. With the porch walls now
+# bearing on `_wall_bottom` like everything else there is no trimmed inch to give back, and
+# a one-off thickness on two of five footings is a dimension a detailer has to notice.
 # ============================================================================
 # THE THREE RETAINING FOOTINGS GROW INBOARD ONLY: 7'-0" -> 8'-0", OFFSET 6".
 # ============================================================================
@@ -1118,7 +1148,7 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
         BarSpec(role="bottom-x", bar=6, spacing=inch(10.0),
                 note="transverse, resists the 4'-0\" toe cantilever; hook the toe end"),
         BarSpec(role="top-x", bar=6, spacing=inch(10.0),
-                note="transverse, resists the 3'-0\" heel carrying 9.62' of soil"),
+                note="transverse, resists the 3'-0\" heel carrying 9.29' of soil"),
         BarSpec(role="bottom-y", bar=4, spacing=inch(18.0),
                 note="longitudinal distribution steel; carries no graded limit state"),
     ),
@@ -1139,7 +1169,7 @@ FOOTINGS = [
             # footing in this court is inside the excavation and in the freezing zone.
             assembly=("CATLIN_RETAINING_FOOTING_96" if w.tag in _RETAINING
                       else "CATLIN_PORCH_FOOTING_84"),
-            depth=inch(_PORCH_FOOTING_THICKNESS_IN.get(w.tag, SPEC.footing_thickness_in)))
+            depth=inch(SPEC.footing_thickness_in))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
     for w in WALLS if w.tag in _WALL_FOOTING_UID
@@ -1179,8 +1209,9 @@ FOOTINGS.append(
 # resolved geometry / IFC (the dowels themselves are annotation-only — see plans/TODO.md).
 #
 # **FT-SG-COL IS NOT IN THIS SET, and there is nothing to replace it with.** A dowel-and-
-# foam joint needs two concretes meeting at one plane, and the garden bell bears 2'-6" lower
-# than FT-B-S2's underside — 1'-10" below it — so the two pours no longer face each other:
+# foam joint needs two concretes meeting at one plane, and the garden bell bears 2'-10"
+# lower than FT-B-S2's underside — its top is 1'-10" below it — so the two pours do not
+# face each other:
 # there is no joint to dowel and no bridge to break, because the separation itself is the
 # break. Leaving the flag on would cast a foam block into aggregate with nothing on the far
 # side of it. The two side walls are unchanged and keep theirs; their footings never moved.
@@ -1191,10 +1222,12 @@ _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 # it — a flat, free-draining seat at the bottom of an augered hole, and the host for the
 # tile that has to get water out of these two excavations — but 42" of soil REPLACEMENT
 # under a bell that is already at 42" is stone bought twice for one result. It is also
-# stone that does not fit: 42" under the new bell underside would bottom the excavation at
-# -16'-1 7/16", which is 1'-9" BELOW _SG_DRYWELL_TOP, so the bearing bed and the soakaway
-# it is supposed to sit on top of would swap places and intersect. Measured, not assumed —
-# the old bed bottomed at -13'-7 7/16" and cleared the well's stone by 9".
+# stone that does not fit: 42" under the bell underside would bottom the excavation at
+# -16'-1 7/16", 2'-6" BELOW _SG_DRYWELL_TOP, so the bearing bed and the soakaway it is
+# supposed to sit on top of would swap places. Measured, not assumed. At 7" the bed bottoms
+# at -13'-2 7/16" and clears the well's top of stone by 5" — the two do not overlap in plan
+# at all, so the clearance is belt and braces rather than the thing holding them apart, but
+# it is asserted because it is the number that would close first.
 _PIER_BELL = {"FT-SG-COL", "FT-SG-FCOL"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
@@ -1279,20 +1312,28 @@ FOOTING_BEDDING.append(
 # a 7" levelling course and their beds stop well short of this plane, which is clearance,
 # not a gap to close.
 #
-# ** THE DEEPEST BED IS NOW FT-SG-W1/E1's, NOT THE RETAINING STRIPS' (2026-09-05). ** Until
-# the three retaining footings rose to become the court floor, every wall footing in this
-# court had the same underside and this expression could be written once against any of
-# them. It cannot any more: FT-SG-W2/E2/S bottom at -121 7/16" and their beds at -163 7/16",
-# while the two house-adjacent porch strips did not move and still bottom at -130 7/16" with
-# their beds at -172 7/16". `test_the_garden_drywell_sits_below_the_bearing_bed` takes the
-# `min` over every FT-SG-* bed, so this must be the deepest of them and not an average or a
-# convenient one — it is written as the porch strips' own arithmetic for that reason.
+# ** IT SITS ON THE FIVE WALL BEDS, AND THAT IS WHAT WAS BROKEN. ** Until the retaining
+# footings rose, every bed in this court — five wall beds and the grade beam's — shared one
+# underside, and the well's top of stone WAS that plane: the whole bearing system stood on
+# the soakaway and drained into it by falling into it. Lifting the wall footings 9" left
+# their beds at -13'-7 7/16" with the well still pinned to the beam's at -14'-4 7/16", so
+# the five tiles that feed this well ended 9" above the top of it, discharging into
+# undisturbed clay. `drainage.discharge_consistency` resolves the NAME and never asks where
+# the pipe goes, so it passed; the plan drawings are where it shows, and it showed.
+#
+# So the well follows the WALL beds, which are the ones that feed it, and FB-SG-ARCH's is
+# now the one bed that reaches BELOW it — 9" lower, 2" clear of the shaft in plan, feeding
+# the stone column through its side the way a soakaway beside a trench does rather than
+# from above. That is a real difference from the old "everything stacks on one plane" and
+# it is why the two lead runs below are authored: with the tops level, the tie is a 3'-0"
+# horizontal lead, which is a thing that can be drawn and dug.
 #
 # 6' of fabric-wrapped stone below (unwrapped, this clay silts its voids shut in a
 # season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the two collided.
-_SG_DRYWELL_TOP = (_porch_wall_bottom
-                   - inch(_PORCH_FOOTING_THICKNESS_IN["W-SG-W1"])
-                   - inch(SPEC.aggregate_bedding_depth_in))
+_SG_WALL_BED_BOTTOM = (_wall_bottom
+                       - inch(SPEC.footing_thickness_in)
+                       - inch(SPEC.aggregate_bedding_depth_in))
+_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM
 GARDEN_DRYWELL = Drywell(
     uid="SGDR01AAAA", tag="DRW-SG-MAIN",
     position=pt(ft(_cx), ft((_y_in_s + _y_in_n) / 2.0)),
@@ -1301,7 +1342,8 @@ GARDEN_DRYWELL = Drywell(
     # Every FT-SG-* bearing bed, plus the field's own underdrain. FD-SG-FIELD is named as a
     # string rather than swept up, because the field's plan coordinates are derived below
     # this point and the well is what they are derived towards.
-    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING) + ("FD-SG-FIELD",),
+    inlet_refs=tuple(b.tag for b in FOOTING_BEDDING)
+    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E"),
 )
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
@@ -1328,6 +1370,8 @@ GARDEN_DRYWELL = Drywell(
 # The court-side edge of each retaining strip, derived so it cannot drift from the footing:
 # wall axis, half the 8'-0" strip, plus the 6" the strip is offset INTO the court.
 _ret_toe_reach_ft = _RETAINING_FOOTING_WIDTH_IN / 24.0 + _RETAINING_FOOTING_OFFSET_IN / 12.0
+# The porch strips' equivalent: 84" centred on the wall axis, no offset, so half of it.
+_porch_toe_reach_ft = SPEC.footing_width_in / 24.0
 _field_x_w = (_x_in_w - _half) + _ret_toe_reach_ft   # 12.5
 _field_x_e = (_x_in_e + _half) - _ret_toe_reach_ft   # 23.5
 _field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -24.833
@@ -1401,6 +1445,51 @@ GARDEN_UNDERDRAIN = FrenchDrain(
 # "sleeve", so the modelled trench is only the part that really is one, and the sleeve is
 # this comment. North of the court it ties into the house perimeter collector, which as of
 # today falls to the same sump.
+# ** THE TWO LEADS THAT MAKE "discharges to DRW-SG-MAIN" A RUN AND NOT A STRING. **
+# Seven `FootingBedding` tiles in this court name DRW-SG-MAIN, the well names all seven
+# back in `inlet_refs`, and until now not one inch of pipe ran between them: the check
+# resolves tags, `resolve/drain_tile.py` derives a ring per bed and never a lead, and the
+# well is a bare cylinder 3'-0" away from the nearest ring in plan. Six named connections
+# with no geometry is the same defect as the field's "draining to DRW-SG-MAIN" prose, one
+# level up.
+#
+# ** TWO, NOT SEVEN. ** The five wall beds are ONE excavation: FB-SG-W1's stone abuts
+# FB-SG-W2's at y = -11.0' where the footings meet, and W2's abuts FB-SG-S's through a
+# 4'-10" square corner lap — measured, not assumed — so the west ring, the south ring and
+# the porch ring are a single connected body of washed stone at one invert, and the east
+# side mirrors it. One lead per side takes the lot. FB-SG-ARCH takes none: its bed bottoms
+# 9" BELOW the well's top and stops 2" from the shaft in plan, so it feeds the column
+# through its side and a lead would be a pipe running uphill.
+#
+# Each run is 5'-6" of trench from the strips' court face at `_field_x_*` to the well's own
+# centre — 3'-0" of it in open ground and the last 2'-6" inside the shaft. Drawn to the
+# CENTRE rather than to the face for the same reason FD-SG-FIELD is: a band that stops on
+# the cylinder's edge reads in section as a pipe that does not arrive.
+#
+# The invert IS `_SG_WALL_BED_BOTTOM`, the same expression the well's top is, so the two
+# cannot drift apart into a lead that runs uphill — which is exactly what happened to the
+# well itself when the footings rose.
+_sg_well_y = (_y_in_s + _y_in_n) / 2.0
+_WELL_LEAD = dict(invert=_SG_WALL_BED_BOTTOM, trench_width=inch(12), trench_depth=inch(8),
+                  discharge_ref="DRW-SG-MAIN")
+GARDEN_LEAD_W = FrenchDrain(
+    uid="SGFD03AAAA", tag="FD-SG-LEAD-W",
+    # The retaining strips' court-side face out to the well's own centre — the same two
+    # names FD-SG-FIELD is drawn between, so all three runs share one geometry.
+    path=(pt(ft(_field_x_w), ft(_sg_well_y)), pt(ft(_cx), ft(_sg_well_y))),
+    # `sock=True`, unlike the field's. This lead leaves a bearing bed in clay and the sock
+    # is what keeps the clay out of the pipe; the field's run is filtered by the graded
+    # sand above it and USGA says a sleeve there seals the line.
+    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+    **_WELL_LEAD,
+)
+GARDEN_LEAD_E = FrenchDrain(
+    uid="SGFD04AAAA", tag="FD-SG-LEAD-E",
+    path=(pt(ft(_field_x_e), ft(_sg_well_y)), pt(ft(_cx), ft(_sg_well_y))),
+    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+    **_WELL_LEAD,
+)
+
 GARDEN_OVERFLOW = FrenchDrain(
     uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
     path=(pt(ft(_field_x_mid), ft(_field_y_n + 1.0)),
@@ -1418,7 +1507,8 @@ GARDEN_SLAB = Slab(
     thickness=inch(SPEC.rim_thickness_in),
     top_elevation=_court_top,
     openings=("FO-SG-FIELD", "FO-SG-BRKBM",
-              "FO-SG-TOE-W", "FO-SG-TOE-E", "FO-SG-TOE-S"),
+              "FO-SG-TOE-W", "FO-SG-TOE-E", "FO-SG-TOE-S",
+              "FO-SG-TOE-N-W", "FO-SG-TOE-N-E"),
 )
 
 # `FloorOpeningPurpose.CHASE` on all five, and it is load-bearing rather than descriptive:
@@ -1478,16 +1568,24 @@ GARDEN_FLOOR_OPENINGS = [
     # each runs from the wall's court face (`_x_in_*` / `_y_in_s`) out to that strip's own
     # `_field_*` edge, which is the same `_ret_toe_reach_ft` the field is derived from — so a
     # change to the footing width moves the toe and the field together or neither.
+    #
+    # ** THE NORTH EDGE IS `_y_ax_mid`, NOT `_field_y_n`, AND THE 6" DIFFERENCE WAS A REAL
+    # LEAK. ** FT-SG-W2/E2 run north to `_y_ax_mid` (-11.0'); the FIELD stops 6" short of
+    # that, at the grade beam's south face. Cut to the field's edge, each of these two left
+    # a 4'-0" x 0'-6" tongue of footing under 3 1/2" of rim — 2.0 sf of concrete billed
+    # twice and cast into itself, at 0 FAIL, because `structural.concrete_interference`
+    # grades only ISOLATED pours and every FT-SG-* carries `under=`. The toes are cut to
+    # the FOOTING now, which is what they were always for.
     FloorOpening(uid="SGO004AAAA", tag="FO-SG-TOE-W", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_field_y_s)),
                           pt(ft(_field_x_w), ft(_field_y_s)),
-                          pt(ft(_field_x_w), ft(_field_y_n)),
-                          pt(ft(_x_in_w), ft(_field_y_n)))),
+                          pt(ft(_field_x_w), ft(_y_ax_mid)),
+                          pt(ft(_x_in_w), ft(_y_ax_mid)))),
     FloorOpening(uid="SGO005AAAA", tag="FO-SG-TOE-E", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_field_x_e), ft(_field_y_s)),
                           pt(ft(_x_in_e), ft(_field_y_s)),
-                          pt(ft(_x_in_e), ft(_field_y_n)),
-                          pt(ft(_field_x_e), ft(_field_y_n)))),
+                          pt(ft(_x_in_e), ft(_y_ax_mid)),
+                          pt(ft(_field_x_e), ft(_y_ax_mid)))),
     # The south toe takes the full court width, so the two corner laps — where the west and
     # east strips run past the south one — fall inside it and are not double-cut.
     FloorOpening(uid="SGO006AAAA", tag="FO-SG-TOE-S", purpose=FloorOpeningPurpose.CHASE,
@@ -1495,6 +1593,27 @@ GARDEN_FLOOR_OPENINGS = [
                           pt(ft(_x_in_e), ft(_y_in_s)),
                           pt(ft(_x_in_e), ft(_field_y_s)),
                           pt(ft(_x_in_w), ft(_field_y_s)))),
+    # ** THE PORCH BAY'S TWO TOES (2026-09-05, second pass). ** FT-SG-W1/E1 rose to the
+    # court plane with the other three, so the rim has to be cut off them the same way.
+    #
+    # They are 3'-0" of reach, not the retaining strips' 4'-0": the porch footings are the
+    # shared 84" wide and centred on their wall (no `offset`), so they project
+    # `footing_width/2` from the axis and only `footing_width/2 - _half` past the wall's
+    # court face. Derived from the same field, so a footing-width change moves the cut.
+    #
+    # The north end stops on the veneer beam's south face rather than on the court's own
+    # north edge, because `FO-SG-BRKBM` already voids the full width of that last 1'-0" and
+    # two openings over one piece of floor is a hole cut twice.
+    FloorOpening(uid="SGO007AAAA", tag="FO-SG-TOE-N-W", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_x_in_w), ft(_y_ax_mid)),
+                          pt(ft(_x_ax_w + _porch_toe_reach_ft), ft(_y_ax_mid)),
+                          pt(ft(_x_ax_w + _porch_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)),
+                          pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)))),
+    FloorOpening(uid="SGO008AAAA", tag="FO-SG-TOE-N-E", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_x_ax_e - _porch_toe_reach_ft), ft(_y_ax_mid)),
+                          pt(ft(_x_in_e), ft(_y_ax_mid)),
+                          pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
+                          pt(ft(_x_ax_e - _porch_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)))),
 ]
 
 # ** THE OPEN CENTRE IS A USGA PUTTING-GREEN PROFILE, ISOLATED BEHIND ONE ASSEMBLY. **
@@ -2722,7 +2841,7 @@ BALCONY_JOISTS = FloorSystem(
 # Fiberglass (GFRP) rebar dowels + 40 psi XPS foam thermal break between the shared
 # house/garden footings. The two house-adjacent footings (the porch side walls, along the
 # north edge) pin to the house footing across a 2" XPS block so the joint transfers shear
-# without a thermal bridge. Bars at mid-footing (-9.25'), on the north-edge line.
+# without a thermal bridge. Bars at mid-JOINT (-9'-5 7/16"), on the north-edge line.
 #
 # **DW-SG-COL, the third, is retired, with its bell.** It would have crossed the joint
 # between FT-SG-COL and FT-B-S2 if the two sat at the same elevation 2" apart, but the bell
@@ -2734,14 +2853,29 @@ BALCONY_JOISTS = FloorSystem(
 # ``enumerate``-minted uid was safe to do in place (compare _WALL_FOOTING_UID above, where
 # it was not).
 # ============================================================================
-_dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)
+# ** THE BARS WERE ABOVE THE FOOTING THEY DOWEL INTO. FIXED 2026-09-05. **
+# This read `ft(-(basement_depth_ft + 0.75) + footing_thickness/24)` — mid-height of a
+# garden footing whose underside was -118 7/16", which is where FT-SG-W1/E1 sat before the
+# court was ever re-levelled. Two elevation changes later the bars resolved at -112 7/16"
+# and the garden footing's TOP was -117 7/16": three #5 GFRP bars 5" of open air above the
+# concrete they claim to develop into, and a 12" foam block straddling a joint that was not
+# there. Nothing grades a dowel against the two footings it names, so it read fine.
+#
+# Derived now, off the joint itself. The two footings share a face from FT-B-S2's underside
+# up to the plane they both top out on — 8", the house footing's own depth — and the bars
+# sit at the middle of it with 4" to each face. `_HOUSE_FOOTING_DEPTH_IN` is transcribed
+# from `params/foundations.HOUSE_FOOTINGS` (`depth=inch(8)`) rather than imported, the same
+# way `basement_depth_ft` is, and the foam block is that same 8" so it fills the joint
+# exactly instead of standing proud of it into the slab bed.
+_HOUSE_FOOTING_DEPTH_IN = 8.0
+_dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 _DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(y)),
           axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,
           count=3, spacing=inch(8),
           connects=(f"FT-SG-{name}", "FT-B-S2"),
-          foam_thickness=inch(2), foam_height=inch(SPEC.footing_thickness_in), foam_psi=40.0)
+          foam_thickness=inch(2), foam_height=inch(_HOUSE_FOOTING_DEPTH_IN), foam_psi=40.0)
     for i, (name, x, y) in enumerate(_DOWEL_AT, start=1)
 ]
 
@@ -3065,7 +3199,7 @@ BALCONY_GUTTER = Gutter(
 # 3" round, not the roof's 4": catches only the balcony deck (~200 sf) vs. 648 sf per house
 # eave. It no longer drops into the sunken garden — hanging outboard of the east wall there
 # is no garden underneath it — so it discharges 6" above the raised terrace, whose surface
-# is level with that wall top at +0'-6" (raised_garden.TOP). DRW-SG-MAIN stops naming it as
+# is level with that wall top at +0'-2" (raised_garden.TOP). DRW-SG-MAIN stops naming it as
 # an inlet for the same reason, and that is the better half of the trade: the soakaway
 # serves a 9'-deep pit with no outlet of its own, and 200 sf of balcony runoff is the one
 # contribution it does not have to swallow.
@@ -3172,6 +3306,7 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
+                     GARDEN_LEAD_W, GARDEN_LEAD_E,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

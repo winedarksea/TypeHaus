@@ -128,23 +128,15 @@ DECLARED_DIVERGENCES = {
         "side walls replaced the arched cross-wall, and the 42\" masonry parapet over it "
         "became RL-SG-PORCH (→ contract test)"
     ),
-    # ** FT-SG-W2 / FT-SG-E2 ARE STILL THERE. THE MATCHER LOST THEM, 2026-09-05. **
-    # Both are `only_in_current` in the same report, which is what says this is a pairing
-    # artifact and not a deletion. Two things moved them past the scorer at once: they were
-    # already the widest divergence in this category (the reference strip is 7'-0", the
-    # current one 8'-0" offset 6" into the court — see test_retaining_court), and then their
-    # tops rose 9" so their footings could become the court's walking surface. Their south
-    # sibling FT-SG-S made exactly the same move and still pairs, at 0.353 m — which is the
-    # useful evidence that the threshold, not the geometry, is what changed sides here.
-    "Sunken Garden East Wall Footing": (
-        "FT-SG-E2, present and only_in_current: the 7'-0\" -> 8'-0\" inboard widening plus "
-        "the 9\" rise of 2026-09-05 together carry it past the matcher's score, though "
-        "FT-SG-S survives the same move"
-    ),
-    "Sunken Garden West Wall Footing": (
-        "FT-SG-W2, present and only_in_current: the same widening and the same 9\" rise as "
-        "its east mirror, from the same symbols in params/sunken_garden.py"
-    ),
+    # ** FT-SG-W2 / FT-SG-E2 PAIR AGAIN, 2026-09-05 (second pass), AND NOTHING ABOUT THEM
+    # MOVED TO DO IT. ** They fell out of the matcher earlier the same day — the 7'-0" ->
+    # 8'-0" inboard widening plus a 9" rise carried them past its score — and they came back
+    # when FT-SG-W1/E1 rose the same 9" and went 13" -> 12" thick. Those two are the
+    # NEIGHBOURING footings, and the scorer pairs against the whole reference set: moving
+    # them changed which candidate each reference footing competes with. Worth leaving this
+    # comment behind rather than deleting the entries silently, because a divergence that
+    # resolves itself when something ELSE moves is the clearest evidence available that this
+    # category's declarations are about the matcher and not about the house.
     "Sunken Garden North Wall Footing": (
         "the court's north end has carried no footing since the north wall went. It was "
         "PAIRED rather than declared until 2026-09-05 — FT-B-BRICK, the plinth under the "

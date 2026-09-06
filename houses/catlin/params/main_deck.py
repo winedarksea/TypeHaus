@@ -324,14 +324,40 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # box's own weight: a 1 1/2" mortar bed plus platform and tile is roughly 450-500 lb of
 # PERMANENT load over ~23 ft2, which is the part that creeps for thirty years while the
 # 601 lb of water is there a few hours a week.
+#
+# ** THE THIRD ENTRY IS THE WASHTOWER, AND IT IS BLOCKING ONLY — NO SISTER. ** FX-M-LAUNDRY
+# stands at (114.06", 238.58"), so its 27"x32 3/4" footprint covers y 222"..255" and its
+# nearest joist line is the SAME y=240" the bath already sisters — and a sister ply runs the
+# WHOLE joist (``resolve/floors.py`` ``_reinforcement_members``), so the doubled line is
+# already under the machine end to end. Nothing to add there.
+#
+# What the machine does not have is blocking at its OWN station: the bath's blocks all sit
+# at x=74.56", 40" west. The WashTower is ~450 lb (340 dry + a drum of water) on 6.1 ft2,
+# spread over 2-3 lines at 150-225 lb each — LIGHTER per line than the bath's 239 lb, on a
+# line that is already doubled, so this is not a strength entry and no ply is warranted.
+# It is the SPIN CYCLE: a ~20 Hz dynamic point load at essentially midspan of an 18'-0" bay,
+# and blocking is what makes the neighbouring lines take it instead of one line drumming.
+# Cheap only while the basement ceiling is open.
+#
+# ** IT MUST STAY LAST IN THIS TUPLE. ** ``laid`` is built in iteration order and every
+# entry's blocks are cut against the cluster laid SO FAR. Ahead of the y=240" bath entry
+# this one would cut its blocks against a bare joist and the bath's ply would then be laid
+# straight through them — ``structural.member_interference``, two FAILs. ``plies=1`` asks
+# for no ply of its own and tops up nothing; it rides the bath entry's finished cluster.
+# x=112.81"..115.31" at 2 1/2" wide, clear of the bath's 73.31"..75.81".
 _TUB_DECK_X = inch(74.56)          # FX-M-BATH2-TUB's centre, and the blocks' axis station
-_TUB_DECK_REINFORCEMENT = (
+_LAUNDRY_X = inch(114.06)          # FX-M-LAUNDRY's centre, and its own blocks' station
+_WEST_FLOOR_REINFORCEMENT = (
     JoistReinforcement(at=pt(_TUB_DECK_X, inch(208)), plies=1, blocking=True,
                        source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
                               "192\"..224\" bays under the bath and under W-M-TUBDK-S"),
     JoistReinforcement(at=pt(_TUB_DECK_X, inch(240)), plies=2, blocking=True,
                        source="RM-M-BATH2 drop-in bath: one sister ply plus full-depth "
                               "blocking in the 224\"..256\" bays, completing the spread"),
+    JoistReinforcement(at=pt(_LAUNDRY_X, inch(240)), plies=1, blocking=True,
+                       source="FX-M-LAUNDRY WashTower: full-depth blocking in the "
+                              "224\"..256\" bays at the machine's own station, for spin-"
+                              "cycle vibration — the y=240\" line is sistered already"),
 )
 
 # South bay: full 18'-0" span, wall to centre line, y 0'-0" to the bathroom node line.
@@ -346,7 +372,7 @@ WEST_FLOOR = FloorSystem(
                      bearing_refs=("W-B-W2", "W-B-W1", "W-B-CS", "W-B-CS3", "W-B-CS2",
                                    "W-B-CN2")),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
-    reinforcements=_TUB_DECK_REINFORCEMENT,
+    reinforcements=_WEST_FLOOR_REINFORCEMENT,
     # The basement's ceiling. R316.4 wants gypsum over the EPS in the concrete band; the
     # owner's decision was to drywall the whole ceiling rather than stop the board at the
     # boundary (houses/catlin/preferences.toml).

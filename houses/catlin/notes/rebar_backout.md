@@ -28,26 +28,30 @@ rate.
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
 | column | #3 | hdg-a767 | 187.6 LF | 70.5 lb | all ten cast columns, ties |
-| column | #5 | hdg-a767 | 297.0 LF | 309.8 lb | all ten cast columns, verticals |
+| column | #5 | hdg-a767 | 292.1 LF | 304.7 lb | all ten cast columns, verticals |
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
-| foundation wall | #4 | hdg-a767 | 817.7 LF | 546.2 lb | `W-SG-W2/E2/S` horizontal |
+| foundation wall | #4 | hdg-a767 | 789.3 LF | 527.3 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 208.0 LF | 216.9 lb | the eight 8" basement runs |
-| foundation wall | #6 | hdg-a767 | 717.0 LF | 1,076.9 lb | `W-SG-*` verticals |
-| | | | | **4,056 lb** | **2.03 ton** |
+| foundation wall | #6 | hdg-a767 | 690.0 LF | 1,036.4 lb | `W-SG-*` verticals |
+| | | | | **3,992 lb** | **2.00 ton** |
 
-**The two `foundation wall` rows lost 119.2 lb on 2026-09-05, and no schedule changed.** The
-three retaining footings rose 9" so their tops could become the court's walking surface
-(`params/sunken_garden._wall_bottom`), which shortened the stems above them 10.37' -> 9.62'.
-Steel authored as a SPACING is `area / spacing`, so a foot off a 57'-0" run of wall is 4.75
-sf of plane gone from both the horizontal (#4) and the vertical (#6) mats. The bar sizes and
-spacings are exactly what §6 and §7 of `sunken_garden_court_free_body.md` selected; there is
-simply less wall.
+**The two `foundation wall` rows have lost 159.4 lb across two moves on 2026-09-05, and no
+schedule changed.** First the three retaining footings rose 9" so their tops could become the
+court's walking surface (`params/sunken_garden._wall_bottom`), shortening the stems above them
+10.37' -> 9.62'; then the run was capped at 36" out of the yard (`SPEC.retaining_top_ft`,
+derived from site grade), taking another 4" off the top and the stem to 9.2865'. Steel
+authored as a SPACING is `area / spacing`, so a foot off a 57'-0" run of wall is 4.75 sf of
+plane gone from both the horizontal (#4) and the vertical (#6) mats. The bar sizes and
+spacings are exactly what §6 and §7 of `sunken_garden_court_free_body.md` selected — and both
+are still the selection at the new demand, which that note's §6 works through; there is simply
+less wall.
 
-`column #5` gained 4.9 LF / 5.1 lb on 2026-09-03: the court dropped 7 1/4" and
-`_pier_bell_bottom_ft` followed it, so both belled piers' shafts — and the four #5 verticals
-in each — grew by exactly that step. The bells did not move relative to the ground they bear
-on; the ground moved.
+`column #5` gained 4.9 LF / 5.1 lb on 2026-09-03 and gave it back on 2026-09-05. The court
+dropped 7 1/4" and `_pier_bell_bottom_ft` followed it down, so both belled piers' shafts — and
+the four #5 verticals in each — grew by exactly that step; when the court came back flush the
+bells came back with it. The bells have never moved relative to the beam soffits they carry;
+the ground moved, twice.
 
 **Nine rows became seven on 2026-09-03, and not one pound moved.** `PIER_CONCRETE_12` was
 given a real `ConcreteSpec`, and `bar_coating` is a property of the POUR, so the 149 lb in
@@ -75,33 +79,42 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 `wall_structure` row of material `concrete`. `tests/test_rebar_backout.py` recomputes it.
 
 ```
-column   PIER_CONCRETE_12                       0.84 cy
-column   SUNKEN_GARDEN_COLUMN_12                1.27
-footing  CATLIN_FOOTING_20                     10.28
+column   PIER_CONCRETE_12                       0.82 cy
+column   SUNKEN_GARDEN_COLUMN_12                1.25
+footing  CATLIN_FOOTING_20                     10.30
 footing  CATLIN_PIER_BASE_12                    0.57
-footing  CATLIN_PORCH_FOOTING_84                5.71
+footing  CATLIN_PORCH_FOOTING_84                5.27
 footing  CATLIN_RETAINING_FOOTING_96           16.79
 footing  FOOTING_FPSF_20                        1.48
 pad      CATLIN_PIER_BASE_12                    0.26
 slab     CATLIN_DECK_EPS_INT                   18.37
 slab     CATLIN_GARAGE_STEP_6                   0.17
-slab     CATLIN_GARDEN_SLAB                     1.95
+slab     CATLIN_GARDEN_SLAB                     1.31
 slab     CATLIN_SLAB_FLOOR                     14.00
 slab     GARAGE_SLAB_ON_GRADE                   5.27
 slab     HP_PAD_ON_GRADE                        0.56
-                                     solids   79.49 cy
+                                     solids   76.42 cy
 
-SUNKEN_GARDEN_WALL                            28.64
+SUNKEN_GARDEN_WALL                            27.44
 CATLIN_BASEMENT_8                             17.55
 CATLIN_BASEMENT_12                            10.67
 GARAGE_ICF_6                                    8.82
 FOUNDATION_WALL_12_INT                         6.57
 SG_VENEER_BEAM_14                              1.10
 the two garden curbs                           0.21
-                                      walls   75.13 cy
+                                      walls   72.36 cy
 
-                                      TOTAL  151.10 cy
+                                      TOTAL  148.78 cy
 ```
+
+**2.32 cy came out on 2026-09-05's second pass, and every yard of it was concrete poured on
+top of something.** `SUNKEN_GARDEN_WALL` -1.20 (4" off five wall tops at the 36" cap, 8" off
+the two porch walls' bottoms); `CATLIN_GARDEN_SLAB` -0.64 (`FO-SG-TOE-N-W/E` void the rim over
+the porch strips, which are the court's walking surface now like the other three, and the
+W/E toes were extended 6" north to the footings they are cut for); `CATLIN_PORCH_FOOTING_84`
+-0.44 (FT-SG-W1/E1 back to the shared 12" from a one-off 13"); the two column rows -0.04
+(shafts 7 1/4" shorter as the bells came back up to 42"). The excavation fell further than
+the pour did: 9" across the whole under-porch footprint, and the same 9" off `DRW-SG-MAIN`.
 
 **`CATLIN_GARDEN_SLAB` is 1.95 cy and the court has moved three times under it.** It fell
 5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
@@ -150,11 +163,11 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          4,056 lb / 151.10 cy   =  26.8 lb/cy
-register ~5 t  10,000 lb / 151.10 cy   =  66.2 lb/cy
+billed          3,992 lb / 148.78 cy   =  26.8 lb/cy
+register ~5 t  10,000 lb / 148.78 cy   =  67.2 lb/cy
 ```
 
-At a black-bar material price of $1.05-1.35/lb, **4,056 lb is $4,259-5,476.** The allowance
+At a black-bar material price of $1.05-1.35/lb, **3,992 lb is $4,192-5,389.** The allowance
 register (`plans/cost-options.md`, `prices.toml` `[allowances]`) carries rebar at
 **$10,000-18,000**, and the plan's acceptance condition is explicit:
 

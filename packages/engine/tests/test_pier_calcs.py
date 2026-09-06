@@ -89,17 +89,24 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # PT-SG-COL's bearing d/c is what feels it — 0.81 -> 0.83 on a 30" bell, the least margin in
 # this structure.
 #
-# ** THE SHAFTS GREW 7 1/4" ON 2026-09-03. ** The sunken-garden court dropped that far (the
-# flood step at D-B-PATIO) and `_pier_bell_bottom_ft` is 42" below the COURT, so both bells
-# followed the ground down and the shafts made up the difference. No beam soffit moved. What
-# did move: 71 lb of self weight per column into D, h/d 10.7 -> 11.29, k*lu/r 42.7 -> 45.1,
-# and P_c down 10.5% (it goes as 1/lu^2) so delta_ns eased up a little. notes §1, §2, §4e.
+# ** THE SHAFTS GREW 7 1/4" ON 2026-09-03 AND GAVE IT BACK ON 2026-09-05. ** The court
+# dropped that far (the flood step at D-B-PATIO) and `_pier_bell_bottom_ft` is 42" below the
+# COURT, so both bells followed the ground down and the shafts made up the difference; then
+# the court came back flush and they came back with it. No beam soffit moved in either
+# direction. In between, `_pier_bell_bottom_ft` was PINNED at the dropped elevation for a
+# day, which left the bells carrying 49 1/4" of cover instead of the 42" the rule asks for;
+# the owner's instruction reverses that and the constant is derived again.
+#
+# So these rows are back where they were before the step: 1,258 lb of shaft, h/d 10.7,
+# k*lu/r 42.7. What is NOT symmetric is the tributary — that changed for its own reasons on
+# 2026-09-03 and stayed changed — so a reader diffing this block against its pre-step
+# version will find D and P_u agreeing and the loads above them not. notes §1, §2, §4e.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 120.83, "dead_lb": 2605.0, "live_lb": 4833.0,
-        "service_lb": 7438.0, "factored_lb": 10_859.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1665.0,
-        "gross_in2": 113.1, "h_over_d": 11.29, "min_steel_in2": 1.131,
+        "tributary_ft2": 120.83, "dead_lb": 2534.0, "live_lb": 4833.0,
+        "service_lb": 7367.0, "factored_lb": 10_774.0,
+        "bell_area_ft2": 4.909, "bearing_psf": 1651.0,
+        "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
         # §4d: PIER_CONCRETE_12 names CATLIN_EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
@@ -108,16 +115,16 @@ _ORACLE = {
         # THE TWO COLUMNS ARE POURED FROM THE SAME 5,000 psi; the split is the unfinished
         # migration of SUNKEN_GARDEN_COLUMN_12, not a difference in the concrete.
         "capacity_lb": 285_893.0, "tie_spacing_in": 10.0,
-        "slenderness": 45.1, "delta_ns": 1.022, "e_magnified_in": 0.981, "e_capped_in": 1.20,
+        "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 120.83, "dead_lb": 2604.0, "live_lb": 4833.0,
-        "service_lb": 7436.0, "factored_lb": 10_858.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1202.0,
-        "gross_in2": 113.1, "h_over_d": 11.29, "min_steel_in2": 1.131,
+        "tributary_ft2": 120.83, "dead_lb": 2532.0, "live_lb": 4833.0,
+        "service_lb": 7366.0, "factored_lb": 10_772.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
+        "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 45.1, "delta_ns": 1.028, "e_magnified_in": 0.987, "e_capped_in": 1.20,
+        "slenderness": 42.7, "delta_ns": 1.025, "e_magnified_in": 0.984, "e_capped_in": 1.20,
     },
 }
 

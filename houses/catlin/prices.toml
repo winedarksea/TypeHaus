@@ -1077,20 +1077,26 @@
 # At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
 # what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
 # check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 253.8 SF = 761.4 LF @ $6-14/LF
+"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 256.9 SF = 770.7 LF @ $6-14/LF
 # The stone itself is only $88-110/cy at this size: 4.71 cy is 6.6 tons, a third of a tandem,
 # so a light-load haul charge ($150-250) roughly doubles the truckload rate. The rest of this
 # range is the excavation, the geotextile wrap and the placement, which no other line carries.
 # WORTH DOING: have the driver spot the drywell stone off the 97 cy #57 order and this drops
 # to about $275 for the aggregate.
 "drywell" = { low = 150, high = 350 }  # 4.71 cy — was $70-180
-# The two sunken-garden trenches (FD-SG-FIELD, FD-SG-OVERFLOW), 2026-09-05. Same washed
-# stone as the drywell and the same $88-110/cy at the pit, but a quarter of a yard is a
-# hand-barrowed quantity 9' down a court with no truck access, so the placement dominates
-# the material by a wide margin and the range is wider than the drywell's for it. The 4"
-# pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot, like
-# every other run in the house.
-"french_drain" = { low = 400, high = 1100 }  # 0.24 cy in two hand-dug trenches
+# The four sunken-garden trenches, 2026-09-05: FD-SG-FIELD and FD-SG-OVERFLOW in the field,
+# plus FD-SG-LEAD-W/E, the two 3'-0" leads that carry the footing beds' tile into
+# DRW-SG-MAIN. Same washed stone as the drywell and the same $88-110/cy at the pit, but half
+# a yard is a hand-barrowed quantity 9' down a court with no truck access, so the placement
+# dominates the material by a wide margin and the range is wider than the drywell's for it.
+# The 4" pipe inside each trench is NOT here — it bills as `drain_tile` above, by the foot,
+# like every other run in the house.
+#
+# The rate is a LUMP for the set, not a $/cy, which is why it did not move when the two
+# leads doubled the yardage: the money in a hand-dug trench 9' down is the access and the
+# barrow, and two more short runs in the same hole share both. If a fifth run is ever
+# authored somewhere the barrow does not already reach, this number has to be re-opened.
+"french_drain" = { low = 400, high = 1100 }  # 0.51 cy in four hand-dug trenches
 # "dowel" =    # 0 cy
 # A 16"x8" footing is 0.0329 cy/LF, so this is $9.20-14.80/LF. Inch Calculator's dimension
 # table back-solves to a consistent $256-267/cy but on a $137/cy ready-mix basis; Twin Cities
@@ -4216,7 +4222,7 @@
 # 4" pipe inside it as [concrete] `drain_tile` ($/LF, open-trench installed) and the stone
 # around it as [concrete] `french_drain` ($/cy). A $/LF rate here would bill the same trench a
 # third time. The zero says "priced, elsewhere, on purpose".
-"french_drain" = { low = 0, high = 0 }  # 19.7 LF — bills in [concrete], twice over already
+"french_drain" = { low = 0, high = 0 }  # 30.7 LF — bills in [concrete], twice over already
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
 # zero-quantity row is not reported as unpriced either. The 4.35 cy of washed stone bills in

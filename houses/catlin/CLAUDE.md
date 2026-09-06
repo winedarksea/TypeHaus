@@ -2166,17 +2166,20 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     same expression, so the rim bears on it and **`FO-SG-ARCH` is retired** with the stoop.
     `W-SG-BRKBM`, by contrast, carries nothing structural: it is the veneer's thermal
     foundation only.
-  - **Two things were PINNED rather than allowed to follow the court up**, both because the
-    derivation was right and the churn was not worth it:
-    - `_pier_bell_bottom_ft` was `_court_top_in - frost_depth_in`. Following the court would
-      have lifted both belled piers 7 1/4" — still 42" of cover, perfectly legal — for about
-      **0.1 cy** of shaft, at the cost of re-opening every hand-worked term in the two porch
-      pier notes that `test_pier_calcs` / `test_pier_section_calcs` reproduce. Pinned; they
-      carry **49 1/4"** of cover now. `structural.frost_depth` grades on cover, so more can
-      only help.
+  - **Two things were PINNED rather than allowed to follow the court up. One of them has
+    since been un-pinned; the other must stay.**
+    - `_pier_bell_bottom_ft` was pinned for a day and is **DERIVED again** (owner's call,
+      later on 2026-09-05): `(_court_top_in - frost_depth_in) / 12`, so both bells carry
+      exactly **42"** of cover rather than the 49 1/4" the pin left them with. The pin's
+      argument — 0.1 cy of shaft against re-opening every hand-worked term in
+      `notes/sunken_garden_piers.md` — was real and was overruled: a pinned literal is what
+      silently drifts the next time the court moves, which is precisely how it got to
+      49 1/4". The note and both pier test modules were re-worked; the shafts are 128.1875"
+      again, exactly what they were before the flood step.
     - `_veneer_beam_bottom` was the garden slab's underside. Flush, that gives a 10 1/2"
       beam over a 19'-0" span, under ACI 318-19 Table 9.3.1.1's L/16 = 14 1/4" minimum depth.
       Held at -120 3/16" so the graded 17 3/4" section survives; the beam is simply buried.
+      **This one stays held.**
   - **Frost got BETTER, which is the quiet win.** `FT-B-S2`/`S3`'s cover below `SL-SG-FLOOR`
     goes 1" -> **8"**. The R403.3 wings still do the work, but they are no longer carrying it
     on a fingernail.
@@ -2194,6 +2197,59 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     court into two bays, both `SL-SG-FLOOR`, and the stoop happened to anchor the second;
     retiring it filled **281 sf** of open court onto the basement's gross area. It is an
     area-overlap test now, which asks the question actually meant.
+
+- **The court's second pass: the porch side joins the lift, the run is capped at 36" above
+  grade, and the well is tied to the footings that feed it** (2026-09-05, after the
+  re-levelling above). Four separate defects, all found by looking at the model rather than
+  by any check — none of them was a FAIL, and none of them could have been.
+  - **`SPEC.retaining_top_ft` is derived from grade now**, `(site_grade_in + 36)/12` = +0'-2".
+    It was +0'-6", i.e. **40"** out of the -2'-10" yard. One constant does two jobs, because
+    `params/raised_garden.py` reads it through `RETAINING_WALL_TOP_FT` as its apron TOP and
+    derives BASE as `TOP - drop_ft`: capping the top at 36" lands the SRW base on -34",
+    **site grade exactly**, where it used to float **4" in the air**. Nothing grades a
+    freestanding wall's base against the ground plane, so five `W-RG-*` legs stood on nothing
+    at 0 FAIL while the comment beside them claimed "their base is grade".
+  - **`W-SG-W1`/`E1` bottom on `_wall_bottom` like everything else**, and
+    `_PORCH_FOOTING_THICKNESS_IN` is gone. They were held back when the three retaining
+    strips rose, to keep IRC Table R404.1.2(8)'s last published row (10'-0") and to stop the
+    two 13"-thick footings' undersides moving. **Both arguments were weaker than they
+    looked**: 10'-0" is a ceiling, not a target — a shorter braced wall over less fill sits
+    further inside the same row, and the check still PASSES at 9'-1 7/16" — and the frost
+    answer at this edge was never cover but ASCE 32 soil replacement, which is the same 42"
+    of stone whatever elevation the footing starts at. Holding them left the whole under-porch
+    dig 9" deeper than the identical stack ten feet south, for nothing.
+    - `FO-SG-TOE-N-W`/`-N-E` void the rim over them, as `W`/`E`/`S` do over the other three.
+    - `FO-SG-TOE-W`/`-E` were cut to the FIELD's north edge and the footings run 6" past it,
+      so each left a 4'-0" x 0'-6" tongue of footing under 3 1/2" of rim — **2.0 sf of
+      concrete billed twice and cast into itself**, at 0 FAIL, because
+      `structural.concrete_interference` grades only ISOLATED pours and every `FT-SG-*`
+      carries `under=`. The toes are cut to `_y_ax_mid` now. **The assertion worth keeping is
+      that the net rim polygon's intersection with every `FT-SG-*` footprint is 0.000 sf.**
+  - **`DRW-SG-MAIN` sits on the WALL beds again, and two lead runs make the tie visible.**
+    The well's top was pinned to the DEEPEST bed. That was right while every bed shared one
+    underside; after the lift it left the five tiles that actually feed it discharging **9"
+    above the top of the stone**, into undisturbed clay. `drainage.discharge_consistency`
+    resolves the tag and never asks where the pipe goes, so it passed.
+    `_SG_DRYWELL_TOP` is `_SG_WALL_BED_BOTTOM` now, and `FD-SG-LEAD-W`/`-E` carry the ring
+    across the 3'-0" of open ground into the well at that invert — **two, not seven**, because the five wall beds abut
+    into one connected body of stone (W1 to W2 at y = -11.0', W2 to S through the corner lap)
+    and the east side mirrors it. `FB-SG-ARCH` takes none: its bed bottoms 9" BELOW the well
+    and stops 2" from the shaft in plan, so it feeds the column through its side and a lead
+    there would run uphill.
+  - **The dowels were above the footing they dowel into.** `_dowel_z` read
+    `-(basement_depth + 0.75) + footing_thickness/24` — mid-height of a garden footing whose
+    underside was -118 7/16", two elevation changes ago. The bars resolved at -112 7/16" with
+    the garden footing's TOP at -117 7/16": three #5 GFRP bars **5" of open air** above the
+    concrete they develop into, and a 12" foam block straddling a joint that was not there.
+    Nothing grades a `Dowel` against the two footings it names. Derived off the joint now —
+    mid-way through the 8" face the two footings actually share, with the foam block that
+    same 8" so it fills the joint instead of standing proud into the slab bed.
+  - **What it is worth: 2.32 cy of concrete** (151.10 -> 148.78) and 9" off the whole
+    under-porch excavation and the well shaft. Every yard of it was concrete being poured on
+    top of something. The engineering all moved the safe way — stem 9.62' -> 9.2865', system
+    FS 1.71 -> **1.77**, stem flexure 0.72 -> 0.65, toe flexure 0.61 -> 0.56 — and
+    `notes/sunken_garden_court_free_body.md` §4/§6/§7 are re-worked term by term rather than
+    recomputed from the engine.
 
 - **The sunken garden's veneer is one flat field of unglazed buff brick** (2026-09-04).
   `W-B-BRICK` has now worn three faces: one flat field of `glazed-green-brick` (`#1b4332`),

@@ -67,13 +67,19 @@ def test_pillars_start_at_the_top_of_the_wall_they_bear_on(catlin_model) -> None
         wall_top = _wall(catlin_model, wall_tag).z1_m
         assert abs(_solid(catlin_model, tag).z0_m - wall_top) < 1e-9, tag
     # One wall top, not two: every outer pillar lands on a porch side wall at the porch
-    # floor. The +0'-6" retaining step is what W-SG-W2/E2 stand at, begins 6" south of the
-    # front pillar line, and runs out over the side walls' own tops at the front corners.
+    # floor. The retaining step is what W-SG-W2/E2 stand at, begins 6" south of the front
+    # pillar line, and runs out over the side walls' own tops at the front corners.
+    #
+    # ** THE STEP IS +0'-2", NOT +0'-6", SINCE 2026-09-05. ** The retaining run is capped at
+    # 36" out of the -2'-10" yard on the owner's instruction, and 36" over grade IS +2".
+    # The porch floor at 0.0 did not move with it, so the step down off the porch onto the
+    # terrace grew from 6" to 10" — still a step, still not a stair, and the porch's own
+    # guard (RL-SG-PORCH) is what stands between them.
     tops = {round(_wall(catlin_model, w).z1_m, 9) for w in PILLAR_BEARING_WALL.values()}
     assert tops == {0.0}
     step = {round(_wall(catlin_model, w).z1_m, 9) for w in ("W-SG-W2", "W-SG-E2")}
     assert len(step) == 1
-    assert abs(step.pop() - 6 * INCH) < 1e-9
+    assert abs(step.pop() - 2 * INCH) < 1e-9
 
 
 def test_the_side_walls_run_past_the_front_pillars_they_carry(catlin_model) -> None:
@@ -669,16 +675,16 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
         # two on COVER, in its plain "at least 42 inches below their lowest adjacent grade"
         # bucket, not on the soil replacement the five wall footings still rely on.
         #
-        # ** `>=`, NOT `==`, SINCE 2026-09-05. ** `_pier_bell_bottom_ft` used to derive off
-        # `_court_top_in`, so the bells tracked the court exactly. When the court came back
-        # up 7 1/4" (`court_step_down_in` -> 0) that expression would have lifted both bells
-        # with it — correct, and worth about 0.1 cy of shaft across the pair, against
-        # re-opening every hand-worked term in notes/porch_pier_*.md that
-        # test_pier_calcs / test_pier_section_calcs reproduce. So the bells were pinned at
-        # the elevation they were augered to and now carry 49 1/4" of cover. More cover can
-        # only make this check happier; less would be the failure, which is what `>=` says.
+        # ** EXACTLY 42", AND IT WENT THE LONG WAY ROUND. ** `_pier_bell_bottom_ft` derives
+        # off `_court_top_in`, so the bells track the court. When the court came back up
+        # 7 1/4" that expression was PINNED for a day instead of followed, on the argument
+        # that 49 1/4" of cover is more conservative and that re-opening every hand-worked
+        # term in notes/sunken_garden_piers.md was not worth 0.1 cy of shaft. Owner's call
+        # reverses it: the rule is the rule, and a pinned literal is what silently drifts the
+        # next time the court moves. Both bounds are asserted — the inequality says which
+        # direction is the failure, the equality says the constant is derived and not held.
         assert bell.z0_m <= floor_top - frost_m + 1e-9, bell_tag
-        assert (floor_top - bell.z0_m) / INCH == pytest.approx(49.25, abs=0.05), bell_tag
+        assert (floor_top - bell.z0_m) / INCH == pytest.approx(42.0, abs=0.05), bell_tag
         assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" bell, not 42\""
         # The shaft picks up exactly where the bell stops...
         assert post.z0_m == pytest.approx(bell.z1_m)

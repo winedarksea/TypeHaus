@@ -302,11 +302,22 @@ def test_the_keepout_check_reads_the_rotated_footprint():
 
 # --- the joists under the bath ---------------------------------------------------------
 
+def _blocks_by_station(floor):
+    """Blocking grouped by its axis (x) station — the bath's is at 74.56", the
+    WashTower's at 114.06". Every invariant below is per-station: two entries at the
+    same joist line but different stations SHARE that line's bays legitimately."""
+    out: dict[float, list] = {}
+    for member in floor.members:
+        if member.category == "blocking":
+            out.setdefault(round(member.p0[0] / M_PER_IN, 2), []).append(member)
+    return out
+
+
 def test_the_filled_bath_is_answered_with_blocking_and_one_sister():
     """plans/TODO.md's 60 psf item. Four full-depth blocks and one sister ply."""
     model = _model()
     floor = next(f for f in model.floors if f.tag == "FS-M-WEST")
-    blocks = [m for m in floor.members if m.category == "blocking"]
+    blocks = _blocks_by_station(floor)[74.56]
     sisters = [m for m in floor.members if m.category == "sister_joist"]
     assert len(blocks) == 4
     assert len(sisters) == 1
@@ -322,16 +333,46 @@ def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():
     FAILs on either. Two entries 32" apart, sister riding one of them, is what avoids it."""
     model = _model()
     floor = next(f for f in model.floors if f.tag == "FS-M-WEST")
-    spans = sorted((min(m.p0[1], m.p1[1]) / M_PER_IN, max(m.p0[1], m.p1[1]) / M_PER_IN)
-                   for m in floor.members if m.category == "blocking")
-    for (_, prev_hi), (next_lo, _) in pairwise(spans):
-        assert next_lo >= prev_hi, "blocking must tile the bays, never overlap"
-    # And they span the bath, which is 59 11/16" of tub across four joist lines.
-    assert spans[0][0] < 194.0 and spans[-1][1] > 254.0
-
     sister_y = next(m for m in floor.members if m.category == "sister_joist").p0[1] / M_PER_IN
-    for lo, hi in spans:
-        assert not (lo < sister_y < hi), "the sister ply sits in a blocked bay"
+    by_station = _blocks_by_station(floor)
+    for station, members in by_station.items():
+        spans = sorted((min(m.p0[1], m.p1[1]) / M_PER_IN, max(m.p0[1], m.p1[1]) / M_PER_IN)
+                       for m in members)
+        for (_, prev_hi), (next_lo, _) in pairwise(spans):
+            assert next_lo >= prev_hi, f"blocking must tile the bays, never overlap @{station}"
+        for lo, hi in spans:
+            assert not (lo < sister_y < hi), f"the sister ply sits in a blocked bay @{station}"
+    # And the bath's own station spans the tub, 59 11/16" across four joist lines.
+    bath = sorted((min(m.p0[1], m.p1[1]) / M_PER_IN, max(m.p0[1], m.p1[1]) / M_PER_IN)
+                  for m in by_station[74.56])
+    assert bath[0][0] < 194.0 and bath[-1][1] > 254.0
+
+
+def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister():
+    """FX-M-LAUNDRY stands at (114.06", 238.58"), whose nearest joist line is the same
+    y=240" the bath sisters — and a sister runs the WHOLE joist, so the doubled line is
+    already under the machine. What it lacked was blocking at its own station: the bath's
+    four blocks all sit at x=74.56", 40" west. This is a vibration entry (a ~20 Hz spin
+    cycle at midspan), not a strength one, so ``plies=1`` asks for no ply and tops up
+    nothing — it rides the bath entry's finished cluster, which is also why it has to stay
+    LAST in ``_WEST_FLOOR_REINFORCEMENT``: ahead of the y=240" bath entry it would cut its
+    blocks against a bare joist and the ply would be laid through them."""
+    model = _model()
+    floor = next(f for f in model.floors if f.tag == "FS-M-WEST")
+    laundry_x = _element(_plan(), "main", "FX-M-LAUNDRY").position.xy_m[0] / M_PER_IN
+    blocks = _blocks_by_station(floor)[round(laundry_x, 2)]
+    assert len(blocks) == 2, "one block to the joist line on each side, no more"
+    assert len([m for m in floor.members if m.category == "sister_joist"]) == 1
+
+    # They bracket the machine's 32 3/4" depth (y 222.2"..254.9") across the 240" line.
+    lo = min(min(m.p0[1], m.p1[1]) for m in blocks) / M_PER_IN
+    hi = max(max(m.p0[1], m.p1[1]) for m in blocks) / M_PER_IN
+    assert lo < 226.0 and hi > 254.0
+
+    # And the block on the sister's side is cut against the finished CLUSTER face, not the
+    # bare joist — 1 1/4" further out, which is the ply width the cluster grew by.
+    assert round(min(y for m in blocks for y in (m.p0[1], m.p1[1])
+                     if y / M_PER_IN > 240.0) / M_PER_IN, 2) == 243.75
 
 
 def test_the_sister_stays_clear_of_the_tub_drain():

@@ -36,14 +36,14 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 # to galvanized dowels would have been.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): 70.5,
-    ("column", "#5", "hdg-a767"): 309.8,
+    ("column", "#5", "hdg-a767"): 304.7,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
-    ("foundation wall", "#4", "hdg-a767"): 546.2,
+    ("foundation wall", "#4", "hdg-a767"): 527.3,
     ("foundation wall", "#5", "hdg-a767"): 216.9,
-    ("foundation wall", "#6", "hdg-a767"): 1076.9,
+    ("foundation wall", "#6", "hdg-a767"): 1036.4,
 }
-_TOTAL_LB = 4056.4
+_TOTAL_LB = 3991.9
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
@@ -77,6 +77,10 @@ def test_the_backout_gate_is_still_CLOSED(rows) -> None:
     a form whose rib spacing the model does not carry. The RATIO got worse on 2026-09-03
     (28.2 -> 27.0 lb/cy) when 6.5 cy of previously unclassifiable pours gained assemblies:
     what that sweep found was more unreinforced concrete, not more steel.
+
+    2026-09-05 took 64 lb of steel and 2.32 cy of concrete out together — shorter walls,
+    shorter shafts, and rim voided off the two porch footings — and left the ratio at 26.8,
+    which is the reassuring direction: the steel that came out came out WITH its concrete.
 
     Cutting the full embedded rebar out of the $/cy rates while billing 42% of it would make
     the estimate FALL by about $6,000 and read as a saving. So the gate stays shut, and this

@@ -25,17 +25,18 @@ from typehaus.engineering.retaining_system import KIND
 _M_PER_FT = 0.3048
 
 # §4 of the note, at the graded case (at-rest 60 psf/ft, 110 pcf, mu 0.35 on the stone bed).
-# Re-oracled by hand 2026-09-05, when the three retaining footings rose 9" to become the
-# court's walking surface: the stem shortens 10.37' -> 9.62' and H 11.37' -> 10.62'. Thrust
-# goes as H^2 while the resisting weights fall linearly, so every one of these moves the
-# right way.
-_NOTE_RESULTANT_LB = 67_668.0
-_NOTE_CAPACITY_LB = 115_380.0
-_NOTE_CANCELLED_LB = 124_058.0
-_NOTE_SYSTEM_FS = 1.71
+# Re-oracled by hand TWICE on 2026-09-05, and both ends of the wall moved: the footings rose
+# 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' -> 10.62'), then
+# the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865', H -> 10.2865').
+# Thrust goes as H^2 while the resisting weights fall linearly, so both moves pushed every
+# one of these the same way.
+_NOTE_RESULTANT_LB = 63_487.0
+_NOTE_CAPACITY_LB = 112_207.0
+_NOTE_CANCELLED_LB = 116_392.0
+_NOTE_SYSTEM_FS = 1.77
 # §7: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
-# section over a 20'-0" clear span.
-_NOTE_STRUT_PU_LB = 54_134.0
+# section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
+_NOTE_STRUT_PU_LB = 50_789.0
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
 
 
@@ -54,7 +55,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert record.status is Status.OK, record.summary
 
     states = {state.name: state for state in record.limit_states}
-    # 1.71 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
+    # 1.77 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
     assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
     assert states["sliding"].demand == pytest.approx(1.5)
     assert states["sliding"].ok
@@ -92,16 +93,18 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.22 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.26 and does NOT check.
 
-    **This assertion pins a failure and that is the point.** The whole margin between 1.22
-    and 1.71 is the washed-stone bed, and the bed is an authored claim
+    **This assertion pins a failure and that is the point.** The whole margin between 1.26
+    and 1.77 is the washed-stone bed, and the bed is an authored claim
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.71 as robust.
+    so out loud; this says so in the suite, so that nobody later reads 1.77 as robust.
 
-    Raising the footings 9" on 2026-09-05 moved this row from 1.13 to 1.22 and changed
-    nothing about the argument: it is still short of 1.50, and 0.35 versus 0.25 is still the
-    difference between a court that stands and one that does not.
+    Two height cuts on 2026-09-05 moved this row — 1.13 to 1.22 when the footings rose, to
+    1.26 when the tops came down to the 36" cap — and neither changed anything about the
+    argument: it is still short of 1.50, and 0.35 versus 0.25 is still the difference between
+    a court that stands and one that does not. mu multiplies the same W on both sides, so no
+    amount of shortening can close this gap. Only the bed can.
     """
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_system import _free_body, _loops, _members
@@ -121,7 +124,7 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     site = presumptive("GM").friction_coefficient
     assert site == pytest.approx(0.25)
     on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(1.22, abs=0.01)
+    assert on_site / on_stone_demand == pytest.approx(1.26, abs=0.01)
     assert on_site / on_stone_demand < 1.5
 
 
@@ -258,11 +261,13 @@ def test_the_front_columns_bell_does_not_reach_the_beam(catlin_model) -> None:
     """
     bell = next(s for s in catlin_model.solids if s.tag == "FT-SG-FCOL")
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
-    # 9" until 2026-09-03; the bell followed the court's 7 1/4" flood step down and the beam
-    # did not, so the two sections are further apart than ever. The span §7 grades is still
-    # the full 20'-0".
+    # 9", and back to 9" the long way round. It was 9" while the bell bore 42" under a flush
+    # court; 16.25" while the bell followed the court's 7 1/4" flood step down and the beam
+    # did not; and 9" again now that the court is flush and the bell is derived from the
+    # 42" rule instead of pinned to where it happened to be. The span §7 grades is the full
+    # 20'-0" in every one of those states, which is the point of pinning the gap at all.
     gap_in = (beam.z0_m - bell.z1_m) / _M_PER_FT * 12
-    assert gap_in == pytest.approx(16.25, abs=0.01), "the bell and the beam must not touch"
+    assert gap_in == pytest.approx(9.0, abs=0.01), "the bell and the beam must not touch"
 
 
 # --------------------------------------------------------------------------------------
