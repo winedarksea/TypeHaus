@@ -55,6 +55,7 @@ _LAYER_STYLE = {
     "A-ANNO-DIMS": (1, 13),
     "A-ANNO-TEXT": (2, 18),
     "A-ANNO-SYMB": (6, 18),
+    "A-ANNO-KEYN": (1, 20),   # keynote bubbles
     "S-FNDN": (9, 60),
     "S-FNDN-FTNG": (9, 25),
     "A-SLAB": (9, 25),

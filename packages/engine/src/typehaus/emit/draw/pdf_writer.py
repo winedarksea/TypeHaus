@@ -55,6 +55,9 @@ _LAYER_STYLE = {
     "A-ANNO-DIMS": ("#204070", 0.6),
     "A-ANNO-TEXT": ("#333333", 0.6),
     "A-ANNO-SYMB": ("#555555", 0.6),
+    # Keynote bubbles. Drawn heavier than the note text they key, because a bubble is a
+    # navigation aid a reader scans the drawing for — the same reason a door mark is.
+    "A-ANNO-KEYN": ("#204070", 0.7),
     "A-FLR-HEAT": ("#c05030", 0.35),
     "A-FIXT": ("#4d7080", 0.55),
     "A-SITE-ROOF": ("#2d3b46", 0.8),
