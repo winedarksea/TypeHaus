@@ -1029,7 +1029,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     The north face stacks one column, at x=29'-4" (WIN-M-KITCH / WIN-S-HALL-N, moved there
     from x=28'-0"), to bring WIN-M-KITCH onto FURN-M-KIT-SINKBASE below. It was a
     three-storey column until the 6:12 rake pulled `WIN-A-N2` off 29'-4" and inboard to the
-    gable (see **Gables**); the attic pair now near-stacks on the stair window instead. The sink is the harder-pinned of the two: its counter run is
+    gable (see **Gables**); `WIN-A-N1` stacks EXACTLY on `WIN-S-STAIR-N` at 13'-4" instead,
+    and since 2026-09-06 `WIN-A-N2` sits 8" off `WIN-S-BED3-N` with their east jambs
+    flush at 23'-11" — the facade reads as a rectangle of four.
+    The sink is the harder-pinned of the two: its counter run is
     exactly full (5/8" scribe + B15 + DW + SINK-36 + B30, pantry wall to corner, no slack
     to slide it), while the window has 16" stations to choose from — so the column moved to
     the sink rather than the other way round. See `plan/placeables.py`'s kitchen header.
@@ -1088,16 +1091,24 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     with it to hold the mirror about x=18'-0". Then the rake moved it again: WT-3036 on
     the gable's 2'-0" sill puts the head at 5'-0", which needs 2 x (60 + 2) = 124" of
     clearance to the outer jamb, and 6'-8" gives 65". That landed the pair on
-    12'-0" / 24'-0". **It sits at 13'-4" / 22'-8" now** (2026-09-03), one bay further in,
-    so WIN-A-N1 stacks as nearly as the module allows on `WIN-S-STAIR-N` below at 12'-8".
-    **12'-8" itself is unreachable at this width**: a 30" RO BREAKS studs so it must centre
-    on a STUD LINE — on `LL-W-A-N1` those are 144", 160", 176"… — unlike the 14" family,
-    which sits on a bay CENTRE (8 mod 16), which is exactly what 12'-8" is. 160" is the
-    nearest legal station, 8" east of the stair window, and 272" mirrors it about the
-    18'-0" ridge; forcing 12'-8" costs two FAILs on `structural.window_framing_module`.
-    Retyping to WT-1436 would hit 12'-8" exactly and make the north gable a literal twin of
-    the south pair, but it buys the alignment with glass, and was declined. The rake is not
+    12'-0" / 24'-0". **It sits at 13'-4" / 22'-8" now** (2026-09-03), one bay further in, and
+    **`WIN-A-N1` stacks EXACTLY on `WIN-S-STAIR-N`, which is also at 13'-4"**. This passage
+    said the stair window was at 12'-8" and argued an 8" miss until **2026-09-06**; it never
+    was. `second.py`'s `from_node("N-S-N1", ft(3, 5))` on a wall running 18'-0" -> 10'-0" is
+    a near jamb at 12'-1" and a centre at 13'-4" (RO 145"-175" in `model.json`). Nothing
+    moved when the prose was corrected — 160" is a stud line, which is what a 30" RO must
+    have, and 272" mirrors it about the 18'-0" ridge. The rake is not
     binding here: the outer jambs sit 145" from their eaves against the 124" it allows.
+    **The facade's fourth window arrived the same day**: `WIN-S-BED3-N`, a WT-1436 at
+    x 23'-4" on `W-S-N1` with sill 3'-0" and head 6'-0" — the second storey's own two lines
+    — filling the lower-east corner the other three left empty. x 22'-8" is unbuildable
+    there (a 30" RO would cross node `N-S-B5`, `integrity.opening_fits`, ERROR) and a 14" RO
+    sits on a bay centre, so 23'-4" is the nearest station; its east jamb lands flush with
+    `WIN-A-N2`'s at 23'-11", which is the alignment actually available. 36" rather than 24"
+    because at 24" the sill course and the head cannot both sit clear of a girt course.
+    It takes `RM-S-BED3` off R303.1 Exception 1 (13.33 sf glazed / 6.67 openable against
+    10.32 required) and cost `FURN-S-BED3-WARD` its wall — the wardrobe and `FURN-S-DESK3`
+    swapped slots.
     `WIN-A-N1` rehosted W-A-N2 -> W-A-N2B on the earlier move; at x=13'-4" it fronts
     `FO-A-HALL` and daylights the double-height stair void rather than a room, which is an
     amenity and not a code problem.
