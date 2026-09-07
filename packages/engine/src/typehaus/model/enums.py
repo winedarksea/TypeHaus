@@ -83,6 +83,19 @@ class Occupancy(Enum):
 # Sleeping rooms for R310 egress applicability.
 SLEEPING_OCCUPANCIES = frozenset({Occupancy.BEDROOM})
 
+#: Rooms whose ceiling is a service plane, not a finish: pipe, duct and raceway hang in the
+#: open there by design, and no rule about a run crossing a finished volume applies. A fact
+#: about the vocabulary rather than a list inside one check —
+#: ``mep.run_in_finished_volume`` is the first consumer and will not be the last.
+#:
+#: Everything absent from this set is finished, including the ones it is tempting to add:
+#: a hallway is a room people look up in, and a stairwell is the one place a bulkhead is at
+#: head height. Both stay graded.
+EXPOSED_SERVICE_OCCUPANCIES = frozenset({
+    Occupancy.UTILITY, Occupancy.MECHANICAL, Occupancy.GARAGE,
+    Occupancy.STORAGE, Occupancy.UNCONDITIONED,
+})
+
 
 class HumidityClass(Enum):
     """How wet a room's air is *run*, as a separate axis from :class:`Occupancy`.

@@ -26,12 +26,28 @@ from typehaus.quantities import Length, Point2D
 class PipeRun(Element):
     """One authored plumbing run — a routed 3D polyline.
 
-    ``path`` is the plan-frame polyline; ``elevations`` (optional) gives the invert at
-    every vertex, storey-relative, so a run can slope per segment and drop vertically —
-    a vertical drop is a repeated plan point with two different elevations. When
-    ``elevations`` is None the resolver interpolates linearly between
+    ``path`` is the plan-frame polyline; ``elevations`` (optional) gives the pipe's
+    elevation at every vertex, storey-relative, so a run can slope per segment and drop
+    vertically — a vertical drop is a repeated plan point with two different elevations.
+    When ``elevations`` is None the resolver interpolates linearly between
     ``start_elevation``/``end_elevation`` over developed plan length, which is exactly
-    the old two-invert behaviour — existing authored runs resolve unchanged.
+    the old two-elevation behaviour — existing authored runs resolve unchanged.
+
+    **An authored elevation is the pipe's CENTRELINE, not its invert.** Prose in several
+    places (this file's history, ``resolve/mep.py``, ``pipe_invert_at``) says "invert", and
+    every piece of geometry the engine actually builds says otherwise: the IFC emitter and
+    the takeoff both sweep a circle of radius ``diameter/2`` along this polyline, so the
+    viewer's tube is centred on it, and ``mep.under_slab_burial`` takes the crown as
+    ``z + diameter/2``. One convention had to win and it is the one the solids are already
+    drawn to — the alternative would move every modelled pipe half a diameter without
+    changing a single authored number.
+
+    It matters wherever a surface is graded rather than a line: a 3" drain authored at
+    9'-10 1/2" occupies 9'-9" to 10'-0", and the half-diameter is exactly the margin that
+    decides whether it clears the deck above it. Checks that ask about the pipe's outside
+    take ``run_radii()`` (``checks/mep/routing_geometry.py``) rather than assuming. Slope is
+    unaffected either way: a run carries one diameter, so its centreline and its invert fall
+    in parallel.
 
     An ``elevations`` entry may itself be ``None``, meaning "solve me": with
     ``slope_in_per_ft`` set, the resolver falls at that grade over the developed plan length

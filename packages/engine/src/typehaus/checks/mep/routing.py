@@ -64,10 +64,9 @@ from typing import Any
 from shapely.geometry import MultiLineString, Polygon
 
 from typehaus.checks._authoring import advisory, passed, unknown
+from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, wall_cover
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
-
-_M_TO_FT = 3.280839895013123
 
 #: How far a deck void is shrunk before a run is tested against it. A run laid along the
 #: trimmer that frames the opening shares the opening's own coordinate; without this it reads
@@ -88,27 +87,6 @@ MIN_SPAN_FT = 0.5
 ON_DECK_FT = 1.0
 
 
-def _wall_cover(ctx: CheckContext, storeys: set[str]) -> Any:
-    """The union of every wall layer polygon on the named storeys — "somewhere to strap to".
-
-    Layer polygons rather than the axis, because the question is physical: is there framing
-    under this foot of pipe. A 5 1/2" stud bay is 5 1/2" of support and the axis is a line
-    with no width at all.
-
-    Built through :mod:`typehaus.resolve.overlay` rather than a bare ``unary_union``: the
-    published web app runs GEOS 3.12.1, where an overlay of many nearly-collinear wall
-    polygons without a grid size is fatal rather than merely imprecise.
-    """
-    from typehaus.resolve.overlay import union_all
-
-    polygons = [Polygon(layer.polygon)
-                for wall in ctx.model.walls if wall.storey in storeys
-                for layer in wall.layers
-                if len(layer.polygon) >= 3]
-    valid = [poly for poly in polygons if poly.is_valid and not poly.is_empty]
-    return union_all(valid) if valid else None
-
-
 def _voided_floors(ctx: CheckContext) -> list[tuple[Any, tuple[float, float], list[Any]]]:
     """Every floor that has a hole in it: ``(floor, (band low, band high), [void polygons])``.
 
@@ -127,33 +105,7 @@ def _voided_floors(ctx: CheckContext) -> list[tuple[Any, tuple[float, float], li
             continue
         joists = [member.z0_m for member in floor.members if member.z0_m is not None]
         low = min(joists) if joists else floor.deck_z0_m
-        out.append((floor, (low, floor.deck_z1_m + ON_DECK_FT / _M_TO_FT), shrunk))
-    return out
-
-
-def _runs(ctx: CheckContext) -> list[tuple[str, str, tuple[tuple[float, float], ...],
-                                           tuple[float, ...]]]:
-    """Every routed thing, as ``(kind, tag, plan path, per-vertex z)``.
-
-    No storey: which floor a run is *in* is decided by elevation here, not by filing (see the
-    module note), so carrying the storey would only invite something to start reading it.
-
-    Pipe, duct and raceway together: the void does not care which trade drew the line, and
-    three near-identical loops would be three places for the rule to drift. A raceway's z is
-    reconstructed by :func:`~typehaus.takeoff.runs.conduit_vertex_z`, which owns the one
-    reading of "a ConduitRun rises at its last point".
-    """
-    from typehaus.takeoff.runs import conduit_vertex_z
-
-    out = []
-    for run in ctx.model.pipe_runs:
-        z = tuple(run.z_m) if run.z_m and len(run.z_m) == len(run.path) else ()
-        out.append(("pipe", run.tag, tuple(run.path), z))
-    for duct in ctx.model.ducts:
-        z = tuple(duct.z_m) if len(duct.z_m) == len(duct.path) else ()
-        out.append(("duct", duct.tag, tuple(duct.path), z))
-    for raceway in ctx.model.conduits:
-        out.append(("conduit", raceway.tag, tuple(raceway.path), conduit_vertex_z(raceway)))
+        out.append((floor, (low, floor.deck_z1_m + ON_DECK_FT / M_TO_FT), shrunk))
     return out
 
 
@@ -176,7 +128,7 @@ def _segments_in_band(path: tuple[tuple[float, float], ...], z: tuple[float, ...
 def run_over_void(ctx: CheckContext) -> list[Finding]:
     """A run may not span a floor opening except where a wall runs under it."""
     cid = "mep.run_over_void"
-    runs = _runs(ctx)
+    runs = run_polylines(ctx)
     if not runs:
         return [unknown(cid, "no pipe, duct or conduit run is modeled, so there is no "
                              "route to grade", ())]
@@ -204,7 +156,7 @@ def run_over_void(ctx: CheckContext) -> list[Finding]:
             if not segments:
                 continue
             if floor.storey not in covers:
-                covers[floor.storey] = _wall_cover(ctx, {floor.storey})
+                covers[floor.storey] = wall_cover(ctx, {floor.storey})
             cover = covers[floor.storey]
             line = MultiLineString(segments)
             for void in voids:
@@ -213,7 +165,7 @@ def run_over_void(ctx: CheckContext) -> list[Finding]:
                     continue
                 if cover is not None:
                     spanning = spanning.difference(cover)
-                span_ft = spanning.length * _M_TO_FT
+                span_ft = spanning.length * M_TO_FT
                 if span_ft < MIN_SPAN_FT:
                     continue
                 out.append(advisory(
@@ -310,203 +262,3 @@ def run_route_efficiency(ctx: CheckContext) -> list[Finding]:
                                "straight-line length", ()))
     return out
 
-
-# --- what a run goes THROUGH on its way ------------------------------------------------------
-
-#: A run whose surface comes within this of a rough opening's edge is not reported. A raceway
-#: strapped to a jack stud shares a coordinate with the opening it is beside, and grading that
-#: as "through the window" would be wrong in exactly the case the trade does on purpose. Half
-#: an inch is under any framing member and over any coordinate noise.
-OPENING_EDGE_M = 0.0127
-#: How much of an opening a run must actually cross before it is reported. Below this it is a
-#: corner clip, which is a dimension to check rather than a route to redraw.
-MIN_CROSSING_FT = 0.1
-
-
-def _opening_prisms(ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, float]]:
-    """Every rough opening as ``(tag, is_door, host tag, plan footprint, z low, z high)``.
-
-    The footprint is the opening's slice of its host wall through the WHOLE wall thickness,
-    because that is the hole: a window buck runs the full depth of the assembly, and a run
-    that crosses the opening's width anywhere in that depth is in it. The band is the host
-    wall's own base plus the authored sill, which is how ``resolve`` places the buck.
-    """
-    import math
-
-    walls = {wall.tag: wall for wall in ctx.model.walls}
-    out = []
-    for opening in ctx.model.openings:
-        wall = walls.get(opening.host_wall)
-        if wall is None or len(wall.axis) < 2:
-            continue
-        (ax, ay), (bx, by) = wall.axis[0], wall.axis[-1]
-        length = math.dist((ax, ay), (bx, by))
-        if length <= 0:
-            continue
-        ux, uy = (bx - ax) / length, (by - ay) / length
-        nx, ny = -uy, ux
-        half, depth = opening.width_m / 2.0, wall.thickness_m / 2.0
-        near, far = opening.center_along_m - half, opening.center_along_m + half
-        corners = [(ax + ux * s + nx * depth * side, ay + uy * s + ny * depth * side)
-                   for s in (near, far) for side in (1, -1)]
-        prism = Polygon([corners[0], corners[1], corners[3], corners[2]])
-        prism = prism.buffer(-OPENING_EDGE_M)
-        if prism.is_empty or not prism.is_valid:
-            continue
-        low = wall.z0_m + opening.sill_m
-        out.append((opening.tag, bool(opening.is_door), wall.tag, prism,
-                    low, low + opening.height_m))
-    return out
-
-
-def _crossing_band(segment: Any, za: float, zb: float, piece: Any) -> tuple[float, float]:
-    """The run's own z range over just the part of the segment inside the opening.
-
-    Banding the WHOLE segment is the tempting shortcut and it is wrong on exactly the runs
-    this check exists for: ``CD-A-DATA-NE`` climbs 3'-6" across 21 ft of gable in one segment,
-    so its segment band spans four feet of elevation and reads as inside every opening it
-    passes under. Interpolating at the crossing is the difference between two real findings
-    and five, three of which are arithmetic.
-    """
-    from shapely.geometry import Point
-
-    length = segment.length
-    if length <= 0:
-        return (min(za, zb), max(za, zb))
-    zs = [za + (zb - za) * (segment.project(Point(xy)) / length)
-          for xy in piece.coords]
-    return (min(zs), max(zs))
-
-
-def _run_radii(ctx: CheckContext) -> dict[str, float]:
-    """Half the outside dimension of each run, keyed by tag.
-
-    A run is a centreline and an opening is a hole; whether the two meet is a question about
-    the run's SURFACE. Six inches of duct with an inch of wrap either side is eight inches of
-    obstruction, and grading its centreline alone under-reports by four. A raceway's trade
-    size is a nominal bore rather than an outside diameter, but the error is under an eighth
-    of an inch on 3/4" EMT and in the conservative direction.
-    """
-    radii: dict[str, float] = {}
-    for run in ctx.model.pipe_runs:
-        radii[run.tag] = (run.diameter_m or 0.0) / 2.0
-    for duct in ctx.model.ducts:
-        radii[duct.tag] = (duct.diameter_m or 0.0) / 2.0
-    for raceway in ctx.model.conduits:
-        radii[raceway.tag] = (raceway.trade_size_m or 0.0) / 2.0
-    return radii
-
-
-@check(Tier.ADVISORY, "mep.run_through_opening")
-def run_through_opening(ctx: CheckContext) -> list[Finding]:
-    """A pipe, duct or raceway may not pass through a window or door rough opening.
-
-    This is the hole the trades leave for something else. A run drawn across it is not a
-    clearance question to be resolved on site — there is nothing there to strap to, the leaf
-    swings through it, and in a window it stands in front of the glass. It is also the single
-    easiest defect to author, because a plan drawing shows a run crossing a wall and says
-    nothing about whether it crossed at the header or at the opening.
-
-    **Nothing else in the engine looks.** ``mep.duct_joist_bay`` grades the bay a duct is in
-    and never asks what its riser stands in — on catlin it PASSED a 3" extract standing 78 1/2"
-    inside ``D-S-PLANT``'s rough opening and printed the station twice in its own fire-blocking
-    list. ``structural.member_interference`` is wood against wood. ``mep.run_over_void`` grades
-    holes in floors, not holes in walls. Before this check the argument was made by hand, in a
-    comment, when it was made at all (``houses/catlin/plan/electrical.py`` reasoned about one
-    door head in prose and was right; two windows and three doors elsewhere were missed).
-
-    Two cases, because a run meets an opening in two ways:
-
-    **Crossing** — a segment whose plan line passes through the opening's footprint within its
-    elevation band. The band is taken at the crossing, not over the whole segment; see
-    :func:`_crossing_band` for why that distinction decides real findings from arithmetic.
-
-    **Standing in it** — a riser, whose plan segment has no length at all, landing inside the
-    footprint with its rise overlapping the band. This is the ``D-S-PLANT`` case and a
-    crossing test alone cannot see it, because a riser crosses nothing.
-
-    ADVISORY rather than CODE: no section says "do not draw a duct through a window", for the
-    same reason no section says which side of a wall a light switch is on. It is a buildability
-    rule, and its result is still ``FAIL`` so a clean house stays clean.
-    """
-    from shapely.geometry import LineString, Point
-
-    cid = "mep.run_through_opening"
-    runs = _runs(ctx)
-    if not runs:
-        return [unknown(cid, "no pipe, duct or conduit run is modeled, so there is no route "
-                             "to grade", ())]
-    prisms = _opening_prisms(ctx)
-    if not prisms:
-        return [passed(cid, f"{len(runs)} runs: this model resolves no rough opening, so no "
-                            "run can pass through one", ())]
-
-    radii = _run_radii(ctx)
-    out: list[Finding] = []
-    ungraded: list[str] = []
-
-    for kind, tag, path, z in sorted(runs, key=lambda item: item[1]):
-        if len(path) < 2:
-            continue
-        if len(z) != len(path):
-            ungraded.append(tag)
-            continue
-        radius = radii.get(tag, 0.0)
-        for index in range(len(path) - 1):
-            a, b = path[index], path[index + 1]
-            za, zb = z[index], z[index + 1]
-            segment = LineString([a, b])
-            standing = segment.length <= OPENING_EDGE_M
-            for otag, is_door, host, prism, low, high in prisms:
-                if standing:
-                    if not prism.covers(Point(a)):
-                        continue
-                    band = (min(za, zb), max(za, zb))
-                    if band[1] - band[0] <= OPENING_EDGE_M:
-                        continue
-                    overlap = min(band[1], high) - max(band[0], low)
-                    if overlap <= OPENING_EDGE_M:
-                        # A riser that merely touches the head or the sill passes the opening,
-                        # it does not stand in it — and a run has to touch one of the two to
-                        # get past. Only an overlap with real height is a finding.
-                        continue
-                    out.append(advisory(
-                        cid,
-                        f"{kind} run {tag} stands {overlap * 12 * _M_TO_FT:.0f}\" inside "
-                        f"{otag}'s rough opening in {host} — a riser in a "
-                        f"{'doorway' if is_door else 'window'} has nothing to strap to, and "
-                        "the header above it is not borable",
-                        (tag, otag), Result.FAIL,
-                        fix="move the riser to a clear stud bay beside the opening; the "
-                            "terminal it feeds usually has to move with it"))
-                    continue
-                piece = prism.intersection(segment)
-                if piece.is_empty or piece.length <= 0:
-                    continue
-                crossed_ft = piece.length * _M_TO_FT
-                if crossed_ft < MIN_CROSSING_FT:
-                    continue
-                pieces = (piece.geoms if isinstance(piece, MultiLineString) else [piece])
-                for part in pieces:
-                    lo, hi = _crossing_band(segment, za, zb, part)
-                    if hi + radius < low or lo - radius > high:
-                        continue
-                    out.append(advisory(
-                        cid,
-                        f"{kind} run {tag} crosses {crossed_ft:.2f} ft of {otag}'s rough "
-                        f"opening in {host}, at {(lo - low) * 12 * _M_TO_FT:.0f}\" above its "
-                        f"sill — the opening is {(high - low) * 12 * _M_TO_FT:.0f}\" tall",
-                        (tag, otag), Result.FAIL,
-                        fix="carry the run over the header or under the sill, or take it to "
-                            "the next stud bay; in a window there is no 'over' — the head is "
-                            "usually the plate"))
-                    break
-
-    if not any(finding.result is Result.FAIL for finding in out):
-        out.append(passed(cid, f"{len(runs)} runs against {len(prisms)} rough openings: no "
-                               "run passes through one or stands in one", ()))
-    if ungraded:
-        out.append(unknown(cid, f"{len(ungraded)} run(s) carry no resolved elevations and are "
-                                f"not graded: {', '.join(sorted(ungraded)[:6])}",
-                           tuple(sorted(ungraded))))
-    return out

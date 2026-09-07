@@ -32,7 +32,7 @@ from __future__ import annotations
 import pytest
 
 from typehaus.checks import run_from_model
-from typehaus.checks.mep.routing import MIN_CROSSING_FT, OPENING_EDGE_M
+from typehaus.checks.mep.routing_openings import MIN_CROSSING_FT, OPENING_EDGE_M
 from typehaus.checks.registry import Tier, registered
 from typehaus.findings import Result
 
@@ -46,8 +46,8 @@ def findings(catlin_model):
 def test_the_check_is_registered() -> None:
     """A check module that nothing imports registers nothing and every test still passes.
 
-    ``routing.py`` is already in ``checks/mep/__init__.py``, so this check came for free — but
-    that is exactly the condition worth asserting, because the failure mode is silent."""
+    ``routing_openings.py`` has to be named in ``checks/mep/__init__.py``'s import list; it was
+    split out of ``routing.py`` and a split is exactly when that line gets forgotten."""
     assert "mep.run_through_opening" in [cid for cid, _ in registered(Tier.ADVISORY)]
 
 
@@ -70,12 +70,12 @@ def test_the_crossing_band_is_interpolated_not_banded() -> None:
     is about no longer exists in catlin and this arithmetic must stay pinned regardless."""
     from shapely.geometry import LineString
 
-    from typehaus.checks.mep.routing import _crossing_band
+    from typehaus.checks.mep.routing_geometry import crossing_band
 
     # A 20 ft segment climbing 0 -> 10 ft, crossing an opening over its first two feet.
     segment = LineString([(0.0, 0.0), (20.0, 0.0)])
     piece = LineString([(0.0, 0.0), (2.0, 0.0)])
-    low, high = _crossing_band(segment, 0.0, 10.0, piece)
+    low, high = crossing_band(segment, 0.0, 10.0, piece)
     assert low == pytest.approx(0.0, abs=1e-9)
     assert high == pytest.approx(1.0, abs=1e-9)  # not 10.0, which banding would give
 
@@ -86,13 +86,13 @@ def test_a_riser_standing_in_an_opening_is_caught(catlin_model) -> None:
     This is the ``DU-M-ERV-R-PLANT`` case and it was the worst of the six: 78 1/2" of duct
     standing free in a doorway. Rebuilt here by dropping a riser into a real opening in the
     real house, because a synthetic wall would not exercise the prism construction."""
-    from typehaus.checks.mep.routing import _opening_prisms
+    from typehaus.checks.mep.routing_openings import opening_prisms
 
     class _Ctx:
         model = catlin_model
 
-    prisms = {tag: prism for tag, _door, _host, prism, *_ in _opening_prisms(_Ctx())}
-    bands = {tag: (low, high) for tag, _door, _host, _p, low, high in _opening_prisms(_Ctx())}
+    prisms = {tag: prism for tag, _door, _host, prism, *_ in opening_prisms(_Ctx())}
+    bands = {tag: (low, high) for tag, _door, _host, _p, low, high in opening_prisms(_Ctx())}
     assert "D-S-PLANT" in prisms, "the opening the check was written for must resolve"
     low, high = bands["D-S-PLANT"]
     assert high - low == pytest.approx(80 * 0.0254, abs=1e-6), "a 6'-8\" door"

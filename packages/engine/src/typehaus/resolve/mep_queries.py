@@ -279,7 +279,11 @@ def on_pipe_segment(point: tuple[float, float], start: tuple[float, float],
 
 
 def pipe_invert_at(run, point: tuple[float, float], tol: float = 1e-6) -> float | None:
-    """The run's invert where ``point`` sits on its plan path, or None if it doesn't.
+    """The run's elevation where ``point`` sits on its plan path, or None if it doesn't.
+
+    The value is the pipe's **centreline**, per ``model/mep.py``'s note on
+    ``PipeRun.elevations``; the name is older than the convention and is kept because
+    ``drain_tie_ins`` compares one run's value against another's, where the offset cancels.
 
     Takes the *deepest* match, not the first: a run's plan path can visit one point twice
     at two elevations (PR-B-MAIN-DRAIN passes (3', 15'-6") at the ceiling where the

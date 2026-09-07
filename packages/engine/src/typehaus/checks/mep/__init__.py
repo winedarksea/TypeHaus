@@ -19,6 +19,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     port_service,
     power_sources,
     routing,
+    routing_openings,
     supply_protection,
     water_heater,
 )

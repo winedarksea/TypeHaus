@@ -81,6 +81,37 @@ class MepPreferences:
     #: ``checks/mep/routing.py``.
     min_graded_run_ft: float = 20.0
 
+    # --- mep.run_in_finished_volume (checks/mep/routing_ceiling.py) ---
+    #: How far below a room's finished ceiling a run's outside surface has to hang before it
+    #: is a finding. Catlin's ceilings resolve 5/8"-3/4" of lining, so anything under about
+    #: three inches is the pipe grazing the plane it is furred to — real, and a dimension to
+    #: check rather than a route to redraw. The defects this was written for measure 5.7",
+    #: 8.1" and 33".
+    ceiling_intrusion_in: float = 3.0
+    #: Below this length a crossing is a corner clip of a room polygon rather than a run
+    #: through the room — the same reasoning, and the same number, as ``MIN_SPAN_FT`` in
+    #: ``mep.run_over_void``. A riser is exempt from it: its plan piece is a point, so it is
+    #: graded on the feet of *height* it stands in the room instead.
+    min_ceiling_exposure_ft: float = 0.5
+    #: How close a terminal leg's own end vertex must land to something in the room before it
+    #: reads as the connection to that thing rather than transit through the room. See
+    #: ``routing_ceiling._terminates_in_room``.
+    terminal_grace_in: float = 24.0
+
+    # --- checks/mep/drain_geometry.py ---
+    #: How far a drained fixture's derived drain point may sit from the nearest polyline of a
+    #: run that names it in ``serves``. Catlin's measured distribution is bimodal with a clean
+    #: hole in it: fixtures a branch actually reaches sit at 0"-8", the ones with no branch
+    #: drawn at all at 15.6" and up. A foot sits in the gap with about 50% margin either side.
+    fixture_drain_reach_in: float = 12.0
+    #: The steepest a non-vertical drain segment may fall. 12"/ft is 45 degrees — the
+    #: steepest fitting on the truck — so past this the geometry is not a fitting at all.
+    max_drain_offset_slope_in_per_ft: float = 12.0
+    #: How far a non-vertical drain segment may fall in total. Beyond this it is a drop drawn
+    #: as a slant. Graded in conjunction with the slope, never alone: neither term separates
+    #: the defect from a legitimate 45-degree offset by itself.
+    max_drain_offset_fall_in: float = 18.0
+
 
 @dataclass
 class StructuralPreferences:
