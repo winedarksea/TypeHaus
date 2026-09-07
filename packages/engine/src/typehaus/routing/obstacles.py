@@ -77,11 +77,17 @@ def _polygon(ring) -> Any:
 
 
 def hard_prisms(model, radius_m: float, *, avoid: frozenset[str] = frozenset(),
+                touch: frozenset[str] = frozenset(),
                 clearance_m: float = CLEARANCE_M) -> list[HardPrism]:
     """Every prism a run of this radius may not enter, inflated by radius + clearance.
 
     ``avoid`` names extra element tags to treat as hard — the CLI's ``--avoid``, and the
     mechanism by which a person overrules the router without editing a weight.
+
+    ``touch`` names existing runs the proposal is **allowed to occupy**: the run being
+    replaced, and the run being tied into. Without it the two runs a proposal is most
+    concerned with are the two it may not reach — a branch cannot land on the main it
+    discharges to, because the main is a hard prism sitting exactly where the tie is.
 
     **Rough openings move here from the check that first needed them.**
     ``checks/mep/routing_openings.opening_prisms`` derives the same footprints and this
@@ -139,7 +145,7 @@ def hard_prisms(model, radius_m: float, *, avoid: frozenset[str] = frozenset(),
     # proposal, and this is the only obstacle class whose membership the caller edits by
     # deleting the run it is re-routing.
     for tag, path, z, other_radius in _existing_runs(model):
-        if tag in avoid or len(path) < 2 or len(z) != len(path):
+        if tag in avoid or tag in touch or len(path) < 2 or len(z) != len(path):
             continue
         from shapely.geometry import LineString
 

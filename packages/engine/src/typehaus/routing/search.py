@@ -85,23 +85,34 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
         return Route(nodes=[start], points=[(node.x, node.y, node.z)], cost=0.0)
 
     heuristic = _heuristic(graph, space, goals)
-    open_heap: list[tuple[float, int, int, int, str]] = []
+    # The heap entry carries ``g`` as its LAST element, after the unique ``counter``, so it
+    # takes no part in the ordering and the tie-break stays exactly ``(f, node id, axis)``
+    # — which is what §4 of the oracle note pins.
+    open_heap: list[tuple[float, int, int, int, str, float]] = []
     counter = 0
     best: dict[tuple[int, str], float] = {}
     came: dict[tuple[int, str], tuple[int, str]] = {}
 
     for axis in ("x", "y", "z"):
         best[(start, axis)] = 0.0
-    heapq.heappush(open_heap, (heuristic(start), start, _AXIS_ORDER["x"], counter, ""))
+    heapq.heappush(open_heap,
+                   (heuristic(start), start, _AXIS_ORDER["x"], counter, "", 0.0))
 
     expansions = 0
     while open_heap:
-        _f, index, _axis_key, _seq, incoming = heapq.heappop(open_heap)
+        _f, index, _axis_key, _seq, incoming, popped_g = heapq.heappop(open_heap)
         state = (index, incoming)
+        # **Lazy deletion, and it is a correctness fix rather than a speed one.** A state
+        # can be pushed twice and relaxed lower in between; taking ``best[state]`` at pop
+        # time then pairs one state's g with another's predecessor in ``came``, and the
+        # reconstructed path doubles back on itself. Carrying g with the entry and dropping
+        # a stale pop is what keeps g and came describing the same path.
+        if popped_g > best.get(state, float("inf")) + 1e-12:
+            continue
         expansions += 1
         if index in goals:
             return _rebuild(graph, space, came, state, expansions)
-        current = best.get(state, best.get((index, "x"), 0.0))
+        current = popped_g
         for other, axis in graph.neighbours(index):
             step = graph.weights.get((index, other))
             if step is None:
@@ -117,7 +128,7 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
             counter += 1
             heapq.heappush(open_heap,
                            (candidate + heuristic(other), other,
-                            _AXIS_ORDER[axis], counter, axis))
+                            _AXIS_ORDER[axis], counter, axis, candidate))
     return None
 
 

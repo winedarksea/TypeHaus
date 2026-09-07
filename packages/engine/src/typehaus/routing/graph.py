@@ -23,7 +23,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from typehaus.routing.space import MAX_CANDIDATE_LINES, RoutingSpace, RoutingSpaceTooLarge
+from typehaus.routing.space import (
+    MAX_CANDIDATE_LINES,
+    MAX_LATTICE_NODES,
+    RoutingSpace,
+    RoutingSpaceTooLarge,
+)
 
 #: Two coordinates closer than this are one line. A sixteenth of an inch: finer than any
 #: dimension this engine authors and coarser than any float noise it produces.
@@ -69,6 +74,9 @@ class Graph:
     #: content of ``--explain``: a router that cannot say why it chose a line is one nobody
     #: will take a line from.
     terms: dict[tuple[int, int], dict[str, float]] = field(default_factory=dict)
+    #: Tags of hard prisms that a terminal node was standing in. Kept rather than dropped —
+    #: see :func:`build_graph` — and reported by the caller.
+    blocked_terminals: list[str] = field(default_factory=list)
 
     def neighbours(self, index: int) -> list[tuple[int, str]]:
         return [(other, axis)
@@ -77,7 +85,8 @@ class Graph:
 
 
 def candidate_lines(space: RoutingSpace,
-                    terminals: list[tuple[float, float, float]]
+                    terminals: list[tuple[float, float, float]],
+                    levels: list[float] | None = None
                     ) -> tuple[list[float], list[float], list[float]]:
     """``(xs, ys, zs)`` — the lines the lattice is built at, sorted and de-duplicated.
 
@@ -88,8 +97,16 @@ def candidate_lines(space: RoutingSpace,
     2. **Every corridor centreline** on its own axis, plus the middle of its z window. This
        is what puts a node *in* a bay rather than merely beside one.
     3. **Every hard prism's edges**, already offset outward by ``radius + clearance`` when
-       the space was built. Offsetting here rather than at query time is what lets a route
-       hug an obstacle exactly and no closer.
+       the space was built — but only for a prism whose z band the lattice can reach.
+       Offsetting here rather than at query time is what lets a route hug an obstacle
+       exactly and no closer; skipping the unreachable ones is what keeps the lattice a
+       lattice rather than a grid.
+
+    ``levels`` pins the z set instead of deriving it, and **a gravity run must pass one.**
+    A drain's elevation is a derived monotone potential rather than a free dimension: search
+    it in 3-D and the found route is free to dive into a cheap plane and climb back, which
+    the profile then silently flattens into a plan detour. One level is a plan search, which
+    is what "z is derived" actually means.
 
     Raises :class:`RoutingSpaceTooLarge` past :data:`MAX_CANDIDATE_LINES` on either plan
     axis, for the reason ``space.py`` gives: coarsening to fit is answering a different
@@ -98,17 +115,31 @@ def candidate_lines(space: RoutingSpace,
     minx, miny, maxx, maxy = space.bbox
     xs = [t[0] for t in terminals]
     ys = [t[1] for t in terminals]
-    zs = [t[2] for t in terminals]
+    zs = [t[2] for t in terminals] if levels is None else list(levels)
 
     for corridor in space.corridors:
         window = corridor.z_window(space.radius_m)
         if window is None:
             continue
         (ys if corridor.axis == "x" else xs).append(corridor.station)
-        zs.append((window[0] + window[1]) / 2.0)
+        if corridor.kind != "wall" and levels is None:
+            # **A wall contributes a plan line and NOT a z level**, and that is the
+            # difference between a lattice with three thousand nodes and one with three
+            # hundred thousand. A wall cavity is a corridor a run may travel at any height
+            # inside it, so its mid-height is not a plane anybody routes on; a bay's and a
+            # soffit's are. Catlin resolves ~99 walls in a two-fixture window, and one z
+            # level each multiplied the lattice by thirty for nothing.
+            zs.append((window[0] + window[1]) / 2.0)
 
+    # **Only prisms whose z band the lattice can actually reach.** A footing nine feet
+    # under the terminals cannot block anything on the planes this route may use, and
+    # nominating two x-lines and two y-lines for it is four lines' worth of lattice bought
+    # for nothing. On catlin's suite-bath problem this is most of the plan lines.
+    reach = (min(zs) - space.radius_m, max(zs) + space.radius_m)
     for prism in space.hard:
         if prism.footprint.is_empty:
+            continue
+        if prism.z1_m < reach[0] or prism.z0_m > reach[1]:
             continue
         px0, py0, px1, py1 = prism.footprint.bounds
         xs.extend((px0, px1))
@@ -121,11 +152,21 @@ def candidate_lines(space: RoutingSpace,
         raise RoutingSpaceTooLarge(
             f"{len(xs)} x-lines and {len(ys)} y-lines exceed MAX_CANDIDATE_LINES="
             f"{MAX_CANDIDATE_LINES}; narrow --margin or raise the cap deliberately")
+    if len(xs) * len(ys) * len(zs) > MAX_LATTICE_NODES:
+        # The line caps do not bound the lattice: 400 x 400 x 60 is inside both of them and
+        # is nine million nodes. This is the guard that actually holds, and it RAISES for
+        # the reason space.py gives — a router that coarsens to finish is answering a
+        # different question from the one asked.
+        raise RoutingSpaceTooLarge(
+            f"{len(xs)} x {len(ys)} x {len(zs)} = {len(xs) * len(ys) * len(zs):,} lattice "
+            f"nodes exceeds MAX_LATTICE_NODES={MAX_LATTICE_NODES:,}. Narrow --margin, "
+            "split the problem, or raise the cap having looked at why")
     return xs, ys, zs
 
 
 def build_graph(space: RoutingSpace,
-                terminals: list[tuple[float, float, float]]) -> Graph:
+                terminals: list[tuple[float, float, float]],
+                levels: list[float] | None = None) -> Graph:
     """The lattice, with every node priced against the world once.
 
     A node is dropped when it stands inside a hard prism; an edge is dropped when either
@@ -135,19 +176,33 @@ def build_graph(space: RoutingSpace,
     **Node ids are assigned in ``(z, y, x)`` order** and the search breaks ties on them, so
     two runs of the same problem return the same route. §4 of the oracle note depends on
     it, and so does anybody diffing two proposals.
+
+    ``levels`` is passed through to :func:`candidate_lines`; a gravity run passes one level
+    and searches in plan.
     """
-    xs, ys, zs = candidate_lines(space, terminals)
+    xs, ys, zs = candidate_lines(space, terminals, levels)
+    # **A terminal's own plan point is never dropped**, and this is a statement about what
+    # the search is for rather than a leniency. A route has to start and end where it is
+    # told; if the model puts something there — and it usually does, because a branch ties
+    # into the very run that blocks its tie point — that is a fact about the model, not a
+    # reason for the search to refuse. ``blocked_terminals`` records which, so the caller
+    # can say so instead of the graph swallowing it.
+    fixed = {(round(t[0], 6), round(t[1], 6)) for t in terminals}
+    blocked_terminals: list[str] = []
     nodes: list[Node] = []
     lookup: dict[tuple[int, int, int], int] = {}
     for kz, z in enumerate(zs):
         for ky, y in enumerate(ys):
             for kx, x in enumerate(xs):
-                if space.blocked((x, y), z) is not None:
-                    continue
+                offender = space.blocked((x, y), z)
+                if offender is not None:
+                    if (round(x, 6), round(y, 6)) not in fixed:
+                        continue
+                    blocked_terminals.append(offender)
                 lookup[(kx, ky, kz)] = len(nodes)
                 nodes.append(Node(index=len(nodes), x=x, y=y, z=z))
 
-    graph = Graph(nodes=nodes)
+    graph = Graph(nodes=nodes, blocked_terminals=sorted(set(blocked_terminals)))
     for (kx, ky, kz), index in lookup.items():
         by_axis: dict[str, list[int]] = {}
         for axis, key in (("x", (kx + 1, ky, kz)),

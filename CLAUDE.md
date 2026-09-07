@@ -110,6 +110,38 @@ actually paid), `tasks.toml` (work-package status). The engine ships no price da
   updates rather than duplicates. No durations, crew sizes or dates — the model cannot know
   them.
 
+## Routing: the engine proposes, the person commits
+
+`typehaus/routing/` searches for MEP routes and **proposes** them as dialect source to
+paste. It is a leaf like `engineering/`: it imports `model` / `resolve` / `quantities` and
+**never `checks`, `takeoff`, `emit`**, and nothing upstream imports it — `cli/cmd_route.py`
+is the one place it and `checks` meet, and it sits above both
+(`tests/test_routing_leaf.py` walks the AST, function-local imports included).
+
+```
+haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run
+haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # a branch for one fixture
+haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
+haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
+```
+
+- **There is no `--write`.** `source/loader._content_hash` hashes every `plan/**/*.py`, so
+  a machine edit stales every pinned engineering seal; the prose in a plan file *is* the
+  design record; and accepting a route is a judgement, exactly as
+  `haus engineering --fingerprint` prints a value for a person to paste.
+- **A search result is not a `Finding`.** What is a fact about the building —
+  "this drain hangs 8" into the gym", "this fixture is 48" from every pipe in the house" —
+  belongs in `checks/`, and the router is aimed at it. A verdict that moved when a cost
+  weight moved would not be a verdict.
+- **A drain searches in PLAN.** Its z is a derived monotone potential
+  (`routing/gravity.py`), so a 3-D search would optimise an elevation the profile then
+  overwrites. `routing/tree.py` orders terminals **deepest first** — least head slack, not
+  cheapest — because route length is not a proxy for slack.
+- Both notes are oracles and are reproduced by `tests/test_routing_oracle.py`:
+  `notes/mep_drain_routing_basis.md` (§4 *is* the graph spec) and
+  `notes/mep_duct_routing_basis.md`. `routing/oracle.py` declares which module each verifies
+  and a lint fails on a module that names neither a note nor a reason.
+
 `haus serve` watches `houses/<name>/` only. After editing anything under
 `packages/engine/`, **restart the server** or the viewer shows stale geometry.
 

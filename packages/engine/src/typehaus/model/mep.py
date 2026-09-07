@@ -2,7 +2,14 @@
 
 Authored routing only — the user places runs/ducts/devices; the resolver validates them
 against the framing (joist bays, bearing lines, slab hosts) and the sheets draw them.
-Auto-routing is a declared non-goal.
+
+**Auto-routing is a declared non-goal HERE, and the declaration is narrower than it was.**
+``typehaus.routing`` searches for routes and PROPOSES them as text a person pastes; nothing
+in ``model``, ``resolve`` or ``checks`` may import it, and it writes no file. The reason is
+not caution about search quality: a route is the output of a cost function, and a cost
+function is a set of preferences. An element placed by one would be a preference recorded
+as geometry, and a ``Finding`` about it would be a verdict that moves when a weight moves.
+So the model stays authored, and the router argues.
 """
 
 from __future__ import annotations

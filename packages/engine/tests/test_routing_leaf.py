@@ -38,9 +38,20 @@ _ALLOWED = {
 }
 
 #: Named and excused, with the reason, rather than silently permitted by a loose rule.
-#: ``findings`` is a leaf itself (``resolve`` and ``source`` both import it), so an
-#: engineering module reaching it is not reaching into the checks tree.
-_EXCUSED: dict[str, set[str]] = {}
+#: Every entry is a leaf reaching another leaf — never a package that reaches back — and
+#: ``test_nothing_upstream_reaches_for_the_router`` is what keeps that true in the other
+#: direction.
+_EXCUSED: dict[str, set[str]] = {
+    # One shape for one idea. ``Oracle`` is a frozen dataclass of three strings, and a
+    # second copy of it here would mean the calc package and the router describing "who
+    # checked this independently" in two different vocabularies.
+    "routing/oracle.py": {"engineering"},
+    # ``value_source`` is the dialect printer. A proposal has to be dialect-legal BY
+    # CONSTRUCTION — 1-tuple commas, no operators, no frozenset — and a second printer in
+    # this package would be a second definition of what the dialect accepts, drifting from
+    # the one the loader actually enforces.
+    "routing/proposal.py": {"source"},
+}
 
 
 def _typehaus_imports(path: pathlib.Path) -> set[str]:

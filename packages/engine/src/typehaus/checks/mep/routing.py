@@ -1,11 +1,15 @@
 """Whether an authored MEP route is *buildable*, not whether it is the shortest.
 
-The engine has no router and says so (``model/mep.py``): every pipe, duct and raceway is a
-polyline somebody drew. That is a deliberate choice — an autorouter that does not know about
-the trades' sequencing, the electrician's preference for a straight pull, or the fact that a
-drain has to fall, would produce confident nonsense. But it leaves a gap: a drawn route is
-graded by nothing at all, so the difference between "this is the only way round" and "this
-was drawn on the wrong line" is invisible.
+Every pipe, duct and raceway in the model is a polyline somebody drew, and that is a
+deliberate choice rather than a missing feature: a route is the output of a cost function,
+and an element placed by one would be a set of preferences recorded as geometry. But it
+leaves a gap — a drawn route was graded by nothing at all, so the difference between "this
+is the only way round" and "this was drawn on the wrong line" was invisible.
+
+``typehaus.routing`` exists now and proposes routes for a person to paste; it may not be
+imported from here and does not import this. **What lives in this package is the half that
+is a fact about the building**, which is why the checks came first and the router was aimed
+at them.
 
 ``mep.run_over_void`` closes the first and worst half of that gap. A run's plan polyline may
 not cross a ``FloorSystem`` deck void — a stairwell, a chase, a two-storey space — unless the
