@@ -24,6 +24,11 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 
+#: The section that governs a drain's changes in direction, and the same one
+#: ``mep.drain_slope`` is listed against on the permit checklist — the two are complements
+#: of one rule, graded from opposite ends.
+_OFFSET_CODE = "IRC P3005.3"
+
 
 @check(Tier.CODE, "mep.drain_offset_geometry")
 def drain_offset_geometry(ctx: CheckContext) -> list[Finding]:
@@ -88,7 +93,7 @@ def drain_offset_geometry(ctx: CheckContext) -> list[Finding]:
                 f"{rules.max_drain_offset_slope_in_per_ft:.0f}\"/ft of a 45-degree fitting, "
                 f"and further than the {rules.max_drain_offset_fall_in:.0f}\" any offset "
                 "descends. This is a vertical drop and a sloped branch drawn as one diagonal",
-                (run.tag,),
+                (run.tag,), code=_OFFSET_CODE,
                 fix="split the segment: repeat the plan vertex to author the drop (two "
                     "elevations at one point), then run the horizontal leg at its own grade. "
                     "The drop has to land high enough that the leg below it still holds "
@@ -98,7 +103,7 @@ def drain_offset_geometry(ctx: CheckContext) -> list[Finding]:
             cid, f"{graded} sloped drain segment(s): none falls more than "
                  f"{rules.max_drain_offset_fall_in:.0f}\" at more than "
                  f"{rules.max_drain_offset_slope_in_per_ft:.0f}\"/ft — every change in "
-                 "direction is a fitting that exists", ()))
+                 "direction is a fitting that exists", (), code=_OFFSET_CODE))
     return out
 
 

@@ -255,7 +255,13 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Floor joist span table", ("structural.ijoist_span",),
                        ("manufacturer span table",)),
         PermitItemSpec("Plumbing sleeve alignment", ("mep.sleeve_alignment",), ()),
-        PermitItemSpec("Plumbing drain slope", ("mep.drain_slope",), ("IRC P3005.3",)),
+        # Grouped, because they are two halves of one line on the reviewer's list and two
+        # complements in the engine: `drain_slope` grades a run by its FLATTEST segment
+        # (where the water stops) and `drain_offset_geometry` by its steepest (where the
+        # geometry stops being a fitting). P3005.3 governs both.
+        PermitItemSpec("Plumbing drain slope and offsets",
+                       ("mep.drain_slope", "mep.drain_offset_geometry"),
+                       ("IRC P3005.3",)),
         # Every one of these plumbing checks answers a line a plan reviewer actually asks
         # about, so they go on the checklist rather than into the exclusion list — the
         # pour-day sleeve schedule most of all, since it is the one item that cannot be
