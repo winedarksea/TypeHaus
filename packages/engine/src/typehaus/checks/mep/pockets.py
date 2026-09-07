@@ -24,6 +24,11 @@ _CID = "mep.pocket_occupancy"
 # A fastening or a box needs the wall's depth, so anything whose plan point lands within
 # the structure band is in the leaf's way. The tolerance only forgives authoring noise.
 _BAND_TOLERANCE_M = 0.01
+#: How far above the leaf the cavity still belongs to the door. The head track, its
+#: fasteners and the slack a kit wants for hanging and adjusting the leaf all live here;
+#: above it the wall is ordinary framing with a header in it. 3 1/2" is a nominal 2x4 laid
+#: flat, which is what every kit's rough-opening height allowance amounts to.
+_POCKET_HEAD_TRACK_M = 0.0889
 
 
 def _pocket_bands(ctx: CheckContext):
@@ -50,21 +55,44 @@ def _pocket_bands(ctx: CheckContext):
             high = (sx + ux * segment.high_m, sy + uy * segment.high_m)
             half_depth = structure.thickness_m / 2.0 + _BAND_TOLERANCE_M
             # Flat caps: the band is the cavity's own length, not a rounded sweep past it.
-            yield op, segment.wall_tag, LineString([low, high]).buffer(half_depth,
-                                                                      cap_style=2)
+            # The z band is the leaf's own travel: from the wall's base (the floor track)
+            # to the head track above the leaf. A pocket is a hole in a wall, not a hole in
+            # a *storey* — see :func:`pocket_occupancy`.
+            top = wall.z0_m + op.sill_m + op.height_m + _POCKET_HEAD_TRACK_M
+            yield (op, segment.wall_tag,
+                   LineString([low, high]).buffer(half_depth, cap_style=2),
+                   (wall.z0_m, top))
 
 
 @check(Tier.CODE, _CID)
 def pocket_occupancy(ctx: CheckContext) -> list[Finding]:
-    """A pocket's cavity must hold no pipe, no wall-mounted device, and no register."""
+    """A pocket's cavity must hold no pipe, no wall-mounted device, and no register.
+
+    **A pocket is a hole in a wall, not a hole in a storey.** The plan band alone reported a
+    second-storey lavatory branch running in the floor trusses 32" above ``D-M-LAUN``'s
+    leaf — a wall that happens to stand under a bathroom one floor up forbade draining it.
+    So a run's segment is tested against the leaf's own travel as well: from the wall's base
+    up to :data:`_POCKET_HEAD_TRACK_M` over the head. A segment clear of that band in z is
+    not in the cavity however squarely it crosses in plan.
+
+    A run with no resolved elevations keeps being tested in plan alone, which is the
+    conservative reading and the only one available. Wall-mounted devices and registers are
+    graded in plan for a different reason: a device's ``Mount.elevation`` is its base and
+    nothing bounds its body upward, so "above the head track" is not a claim this model can
+    make about one. That is a real asymmetry rather than an oversight — a device on a pocket
+    wall is on the wall, and a pipe in the floor over it is not."""
     from shapely.geometry import LineString, Point
 
     out: list[Finding] = []
-    for op, wall_tag, band in _pocket_bands(ctx):
+    for op, wall_tag, band, (low, high) in _pocket_bands(ctx):
         hits: list[tuple[str, str]] = []
 
         for run in ctx.model.pipe_runs:
+            z = run.z_m if run.z_m and len(run.z_m) == len(run.path) else None
             for index in range(len(run.path) - 1):
+                if z is not None and (min(z[index], z[index + 1]) > high
+                                      or max(z[index], z[index + 1]) < low):
+                    continue  # over the head track or under the floor — not in the travel
                 segment = LineString([run.path[index], run.path[index + 1]])
                 if segment.intersects(band):
                     hits.append((run.tag, "pipe run"))
