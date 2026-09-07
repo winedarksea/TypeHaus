@@ -781,7 +781,7 @@ OPENINGS = [
     # 22'-8" itself would not have had at any width. FURN-S-BED3-WARD stood 6'-6" tall right
     # here (x 22'-1.5"..24'-1.5") and swaps slots with FURN-S-DESK3 in placeables.py.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(10, 9)), sill_height=ft(3)),       # ctr x 24'-0"
+           position=from_node("N-S-NE", ft(10, 9)), sill_height=ft(3, 6)),       # ctr x 24'-0"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
     # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so the offset is measured
     # east-to-west and 4'-9" off N-S-N1 is a near jamb at 13'-3", a CENTRE at x 12'-0" and
@@ -794,7 +794,7 @@ OPENINGS = [
     # 8" miss against WIN-A-N1 until 2026-09-06; the offset always resolved to 13'-4" and
     # the prose was simply wrong. The move below is a real move; that correction was not.)
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
-           position=from_node("N-S-N1", ft(4, 9)), sill_height=ft(3)),        # ctr x 12'-0"
+           position=from_node("N-S-N1", ft(4, 9)), sill_height=ft(3, 6)),        # ctr x 12'-0"
     # ** THE NE CORNER PAIR, COMPLETED ONE STOREY UP (2026-09-06). ** RM-S-BED3 already had
     # WIN-S-BED3 on its east wall at y=34'-0"; this is its twin on the north wall at
     # x=34'-0" — same WT-1424, plain glass, operable awning. The two now wrap the north-east
