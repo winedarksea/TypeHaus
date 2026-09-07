@@ -26,7 +26,7 @@ from typing import Any
 from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 
 from typehaus.model.assembly import Layer
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import FloorOpeningPurpose, LayerFunction
 from typehaus.model.floors import FloorSystem, Slab
 from typehaus.model.plan import PlanModel
 from typehaus.model.refs import FollowRoof
@@ -178,6 +178,9 @@ def room_roof_over(plan: PlanModel, storey_tag: str, room: Any) -> Roof | None:
 #: than a piece of ceiling. 1e-3 m2 is 1.6 sq in — smaller than any real ceiling region and
 #: several orders above the micron grid :mod:`typehaus.resolve.overlay` snaps to.
 _MIN_REGION_M2 = 1e-3
+#: A wall counts as filling the ceiling plane if its z band reaches it within this.
+#: Elevations are derived through several sums, so an exact compare would miss.
+_FILL_TOL_M = 1e-6
 
 
 @dataclass(frozen=True)
@@ -220,26 +223,79 @@ def polygon_parts(geometry: Any) -> list[Polygon]:
     return []
 
 
-def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any) -> Polygon | None:
+def wall_fill_face(walls: Sequence[Any], z_m: float) -> Polygon | None:
+    """The plan footprint of everything standing THROUGH the ceiling plane at ``z_m``.
+
+    An ordinary partition does not reach here: a basement wall tops out at the bearing seat
+    *under* the joists and a main-floor wall starts at the datum *over* them, so the only
+    walls whose z band contains the deck's own underside are the ones that genuinely pass
+    through the deck.
+    """
+    faces = [Polygon(layer.polygon)
+             for wall in walls
+             if wall.z0_m - _FILL_TOL_M <= z_m <= wall.z1_m + _FILL_TOL_M
+             for layer in wall.layers if len(layer.polygon) >= 3]
+    return union_all(faces) if faces else None
+
+
+def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any,
+                   walls: Sequence[Any] = (), z_m: float | None = None) -> Polygon | None:
     """The union of the ``FloorOpening`` faces this deck carries, or None if it carries none.
 
     A hole in the deck is a hole in the ceiling hung under it — the same ``gross -
     openings`` the take-off already bills (:mod:`typehaus.takeoff.framing`). Without it, a
     room under a stair well resolves a gypsum plane straight across the shaft, in the 3D
     model and in every section cut through it.
+
+    **A FILLED hole is not a void, and that is the difference between a shaft and a chase.**
+    An opening exists so that something can pass through the deck, and only sometimes is that
+    something air. Catlin's ``FO-M-FIRE`` is the hole ``W-M-FIRE-STUB``'s brick rises through
+    on its way from ``W-B-E1``'s pour to the living-room floor: it is full of masonry at every
+    elevation, so the gypsum below simply stops at the brick and ``RM-B-GYM`` sees a plain
+    ceiling, exactly as ``plan/storeys/main.py`` says it does. Subtracting the whole opening
+    instead cut that room's one 234 SF plane into four fragments — 219 + 7 + 2.5 + 1.4 — none
+    of which anybody builds.
+
+    So an opening with something standing in it at the ceiling plane is not a void here at
+    all; a stair well, with nothing in it, stays one in full. It is deliberately all-or-
+    nothing rather than a subtraction of the fill's own footprint: the wythe is thinner than
+    the chase it rises in, and differencing the two leaves an annular gap that resolves to
+    1 SF slivers of gypsum nobody hangs. What is really built is board run through and cut to
+    the penetration, with the residue packed — one plane, which is what this returns. ``z_m``
+    is that plane, and without it (or without ``walls``) this falls back to the whole opening,
+    which is the conservative answer.
     """
+    tags = tuple(getattr(deck, "openings", ()))
+    if not tags:
+        return None
+    # Unioning every wall footprint is not cheap and almost no deck needs it, so the fill is
+    # built at most once and only when a CHASE actually asks for it. Most decks carry no
+    # opening at all and return above; the rest usually carry a stair, which never asks.
+    fill: Polygon | None = None
+    fill_built = False
     faces = []
-    for tag in getattr(deck, "openings", ()):
+    for tag in tags:
         opening = plan.by_tag(tag)
         outline = getattr(opening, "outline", ())
         if len(outline) < 3:
             continue
-        faces.append(Polygon([point.xy_m for point in outline]))
+        face = Polygon([point.xy_m for point in outline])
+        # Only a CHASE can be full. A STAIR is walked through and a HATCH reached through,
+        # so both are open by definition however much wall runs along their edges — and the
+        # stair well's own trimmer studs DO span the deck, which is why this asks the
+        # opening what it is for rather than measuring what stands in it.
+        if (walls and z_m is not None
+                and getattr(opening, "purpose", None) is FloorOpeningPurpose.CHASE):
+            if not fill_built:
+                fill, fill_built = wall_fill_face(walls, z_m), True
+            if fill is not None and intersection(face, fill).area > _MIN_REGION_M2:
+                continue
+        faces.append(face)
     return union_all(faces) if faces else None
 
 
-def ceiling_regions(plan: PlanModel, room_storey_tag: str,
-                    face: Polygon) -> list[CeilingRegion]:
+def ceiling_regions(plan: PlanModel, room_storey_tag: str, face: Polygon,
+                    walls: Sequence[Any] = ()) -> list[CeilingRegion]:
     """``face``, cut into one region per deck overhead, each with its structure elevation.
 
     The single-deck case returns the WHOLE face rather than its intersection with the
@@ -259,7 +315,7 @@ def ceiling_regions(plan: PlanModel, room_storey_tag: str,
         return []
     if len(usable) == 1:
         storey, deck, z = usable[0]
-        return _cut_voids(plan, storey, deck, z, [face])
+        return _cut_voids(plan, storey, deck, z, [face], walls)
     regions: list[CeilingRegion] = []
     taken: list[Polygon] = []
     for storey, deck, z in usable:
@@ -267,26 +323,26 @@ def ceiling_regions(plan: PlanModel, room_storey_tag: str,
             continue
         outline = Polygon([point.xy_m for point in deck.outline])
         parts = polygon_parts(intersection(face, outline))
-        regions.extend(_cut_voids(plan, storey, deck, z, parts))
+        regions.extend(_cut_voids(plan, storey, deck, z, parts, walls))
         taken.extend(parts)
     for storey, deck, z in usable:
         if getattr(deck, "outline", ()):
             continue
         rest = difference(face, union_all(taken)) if taken else face
         parts = polygon_parts(rest)
-        regions.extend(_cut_voids(plan, storey, deck, z, parts))
+        regions.extend(_cut_voids(plan, storey, deck, z, parts, walls))
         taken.extend(parts)
     return regions
 
 
 def _cut_voids(plan: PlanModel, storey: Any, deck: Any, z: float,
-               parts: Sequence[Polygon]) -> list[CeilingRegion]:
+               parts: Sequence[Polygon], walls: Sequence[Any] = ()) -> list[CeilingRegion]:
     """``parts`` as regions, less whatever ``deck``'s openings take out of them.
 
     The share the deck's outline apportions is taken FIRST and the voids come out of that
     share, so a room straddling two decks loses the hole only from the deck that has it.
     """
-    voids = deck_void_face(plan, storey.tag, deck)
+    voids = deck_void_face(plan, storey.tag, deck, walls, z)
     if voids is None:
         return [CeilingRegion(storey, deck, part, z) for part in parts]
     out: list[CeilingRegion] = []

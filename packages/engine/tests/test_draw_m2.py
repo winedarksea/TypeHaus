@@ -183,7 +183,10 @@ def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
     furniture = [node for node in build_floorplan(model, "main").by_layer()["A-FURN"]
                  if isinstance(node, Polyline)]
 
-    sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
+    # RM-M-LIVING's sofa was retyped house-local to `FT-SOFA-84-SEAT-BAND` on 2026-09-06
+    # (same dimensions, a seat-width walk band), so the shared `FURN-SOFA-84` has no
+    # instance in catlin. The witness here is the sofa MASSING, which did not change.
+    sofa = next(item for item in model.canvas_objects if item.type_ref == "FT-SOFA-84-SEAT-BAND")
     drawn = [node for node in furniture if node.uid == sofa.uid]
     assert len(drawn) > 1, "the resolved outline plus every generated stroke"
     assert drawn[0].closed and drawn[0].lineweight == 0.25, "the footprint stays the heavy outline"

@@ -13,7 +13,11 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Room
 from typehaus.resolve.assembly_material import assembly_structure_material
-from typehaus.resolve.ceiling_over import ceiling_regions
+from typehaus.resolve.ceiling_over import (
+    ceiling_regions,
+    deck_structure_underside_m,
+    deck_void_face,
+)
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.model import ResolvedModel
@@ -401,9 +405,17 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
             # the same deck — and it is nailed to the JOISTS, so it keeps the framed extent
             # whatever the sheet above does.
+            #
+            # It does NOT take the same opening deduction, though. The subfloor above is
+            # genuinely cut around everything that passes through the deck; the ceiling below
+            # is only cut where you can see up into it. A chase full of brick takes plywood
+            # out and leaves the gypsum whole, so the ceiling asks `deck_void_face` — the one
+            # place that rule lives — instead of re-summing every opening.
+            under = deck_structure_underside_m(storey, system)
+            voids = deck_void_face(model.plan, storey.tag, system, model.walls, under)
             for layer in system.ceiling_below:
                 areas[("ceiling", layer.material_ref,
-                       layer.thickness.meters)] += framed - openings
+                       layer.thickness.meters)] += framed - (0.0 if voids is None else voids.area)
 
     # A structural Slab's own ceiling_below (a room sitting under a cast deck) bills the
     # same way, net of its floor openings — meaningless, and left unauthored, on a
@@ -432,7 +444,7 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         # out of each one's blanket billing, or the second subtraction credits back area
         # that deck never billed (catlin's RM-B-GYM is 234 SF of FS-M-EAST and 90 of
         # SL-M-DECK, not 324 of each).
-        for region in ceiling_regions(model.plan, room.storey, face):
+        for region in ceiling_regions(model.plan, room.storey, face, model.walls):
             for layer in region.deck.ceiling_below:
                 areas[("ceiling", layer.material_ref, layer.thickness.meters)] -= region.face.area
         for layer in plan_room.ceiling_lining:

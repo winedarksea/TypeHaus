@@ -31,7 +31,7 @@ question of how many records a room contributes, not of a changed shape.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from typing import Any
 
 from shapely.geometry import Polygon
@@ -71,7 +71,7 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
                 continue
             face = Polygon(resolved_room.clear_face)
             for uid, tag, outline, layers, structure_z in _pieces(
-                    plan, storey.tag, room, face, resolved_room.clear_face):
+                    plan, storey.tag, room, face, resolved_room.clear_face, model.walls):
                 z0 = None if structure_z is None else structure_z - sum(
                     layer.thickness.meters for layer in layers)
                 z1 = structure_z
@@ -88,7 +88,8 @@ def resolve_ceilings(plan: PlanModel, model: ResolvedModel) -> None:
 
 
 def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
-            clear_face: Ring) -> Iterator[tuple[str, str, Ring, Stack, float | None]]:
+            clear_face: Ring,
+            walls: Sequence[Any] = ()) -> Iterator[tuple[str, str, Ring, Stack, float | None]]:
     """``(uid, tag, outline, layers, structure_z)`` per ceiling this room resolves.
 
     A room whose ceiling resolves to ONE plane — under a single deck, under none, or under
@@ -101,7 +102,7 @@ def _pieces(plan: PlanModel, storey_tag: str, room: Any, face: Polygon,
     (`houses/catlin/CLAUDE.md`). What splits `RM-B-GYM` is the 1 9/16" the EPS band hangs
     below the joists beside it, not the fact that two decks meet in the room.
     """
-    regions = ceiling_regions(plan, storey_tag, face)
+    regions = ceiling_regions(plan, storey_tag, face, walls)
     if not regions:
         layers, structure_z = _no_deck_stack(plan, storey_tag, room)
         if not layers:

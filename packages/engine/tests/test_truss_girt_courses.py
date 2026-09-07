@@ -230,7 +230,23 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     ``course_offset = 0`` still wins on exact hits by a clear margin — the runner-up at
     +4.5" buys a 15th exact hit for TEN more slivers (41), and the next phases at +8" and
     -16" match 14 exact with 38. Zero remains the phase; nothing was re-phased for this.
+
+    ** RE-SWEPT 2026-09-07, AND BOTH NUMBERS FELL: 14/31 -> 12/33. ** The attic retype
+    `WT-1448` -> `WT-1436` (`355c2073`) is what did it. Both south attic units keep a 2'-8"
+    sill, and a 36"-tall unit heads at 68" where a 48" one headed at 80": 80" is the 72"
+    course plus a full 8", clear of everything, but 68" sits 4" under it, so `WIN-A-S2` and
+    `WIN-A-S3` each traded an exact hit for a sliver. A 3'-0" sill would put both heads back
+    on 72" exactly; it is not taken here because the rake clearance that governs those two
+    units is the reason they are short in the first place.
+
+    The phase was re-swept at 1/8" from -16" to +8" over the current model and ZERO still
+    wins on the metric this test actually bounds. It is no longer the exact-hit leader —
+    +4.5" now buys a 15th hit, and +8"/-16" match 14 — but every one of those costs six or
+    seven more slivers (39, 40, 40 against 33), and a sliver is the defect this rule was
+    written for. -3.5" is fewer slivers still (24) and remains ILLEGAL: it leaves a 24.75"
+    bay, over the module.
     """
+
     conflicts: list[tuple[str, str, float]] = []
     exact = 0
     for wall in _girt_walls(catlin_model):
@@ -247,8 +263,8 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
                     exact += 1
                 elif gap < _CONFLICT_IN - 1e-6:
                     conflicts.append((wall.tag, f"{opening.tag} {name}", round(gap, 2)))
-    assert exact >= 14, f"only {exact} opening edges land on a course line"
-    assert len(conflicts) <= 31, (
+    assert exact >= 12, f"only {exact} opening edges land on a course line"
+    assert len(conflicts) <= 33, (
         f"{len(conflicts)} field courses in the shadow of an opening's own course "
-        f"(31 is the swept optimum at 24\" o.c. among the phases that keep every bay "
+        f"(33 is the swept optimum at 24\" o.c. among the phases that keep every bay "
         f"within the module): {sorted(conflicts)[:8]}")

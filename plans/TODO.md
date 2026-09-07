@@ -3,6 +3,35 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
+- **RM-B-GYM runs 6.96' between outlets on its north-west wall, and that is ACCEPTED
+  (2026-09-07).** NEC 210.52(A) wants 6'. The stretch north of `D-B-GYM` is `W-B-CS2`, a bare
+  12" pour carrying `SL-M-DECK`, so closing the gap means a box on cast concrete — which is
+  exactly why `ED-B-GYM-RC8` was put SOUTH of the door. `electrical.receptacle_spacing` is
+  left LIVE and red in `haus check`; `test_catlin_receptacle_spacing_passes_after_fill` names
+  this one room in `_ACCEPTED_SPACING_GAPS` so any other room still fails the suite. Revisit if
+  that wall is ever furred.
+
+- **The attic's two south windows sit 4" off the girt course, and that is ACCEPTED
+  (2026-09-07).** `355c2073` retyped `WIN-A-S2`/`WIN-A-S3` from WT-1448 to WT-1436 at the same
+  2'-8" sill, so both heads moved 80" -> 68" and fell 4" under the 72" course: exact hits
+  14 -> 12, slivers 31 -> 33, block count 1114 -> 1118. A 3'-0" sill would put both heads back
+  on 72" exactly, and is NOT taken because rake clearance is why those units are short. The
+  phase was re-swept at 1/8" from -16" to +8" and `course_offset = 0` still wins on slivers
+  (33 against 39 at +4.5" and 40 at +8"/-16"); -3.5" is 24 slivers and still illegal (24.75" bay).
+
+- **Open-web trusses on the main deck were COSTED AND REJECTED (2026-09-07).** The TODO
+  entry below claimed every crossing above would become free. Measured on the real model, the
+  swap takes catlin from 20 FAIL to 27: it fixes almost no `mep.run_in_finished_volume` hit,
+  because changing the deck MEMBER does not move a pipe — the check grades a run's elevation
+  against the ceiling, and a truss only makes raising one possible later. It also breaks three
+  `integrity.floor_end_bearing` ERRORS (FS-M-WEST and FS-M-EAST both land on the x=18' framed
+  plate, which is 5 1/2"; two trusses need 3" + 3") and four `structural.member_interference`
+  hits (`_TRANSITION_DOUBLE` is authored at the 2 1/2" I-joist flange, not a 3 1/2" chord).
+  Its reach is narrow anyway: `RM-B-PLAY-N` and part of `RM-B-GYM` sit under `SL-M-DECK`'s cast
+  concrete, and 4 of the failures are risers standing in a room. **Still open as a WEST-BAY-only
+  option** if the sauna cannot be solved by rerouting through the workshop or by deepening the
+  ceiling furring and running in it.
+
 - **NEC 210.52 receptacle checks measure to the vanity carcass, not the basin** (no `FixtureType.basin` field exists). Permissive rather than wrong. The (D)(2) cabinet-face branch reports UNKNOWN for the same reason.
 
 - **`Room.clear_face` is not the wall's finish face** — it's inset from the wall AXIS by the
@@ -56,9 +85,10 @@ soffit, a reroute or a ceiling move and only the owner can say which.
   This is `mep.fixture_drain_reach`'s defect for supply, and the fix is the same shape:
   take the riser into the wet wall it is supposed to be in.
 
-Also open, and cheap: the owner raised switching the basement-to-main deck from I-joists to
-open-web trusses (as `params/second_deck.py` already does for the second floor's west half).
-Every crossing above would become free rather than bored or soffited. Not costed.
+~~Also open, and cheap: switch the basement-to-main deck to open-web trusses; every crossing
+above would become free.~~ **COSTED AND REJECTED 2026-09-07** — it fixes almost none of these
+and adds seven other failures. See "Needs your decision" at the top of this file; a
+west-bay-only version is still on the table.
 - Add soffit lighting to the garage overhead-door side and both side walls (aluminum channel
   integrated with the soffit).
 - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.

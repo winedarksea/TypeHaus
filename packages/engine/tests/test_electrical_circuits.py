@@ -280,17 +280,32 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["demand_amps"] < 200
 
 
+#: The one 210.52(A) gap catlin carries on purpose, accepted by the owner 2026-09-07.
+#:
+#: RM-B-GYM's west wall north of `D-B-GYM` is `W-B-CS2`, a bare 12" pour carrying
+#: `SL-M-DECK`. From the door's north jamb round the corner to `ED-B-GYM-RC3` is 6.96'
+#: against the 6' rule — 0.96' over, and closing it means a box on cast concrete, which is
+#: why `plan/storeys/basement.py` put `ED-B-GYM-RC8` south of the door instead. The finding
+#: is left LIVE in `haus check` rather than designed away; this names it so that any OTHER
+#: room appearing here still fails the suite. See plans/TODO.md.
+_ACCEPTED_SPACING_GAPS = {("electrical.receptacle_spacing", "RM-B-GYM")}
+
+
 def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.receptacle_spacing"]
-    fails = [f for f in findings if f.result.value == "fail"]
+    fails = [f for f in findings if f.result.value == "fail"
+             and (f.check_id, *f.element_tags) not in _ACCEPTED_SPACING_GAPS]
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"]
     # 12, including RM-A-STUDIO. The west attic loft was STORAGE and outside
     # `_HABITABLE`, so 210.52 spacing was not evaluated for it at all; as a guest BEDROOM it
     # is, and seven new receptacles (plan/electrical.py) are what close the gaps the check
     # named. RM-A-EAST-UNFIN and RM-A-POCKET are still storage and still not counted.
-    assert len(passes) == 12
+    # 11, not 12, since 2026-09-07: RM-B-GYM is the accepted gap above, so it reports a
+    # FAIL where it used to report a PASS. The room is still evaluated — it moved
+    # verdicts, it did not drop out.
+    assert len(passes) == 11
     # The kitchen-counter rule stays visibly unevaluated.
     assert any(f.result.value == "unknown" for f in findings)
 

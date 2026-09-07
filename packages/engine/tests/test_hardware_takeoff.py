@@ -234,7 +234,13 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # independent.) The courses themselves never moved: structural.girt_course_spacing
     # passes and test_truss_girt_courses re-swept to 14 exact / 31 slivers on the same
     # course_offset of 0.
-    assert row["count"] == 1114 and furring[0]["count"] == 224
+    # ** 1114 -> 1118 ON 2026-09-07, AND IT IS THE ATTIC RETYPE. ** `355c2073` took
+    # WIN-A-S2 and WIN-A-S3 from WT-1448 to WT-1436 at the same 2'-8" sill. A 12"-shorter
+    # unit is crossed by one course fewer but stops shadowing the one above it, so each
+    # window's jambs pick up two more packed stations — +4, the same "a station moved"
+    # arithmetic as the two entries above and not a new kind of change. Its cost is in
+    # test_truss_girt_courses, which fell to 12 exact / 33 slivers and was re-swept there.
+    assert row["count"] == 1118 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

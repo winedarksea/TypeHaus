@@ -27,6 +27,7 @@ from typehaus import (
     Slab,
     SlabThermalBreak,
     SlabThermalBreak,
+    Soffit,
     StructuralRole,
     Wall,
     WallPaneling,
@@ -983,14 +984,15 @@ OPENINGS = [
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, and on 2026-09-05 the bathroom
     # rotated north-south, so this leaf (same uid, same 32" width) is on the room's east
     # wall now, opening into the new hall. It still swings OUT — the left-hand normal of
-    # W-B-BA-E's north-to-south direction is east — because an inswing in a 3'-3 15/16" room
+    # W-B-BA-E's north-to-south direction is WEST, so this takes flip_swing — because an
+    # inswing in a 3'-3 15/16" room
     # sweeps the WC clearance zone, the lavatory and the receptacle, all
     # `integrity.door_swing_conflict` violations. Jambs resolve to y 22'-8 1/16"..20'-0 1/16"
     # (the "23'-2"..20'-6"" this comment claimed was already 6" out before the wall moved)
     # and clear both fixtures' footprints; hinge at the south jamb, latch at the north where
     # ED-B-BATH-SW is.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=False),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=True),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post
@@ -1269,5 +1271,50 @@ PANELING = [
                         PanelingSpan(wall_ref="W-B-SA-N", start=ft(5, 10), length=ft(3)))),
 ]
 
+# --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------
+#
+# Three runs cross this bathroom, and they cross it in ONE 12" band at the north end:
+# `PR-B-LSINK-DRAIN` at y=18'-9", `PR-B-BATH-VENT` at 19'-3" and `PR-B-HW-BATH` at 19'-9".
+# `mep.run_in_finished_volume` called all three, at 5.8", 8.2" and 3.8" below the finished
+# ceiling. They are not reroutable as a group — the drain has to fall west to the stack and
+# the vent has to rise east off the fixture it serves — so this is the case the check's own
+# hint names: box them out.
+#
+# ONE RECTANGLE, and it is the whole width of the room (`soffit_clear_section` frames
+# axis-aligned rectangles only, and returns None — every occupant UNKNOWN — for anything
+# else). y runs from the north wall face to 20'-3", 6" clear past the southernmost of the
+# three.
+#
+# ** THE CORNERS ARE THE WALLS' FINISH FACES, NOT `Room.clear_face`. ** The clear face
+# polygonises wall AXES and reaches 2-3" INTO every wall around it, so a box drawn to it put
+# the ladder's rails through W-B-CW2's top plates and W-B-STR2's studs — 22 hits of
+# `structural.member_interference`, all of them real. These four numbers are read off the
+# resolved layer polygons instead: W-B-STR2's east face at 123 3/8", W-B-BA-E's west face at
+# 163.303", W-B-CW2's south face at 218 3/8".
+#
+# The LONG axis is x, which is what the three runs travel along, so the clear section is
+# measured across the 27" of y — the right reading for a band a pipe runs down.
+#
+# `underside_elevation`, not `drop`: the number that matters is the -20.7" the deepest of
+# the three reaches, and pinning the face states the clearance directly instead of deriving
+# it from a ceiling that is itself derived.
+#
+# ** AND IT IS STOREY-RELATIVE, WHICH IS THE TRAP HERE. ** This soffit is filed on the
+# BASEMENT, whose datum is -9'-1 7/16" (`params/main_deck.py::BASEMENT_DATUM`, the bearing
+# seat less the 8'-0" pour), while the -20.7" the check reports is off the MAIN datum. The
+# face wanted is 88 7/16" = -21" - (-109 7/16"). Writing the -21" straight in put the soffit
+# below the slab and `code.R305_ceiling_height` errored at -2'-3" clear, which is the useful
+# way to find out. This file is editable-dialect and cannot import the constant, so the
+# arithmetic is stated here and `integrity.basement_bearing_seat` is what guards the datum
+# it rests on. 88 7/16" leaves 7'-4 7/16" clear under the box, against R305.1's 6'-8" for a
+# bathroom, and the ceiling either side of it is untouched.
+SOFFITS = [
+    Soffit(uid="CEWX9GPQMQ", tag="SF-B-BATH",
+           outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
+                    pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
+           underside_elevation=inch(88.4375),
+           framing=FramingSpec(member="2x2", spacing=inch(16))),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS,
-            *PANELING]
+            *PANELING, *SOFFITS]
