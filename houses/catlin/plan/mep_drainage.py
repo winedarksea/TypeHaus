@@ -249,7 +249,12 @@ SECOND_DRAINS = [
             path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)),
                   pt(ft(4, 6.4), ft(17, 4.8)), pt(ft(3), ft(16, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 9), ft(-1.8333), ft(-2.2333), ft(-2.3333)),
+            # ** THE HEAD IS ABOVE THE SECOND FLOOR NOW, NOT UNDER IT. ** It was 9'-9" —
+            # inside the truss depth — for as long as this stack had no branch piping at
+            # all. PR-M-S-VANITY-DRAIN is a wall arm in W-S-BD-N's cavity at 10'-2 9/16",
+            # and a stack tops out at its highest inlet, so the barrel rises 6" further to
+            # 10'-3" and every other branch ties onto the vertical below it.
+            elevations=(ft(10, 3), ft(-1.8333), ft(-2.2333), ft(-2.3333)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # ** THE HEAD IS 1 1/2" LOWER THAN ITS BATH1 TWIN, AND DELIBERATELY. ** The attic bath's
@@ -266,6 +271,120 @@ SECOND_DRAINS = [
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
+
+# --- the second storey's bathroom branches ---------------------------------------------------
+#
+# ** UNTIL 2026-09-07 THIS STOREY HAD TWO STACKS AND NO BRANCH PIPING AT ALL. ** Six fixtures
+# named PR-M-S-BATH1-DRAIN or PR-M-S-SUITE-DRAIN in `serves` and the nearest pipe to any of
+# them was 37"-79" away; the suite bath's water closet read as undrained in the 3D view
+# because it was. `mep.fixture_drain_reach` is the check that says so out loud.
+#
+# ** EVERY LEG IS IN FS-S-WEST, AND THAT IS WHY THE WEST HALF IS TRUSSES. ** `params/
+# second_deck.py` chose 11 7/8" open-web floor trusses west of x=18' precisely so services
+# cross *through* the webs. So a leg running in y (across the trusses) passes freely, and a
+# leg running in x has to lie in a bay: chords are 3 1/2" wide on the 16" grid, so the clear
+# zone between two lines is 12 1/2" and a 3" pipe on a bay centre has 4 3/4" either side.
+# ** The one thing the webs do NOT forgive is depth: ** chord-to-chord is 8 7/8", so a
+# crossing leg's OUTSIDE has to stay inside 109 5/8"..118 1/2" absolute. That single number
+# sets every starting invert below. A leg riding a bay may use the full 108 1/8"..120".
+#
+# ** BOTH STACK HEADS MOVED, AND FOR OPPOSITE REASONS. ** PR-M-S-BATH1-DRAIN's head went UP
+# to 10'-3", into W-S-BD-N's cavity, because the vanity alcove's arm is a wall arm above the
+# floor and a stack has to top out at its highest inlet. PR-M-S-SUITE-DRAIN's stayed at
+# 9'-7 1/2" (it took its 1 1/2" drop on 2026-09-07 with PR-A-STUBATH-DRAIN's dog-leg fix) and
+# the attic branch now lands 2 1/2" above the collector rather than on top of it, so the
+# two are separate inlets on one vertical instead of a double fitting at a point.
+#
+# ** FILED ON ``main``, like SECOND_DRAINS and STUDIO_DRAINS, ** so every elevation here is
+# project-absolute: 10'-0 3/4" is the second storey's finished floor, 10'-0" its deck, and
+# 9'-0 1/8" the underside of the trusses.
+SECOND_BRANCH_DRAINS = [
+    # ** THE HALL BATH'S 3" COLLECTOR. THE CLOSET BEND IS OFFSET AND THAT IS NOT A ROUNDING. **
+    # FX-S-BATH1-WC's flange is at y=365.29" and the truss line at 368" occupies
+    # 366.25"..369.75", so a 3" pipe dropping on the flange centre would notch a chord by
+    # 0.54". A closet bend is a fitting with 5 1/4" of translation in it: the pipe leaves the
+    # flange at the floor plane and is on the y=360" bay centre 5 1/4" later, 3'-0" below.
+    # That first leg falls 8.5"/ft, which is a bend and not a slant — `mep.drain_offset_
+    # geometry` grades it on the conjunction and 3 3/4" of fall is nowhere near its 18".
+    # Then east on the bay to x=5'-0" and south across the trusses to the stack.
+    PipeRun(uid="K28BQ29KCW", tag="PR-M-S-BATH1-WC-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(m(0.560313), m(9.2783)), pt(m(0.560313), ft(30)),
+                  pt(ft(5), ft(30)), pt(ft(5), ft(26, 6))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 9), ft(9, 6.625), ft(9, 4)),
+            serves=("FX-S-BATH1-WC",)),
+    # The tub-shower's 1 1/2" waste: straight down in its own bay at the west end, then south
+    # across the trusses to the collector at (3'-3 1/4", 30'-0"). It arrives 1/16" over the
+    # collector's own invert there — a side entry, which is what `drain_tie_ins` wants and
+    # what a wye is. 1 1/2" because the tub's waste-and-overflow is 1 1/2" and that is the
+    # trap size the table gives a bathtub (cf. PR-B-TUB2-DRAIN).
+    PipeRun(uid="0W45BR6619", tag="PR-M-S-BATH1-TUB-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(39.25), inch(409.5)), pt(inch(39.25), inch(409.5)),
+                  pt(inch(39.25), ft(30))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.9375)),
+            serves=("FX-S-BATH1-SH",)),
+    # The 48" vanity's 1 1/2" arm. The drop is at y=31'-0" rather than on the bowl's own
+    # 369.88" for the same reason as the water closet's: 369.88" is 0.13" off the 368" truss
+    # line's south face. y=372" is the 369.75"..382.25" bay, 2 1/8" from the bowl and exactly
+    # where PR-S-BATH1-VENT already takes off. West on that bay to x=5'-0", then 1'-0" south
+    # onto the collector's corner.
+    PipeRun(uid="E9TA1G01B8", tag="PR-M-S-BATH1-LAV-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(10), ft(31)), pt(ft(10), ft(31)),
+                  pt(ft(5), ft(31)), pt(ft(5), ft(30))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 9.75), ft(9, 7.1875), ft(9, 6.6875)),
+            # No `wall_ref`: only the first vertex is in W-S-BA-E1B, and the drop leaves
+            # the wall's own z band the moment it passes the deck at 10'-0". `wall_ref`
+            # claims EVERY segment is in that wall, which this run cannot honestly say.
+            serves=("FX-S-BATH1-LAV",)),
+    # ** THE DOUBLE VANITY'S ARM NEVER LEAVES THE WALL. ** W-S-BD-N is
+    # INT_2X6_STAGGERED_PLUMBING — 5 1/2" of continuous cavity with no stud to bore — and
+    # both bowls sit on it, so their 1 1/2" arm runs east inside it at 2 3/4" above the
+    # finished floor and lands on the stack head at 10'-2 9/16". That is what took the head
+    # up to 10'-3": a stack tops out at its highest inlet, and this is it. Both lavatories
+    # are named because both drain here; LAV2 at x=52 3/8" already sat 7 5/8" from the head
+    # and passed `fixture_drain_reach` for a reason that was true by accident.
+    PipeRun(uid="WJ1ZY1QTET", tag="PR-M-S-VANITY-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(22.375), ft(26, 6)), pt(inch(52.375), ft(26, 6)),
+                  pt(ft(5), ft(26, 6))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(10, 3.5), ft(10, 2.75), ft(10, 2.5625)),
+            serves=("FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2"), wall_ref="W-S-BD-N"),
+    # ** THE SUITE BATH'S 3" COLLECTOR. ** The water closet is floor-drained and its flange
+    # at (134.81", 250.625") lands cleanly in the 241.75"..254.25" bay, so this one drops
+    # vertically — no offset bend needed. South across the trusses to the y=16'-10.8" bay the
+    # stack head sits in, then 1'-9 3/16" east onto it. It starts at 9'-8 1/2" so its 3"
+    # crown clears the truss webs' 118 1/2" ceiling by 1/2", and lands at 9'-4" on the stack's
+    # vertical, 3 1/2" below where the attic branch enters it.
+    PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
+                  pt(inch(134.81), ft(16, 10.8)), pt(ft(13), ft(16, 10.8))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 8.5), ft(9, 5.375), ft(9, 4)),
+            serves=("FX-S-SUITEBATH-WC",)),
+    # The 30" vanity's 1 1/2" arm: down inside W-S-SN3 (the staggered wet wall this bath was
+    # laid out around), south across one truss, then west on the y=246" bay to the collector.
+    # The tie is at y=246" and not at the 240" truss line, which is where the arithmetic
+    # first put it — a wye centred on a chord is not a fitting anybody can install.
+    PipeRun(uid="HNBWJNTS71", tag="PR-M-S-SUITE-LAV-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(165.5), ft(22, 4)), pt(inch(165.5), ft(22, 4)),
+                  pt(inch(165.5), inch(246)), pt(inch(134.81), inch(246))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 9.5625), ft(9, 9), ft(9, 8.25)),
+            serves=("FX-S-SUITEBATH-LAV",)),
+    # The tub-shower's 1 1/2" waste, from the north-end waste-and-overflow at
+    # (197.615", 261.125"): down its own bay, south under the tub across three trusses, then
+    # west on the y=19'-0" bay to the collector 1'-6" south of the vanity arm's tie. Two
+    # separate wyes on the 3", 18" apart, rather than one fitting taking both.
+    PipeRun(uid="WVNA8G8ZHX", tag="PR-M-S-SUITE-TUB-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(inch(197.615), inch(261.125)), pt(inch(197.615), inch(261.125)),
+                  pt(inch(197.615), ft(19)), pt(inch(134.81), ft(19))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(10, 0.75), ft(9, 9.4375), ft(9, 8.625), ft(9, 7.0625)),
+            serves=("FX-S-SUITEBATH-TUBSH",)),
+]
+
 
 # Heat-pump condensate (plans/TODO.md §condensate): a collected 3/4" air-gap line, falling
 # continuously to a receptor, never tied into the sanitary system. PR-M-COND-HEADS drops
@@ -491,15 +610,18 @@ STUDIO_DRAINS = [
     # be one diagonal from the attic bay straight to the stack head, falling 114.5" over
     # 4.16 ft of plan. That is 27.5"/ft and there is no fitting for it; `mep.drain_slope` was
     # blind to it (it grades the FLATTEST segment) and `mep.drain_offset_geometry` now is not.
-    # The drop bottoms at 9'-8 3/4" so the east leg still holds 1.25" over its 4.161 ft —
-    # 0.30"/ft, clear of P3005.3's 1/4" — and its 3" crown sits at 9'-10 1/4", 1 3/4" under
-    # FS-S-WEST's 10'-0" deck underside. That clearance is what took PR-M-S-SUITE-DRAIN's own
-    # head down 1 1/2" with it (below); the two profiles move together or neither moves.
+    # The drop bottoms at 9'-8" so the east leg still holds 1.5" over its 4.161 ft —
+    # 0.36"/ft, clear of P3005.3's 1/4" — and its 3" crown sits at 9'-9 1/2", inside the
+    # 8 7/8" chord-to-chord window a leg crossing FS-S-WEST's trusses has to stay in. That
+    # window is what took PR-M-S-SUITE-DRAIN's head down 1 1/2" (below); the two profiles
+    # move together or neither moves. It lands at 9'-6 1/2" on the stack's vertical, 2 1/2"
+    # above where PR-M-S-SUITE-WC-DRAIN enters it — two inlets on one barrel, not a double
+    # fitting at one point.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
                   pt(ft(9, 7.5), ft(19, 4)), pt(ft(13), ft(16, 10.8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8.75), ft(9, 7.5)),
+            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), ft(9, 6.5)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE BAR IS NOT BACK-TO-BACK WITH THE BATH. ** It is on W-A-C2's west face at
     # (17'-0", 16'-8") because the 6:12 rake leaves nothing usable at the wet wall, so its
@@ -519,4 +641,29 @@ STUDIO_DRAINS = [
             # FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), through the webs.
             elevations=(ft(19, 7.75), ft(19, 7.5), ft(19, 5.5), ft(19, 4.5)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
+
+    # ** THE LAVATORY AND THE SHOWER, COLLECTED IN THE WET WALL. ** Both were 15"-27" from any
+    # pipe naming them until 2026-09-07. This 2" leg runs south inside W-A-STU-W's 5 1/2"
+    # staggered cavity — under the bottom plate, through two FS-ATTIC I-joist webs at y=256"
+    # and y=240" — from the lavatory's drop to the west leg's own drop point at (9'-7 1/2",
+    # 19'-4"), where it lands exactly on that vertex at 19'-3 1/2".
+    PipeRun(uid="FY6M0PTE7C", tag="PR-A-STUBATH-LAV-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(9, 7.5), inch(258.625)), pt(ft(9, 7.5), inch(258.625)),
+                  pt(ft(9, 7.5), ft(19, 4))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(20, 0.75), ft(19, 4.25), ft(19, 3.5)),
+            # No `wall_ref`, for the same reason as PR-M-S-BATH1-LAV-DRAIN: the leg runs
+            # under W-A-STU-W's plan footprint but below its base, in the joist band, so a
+            # claim that every segment is inside that wall's cavity would be false.
+            serves=("FX-A-STUBATH-LAV",)),
+    # The 36" pan's 2" waste. FS-ATTIC is I-joists, not the second floor's trusses, so this
+    # leg buys its freedom by running WEST — parallel to the joists, in the 241 1/4"..254 3/4"
+    # bay the pan's grate already sits in — and crosses nothing at all for 6'-7". It ties into
+    # the leg above at (9'-7 1/2", 20'-7 5/8"), 1/16" over that pipe's invert there.
+    PipeRun(uid="BVZG9VAP7M", tag="PR-A-STUBATH-SH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(16, 2.625), ft(20, 7.625)), pt(ft(16, 2.625), ft(20, 7.625)),
+                  pt(ft(9, 7.5), ft(20, 7.625))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(20, 0.75), ft(19, 5.75), ft(19, 4)),
+            serves=("FX-A-STUBATH-SH",)),
 ]

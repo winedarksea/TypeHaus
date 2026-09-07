@@ -6,10 +6,9 @@ a drain run that never reached them, and the whole second-storey bathroom group 
 with no branch or trap-arm piping drawn at all — which is why the suite bath's water closet
 read as undrained in the viewer.
 
-**This check lands red on purpose.** Per the plan of record, checks go in as hard FAILs and
-the fixes follow; the branches are the next commit. What these tests pin meanwhile is the
-part that survives the fix: the vertical gate, the empty-``serves`` verdict, and the
-threshold's basis.
+The branches were authored in the commit after the check, so the house is green here. What
+these tests pin is what survives that fix: the vertical gate, the empty-``serves`` verdict,
+and the fact that the threshold still sits well clear of the house's own worst reach.
 """
 
 from __future__ import annotations
@@ -45,22 +44,30 @@ def test_every_drained_fixture_is_graded(findings) -> None:
         [f.message for f in findings if f.result is Result.UNKNOWN]
 
 
-def test_the_distribution_is_bimodal_with_a_hole_at_the_threshold(findings) -> None:
+def test_the_threshold_still_clears_the_house_by_a_third(findings) -> None:
     """Where the 12" comes from, asserted rather than asserted-in-a-docstring.
 
-    Every PASS measures 8" or less; every FAIL measures 15" or more. The threshold sits in
-    an empty band, so it is a reading of the house rather than a knob. If a future branch
-    lands at 11" this test fails and the number needs re-deriving — which is the point."""
+    The measurement that set it was bimodal with a hole: fixtures a branch actually reached
+    sat at 0"-8", the nine with no branch drawn at 15.6"-79.3". The upper cluster is gone
+    now — the branches were authored — so what is left to pin is the lower one. Every
+    reached fixture measures 8" or less, so the threshold has 50% of margin over the worst
+    honest reach in the house. If a future branch lands at 11" this fails and the number
+    needs re-deriving rather than nudging, which is the point of pinning it.
+    """
     import re
 
     def inches(finding):
         return float(re.search(r"(\d+\.\d)\"", finding.message).group(1))
 
     reached = [inches(f) for f in findings if f.result is Result.PASS]
-    missed = [inches(f) for f in findings if f.result is Result.FAIL]
-    assert reached and missed
+    assert len(reached) >= 20
     assert max(reached) <= 8.0, sorted(reached)
-    assert min(missed) >= 15.0, sorted(missed)
+
+
+def test_every_drained_fixture_is_reached(findings) -> None:
+    """The gate. Nine fixtures named a run that never came near them; none does now."""
+    fails = [f for f in findings if f.result is Result.FAIL]
+    assert not fails, [f.message for f in fails]
 
 
 def test_a_fixture_no_run_names_fails_rather_than_unknowns(catlin_model) -> None:

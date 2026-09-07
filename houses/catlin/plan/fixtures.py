@@ -30,9 +30,15 @@ BASEMENT_FIXTURES = (
     # It moved 7" north with W-B-SA-N on 2026-09-05 (round three) to stay in the corner, and
     # the floor drain, both sleeves, PR-B-SAUNA-DRAIN's first three vertices, the two
     # condensate air gaps over the grate and PR-B-SAUNA-VENT's riser all moved with it.
+    # ** `drain_position` IS THE PAN'S OWN GRATE, AND IT HAS TO BE AUTHORED. ** Without it
+    # `_expected_drain_point` reads the "no hot connection = floor-drained" heuristic the
+    # wrong way round for a shower — this type DOES need hot water, so the derivation
+    # projects the drain onto `wall_ref`'s axis at x=18'-0", 24 1/4" east of the pan and
+    # inside W-B-CS's studs. A shower pan drains at its own grate; PR-B-SAUNA-DRAIN's first
+    # two vertices are already exactly here, so this authors a fact rather than a route.
     Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36-COMBO",
             room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
-            wall_ref="W-B-CS"),
+            wall_ref="W-B-CS", drain_position=pt(inch(191.75), inch(98.1875))),
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
             room="RM-B-SAUNA", position=pt(ft(13, 6), inch(98.1875)),
             wall_ref="W-B-CS"),
@@ -429,8 +435,16 @@ SECOND_FIXTURES = (
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-VANITY-48-SINGLE",
             room="RM-S-BATH1", position=pt(inch(106.12), inch(369.88)), rotation=deg(-90),
             wall_ref="W-S-BA-E1B"),
+    # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE WEST END, NOT THE WET WALL. **
+    # The derived convention projects a hot-served fixture onto `wall_ref`'s axis, which for
+    # this tub is W-S-BD-N at y=26'-6" — 7'-7" from the tub and in another room. A 60"
+    # alcove tub's waste sits against its plumbing end wall on the long centreline: the
+    # chase wall's finish face is x=2'-11 3/8", the tub's west end 2'-11 3/4", and the
+    # w-and-o tee is 3 1/2" in from it at x=39 1/4". y=409.5" is the tub's own centreline
+    # (394.5"..424.5"). The drop lands in the 401.75"..414.25" truss bay with 6" to spare.
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60-DIVERTED", room="RM-S-BATH1",
-            position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N"),
+            position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N",
+            drain_position=pt(inch(39.25), inch(409.5))),
     # The suite's own bath (source: 46.01sf). D-S-SUITEBATH's 2'-6" leaf sweeps the room's SW
     # quadrant clear, so WC sits north of the swing against the north wall, lav east of it
     # also against the north wall, shower in the NE corner.
@@ -501,9 +515,15 @@ SECOND_FIXTURES = (
     # the south gap exactly 11 1/4" for the carcass to be built to.
     # ** NOTHING GRADED ANY OF THIS: ** no check tests a flanged fixture against the faces
     # it is flanged to, and the 0.17" over-run read as 0 FAIL.
+    # ** `drain_position` IS THE WASTE-AND-OVERFLOW AT THE NORTH END. ** Rotated -90, the
+    # 60" dimension runs in y (204.625"..264.625") and the long centreline is x=197.615".
+    # The plumbing end is the north one, against W-S-SN3 — the wet wall this bath drains
+    # into and the wall PR-S-SUITEBATH-VENT takes off from at (196.5", 263"). The tee is
+    # 3 1/2" in from that face. Without this the derivation projects onto `wall_ref`
+    # W-S-C2C's axis at x=18'-0", which is inside a bearing wall's studs.
     Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60-DIVERTED",
             room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(234.625)), rotation=deg(-90),
-            wall_ref="W-S-C2C"),
+            wall_ref="W-S-C2C", drain_position=pt(inch(197.615), inch(261.125))),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
     #
@@ -672,8 +692,13 @@ ATTIC_FIXTURES = (
     # three nailable walls (the 2026-08-21 alcove audit above), and a guest suite does not want
     # a tub. R305 is not the constraint here either: the roof underside over this corner is
     # 10'-6" and up.
+    # ** `drain_position` IS THE PAN'S GRATE, WHICH IS ALSO ITS CENTRE. ** `wall_ref` here
+    # names the WET wall, not the wall the pan touches (see the note above this tuple), so
+    # the derived convention put this shower's drain 6'-7" west, on W-A-STU-W's axis. A 36"
+    # pan drains at its centre, and PR-A-STUBATH-VENT already takes off there.
     Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36-COMBO", room="RM-A-STUBATH",
-            position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W"),
+            position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W",
+            drain_position=pt(ft(16, 2.625), ft(20, 7.625))),
     # ** THE WET BAR'S SINK, BACK-TO-BACK WITH THE BATH THROUGH THE SAME WET WALL. ** It is on
     # W-A-STU-W's WEST face, so the bar and the bathroom share one stack, one vent and one
     # 5 1/2" cavity instead of running a second branch across the studio floor.
