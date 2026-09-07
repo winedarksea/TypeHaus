@@ -14,7 +14,11 @@ from __future__ import annotations
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
-from typehaus.checks.mep.plumbing_common import _M_TO_FT, _advisory_fail
+from typehaus.checks.mep.plumbing_common import (
+    _M_TO_FT,
+    VERTICAL_PLAN_FT,
+    _advisory_fail,
+)
 from typehaus.checks.mep.vent_path import evaluate_vent_path
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
@@ -51,7 +55,7 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
             for i in range(len(run.path) - 1):
                 a, b = run.path[i], run.path[i + 1]
                 plan_ft = (((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5) * _M_TO_FT
-                if plan_ft <= 1e-6:
+                if plan_ft <= VERTICAL_PLAN_FT:
                     continue  # vertical drop
                 seg_slope = (run.z_m[i] - run.z_m[i + 1]) / M_PER_IN / plan_ft
                 if worst is None or seg_slope < worst[0]:

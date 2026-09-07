@@ -12,6 +12,13 @@ from typehaus.findings import Finding, Result
 
 _M_TO_FT = 3.280839895
 
+#: Plan length, in feet, under which a drain segment is a vertical drop rather than a leg
+#: with a grade. ``mep.drain_slope`` skips those (a stack holds no slope) and
+#: ``mep.drain_offset_geometry`` exempts them (a stack cannot be too steep); the two rules
+#: are complements of each other and must agree exactly about which segments exist, so the
+#: tolerance is one constant rather than two literals.
+VERTICAL_PLAN_FT = 1e-6
+
 
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
     # Advisory findings never carry ERROR severity — that severity is reserved for

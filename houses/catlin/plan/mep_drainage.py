@@ -252,11 +252,17 @@ SECOND_DRAINS = [
             elevations=(ft(9, 9), ft(-1.8333), ft(-2.2333), ft(-2.3333)),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
+    # ** THE HEAD IS 1 1/2" LOWER THAN ITS BATH1 TWIN, AND DELIBERATELY. ** The attic bath's
+    # branch has to fall 1/4"/ft over the 4.161 ft from its drop inside W-S-DC2 to this head,
+    # and its 3" crown has to stay under FS-S-WEST's 10'-0" deck underside. At 9'-9" those two
+    # cannot both hold. At 9'-7 1/2" the branch drops to 9'-8 3/4", falls 0.30"/ft, and crowns
+    # 1 3/4" clear. Nothing else reads this number and the drop below it is vertical, so the
+    # cost of the move is 1 1/2" of stack.
     PipeRun(uid="CMPD08AAAA", tag="PR-M-S-SUITE-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(13), ft(16, 10.8)), pt(ft(13), ft(16, 10.8)),
                   pt(ft(6, 2.4), ft(16, 8.4)), pt(ft(6), ft(16, 6))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(9, 9), ft(-1.8333), ft(-2.2503), ft(-2.3163)),
+            elevations=(ft(9, 7.5), ft(-1.8333), ft(-2.2503), ft(-2.3163)),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
 ]
@@ -475,16 +481,25 @@ RADON_SUMP = [
 # these are project elevations, so +19'-4" is the attic floor's underside and +9'-9" is the
 # second floor's, where PR-M-S-SUITE-DRAIN's head is waiting.
 STUDIO_DRAINS = [
-    # ** THE RUN IS THREE POINTS: FLANGE -> WEST -> DOWN, NO DOG-LEG. ** The water closet is
+    # ** THE RUN IS FLANGE -> WEST -> DOWN -> EAST, NO DOG-LEG. ** The water closet is
     # on the wet wall (plan/fixtures.py), c/l on y=19'-4", 232" = 8 + 14 x 16, a bay centre:
     # the flange drops straight between joists. The drop, at (9'-7 1/2", 19'-4"), is deep
     # inside W-S-DC2 (y 15'-11"..22'-4") and clears the two supply risers at y 20'-6"/21'-0".
     # The lavatory's 1 1/2" arm comes south off the north wall into the same west leg.
+    #
+    # ** THE DROP IS ITS OWN LEG — A REPEATED PLAN VERTEX WITH TWO ELEVATIONS. ** It used to
+    # be one diagonal from the attic bay straight to the stack head, falling 114.5" over
+    # 4.16 ft of plan. That is 27.5"/ft and there is no fitting for it; `mep.drain_slope` was
+    # blind to it (it grades the FLATTEST segment) and `mep.drain_offset_geometry` now is not.
+    # The drop bottoms at 9'-8 3/4" so the east leg still holds 1.25" over its 4.161 ft —
+    # 0.30"/ft, clear of P3005.3's 1/4" — and its 3" crown sits at 9'-10 1/4", 1 3/4" under
+    # FS-S-WEST's 10'-0" deck underside. That clearance is what took PR-M-S-SUITE-DRAIN's own
+    # head down 1 1/2" with it (below); the two profiles move together or neither moves.
     PipeRun(uid="HTZ1RGAGXP", tag="PR-A-STUBATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(11, 0.875), ft(19, 4)), pt(ft(9, 7.5), ft(19, 4)),
-                  pt(ft(13), ft(16, 10.8))),
+                  pt(ft(9, 7.5), ft(19, 4)), pt(ft(13), ft(16, 10.8))),
             diameter=inch(3), material="pvc",
-            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 9)),
+            elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8.75), ft(9, 7.5)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
     # ** THE BAR IS NOT BACK-TO-BACK WITH THE BATH. ** It is on W-A-C2's west face at
     # (17'-0", 16'-8") because the 6:12 rake leaves nothing usable at the wet wall, so its
