@@ -3,9 +3,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **NEC 210.52 receptacle checks measure to the vanity carcass, not the basin** (no
-  `FixtureType.basin` field exists). Permissive rather than wrong. The (D)(2) cabinet-face
-  branch reports UNKNOWN for the same reason.
+- **NEC 210.52 receptacle checks measure to the vanity carcass, not the basin** (no `FixtureType.basin` field exists). Permissive rather than wrong. The (D)(2) cabinet-face branch reports UNKNOWN for the same reason.
 
 - **`Room.clear_face` is not the wall's finish face** — it's inset from the wall AXIS by the
   room's lining, not the wall's own resolved layer polygons. A vanity authored off it stood
@@ -15,9 +13,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   279 references across 51 engine modules + tests + houses + ui. Details:
   `clear-face-is-not-the-finish-face.md`.
 
-- **Zoning height is now 2'-10" above average grade.** No `height_limit` exists on a
-  jurisdiction profile, so this is a note, not a check. If a limit is close, the levers are
-  the attic's 11' ceiling and the 4:12 ridge.
+- **Zoning height is now 2'-10" above average grade.** No `height_limit` exists on a jurisdiction profile, so this is a note, not a check.
 
 - **Porch beam span is a 9" knife-edge.** `FS-SG-PORCH`'s 7.25' joist span reads IRC Table
   R507.5(1)'s 8' row (10.25' beam limit) against a 10.00' actual beam span. At 8.01' the
@@ -165,11 +161,7 @@ Every crossing above would become free rather than bored or soffited. Not costed
   UNKNOWN because of it; pinned by `test_catlin_contract_m3.py`.
 - **Basement flood-step threshold (7 1/4" on `W-B-S2`/`S3`) is a literal, not a check.** A
   check walking the step would catch a future regression.
-- **French drains could be a form-a-drain product** (doubles as footing form); we probably
-  also have more drains than needed.
-- **The garage eave detail lost its heel.** With one member per truss, the raised-heel eave
-  draws a plain 26" rectangle instead of the fink shape. Fixing it means teaching the section
-  cutter to cut the fink, not just the member envelope — golden was blessed instead.
+- **French drains could be a form-a-drain product** (doubles as footing form); we probably also have more drains than needed.
 - **Four matchers still separately answer "is this wall above that one"**, at three
   tolerances (`platform._collinear_overlap`, `stacking._axis_match`,
   `construction_geometry._stack_overlap`, `layout_lines._collinear`). Not a mechanical
@@ -241,7 +233,7 @@ the future.
 
 ## Questions
 
-- Floor drains in kitchen/laundry room — deferred 2026-07-30: neither, for now.
+- Floor drains in laundry room — deferred 2026-07-30: neither, for now.
 - Rename wall assemblies to just their type (no "CATLIN" prefix needed) and get them into the
   library.
 - **Showers: one of four classified.** `FX-M-BATH2-SH` has a modelled surround
