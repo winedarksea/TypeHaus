@@ -26,18 +26,49 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   + aluminum cap and never see rain. The span knife-edge itself is still live: re-check any
   PORCH beam-section change against it. (`notes/beam_water_protection.md`)
 
-- **Eight heat-pump stand legs on `SL-SG-HPPAD` are ungraded for bearing.** Neither
-  `structural.deck_post_bearing` (posts on a `FloorSystem`) nor `landing_post_bearing`
-  (stair-landing posts) reaches a post standing on a slab — their anchors, not bearing,
-  actually govern.
+- ~~PR-B-KITCHEN-DRAIN-RUN cuts through the theater~~ — **DONE 2026-09-07.** It now drops
+  through SL-M-DECK's cast cap only and runs west inside the EPS form at y=35'-0". Zero
+  exposure in the theater and the gym.
+- ~~PR-A-STUBATH-DRAIN-RUN runs through the SUITEBATH's door~~ — **DONE 2026-09-07.** The
+  dog-leg is split into a drop and a horizontal; `mep.drain_offset_geometry` now grades the
+  shape and `mep.fixture_drain_reach` grades the nine fixtures that named a run and never
+  reached one.
 
-- PR-B-KITCHEN-DRAIN-RUN cuts through the theater — should route further west.
-- PR-A-STUBATH-DRAIN-RUN runs through the SUITEBATH's door.
+### `mep.run_in_finished_volume`: 18 runs still hang in a finished room
+
+The check landed 2026-09-07 (`checks/mep/routing_ceiling.py`). One family is fixed; three
+are open and each needs an owner decision before it can be authored, because the fix is a
+soffit, a reroute or a ceiling move and only the owner can say which.
+
+- **RM-B-SAUNA, 6 runs.** Its lined ceiling resolves at -15 3/8", 2 7/8" lower than the rest
+  of the storey, so everything crossing above it is inside it:
+  `DU-B-ERV-R-SAUNA-SUP` 7.49 ft @ 5.6", `-EXH` 6.52 ft @ 5.6", `PR-B-COND` 4.80 ft @ 9.4",
+  `PR-B-CW-SAUNA` 3.57 ft @ 42.9", `PR-B-HW-SAUNA` 3.54 ft @ 42.9",
+  `PR-B-ERV-COND` 1.50 ft @ 50.5", `PR-B-SAUNA-VENT` 1.50 ft @ 9.6". One perimeter soffit
+  would take most of them; the two 42.9" ones are risers standing in the room.
+- **RM-B-BATH, 3 runs.** `PR-B-BATH-VENT` 3.33 ft @ 8.2", `PR-B-HW-BATH` 3.33 ft @ 3.8",
+  `PR-B-LSINK-DRAIN` 1.47 ft @ 5.8". Small, and one bulkhead over the wet wall takes all
+  three.
+- **The theater/gym/stair residue, 4 runs.** `CD-B-KITCHEN` 13.32 ft @ 4.3" and
+  `CD-B-DATA-MEDIA` 6.07 ft @ 4.3" in RM-B-PLAY-N (both would take the same EPS lane the
+  kitchen drain now uses, but each would orphan a wall sleeve); `PR-M-COND-HEADS` 9.07 ft @
+  8.0" and `PR-B-COND` 5.80 ft @ 10.7" in RM-B-GYM; `CD-B-GARAGE` 6.05 ft @ 36.1" hanging in
+  RM-B-STAIR.
+- **4 supply risers stand in a finished room.** `PR-B-CW-SUITE` and `PR-B-HW-SUITE` stop 30"
+  above RM-S-SUITEBATH's floor, 47" and 51" from the fixtures they name;
+  `PR-B-CW-BATH2` 3.03 ft in RM-M-BATH2; `PR-B-CW-SAUNA` 3.57 ft. None carries `wall_refs`.
+  This is `mep.fixture_drain_reach`'s defect for supply, and the fix is the same shape:
+  take the riser into the wet wall it is supposed to be in.
+
+Also open, and cheap: the owner raised switching the basement-to-main deck from I-joists to
+open-web trusses (as `params/second_deck.py` already does for the second floor's west half).
+Every crossing above would become free rather than bored or soffited. Not costed.
 - Add soffit lighting to the garage overhead-door side and both side walls (aluminum channel
   integrated with the soffit).
-- Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a
-  flush-with-drywall baseboard.
+- Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
 - Orientation-tuned glass, particularly second-story south-facing windows.
+- Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
+
 
 - **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
   cross-references don't. `retype_placeable` already re-anchors wall-fitted placeables and

@@ -59,13 +59,18 @@ def test_the_known_defects_are_written_down(findings) -> None:
     they name, in open air with no ``wall_refs`` on them. Nothing else in the engine looks at
     that; it is ``mep.fixture_drain_reach``'s finding for supply, arrived at from the other
     direction.
+
+    ``PR-B-KITCH-DRAIN`` is the one that has been fixed, and its absence from this list is
+    the assertion that matters most here: it was the worst of them (14.5 ft at 6.7" into the
+    theater, 9.1 ft at 9.9" into the gym) and it is not in a finished room anywhere now.
     """
     fails = [f for f in findings if f.result is Result.FAIL]
     rooms = {f.element_tags[1] for f in fails}
     assert rooms <= {"RM-B-PLAY-N", "RM-B-GYM", "RM-B-STAIR", "RM-B-SAUNA", "RM-B-BATH",
                      "RM-M-BATH2", "RM-S-SUITEBATH"}
     tags = {f.element_tags[0] for f in fails}
-    assert {"PR-B-KITCH-DRAIN", "CD-B-KITCHEN", "CD-B-DATA-MEDIA",
+    assert "PR-B-KITCH-DRAIN" not in tags
+    assert {"CD-B-KITCHEN", "CD-B-DATA-MEDIA",
             "PR-M-COND-HEADS", "CD-B-GARAGE"} <= tags
 
 
