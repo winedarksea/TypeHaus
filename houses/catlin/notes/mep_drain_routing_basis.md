@@ -139,16 +139,17 @@ Deliberately tiny, so a reviewer can redo it in five minutes and check the engin
 This is the spec for `routing/graph.py` and `routing/search.py`; the numbers here are what
 `test_routing_oracle.py` asserts.
 
-**The world.** A 3×3 lattice on a 24" grid. Nodes `N(i,j)` at (24i, 24j), i,j ∈ {0,1,2},
-identified by `id = 3j + i`:
-
-          y=48   G(6)   H(7)   I(8)
-          y=24   D(3)   E(4)   F(5)
-          y= 0   A(0)   B(1)   C(2)
-                 x=0    x=24   x=48
+**The world.** A 3×3 lattice on a 24" grid. Nodes at (24i, 24j), i,j ∈ {0,1,2}.
 
 **The obstacle.** A chase whose inflated footprint (`radius + clearance`, already applied)
-covers node E. Every edge into E is removed; nothing else is.
+covers the centre node E. **E is REMOVED, not merely disconnected** — `build_graph` never
+creates a node inside a hard prism — so ids are assigned to the eight survivors in
+`(z, y, x)` order and E's number is never used:
+
+          y=48   G(5)   H(6)   I(7)
+          y=24   D(3)    ·     F(4)
+          y= 0   A(0)   B(1)   C(2)
+                 x=0    x=24   x=48
 
 **Start** A, **goal** I. Supply pipe, so no gravity predicate — §5 adds that.
 
@@ -169,13 +170,17 @@ staircases.
 | # | popped state | g | h | f | pushed |
 |---|---|---|---|---|---|
 | 1 | (A, —) | 0 | 96 | 96 | (B,+x) g=24 f=96; (D,+y) g=24 f=96 |
-| 2 | (B,+x) | 24 | 72 | 96 | (C,+x) g=48 f=96 — E is blocked |
+| 2 | (B,+x) | 24 | 72 | 96 | (C,+x) g=48 f=96 — E is not there |
 | 3 | (C,+x) | 48 | 48 | 96 | (F,+y) g=48+24+**24**=96 f=120 |
-| 4 | (D,+y) | 24 | 72 | 96 | (G,+y) g=48 f=96 — E is blocked |
+| 4 | (D,+y) | 24 | 72 | 96 | (G,+y) g=48 f=96 — E is not there |
 | 5 | (G,+y) | 48 | 48 | 96 | (H,+x) g=48+24+**24**=96 f=120 |
 | 6 | (F,+y) | 96 | 24 | 120 | (I,+y) g=120 f=120 |
-| 7 | (H,+x) | 96 | 24 | 120 | (I,+x) g=120 f=120 |
+| 7 | (H,+x) | 96 | 24 | 120 | (I,+x) g=120 f=120; (G,+x) g=120 f=168 |
 | 8 | (I,+x) | 120 | 0 | 120 | **goal** |
+
+Steps 5 and 6 are where the id tie-break is visible: both (F,+y) and (H,+x) sit at f=120,
+and F's id of 4 pops before H's 6. Step 8 is where the AXIS tie-break is: two states for
+the same node I at the same f, and `+x` before `+y`.
 
 Eight pops. The winner is **A → D → G → H → I**, length 96", one bend, **cost 120**, and it
 wins the tie against A → B → C → F → I on the axis rule at step 8 alone — both are 96" with
@@ -218,32 +223,33 @@ compound: a 3" pipe's crown is 3/4" higher than a 1 1/2" pipe's for the same cen
 its start ceiling is 3/4" lower; and the tub, which is the physically longest run, is on the
 smaller pipe and therefore has the higher ceiling to spend.
 
-**Length alone does not give this ordering.** By route length the order is TUB (8.33 ft),
-LAV (6.23), WC (5.75) — the water closet, whose route is nearly forced, sorts *last*. By
-slack it sorts first. That is the entire content of "deepest first".
+**Length is not a proxy for slack, and these three are the counter-example.** The tub has
+the LONGEST route and the SECOND-tightest budget; the lavatory has a shorter route and four
+times the head to spend. Order by length and you get WC, LAV, TUB; order by slack and you
+get WC, TUB, LAV. The two agree about the water closet here **by luck** — its route happens
+to be both the shortest and the tightest, by six inches of pipe — and disagree about
+everything after it.
 
-**Cheapest first fails, and fails in a way that looks like it worked.** Order LAV, TUB, WC:
+**Why the disagreement is not cosmetic.** RSPH routes each terminal to the *tree*, and
+nodes already on the tree are free. So the second terminal routed takes the direct lane and
+the third bends around whatever the first two built:
 
-1. LAV routes directly to the stack head, taking the x=134.81 lane south — the only lane that
-   reaches the head without crossing the tub.
-2. TUB routes to the tree, and the tree is now that 1 1/2" lane, which is free to join. It
-   joins.
-3. WC routes to the tree. Its nearest tree node is the 1 1/2" lane a few inches away, so RSPH
-   discharges a **3" closet branch into a 1 1/2" arm.** Table 703.2 does not permit it,
-   `mep.pipe_sizing` fails it, and the search reported a feasible tree.
+* **slack order** puts the tub second. It spends its 0.168" getting to the 3" at y=228,
+  and the lavatory — with 0.694" in hand — bends around it and joins 18" further up.
+  Both fit. This is what is authored.
+* **length order** puts the lavatory second. It takes the lane at the elevation *its* own
+  budget allows, and the tub arrives third with 0.168" and a tree that is now in its way.
+  Its shortfall lands in `unserved`, and the honest report is "no feasible route for the
+  fixture with the least head", which is the terminal a length-ordered search was always
+  going to fail on.
 
-**Deepest first works.** Order WC, TUB, LAV — by required invert, deepest first:
-
-1. WC routes directly, spending 4.5" of its 5.5" available head on 5.7513 ft (0.782"/ft), and
-   lands on the stack barrel at 112 rather than on its head at 115.5. That is what buys the
-   margin the 0.062" figure above says it does not have: **the root is a vertical, and a
-   vertical is a range of legal arrivals, not a point.** A router that models the root as a
-   node loses this.
-2. TUB routes to the tree and joins the 3" at y=228, arriving 0.0375" above its invert there.
-3. LAV routes to the tree and joins the 3" at y=246, arriving 0.052" above its invert there.
-
-Every join is a larger pipe receiving a smaller one, every arrival is above the receiving
-invert, and `drain_tie_ins` derives the whole tree from the geometry alone.
+**And the water closet's luck runs out one edit from here.** Move the lavatory six inches
+closer to the stack, or the closet six inches further, and length order routes a 1 1/2" arm
+first, straight down the lane the 3" needs. RSPH then joins the closet branch to the nearest
+tree node, which is that arm: a **3" closet branch discharging into a 1 1/2" line.** Table
+703.2 does not permit it, `mep.pipe_sizing` fails it, and the search reported a feasible
+tree. Ordering by slack cannot produce that outcome, because the pipe with the least head is
+always the pipe that gets the lane.
 
 **So the ordering key is `required invert`, ascending** — the terminal whose route is most
 nearly forced goes first, and the ones with slack bend around it. A terminal with no feasible

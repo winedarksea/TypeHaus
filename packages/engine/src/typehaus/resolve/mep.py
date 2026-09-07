@@ -31,9 +31,9 @@ from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_ducts import resolve_duct_run
 from typehaus.resolve.mep_queries import (  # noqa: F401 - re-exported query API
     _CONCRETE_SOLID_CATEGORIES,
-    _conduit_vertical_profile,
     accumulated_serves,
     concrete_crossings,
+    conduit_vertical_profile,
     drain_tie_ins,
     duct_bay_occupancy,
     is_parallel_to_floor,
@@ -165,10 +165,10 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
     # Geometry from the same profile ``concrete_crossings`` walks, so the raceway a reader
     # sees in the viewer is the one the pour-day crossing list was derived from — one
     # derivation, not two that can disagree. A run with no elevation emits nothing, and that
-    # silence is deliberate: ``_conduit_vertical_profile`` returns None precisely when there
+    # silence is deliberate: ``conduit_vertical_profile`` returns None precisely when there
     # is no vertical information to extrude, and a raceway drawn at an invented height would
     # be a claim about where the electrician bores that nobody authored.
-    profile = _conduit_vertical_profile(resolved)
+    profile = conduit_vertical_profile(resolved)
     if profile is not None:
         solid_path, solid_z = profile
         _emit_run_solids(model, run.uid or run.tag, run.tag, storey_tag,

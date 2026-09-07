@@ -26,7 +26,7 @@ members from rotating about the base."
 **Why it never returns a bare PASS.** Two independent reasons, and either alone is enough.
 
 *The missing coefficient.* ``C_f`` comes from ASCE 7-16 Fig. 29.3-1, a copyrighted table
-this repository holds only three verified cells of (see ``_asce_29_3_table``). So the check
+this repository holds only three verified cells of (see ``typehaus/wind_tables.py``). So the check
 inverts: it reports the **critical C_f** at which each joint reaches capacity, and compares
 that against the largest coefficient Cases A and B are known to produce. A joint whose
 critical C_f clears that bound is adequate for *any* legitimate reading of the figure —
@@ -53,11 +53,6 @@ import math
 
 from typehaus.checks._authoring import engineered, passed, structural_advisory
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.checks.structural._asce_29_3_table import (
-    GUST_EFFECT_RIGID,
-    MAX_VERIFIED_CASE_AB,
-    force_coefficient,
-)
 from typehaus.engineering.balcony_wind import (
     Demand,
     ground_below_ft,
@@ -70,6 +65,11 @@ from typehaus.model.structure import KneeBrace, Post, Railing
 from typehaus.model.trim import Fascia
 from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE, allowable_for_model
 from typehaus.wind import ASD_WIND_FACTOR, velocity_pressure_psf, wind_basis
+from typehaus.wind_tables import (
+    GUST_EFFECT_RIGID,
+    MAX_VERIFIED_CASE_AB,
+    force_coefficient,
+)
 
 _CID = "structural.lateral_racking"
 _FT = 0.3048
@@ -241,7 +241,7 @@ def _grade_brace(brace: KneeBrace, demand: Demand, axis_name: str, band_text: st
     b_over_s, s_over_h = _table_ratios(demand)
     cell = force_coefficient(b_over_s, s_over_h)
     lookup = (f"; Fig. 29.3-1 at B/s {b_over_s:.1f}, s/h {s_over_h:.2f} is not a cell this "
-              f"model holds (see checks/structural/_asce_29_3_table.py)" if cell is None
+              f"model holds (see typehaus/wind_tables.py)" if cell is None
               else f"; Fig. 29.3-1 gives C_f {cell.c_f:.2f} here ({cell.citation})")
 
     verdict = (f"adequate for any C_f up to {critical_c_f:.2f}, which exceeds the "
@@ -291,7 +291,7 @@ def _table_ratios(demand: Demand) -> tuple[float, float]:
 
     ``s`` is the solid band's own vertical dimension — the summed band depths, not the guard
     height, because the guard is far too porous for §29.3's opening reduction to reach (see
-    ``_asce_29_3_table.opening_reduction``). ``B`` is the run perpendicular to the wind and
+    ``wind_tables.opening_reduction``). ``B`` is the run perpendicular to the wind and
     ``h`` the height to the top of the whole appurtenance.
     """
     s = sum(b.depth_ft for b in demand.bands) or 1.0

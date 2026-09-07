@@ -1,5 +1,12 @@
 """ASCE 7-16 Fig. 29.3-1 force coefficients — only the cells that could be sourced.
 
+**Beside ``wind.py``, not under ``checks/``, since 2026-09-07.** It was
+``checks/structural/_asce_29_3_table``, and two of its three consumers are in
+``engineering/`` — which is a leaf that may not import the checks tree, and whose
+``__init__`` eagerly imports all of it. A copyrighted standard's data table is not a check;
+it is the same kind of thing ``wind.py`` holds, and it belongs where both consumers can
+reach it without dragging a package they must not depend on.
+
 §29.3 gives the wind force on a solid freestanding wall or solid sign as
 
     F = q_h · G · C_f · A_s                                       (eq. 29.3-1)

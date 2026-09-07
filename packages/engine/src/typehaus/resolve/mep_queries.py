@@ -123,12 +123,17 @@ def _wall_layout(model: ResolvedModel, wall) -> str:
     return "single"
 
 
-def _conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float]] | None:
+def conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float]] | None:
     """A conduit's path and per-vertex z, in the same shape a ``PipeRun`` resolves to.
 
     A ``ConduitRun`` travels its plan polyline flat at ``z_start_m`` and rises vertically at
     its last point (→ model/mep.py ConduitRun), so the riser is expressed the way pipe runs
-    express one: the final plan point repeated, carrying the two different elevations."""
+    express one: the final plan point repeated, carrying the two different elevations.
+
+    Public because ``typehaus.routing`` needs the same reconstruction and may not import
+    ``takeoff`` (the leaf rule, ``tests/test_routing_leaf.py``), where the other reading of
+    "a ConduitRun rises at its last point" lives as ``takeoff.runs.conduit_vertex_z``. One
+    fact, and the copy on the ``resolve`` side is the one a leaf can reach."""
     if run.z_start_m is None or run.z_end_m is None or len(run.path) < 2:
         return None
     path = list(run.path)
@@ -236,7 +241,7 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
         for run in model.pipe_runs if run.z_m is not None
     ]
     for conduit in model.conduits:
-        profile = _conduit_vertical_profile(conduit)
+        profile = conduit_vertical_profile(conduit)
         if profile is None:
             continue
         path, z = profile

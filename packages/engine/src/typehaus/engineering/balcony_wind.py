@@ -29,7 +29,7 @@ import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from typehaus.checks.structural._asce_29_3_table import GUST_EFFECT_RIGID
+from typehaus.wind_tables import GUST_EFFECT_RIGID
 from typehaus.model.structure import Post
 from typehaus.wind import ASD_WIND_FACTOR
 
