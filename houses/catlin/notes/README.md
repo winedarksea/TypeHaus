@@ -43,6 +43,8 @@ each is kept because the *rule* it established usually outlives the design that 
 | `soffit_rung_deflection.md` | `checks/structural/soffit.py` | live |
 | `rebar_backout.md` | the rebar back-out in `takeoff/reinforcement.py` | live |
 | `ridge_beam_detail.md` | `header/D-G-OVERHEAD` deferral; the ridge beam section | live, revised in part |
+| `mep_drain_routing_basis.md` | `routing/{gravity,corridors,graph,search,tree}.py` (`tests/test_routing_oracle.py`); `mep.fixture_drain_reach` §1 | live, ahead of the code it oracles |
+| `mep_duct_routing_basis.md` | `routing/trades/duct.py`, the corridor half of `routing/corridors.py` | live, ahead of the code it oracles |
 
 ## Design and decision notes — reasoning, not an oracle
 
