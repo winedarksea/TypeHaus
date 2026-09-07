@@ -46,9 +46,8 @@ basement ceiling carries four runs at -1'-6" to -1'-7 3/8" that cross the stairw
 ``CD-B-KITCHEN``, ``CD-B-DATA-MEDIA``, ``DU-B-ERV-R-PLAY``, ``DU-B-ERV-R-BATH``.
 ``FS-M-STAIR``'s joists stop at -0'-11 7/8", so those runs are *below* the floor, hanging in
 the room. Whether a duct at that height fouls the stair's headroom is a real question and a
-different one — this check has no per-room ceiling plane to answer it with, which is the same
-reason ``run_route_efficiency`` refuses the "run through open volume" test — and a band
-generous enough to catch them answers it badly, by calling every basement-ceiling run a
+different one, and ``mep.run_in_finished_volume`` is where it is now asked — a band generous
+enough to catch them here answers it badly, by calling every basement-ceiling run a
 void-spanner. The joist line is where "in this floor" honestly stops.
 
 The tier is ADVISORY, not CODE. No IRC section says "do not run conduit across a stairwell";
@@ -214,11 +213,11 @@ def run_route_efficiency(ctx: CheckContext) -> list[Finding]:
     stated as a rule rather than as a suppression, because it is a fact about what the
     geometry means and not a decision about this house.
 
-    **What this deliberately does NOT do** is ask whether a run crosses a room's open volume.
-    The model has no per-room ceiling plane, so it cannot separate a duct in a plenum from a
-    duct across a living room, and a check that guessed would be wrong in the cases that
-    matter most. ``mep.run_over_void`` answers the half of that question the model CAN
-    answer.
+    **What this deliberately does NOT do** is ask whether a run crosses a room's open
+    volume. That was once because the model had no per-room ceiling plane; it has had one
+    since the ceiling work, and ``mep.run_in_finished_volume`` is the check that asks. A
+    ratio is still the wrong instrument for it — a run can be perfectly direct and still
+    hang eight inches into the gym.
     """
     from typehaus.takeoff.runs import MIN_STRAIGHT_FT, run_schedule
 
