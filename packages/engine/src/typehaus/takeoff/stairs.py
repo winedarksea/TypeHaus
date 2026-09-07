@@ -63,6 +63,15 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     where a finish floor meets the stair: nosings, thresholds, transition strips. Those a
     price row can select with ``[conditioned=True]`` rather than a rate hand-corrected by
     a ratio.
+
+    ``has_nosing`` is the second such column, and ``conditioned`` alone was not enough.
+    ``_in_conditioned_space`` reports a stair that lands in **no room at all** as
+    conditioned — the safe default for a finish schedule, since an unrecognised stair should
+    keep its scope rather than silently drop it. An OUTDOOR stair stands in no ``Room``, so
+    it takes that default and buys nosing it cannot have. A driver filter can only *include*
+    (it compares ``str(value)`` for equality), so "everything except the outdoor one" is not
+    expressible; ``nosing_depth > 0`` is, it is authored on the stair rather than inferred,
+    and it is the actual physical question a nosing allowance is asking.
     """
     rows: list[dict[str, object]] = []
     for stair in sorted(model.stairs, key=lambda item: item.tag):
@@ -77,6 +86,7 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         rows.append({
             "stair": stair.tag,
             "conditioned": _in_conditioned_space(model, stair),
+            "has_nosing": stair.nosing_depth_m > 0.0,
             "treads": len(treads),
             "tread_run_in": round(stair.tread_depth_m / 0.0254, 2),
             "tread_lf": round(tread_lf * _M_TO_FT, 1),

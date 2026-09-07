@@ -420,8 +420,12 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     assert above_floor("ED-M-DINING-PEND") == pytest.approx(
         living_floor + ceiling["main"] - ft(3, 6).meters)
     # A stated elevation wins: the attic ceiling is a 6:12 rake, not the storey default.
-    # 7'-1 1/2" is `1 1/2" + x/2` at this can's x=22'-0" — the plane it is recessed into.
-    assert above_floor("ED-A-EAST-CAN3") == pytest.approx(ft(7, 1.5).meters)
+    # 7'-0" is `1 1/2" + x/2` at this can's x=13'-9" — the plane it is recessed into.
+    # ** This used to read ED-A-EAST-CAN3 at 7'-1 1/2". ** The attic came off its recessed
+    # cans on 2026-09-06 (plan/lighting_attic.py) and ED-A-STUBATH-CAN1, over the shower
+    # pan, is the one the storey deliberately keeps — so it is now the only fitting that can
+    # carry this assertion, and the assertion is about the rake either way.
+    assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(ft(7).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
     assert switch.z_m == pytest.approx(living_floor + inch(48).meters)

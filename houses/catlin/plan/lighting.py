@@ -45,23 +45,34 @@ from typehaus.model import m
 # rooms you would actually need it in when the grid drops.
 BASEMENT_LIGHTING = [
     # RM-B-GYM: the fan-light (ED-B-GYM-LT, re-typed in plan/mep.py) plus a 4-can grid.
+    #
+    # ** THE GRID MOVED OFF THE CONCRETE, y 4'-6"/13'-6" -> 6'-0"/12'-0" (2026-09-06). **
+    # SL-M-DECK's band starts at y=13'-0", so CAN3 and CAN4 at y=13'-6" stood 6" inside a
+    # 14 3/8" solid deck: 4 3/8" of cast cap over a 10" EPS stay-in-place form on 1/2" steel
+    # furring, under the 5/8" gypsum R316.4 requires as the thermal barrier over that foam.
+    # There is nothing to recess into at any depth and cutting the barrier is what the layer
+    # exists to prevent. The room is 18' x 18', so y=6'-0"/12'-0" is its thirds and reads
+    # better than the 4'-6"/13'-6" it replaces; both rows now sit over the wood joist bays
+    # south of the band, where a 2"-deep canless fixture is a legitimate detail.
+    # ** No lumen consequence: ** RM-B-GYM passes code.R303_1_light_and_ventilation on its
+    # 33.3 sf of glazing, not on Exception 1's 6 fc, so moving light around costs nothing.
     ElectricalDevice(uid="QTB0001AAA", tag="ED-B-GYM-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(4, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(22), ft(6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0002AAA", tag="ED-B-GYM-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(4, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(32), ft(6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0003AAA", tag="ED-B-GYM-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(13, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(22), ft(12)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB0004AAA", tag="ED-B-GYM-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(13, 6)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(32), ft(12)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM",
                      controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -150,43 +161,94 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-B-PLAY-N is the theatre. Up/down sconces on the east wall are the traditional
-    # answer (notes) and the dimmer is the whole point: bright enough to cross the room,
-    # dark enough to watch something. Two cans on the same dimmer are the cleaning light.
+    # RM-B-PLAY-N is the theatre. Up/down sconces are the traditional answer (notes) and the
+    # dimmer is the whole point: bright enough to cross the room, dark enough to watch
+    # something.
+    #
+    # ** THE FOUR CANS ARE GONE (2026-09-06, owner's call), BECAUSE THIS CEILING CANNOT
+    # TAKE ONE. ** ED-B-PLAY-N-CAN1..4 (uids QTB000DAAA, QTB000EAAA, QTB0010AAA, QTB0011AAA)
+    # all stood inside SL-M-DECK: 4 3/8" of cast cap over a 10" EPS stay-in-place form, on
+    # 1/2" steel furring, under the 5/8" gypsum IRC R316.4 requires as the thermal barrier
+    # over that foam. The whole 18' x 18' room is on it. There is no cavity — plan/mep.py's
+    # duct routing has said so for weeks ("NO cavity at all, so every foot of that run is
+    # surface-mounted") — and the only way to recess anything is to cut the one layer that
+    # is there to stop a fire reaching the foam. The right fitting count for a ceiling like
+    # that is zero.
+    #
+    # ** SIX SCONCES, NOT TWO, AND THE ARITHMETIC IS THE REASON. ** This windowless room is
+    # habitable only under R303.1 Exception 1's 6 fc average, and
+    # code.R303_1_light_and_ventilation counts POINT luminaires only — LightRuns are
+    # deliberately excluded from `_room_lumens` ("a cove can only add light, which makes the
+    # number conservative"), so the cove below is worth exactly 0 fc to the check no matter
+    # how long it is. The floor is 6 fc x 324 sf / (CU 0.60 x LLF 0.80) = 4,050 lm.
+    # Two sconces alone is 1,400 lm / 2.1 fc and FAILS. Six ED-T-LT-SCONCE-UD at 700 lm is
+    # 4,200 lm / 6.2 fc and passes. ** THAT IS 0.2 fc OF MARGIN AND IT IS THE WHOLE MARGIN: **
+    # drop one sconce, or swap the type for anything dimmer, and this room is a FAIL. An
+    # eighth-sconce scheme was offered and 6 was the call.
+    #
+    # Three a side on the two side walls at the room's quarter points, y = 22'-6", 27'-0",
+    # 31'-6" — SCONCE1/2 keep their uids and move onto the outer east stations, so the
+    # schedule reads as one six-piece run rather than a pair plus four. Nothing is on either
+    # side wall to foul at 6'-6": the bookcases are on the south wall, the 98" screen and
+    # the sectional are in the middle third.
     ElectricalDevice(uid="QTB000BAAA", tag="ED-B-PLAY-N-SCONCE1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 10), ft(23, 4.875)), type_ref="ED-T-LT-SCONCE-UD",
+                     position=pt(ft(34, 10), ft(22, 6)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTB000CAAA", tag="ED-B-PLAY-N-SCONCE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 10), ft(29, 11.25)), type_ref="ED-T-LT-SCONCE-UD",
+                     position=pt(ft(34, 10), ft(31, 6)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    ElectricalDevice(uid="QTB000DAAA", tag="ED-B-PLAY-N-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(24), ft(22)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+    ElectricalDevice(uid="7VRS9XJKG7", tag="ED-B-PLAY-N-SCONCE3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(34, 10), ft(27)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
                      controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTB000EAAA", tag="ED-B-PLAY-N-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(30), ft(22)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    # West wall. ** THE TWO DEVICE LINES ARE NOT MIRRORED, AND THAT IS CORRECT: ** the east
+    # side is W-B-E2, a 16.17" foundation wall, and the west is W-B-CN/CN2 at 12", so a
+    # station mirrored about x=27'-0" would stand 6" off the west face. x=18'-8" puts a
+    # 4"-deep body's back ON that face (216" axis + 6" half-thickness + 2"), which is what
+    # `test_wall_mounted_devices_resolve_against_a_wall_face` grades — the resolved body,
+    # never the authored point. The two banks line up in ELEVATION and in y, which is what
+    # reads in the room.
+    ElectricalDevice(uid="NYEVZE2RN5", tag="ED-B-PLAY-N-SCONCE4", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 8), ft(22, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
                      controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Cans 3 and 4 (2026-08-01, code.R303_1_light_and_ventilation): this windowless room is
-    # habitable only under R303.1 Exception 1's 6 fc average. Two sconces + two cans was
-    # 3,200 lm / 4.7 fc over 324 sf — short; four cans reaches 5,000 lm / 7.4 fc. Same
-    # dimmer as the rest: the whole room goes down together.
-    ElectricalDevice(uid="QTB0010AAA", tag="ED-B-PLAY-N-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(24), ft(30)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="4XZRS7P3VR", tag="ED-B-PLAY-N-SCONCE5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 8), ft(27)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
                      controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTB0011AAA", tag="ED-B-PLAY-N-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(30), ft(30)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="JBZ1PYPYF0", tag="ED-B-PLAY-N-SCONCE6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 8), ft(31, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
                      controlled_by=("ED-B-PLAY-N-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    # ** THE AMBIENT COVE WAS DESIGNED, PRICED AND THEN WITHDRAWN (2026-09-06), AND THE
+    # REASON IS THE BATTERY, NOT THE CEILING. ** Two surface COB channels up the side walls
+    # at 7'-4" were the ambient tier the cans used to be — nothing recessed, nothing through
+    # the R316.4 board, washing a soffit that cannot be cut into. 2 x 15'-6" at 3 W/ft is
+    # 93 W and wants an ED-T-LT-PSU-200.
+    #
+    # CKT-LT-BACKUP cannot carry it. This is the ALWAYS_ON tier on a 14.3 kWh battery, and
+    # per plan/lighting_types.py a PSU sums at its supply's RATING, not the tape's draw —
+    # the same deliberate overstatement that already took battery-only autonomy from 46.3 h
+    # to 41.3 h for the kitchen's ED-M-KITCH-LT-PSU. A second 200 VA driver takes it to
+    # 37.5 h and flips `cycle_48h.sustains_always_on` to False: the house's headline
+    # two-day answer, bought with a decorative cove. The tier has about 52 VA of headroom
+    # and every honest version of this cove is over it — a 60 VA driver still lands at
+    # 39.8 h, and a 120 V integral-driver run bills its real 93 W and lands at 39.0 h.
+    # `test_backup_calc.py` is the assertion; the basement has exactly one lighting circuit
+    # and it is this one, so there is nowhere else to put it without a new breaker.
+    #
+    # ** IF IT IS WANTED, IT IS A CIRCUIT DECISION, NOT A LIGHTING ONE: ** give the cove its
+    # own non-backup breaker and its own switch, and it costs the backup tier nothing. It
+    # was never worth anything to code.R303_1_light_and_ventilation either way — a LightRun
+    # counts 0 lm — so nothing but the room's feel is riding on it.
     ElectricalDevice(uid="QTB000FAAA", tag="ED-B-PLAY-N-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(18, 7), ft(20)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),
@@ -386,8 +448,29 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # ** MOVED OFF W-M-C5 (2026-09-06): THE KITCHEN'S MAIN SWITCH WAS BEHIND A CABINET. **
+    # At y=26'-6" it sat 13 1/8" inside FURN-M-KIT-PANTRYC, the 24" x 96" pantry carcass —
+    # the switch for every fixture in this list, unreachable without emptying a cupboard.
+    # ** AND NO STATION ON W-M-C5 FIXES IT. ** That wall runs y 25'-10"..33'-1", 87" of it,
+    # and 84 5/8" is behind PANTRYC or the fridge/freezer columns; the 2 3/8" left at the
+    # north end is a corner stud pack. The comment below ED-M-KITCH-SW-UC already said this
+    # and called it "a pre-existing condition this commit neither causes nor fixes" — this
+    # commit fixes it.
+    #
+    # W-M-C3's east face instead, in the 11" of free wall between D-M-STUDY's jamb pack
+    # (which reaches y=256.97", measured off the resolved `framing_bumper`, not the 30"
+    # leaf) and N-M-C2 at y=268". y=21'-10 1/2" centres the 4" body at 3 1/2" clear of
+    # each — the wall you pass walking into the kitchen through the BM-M-HALL beam line,
+    # which is open from y 21'-8" to 25'-10" and is why the kitchen has no door-side wall
+    # of its own. ED-M-KITCH-SW-UC stays at the pantry corner: that one dims the counter
+    # tape you stand at, this one is the room's general lighting you reach for on the way in.
+    #
+    # ** ED-M-LIVING-RC7 IS THE SAME DEFECT ON THIS WALL AND IS NOT FIXED HERE. ** It sits
+    # at y=21'-1 1/4", inside D-M-STUDY's jamb pack (y 223.03"..256.97"), at 16" AFF. Found
+    # while measuring this move; a receptacle is a spacing decision (electrical.py's
+    # NEC 210.52 run) and not this switch's to make. See plans/TODO.md.
     ElectricalDevice(uid="QTM000DAAA", tag="ED-M-KITCH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(18, 4.375), ft(26, 6)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(18, 4.375), ft(21, 10.5)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -445,13 +528,16 @@ MAIN_LIGHTING = [
                      position=pt(ft(32), ft(33)), type_ref="ED-T-LT-PSU-200",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.CEILING)),
-    # ** NOT beside ED-M-KITCH-SW, and that is worth stating. ** W-M-C5's east face has no
-    # free wall left on it at all: FURN-M-KIT-PANTRYC covers y 25'-0 7/8"..27'-0 7/8" and
-    # the cold pair covers 27'-0 7/8"..32'-6 5/8", so the existing switch at y=26'-6" is
-    # already behind a cabinet — a pre-existing condition this commit neither causes nor
-    # fixes, but is not going to make worse by ganging a second device into it. This one
-    # goes on W-M-PAN-E's EAST face instead, at the pantry's outside corner, which is the
-    # wall you actually pass on the way into the kitchen from the west.
+    # ** NOT ON W-M-C5, and that is worth stating. ** That wall's east face has no free wall
+    # left on it at all: FURN-M-KIT-PANTRYC covers y 25'-4 7/8"..27'-4 7/8" and the cold
+    # pair covers 27'-4 7/8"..32'-10 5/8" (both extents RE-MEASURED 2026-09-06 — the
+    # figures here were 4" south of the model, stale since PANTRYC last moved), leaving
+    # 2 3/8" of corner stud pack out of 87". This one goes on W-M-PAN-E's EAST face at the
+    # pantry's outside corner, which is the wall you actually pass on the way into the
+    # kitchen from the west. ED-M-KITCH-SW was behind PANTRYC on the strength of that same
+    # dead wall and has now MOVED to W-M-C3 — see its own note above; the sentence that
+    # used to stand here calling it "a pre-existing condition this commit neither causes
+    # nor fixes" is spent.
     ElectricalDevice(uid="EX3ZQQPM9K", tag="ED-M-KITCH-SW-UC", kind=DeviceKind.SWITCH,
                      position=pt(ft(24, 7.375), ft(33, 1)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
@@ -884,10 +970,11 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
-    # ** THE ROBERN IS CORD-AND-PLUG, so it needs a receptacle CONCEALED BEHIND THE GLASS **
-    # — this is not the same outlet as ED-S-SUITEBATH-RC1, which is the NEC 210.52(D)
-    # counter-height one and stays. Same pattern and the same 54" band as
-    # ED-S-BATH1-RC-MIRROR. GFCI at the receptacle, not just at the breaker (210.8(A)(1)).
+    # ** THE ROBERN IS CORD-AND-PLUG, so it needs a receptacle of its own ** — not the same
+    # outlet as ED-S-SUITEBATH-RC1, which is the NEC 210.52(D) counter-height one and stays.
+    # Same pattern and the same 54" band as ED-S-BATH1-RC-MIRROR. GFCI at the receptacle,
+    # not just at the breaker (210.8(A)(1)). The cord runs behind the glass to a plate
+    # BESIDE it; it used to plug in behind it, which is the defect fixed below.
     #
     # ** IT MUST NOT LAND WHERE A MOUNTING CLEAT OR THE BOTTOM BRACKET GOES, and the mirror's
     # own install sheet is the authority on where those are ** (the round unit's cleat
@@ -897,9 +984,25 @@ SECOND_LIGHTING = [
     # not find 16" o.c. studs at an arbitrary vanity centre; and pull a conductor for a
     # SECOND switch leg, because Robern requires the defogger to be switched independently
     # of the lights.
+    #
+    # ** MOVED OUT FROM BEHIND THE GLASS, x=13'-10" -> 12'-3 1/2" (2026-09-06), with
+    # ED-S-BATH1-RC-MIRROR, which it was authored from. ** At x=166" it was dead centre of
+    # the 30" mirror (x 151"..181") at 54" AFF: a GFCI DEVICE on a circuit that is not GFCI
+    # at the breaker, so its test/reset button was the whole protective path and it was
+    # sealed behind a hardwired mirror. x=147.5" puts the 4 1/2" plate at 145 1/4"..149 3/4",
+    # 1 1/4" clear of the mirror's west edge and clear of FX-S-SUITEBATH-WC (x 127"..142").
+    # It now stacks directly over ED-S-SUITEBATH-RC1 at x=148"/44" with 5 1/2" between the
+    # two plates, which is how it reads on the wall: the counter outlet and the mirror's,
+    # one above the other.
+    #
+    # ** EAST WAS THE OBVIOUS SIDE AND IT IS NOT AVAILABLE: ** x 181"..211 1/2" of this
+    # north wall is inside FX-S-SUITEBATH-TUBSH's own footprint.
+    #
+    # Unlike the hall bath this room does NOT depend on this outlet for 210.52(D) —
+    # ED-S-SUITEBATH-RC1 is 2 1/2" off the lav carcass and carries it either way.
     ElectricalDevice(uid="CE0KDETNZH", tag="ED-S-SUITEBATH-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(13, 10), ft(21, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(inch(147.5), ft(21, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND", room="RM-S-SUITEBATH", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
@@ -954,12 +1057,33 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
-    # Mirror is hardwired *and* gets an outlet behind it (electrical_notes.md line 80), so
-    # a future replacement doesn't need an electrician. 54" sits inside the mirror's
-    # 3'-6"..6'-6" band. GFCI at the receptacle, not just the breaker — 210.8(A)(1).
+    # Mirror is hardwired *and* gets an outlet beside it (electrical_notes.md line 80), so a
+    # future replacement doesn't need an electrician. GFCI at the RECEPTACLE, not at the
+    # breaker — 210.8(A)(1), and CKT-RC-SECOND is deliberately not GFCI at the panel
+    # (circuits.py: thirty outlets behind one 5 mA trip is not buildable).
+    #
+    # ** MOVED OUT FROM BEHIND THE GLASS, y=31'-0" -> 32'-6 3/4" (2026-09-06). ** At
+    # y=372" it was dead centre of ED-S-BATH1-MIRROR (a 30" Robern, y 357"..387", 42"..72"
+    # AFF) at 54" AFF — sealed behind a hardwired mirror. That is the one thing a GFCI
+    # DEVICE must never be: its circuit is not GFCI at the breaker, so the test/reset button
+    # was the entire protective path and no hand could reach it. The house states this
+    # principle for exactly this case twice already and then took the opposite decision here
+    # (see ED-M-BATH2-TUB-RC in plan/electrical.py, and CKT-BATH2-TUB in plan/circuits.py).
+    #
+    # ** AND IT WAS ALSO THIS ROOM'S ONLY RECEPTACLE, so deleting it was never available: **
+    # code.E3901_6_bathroom_receptacle passes RM-S-BATH1 on this outlet and nothing else.
+    # Moving it keeps that pass — y=390.75" is still hard against FX-S-BATH1-LAV's carcass
+    # (y 345.88"..393.88"), 0" to the basin's outside edge against 210.52(D)'s 36".
+    #
+    # y=390.75" is the 7 1/2" of wall between the mirror's north edge and
+    # FURN-S-BATH1-SHELF at y=394.5": a 4 1/2" plate leaves 1 1/2" and 1 3/4". The 11 1/8"
+    # south of the mirror is wider but ED-S-BATH1-SW already has 4 1/2" of it at y=354".
+    # 54" AFF is kept, not dropped to the house's 44" vanity height: at 44" the plate
+    # (41 3/4"..46 1/4") would foul the mirror's own 42" base line the moment the glass is
+    # centred any further north.
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9, 7.625), ft(31)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(9, 7.625), inch(390.75)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND", room="RM-S-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     ElectricalDevice(uid="QTS000NAAA", tag="ED-S-BATH1-SW", kind=DeviceKind.SWITCH,

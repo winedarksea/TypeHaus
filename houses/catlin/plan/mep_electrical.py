@@ -363,26 +363,31 @@ SECOND_DEVICES = [
 
 # Attic habitable rooms, both east of the ridge. ** THE CATHEDRAL PLANE SETS BOTH CEILING
 # BOX ELEVATIONS. ** At 6:12 off a 1 1/2" rafter plate the underside is `1 1/2" + x/2`
-# mirrored about x=18', which at these two fittings' x=22'-0" is 7'-1 1/2". A recessed can
-# sits IN that plane, so that is the elevation. The stations do not move —
-# x=22'-0" is inside the 13'-9"..22'-3" band where the ceiling clears 7'-0" (see
-# plan/lighting_attic.py, which places the rest of the storey's fittings).
+# mirrored about x=18'. These two fittings USED to be recessed cans in that plane at
+# x=22'-0"; on 2026-09-06 the whole storey came off its recessed cans (plan/lighting_attic.py
+# carries the reasoning and the corrected 2" product data) and they became up/down sconces
+# on the centre wall's east face at x=18'-5 3/8" — that face's finish plane plus a 4"-deep
+# body's own half, the offset ED-A-STUDY-SPOT already uses on the same wall.
 ATTIC_DEVICES = [
     # RM-A-EAST-UNFIN (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
+    # ** y MOVED 15'-0" -> 31'-6", AND THAT IS A BUG FIX, NOT A STYLE CHANGE: ** this fitting
+    # stood at exactly (22'-0", 15'-0"), the same point as the old ED-A-EAST-CAN3, so the
+    # loft has been lit by two coincident fixtures and billed for both. 31'-6" is the fourth
+    # station in that room's run, 11 1/2" clear of ED-A-EAST-SW's plate below.
     ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(15)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
-                     room="RM-A-EAST-UNFIN", controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
+                     position=pt(ft(18, 5.375), ft(31, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
+                     controlled_by=("ED-A-EAST-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(18, 4.375), ft(32, 5.5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # RM-A-STUDY (x 18'-36', y 0-8'-8"): switch inside D-A-STUDY, the door at (19', 8'-8").
     ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
-                     room="RM-A-STUDY", controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
+                     position=pt(ft(18, 5.375), ft(8)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(90),
+                     controlled_by=("ED-A-STUDY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(21, 8.375), ft(8, 8.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),

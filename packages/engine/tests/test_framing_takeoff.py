@@ -433,3 +433,32 @@ def test_floor_heat_rides_in_the_bom(catlin_model) -> None:
     zone = next(z for z in catlin_model.floor_heat if z.tag == "FH-M-BATH2")
     assert bath["wire_length_ft"] == round(zone.wire_length_m / 0.3048, 1)
     assert bath["system"] == zone.system and bath["storey"] == zone.storey
+
+
+def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_model) -> None:
+    """``conditioned`` alone billed nosing to an outdoor stair, and ``has_nosing`` is why.
+
+    ``_in_conditioned_space`` reports a stair that lands in no ``Room`` as conditioned — the
+    safe default for a finish schedule, since an unrecognised stair should keep its scope
+    rather than drop it silently. ST-SG-PORCH is outdoors and stands in no room, so it took
+    that default and bought 12.0 LF of nosing it has none of, landing the
+    ``finish-transitions-and-stair-nosings`` allowance on 143.4 LF instead of 131.4. An
+    allowance driver filter can only *include*, so "all but the outdoor one" is not
+    expressible; ``nosing_depth > 0`` is, and it is the physical question the allowance asks.
+    """
+    from typehaus.takeoff.stairs import stair_finish_takeoff
+
+    rows = {row["stair"]: row for row in stair_finish_takeoff(catlin_model)}
+    # The two stairs with no nosing: one cold and recognised, one outdoors and not.
+    assert rows["ST-G-SERVICE"]["has_nosing"] is False
+    assert rows["ST-G-SERVICE"]["conditioned"] is False
+    assert rows["ST-SG-PORCH"]["has_nosing"] is False
+    # The trap: the outdoor stair still reads as conditioned, which is why the second
+    # column had to exist rather than the first one being tightened.
+    assert rows["ST-SG-PORCH"]["conditioned"] is True
+    for tag in ("ST-B2M", "ST-M2S", "ST-S2A"):
+        assert rows[tag]["has_nosing"] is True and rows[tag]["conditioned"] is True
+
+    billed = sum(float(row["tread_lf"]) for row in rows.values()
+                 if row["conditioned"] and row["has_nosing"])
+    assert billed == pytest.approx(131.4)

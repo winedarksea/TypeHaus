@@ -37,7 +37,31 @@ from typehaus.model import m
 #
 # ** NOTHING IN THIS FILE MAY BE DELETED. ** RM-A-STUDIO lost the four eave windows on the
 # same pass, so its R303.1 Exception 1 lumen count (see the studio block) is doing more work
-# than it was, not less.
+# than it was, not less. That rule held through the 2026-09-06 rework below: every uid in
+# this file is still here, and the lumen count went UP.
+#
+# ** 2026-09-06 — THE STOREY CAME OFF ITS RECESSED CANS, AND THE REASON IS NOT THE ONE THE
+# REVIEW GAVE. ** The finding was that a 6" can housing eats the ROOF assembly's whole
+# 6 7/8" batt zone and punches the 5" of ccSPF that is the only air barrier R806.5 rests on.
+# ** THE 6" WAS WRONG DATA. ** Lotus's LL4SR sheet — the product this house has named all
+# along — reads 2" deep, "Type IC Rated - No Housing Required", "Driver Inside Connection
+# Box", Air-Tight, Approved Location "Insulated Ceilings, Open Plenum, Wet". At 2" it sits
+# inside the batt and never reaches the foam, and the type is corrected in
+# plan/lighting_types.py. So the cans were never the code problem they were written up as.
+#
+# What is real, and is why they went anyway (owner's call), is the AIM: a flat trim in a
+# 6:12 plane throws its cone 26.6 deg off plumb and scallops one wall of every room. Wall
+# fittings on the CENTRE LINE — W-A-C1/C1B/C2/C2B, the only full-height walls this storey
+# has, since both gables rake to a 1 1/2" plate at the eave — light the slope the way the
+# slope wants to be lit. ** ONE CAN IS DELIBERATELY KEPT: ** ED-A-STUBATH-CAN1, over a
+# shower pan, where a sconce is the wrong fitting and a 26.6 deg tilt aims INTO the room
+# rather than away from it. Its own note says so.
+#
+# ** AND THE LUMEN FLOOR IS THE CONSTRAINT THAT SHAPED THE LAYOUT, NOT TASTE. ** RM-A-STUDIO
+# is on R303.1 Exception 1 and needs 12.5 lm per square foot of point luminaires; a LightRun
+# counts for nothing. The studio has exactly one mountable wall (the centre wall, ~11 ft of
+# it free of the bar), which is why the scheme is five sconces plus a real pendant over the
+# bar and not eight sconces. See the studio block for the arithmetic.
 ATTIC_LIGHTING = [
     # A 43 ft2 nook with no wall on the way in to put a switch on, so the fixture carries
     # its own (notes: "spotlight sconce with switch on sconce"). No `controlled_by`,
@@ -51,40 +75,48 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 
-    ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(28)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
+    # RM-A-EAST-UNFIN, 475 sf of unfinished storage under the east rake. The three cans that
+    # were one line at x=22'-0" become three up/down sconces on the centre wall's EAST face,
+    # x=18'-5 3/8" — that face's finish plane (x=18'-3 3/8") plus a 4"-deep body's own half,
+    # which is the offset ED-A-STUDY-SPOT already uses on the same wall. Spacing goes
+    # 15'/22'/28' -> 15'/20'-6"/26' so the fourth station (ED-A-EAST-LT, in
+    # plan/mep_electrical.py, which sat at the SAME point as CAN3 and lit it twice) has
+    # somewhere of its own at 31'-6", clear of ED-A-EAST-SW's plate at y=32'-5 1/2".
+    # ** NO LUMEN CONSEQUENCE: ** storage is not a habitable room, so R303.1 never applied
+    # here — this room is the one place on the storey where the change is free.
+    ElectricalDevice(uid="QTA0002AAA", tag="ED-A-EAST-SCONCE2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 5.375), ft(26)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
-    # x=22'-0" (7'-1 1/2" of ceiling): at x=27'-0" the underside is 4'-7 1/2", lighting a
-    # crawl space. The loft's three cans are one line here, spaced 15'/22'/28' in y.
-    ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(15)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="QTA0003AAA", tag="ED-A-EAST-SCONCE3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 5.375), ft(15)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(22), ft(22)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="QTA0004AAA", tag="ED-A-EAST-SCONCE4", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 5.375), ft(20, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-EAST-UNFIN", rotation=deg(90),
                      controlled_by=("ED-A-EAST-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
 
     # RM-A-STUDY: the second of the notes' two studies. The stair sconce lights ST-S2A's
     # landing at the top of the flight.
     #
-    # CAN2 at (20'-0", 7'-0"): the ceiling is 8'-1 1/2" there, and the station is west of
-    # FO-A-STAIR's x 21'-2" edge, so it is over floor and not over the well. With
-    # ED-A-STUDY-LT at (22'-0", 3'-0") the two sit diagonally across the room's west leg
-    # rather than in a line down a low edge.
-    ElectricalDevice(uid="QTA0005AAA", tag="ED-A-STUDY-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(20), ft(7)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDY",
+    # The study's two cans join ED-A-STUDY-SPOT on the centre wall's east face, at
+    # y=4'-6" and (in plan/mep_electrical.py) y=8'-0", above SPOT's own 2'-3" station and
+    # its 4'-0" mount, so the three read as one vertical family rather than two ceiling
+    # holes and a spot.
+    # ** RM-A-STUDY PASSES R303.1 ON GLAZING, NOT ON EXCEPTION 1, so no lumen floor binds
+    # here — but by 0.4 sf (13.6 sf against 8% of 165.1 = 13.2 sf), so it is one window
+    # change away from binding. ** After this swap the room still holds 2,400 lm against the
+    # 2,064 Exception 1 would ask for, which is the margin that made a two-for-two swap
+    # acceptable instead of a three-for-two.
+    ElectricalDevice(uid="QTA0005AAA", tag="ED-A-STUDY-SCONCE2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18, 5.375), ft(4, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDY", rotation=deg(90),
                      controlled_by=("ED-A-STUDY-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 1.5),
-                                 recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     # On the CENTRE wall (W-A-C1, x=18'-0"), study side — x 18'-5 3/8" is that wall's
     # study-side finish face plus a sconce body's own reveal — at 2'-3" in y, 4'-0" mount,
     # thrown east across the room. There is no knee wall on this gable: W-A-E1 is a 1 1/2"
@@ -110,67 +142,72 @@ ATTIC_LIGHTING = [
     # ED-A-STUDIO-, ED-A-STUBATH- and ED-A-POCKET- are disjoint, which is also why the bath is
     # tagged RM-A-STUBATH rather than RM-A-STUDIO-BATH (see storeys/attic_studio.py).
     #
-    # ** THE LUMEN COUNT IS R303.1 EXCEPTION 1, AND IT IS THE REASON FOR THE ADDED CANS. **
-    # The studio's glazing is 21.33 sf against 0.08 x 356.6 = 28.52 sf, and openable is 10.67
-    # against 14.26 — both short, and NO GLAZING IS ADDED because the south gable's
+    # ** THE LUMEN COUNT IS R303.1 EXCEPTION 1, AND IT IS WHY THIS ROOM IS LIT THE WAY IT
+    # IS. ** The studio's glazing is 21.33 sf against 0.08 x 356.6 = 28.52 sf, and openable
+    # is 10.67 against 14.26 — both short, and NO GLAZING IS ADDED because the south gable's
     # six-opening mirror about x=18' is not negotiable (houses/catlin/CLAUDE.md). So the room
     # takes Exception 1, and four of `_exception_1`'s gates matter here:
     #   * a luminaire must be ASSIGNED to the room — `room=` is the whole match, position is
     #     never read;
     #   * every one must state `lumens` on its LuminaireType or the verdict is UNKNOWN rather
-    #     than PASS (ED-T-LT-CAN4 = 900, ED-T-LT-SPOT-SW = 600);
+    #     than PASS;
     #   * ** a LightRun COUNTS FOR NOTHING ** — `_room_lumens` excludes cove and tape runs by
     #     its own docstring. Point luminaires only;
     #   * 6 fc delivered, computed as lumens x 0.60 x 0.80 / area_sf — i.e. LUMENS >= 12.5 x
     #     the room's square feet, which at 356.6 sf is 4,457 lm.
-    # Two cans plus the sconce is 2,400 lm = 2.9 fc and FAILS; five is 5,100 lm = 6.9 fc
-    # (+15%); SIX plus the sconce is 6,000 lm = 8.08 fc, specified to survive the room
-    # growing 30%. 80 VA on CKT-LT-UPPER.
-    # Two bands at 14'-0" (7'-1 1/2" of ceiling) and 16'-6" (8'-4 1/2"), both inside the ridge
-    # band where the six cans the lumen count depends on have real headroom. Lighting throws
-    # west down the slope from one side, the only daylight direction the eave-window deletion
-    # left available.
-    ElectricalDevice(uid="QTA0008AAA", tag="ED-A-STUDIO-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(10)), type_ref="ED-T-LT-CAN4",
+    #
+    # ** SIX CANS BECAME FIVE SCONCES AND A PENDANT (2026-09-06), UID FOR UID. ** CAN1..CAN5
+    # keep their uids as WALL1..WALL5 and CAN6's uid carries the bar pendant, so the "nothing
+    # in this file may be deleted" rule in the header holds literally. The count went
+    # 6,000 lm -> 5,900 lm, 8.08 fc -> 7.95 fc: still 32% clear of the floor, which is the
+    # same "survive the room growing 30%" margin the six-can scheme was specified to hold.
+    #
+    # ** THE LAYOUT IS DICTATED BY THERE BEING ONE WALL. ** Both gables rake to a 1 1/2"
+    # plate, so the only full-height wall in a 356 sf room is the centre wall, x=18'-0",
+    # west face at x=17'-8 5/8" and the device line 2" off it at 17'-6 5/8" (a 4"-deep
+    # body's own half — the offset ED-A-STUDY-SPOT uses on the far side of the same wall).
+    # Of its 17'-4" run the bar takes y 12'-6"..17'-1" (APPL-A-STUDIO-FRIDGE and
+    # FURN-A-STUDIO-BAR-BASE), leaving y 0..12'-6" for sconces: five at 2'-6" centres from
+    # y=2'-0" to y=12'-0", clear of ED-A-STUDIO-SW's plate at y=6'-0"/46" by height.
+    # ** THAT IS WHY IT IS NOT EIGHT SCONCES: ** eight would not fit the wall, and five plus
+    # a 1,800 lm pendant clears the floor by more than eight of these would.
+    ElectricalDevice(uid="QTA0008AAA", tag="ED-A-STUDIO-WALL1", kind=DeviceKind.LIGHT,
+                     position=pt(inch(210.6), ft(2)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
+                     controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="QTA000BAAA", tag="ED-A-STUDIO-WALL2", kind=DeviceKind.LIGHT,
+                     position=pt(inch(210.6), ft(4, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
+                     controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="QP7K1NEC12", tag="ED-A-STUDIO-WALL3", kind=DeviceKind.LIGHT,
+                     position=pt(inch(210.6), ft(7)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
+                     controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="KR49G4VP4A", tag="ED-A-STUDIO-WALL4", kind=DeviceKind.LIGHT,
+                     position=pt(inch(210.6), ft(9, 6)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
+                     controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    ElectricalDevice(uid="6M2C9K60B8", tag="ED-A-STUDIO-WALL5", kind=DeviceKind.LIGHT,
+                     position=pt(inch(210.6), ft(12)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
+                     controlled_by=("ED-A-STUDIO-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    # The bar pendant (owner, 2026-09-06). Centred on the bar run at (16'-9", 14'-10") — the
+    # midpoint of APPL-A-STUDIO-FRIDGE (y 12'-6"..14'-6") and FURN-A-STUDIO-BAR-BASE
+    # (y 15'-1"..17'-1"), with FX-A-STUDIO-BAR-SINK between them. The ceiling there is
+    # 1 1/2" + 201"/2 = 8'-6 3/4", and a 2'-6" assembly hung off it puts the shade bottom at
+    # 6'-0 3/4" — 3'-0" over a 36" counter, the same clearance ED-M-DINING-PEND takes over
+    # the dining table. ** THIS FIXTURE IS 31% OF THE ROOM'S CODE LUMENS: ** drop it, or
+    # substitute anything under 1,800 lm, and RM-A-STUDIO goes to a FAIL on R303.1.
+    ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
+                     position=pt(ft(16, 9), ft(14, 10)), type_ref="ED-T-LT-PENDANT-BAR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
-    # (16'-6", 16'-6"), with the rest of the outer band. y must sit south of 17'-6 3/8":
-    # RM-A-STUBATH runs x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", and a can assigned
-    # to RM-A-STUDIO whose footprint centre falls inside another room
-    # (`integrity.placeable_room_mismatch`) counts toward the wrong R303.1 lumen total.
-    ElectricalDevice(uid="QTA000BAAA", tag="ED-A-STUDIO-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(16, 6), ft(16, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 4.5),
-                                 recessed_into_host_surface=True)),
-    # The four added cans, two per band.
-    ElectricalDevice(uid="QP7K1NEC12", tag="ED-A-STUDIO-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(3)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="KR49G4VP4A", tag="ED-A-STUDIO-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(16)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1.5),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="6M2C9K60B8", tag="ED-A-STUDIO-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(16, 6), ft(5, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 4.5),
-                                 recessed_into_host_surface=True)),
-    ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-CAN6", kind=DeviceKind.LIGHT,
-                     position=pt(ft(16, 6), ft(11)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 4.5),
-                                 recessed_into_host_surface=True)),
+                     mount=Mount(kind=MountKind.CEILING, drop=ft(2, 6))),
     # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.
@@ -178,9 +215,15 @@ ATTIC_LIGHTING = [
                      position=pt(ft(17, 7.625), ft(6)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # The bath's light, retyped wet-listed: its station fell inside the bath box, and a
-    # recessed can over a 36" shower pan is a damp/wet location (ED-T-LT-CAN4-WET). Same
-    # 900 lm; not part of the studio's 6,000.
+    # ** THE ONE RECESSED CAN THIS STOREY KEEPS, AND THE REASON IS THE SHOWER. ** Everything
+    # else here went to a wall fitting on 2026-09-06; a sconce over a 36" pan is the wrong
+    # article, and the 26.6 deg tilt a flat trim takes in a 6:12 plane — the objection that
+    # moved the rest — aims this one DOWN-SLOPE INTO THE ROOM, at the person, which is where
+    # you want it. The fixture is legitimate here on the corrected data: Lotus's LL4SR is 2"
+    # deep, Type IC, Air-Tight, Wet and Plenum rated, approved for insulated ceilings, so it
+    # sits inside the ROOF assembly's 6 7/8" batt and never reaches the 5" of ccSPF that
+    # carries R806.5. Retyped wet-listed because its station falls inside the bath box. Same
+    # 900 lm; not part of the studio's count.
     ElectricalDevice(uid="QTA0009AAA", tag="ED-A-STUBATH-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(13, 9), ft(19, 6)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
@@ -190,6 +233,17 @@ ATTIC_LIGHTING = [
                      # the one station in this bath the new plane keeps.
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7),
                                  recessed_into_host_surface=True)),
+    # The over-mirror bar (owner, 2026-09-06). On W-A-STU-N's bath face (y=22'-1 5/8"), on
+    # FX-A-STUBATH-LAV's centreline at x=13'-6", back on the face — a 2"-deep body at
+    # y=22'-0 5/8". 6'-6" is the height both RM-S-VANITY bars take. ED-T-LT-MIRROR is the
+    # 24" damp-rated bar already in the schedule, so this is a second instance of an
+    # existing row and not a new product: 1,300 lm of front light at a basin, which the
+    # ceiling can (a downlight behind your head) never gave this mirror.
+    ElectricalDevice(uid="3W86JZVH61", tag="ED-A-STUBATH-MIRROR", kind=DeviceKind.LIGHT,
+                     position=pt(ft(13, 6), inch(264.625)), type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUBATH", rotation=deg(180),
+                     controlled_by=("ED-A-STUBATH-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     # On W-A-BATH-S's north face, east of D-A-STUBATH's leaf (which parks x 11'-3 5/8" to
     # 13'-9 5/8") — the wall you reach for on the way in. It was first put on W-A-STU-W beside
     # the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face` reported it

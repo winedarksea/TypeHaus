@@ -1915,6 +1915,11 @@
 # own Lutron DVELV-300P: this fixture must NOT be ganged with the kitchen cans, and a 23 W
 # fixture on a 600 W forward-phase dimmer is the #1 cause of "my chandelier flickers".
 "ED-T-LT-PENDANT" = { material = { low = 250, high = 1500 }, labour = { low = 70, high = 200 } }  # 1 ea
+# ADDED 2026-09-06 with the attic studio's bar pendant (mark M1). Narrower band than mark M:
+# a 36" linear bar pendant is a stocked article at the low end where the dining fixture's
+# high end is an imported statement piece, and this one is specified against a lumen number
+# the room's R303.1 compliance depends on rather than against a look.
+"ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 1 ea
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 2 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 2 ea — ED-G-EXT-LT at the garage door, and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
@@ -2118,6 +2123,11 @@
 # is a fraction of this and CANNOT be substituted — it is not standable.
 "FT-KIT-PANTRY-SHELVES-70" = { material = { low = 160, high = 420 }, labour = { low = 400, high = 1050 } }  # 1 ea
 "FT-BATH1-SHELF-2030" = { material = { low = 200, high = 750 }, labour = { low = 150, high = 450 } }  # 1 ea
+# The suite bath's twin of it (2026-09-06), same construction and the same two ends of the
+# band — a carpenter building it in place, or a cabinetmaker building it as casework. Lower
+# than FT-BATH1-SHELF-2030 by a little: 30" x 11 1/4" is less carcass than 20" x 30", and it
+# is scribed to a partition rather than to an exterior wall.
+"FT-SUITEBATH-RETURN-3011" = { material = { low = 160, high = 620 }, labour = { low = 150, high = 450 } }  # 1 ea
 # RM-M-BATH2's over-toilet cabinet (2026-08-31). [placeables], not [furnishings] — it is
 # screwed to W-M-HS1's studs and cannot be carried out of the room. Basis: ~2 sheets (3/4"
 # paint-grade ply carcass + 5/8" MDF for three flush doors), 6 concealed hinges, 3 push
@@ -4793,7 +4803,18 @@
 # The bookcase is a Billy-class 32" unit; four of them line RM-B-PLAY-N's south wall either
 # side of D-B-PLAY. The low end is the IKEA price with no doors, the high end a solid-wood
 # equivalent of the same size.
-"FURN-BOOKCASE-32" = { low = 80, high = 500 }  # 4 ea
+#
+# ** THE KEY WAS WRONG AND THE FOUR BOOKCASES WERE BILLING $0 (fixed 2026-09-06). ** This row
+# was written against the library type FURN-BOOKCASE-32, and the house stopped using it on
+# 2026-08-24 when the theatre's shelving was taken up near the ceiling: the placeables carry
+# the house-local FT-BOOKCASE-32-90 and this key matched nothing, so `haus takeoff` listed
+# them under "not priced" and the total was $320-2,000 light. ** A PRICE KEY IS A TYPE TAG,
+# and nothing reconciles the two — a rename on the type side is a silent price deletion, and
+# the only symptom is a line in the "not priced" list nobody reads.
+#
+# The band goes up with the height: FT-BOOKCASE-32-90 is 7'-6" where the library unit is
+# 6'-0", the same 2'-8" x 1'-0" footprint with two more shelves. +25% on both ends.
+"FT-BOOKCASE-32-90" = { low = 100, high = 625 }  # 4 ea
 # A 98" panel is the one line in this table with a floor well above zero: the size itself is
 # specialty, and the low end is a TCL/Hisense-class 98" rather than anything smaller. The
 # high end is an LG/Samsung flagship at the same diagonal. The articulating anchor mount into
@@ -5681,20 +5702,29 @@ finish-window-stools-and-aprons = { low = 55, high = 125, unit = "ea", driver = 
 # riser STOCK bills in [framing], and this is the nosing on its edge. $7-21/LF; the seven
 # finishes meeting each other ride inside the rate, because a threshold is a count the model
 # does not carry and inventing one to make the other honest is worse than saying so.
-# ** 12.0 OF THOSE 143.4 LF ARE ST-G-SERVICE. ** That is the four-riser service stair in the
-# UNCONDITIONED GARAGE — KDAT stringers and treads, no finish flooring meeting it at either
-# end, and nothing to nose. The finished tread length is 131.4 LF (ST-B2M 41.1 + ST-M2S 45.9
-# + ST-S2A 44.4).
+# ** THE ROW BILLED 143.4 LF AND SHOULD HAVE BILLED 131.4 (fixed 2026-09-06), AND THE 12 LF
+# WAS NOT THE STAIR THIS NOTE SAID IT WAS. ** ST-G-SERVICE, the four-riser service stair in
+# the UNCONDITIONED GARAGE, was already dropping out correctly — `[conditioned=True]` has
+# excluded it since RM-GARAGE is a real Room carrying conditioned=False. The 12.0 LF being
+# billed was ST-SG-PORCH, the exterior sunken-garden porch stair, added after this note was
+# written and coincidentally the same length. It stands in no `Room` at all, and
+# `_in_conditioned_space` reports a stair that lands in no room as CONDITIONED — the safe
+# default for a finish schedule, and exactly wrong for a stair that is outdoors.
+# `[conditioned=True]` cannot see the difference between "outdoors" and "unrecognised", so
+# the driver now also asks `has_nosing`, a new stair_finish column reading the stair's own
+# authored `nosing_depth`. Both zero-nosing stairs — the garage flight and the porch flight
+# — drop out on the physical question a nosing allowance is actually asking, and the finished
+# tread length is 131.4 LF (ST-B2M 41.1 + ST-M2S 45.9 + ST-S2A 44.4).
 # ** THE RATE IS BACK TO ITS RESEARCHED $7-21 (2026-09-01). ** From 2026-08-30 this row read
-# $6.41-19.24, which is $7-21 x 131.4/143.4 — the garage stair scaled out of a rate because
-# the driver could not exclude it. `stair_finish` now reports a `conditioned` column
-# (takeoff/stairs.py), derived by testing the stair outline's centroid against the
-# `clear_face` of the rooms on its storey, so the exclusion is expressed where it belongs and
-# the rate is a rate again. Same 131.4 LF, same money, but a fifth stair in a cold space now
-# takes itself out instead of quietly inflating the line.
+# $6.41-19.24, which is $7-21 x 131.4/143.4 — a stair scaled out of a rate because the driver
+# could not exclude it. `stair_finish` now reports both a `conditioned` column and a
+# `has_nosing` column (takeoff/stairs.py), so the exclusions are expressed where they belong
+# and the rate is a rate again. Same 131.4 LF, same money — but the quantity now gets there
+# by excluding the two stairs that have no nosing, rather than by arriving at the right
+# number for the wrong reason.
 # The row is NOT dropped from `stair_finish` — ST-G-SERVICE still buys treads, risers and
 # stringers and still appears in the schedule; only this nosing scope excludes it.
-finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True]" }
+finish-transitions-and-stair-nosings = { low = 7, high = 21, unit = "LF", driver = "stair_finish.tread_lf[conditioned=True,has_nosing=True]" }
 # DRIVEN 2026-08-27 off the overhead-door count — 1. The smallest conversion in the file and
 # the clearest: the number was already per-door, it just had no door behind it. A second
 # overhead door now doubles the line by itself.

@@ -482,15 +482,27 @@ SECOND_FIXTURES = (
     # -90, back turns east onto W-S-C2C; footprint keeps the old pan's north/east edges,
     # extended south, clearing the WC zone, the south lav, and the door swing.
     #
-    # SAME DEFECT AS THE HALL BATH, LEFT OPEN. This insert also stands in two walls, not
-    # three: the east wall and W-S-SN3 to the north are closed, and its SOUTH end is open
-    # with only 10.4" to W-S-SBS. That is why the hall bath's fix does not transfer — a
-    # return partition here leaves 5 5/8" of filler beside a 4 3/4" wall, which is a framing
-    # decision (furr the whole 10.4" out, move W-S-SBS, or accept a two-wall install and
-    # detail the open end) and not a modelling one. Left for the owner rather than decided
-    # here; a shelf like FURN-S-BATH1-SHELF will not fit the leftover.
+    # ** THE OPEN END IS CLOSED (2026-09-06, owner's call), THE SAME WAY THE HALL BATH'S
+    # WAS: ** FURN-S-SUITEBATH-RETURN (plan/placeables.py) is a 30" x 11 1/4" x 84" carcass
+    # in the gap, and its NORTH panel is the tub's south return, with a 2x4 framed behind it
+    # for the flange. The note that stood here said "a shelf like FURN-S-BATH1-SHELF will
+    # not fit the leftover" — true of a 20"-deep box and false of one built 11 1/4" deep,
+    # which is an ordinary linen-tower depth. It is millwork as Furniture for the reason
+    # plan/placeables.py gives for the hall bath: a real return partition has to tee into
+    # W-S-C2C, splitting a BEARING wall at a new node and re-phasing its stud grid.
+    #
+    # ** AND THE TUB IS RE-SEATED ON ITS OWN TWO CLOSED WALLS. ** The 10.4" this note used
+    # to quote went stale on 2026-08-30 when W-S-SBS was retyped to a 4 3/4"
+    # INT_2X4_PARTITION and both its faces moved 1"; the gap was 11.42". Worse, the same
+    # 1" shuffle left this FLANGED insert not touching either wall it is supposed to be
+    # flanged to: 1.05" off W-S-C2C's face (x=212.615") to the east, and 0.17" THROUGH
+    # W-S-SN3's finish face (y=264.625") to the north. x moves +1.047" and y -0.173" so the
+    # back and the north end land exactly on those two planes — which is also what makes
+    # the south gap exactly 11 1/4" for the carcass to be built to.
+    # ** NOTHING GRADED ANY OF THIS: ** no check tests a flanged fixture against the faces
+    # it is flanged to, and the 0.17" over-run read as 0 FAIL.
     Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER-60-DIVERTED",
-            room="RM-S-SUITEBATH", position=pt(m(4.99282), m(5.96387)), rotation=deg(-90),
+            room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(234.625)), rotation=deg(-90),
             wall_ref="W-S-C2C"),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
@@ -517,9 +529,13 @@ SECOND_FIXTURES = (
     # vanity -- and this alcove is 61.49" wide, so the recommendation cannot be met here.
     # 60" is the smallest code-legal true double and this is it, with nothing to spare.
     #
-    # ** THIS ROOM HAS NO RECEPTACLE, AND IT NEEDS ONE. ** NEC 210.52(D) wants an outlet
-    # within 36" of each sink's outside edge and there is not one anywhere in RM-S-VANITY.
-    # The fix lands in plan/electrical.py. See plans/TODO.md.
+    # ** THE OUTLET THIS ROOM NEEDS IS BUILT: ** ED-S-VANITY-RC1 (plan/electrical.py), one
+    # GFCI receptacle at 44" serving BOTH bowls — 8.9" from the east basin's edge and 33.2"
+    # from the west, inside NEC 210.52(D)'s 36" either way. code.E3901_6_bathroom_receptacle
+    # passes both. ** That 2.8" of margin on the far bowl is what to re-check if either
+    # cabinet moves ** — the 60" run is already at the code minimum for bowl spacing, so
+    # there is no slack to absorb a shift. (This note used to read "THIS ROOM HAS NO
+    # RECEPTACLE"; it was stale, and so was the plans/TODO.md item it pointed at.)
     Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-VANITY-30-SHALLOW",
             room="RM-S-VANITY", position=pt(inch(22.375), inch(305.62)),
             wall_ref="W-S-BD-N"),

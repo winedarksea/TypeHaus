@@ -177,6 +177,33 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "2000-3500 lm, 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
                          "UL/ETL/cETLus mark on the fixture itself."),
 
+    # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
+    # instance of it: M is a 4'-0" dining fixture and this hangs over a 4'-7" bar run in a
+    # 356 sf room, where a 48" linear would read as the dining room's fixture put somewhere
+    # it does not belong.
+    #
+    # ** ITS LUMENS ARE A CODE NUMBER, NOT A PREFERENCE. ** RM-A-STUDIO is habitable only
+    # under R303.1 Exception 1 and needs 4,457 lm of POINT luminaires; five ED-T-LT-SCONCE-UD
+    # and ED-A-STUDIO-SCONCE give 4,100, so 1,800 lm here is what carries the room and 357 lm
+    # is the whole slack. Substituting a decorative fixture "of about this size" is how that
+    # gets lost — TARGET THE SPECS, NOT THE LOOK, the same way mark M is written: ~36" long,
+    # 1,800 lm or better, 3000 K, CRI 90+, dimmable, 120 V, and a real UL/ETL/cETLus mark.
+    #
+    # 2'-6" assembly, not M's 3'-6": the ceiling over the bar is 8'-6 3/4" (the 6:12 plane at
+    # x=16'-9"), and a 3'-6" drop would leave the shade bottom at 5'-0 3/4" — head height at
+    # a counter you stand at.
+    LuminaireType(tag="ED-T-LT-PENDANT-BAR", name='36" linear bar pendant',
+                  form=LuminaireForm.CHANDELIER, type_mark="M1",
+                  footprint=(ft(3), inch(4)), height=ft(2, 6), plan_symbol="pendant",
+                  lamp="LED integrated, replaceable ELV/TRIAC driver", watts=24.0,
+                  lumens=1800.0, cct_k=3000, cri=90, dimmable=True, load_va=24.0,
+                  ports=_POWER_120,
+                  source="Owner selection 2026-09-06 for the attic studio's bar, unit not "
+                         "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~36\" long, "
+                         "1800 lm or better (this room's R303.1 Exception 1 count depends "
+                         "on it), 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
+                         "UL/ETL/cETLus mark on the fixture itself."),
+
     # --- N: ceiling fans with a light kit ---------------------------------------------
     # A fan-light is a luminaire here, not Equipment: there is no fan ``EquipmentKind``, no
     # HVAC check reads one, and every form in this catalog exports as the same

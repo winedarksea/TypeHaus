@@ -342,8 +342,10 @@ CIRCUITS = (
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
     # ADDED 2026-08-29 with the attic guest bath. NEC 210.11(C)(3) / IRC E3901.6 wants a
-    # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901 RULE **,
-    # so this is judgement rather than a finding — taken anyway, because it is cheap in exactly
+    # dedicated 20A circuit for bathroom receptacles, and ** THE ENGINE HAS NO E3901
+    # BRANCH-CIRCUIT RULE ** (it does now grade E3901.6's other half, the receptacle a basin
+    # must have, as code.E3901_6_bathroom_receptacle — 210.11(C)(3) is the part nothing
+    # encodes), so this is judgement rather than a finding — taken anyway, because it is cheap in exactly
     # the two currencies that are scarce here. It costs one of nine spare 1-pole spaces (let
     # `electrical.panel_spaces` reconcile the count; do not hand-count), and it adds 0 VA to the
     # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which

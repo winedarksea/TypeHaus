@@ -1217,6 +1217,25 @@ SECOND_PLACEABLES = [
     # radiant zone stops at y 31'-3", so the unit does not stand on the mat.
     Furniture(uid="640HBGH1XS", tag="FURN-S-BATH1-SHELF", type_ref="FT-BATH1-SHELF-2030",
               room="RM-S-BATH1", position=pt(m(2.68588), m(10.4013))),
+    # The suite bath's twin of it (2026-09-06): FX-S-SUITEBATH-TUBSH's SOUTH return, built
+    # as an 11 1/4"-deep linen tower. Its north panel is the return the flange nails to over
+    # a framed 2x4; x 15'-2 5/8"..17'-8 5/8" is the tub's own 30" width, so the two front
+    # faces land on one line, and y 16'-1 3/8"..17'-0 5/8" is the exact leftover between the
+    # re-seated tub's south edge (y=204.625") and W-S-SBS's north face (y=193.375").
+    #
+    # ** DELIBERATELY NOT A WALL, for the same reason as the hall bath's: ** a real return
+    # partition has to tee into W-S-C2C, splitting a BEARING wall at a new node, and a
+    # segment lays its studs from its own start node — re-phasing that wall's whole grid to
+    # gain nothing the carcass does not already give. Moving W-S-SBS north instead was the
+    # other candidate and costs more: D-S-SUITEBATH's 17" framing station exists BECAUSE
+    # SBS is the 4 3/4" partition (storeys/second.py), and the bedroom side of that wall
+    # carries ED-S-SUITE-RC8 and its NEC 210.52(A)(2) wall-space run.
+    #
+    # ** THE STRIP IS OTHERWISE EMPTY AND WAS CHECKED: ** D-S-SUITEBATH's leaf is ~36" west
+    # of the tub's west face, FX-S-SUITEBATH-LAV's front zone stops at y=222.63", and the
+    # W-S-C2C shower niche is above and north of it.
+    Furniture(uid="P1NESXCW7K", tag="FURN-S-SUITEBATH-RETURN", type_ref="FT-SUITEBATH-RETURN-3011",
+              room="RM-S-SUITEBATH", position=pt(inch(197.615), inch(199))),
     # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, the

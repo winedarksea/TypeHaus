@@ -55,9 +55,22 @@ AMBIENT_LUMINAIRE_TYPES = (
     # hall, closet, laundry and stair cans from 650 lm to 900 and over-light every one of
     # them. The split stays. Every can in the house is on a dimmer, so trimming a living
     # room below 900 lm is a commissioning setting, not a different fixture.
+    # ** HEIGHT IS 2", NOT 6" — CORRECTED 2026-09-06 AGAINST THE PUBLISHED SHEET. ** All
+    # three marks below carried height=inch(6), a generic can housing, while the product
+    # they name has been a canless fixture since it was specified. Lotus's LL4SR sheet:
+    # "ID 4" OD 5" Sq", "2" Deep - Install Where Ceiling Space Is Limited", "Ceiling
+    # Clearance Required: 2"", "Type IC Rated - No Housing Required", "Driver Inside
+    # Connection Box - No Junction Box Needed", Approved Location "Insulated Ceilings, Open
+    # Plenum, Wet". ** THE 6" WAS NOT A ROUNDING ERROR, IT WAS A DIFFERENT PRODUCT, ** and
+    # it is what made thirteen cathedral cans read as unbuildable: a 6" housing eats the
+    # whole 6 7/8" batt zone of the ROOF assembly and lands on the 5" of ccSPF that is the
+    # only air barrier R806.5 compliance rests on, where a 2" one sits inside the batt and
+    # never reaches it. Nothing in the engine grades a ceiling-recessed body against its
+    # host's depth (resolve/placeables.py special-cases floor and wall mounts only), so the
+    # wrong number cost nothing and bought nothing until somebody measured it.
     LuminaireType(tag="ED-T-LT-CAN4", name='4" recessed can, white regressed trim',
                   form=LuminaireForm.RECESSED_CAN, type_mark="A",
-                  footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
+                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
                   lamp="LED module, field replaceable", watts=12.0, lumens=900.0,
                   cct_k=3000, cri=90, dimmable=True, load_va=12.0, ports=_POWER_120,
                   product_ref="PROD-LOTUS-LL4SR-30K-WH",
@@ -71,7 +84,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     # which module goes in which can. Do not "deduplicate" these two into one entry.
     LuminaireType(tag="ED-T-LT-CAN4-4000", name='4" recessed can, 4000K, white regressed trim',
                   form=LuminaireForm.RECESSED_CAN, type_mark="A1",
-                  footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
+                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
                   lamp="LED module, field replaceable, set to 4000K", watts=12.0,
                   lumens=950.0, cct_k=4000, cri=90, dimmable=True, load_va=12.0,
                   ports=_POWER_120,
@@ -88,7 +101,7 @@ AMBIENT_LUMINAIRE_TYPES = (
     # which side of the curtain they fall on.
     LuminaireType(tag="ED-T-LT-CAN4-WET", name='4" recessed can, wet location, white regressed trim',
                   form=LuminaireForm.RECESSED_CAN, type_mark="B",
-                  footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
+                  footprint=(inch(5), inch(5)), height=inch(2), plan_symbol="recessed-can",
                   lamp="LED module, field replaceable", watts=12.0, lumens=900.0,
                   cct_k=3000, cri=90, dimmable=True, damp_rated=True, wet_rated=True,
                   load_va=12.0, ports=_POWER_120,
@@ -96,6 +109,12 @@ AMBIENT_LUMINAIRE_TYPES = (
                   source="Lotus LL4SR-30K-WH — the SAME SKU as mark A, which is already wet "
                          "+ IP54 listed, so this is a schedule row rather than a second "
                          "product and there is no separate wet trim to colour-match"),
+    # height=inch(5) is LEFT ALONE and is probably also wrong: the Lotus 3" is the same
+    # canless family as mark A and is very likely 2" too. It is not corrected here because
+    # the 3" SKU was never confirmed against a datasheet (see the source string), and
+    # guessing a depth from a sibling is how the 6" above got in. Confirm the sheet, then
+    # fix it. Every ED-T-LT-CAN3 in this house is in a flat joist-bay ceiling, so nothing
+    # currently turns on the number.
     LuminaireType(tag="ED-T-LT-CAN3", name='3" recessed can, white regressed trim',
                   form=LuminaireForm.RECESSED_CAN, type_mark="C",
                   footprint=(inch(3.75), inch(3.75)), height=inch(5),

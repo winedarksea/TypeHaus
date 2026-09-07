@@ -160,6 +160,34 @@ BATH1_SHELF_2030 = FurnitureType(
 )
 
 
+# The tower that closes RM-S-SUITEBATH's tub alcove (2026-09-06). Same defect and the same
+# fix as FT-BATH1-SHELF-2030 above: FX-S-SUITEBATH-TUBSH is a flanged 60x30 insert standing
+# in two walls, not three, with its SOUTH end open. This carcass is that third side — its
+# NORTH panel is the return, with a 2x4 framed behind it to nail the flange to.
+#
+# ** THE OLD SOURCE SAID "A SHELF LIKE FURN-S-BATH1-SHELF WILL NOT FIT THE LEFTOVER", AND
+# THAT WAS MEASURED AGAINST THE WRONG BOX. ** A 20"-deep carcass does not fit an 11 1/4"
+# gap; a carcass MADE 11 1/4" deep does, and 11 1/4" is an ordinary linen-tower depth. The
+# same note also carried a stale 10.4": W-S-SBS was retyped to a 4 3/4" INT_2X4_PARTITION on
+# 2026-08-30 and both its faces moved 1", making the real gap 11.42", and re-seating the tub
+# on its own two closed walls (see plan/fixtures.py) takes the last 0.17" out to leave
+# exactly 11 1/4".
+#
+# 30" wide is the tub's own width, so the return panel is the full end of the insert and the
+# two front faces land on one line; 84" is the surround head, so the south wall reads as one
+# built element floor to 7'-0" the way the hall bath's does.
+SUITEBATH_RETURN_3011 = FurnitureType(
+    tag="FT-SUITEBATH-RETURN-3011", name='Suite bath alcove return, 30" x 11 1/4"',
+    footprint=(inch(30), inch(11.25)), height=inch(84),
+    storage=True, work_surface=False, plan_symbol="bookcase",
+    source="Site-built millwork, not a catalogue tower: a 3/4\" plywood carcass scribed to "
+           "the south end of RM-S-SUITEBATH's tub alcove, whose NORTH panel carries "
+           "FX-S-SUITEBATH-TUBSH's south flange over a framed 2x4 and is what makes that "
+           "insert a legitimate three-wall install. Width matches the tub (30\"), height "
+           "matches the surround head (84\"), depth is the alcove's own leftover (11 1/4\").",
+)
+
+
 # --- RM-M-STUDY, the call booth --------------------------------------------------------
 #
 # The house's smallest habitable room and its only windowless one, finished as a booth for
@@ -828,7 +856,7 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, OVER_COLD_3278, MIXER_GARAGE_24,
+                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_RETURN_3011, OVER_COLD_3278, MIXER_GARAGE_24,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,

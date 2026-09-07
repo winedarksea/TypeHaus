@@ -825,13 +825,16 @@ MAIN_DEVICES = [
     # WIN-M-LIV-E2 and WIN-M-DIN-E2" this comment used to describe has not existed for two
     # weeks. The real clear stretch is now y 14'-5 1/2"..17'-6 1/2", 3'-1" of it.
     #
-    # ** AND THE STAT IS NOT IN IT: at y=17'-9" it stands 2 1/2" INSIDE WIN-M-EAST-MID's rough
-    # opening ** (y 17'-6 1/2"..19'-10 1/2"), at 48" between that window's 32" sill and 80"
-    # head. Found 2026-09-06 while correcting the sentence above; ** NOT MOVED HERE **, because
-    # relocating a thermostat is a device decision of its own and this pass was the fireplace.
-    # The move is small — anywhere in y 14'-8"..17'-4" keeps it on wall and clear of
-    # ED-M-LIVING-RC3 at y=16'-11 1/8" — and nothing in `haus check` will ask for it: no rule
-    # grades a wall device against an opening.
+    # ** MOVED 17'-9" -> 16'-0" (2026-09-06). ** At y=17'-9" it stood 2 1/2" INSIDE
+    # WIN-M-EAST-MID's rough opening (y 17'-6 1/2"..19'-10 1/2"), at 48" between that
+    # window's 32" sill and 80" head — a device specified in a hole. y=16'-0" centres it in
+    # the pier the corrected sentence above names: 16 1/2" of clear wall to WIN-M-LIV-E2's
+    # RO end (y=14'-5 1/2") and 16 1/2" to WIN-M-EAST-MID's RO start (y=17'-6 1/2"), the
+    # 37" pier taken dead centre. Clear of ED-M-LIVING-RC3 (y=16'-11 1/8") by 11" in plan
+    # and 12" in elevation, and 48" clears the BESTA run's 29 3/4" tops the whole way.
+    # ** NOTHING IN `haus check` ASKED FOR THIS AND NOTHING WILL VERIFY IT: ** no rule
+    # grades a wall device against an opening, which is why the defect survived two weeks
+    # of clean reports. Re-measure by hand if either east window moves.
     # FX-M-BATH2-TUB's Bask outlet. Kohler: "A qualified electrician must
     # install a GFCI-protected, 120 V, 15 A, grounded outlet. Locate the outlet BEHIND THE
     # BATH and WITHIN 24 in. of the power supply." The bath ships cord-and-plug with its
@@ -873,7 +876,7 @@ MAIN_DEVICES = [
                      circuit="CKT-BATH2-TUB", room="RM-M-BATH2", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(8))),
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(35, 4.375), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(ft(35, 4.375), ft(16)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(270)),
 ]
@@ -1122,10 +1125,14 @@ SECOND_DEVICES = [
                      position=pt(ft(6, 6), ft(26, 10.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # ** RM-S-SUITEBATH AND RM-S-VANITY EACH NEED THIS RECEPTACLE FOR A GAP THE ENGINE
-    # CANNOT SEE. ** Same NEC 210.52(D) gap as RM-M-BATH1 above, and the same reason: the
-    # engine encodes E3902's GFCI-location rule but nothing encodes E3901.6 / 210.52(D)'s
-    # "one within 36 in. of each sink", so a bathroom with zero outlets draws no finding.
+    # ** RM-S-SUITEBATH AND RM-S-VANITY EACH GET THIS RECEPTACLE FOR NEC 210.52(D). ** Both
+    # were authored when nothing in the engine encoded E3901.6, so the note here used to
+    # say the gap was one "the engine cannot see". ** THAT IS NO LONGER TRUE (checked
+    # 2026-09-06): ** checks/mep/electrical_receptacles.py implements the rule and
+    # code.E3901_6_bathroom_receptacle now PASSES both bowls of RM-S-VANITY off
+    # ED-S-VANITY-RC1 below, and every other lavatory in the house besides. The outlets
+    # stay for the reason they were always right; only the claim that nothing grades them
+    # is retired.
     #
     # SUITEBATH sits on W-S-SN3 immediately WEST of the 30" vanity rather than beside its
     # mirror: the mirror is 24" wide on a 30" cabinet, which leaves 3 1/2" and 2 1/2" of wall
@@ -1849,11 +1856,12 @@ NEC_FILL_MAIN = [
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RM-M-BATH2's vanity outlet, and the room's only usable one. NEC 210.52(D) / IRC
-    # E3901.6 want a receptacle within 36" of the outside edge of EACH BASIN, and ** THE
-    # ENGINE HAS NO E3901 RULE AT ALL ** (see CKT-BATH-ATTIC in plan/circuits.py), so nothing
-    # will report a miss here or anywhere else — two other lavatories in this house are
-    # outside the 36" today, and both are written up in plans/TODO.md rather than moved
-    # here, because they are not this room.
+    # E3901.6 want a receptacle within 36" of the outside edge of EACH BASIN. ** THE ENGINE
+    # NOW HAS THAT RULE ** — code.E3901_6_bathroom_receptacle, in
+    # checks/mep/electrical_receptacles.py — and every lavatory in this house passes it,
+    # including the two that were written up in plans/TODO.md as outside the 36" and have
+    # since been served. The paragraph that stood here saying no such rule existed predates
+    # the check.
     #
     # It is on W-M-W3's finish face beside the bowl: x=7 5/8" is the face at 6 5/8" plus the
     # device's own 1" half-depth, y=15'-3" is 5 3/8" south of the basin's south edge.

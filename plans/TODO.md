@@ -80,6 +80,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   standing on a slab — and their anchors, not their bearing, are what actually governs.
 
 - PR-B-KITCHEN-DRAIN-RUN is right through the middle of the theater. It should likely run more west first, bypassing the theater/media room as much as possible.
+- PR-A-STUBATH-DRAIN-RUN runs right through the SUITEBATH's door
 
 - Let's add soffit lighting to the overhead garage door side of the garage, and then to both side walls of that. Likely an aluminum channel cleanly integrated with the soffit of the garage.
 
@@ -838,10 +839,7 @@ number are ready to move to `plans/cost-options.md` whenever the owner wants the
 Implement now:
 ~~Raise the electric fireplace to seated eye level, buy one that reads as fire at 11 feet, give it a dark surround, and turn the seats toward it (181/185).~~ **DONE 2026-09-06.** The fire left the SE corner for the pier between `WIN-M-LIV-E1` and `WIN-M-LIV-E2`: a 45 1/2" white-facebrick surround (`W-M-FIRE`) centred on y=8'-8", starting on `W-B-E1`'s pour and rising through `FS-M-EAST`, stopping at a one-piece walnut mantel at 5'-4". Flame centre 42 3/16" — **a 14" rise** — against a seated eye of ~46-48". The unit is a real product now, an Amantii BI-30-XTRASLIM, chosen because it is the only *trimless* one in the whole 26-32"-wide, <=6"-deep, hardwireable field, so the brick runs to the glass edge. All eight BESTA units kept, re-laid three south and five north; sofa and two new armchairs turned onto it. **The surround is white, not dark** — the review asked for dark and the owner's call was full white facebrick, which is what a house of white standing seam wanted. Two things it does not fix: no evidence distinguishes any unit in this class at 11 ft (nobody publishes viewing-distance data, and neither Amantii glass is low-iron or anti-glare — the brick reveal and the mantel's shadow are what solve glare here), and turning the sofa east means it no longer addresses `FURN-M-MEDIA`. See `notes/east_breast_bearing.md`.
 
-**Open, and deliberately left as owner calls:** retire `FURN-M-MEDIA` outright (the 98" screen is in the basement and the console duplicates seven BESTA units of storage); move `ED-M-DINING-FH-STAT`, which was found sitting 2 1/2" inside `WIN-M-EAST-MID`'s rough opening and is unrelated to the fireplace; and get four things from Amantii in writing before framing (mantel projection, bottom/side/back clearances, junction-block serviceability, and which manual revision ships) — all four are listed on `EQ-T-FIREPLACE-EL` in `houses/catlin/plan/electrical.py`.
-
-Deferred:
-Two lounge chairs on the porch -- it is roofed, fanned, lit, wired and curtained, and has nothing on it (241).
+**Open, and deliberately left as owner calls:** retire `FURN-M-MEDIA` outright (the 98" screen is in the basement and the console duplicates seven BESTA units of storage); and get four things from Amantii in writing before framing (mantel projection, bottom/side/back clearances, junction-block serviceability, and which manual revision ships) — all four are listed on `EQ-T-FIREPLACE-EL` in `houses/catlin/plan/electrical.py`. (`ED-M-DINING-FH-STAT` was on this list and is **done** — moved to y=16'-0" on 2026-09-06, see Items to Fix below.)
 
 
 ## Takeoff and price-model gaps found by the 2026-08-30 allowance audit
@@ -870,39 +868,138 @@ Two pricing decisions that are correct today and become double bills the moment 
   concrete rate should come down ~$7–18/LF or that note should be rewritten. Not touched in
   the 2026-08-30 pass because it is a rate re-derivation, not a defect fix.
 
-## Items to Fix
-Seven items that are not stylistic. Each one is ungraded by haus check — the house reports 951 passing rules with every one of these live — and each one shows up in the finished room.
+## Items to Fix — CLOSED 2026-09-06
 
-A thermostat is specified inside a window opening
-ED-M-DINING-FH-STAT sits at y=17′-9″, 48″ AFF, on the great room's east wall. WIN-M-EAST-MID occupies y 17′-6½″ → 19′-9½″ at 32″–80″ AFF. The device falls inside the rough opening in both plan and elevation.
+All seven are done. The house still reports the same **two** FAILs it reported before this
+batch (`code.R312_1_guard_height` on SL-G-STEP-0 and `electrical.receptacle_spacing` in
+RM-B-GYM), both pre-existing and neither in this list. **Three of the seven were not what the
+write-up said they were**, and those corrections are the useful part of the record.
 
-The comment beside it places it in a clear pier between two windows — but that pier is gone: the window it was measured against was retired on 24 Aug and replaced by a unit centred on y=18′-8″. The note was not re-measured. I confirmed nothing in the rule set catches it; there is no check that grades a wall device against an opening.
-relocate the stat, or the glazing schedule is wrong
+**1. A thermostat specified inside a window opening — MOVED.**
+`ED-M-DINING-FH-STAT` went y=17'-9" → **16'-0"** (`plan/electrical.py`). It stood 2 1/2"
+inside `WIN-M-EAST-MID`'s RO (y 210.5"..237.5") at 48", between that window's 32" sill and
+80" head. The 37" pier between `WIN-M-LIV-E2` and `WIN-M-EAST-MID` is y 173.5"..210.5" and
+16'-0" takes it dead centre: 16 1/2" of clear wall each side, 11" clear of
+`ED-M-LIVING-RC3`, and 48" clears the BESTA run's 29 3/4" tops. Still true, and still worth
+knowing: **no rule grades a wall device against an opening**, which is how this survived two
+weeks of clean reports. `ED-M-LIVING-RC7` is the same defect on `W-M-C3` — y=21'-1 1/4", 16"
+AFF, inside `D-M-STUDY`'s jamb pack (y 223.03"..256.97") — found while measuring the switch
+move below and **left open**, because a receptacle is a spacing decision in the NEC 210.52
+run and not a one-device fix.
 
-Six recessed cans are specified into the concrete deck
-Buildability
-ED-B-PLAY-N-CAN1–4 and ED-B-GYM-CAN3/4 all carry recessed_into_host_surface=True and all fall inside SL-M-DECK's footprint — the EPS stay-in-place form under a 4-3/8″ structural cap, with the gypsum thermal barrier R316.4 requires below it. A 6″ IC housing has nowhere to go: it would have to be buried in the foam form, past the steel ribs, with no access to its junction box.
+**2. Recessed cans that cannot be recessed — HALF OF IT WAS WRONG DATA.**
+The write-up said a 6" IC housing eats the roof's whole 6 7/8" batt zone and punches the
+ccSPF air barrier. **The 6" was wrong.** Lotus's LL4SR sheet — the product this house has
+named all along — reads **2" deep**, "Type IC Rated - No Housing Required", "Driver Inside
+Connection Box", Air-Tight, Approved Location "Insulated Ceilings, Open Plenum, Wet". All
+three CAN4 marks carried `height=inch(6)`, a generic can housing; corrected in
+`plan/lighting_types.py`. At 2" a fitting sits inside the batt and never reaches the foam,
+so the thirteen cathedral cans were never the code defect they were written up as. (`ED-T-LT-CAN3`
+is left at 5" deliberately — that SKU was never confirmed against a datasheet, and guessing a
+depth from a sibling is how the 6" got in.)
 
-Thirteen more cans are cut into the unvented hot roof, where a 6″ housing consumes the entire 6-7/8″ batt zone and breaches the only continuous air barrier R806.5 compliance depends on — and the catalog carries no sloped-ceiling housing at all, though the file header claims one.
-surface or semi-recessed fittings below the decka sloped IC housing SKU for the cathedral
-The kitchen's main light switch is behind a cabinet
+*The six under the concrete deck were real and are worse than described.* `SL-M-DECK` is
+4 3/8" of cast cap over a 10" EPS stay-in-place form on **1/2" of steel furring**, under the
+5/8" gypsum R316.4 requires as the thermal barrier over that foam. Nothing recesses there at
+**any** depth, and the only way in is through the one layer that exists to stop a fire
+reaching the foam.
 
-Fix
-ED-M-KITCH-SW at y=26′-6″ is covered by FURN-M-KIT-PANTRYC. The plan source states it outright and declines to fix it as a pre-existing condition. It is the switch for the kitchen's general lighting.
-A GFCI device is sealed behind a hardwired mirror
+- **RM-B-PLAY-N (the theatre):** the four cans are gone. Six `ED-T-LT-SCONCE-UD`, three a side
+  on the side walls at the room's quarter points. **The count is arithmetic, not taste** —
+  this windowless room is habitable only under R303.1 Exception 1, and `_room_lumens` counts
+  POINT luminaires only, so the floor is 6 fc x 324 sf / (0.60 x 0.80) = 4,050 lm. Two
+  sconces is 2.1 fc and FAILS; six is 4,200 lm / **6.2 fc**. That is 0.2 fc of margin and it
+  is the whole margin.
+- **RM-B-GYM:** `CAN3`/`CAN4` were only 6" inside the band, so the grid re-spaced to the
+  room's thirds, y 4'-6"/13'-6" → **6'-0"/12'-0"**. All four now sit over wood joists. The
+  gym passes R303.1 on glazing, so this cost nothing.
+- **The attic (owner's call, beyond what the data required):** twelve of the thirteen cans
+  became wall fittings on the centre line — the only full-height walls the storey has, both
+  gables raking to a 1 1/2" plate. The real objection to a flat trim there is **aim**, not
+  air: 26.6 deg off plumb in a 6:12 plane. `RM-A-STUDIO` is on Exception 1 too and needed
+  4,457 lm; it has exactly one mountable wall, ~11 ft of it free of the bar, so the scheme is
+  five sconces plus an 1,800 lm bar pendant over `APPL-A-STUDIO-FRIDGE` (new mark **M1**,
+  `ED-T-LT-PENDANT-BAR`), landing at 5,900 lm / **8.0 fc** — up from 6,000 lm / 8.08 fc, and
+  every uid in the file kept, which the file's own "nothing here may be deleted" rule
+  required. `RM-A-STUBATH` gains an over-mirror `ED-T-LT-MIRROR` bar. **One can is kept:**
+  `ED-A-STUBATH-CAN1`, over the shower pan, where a sconce is the wrong article and the
+  26.6 deg tilt aims *into* the room. `ED-A-EAST-LT` also moved off a station it shared
+  *exactly* with the old `ED-A-EAST-CAN3` — the loft has been lit and billed twice.
+- **The cove was designed, then withdrawn, and the reason is the battery.** Two surface COB
+  channels were the ambient tier; `CKT-LT-BACKUP` is the ALWAYS_ON tier on one 14.3 kWh
+  battery, and a PSU sums at its supply's **rating**. A second 200 VA driver takes
+  battery-only autonomy 41.3 h → 37.5 h and flips `cycle_48h.sustains_always_on` to False —
+  the house's headline two-day answer, spent on decoration. The tier has ~52 VA of headroom
+  and every honest version of the cove is over it (a 60 VA driver lands at 39.8 h; a 120 V
+  integral-driver run bills its real 93 W and lands at 39.0 h). **If it is wanted it is a
+  circuit decision:** its own non-backup breaker and its own switch.
 
-Fix
-ED-S-BATH1-RC-MIRROR at 54″ sits behind a mirror spanning 42″–78″. Its circuit is deliberately not GFCI at the breaker, so the test/reset button is the only protection in the path — and it cannot be reached. The codebase states the correct principle for this exact case elsewhere and then takes the opposite decision here.
-The double vanity has no receptacle
+**3. The kitchen's main light switch behind a cabinet — MOVED.**
+`ED-M-KITCH-SW` went to `W-M-C3`'s east face at **y=21'-10 1/2"**. It sat 13 1/8" inside
+`FURN-M-KIT-PANTRYC`, and **no station on W-M-C5 fixes it**: 87" of wall, 84 5/8" behind a
+96" carcass or the fridge/freezer columns, 2 3/8" of corner stud pack left. The new station
+is the 11" between `D-M-STUDY`'s jamb pack and `N-M-C2` — the wall you pass walking in
+through the `BM-M-HALL` beam line, which is open y 21'-8"..25'-10" and is why the kitchen has
+no door-side wall of its own. The extents quoted beside `ED-M-KITCH-SW-UC` were also 4"
+stale and are re-measured.
 
-Code
-RM-S-VANITY has two basins and no outlet anywhere in the room. NEC 210.52(D) requires one within 36″ of each basin's outside edge. Known, and parked. It is a permit item, not a nicety — and the bowls are also spaced at exactly 30.00″ on centre, the code floor to the hundredth.
-The suite's tub-shower stands in two walls
+**4. A GFCI device sealed behind a hardwired mirror — BOTH OF THEM MOVED.**
+There were **two**, not one: `ED-S-BATH1-RC-MIRROR` and `ED-S-SUITEBATH-RC-MIRROR`, the
+second authored from the first a day later. Each was a GFCI *device* on `CKT-RC-SECOND`,
+which is deliberately not GFCI at the breaker, so its test/reset button was the entire
+protective path — behind glass. **And deleting them was never available:**
+`code.E3901_6_bathroom_receptacle` passes RM-S-BATH1 on that outlet and nothing else, so
+removing it would have turned a silent defect into a FAIL. BATH1's moved y=31'-0" →
+**32'-6 3/4"**, into the 7 1/2" between the mirror's north edge and `FURN-S-BATH1-SHELF`,
+still hard against the lav carcass so 210.52(D) is untouched. SUITEBATH's moved x=13'-10" →
+**12'-3 1/2"**, west of the glass and stacked over `ED-S-SUITEBATH-RC1`; east was the obvious
+side and is inside the tub's own footprint.
 
-Water
-FX-TUBSHOWER-60 in RM-S-SUITEBATH is a flanged alcove insert with its south end open by 10.4″. The hall bath solved the identical problem by using a shelf carcass as the third return; that fix does not transfer here, and the source explicitly leaves the question open. An unresolved open end on a flanged insert is water management, not trim.
-Two small estimate defects
+**5. The double vanity has no receptacle — IT ALREADY DID.**
+`ED-S-VANITY-RC1` exists at 44" and `code.E3901_6_bathroom_receptacle` **PASSES both bowls**
+(8.9" and 33.2" against 36"). What was real was that **four separate comments still claimed
+the engine had no E3901 rule at all** — `plan/fixtures.py`, two in `plan/electrical.py`,
+one in `plan/circuits.py`. All four predate `checks/mep/electrical_receptacles.py` and are
+retired. The one that survives, narrowed: 210.11(C)(3)'s *dedicated-circuit* half still has
+no rule. **The 2.8" of margin on the far bowl is the thing to re-check if either cabinet
+moves** — the 60" run is already at the code minimum for bowl spacing.
 
-Estimate
-The four playroom bookcases price at $0: the price key is FURN-BOOKCASE-32 and the type was renamed to FT-BOOKCASE-32-90. haus takeoff lists it under "not priced" and the row was never chased — about $320–2,000 missing. Separately, finish-transitions-and-stair-nosings bills 143.4 lf where its own note says the conditioned-only driver should give 131.4, so the garage flight is being billed.
+**6. The suite's tub-shower stands in two walls — CLOSED, AND THE GAP WAS NOT 10.4".**
+`W-S-SBS` was retyped to a 4 3/4" `INT_2X4_PARTITION` on 2026-08-30 and both its faces moved
+1", making the real gap **11.42"**. The same 1" shuffle left this **flanged** insert not
+touching either wall it is flanged to: 1.05" off `W-S-C2C` to the east and 0.17" *through*
+`W-S-SN3`'s finish face to the north — **all of it at 0 FAIL**, because no check tests a
+flanged fixture against the faces it is flanged to. Re-seating it on those two planes
+(+1.047", −0.173") leaves the south gap at exactly **11 1/4"**, and
+`FURN-S-SUITEBATH-RETURN` — a 30" x 11 1/4" x 84" carcass, new type `FT-SUITEBATH-RETURN-3011`
+with `SB-S-SUITEBATH` fitting it out — is that third return, its north panel carrying the
+flange over a framed 2x4. The old note's "a shelf like FURN-S-BATH1-SHELF will not fit the
+leftover" was measured against a 20"-deep box; 11 1/4" is an ordinary linen-tower depth.
+Millwork as Furniture, not a wall, for the reason the hall bath already gives: a real return
+has to tee into `W-S-C2C`, splitting a **bearing** wall at a new node and re-phasing its stud
+grid.
 
+**7. Two estimate defects — ONE OF THEM BLAMED THE WRONG STAIR.**
+- **The bookcases were billing $0.** The price key was the library type `FURN-BOOKCASE-32`
+  and the house moved to house-local `FT-BOOKCASE-32-90` on 2026-08-24. Key corrected and the
+  band raised 25% with the height (6'-0" → 7'-6"): $100–625 each, $400–2,500 for the four.
+  ** A price key is a type tag and nothing reconciles the two ** — a rename on the type side
+  is a silent price deletion whose only symptom is a line in the "not priced" list.
+- **`finish-transitions-and-stair-nosings` billed 143.4 LF, and the extra 12.0 was NOT the
+  garage flight.** `ST-G-SERVICE` was already dropping out correctly — `[conditioned=True]`
+  excludes it because RM-GARAGE is a real Room carrying `conditioned=False`. The 12.0 LF was
+  **`ST-SG-PORCH`**, the exterior sunken-garden stair, added after the note was written and
+  coincidentally the same length. It stands in no `Room`, and `_in_conditioned_space` reports
+  a stair that lands in no room as **conditioned** — the safe default for a finish schedule
+  and exactly wrong outdoors. A driver filter can only *include*, so `stair_finish` gained a
+  **`has_nosing`** column off the stair's own authored `nosing_depth`, and the driver is now
+  `[conditioned=True,has_nosing=True]`. Both zero-nosing stairs drop on the physical question
+  the allowance actually asks. **131.4 LF**, with a test.
+
+### Still open from this batch
+
+- `ED-M-LIVING-RC7` sits inside `D-M-STUDY`'s jamb pack (item 1 above).
+- The theatre cove, if wanted, needs its own non-backup breaker and switch (item 2 above).
+- `ED-T-LT-CAN3`'s 5" depth is unconfirmed against a datasheet (item 2 above).
+- Nothing grades a wall device against an opening, or a flanged fixture against the faces it
+  is flanged to. Both cost this batch real defects at 0 FAIL.
