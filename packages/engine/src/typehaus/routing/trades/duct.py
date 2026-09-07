@@ -17,7 +17,12 @@ cannot place two lanes side by side, and a proposal into an occupied bay has to 
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typehaus.routing.corridors import Corridor
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedFloor, ResolvedModel
 
 
 def radius_m(*, diameter_m: float | None = None, width_m: float = 0.0,
@@ -28,7 +33,8 @@ def radius_m(*, diameter_m: float | None = None, width_m: float = 0.0,
     return max(width_m, depth_m) / 2.0
 
 
-def crossing_admissible(model, floor, *, diameter_m: float | None = None,
+def crossing_admissible(model: ResolvedModel, floor: ResolvedFloor, *,
+                        diameter_m: float | None = None,
                         width_m: float = 0.0, depth_m: float = 0.0) -> bool:
     """Whether a duct of this section may pass through this floor's members.
 
@@ -39,13 +45,10 @@ def crossing_admissible(model, floor, *, diameter_m: float | None = None,
     route through.
     """
     del model  # the floor carries its own members; the model is the caller's handle
-    try:
-        from typehaus.resolve.framing.profiles import open_web_opening_m
+    from typehaus.routing.corridors import _open_web_opening
 
-        members = [m for m in floor.members if m.z0_m is not None]
-        opening = open_web_opening_m(members[0].profile) if members else None
-    except Exception:  # noqa: BLE001 - an unreadable profile is a refusal, not a crash
-        opening = None
+    members = [m for m in floor.members if m.z0_m is not None]
+    opening = _open_web_opening(members[0].profile) if members else None
     if not opening:
         return False
     return opening >= 2.0 * radius_m(diameter_m=diameter_m, width_m=width_m,

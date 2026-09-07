@@ -20,9 +20,12 @@ run against many geometries and the correction belongs in the world.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from typehaus.quantities import M_PER_IN
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedModel
 
 #: How much clear air a run wants beyond its own radius. Half an inch is a hanger's strap
 #: and the tolerance a trade actually works to; it is deliberately smaller than the 2"
@@ -65,7 +68,7 @@ class SoftPrism:
     occupancy: str | None = None
 
 
-def _polygon(ring) -> Any:
+def _polygon(ring: Any) -> Any:
     from shapely.geometry import Polygon
 
     if ring is None or len(ring) < 3:
@@ -76,7 +79,7 @@ def _polygon(ring) -> Any:
     return poly
 
 
-def hard_prisms(model, radius_m: float, *, avoid: frozenset[str] = frozenset(),
+def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
                 clearance_m: float = CLEARANCE_M) -> list[HardPrism]:
     """Every prism a run of this radius may not enter, inflated by radius + clearance.
@@ -165,7 +168,7 @@ def hard_prisms(model, radius_m: float, *, avoid: frozenset[str] = frozenset(),
     return out
 
 
-def soft_prisms(model) -> list[SoftPrism]:
+def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
     """Every prism a route may enter for a price: finished room air, and wall cavities.
 
     The room band is the same one ``mep.run_in_finished_volume`` grades against — the
@@ -197,7 +200,7 @@ def soft_prisms(model) -> list[SoftPrism]:
     return out
 
 
-def _opening_prisms(model):
+def _opening_prisms(model: ResolvedModel) -> list[tuple[str, bool, str, Any, float, float]]:
     """Rough-opening prisms, derived where the check that documents them lives.
 
     Imported lazily and by module path so the leaf rule stays checkable: this package
@@ -234,7 +237,7 @@ def _opening_prisms(model):
     return out
 
 
-def _wall_union(model):
+def _wall_union(model: ResolvedModel) -> Any:
     from shapely.geometry import Polygon
 
     from typehaus.resolve.overlay import union_all
@@ -246,7 +249,9 @@ def _wall_union(model):
     return union_all(valid) if valid else None
 
 
-def _existing_runs(model):
+def _existing_runs(
+        model: ResolvedModel
+) -> list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]]:
     """``(tag, path, per-vertex z, radius)`` for every routed thing already in the model."""
     from typehaus.resolve.mep_queries import conduit_vertical_profile
 
@@ -262,8 +267,8 @@ def _existing_runs(model):
         profile = conduit_vertical_profile(raceway)
         if profile is None:
             continue
-        path, z = profile
-        out.append((raceway.tag, tuple(path), tuple(z),
+        raceway_path, raceway_z = profile
+        out.append((raceway.tag, tuple(raceway_path), tuple(raceway_z),
                     (raceway.trade_size_m or 0.0) / 2.0))
     return out
 

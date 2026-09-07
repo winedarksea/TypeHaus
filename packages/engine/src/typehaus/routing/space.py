@@ -15,6 +15,7 @@ from the one asked, and AGENTS.md §2.3 is explicit about which of the two is wo
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 from typehaus.routing.corridors import (
     Corridor,
@@ -24,6 +25,10 @@ from typehaus.routing.corridors import (
     wall_corridors,
 )
 from typehaus.routing.cost import RouteCost
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedModel
+
 from typehaus.routing.obstacles import (
     CLEARANCE_M,
     HardPrism,
@@ -78,15 +83,16 @@ class RoutingSpace:
     #: "what is here" once per node and twice per edge, so a linear scan over a hundred
     #: prisms is the whole cost of building a graph. Measured on the catlin suite-bath
     #: problem, indexing is worth roughly an order of magnitude on the graph build.
-    _hard_index: object | None = field(default=None, repr=False, compare=False)
-    _soft_index: object | None = field(default=None, repr=False, compare=False)
+    _hard_index: Any = field(default=None, repr=False, compare=False)
+    _soft_index: Any = field(default=None, repr=False, compare=False)
     #: Corridors bucketed by ``(axis, station rounded to 1/16")``. ``corridor_at`` is called
     #: once per lattice EDGE, so a linear scan over a hundred-odd corridors is tens of
     #: millions of comparisons on a real problem and was the single largest cost in
     #: building a graph — larger than the shapely work it sits beside.
-    _corridor_index: dict | None = field(default=None, repr=False, compare=False)
+    _corridor_index: dict[tuple[str, int], list[Corridor]] | None = field(
+        default=None, repr=False, compare=False)
 
-    def _index(self, which: str):
+    def _index(self, which: str) -> Any:
         from shapely import STRtree
 
         cached = self._hard_index if which == "hard" else self._soft_index
@@ -135,7 +141,7 @@ class RoutingSpace:
         it should be priced as the bay — the channel that actually carries it.
         """
         if self._corridor_index is None:
-            index: dict = {}
+            index: dict[tuple[str, int], list[Corridor]] = {}
             tolerance = self.radius_m + self.clearance_m
             for corridor in self.corridors:
                 if not corridor.admits(self.radius_m):
@@ -164,7 +170,8 @@ class RoutingSpace:
         return best
 
 
-def build_space(model, *, radius_m: float, terminals, cost: RouteCost | None = None,
+def build_space(model: ResolvedModel, *, radius_m: float,
+                terminals: Any, cost: RouteCost | None = None,
                 margin_ft: float = DEFAULT_MARGIN_FT,
                 avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),

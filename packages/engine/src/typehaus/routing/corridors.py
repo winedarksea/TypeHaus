@@ -21,6 +21,10 @@ oracle for the bay arithmetic.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedFloor, ResolvedModel, ResolvedSoffit
 
 #: The chord a floor truss's open web leaves. ``resolve/framing/profiles.open_web_opening_m``
 #: owns the real number; this is the fraction of the member's depth that is chord, used only
@@ -61,7 +65,7 @@ class Corridor:
         return (low, high) if high >= low else None
 
 
-def floor_corridors(model) -> list[Corridor]:
+def floor_corridors(model: ResolvedModel) -> list[Corridor]:
     """One corridor per joist/truss bay, on every resolved floor.
 
     The bay's own clear width comes from ``clear_bay_width_m``, which takes the MEDIAN
@@ -98,7 +102,8 @@ def floor_corridors(model) -> list[Corridor]:
     return out
 
 
-def crossing_window(model, floor) -> tuple[float, float] | None:
+def crossing_window(model: ResolvedModel,
+                    floor: ResolvedFloor) -> tuple[float, float] | None:
     """The z band a run may occupy while crossing this floor's members, or None.
 
     An open-web truss lets a service through its webs and an I-joist wants a bored hole;
@@ -112,19 +117,28 @@ def crossing_window(model, floor) -> tuple[float, float] | None:
         return None
     low = min(m.z0_m for m in members)
     high = max(getattr(m, "z1_m", None) or floor.deck_z0_m for m in members)
-    try:
-        from typehaus.resolve.framing.profiles import open_web_opening_m
-
-        opening = open_web_opening_m(members[0].profile)
-    except Exception:  # noqa: BLE001 - a profile this build cannot read is not fatal here
-        opening = None
-    if opening and opening > 0:
+    opening = _open_web_opening(members[0].profile)
+    if opening is not None and opening > 0:
         margin = ((high - low) - opening) / 2.0
         return (low + margin, high - margin)
     return (low + _CHORD_M, high - _CHORD_M)
 
 
-def soffit_corridors(model) -> list[Corridor]:
+def _open_web_opening(profile: str) -> float | None:
+    """The chord-to-chord opening of this member's section, or None if it has no web space.
+
+    ``open_web_opening_m`` takes a ``CrossSection`` and a ``FramedMember.profile`` is the
+    *string* that names one — a distinction that cost a silently dead branch: passing the
+    string raised, the caller swallowed it, and the chord fallback happened to give the
+    same 8 7/8" on catlin's truss. It answered right for the wrong reason on the one floor
+    it was checked against and would have answered wrong on any other section.
+    """
+    from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
+
+    return open_web_opening_m(cross_section(profile))
+
+
+def soffit_corridors(model: ResolvedModel) -> list[Corridor]:
     """One corridor per resolved soffit, along its own LONG plan dimension.
 
     A box's long axis is its axis — the same reading ``mep.duct_soffit_occupancy`` takes,
@@ -150,7 +164,7 @@ def soffit_corridors(model) -> list[Corridor]:
     return out
 
 
-def wall_corridors(model) -> list[Corridor]:
+def wall_corridors(model: ResolvedModel) -> list[Corridor]:
     """One corridor per wall, on its axis, bounded by its structure cavity.
 
     A wall is a corridor and a soft obstacle at once, and that is not a contradiction:
@@ -179,13 +193,13 @@ def wall_corridors(model) -> list[Corridor]:
     return out
 
 
-def _member_span(floor, along: str) -> tuple[float, float] | None:
+def _member_span(floor: ResolvedFloor, along: str) -> tuple[float, float] | None:
     coords = [p[0] if along == "x" else p[1]
               for member in floor.members for p in (member.p0, member.p1)]
     return (min(coords), max(coords)) if coords else None
 
 
-def _bounds(ring):
+def _bounds(ring: Any) -> tuple[float, float, float, float] | None:
     if ring is None or len(ring) < 3:
         return None
     xs = [p[0] for p in ring]
@@ -193,7 +207,7 @@ def _bounds(ring):
     return (min(xs), min(ys), max(xs), max(ys))
 
 
-def _remaining_taken(model, soffit) -> float:
+def _remaining_taken(model: ResolvedModel, soffit: ResolvedSoffit) -> float:
     """How much of a soffit's across-axis width is already spoken for.
 
     Ducts and pipes naming this soffit occupy it; the sum of their outside dimensions is

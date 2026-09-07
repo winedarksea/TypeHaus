@@ -21,13 +21,19 @@ stale every pinned engineering seal in the house.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import typer
 
 from typehaus.cli._shared import _print_findings, _resolve_house, app, console
 
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedModel
+    from typehaus.routing.graph import Graph
+    from typehaus.routing.proposal import RouteProposal
 
-def _load(house: Path | None):  # type: ignore[no-untyped-def]
+
+def _load(house: Path | None) -> tuple[Path, Any]:
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -44,11 +50,11 @@ def _load(house: Path | None):  # type: ignore[no-untyped-def]
     return directory, model
 
 
-def _storey_datum(model, storey: str) -> float:
+def _storey_datum(model: ResolvedModel, storey: str) -> float:
     return next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
 
 
-def _unconnected_fixtures(directory: Path, model) -> list[str]:
+def _unconnected_fixtures(directory: Path, model: ResolvedModel) -> list[str]:
     """Every fixture ``mep.fixture_drain_reach`` reports a FAIL on.
 
     Read from the CHECK rather than re-derived here, and that is the whole architecture in
@@ -148,9 +154,10 @@ def _points(via: list[str]) -> list[tuple[float, float]]:
     return out
 
 
-def _propose(model, targets: list[str], *, mode: str, slope: float | None,
-             margin_ft: float, level: str | None, avoid: frozenset[str],
-             via: list[tuple[float, float]], explain: bool):
+def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
+             slope: float | None, margin_ft: float, level: str | None,
+             avoid: frozenset[str], via: list[tuple[float, float]], explain: bool
+             ) -> tuple[list[tuple[RouteProposal, str]], list[str]]:
     """The one place the router is actually driven. Returns ``(proposals, problems)``.
 
     Every refusal comes back as a *line*, never as a silent omission: a fixture whose drain
@@ -255,7 +262,8 @@ def _propose(model, targets: list[str], *, mode: str, slope: float | None,
     return proposals, problems
 
 
-def _endpoints(model, target: str, mode: str, problems: list[str]):
+def _endpoints(model: ResolvedModel, target: str, mode: str,
+               problems: list[str]) -> tuple[Any, ...]:
     """``(origin, root, diameter, serves, storey, system, touch)`` for one target.
 
     ``touch`` is the set of existing runs this proposal may occupy — see
@@ -267,7 +275,10 @@ def _endpoints(model, target: str, mode: str, problems: list[str]):
     reading of "where does this discharge", and is the same derivation
     ``drain_tie_ins`` uses to link the load.
     """
-    from typehaus.resolve.mep import _expected_drain_point
+    # Imported from the module that OWNS the derivation rather than re-derived: the same
+    # point `mep.trap_arm_length` and `mep.fixture_drain_reach` measure from, so a router
+    # aimed at a different point from the checks that judge it is impossible by construction.
+    from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
 
     runs = {r.tag: r for r in model.pipe_runs}
     if mode in ("run", "tree") and target in runs:
@@ -293,10 +304,10 @@ def _endpoints(model, target: str, mode: str, problems: list[str]):
         storey = _storey_of(model, target)
         floor_m = next((s.elevation.meters for s in model.plan.storeys
                         if s.tag == storey), 0.0)
-        found = _nearest_main(model, point, floor_m, problems, target, exclude=target)
-        if found is None:
+        near = _nearest_main(model, point, floor_m, problems, target, exclude=target)
+        if near is None:
             return (None,) * 7
-        root, parent = found
+        root, parent = near
         del element
         # The runs that already serve this fixture are what the proposal REPLACES, so they
         # are not obstacles to it — and one of them is usually the run the tie point sits
@@ -310,7 +321,8 @@ def _endpoints(model, target: str, mode: str, problems: list[str]):
     return (None,) * 6
 
 
-def _discharge(model, run, problems: list[str]):
+def _discharge(model: ResolvedModel, run: Any,
+               problems: list[str]) -> tuple[tuple[float, float, float], list[str]] | None:
     """``(root point, the whole downstream chain)`` for a run, or None.
 
     The chain, not just the parent, and that is what makes a tie reachable at all: a
@@ -327,17 +339,24 @@ def _discharge(model, run, problems: list[str]):
         problems.append(f"{run.tag}: nothing downstream of it is derivable, so there is "
                         "no root to route to. Name a --via, or route the parent first")
         return None
-    chain, cursor = [], parent
+    chain: list[str] = []
+    cursor: str | None = parent
     while cursor is not None and cursor not in chain:
         chain.append(cursor)
         cursor = ties.get(cursor)
     other = next(r for r in model.pipe_runs if r.tag == parent)
-    index = min(range(len(other.path)), key=lambda i: other.z_m[i])
-    return ((other.path[index][0], other.path[index][1], other.z_m[index]), chain)
+    z = other.z_m or ()
+    if len(z) != len(other.path):
+        problems.append(f"{run.tag}: its discharge {parent} carries no resolved "
+                        "elevations, so there is no invert to tie into")
+        return None
+    index = min(range(len(other.path)), key=lambda i: z[i])
+    return ((other.path[index][0], other.path[index][1], z[index]), chain)
 
 
-def _nearest_main(model, point, floor_m: float, problems: list[str], target: str, *,
-                  exclude: str | None = None):
+def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: float,
+                  problems: list[str], target: str, *, exclude: str | None = None
+                  ) -> tuple[tuple[float, float, float], str] | None:
     """The nearest drain run's vertex on this fixture's own floor.
 
     The vertical gate is ``mep.fixture_drain_reach``'s: a run counts only where it passes
@@ -368,23 +387,23 @@ def _nearest_main(model, point, floor_m: float, problems: list[str], target: str
     return (best[1], best[2])
 
 
-def _storey_of(model, tag: str) -> str:
+def _storey_of(model: ResolvedModel, tag: str) -> str:
     for storey in model.plan.storeys:
         if any(getattr(e, "tag", None) == tag
                for e in model.plan.storey_elements(storey.tag)):
-            return storey.tag
+            return str(storey.tag)
     return "main"
 
 
-def _nearest(graph, point) -> int | None:
+def _nearest(graph: Graph, point: tuple[float, float, float]) -> int | None:
     if not graph.nodes:
         return None
-    return min(graph.nodes,
-               key=lambda n: (abs(n.x - point[0]) + abs(n.y - point[1])
-                              + abs(n.z - point[2]))).index
+    return int(min(graph.nodes,
+                   key=lambda n: (abs(n.x - point[0]) + abs(n.y - point[1])
+                                  + abs(n.z - point[2]))).index)
 
 
-def _root_nodes(graph, root) -> set[int]:
+def _root_nodes(graph: Graph, root: tuple[float, float, float]) -> set[int]:
     """Every lattice node on the root's own plan point — a vertical, not a point.
 
     See :func:`~typehaus.routing.search.shortest_route`: a stack accepts arrivals over a

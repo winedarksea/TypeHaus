@@ -21,6 +21,7 @@ laid out.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 
 from typehaus.routing.space import (
@@ -275,7 +276,7 @@ def _price(space: RoutingSpace, a: Node, b: Node,
     return cost, terms
 
 
-def _unique(values) -> list[float]:
+def _unique(values: Iterable[float]) -> list[float]:
     out: list[float] = []
     for value in sorted(values):
         if not out or value - out[-1] > _LINE_TOL_M:

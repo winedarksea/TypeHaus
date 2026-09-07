@@ -13,6 +13,8 @@ potential" means.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from typehaus.routing.corridors import Corridor
 from typehaus.routing.gravity import GravityProfile, HeadBudget, apply, minimum_slope
 
@@ -46,8 +48,8 @@ def falls(system: str) -> bool:
     return system in GRAVITY_SYSTEMS
 
 
-def elevate(points, budget: HeadBudget | None, *,
-            grade_in_per_ft: float | None = None):
+def elevate(points: Sequence[tuple[float, ...]], budget: HeadBudget | None, *,
+            grade_in_per_ft: float | None = None) -> list[tuple[float, float, float]]:
     """Give a found plan route its elevations.
 
     With no budget the route keeps whatever z the search chose — the supply case. With one,
@@ -55,7 +57,7 @@ def elevate(points, budget: HeadBudget | None, *,
     result is monotone by construction rather than by checking afterwards.
     """
     if budget is None:
-        return list(points)
+        return [(p[0], p[1], p[2]) for p in points]
     slope = (grade_in_per_ft if grade_in_per_ft is not None
              else minimum_slope(budget.diameter_m))
     profile = GravityProfile(start_m=budget.ceiling_m, slope_in_per_ft=slope)

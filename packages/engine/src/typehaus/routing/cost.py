@@ -13,6 +13,7 @@ catlin's, and each states its basis the way ``max_run_developed_over_straight`` 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 #: Occupancy-keyed penalty for a foot of run in a room's open air, in inches of equivalent
 #: travel per foot. The ordering is the point rather than the magnitudes: a bedroom and a
@@ -102,7 +103,7 @@ class RouteCost:
         return max(0.0, 1.0 - self.corridor_discount_per_ft / 12.0)
 
 
-def cost_from_preferences(table: dict) -> RouteCost:
+def cost_from_preferences(table: dict[str, Any]) -> RouteCost:
     """Build a :class:`RouteCost` from ``preferences.toml``'s ``[mep.routing]`` table.
 
     Unknown keys are ignored rather than raising: a house that pins a weight this version

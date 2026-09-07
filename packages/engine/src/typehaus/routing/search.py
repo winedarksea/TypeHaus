@@ -24,6 +24,7 @@ and no oracle can pin it.
 from __future__ import annotations
 
 import heapq
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from typehaus.routing.graph import Graph
@@ -132,7 +133,8 @@ def shortest_route(graph: Graph, space: RoutingSpace, start: int,
     return None
 
 
-def _heuristic(graph: Graph, space: RoutingSpace, goals: set[int]):
+def _heuristic(graph: Graph, space: RoutingSpace,
+               goals: set[int]) -> Callable[[int], float]:
     """Manhattan plan + ``|Δz| × riser_per_ft``, scaled by the cost's own cheapest inch.
 
     Over a set of goals it is the minimum over them, which is still admissible: the true
@@ -151,8 +153,9 @@ def _heuristic(graph: Graph, space: RoutingSpace, goals: set[int]):
     return estimate
 
 
-def _rebuild(graph: Graph, space: RoutingSpace, came: dict, state, expansions: int
-             ) -> Route:
+def _rebuild(graph: Graph, space: RoutingSpace,
+             came: dict[tuple[int, str], tuple[int, str]],
+             state: tuple[int, str], expansions: int) -> Route:
     chain = [state]
     while state in came:
         state = came[state]
@@ -177,7 +180,7 @@ def _rebuild(graph: Graph, space: RoutingSpace, came: dict, state, expansions: i
                  bends=bends, expansions=expansions)
 
 
-def _axis_of(a, b) -> str:
+def _axis_of(a: tuple[float, float, float], b: tuple[float, float, float]) -> str:
     if abs(b[0] - a[0]) > 1e-9:
         return "x"
     if abs(b[1] - a[1]) > 1e-9:

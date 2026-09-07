@@ -21,9 +21,10 @@ printed is what was verified rather than what was found and then rounded.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 
-from typehaus.quantities import M_PER_IN, Point2D, ft, inch
+from typehaus.quantities import M_PER_IN, Length, Point2D, ft, inch
 
 #: The grid every printed coordinate lands on. A sixteenth is what this house authors to
 #: and what a tape measures; printing a route to a millimetre would be claiming a precision
@@ -36,7 +37,7 @@ def snap(metres: float) -> float:
     return round(metres / M_PER_IN * (1.0 / SNAP_IN)) * SNAP_IN * M_PER_IN
 
 
-def length_source(metres: float):
+def length_source(metres: float) -> Length:
     """A ``Length`` whose authored unit is the one this house writes.
 
     ``ft(f, i)`` above zero, ``inch(x)`` below it — and the second half is not a style
@@ -149,7 +150,7 @@ _CONSTRUCTOR = {"pipe": "PipeRun", "duct": "DuctRun", "conduit": "ConduitRun"}
 _WIDTH = 96
 
 
-def _wrapped(name: str, values) -> list[str]:
+def _wrapped(name: str, values: Iterable[object]) -> list[str]:
     """``name=(a, b, c)`` over as many 8-space-indented lines as it takes.
 
     A 1-tuple keeps its trailing comma — ``value_source`` puts it there and this must not
@@ -176,7 +177,7 @@ def _system_source(kind: str, system: str) -> str:
     return f"{enum}.{system.upper()}"
 
 
-def render(proposals: list[RouteProposal], *, storey_datum_m: float = 0.0,
+def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
            explain: bool = False) -> str:
     """The whole printout: a banner nobody can mistake for a file, then the constructors.
 

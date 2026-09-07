@@ -20,6 +20,7 @@ the number a person can act on.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
@@ -142,7 +143,7 @@ def profile_for(budget: HeadBudget, *, grade_in_per_ft: float | None = None
         slope_in_per_ft=slope)
 
 
-def developed_lengths(points) -> list[float]:
+def developed_lengths(points: Sequence[tuple[float, ...]]) -> list[float]:
     """Cumulative developed **plan** length at each vertex, in feet.
 
     Plan and not 3-D, because that is the datum every slope rule in this engine measures
@@ -156,7 +157,8 @@ def developed_lengths(points) -> list[float]:
     return out
 
 
-def apply(points, profile: GravityProfile) -> list[tuple[float, float, float]]:
+def apply(points: Sequence[tuple[float, ...]],
+          profile: GravityProfile) -> list[tuple[float, float, float]]:
     """Re-elevate a plan polyline onto a gravity profile.
 
     Every vertex takes its own developed length's invert, so a route the search chose in
