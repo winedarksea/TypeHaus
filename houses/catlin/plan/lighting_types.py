@@ -88,7 +88,19 @@ AMBIENT_LUMINAIRE_TYPES = (
                   lamp="LED module, field replaceable, set to 4000K", watts=12.0,
                   lumens=950.0, cct_k=4000, cri=90, dimmable=True, load_va=12.0,
                   ports=_POWER_120,
-                  product_ref="PROD-LOTUS-LL4SR-30K-WH",
+                  # ** A1 IS NOT A DEDUPLICATION TARGET, AND NEITHER ARE ITS PLACEMENTS. **
+                  # The four A1 cans in RM-M-LIVING are a deliberate warm/cool scene —
+                  # an interleaved diamond symmetric about (27', 7') on its own dimmer leg
+                  # ED-M-LIVING-SW-DAY. Two colour temperatures in the one room is an owner
+                  # preference here, not the defect it is in the kitchen, where the panels
+                  # were a second CCT nobody chose.
+                  #
+                  # ** NO product_ref, 2026-09-06. ** It pointed at
+                  # PROD-LOTUS-LL4SR-30K-WH — the *3000 K* SKU — while the source below
+                  # forbids a selectable module and demands a fixed 4000 K one. The
+                  # reference contradicted the specification; ED-T-LT-CAN3 is the
+                  # precedent for naming the requirement and leaving the part number
+                  # blank until the 4000 K tap is confirmed against a datasheet.
                   source="Lotus LL4SR class, 4\" deeply regressed white trim, in the 4000K "
                          "tap. ** BUY A FIXED-CCT MODULE, NEVER A 5CCT SELECTABLE ONE: ** "
                          "the DIP switch gets set wrong constantly, one can at the wrong "

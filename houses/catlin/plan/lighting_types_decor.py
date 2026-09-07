@@ -51,7 +51,17 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lamp="LED integrated", watts=9.0, lumens=700.0, cct_k=3000, cri=90,
                   dimmable=True, damp_rated=True, wet_rated=True, load_va=9.0,
                   ports=_POWER_120,
-                  source="ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md)"),
+                  source="ED-T-LT-SCONCE-SPOT in a wet-location housing (notes/plant_room.md). "
+                         "** NOT UNUSED: ** placed once, as ED-S-PLANT-SPOT in "
+                         "plan/placeables.py, not in a lighting*.py file. A review that "
+                         "greps only the lighting files reads this row as dead and it is "
+                         "not."),
+    # ** J1 IS NOT A DUPLICATE OF J WITH A SWITCH ON IT. ** Both its uses are places that
+    # deliberately CANNOT take a wall switch: a 43 sf attic nook with no wall on the way in
+    # (plan/lighting_attic.py) and the under-stair closet (plan/lighting.py).
+    # ``integral_switch=True`` is exactly what exempts both from
+    # ``electrical.lighting_controls`` — deleting J1 means adding two switches with nowhere
+    # to put them.
     LuminaireType(tag="ED-T-LT-SPOT-SW", name="Down-spot wall sconce, switch on fixture",
                   form=LuminaireForm.SCONCE, type_mark="J1",
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
@@ -108,7 +118,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   dimmable=True, load_va=6.0, ports=_POWER_120,
                   product_ref="PROD-MODERNFORMS-WS-38109",
                   source="Modern Forms Bantam WS-38109-30-BK, 393 lm, CRI 90, <=4\" "
-                         "projection"),
+                         "projection. ** NOT A STYLING DUPLICATE OF MARK J: ** the "
+                         "projection limit above is a specification, this is a real and "
+                         "different product, and J's head stands 9\" tall — which is the "
+                         "hazard this row exists to avoid."),
 
     # --- L/M: hanging fixtures --------------------------------------------------------
     # ``height`` on a hanging fixture is the *whole assembly* — canopy, drop, shade — which
@@ -209,12 +222,23 @@ DECORATIVE_LUMINAIRE_TYPES = (
     # HVAC check reads one, and every form in this catalog exports as the same
     # ``IfcLightFixture`` regardless. ``load_va`` carries motor *and* light; ``watts`` is
     # the light kit alone, because that is what the photometric row means.
+    #
+    # ** dimmable=False ON EVERY FAN HERE, 2026-09-06. ** These read True while their own
+    # ``source`` said in capitals that a DC fan cannot be speed-controlled by a wall
+    # dimmer. The plan was already right (a plain ED-T-SWITCH); the flag was the lie, and
+    # it prints to the E-602 schedule an electrician orders from.
+    #
+    # ** MARK N IS CATALOG-ONLY SINCE 2026-09-06 AND IS DELIBERATELY KEPT. ** ED-B-GYM-LT
+    # was its one placement and retyped to N3 for blade headroom. `luminaire_schedule`
+    # builds its rows from placements, so an unplaced type prints on no sheet and bills
+    # nothing — the same convention `glazed-green-brick` and `EXT_2X6_SWINBURNE` are held
+    # under, and N is N3's stated revert if no flush-mount SKU can be sourced.
     LuminaireType(tag="ED-T-LT-FAN52", name='52" ceiling fan with LED light kit',
                   form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N",
                   footprint=(inch(52), inch(52)), height=ft(1, 6),
                   plan_symbol="ceiling-fan-light",
                   lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=True, load_va=60.0, ports=_POWER_120,
+                  cri=90, dimmable=False, load_va=60.0, ports=_POWER_120,
                   product_ref="PROD-MODERNFORMS-FR-W1819",
                   source="Modern Forms Mykonos FR-W1819-52L-30-MB. ** A DC FAN CANNOT BE "
                          "SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** wire it to "
@@ -222,6 +246,30 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "the remote. Do NOT put it on a Caseta dimmer — it will corrupt "
                          "the receiver. This deliberately breaks the house dimming scheme, "
                          "and that is correct."),
+    # The gym's fan. ** A HUGGER, AND THAT IS THE WHOLE POINT: ** RM-B-GYM's resolved
+    # clear_height_m is 2.42253 = 95 3/8", and mark N's 18" assembly leaves the blades at
+    # ~6'-5 3/8" in a room people swing their arms in. 11" of assembly puts them at
+    # 7'-0 3/8", clearing the 7'-0" blade-to-floor minimum every fan IFU states. N3 rather
+    # than a drop change on N: a flush-mount fan is a different product, not a shorter
+    # downrod — the Mykonos of mark N is a downrod fan and does not hug.
+    #
+    # ** NO product_ref ON PURPOSE. ** Follow ED-T-LT-CAN3: state the requirement and say
+    # the SKU is unconfirmed rather than invent a datasheet. TARGET THE SPECS — 52",
+    # flush/hugger mount, <= 11" overall, DC motor, 1400 lm 3000 K CRI 90 integrated light,
+    # and the same constant-hot + wall-control wiring as N.
+    LuminaireType(tag="ED-T-LT-FAN52-FLUSH",
+                  name='52" flush-mount ceiling fan with LED light kit',
+                  form=LuminaireForm.CEILING_FAN_LIGHT, type_mark="N3",
+                  footprint=(inch(52), inch(52)), height=inch(11),
+                  plan_symbol="ceiling-fan-light",
+                  lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
+                  cri=90, dimmable=False, load_va=60.0, ports=_POWER_120,
+                  source="Low-ceiling hugger for RM-B-GYM (no product_ref: no flush-mount "
+                         "SKU has been confirmed against a datasheet). ** <= 11\" OVERALL "
+                         "IS THE SPECIFICATION: ** the room's 95 3/8\" clear leaves nothing "
+                         "spare against the 7'-0\" blade-to-floor minimum. ** A DC FAN "
+                         "CANNOT BE SPEED-CONTROLLED BY ANY CONVENTIONAL WALL DIMMER: ** "
+                         "constant hot plus the hardwired wall control, as mark N."),
     # The plant room's fan. Same 52" fan as N, in a wet-location listed housing with a
     # corrosion-resistant (sealed, non-ferrous) motor and gasketed light kit. N2 rather than
     # a retype of N: this is a different product on the quote, and the reason it is here —
@@ -233,7 +281,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   footprint=(inch(52), inch(52)), height=ft(1, 6),
                   plan_symbol="ceiling-fan-light",
                   lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=True, damp_rated=True, wet_rated=True, load_va=60.0,
+                  cri=90, dimmable=False, damp_rated=True, wet_rated=True, load_va=60.0,
                   ports=_POWER_120,
                   source="NEC 2023 damp/wet location; RM-S-PLANT is a damp location throughout and wet where it is misted (notes/plant_room.md)"),
     # The porch fan. Damp rated because it lives under the balcony deck, open on three
@@ -251,7 +299,7 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   footprint=(inch(60), inch(60)), height=ft(1, 6),
                   plan_symbol="ceiling-fan-light",
                   lamp="LED integrated light kit", watts=17.0, lumens=1400.0, cct_k=3000,
-                  cri=90, dimmable=True, damp_rated=True, wet_rated=True, load_va=75.0,
+                  cri=90, dimmable=False, damp_rated=True, wet_rated=True, load_va=75.0,
                   ports=_POWER_120,
                   product_ref="PROD-CRAFTMADE-FXL60DGT3",
                   source="Craftmade Force XL FXL60DGT3, cETLus WET rated, 3000K integrated "

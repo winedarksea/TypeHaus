@@ -121,10 +121,16 @@ PANEL = [
 # grid completed in plan/lighting.py; switches were left where they were.
 BASEMENT_DEVICES = [
     # RM-B-GYM (x 18'-36', y 0-18'): switch just inside D-B-PLAY, the door at (24', 18').
+    #
+    # ** RETYPED N -> N3 (FLUSH) AND drop 18" -> 11", 2026-09-06, uid PRESERVED. ** The
+    # room's resolved clear_height_m is 2.42253 = 95 3/8"; an 18" fan assembly left the
+    # blades at ~6'-5 3/8" in a room people exercise in. 11" puts them at 7'-0 3/8".
+    # ** NOTHING GRADES THIS: ** there is no blade-to-floor check in the engine, so this
+    # comment and the height on ED-T-LT-FAN52-FLUSH are the only guard.
     ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52", circuit="CKT-LT-BACKUP",
+                     position=pt(ft(27), ft(9)), type_ref="ED-T-LT-FAN52-FLUSH", circuit="CKT-LT-BACKUP",
                      room="RM-B-GYM", controlled_by=("ED-B-GYM-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(11))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(23, 6.5), ft(17, 7.615)), type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),

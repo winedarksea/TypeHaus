@@ -1859,9 +1859,9 @@
 # ** BUY FIXED 3000 K, NEVER A 5CCT SELECTABLE MODULE ** at any price: the DIP switch gets
 # set wrong constantly and one can at the wrong temperature in a run of eight is a visible
 # defect. A dedicated phosphor also gives better R9 than a warm/cool blend.
-"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 49 ea
+"ED-T-LT-CAN4" = { material = { low = 55, high = 95 }, labour = { low = 52, high = 108 } }  # 39 ea
 "ED-T-LT-CAN4-4000" = { material = { low = 25, high = 75 }, labour = { low = 52, high = 108 } }  # 4 ea
-"ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 9 ea
+"ED-T-LT-CAN4-WET" = { material = { low = 35, high = 95 }, labour = { low = 68, high = 130 } }  # 10 ea
 # Kuzco Samar CH57514-CH/OP at $398. ** THE LABOUR HIGH END IS A LIFT, NOT A LADDER: ** it
 # hangs over a 20'-4" void. ** A CHANDELIER LIFT WAS PRICED AND REJECTED at $2,700-3,100 **
 # -- over this void one needs ~14 ft of travel, so a cascade whose bottom globe hangs 8 ft
@@ -1869,7 +1869,17 @@
 # wants 3 ft of accessible level cavity plumb above, which a peaked trussed ridge does not
 # have. 3 x replaceable E26 makes the relamp a $6 part instead.
 "ED-T-LT-CHANDELIER" = { material = { low = 380, high = 700 }, labour = { low = 150, high = 450 } }  # 1 ea
-"ED-T-LT-FAN52" = { material = { low = 150, high = 500 }, labour = { low = 120, high = 260 } }  # 2 ea
+# 2026-09-06: PLACED NOWHERE. ED-B-GYM-LT was the only one and it retyped to
+# ED-T-LT-FAN52-FLUSH for headroom. The row is KEPT under the `glazed-green-brick`
+# convention — a downrod fan is the revert if no flush SKU can be sourced, and
+# `luminaire_schedule` derives its rows from placements, so an unplaced type prints on
+# no sheet and bills nothing. Do not delete it, and do not read this as a live line.
+"ED-T-LT-FAN52" = { material = { low = 150, high = 500 }, labour = { low = 120, high = 260 } }  # 0 ea (catalog only)
+# 2026-09-06: the gym's hugger. Same 52" DC fan and light kit, flush-mount rather than
+# downrod, because RM-B-GYM's 95 3/8" clear cannot take an 18" assembly. Same band as the
+# downrod fan: a low-profile mount is a different housing, not a dearer one, and the SKU is
+# not yet chosen (the type carries no product_ref on purpose).
+"ED-T-LT-FAN52-FLUSH" = { material = { low = 150, high = 500 }, labour = { low = 120, high = 260 } }  # 1 ea
 # 2026-08-18: the same 52" fan in a wet-location listed housing — sealed non-ferrous
 # motor, gasketed light kit. A ~30-40% adder over the damp-rated version, which is the
 # spread the outdoor-rated fan listings carry over their indoor twins.
@@ -1890,7 +1900,7 @@
 # upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
 # CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
 # or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 4 ea
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 5 ea
 # ** REPRICED AND RE-SCOPED 2026-09-06: two of them now, and the second is the primary
 # suite's (owner's call -- an integrated LED mirror, not sconces). ** Robern Vitality
 # YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
@@ -1906,7 +1916,7 @@
 # (the driver cooking in a sealed 1 3/4" cavity, not the LEDs). Electric Mirror's Fusion
 # has replaceable LED strips and a 7-year warranty at ~$1,429 but makes no round.
 "ED-T-LT-MIRROR-RING" = { material = { low = 830, high = 1500 }, labour = { low = 60, high = 135 } }  # 2 ea
-"ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 6 ea
+"ED-T-LT-PANEL" = { material = { low = 45, high = 130 }, labour = { low = 48, high = 115 } }  # 4 ea
 # ** THE DINING FIXTURE IS THE OWNER'S OWN IMPORT AND HAS NOT BEEN SELECTED ** (48" linear,
 # 2000-3500 lm, 3000 K, CRI 90+). The band brackets an import against the domestic fixture
 # to price it by: Visual Comfort Dessau 48 at $1,449 for 2,261 lm / 36 W. ** BUDGET A SPARE
@@ -1920,10 +1930,10 @@
 # high end is an imported statement piece, and this one is specified against a lumen number
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 1 ea
-"ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 2 ea
+"ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 2 ea — ED-G-EXT-LT at the garage door, and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 5 ea
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 4 ea
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 "ED-T-LT-SCONCE-SPOT-WET" = { material = { low = 95, high = 340 }, labour = { low = 60, high = 140 } }  # 1 ea
@@ -1940,15 +1950,15 @@
 # room this is the most likely permit snag in the house. Confirm before ordering.
 "ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 1 ea
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
-"ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 2 ea
+"ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 17 ea
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
 # rated to -4 F and some to +14 F; it is the DRIVER, not the LEDs. The category that
 # reliably publishes a cold rating is vaportight/cold-storage, because it sells into freezer
 # warehouses: Westgate LVTE-4FT-30-46W-MCTP at $93, IP66. ** HARDWIRE IT ** -- plug-in
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
-"ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 2 ea
-"ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 1 ea
+"ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
+"ED-T-LT-SPOT-SW" = { material = { low = 60, high = 200 }, labour = { low = 60, high = 140 } }  # 2 ea
 "ED-T-LT-TUBE6" = { material = { low = 120, high = 350 }, labour = { low = 45, high = 100 } }  # 2 ea
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
 # RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver

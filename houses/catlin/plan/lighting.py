@@ -409,19 +409,58 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # The kitchen end of the same room, on the backup circuit with the basement
-    # (electrical_notes.md line 24). Panels over the working floor, cans over the counters
-    # — a can right above where you stand puts your own shadow on the cutting board, which
-    # is why the perimeter gets them and the middle does not.
-    ElectricalDevice(uid="QTM0007AAA", tag="ED-M-KITCH-PANEL1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(23), ft(30)), type_ref="ED-T-LT-PANEL",
+    # (electrical_notes.md line 24).
+    #
+    # ** THE TWO 2x4 PANELS ARE GONE, 2026-09-06, AND FOUR CANS REPLACE THEM. ** They were
+    # 4000 K / CRI 80 / 4800 lm commercial troffers surface-mounted 1.5" below a
+    # residential ceiling — the only 4000 K/CRI 80 fixtures on this floor, in the same
+    # open-plan sightline as 3000 K/CRI 90 cans, a CRI 95 under-cabinet tape and the dining
+    # pendant. ** NOTHING GRADES COLOUR TEMPERATURE: ** there is no CCT-consistency check,
+    # so the schedule would have carried two colours of white forever.
+    #
+    # The comment this replaces argued "panels over the working floor, cans over the
+    # counters — a can right above where you stand puts your own shadow on the cutting
+    # board". That reasoning is about standing AT A COUNTER, and it is why CAN1-CAN4 sit
+    # 8-9 5/8" off the counter fronts rather than over them. It says nothing about the open
+    # floor in the middle of the room, where there is no work surface to shadow.
+    #
+    # ~9,600 lm of panel down to 3,600 lm of can, and the whole room on one colour
+    # temperature.
+    #
+    # ** NOTHING GRADES A CAN'S POSITION EITHER, SO THE LAYOUT WAS MEASURED. ** A 2x2 on the
+    # panels' own x centres (23'/31') straddling their y=30' line was the first draft and
+    # fails twice against the resolved model: (31', 28'-6") lands 5/8" off
+    # FURN-M-KIT-PENINSULA's back edge at y=28'-5 3/8" — a can over the head of whoever is
+    # standing at that counter, which is the very shadow case the paragraph above describes
+    # — and (31', 31'-6") sits 1'-4 1/2" from ED-M-KITCH-CAN2. So instead:
+    #
+    # CAN6/7/8 are a **row of three at y=30'-6"** on a 4'-0" pitch, mid-depth in the galley
+    # floor: 2'-0" north of the peninsula's back edge and 2'-11" south of the north counter
+    # face, with CAN1-CAN4 already washing both of those. CAN5 takes the west walkway
+    # between FURN-M-KIT-PANTRYC and the peninsula's west end, which the 2x2 also covered
+    # and a bare row of three would not. Measured against the resolved footprints: every one
+    # of the four is >= 1'-11 3/4" from any cabinet or appliance and >= 2'-4" from any
+    # existing can.
+    ElectricalDevice(uid="7WE319EHB5", tag="ED-M-KITCH-CAN5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(23), ft(27)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    ElectricalDevice(uid="QTM0008AAA", tag="ED-M-KITCH-PANEL2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(31), ft(30)), type_ref="ED-T-LT-PANEL",
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="Z256WYTAN6", tag="ED-M-KITCH-CAN6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(23), ft(30, 6)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="T5YZRQ2P6K", tag="ED-M-KITCH-CAN7", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(30, 6)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     controlled_by=("ED-M-KITCH-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QXW0T5DB2J", tag="ED-M-KITCH-CAN8", kind=DeviceKind.LIGHT,
+                     position=pt(ft(31), ft(30, 6)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     controlled_by=("ED-M-KITCH-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # x=25'-2 1/2" follows FURN-M-KIT-E1's centre — the north counter run's west end, at the
     # pantry wall. It is NOT retagged into RM-M-PANTRY: its `controlled_by` is ED-M-KITCH-SW
     # and the kitchen needs the can. y stays on CAN2's line, 8" south of the counter front.
@@ -686,8 +725,34 @@ MAIN_LIGHTING = [
                      position=pt(ft(8, 4.375), ft(21, 2)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+    # ** A SECOND CAN, AND THE FIRST ONE MOVES, 2026-09-06. ** 48.4 sf, 8'-11 1/2" clear,
+    # on ONE 650 lm CAN3 at mid-span: 6.4 fc at the engine's own CU 0.60 x LLF 0.80,
+    # for a room whose whole job is telling navy from black. ** NOTHING EVER LOOKED AT IT: **
+    # `electrical.room_lighting` only grades _HABITABLE occupancies and RM-M-CLOSET is
+    # Occupancy.STORAGE.
+    #
+    # FURN-M-CLOSET-SHELF is a 96" rod centred at x=13'-0", spanning x 9'-0"..17'-0". One
+    # can mid-span lights the rod's centre and leaves both ends dim, so the pair sits on
+    # the rod's quarter points (11'-0" and 15'-0"). y stays at 15'-8", which the resolved
+    # footprint puts 8 5/8" clear in front of the shelf's own front edge (y=16'-4 5/8") —
+    # lighting the hanging clothes' FACES rather than the top of the shelf. Measure that
+    # off the shelf, not off `Room.clear_face`, which is inset from the wall AXIS and is
+    # not the finish face. 1,300 lm over 48.4 sf = 12.9 fc.
+    #
+    # ** MEP CHECKED, AND THE MOVE WEST IS THE TIGHT HALF OF IT. ** Four services cross this
+    # ceiling: PR-B-HW-SUITE-RUN, PR-B-CW-SUITE-RUN, PR-M-S-SUITE-DRAIN-RUN and
+    # DU-M-ERV-R-BED1-RUN. Measured off the resolved plan solids, CAN1 at x=11'-0" is
+    # 7 5/16" from the hot run against 11 5/8" at its old x=13'-0" — the move HALVED that
+    # clearance, and it is still ~5" of clear round a 4" housing. CAN2 at x=15'-0" is
+    # 1'-5 1/4" clear of the nearest. ** Nothing grades a can against a pipe **, so if
+    # either can ever moves west again, re-measure rather than assume.
     ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(15, 8)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(11), ft(15, 8)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
+                     controlled_by=("ED-M-CLOSET-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="1N2XSTDANE", tag="ED-M-CLOSET-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(15), ft(15, 8)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
