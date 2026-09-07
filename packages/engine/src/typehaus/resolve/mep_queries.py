@@ -36,6 +36,10 @@ _JOIST_BREADTH_FALLBACK_M = inch(1.5).meters
 _BAY_EDGE_CATEGORIES = ("joist", "trimmer", "sister_joist")
 #: The concrete a sleeve can be cast into, and the solids ``concrete_crossings`` walks.
 _CONCRETE_SOLID_CATEGORIES = ("slab", "footing")
+#: How much non-concrete a solid's section needs before :func:`concrete_bands` will split
+#: it. A bond break, a vapour retarder or a slip sheet is not a route for a 2" drain; the
+#: 10" foam beam in an EPS deck form is.
+_MIN_NON_CONCRETE_M = 0.0508  # 2 inches
 _PIPE_CAVITY_CLEARANCE_M = inch(0.25).meters  # boring/annular allowance inside a stud bay
 _STUD_BAY_TRAVEL_M = inch(16).meters  # one standard bay: horizontal in-wall travel note
 
@@ -135,11 +139,75 @@ def _conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float
     return path, z
 
 
+def concrete_bands(model: ResolvedModel, solid) -> list[tuple[float, float]]:
+    """The z bands of a concrete solid that are actually CONCRETE, top down.
+
+    Nearly always one band, the whole prism, and that is the fallback. The exception is a
+    stay-in-place foam deck form: ``SL-M-DECK`` is 14 3/8" tall and 10" of that is
+    ``eps-deck-form``, a material a plumber routes a channel in with a hot knife. A run
+    lying in that foam is not embedded in a pour, and reporting it as an unsleeved crossing
+    says the opposite of what is true — carrying services without a cast void is what an
+    EPS deck is sold for.
+
+    A layer counts as concrete when it names a mix (``Layer.concrete``). Bands are measured
+    from the solid's TOP downward, because that is the order an assembly states its layers
+    in and the order ``resolve/envelope`` stacks them.
+
+    **Three ways this refuses to split, and all three are the conservative direction**, because
+    a band this function invents is a crossing ``mep.sleeve_coverage`` stops reporting:
+
+    * no assembly, or no layer in it naming a mix — the whole prism, which is today's
+      reading and right for every footing and every ordinary slab;
+    * no non-concrete layer at least :data:`_MIN_NON_CONCRETE_M` thick inside the prism —
+      a 1/2" bond break is not a route for a 2" drain;
+    * an assembly that does not account for the solid's full depth. Catlin's footings
+      resolve 1/4" taller than their own assembly states, and attributing that remainder to
+      anything but concrete would exempt the bottom inch of every footing in the house.
+    """
+    element = model.plan.by_tag(solid.tag)
+    assembly_ref = getattr(element, "assembly", None) if element is not None else None
+    assembly = (model.plan.library.assembly(assembly_ref)
+                if isinstance(assembly_ref, str) else None)
+    whole = [(solid.z0_m, solid.z1_m)]
+    if assembly is None:
+        return whole
+
+    bands: list[tuple[float, float]] = []
+    gap = 0.0
+    top = solid.z1_m
+    for layer in assembly.layers:
+        if top <= solid.z0_m + 1e-9:
+            break
+        bottom = max(top - layer.thickness.meters, solid.z0_m)
+        if getattr(layer, "concrete", None) is not None:
+            bands.append((bottom, top))
+        else:
+            gap += top - bottom
+        top = bottom
+    if not bands or gap < _MIN_NON_CONCRETE_M:
+        return whole
+    if top > solid.z0_m + 1e-9:
+        # The layers ran out above the solid's own bottom. Whatever is left is concrete
+        # until something says otherwise.
+        bands.append((solid.z0_m, top))
+
+    merged: list[tuple[float, float]] = []
+    for low, high in sorted(bands):
+        if merged and low <= merged[-1][1] + 1e-9:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], high))
+        else:
+            merged.append((low, high))
+    return merged
+
+
 def concrete_crossings(model: ResolvedModel) -> list[dict]:
     """Every point where a routed pipe or raceway passes through concrete — the pour-day list.
 
     Walks each resolved run with vertical information against every concrete solid
-    (slab/footing) and foundation wall. Returns plain dicts: run, host, host_category,
+    (slab/footing) and foundation wall. A solid is walked band by band rather than as one
+    prism — see :func:`concrete_bands`, which is what keeps a run lying in an EPS deck
+    form's foam from reading as embedded in the pour. Returns plain dicts: run, host,
+    host_category,
     point (plan), z_m, matched sleeve tag or None. A run with no z information cannot be
     walked and is skipped — the check reports those runs as UNKNOWN, never silently.
 
@@ -149,9 +217,10 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
     catlin's 9" ``SL-M-DECK`` unsleeved and unnoticed."""
     from shapely.geometry import LineString, Point, Polygon
 
-    hosts = [(s.tag, s.category, Polygon(s.outline), s.z0_m, s.z1_m)
+    hosts = [(s.tag, s.category, Polygon(s.outline), z0, z1)
              for s in model.solids
-             if s.category in _CONCRETE_SOLID_CATEGORIES and len(s.outline) >= 3]
+             if s.category in _CONCRETE_SOLID_CATEGORIES and len(s.outline) >= 3
+             for z0, z1 in concrete_bands(model, s)]
     for wall in model.walls:
         if not wall.is_foundation:
             continue

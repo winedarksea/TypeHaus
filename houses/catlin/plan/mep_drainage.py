@@ -59,9 +59,41 @@ DRAINS = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
-    # Runs straight down the deck sleeve's own column, through the W-B-CE/W-B-CS2
-    # crossings, west to the main tie-in — the route is fixed by basement framing, not sink
-    # position. Elevations re-solved onto both sleeves' cast centerlines at >= 0.25"/ft.
+    # ** REROUTED 2026-09-07: NORTH INTO THE DECK, THEN THE WHOLE WIDTH OF THE HOUSE. **
+    # It used to go south down x=29'-4" and west along y=16'-6", and `mep.run_in_finished_
+    # volume` measured what that cost: **14.5 ft hanging 6.7" into RM-B-PLAY-N and 9.1 ft
+    # hanging 9.9" into RM-B-GYM.** Not a routing mistake so much as an unavoidable one —
+    # RM-B-PLAY-N's finished ceiling resolves at -14 1/16" while SL-M-DECK's soffit is at
+    # -13 7/16", a furred plane 5/8" UNDER the slab, so anything hung beneath that deck is
+    # in the theater by construction. Rerouting inside the basement cannot fix that.
+    #
+    # ** THE FIX IS TO STAY IN THE DECK, NOT UNDER IT. ** SL-M-DECK is a LiteDeck EPS
+    # stay-in-place form: 4 3/8" of cast cover over a 10" foam beam whose ribs run in x, the
+    # same direction this leg travels. So the drain drops through the cap only, turns west at
+    # -7 1/2" inside the foam — a routed channel between ribs, which is what an EPS deck is
+    # sold for — and stays there for the whole 11'-4" over the theater, coming out at
+    # -10 3/4" with its bottom still 2 11/16" above the foam's soffit. Zero exposure in
+    # RM-B-PLAY-N. `resolve/mep_queries.concrete_bands` is what lets the model say this:
+    # before it, `concrete_crossings` read the deck as one 14 3/8" prism and called a pipe
+    # lying in the foam an unsleeved crossing of the pour.
+    #
+    # ** WEST OF x=18' IT IS EXPOSED, AND THAT IS THE OWNER'S CALL. ** Past the deck edge it
+    # runs in FS-M-STAIR's joist bay at y=35'-0", drops out of it about halfway across, and
+    # crosses RM-B-STAIR 1 3/8" below that room's -12 1/2" ceiling — under the 3" grazing
+    # tolerance, so `run_in_finished_volume` does not report it, and a stair is somewhere a
+    # pipe may show. It then bores W-B-STR and W-B-ESS-W (both framed: a hole on the day, no
+    # cast sleeve) and crosses RM-B-ESS. ** THAT IS A BATTERY CLOSET BEHIND A TYPE X
+    # MEMBRANE ** — the owner accepted the crossing on 2026-09-07, and both penetrations
+    # need a listed firestop to keep the membrane's rating. Nothing in this engine grades
+    # that; this comment is the record.
+    #
+    # ** y=35'-0", NOT 35'-6". ** The north foundation walls W-B-N1..N4 are 12 3/16" on the
+    # y=36' axis, so their inner face is y=35'-5 7/8" and a 2" pipe at 35'-6" is INSIDE the
+    # pour — three unsleeved crossings, and the wall-cover exemption in
+    # `run_in_finished_volume` would have hidden the stair leg while it was there. Six inches
+    # south is the whole difference.
+    #
+    # Elevations re-solved onto SP-M-KITCH's cast centerline at >= 0.25"/ft.
     #
     # These are BASEMENT-relative, so ft(9, 4.75) is project +3/4" — the main floor's
     # finished surface, which is the plywood top of the wood bays and the cap top of
@@ -73,21 +105,30 @@ DRAINS = [
     # sleeve.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(29, 4), ft(35)), pt(ft(29, 4), ft(35)),
-                  pt(ft(29, 4), ft(16, 6)), pt(ft(6), ft(16, 6))),
+                  pt(ft(18), ft(35)), pt(ft(10), ft(35)),
+                  pt(ft(6), ft(35)), pt(ft(4, 6), ft(35)),
+                  pt(ft(4, 6), ft(16, 6))),
             diameter=inch(2), material="pvc",
             # Starts on the cap's own top (+15/16" project = 9'-2 3/8" basement-relative) and
             # drops clear of the deck's SOFFIT, the bearing seat at -13 7/16" — a drop that
             # stops inside the pour is what `mep.sleeve_coverage` reads as a sleeve serving
             # nothing.
             #
-            # 10'-3 3/8" of head over 41'-10" of run buys 0.245"/ft spent evenly across the
-            # two legs: 7'-5 3/16" at the turn and 6'-11 1/4" at the collector put the legs
-            # on 0.257"/ft and 0.254"/ft, both above P3005.3's 1/4"/ft `mep.drain_slope`
-            # minimum. The end lands 1 13/16" above PR-B-MAIN-DRAIN's 6'-9 7/16" invert — a
-            # side entry into the 4" barrel's upper half, which is what a 2" branch wants.
-            # Neither number is pinned to a sleeve (SP-B-CS2-KITCH is matched in plan, not
-            # elevation), so this is free head to spend; the drop above it is not.
-            elevations=(ft(9, 2.375), ft(7, 9.9375), ft(7, 5.1875), ft(6, 11.25)),
+            # ** THE PROFILE IS NOT UNIFORM, AND THAT IS THE POINT. ** 8'-5 3/16" of head
+            # over 43'-4" would allow 0.235"/ft spread evenly — under the minimum — so the
+            # head is spent where it is worth something instead. The theater leg takes the
+            # least it legally can (3 1/16" over 11'-4", 0.270"/ft) to keep the pipe inside
+            # the foam for its whole length; the stair leg 0.273"/ft; and the last leg, once
+            # the run is over RM-B-FURNACE and RM-B-WORKSHOP where nothing cares how low it
+            # hangs, takes 13 5/8" over 19'-0" at 0.717"/ft.
+            #
+            # The end lands at 6'-9 1/8", 1/16" over PR-B-MAIN-DRAIN's interpolated invert at
+            # x=4'-6" — a side entry into the 4" barrel's upper half, which is what a 2"
+            # branch wants, and inside `drain_tie_ins`' 1" tolerance so the load still rolls
+            # up. It ties on the main's y=16'-6" leg rather than at its (6'-0") head, which
+            # is 1'-6" of 2" PVC saved and one fitting fewer.
+            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 0.5),
+                        ft(7, 11.25), ft(7, 10.75), ft(6, 9.125)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2), x 2'-6" y 20'-10 5/8" — the
     # run's first two points ARE the fixture's drain convention, under the bowl.

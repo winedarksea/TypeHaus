@@ -96,12 +96,13 @@ SLAB_STUBS = [
 # (W-B-CW, W-B-CW2, W-B-CW3, W-B-CE, W-B-STR2, W-B-CS) takes a bored hole on the day, not a
 # sleeve set before a pour.
 WALL_SLEEVES = [
-    # W-B-CS2 (x=18', y 13'-10"..18') — the kitchen drain's crossing of the centre line,
-    # up at the ceiling well above D-B-GYM's 6'-8" head.
-    SleevePenetration(uid="CBPW15AAAA", tag="SP-B-CS2-KITCH", host_ref="W-B-CS2",
-                      position=pt(ft(18), ft(16, 6)), pipe_diameter=inch(2),
-                      sleeve_diameter=inch(3), axis="horizontal",
-                      center_elevation=inch(-21.8571)),
+    # ** SP-B-CS2-KITCH IS GONE (2026-09-07). ** It was the kitchen drain's crossing of the
+    # x=18' centre line at y=16'-6", back when that run went south through the theater and
+    # west through the gym. PR-B-KITCH-DRAIN now leaves the sink northward and runs the
+    # whole width of the house at y=35'-0", so it never touches W-B-CS2 — and a cast-in
+    # sleeve with no run through it is a void somebody forms and pays for and then patches.
+    # `mep.sleeve_coverage` reported it UNKNOWN ("no routed run to check against yet") the
+    # moment the reroute landed, which is the check doing its second job.
     SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
