@@ -1,7 +1,6 @@
 import { useStore } from "../../state/store";
 import { useIsCompact } from "../../hooks/useBreakpoint";
 import { Icon } from "../../icons/Icon";
-import { Menu } from "../ui/Menu";
 import { OverflowMenu } from "./OverflowMenu";
 import { REPORTS, VIEW_MODES } from "./navigationConfig";
 import type { PwaState } from "../../pwa/register";
@@ -60,24 +59,19 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
 
       <div className="spacer" />
 
-      {/* One trigger for the six full-screen readers. Reflects the open one so the bar still
-          says where you are. Folds into the overflow on a phone, where there is only room for
-          the constant actions. */}
-      {!isCompact && <Menu
-        label={activeReport ? activeReport.label : "Reports"}
-        title="Reports — assembly, BOM, circuits, HVAC, plumbing, lighting"
-        icon="report"
-        triggerClassName={`btn reports-trigger${activeReport ? " active" : ""}`}
-        align="end"
-        items={REPORTS.map((report) => ({
-          id: report.id,
-          label: report.label,
-          icon: report.icon,
-          hint: report.hint,
-          selected: detailView === report.id,
-          onSelect: () => setDetailView(detailView === report.id ? "none" : report.id),
-        }))}
-      />}
+      {/* The readers used to hang off a Reports menu here. They live in the Documents hub
+          now (rail destination → Reports tab), so the bar keeps only the readout: which
+          reader is open, since the hub's own Back is offscreen while one is. */}
+      {!isCompact && activeReport && (
+        <button
+          className="btn reports-trigger active"
+          onClick={() => setDetailView("none")}
+          title={`${activeReport.label} — back to the canvas`}
+        >
+          <Icon name={activeReport.icon} size={18} />
+          {activeReport.label}
+        </button>
+      )}
 
       <div className="seg-group" role="group" aria-label="View mode">
         {VIEW_MODES.filter((mode) => !(isCompact && mode.id === "split")).map((mode) => (

@@ -7,6 +7,13 @@
 // catalogs, and any data file a plan module opens at import time. Build output and caches are
 // skipped. The folder-pick path (ui/src/engine/openHouse.ts) keeps its own copy of this filter —
 // the two lists must agree or a folder that works bundled will fail when picked, and vice versa.
+//
+// PUBLIC_EXCLUDE is a publish-time SUPERSET of that shared filter, applied only under
+// HAUS_PUBLIC=1 (landing/build-site.mjs). It is deliberately not mirrored into openHouse.ts:
+// a folder the user picked is the user's own house, and hiding their prices from them would be
+// absurd. This exists because the published bundle is a real house whose numbers are the
+// owner\u2019s business — the UI\u2019s gate (ui/src/state/public.ts) hides the pages, this keeps the
+// data out of the download.
 
 import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve, relative, join, sep } from "node:path";
@@ -26,6 +33,11 @@ const outFile = resolve(outDir, "catlin-house.json");
 const PLAN_TEXT_EXTENSIONS = /\.(py|toml|md|json|geojson|csv|txt|cfg|ini)$/i;
 const SKIP_DIR = new Set(["out", "__pycache__", ".git", "node_modules", ".venv", "dist", ".claude"]);
 
+// Dropped from the PUBLISHED bundle only. Every one of these is money: unit prices, what was
+// actually paid, and the work-package status that says which of it is done.
+const PUBLIC_EXCLUDE = new Set(["prices.toml", "costs.toml", "tasks.toml"]);
+const IS_PUBLIC = process.env.HAUS_PUBLIC === "1";
+
 // A plan whose manifest cannot be imported produces no model at all, so the bundle is worthless.
 // Fail the build loudly here rather than shipping an asset that only breaks in the browser.
 const REQUIRED_RELPATHS = ["plan/manifest.py", "plan/basemap.geojson", "preferences.toml"];
@@ -39,6 +51,7 @@ function walk(dir, files) {
       walk(abs, files);
     } else if (PLAN_TEXT_EXTENSIONS.test(name)) {
       const rel = relative(houseDir, abs).split(sep).join("/");
+      if (IS_PUBLIC && PUBLIC_EXCLUDE.has(rel)) continue;
       files[rel] = readFileSync(abs, "utf-8");
     }
   }
@@ -63,4 +76,5 @@ if (missing.length > 0) {
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(outFile, JSON.stringify(files));
-console.log(`[pwa] wrote ${outFile} (${Object.keys(files).length} files)`);
+console.log(`[pwa] wrote ${outFile} (${Object.keys(files).length} files)`
+  + (IS_PUBLIC ? ` — public build, ${[...PUBLIC_EXCLUDE].join("/")} withheld` : ""));

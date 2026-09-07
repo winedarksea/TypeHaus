@@ -18,6 +18,12 @@ on:
     paths:
       - "landing/**"
       - "ui/**"
+      # The deploy now prints the permit set, and the print is gated on the permit
+      # checklist — so a PR that touches the engine, the library or the house has to
+      # exercise it here rather than discovering the refusal on main.
+      - "packages/engine/src/**"
+      - "library/**"
+      - "houses/catlin/**"
       - ".github/workflows/deploy-site.yml"
   workflow_dispatch:
 
@@ -52,8 +58,25 @@ jobs:
         run: npm test
         working-directory: ui
 
-      # Builds the standalone PWA and assembles ./site. Fails if the bundled engine or house is
-      # missing, so a broken /app can never reach the CDN.
+      # The drawings the app's Documents tab reads. Composed here rather than bundled into
+      # the repo because they are build output, and composed by the CLI rather than in the
+      # browser because matplotlib does not run in Pyodide.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install the engine
+        run: pip install -e packages/engine
+
+      # `haus print` exits 1 when the permit checklist has a failure or an unknown, which
+      # fails this job — deliberately. A set that does not pass should not be published, and
+      # the deploy is the last place that can say so.
+      - name: Print permit set
+        run: haus print houses/catlin --fmt pdf
+
+      # Builds the standalone PWA and assembles ./site. Fails if the bundled engine, house or
+      # permit set is missing, so a broken /app can never reach the CDN.
       - name: Build site
         run: node landing/build-site.mjs
 

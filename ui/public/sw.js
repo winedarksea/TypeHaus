@@ -33,9 +33,13 @@ const SHELL_ASSETS = [
 ];
 
 // Engine API surface (server/app.py) — never cached; these belong to `haus serve`.
+// `/sheets` and `/notes` are the served (documents_api.py) reads. The PWA's own bundled copy
+// lives at `<base>sheets/…` — a different path — so it falls through to
+// stale-while-revalidate like the engine tarball, which is what the manifest's content hash
+// on the PDF's query string is there to make visible.
 const API_PREFIXES = [
   "/model", "/checks", "/details", "/detail", "/plan", "/preview", "/macro",
-  "/build", "/undo", "/redo", "/events", "/underlays",
+  "/build", "/undo", "/redo", "/events", "/underlays", "/sheets", "/notes",
 ];
 
 self.addEventListener("install", (event) => {

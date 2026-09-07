@@ -136,6 +136,7 @@ function PoeCard({ budget }: { budget: PoeBudget }) {
 export function DataView() {
   const model = useStore((s) => s.model);
   const setDetailView = useStore((s) => s.setDetailView);
+  const closeReader = useStore((s) => s.closeReader);
   const zoomToUid = useStore((s) => s.zoomToUid);
 
   const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
@@ -155,7 +156,7 @@ export function DataView() {
   if (!data) {
     return (
       <ReaderShell title="Data" subtitle="no low-voltage take-off"
-                   onClose={() => setDetailView("none")}>
+                   onClose={closeReader}>
         <div className="muted">
           This model carries no structured cabling — rebuild with a current engine, or author
           a data device and a raceway to reach it.
@@ -172,7 +173,7 @@ export function DataView() {
     <ReaderShell
       title="Data"
       subtitle={`${devices.length} device${devices.length === 1 ? "" : "s"} · E-603`}
-      onClose={() => setDetailView("none")}
+      onClose={closeReader}
     >
       <ReaderSection
         title="Low-voltage devices"

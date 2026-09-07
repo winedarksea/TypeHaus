@@ -35,6 +35,7 @@ def record(
 
     from typehaus._meta import engine_version
     from typehaus.emit.design_record import NoteSource, RecordInputs, design_record
+    from typehaus.emit.notes_index import sheets_by_note
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -50,7 +51,7 @@ def record(
         raise typer.Exit(0)
 
     model, _ = resolve(loaded.plan)
-    on_sheets = _sheets_by_note(model)
+    on_sheets = sheets_by_note(model)
     # ``superseded/`` is deliberately included: a superseded note opens with a banner
     # naming what replaced it, and the rule it established usually outlives the design that
     # prompted it. That is exactly what a design record is for.
@@ -78,22 +79,3 @@ def record(
     bound = sum(1 for s in sources if s.on_sheets)
     console.print(f"wrote {root} ({len(files)} files, {bound} of {len(sources)} notes "
                   f"reach a drawing)", soft_wrap=True)
-
-
-def _sheets_by_note(model) -> dict[str, list[str]]:
-    """``notes path -> sheet numbers``, from the same derivation G-002's index uses.
-
-    One mapping, computed the one way: a record that disagreed with the sheet-note index
-    about which sheet carries a note would be worse than one that said nothing.
-    """
-    from typehaus.emit.draw.callouts import detail_sheet_numbers
-    from typehaus.emit.draw.details import derive_detail_slices
-
-    numbers = detail_sheet_numbers(model)
-    out: dict[str, list[str]] = {}
-    for derived in derive_detail_slices(model):
-        rel = getattr(derived.transition, "notes", None) if derived.transition else None
-        sheet = numbers.get(derived.key)
-        if rel and sheet:
-            out.setdefault(rel, []).append(sheet)
-    return out

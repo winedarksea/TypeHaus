@@ -13,6 +13,7 @@ import contextlib
 from pathlib import Path
 from typing import Any
 
+from typehaus.server.documents_api import register_documents_routes
 from typehaus.server.events import EventBus
 from typehaus.server.state import ProjectState
 from typehaus.source.coordinator import ExternalEdit, RevisionMismatch
@@ -432,6 +433,10 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     # Binding the class object itself keeps the deferred import and the endpoint contract.
     events.__annotations__["ws"] = WebSocket
     app.websocket("/events")(events)
+
+    # The contractor reference — `/sheets`, `/notes` — lives in its own module: read-only,
+    # sharing nothing with the editing loop, and this file is at its size limit.
+    register_documents_routes(app, state)
 
     # V6 — serve the compiled SPA (must be registered LAST so every API route above wins the
     # match; this GET catch-all only fires for paths no API route claimed).

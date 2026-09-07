@@ -146,9 +146,13 @@ def print_sheets(
     its own file (``permit_set.pdf``, ``permit_set_24x36.pdf``) so a set already sent out
     is never silently replaced by one at a different scale.
     """
+    from datetime import date
+
+    from typehaus._meta import engine_version
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run
     from typehaus.checks.run import resolve_profile
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
+    from typehaus.emit.draw.sheet_manifest import sheet_manifest, write_sheet_manifest
     from typehaus.emit.draw.sheet_writer import (
         FOR_PLAN_CHECK,
         NOT_FOR_CONSTRUCTION,
@@ -217,10 +221,19 @@ def print_sheets(
         issue = FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION
         name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
         with set_issue_status(issue):
-            path, _ = write_permit_set(model, out / name, preferences,
-                                       profile=jurisdiction, details=details, paper=size,
-                                       house_dir=d)
+            path, composed = write_permit_set(model, out / name, preferences,
+                                              profile=jurisdiction, details=details,
+                                              paper=size, house_dir=d)
         console.print(f"wrote {path}")
+        # The set's own table of contents, on disk. A vector PDF says nothing about which
+        # page carries S-101; the viewer's Drawings tab, and anyone scripting against the
+        # set, would otherwise have to page through it to find out.
+        manifest = sheet_manifest(
+            composed["index"],  # type: ignore[arg-type]
+            pdf_name=name, paper=paper, issue=issue,
+            printed_at=date.today().isoformat(), engine_version=engine_version(),
+            content_hash=result.content_hash)
+        console.print(f"wrote {write_sheet_manifest(path.with_suffix('.json'), manifest)}")
     if handoff:
         _write_handoff_bundle(d, model, preferences, jurisdiction, size)
 

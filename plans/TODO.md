@@ -256,48 +256,13 @@ the future.
   primer, and slope in `FS-SECOND`.
 - Study on first-floor location adjustments — deferred by decision 2026-08-02.
 - Nest/loft design.
-- Window sealing detail — RM-S-PLANT's is drawn (strictest case); rest of envelope rides
-  `TR-CATLIN-FRAMED-OPENING`.
+- Window sealing detail — RM-S-PLANT's is drawn (strictest case); rest of envelope rides `TR-CATLIN-FRAMED-OPENING`.
 - Make sure all desired access panels are in — deferred pending more design settling.
-- Floor truss GLB/IFC exports still show the one-box representation even though the viewer
-  draws chords + webs — only worth doing if it ever matters.
-- Basement under-stairs storage closet.
 - **OPEN DECISION — R312.1.1 guard on the garage stair's 34" landing.** `SL-G-STEP-0` now
   FAILs `code.R312_1_guard_height` (~4 LF unguarded on the east/north sides over a 2.8' drop).
   Deliberately not authored around or suppressed — an owner cost/look decision.
   `test_cli_check_output.py::test_catlin_carries_no_failures`'s `accepted` allow-list is where
   to record "leave it" if that's the answer.
-
-**Is this enough glazing for light-feeling rooms (along with LED strips, etc)?** 8% is the
-code minimum, not an answer about feel. `code.R303_1_light_and_ventilation` prints per-room
-numbers, pass or fail — refreshed 2026-09-06 to count the three exterior FRENCH60 doors as
-glazed fenestration (33.3 sf apiece, previously counted by nothing):
-
-| room | glazing | floor | ratio | openable | ratio |
-|---|---:|---:|---:|---:|---:|
-| RM-S-STUDY2 | 62.3 sf | 159 sf | **39.2%** | 31.2 sf | 19.6% |
-| RM-S-PLANT | 36.7 sf | 159 sf | **23.1%** | 0.0 sf | 0.0% |
-| RM-M-BED | 33.5 sf | 231 sf | **14.5%** | 16.7 sf | 7.3% |
-| RM-M-LIVING | 81.7 sf | 748 sf | **10.9%** | 40.9 sf | 5.5% |
-| RM-B-GYM | 33.3 sf | 324 sf | **10.3%** | 16.7 sf | 5.1% |
-| RM-S-BED3 | 12.2 sf | 129 sf | **9.4%** | 6.1 sf | 4.7% |
-| RM-S-SUITE | 13.5 sf | 154 sf | **8.7%** | 6.7 sf | 4.4% |
-| RM-A-STUDY | 13.6 sf | 165 sf | **8.3%** | 6.8 sf | 4.1% |
-| RM-S-BED1 | 9.0 sf | 120 sf | 7.5% | 4.5 sf | 3.8% |
-| RM-S-BED2 | 9.0 sf | 124 sf | 7.2% | 4.5 sf | 3.6% |
-| RM-A-STUDIO | 13.6 sf | 356 sf | 3.8% | 6.8 sf | 1.9% |
-| RM-M-STUDY | 0.0 sf | 19 sf | 0% | 0.0 sf | 0% |
-| RM-B-PLAY-N | 0.0 sf | 324 sf | 0% | 0.0 sf | 0% |
-
-The top seven clear R303.1 outright. The bottom six pass under Exception 1 (artificial light +
-mechanical ventilation) and are where the real question lives:
-- **RM-S-PLANT** is short on OPENABLE only (every plant-room unit is fixed) — light isn't the
-  problem.
-- **RM-S-BED1/BED2** spend Exception 1 on daylight by ~1 sf each (the WT-2754->WT-2748 trade).
-- **RM-A-STUDIO at 3.8%** on a 356 sf floor is the largest daylight gap left.
-- **RM-B-PLAY-N has no glass** — a basement room, always was; whether that's acceptable is a
-  use question. RM-B-GYM is no longer on this list (D-B-PATIO's French pair carries it).
-- RM-M-STUDY (19 sf, a nook) and RM-M-LIVING (10.9%, D-M-BALC carries it) can be ignored.
 
 Two glazing gaps still leave the French doors out entirely, both wanting product data:
 - `checks/building_science/energy_load.py` gives a door a UA but no solar gain — `DoorType`
@@ -315,10 +280,9 @@ Two glazing gaps still leave the French doors out entirely, both wanting product
   `resolve/overlay.py`'s fixed-precision helper). **The class of bug is still the open item**:
   pin a Pyodide smoke test into CI, or bump Pyodide to 0.28.x (newer GEOS). Until then,
   `pytest` passing proves nothing about the published app's geometry.
-- **No trap-primer element/field/`PipeAccessoryKind` exists** — blocks the RM-S-PLANT floor
-  drain (`library/placeables/fixtures.py:108-110`: existing drain type is for wet rooms only).
-- **The HPWH (80-gal Rheem ProTerra) has no combustion/air-volume provision** — no `DuctRun`/
-  `Register`/louvre authored, nothing in `haus check` grades it.
+
+- Remove any floor drain from the plant room (it's not likely to flood, smaller water spills are the more likely concern) and then add a mop sink basin with a cold water fill (no hot). It can likely reuse the hydrant's existing PR-M-CW-BALC-HYD-RUN
+
 - **The writeback can't address a `FoundationWall` as `type: "Wall"`** — a PATCH comes back
   422 even though the wall is authored in an editable file. A UI drag of a foundation wall
   presumably fails the same way.

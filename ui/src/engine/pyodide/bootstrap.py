@@ -258,6 +258,27 @@ class OfflineEngine:
             return None
         return detail_payload(self.model, key)
 
+    def notes_index(self) -> list[dict[str, Any]]:
+        """The house's markdown notes, offline. Mirrors the served ``GET /notes``.
+
+        The worker's virtual FS carries ``brief.md`` and ``notes/**.md`` — the bundled
+        house asset ships every ``.md`` under the house — so the offline Documents hub
+        reads the same list the server would serve.
+        """
+        from typehaus.emit.notes_index import notes_index
+
+        if self.house_dir is None:
+            return []
+        return [entry.to_dict() for entry in notes_index(self.house_dir, self.model)]
+
+    def note_text(self, relative: str) -> str | None:
+        """One note's markdown, sandboxed the same way the server's route is."""
+        from typehaus.emit.notes_index import read_note
+
+        if self.house_dir is None:
+            return None
+        return read_note(self.house_dir, relative)
+
     def glb_bytes(self) -> bytes:
         from typehaus.emit.gltf.emitter import emit_glb
 

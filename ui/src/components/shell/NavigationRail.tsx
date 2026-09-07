@@ -3,6 +3,7 @@ import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
 import { ToolRailSection } from "./ToolRailSection";
+import { DOCUMENTS_DESTINATION } from "./navigationConfig";
 
 /**
  * The permanent left navigation rail.
@@ -18,6 +19,10 @@ export function NavigationRail() {
   const activePanel = useStore((s) => s.activePanel);
   const setActivePanel = useStore((s) => s.setActivePanel);
   const model = useStore((s) => s.model);
+  const detailView = useStore((s) => s.detailView);
+  const setDetailView = useStore((s) => s.setDetailView);
+  const openDocuments = useStore((s) => s.openDocuments);
+  const documentsOpen = detailView === "documents";
 
   const findings = model ? visibleFindings(model.findings) : [];
   const errorCount = findings.filter((f) => f.severity === "error").length;
@@ -49,6 +54,21 @@ export function NavigationRail() {
           </button>
         );
       })}
+
+      {/* Documents sits with the panels rather than with the tools: it is a destination
+          you go to, not something you do to the drawing. It replaced the top bar's Reports
+          menu — see navigationConfig.DOCUMENTS_DESTINATION. */}
+      <button
+        className={`rail-item${documentsOpen ? " active" : ""}`}
+        aria-pressed={documentsOpen}
+        title={DOCUMENTS_DESTINATION.hint}
+        onClick={() => (documentsOpen ? setDetailView("none") : openDocuments())}
+      >
+        <span className="rail-indicator">
+          <Icon name={DOCUMENTS_DESTINATION.icon} size={22} />
+        </span>
+        <span className="rail-label">{DOCUMENTS_DESTINATION.label}</span>
+      </button>
 
       <div className="rail-divider" role="separator" />
 

@@ -113,5 +113,29 @@ export function runEngineBomTests() {
     === "length (ft) 8 · count 2, length (ft) 12 · count 4",
     "…and a list of them joins without a brace in sight");
 
+  // --- the public site's price gate --------------------------------------------------
+  //
+  // `omit` drops columns and nothing else. The rows are the house; hiding what a stud cost
+  // must not change how many studs the table says there are.
+  const omit = new Set(["length_ft", "board_feet"]);
+  const gated = groupBom(FIXTURE as never, omit);
+  const gatedFraming = gated.flatMap((g) => g.sections).find((s) => s.key === "framing");
+  assert(gatedFraming !== undefined, "the framing section survives an omit");
+  assert(!gatedFraming!.table.columns.includes("length_ft"),
+    "an omitted column is gone from the columns");
+  assert(!gatedFraming!.table.headers.some((h) => h.includes("length")),
+    "…and from the headers, not merely blanked");
+  assert(gatedFraming!.table.rows.length === 2, "omitting a column removes no rows");
+  assert(gatedFraming!.table.rows.every((row) => row.length === gatedFraming!.table.columns.length),
+    "every row still has exactly one cell per surviving column");
+  assert(gatedFraming!.table.rows[0][0] === "2x6",
+    "the surviving cells stay aligned with their columns");
+
+  // An omit naming nothing in this payload is a no-op, not an error: the hidden set is
+  // written once for every house and most sections carry none of its columns.
+  const untouched = groupBom(FIXTURE as never, new Set(["no_such_column"]));
+  assert(JSON.stringify(untouched) === JSON.stringify(groupBom(FIXTURE as never)),
+    "an omit that matches nothing changes nothing");
+
   console.log("Engine BOM presentation tests passed.");
 }

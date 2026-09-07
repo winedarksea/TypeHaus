@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
 import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type LabelMode, type Representation, type Trade, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
 import {
@@ -8,6 +8,8 @@ import {
   type LayerVisibilityGroup,
 } from "../model/visibility";
 import { Icon } from "../icons/Icon";
+import { useIsCompact } from "../hooks/useBreakpoint";
+import { useLightDismiss } from "../hooks/useLightDismiss";
 
 // Views (Phase 6): untangles workspace / visibility / representation, and adds saved view
 // recipes. Consolidates the loose 3D trade toggles + nordic/schematic switch (relocated out
@@ -115,6 +117,13 @@ export function ViewsPanel() {
   const [views, setViews] = useState<SavedView[]>(loadViews);
   const [newName, setNewName] = useState("");
 
+  // Light dismiss, desktop only: at compact the panel is wrapped in a Sheet, which already
+  // scrims and dismisses. Hooks run before the early return below, as they must.
+  const panelRef = useRef<HTMLElement>(null);
+  const isCompact = useIsCompact();
+  const dismiss = useCallback(() => setActivePanel(null), [setActivePanel]);
+  useLightDismiss(panelRef, open && !isCompact, dismiss);
+
   if (!open || !model) return null;
 
   const saveCurrent = () => {
@@ -163,7 +172,7 @@ export function ViewsPanel() {
   };
 
   return (
-    <aside className="views-panel">
+    <aside className="views-panel" ref={panelRef}>
       <div className="drawer-header">
         <h3 style={{ margin: 0 }}>Views</h3>
         <button className="btn icon-btn" onClick={() => setActivePanel(null)} title="Close views"><Icon name="close" /></button>

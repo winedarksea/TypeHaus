@@ -121,6 +121,7 @@ is the one place it and `checks` meet, and it sits above both
 ```
 haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run
 haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # a branch for one fixture
+haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and every fixture on it
 haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
 haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
 ```

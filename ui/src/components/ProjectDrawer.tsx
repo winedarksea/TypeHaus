@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Wall } from "../model/types";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
@@ -6,6 +6,8 @@ import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
 import { DetailsNavigator } from "./DetailsNavigator";
 import { Icon } from "../icons/Icon";
+import { useIsCompact } from "../hooks/useBreakpoint";
+import { useLightDismiss } from "../hooks/useLightDismiss";
 
 // Left project drawer (Phase 3 relocation; Phase 6 grows the object hierarchy + Views).
 // Houses the always-on dashboards evicted from the strict inspector. Opens as one of the
@@ -17,10 +19,17 @@ export function ProjectDrawer() {
   const setActivePanel = useStore((s) => s.setActivePanel);
   const setWorkbench = useStore((s) => s.setWorkbench);
 
+  // Same light dismiss as ViewsPanel, and desktop-only for the same reason (the compact
+  // Sheet already scrims). Hooks before the early return.
+  const panelRef = useRef<HTMLElement>(null);
+  const isCompact = useIsCompact();
+  const dismiss = useCallback(() => setActivePanel(null), [setActivePanel]);
+  useLightDismiss(panelRef, open && !isCompact, dismiss);
+
   if (!open || !model) return null;
 
   return (
-    <aside className="project-drawer">
+    <aside className="project-drawer" ref={panelRef}>
       <div className="drawer-header">
         <h3 style={{ margin: 0 }}>{model.project.name}</h3>
         <button className="btn" onClick={() => setActivePanel(null)} title="Close project drawer">

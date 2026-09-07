@@ -55,6 +55,14 @@ export const ICON_PATHS: Record<IconName, ReactNode> = {
   install: <><path d="M12 4v10" /><path d="M8 11l4 4 4-4" /><path d="M4 19h16" /></>,
   // A schedule/table — the readers are all tabular.
   report: <><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M8 8h8" /><path d="M8 12h8" /><path d="M8 16h5" /></>,
+  // Documents: a stack of sheets. The hub's own destination icon, deliberately not `report`
+  // — a report is one table, this is everything the house has to read.
+  description: <><path d="M7 3h7l5 5v13H7z" /><path d="M14 3v5h5" /><path d="M10 13h7" /><path d="M10 17h5" /></>,
+  // A drawing sheet: a border, a title block in the corner.
+  drawing: <><rect x="3" y="4" width="18" height="16" rx="1" /><rect x="14" y="14" width="7" height="6" /><path d="M6 8h6" /><path d="M6 12h4" /></>,
+  // A note: ruled lines with a dog-eared corner.
+  note: <><path d="M5 3h10l4 4v14H5z" /><path d="M15 3v4h4" /><path d="M8 12h8" /><path d="M8 16h6" /></>,
+  "open-in-new": <><path d="M14 4h6v6" /><path d="M20 4l-9 9" /><path d="M18 14v6H4V6h6" /></>,
   "view-2d": <><rect x="3" y="4" width="18" height="16" rx="1" /><path d="M3 9h18" /><path d="M9 9v11" /></>,
   "view-split": <><rect x="3" y="4" width="18" height="16" rx="1" /><path d="M12 4v16" /></>,
   "view-3d": <><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" /><path d="M12 12l8-4.5" /><path d="M12 12v9" /><path d="M12 12L4 7.5" /></>,

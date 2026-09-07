@@ -25,7 +25,9 @@ import {
   type MacroResult,
   type PatchOp,
   type PatchResult,
+  type NoteEntry,
   type PreviewGeometry,
+  type SheetManifest,
   type UnderlayCalibration,
 } from "./EngineClient";
 
@@ -161,6 +163,9 @@ export class PyodideEngineClient implements EngineClient {
   }
 
   async getArtifact(kind: EngineArtifact): Promise<Blob> {
+    // The permit set is a bundled file, not something the engine emits, so it must not
+    // queue behind a pyodide boot that has nothing to do with it.
+    if (kind === "permit_pdf") return this.bundledPermitPdf();
     await this.initialized;
     if (kind === "ifc") {
       // Live-load the packaged IFC extension and emit client-side (V6). The worker fetches +
@@ -181,6 +186,54 @@ export class PyodideEngineClient implements EngineClient {
     }
     const bytes = await this.call<Uint8Array>("glb");
     return new Blob([bytes as unknown as BlobPart], { type: "model/gltf-binary" });
+  }
+
+  // --- The contractor reference, offline ----------------------------------------------
+  //
+  // The notes come out of the worker's own virtual FS — the bundled house ships every .md
+  // under it — so they are the same list the server would serve. The drawings cannot be:
+  // matplotlib does not run in pyodide, so the deploy bundles a set `haus print` composed
+  // in CI, beside the app under `sheets/`.
+
+  /** The set `haus print` composed in CI, copied beside the app at deploy time.
+   *
+   *  The manifest's content hash rides along as a cache-buster: the PDF is same-origin and
+   *  outside `/assets/`, so the service worker serves it stale-while-revalidate and a
+   *  re-deployed set would otherwise show yesterday's drawings under today's manifest. */
+  private async bundledPermitPdf(): Promise<Blob> {
+    const manifest = await this.getSheets().catch(() => null);
+    const suffix = manifest ? `?v=${encodeURIComponent(manifest.content_hash)}` : "";
+    const res = await fetch(this.sheetsUrl(`permit_set.pdf${suffix}`));
+    if (!res.ok) throw new EngineError("no permit set bundled with this build", res.status);
+    return await res.blob();
+  }
+
+  async getSheets(): Promise<SheetManifest> {
+    const res = await fetch(this.sheetsUrl("permit_set.json"));
+    if (!res.ok) {
+      // A 404 here is "this build shipped no drawings", not "the offline engine cannot do
+      // this" — the Documents tab says so and stays usable, so it must not be an
+      // OfflineUnsupported.
+      throw new EngineError("no permit set bundled with this build", res.status);
+    }
+    return (await res.json()) as SheetManifest;
+  }
+
+  async getNotes(): Promise<NoteEntry[]> {
+    await this.initialized;
+    return this.call<NoteEntry[]>("notes");
+  }
+
+  async getNote(path: string): Promise<string> {
+    await this.initialized;
+    const text = await this.call<string | null>("note", { path });
+    if (text === null) throw new EngineError(`no note ${path}`, 404);
+    return text;
+  }
+
+  /** The deploy-time copy beside the app (landing/build-site.mjs writes `app/sheets/`). */
+  private sheetsUrl(name: string): string {
+    return new URL(`sheets/${name}`, document.baseURI).href;
   }
 
   calibrateUnderlay(_calibration: UnderlayCalibration): Promise<void> {

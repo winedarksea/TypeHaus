@@ -19,14 +19,19 @@ import {
   type MacroResult,
   type PatchOp,
   type PatchResult,
+  type NoteEntry,
   type PreviewGeometry,
   RevisionConflict,
+  type SheetManifest,
   type UnderlayCalibration,
 } from "./EngineClient";
 
 const ARTIFACT_PATHS: Record<EngineArtifact, string> = {
   ifc: "/model.ifc",
   glb: "/model.glb",
+  // Served, never composed on demand: `haus print` is gated on the permit checklist and a
+  // route that rendered a set would be a second door around that gate (server/documents_api.py).
+  permit_pdf: "/sheets/permit_set.pdf",
 };
 
 async function readError(res: Response): Promise<string> {
@@ -162,6 +167,29 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url(path));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return await res.blob();
+  }
+
+  async getSheets(): Promise<SheetManifest> {
+    const res = await fetch(this.url("/sheets"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as SheetManifest;
+  }
+
+  async getNotes(): Promise<NoteEntry[]> {
+    const res = await fetch(this.url("/notes"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    const body = (await res.json()) as { notes: NoteEntry[] };
+    return body.notes;
+  }
+
+  async getNote(path: string): Promise<string> {
+    // The path is a route segment, not a query param: `/notes/notes/foo.md`. Each segment
+    // is encoded, so a name with a space or a '#' survives; the '/' separators do not.
+    const encoded = path.split("/").map(encodeURIComponent).join("/");
+    const res = await fetch(this.url(`/notes/${encoded}`));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    const body = (await res.json()) as { markdown: string };
+    return body.markdown;
   }
 
   async calibrateUnderlay(calibration: UnderlayCalibration): Promise<void> {

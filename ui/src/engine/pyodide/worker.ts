@@ -26,12 +26,17 @@ interface LoadHouseMsg {
 }
 interface CallMsg {
   id: number;
-  type: "model" | "checks" | "bom" | "costs" | "glb" | "ifc" | "detailIndex" | "undo" | "redo";
+  type: "model" | "checks" | "bom" | "costs" | "glb" | "ifc" | "detailIndex" | "notes" | "undo" | "redo";
 }
 interface DetailMsg {
   id: number;
   type: "detail";
   key: string;
+}
+interface NoteMsg {
+  id: number;
+  type: "note";
+  path: string;
 }
 interface PatchMsg {
   id: number;
@@ -39,7 +44,7 @@ interface PatchMsg {
   ops: unknown[];
   revision: string | null;
 }
-type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg | PatchMsg;
+type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg | NoteMsg | PatchMsg;
 
 let pyodide: any = null;
 let engine: any = null;
@@ -190,6 +195,19 @@ async function handle(msg: InMsg): Promise<unknown> {
       const out = d.toJs({ dict_converter: Object.fromEntries });
       d.destroy();
       return out;
+    }
+    case "notes": {
+      await ensureReady();
+      const d = engine.notes_index();
+      const out = d.toJs({ dict_converter: Object.fromEntries });
+      d.destroy();
+      return out;
+    }
+    case "note": {
+      await ensureReady();
+      // A plain str comes back as a JS string (or null outside the sandbox) — nothing
+      // to destroy, unlike the PyProxy the dict/list calls hand over.
+      return engine.note_text(msg.path) ?? null;
     }
     case "detail": {
       await ensureReady();

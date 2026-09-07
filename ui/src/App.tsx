@@ -40,6 +40,10 @@ const PlumbingView = lazy(() => import("./components/PlumbingView")
   .then((m) => ({ default: m.PlumbingView })));
 const LightingView = lazy(() => import("./components/LightingView")
   .then((m) => ({ default: m.LightingView })));
+// The Documents hub is lazy for the same reason and one more: its Drawings tab pulls pdf.js
+// and its Notes tab pulls marked, neither of which belongs in the chunk that draws a plan.
+const DocumentsView = lazy(() => import("./components/documents/DocumentsView")
+  .then((m) => ({ default: m.DocumentsView })));
 
 // Interaction-state label shown near the top-left canvas corner (Phase 2).
 function interactionLabel(tool: string, subOperation: boolean): string {
@@ -77,6 +81,8 @@ export function App() {
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
+  const activePanel = useStore((s) => s.activePanel);
+  const setActivePanel = useStore((s) => s.setActivePanel);
 
   const isCompact = useIsCompact();
   const setViewMode = useStore((s) => s.setViewMode);
@@ -113,11 +119,18 @@ export function App() {
         if (e.shiftKey) void redo();
         else void undo();
       } else if (e.key === "Escape" && !typing) {
-        // Predictable Esc hierarchy (Phase 2): close reader → cancel sub-op → exit tool →
-        // clear selection. Canvas2D independently clears its in-flight draft; here we advance
-        // the outer state.
+        // Predictable Esc hierarchy (Phase 2): close reader → close a docked panel →
+        // cancel sub-op → exit tool → clear selection. Canvas2D independently clears its
+        // in-flight draft; here we advance the outer state.
+        //
+        // Panels come after readers and before the tool state: a reader is over the panel,
+        // and a panel is a bigger thing to be rid of than an armed tool. Issues is
+        // deliberately not in the chain — it is a work list you keep open while fixing what
+        // it names, which is exactly the case the other two panels are not.
         if (useStore.getState().detailView !== "none") {
           setDetailView("none");
+        } else if (activePanel === "views" || activePanel === "project") {
+          setActivePanel(null);
         } else if (subOperation) {
           setSubOperation(false);
         } else if (tool !== "select") {
@@ -130,7 +143,7 @@ export function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo, subOperation, tool, selection.uid, setSubOperation, setTool, select,
-    setCommandPaletteOpen, setDetailView]);
+    setCommandPaletteOpen, setDetailView, activePanel, setActivePanel]);
 
   return (
     <div className="app">
@@ -201,6 +214,7 @@ export function App() {
         {detailView === "plumbing" && <PlumbingView />}
         {detailView === "data" && <DataView />}
         {detailView === "estimate" && <EstimateView />}
+        {detailView === "documents" && <DocumentsView />}
       </Suspense>
       <Workbench />
       <CommandPalette />

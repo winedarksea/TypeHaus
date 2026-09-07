@@ -141,7 +141,7 @@ export interface BomTable {
  * what keeps the identifying column leftmost. A scalar or a plain dict (a summary such as
  * `service_load`) becomes a two-column key/value table instead. An empty list yields no rows.
  */
-export function sectionRows(value: unknown): BomTable {
+export function sectionRows(value: unknown, omit?: ReadonlySet<string>): BomTable {
   if (Array.isArray(value)) {
     const columns: string[] = [];
     const seen = new Set<string>();
@@ -153,9 +153,10 @@ export function sectionRows(value: unknown): BomTable {
         columns.push(key);
       }
     }
-    const rows = value.map((row) => columns.map((column) =>
+    const kept = omit ? columns.filter((column) => !omit.has(column)) : columns;
+    const rows = value.map((row) => kept.map((column) =>
       (row && typeof row === "object") ? (row as Record<string, unknown>)[column] : undefined));
-    return { kind: "rows", columns, headers: columns.map(prettifyHeader), rows };
+    return { kind: "rows", columns: kept, headers: kept.map(prettifyHeader), rows };
   }
   if (value && typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>);
@@ -209,13 +210,18 @@ export interface BomGroup {
  * Sections absent from the payload are skipped; sections the payload has and `SECTION_GROUPS`
  * does not are collected into a trailing "Other" group. That fallback is the point: a new
  * engine section shows up unarranged rather than not at all.
+ *
+ * `omit` drops named columns from every row table — the published site's price gate
+ * (state/public.ts::HIDDEN_BOM_COLUMNS). It is a column filter and nothing else: no row is
+ * removed and no total is recomputed, because a BOM with a column hidden still bills the
+ * same house.
  */
-export function groupBom(bom: EngineBom): BomGroup[] {
+export function groupBom(bom: EngineBom, omit?: ReadonlySet<string>): BomGroup[] {
   const groups: BomGroup[] = [];
   for (const group of SECTION_GROUPS) {
     const sections = group.sections
       .filter((key) => key in bom)
-      .map((key) => ({ key, title: prettifyHeader(key), table: sectionRows(bom[key]) }));
+      .map((key) => ({ key, title: prettifyHeader(key), table: sectionRows(bom[key], omit) }));
     if (sections.length) groups.push({ ...group, sections });
   }
   const other = Object.keys(bom).filter((key) => !GROUPED.has(key));
@@ -225,7 +231,7 @@ export function groupBom(bom: EngineBom): BomGroup[] {
       title: "Other",
       note: "Sections the engine bills that this view has not been told where to put.",
       sections: other.map((key) => ({
-        key, title: prettifyHeader(key), table: sectionRows(bom[key]),
+        key, title: prettifyHeader(key), table: sectionRows(bom[key], omit),
       })),
     });
   }

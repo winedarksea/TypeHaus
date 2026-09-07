@@ -1,0 +1,262 @@
+/* The Documents hub: the tab strip, the reports grid, and the list-detail split the
+   Drawings and Notes tabs share.
+
+   Imported after readers.css because the hub is a reader — it lives inside the same
+   `.workbench` shell and inherits its surface, its Back affordance and its body scroll. Only
+   what is new to the hub is here. Every colour is an `--md-*` token, so both themes and all
+   three densities follow without a second rule. */
+
+/* ── Secondary tabs (MD3) ────────────────────────────────────────────────────────────── */
+.doc-tabs {
+  display: flex;
+  gap: 2px;
+  align-items: stretch;
+}
+.doc-tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--md-on-surface-variant, var(--muted));
+  font: inherit;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* The indicator is a border rather than a pseudo-element so it cannot be knocked out of
+     alignment by the tab's own padding at a different density. */
+  border-bottom: 2px solid transparent;
+  border-radius: var(--md-shape-xs, 4px) var(--md-shape-xs, 4px) 0 0;
+}
+.doc-tab:hover { background: var(--md-surface-container-high, var(--panel-line)); }
+.doc-tab:focus-visible { outline: 2px solid var(--md-primary, var(--accent)); outline-offset: -2px; }
+.doc-tab.active {
+  color: var(--md-primary, var(--accent));
+  border-bottom-color: var(--md-primary, var(--accent));
+}
+.doc-tab-count {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+/* ── Reports tab: the readers as cards ───────────────────────────────────────────────── */
+.doc-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.doc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 14px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--md-on-surface, var(--fg));
+  background: var(--md-surface-container, var(--panel));
+  border: 1px solid var(--md-outline-variant, var(--panel-line));
+  border-radius: var(--md-shape-md, 12px);
+}
+.doc-card:hover { background: var(--md-surface-container-high, var(--panel-line)); }
+.doc-card:focus-visible { outline: 2px solid var(--md-primary, var(--accent)); outline-offset: 2px; }
+.doc-card-title { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.doc-card-hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--md-on-surface-variant, var(--muted));
+}
+
+/* ── List-detail (Drawings, Notes) ───────────────────────────────────────────────────── */
+.doc-split {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) 1fr;
+  gap: 16px;
+  align-items: start;
+  min-height: 0;
+}
+/* A phone gets one column: a 240px index beside a 150px drawing is neither. */
+@media (max-width: 599px) {
+  .doc-split { grid-template-columns: 1fr; }
+}
+
+.doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* Its own scroll, so paging the drawing does not scroll the index out from under you. */
+  max-height: 100%;
+  overflow-y: auto;
+}
+.doc-list-group-title {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant, var(--muted));
+}
+.doc-list-group-note {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--md-on-surface-variant, var(--muted));
+}
+.doc-list-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 7px 10px;
+  border-radius: var(--md-shape-sm, 8px);
+  cursor: pointer;
+}
+.doc-list-item:hover { background: var(--md-surface-container-high, var(--panel-line)); }
+.doc-list-item:focus-visible { outline: 2px solid var(--md-primary, var(--accent)); outline-offset: -2px; }
+.doc-list-item.active {
+  background: var(--md-secondary-container, var(--panel-line));
+  color: var(--md-on-secondary-container, var(--fg));
+  font-weight: 600;
+}
+.doc-list-item-number {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  margin-right: 8px;
+}
+.doc-list-item-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--md-on-surface-variant, var(--muted));
+}
+
+.doc-detail {
+  min-width: 0; /* or a wide table/canvas blows the grid column out */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.doc-detail-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doc-detail-title { margin: 0; font-size: 15px; }
+
+/* The issue stamp. Not decorated as a badge in a colour that could read as a status the
+   engine did not assign — it is the words the sheets themselves carry, set in the drawing
+   face so it reads as a quotation from the set. */
+.doc-stamp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border: 1px solid var(--md-outline, var(--panel-line));
+  border-radius: var(--md-shape-xs, 4px);
+  color: var(--md-on-surface-variant, var(--muted));
+  white-space: nowrap;
+}
+.doc-meta {
+  font-size: 11px;
+  color: var(--md-on-surface-variant, var(--muted));
+  font-variant-numeric: tabular-nums;
+}
+.doc-meta-hash {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.doc-chip-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.doc-chip {
+  appearance: none;
+  font: inherit;
+  font-size: 11.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--md-outline, var(--panel-line));
+  background: transparent;
+  color: var(--md-on-surface-variant, var(--muted));
+  cursor: pointer;
+}
+.doc-chip:hover {
+  background: var(--md-secondary-container, var(--panel-line));
+  color: var(--md-on-secondary-container, var(--fg));
+}
+.doc-chip:focus-visible { outline: 2px solid var(--md-primary, var(--accent)); outline-offset: 1px; }
+
+/* ── The rendered PDF page ───────────────────────────────────────────────────────────── */
+.doc-pdf-scroll {
+  overflow: auto;
+  /* A drawing is read at a size, not squeezed to fit: this pans rather than reflows. The
+     ceiling keeps the sheet inside the reader instead of growing the body scroll. */
+  max-height: min(72vh, 900px);
+  background: var(--md-surface-container-highest, var(--panel-line));
+  border: 1px solid var(--md-outline-variant, var(--panel-line));
+  border-radius: var(--md-shape-sm, 8px);
+  /* Let a touch drag pan the sheet, and keep pinch-zoom for the page itself. */
+  touch-action: pan-x pan-y;
+}
+.doc-pdf-canvas {
+  display: block;
+  margin: 0 auto;
+  /* Paper is white in every theme — a drawing inverted for dark mode is not the drawing. */
+  background: #fff;
+}
+.doc-pdf-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--md-on-surface-variant, var(--muted));
+  font-size: 12px;
+}
+
+/* ── Rendered markdown ───────────────────────────────────────────────────────────────── */
+.md-body {
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 74ch;
+  overflow-wrap: anywhere;
+}
+.md-body h1 { font-size: 17px; margin: 0 0 10px; }
+.md-body h2 { font-size: 15px; margin: 20px 0 8px; }
+.md-body h3 { font-size: 13.5px; margin: 16px 0 6px; }
+.md-body p, .md-body ul, .md-body ol { margin: 0 0 10px; }
+.md-body ul, .md-body ol { padding-left: 22px; }
+.md-body li { margin-bottom: 3px; }
+.md-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  padding: 1px 4px;
+  border-radius: var(--md-shape-xs, 4px);
+  background: var(--md-surface-container-high, var(--panel-line));
+}
+.md-body pre {
+  overflow-x: auto;
+  padding: 10px 12px;
+  border-radius: var(--md-shape-sm, 8px);
+  background: var(--md-surface-container-high, var(--panel-line));
+}
+.md-body pre code { background: transparent; padding: 0; }
+.md-body blockquote {
+  margin: 0 0 10px;
+  padding-left: 12px;
+  border-left: 3px solid var(--md-outline-variant, var(--panel-line));
+  color: var(--md-on-surface-variant, var(--muted));
+}
+.md-body table { border-collapse: collapse; font-size: 12px; }
+.md-body th, .md-body td {
+  border: 1px solid var(--md-outline-variant, var(--panel-line));
+  padding: 4px 8px;
+  text-align: left;
+}
+.md-body th { background: var(--md-surface-container-high, var(--panel-line)); }
+/* Wide tables scroll inside the note rather than widening the reader. */
+.md-body > table { display: block; overflow-x: auto; max-width: 100%; }
+.md-body img { max-width: 100%; height: auto; }
+.md-body hr { border: 0; border-top: 1px solid var(--md-outline-variant, var(--panel-line)); margin: 16px 0; }

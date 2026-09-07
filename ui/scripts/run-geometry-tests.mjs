@@ -36,6 +36,9 @@ try {
   const { runToolDispatchTests } = await server.ssrLoadModule("/src/components/plan/toolDispatch.test.ts");
   const { runPlaceableDragTests, runObjectDragMathTests } = await server.ssrLoadModule("/src/components/plan/objectDrag.test.ts");
   const { runStoreEventTests } = await server.ssrLoadModule("/src/state/storeEvents.test.ts");
+  const { runSheetGroupingTests } = await server.ssrLoadModule("/src/model/sheets.test.ts");
+  const { runNoteGroupingTests } = await server.ssrLoadModule("/src/model/notes.test.ts");
+  const { runPublicSiteTests } = await server.ssrLoadModule("/src/state/public.test.ts");
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();
@@ -81,6 +84,9 @@ try {
   runPlaceableDragTests();
   runObjectDragMathTests();
   runStoreEventTests();
+  runSheetGroupingTests();
+  runNoteGroupingTests();
+  runPublicSiteTests();
   console.log("Plan geometry tests passed.");
 } finally {
   await server.close();

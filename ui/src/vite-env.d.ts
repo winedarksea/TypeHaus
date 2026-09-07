@@ -22,6 +22,9 @@ interface ImportMetaEnv {
   // ensureIfc → micropip.install → enable_ifc. Unset by default: IFC export cleanly degrades
   // with the RequiresLocalInstall message. See docs/ifc-wasm.md.
   readonly VITE_IFC_WASM_URL?: string;
+  // "1" in the published type-haus.com/app build: hide the Estimate reader and the BOM's
+  // cost columns (→ state/public.ts). Unset locally, where the prices are your own.
+  readonly VITE_PUBLIC_SITE?: string;
 }
 
 interface ImportMeta {

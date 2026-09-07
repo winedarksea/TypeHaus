@@ -109,10 +109,10 @@ def test_the_catlin_record_covers_every_note(catlin_model_ro, tmp_path):
     A superseded note opens with a banner naming what replaced it, and the rule it
     established usually outlives the design that prompted it. That is what a record is for.
     """
-    from typehaus.cli.cmd_record import _sheets_by_note
+    from typehaus.emit.notes_index import sheets_by_note
 
     notes = sorted((Path(catlin_model_ro.plan.source_root) / "notes").rglob("*.md"))
-    on_sheets = _sheets_by_note(catlin_model_ro)
+    on_sheets = sheets_by_note(catlin_model_ro)
     assert len(on_sheets) == 6, "exactly six catlin notes are bound to a drawing"
     stems = {p.stem for p in notes} - {"README", "TEMPLATE"}
     files = design_record(_inputs(*[

@@ -103,6 +103,7 @@ function ConditionRows({ conditions, index, uncovered, onZoom, onDetail }: {
 export function AssemblyDetailsView() {
   const model = useStore((s) => s.model);
   const setDetailView = useStore((s) => s.setDetailView);
+  const closeReader = useStore((s) => s.closeReader);
   const zoomToUid = useStore((s) => s.zoomToUid);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [expandedKind, setExpandedKind] = useState<string | null>(null);
@@ -147,7 +148,7 @@ export function AssemblyDetailsView() {
     <ReaderShell
       title="Assembly details"
       subtitle={`${transitions.length} transitions · ${model.conditions.length} resolved conditions`}
-      onClose={() => setDetailView("none")}
+      onClose={closeReader}
       toolbar={
         <button className="btn" onClick={() => setDetailKey(null)}
           title="Browse every derived junction drawing">

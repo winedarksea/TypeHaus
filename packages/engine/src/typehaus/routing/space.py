@@ -45,8 +45,8 @@ MAX_CANDIDATE_LINES = 400
 
 #: How many lattice nodes the graph may build. The line caps above do not bound this —
 #: 400 x 400 x 60 is inside both of them and is nine million nodes — so this is the guard
-#: that actually holds. Fifty thousand is comfortably past a whole-storey problem and well
-#: inside a second of A*; it RAISES rather than coarsening, for the reason above.
+#: that actually holds. A hundred and twenty thousand is comfortably past a whole-storey
+#: problem and well inside a second of A*; it RAISES rather than coarsening, as above.
 MAX_LATTICE_NODES = 120_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of

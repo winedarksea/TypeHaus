@@ -83,9 +83,9 @@ class RouteCost:
         """
         travel = length_ft * 12.0 * (self.riser_per_ft if vertical else 1.0)
         if corridor:
-            travel = max(travel - length_ft * self.corridor_discount_per_ft,
-                         travel * 0.0)
-            travel = max(travel, 0.0)
+            # Capped at the travel term itself, never below zero: an edge cheaper than its
+            # own Manhattan length would break `heuristic_floor`'s admissibility.
+            travel = max(travel - length_ft * self.corridor_discount_per_ft, 0.0)
         return (travel
                 + in_wall_ft * self.in_wall_travel_per_ft
                 + room_ft * self.room_penalty(occupancy))

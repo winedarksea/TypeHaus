@@ -32,7 +32,26 @@ export const REPORTS: ReportSpec[] = [
     hint: "Isometric riser, fixture units, pipe takeoff, cast-in sleeves" },
   { id: "lighting", label: "Lighting", icon: "report",
     hint: "Luminaire schedule, controls, LED runs, connected load" },
+  // Reachable only from the command palette until the Documents hub: the top bar's Reports
+  // menu rendered this list too, so a reader missing from it was a reader with no home.
+  { id: "data", label: "Data", icon: "report",
+    hint: "Low-voltage devices, comms raceways, PoE budget" },
 ];
+
+/**
+ * The Documents destination, shared by the rail and the bottom nav.
+ *
+ * It replaced the top bar's Reports menu rather than sitting beside it: the readers above
+ * are one of three things a contractor reads (the drawings and the house's notes are the
+ * other two), and three trigger surfaces for one question — "what am I building to?" — is
+ * two too many.
+ */
+export const DOCUMENTS_DESTINATION = {
+  id: "documents" as const,
+  label: "Documents",
+  icon: "description" as IconName,
+  hint: "Permit drawings, design and product notes, and the model reports",
+};
 
 export interface ToolSpec {
   id: Tool;

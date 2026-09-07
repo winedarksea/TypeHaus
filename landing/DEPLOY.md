@@ -14,11 +14,28 @@ site/
 ## Build
 
 ```bash
-node landing/build-site.mjs      # -> ./site   (also runs the ui build with VITE_PWA_STANDALONE=1)
+.venv/bin/haus print houses/catlin --fmt pdf   # -> houses/catlin/out/permit_set.{pdf,json}
+node landing/build-site.mjs                    # -> ./site
 ```
 
-`site/` is gitignored. The script fails loudly if `site/app/` is missing the engine tarball or
-the bundled Catlin house, because those only break in the browser, never at build time.
+The print comes first and is not optional: the app's **Documents → Drawings** tab reads a
+pre-rendered permit set, because matplotlib cannot run in Pyodide and the browser therefore
+cannot compose one. `build-site.mjs` copies `permit_set.pdf` and `permit_set.json` into
+`site/app/sheets/` and fails if the manifest is not there.
+
+`haus print` is itself gated on the permit checklist and exits 1 when it has a failure or an
+unknown. That refusal failing the deploy is the intended behaviour, not an inconvenience: a
+set that does not pass should not be published.
+
+`build-site.mjs` runs the ui build with three env vars — `VITE_PWA_STANDALONE=1` (boot the
+bundled house in the in-browser engine), `VITE_PUBLIC_SITE=1` (hide the Estimate reader and
+the BOM's cost columns) and `HAUS_PUBLIC=1` (keep `prices.toml`, `costs.toml` and `tasks.toml`
+out of the bundled house entirely). The last two are a pair: the first hides the pages, the
+second means the numbers are not in the download at all.
+
+`site/` is gitignored. The script fails loudly if `site/app/` is missing the engine tarball,
+the bundled Catlin house or the sheet manifest, because those only break in the browser, never
+at build time.
 
 To look at the result before shipping:
 

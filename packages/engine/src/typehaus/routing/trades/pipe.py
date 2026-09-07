@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from typehaus.routing.corridors import Corridor
-from typehaus.routing.gravity import GravityProfile, HeadBudget, apply, minimum_slope
+from typehaus.routing.gravity import HeadBudget, apply, profile_for
 
 #: Systems that fall. Everything else in ``PipeSystem`` is pressurised or is a vent, and a
 #: vent rises to a roof rather than falling to a main — a different problem this package
@@ -49,16 +49,26 @@ def falls(system: str) -> bool:
 
 
 def elevate(points: Sequence[tuple[float, ...]], budget: HeadBudget | None, *,
-            grade_in_per_ft: float | None = None) -> list[tuple[float, float, float]]:
-    """Give a found plan route its elevations.
+            grade_in_per_ft: float | None = None
+            ) -> list[tuple[float, float, float]] | None:
+    """Give a found plan route its elevations, or None when the head does not close.
 
     With no budget the route keeps whatever z the search chose — the supply case. With one,
-    the elevations are derived from a :class:`GravityProfile` and nothing else, so the
-    result is monotone by construction rather than by checking afterwards.
+    the elevations come from :func:`~typehaus.routing.gravity.profile_for` and nothing
+    else, so the result is monotone by construction rather than by checking afterwards.
+
+    **The profile is built from the ARRIVAL upward**, not from the ceiling down, and that
+    is ``profile_for``'s decision rather than this function's: head spent early is head
+    unavailable to whatever ties in downstream. Building it from ``ceiling_m`` instead
+    would land the route above its own tie by exactly the slack and say nothing.
+
+    None rather than a route means the grade asked for does not fit the budget — including
+    a ``--slope`` steeper than the code minimum, which ``HeadBudget.feasible`` does not
+    grade because it asks about the minimum.
     """
     if budget is None:
         return [(p[0], p[1], p[2]) for p in points]
-    slope = (grade_in_per_ft if grade_in_per_ft is not None
-             else minimum_slope(budget.diameter_m))
-    profile = GravityProfile(start_m=budget.ceiling_m, slope_in_per_ft=slope)
+    profile = profile_for(budget, grade_in_per_ft=grade_in_per_ft)
+    if profile is None:
+        return None
     return apply([(p[0], p[1]) for p in points], profile)

@@ -91,6 +91,7 @@ export function useReader<T>(
 ): Reader<T> {
   const model = useStore((s) => s.model);
   const setDetailView = useStore((s) => s.setDetailView);
+  const closeReader = useStore((s) => s.closeReader);
   const zoomToUid = useStore((s) => s.zoomToUid);
   const [filter, setFilter] = useState("");
 
@@ -105,7 +106,8 @@ export function useReader<T>(
     [base, data],
   );
 
-  const close = useCallback(() => setDetailView("none"), [setDetailView]);
+  // Back goes wherever this reader was opened from — the Documents hub, or the canvas.
+  const close = useCallback(() => closeReader(), [closeReader]);
   const jump = useCallback((tag: string) => {
     const uid = index.get(tag);
     if (!uid) return;

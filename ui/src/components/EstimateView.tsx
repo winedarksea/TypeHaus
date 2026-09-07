@@ -192,7 +192,7 @@ function GroupHeader({ group, showLabel, collapsed, onToggle }: {
 export function EstimateView() {
   const model = useStore((s) => s.model);
   const client = useStore((s) => s.client);
-  const setDetailView = useStore((s) => s.setDetailView);
+  const closeReader = useStore((s) => s.closeReader);
   const [costs, setCosts] = useState<EngineCosts | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
@@ -265,7 +265,7 @@ export function EstimateView() {
 
   if (!model) return null;
 
-  const close = () => setDetailView("none");
+  const close = closeReader;
   const subtitle = error !== null ? `${model.project.name} · estimate unavailable`
     : costs === null ? `${model.project.name} · pricing…`
       : estimateSubtitle(estimate, model.project.name);

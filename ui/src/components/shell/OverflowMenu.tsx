@@ -2,7 +2,7 @@ import { useStore } from "../../state/store";
 import { useTheme, useDensity, type ThemePreference, type Density } from "../../theme/theme";
 import { promptInstall, type PwaState } from "../../pwa/register";
 import { Menu, type MenuSection } from "../ui/Menu";
-import { REPORTS } from "./navigationConfig";
+import { DOCUMENTS_DESTINATION } from "./navigationConfig";
 import type { IconName } from "../../icons/names";
 
 const DENSITIES: { id: Density; label: string; icon: IconName }[] = [
@@ -30,6 +30,7 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
   const connected = useStore((s) => s.connected);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
+  const openDocuments = useStore((s) => s.openDocuments);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
@@ -39,17 +40,21 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
     // actions the bar no longer has room for, so they come first.
     ...(compact
       ? [
+          // One item, not seven: the readers moved into the Documents hub, which the bottom
+          // nav already has a slot for. This is the escape hatch for a viewport narrow
+          // enough that the bar is the only chrome left.
           {
-            id: "reports",
-            label: "Reports",
-            items: REPORTS.map((report) => ({
-              id: report.id,
-              label: report.label,
-              icon: report.icon,
-              hint: report.hint,
-              selected: detailView === report.id,
-              onSelect: () => setDetailView(detailView === report.id ? "none" : report.id),
-            })),
+            id: "documents",
+            label: "Read",
+            items: [{
+              id: "documents",
+              label: DOCUMENTS_DESTINATION.label,
+              icon: DOCUMENTS_DESTINATION.icon,
+              hint: DOCUMENTS_DESTINATION.hint,
+              selected: detailView === "documents",
+              onSelect: () => (detailView === "documents"
+                ? setDetailView("none") : openDocuments()),
+            }],
           },
           {
             id: "actions",

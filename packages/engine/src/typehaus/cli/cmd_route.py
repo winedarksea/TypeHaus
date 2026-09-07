@@ -13,7 +13,7 @@ stale every pinned engineering seal in the house.
 
     haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run
     haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # propose a branch for one
-    haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and all that feeds it
+    haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and every fixture on it
     haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
     haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
 """
@@ -31,6 +31,13 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedModel
     from typehaus.routing.graph import Graph
     from typehaus.routing.proposal import RouteProposal
+
+
+#: What a fixture branch is proposed at, in metres — 2". The size a branch actually wants
+#: is a fixture-unit derivation ``checks/mep`` owns and this package must not import, so
+#: the proposal states the common case and leaves the sizing to the person who accepts it:
+#: a water closet's own 3" branch is an edit to one literal in what is printed.
+_BRANCH_DIAMETER_M = 0.0508
 
 
 def _load(house: Path | None) -> tuple[Path, Any]:
@@ -82,7 +89,7 @@ def route(
     fixture: str | None = typer.Option(
         None, "--fixture", help="Propose a branch from one fixture to its nearest main."),
     tree: str | None = typer.Option(
-        None, "--tree", help="A main and every fixture that names it."),
+        None, "--tree", help="A main and every fixture it serves, as one Steiner tree."),
     unconnected: bool = typer.Option(
         False, "--unconnected",
         help="One proposal per mep.fixture_drain_reach FAIL."),
@@ -121,14 +128,22 @@ def route(
         console.print(f"[yellow]{len(targets)} fixture(s) reported by "
                       "mep.fixture_drain_reach[/yellow]")
     else:
-        targets = [t for t in (run, fixture, tree) if t]
+        targets = [t for t in (run, fixture) if t]
 
-    proposals, problems = _propose(
-        model, targets, mode=("run" if run else "fixture" if fixture
-                              else "tree" if tree else "unconnected"),
-        slope=slope, margin_ft=margin_ft, level=level,
-        avoid=frozenset(avoid), via=_points(via), explain=explain)
+    if tree:
+        proposals, problems, notices = _propose_tree(
+            model, tree, slope=slope, margin_ft=margin_ft, level=level,
+            avoid=frozenset(avoid), via=_points(via), explain=explain)
+    else:
+        proposals, problems = _propose(
+            model, targets, mode=("run" if run else "fixture" if fixture
+                                  else "unconnected"),
+            slope=slope, margin_ft=margin_ft, level=level,
+            avoid=frozenset(avoid), via=_points(via), explain=explain)
+        notices = []
 
+    for line in notices:
+        console.print(f"[dim]{line}[/dim]")
     for line in problems:
         console.print(f"[yellow]{line}[/yellow]")
     if not proposals:
@@ -226,33 +241,13 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                            for a, b in zip(points, points[1:], strict=False)) / 0.3048
         budget = HeadBudget(ceiling_m=origin[2], required_m=root[2],
                             developed_ft=developed_ft, diameter_m=diameter_m)
-        notes = []
-        if system == "drain" and not budget.feasible:
-            feasible = budget.feasible_slope_in_per_ft()
-            problems.append(
-                f'{target}: short {budget.shortfall_in():.2f}" of head over '
-                f'{developed_ft:.2f} ft. The route is feasible at '
-                f'{feasible:.3f}"/ft and the code wants {grade:.3f}"/ft — raise the '
-                "start, lower the tie, or shorten the run by "
-                f'{budget.shortfall_in() / grade:.2f} ft')
-            continue
+        notes: list[str] = []
         if system == "drain":
-            from typehaus.routing.gravity import GravityProfile, apply
-
-            # The profile is built from the ARRIVAL upward — start = root + grade x length
-            # — so the route lands exactly on the tie rather than wherever a start
-            # elevation happened to put it. Then the flange is prepended as its own vertex
-            # at the finished floor, which makes the first leg the vertical drop it is: a
-            # closet bend is a fitting, not a grade.
-            profile = GravityProfile(
-                start_m=root[2] + grade * developed_ft * 0.0254,
-                slope_in_per_ft=grade)
-            points = apply([(p[0], p[1]) for p in points], profile)
-            if origin[2] > points[0][2] + 1e-9:
-                points = [(points[0][0], points[0][1], origin[2]), *points]
-            notes.append(f'gravity: {grade:.3f}"/ft over {developed_ft:.2f} ft, '
-                         f'{budget.slack_in:.2f}" of head to spare; the first leg is the '
-                         "flange drop and takes no grade")
+            fallen = _fall(points, origin, budget, grade, target, problems)
+            if fallen is None:
+                continue
+            points, note = fallen
+            notes.append(note)
 
         proposals.append((RouteProposal(
             tag=f"{target}-PROPOSED", kind="pipe", points=list(points),
@@ -260,6 +255,279 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             cost=found.cost, bends=found.bends,
             terms=dict(found.terms) if explain else {}, notes=notes).snapped(), storey))
     return proposals, problems
+
+
+def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
+                  margin_ft: float, level: str | None, avoid: frozenset[str],
+                  via: list[tuple[float, float]], explain: bool
+                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
+    """A main and every fixture it serves, routed as one directed Steiner tree.
+
+    This is the mode :mod:`typehaus.routing.tree` exists for, and the one where the order
+    terminals are routed in decides the answer. Routing each fixture on its own — which is
+    what ``--fixture`` does, once per fixture — gives every one of them the direct lane and
+    proposes a bundle that cannot all be built; RSPH gives the lane to the fixture with the
+    least head and makes the rest join what is already there, which is what a wye is.
+
+    **The root is the whole main, not a point.** Goals are every lattice node lying on its
+    plan polyline, so a branch ties in where it arrives rather than at whichever end
+    happened to be nominated. ``search.shortest_route`` takes a set of goals for exactly
+    this.
+
+    Returns ``(proposals, problems, notices)``. The third channel is the tree's own
+    ordering and its cost: it is not a problem and it is not source, and printing it as
+    either would be a lie about what it is.
+    """
+    from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
+    from typehaus.routing.graph import build_graph
+    from typehaus.routing.gravity import HeadBudget, minimum_slope
+    from typehaus.routing.proposal import RouteProposal
+    from typehaus.routing.space import RoutingSpaceTooLarge, build_space
+    from typehaus.routing.trades import pipe as pipe_trade
+    from typehaus.routing.tree import Terminal, build_tree
+    from typehaus.routing.tree import explain as explain_tree
+
+    problems: list[str] = []
+    runs = {r.tag: r for r in model.pipe_runs}
+    main = runs.get(target)
+    if main is None or main.system != "drain":
+        problems.append(f"{target}: not a drain run in this model, so there is no tree "
+                        "to build round it")
+        return [], problems, []
+    if not main.z_m or len(main.z_m) != len(main.path):
+        problems.append(f"{target}: no resolved elevations, so there is no invert to tie "
+                        "into anywhere along it")
+        return [], problems, []
+
+    fixtures = [tag for tag in main.serves if tag.startswith("FX-")]
+    if not fixtures:
+        problems.append(f"{target}: serves no fixture, so nothing feeds it. `--run "
+                        f"{target}` re-routes the main itself")
+        return [], problems, []
+
+    diameter_m = _BRANCH_DIAMETER_M
+
+    points: dict[str, tuple[float, float]] = {}
+    storeys: dict[str, str] = {}
+    floors: dict[str, float] = {}
+    for tag in fixtures:
+        point = _expected_drain_point(model, tag)
+        if point is None:
+            problems.append(f"{tag}: no resolvable drain point — the same wording "
+                            "mep.trap_arm_length uses, and the same cause")
+            continue
+        points[tag] = (point[0], point[1])
+        storeys[tag] = _storey_of(model, tag)
+        floors[tag] = _storey_datum(model, storeys[tag])
+    if not points:
+        return [], problems, []
+
+    # **One storey per tree.** The branches are searched in a single plane — a drain's z is
+    # a derived potential, not a free dimension — so fixtures on two floors are two trees
+    # and saying so is the only honest answer. A stack serves both; a plan search does not.
+    levels = sorted(set(floors.values()))
+    if len(levels) > 1:
+        problems.append(
+            f"{target}: its fixtures sit on {len(levels)} storeys "
+            f"({', '.join(sorted({storeys[t] for t in points}))}) and a branch tree is "
+            "searched in one plane. Route each storey's group on its own")
+        return [], problems, []
+    floor_m = levels[0]
+
+    # **The tie band is ``mep.fixture_drain_reach``'s**, and reusing it is the point: a
+    # branch may tie in where the main passes within two feet below and six inches above
+    # the fixture floor, and nowhere else. Without it a second-floor lavatory happily ties
+    # into the basement leg of its own stack — the plan polyline says the two lines cross,
+    # and only the invert says they are twelve feet apart.
+    band = (floor_m - 2.0 * 0.3048, floor_m + 0.5 * 0.3048)
+    reachable = [((x, y), z) for (x, y), z in zip(main.path, main.z_m, strict=False)
+                 if band[0] <= z <= band[1]]
+    if not reachable:
+        problems.append(
+            f"{target}: no vertex of it passes within 2 ft below and 6 in above the "
+            f"{storeys[next(iter(points))]} floor, so nothing on that floor can tie into "
+            "it — the same band mep.fixture_drain_reach grades against")
+        return [], problems, []
+    root_z = max(z for _p, z in reachable)
+    tie_path = [p for p, _z in reachable]
+
+    replaced = {run.tag for run in model.pipe_runs
+                if any(tag in run.serves for tag in points)}
+    terminals_xyz = [(x, y, root_z) for x, y in points.values()]
+    terminals_xyz.extend((x, y, root_z) for x, y in tie_path)
+    terminals_xyz.extend((p[0], p[1], root_z) for p in via)
+    try:
+        space = build_space(model, radius_m=pipe_trade.radius_m(diameter_m),
+                            terminals=terminals_xyz, margin_ft=margin_ft, avoid=avoid,
+                            touch=frozenset({target, *replaced}))
+    except RoutingSpaceTooLarge as exc:
+        problems.append(f"{target}: {exc}")
+        return [], problems, []
+    if level is not None and level not in space.storeys:
+        problems.append(f"{target}: --level {level} is not a storey in this model")
+        return [], problems, []
+
+    graph = build_graph(space, terminals_xyz, [root_z])
+    goals = _line_nodes(graph, tie_path)
+    if not goals:
+        problems.append(f"{target}: no lattice node lies on the reachable part of the "
+                        "main, so there is nowhere to tie into. Narrow --margin or name "
+                        "a --via on it")
+        return [], problems, []
+
+    grade = slope if slope is not None else minimum_slope(diameter_m)
+    terminals = []
+    for tag, (x, y) in points.items():
+        node = _nearest(graph, (x, y, root_z))
+        if node is None:
+            problems.append(f"{tag}: no lattice node at its drain point")
+            continue
+        # A **lower bound** on the developed length, and stated as one: the ordering key is
+        # slack, slack needs a length, and the length is not known until the route is. A
+        # Manhattan estimate over-states every terminal's slack by the same kind of amount,
+        # which is all an ORDER needs; the real budget is rebuilt below and can still
+        # refuse. §5 of the oracle note is explicit that length is not a proxy for slack —
+        # this uses it to order the question, never to answer it.
+        reach = min(abs(x - mx) + abs(y - my) for mx, my in tie_path) / 0.3048
+        terminals.append(Terminal(tag=tag, node=node, budget=HeadBudget(
+            ceiling_m=floors[tag], required_m=root_z, developed_ft=reach,
+            diameter_m=diameter_m)))
+    if not terminals:
+        return [], problems, []
+
+    built = build_tree(graph, space, min(goals), terminals, root_nodes=goals)
+    notices = [f"{target}: {line}" for line in explain_tree(built)] if explain else []
+    for tag, shortfall in sorted(built.unserved.items()):
+        problems.append(
+            f"{tag}: no route in plan to {target} — every lane is blocked"
+            if shortfall == float("inf") else
+            f'{tag}: short {shortfall:.2f}" of head to {target} at the minimum grade')
+
+    # **A terminal's required invert is the invert of whatever it lands on**, and in RSPH
+    # that is usually not the main: the second branch routed ties into the first. So the
+    # inverts are carried forward node by node as the tree grows — seeded from the main's
+    # own profile, then extended by each branch's — and a wye onto a branch is graded
+    # against the branch. Grading it against the main instead reads a tie twelve feet away
+    # and calls a route feasible that is not.
+    from typehaus.routing.gravity import developed_lengths, profile_for
+
+    inverts = {index: _invert_at(main, (graph.nodes[index].x, graph.nodes[index].y, 0.0))
+               for index in goals}
+    proposals: list[tuple[RouteProposal, str]] = []
+    for tag, _slack in built.order:
+        route_found = built.routes.get(tag)
+        if route_found is None:
+            continue
+        legs = route_found.polyline()
+        lengths = developed_lengths(route_found.points)
+        arrival = inverts.get(route_found.nodes[-1])
+        if arrival is None:
+            problems.append(f"{tag}: it ties onto a branch whose own invert is not "
+                            "known, so its head cannot be graded — route that branch "
+                            "first with --fixture")
+            continue
+        budget = HeadBudget(ceiling_m=floors[tag], required_m=arrival,
+                            developed_ft=lengths[-1], diameter_m=diameter_m)
+        profile = profile_for(budget, grade_in_per_ft=grade)
+        origin = (legs[0][0], legs[0][1], floors[tag])
+        fallen = _fall(legs, origin, budget, grade, tag, problems)
+        if fallen is None:
+            continue
+        fell, note = fallen
+        if profile is not None:
+            for index, length in zip(route_found.nodes, lengths, strict=False):
+                inverts.setdefault(index, profile.invert_at(length))
+        proposals.append((RouteProposal(
+            tag=f"{tag}-PROPOSED", kind="pipe", points=list(fell),
+            diameter_m=diameter_m, serves=(tag,), system="drain",
+            cost=route_found.cost, bends=route_found.bends,
+            terms=dict(route_found.terms) if explain else {},
+            notes=[note]).snapped(), storeys[tag]))
+    return proposals, problems, notices
+
+
+def _invert_at(run: Any, point: tuple[float, float, float]) -> float:
+    """The main's own invert where a branch arrives, interpolated along its path.
+
+    Taking the shallowest invert everywhere would price every branch against the hardest
+    tie on the main, and taking the deepest would price it against a tie it may not reach.
+    The invert at the arrival is neither: it is the number the wye is actually cut at.
+    """
+    best: tuple[float, float] | None = None
+    for (ax, ay), az, (bx, by), bz in zip(run.path, run.z_m, run.path[1:], run.z_m[1:],
+                                          strict=False):
+        dx, dy = bx - ax, by - ay
+        span = dx * dx + dy * dy
+        t = 0.0 if span <= 0 else max(0.0, min(1.0, ((point[0] - ax) * dx
+                                                     + (point[1] - ay) * dy) / span))
+        near = (ax + t * dx, ay + t * dy)
+        distance = (near[0] - point[0]) ** 2 + (near[1] - point[1]) ** 2
+        if best is None or distance < best[0]:
+            best = (distance, az + t * (bz - az))
+    return best[1] if best is not None else max(run.z_m)
+
+
+def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05) -> set[int]:
+    """Every lattice node lying on a run's plan polyline — the root of a tree.
+
+    A main is a line and a branch ties in where it meets it. Modelling the root as one
+    vertex is what makes a tree look like a manifold: every branch converges on the same
+    point, and the wyes stack where no fitting could.
+    """
+    out: set[int] = set()
+    # A stack's reachable part is ONE vertex — its head — so the degenerate polyline is the
+    # common case here rather than an edge case, and zipping it against its own tail would
+    # silently produce no goals at all.
+    segments = (list(zip(path, path[1:], strict=False)) if len(path) > 1
+                else [(path[0], path[0])])
+    for node in graph.nodes:
+        for (ax, ay), (bx, by) in segments:
+            dx, dy = bx - ax, by - ay
+            span = dx * dx + dy * dy
+            t = 0.0 if span <= 0 else max(0.0, min(1.0, ((node.x - ax) * dx
+                                                         + (node.y - ay) * dy) / span))
+            if ((ax + t * dx - node.x) ** 2
+                    + (ay + t * dy - node.y) ** 2) <= tolerance ** 2:
+                out.add(node.index)
+                break
+    return out
+
+
+def _fall(points: list[tuple[float, float, float]],
+          origin: tuple[float, float, float], budget: Any, grade: float,
+          target: str, problems: list[str]
+          ) -> tuple[list[tuple[float, float, float]], str] | None:
+    """Put a found plan route on its gravity profile, or refuse and say by how much.
+
+    The profile comes from ``gravity.profile_for`` rather than from a start elevation, so
+    it is built from the ARRIVAL upward and the route lands exactly on the tie. Then the
+    flange is prepended as its own vertex at the finished floor, which makes the first leg
+    the vertical drop it is: a closet bend is a fitting, not a grade.
+
+    A refusal names the grade the route WOULD hold. "No feasible route" is not actionable;
+    "this needs 0.19"/ft and the code wants 0.25"" says how much shorter, higher or lower
+    the problem has to get. That second refusal — a ``--slope`` steeper than the code
+    minimum, which ``HeadBudget.feasible`` does not grade because it asks about the
+    minimum — is why the profile is asked rather than the budget.
+    """
+    from typehaus.routing.trades import pipe as pipe_trade
+
+    fallen = pipe_trade.elevate(points, budget, grade_in_per_ft=grade)
+    if fallen is None:
+        feasible = budget.feasible_slope_in_per_ft()
+        short = max(budget.shortfall_in(),
+                    grade * budget.developed_ft - budget.available_in)
+        problems.append(
+            f'{target}: short {short:.2f}" of head over '
+            f'{budget.developed_ft:.2f} ft. The route is feasible at '
+            f'{feasible:.3f}"/ft and this asks for {grade:.3f}"/ft — raise the '
+            f'start, lower the tie, or shorten the run by {short / grade:.2f} ft')
+        return None
+    if origin[2] > fallen[0][2] + 1e-9:
+        fallen = [(fallen[0][0], fallen[0][1], origin[2]), *fallen]
+    return fallen, (f'gravity: {grade:.3f}"/ft over {budget.developed_ft:.2f} ft, '
+                    f'{budget.slack_in:.2f}" of head to spare; the first leg is the '
+                    "flange drop and takes no grade")
 
 
 def _endpoints(model: ResolvedModel, target: str, mode: str,
@@ -281,7 +549,7 @@ def _endpoints(model: ResolvedModel, target: str, mode: str,
     from typehaus.resolve.mep import _expected_drain_point  # type: ignore[attr-defined]
 
     runs = {r.tag: r for r in model.pipe_runs}
-    if mode in ("run", "tree") and target in runs:
+    if mode == "run" and target in runs:
         run = runs[target]
         if not run.z_m or len(run.z_m) != len(run.path):
             problems.append(f"{target}: no resolved elevations, so it cannot be routed")
@@ -300,7 +568,6 @@ def _endpoints(model: ResolvedModel, target: str, mode: str,
             problems.append(f"{target}: no resolvable drain point — the same wording "
                             "mep.trap_arm_length uses, and the same cause")
             return (None,) * 7
-        element = model.plan.by_tag(target)
         storey = _storey_of(model, target)
         floor_m = next((s.elevation.meters for s in model.plan.storeys
                         if s.tag == storey), 0.0)
@@ -308,17 +575,16 @@ def _endpoints(model: ResolvedModel, target: str, mode: str,
         if near is None:
             return (None,) * 7
         root, parent = near
-        del element
         # The runs that already serve this fixture are what the proposal REPLACES, so they
         # are not obstacles to it — and one of them is usually the run the tie point sits
         # on, which is why leaving them hard reports "no lattice node at the root" for a
         # root that is perfectly reachable.
         replaced = {run.tag for run in model.pipe_runs if target in run.serves}
-        return ((point[0], point[1], floor_m), root, 0.0508, (target,), storey, "drain",
-                frozenset({parent, *replaced}))
+        return ((point[0], point[1], floor_m), root, _BRANCH_DIAMETER_M, (target,),
+                storey, "drain", frozenset({parent, *replaced}))
 
     problems.append(f"{target}: not a run in this model")
-    return (None,) * 6
+    return (None,) * 7
 
 
 def _discharge(model: ResolvedModel, run: Any,

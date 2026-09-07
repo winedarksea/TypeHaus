@@ -3,8 +3,9 @@
 Two kinds, and the distinction is not a matter of degree:
 
 **Hard** — a rough opening, a deck void with no wall under it, unsleeved concrete, an
-existing run, a door's swing. A route through one of these is not expensive, it is wrong,
-and the search may not take it at any weight.
+existing run, anything ``--avoid`` names. A route through one of these is not expensive,
+it is wrong, and the search may not take it at any weight. (A door's *swing* is not among
+them — see :func:`_opening_prisms` — and the buck it swings in is.)
 
 **Soft** — a room's open volume below its finished ceiling, priced by occupancy; in-wall
 travel past one stud bay. These are buildable and undesirable, which is exactly what a
@@ -39,7 +40,7 @@ class HardPrism:
     """A plan footprint and a z band the route may not enter. Already inflated."""
 
     tag: str
-    kind: str  # "opening" | "void" | "concrete" | "run" | "swing" | "joist"
+    kind: str  # "opening" | "void" | "concrete" | "run" | "avoid"
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
@@ -92,22 +93,21 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     concerned with are the two it may not reach — a branch cannot land on the main it
     discharges to, because the main is a hard prism sitting exactly where the tie is.
 
-    **Rough openings move here from the check that first needed them.**
-    ``checks/mep/routing_openings.opening_prisms`` derives the same footprints and this
-    package must not import it (the leaf rule), so the derivation lives in the check and
-    is called through a small adapter — see :func:`_opening_prisms`. One derivation, two
-    consumers, and the check keeps the docstring that explains the buck's full depth.
+    **Rough openings are re-derived here, deliberately.**
+    ``checks/mep/routing_openings`` derives the same footprints for
+    ``mep.opening_interference``, and the leaf rule forbids importing it — so the two
+    readings are stated twice and :func:`_opening_prisms` says which parts must agree and
+    which must not. Sharing one derivation would mean the router importing a check.
     """
     inflate = radius_m + clearance_m
     out: list[HardPrism] = []
 
-    for tag, is_door, host, prism, low, high in _opening_prisms(model):
+    for tag, prism, low, high in _opening_prisms(model):
         grown = prism.buffer(inflate)
         if grown.is_empty:
             continue
         out.append(HardPrism(tag=tag, kind="opening", footprint=grown,
                              z0_m=low - inflate, z1_m=high + inflate))
-        del is_door, host
 
     # Deck voids, less the walls that cross them: a run over a void has nothing to strap
     # to unless a wall carries it, which is exactly ``mep.run_over_void``'s reading.
@@ -200,13 +200,25 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
     return out
 
 
-def _opening_prisms(model: ResolvedModel) -> list[tuple[str, bool, str, Any, float, float]]:
-    """Rough-opening prisms, derived where the check that documents them lives.
+def _opening_prisms(model: ResolvedModel) -> list[tuple[str, Any, float, float]]:
+    """``(tag, plan footprint, sill z, head z)`` for every rough opening in the model.
 
-    Imported lazily and by module path so the leaf rule stays checkable: this package
-    never names ``typehaus.checks`` at import time, and ``tests/test_routing_leaf.py``
-    grades the module's import graph. The derivation is genuinely shared — one buck, one
-    footprint — and duplicating it here would be a second source of truth for a hole.
+    The buck is the opening's width along the wall axis by the wall's FULL thickness
+    across it — a window buck runs the whole depth of the assembly, so a run crossing the
+    width anywhere in that depth is in it. ``checks/mep/routing_openings.opening_prisms``
+    derives the same rectangle for ``mep.run_through_opening``; the leaf rule forbids
+    importing it, so the derivation is stated twice and this says which way the two differ.
+
+    **The check erodes the buck by ``OPENING_EDGE_M`` and this does not.** A raceway
+    strapped to a jack stud shares a coordinate with the opening beside it, and the check
+    must not report that; a router must not *propose* it either, and half an inch of
+    tolerance is exactly the width of the lane it would propose. The check's tolerance is
+    forgiveness after the fact and the router has nothing to forgive. :func:`hard_prisms`
+    then grows this by ``radius + clearance`` once, for the same reason.
+
+    A door's swing is not modelled here. The swing is a hard obstacle in its own right and
+    would need the leaf's own reading of hinge side and hand, which this package has not
+    got; a route through a closed door's buck is already refused by the buck itself.
     """
     import math
 
@@ -232,8 +244,7 @@ def _opening_prisms(model: ResolvedModel) -> list[tuple[str, bool, str, Any, flo
         if prism.is_empty or not prism.is_valid:
             continue
         low = wall.z0_m + opening.sill_m
-        out.append((opening.tag, bool(opening.is_door), wall.tag, prism,
-                    low, low + opening.height_m))
+        out.append((opening.tag, prism, low, low + opening.height_m))
     return out
 
 

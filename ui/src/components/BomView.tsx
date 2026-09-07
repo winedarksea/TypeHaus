@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useStore } from "../state/store";
 import type { CostsOp, EngineBom, EngineCosts } from "../engine/EngineClient";
 import { formatCell, groupBom } from "../model/engineBom";
+import { HIDDEN_BOM_COLUMNS, IS_PUBLIC_SITE } from "../state/public";
 import {
   buildExtraTable,
   costsSubtitle,
@@ -123,7 +124,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 export function BomView() {
   const model = useStore((s) => s.model);
   const client = useStore((s) => s.client);
-  const setDetailView = useStore((s) => s.setDetailView);
+  const closeReader = useStore((s) => s.closeReader);
   const [filter, setFilter] = useState("");
   const [bom, setBom] = useState<EngineBom | null>(null);
   const [costs, setCosts] = useState<EngineCosts | null>(null);
@@ -140,6 +141,10 @@ export function BomView() {
         if (!cancelled) setError(cause instanceof Error ? cause.message : String(cause));
       },
     );
+    // The published site does not price this house: it ships no prices.toml, and asking
+    // would come back empty anyway. Skipping the fetch is the honest version of that —
+    // the columns are not merely hidden, they are never computed (→ state/public.ts).
+    if (IS_PUBLIC_SITE) return () => { cancelled = true; };
     // Costs ride alongside; a house without the endpoint (or a malformed costs.toml)
     // degrades to the plain BOM rather than blanking it.
     client.getCosts().then(
@@ -246,7 +251,7 @@ export function BomView() {
 
   const groups: CostedGroup[] = useMemo(() => {
     if (!bom) return [];
-    const plain = groupBom(bom);
+    const plain = groupBom(bom, HIDDEN_BOM_COLUMNS);
     return costs ? decorateWithCosts(plain, costs) : plain;
   }, [bom, costs]);
   const stale = useMemo(() => (costs ? staleEntries(costs) : []), [costs]);
@@ -287,7 +292,7 @@ export function BomView() {
     <ReaderShell
       title="Bill of materials"
       subtitle={subtitle}
-      onClose={() => setDetailView("none")}
+      onClose={closeReader}
       toolbar={<ReaderFilter value={filter} onChange={setFilter}
         placeholder="Filter parts…" label="Filter bill of materials" />}
     >

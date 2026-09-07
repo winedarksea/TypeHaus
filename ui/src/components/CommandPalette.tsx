@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import { ALL_TRADES } from "../state/vocabulary";
 import { ALL_LAYER_VISIBILITY_GROUPS, LAYER_VISIBILITY_GROUP_LABEL } from "../model/visibility";
+import { HIDDEN_REPORTS } from "../state/public";
 
 // Command palette (Phase 4): fuzzy-searchable actions + recent commands. The registry is
 // built here from live store actions so commands always stay wired to real behaviour.
@@ -54,6 +55,7 @@ export function CommandPalette() {
   const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const showEverything = useStore((s) => s.showEverything);
   const setDetailView = useStore((s) => s.setDetailView);
+  const openDocuments = useStore((s) => s.openDocuments);
   const reload = useStore((s) => s.reload);
   const offline = useStore((s) => s.offline);
 
@@ -97,8 +99,14 @@ export function CommandPalette() {
       { id: "reader-plumbing", title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
       { id: "reader-data", title: "Data (low-voltage schedule)", group: "Model", run: () => setDetailView("data") },
       { id: "reader-estimate", title: "Estimate (priced rows, bid ladder)", group: "Model", run: () => setDetailView("estimate") },
+      { id: "reader-documents", title: "Documents (drawings, notes, reports)", group: "Model", run: () => openDocuments() },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
-    ];
+    ]
+      // The published build does not offer every reader (state/public.ts). Filtering the
+      // command list rather than the menu alone is the point: a palette entry for a page
+      // that is not there is a dead end you can still type your way into.
+      .filter((command) => !command.id.startsWith("reader-")
+        || !HIDDEN_REPORTS.has(command.id.slice("reader-".length)));
     for (const trade of ALL_TRADES) {
       list.push({
         id: `trade-${trade}`,
@@ -120,7 +128,8 @@ export function CommandPalette() {
     return list;
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
     setActivePanel, setRepresentation, setActiveWorkspace, setActiveLens,
-    setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, reload, offline]);
+    setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, openDocuments,
+    reload, offline]);
 
   const results = useMemo(() => {
     if (!query) {

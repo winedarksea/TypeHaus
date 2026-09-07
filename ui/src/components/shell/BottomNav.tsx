@@ -3,7 +3,7 @@ import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
 import { Menu } from "../ui/Menu";
-import { TOOL_GROUPS, GROUP_OF_TOOL } from "./navigationConfig";
+import { DOCUMENTS_DESTINATION, TOOL_GROUPS, GROUP_OF_TOOL } from "./navigationConfig";
 
 /**
  * The phone-class replacement for the navigation rail.
@@ -23,6 +23,10 @@ export function BottomNav() {
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
   const offline = useStore((s) => s.offline);
+  const detailView = useStore((s) => s.detailView);
+  const setDetailView = useStore((s) => s.setDetailView);
+  const openDocuments = useStore((s) => s.openDocuments);
+  const documentsOpen = detailView === "documents";
 
   const findings = model ? visibleFindings(model.findings) : [];
   const errorCount = findings.filter((f) => f.severity === "error").length;
@@ -56,6 +60,19 @@ export function BottomNav() {
           </button>
         );
       })}
+
+      {/* The phone case for this app is reading a drawing, so Documents earns a bar slot. */}
+      <button
+        className={`rail-item${documentsOpen ? " active" : ""}`}
+        aria-pressed={documentsOpen}
+        title={DOCUMENTS_DESTINATION.hint}
+        onClick={() => (documentsOpen ? setDetailView("none") : openDocuments())}
+      >
+        <span className="rail-indicator">
+          <Icon name={DOCUMENTS_DESTINATION.icon} size={22} />
+        </span>
+        <span className="rail-label">{DOCUMENTS_DESTINATION.label}</span>
+      </button>
 
       <Menu
         label={activeToolLabel}

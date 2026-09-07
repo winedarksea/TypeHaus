@@ -26,13 +26,28 @@ const NOT_SHIPPED = new Set(["build-site.mjs", "DEPLOY.md", "node_modules"]);
 // The offline PWA is worthless without these: the engine sources it unpacks into Pyodide and
 // the bundled house a first-time visitor lands in. A missing one only fails in the browser, so
 // assert here instead of shipping a deploy that boots to "Cannot reach engine".
-const REQUIRED_APP_FILES = ["index.html", "sw.js", "manifest.webmanifest", "typehaus-engine.tar", "catlin-house.json"];
+const REQUIRED_APP_FILES = ["index.html", "sw.js", "manifest.webmanifest", "typehaus-engine.tar",
+  "catlin-house.json", "sheets/permit_set.json"];
+
+// The permit set the app's Drawings tab reads. Composed by `haus print` (in CI, before this
+// script runs — see landing/DEPLOY.md), never here: matplotlib cannot run in Pyodide, so the
+// published app ships a pre-rendered PDF rather than drawing one. Copied out of the house's
+// `out/` into `app/sheets/` rather than into `ui/public/`, or every local `haus serve` build
+// would carry a 24 MB drawing set too.
+const houseOut = resolve(repoRoot, "houses", "catlin", "out");
+const SHEET_FILES = ["permit_set.pdf", "permit_set.json"];
+// Cloudflare Pages refuses a file over 25 MB. A set that crosses it fails the deploy at
+// upload time with nothing to point at; better to say so here, naming the file.
+const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 
 console.log("[site] building standalone PWA...");
 execFileSync("npm", ["run", "build"], {
   cwd: uiDir,
   stdio: "inherit",
-  env: { ...process.env, VITE_PWA_STANDALONE: "1" },
+  // VITE_PUBLIC_SITE gates the pages (the Estimate reader, the BOM's cost columns);
+  // HAUS_PUBLIC keeps prices.toml / costs.toml / tasks.toml out of the bundled house
+  // entirely, so the numbers are not merely hidden but absent (→ ui/src/state/public.ts).
+  env: { ...process.env, VITE_PWA_STANDALONE: "1", VITE_PUBLIC_SITE: "1", HAUS_PUBLIC: "1" },
 });
 
 console.log(`[site] assembling ${siteDir}`);
@@ -49,9 +64,28 @@ for (const name of readdirSync(here)) {
 // PWA under /app.
 cpSync(resolve(uiDir, "dist"), join(siteDir, "app"), { recursive: true });
 
+// The drawings, beside the app.
+const sheetsDir = join(siteDir, "app", "sheets");
+mkdirSync(sheetsDir, { recursive: true });
+for (const name of SHEET_FILES) {
+  const src = join(houseOut, name);
+  if (!existsSync(src)) continue; // REQUIRED_APP_FILES below is what actually fails the build
+  const size = statSync(src).size;
+  if (size > MAX_ASSET_BYTES) {
+    console.error(`[site] ${name} is ${(size / 1e6).toFixed(1)} MB — over the 25 MB `
+      + `per-file cap on Cloudflare Pages. Print at --paper ledger, or thin the set.`);
+    process.exit(1);
+  }
+  cpSync(src, join(sheetsDir, name));
+}
+
 const missing = REQUIRED_APP_FILES.filter((f) => !existsSync(join(siteDir, "app", f)));
 if (missing.length > 0) {
   console.error(`[site] /app is missing required files: ${missing.join(", ")}`);
+  if (missing.some((f) => f.startsWith("sheets/"))) {
+    console.error("[site] run `haus print houses/catlin --fmt pdf` first — it writes "
+      + "out/permit_set.{pdf,json}, and it refuses while the permit checklist does not pass.");
+  }
   process.exit(1);
 }
 

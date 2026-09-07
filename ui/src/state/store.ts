@@ -27,7 +27,7 @@ import { createMutationActions, type MutationActions } from "./mutations";
 import {
   ALL_TRADES,
   DEFAULT_EARTH_OPACITY,
-  type Conflict, type DetailView, type LabelMode, type Lens, type Representation, type Selection,
+  type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Representation, type Selection,
   type ThreeMode, type Toast, type Tool, type Trade,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
@@ -78,6 +78,12 @@ export interface StoreState extends MutationActions {
   // ground you *are* showing lets through, from the translucent default up to real dirt.
   earthOpacity: number;
   detailView: DetailView; // assembly-details / BOM reader over the canvas
+  // The Documents hub's own state. `readerOrigin` is why it is three fields and not one:
+  // a reader opened FROM the hub has to go back to the hub, and a reader opened from the
+  // canvas has to go back to the canvas — same reader, two Backs.
+  documentsTab: DocumentsTab;
+  documentsSelection: { sheet: string | null; note: string | null };
+  readerOrigin: "canvas" | "documents";
   conflict: Conflict | null;
   // Set when the engine reports a queued source writeback failed: the edit the user saw
   // applied has been reverted to source truth, so this must be shown, not swallowed.
@@ -114,6 +120,16 @@ export interface StoreState extends MutationActions {
   setEarthOpacity: (opacity: number) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
+  // Open the Documents hub, optionally straight onto a tab and a selection (a note's "on
+  // sheet A-401" chip lands on that sheet).
+  openDocuments: (tab?: DocumentsTab, selection?: { sheet?: string; note?: string }) => void;
+  setDocumentsTab: (tab: DocumentsTab) => void;
+  // Where a reader should return to when it closes. Set by the hub's Reports cards.
+  setReaderOrigin: (origin: "canvas" | "documents") => void;
+  // The one Back every reader uses: the hub when that is where it was opened from, the
+  // canvas otherwise. Living here rather than in ReaderShell keeps the two readers that
+  // close through their own paths (BOM, Estimate) from having to re-derive it.
+  closeReader: () => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
   selectByTag: (kind: Selection["kind"], tag: string) => void;
   setHover: (uid: string | null) => void;
@@ -179,6 +195,9 @@ export const useStore = create<StoreState>((set, get) => ({
   ) as Record<LayerVisibilityGroup, boolean>,
   earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
+  documentsTab: "drawings",
+  documentsSelection: { sheet: null, note: null },
+  readerOrigin: "canvas",
   conflict: null,
   writebackFailure: null,
   toasts: [],
@@ -311,7 +330,24 @@ export const useStore = create<StoreState>((set, get) => ({
         ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
       ) as Record<LayerVisibilityGroup, boolean>,
     }),
-  setDetailView: (detailView) => set({ detailView }),
+  // Leaving for the canvas always clears the origin: whatever opened the reader, the user
+  // is now back at the plan, and a stale "came from Documents" would send the *next* Back
+  // to a hub nobody opened.
+  setDetailView: (detailView) => set(
+    detailView === "none" ? { detailView, readerOrigin: "canvas" as const } : { detailView }),
+  openDocuments: (tab, selection) => set((s) => ({
+    detailView: "documents",
+    documentsTab: tab ?? s.documentsTab,
+    documentsSelection: selection
+      ? { sheet: selection.sheet ?? null, note: selection.note ?? null }
+      : s.documentsSelection,
+  })),
+  setDocumentsTab: (documentsTab) => set({ documentsTab }),
+  setReaderOrigin: (readerOrigin) => set({ readerOrigin }),
+  closeReader: () => set((s) => (s.readerOrigin === "documents"
+    ? { detailView: "documents" as DetailView, readerOrigin: "canvas" as const }
+    : { detailView: "none" as DetailView, readerOrigin: "canvas" as const })),
+
   select: (kind, uid) => set({ selection: { kind, uid } }),
   // Select an element by its authored tag (uids are minted server-side, so a freshly drawn
   // wall / placed opening is only addressable by tag until the next reload lands).

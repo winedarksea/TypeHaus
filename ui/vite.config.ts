@@ -35,6 +35,9 @@ export default defineConfig({
       "/costs": ENGINE,
       "/tasks": ENGINE,
       "/preview": ENGINE,
+      // The Documents hub's two reads (server/documents_api.py).
+      "/sheets": ENGINE,
+      "/notes": ENGINE,
       "/asset": ENGINE,
       "/underlay": ENGINE,
       "/events": { target: ENGINE, ws: true },
@@ -53,7 +56,11 @@ export default defineConfig({
         // reached only through the lazily-imported 3D panel (components/Panel3DLazy.tsx), so
         // naming it here keeps it out of the entry chunk *and* lets it stay cached across
         // deploys that only touch app code.
-        manualChunks: { three: ["three"] },
+        // three.js and pdf.js are the two dependencies big enough to be worth their own
+        // chunk, and both are reached only through a lazily-imported surface (the 3D panel;
+        // the Documents hub's Drawings tab) — so naming them here keeps them out of the
+        // entry chunk *and* lets them stay cached across deploys that only touch app code.
+        manualChunks: { three: ["three"], pdfjs: ["pdfjs-dist"] },
       },
     },
   },

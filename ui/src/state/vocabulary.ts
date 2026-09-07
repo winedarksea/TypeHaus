@@ -65,7 +65,14 @@ export const DEFAULT_EARTH_OPACITY = 0.28;
 // "estimate" is a fifth reader over the takeoff payload, beside "bom": the BOM says what
 // is in the house, the estimate ranks what it costs. Read-only — prices.toml is
 // hand-authored and stays that way.
-export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data" | "estimate";
+// "documents" is the odd one out and deliberately so: it is not a report over the model but
+// the hub the reports now hang under, beside the permit drawings and the house's own notes.
+// It is a DetailView rather than a panel because it is the same read-and-return, full-screen
+// surface the readers are, and a contractor checking a sheet is not editing the plan.
+export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac" | "plumbing" | "data" | "estimate" | "documents";
+
+// The Documents hub's three tabs. Drawings first: it is what a contractor opens the hub for.
+export type DocumentsTab = "drawings" | "notes" | "reports";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the rest are *derived* geometry the resolver computes (a post

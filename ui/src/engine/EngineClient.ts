@@ -84,7 +84,45 @@ export type EngineEvent =
   // user already saw applied is gone. Detail is the engine's WritebackError message.
   | { type: "writeback-failed"; revision: string; detail: string };
 
-export type EngineArtifact = "ifc" | "glb";
+export type EngineArtifact = "ifc" | "glb" | "permit_pdf";
+
+// --- The contractor reference: drawings and notes (→ Documents hub) ---------------------
+//
+// Both are read-only and both exist on either surface: `haus serve` serves what `haus print`
+// left in `out/`, and the standalone PWA reads a copy bundled at deploy time. Neither is
+// composed in the browser — matplotlib does not run in pyodide, which is exactly why the
+// published site ships a pre-rendered PDF rather than drawing one.
+
+/** One sheet in the printed set. `page` is 1-based, into the single permit-set PDF. */
+export interface SheetEntry {
+  number: string;
+  title: string;
+  page: number;
+}
+
+/** `out/permit_set.json` — written beside the PDF by `haus print` (emit/draw/sheet_manifest.py). */
+export interface SheetManifest {
+  sheets: SheetEntry[];
+  pdf: string;
+  paper: string;
+  /** The issue stamp every sheet in this set carries ("NOT FOR CONSTRUCTION"). */
+  issue: string;
+  printed_at: string;
+  engine_version: string;
+  /** The model hash the set was printed from — how a stale set becomes visible. */
+  content_hash: string;
+}
+
+/** One markdown note in the house (emit/notes_index.py::NoteEntry). */
+export interface NoteEntry {
+  /** `brief.md` or `notes/<...>.md`, relative to the house. */
+  path: string;
+  title: string;
+  kind: "brief" | "detail" | "calc" | "design" | "superseded";
+  /** Sheet numbers this note's prose prints on. */
+  on_sheets: string[];
+  chars: number;
+}
 
 // A server-side geometry macro (server/macros_api.py). The UI sends screen intent (draw
 // endpoints, the wall to split, a drag delta) as authored-unit strings; the engine owns all
@@ -389,6 +427,12 @@ export interface EngineClient {
   undo(): Promise<HistoryResult>;
   redo(): Promise<HistoryResult>;
   getArtifact(kind: EngineArtifact): Promise<Blob>;
+  // The printed permit set's table of contents. Rejects with a 404 EngineError when
+  // `haus print` has not run (served) or no set was bundled (offline).
+  getSheets(): Promise<SheetManifest>;
+  // The house's markdown notes, and one note's text. Read-only on both surfaces.
+  getNotes(): Promise<NoteEntry[]>;
+  getNote(path: string): Promise<string>;
   calibrateUnderlay(calibration: UnderlayCalibration): Promise<void>;
   // Subscribe to server push; returns an unsubscribe function.
   events(onEvent: (e: EngineEvent) => void, onStatus?: (up: boolean) => void): () => void;
