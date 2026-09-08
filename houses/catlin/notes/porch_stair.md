@@ -200,7 +200,7 @@ itself rather than a wall six feet from it. Three things follow from that wall:
   of `PT-SG-BF3`.
 
 The fitting and the circuit are unchanged: `ED-T-LT-SCONCE-EXT`, the same wet-rated
-full-cutoff luminaire as `ED-G-EXT-LT`, on `CKT-LT-MAIN` and switched by
+full-cutoff luminaire as the garage door pair `ED-G-EXT-LT-E`/`-W`, on `CKT-LT-MAIN` and switched by
 `ED-M-PORCH-FLOOD-SW` — NEC 210.70(A)(2)(b) wants the exterior light switched from inside,
 that switch already is, and the flood and the stair light are wanted on the same errand. It
 reuses that type rather than minting a full-cutoff downlight of its own **because an unpriced

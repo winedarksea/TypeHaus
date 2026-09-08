@@ -1259,9 +1259,16 @@ def test_hp3s_cabinet_faces_the_slot_and_clears_both_walls(catlin_model) -> None
 _HP1_PAD = "SL-M-HP1PAD"
 _HP1_CAB_W_IN, _HP1_CAB_D_IN = 39.0, 14.5625
 _HP1_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
-#: The garage's plan extent. The discharge argument turns on the cabinet standing EAST of
-#: it: the 48 1/2" slot could never give a 24k unit 40" of throw.
-_GARAGE_EAST_X_FT = 24.0
+#: The garage's plan extent, and it is the ROOF's, not the wall's. The discharge argument
+#: turns on the cabinet standing EAST of it: the 48 1/2" slot could never give a 24k unit
+#: 40" of throw.
+#:
+#: ** 31'-10" SINCE 2026-09-07 (was 24'-0"). ** Two things moved it. The garage went 6'-0"
+#: east onto the house ridge, and its own ridge turned north-south — so the edge facing this
+#: cabinet stopped being a rake at the wall line and became an EAVE carrying a gutter, whose
+#: outer face stands 1'-10" proud of the 30'-0" wall. Asserting the wall line here would let
+#: the cabinet sit under the trough and still pass. See notes/garage_orientation_lot.md.
+_GARAGE_EAST_X_FT = 31.0 + 10.0 / 12.0
 
 
 def test_hp1_stands_on_a_pad_at_the_same_top_and_height_as_the_other_two(catlin_model
@@ -1318,16 +1325,24 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     """The siting, in the four numbers that decide it.
 
     ``rotation=deg(180)`` faces the discharge NORTH, away from the wall — the opposite of the
-    deg(0) this unit carried in the pocket, where it discharged south into open yard. Every
-    clearance is better than the row it left: 6" back against a published 4", 23 3/4" of
-    service side, 14" to the garage rake, and 40" of throw.
+    deg(0) this unit carried in the pocket, where it discharged south into open yard. 6" of
+    back clearance against a published 4", 14" to the garage's east gutter face, and 40" of
+    throw.
 
-    ** THE 40" IS ONLY LEGAL BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** The garage
-    occupies x 0'..24'; this cabinet is at x 26'-6"..29'-9", past its plan extent, throwing
-    into open front yard. Assert that, not the 40", because the 40" is a consequence.
+    ** THE 40" IS ONLY LEGAL BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** Since
+    2026-09-07 the garage occupies x 6'..30' with its roof to 31'-4" and its gutter to
+    31'-10"; this cabinet is at x 33'-0"..36'-3", past its plan extent, throwing into open
+    front yard. Assert that, not the 40", because the 40" is a consequence.
 
-    And the price, asserted so nobody discovers it on site: the cabinet laps WIN-M-KITCH's
-    rough opening in plan. There is no window-free band 39" wide on this wall.
+    ** IT OVERSAILS THE HOUSE'S NE CORNER BY 3", DELIBERATELY. ** 31'-10" to 36'-0" is 50"
+    and the cabinet plus its 14" clearance is 53". The alternative was to sit flush and give
+    the far end 11" — trading a published-unknown airflow clearance for a mounting cosmetic.
+    Airflow won, and that is why this test does NOT assert the cabinet stays inside x=36'.
+
+    And the price, asserted so nobody discovers it on site: the cabinet laps a kitchen
+    window's rough opening in plan. There is no window-free band 39" wide on this wall — the
+    widest is 34 1/2" — so a north-face siting laps one wherever it goes. It used to be
+    WIN-M-KITCH over the sink; since the move east it is WIN-M-KITCH-N, and by less.
     """
     from shapely.geometry import Polygon
 
@@ -1346,11 +1361,15 @@ def test_hp1_faces_north_off_its_own_pad(catlin_model) -> None:
     # W-M-N1 runs EAST to WEST, so the opening's `center_along_m` is subtracted from the
     # wall's start x rather than added to it.
     wall = _wall(catlin_model, "W-M-N1")
-    window = next(o for o in catlin_model.openings if o.tag == "WIN-M-KITCH")
-    assert window.host_wall == "W-M-N1"
-    wx_in = (wall.axis[0][0] - window.center_along_m) / INCH
-    ro_half = (window.width_m / INCH) / 2.0
-    assert abs(wx_in - cx_in) < _HP1_CAB_W_IN / 2.0 + ro_half
+    lapped = []
+    for tag in ("WIN-M-KITCH", "WIN-M-KITCH-N"):
+        window = next(o for o in catlin_model.openings if o.tag == tag)
+        assert window.host_wall == "W-M-N1"
+        wx_in = (wall.axis[0][0] - window.center_along_m) / INCH
+        ro_half = (window.width_m / INCH) / 2.0
+        if abs(wx_in - cx_in) < _HP1_CAB_W_IN / 2.0 + ro_half:
+            lapped.append(tag)
+    assert lapped, "a 39\" cabinet cannot miss both windows on this wall"
 
     # Every leg's full 2" section lands on the pad, and on a published foot hole.
     pad = Polygon(_solid(catlin_model, _HP1_PAD).outline)

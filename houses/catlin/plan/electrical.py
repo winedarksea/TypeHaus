@@ -775,15 +775,29 @@ MAIN_DEVICES = [
     # within sight of it in any sense 440.14 means.
     # ** ED-M-HP1-DISC LEFT THIS WALL WITH ITS UNIT (2026-09-04, later the same day). **
     # Everything above is now HP2's story alone; only ED-M-HP2-DISC stays on W-SG-E1.
-    # HP1's can goes to the house's NORTH face beside its own cabinet, at (32'-0",
+    # HP1's can goes to the house's NORTH face beside its own cabinet, at (32'-5",
     # 36'-8 7/8") — 1 5/8" off the cladding for the can's 3 1/4" depth, and with NO
     # `rotation`, because a north face wants the depth in y where the pocket's east face
-    # wanted it in x. x=32'-0" is the only clear band on this wall: 30'-7 1/2"..33'-3",
-    # between WIN-M-KITCH's framing bumper and the next opening's.
+    # wanted it in x.
     # elevation 3'-6" reads 6'-4" above the -2'-10" grade it is operated from — inside NEC
     # 404.8(A)'s 6'-7" — and it is dry, at standing height, not in the plough line.
+    #
+    # ** IT MOVED 32'-0" -> 32'-5" ON 2026-09-07 BECAUSE ITS CABINET LANDED ON IT. ** The
+    # old station sat in the clear band 30'-7 1/2"..33'-3" between WIN-M-KITCH's framing
+    # bumper and the next opening's; EQ-M-HP1-OD now occupies x 33'-0"..36'-3" — hard against
+    # the house's NE corner — so the can went WEST of the machine instead of east, into the
+    # 14" band between the garage's east gutter line (31'-10") and the cabinet. A 6 1/2" can
+    # centred at 32'-5" spans 32'-1 3/4"..32'-8 1/4": 3 3/4" clear each side, and clear of
+    # both WIN-M-KITCH's RO (28'-2 1/2"..30'-5 1/2") and WIN-M-KITCH-N's (33'-5"..34'-7").
+    #
+    # ** IT IS A 6 1/2" CAN IN A 14" SLOT AND IT HAS NO NEC 110.26 WORKING SPACE TO SPEAK
+    # OF. ** Nothing in this engine grades that. It is the accepted cost of centring the
+    # garage on the house ridge, recorded here rather than papered over, and it is a hard
+    # bound: the cabinet cannot move west (the gutter) or east (the corner), so this can has
+    # nowhere better on this face. If the working space is wanted back, the answer is to
+    # move EQ-M-HP1-OD off the north face entirely, not to shuffle this box.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(32), ft(36, 8.875)),
+                     position=pt(ft(32, 5), ft(36, 8.875)),
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
@@ -950,12 +964,25 @@ MAIN_EQUIPMENT = [
     #
     # `rotation=deg(180)` faces the discharge NORTH, away from the wall. All four clearances
     # are better than the south row's: back (S) 6" against the published 4"; discharge (N)
-    # 40" into open front yard; service side (E) 23 3/4"; far end (W) 14" to the garage rake.
+    # 40" into open front yard; far end (W) 14" to the garage's east gutter face.
     #
-    # `mount.elevation` is UNCHANGED at -14": the new pad tops out at the same -2'-8" under
-    # the same 18" stand, so all three cabinets keep one base plane at -1'-2".
+    # ** IT WENT 6'-6" EAST ON 2026-09-07 (x 28'-1 1/2" -> 34'-7 1/2"). ** The garage moved
+    # 6'-0" east onto the house ridge and its own ridge turned, so the edge west of this
+    # cabinet stopped being a rake at x=25'-4" and became an EAVE with a gutter, face at
+    # 31'-10". 6'-6" is the smallest move that gives the 14" far-end clear back; the whole
+    # argument, including why it oversails the NE corner by 3" rather than giving up 3" of
+    # airflow clearance, is in params/hp1_north_pad.py, which moved with it.
+    #
+    # ** THE SERVICE SIDE IS GONE AS A NUMBER: 23 3/4" -> the open yard past the corner. **
+    # The cabinet's east face is at the house's NE corner, so the service side is unbounded
+    # by anything but the sky. `ED-M-HP1-DISC` moved to the WEST side, into the 14" band
+    # between the gutter line and the cabinet (its own note below). That is the honest cost
+    # of the garage move on this face.
+    #
+    # `mount.elevation` is UNCHANGED at -14": the pad tops out at the same -2'-8" under the
+    # same 18" stand, so all three cabinets keep one base plane at -1'-2".
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(28, 1.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
+              position=pt(ft(34, 7.5), ft(37, 8.53125)), footprint=(inch(39), inch(14.5625)),
               rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
@@ -1237,10 +1264,13 @@ SECOND_EQUIPMENT = [
 # (`GARAGE_Y_SOUTH`, plan/storeys/garage.py) that keeps the breezeway slot — net, W-G-S's
 # interior face sits +3/8" (node) - 7/8" (wall depth) = -1/2" off the sheathing plane.
 # `ED-G-EV-620` is on W-G-W, which has no node-line move, so its interior face is 7/8" off
-# the sheathing plane.
+# the sheathing plane. Both west-wall devices here and `EQ-G-HEATER` below travelled the
+# garage's 6'-0" east move on 2026-09-07 — they sit ON that wall. `ED-G-EV-1450` did not:
+# it is a station on the SOUTH wall's interior face, still well inside its new x 6'..30'
+# run, and holding it still keeps `CD-B-GARAGE` and its three sleeves untouched.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(0, 8.75), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     position=pt(ft(6, 8.75), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(19, 11.375), ft(41, 5.375)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
@@ -1256,7 +1286,7 @@ GARAGE_EQUIPMENT = [
     # this corner someone stands over with a hose — without moving the heater off
     # FURN-G-WORKBENCH, which it is here to blow down over.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(m(0.213454), m(17.858)), footprint=(inch(14), inch(9)),
+              position=pt(m(2.042254), m(17.858)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
               circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),

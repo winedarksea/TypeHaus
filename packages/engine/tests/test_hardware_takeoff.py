@@ -215,7 +215,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
                  if m.category == "truss_block" and girt_block_tier(m.child_key) is not None)
     assert row["count"] == blocks > 0
     # It is the only structural screw this role bills ON THE HOUSE — the roof's 581 came out
-    # with the nailbase, and the inner tier's took the second wall row with it. The other 224
+    # with the nailbase, and the inner tier's took the second wall row with it. The other 221
     # are the garage ICF stem's protection band (see above), which is a different building.
     assert row["count"] + furring[0]["count"] == sum(r["count"] for r in rows) > 0
     # 1114 since 2026-09-03: the garden/garage window work moved the openings the girt
@@ -240,7 +240,15 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # window's jambs pick up two more packed stations — +4, the same "a station moved"
     # arithmetic as the two entries above and not a new kind of change. Its cost is in
     # test_truss_girt_courses, which fell to 12 exact / 33 slivers and was re-swept there.
-    assert row["count"] == 1118 and furring[0]["count"] == 224
+    # ** THE GARAGE BAND WENT 224 -> 221 ON 2026-09-07, AND IT IS A ROUNDING, NOT A SAVING. **
+    # The overhead door turned north, so the stem's gap moved off the east wall onto the
+    # north: the east run merged from three segments into one unbroken W-GF-E and the north
+    # split from one into three. The band's AREA is untouched at 156.2 SF (`haus takeoff`
+    # confirms it either way) — what moved is that this row counts a
+    # "16 in o.c. strips x 24 in o.c. fasteners" grid PER WALL RUN, and re-cutting the same
+    # perimeter into differently-sized pieces re-rounds every strip. Nine runs where there
+    # were ten. See notes/garage_orientation_lot.md.
+    assert row["count"] == 1118 and furring[0]["count"] == 221
 
 
 # --- hangers -------------------------------------------------------------------------
@@ -544,25 +552,26 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
     rail and the clamps it mounts on stay one modeled ``Connector`` — this split only
     affects how the BOM itemizes the same hardware, not the geometry.
 
-    ColorGard is the only ``requires_role`` part the model contains, and it pins the rule.
+    ** THE HOUSE CONTAINS NO ``requires_role`` PART ANY MORE, AND THAT IS WHAT THIS NOW
+    PINS. ** ColorGard was the only one, and its six rails were deleted on 2026-09-07 with
+    the slope that needed them: the garage's overhead door turned north, its ridge turned
+    with it, and the south slope that used to shed onto the breezeway canopy became a rake.
+    The rule itself is unchanged and still lives in ``takeoff/hardware.py``; what is gone is
+    its only witness in this house.
 
-    The *modeled* side of the split is empty: an S-5! closes on a seam, and the only seam
-    left in the house is the roof's, where nothing is authored as a bare clamp. So the
-    carried row is the whole S-5! story, and this test asserts that rather than comparing
-    two rows — see test_solar.py for the same fact from the count's side.
+    So this test asserts the ABSENCE on both sides — no rail, and no carried clamp row
+    implied by one — rather than deleting itself. If a rail ever comes back, the carried row
+    must come back with it, and the assertion below is what will say so.
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
+    assert rails == 0, "no snow-retention rail is modeled since 2026-09-07"
     assert not [row for row in seam if row["scope"] == "modeled connector"], \
         "no bare seam clamp is authored any more; every S-5! is implied by the rail"
-    # One carried-mount row per *requiring* part, so two parts riding the same clamp never
-    # collapse into one row with a right count and a wrong reason. Pick by basis text.
-    mounts = next(row for row in seam
-                  if row["scope"] == "carried-mount" and "ColorGard" in row["basis"])
-    assert mounts["part_number"] == "S-5!"
-    assert mounts["count"] == rails > 0
-    assert "required to mount a modeled S-5! ColorGard snow-retention rail" in mounts["basis"]
+    assert not [row for row in seam
+                if row["scope"] == "carried-mount" and "ColorGard" in row["basis"]], \
+        "a carried-mount row with no rail to carry would be billing hardware for nothing"
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:

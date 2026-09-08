@@ -305,8 +305,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     INT_2X6_PLUMBING: the playroom partition meeting the furnace room's wet wall is a real
     4 3/4"-to-6 3/4" jog on one line whatever the studs on either side are made of.
 
-    **The garage east stem no longer contributes a key at all, and losing one is the
-    point.** W-GF-E1/E2/S3/N2 took a mid-stack brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`)
+    **The garage stem no longer contributes a key at all, and losing one is the
+    point.** (The tags below are the pre-2026-09-07 east-facing garage — that wall is one
+    unbroken `W-GF-E` now and the door's gap is in the north stem; see
+    notes/garage_orientation_lot.md. The reason there is no key is the assembly, not the
+    orientation, so the rotation did not touch this.)
+    W-GF-E1/E2/S3/N2 took a mid-stack brick-ledge form (`GARAGE_ICF_6_BRICKLEDGE`)
     to carry the brick wainscot's 3 5/8" wythe, so four collinear nodes (N-GF-SE,
     N-GF-E-DRS, N-GF-E-DRN, N-GF-NE) were real changes of construction and collapsed to one
     key. The wainscot became hung aluminium sheet on 2026-09-02 and bears on nothing, so

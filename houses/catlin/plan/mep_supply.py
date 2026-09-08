@@ -19,7 +19,7 @@ from typehaus.model import m
 # --- Water supply: the service lateral, hydrant to house ---------------------------
 #
 # The project's first WATER_COLD run: the water service lateral, from the entry at the
-# garage yard hydrant (5', 59'-6") south to the house's north foundation, staying at the
+# garage yard hydrant (11', 59'-6") south to the house's north foundation, staying at the
 # service's own 6' bury the whole way — a supply line that rises above frost anywhere along
 # its length freezes there. Filed on ``main`` (datum 0'-0") so the authored elevations read
 # straight off the drawing set; on ``basement`` (-9' datum) they would resolve nine feet
@@ -33,15 +33,30 @@ from typehaus.model import m
 # drop the garage foundation it passes under took: FT-GF-S-DR's bearing plane is -7'-0"
 # against this run's -8'-10", so the 22" of cover between them holds.
 #
-# A straight line from entry to hydrant at x=5', touching only FT-GF-S-DR — a jogged route
-# would clip the footing's 45° influence line. `mep.hydrant_freeze_depth` checks every
-# buried vertex holds the full 72" bury; the terminal rise is the hydrant's own
-# self-draining barrel and exempt.
+# ** IT JOGS, AND IT DID NOT USED TO. ** This was a dead-straight run at x=5'-0" from the
+# house entry to the hydrant, touching only FT-GF-S-DR. The garage went 4'-0" east on
+# 2026-09-07 and took FT-GF-W's 45° influence line with it: at x=5'-0" the crossing would
+# now sit inside that west footing's own 20" strip. The hydrant moved to x=11'-0" (5'-0"
+# east of the west wall, its unchanged station relative to the garage) and the lateral turns
+# east to meet it.
+#
+# ** THE TURN IS AT y=38'-0", IN THE YARD SLOT, AND THAT IS THE ONLY PLACE IT CAN BE. **
+# South of 36'-0" is the house; north of 40'-8 5/8" the run is under the garage foundation,
+# where an east leg would travel along FT-GF-S1/FT-GF-S-DR's influence cone instead of
+# crossing it perpendicular. Between the two the run is in open yard 6'-0" down, clear of
+# both structures' footings; SL-M-HP3PAD and the front walk overhead are surface pours.
+#
+# The garage crossing is at x=11'-0", under the grade beam, 22" below its bearing plane
+# inside SP-GF-S-HYD's protection sleeve — being *under* a footing is the worst case in its
+# 45° cone, not clearance from it, and the sleeve is what answers it (plan/mep_sleeves.py).
+# `mep.hydrant_freeze_depth` checks every buried vertex holds the full 72" bury; the
+# terminal rise is the hydrant's own self-draining barrel and exempt.
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
+            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(38)), pt(ft(11), ft(38)),
+                  pt(ft(11), ft(59, 6)), pt(ft(11), ft(59, 6))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
+            elevations=(ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),
 ]
 

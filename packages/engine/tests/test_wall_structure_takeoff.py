@@ -93,7 +93,18 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # difference in the rate and says so rather than re-rating down and deducting twice.
     # The 14 3/8" of buried stub below the finished floor IS still billed — the mason lays
     # it. See notes/east_breast_bearing.md.
-    assert len({tag for row in rows for tag in row["tags"]}) == 44
+    # **43 SINCE 2026-09-07, and the one that left is the garage's east stem gap.** The
+    # overhead door turned north (notes/garage_orientation_lot.md), taking the gap with it:
+    # the east wall is one unbroken `W-GF-E` where it was W-GF-E1 / W-GF-E-DR / W-GF-E2, and
+    # the north wall split into W-GF-N2 / W-GF-N-DR / W-GF-N where it was one W-GF-N plus the
+    # W-GF-N2 fossil. Three tags out, two in — net -1, the retired one being W-GF-E2
+    # (uid CGF106). Same pour, same cubic yards, one fewer segment.
+    #
+    # **AND W-GF-N2 IS NO LONGER A FOSSIL**, though it keeps its tag and uid: the node it
+    # shares with W-GF-N-DR was N-GF-N-BRICK, a relic of the deleted brick wainscot, and it
+    # sits at exactly the rotated door's east jamb. Retagged N-GF-N-DRE in place. Its south
+    # twin W-GF-S3 is still a true fossil and is still kept on the uid-churn argument.
+    assert len({tag for row in rows for tag in row["tags"]}) == 43
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

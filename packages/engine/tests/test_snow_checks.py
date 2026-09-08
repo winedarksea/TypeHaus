@@ -209,16 +209,33 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     assert "this engine computes none" in garage.message
 
 
-def test_catlin_sliding_snow_is_screened_and_retained(catlin_model) -> None:
-    """The landed house: the garage sheds onto the breezeway canopy, and it is guarded."""
+def test_catlin_sliding_snow_has_no_pair_left_to_screen(catlin_model) -> None:
+    """The landed house, and since 2026-09-07 the interesting thing is an ABSENCE.
+
+    The garage used to shed SOUTH onto the breezeway's polycarbonate canopy GL-BW-ROOF, 3.0'
+    below its eave — a willing 4:12 standing-seam slope over an unwilling target — and six
+    ``S-5! ColorGard`` guards answered it. The overhead door turned north, RF-GARAGE's ridge
+    turned with it, and **south became a RAKE**. A rake sheds along itself into the eave
+    beside it, so nothing discharges over the canopy any more; the guards were deleted rather
+    than left standing over nothing. The two slopes now face east (open ground and a cabinet
+    at grade, which is not a roof) and west (the window wall and the walk, nothing below).
+
+    ``sliding_snow`` only sees ROOFS below a slope, so it now finds no pair here at all. That
+    is the design fact and this test states it as one: **the check going quiet is asserted,
+    not assumed.** If a GL-BW-ROOF pair ever comes back, the ridge has turned back and the
+    guards owe a return trip — their row is written out in plan/storeys/garage.py.
+    """
     ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
                        preferences=Preferences(), profile=None)
     findings = sliding_snow(ctx)
     assert not [f for f in findings if f.result is Result.FAIL], \
         [f.message for f in findings]
-    hit = next(f for f in findings if "GL-BW-ROOF" in f.message)
-    assert hit.result is Result.PASS
-    assert "RF-GARAGE" in hit.message
+    assert not [f for f in findings if "GL-BW-ROOF" in f.message], \
+        ["the canopy is under a rake now, not a slope",
+         *(f.message for f in findings if "GL-BW-ROOF" in f.message)]
+    assert not [c for c in catlin_model.plan.elements_of_kind("Connector")
+                if str(getattr(c, "tag", "")).startswith("CN-G-SNOW-")], \
+        "the guards were deleted with their target, not left standing over nothing"
 
 
 @pytest.mark.parametrize("profile,spacing,expected", [

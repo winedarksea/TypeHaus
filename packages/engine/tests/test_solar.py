@@ -80,15 +80,33 @@ def test_panels_stay_clear_of_ridge_and_eaves(catlin_model):
 
 
 def test_x_ridge_roof_branch(catlin_model):
-    """The resolver's ridge_direction="x" arm, exercised on the garage roof (the house
-    array only covers the "y" arm): width runs along x, the slope runs in y, and the
-    corners ride the garage plane with the same standoff contract."""
-    from typehaus.model import SolarPanel, ft, inch, pt
+    """The resolver's ridge_direction="x" arm: width runs along x, the slope runs in y, and
+    the corners ride the plane with the same standoff contract.
 
+    ** THE PREMISE CHANGED ON 2026-09-07 AND THE COVERAGE DID NOT. ** This used to lean on
+    the garage roof being the one "x" ridge in catlin. The garage's overhead door turned
+    north, its ridge turned with it, and BOTH of this house's gables now run "y" — so the
+    "x" arm has no witness in the reference house at all. Rather than hunt for another roof
+    or let the branch go dark, the test now states its own premise: it takes RF-GARAGE and
+    turns its ridge back to "x" in a throwaway plan. That is honest about what is being
+    exercised (the resolver, not the house) and it cannot rot when the house moves again.
+    """
+    from typehaus.model import Roof, SolarPanel, ft, inch, pt
+
+    # `model_copy`, not `dataclasses.replace`: every model element is a pydantic model here,
+    # not a dataclass, and `replace()` raises TypeError on one.
+    garage = catlin_model.plan.storey_elements("garage")
+    turned = tuple(
+        e.model_copy(update={"ridge_direction": "x"})
+        if isinstance(e, Roof) and e.tag == "RF-GARAGE" else e
+        for e in garage
+    )
+    assert any(isinstance(e, Roof) and e.ridge_direction == "x" for e in turned), \
+        "the fixture this branch needs is built here, not borrowed from the house"
     plan = catlin_model.plan.with_elements("garage", (
-        *catlin_model.plan.storey_elements("garage"),
+        *turned,
         SolarPanel(uid="TESTSPX001", tag="SP-G-TEST", roof_ref="RF-GARAGE",
-                   origin=pt(ft(4), ft(52)), width=inch(69.4), length=inch(44.6),
+                   origin=pt(ft(10), ft(52)), width=inch(69.4), length=inch(44.6),
                    thickness=inch(1.2), watts=440.0),
     ))
     model, findings = resolve(plan)
@@ -156,25 +174,23 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     pv = [row for row in rows if row["part_number"] == "S-5-PVKIT"]
     assert len(pv) == 1
     assert pv[0]["count"] == 48  # 4 kits x 12 modules
-    # The plain S-5! clamps (vent riser + boxes) split across scopes: directly modeled
-    # connectors get their own row, and the clamps carried under a part that declares
-    # ``requires_role`` (which reaches the roof but is not itself a separately modeled
-    # Connector) get another — see authored_connector_rows in takeoff/anchors.py. Gather
-    # every S-5! row regardless of scope and use `>=` throughout, so this pins the SPLIT
-    # and never an exact count or a single row's index.
+    # ** THE PLAIN S-5! IS GONE FROM THIS HOUSE ENTIRELY (2026-09-07), AND BOTH HALVES OF
+    # THE SPLIT ARE NOW ZERO. ** The MODELED half went first: an S-5! closes on a seam, and
+    # the exposed-fastener cladding swap moved the wall clamps onto through-panel straps.
+    # The CARRIED half went with the ColorGard rail on the garage roof, which was deleted
+    # when that roof's ridge turned north-south and its south slope — the one shedding onto
+    # the breezeway canopy — became a rake (notes/garage_orientation_lot.md).
     #
-    # The MODELED half is zero, and that is the point rather than an erosion of the test. An
-    # S-5! closes on a seam; the house has no wall seam left to close on — the exposed-
-    # fastener cladding swap moved the wall clamps onto through-panel straps, which carry
-    # nothing. Every S-5! the model still bills is implied by the ColorGard rail on the ROOF,
-    # which kept its standing seam — so this pins the split as "carried only".
+    # `S-5-PVKIT` above is a different part and is unaffected: it clamps the PV array to
+    # RF-HOUSE's standing seam, which is untouched. That is why this test still has a
+    # subject, and it is the assertion worth keeping — the plain-clamp lines below are now
+    # an absence, pinned so their return is visible rather than silent.
     s5_rows = [row for row in rows if row["part_number"] == "S-5!"]
-    assert s5_rows
     modeled = sum(row["count"] for row in s5_rows if row["scope"] == "modeled connector")
     carried = sum(row["count"] for row in s5_rows if row["scope"] == "carried-mount")
     assert modeled == 0, "an S-5! needs a seam; the walls are exposed-fastener panel now"
-    assert carried >= 6
-    assert sum(row["count"] for row in s5_rows) == carried
+    assert carried == 0, "the ColorGard rail that carried them left with the south slope"
+    assert not s5_rows, [row["basis"] for row in s5_rows]
 
 
 def test_model_json_serializes_solar(catlin_model):

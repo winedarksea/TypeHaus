@@ -108,7 +108,10 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
     trusses = [m for m in roof.members if m.category == "roof_truss"]
     tied = [c for c in connections if c.member_category == "roof_truss"]
     assert len(tied) == 2 * len(trusses) > 0
-    assert {c.support_tag for c in tied} == {"W-G-S", "W-G-N"}
+    # W-G-E / W-G-W since 2026-09-07: the overhead door turned north and RF-GARAGE's ridge
+    # turned with it, so the trusses span east-west and bear on the other pair. The count is
+    # untouched — a square garage under a rotated gable frames the same number of trusses.
+    assert {c.support_tag for c in tied} == {"W-G-E", "W-G-W"}
     assert not [c for c in connections
                 if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]
 

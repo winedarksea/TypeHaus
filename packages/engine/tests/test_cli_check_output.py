@@ -135,6 +135,21 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
         # over is accepted rather than answered with a box, because the only station that
         # would close it lands on the stretch the gym's equipment stands against.
         ("electrical.receptacle_spacing", ("RM-B-GYM",)),
+        # D-G-SERVICE's landing. **Owner call, 2026-09-07, and DELIBERATELY OPEN** — the
+        # garage was centred on the house ridge, which forced its service door to x=10'-0"
+        # (a 36" RO must sit on a stud line measured from its own wall's start, and at
+        # x=8'-0" the king lands 5/8" inside the corner pack). D-M-ENTRY could not follow:
+        # its east jamb is 6" west of N-M-N2, the tee where W-M-STRW's bearing stack lands
+        # and runs to the footings, and a 36" RO cannot straddle it. So the breezeway —
+        # still built for the concentric pair at _GLAZING_CENTER_X = 8.0 — covers only 1'-6"
+        # of the 3'-0" leaf, and the other half opens onto air over a 2'-10" drop.
+        #
+        # ** A REAL SAFETY CONDITION, NOT A DRAFTING NICETY. ** It is accepted here only
+        # because the owner asked to centre the garage first and adjust the breezeway after
+        # seeing it. `test_catlin_invariants.py::test_breezeway_stays_centred_...` is
+        # xfail(strict) for the same reason and must go green in the same edit that closes
+        # this. See notes/garage_orientation_lot.md section 6.1.
+        ("code.R311_3_exterior_landing", ("D-G-SERVICE",)),
     }
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "

@@ -145,14 +145,14 @@ WALL_SLEEVES = [
 # near the footing (checks/mep/plumbing_concrete.py) — see params/foundations.py for the
 # hydrant's station at (5'-0", 59'-6"), chosen to clear the west footing entirely.
 GARAGE_SLEEVES = [
-    # It crosses the garage's south foundation line at x=5'-0", at -8'-10", inside a 2"
-    # protection sleeve. `host_ref=FT-GF-S1` because D-G-SERVICE's jambs sit on the stud
-    # module (SERVICE_DOOR_OFFSET, params/foundations.py), which put the grade beam under
-    # the door (FT-GF-S-DR) east of this crossing — x=5'-0" is now under the ordinary stem
-    # footing beside it. `integrity.sleeve_in_opening` catches a sleeve naming a host it no
-    # longer sits in.
-    SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S1",
-                      position=pt(ft(5), ft(41, 0.875)), pipe_diameter=inch(0.75),
+    # It crosses the garage's south foundation line at x=11'-0", at -8'-10", inside a 2"
+    # protection sleeve. `host_ref=FT-GF-S-DR`: the garage moved 6'-0" east on 2026-09-07 and
+    # the hydrant with it, so the crossing is back under the grade beam beneath D-G-SERVICE,
+    # which is the host this sleeve carried before SERVICE_DOOR_OFFSET last moved. It sits
+    # 9" inside the beam's east end. `integrity.sleeve_in_opening` catches a sleeve naming a
+    # host it no longer sits in — and it is what will catch the next move of that door.
+    SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
+                      position=pt(ft(11), ft(41, 0.875)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]

@@ -46,23 +46,36 @@ def test_every_authored_gutter_falls_to_a_leader_that_exists(catlin_plan, catlin
                for element in catlin_plan.storey_elements(storey.tag)
                if isinstance(element, Downspout)}
     assert {"TR-RF-LEADER-W", "TR-RF-LEADER-E",
-            "TR-G-LEADER-E", "TR-SG-LEADER-SE"} <= leaders
+            "TR-G-LEADER-E", "TR-G-LEADER-W", "TR-SG-LEADER-SE"} <= leaders
 
 
-def test_the_garage_leader_takes_its_water_from_the_resolved_trough(catlin_model):
-    """TR-G-LEADER-E's elevation is pinned rather than derived, because the EaveGutter above
-    it deliberately is not: the raised-heel truss lifts the deck plane during the envelope
-    stage. This is the tie that catches the pin drifting off the channel it drains."""
+def test_the_garage_leaders_take_their_water_from_the_resolved_troughs(catlin_model):
+    """Each garage leader's elevation is pinned rather than derived, because the EaveGutter
+    above it deliberately is not: the raised-heel truss lifts the deck plane during the
+    envelope stage. This is the tie that catches a pin drifting off the channel it drains.
+
+    ** TWO LEADERS SINCE 2026-09-07. ** The ridge turned north-south with the overhead door,
+    so the eaves are EAST and WEST and both carry a trough. `EaveGutter.downspout_ref` is a
+    single string and cannot name both; what actually binds a leader to its trough is
+    `Downspout.gutter_ref`, which both carry — so this test walks the pair and matches each
+    leader to the trough on ITS OWN side, which is the tie the schema cannot express.
+    """
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
-    floor = next(m for m in roof.members
-                 if m.category == "gutter" and m.child_key.endswith("-bottom"))
-    leader = next(s for s in catlin_model.solids if s.tag == "TR-G-LEADER-E")
-    assert floor.z0_m <= leader.z1_m <= floor.z1_m, \
-        "the leader's outlet must sit in the trough floor, not above or below it"
+    floors = [m for m in roof.members
+              if m.category == "gutter" and m.child_key.endswith("-bottom")]
+    assert len(floors) == 2, "one trough per eave, east and west"
     grade_m = catlin_model.plan.project.site.grade.meters
-    assert grade_m < leader.z0_m < grade_m + 0.5, \
-        "and run down to a splash block just above the apron — measured from grade, which "\
-        "the garage stands on and which is 2'-6\" below the house datum since 2026-08-18"
+    for tag in ("TR-G-LEADER-E", "TR-G-LEADER-W"):
+        leader = next(s for s in catlin_model.solids if s.tag == tag)
+        leader_x = sum(p[0] for p in leader.outline) / len(leader.outline)
+        floor = min(floors, key=lambda m: abs(m.p0[0] - leader_x))
+        assert abs(floor.p0[0] - leader_x) < 0.3, \
+            f"{tag} must sit on its own eave's trough, not the one across the roof"
+        assert floor.z0_m <= leader.z1_m <= floor.z1_m, \
+            f"{tag}'s outlet must sit in the trough floor, not above or below it"
+        assert grade_m < leader.z0_m < grade_m + 0.5, \
+            "and run down to a splash block just above the apron — measured from grade, "\
+            "which the garage stands on and which is 2'-6\" below the house datum"
 
 
 def _x0(solid) -> float:

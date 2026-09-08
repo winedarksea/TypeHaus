@@ -78,7 +78,11 @@ def test_an_override_substitutes_the_material_and_nothing_else(tmp_path) -> None
                   'end_node="N-G-NE",\n'
                   '         assembly="GARAGE_WALL_2X6", alignment=face("cdx-ext"), '
                   'top=ft(8, 4),\n'
-                  '         structural_role=StructuralRole.NONBEARING),')
+                  '         structural_role=StructuralRole.BEARING),')
+    # BEARING since 2026-09-07: the garage's ridge turned north-south with its overhead door,
+    # so the trusses land on W-G-E/W-G-W and the gable ends are N/S. This test only needs a
+    # wall with NO `layer_materials` of its own to override; the role is part of the literal
+    # it patches and has to track it. See notes/garage_orientation_lot.md.
     assert plain_wall in source, "W-G-E is no longer the plain wall this test overrides"
     source = source.replace(plain_wall, plain_wall[:-2] + (
         ',\n         layer_materials=(LayerMaterial(layer="cladding", '

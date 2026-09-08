@@ -86,7 +86,11 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     hydrant = _hydrant(catlin_model)
     assert hydrant.room == "RM-GARAGE"
     x, y = hydrant.position.xy_m
-    assert x * _M_TO_FT == pytest.approx(5.0, abs=1e-6)
+    # x=11'-0", which is 5'-0" east of the garage's west wall — the station this hydrant has
+    # always had RELATIVE TO ITS FOOTINGS. The garage moved 6'-0" east on 2026-09-07 and the
+    # hydrant went with it: the clear zone is derived from FT-GF-W's 45° influence line, so
+    # holding the absolute x would have put the shutoff inside that footing's own 20" strip.
+    assert x * _M_TO_FT == pytest.approx(11.0, abs=1e-6)
     assert y * _M_TO_FT == pytest.approx(59.5, abs=1e-6)
     # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
@@ -103,7 +107,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     hand on the handle, from whatever else the corner is asked to hold.
 
     12" is the number, and FURN-G-WORKBENCH at 17 1/2" is the one that binds it — the bench
-    is 30" deep off the west wall and the hydrant stands 4'-9" out from the same wall.
+    is 30" deep off the west wall and the hydrant stands 4'-9" out from the same wall. All
+    three moved 6'-0" east together on 2026-09-07, so every distance here is unchanged.
     """
     from shapely.geometry import Polygon
 
@@ -200,11 +205,12 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
                                 ("ED-G-LT1", 8.0)):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
             above_floor_ft, abs=1e-6), tag
-    # The one deliberate exception: ED-G-EXT-LT is authored with no `room` (it stands outside
-    # RM-GARAGE, and `electrical.wet_location` decides "exterior" from that), so it keeps the
-    # storey datum its comment in plan/lighting.py already accounts for.
-    assert (by_tag["ED-G-EXT-LT"].z_m - grade) * _M_TO_FT == pytest.approx(
-        8 + 10 / 12, abs=1e-6)
+    # The one deliberate exception: the ED-G-EXT-LT-E/-W pair is authored with no `room` (it
+    # stands outside RM-GARAGE, and `electrical.wet_location` decides "exterior" from that),
+    # so both keep the storey datum plan/lighting.py already accounts for: 5'-8" over a datum
+    # 1'-10" up is 7'-6" over the apron, 6" clear of D-G-OVERHEAD's head.
+    for tag in ("ED-G-EXT-LT-E", "ED-G-EXT-LT-W"):
+        assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(7.5, abs=1e-6), tag
 
 
 def test_the_pedestal_and_its_block_out_are_gone(catlin_model):
@@ -230,7 +236,9 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     # Collocated with the hydrant's own supply stack (SP-G-HYDRANT), not offset to some
     # exterior spot — the weep has to reach stone at the valve, not stone a pipe carries it to.
     x_ft, y_ft = pit.position.xy_m[0] * _M_TO_FT, pit.position.xy_m[1] * _M_TO_FT
-    assert x_ft == pytest.approx(5.0, abs=1e-6)
+    # x=11'-0" since 2026-09-07: the pit rides HYDRANT_X_FT, and the hydrant moved 6'-0"
+    # east with the garage that sets its footing clearances.
+    assert x_ft == pytest.approx(11.0, abs=1e-6)
     assert y_ft == pytest.approx(59.5, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
     # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
@@ -263,6 +271,15 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     Being *under* a footing is not clearance from it — the cone opens downward — so the one
     crossing that stays, PR-G-HYDRANT-CW passing beneath FT-GF-S-DR, is sleeved rather than
     spaced.
+
+    ** THE RUN JOGS SINCE 2026-09-07, AND THAT IS WHAT THE GARAGE MOVE COST. ** It used to
+    be one straight leg north at x=5'-0" from the house entry to the hydrant. The garage went
+    6'-0" east onto the house ridge and took FT-GF-W's influence line with it, so the hydrant
+    moved to x=11'-0" — its unchanged 5'-0" off the west wall — and the lateral turns east
+    4 legs' worth at y=38'-0", in the yard slot, which is the only band clear of both
+    structures' footings. The geometry assertions below are the point and are unchanged; what
+    changed is that "one straight leg" is now "one jog in open yard, and the crossing still
+    perpendicular". See notes/garage_orientation_lot.md §6.2.
     """
     from shapely.geometry import Point, Polygon
     from shapely.ops import unary_union
@@ -284,10 +301,18 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     assert riser.distance(pour.boundary) + 1e-9 >= bearing - min(run.z_m), \
         "the hydrant riser is inside the footings' 45° influence line"
 
-    # And the run reaches it without a jog: entry, hydrant, rise. Two legs, one of them
-    # vertical — the west dog-leg out to the old position is what carried the encroachment.
-    assert len(run.path) == 3
-    assert run.path[0][0] == pytest.approx(run.path[1][0], abs=1e-9), "not one straight leg"
+    # The jog is in the YARD, not under either structure, and each leg is orthogonal — a
+    # diagonal would travel ALONG a footing's cone instead of crossing it. Five vertices:
+    # entry, turn, turn, hydrant, rise.
+    assert len(run.path) == 5
+    for a, b in zip(run.path, run.path[1:]):
+        dx = abs(a[0] - b[0])
+        dy = abs(a[1] - b[1])
+        assert dx < 1e-9 or dy < 1e-9, "every leg is orthogonal; no diagonal under a footing"
+    # The turn sits between the house's north wall (y=36') and the garage's south stem
+    # (y=40'-8 5/8") — open yard, 6'-0" down, clear of both structures' footings.
+    turn_y = run.path[1][1] / 0.3048
+    assert 36.0 < turn_y < 40.7, f"the jog must happen in the yard slot, not under a pour"
 
 
 # --- 4. the check -------------------------------------------------------------------------

@@ -373,7 +373,7 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
     from typehaus.checks.mep.lighting import dark_sky_lighting
     from typehaus.checks.registry import CheckContext, Preferences
 
-    device = catlin_model.plan.by_tag("ED-G-EXT-LT")
+    device = catlin_model.plan.by_tag("ED-G-EXT-LT-E")
     broken = device.model_copy(update={"type_ref": "ED-T-LT-SHOP4"})
     patched = catlin_model.plan.with_elements(
         "garage", [broken if element.tag == device.tag else element
@@ -381,7 +381,7 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
     context = CheckContext(plan=patched, model=catlin_model, preferences=Preferences(),
                            profile=MN_2024)
     failures = [f for f in dark_sky_lighting(context) if f.result.value == "fail"]
-    assert [f.element_tags for f in failures] == [("ED-G-EXT-LT",), ("ED-G-EXT-LT",)]
+    assert [f.element_tags for f in failures] == [("ED-G-EXT-LT-E",), ("ED-G-EXT-LT-E",)]
     assert any("full-cutoff" in f.message for f in failures)
     assert any("4000" in f.message for f in failures)
 

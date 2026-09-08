@@ -1074,7 +1074,7 @@ GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
     # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension.
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
-              room="RM-GARAGE", position=pt(m(0.621183), m(18.6321)), rotation=deg(90)),
+              room="RM-GARAGE", position=pt(m(2.449983), m(18.6321)), rotation=deg(90)),
 ]
 # The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box: queen, head
 # north, 2' side-access zones running the long (14') way. Head-against-east-wall (under the

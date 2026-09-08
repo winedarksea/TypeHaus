@@ -926,7 +926,7 @@ MAIN_LIGHTING = [
     # So it moved onto **W-SG-E1's east face at the head of the flight**, which is the top
     # landing itself rather than a wall six feet away from it. x 28'-8 1/2" puts the 5" body's
     # BACK on that face at x 28'-6" (a device footprint is CENTRED on its position, so the
-    # position owes the face half the depth — the ED-G-EXT-LT convention, and NOT the 1 5/8"
+    # position owes the face half the depth — the ED-G-EXT-LT-E convention, and NOT the 1 5/8"
     # the two disconnects use: those are 3 1/4" cans and their offset buries this one an inch
     # into the concrete). `rotation=deg(90)` turns the body's depth onto x so it stands off an
     # east face, the ED-M-LIVING-KFZ1 convention.
@@ -951,13 +951,14 @@ MAIN_LIGHTING = [
     # fitting is unchanged and so is the circuit — this is the same wet-rated full-cutoff
     # luminaire on the same switch leg, on a different wall.
     #
-    # NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT precedent — that absence is how
+    # NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT-E precedent — that absence is how
     # `electrical.wet_location` and `advisory.dark_sky_lighting` know a device is outside.
     #
     # ED-T-LT-SCONCE-EXT rather than a new full-cutoff downlight type: it is the same
-    # full-cutoff wet-rated exterior fitting as ED-G-EXT-LT, and it is already priced. A
-    # freshly minted LuminaireType with no prices.toml row is silently DROPPED from the
-    # takeoff, so a new type here would have bought a fixture the bill never showed.
+    # full-cutoff wet-rated exterior fitting as the ED-G-EXT-LT-E/-W pair, and it is
+    # already priced. A freshly minted LuminaireType with no prices.toml row is silently
+    # DROPPED from the takeoff, so a new type here would have bought a fixture the bill
+    # never showed.
     #
     # Controlled by ED-M-PORCH-FLOOD-SW rather than a third switch: NEC 210.70(A)(2)(b)
     # wants the exterior light switched from inside, that switch already is, and the flood
@@ -1387,12 +1388,12 @@ SECOND_LIGHTING = [
 # nothing above the garage ceiling to recess a can into.
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12), ft(48)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(18), ft(48)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0002AAA", tag="ED-G-LT2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(12), ft(58)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(18), ft(58)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
@@ -1405,36 +1406,76 @@ GARAGE_LIGHTING = [
     # would want the same luminaire here and not the switching, since five risers is under
     # its six-riser threshold.)
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(6, 6), ft(42)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(8, 6), ft(42)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
     # plan/electrical.py's GARAGE_DEVICES comment for the face-position arithmetic.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 6), ft(41, 4.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10, 6), ft(41, 4.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # The garage-door light (2026-08-02): mark R, full-cutoff exterior sconce, on W-G-E's
-    # outside face on the 4' pier south of the door (door runs y 45'..61'), clear of the
-    # door panel. NO `room=`, deliberately — outside RM-GARAGE is how `electrical.
-    # wet_location` / `advisory.dark_sky_lighting` know it's exterior. Elevation 7'-0" is
-    # storey-relative (garage datum = stem top at 1'-10" over slab), so it sits 8'-10"
-    # over the apron and its 9" housing still clears the 8'-0" top plate.
-    ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
-                     # x=24'-3 3/8" is the cladding face — what a surface-mounted sconce
-                     # screws to — 3/8" proud of W-G-E's unmoved node line under
-                     # GARAGE_WALL_2X6's 7/8" corrugated panel.
-                     position=pt(ft(24, 3.375), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(90),
+    # The garage-door lights (2026-08-02; a PAIR since 2026-09-07): mark R, full-cutoff
+    # exterior sconces. The single light followed the overhead door onto W-G-N earlier the
+    # same day — the door is the thing it lights, and the door faces north now — and it was
+    # then mirrored, because one sconce on one side of a 16' door lights half an apron and
+    # reads as an accident on a symmetrical elevation. W-G-N runs x 6'..30' and the opening
+    # takes x 10'..26', leaving a 4'-0" pier at each end; each light stands on its pier's
+    # centre, 2'-0" clear of both the jamb and the corner. Both aim north (`rotation=deg(0)`).
+    #
+    # ** THE TAG WAS `ED-G-EXT-LT`. ** It is `-E` now and `-W` is its twin: a pair whose
+    # members do not share a naming scheme is a pair only in the drawing. Nothing
+    # prefix-matches between the two (see the ED-M-STAIR-LT / RL-SG-PORCH- precedent for why
+    # that is worth checking), and prices.toml's ED-T-LT-SCONCE-EXT row now carries 3 ea.
+    #
+    # NO `room=`, deliberately — outside RM-GARAGE is how `electrical.wet_location` /
+    # `advisory.dark_sky_lighting` know these are exterior.
+    #
+    # ** ELEVATION DROPPED 1'-4" WITH THE PAIRING. ** 5'-8" is storey-relative (garage datum
+    # = stem top at 1'-10" over slab), so each sits 7'-6" over the apron — 6" over
+    # D-G-OVERHEAD's 7'-0" head, which is what makes the two of them read as framing the
+    # door rather than floating up under the eave. The old 7'-0" put them at 8'-10", nearly
+    # at the 9'-10" plate. The 9" housing tops out at 8'-3" over the apron, still 1'-7"
+    # under the plate.
+    #
+    # ** y IS THE FIXTURE'S CENTRE, NOT THE WALL FACE, on both. ** A wall device's footprint
+    # is centred on its position, so a 5" sconce owes the cladding face half its depth or it
+    # resolves buried in the panel — which nothing in `haus check` grades, though
+    # test_wall_mounted_devices_resolve_against_a_wall_face does. W-G-N's cladding outer face
+    # is 64'-9 1/2" (GARAGE_Y_NORTH + the 7/8" corrugated panel), so the centre is 2 1/2"
+    # proud of it at 65'-0".
+    ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT-E", kind=DeviceKind.LIGHT,
+                     # x=28'-0" is 2'-0" in from the NE corner. The uid is the original
+                     # light's: this element did not stop existing when it was retagged.
+                     position=pt(ft(28), ft(65)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-G-EXT-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
-    # Its switch, inside, ganged beside ED-G-SW at the service door (D-G-SERVICE's east
-    # jamb is at 6'-6"; the shop-light switch sits at 8'-6", this one 6" west of it) —
-    # walk in, one reach turns on the shop lights and the apron light both.
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
+    ElectricalDevice(uid="GT8NZ3DTSX", tag="ED-G-EXT-LT-W", kind=DeviceKind.LIGHT,
+                     # x=8'-0" is 2'-0" in from the NW corner, the exact mirror of -E about
+                     # the door's centreline at x=18'-0". Same circuit, same switch: the pair
+                     # is one control, not two.
+                     position=pt(ft(8), ft(65)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(0),
+                     controlled_by=("ED-G-EXT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
+    # Its switch, inside, ganged beside ED-G-SW at the service door (D-G-SERVICE's west
+    # jamb is at 8'-6"; the shop-light switch sits at 10'-6", this one 6" west of it —
+    # ** AND BOTH OF THOSE STATIONS ARE INSIDE THE ROUGH OPENING, WHICH IS A PRE-EXISTING
+    # DEFECT CARRIED FORWARD, NOT A NEW ONE. ** `from_node` offsets the NEAR jamb, so
+    # D-G-SERVICE's RO is 8'-6"..11'-6" and its EAST jamb is 11'-6", not the 8'-6" this note
+    # has claimed since the switches were authored. Nothing grades a wall device against an
+    # opening. The 2026-09-07 move translated both switches faithfully rather than quietly
+    # re-siting them; putting them east of the real east jamb (~12'-0" / 12'-6") is a small
+    # separate edit and is the right fix) —
+    # walk in, one reach turns on the shop lights and BOTH door lights. One switch for the
+    # pair, not one each: they light a single opening and there is no reason to run half of
+    # it. It stays here though its luminaires crossed to the far wall: the switch belongs at
+    # the door you enter by, not under the lamp.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(41, 4.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10), ft(41, 4.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

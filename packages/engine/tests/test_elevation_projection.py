@@ -199,8 +199,14 @@ def test_an_operable_window_carries_a_dashed_operation_symbol(catlin_model):
 
 
 def test_the_overhead_door_reads_as_a_sectional_door(catlin_model):
-    """A 16' garage door is a stack of 21" panels, which is what identifies it."""
-    scene = build_elevation(catlin_model, "east")
+    """A 16' garage door is a stack of 21" panels, which is what identifies it.
+
+    Drawn on the NORTH elevation since 2026-09-07: the door left W-G-E for W-G-N when the
+    garage was re-fronted onto the street the site's own setbacks already declared. Nothing
+    about the door changed — same type, same 4'-0" offset from its wall's near corner, same
+    panel stack — only which facade it appears on. See notes/garage_orientation_lot.md.
+    """
+    scene = build_elevation(catlin_model, "north")
     joints = [node for node in _polylines(scene, "A-DOOR")
               if node.tag == "D-G-OVERHEAD" and len(node.points) == 2
               and abs(node.points[0][1] - node.points[1][1]) < 1e-6]

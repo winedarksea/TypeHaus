@@ -57,6 +57,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `beam_water_protection.md` | keeping water out of a built-up exterior beam |
 | `east_breast_bearing.md` | RM-M-LIVING's fireplace surround: why the brick bears on `W-B-E1`'s pour and not on the floor, the opening it needs through `FS-M-EAST`, and the list of things nothing in `haus check` looks at |
 | `fortified_roof_cert.md` | what the FORTIFIED Roof designation asks for |
+| `garage_orientation_lot.md` | the south-lot/east-driveway premise the garage was drawn for, why it never agreed with `plan/site.py`'s own north FRONT setback, what turning the door north moved, the eastward move that followed it, and the revert recipe |
 | `heat_pump_ground_pad.md` | why the condensers left the balcony, and why the three of them now stand on three separate pads on three sides of the house |
 | `interior_selections.md` | the 2026-09-06 interior pass: what was chosen and why, the category-by-category import verdict, and the five things it found that were wrong rather than merely unspecified |
 | `mixed_deck_movement_joint.md` | the movement joint where two deck materials meet |

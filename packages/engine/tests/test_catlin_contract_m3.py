@@ -1424,20 +1424,29 @@ def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_m
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    # 10, not 4. Two splits are door gaps, in stems that carry one rather than running a
-    # continuous 22" band across it — the east at the overhead door (W-GF-E1/W-GF-E-DR/
-    # W-GF-E2) and the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
+    # 9, not 4. Two splits are door gaps, in stems that carry one rather than running a
+    # continuous 22" band across it — the NORTH at the overhead door (W-GF-N2/W-GF-N-DR/
+    # W-GF-N) and the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
     # not climb a 22" curb any more happily than a car will.
     #
-    # The other two splits are a FOSSIL, and the count pins them on purpose. W-GF-S3 and
-    # W-GF-N2 were cut off W-GF-S2/W-GF-N to carry the SE/NE corner returns of a brick
-    # wainscot, on a ledged stem (GARAGE_ICF_6_BRICKLEDGE) that a full 3 5/8" wythe needed
-    # for bearing. The brick went to hung aluminium sheet on 2026-09-02 and the wainscot
-    # went away entirely on 2026-09-03, so nothing stands on them and both halves are plain
-    # stem. THE SEGMENTATION IS KEPT ANYWAY: reversing it would churn four wall uids and
-    # four footing uids to express no geometric change at all. If this count ever has to
-    # move, merge deliberately — do not let a cleanup do it by accident.
-    assert len(stem) == 10
+    # ** IT WAS 10 UNTIL 2026-09-07. ** The overhead door faced east; the gap it opened was
+    # in the east stem, and that wall carried three segments where it now carries one
+    # unbroken run (W-GF-E). The count fell by exactly the piece that retired with it,
+    # W-GF-E2/CGF106 — see notes/garage_orientation_lot.md.
+    #
+    # One split is still a FOSSIL, and the count pins it on purpose. W-GF-S3 was cut off
+    # W-GF-S2 to carry the SE corner return of a brick wainscot, on a ledged stem
+    # (GARAGE_ICF_6_BRICKLEDGE) that a full 3 5/8" wythe needed for bearing. The brick went
+    # to hung aluminium sheet on 2026-09-02 and the wainscot went away entirely on
+    # 2026-09-03, so nothing stands on it and both halves are plain stem. THE SEGMENTATION
+    # IS KEPT ANYWAY: reversing it would churn wall and footing uids to express no
+    # geometric change at all. If this count ever has to move, merge deliberately — do not
+    # let a cleanup do it by accident.
+    #
+    # ** W-GF-N2's TWIN IS NO LONGER A FOSSIL. ** Its shared node, once N-GF-N-BRICK, is
+    # retagged N-GF-N-DRE in place: (20' off the west wall, GARAGE_Y_NORTH) turned out to be
+    # exactly the rotated door's east jamb.
+    assert len(stem) == 9
     assert {w.assembly for w in stem} == {"GARAGE_ICF_6"}
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
@@ -1451,17 +1460,19 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # Reading them off ``site.grade`` is the assertion: the reveal, the bury and the slab
     # are properties of the ground, and the house datum is not the ground.
     grade_m = catlin_model.plan.project.site.grade.meters
-    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-E-DR", "W-GF-S-DR")}
-    assert grade_beams == {"W-GF-E-DR", "W-GF-S-DR"}
+    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-N-DR", "W-GF-S-DR")}
+    assert grade_beams == {"W-GF-N-DR", "W-GF-S-DR"}
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
     assert slab.z1_m == pytest.approx(grade_m)
     for wall in stem:
         assert wall.z0_m == pytest.approx(grade_m - inch(42.0).meters)
         expected_top = slab.z1_m if wall.tag in grade_beams else grade_m + inch(22.0).meters
         assert wall.z1_m == pytest.approx(expected_top)
-    # Garage roof: ridge E-W (rotated 90° vs the house), 16" overhangs.
+    # Garage roof: ridge N-S (PARALLEL to the house's since 2026-09-07 — it turned with the
+    # overhead door), 16" overhangs. The footprint's x-extent is unchanged either way: the
+    # garage is square and the overhang is uniform, so only the ridge assertion moves.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
-    assert roof.ridge_direction == "x"
+    assert roof.ridge_direction == "y"
     xs = [p[0] for p in roof.footprint]
     assert max(xs) - min(xs) == pytest.approx(
         ft(GARAGE_SIZE_FT).meters + 2 * inch(GARAGE_OVERHANG_IN).meters)
@@ -1470,13 +1481,15 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
 def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     """The one negative sill in the plan, and the thing that makes the garage drivable.
 
-    W-G-E bears on the ICF stem, 22" above the slab poured inside it, so a door sitting on
-    its host wall's own base would open 22" up in the air. D-G-OVERHEAD instead drops that
+    W-G-N bears on the ICF stem, 22" above the slab poured inside it, so a door sitting on
+    its host wall's own base would open 22" up in the air. (It was W-G-E until 2026-09-07,
+    when the door turned north with the ridge; the reveal argument is the wall's, not the
+    door's, so it reads identically on either.) D-G-OVERHEAD instead drops that
     exact reveal to land on SL-G-FLOOR. This is the assertion that holds ``sill_height``
     tied to ``GARAGE_STEM_REVEAL``: the editable-plan dialect bans arithmetic, so the two
     numbers cannot be spelled as one expression in plan/storeys/garage.py.
     """
-    wall = catlin_model.wall("W-G-E")
+    wall = catlin_model.wall("W-G-N")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-OVERHEAD")
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
 
@@ -1507,20 +1520,24 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
         assert cripple.z0_m == pytest.approx(backing.z1_m)
 
     # And the sole plate stops at the jambs. The ICF stem is stepped down to a grade beam
-    # right here — N-GF-E-DRS/N-GF-E-DRN in params/foundations.py are the two stations where
+    # right here — N-GF-N-DRE/N-GF-N-DRW in params/foundations.py are the two stations where
     # it drops — which is exactly why there is no floor for a plate to sit on.
+    #
+    # W-G-N runs EAST to WEST (N-G-NE -> N-G-NW), so the plates sort on descending x and the
+    # first plate's far end is the door's EAST jamb. Sorting on -x rather than +y is the
+    # whole edit this test took from the 2026-09-07 rotation.
     plates = sorted((m for m in catlin_model.all_members()
                      if m.parent_uid == wall.uid
                      and m.child_key.startswith("plate-bottom")),
-                    key=lambda m: m.p0[1])
+                    key=lambda m: -m.p0[0])
     assert [m.child_key for m in plates] == ["plate-bottom-0", "plate-bottom-1"]
     # The gap is the rough opening exactly, so every trimmer still bears on a plate end.
     gap = math.dist(plates[0].p1, plates[1].p0)
     assert gap == pytest.approx(door.width_m, abs=1e-6)
-    for plate_end, node_tag in ((plates[0].p1, "N-GF-E-DRS"), (plates[1].p0, "N-GF-E-DRN")):
+    for plate_end, node_tag in ((plates[0].p1, "N-GF-N-DRE"), (plates[1].p0, "N-GF-N-DRW")):
         node = catlin_model.plan.by_tag(node_tag)
         assert node is not None, f"{node_tag} is what makes the stem step down here"
-        assert plate_end[1] == pytest.approx(node.position.xy_m[1], abs=1e-6)
+        assert plate_end[0] == pytest.approx(node.position.xy_m[0], abs=1e-6)
     # Deliberately silent about the track jambs. `_append_track_jamb_legs` still puts
     # trackjamb-0-l/r inside the rough opening, bottoming on the plate this cut removes —
     # they were already wrong (they stop 22" above the slab) and fixing them is its own
@@ -1578,7 +1595,7 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
     zs = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-STEMZ-")]
     drips = [z for z in zs if str(z.tag).endswith("-DRIP")]
     assert len(drips) == 6, \
-        "south and east are each broken by a stem gap; north and west run whole"
+        "south and north are each broken by a stem gap; east and west run whole"
     # It sits ON the stem top, which is the garage storey datum: grade + GARAGE_STEM_REVEAL.
     stem_top_m = grade_m + ft(1, 10).meters
     assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m)
@@ -1643,9 +1660,11 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
     """Wood members must follow studs rather than the exterior ZIP-R datum axis."""
-    # The east side's stem splits into 3 segments at the overhead door (W-GF-E1/
-    # W-GF-E-DR/W-GF-E2), so it no longer matches the (unsplit) wood wall 1:1 — group by
+    # The NORTH side's stem splits into 3 segments at the overhead door (W-GF-N2/
+    # W-GF-N-DR/W-GF-N), so it no longer matches the (unsplit) wood wall 1:1 — group by
     # side and check the wood wall's endpoints are among the group's stem corners instead.
+    # (It was the EAST side until 2026-09-07; the grouping is by compass letter and does not
+    # care which side carries the gap, which is why only this comment moved.)
     stem_groups: dict[str, list] = {}
     for wall in catlin_model.walls:
         if not wall.tag.startswith("W-GF-"):

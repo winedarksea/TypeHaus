@@ -20,10 +20,18 @@ discharge faces AWAY from the wall (`rotation=deg(180)`, north), and the sill cl
 cabinet top by 18 3/16".
 
 ** THE 40" DISCHARGE IS LEGAL ONLY BECAUSE THE CABINET STANDS EAST OF THE GARAGE. ** The
-garage occupies x 0'..24' with its roof to 25'-4"; this cabinet is at x 26'-6"..29'-9",
-past its plan extent, discharging north into open front yard. The 48 1/2" slot between the
-house and the garage — where `SL-M-HP3PAD` sits — could never have given a 24k unit its
-discharge, and that, not the pad, is the load-bearing siting reason.
+garage occupies x 6'..30' with its roof to 31'-4" and its gutter face to 31'-10"; this
+cabinet is at x 33'-0"..36'-3", past its plan extent, discharging north into open front
+yard. The 48 1/2" slot between the house and the garage — where `SL-M-HP3PAD` sits — could
+never have given a 24k unit its discharge, and that, not the pad, is the load-bearing
+siting reason. It is also the sentence that moved this cabinet 6'-6" east on 2026-09-07:
+the garage moved under it, and the siting reason moved with the garage.
+
+** IT LAPS `WIN-M-KITCH-N` NOW, NOT `WIN-M-KITCH`, AND ONE OF THEM IS UNAVOIDABLE. ** The
+window-free band between the two ROs is 35 1/2" against a 39" cabinet, so a north-face
+siting laps a window wherever it goes — it always did. The new lap is 10" of a 14" RO
+against the 18 1/2" it took out of `WIN-M-KITCH`, so the trade is slightly better, and the
+sink window is clear.
 
 Not in `params/hp3_pad.py`, which owns the slot pad, and not in `params/sunken_garden.py`,
 which owns the pocket: three units, three pads, three modules.
@@ -60,15 +68,29 @@ _CLADDING_Y_IN = 36 * 12 + 7.25
 _BACK_CLEAR_IN = 6.0
 
 #: The cabinet centre, in inches from the project origin. **This pair is also written in
-#: plan/electrical.py** as ``pt(ft(28, 1.5), ft(37, 8.53125))`` and the two files cannot
-#: import each other. It mirrors the centre the unit had in the pocket
+#: plan/electrical.py** as ``pt(ft(34, 7.5), ft(37, 8.53125))`` and the two files cannot
+#: import each other. The Y mirrors the centre the unit had in the pocket
 #: (``ft(-1, -8.53125)`` about the same cladding offset), which is not a coincidence: it is
 #: the same cabinet at the same back clearance off the same 7 1/4" cladding stack.
-_CX_IN = 28 * 12 + 1.5                                      # 28'-1 1/2"
+#:
+#: ** X WENT 28'-1 1/2" -> 34'-7 1/2" ON 2026-09-07, AND IT IS THE SMALLEST MOVE THAT KEEPS
+#: THE CLEARANCE. ** The garage moved 6'-0" east onto the house ridge and its roof turned, so
+#: what stands west of this cabinet is no longer a rake at x=25'-4" but an EAVE at x=31'-4"
+#: carrying a gutter whose outer face is at 31'-10". The far-end clear was 14"; 33'-0" is the
+#: west face that gives 14" back, and 33'-0" + 19 1/2" is this centre.
+#:
+#: ** IT OVERSAILS THE HOUSE'S NE CORNER BY 3", AND THAT IS THE TRADE THAT WAS TAKEN. **
+#: The cabinet runs x 33'-0"..36'-3" against a north wall that ends at 36'-0", so its last
+#: 3" have open air behind them instead of cladding — the 6" back clearance holds over 36 of
+#: 39 inches. The alternative was to sit flush at 32'-9"..36'-0" and give the far end 11"
+#: instead of 14", which trades a published-unknown airflow clearance for a mounting
+#: cosmetic. Airflow won. There is no third option: 31'-10" to 36'-0" is 50" and the cabinet
+#: plus its clearance is 53".
+_CX_IN = 34 * 12 + 7.5                                      # 34'-7 1/2"
 _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 
 # --- the pad ---------------------------------------------------------------------------
-# x 26'-3 1/4"..29'-11 3/4", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
+# x 32'-9 1/4"..36'-5 3/4", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
 # same top and the same reasoning as the other two: 4" unreinforced on 4" of open-graded
 # stone, no XPS, no vapour retarder, no frost footing under 187 lb of cabinet.
 #
@@ -78,7 +100,9 @@ _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 # runoff into gravel rather than against a lip. The east and west edges run 2 3/4" past the
 # cabinet, the same rule that sets the pocket pad's east edge. The north edge runs 12 3/16"
 # past the cabinet, which is the standing room in front of the service side.
-_PAD_X0_IN, _PAD_X1_IN = 26 * 12 + 3.25, 29 * 12 + 11.75
+#: Derived off the centre rather than restated, so the pad follows the cabinet: the east
+#: and west edges run 2 3/4" past it, which is the pocket pad's own rule.
+_PAD_X0_IN, _PAD_X1_IN = _CX_IN - (_CAB_W_IN / 2.0 + 2.75), _CX_IN + (_CAB_W_IN / 2.0 + 2.75)
 _PAD_Y0_IN, _PAD_Y1_IN = 36 * 12 + 10.0, 39 * 12 + 4.0
 #: Two inches proud of the -2'-10" site grade, the same top as both other pads, so all
 #: three cabinets' bases resolve to one number.

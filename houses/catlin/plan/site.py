@@ -212,8 +212,10 @@ SITE = Site(
     impervious_surfaces=(
         # Apron on the north wall (y=36'), east of the breezeway (which spans x 0.5-8.5').
         # Only 4' deep now that the garage stands at y=40.5': it floors the slot between the
-        # two structures, falls away from the house, and drains east to the driveway rather
-        # than north into the garage stem.
+        # two structures, falls away from the house, and drains east rather than north into
+        # the garage stem. (It drained "east to the driveway" until 2026-09-07; the driveway
+        # premise is retired — see notes/garage_orientation_lot.md — and the 4.2% fall is
+        # unchanged and still legal, it simply no longer drains *to* anything named.)
         ImperviousSurface(
             label="front walk",
             outline=(pt(ft(14), ft(36)), pt(ft(22), ft(36)),
@@ -265,18 +267,19 @@ SITE = Site(
             far_elevation=ft(-2, -9),
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
-        # x 26'-3 1/4"..29'-11 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04. Same
-        # top, -2'-8", 2" proud of grade.
+        # x 32'-9 1/4"..36'-5 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04, moved
+        # 6'-6" east on 2026-09-07 with its cabinet. Same top, -2'-8", 2" proud of grade.
+        # It runs 5 3/4" past the house's NE corner, into open yard, as the cabinet does.
         #
         # ** IT FALLS STRAIGHT NORTH, unlike SL-M-HP3PAD's diagonal. ** That pad runs its
         # fall on the diagonal only because the garage stem stands directly north of it and
-        # there is nowhere else for the sheet to go. The garage is x 0'..24'; this pad is at
-        # x 26'-3 1/4"..29'-11 3/4", with open front yard in front of it. 3/4" over 30" is
+        # there is nowhere else for the sheet to go. The garage is x 6'..30'; this pad is at
+        # x 32'-9 1/4"..36'-5 3/4", with open front yard in front of it. 3/4" over 30" is
         # 2.5% against R401.3's 2%, away from the house, and that is the whole story.
         ImperviousSurface(
             label="hp1 pad",
-            outline=(pt(ft(26, 3.25), ft(36, 10)), pt(ft(29, 11.75), ft(36, 10)),
-                     pt(ft(29, 11.75), ft(39, 4)), pt(ft(26, 3.25), ft(39, 4))),
+            outline=(pt(ft(32, 9.25), ft(36, 10)), pt(ft(36, 5.75), ft(36, 10)),
+                     pt(ft(36, 5.75), ft(39, 4)), pt(ft(32, 9.25), ft(39, 4))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
         ),

@@ -17,7 +17,7 @@ FT = 0.3048
 INCH = 0.0254
 
 # The two doors the breezeway exists to connect, and the enclosure that must stay centred
-# between them. `params/breezeway.py` derives its glazing from _GLAZING_CENTER_X = 7.25 ft;
+# between them. `params/breezeway.py` derives its glazing from _GLAZING_CENTER_X = 8.0 ft;
 # this test never reads that constant — it re-derives the answer from the doors, which is
 # the whole point.
 ENTRY_DOOR = "D-M-ENTRY"
@@ -41,6 +41,15 @@ def _solid_x_span(model, tag: str) -> tuple[float, float]:
     return min(xs), max(xs)
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "DELIBERATE AND OPEN since 2026-09-07. The garage was centred on the house ridge and "
+    "D-G-SERVICE travelled with its wall to a centre of 10 ft; D-M-ENTRY is pinned at 8 ft "
+    "by the W-M-STRW bearing tee 6 in off its jamb and could not follow. The breezeway is "
+    "left untouched at _GLAZING_CENTER_X = 8.0 by owner decision - centre the garage, look "
+    "at it, adjust the breezeway after. code.R311_3_exterior_landing FAILs on D-G-SERVICE "
+    "for the same reason and is the finding that tracks it. STRICT on purpose: when the "
+    "breezeway is re-centred this test must go green and this marker must come off in the "
+    "same edit. See notes/garage_orientation_lot.md section 6.1."))
 def test_breezeway_stays_centred_between_the_two_doors_it_shelters(catlin_model):
     """The invariant `houses/catlin/CLAUDE.md` says nothing enforces.
 
@@ -48,6 +57,12 @@ def test_breezeway_stays_centred_between_the_two_doors_it_shelters(catlin_model)
     doors are 1'-6" apart in x, so the centre is a derived midpoint, not a snapped one.
     Half an inch is far tighter than the 3'-6" miss this is here to catch and still leaves
     room for a deliberate inch of re-centring.
+
+    ** IT IS XFAIL TODAY, AND THE ASSERTION BELOW IS UNCHANGED ON PURPOSE. ** The doors are
+    2'-0" apart in x rather than concentric, so their midpoint is x=9'-0" against the
+    glazing's 8'-0". Nothing here was loosened to accommodate that — the miss is exactly the
+    kind this test exists to catch, and the marker records that it is known rather than
+    unnoticed.
     """
     entry_x, _ = _opening_world_center(catlin_model, ENTRY_DOOR)
     service_x, _ = _opening_world_center(catlin_model, SERVICE_DOOR)

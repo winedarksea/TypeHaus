@@ -176,6 +176,20 @@ DECLARED_DIVERGENCES = {
         "the stair shaft's west wall is two framed 2x6 bearing walls on x=10' since "
         "2026-08-24 (W-B-STR + W-B-STR3), not a pour on x=11' — see plan/storeys/basement.py"
     ),
+    # The reference's garage roof is a PLACEHOLDER PRISM — a solid block standing in for a
+    # roof nobody had modelled — so it only ever paired with RF-GARAGE by sitting roughly
+    # over the same footprint. On 2026-09-07 the overhead door turned north to face the
+    # street the site's own setbacks declare, RF-GARAGE's ridge turned with it
+    # (`ridge_direction` "x" -> "y", bearing on W-G-E/W-G-W), and the garage itself moved
+    # 6'-0" east onto the house's ridge line. The prism cannot follow any of that: it has no
+    # ridge to turn, and its centre is now 6'-0" west of the roof's. What the current model
+    # has instead is a real gable with two eaves, two gutters, two leaders and a truss set —
+    # more than the reference described, not less. See notes/garage_orientation_lot.md.
+    "Garage Roof (placeholder prism)": (
+        "the garage was centred on the house ridge and its own ridge turned N-S with the "
+        "overhead door on 2026-09-07; a placeholder prism has neither a ridge to turn nor "
+        "6'-0\" to travel, and RF-GARAGE is a resolved gable rather than a block"
+    ),
     "Garage Floor Slab": _GARAGE_MOVED,
     "Garage ICF Concrete Core 3": _GARAGE_MOVED,
     "Garage Stud Wall 1": _GARAGE_MOVED,

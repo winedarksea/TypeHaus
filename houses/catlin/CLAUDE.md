@@ -1910,6 +1910,46 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - **`GARAGE_WALL_WIND_CLAMPS` survives as an empty list**, and `standing-seam-nailstrip-26`
     and `zip-r` keep their price rows at 0 — the `glazed-green-brick` convention. The revert
     is layer material refs plus re-authoring sixteen constructors.
+- **THE OVERHEAD DOOR FACES NORTH AND THE GARAGE SITS AT x 4'-0"..28'-0" (2026-09-07).**
+  It faced east on `W-G-E` for a lot to the SOUTH with a driveway round the east side — a
+  premise that survived in two prose comments and no `Driveway` element, and that had never
+  agreed with `plan/site.py`'s own `SetbackSpec(edge=2, "FRONT")` on the NORTH edge or with
+  the water service entering from the north. The ridge turned with it (`ridge_direction`
+  `"x"` -> `"y"`, bearing on `W-G-E`/`W-G-W`), the stem gap moved east -> north, both eaves
+  now carry gutters and a leader, and the six south-slope snow guards are gone because south
+  is a rake and nothing discharges over `GL-BW-ROOF` any more. **The footprint did not
+  rotate** — the garage is square, the windows stayed on `W-G-W` and `D-G-SERVICE` on
+  `W-G-S`. Then it moved **6'-0" east onto the house ridge**: the garage is x 6'-0"..30'-0",
+  centre x=18'-0". `GARAGE_X_WEST`/`GARAGE_X_EAST` are published beside the two y lines and
+  the stem, the slab and the landing all derive from them.
+  - **THE MOVE COST THE CONCENTRIC DOORS, AND THAT RED IS DELIBERATE AND OPEN.**
+    `D-G-SERVICE` had to travel with its wall — the move is in 24" steps (a 36" RO must land
+    on a stud line measured from the wall's own start) and at x=8'-0" its king stud would
+    stand **5/8"** inside the corner pack, which owns the first 3 5/8" of wall. Its centre is
+    x=10'-0" now. **`D-M-ENTRY` could not follow**: its east jamb is already 6" west of
+    `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s bearing stack lands and runs to the
+    footings, and a 36" RO cannot straddle it. So the two doors the breezeway spans are
+    **2'-0" out of line**, `params/breezeway.py` is untouched at `_GLAZING_CENTER_X = 8.0`,
+    and `code.R311_3_exterior_landing` FAILs on `D-G-SERVICE`. **That is the one deliberate
+    red in this house and it is an owner decision** — centre the garage, look at it, adjust
+    the breezeway after. Do not answer it by moving the garage back.
+  - **`EQ-M-HP1-OD` moved 6'-6" east and `ED-M-HP1-DISC` went to the WEST of it.** That
+    cabinet's whole siting argument is that it stands east of the garage's plan extent; the
+    garage moved under it. It now oversails the house's NE corner by 3" to keep its 14"
+    clearance to the garage's east gutter face (31'-10" to 36'-0" is 50"; cabinet plus
+    clearance is 53"), and its disconnect is a 6 1/2" can in the 14" slot with **no NEC
+    110.26 working space and nothing grading it**. Both are hard bounds: that machine cannot
+    move further either way on this face. **`EQ-M-HP3-OD` did not move** — it sits south of
+    the garage's roof edge, in the 48 1/2" slot, which is its documented condition.
+  - **Aligning `ST-G-SERVICE` under its own landing fixed a standing FAIL.** The flight ran
+    x 5'..8' under a landing at 6'-6"..9'-6", a stale offset nothing graded;
+    `code.R312_1_guard_height`'s unguarded-edge FAIL on `SL-G-STEP-0` went with the fix.
+  - **`ED-G-SW` / `ED-G-EXT-SW` sit inside `D-G-SERVICE`'s rough opening** — a pre-existing
+    defect translated faithfully rather than silently re-sited. Nothing grades a wall device
+    against an opening; the fix is ~12'-0"/12'-6", east of the real east jamb.
+  - **`notes/garage_orientation_lot.md` is the whole before/after and the revert recipe**,
+    including that a genuine south-lot revert must also flip `SetbackSpec` edges 0 and 2,
+    which this change deliberately did not touch.
 - **The garage has no wainscot. Its base skin is the 24" band on the ICF stem, uniform on
   all four walls, and that is a 2026-09-03 deletion rather than a substitution.** A 4'-0"
   wainscot stood on the two 4'-0" strips of east wall flanking the overhead door, wrapped

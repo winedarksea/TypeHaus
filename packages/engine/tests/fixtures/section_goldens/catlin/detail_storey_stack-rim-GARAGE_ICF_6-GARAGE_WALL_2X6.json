@@ -679,6 +679,118 @@
       "node": "polyline",
       "points": [
         [
+          484.25000000000006,
+          -7.249999999999999
+        ],
+        [
+          485.75000000000006,
+          -7.249999999999999
+        ],
+        [
+          485.75000000000006,
+          0.0
+        ],
+        [
+          484.25000000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "joist-0-003-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          484.25000000000006,
+          -7.249999999999999
+        ],
+        [
+          485.75000000000006,
+          -7.249999999999999
+        ],
+        [
+          485.75000000000006,
+          0.0
+        ],
+        [
+          484.25000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          478.4824803149607,
+          0.0
+        ],
+        [
+          488.62500000000006,
+          0.0
+        ],
+        [
+          488.62500000000006,
+          1.0
+        ],
+        [
+          478.4824803149607,
+          1.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          478.4824803149607,
+          0.0
+        ],
+        [
+          488.62500000000006,
+          0.0
+        ],
+        [
+          488.62500000000006,
+          1.0
+        ],
+        [
+          478.4824803149607,
+          1.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           489.25,
           -12.000000000000005
         ],

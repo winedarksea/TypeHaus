@@ -38,6 +38,8 @@ from plan.assemblies import GARAGE_ICF_CORE, GARAGE_ICF_EPS
 # authored on. The stem must sit under them and the slab inside them, so both derive from
 # there rather than repeating the literal.
 from plan.storeys.garage import (
+    GARAGE_X_EAST,
+    GARAGE_X_WEST,
     GARAGE_STEM_REVEAL,
     GARAGE_Y_NORTH,
     GARAGE_Y_SOUTH,
@@ -319,9 +321,9 @@ _FROST = 42.0 / 12.0  # frost depth below grade
 # *reveal*, a height above soil, authored next to the wall lines it belongs with
 # (plan/storeys/garage.py); grade is what it is a reveal above.
 _STEM_TOP = ft(_GRADE_FT + GARAGE_STEM_REVEAL.feet)
-# A car can't climb a 22" ICF stem, so the east stem gaps at the overhead door: the flanking
+# A car can't climb a 22" ICF stem, so the north stem gaps at the overhead door: the flanking
 # segments keep the full reveal, and the segment behind the door becomes a grade beam flush
-# with the slab (grade), no curb across the opening. W-G-E above is untouched (splitting it
+# with the slab (grade), no curb across the opening. W-G-N above is untouched (splitting it
 # would break the ridge closure it carries) — the door reaches down via a negative
 # sill_height in plan/storeys/garage.py instead.
 _GRADE_BEAM_TOP = SITE_GRADE
@@ -329,32 +331,43 @@ _GRADE_BEAM_TOP = SITE_GRADE
 _SERVICE_GAP_MARGIN = ft(0, 3)
 
 GARAGE_STEM_NODES = [
-    Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
-    Node(uid="CGF002AAAA", tag="N-GF-SE", position=pt(ft(24), GARAGE_Y_SOUTH)),
-    Node(uid="CGF003AAAA", tag="N-GF-NE", position=pt(ft(24), GARAGE_Y_NORTH)),
-    Node(uid="CGF004AAAA", tag="N-GF-NW", position=pt(ft(0), GARAGE_Y_NORTH)),
-    Node(uid="CGF005AAAA", tag="N-GF-E-DRS", position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET)),
-    Node(uid="CGF006AAAA", tag="N-GF-E-DRN",
-         position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET + OVERHEAD_DOOR_WIDTH)),
+    Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(GARAGE_X_WEST, GARAGE_Y_SOUTH)),
+    Node(uid="CGF002AAAA", tag="N-GF-SE", position=pt(GARAGE_X_EAST, GARAGE_Y_SOUTH)),
+    Node(uid="CGF003AAAA", tag="N-GF-NE", position=pt(GARAGE_X_EAST, GARAGE_Y_NORTH)),
+    Node(uid="CGF004AAAA", tag="N-GF-NW", position=pt(GARAGE_X_WEST, GARAGE_Y_NORTH)),
+    # Overhead-door gap in the NORTH stem. D-G-OVERHEAD hangs off N-G-NE and W-G-N runs
+    # east->west, so OVERHEAD_DOOR_OFFSET is measured back from x=24': the jambs land at
+    # x=20' and x=4'. Flush with the opening, no margin — the ±3" `_SERVICE_GAP_MARGIN`
+    # below is the service door's rule, forced by a buried water line, and nothing crosses
+    # here. CGF005 is the uid the retired east gap's south node carried.
+    Node(uid="CGF005AAAA", tag="N-GF-N-DRW",
+         position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET - OVERHEAD_DOOR_WIDTH,
+                     GARAGE_Y_NORTH)),
     # Service door gap in the south stem (2026-08-01). Unlike the overhead door's gap, this
     # one gets 3" margin each side: the hydrant line (PR-G-HYDRANT-CW) crosses buried at
     # x=5'-0", exactly the door's west jamb, so a flush gap would land the crossing on the
     # joint between two footings and trip mep.footing_clearance in both. The wider block-out
     # puts it unambiguously inside the grade beam.
     Node(uid="CGF007AAAA", tag="N-GF-S-DRW",
-         position=pt(SERVICE_DOOR_OFFSET - _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
-    Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
-         position=pt(SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH + _SERVICE_GAP_MARGIN,
+         position=pt(GARAGE_X_WEST + SERVICE_DOOR_OFFSET - _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
-    # ** THESE TWO SPLITS ARE LEGACY AND ARE KEPT DELIBERATELY. ** They exist only because
-    # the SE/NE brick-ledge wainscot returns once needed 4'-0" of widened, ledged stem under
-    # them; both halves have been plain `_STEM` since 2026-09-02, and the wainscot itself is
-    # gone since 2026-09-03, so the split is now purely cosmetic. Merging W-GF-S2/S3 and
-    # W-GF-N/N2 back into one wall apiece would delete two real footings and churn every
-    # golden that names them, for no geometric change at all. Not worth it — but do not
-    # invent a new reason for the split either: there isn't one.
-    Node(uid="CGF009AAAA", tag="N-GF-S-BRICK", position=pt(ft(20), GARAGE_Y_SOUTH)),
-    Node(uid="CGF010AAAA", tag="N-GF-N-BRICK", position=pt(ft(20), GARAGE_Y_NORTH)),
+    Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
+         position=pt(GARAGE_X_WEST + SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
+                     + _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
+    # ** THE SOUTH SPLIT IS A LEGACY FOSSIL AND IS KEPT DELIBERATELY. ** It exists only
+    # because the SE brick-ledge wainscot return once needed 4'-0" of widened, ledged stem
+    # under it; both halves have been plain `_STEM` since 2026-09-02, and the wainscot
+    # itself is gone since 2026-09-03, so the split is now purely cosmetic. Merging
+    # W-GF-S2/S3 back into one wall would delete a real footing and churn every golden that
+    # names it, for no geometric change at all. Not worth it — but do not invent a new
+    # reason for the split either: there isn't one.
+    Node(uid="CGF009AAAA", tag="N-GF-S-BRICK",
+         position=pt(GARAGE_X_WEST + ft(20), GARAGE_Y_SOUTH)),
+    # ** ITS NORTH TWIN IS NO LONGER A FOSSIL. ** (20', GARAGE_Y_NORTH) is exactly the new
+    # overhead door's east jamb, so the node the deleted wainscot left behind is retagged in
+    # place — same uid, same coordinate, a reason at last. Do not merge W-GF-N2 away.
+    Node(uid="CGF010AAAA", tag="N-GF-N-DRE",
+         position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET, GARAGE_Y_NORTH)),
 ]
 
 # Aligns the stem's exterior EPS face to the 24'x24' node line, which is also the wood
@@ -388,25 +401,28 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-S-BRICK", **_STEM),
     FoundationWall(uid="CGF109AAAA", tag="W-GF-S3", start_node="N-GF-S-BRICK",
                    end_node="N-GF-SE", **_STEM),
-    FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
-                   end_node="N-GF-E-DRS", **_STEM),
-    FoundationWall(uid="CGF105AAAA", tag="W-GF-E-DR", start_node="N-GF-E-DRS",
-                   end_node="N-GF-E-DRN", **_GRADE_BEAM),
-    FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
+    # The east stem is one unbroken run again now that the door is off it; W-GF-E1's uid
+    # carries the merged wall (W-GF-E2/CGF106 retired).
+    FoundationWall(uid="CGF102AAAA", tag="W-GF-E", start_node="N-GF-SE",
                    end_node="N-GF-NE", **_STEM),
-    # W-GF-N split the same way: W-GF-N keeps its uid on the remnant (west side);
-    # W-GF-N2 is the corner piece.
-    FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-BRICK",
-                   end_node="N-GF-NW", **_STEM),
+    # North stem, split three ways at the overhead door — the south wall's pattern exactly.
+    # Every uid here is re-used from the east gap it replaces or from the wall it splits:
+    # W-GF-N2 keeps CGF110 (its east end is unmoved), the grade beam takes CGF105 off
+    # W-GF-E-DR, and W-GF-N keeps CGF103 on the west remnant.
     FoundationWall(uid="CGF110AAAA", tag="W-GF-N2", start_node="N-GF-NE",
-                   end_node="N-GF-N-BRICK", **_STEM),
+                   end_node="N-GF-N-DRE", **_STEM),
+    FoundationWall(uid="CGF105AAAA", tag="W-GF-N-DR", start_node="N-GF-N-DRE",
+                   end_node="N-GF-N-DRW", **_GRADE_BEAM),
+    FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-N-DRW",
+                   end_node="N-GF-NW", **_STEM),
     FoundationWall(uid="CGF104AAAA", tag="W-GF-W", start_node="N-GF-NW",
                    end_node="N-GF-SW", **_STEM),
 ]
 
-# Not a comprehension any more: the east wall split into three, and a fresh uid per item
+# Not a comprehension any more: the north wall splits into three, and a fresh uid per item
 # would reassign CGF203/204AAAA (footings that didn't conceptually change) to the new door
-# pieces. Original uids are kept; only the grade beam and far door-split piece are new.
+# pieces. Original uids are kept and re-used across the 2026-09-07 rotation — CGF206
+# (FT-GF-E2) is the one that retired with the east gap.
 #
 # `center_on="wall"`: the stem runs 0"..11" inboard of the raw node line, so a 20" strip
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
@@ -419,11 +435,10 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
     Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", **_GARAGE_FOOTING),
     Footing(uid="CGF209AAAA", tag="FT-GF-S3", under="W-GF-S3", **_GARAGE_FOOTING),
-    Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", **_GARAGE_FOOTING),
-    Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR", **_GARAGE_FOOTING),
-    Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2", **_GARAGE_FOOTING),
-    Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
+    Footing(uid="CGF202AAAA", tag="FT-GF-E", under="W-GF-E", **_GARAGE_FOOTING),
     Footing(uid="CGF210AAAA", tag="FT-GF-N2", under="W-GF-N2", **_GARAGE_FOOTING),
+    Footing(uid="CGF205AAAA", tag="FT-GF-N-DR", under="W-GF-N-DR", **_GARAGE_FOOTING),
+    Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 
@@ -437,10 +452,12 @@ _SLAB_GAP = inch(0.5)
 _SLAB_INSET = GARAGE_ICF_CORE + GARAGE_ICF_EPS + GARAGE_ICF_EPS + _SLAB_GAP
 _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
 _slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
+_slab_x_w = GARAGE_X_WEST + _SLAB_INSET
+_slab_x_e = GARAGE_X_EAST - _SLAB_INSET
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
-    outline=(pt(_SLAB_INSET, _slab_y_s), pt(ft(24) - _SLAB_INSET, _slab_y_s),
-             pt(ft(24) - _SLAB_INSET, _slab_y_n), pt(_SLAB_INSET, _slab_y_n)),
+    outline=(pt(_slab_x_w, _slab_y_s), pt(_slab_x_e, _slab_y_s),
+             pt(_slab_x_e, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
     perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
 )
@@ -460,11 +477,14 @@ GARAGE_SLAB = Slab(
 # slab, R311.7.6's "a landing at least as deep as the stair is wide". A landing is a floor,
 # not a flight; it has no business being generated by a stair resolver.
 #
-# It lands in the south-west corner, on the door's own 5'-0"..8'-0" band. The 16' overhead
-# door is in the *east* wall between y=45' and y=61', so the drive path never crosses this;
-# the flight below the landing stops at y=47'-2 3/8", clear of it.
-_STEP_X0 = SERVICE_DOOR_OFFSET
-_STEP_X1 = SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
+# It lands on the door's own 8'-6"..11'-6" band. The 16' overhead door is in the *north*
+# wall between x=10' and x=26' since 2026-09-07, so the drive path runs the length of the bay
+# and never crosses this; the flight below the landing stops at y=47'-2 3/8", clear of it.
+# ** THESE ARE OFFSETS ALONG W-G-S AND MUST BE TAKEN FROM ITS WEST END. ** They read as
+# absolute x only while GARAGE_X_WEST was 0'-0"; it is 4'-0" since 2026-09-07 and the
+# landing would otherwise have slid out from under its own door.
+_STEP_X0 = GARAGE_X_WEST + SERVICE_DOOR_OFFSET
+_STEP_X1 = GARAGE_X_WEST + SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
 _STEP_LANDING_FT = 3.0         # R311.7.6: a landing at least as deep as the run is wide
 
 GARAGE_STEPS = [
@@ -485,20 +505,32 @@ GARAGE_STEPS = [
 # the same thing.
 #
 # The hydrant is freestanding, not wall-mounted: nowhere on a wall clears the footings'
-# 45° bearing-influence line at this bury depth. The clear zone is x >= 4'-10 1/2",
+# 45° bearing-influence line at this bury depth. The clear zone is x >= 10'-10 1/2",
 # y <= 59'-7 7/8", floor not wall — no wall
 # position works here, so it stands free like a yard hydrant should (Y34 barrel, unlike the
 # two wall hydrants in plan/fixtures.py).
 #
-# x=5'-0" sits on the existing supply line (PR-G-HYDRANT-CW runs north at x=5'-0" through
-# three sleeves), keeping the run straight instead of jogging. y=59'-6" clears FT-GF-N by
-# 35 7/8" (34" required) and stays inside the overhead door's 45'..61' band.
+# ** x=11'-0" SINCE 2026-09-07, AND IT IS THE SAME STATION. ** It is 5'-0" east of the west
+# wall, exactly where it always stood; the wall moved 6'-0" east and the hydrant with it,
+# because the clear zone is derived from FT-GF-W's 45° influence line and travels with the
+# footing. Left at x=5'-0" absolute it would stand INSIDE FT-GF-W's own 20" strip.
+#
+# ** THE LATERAL NOW JOGS, AND THAT IS WHAT THE MOVE COST. ** PR-G-HYDRANT-CW used to run
+# dead straight north at x=5'-0" from the house entry; it turns east 4'-0" in the yard slot
+# at y=38'-0" (plan/mep_supply.py) and crosses the garage's south foundation at x=11'-0",
+# under the grade beam FT-GF-S-DR inside SP-GF-S-HYD's protection sleeve — 22" below its
+# bearing plane, which is the documented worst case and the arrangement this run carried
+# before SERVICE_DOOR_OFFSET last moved. y=59'-6" clears the north
+# stem footing by 35 7/8" (34" required). That strip is continuous along GARAGE_Y_NORTH and
+# unchanged by the 2026-09-07 door rotation — only its tag over x=5'-0" changed, from
+# FT-GF-N to the grade beam's FT-GF-N-DR, and the grade beam's footing keeps the same
+# bottom elevation, so the 45° influence line is the same line.
 #
 # Consequence: the hydrant sits 5' out into the parking area, not against the wall — every
 # compliant position here is in the room. Mitigate with a bollard/wheel stop if needed;
 # don't move it back to the wall.
-HYDRANT_X_FT = 5.0          # on the service line — the run reaches it without a jog
-HYDRANT_Y_FT = 59.5         # north bay, clear of FT-GF-N's influence line
+HYDRANT_X_FT = 11.0         # 5'-0" east of the west wall — the footing-clear station
+HYDRANT_Y_FT = 59.5         # north bay, clear of the north footing's influence line
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # A 4" topping pedestal (SL-G-HYDRANT-PED) that lifted the slab penetration above the
@@ -531,7 +563,8 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # Re-sized from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
 # in plan — nothing was grading it, since `mep.footing_clearance` only walks pipe runs) down
 # to 1'-6"x1'-6" deep, top -5'-6", ~2.6 cu ft. Bottom -7'-0" is 34" below bearing; the
-# stone's edge stands 35 1/2" off FT-GF-W and 35 7/8" off FT-GF-N — no slack left in either.
+# stone's edge stands 35 1/2" off FT-GF-W and 35 7/8" off the north footing strip (which is
+# FT-GF-N-DR over this x since 2026-09-07) — no slack left in either.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),

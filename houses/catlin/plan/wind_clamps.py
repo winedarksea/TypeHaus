@@ -73,40 +73,49 @@ from typehaus import Connector, ConnectorKind, ft, pt
 GARAGE_WALL_WIND_CLAMPS = []
 
 GARAGE_ROOF_WIND_CLAMPS = [
+    # ** THE EAVES ARE EAST AND WEST SINCE 2026-09-07, AND THE GARAGE IS AT x 6'..30'. **
+    # The row structure is unchanged and is the only thing to reproduce: three clamps at
+    # each of the roof's four corners, on the EAVE, three seams in from the RAKE beside
+    # them — stations at -8", +8" and +24" off the rake's own wall line, on a 16" seam
+    # pitch. What turned is which pair of edges is which: the eaves used to be y=39'-2 7/8"
+    # and 65'-10 7/8" and are now x=4'-6 1/4" and 31'-5 3/4" (each 17 3/4" outboard of its
+    # node line), and the stations that used to run in x now run in y off GARAGE_Y_SOUTH /
+    # GARAGE_Y_NORTH. `elevation` is untouched: same 4:12, same 24' span, same 16" overhang,
+    # so the eave line is at the same height it always was.
     Connector(uid="M2BE9KCQQ7", tag="CN-G-WIND-RFSW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, -8), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(40, 0.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="PPM5H4K6EK", tag="CN-G-WIND-RFSW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(41, 4.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="QAZ18JEVTF", tag="CN-G-WIND-RFSW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(2), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(42, 8.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="X9PQ5K1CYX", tag="CN-G-WIND-RFSE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24, 8), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(40, 0.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="6Y59G1FQDX", tag="CN-G-WIND-RFSE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(41, 4.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="H8GJE348NE", tag="CN-G-WIND-RFSE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(22), ft(39, 2.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(42, 8.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="QNY7KXYE7F", tag="CN-G-WIND-RFNE-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(24, 8), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(65, 4.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="S67JTBKR21", tag="CN-G-WIND-RFNE-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(23, 4), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(64, 0.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="5WVHPSXHFD", tag="CN-G-WIND-RFNE-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(22), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(31, 5.75), ft(62, 8.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="8REEX7CC35", tag="CN-G-WIND-RFNW-1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, -8), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(65, 4.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="4YB7X5WM5X", tag="CN-G-WIND-RFNW-2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(0, 8), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(64, 0.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
     Connector(uid="CM84J5D2KA", tag="CN-G-WIND-RFNW-3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(2), ft(65, 10.875)), elevation=ft(7, 11.44),
+              position=pt(ft(4, 6.25), ft(62, 8.625)), elevation=ft(7, 11.44),
               connects=("RF-GARAGE",), size="S-5-N"),
 ]

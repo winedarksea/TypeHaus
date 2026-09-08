@@ -161,18 +161,30 @@ def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):
 
 # --- the garage gutter ---------------------------------------------------------------------
 
-def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model_ro):
-    """Deferred with the truss roof; derived now, so the raised-heel lift carries it.
+def test_the_garage_eaves_carry_derived_gutters(catlin_model_ro):
+    """Deferred with the truss roof; derived now, so the raised-heel lift carries them.
 
-    The channel is an open-top U of three thin bands (back/bottom/front), not a solid bar.
+    Each channel is an open-top U of three thin bands (back/bottom/front), not a solid bar.
+
+    ** BOTH EAVES SINCE 2026-09-07. ** The overhead door turned north and the ridge turned
+    with it, so the eaves are EAST and WEST where they were south and north, and
+    `EaveGutter.edges` went from ``("south",)`` to ``("east", "west")`` — the south slope had
+    the trough because it shed onto the breezeway, and a rake sheds along itself.
+    "eave-lo"/"eave-hi" are the resolver's own naming for the two, on whichever axis the
+    ridge leaves them; asserting the pair rather than one is what makes this test survive the
+    next rotation. See notes/garage_orientation_lot.md.
     """
     roof = next(item for item in catlin_model_ro.roofs if item.tag == "RF-GARAGE")
     gutters = [member for member in roof.members if member.category == "gutter"]
     assert [member.child_key for member in gutters] == [
-        "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front"]
+        "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front",
+        "eave-hi-gutter-back", "eave-hi-gutter-bottom", "eave-hi-gutter-front"]
+    # The ridge runs N-S, so the two eaves are the roof footprint's x extremes.
+    x0 = min(point[0] for point in roof.footprint)
+    x1 = max(point[0] for point in roof.footprint)
     for gutter in gutters:
-        # The ridge runs E-W, so "eave-lo" is the south edge — facing the breezeway.
-        assert min(gutter.p0[1], gutter.p1[1]) < min(point[1] for point in roof.footprint) + 0.2
+        edge = x0 if gutter.child_key.startswith("eave-lo") else x1
+        assert abs(gutter.p0[0] - edge) < 0.3, gutter.child_key
         # Hung off the plane, so it stays under the eave the heel lift raised.
         assert gutter.z1_m < roof.eave_z_m
         assert gutter.z1_m > roof.eave_z_m - 0.2
@@ -181,6 +193,8 @@ def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model_ro):
 def test_the_garage_gutter_reaches_the_ifc_export(catlin_model_ro, ifc_file):
     children = _children(ifc_file, _roof_product(ifc_file, "RF-GARAGE"))
     for band in ("back", "bottom", "front"):
+        assert f"eave-hi-gutter-{band}" in children, \
+            "the second eave's trough must export too, not just the first"
         gutter = children[f"eave-lo-gutter-{band}"]
         assert gutter.is_a("IfcBuildingElementProxy")
         assert gutter.Representation is not None
