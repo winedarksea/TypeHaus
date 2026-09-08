@@ -58,6 +58,17 @@ DOOR_TYPES = [
     DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
              operation="slide", glazed=True, tempered=True, u_factor=u_us(0.25)),
     DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
+    # 3'-0" interior leaf, new 2026-09-07: the basement equipment route. D-B-FURN and
+    # D-B-SHOP are the two doors an appliance or a machine actually passes through, off a
+    # 3'-5 1/16" stair flight, so both take the full 36" rather than the 32" the rest of
+    # the interior doors carry.
+    DoorType(tag="DT-INT-SWING36", width=ft(3), height=ft(6, 8),
+             source="2026-09-07 basement equipment route — D-B-FURN and D-B-SHOP"),
+    # D-B-GYM's leaf once the hall reached the sauna wall: same 32" as before, glazed, so
+    # the gym's south daylight reaches the windowless hall. tempered per the note above.
+    DoorType(tag="DT-INT-SWING32-GLAZED", width=ft(2, 8), height=ft(6, 8), glazed=True,
+             tempered=True,
+             source="2026-09-07 basement hall — borrowed light for a hall with no window"),
     DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True),
@@ -851,14 +862,18 @@ WALLS = [
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
          end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
-    # Staggered per the W-M-LS note. `stacks_on` MUST stay: it is the tiebreaker on the
-    # y=18' run and dropping it re-arms integrity.stack_ambiguous. It names **W-B-CW2B**
-    # since 2026-09-05, when the hall's cased opening split the basement wall at x=14'-0":
-    # this wall runs x 13'-4"..18'-0", so W-B-CW2B (14'..18') is its only >=2' overlap.
-    # W-M-CLN keeps W-B-CW2.
+    # Staggered per the W-M-LS note. ** IT STACKS ON NOTHING SINCE 2026-09-07, AND THAT IS
+    # AUTHORED, NOT AN OMISSION. ** W-B-CW2B was the only basement wall under this run, and
+    # the hall's extension to the sauna wall deleted it. What is left beneath the y=18'
+    # line here is W-B-CW2, which reaches 6 11/16" into this wall's x 13'-4"..18'-0" run —
+    # short of the 2'-0" minimum overlap, so there is exactly ONE candidate count of zero
+    # and no `integrity.stack_ambiguous` to arm. Same situation as W-M-STRW2 two hundred
+    # lines down.
+    # The load goes into the deck instead: FS-M-WEST's joists run in x, this partition runs
+    # ALONG them at y=216" mid-bay between the 208" and 224" lines, so
+    # params/main_deck.py carries two `JoistReinforcement` blocking entries under it.
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
-         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
-         stacks_on="W-B-CW2B"),
+         end_node="N-M-E4", assembly="INT_2X4_STAGGERED_GWB", top=ft(9)),
     # --- RM-M-BATH2 drop-in tub deck knee walls ---------------------
     # The two framed sides of the box FX-M-BATH2-TUB drops into. 2x4 at 16" o.c. with
     # exterior-grade ply both faces and a mineral wool cavity — and that cavity is the one

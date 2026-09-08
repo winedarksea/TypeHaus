@@ -1515,6 +1515,62 @@
       "node": "polyline",
       "points": [
         [
+          0.0,
+          -26.625
+        ],
+        [
+          19.34251968503937,
+          -26.625
+        ],
+        [
+          19.34251968503937,
+          -23.720964566929126
+        ],
+        [
+          0.0,
+          -23.720964566929126
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBR403AAAA-ceiling",
+      "tag": "CEIL-RM-B-SAUNA"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.0,
+          -26.625
+        ],
+        [
+          19.34251968503937,
+          -26.625
+        ],
+        [
+          19.34251968503937,
+          -23.720964566929126
+        ],
+        [
+          0.0,
+          -23.720964566929126
+        ]
+      ],
+      "pattern": "sauna-shiplap",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "sauna-shiplap"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           -66.93749999999999
         ],

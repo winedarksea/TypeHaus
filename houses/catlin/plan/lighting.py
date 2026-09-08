@@ -97,12 +97,30 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    # 7" west of O-B-HALL's west jamb, on W-B-CW2's workshop face — the switch you reach
-    # for coming through the cased opening from the hall. It was at x=16', which the
-    # opening now occupies.
+    # ** IT MOVED ONTO THE NEW DOOR'S WALL (2026-09-07). ** It was 7" west of O-B-HALL's
+    # west jamb on W-B-CW2's workshop face, 8 5/16" from what is now a wall tee at
+    # N-B-BA-SE, and it was justified by a cased opening that no longer exists. The way in
+    # is D-B-SHOP, so the switch goes on W-B-HALL-W's workshop face (x=163.3025", the
+    # device 0.135" into it, the same seat ED-B-STAIR-SW takes on W-B-BA-E) at y=14'-2 7/16",
+    # 5" north of the door's north jamb at 13'-9 7/16".
+    #
+    # ** THAT IS THE HINGE SIDE, AND IT IS THE ONLY SIDE. ** This house's habit is the latch
+    # jamb (see ED-B-BATH-SW) so the switch is not behind the leaf. D-B-SHOP's latch jamb is
+    # the SOUTH one and there are 5 5/8" of wall between it and W-B-SA-N2's face — no box,
+    # no king stud, nothing fits. North it is. The leaf only covers this station if it is
+    # swung the full 180 degrees flat against the wall, which is a workshop door parked, not
+    # a workshop door open; at 90 degrees the switch is in the clear and it is the first
+    # thing your hand finds coming through.
+    #
+    # ** x IS THE BOX'S CENTRE, NOT ITS FACE. ** 163.4375" is where the plate lands — the
+    # face at 163.3025" plus the 0.135" seat — and authoring it as the position put the
+    # whole 2" body 1" further east, 1.61" inside W-B-HALL-W's studs
+    # (`test_wall_mounted_devices_resolve_against_a_wall_face`). A device footprint is a
+    # plan rectangle CENTRED on `position`, so the centre is an inch back: 162.4375".
+    # ED-B-STAIR-SW reads the same way against a wall on its other side.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(13, 10), ft(17, 8.626)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
+                     position=pt(inch(162.4375), inch(170.4375)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(270),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # The under-stair storage (new 2026-09-05). ED-T-LT-SPOT-SW is the
@@ -293,13 +311,50 @@ BASEMENT_LIGHTING = [
                      position=pt(inch(169.9375), ft(25, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 that runs from the
-    # stair foot south to O-B-HALL — centred in it and level with D-B-BATH's leaf. The slot
-    # was 3'-2 5/8" and the can sat at x=15'-9"; sliding W-B-BA-E 1 5/16" west onto the well
-    # partition's line (2026-09-05) made it **3'-3 15/16", x 14'-2 1/16"..17'-6"**, whose
-    # centre is x=15'-10". x=14' would still put the can inside W-B-BA-E's studs.
+    # The can lights the HALL — the slot between W-B-BA-E and W-B-CN2 — centred in it and
+    # level with D-B-BATH's leaf. The slot was 3'-2 5/8" and the can sat at x=15'-9";
+    # sliding W-B-BA-E 1 5/16" west onto the well partition's line (2026-09-05) made it
+    # **3'-3 15/16", x 14'-2 1/16"..17'-6"**, whose centre is x=15'-10". x=14' would still
+    # put the can inside W-B-BA-E's studs. It no longer runs "south to O-B-HALL": since
+    # 2026-09-07 the slot runs to the sauna wall and this is the first of four cans on it.
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(inch(190), ft(23, 6)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # ** THREE MORE CANS DOWN THE EXTENDED HALL (2026-09-07). ** The hall is 15'-6" of
+    # windowless circulation now and CAN1 alone lit its north quarter. Same type, same
+    # circuit, same two-way pair, on the same x=190" centre line — the new wall's east face
+    # lands at 170.0725" and W-B-CN2's west face at 210", so the centre did not move when
+    # the slot grew. (South of y=13'-10" the east side is W-B-CS3's face at 212.615" and the
+    # true centre is 191 5/16"; holding 190" keeps the ladder straight, which is worth more
+    # than 1 5/16" on a 3" aperture.)
+    #
+    # ** 27 VA, AND THAT IS THE WHOLE BUDGET QUESTION. ** CKT-LT-BACKUP is the ALWAYS_ON
+    # tier on a 14.3 kWh battery with about 52 VA of headroom — the number the withdrawn
+    # play-room cove was measured against forty lines up. Three 9 VA cans fit inside it with
+    # 25 VA to spare and `cycle_48h.sustains_always_on` holds; `test_backup_calc.py` is the
+    # assertion, and a fourth can is not free.
+    #
+    # ** THE MIDDLE ONE IS AT 15'-0", NOT THE 15'-6" A 4'-0" LADDER WANTS. ** PR-B-HW-SAUNA
+    # crosses the hall east-west at y=15'-6", 2 9/16" below the finished ceiling, and a
+    # recessed can wants that plane for its trim. 15'-0" is 6" clear of the pipe and leaves
+    # 4'-0"/4'-6"/3'-6" spacings, which nobody standing in a 3'-4" hall can read.
+    #
+    # Recessing is legitimate here: SL-M-DECK is the x 18'-36' half, so this hall's ceiling
+    # is FS-M-WEST's joist bays and there is depth for a 5" housing.
+    ElectricalDevice(uid="J2YZPDZ9MP", tag="ED-B-STAIR-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(inch(190), ft(19, 6)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="780QDKJASC", tag="ED-B-STAIR-CAN3", kind=DeviceKind.LIGHT,
+                     position=pt(inch(190), ft(15)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
+                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="K96T60Y9RX", tag="ED-B-STAIR-CAN4", kind=DeviceKind.LIGHT,
+                     position=pt(inch(190), ft(11, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

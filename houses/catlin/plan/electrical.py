@@ -1781,6 +1781,25 @@ NEC_FILL_BASEMENT = [
                      position=pt(ft(26, 9), ft(35, 3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT", room="RM-B-PLAY-N", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(30))),
+
+    # ** THE HALL, AND NOTHING IN THIS ENGINE ASKED FOR IT (2026-09-07). ** The basement
+    # hall runs 15'-6" from the stair foot to the sauna wall now, which is NEC 210.52(H)
+    # territory — a hallway 10 ft or more in length takes at least one receptacle. Like the
+    # workshop benches above, `electrical.receptacle_spacing` walks
+    # {BEDROOM, LIVING, KITCHEN, DINING, OFFICE} and STAIR is outside it, so no check will
+    # ever call this gap. It is authored because the code says so, not because the model
+    # noticed.
+    #
+    # On W-B-HALL-W's hall face (east face at 14'-2 1/16") 1" proud of it — the face
+    # convention at the top of this file — at y=16'-0", roughly the hall's midpoint and
+    # clear of both doors: D-B-SHOP's north jamb is at 13'-9 7/16" and D-B-GYM is opposite,
+    # on the other side. `rotation=deg(90)` turns the plate east into the hall. Elevation
+    # 16", the house's standard. CKT-RC-BSMT is already `gfci=True, afci=True`
+    # (plan/circuits.py), which is what E3902.11 wants of an unfinished-basement outlet.
+    ElectricalDevice(uid="KYE6QTF5VS", tag="ED-B-HALL-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(inch(171.0725), ft(16)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-BSMT", room="RM-B-STAIR", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 NEC_FILL_MAIN = [
     ElectricalDevice(uid="NEC008AAAA", tag="ED-M-LIVING-RC1", kind=DeviceKind.RECEPTACLE,

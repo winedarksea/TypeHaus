@@ -181,6 +181,11 @@ _MIN_REGION_M2 = 1e-3
 #: A wall counts as filling the ceiling plane if its z band reaches it within this.
 #: Elevations are derived through several sums, so an exact compare would miss.
 _FILL_TOL_M = 1e-6
+#: How much of a chase a wall must fill before the ceiling below runs through it. Catlin's
+#: two chases sit either side of this by a wide margin — FO-M-FIRE is ~67% brick, FO-M-TUBDK
+#: is 2% clipped by a partition that merely shares the elevation — so the exact figure is not
+#: load-bearing, but "most of it" is the claim, not "any of it".
+_FILLED_FRACTION = 0.5
 
 
 @dataclass(frozen=True)
@@ -226,10 +231,10 @@ def polygon_parts(geometry: Any) -> list[Polygon]:
 def wall_fill_face(walls: Sequence[Any], z_m: float) -> Polygon | None:
     """The plan footprint of everything standing THROUGH the ceiling plane at ``z_m``.
 
-    An ordinary partition does not reach here: a basement wall tops out at the bearing seat
-    *under* the joists and a main-floor wall starts at the datum *over* them, so the only
-    walls whose z band contains the deck's own underside are the ones that genuinely pass
-    through the deck.
+    Reaching the plane is necessary and NOT sufficient, which is why the caller also weighs
+    how much of the opening is covered. Plenty of ordinary partitions cross this elevation —
+    catlin's ``W-B-CW3`` is a basement wall whose z band runs to the main datum — and one of
+    them clipping 2% of a chase says nothing about whether the chase is full.
     """
     faces = [Polygon(layer.polygon)
              for wall in walls
@@ -256,9 +261,9 @@ def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any,
     instead cut that room's one 234 SF plane into four fragments — 219 + 7 + 2.5 + 1.4 — none
     of which anybody builds.
 
-    So an opening with something standing in it at the ceiling plane is not a void here at
-    all; a stair well, with nothing in it, stays one in full. It is deliberately all-or-
-    nothing rather than a subtraction of the fill's own footprint: the wythe is thinner than
+    So an opening MOSTLY full at the ceiling plane is not a void here at all; a stair well,
+    with nothing in it, stays one in full. It is deliberately all-or-nothing rather than a
+    subtraction of the fill's own footprint: the wythe is thinner than
     the chase it rises in, and differencing the two leaves an annular gap that resolves to
     1 SF slivers of gypsum nobody hangs. What is really built is board run through and cut to
     the penetration, with the residue packed — one plane, which is what this returns. ``z_m``
@@ -288,7 +293,8 @@ def deck_void_face(plan: PlanModel, storey_tag: str, deck: Any,
                 and getattr(opening, "purpose", None) is FloorOpeningPurpose.CHASE):
             if not fill_built:
                 fill, fill_built = wall_fill_face(walls, z_m), True
-            if fill is not None and intersection(face, fill).area > _MIN_REGION_M2:
+            if (fill is not None
+                    and intersection(face, fill).area >= _FILLED_FRACTION * face.area):
                 continue
         faces.append(face)
     return union_all(faces) if faces else None

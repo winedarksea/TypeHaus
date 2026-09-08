@@ -47,10 +47,18 @@ SUPPLY_DEVICES_BASEMENT = [
     PipeAccessory(uid="Q8RJ1ZFN6V", tag="PA-B-BFP-SAUNA",
                   kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-SAUNA",
                   # room= said RM-B-SAUNA until 2026-09-05 and never was: y=16'-0" is six and
-                  # a half feet north of the sauna's north wall, in the workshop's north
-                  # strip. It is on PR-B-CW-SAUNA, which is what `serves` records; the room
-                  # is where the valve hangs, and it hangs here.
-                  position=pt(ft(17, 4), ft(16)), room="RM-B-WORKSHOP", accessible=True,
+                  # a half feet north of the sauna's north wall. It is on PR-B-CW-SAUNA,
+                  # which is what `serves` records; the room is where the valve hangs.
+                  #
+                  # ** IT HANGS IN THE HALL SINCE 2026-09-07 **, not the workshop: x=17'-4"
+                  # y=16'-0" is inside RM-B-STAIR now that W-B-HALL-W runs the hall's west
+                  # side down to the sauna. Nothing about the valve moved. What changed is
+                  # that a TESTABLE device is in a circulation ceiling rather than a service
+                  # one, so `accessible=True` has to mean something a person can act on: the
+                  # ceiling under it is the hall's finished plane, and the annual test wants
+                  # an access panel in it at this station. Nothing in the model can say that
+                  # — there is no access-panel element — so it is said here.
+                  position=pt(ft(17, 4), ft(16)), room="RM-B-STAIR", accessible=True,
                   model='1/2" dual-check backflow preventer, testable',
                   serves=("FX-B-SAUNA-SH",)),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —

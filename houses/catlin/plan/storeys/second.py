@@ -1072,7 +1072,13 @@ SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
            outline=(pt(ft(18, 6.5), ft(2, 10)), pt(ft(21, 5.5), ft(2, 10)),
                     pt(ft(21, 5.5), ft(27, 8)), pt(ft(18, 6.5), ft(27, 8))),
-           drop=inch(14),
+           # ** THE FACE IS PINNED, NOT DROPPED (2026-09-07). ** 7'-10" AFF is a stated
+           # design elevation — the paragraph above quotes it and DU-S-HP-SOUTH-RISE is sized
+           # to the cavity it leaves. `drop` measures from the plane overhead, and that plane
+           # stopped being the storey's 9'-0" nominal when soffits started hanging off the
+           # deck's real underside (`resolve/envelope.py`): 1/8" of ceiling took 1/8" of
+           # cavity with it and the duct read 0.1" proud. 94" states the face itself.
+           underside_elevation=inch(94),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
     # THE AIR-HANDLER BOX — the ceiling of RM-S-NCLOSET and the north end of RM-S-HALL,
     # abutting SF-S-DUCT on the y=27'-8" seam and reading as one continuous soffit with it.

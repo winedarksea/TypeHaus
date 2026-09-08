@@ -651,8 +651,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBR402AAAA-ceiling",
-      "tag": "CEIL-RM-B-WORKSHOP"
+      "uid": "CBR406AAAA-ceiling",
+      "tag": "CEIL-RM-B-STAIR"
     },
     {
       "space": "model",

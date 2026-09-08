@@ -320,23 +320,48 @@ SUPPLY = [
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
-    # trunks and run south down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), through
-    # W-B-SA-N's framed stud bay (no cast sleeve needed) to the valve inside W-B-CS's liner.
+    # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot
+    # down x=17'-3" beside it — through W-B-SA-N2's framed stud bay (no cast sleeve needed)
+    # to the valve inside W-B-CS's liner.
+    #
+    # ** THEY ARE A SIDE-BY-SIDE PAIR SINCE 2026-09-07, NOT A STACKED ONE, AND THE HALL IS
+    # WHY. ** Both were on x=17'-4" with the hot 1 3/16" UNDER the cold, which is not how a
+    # pair gets hung and did not matter while this run crossed the workshop — UTILITY is in
+    # `EXPOSED_SERVICE_OCCUPANCIES` and nothing grades a pipe in its air. The hall reaching
+    # the sauna wall put six feet of both runs in RM-B-STAIR, where
+    # `mep.run_in_finished_volume` allows 3": the cold cleared at 2.55" and the hot, one
+    # inch lower, FAILed at 3.75". Stacking them is what made that gap, and there is no
+    # elevation pair that fixes it — two 1/2" lines need 5/8" of separation and the band
+    # between the ceiling and the 3" limit is only 3" deep. So they come off the stack and
+    # go up beside each other: both at 7'-10 5/8", 1" apart on centre, 3/8" of air between
+    # the tubes, and both 2.55" below the finished ceiling.
     # The rotation moved the pan to the room's NORTH-EAST corner, so the drops land at
     # y 6'-6"/6'-2" — inside the pan and 1'-1" clear of PR-B-SAUNA-VENT's riser at
     # 8'-2 3/16", which shares this build-up.
     # No supply to FX-B-SAUNA-FD: a floor drain has none.
+    #
+    # ** THE DROPS ARE IN THE WALL SINCE 2026-09-07, WHICH IS WHERE THIS NOTE ALWAYS SAID
+    # THE VALVE WAS. ** Both legs used to turn down at x=17'-4"/17'-3", 1 3/4" and 2 3/4"
+    # WEST of W-B-CS's liner face — three and a half feet of bare copper standing in a sauna
+    # on its way to a mixer that is inside the wall. `mep.run_in_finished_volume` called both
+    # at 31.6" for 2.64 ft once the ceiling came down. Each now jogs east at its own y and
+    # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0" — dead centre of
+    # the bay, 6 1/4" behind the liner, which is where a mixer body belongs and where the
+    # trim escutcheon reaches it from. The two are 4" apart in y, so one x serves both.
+    # The east jog itself rides at 7'-10 5/8", above the sauna's new 6'-10 13/16" ceiling
+    # and inside its service cavity.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 6)),
-                  pt(ft(17, 4), ft(6, 6))),
+                  pt(ft(18), ft(6, 6)), pt(ft(18), ft(6, 6))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(4, 3.4375)),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 4), ft(15, 6)),
-                  pt(ft(17, 4), ft(6, 2)), pt(ft(17, 4), ft(6, 2))),
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 3), ft(15, 6)),
+                  pt(ft(17, 3), ft(6, 2)), pt(ft(18), ft(6, 2)), pt(ft(18), ft(6, 2))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(4, 3.4375)),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
 ]
 

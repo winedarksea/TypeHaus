@@ -116,7 +116,9 @@ _storeys = (
     # ``params/main_deck.py``, the way ``main`` already reads MAIN_DATUM from the same
     # module — a literal here would let the basement floor and its walls drift apart.
     Storey(uid="STBASEAAAA", tag="basement", elevation=main_deck.BASEMENT_DATUM,
-           default_ceiling_height=ft(9)),
+           # 8'-0 15/16", derived — NOT the 9'-0" nominal the other storeys carry. This
+           # basement's ceiling is the deck's soffit, and it is 11" under a nominal 9'-0".
+           default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
     # The datum every other elevation in the house is measured from, and the plane
     # SL-M-DECK pins its cap to — so it lives beside that arithmetic in params/main_deck.py
     # rather than as a second literal here. Note it is the TOP OF JOISTS, not the walking

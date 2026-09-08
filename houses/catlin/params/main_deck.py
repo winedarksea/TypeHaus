@@ -213,6 +213,14 @@ DECK_TOP = inch(BEARING_SEAT.inches + DECK_DEPTH.inches)
 BASEMENT_WALL_HEIGHT = ft(8)
 BASEMENT_DATUM = inch(BEARING_SEAT.inches - BASEMENT_WALL_HEIGHT.inches)
 
+# The basement's FINISHED ceiling, off its own datum: the joists' soffit less the 5/8" board
+# hung on it, which is 8'-0 15/16". `Storey.default_ceiling_height` in plan/manifest.py reads
+# this instead of a nominal 9'-0", and the difference is not cosmetic — a soffit hangs from
+# that field (`resolve/envelope.py`), and so does every ceiling-mounted placeable and light
+# (`resolve/placeables.py`). The nominal put RM-B-BATH's bulkhead 11" up inside FS-M-WEST.
+BASEMENT_CEILING_HEIGHT = inch(-(_JOIST_DEPTH.inches + _CEILING_GWB[0].thickness.inches)
+                               - BASEMENT_DATUM.inches)
+
 # The concrete/wood boundary. Concrete keeps the east half north of y=13' — the dining
 # radiant zone (FH-M-DINING, x 22'-11"..30'-11", y 13'-9"..21'-0") sits wholly inside it,
 # with its thinset bed over the cured cap exactly as before. Everything else is wood.
@@ -347,6 +355,26 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # x=112.81"..115.31" at 2 1/2" wide, clear of the bath's 73.31"..75.81".
 _TUB_DECK_X = inch(74.56)          # FX-M-BATH2-TUB's centre, and the blocks' axis station
 _LAUNDRY_X = inch(114.06)          # FX-M-LAUNDRY's centre, and its own blocks' station
+# ** W-M-CLN2 HAS NOTHING UNDER IT SINCE 2026-09-07. ** W-B-CW2B was the only basement wall
+# beneath that run, and the basement hall's extension to the sauna wall deleted it (see
+# storeys/basement.py). The partition is 9'-0" of INT_2X4_STAGGERED_GWB — double board both
+# faces, the heaviest non-bearing wall type in the house — running x 13'-4"..18'-0" at
+# y=216", which is ALONG FS-M-WEST's joists (``direction="x"``) and mid-bay between the
+# 208" and 224" lines. That is the load case this house already answers with
+# ``JoistReinforcement``, so it answers this one the same way: solid blocking in the bays,
+# no sister ply. A partition parallel to the joists does not need a doubled line under it;
+# it needs the neighbouring lines tied so the one bay does not carry it alone.
+#
+# ** y=217", NOT 216". ** ``at`` snaps to the NEAREST joist line and 216" is exactly
+# equidistant from 208" and 224" — a coin toss decided inside the resolver. 217" is a
+# deliberate 1" north, which snaps to 224" and blocks the 208"..240" bays; the wall's own
+# 216" line sits inside the southern of those two.
+#
+# Two stations at 2'-3" o.c., inside the 4'-0" this house treats as the spacing for blocking
+# under a parallel partition, with the x=18'-0" bearing line closing the east end and W-M-CLN
+# (which still stacks, on W-B-CW2) closing the west.
+_CLN2_X_W = inch(174)              # 1'-2" east of W-M-CLN2's west end at 13'-4"
+_CLN2_X_E = inch(201)              # 1'-3" west of the x=18'-0" bearing line
 _WEST_FLOOR_REINFORCEMENT = (
     JoistReinforcement(at=pt(_TUB_DECK_X, inch(208)), plies=1, blocking=True,
                        source="RM-M-BATH2 drop-in bath: full-depth blocking in the "
@@ -358,6 +386,17 @@ _WEST_FLOOR_REINFORCEMENT = (
                        source="FX-M-LAUNDRY WashTower: full-depth blocking in the "
                               "224\"..256\" bays at the machine's own station, for spin-"
                               "cycle vibration — the y=240\" line is sistered already"),
+    JoistReinforcement(at=pt(_CLN2_X_W, inch(217)), plies=1, blocking=True,
+                       source="W-M-CLN2's west third: full-depth blocking in the "
+                              "208\"..240\" bays under a 9'-0\" double-gwb partition that "
+                              "runs ALONG the joists mid-bay and, since W-B-CW2B was "
+                              "deleted on 2026-09-07, stacks on nothing. Authored intent, "
+                              "not a check response: no rule in this engine grades an "
+                              "unsupported partition"),
+    JoistReinforcement(at=pt(_CLN2_X_E, inch(217)), plies=1, blocking=True,
+                       source="W-M-CLN2's east third: the second of the pair above, "
+                              "2'-3\" along, with the x=18'-0\" bearing line closing the "
+                              "run 1'-3\" further east"),
 )
 
 # South bay: full 18'-0" span, wall to centre line, y 0'-0" to the bathroom node line.

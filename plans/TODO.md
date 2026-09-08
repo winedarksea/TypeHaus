@@ -3,34 +3,26 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **RM-B-GYM runs 6.96' between outlets on its north-west wall, and that is ACCEPTED
-  (2026-09-07).** NEC 210.52(A) wants 6'. The stretch north of `D-B-GYM` is `W-B-CS2`, a bare
-  12" pour carrying `SL-M-DECK`, so closing the gap means a box on cast concrete — which is
-  exactly why `ED-B-GYM-RC8` was put SOUTH of the door. `electrical.receptacle_spacing` is
-  left LIVE and red in `haus check`; `test_catlin_receptacle_spacing_passes_after_fill` names
-  this one room in `_ACCEPTED_SPACING_GAPS` so any other room still fails the suite. Revisit if
-  that wall is ever furred.
+- **The garage service-door landing wants a guard, and nothing was asking (2026-09-07).**
+  `code.R312_1_guard_height` now walks slab edges, so `SL-G-STEP-0` — the 3'-0" landing at
+  D-G-SERVICE, 34" above the garage slab — reports 2.4' of open east side and 1.5' of open
+  north side over R312.1.1's 30" threshold. `plan/storeys/garage.py` flagged exactly this
+  and called it the owner's. **DEFERRED 2026-09-07**: reworking the landing is the preferred
+  answer and it is a known item; the FAIL stays visible rather than being allow-listed.
 
-- **The attic's two south windows sit 4" off the girt course, and that is ACCEPTED
-  (2026-09-07).** `355c2073` retyped `WIN-A-S2`/`WIN-A-S3` from WT-1448 to WT-1436 at the same
-  2'-8" sill, so both heads moved 80" -> 68" and fell 4" under the 72" course: exact hits
-  14 -> 12, slivers 31 -> 33, block count 1114 -> 1118. A 3'-0" sill would put both heads back
-  on 72" exactly, and is NOT taken because rake clearance is why those units are short. The
-  phase was re-swept at 1/8" from -16" to +8" and `course_offset = 0` still wins on slivers
-  (33 against 39 at +4.5" and 40 at +8"/-16"); -3.5" is 24 slivers and still illegal (24.75" bay).
-
-- **Open-web trusses on the main deck were COSTED AND REJECTED (2026-09-07).** The TODO
-  entry below claimed every crossing above would become free. Measured on the real model, the
-  swap takes catlin from 20 FAIL to 27: it fixes almost no `mep.run_in_finished_volume` hit,
-  because changing the deck MEMBER does not move a pipe — the check grades a run's elevation
-  against the ceiling, and a truss only makes raising one possible later. It also breaks three
-  `integrity.floor_end_bearing` ERRORS (FS-M-WEST and FS-M-EAST both land on the x=18' framed
-  plate, which is 5 1/2"; two trusses need 3" + 3") and four `structural.member_interference`
-  hits (`_TRANSITION_DOUBLE` is authored at the 2 1/2" I-joist flange, not a 3 1/2" chord).
-  Its reach is narrow anyway: `RM-B-PLAY-N` and part of `RM-B-GYM` sit under `SL-M-DECK`'s cast
-  concrete, and 4 of the failures are risers standing in a room. **Still open as a WEST-BAY-only
-  option** if the sauna cannot be solved by rerouting through the workshop or by deepening the
-  ceiling furring and running in it.
+- **RM-B-BATH is BOXED OUT and the soffit datum was wrong under it (2026-09-07).**
+  `SF-B-BATH` takes all three of that room's runs — `PR-B-LSINK-DRAIN`, `PR-B-BATH-VENT`,
+  `PR-B-HW-BATH` — in one bulkhead over the north wall, face at 7'-4 7/16" clear. Authoring
+  it exposed a real engine gap: `resolve/envelope.py` hung every soffit from
+  `storey.default_ceiling_height`, and the basement declared a nominal 9'-0" against a real
+  8'-0 15/16", so the box ran 11" up inside FS-M-WEST's joists (22 interference FAILs). A
+  soffit now hangs from the DECK UNDERSIDE over its own outline, with the nominal kept only
+  as the fallback where no deck is overhead, and `params/main_deck.BASEMENT_CEILING_HEIGHT`
+  is what `plan/manifest.py` states — that field also places every ceiling-mounted placeable
+  and light in the basement, so it was never cosmetic. One knock-on: SF-S-DUCT's face moved
+  1/8" with the plane it dropped from and its duct read 0.1" proud, so its 7'-10" face is
+  now PINNED with `underside_elevation` rather than derived with `drop`. Any soffit whose
+  face is a stated design elevation should be authored the same way.
 
 - **NEC 210.52 receptacle checks measure to the vanity carcass, not the basin** (no `FixtureType.basin` field exists). Permissive rather than wrong. The (D)(2) cabinet-face branch reports UNKNOWN for the same reason.
 
@@ -59,36 +51,66 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   shape and `mep.fixture_drain_reach` grades the nine fixtures that named a run and never
   reached one.
 
-### `mep.run_in_finished_volume`: 18 runs still hang in a finished room
+### `mep.run_in_finished_volume`: 11 runs still hang in a finished room
 
-The check landed 2026-09-07 (`checks/mep/routing_ceiling.py`). One family is fixed; three
-are open and each needs an owner decision before it can be authored, because the fix is a
-soffit, a reroute or a ceiling move and only the owner can say which.
+The check landed 2026-09-07 (`checks/mep/routing_ceiling.py`); catlin was 20 FAIL that day
+and is 13 now (11 of these, plus the accepted RM-B-GYM outlet and the deferred garage
+landing guard). **Three of the seven that closed were engine bugs the check itself carried,
+not house edits**, and they are worth knowing about because each made the report LOOK
+better than the house was:
 
-- **RM-B-SAUNA, 6 runs.** Its lined ceiling resolves at -15 3/8", 2 7/8" lower than the rest
-  of the storey, so everything crossing above it is inside it:
-  `DU-B-ERV-R-SAUNA-SUP` 7.49 ft @ 5.6", `-EXH` 6.52 ft @ 5.6", `PR-B-COND` 4.80 ft @ 9.4",
-  `PR-B-CW-SAUNA` 3.57 ft @ 42.9", `PR-B-HW-SAUNA` 3.54 ft @ 42.9",
-  `PR-B-ERV-COND` 1.50 ft @ 50.5", `PR-B-SAUNA-VENT` 1.50 ft @ 9.6". One perimeter soffit
-  would take most of them; the two 42.9" ones are risers standing in the room.
-- **RM-B-BATH, 3 runs.** `PR-B-BATH-VENT` 3.33 ft @ 8.2", `PR-B-HW-BATH` 3.33 ft @ 3.8",
-  `PR-B-LSINK-DRAIN` 1.47 ft @ 5.8". Small, and one bulkhead over the wet wall takes all
-  three.
-- **The theater/gym/stair residue, 4 runs.** `CD-B-KITCHEN` 13.32 ft @ 4.3" and
-  `CD-B-DATA-MEDIA` 6.07 ft @ 4.3" in RM-B-PLAY-N (both would take the same EPS lane the
-  kitchen drain now uses, but each would orphan a wall sleeve); `PR-M-COND-HEADS` 9.07 ft @
-  8.0" and `PR-B-COND` 5.80 ft @ 10.7" in RM-B-GYM; `CD-B-GARAGE` 6.05 ft @ 36.1" hanging in
-  RM-B-STAIR.
-- **4 supply risers stand in a finished room.** `PR-B-CW-SUITE` and `PR-B-HW-SUITE` stop 30"
-  above RM-S-SUITEBATH's floor, 47" and 51" from the fixtures they name;
-  `PR-B-CW-BATH2` 3.03 ft in RM-M-BATH2; `PR-B-CW-SAUNA` 3.57 ft. None carries `wall_refs`.
-  This is `mep.fixture_drain_reach`'s defect for supply, and the fix is the same shape:
-  take the riser into the wet wall it is supposed to be in.
+- `_soffit_union` unioned every soffit in the house with no storey filter, so a basement
+  bulkhead read as covering the rooms two floors above it. `SF-B-BATH` took 6.8 SF out of
+  RM-S-SUITEBATH's ceiling the day it was authored. Keyed by storey now, like the
+  `wall_cover` beside it — and fixing it ADDED two honest FAILs (`DU-B-ERV-R-GYM`,
+  `PR-B-HW-KITCH`) and lengthened four more.
+- `resolve/envelope.py` hung every soffit from `storey.default_ceiling_height` rather than
+  the deck actually overhead; see the RM-B-BATH entry above.
+- `emit/draw/plumbingplan.storey_above` picked the garage as the storey over the basement
+  the moment the basement declared its true ceiling height, dropping eleven of the twelve
+  deck sleeves off sheet P-101. It asks `ceiling_decks_over` now instead of comparing
+  elevations.
 
-~~Also open, and cheap: switch the basement-to-main deck to open-web trusses; every crossing
-above would become free.~~ **COSTED AND REJECTED 2026-09-07** — it fixes almost none of these
-and adds seven other failures. See "Needs your decision" at the top of this file; a
-west-bay-only version is still on the table.
+- ~~**RM-B-SAUNA, 6 runs**~~ — **6 of 7 DONE 2026-09-07.** The measured fact that decided it:
+  **the basement has no plenum anywhere.** Every ceiling on that storey is 5/8" of gypsum
+  straight onto the joist soffit, the workshop included, so "reroute it through the
+  workshop" had nowhere to route to. Owner call: drop the sauna instead. `RM-B-SAUNA`'s
+  `ceiling_lining` grew an 11 1/4" framed service cavity OUTBOARD of the foil-polyiso —
+  vapour control stays continuous on the hot side, services run outside it — putting the
+  finished face at 6'-10 13/16", clear of R305.1.1's 6'-8" and a better sauna than 7'-10"
+  was. That took the four ceiling crossings. `PR-B-CW-SAUNA`/`-HW-SAUNA` then jogged east
+  and drop inside W-B-CS's stud cavity at x=18'-0", which is where the note under them
+  always said the mixer was.
+  **Still open: `PR-B-ERV-COND`, 1.50 ft @ 39.3".** Not a riser — the transit leg, crossing
+  the sauna's north wall at 44" AFF for 22" on its way to the air gap over FX-B-SAUNA-FD.
+  The drop itself is excused as a connection; this is the horizontal before it, and it
+  cannot simply rise: the run starts at EQ-B-ERV's pan at 4'-6" and falls 0.3"/ft, so there
+  is no elevation that clears an 82 13/16" ceiling. Answering it means moving the tie-in,
+  not the pipe — see the `PR-B-COND` arithmetic in `plan/mep_drainage.py`.
+- ~~**RM-B-BATH, 3 runs**~~ — **DONE 2026-09-07**, `SF-B-BATH`. See the entry above.
+- **The theater/gym/stair residue, 6 runs**, and the numbers below are the honest ones now
+  that the soffit-union bug is fixed. `CD-B-KITCHEN` 16.50 ft @ 4.3" and `CD-B-DATA-MEDIA`
+  9.25 ft @ 4.3" in RM-B-PLAY-N (both would take the same EPS lane the kitchen drain now
+  uses, but each would orphan a wall sleeve); `PR-M-COND-HEADS` 11.40 ft @ 8.0", `PR-B-COND`
+  8.72 ft @ 10.7" and `DU-B-ERV-R-GYM` 0.72 ft @ 8.4" in RM-B-GYM; `PR-B-HW-KITCH` 3.33 ft
+  @ 3.9" and `CD-B-GARAGE` 6.05 ft @ 36.1" hanging in RM-B-STAIR. SF-B-HALL already boxes
+  the hall's share of the last two; what is left is what leaves the hall.
+- **3 supply risers stand in a finished room** (`PR-B-CW-SAUNA` was the fourth and is done).
+  `PR-B-CW-SUITE` and `PR-B-HW-SUITE` stop 30" above RM-S-SUITEBATH's floor, 47" and 51"
+  from the fixtures they name and **9 7/16" from W-S-SBS**, the partition they belong in;
+  `PR-B-CW-BATH2` 3.03 ft in RM-M-BATH2, **20 3/8" from W-M-W3**. This is
+  `mep.fixture_drain_reach`'s defect for supply and the fix is the same shape the sauna pair
+  just took: jog at ceiling level, drop inside the wet wall. The suite pair is a short move
+  and looks routine; PR-B-CW-BATH2's 20" is far enough that it is a reroute, not a nudge.
+
+~~Also open, and cheap: switch the basement-to-main deck from I-joists to open-web trusses,
+and every crossing above becomes free.~~ **COSTED AND REJECTED 2026-09-07.** It was trialled
+against the real model, not reasoned about: catlin goes **20 -> 27 FAIL**. Two families
+break. `integrity.floor_end_bearing` throws three ERRORs — a 5 1/2" plate does not seat two
+3" truss chords the way it seats two 2 1/2" I-joist flanges — and `structural.member_
+interference` picks up four more, because `_TRANSITION_DOUBLE` is dimensioned off that same
+2 1/2" flange. "Every crossing becomes free" was never measured; the bearing is what pays
+for it.
 - Add soffit lighting to the garage overhead-door side and both side walls (aluminum channel
   integrated with the soffit).
 - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
@@ -312,6 +334,8 @@ Two glazing gaps still leave the French doors out entirely, both wanting product
   `pytest` passing proves nothing about the published app's geometry.
 
 - Remove any floor drain from the plant room (it's not likely to flood, smaller water spills are the more likely concern) and then add a mop sink basin with a cold water fill (no hot). It can likely reuse the hydrant's existing PR-M-CW-BALC-HYD-RUN
+- Pocket door possibly for basement bathroom
+- Optimize the sunken garden wall heights and corners for a single pour with basement (XPS in forms)
 
 - **The writeback can't address a `FoundationWall` as `type: "Wall"`** — a PATCH comes back
   422 even though the wall is authored in an editable file. A UI drag of a foundation wall

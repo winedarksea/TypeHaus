@@ -55,11 +55,17 @@ def test_default_case_bills_the_covering_decks_own_ceiling_below(catlin_model) -
 
 
 def test_room_override_wins_over_the_covering_decks_ceiling_below(catlin_model) -> None:
-    """The sauna's T&G liner replaces FS-M-WEST's plain gwb over its own clear face."""
+    """The sauna's T&G liner replaces FS-M-WEST's plain gwb over its own clear face.
+
+    The fourth layer, ``spf``, is the 11 1/4" service cavity the room grew on 2026-09-07 so
+    the four runs crossing overhead had somewhere to be — the basement carries no plenum
+    anywhere else. It is OUTBOARD of the foil-polyiso deliberately, which is why the order
+    below still reads liner, furring, vapour control, and only then the framed void.
+    """
     ceiling = _ceiling(catlin_model, "RM-B-SAUNA")
     assert ceiling is not None
     assert [layer.material_ref for layer in ceiling.layers] == [
-        "sauna-shiplap", "struct-1-plywood", "polyiso-foil"]
+        "sauna-shiplap", "struct-1-plywood", "polyiso-foil", "spf"]
     solid = _solid(catlin_model, ceiling.tag)
     assert solid is not None and solid.material == "sauna-shiplap"
 

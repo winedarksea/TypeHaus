@@ -8,11 +8,15 @@ rough-in against the cast-in-place pour above it, → 2.5).
 
 from __future__ import annotations
 
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
+
 from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.lineweights import PROFILE
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.ceiling_over import ceiling_decks_over
 from typehaus.resolve.model import ResolvedModel
 
 _DRAIN_VENT = {"drain", "vent"}
@@ -34,15 +38,33 @@ def storey_above(model: ResolvedModel, storey_tag: str) -> str | None:
     yard-hydrant sleeve on the basement's ceiling plan and dropped the 42 sleeves cast in
     the deck actually overhead.
 
-    So the candidate must reach this storey's own ceiling. A floor that sits below the
-    ceiling of the storey under it is not that storey's ceiling; it is something standing
-    next to it.
+    So the candidate must be a storey that actually DECKS this one. Elevation alone cannot
+    say so, and the reason is worth stating because it bit twice. The first reading took
+    the next storey up and put the garage overhead. The second compared against this
+    storey's ceiling PLANE — which held only while the basement declared a nominal 9'-0";
+    the moment it declared its true 8'-0 15/16" (params/main_deck.BASEMENT_CEILING_HEIGHT)
+    the garage floor at -0'-8" cleared that plane and took the sheet again, dropping eleven
+    of the twelve deck sleeves the rough-in crew sets. A more accurate number is not
+    supposed to lose a drawing.
+
+    :func:`ceiling_over.ceiling_decks_over` already answers the real question — which
+    storey's decks are over this footprint — so ask it, over the union of this storey's
+    rooms. The elevation rule survives only as the fallback for a storey with no rooms
+    resolved (the starter house's, and any sheet built before rooms exist).
     """
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     tags = [s.tag for s in storeys]
     if storey_tag not in tags:
         return None
     here = storeys[tags.index(storey_tag)]
+    faces = [Polygon(room.clear_face) for room in model.rooms
+             if room.storey == storey_tag and len(room.clear_face) >= 3]
+    faces = [face for face in faces if face.is_valid and face.area > 1e-9]
+    if faces:
+        decked = {deck_storey.tag
+                  for deck_storey, _deck in ceiling_decks_over(
+                      model.plan, storey_tag, unary_union(faces))}
+        return next((s.tag for s in storeys if s.tag in decked), None)
     ceiling = here.elevation.meters + here.default_ceiling_height.meters - _CEILING_SLACK_M
     return next((s.tag for s in storeys
                  if s.elevation.meters > here.elevation.meters

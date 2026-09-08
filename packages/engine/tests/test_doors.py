@@ -74,6 +74,13 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
         "DT-EXT-SLIDE60": (60.0, DoorOperation.SLIDE, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
+        # The basement equipment route, 2026-09-07: D-B-FURN and D-B-SHOP are the two leaves
+        # an air handler or a water heater actually passes through, so both went to a full
+        # 36". Nothing else interior did.
+        "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
+        # D-B-GYM once the hall ran south to the sauna wall — the same 32" leaf, now glazed
+        # so the gym's south daylight reaches a hall that has no window of its own.
+        "DT-INT-SWING32-GLAZED": (32.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30-TRIMLESS": (30.0, DoorOperation.SWING, False, False),

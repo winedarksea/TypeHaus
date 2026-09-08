@@ -77,7 +77,12 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     # 3'-10" west of the excavation onto the buried 8" pour, and the shrink pulled the room
     # back to the excavation edge the same day — so the face is one substrate again and five
     # is five. The liner area barely moved either way; what the shrink removed is a JOINT.
-    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS",
+    # **W-B-SA-N2 joined on 2026-09-07, and it is the same joint story a third time.** The
+    # north face split at N-B-HALL-S so the new hall's west partition could tee onto a shared
+    # node instead of dying mid-wall; same assembly, same 7'-6" top, same `interior_room`. The
+    # liner did not gain a FACE, only a seam, so the recomputed area below is the check that
+    # matters and it does not move.
+    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-SA-N2", "W-B-CS",
                                             "W-B-S2", "W-B-S2-FR"}
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
     # Filtered by TAG since 2026-09-02, not just by ``replaces_wall_finish``: RM-M-BATH2's

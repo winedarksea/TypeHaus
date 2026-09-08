@@ -77,16 +77,22 @@ _TERMINAL_KINDS = {
 }
 
 
-def _soffit_union(ctx: CheckContext) -> Any:
-    """The plan union of every resolved soffit — a run inside a bulkhead is boxed out.
+def _soffit_union(ctx: CheckContext, storey: str) -> Any:
+    """The plan union of ``storey``'s resolved soffits — a run inside a bulkhead is boxed out.
 
     A soffit is the authored answer to exactly this finding, so a route that has already
     been covered by one must stop being reported, or the fix cannot be verified.
+
+    ** PER STOREY, AND NOT AS A REFINEMENT. ** This unioned the whole house until 2026-09-07,
+    which reads a bulkhead as covering every room stacked over and under it. Catlin found it
+    the day a basement bathroom got one: SF-B-BATH took 6.8 SF out of RM-S-SUITEBATH's
+    ceiling two floors up and shortened a run's reported exposure by a foot and a quarter.
+    ``wall_cover`` beside it was already keyed this way; this is the same rule.
     """
     from typehaus.resolve.overlay import union_all
 
     polygons = [Polygon(soffit.outline) for soffit in ctx.model.soffits
-                if len(soffit.outline) >= 3]
+                if soffit.storey == storey and len(soffit.outline) >= 3]
     valid = [poly for poly in polygons if poly.is_valid and not poly.is_empty]
     return union_all(valid) if valid else None
 
@@ -194,7 +200,7 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     occupancies = {room.tag: room.occupancy for room in ctx.model.rooms}
     storey_z = {storey.tag: storey.elevation.meters for storey in ctx.plan.storeys}
     radii = run_radii(ctx)
-    soffits = _soffit_union(ctx)
+    soffit_covers: dict[str, Any] = {}
     tol = rules.ceiling_intrusion_in * M_PER_IN
     grace_m = rules.terminal_grace_in * M_PER_IN
 
@@ -238,6 +244,8 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                     continue
                 if ceiling.storey not in covers:
                     covers[ceiling.storey] = wall_cover(ctx, {ceiling.storey})
+                    soffit_covers[ceiling.storey] = _soffit_union(ctx, ceiling.storey)
+                soffits = soffit_covers[ceiling.storey]
                 if riser:
                     if not outline.covers(Point(a)):
                         continue

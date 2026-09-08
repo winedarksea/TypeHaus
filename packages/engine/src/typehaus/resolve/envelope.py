@@ -5,12 +5,18 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
+from shapely.geometry import Polygon
+
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import ConditionKind
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
+from typehaus.resolve.ceiling_over import (
+    ceiling_decks_over,
+    deck_structure_underside_m,
+)
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import band_axis
@@ -96,7 +102,19 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                            f"soffit {element.tag} needs a closed outline",
                                            element.tag))
                     continue
-                ceiling = elevation + storey.default_ceiling_height.meters
+                # ** THE PLANE IT HANGS FROM IS THE DECK OVERHEAD, NOT THE STOREY NOMINAL. **
+                # `default_ceiling_height` is a nominal, and a storey whose ceiling is a
+                # derived deck underside can be a long way off it: catlin's basement declares
+                # 9'-0" and really finishes at 8'-0 15/16", so a bulkhead authored there ran
+                # 11" up inside FS-M-WEST's joists and every rail read as an interference. The
+                # deck over the outline is the honest plane, and the LOWEST of them is the one
+                # a box has to fit under. The nominal stays as the fallback for a soffit with
+                # no deck above it at all.
+                undersides = [z for deck_storey, deck in ceiling_decks_over(
+                    plan, storey.tag, Polygon(outline))
+                    if (z := deck_structure_underside_m(deck_storey, deck)) is not None]
+                ceiling = (min(undersides) if undersides
+                           else elevation + storey.default_ceiling_height.meters)
                 if element.underside_elevation is not None:
                     bottom = elevation + element.underside_elevation.meters
                 elif element.drop is not None:

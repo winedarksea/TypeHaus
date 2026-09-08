@@ -73,9 +73,20 @@ _GARAGE_MOVED = "the garage moved 7'-5 5/8\" south to close the breezeway gap to
 # shower recess; RM-B-SAUNA is a real room instead, which is why nothing was lost.
 
 DECLARED_DIVERGENCES = {
-    "House Basement Center Wall (N-S)": (
-        "the old center wall ran the full 36' as one solid; the basement's N-S centerline is "
-        "now split into segments at door and stair openings, so no single run spans it"
+    # "House Basement Center Wall (N-S)" was declared here until 2026-09-07 — the old
+    # one-piece 36' solid against a centerline split at door and stair openings. It PAIRS
+    # again now, and the same-day hall changes are what did it: deleting W-B-CW2B and
+    # splitting W-B-SA-N moved the candidates the greedy matcher had been spending on this
+    # reference wall, and it settled on a segment of the N-S line. Nothing about the N-S
+    # centerline itself moved. Recorded rather than deleted silently, on the reasoning the
+    # North Arch Wall note below sets out.
+    "House Basement Center Wall (E-W)": (
+        "the 2026-09-07 basement hall: the y=18' line's last 4'-1 5/16\" was W-B-CW2B, "
+        "carrying the cased opening O-B-HALL that the route to the workshop passed through. "
+        "Running the hall south to the sauna wall retired that route — the workshop is a "
+        "room at the end of a branch with a door of its own (D-B-SHOP in W-B-HALL-W) now, "
+        "not a corridor — so the segment is gone and RM-B-STAIR's face grows south through "
+        "it. The E-W line is W-B-CW + W-B-CW2 and stops short of the reference's run"
     ),
     "House Centerline Wall (Second)": (
         "8'-6\" of that line (y 22'-4\"..30'-10\") is BM-S-HALL now — a flush 3-ply 11-7/8\" "

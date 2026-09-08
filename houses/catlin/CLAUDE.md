@@ -1559,14 +1559,65 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     a dry `INT_2X4_PARTITION` when the plumbing left it. `D-B-BATH` swings out into the
     hall, and **on this wall that takes `flip_swing=True`**: the leaf's default side follows
     the host's direction and `W-B-BA-E` runs north-to-south where `W-B-BA-N` ran west-to-east.
-  - **A hall** runs west of `W-B-CN2` from the stair foot south to the y=18' line —
-    3'-3 15/16" clear, part of `RM-B-STAIR`'s own loop, no new `Room` — and crosses that line
-    through `O-B-HALL`, a **cased opening** (a bare `RoughOpening`, the `O-S-VANITY` idiom)
-    in the new `W-B-CW2B`. **That wall must EXIST rather than be a gap**, or the workshop
-    and stair loops merge into one room.
-  - **ACCEPTED CONSEQUENCE, stated rather than discovered:** the playroom is reached only
-    via the gym (stair → hall → workshop → gym → `D-B-PLAY`), and the workshop is the
-    through-route from the stair to the gym.
+  - **A hall** runs west of `W-B-CN2` from the stair foot south — 3'-3 15/16" clear, part of
+    `RM-B-STAIR`'s own loop, no new `Room`. It stopped at the y=18' line and crossed into the
+    workshop through `O-B-HALL`, a cased opening in `W-B-CW2B`; **on 2026-09-07 it runs the
+    rest of the way to the sauna's north wall** and both of those are gone (next bullet).
+  - **THE HALL REACHED THE SAUNA WALL, 2026-09-07 — and it retired the replan's "accepted
+    consequence".** That consequence read: the playroom is reached only via the gym
+    (stair → hall → workshop → gym → `D-B-PLAY`), and the workshop is the through-route from
+    the stair to the gym. Running the hall south from y=18' to y=10' on the **same
+    x=13'-10 11/16" well-partition centreline** `W-B-BA-E` and `W-B-WELL` already stand on
+    buys three things for the length of one partition, `W-B-HALL-W`:
+    - **`D-B-GYM` lands on the hall**, not on the workshop — same uid, same position, same
+      32" leaf, retyped to `DT-INT-SWING32-GLAZED`. Circulation is
+      stair → hall → gym → `D-B-PLAY`, one room shorter. The glazing is not decoration: the
+      hall has no window and the gym's south daylight is the only light it can borrow.
+      **It stays 32"** — `W-B-CS3` offers 42 3/16" of framed run and a 36" RO leaves 3/16"
+      for two jamb packs.
+    - **The workshop is a room, not a corridor**, with `D-B-SHOP` — 3'-0", in `W-B-HALL-W`,
+      `flip_swing=True` so the leaf goes west into the shop, hinged at the north jamb. Its
+      RO centres on `D-B-GYM`'s at y=12'-3 7/16" so the equipment path is straight through.
+    - **The equipment route is the hall**: 3'-0" at `D-B-FURN` (widened, position unmoved —
+      it is still pinned west by `PR-B-ERV-COND`) and at `D-B-SHOP`, off a 3'-5 1/16" flight.
+    - **`W-B-CW2B` and `O-B-HALL` are deleted.** The note on that wall said it *had* to exist
+      or the workshop and stair loops would merge into one room. True, and now deliberate:
+      the merge IS the hall. `RM-B-STAIR` goes 114.8 → 147.7 sf and keeps one seed.
+    - **`W-B-SA-N` splits at `N-B-HALL-S`**; `W-B-SA-N2` is the east 4'-1 5/16", and
+      `WP-B-SAUNA-SPLASH`'s second span re-datums onto it at 9 5/16".
+    - **`W-M-CLN2` now stacks on nothing, and that is authored.** `W-B-CW2B` was the only
+      wall under it; what is left below is `W-B-CW2`, which overlaps its x 13'-4"..18'-0" run
+      by 6 11/16" — short of the 2'-0" minimum, so there is one candidate count of ZERO and
+      no `integrity.stack_ambiguous` to arm (the `W-M-STRW2` precedent). The load goes into
+      the deck instead: two `JoistReinforcement` blocking entries in `params/main_deck.py` at
+      x=14'-6"/16'-9", `at` y=**217"** rather than 216" because `at` snaps to the nearest
+      joist line and 216" is exactly equidistant from 208" and 224". They must stay LAST in
+      `_WEST_FLOOR_REINFORCEMENT`.
+    - **The hall inherited the workshop's service ceiling, and that is the one thing the
+      change actually cost.** `RM-B-WORKSHOP` is UTILITY, which is in
+      `EXPOSED_SERVICE_OCCUPANCIES`, so nothing graded a pipe in its air. `RM-B-STAIR` is
+      not, and `mep.run_in_finished_volume` (3" tolerance) called three runs the moment the
+      hall grew: `DU-B-ERV-R-GYM` at 8.4", `PR-B-SAUNA-VENT` at 10.7" and `PR-B-HW-SAUNA` at
+      3.8". The first two are not reroutable — the gym register is east of the x=18' bearing
+      line and the ERV is west of the hall, so ANY route between them crosses it — so they
+      are boxed out by **`SF-B-HALL`**, a full-width bulkhead at the hall's south dead end
+      (x 170.0725"..212.615", y 123.8125"..133.4375", underside 85 15/16" storey-relative,
+      7'-1 15/16" clear). The third was a modelling artefact worth fixing rather than boxing:
+      `PR-B-HW-SAUNA` was **stacked 1 3/16" under `PR-B-CW-SAUNA`** on the same x=17'-4"
+      line, which is not how a supply pair gets hung. They are side by side now — x=17'-4"
+      and 17'-3", both at 7'-10 5/8" — and both clear at 2.55". There is no elevation pair
+      that fixes a stacked one: two 1/2" lines need 5/8" of separation and the band between
+      the ceiling and the 3" limit is 3" deep.
+    - **Lighting and outlets.** Three more `ED-T-LT-CAN3` on `CKT-LT-BACKUP` at x=190",
+      y=19'-6"/15'-0"/11'-6" — 27 VA against the ~52 VA of ALWAYS_ON headroom the withdrawn
+      play-room cove was measured against, so `cycle_48h.sustains_always_on` holds
+      (`test_backup_calc.py`). The middle one is at 15'-0" and not the ladder's 15'-6"
+      because `PR-B-HW-SAUNA` crosses there 2 9/16" below the ceiling and a recessed trim
+      wants that plane. `ED-B-WORKSHOP-SW` moves onto `W-B-HALL-W`'s workshop face 5" north
+      of `D-B-SHOP`'s north jamb — **the hinge side, and the only side**: the latch jamb has
+      5 5/8" of wall to `W-B-SA-N2` and no box fits in it. `ED-B-HALL-RC1` is new, on
+      `CKT-RC-BSMT` at y=16': NEC 210.52(H) wants it and `electrical.receptacle_spacing`
+      walks {BEDROOM, LIVING, KITCHEN, DINING, OFFICE} only, so nothing will ever ask.
   - **Two things the replan cost that are worth knowing before the next edit.** S-100's
     ARCH D scale went **3/16" → 1/8"** — one new foundation assembly is one more row in the
     FOUNDATION WALL SCHEDULE, that column already carried all three schedules (the sheet has
@@ -1578,7 +1629,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     walls: `W-M-C1` (the x=18' line has three basement segments under it now and `stacks_on`
     names one, so `W-B-CS3`'s studs are invisible to the metric though they share its layout
     line) and `W-M-CLN2` (forced onto `W-B-CW2B`, which restarts its module 8" off because
-    `INT_2X4_PARTITION` is deliberately not on the interior grid).
+    `INT_2X4_PARTITION` is deliberately not on the interior grid). **`W-M-CLN2` came back off
+    that stack on 2026-09-07 when `W-B-CW2B` was deleted** — it stacks on nothing now, and
+    `test_catlin_contract_m3.py` moved with it.
   - **`ED-B-GYM-RC1`/`RC2` were on the wrong side of the x=18' line and nobody noticed.**
     They were authored 1" WEST of `W-B-CS`'s west face — inside the sauna, a 120V
     convenience receptacle in a 190 °F room — and `electrical.receptacle_spacing` accepts a
@@ -1693,6 +1746,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
       wall's north face leaves 7 5/8" for the jamb pack. At **10'-6" the two overlap
       outright and `haus check` says nothing** — no rule tests a tee wall landing beside an
       opening. The coupling runs both ways: if `D-B-GYM` goes back south, this wall follows.
+      **It is also why `D-B-GYM` stayed 32" when the hall reached it on 2026-09-07**: 42 3/16"
+      of framed run less two jamb packs is a 32" leaf, and a 36" one would spend the 7 5/8"
+      this bullet is about.
     - **Everything dimensioned off the north liner moved 7" with it**, and none of it would
       have been reported: `FURN-B-SAUNA-BENCH-E`, `FX-B-SAUNA-SH` (the pan stays in its
       corner), `FX-B-SAUNA-FD`, both `SP-B-SAUNA-*` sleeves, `PR-B-SAUNA-DRAIN`'s first
