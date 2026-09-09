@@ -57,6 +57,14 @@ from typehaus.emit.draw.schedules import (
 from typehaus.emit.draw.schedules.architectural import specification_sections
 from typehaus.emit.draw.schedules.structural_notes import _write_structural_notes
 from typehaus.emit.draw.section import build_center_section, build_section
+from typehaus.emit.draw.sheet_sets import (
+    BOTH_SETS,
+    FULL_ONLY,
+    FULL_SET,
+    PERMIT_SET,
+    in_set,
+    resolve_set_name,
+)
 from typehaus.emit.draw.sheet_writer import (
     LEDGER,
     PORTRAIT_LEDGER,
@@ -113,18 +121,6 @@ def _derived_detail_scene(model: ResolvedModel, derived: DerivedDetail) -> Scene
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
     from typehaus.checks.registry import Preferences
-
-#: The two sets this composer knows how to emit. ``full`` is everything; ``permit`` is
-#: the submittal. They are named rather than a bool because a third one (a bid set, an
-#: as-built) is a sheet-list question and not a new flag on every spec.
-PERMIT_SET = "permit"
-FULL_SET = "full"
-BOTH_SETS = frozenset({PERMIT_SET, FULL_SET})
-FULL_ONLY = frozenset({FULL_SET})
-
-#: ``--details`` was the older name for the same filter and only ever had two values.
-_DETAILS_ALIAS = {"primary": PERMIT_SET, "all": FULL_SET}
-
 
 SceneFn = Callable[[ResolvedModel], Scene]
 PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
@@ -407,33 +403,7 @@ def build_sheet_index(model: ResolvedModel,
                                 page=_write_data_schedule, sets=FULL_ONLY))
 
     return [replace(sheet, paper=paper) for sheet in sheets
-            if _in_set(sheet, resolve_set_name(sets, details), preferences)]
-
-
-def resolve_set_name(sets: str, details: str | None) -> str:
-    """``details=`` wins when given, because a caller passing it means it."""
-    if details is not None:
-        return _DETAILS_ALIAS.get(details, FULL_SET)
-    return sets
-
-
-def _in_set(sheet: SheetSpec, name: str, preferences: Preferences | None) -> bool:
-    """Whether ``sheet`` belongs in the named set, after the house's own overrides.
-
-    ``permit_drop`` beats ``permit_add`` so a house cannot write a contradiction that
-    silently resolves one way; and neither touches the full set, which is by definition
-    everything the engine drew.
-    """
-    if name == FULL_SET:
-        return True
-    options = preferences.print_options if preferences is not None else None
-    drop = options.permit_drop if options is not None else ()
-    add = options.permit_add if options is not None else ()
-    if any(sheet.number.startswith(prefix) for prefix in drop):
-        return False
-    if any(sheet.number.startswith(prefix) for prefix in add):
-        return True
-    return name in sheet.sets
+            if in_set(sheet, resolve_set_name(sets, details), preferences)]
 
 
 def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:

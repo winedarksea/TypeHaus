@@ -140,7 +140,9 @@ def concrete_block(model: ResolvedModel) -> list[str]:
         key = (spec.fc_psi, spec.w_cm_max, spec.air_content_pct, spec.exposure_f,
                spec.exposure_s, spec.exposure_w, spec.exposure_c,
                round(spec.cover.inches, 3) if spec.cover is not None else None, spec.bar_coating,
-               spec.scm, round(spec.max_aggregate.inches, 3) if spec.max_aggregate is not None else None)
+               spec.scm,
+               round(spec.max_aggregate.inches, 3) if spec.max_aggregate is not None
+               else None)
         grouped.setdefault(key, []).append(tag)
     if not grouped:
         return ["No concrete pour in this model states a mix (Assembly layer ConcreteSpec).",
