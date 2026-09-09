@@ -63,9 +63,13 @@ def test_impervious_groups_on_kind_not_on_label(catlin_plan) -> None:
 
 def test_the_coverage_table_prints_a_district_limit_only_when_the_district_is_known(
         catlin_plan, catlin_model_ro) -> None:
-    site = _site(catlin_plan, parcel=_rect(0, 0, 100, 165))
+    # ``zoning_district=None`` explicitly: `_site` copies catlin's own Site, which states
+    # RL, and `coverage_table` falls back to the site when the kwarg is unset — so a bare
+    # copy tests the RL path twice and the unstated path not at all.
+    site = _site(catlin_plan, parcel=_rect(0, 0, 100, 165), zoning_district=None)
     unstated = dict((row[0], row[2]) for row in coverage_table(catlin_model_ro, site))
     assert unstated["BUILDING COVERAGE"] == ""
+    assert unstated["ZONING DISTRICT"] == ""
 
     rl = dict((row[0], row[2]) for row in
               coverage_table(catlin_model_ro, site, zoning_district="RL"))
