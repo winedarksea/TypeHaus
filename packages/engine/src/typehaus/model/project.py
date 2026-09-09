@@ -9,11 +9,15 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.refs import FaceRef, face
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.site import (
+    Benchmark,
     Contour,
+    Easement,
+    ErosionControl,
     ImperviousSurface,
     MonthlyNormal,
     SetbackSpec,
     SpotElevation,
+    StreetFrontage,
     UtilityLine,
 )
 from typehaus.quantities import Angle, Length, Point2D, Temperature, deg
@@ -93,6 +97,11 @@ class Site(HausModel):
     impervious_surfaces: tuple[ImperviousSurface, ...] = ()  # walks/patios/slabs abutting the house
     utilities: tuple[UtilityLine, ...] = ()
     contours: tuple[Contour, ...] = ()  # survey topo lines from a GeoJSON basemap
+    # --- What St Paul reviews on C-101, in the order it reads them ---------------------
+    easements: tuple[Easement, ...] = ()  # recorded burdens nothing may be built over
+    erosion_controls: tuple[ErosionControl, ...] = ()  # silt fence, rock entrance, inlet
+    streets: tuple[StreetFrontage, ...] = ()  # abutting public streets and their ROW
+    benchmark: Benchmark | None = None  # the point every elevation on the set recovers from
 
 
 @register_element

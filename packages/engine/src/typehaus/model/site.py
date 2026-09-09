@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import UtilityKind
@@ -39,10 +40,19 @@ class SetbackSpec(HausModel):
 
 
 class SpotElevation(HausModel):
-    """An authored grade elevation at a point, relative to the main-floor 0 datum."""
+    """An authored elevation at a point, relative to the main-floor 0 datum.
+
+    ``kind`` says what the reading *is*. ``"grade"`` is the soil plane and is what an
+    elevation's or a section's ground line is drawn through. ``"structure"`` is the top of
+    something built — a sunken-court floor, a retaining wall's cap — which is a real
+    elevation the model needs (``engineering/balcony_wind`` takes the lowest spot on the
+    site, R401.3 reads every station) but is **not** ground: drawn into a ground line it
+    ramps the profile down into a courtyard 20 feet away from the facade.
+    """
 
     position: Point2D
     elevation: Length
+    kind: Literal["grade", "structure"] = "grade"
 
 
 class ImperviousSurface(HausModel):
@@ -59,6 +69,11 @@ class ImperviousSurface(HausModel):
     outline: tuple[Point2D, ...]  # hardscape polygon ring, plan frame
     near_elevation: Length  # grade where the surface meets the foundation
     far_elevation: Length  # grade at the outer edge, away from the foundation
+    # What the hardscape IS, as opposed to what it is called. The zoning coverage table
+    # groups on this: St Paul bounds driveway-and-parking paving separately from total
+    # impervious area, so a driveway has to be distinguishable from a patio by something
+    # better than reading ``label``. A driveway needs no element type of its own.
+    kind: Literal["walk", "patio", "driveway", "pad", "stair", "other"] = "other"
 
 
 class UtilityLine(HausModel):
@@ -79,6 +94,66 @@ class Contour(HausModel):
 
     elevation: Length
     points: tuple[Point2D, ...]
+
+
+class Easement(HausModel):
+    """A recorded burden on the parcel — the one thing on a site plan a reviewer will not
+    let you build over.
+
+    ``outline`` is the easement area itself, in the plan frame, rather than a centreline
+    plus a width, because that is what gets hatched on C-101 and what a footprint has to be
+    checked against. ``width`` is carried anyway when the instrument states one (a 6' side
+    utility easement), since the recorded document is the authority and the drawn ring is a
+    depiction of it.
+    """
+
+    kind: str  # "utility" | "drainage" | "access" | "sewer" | ...
+    outline: tuple[Point2D, ...]
+    width: Length | None = None
+    description: str = ""  # recording reference / instrument wording
+
+
+class ErosionControl(HausModel):
+    """One erosion and sediment control measure, as the site plan shows it.
+
+    A permit set carries these as lines and a symbol, not as a computed quantity: silt
+    fence runs along the downhill parcel lines, a rock construction entrance sits where
+    vehicles leave the site, inlet protection sits on the storm structure that receives the
+    runoff. ``path`` is a polyline for a fence and may be a single point for an entrance or
+    an inlet — the drawing decides how to render it, and the model does not pretend the
+    three measures share a geometry.
+    """
+
+    kind: Literal["silt_fence", "construction_entrance", "inlet_protection"]
+    path: tuple[Point2D, ...]
+    description: str = ""
+
+
+class StreetFrontage(HausModel):
+    """A public street abutting one parcel edge, and its right-of-way width.
+
+    The ROW matters because the front setback is measured from the property line and the
+    street centreline is a different line entirely; naming the frontage is also what makes
+    "FRONT" mean something on a corner lot with two of them.
+    """
+
+    name: str  # street name, or "TBD" before the lot is chosen
+    edge: int  # index into ``Site.parcel``, same convention as SetbackSpec
+    right_of_way_ft: float | None = None
+
+
+class Benchmark(HausModel):
+    """The surveyed point every other elevation on the set is referenced to.
+
+    ``elevation`` is datum-relative like :class:`SpotElevation` — the benchmark's job here
+    is to say *which* physical object on the ground carries the datum ("top nut of hydrant
+    at the NE corner"), so a field crew can recover it. Its assumed value in a public datum,
+    where one exists, belongs in ``description``.
+    """
+
+    position: Point2D
+    elevation: Length
+    description: str = ""
 
 
 @dataclass(frozen=True)
@@ -170,6 +245,10 @@ for _name, _obj in (
     ("ImperviousSurface", ImperviousSurface),
     ("UtilityLine", UtilityLine),
     ("Contour", Contour),
+    ("Easement", Easement),
+    ("ErosionControl", ErosionControl),
+    ("StreetFrontage", StreetFrontage),
+    ("Benchmark", Benchmark),
     ("WindowWell", WindowWell),
 ):
     register_constructor(_name, _obj)
