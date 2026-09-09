@@ -192,9 +192,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
             rows = max(rows, len(entries))
 
         cursor = top - 0.42 - rows * _INDEX_PITCH_IN - 0.34
-        deferred = DEFERRED_SUBMITTALS.splitlines()
-        for line in deferred:
-            fig.text(_x(x0), _y(cursor), line, fontsize=8, family="monospace")
+        for deferred_line in DEFERRED_SUBMITTALS.splitlines():
+            fig.text(_x(x0), _y(cursor), deferred_line, fontsize=8, family="monospace")
             cursor -= _INDEX_PITCH_IN
         cursor -= 0.32
         section(fig, _x(x0), _y(cursor), "SHEET INDEX", fontsize=12)
@@ -234,8 +233,9 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
                 f"{dropped[0][0]}–{dropped[-1][0]} are in the set and not listed above."])
         cursor = y0 + 0.10 + _FOOTER_STEP_IN * sum(len(p) for p in footer_lines)
         for paragraph in footer_lines:
-            for line in paragraph:
-                fig.text(_x(x0), _y(cursor), line, fontsize=_FOOTER_PT, family="sans-serif")
+            for footer_line in paragraph:
+                fig.text(_x(x0), _y(cursor), footer_line, fontsize=_FOOTER_PT,
+                         family="sans-serif")
                 cursor -= _FOOTER_STEP_IN
             cursor -= _FOOTER_STEP_IN * 0.4
 

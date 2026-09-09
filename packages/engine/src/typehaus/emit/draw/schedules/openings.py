@@ -50,7 +50,8 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
                 f"{opening.width_m / M_PER_IN:.0f}\" × {opening.height_m / M_PER_IN:.0f}\"",
                 *_energy_columns(spec, opening.is_door)))
-        headers = ("Mark", "Tag", "Kind", "Type", "Nominal footprint", "U-factor")
+        headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type",
+                                    "Nominal footprint", "U-factor")
         if want_windows:
             headers = (*headers, "SHGC", "VT", "Operation", "Tempered")
         _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
