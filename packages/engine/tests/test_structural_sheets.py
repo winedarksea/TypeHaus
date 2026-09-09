@@ -204,7 +204,7 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     assert table.rows, "137 MASA anchors are derived; the sheet must show them"
     pitch = CONFIG.sill_plate_anchors.mudsill_anchor_pitch_ft
     # The printed pitch IS the takeoff's, not a second number that looks like it.
-    assert all(row[3].startswith(f"{pitch:.0f}'-0\" O.C.") for row in table.rows), table.rows
+    assert all(row[3] == f"{pitch:.0f}'-0\" O.C." for row in table.rows), table.rows
     assert {row[2] for row in table.rows} == {"MASA"}
     # The table splits the house by condition; the split must not lose or gain an anchor.
     takeoff = mudsill_anchor_rows(catlin_model, CONFIG.sill_plate_anchors,
@@ -213,22 +213,22 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     # Both conditions are on this house and they are not the same detail: a mudsill over a
     # foundation wall, and a partition plate on the basement slab.
     types = {row[1].split(" — ")[0] for row in table.rows}
-    assert types == {"SILL PLATE ON FOUNDATION WALL", "SILL PLATE ON SLAB"}
+    assert types == {"FDN WALL", "SLAB"}
     assert "MASA" in _joined(build_foundation_plan(catlin_model))
 
 
 def test_s100_schedules_the_authored_reinforcement(catlin_model):
     table = reinforcement_schedule(catlin_model)
-    assert table.columns == ("MARK", "ELEMENT", "ROLE", "BAR", "SPACING/COUNT", "LAYERS",
+    assert table.columns == ("MARK", "ELEMENT", "ROLE", "BAR", "SPACING", "LYRS",
                              "COVER", "LAP")
     rows = {(row[2], row[3], row[4], row[6], row[7]) for row in table.rows}
     # `_B8_STEEL` on the basement walls: IRC Table R404.1.2(8), 2" cover, no lap class
     # authored — and the schedule says "NOT STATED" rather than assuming a class.
-    assert ("VERTICAL", "#5", '41" O.C.', '2"', "NOT STATED") in rows
+    assert ("VERTICAL", "#5", '41" O.C.', '2"', "—") in rows
     # The sunken-garden retaining footing mat: cover comes from ReinforcementSpec.cover (3"),
     # which outranks the mix's, and both mat directions print.
-    assert ("BOTTOM-X", "#6", '10" O.C.', '3"', "CLASS B") in rows
-    assert ("TOP-X", "#6", '10" O.C.', '3"', "CLASS B") in rows
+    assert ("BOTTOM-X", "#6", '10" O.C.', '3"', "B") in rows
+    assert ("TOP-X", "#6", '10" O.C.', '3"', "B") in rows
     # Nothing is invented for the pours that carry no spec.
     assert all(row[3].startswith("#") for row in table.rows)
     assert "FOUNDATION REINFORCEMENT SCHEDULE" in _joined(build_foundation_plan(catlin_model))
@@ -263,8 +263,11 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     # Subp. 6 names the same two boxes code.MN_1303_2402_radon passes on, and only those:
     # a box that declares a room is a lighting supply on some other storey.
     assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-NEMA-JB, ED-A-PV-JB" in notes
+    # A schedule that abbreviates carries its legend on the sheet, not in this repo.
+    assert "NO PLATE RUN TAKES FEWER THAN 2 (IRC R403.1.6)" in notes
+    assert "LAP CLASS IS ACI 318-19 §25.5.2.1" in notes
     # R406.1 reads the assembly's water-control layer rather than asserting a product.
-    assert "DAMPPROOFING (IRC R406.1): BASEMENT_8 (8 WALL(S)) CARRIES 'DAMP-PROOF'" in notes
+    assert "BASEMENT_8 (8)" in notes and "50 MIL AIR-BARRIER ('DAMP-PROOF')" in notes
 
 
 def test_s100_is_not_a_floor_plan(catlin_model):

@@ -381,9 +381,8 @@ def _anchor_bolt_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
     rows: list[tuple[str, ...]] = []
     for index, (size, items) in enumerate(sorted(grouped.items()), start=1):
         walls = sorted({tag for bolt in items for tag in getattr(bolt, "connects", ())})
-        rows.append((f"A{index}", "CAST-IN ANCHOR BOLT", size or "NOT STATED",
-                     "AUTHORED PER BOLT — SEE PLAN", str(len(items)),
-                     _abbreviate(", ".join(walls))))
+        rows.append((f"A{index}", "CAST-IN BOLT", size or "NOT STATED",
+                     "PER PLAN", str(len(items)), _abbreviate(", ".join(walls), 20)))
     return rows
 
 
@@ -411,7 +410,7 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     grouped: dict[tuple[str, str], list[Any]] = {}
     for ret in returns:
         host = ret.element_tags[0] if ret.element_tags else ""
-        kind = ("FOUNDATION WALL" if host in foundation_tags
+        kind = ("FDN WALL" if host in foundation_tags
                 else "SLAB" if host in {solid.tag for solid in model.solids}
                 else "CONCRETE")
         grouped.setdefault((ret.storey, kind), []).append(ret)
@@ -423,11 +422,15 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
                     for ret in runs)
         carried = sorted({tag for ret in runs for tag in ret.element_tags[1:]
                           if tag in wall_tags})
+        # Narrow on purpose: this column sits beside the plan and a wide table costs the
+        # drawing a scale step. The per-run minimum rides in a sheet note; the walls
+        # carried are named by the first tag and a count.
+        walls = (f"{carried[0]} +{len(carried) - 1}" if len(carried) > 1
+                 else carried[0] if carried else f"{len(runs)} RUNS")
         rows.append((
-            f"A{index}", f"SILL PLATE ON {kind} — {storey.upper()}", part,
-            f"{feet_inches(rules.mudsill_anchor_pitch_ft / M_TO_FT)} O.C. "
-            f"(MIN {rules.minimum_anchors_per_run} PER PLATE RUN)",
-            str(count), _abbreviate(", ".join(carried)) or f"{len(runs)} SILL RUN(S)"))
+            f"A{index}", f"{kind} — {storey.upper()}", part,
+            f"{feet_inches(rules.mudsill_anchor_pitch_ft / M_TO_FT)} O.C.",
+            str(count), walls))
     return rows
 
 
@@ -460,7 +463,7 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
         spec = specs[key]
         element_kind, _identity, cover = key
         keys = _abbreviate(", ".join(sorted({mark for mark, _tag in members})), 20)
-        lap = f"CLASS {spec.lap_class}" if spec.lap_class else "NOT STATED"
+        lap = spec.lap_class or "—"
         for bar in spec.bars:
             quantity = (f'{bar.spacing.inches:g}" O.C.' if bar.spacing is not None
                         else f"({bar.count})" if bar.count is not None else "NOT STATED")
@@ -469,18 +472,15 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
                          str(bar.layers), cover, lap))
     return ScheduleTable(
         title="FOUNDATION REINFORCEMENT SCHEDULE",
-        columns=("MARK", "ELEMENT", "ROLE", "BAR", "SPACING/COUNT", "LAYERS", "COVER",
-                 "LAP"),
+        columns=("MARK", "ELEMENT", "ROLE", "BAR", "SPACING", "LYRS", "COVER", "LAP"),
         rows=tuple(rows),
     )
 
 
 def _reinforced_elements(model: ResolvedModel) -> list[Any]:
     """Foundation-scope pours carrying an authored ``ReinforcementSpec``, in tag order.
-
-    The four element kinds this sheet draws as foundation. A cast pier is a ``Post`` with a
-    cage of its own and is scheduled with the column it is, not here.
-    """
+    The four kinds this sheet draws as foundation; a cast pier is a ``Post`` with a cage of
+    its own, scheduled with the column it is."""
     kinds = {"FoundationWall", "Footing", "Pad", "Slab"}
     return sorted((element for element in model.plan.all_elements()
                    if element.element_kind in kinds

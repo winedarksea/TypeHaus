@@ -72,6 +72,9 @@ def foundation_general_notes(model: ResolvedModel,
     drainage = _drainage_note(model)
     if drainage:
         notes.append(drainage)
+    notes.append("SILL ANCHORS ARE SCHEDULED AT THEIR PITCH; NO PLATE RUN TAKES FEWER "
+                 "THAN 2 (IRC R403.1.6). REINFORCEMENT LAP CLASS IS ACI 318-19 §25.5.2.1; "
+                 "\"—\" MEANS NO CLASS IS AUTHORED.")
     notes.extend(_dampproofing_notes(model))
     notes.extend(radon_control_notes(model))
     notes.append("FOOTING, PAD, WALL AND SLAB GEOMETRY IS RESOLVED FROM THE PLAN SOURCE; "
@@ -102,18 +105,20 @@ def _dampproofing_notes(model: ResolvedModel) -> list[str]:
     by_assembly: dict[str, list[str]] = {}
     for wall in foundation_walls(model):
         by_assembly.setdefault(wall.assembly, []).append(wall.tag)
-    notes, bare = [], []
+    by_product: dict[str, list[str]] = {}
+    bare = []
     for assembly_tag, tags in sorted(by_assembly.items()):
         assembly = model.plan.library.resolve_assembly(assembly_tag)
         proofed = _water_control_layers(assembly) if assembly is not None else []
-        if proofed:
-            notes.append(f"DAMPPROOFING (IRC R406.1): {assembly_tag} "
-                         f"({len(tags)} WALL(S)) CARRIES '{proofed[0].name.upper()}' — "
-                         f"{_layer_thickness(proofed[0])} "
-                         f"{proofed[0].material_ref.upper()} — ON THE EARTH FACE, FROM THE "
-                         "TOP OF FOOTING TO FINISHED GRADE.")
-        else:
+        if not proofed:
             bare.append(assembly_tag)
+            continue
+        product = (f"{_layer_thickness(proofed[0])} "
+                   f"{proofed[0].material_ref.upper()} ('{proofed[0].name.upper()}')")
+        by_product.setdefault(product, []).append(f"{assembly_tag} ({len(tags)})")
+    notes = [f"DAMPPROOFING (IRC R406.1), EARTH FACE, TOP OF FOOTING TO FINISHED GRADE: "
+             f"{', '.join(assemblies)} CARRY {product}."
+             for product, assemblies in sorted(by_product.items())]
     if bare:
         notes.append("NO WATER-CONTROL LAYER IS MODELLED IN " + ", ".join(bare)
                      + "; SEE code.R406_1_dampproofing FOR WHICH OF THESE R406.1 REACHES.")
