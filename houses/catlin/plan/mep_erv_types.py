@@ -31,10 +31,10 @@ EQUIPMENT_TYPES_ERV = (
     # ** `ventilation_cfm` IS DELIBERATELY LEFT AT 210. ** Moving it to 206 moves a LIVE
     # VERDICT: code.N1103_6_whole_house_ventilation reads 210 provided against 205 required
     # (MN 1322 R403.5), and at 206 it reads 206 against 205 — still passing, but on a 1 cfm
-    # margin instead of 5 — and tests/test_catlin_erv.py:30-33 asserts the current figure. Changing it is a
-    # ventilation decision with a test and a code verdict behind it, not a prose fix. The
-    # name and the source string below carry the real number so nobody re-derives 0.2" from
-    # this row.
+    # margin instead of 5 — and tests/test_catlin_erv.py:30-33 asserts the current
+    # figure. Changing it is a ventilation decision with a test and a code verdict
+    # behind it, not a prose fix. The name and the source string below carry the real
+    # number so nobody re-derives 0.2" from this row.
     EquipmentType(tag="EQ-T-BROAN-B210E75RT",
                   name="Broan B210E75RT ERV, 206 CFM at 0.4\" w.g., 6\" top ports",
                   footprint=(inch(24.8), inch(21)), height=inch(21.6),
