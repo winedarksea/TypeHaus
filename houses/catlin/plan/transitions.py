@@ -1,7 +1,7 @@
 # haus: editable
 # Catlin transition library — documentation overlays never alter resolved geometry.
 # Editable so the UI's detail star toggle (Transition.star and the per-condition
-# starred_conditions/unstarred_conditions overrides — the primary-set curation flags)
+# starred_conditions/unstarred_conditions overrides — the permit-set curation flags)
 # round-trips to source; the geometry-free fields here are still design decisions.
 
 from typehaus import Continuity, Transition
@@ -22,61 +22,59 @@ AIR_WATER_THERMAL = (
     Continuity(control="thermal", from_face="spray-foam-ext", to_face="spray-foam-ext"),
 )
 
+# A star is a claim about the SUBMITTAL, not about whether a detail is worth drawing.
+# `haus print` (`--set permit`) keeps exactly the starred derived details; everything else
+# still derives and still prints under `--set full`. The set carried 33 of them, which is
+# where "too many sheets" came from: sixteen of those were one rim-band drawing repeated
+# for every pair of assemblies that happens to meet at a floor line.
+#
+# The test a key has to pass to stay starred: does a plan checker or a framer open THIS
+# sheet, and is it a different drawing from the one next to it?
 TRANSITIONS = (
-    # star=True marks the details a framer/builder actually opens on site — the primary
-    # export (`haus print --details primary`) keeps exactly these; the rest still derive.
+    # Two eaves in this project and they are genuinely two drawings: the house's
+    # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof with a raised
+    # heel on a wall with no WRB. The four interior-partition-to-roof keys are unstarred —
+    # a partition dying into the ceiling plane has no eave at all: no soffit, no fascia, no
+    # vent, and none of the three control layers to hand off. It is framing, and it is
+    # drawn on S-101.3.
     Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
-               continuity=AIR_WATER_THERMAL, star=True),
-    # The starred half of this pattern is the envelope crossing — concrete to framed wall
-    # where the thermal, air and water layers all have to hand off. Where an interior
-    # partition or bearing wall lands on interior concrete none of those layers exist to
-    # continue, and the sill/anchor condition is already drawn once on the envelope sheet;
-    # unstarring those keys keeps the primary set the crossings a builder actually opens.
+               continuity=AIR_WATER_THERMAL, star=False,
+               starred_conditions=(
+                   "wall_roof:EXT_2X6|ROOF",
+                   "wall_roof:GARAGE_ROOF|GARAGE_WALL_2X6",
+               )),
+    # The envelope crossing — concrete to framed wall, where the thermal, air and water
+    # layers all have to hand off. Named keys rather than a pattern-wide star, and two of the five: the perimeter
+    # basement wall meeting the framed wall above it, and the garage's ICF stem meeting
+    # its own framed wall — the garage/house separation a reviewer looks for. The 8" wall
+    # is the same drawing as the 12" (only the sill plate sits 4" further in), by the same
+    # argument TR-CATLIN-BASEMENT-OPENING already makes for a window in either; and the
+    # garden curb and the sauna liner on it are a 7-1/4" upstand in a sunken court, not an
+    # envelope crossing anybody inspects. All four still derive under `--set full`.
     Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION",
                condition_pattern="wall_foundation:*",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL,
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
-               star=True,
-               unstarred_conditions=(
-                   "wall_foundation:FOUNDATION_WALL_12_INT|INT_2X6_BRG",
+               star=False,
+               starred_conditions=(
+                   "wall_foundation:BASEMENT_12|EXT_2X6",
+                   "wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",
                )),
-    # Same curation as the foundation above: the rim band is a sheet because it is where
-    # the air barrier and the insulation cross a floor line. An interior partition's rim
-    # has neither — it is ordinary blocking, drawn on the framing plans.
+    # ** UNSTARRED WHOLE. ** Sixteen conditions derived off this one pattern and every one
+    # of them is the same drawing: a membrane strip lapped over the plate line, sealant at
+    # the plate, and the rim bay filled. What differs between them is which two assemblies
+    # happen to meet, which is a schedule fact and not a drawing. Sixteen near-identical
+    # sheets in a submittal is how a reviewer learns to stop turning pages.
+    #
+    # The rim band still has a sheet in the permit set: TR-CATLIN-PLANT-RIM, which is the
+    # one place in this house where the detail is NOT an air seal at 35% RH but the
+    # continuity of a Class I vapour barrier at 70%. All sixteen still derive and still
+    # print under `--set full`, which is where a builder reads them.
     Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
-               continuity=AIR_WATER_THERMAL, star=True,
-               unstarred_conditions=(
-                   "storey_stack:rim:FOUNDATION_WALL_12_INT|INT_2X6_BRG",
-                   # The stair-wall stack, framed-on-framed. Two keys, one per leaf: W-B-STR
-                   # carries the ESS closet's Type X and W-B-STR3 the under-stair closet's
-                   # (2026-09-05 — the plain BRG key stopped deriving with that retype, and
-                   # `integrity.condition_star_override` said so within the same build).
-                   "storey_stack:rim:MUDROOM_INT_2X6_EXPOSED|STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
-                   "storey_stack:rim:MUDROOM_INT_2X6_EXPOSED|STAIRWALL_INT_2X6_BRG_TYPEX",
-                   "storey_stack:rim:INT_2X6_BRG",
-                   # W-M-C1 on W-B-CS. This pair IS that one stack; the old key stopped
-                   # deriving entirely, and `integrity.condition_star_override` said so.
-                   "storey_stack:rim:INT_2X6_BRG_RC|SAUNA_LINER_INT_2X6_BRG",
-                   # Same rim, same reason to leave it off the primary set — a different
-                   # assembly on top of it (plan/assemblies.py).
-                   "storey_stack:rim:INT_2X6_BRG_PLUMBING|MUDROOM_INT_2X6_EXPOSED",
-                   # W-S-BD-N1B over W-M-STOS2, the other half of the same retype.
-                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_BRG_PLUMBING",
-                   # SN3 is INT_2X6_STAGGERED_PLUMBING now — the suite bath's real wet wall
-                   # (plan/storeys/second.py) — so that stack derives the paired key below.
-                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
-                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X4_STAGGERED_GWB",
-                   # The plant room's two rim conditions are drawn by TR-CATLIN-PLANT-RIM
-                   # below instead — same plane, a different detail (closed-cell foam
-                   # carrying a Class I barrier across the joist ends, not an air seal).
-                   # Both transitions match these keys, which is legal; unstarring them here
-                   # is what keeps ONE sheet per condition in the primary set.
-                   "storey_stack:rim:EXT_2X6|PLANT_EXT_2X6_HUMID",
-                   "storey_stack:rim:INT_2X6_BRG|PLANT_INT_2X6_BRG_HUMID",
-               )),
+               continuity=AIR_WATER_THERMAL, star=False),
     # No notes= here, deliberately: this condition pattern is a wildcard over every
     # stack-width change in the house (partition-to-partition, sauna liner, plant room,
     # mudroom, and the garage's masonry-to-framed curb among them), and the garage's own
@@ -218,7 +216,12 @@ TRANSITIONS = (
                                       to_face="foil-polyiso"),
                            Continuity(control="air", from_face="foil-polyiso",
                                       to_face="foil-polyiso")),
-               star=True),
+               # Unstarred for the SUBMITTAL only (2026-09-08). It is a durability detail
+               # inside an already-conditioned basement — no code line turns on it and no
+               # inspection is run against it — and the permit set already carries the same
+               # drawing at a higher RH on TR-CATLIN-PLANT-OPENING. Both still derive, and
+               # `--set full` is what the installer is handed.
+               star=False),
     # The plant room's rim band, and the hardest detail in the room. FS-S-WEST and FS-ATTIC
     # both run their joists in x, so the ends bear on W-S-W4 and a parallel rim bay sits
     # against W-S-S1: two direct paths from a floor cavity into the coldest part of an
