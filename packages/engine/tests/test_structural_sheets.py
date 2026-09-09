@@ -21,9 +21,9 @@ from typehaus.emit.draw.foundation_schedule import (
 )
 from typehaus.emit.draw.foundationplan import build_foundation_plan
 from typehaus.emit.draw.framing_schedule import (
-    build_framing_schedules,
-    framed_level,
-    framing_sheet_findings,
+    build_storey_framing_schedules,
+    framed_levels,
+    storey_framing_findings,
 )
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.roofframingplan import (
@@ -196,7 +196,7 @@ def test_s100_is_not_a_floor_plan(catlin_model):
 
 
 def test_s101_carries_joist_direction_size_and_spacing(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "second")
     arrows = [node for node in scene.nodes if getattr(node, "name", "") == "span-arrow"]
     assert arrows and arrows[0].rotation == 0.0  # FS-S-EAST spans x
     text = _joined(scene)
@@ -204,8 +204,8 @@ def test_s101_carries_joist_direction_size_and_spacing(catlin_model):
 
 
 def test_s101_schedules_headers_over_their_openings(catlin_model):
-    level = framed_level(catlin_model, "FS-S-EAST")
-    headers = {table.title: table for table in build_framing_schedules(level)}
+    levels = framed_levels(catlin_model, "second")
+    headers = {table.title: table for table in build_storey_framing_schedules(levels)}
     table = headers["HEADER SCHEDULE — BEARING WALLS BELOW"]
     assert table.rows
     assert any(row[1].startswith("2-2x") for row in table.rows)      # size
@@ -214,46 +214,51 @@ def test_s101_schedules_headers_over_their_openings(catlin_model):
 
 
 def test_s101_draws_the_load_path_beam_to_post_to_support(catlin_model):
-    level = framed_level(catlin_model, "FS-SG-DECK")
-    tables = {table.title: table for table in build_framing_schedules(level)}
+    levels = framed_levels(catlin_model, "second")
+    tables = {table.title: table for table in build_storey_framing_schedules(levels)}
     load_path = tables["BEAM / POST SCHEDULE (LOAD PATH)"]
     beams = [row for row in load_path.rows if row[2] == "BEAM"]
     posts = [row for row in load_path.rows if row[2] == "POST"]
     assert beams and posts
     assert any(row[5].startswith("PT-SG-") for row in beams)      # beam bears on posts
     assert all(row[5] for row in posts)                            # post bears on something
-    scene = build_framing_plan(catlin_model, "FS-SG-DECK")
+    scene = build_framing_plan(catlin_model, "second")
     assert "S-BEAM" in scene.by_layer() and "S-COLS" in scene.by_layer()
     assert "CONNECTOR SCHEDULE" in _joined(scene)
 
 
 def test_s101_marks_bearing_walls_below(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "second")
     text = _joined(scene)
     assert "BRG: W-M-C2" in text          # declared deck bearing
     assert "BEARING" in text              # authored StructuralRole.BEARING walls below
-    assert "DECK BEARS ON" in text
+    assert "DECKS BEAR ON" in text
 
 
 def test_s101_member_schedule_counts_match_the_resolved_deck(catlin_model):
-    level = framed_level(catlin_model, "FS-S-EAST")
-    table = next(t for t in build_framing_schedules(level) if t.title.endswith("MEMBER SCHEDULE"))
-    joists = [m for m in level.floor.members if m.category == "joist"]
-    joist_row = next(row for row in table.rows if row[1] == "FLOOR JOIST")
-    assert joist_row[4] == str(len(joists))
-    assert joist_row[2] == joists[0].profile
+    levels = framed_levels(catlin_model, "second")
+    table = next(t for t in build_storey_framing_schedules(levels)
+                 if t.title == "MEMBER SCHEDULE")
+    east = next(level for level in levels if level.floor.tag == "FS-S-EAST")
+    joists = [m for m in east.floor.members if m.category == "joist"]
+    # The leading DECK column is what makes one sheet per storey readable: the row shape
+    # is (DECK, MARK, MEMBER, SIZE, SPACING, QTY, MAX SPAN).
+    joist_row = next(row for row in table.rows
+                     if row[0] == "FS-S-EAST" and row[2] == "FLOOR JOIST")
+    assert joist_row[5] == str(len(joists))
+    assert joist_row[3] == joists[0].profile
 
 
 def test_s101_names_braced_wall_lines_as_a_missing_input(catlin_model):
-    level = framed_level(catlin_model, "FS-S-EAST")
-    ids = {finding.check_id for finding in framing_sheet_findings(catlin_model, level)}
+    levels = framed_levels(catlin_model, "second")
+    ids = {finding.check_id for finding in storey_framing_findings(catlin_model, levels)}
     assert "sheet.framing.braced_wall_lines" in ids
     assert "sheet.framing.braced_wall_lines" in _joined(
-        build_framing_plan(catlin_model, "FS-S-EAST"))
+        build_framing_plan(catlin_model, "second"))
 
 
 def test_s101_is_not_a_floor_plan_or_an_energy_view(catlin_model):
-    framing = build_framing_plan(catlin_model, "FS-S-EAST")
+    framing = build_framing_plan(catlin_model, "second")
     assert framing.to_json() != build_floorplan(catlin_model, "second").to_json()
     layers = framing.by_layer()
     assert "S-FRAM" in layers and "A-FURN" not in layers
@@ -302,8 +307,8 @@ def test_sheet_index_keeps_one_structural_series(catlin_model):
 def test_structural_scenes_are_deterministic(catlin_model):
     for scene_a, scene_b in (
         (build_foundation_plan(catlin_model), build_foundation_plan(catlin_model)),
-        (build_framing_plan(catlin_model, "FS-S-EAST"),
-         build_framing_plan(catlin_model, "FS-S-EAST")),
+        (build_framing_plan(catlin_model, "second"),
+         build_framing_plan(catlin_model, "second")),
         (build_roof_framing_plan(catlin_model, "RF-HOUSE"),
          build_roof_framing_plan(catlin_model, "RF-HOUSE")),
     ):
@@ -316,7 +321,7 @@ def test_structural_sheets_round_trip_to_dxf(catlin_model, tmp_path: Path):
     from typehaus.emit.draw.dxf_writer import write_dxf
 
     for name, scene in (("s100", build_foundation_plan(catlin_model)),
-                        ("s101", build_framing_plan(catlin_model, "FS-S-EAST")),
+                        ("s101", build_framing_plan(catlin_model, "second")),
                         ("s102", build_roof_framing_plan(catlin_model, "RF-HOUSE"))):
         document = ezdxf.readfile(write_dxf(scene, tmp_path / f"{name}.dxf"))
         assert document.units == 1

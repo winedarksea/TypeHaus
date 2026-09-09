@@ -79,6 +79,64 @@ def framed_level(model: ResolvedModel, floor_tag: str) -> FramedLevel | None:
     return replace(level, marks=_assign_marks(level))
 
 
+def framed_levels(model: ResolvedModel, storey: str) -> tuple[FramedLevel, ...]:
+    """Every framed deck on ``storey``, in deck-tag order, sharing ONE mark table.
+
+    S-101 used to be one sheet per ``ResolvedFloor``, which on catlin is ten sheets for
+    three storeys: six of them are the main floor cut into structural bays, and a reviewer
+    holding six sheets of one floor cannot see the floor. A storey is the unit a framer,
+    an inspector and a plan checker all work in.
+
+    Marks are assigned across the whole storey (:func:`assign_storey_marks`), which is what
+    makes the merge honest rather than cosmetic: a beam carried by two decks gets one mark,
+    not a ``B1`` on one sheet and a ``B3`` on another.
+    """
+    levels = [level for floor in sorted(model.floors, key=lambda item: item.tag)
+              if floor.storey == storey
+              and (level := framed_level(model, floor.tag)) is not None]
+    shared = assign_storey_marks(levels)
+    return tuple(replace(level, marks=shared) for level in levels)
+
+
+def assign_storey_marks(levels: list[FramedLevel]) -> dict:
+    """One mark table for every deck on a storey.
+
+    Only the ``category:*`` keys are deck-local — each deck has its own joist size and
+    spacing, so they are re-keyed ``"{deck}/category:joist"`` and numbered J1..Jn across
+    the storey. Beams, posts and headers are keyed on globally unique element tags, so
+    numbering them in one pass over the decks makes a shared beam one mark for free.
+    """
+    marks: dict = {}
+    counters: dict[str, int] = {}
+    for level in levels:
+        for category, prefix, _title in MEMBER_CATEGORY_TITLES:
+            if not any(member.category == category for member in level.floor.members):
+                continue
+            counters[category] = counters.get(category, 0) + 1
+            marks[f"{level.floor.tag}/category:{category}"] = f"{prefix}{counters[category]}"
+    for level in levels:
+        for beam, _span in level.beams:
+            marks.setdefault(beam.tag, f"B{_next(marks, 'B')}")
+        for post in level.posts:
+            marks.setdefault(post.tag, f"P{_next(marks, 'P')}")
+    # Header grouping goes storey-wide: two decks over the same bearing wall see the same
+    # header, and giving it two marks would put the same stick on the schedule twice.
+    header_keys: dict[tuple, str] = {}
+    for level in levels:
+        for wall, member, _opening in level.headers:
+            key = (member.profile, round(member.length_m, 2))
+            mark = header_keys.setdefault(key, f"H{len(header_keys) + 1}")
+            marks[f"{wall.tag}/{member.child_key}"] = mark
+    return marks
+
+
+def _next(marks: dict, prefix: str) -> int:
+    """The next free index for ``prefix``, counted off the marks already handed out."""
+    return 1 + sum(1 for value in marks.values()
+                   if isinstance(value, str) and value.startswith(prefix)
+                   and value[len(prefix):].isdigit())
+
+
 def _is_bearing_role(model: ResolvedModel, wall: ResolvedWall) -> bool:
     authored = model.plan.by_tag(wall.tag)
     return getattr(authored, "structural_role", None) is StructuralRole.BEARING
@@ -141,10 +199,17 @@ def _connects_any(connector, walls: tuple, beams: tuple, posts: tuple) -> bool:
 
 
 def _assign_marks(level: FramedLevel) -> dict:
+    """Deck-local marks. ``assign_storey_marks`` is the storey-wide equivalent.
+
+    Both key the member categories on ``"{deck}/category:{name}"`` so one lookup works
+    either way; the bare ``"category:{name}"`` key is kept as an alias for a caller that
+    holds a single level and no deck tag.
+    """
     marks: dict = {}
     for category, prefix, _title in MEMBER_CATEGORY_TITLES:
         if any(member.category == category for member in level.floor.members):
             marks[f"category:{category}"] = f"{prefix}1"
+            marks[f"{level.floor.tag}/category:{category}"] = f"{prefix}1"
     for index, (beam, _span) in enumerate(level.beams, start=1):
         marks[beam.tag] = f"B{index}"
     for index, post in enumerate(level.posts, start=1):
@@ -167,49 +232,83 @@ def joist_label(system: FloorSystem) -> str:
 
 
 def build_framing_schedules(level: FramedLevel) -> list[ScheduleTable]:
-    """The keyed S-101 schedules: deck members, beams/posts, headers, connectors."""
-    tables = [_member_schedule(level), _beam_post_schedule(level), _header_schedule(level),
-              _connector_schedule(level)]
+    """The keyed schedules for ONE deck — the storey builder over a single level.
+
+    Kept as its own name because a caller that holds one ``FramedLevel`` (a test, a
+    single-deck house) should not have to construct a tuple to say so.
+    """
+    return build_storey_framing_schedules((level,))
+
+
+def build_storey_framing_schedules(levels: tuple[FramedLevel, ...]) -> list[ScheduleTable]:
+    """The keyed S-101 schedules for a whole storey — one column set, every deck.
+
+    The member schedule gains a leading DECK column because that is the only row shape
+    that is deck-local; every other table is a union deduped on the mark or the tag, which
+    is exactly the merge ``assign_storey_marks`` made possible.
+    """
+    if not levels:
+        return []
+    tables = [_storey_member_schedule(levels), _storey_beam_post_schedule(levels),
+              _storey_header_schedule(levels), _storey_connector_schedule(levels)]
     return [table for table in tables if table.rows]
 
 
-def _member_schedule(level: FramedLevel) -> ScheduleTable:
-    spacing = f'{joist_spacing_in(level.system):.0f}" O.C.'
+def _storey_member_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
     rows: list[tuple[str, ...]] = []
-    for category, _prefix, title in MEMBER_CATEGORY_TITLES:
-        members = [m for m in level.floor.members if m.category == category]
-        if not members:
-            continue
-        rows.append((
-            level.marks[f"category:{category}"], title, members[0].profile,
-            spacing if category in ("joist", "trimmer") else "—",
-            str(len(members)),
-            feet_inches(max(member.length_m for member in members)),
-        ))
-    return ScheduleTable(title=f"{level.floor.tag} MEMBER SCHEDULE",
-                         columns=("MARK", "MEMBER", "SIZE", "SPACING", "QTY", "MAX SPAN"),
+    for level in levels:
+        spacing = f'{joist_spacing_in(level.system):.0f}" O.C.'
+        for category, _prefix, title in MEMBER_CATEGORY_TITLES:
+            members = [m for m in level.floor.members if m.category == category]
+            if not members:
+                continue
+            rows.append((
+                level.floor.tag, level.marks[f"{level.floor.tag}/category:{category}"],
+                title, members[0].profile,
+                spacing if category in ("joist", "trimmer") else "—",
+                str(len(members)),
+                feet_inches(max(member.length_m for member in members)),
+            ))
+    return ScheduleTable(title="MEMBER SCHEDULE",
+                         columns=("DECK", "MARK", "MEMBER", "SIZE", "SPACING", "QTY",
+                                  "MAX SPAN"),
                          rows=tuple(rows))
 
 
-def _beam_post_schedule(level: FramedLevel) -> ScheduleTable:
+def _storey_beam_post_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
     rows: list[tuple[str, ...]] = []
-    for beam, span in level.beams:
-        rows.append((level.marks[beam.tag], beam.tag, "BEAM", beam.size, feet_inches(span),
-                     ", ".join(beam.bearing_refs) or "—"))
-    for post in level.posts:
-        height = feet_inches(post.height.meters) if post.height is not None else "—"
-        rows.append((level.marks[post.tag], post.tag, "POST", post.size, height,
-                     post.supported_by or "—"))
+    seen: set[str] = set()
+    for level in levels:
+        for beam, span in level.beams:
+            if beam.tag in seen:
+                continue
+            seen.add(beam.tag)
+            rows.append((level.marks[beam.tag], beam.tag, "BEAM", beam.size,
+                         feet_inches(span), ", ".join(beam.bearing_refs) or "—"))
+    for level in levels:
+        for post in level.posts:
+            if post.tag in seen:
+                continue
+            seen.add(post.tag)
+            height = feet_inches(post.height.meters) if post.height is not None else "—"
+            rows.append((level.marks[post.tag], post.tag, "POST", post.size, height,
+                         post.supported_by or "—"))
     return ScheduleTable(title="BEAM / POST SCHEDULE (LOAD PATH)",
                          columns=("MARK", "TAG", "TYPE", "SIZE", "SPAN/HT", "BEARS ON"),
                          rows=tuple(rows))
 
 
-def _header_schedule(level: FramedLevel) -> ScheduleTable:
+def _storey_header_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
+    """Headers grouped by mark across the storey; QTY is the summed count."""
     grouped: dict[str, list[tuple]] = {}
-    for wall, member, opening in level.headers:
-        grouped.setdefault(level.marks[f"{wall.tag}/{member.child_key}"], []).append(
-            (wall, member, opening))
+    seen: set[str] = set()
+    for level in levels:
+        for wall, member, opening in level.headers:
+            key = f"{wall.tag}/{member.child_key}"
+            if key in seen:
+                continue
+            seen.add(key)
+            grouped.setdefault(level.marks[key], []).append((wall, member, opening))
     rows: list[tuple[str, ...]] = []
     for mark, items in sorted(grouped.items(), key=lambda item: int(item[0][1:])):
         _wall, member, _opening = items[0]
@@ -221,36 +320,17 @@ def _header_schedule(level: FramedLevel) -> ScheduleTable:
                          rows=tuple(rows))
 
 
-def _connector_schedule(level: FramedLevel) -> ScheduleTable:
+def _storey_connector_schedule(levels: tuple[FramedLevel, ...]) -> ScheduleTable:
+    connectors = {c.tag: c for level in levels for c in level.connectors}
     rows = [(connector.tag, connector.kind.value.replace("_", " ").upper(),
              connector.size or "—", ", ".join(connector.connects) or "—")
-            for connector in sorted(level.connectors, key=lambda item: item.tag)]
+            for connector in sorted(connectors.values(), key=lambda item: item.tag)]
     return ScheduleTable(title="CONNECTOR SCHEDULE",
                          columns=("TAG", "KIND", "PRODUCT", "JOINS"), rows=tuple(rows))
 
 
 def _abbreviate(text: str, limit: int = 44) -> str:
     return text if len(text) <= limit else text[: limit - 1] + "…"
-
-
-def framing_general_notes(model: ResolvedModel, level: FramedLevel) -> list[str]:
-    """Sheet notes derived from the deck spec, the declared bearing, and the subfloor."""
-    notes = [f"{level.floor.tag}: {joist_label(level.system)}, SPANNING "
-             f"{level.floor.direction.upper()} — ARROWS SHOW SPAN DIRECTION."]
-    if level.system.subfloor is not None:
-        deck = level.system.subfloor
-        notes.append(f"SUBFLOOR: {deck.thickness.inches:.2f}\" {deck.material_ref.upper()} "
-                     "GLUED AND FASTENED TO JOISTS.")
-    if level.declared_bearing_walls or level.beams:
-        carried = ", ".join(sorted([wall.tag for wall in level.declared_bearing_walls]
-                                   + [beam.tag for beam, _ in level.beams]))
-        notes.append(f"DECK BEARS ON: {carried}.")
-    if level.role_bearing_walls:
-        notes.append("ADDITIONAL WALLS BELOW DECLARED BEARING (DO NOT REMOVE): "
-                     + ", ".join(sorted(wall.tag for wall in level.role_bearing_walls)) + ".")
-    notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING; SPANS ARE "
-                 "MEASURED FROM THE RESOLVED MODEL AND ARE NOT AN ENGINEERED DESIGN.")
-    return notes
 
 
 def framing_sheet_findings(model: ResolvedModel, level: FramedLevel) -> list[Finding]:
@@ -283,6 +363,71 @@ def framing_sheet_findings(model: ResolvedModel, level: FramedLevel) -> list[Fin
             message="no blocking/bridging is generated for this deck, so the sheet shows "
                     "none at bearing lines", element_tags=(level.floor.tag,),
             result=Result.UNKNOWN))
+    return findings
+
+
+def storey_framing_notes(model: ResolvedModel,
+                         levels: tuple[FramedLevel, ...]) -> list[str]:
+    """One size/spacing line per deck, then the tail every deck on the storey shares."""
+    notes: list[str] = []
+    for level in levels:
+        mark = level.marks.get(f"{level.floor.tag}/category:joist", "")
+        notes.append(f"{mark} {level.floor.tag}: {joist_label(level.system)}, SPANNING "
+                     f"{level.floor.direction.upper()} — ARROWS SHOW SPAN DIRECTION.")
+    decks = {level.system.subfloor.material_ref.upper(): level.system.subfloor
+             for level in levels if level.system.subfloor is not None}
+    for material, deck in sorted(decks.items()):
+        notes.append(f"SUBFLOOR: {deck.thickness.inches:.2f}\" {material} "
+                     "GLUED AND FASTENED TO JOISTS.")
+    carried = sorted({wall.tag for level in levels
+                      for wall in level.declared_bearing_walls}
+                     | {beam.tag for level in levels for beam, _ in level.beams})
+    if carried:
+        notes.append(f"DECKS BEAR ON: {_abbreviate(', '.join(carried), 120)}.")
+    role = sorted({wall.tag for level in levels for wall in level.role_bearing_walls})
+    if role:
+        notes.append("ADDITIONAL WALLS BELOW DECLARED BEARING (DO NOT REMOVE): "
+                     + _abbreviate(", ".join(role), 120) + ".")
+    notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING; SPANS ARE "
+                 "MEASURED FROM THE RESOLVED MODEL AND ARE NOT AN ENGINEERED DESIGN.")
+    return notes
+
+
+def storey_framing_findings(model: ResolvedModel,
+                            levels: tuple[FramedLevel, ...]) -> list[Finding]:
+    """The storey's gaps. ``braced_wall_lines`` is emitted ONCE, not once per deck.
+
+    Six identical UNKNOWNs under one heading is a reader's cue to skip the block, which is
+    the opposite of what a "NOT SHOWN" list is for.
+    """
+    if not levels:
+        return []
+    findings = [Finding(
+        severity=Severity.WARN, check_id="sheet.framing.braced_wall_lines",
+        message="braced-wall / shear lines are not modelled — Wall.structural_role carries "
+                "bearing intent only, with no bracing method, line spacing, or panel length",
+        element_tags=tuple(level.floor.tag for level in levels), result=Result.UNKNOWN,
+        fix_hint="add a BracedWallLine element (method, length, holdowns) so S-101 can key "
+                 "the lines and their panels",
+    )]
+    # Deduped on (check, message): "no blocking is generated for this deck" said six times
+    # under one heading is a reader's cue to skip the block. The element tags merge, so the
+    # sheet still names every deck the gap applies to.
+    merged: dict[tuple[str, str], Finding] = {}
+    for level in levels:
+        for finding in framing_sheet_findings(model, level):
+            if finding.check_id == "sheet.framing.braced_wall_lines":
+                continue
+            key = (finding.check_id, finding.message)
+            previous = merged.get(key)
+            if previous is None:
+                merged[key] = finding
+            else:
+                # ``Finding`` is pydantic, not a dataclass: ``dataclasses.replace`` raises.
+                merged[key] = previous.model_copy(update={
+                    "element_tags": tuple(dict.fromkeys(previous.element_tags
+                                                        + finding.element_tags))})
+    findings.extend(merged.values())
     return findings
 
 

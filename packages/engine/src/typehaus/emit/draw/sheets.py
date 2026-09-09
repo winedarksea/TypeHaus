@@ -8,8 +8,8 @@ page).
 """
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass, replace
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, field, replace
 from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -132,6 +132,10 @@ class SheetSpec:
     # authored details always do; a derived transition detail only when its Transition
     # is starred (model/views.py). ``build_sheet_index(details="primary")`` filters on it.
     primary: bool = True
+    # What this sheet is ABOUT, for a caller that needs to find one without parsing its
+    # title — ``{"storey": "main"}`` on the plan sheets. A dict rather than fields because
+    # the set has no fixed vocabulary and a title is prose, not an index.
+    keywords: Mapping[str, str] = field(default_factory=dict)
 
     @property
     def size(self) -> tuple[float, float]:
@@ -187,21 +191,37 @@ def build_sheet_index(model: ResolvedModel,
                                 scene=partial(build_foundation_plan, profile=profile),
                                 north_arrow=True))
 
-    floors = sorted(model.floors, key=lambda f: _storey_elevation(model, f.storey))
-    for index, floor in enumerate(floors, start=1):
-        number = "S-101" if len(floors) == 1 else f"S-101.{index}"
-        # Name the deck, not just its storey: a storey may carry more than one framed deck
-        # (catlin's second floor plus its balcony), and the cover index must stay unambiguous.
-        title = (f"Framing plan — {floor.storey}" if len(floors) == 1
-                 else f"Framing plan — {floor.storey} · {floor.tag}")
-        sheets.append(SheetSpec(number, title,
-                                scene=partial(build_framing_plan, floor_tag=floor.tag),
+    # S-101.n — ONE SHEET PER STOREY, not one per ``ResolvedFloor``. Catlin's main floor is
+    # six framed bays, which used to be six sheets of one floor; a reviewer holding six
+    # sheets of one floor cannot see the floor, and no sheet in that pile could show a beam
+    # two bays share. ``framed_levels`` assigns the marks storey-wide, which is what makes
+    # the merge honest rather than a collage.
+    framed_storeys = [storey.tag for storey in sorted(model.plan.storeys,
+                                                      key=lambda s: s.elevation.meters)
+                      if any(floor.storey == storey.tag for floor in model.floors)]
+    for index, storey_tag in enumerate(framed_storeys, start=1):
+        number = "S-101" if len(framed_storeys) == 1 else f"S-101.{index}"
+        sheets.append(SheetSpec(number, f"Framing plan — {storey_tag}",
+                                scene=partial(build_framing_plan, storey=storey_tag),
+                                north_arrow=True, keywords={"storey": storey_tag}))
+
+    # Roof framing keeps its own S-102 series: a roof is a framed level too, but numbering
+    # it S-101.n would make the floor-sheet count depend on how many roofs a house has.
+    # S-102 is emitted BEFORE S-103 — the loops used to run the other way round, so the set
+    # printed every braced-wall sheet and then the roof sheets behind them, out of number
+    # order for anyone flipping through the pile.
+    roofs = sorted(model.roofs, key=lambda r: (_storey_elevation(model, r.storey), r.tag))
+    for index, roof in enumerate(roofs, start=1):
+        number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
+        sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
+                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag),
                                 north_arrow=True))
 
     # S-103.n — the braced wall plan, one per storey that has a braced wall line. MNSPECT
-    # requires it per floor and runs a discrete braced-wall inspection against it; this set
-    # had none. It sits in the S-10x plan series beside the framing plans it belongs with,
-    # after them because a reader locates a line on the framing plan first.
+    # requires it per floor and runs a discrete braced-wall inspection against it. It stays
+    # its own sheet rather than folding into S-101: braced-wall content exists on the
+    # basement and the garage where no framed deck does, and S-101 is now the densest sheet
+    # in the set.
     braced_storeys = [s.tag for s in sorted(model.plan.storeys,
                                             key=lambda s: s.elevation.meters)
                       if has_braced_wall_content(model, s.tag)]
@@ -209,17 +229,7 @@ def build_sheet_index(model: ResolvedModel,
         number = "S-103" if len(braced_storeys) == 1 else f"S-103.{index}"
         sheets.append(SheetSpec(number, f"Braced wall plan — {storey_tag}",
                                 scene=partial(build_braced_wall_plan, storey=storey_tag),
-                                north_arrow=True))
-
-    # Roof framing gets its own S-102 series rather than joining the S-101 floor series: a
-    # roof is a framed level too, but numbering it S-101.n would make the floor-deck sheet
-    # count depend on how many roofs a house happens to have.
-    roofs = sorted(model.roofs, key=lambda r: (_storey_elevation(model, r.storey), r.tag))
-    for index, roof in enumerate(roofs, start=1):
-        number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
-        sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
-                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag),
-                                north_arrow=True))
+                                north_arrow=True, keywords={"storey": storey_tag}))
 
     if model.all_members():
         sheets.append(SheetSpec("S-601", "Framing schedule / bill of materials",

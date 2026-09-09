@@ -27,14 +27,16 @@ def test_starter_wires_floor_system(starter_model):
 
 
 def test_catlin_second_floor_joist_count_matches_resolved(catlin_model):
-    floor = next(f for f in catlin_model.floors if f.tag == "FS-S-EAST")
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    """One sheet per STOREY, so the count is every deck on it — three, not one."""
+    floors = [f for f in catlin_model.floors if f.storey == "second"]
+    assert len(floors) > 1, "the storey merge is only interesting on a multi-deck storey"
+    scene = build_framing_plan(catlin_model, "second")
     joist_nodes = [n for n in scene.by_layer()["S-FRAM"] if isinstance(n, Polyline)]
-    assert len(joist_nodes) == len(floor.members)
+    assert len(joist_nodes) == sum(len(floor.members) for floor in floors)
 
 
 def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "second")
     layers = scene.by_layer()
     assert "S-WALL" in layers and "S-WALL-BELW" in layers
     bearing_tags = {n.tag for n in layers["S-WALL"] if isinstance(n, Polyline)}
@@ -50,13 +52,13 @@ def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model
 
 
 def test_framing_plan_has_span_callout(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "second")
     texts = [n.content for n in scene.nodes if isinstance(n, Text) and n.layer == "S-FRAM"]
     assert any("I-JOIST" in t and "O.C." in t for t in texts)
 
 
 def test_framing_plan_draws_stair_opening(catlin_model):
-    scene = build_framing_plan(catlin_model, "FS-S-WEST")
+    scene = build_framing_plan(catlin_model, "second")
     layers = scene.by_layer()
     assert "S-FRAM-OPEN" in layers
     opening_tags = {n.tag for n in layers["S-FRAM-OPEN"] if isinstance(n, Polyline)}
@@ -86,8 +88,8 @@ def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model)
 
 
 def test_framing_plan_scene_snapshot_is_deterministic(catlin_model):
-    a = build_framing_plan(catlin_model, "FS-S-EAST")
-    b = build_framing_plan(catlin_model, "FS-S-EAST")
+    a = build_framing_plan(catlin_model, "second")
+    b = build_framing_plan(catlin_model, "second")
     assert a.to_json() == b.to_json()
 
 
@@ -96,9 +98,71 @@ def test_framing_plan_dxf_round_trips(catlin_model, tmp_path: Path):
 
     from typehaus.emit.draw.dxf_writer import write_dxf
 
-    scene = build_framing_plan(catlin_model, "FS-S-EAST")
+    scene = build_framing_plan(catlin_model, "second")
     path = write_dxf(scene, tmp_path / "framing.dxf")
     doc = ezdxf.readfile(path)
     assert doc.units == 1
     names = {layer.dxf.name for layer in doc.layers}
     assert {"S-FRAM", "S-WALL", "S-WALL-BELW"} <= names
+
+
+# --- one sheet per storey -----------------------------------------------------
+
+
+def test_marks_are_unique_across_a_multi_deck_storey(catlin_model):
+    """The merge is only honest if the marks are. Six decks each numbering their own
+    joists ``J1`` would put six different members under one mark on one sheet."""
+    from typehaus.emit.draw.framing_schedule import framed_levels
+
+    levels = framed_levels(catlin_model, "main")
+    assert len(levels) > 1
+    marks = levels[0].marks
+    assert all(level.marks is marks for level in levels), "one shared table"
+    joist_marks = [mark for key, mark in marks.items() if key.endswith("/category:joist")]
+    assert len(joist_marks) == len(set(joist_marks)) == len(levels)
+
+
+def test_a_beam_two_decks_share_gets_one_mark(catlin_model):
+    """Beams are keyed on globally unique element tags, so numbering them in one pass over
+    the storey's decks makes a shared beam one mark for free."""
+    from typehaus.emit.draw.framing_schedule import (
+        build_storey_framing_schedules,
+        framed_levels,
+    )
+
+    levels = framed_levels(catlin_model, "second")
+    shared = [beam.tag for level in levels for beam, _span in level.beams]
+    assert len(shared) > len(set(shared)), "catlin's second storey shares a beam"
+    table = next(t for t in build_storey_framing_schedules(levels)
+                 if t.title.startswith("BEAM / POST"))
+    tags = [row[1] for row in table.rows]
+    assert len(tags) == len(set(tags)), "a shared beam is scheduled once"
+    marks = [row[0] for row in table.rows]
+    assert len(marks) == len(set(marks))
+
+
+def test_walls_below_are_drawn_once_not_once_per_deck(catlin_model):
+    """Six coincident copies of one wall is not a heavier line — it is a broken DXF.
+
+    ``emit_wall`` draws one polyline per layer (and two layers can be geometrically
+    identical), so the invariant is per WALL: the sheet must contain exactly as many nodes
+    for a wall as one ``emit_wall`` call produces, no matter how many decks sit over it.
+    """
+    from typehaus.emit.draw._shared import emit_wall
+    from typehaus.emit.draw.lineweights import CUT
+    from typehaus.emit.draw.scene import SceneBuilder
+
+    scene = build_framing_plan(catlin_model, "main")
+    drawn = [n for layer in ("S-WALL", "S-WALL-BELW")
+             for n in scene.by_layer().get(layer, []) if isinstance(n, Polyline)]
+    counts: dict[str, int] = {}
+    for node in drawn:
+        counts[node.tag] = counts.get(node.tag, 0) + 1
+    assert counts
+
+    for tag, count in counts.items():
+        builder = SceneBuilder(name="one", units="in")
+        emit_wall(builder, catlin_model.wall(tag), layer_override="S-WALL",
+                  weight_override=CUT, members=False)
+        once = len([n for n in builder.build().nodes if isinstance(n, Polyline)])
+        assert count == once, f"{tag} is drawn {count} times over, not {once}"
