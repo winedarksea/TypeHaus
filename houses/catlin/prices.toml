@@ -185,6 +185,17 @@
 # same run. 498 LF ordered before, 498 LF ordered after, same blended rip rate. Watch it if
 # the gap is ever respecified as something other than a closure strip.
 "0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
+# The WallBacking bands (plan/backing.py). Both are plywood RIPS, so they price off the
+# [sheet_goods] "struct-1-plywood" rate rather than off any lumber row: a 4x8 sheet is 32
+# sq ft, so one LF of the 48"-wide band is 4 sq ft = 1/8 sheet and one LF of the 24" band is
+# 1/16. At $27-42 a sheet that is $3.38-5.25 and $1.69-2.63 of material per LF.
+#
+# Labour is deliberately ABOVE the sheet_goods lay-and-hold rate ($16-34/sheet = $2-4.25/LF
+# at this width). A wall band is cut to fit between the framing already standing, scribed
+# past pipe and wire, and nailed vertically off a ladder; a deck sheet is dropped flat and
+# nailed off. The two are not the same hour.
+"0.75x48.0" = { material = { low = 3.38, high = 5.25 }, labour = { low = 2.5, high = 5 } }  # 106 LF — the wet-wall backing bands
+"0.75x24.0" = { material = { low = 1.69, high = 2.63 }, labour = { low = 1.25, high = 2.5 } }  # 8 LF — W-A-STU-W's short knee-wall band
 # "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "1.25x11.875 rim" = { material = { low = 3, high = 4.75 }, labour = { low = 1.1, high = 2.1 } }  # 72 LF — FS-ATTIC's two went to LSL on 2026-08-29, see below
 # FS-ATTIC's two rims, 2026-08-29. They are the perimeter bearing line under the attic's

@@ -15,6 +15,11 @@ from typehaus.model.elements import Door, Wall
 from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
+from typehaus.resolve.framing.backing_panels import (
+    BackingBand,
+    append_backing_members,
+    backing_bands,
+)
 from typehaus.resolve.framing.carriers import (
     append_carrier_framing,
     carrier_bands,
@@ -79,6 +84,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                neighbour_insets_end: tuple[float, float] | None = None,
                stud_keepouts: tuple[tuple[float, float], ...] = (),
                carrier_bays: tuple[tuple[float, float], ...] = (),
+               backing: tuple[BackingBand, ...] = (),
                continuation_start: str | None = None,
                continuation_end: str | None = None,
                line: object | None = None) \
@@ -311,6 +317,13 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # --- in-line blocking courses (fire/backing blocking) ---------------------
     append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
                          stud_stations, top_at)
+
+    # --- authored backing bands ----------------------------------------------
+    # Across the studs rather than between them, and off the FRAMING base (``z0``) rather
+    # than the stud bearing line, because an authored elevation means "above the floor" —
+    # the datum an opening's ``sill_m`` and a placeable's ``Mount.elevation`` both use.
+    append_backing_members(members, rw, list(backing), d, p0, z0, axis_len, top_at,
+                           openings)
 
     # --- in-wall fixture carriers --------------------------------------------
     # After the module, because the bay's flanking studs replace the module studs the
@@ -596,6 +609,10 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # Two producers, one seam. A carrier bay and a pocket cavity are the same instruction to
     # the module — "no stud here" — so they merge before ``frame_wall`` sees either.
     bays_by_wall = carrier_bands(plan, model)
+    # Authored backing, bucketed once for the whole pass. A band whose wall does not exist
+    # stays in this dict unread and is reported by ``advisory.wall_backing_ref``; dropping
+    # it here would delete a band on a typo.
+    backing_by_wall = backing_bands(plan)
     for wall_tag, bands in carrier_keepouts(plan, model).items():
         keepouts.setdefault(wall_tag, []).extend(bands)
     authored_walls = {element.tag: element for element in plan.all_elements()
@@ -727,6 +744,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         # ``frame_wall`` only ever consults the style at an end it owns).
         authored = authored_walls.get(rw.tag)
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
+                             backing=tuple(backing_by_wall.get(rw.tag, ())),
                              corner_start="start" in endpoints,
                              corner_end="end" in endpoints,
                              butting_start="start" in butting,

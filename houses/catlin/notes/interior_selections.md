@@ -241,7 +241,10 @@ also where the type's own comment always said it belonged.
 
 This is the part of the pass with a deadline on it.
 
-- **Blocking, and it is the only irreversible item on the list.** A ¾" plywood strip, 12"
+- **Blocking, and it is the only irreversible item on the list.** *(Modelled 2026-09-09:
+  every band below is now a `WallBacking` in `plan/backing.py`, with the height schedule
+  and its sources in `notes/wall_backing.md`. The one thing that changed in the move is the
+  cost — see that note's §4.)* A ¾" plywood strip, 12"
   wide, spanning two stud bays, ~40" to ~80" AFF, in **all five wet walls** — including the
   ones with no slide bar planned, because blocking only where today's model's screws land
   pins the house to today's model forever, and a continuous band costs about twelve dollars.

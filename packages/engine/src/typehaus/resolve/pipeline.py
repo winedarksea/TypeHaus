@@ -347,11 +347,22 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
     tangent = ((ex - sx) / length, (ey - sy) / length)
     start = (sx + tangent[0] * (center_along_m - width_m / 2),
              sy + tangent[1] * (center_along_m - width_m / 2))
-    hinge_at_start = not bool(getattr(door, "flip_hinge", False))
-    hinge = start if hinge_at_start else (start[0] + tangent[0] * width_m,
-                                          start[1] + tangent[1] * width_m)
-    closed = tangent if hinge_at_start else (-tangent[0], -tangent[1])
-    direction = -1 if bool(getattr(door, "flip_swing", False)) else 1
+    # ** THE HINGE JAMB AND THE SWING SIDE ARE INDEPENDENT. ** `flip_hinge` picks the jamb
+    # and NOTHING else; `flip_swing` picks the side and nothing else. Until 2026-09-09 this
+    # hinged at the START node by default and let `flip_hinge` fall through to the side as
+    # well, so it disagreed with BOTH renderers -- `emit/draw/floorplan.py` and the UI's
+    # OpeningShapes both hang an unflipped leaf on the END-node jamb, which is also the side
+    # `_door_pocket` above documents the flag to mean. Every unflipped hinged door in every
+    # house had its arc mirrored onto the wrong jamb, and `integrity.door_swing_conflict`
+    # defended a quadrant no leaf sweeps.
+    hinge_sign = -1.0 if bool(getattr(door, "flip_hinge", False)) else 1.0
+    swing_sign = -1.0 if bool(getattr(door, "flip_swing", False)) else 1.0
+    hinge = (start[0] + tangent[0] * width_m * (0.5 + hinge_sign / 2),
+             start[1] + tangent[1] * width_m * (0.5 + hinge_sign / 2))
+    # A leaf shuts *away* from its hinge, and it sweeps toward the side `flip_swing` names
+    # regardless of which jamb it hangs on -- hence the product of the two signs.
+    closed = (-hinge_sign * tangent[0], -hinge_sign * tangent[1])
+    direction = -hinge_sign * swing_sign
     radius = width_m * sweep
     points = [hinge]
     for index in range(9):

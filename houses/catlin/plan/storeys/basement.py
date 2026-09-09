@@ -1033,16 +1033,20 @@ OPENINGS = [
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, and on 2026-09-05 the bathroom
     # rotated north-south, so this leaf (same uid, same 32" width) is on the room's east
-    # wall now, opening into the new hall. It still swings OUT — the left-hand normal of
-    # W-B-BA-E's north-to-south direction is WEST, so this takes flip_swing — because an
-    # inswing in a 3'-3 15/16" room
-    # sweeps the WC clearance zone, the lavatory and the receptacle, all
-    # `integrity.door_swing_conflict` violations. Jambs resolve to y 22'-8 1/16"..20'-0 1/16"
-    # (the "23'-2"..20'-6"" this comment claimed was already 6" out before the wall moved)
-    # and clear both fixtures' footprints; hinge at the south jamb, latch at the north where
-    # ED-B-BATH-SW is.
+    # wall now, opening into the new hall. ** IT SWINGS OUT, EAST, AND THAT IS THE WHOLE
+    # POINT: ** an inswing in a 3'-3 15/16" room sweeps the WC clearance zone, the lavatory
+    # and the receptacle, three `integrity.door_swing_conflict` violations. Jambs resolve to
+    # y 22'-8 1/16"..20'-0 1/16" (the "23'-2"..20'-6"" this comment claimed was already 6"
+    # out before the wall moved) and clear both fixtures' footprints; `flip_hinge` puts the
+    # hinge on the SOUTH jamb, latch at the north where ED-B-BATH-SW is.
+    #
+    # ** `flip_swing` WAS DROPPED ON 2026-09-09 AND THE LEAF DID NOT MOVE. ** W-B-BA-E's
+    # axis runs south-to-north, so the unflipped side is already EAST. It was only ever
+    # authored here because `_door_swing_clearance` used to let `flip_hinge` flip the side
+    # too, and the pair cancelled; now that the two flags are independent, keeping both
+    # would swing this leaf back into the bathroom and onto all three fixtures.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-INT-SWING32",
-         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True, flip_swing=True),
+         position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is
     # what a closet this size takes with jamb both sides. 10" offset from the corner, not
     # the original 4": at 4" the opening's king stud clashed with the wall's corner post

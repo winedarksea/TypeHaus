@@ -150,6 +150,16 @@ TOTO_DRAKE = FixtureType(
 # for a hook saves the blocking, not the valve. Only a true two-in-one magnetic combo head is
 # one outlet, which is why the two low-use showers take one and the two tubs do not.
 #
+# ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE, AND IT IS NOW MODELLED. ** As of
+# 2026-09-09 every band below is a `WallBacking` in `plan/backing.py`, so it reaches the
+# framer on the S-sheets and the lumber yard through the takeoff instead of living here as
+# an instruction nobody downstream can read. `advisory.wall_backing_present` reports a
+# wall-mounted body with nothing behind it, and `notes/wall_backing.md` carries the height
+# schedule with its sources. One correction the modelling forced: the "about twelve
+# dollars" below is right for the 12" strip this paragraph describes and wrong for the 48"
+# band that actually covers the 40"-80" range in one piece, which is ~13 sheets of ply.
+# The paragraph is kept verbatim because the REASONING in it is still the reasoning.
+#
 # ** BLOCKING IS THE ONLY IRREVERSIBLE ITEM IN THIS FILE. ** A 3/4" plywood strip, 12" wide,
 # spanning two stud bays, ~40" to ~80" AFF, in ALL FIVE wet walls including the ones with no
 # slide bar planned — blocking only where today's model's screws land pins the house to

@@ -1119,12 +1119,20 @@ OPENINGS = [
     # out-swinging bathroom door is also the safer arrangement on its own merits: a person
     # who falls against it inside cannot barricade the room.
     #
-    # `flip_hinge` stays: the hinge is still the EAST jamb, so the leaf parks along the
-    # bedroom wall east of the opening rather than swinging back across the bedroom.
-    # ** `flip_swing` IS DELIBERATELY ABSENT AND HAS BEEN REMOVED TWICE. ** It is what makes
-    # the leaf swing IN, and re-adding it re-opens the 25 in2 conflict described above.
+    # The hinge is the EAST jamb (x=3'-11"), so the leaf parks against the bedroom wall east
+    # of the opening rather than swinging back across the bedroom.
+    #
+    # ** THE FLAGS READ THE OPPOSITE WAY ROUND FROM HOW THEY DID BEFORE 2026-09-09, AND THE
+    # ARRANGEMENT ON THE FLOOR IS UNCHANGED. ** This was `flip_hinge=True` alone, written
+    # when `_door_swing_clearance` let `flip_hinge` fall through to the swing SIDE as well;
+    # the two renderers never agreed with it, and the sheets drew this leaf swinging IN,
+    # across the vanity, for as long as it was authored that way. `flip_hinge` now picks the
+    # jamb and only the jamb, so the EAST jamb is the unflipped one here (W-M-BDN1 runs +x)
+    # and `flip_swing` is what turns the leaf OUT into RM-M-BED.
+    # ** DO NOT DROP `flip_swing`. ** It is the out-swing, and without it the leaf clips the
+    # vanity by 25 in2 exactly as described above.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(1, 5)), flip_hinge=True),
+         position=from_node("N-M-W3", ft(1, 5)), flip_swing=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that

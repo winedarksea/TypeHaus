@@ -218,29 +218,35 @@ def append_carrier_framing(members: list[FramedMember], rw: ResolvedWall, member
                 point, point, cripple_bottom, top, top - cripple_bottom, orient=direction))
 
 
-def backing_wall(plan: PlanModel, model: ResolvedModel, fixture: Fixture,
-                 fixture_type) -> tuple[ResolvedWall, float] | None:
+def backing_wall(plan: PlanModel, model: ResolvedModel, body,
+                 body_type) -> tuple[ResolvedWall, float] | None:
     """``(wall, station)`` for the wall a wall-mounted body backs onto, or ``None``.
 
-    **Shared-derivation invariant.** ``resolve/mep_sleeves`` reads this too, so the wall a
-    carrier's bay is framed in and the wall its waste drops inside are the same wall by
-    construction rather than by two agreeing guesses. Emphatically not ``wall_ref``, which
-    in this repo names the *wet* wall a fixture plumbs into.
+    **Shared-derivation invariant.** ``resolve/mep_sleeves`` and
+    ``checks/advisory/backing.py`` both read this, so the wall a carrier's bay is framed in,
+    the wall its waste drops inside, and the wall a backing band is graded against are one
+    wall by construction rather than three agreeing guesses. Emphatically not ``wall_ref``,
+    which in this repo names the *wet* wall a fixture plumbs into.
+
+    ``body`` is any placed body — a ``Fixture``, a ``Furniture``, an ``Appliance``. Only
+    ``.position``, ``.rotation`` and the type's ``.footprint`` are read, and a wall cabinet
+    backs onto its wall exactly the way a hung bowl does. The parameter was typed to
+    ``Fixture`` while carriers were the only caller; nothing in the body ever needed that.
     """
     walls = {wall.tag: wall for wall in model.walls}
     for storey_tag in plan.elements:
         elements = plan.storey_elements(storey_tag)
-        if not any(element.tag == fixture.tag for element in elements):
+        if not any(element.tag == body.tag for element in elements):
             continue
         storey_walls = [walls[element.tag] for element in elements
                         if element.element_kind == "Wall" and element.tag in walls]
-        return _backing_wall(storey_walls, fixture, fixture_type)
+        return _backing_wall(storey_walls, body, body_type)
     return None
 
 
-def _backing_wall(walls: list[ResolvedWall], fixture: Fixture,
+def _backing_wall(walls: list[ResolvedWall], fixture,
                   fixture_type) -> tuple[ResolvedWall, float] | None:
-    """``(wall, station along its axis)`` for the wall the fixture's back faces, or None."""
+    """``(wall, station along its axis)`` for the wall the body's back faces, or None."""
     depth = fixture_type.footprint[1].meters
     radians = math.radians(_degrees(fixture.rotation))
     cos, sin = math.cos(radians), math.sin(radians)

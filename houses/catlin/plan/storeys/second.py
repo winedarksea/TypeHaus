@@ -582,8 +582,23 @@ OPENINGS = [
     # overlaps traded for one stud. (It also needs `flip_swing` there, because at 32" the old
     # swing sweeps FX-S-BATH1-LAV; that part works, and is moot.) The wall is 5'-1" long and
     # carries a 30" leaf: there is no station on it that clears both ends.
+    #
+    # ** `flip_hinge` IS LOAD BEARING: IT IS WHAT KEEPS THE LEAF OFF FX-S-BATH1-LAV. **
+    # W-S-BD-N1B runs +x, so the unflipped jamb is the EAST one at x=9'-6", and a leaf hung
+    # there sweeps its FULL quadrant across the vanity — 15.6 in2 of the cabinet, which is
+    # what the plan sheet was drawing until 2026-09-09. Hinged at the WEST jamb the same
+    # leaf clears it: 0.0 sf, 0.21" at the closest point (the arithmetic is in
+    # plan/fixtures.py). Do not "tidy" this flag away.
+    #
+    # The other two ways out were both worse. `flip_swing` throws the leaf into the hall,
+    # and the 4'-0" stub north of this wall is where you stand to open the door
+    # (storeys/attic_studio.py). Shrinking the cabinet costs a volume SKU: 42" is
+    # special-order where 48" is stock, and it buys clearance the door never needed.
+    #
+    # The arc is a 90 DEGREE quarter-disc. Past 90 the leaf does reach the cabinet, so this
+    # door takes a stop. The engine models no such thing — it is a hardware note only.
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-V2", ft(1, 1.5))),                      # x 8'-3"
+         position=from_node("N-S-V2", ft(1, 1.5)), flip_hinge=True),     # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5)), flip_swing=True, flip_hinge=True),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.

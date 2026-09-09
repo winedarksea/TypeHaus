@@ -1166,7 +1166,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED1", position=pt(m(8.12003), m(5.03458)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED2", position=pt(m(7.36477), m(7.8429)), rotation=deg(0)),
+              room="RM-S-BED2", position=pt(m(7.35693), m(7.74426)), rotation=deg(0)),
     # BED3's slot is EXACT, not approximate: resolved x 293.5..341.5, y 322.5..346.5 on the
     # south wall, with 0.500" to D-S-BED3's swing arc and 0.524" to the bed's west side zone.
     # Any later move of FURN-S-BED3, D-S-BED3 or the 18" zones re-opens

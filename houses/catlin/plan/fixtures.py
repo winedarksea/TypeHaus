@@ -411,6 +411,10 @@ SECOND_FIXTURES = (
     # EAST wall, so `rotation=deg(-90)` — `deg(90)` points a fixture's back at -x, the wrong
     # way here.
     #
+    # ** AND IT FITS ONLY BECAUSE D-S-BATH1 CARRIES `flip_hinge`. ** Hung on its other jamb
+    # that leaf sweeps 15.6 in2 of this carcass. The flag is the fix and storeys/second.py
+    # says so; this cabinet is the reason it is there.
+    #
     # ** 48" FITS ONLY AS A REAL ARC. ** The usable run is bounded north by D-S-BATH1's
     # swing and south by FURN-S-BATH1-SHELF (the shower's return panel) at y=394.5". The
     # swing's BOUNDING BOX reaches y=348", which would leave 46.5" and force a 42"

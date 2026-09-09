@@ -20,6 +20,7 @@ from typehaus.model.assembly import (
     MasonrySpec,
     Substitution,
 )
+from typehaus.model.backing import WallBacking
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
@@ -266,7 +267,7 @@ __all__ = [
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
-    "PanelingSpan", "WallPaneling",
+    "PanelingSpan", "WallPaneling", "WallBacking",
     "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",

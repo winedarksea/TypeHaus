@@ -26,7 +26,7 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DO
 
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
                     roof_trim, second_deck, solar, sunken_garden)
-from plan import (appliance_types, assemblies, circuits, electrical, electrical_attic,
+from plan import (appliance_types, assemblies, backing, circuits, electrical, electrical_attic,
                   fixture_types, fixtures, furniture_types, lighting, lighting_attic,
                   lighting_types, mep, millwork, placeables, products, railing_types,
                   site, transitions, views, wind_clamps)
@@ -158,7 +158,8 @@ PLAN = (
          *raised_garden.BASEMENT_ELEMENTS, *foundations.BASEMENT_ELEMENTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
-         *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES],
+         *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,
+         *backing.BASEMENT_BACKING],
     )
     .with_elements(
         "main",
@@ -176,7 +177,8 @@ PLAN = (
          *roof_trim.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
-         *millwork.MILLWORK, *millwork.MAIN_SHELVES],
+         *millwork.MILLWORK, *millwork.MAIN_SHELVES,
+         *backing.MAIN_BACKING],
     )
     .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
                               *electrical.GARAGE_ELEMENTS,
@@ -192,7 +194,8 @@ PLAN = (
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
                                 *second_deck.SECOND_ELEMENTS,
-                                *millwork.SECOND_SHELVES])
+                                *millwork.SECOND_SHELVES,
+                                *backing.SECOND_BACKING])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
@@ -200,5 +203,6 @@ PLAN = (
                              *solar.ATTIC_ELEMENTS, *lighting_attic.ATTIC_LIGHTING,
                              *electrical_attic.NEC_FILL_ATTIC,
                              *placeables.ATTIC_PLACEABLES,
-                             *millwork.ATTIC_SHELVES])
+                             *millwork.ATTIC_SHELVES,
+                             *backing.ATTIC_BACKING])
 )
