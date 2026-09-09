@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from typehaus.checks.soil import site_soil_bearing_psf, site_soil_class
+from typehaus.emit.draw.schedules.blocks import _lay_out_blocks
 from typehaus.emit.draw.schedules.tables import _add_table
 from typehaus.emit.draw.sheet_writer import schedule_sheet, section
 from typehaus.emit.draw.typography import wrap_columns_for
@@ -382,40 +383,6 @@ def _sheet_note_index(model: ResolvedModel) -> list[str]:
         out.append(f"  {shown}")
     return out
 
-
-#: The four columns G-002 lays out into, as figure-fraction left edges, and the band they
-#: run between. Measured off the composed sheet, which is why they are here and not guessed.
-_NOTE_COLUMNS_X = (0.03, 0.275, 0.52, 0.765)
-_NOTE_BAND = (0.90, 0.115)
-_NOTE_STEP = 0.011
-
-
-def _lay_out_blocks(fig, blocks: list[tuple[str, list[str]]]) -> int:
-    """Lay blocks into four columns; return how many did NOT fit.
-
-    The old loop ``break``ed out of both levels when it ran out of column and dropped
-    everything after, including the remainder of the block it was mid-way through. This one
-    never splits a block across a column boundary and never drops one silently — it counts
-    what it could not place and hands the count back to be printed on the sheet.
-    """
-    top, bottom = _NOTE_BAND
-    column, y = 0, top
-    dropped = 0
-    for title, lines in blocks:
-        needed = (len(lines) + 2) * _NOTE_STEP
-        if y - needed < bottom and y < top:
-            column, y = column + 1, top
-        if column >= len(_NOTE_COLUMNS_X):
-            dropped += 1
-            continue
-        x = _NOTE_COLUMNS_X[column]
-        section(fig, x, y, title, fontsize=7, va="top")
-        y -= _NOTE_STEP * 1.6
-        for line in lines:
-            fig.text(x, y, line, fontsize=6, family="monospace", va="top")
-            y -= _NOTE_STEP
-        y -= _NOTE_STEP
-    return dropped
 
 
 def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
