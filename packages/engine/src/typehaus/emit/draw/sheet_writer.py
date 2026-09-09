@@ -24,9 +24,8 @@ from __future__ import annotations
 import math
 import textwrap
 from collections.abc import Iterator
-from contextlib import contextmanager, suppress
+from contextlib import contextmanager
 from contextvars import ContextVar
-from datetime import date
 from typing import TYPE_CHECKING
 
 from typehaus.emit.draw.paper import (
@@ -52,6 +51,23 @@ from typehaus.emit.draw.pdf_writer import (
     _scene_bounds,
 )
 from typehaus.emit.draw.scene import Frame, Scene
+from typehaus.emit.draw.title_block import (  # noqa: F401 — re-exported, see __all__
+    _INK,
+    _ISSUE,
+    _ISSUE_INK,
+    _ISSUE_WARNING_INK,
+    _MARGIN,
+    FOR_PLAN_CHECK,
+    NOT_FOR_CONSTRUCTION,
+    TITLE_W,
+    SealBlock,
+    _draw_chrome,
+    _issue_color,
+    content_box,
+    set_issue_status,
+    set_seal_block,
+    title_height,
+)
 from typehaus.emit.draw.typography import NOTES_PT, wrap_columns_for
 
 if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which imports us)
@@ -62,55 +78,20 @@ if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which im
 # spells it, and a module split is not a reason to churn their imports.
 __all__ = [
     "ARCH_D", "ARCH_SCALES", "ENG_SCALES", "FIT_LABEL", "LEDGER", "NTS_LABEL", "PAPERS",
-    "PAPER_SUFFIX", "PORTRAIT_LEDGER", "compose_sheet", "fit_scale", "frame_for_scene",
-    "paper_for", "resolve_paper", "scale_for_label", "schedule_sheet", "section",
-    "select_scale", "set_paper", "sheet_chrome", "viewport_box",
+    "PAPER_SUFFIX", "PORTRAIT_LEDGER", "SealBlock", "compose_sheet", "content_box",
+    "fit_scale", "frame_for_scene", "paper_for", "resolve_paper", "scale_for_label",
+    "schedule_sheet", "section", "select_scale", "set_issue_status", "set_paper",
+    "set_seal_block", "sheet_chrome", "title_height", "viewport_box",
 ]
 
-_MARGIN = 0.25       # border inset from the paper edge, inches
-#: Minimum title-block strip height, inches — what a four-cell strip needed. The block is
-#: a full NCS one now (identity, preparer, revision block, seal box, issue status), so it
-#: takes ``title_height(size)`` instead: proportional to the sheet, clamped between this and
-#: ``_TITLE_H_MAX``. A fixed height cannot serve both papers — 1.9" of block is right on the
-#: 24"-tall ARCH D deliverable and eats a fifth of an 11"-tall ledger review print.
-_TITLE_H = 0.75
-_TITLE_H_MAX = 1.90
-#: Fraction of sheet height the block takes between those bounds.
-_TITLE_H_FRACTION = 0.085
+# The chrome — title block, issue stamp, seal cell — moved to ``title_block.py``; the names
+# are re-exported because every caller and every test already spells them ``sheet_writer.x``
+# (and ``_ISSUE``/``_issue_color`` are read straight off this module by the CLI's gate).
 
-
-#: Width of the RIGHT-EDGE title block, paper inches, used on scene sheets.
-#:
-#: **Why there are two title-block geometries, and why that is not a smell.** A scene sheet
-#: and a table page compete for different things. A plan's viewport is computed — it takes
-#: whatever the chrome leaves — and on ARCH D catlin's foundation plan needs 21.4" of the
-#: 22.25" available HEIGHT while using 22.2" of 35.3" of WIDTH. Height there is the scarce
-#: resource and width is free: a full NCS title block as a bottom strip costs S-100 a whole
-#: step of scale (3/16" to 1/8"), and the same block on the right edge costs nothing.
-#:
-#: A table page is the mirror. It lays its content out in FIGURE FRACTIONS across the full
-#: width, with the bottom already reserved at 0.11 — so a right-edge block would run through
-#: every schedule on the sheet while the bottom strip costs it nothing.
-#:
-#: Same cells, same content, placed where each sheet has room. ``_draw_chrome(edge=...)``
-#: is the switch and ``viewport_box`` reserves to match.
-TITLE_W = 2.60
-
-
-def title_height(size: tuple[float, float]) -> float:
-    """Title-block strip height for this paper, inches.
-
-    Bounded below by what the identity cells need and above by what a PE seal wants
-    (~2" of clear area). Schedule pages lay their content out from figure fraction 0.11,
-    so the block must also stay under ``0.11 * height - _MARGIN`` — which the fraction
-    does by construction: 0.085 + 0.25/height < 0.11 for every paper this set prints on.
-    """
-    return max(_TITLE_H, min(_TITLE_H_MAX, _TITLE_H_FRACTION * size[1]))
 _VIEW_PAD = 0.10     # air between chrome and the drawing viewport, inches
 _BAR_LANE = 0.30     # reserved strip below the viewport for the graphic scale bar
 _NOTES_W = 3.4       # reserved right-hand notes panel width, inches
 _NOTES_PT = NOTES_PT  # fixed notes lettering size, points (monospace)
-_INK = "#1a1a1a"
 # Shrink applied when nothing on the ladder fits and the drawing is fitted to the page, so
 # linework and its lettering clear the border instead of touching it.
 _FIT_PAD = 1.04
@@ -131,38 +112,6 @@ def set_paper(paper: tuple[float, float]) -> Iterator[None]:
         yield
     finally:
         _SET_PAPER.reset(token)
-
-
-#: What the set currently being written may be used for. Every sheet carries it, and the
-#: default is the honest one: this engine computes, it does not seal. ``haus print``
-#: overrides it only when its own gate passes — the same gate that decides whether the set
-#: may be printed at all, so the stamp and the gate cannot disagree.
-NOT_FOR_CONSTRUCTION = "NOT FOR CONSTRUCTION"
-FOR_PLAN_CHECK = "FOR PLAN CHECK ONLY"
-_ISSUE: ContextVar[str] = ContextVar("_ISSUE", default=NOT_FOR_CONSTRUCTION)
-
-
-@contextmanager
-def set_issue_status(status: str) -> Iterator[None]:
-    """Stamp ``status`` on every sheet composed in this block."""
-    token = _ISSUE.set(status)
-    try:
-        yield
-    finally:
-        _ISSUE.reset(token)
-
-
-#: Stamp ink. Red is a warning, and it belongs only on the engine's own two defaults —
-#: they say the set may not be built from. A house that authored ``[print] issue`` has
-#: made an affirmative statement about its own set, and printing that in alarm ink would
-#: contradict it.
-_ISSUE_WARNING_INK = "#8a1c1c"
-_ISSUE_INK = "#1a1a1a"
-
-
-def _issue_color(status: str) -> str:
-    return (_ISSUE_WARNING_INK if status.split(" · ")[0]
-            in (NOT_FOR_CONSTRUCTION, FOR_PLAN_CHECK) else _ISSUE_INK)
 
 
 def viewport_box(size: tuple[float, float], notes_panel: bool = False,
@@ -347,29 +296,6 @@ def section(fig, x: float, y: float, title: str, *, fontsize: float = 10, **kwar
                     **kwargs)
 
 
-def content_box(size: tuple[float, float]) -> tuple[float, float, float, float]:
-    """The area a table page may letter into: ``(x0, y0, x1, y1)`` in paper inches.
-
-    :func:`sheet_chrome` states this bound in its docstring as "above ~0.10 on ledger" and
-    every schedule writer then hard-codes figure *fractions* against it. A fraction is the
-    wrong unit for a bound that is really the border plus the title strip — both fixed
-    inches — so a layout tuned on 11x17 either crashes into the title block or floats a
-    long way above it when the same page is composed on 24x36. Returning inches lets a page
-    ask how much room it actually has, which is what the cover's sheet index needs in order
-    to choose a column count instead of silently drawing rows off the edge.
-
-    The extra ``_GUTTER`` inside the border is breathing room, not structure: lettering
-    hard against a drawn border reads as an error even when it is inside it.
-    """
-    width, height = size
-    return (_MARGIN + _GUTTER, _MARGIN + title_height(size) + _GUTTER,
-            width - _MARGIN - _GUTTER, height - _MARGIN - _GUTTER)
-
-
-#: Clear space between the drawn border and any lettering, inches.
-_GUTTER = 0.35
-
-
 def sheet_chrome(fig, model: ResolvedModel, number: str, title: str,
                  scale_label: str = NTS_LABEL,
                  size: tuple[float, float] = LEDGER) -> None:
@@ -384,194 +310,6 @@ def sheet_chrome(fig, model: ResolvedModel, number: str, title: str,
 
 
 # --- chrome -------------------------------------------------------------------
-
-
-def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
-                 scale_label: str, size: tuple[float, float], *,
-                 edge: bool = False) -> None:
-    """Border rectangle + title block, drawn in paper-inch coordinates.
-
-    ``edge`` puts the block down the right-hand side (scene sheets, where height is the
-    scarce resource) instead of along the bottom (table pages, where width is). See
-    :data:`TITLE_W` for the measurement behind that split.
-    """
-    from matplotlib.patches import Rectangle
-
-    width, height = size
-    ax = fig.add_axes([0.0, 0.0, 1.0, 1.0], zorder=5)
-    ax.set_xlim(0.0, width)
-    ax.set_ylim(0.0, height)
-    ax.axis("off")
-    ax.patch.set_visible(False)
-
-    m = _MARGIN
-    ax.add_patch(Rectangle((m, m), width - 2 * m, height - 2 * m, fill=False,
-                           edgecolor=_INK, linewidth=1.2))
-    pad = 0.10
-
-    # Six cells: identity · site · preparer + issue · revisions · seal · sheet. The order is
-    # the reading order of a title block — who and where, then who drew it and what it may
-    # be used for, then what changed, then who is answerable, then which sheet this is. The
-    # sheet number is LAST because it is what a reader's thumb finds on the corner of a
-    # stack, which on the right-edge block means the bottom of the column.
-    #
-    # Proportions are what each cell has to SAY, measured off the printed sheet rather than
-    # split evenly: identity is a name and up to two address lines, the revision block needs
-    # room for a description, and the seal box wants to be nearly square.
-    fractions = (0.18, 0.32, 0.52, 0.76, 0.87)
-    if edge:
-        block_x0 = width - m - TITLE_W
-        strip_h = height - 2 * m
-        ax.plot([block_x0, block_x0], [m, height - m], color=_INK, linewidth=0.9)
-        # Bottom-to-top: the sheet number sits at the bottom corner, so the cell order is
-        # reversed against the fractions, which run "first cell first".
-        cuts = [height - m - (height - 2 * m) * f for f in fractions]
-        for y in cuts:
-            ax.plot([block_x0, width - m], [y, y], color=_INK, linewidth=0.5)
-        tops = [height - m, *cuts]
-        bottoms = [*cuts, m]
-        cells = [(block_x0, block_x0 + TITLE_W, top, bottom)
-                 for top, bottom in zip(tops, bottoms, strict=True)]
-    else:
-        strip_h = title_height(size)
-        strip_top = m + strip_h
-        inner_w = width - 2 * m
-        ax.plot([m, width - m], [strip_top, strip_top], color=_INK, linewidth=0.9)
-        dividers = [m + inner_w * f for f in fractions]
-        for x in dividers:
-            ax.plot([x, x], [m, strip_top], color=_INK, linewidth=0.5)
-        lefts = [m, *dividers]
-        rights = [*dividers, width - m]
-        cells = [(left, right, strip_top, m)
-                 for left, right in zip(lefts, rights, strict=True)]
-
-    edges = [cell[0] for cell in cells] + [cells[-1][1]]
-
-    def rows(count: int, index: int = 0) -> list[float]:
-        """``count`` evenly spaced text baselines down cell ``index``, top row first."""
-        top, bottom = cells[index][2], cells[index][3]
-        span = top - bottom
-        step = span / (count + 0.6)
-        return [top - step * (i + 0.8) for i in range(count)]
-
-    def label(x: float, y: float, text: str, size_pt: float = 6.0,
-              weight: str = "normal", color: str = _INK) -> None:
-        ax.text(x, y, text, fontsize=size_pt, family="monospace", va="center",
-                color=color, weight=weight)
-
-    project = getattr(getattr(model, "plan", None), "project", None)
-    site = getattr(project, "site", None)
-
-    # --- cell 1: project identity and address -------------------------------------
-    r = rows(4, 0)
-    name = getattr(project, "name", "") or ""
-    if name:
-        label(edges[0] + pad, r[0], name, 10.5, "bold")
-    address = _project_address(project, site)
-    for row, line in zip(r[1:3], address, strict=False):
-        label(edges[0] + pad, row, line, 6.5)
-    label(edges[0] + pad, r[3], "TYPE:HAUS — generated construction set", 5.5,
-          color="#555555")
-
-    # --- cell 2: where on earth ----------------------------------------------------
-    # Deliberately ragged: any row may be absent (no lat/lon, no CRS, no elevation), so a
-    # shorter list simply fills the cell from the top rather than leaving labelled blanks.
-    site_rows: list[str] = []
-    lat, lon = getattr(site, "lat", None), getattr(site, "lon", None)
-    if lat is not None and lon is not None:
-        site_rows.append(f"SITE  {lat:.5f}, {lon:.5f}")
-    crs = getattr(site, "crs", None)
-    if crs:
-        site_rows.append(f"CRS   {crs}")
-    elevation = getattr(site, "elevation", None)
-    if elevation is not None:
-        with suppress(AttributeError):
-            site_rows.append(f"ELEV  {elevation.meters:,.1f} m")
-    for row, text in zip(rows(4, 1), site_rows, strict=False):
-        label(edges[1] + pad, row, text, 6.0)
-
-    # --- cell 3: preparer, project number, scale, date, and the issue stamp ---------
-    r = rows(5, 2)
-    label(edges[2] + pad, r[0], f"PROJECT NO  {_project_number(project)}", 6.0)
-    label(edges[2] + pad, r[1], f"DRAWN BY    {_preparer(project)}", 6.0)
-    # CHECKED BY is blank because nobody has checked it. A pre-filled name on a line whose
-    # whole purpose is to record a human act would be a forgery of that act — the same
-    # reasoning that keeps the seal box empty.
-    label(edges[2] + pad, r[2], "CHECKED BY  ______________", 6.0)
-    label(edges[2] + pad, r[3], f"SCALE  {scale_label}      "
-                                f"DATE  {date.today().isoformat()}", 6.0)
-    label(edges[2] + pad, r[4], _ISSUE.get(), 7.5, "bold", _issue_color(_ISSUE.get()))
-
-    # --- cell 4: the revision block ------------------------------------------------
-    # A real block with ruled rows and a header, empty. It replaces a hard-coded "REV —",
-    # which said there is no revision system rather than that there are no revisions yet.
-    # The engine cannot fill it: a revision is an issue to somebody, which is a human act.
-    r = rows(4, 3)
-    label(edges[3] + pad, r[0], "REV  DATE        DESCRIPTION", 5.5, "bold")
-    for row in r[1:]:
-        ax.plot([cells[3][0] + pad, cells[3][1] - pad], [row - 0.055, row - 0.055],
-                color="#999999", linewidth=0.3)
-
-    # --- cell 5: the seal box ------------------------------------------------------
-    # An outlined reserved area and a caption, and the engine still never DRAWS a stamp.
-    # ``schedules/structural.py`` puts it plainly: drawing a stamp would be forging one.
-    seal_l, seal_r, seal_top, seal_bot = cells[4]
-    box_x0, box_x1 = seal_l + pad, seal_r - pad
-    ax.add_patch(Rectangle((box_x0, seal_bot + pad), box_x1 - box_x0,
-                           (seal_top - seal_bot) - 2 * pad,
-                           fill=False, edgecolor="#999999", linewidth=0.4,
-                           linestyle=(0, (3, 2))))
-    ax.text((box_x0 + box_x1) / 2.0, (seal_top + seal_bot) / 2.0, "SEAL", fontsize=6.0,
-            family="monospace", va="center", ha="center", color="#999999")
-
-    # --- cell 6: sheet number and title --------------------------------------------
-    r = rows(3, 5)
-    label(edges[5] + pad, r[0], number, 13.0, "bold")
-    # The cell is as wide as the paper made it, so that — not a constant — is the limit.
-    # A fixed 46 was a ledger number: it clipped a title at the same place on 24x36, where
-    # this cell is more than twice as wide and had the room to print it whole.
-    columns = wrap_columns_for(cells[5][1] - cells[5][0] - 2 * pad, 6.5)
-    label(edges[5] + pad, r[2], _shorten(title, columns), 6.5)
-
-
-def _project_address(project, site) -> list[str]:
-    """Up to two lines of street address, or ``[]``.
-
-    A permit set names the property it is for. Nothing here is invented: an address the
-    model does not carry prints as nothing at all, because a plausible-looking address on a
-    permit drawing is worse than a missing one.
-    """
-    for holder in (project, site):
-        text = getattr(holder, "address", None)
-        if text:
-            return [line.strip() for line in str(text).splitlines() if line.strip()][:2]
-    return []
-
-
-def _project_number(project) -> str:
-    """The project number a reviewer files the set under.
-
-    Falls back to the first eight characters of ``project_uuid``, which is stable, unique
-    and already in the model — a set with no number at all cannot be filed.
-    """
-    number = getattr(project, "number", None)
-    if number:
-        return str(number)
-    uuid = str(getattr(project, "project_uuid", "") or "")
-    return uuid[:8].upper() if uuid else "—"
-
-
-def _preparer(project) -> str:
-    """Who prepared the set. The engine did, unless the project names somebody."""
-    for field in ("preparer", "firm", "architect"):
-        value = getattr(project, field, None)
-        if value:
-            return str(value)[:16]
-    return "TYPE:HAUS"
-
-
-def _shorten(text: str, limit: int) -> str:
-    return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
 # --- graphic scale bar --------------------------------------------------------
