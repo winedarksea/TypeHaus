@@ -138,6 +138,18 @@ origin_y_m = -8.0507
 width_m = 17.1345
 height_m = 25.7018
 opacity = 0.30
+# What the set says about itself. The engine's own default is "NOT FOR CONSTRUCTION",
+# which is the honest thing for an engine to say — only the owner of the building can say
+# a set is being submitted for permit, so it is said here and nowhere in the engine.
+[print]
+issue = "ISSUED FOR PERMIT"
+# Sheet-number prefixes forced into / out of the `--set permit` set. Both empty: the
+# default split (no E-1xx power, no P-1xx plumbing) is what the Saint Paul DSI new-
+# construction checklist asks for — fixtures go on the floor plans. `permit_add =
+# ["E-1", "P-1"]` puts them back in one line if a reviewer asks.
+permit_add = []
+permit_drop = []
+
 
 # --- decided advisories -------------------------------------------------------------------
 #

@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 import pytest
+from _helpers import CATLIN
 
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.paper import ARCH_SCALES
@@ -361,3 +362,46 @@ def test_the_seal_box_is_reserved_and_never_drawn_in(catlin_model):
     assert texts.count("SEAL") == 1
     # Nothing that could read as a licence, a name against a stamp, or a state.
     assert not [t for t in texts if "P.E." in t or "LICENSE" in t.upper()]
+
+
+def test_the_stamp_is_red_only_for_the_engines_own_two_defaults():
+    """Red is a warning, and the two engine defaults are the only warnings.
+
+    A house that authored ``[print] issue`` has made an affirmative statement about its own
+    set; printing that in alarm ink would contradict it. ``· SEALED`` rides along on the
+    same string, so the colour is decided on the status ahead of the separator.
+    """
+    from typehaus.emit.draw.sheet_writer import (
+        FOR_PLAN_CHECK,
+        NOT_FOR_CONSTRUCTION,
+        _ISSUE_INK,
+        _ISSUE_WARNING_INK,
+        _issue_color,
+    )
+
+    assert _issue_color(NOT_FOR_CONSTRUCTION) == _ISSUE_WARNING_INK
+    assert _issue_color(FOR_PLAN_CHECK) == _ISSUE_WARNING_INK
+    assert _issue_color(FOR_PLAN_CHECK + " · SEALED") == _ISSUE_WARNING_INK
+    assert _issue_color("ISSUED FOR PERMIT") == _ISSUE_INK
+    assert _issue_color("ISSUED FOR PERMIT · SEALED") == _ISSUE_INK
+
+
+def test_the_house_issue_wording_reaches_the_stamp_only_through_cmd_sheets():
+    """``[print] issue`` is read by the CLI past its gate, never by the writer itself.
+
+    The writer's ContextVar default stays the honest engine default: nothing a house can
+    author may make an *uncommanded* compose claim a status. ``--sealed`` appends to
+    whatever wording was chosen rather than replacing it.
+    """
+    import inspect
+
+    from typehaus.checks import load_preferences
+    from typehaus.cli import cmd_sheets
+    from typehaus.emit.draw import sheet_writer as sw
+
+    assert sw._ISSUE.get() == sw.NOT_FOR_CONSTRUCTION
+    assert "print_options" not in inspect.getsource(sw)
+    source = inspect.getsource(cmd_sheets.print_sheets)
+    assert "preferences.print_options.issue or (" in source
+    assert 'issue += " · SEALED"' in source
+    assert load_preferences(CATLIN).print_options.issue == "ISSUED FOR PERMIT"

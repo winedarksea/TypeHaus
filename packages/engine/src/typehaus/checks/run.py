@@ -18,6 +18,7 @@ from typehaus.checks.registry import (
     MepPreferences,
     PlumbingPreferences,
     Preferences,
+    PrintPreferences,
     ReferenceUnderlay,
     StructuralPreferences,
     Tier,
@@ -55,6 +56,7 @@ def load_preferences(house_dir: Path) -> Preferences:
     ) for item in data.get("underlay", ()))
     mep = data.get("mep", {})
     suppressed = frozenset(data.get("checks", {}).get("suppress", []))
+    printing = data.get("print", {})
     return Preferences(
         wall_r=env.get("wall_r"), roof_r=env.get("roof_r"),
         window_u=env.get("window_u"), ach50=env.get("ach50"),
@@ -101,6 +103,11 @@ def load_preferences(house_dir: Path) -> Preferences:
                 "max_guard_dead_load_on_wood_plf", 50.0),
         ),
         underlays=underlays,
+        print_options=PrintPreferences(
+            issue=printing.get("issue"),
+            permit_add=tuple(printing.get("permit_add", ())),
+            permit_drop=tuple(printing.get("permit_drop", ())),
+        ),
         suppressed=suppressed,
         jurisdiction=project.get("jurisdiction"),
     )

@@ -126,6 +126,22 @@ class StructuralPreferences:
 
 
 @dataclass(frozen=True)
+class PrintPreferences:
+    """``[print]`` from ``preferences.toml`` — what the composed set says about itself.
+
+    The engine never asserts an issue status a person did not authorize, so ``issue`` is
+    ``None`` by default and ``cli/cmd_sheets`` falls back to the honest engine defaults.
+    ``permit_add`` / ``permit_drop`` are sheet-number *prefixes* that force a sheet into or
+    out of the permit set — the one-line escape hatch for a reviewer who wants the E-1xx
+    power plans back.
+    """
+
+    issue: str | None = None
+    permit_add: tuple[str, ...] = ()
+    permit_drop: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class ReferenceUnderlay:
     """A view-only calibrated reference image; never emitted as building geometry."""
 
@@ -172,6 +188,7 @@ class Preferences:
     mep: MepPreferences = field(default_factory=MepPreferences)
     structural: StructuralPreferences = field(default_factory=StructuralPreferences)
     underlays: tuple[ReferenceUnderlay, ...] = ()
+    print_options: PrintPreferences = field(default_factory=PrintPreferences)
     #: ``[checks] suppress`` from the house's ``preferences.toml``. Two forms, and the second
     #: is the one that makes the list usable without blinding a check:
     #:

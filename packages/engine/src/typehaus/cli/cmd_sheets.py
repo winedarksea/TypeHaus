@@ -218,7 +218,13 @@ def print_sheets(
         # gate refused. Past the draft gate a set is fit for plan check; only a fresh
         # professional seal takes "NOT FOR CONSTRUCTION" off it, and this engine never
         # writes engineering.toml, so that word can only come from a person.
-        issue = FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION
+        # The house gets the last word on the *wording* — an owner submitting for permit
+        # says "ISSUED FOR PERMIT", and only they can say it. The engine's own defaults
+        # stay the fallback, because the engine may not assert a status nobody authorized.
+        issue = preferences.print_options.issue or (
+            FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION)
+        if sealed:
+            issue += " · SEALED"
         name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
         with set_issue_status(issue):
             path, composed = write_permit_set(model, out / name, preferences,

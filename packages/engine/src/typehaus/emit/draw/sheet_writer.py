@@ -152,6 +152,19 @@ def set_issue_status(status: str) -> Iterator[None]:
         _ISSUE.reset(token)
 
 
+#: Stamp ink. Red is a warning, and it belongs only on the engine's own two defaults —
+#: they say the set may not be built from. A house that authored ``[print] issue`` has
+#: made an affirmative statement about its own set, and printing that in alarm ink would
+#: contradict it.
+_ISSUE_WARNING_INK = "#8a1c1c"
+_ISSUE_INK = "#1a1a1a"
+
+
+def _issue_color(status: str) -> str:
+    return (_ISSUE_WARNING_INK if status.split(" · ")[0]
+            in (NOT_FOR_CONSTRUCTION, FOR_PLAN_CHECK) else _ISSUE_INK)
+
+
 def viewport_box(size: tuple[float, float], notes_panel: bool = False,
                  ) -> tuple[float, float, float, float]:
     """(x, y, w, h) of the drawing viewport in paper inches: sheet minus chrome.
@@ -487,7 +500,7 @@ def _draw_chrome(fig, model: ResolvedModel, number: str, title: str,
     label(edges[2] + pad, r[2], "CHECKED BY  ______________", 6.0)
     label(edges[2] + pad, r[3], f"SCALE  {scale_label}      "
                                 f"DATE  {date.today().isoformat()}", 6.0)
-    label(edges[2] + pad, r[4], _ISSUE.get(), 7.5, "bold", "#8a1c1c")
+    label(edges[2] + pad, r[4], _ISSUE.get(), 7.5, "bold", _issue_color(_ISSUE.get()))
 
     # --- cell 4: the revision block ------------------------------------------------
     # A real block with ruled rows and a header, empty. It replaces a hard-coded "REV —",

@@ -65,7 +65,17 @@ def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
     numbers = [sheet["number"] for sheet in manifest["sheets"]]
     assert numbers[0] == "G-001", "the cover is page 1"
     assert any(n.startswith("A-1") for n in numbers), "a floor plan is in the set"
-    assert manifest["issue"] == "NOT FOR CONSTRUCTION", "an unsealed print says so"
+    # catlin authors `[print] issue`, and the house has the last word on the wording of
+    # its own submittal — the engine's "NOT FOR CONSTRUCTION" is only the fallback.
+    assert manifest["issue"] == "ISSUED FOR PERMIT", "the house's [print] issue is stamped"
     assert manifest["content_hash"], "the manifest names the model it was printed from"
     assert [s["page"] for s in manifest["sheets"]] == list(
         range(1, len(manifest["sheets"]) + 1))
+
+
+def test_a_house_authored_issue_is_recorded_verbatim():
+    """The manifest is the audit trail: it records whatever was stamped, not a category."""
+    manifest = sheet_manifest(INDEX, pdf_name="permit_set_24x36.pdf", paper="arch-d",
+                              issue="ISSUED FOR PERMIT", printed_at="2026-09-08",
+                              engine_version="0.0.0+dev", content_hash="abc123")
+    assert manifest["issue"] == "ISSUED FOR PERMIT"

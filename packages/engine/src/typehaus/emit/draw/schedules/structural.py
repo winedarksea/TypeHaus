@@ -132,7 +132,8 @@ def _write_engineering_register(pdf, model: ResolvedModel, number: str, name: st
         line = 0.515
         if not register.signoffs:
             fig.text(0.04, line, "None recorded. Every item above rests on this engine's "
-                                 "own calculation, or on none — NOT FOR CONSTRUCTION.",
+                                 "own calculation, or on none — this sheet carries no "
+                                 "professional seal.",
                      fontsize=6, family="monospace")
         for signoff in register.signoffs:
             fig.text(0.04, line, f"{signoff.id} — {signoff.scope}",
