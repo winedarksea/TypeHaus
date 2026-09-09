@@ -4,6 +4,11 @@ Real C-101: a GeoJSON survey contour basemap under the parcel ring, setback line
 dimensions, utility runs, spot elevations, downhill drainage arrows, and foundation
 grade-away callouts (R401.3), layered on top of the footprint/footing/north-arrow content
 (→ Permit-ready plan set Phase 4).
+
+This module draws the site's **geometry**. Everything the sheet *says about the parcel* —
+lot-line dimensions and bearings, setback numbers, easements, street/right-of-way, erosion
+control, benchmark, and the zoning coverage table — lives in ``siteplan_annotate``, split
+out when C3's zoning content would have pushed this file past the 500-line rule.
 """
 
 from __future__ import annotations
@@ -13,14 +18,13 @@ import math
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
-    ArchDimension,
-    NamedPoint,
     Polyline,
     Scene,
     SceneBuilder,
     Symbol,
     Text,
 )
+from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
 from typehaus.resolve.model import ResolvedModel
 
 _DRAINAGE_RADIUS_FT = 40.0
@@ -39,7 +43,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_roofs_or_wall_footprints(builder, model)
     _emit_foundation_and_post_supports(builder, model)
     _emit_drainage_overlay(builder, model)
-    _emit_parcel_and_setbacks(builder, model, site)
+    emit_site_annotations(builder, model, site)
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
     _emit_foundation_grading(builder, model, site)
@@ -221,32 +225,6 @@ def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
                              layer="C-STRM-DRAN", align="center"))
 
 
-def _emit_parcel_and_setbacks(builder: SceneBuilder, model: ResolvedModel, site) -> None:
-    parcel = [p.xy_m for p in site.parcel]
-    if len(parcel) < 3:
-        return
-    builder.add(Polyline(points=tuple(_in(p) for p in parcel), closed=True, layer="C-PROP",
-                         lineweight=CUT, linetype="PHANTOM"))
-    n = len(parcel)
-    footprint_pts = [p for wall in model.walls for p in (wall.axis[0], wall.axis[1])]
-    for spec in site.setbacks:
-        a, b = parcel[spec.edge % n], parcel[(spec.edge + 1) % n]
-        offset_a, offset_b = _offset_edge(a, b, spec.distance.meters)
-        builder.add(Polyline(points=(_in(offset_a), _in(offset_b)), layer="C-PROP-SETB",
-                             lineweight=PROFILE, linetype="DASHED"))
-        mid = ((offset_a[0] + offset_b[0]) / 2, (offset_a[1] + offset_b[1]) / 2)
-        builder.add(Text(anchor=_in(mid), content=f"{spec.label} SETBACK", height=2.5,
-                         layer="C-PROP-SETB", align="center"))
-        nearest = _nearest_point_to_edge(footprint_pts, a, b)
-        if nearest is not None:
-            foot = _project_onto_segment(nearest, a, b)
-            builder.add(ArchDimension(
-                kind="linear", ends=(NamedPoint(xy=_in(foot), name="setback-edge"),
-                                     NamedPoint(xy=_in(nearest), name="setback-pt")),
-                p0=_in(foot), p1=_in(nearest), offset=0.0,
-            ))
-
-
 def _emit_utilities(builder: SceneBuilder, site) -> None:
     for line in site.utilities:
         path = [p.xy_m for p in line.path]
@@ -306,38 +284,3 @@ def _label(builder: SceneBuilder, tag: str, footprint: list[tuple[float, float]]
     y = sum(point[1] for point in footprint) / len(footprint)
     builder.add(Text(anchor=_in((x, y)), content=tag, height=3.5, layer="A-SITE-ANNO",
                      align="center"))
-
-
-def _offset_edge(a: tuple[float, float], b: tuple[float, float],
-                 distance: float) -> tuple[tuple[float, float], tuple[float, float]]:
-    """Offset a CCW parcel edge inward by ``distance`` (left-hand normal of CCW = inward)."""
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    length = math.hypot(dx, dy) or 1.0
-    nx, ny = -dy / length, dx / length  # rotate -90° (CCW ring -> inward normal)
-    return ((a[0] + nx * distance, a[1] + ny * distance),
-           (b[0] + nx * distance, b[1] + ny * distance))
-
-
-def _nearest_point_to_edge(points: list[tuple[float, float]], a: tuple[float, float],
-                           b: tuple[float, float]) -> tuple[float, float] | None:
-    if not points:
-        return None
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    length2 = dx * dx + dy * dy or 1.0
-    best, best_dist = None, float("inf")
-    for p in points:
-        t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length2
-        foot = (a[0] + t * dx, a[1] + t * dy)
-        dist = math.hypot(p[0] - foot[0], p[1] - foot[1])
-        if dist < best_dist:
-            best_dist, best = dist, p
-    return best
-
-
-def _project_onto_segment(point: tuple[float, float], a: tuple[float, float],
-                          b: tuple[float, float]) -> tuple[float, float]:
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    length2 = dx * dx + dy * dy or 1.0
-    t = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / length2
-    return (a[0] + t * dx, a[1] + t * dy)
-

@@ -107,6 +107,13 @@ _LAYER_STYLE = {
     "C-TOPO-GRAD": ("#5a8a5a", 0.5),
     "C-TOPO-MINR": ("#8aab8a", 0.25),
     "C-TOPO-IMPV": ("#9a8a70", 0.5),
+    # C3 zoning annotation: an easement is a burden (red, like the power line it often
+    # carries), erosion control is temporary work, the data table and the benchmark are
+    # annotation.
+    "C-PROP-EASE": ("#8a2a5a", 0.5),
+    "C-EROS": ("#a06020", 0.5),
+    "C-ANNO-TABL": ("#333333", 0.25),
+    "C-ANNO-BMRK": ("#204070", 0.5),
     "L-SITE-GRAD": ("#5a8a5a", 0.7),
     "A-STAIR": ("#3a4a55", 0.7),
     "A-RAIL": ("#4a6a70", 0.6),

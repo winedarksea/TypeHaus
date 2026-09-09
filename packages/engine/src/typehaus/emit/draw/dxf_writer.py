@@ -104,6 +104,10 @@ _LAYER_STYLE = {
     "C-TOPO-GRAD": (94, 18),
     "C-TOPO-MINR": (94, 9),
     "C-TOPO-IMPV": (43, 18),
+    "C-PROP-EASE": (240, 18),
+    "C-EROS": (32, 18),
+    "C-ANNO-TABL": (7, 9),
+    "C-ANNO-BMRK": (1, 18),
     "L-SITE-GRAD": (94, 70),
     # Layers the PDF writer styled but the DXF table never carried, so they fell back to the
     # default pen on export. Colours track the PDF palette so a sheet reads the same in CAD.
