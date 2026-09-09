@@ -17,13 +17,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-#: The only PDFs this server will hand out, by name. Both are ``haus print`` outputs;
-#: anything else under ``out/`` is not a drawing set and has no business on this route.
-ALLOWED_PDFS = ("permit_set.pdf", "permit_set_24x36.pdf")
+#: The only PDFs this server will hand out, by name. All four are ``haus print`` outputs
+#: — two papers times two sets (``--set full`` writes its own file rather than overwriting
+#: the submittal). Anything else under ``out/`` is not a drawing set and has no business
+#: on this route.
+ALLOWED_PDFS = ("permit_set.pdf", "permit_set_24x36.pdf",
+                "permit_set_full.pdf", "permit_set_full_24x36.pdf")
 
-#: Manifests in preference order — the ledger set is the default print, so it wins when a
-#: house has both.
-MANIFEST_NAMES = ("permit_set.json", "permit_set_24x36.json")
+#: Manifests in preference order. The PERMIT set wins over the full one and ledger over
+#: ARCH D: the Documents tab should open on what was submitted, not on the superset.
+MANIFEST_NAMES = ("permit_set.json", "permit_set_24x36.json",
+                  "permit_set_full.json", "permit_set_full_24x36.json")
 
 
 def find_manifest(house_dir: Path) -> tuple[Path, dict[str, Any]] | None:
