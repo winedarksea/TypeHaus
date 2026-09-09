@@ -48,6 +48,9 @@ SECTIONS: tuple[tuple[str, str, str], ...] = (
     ("02-item-register.md", "R", "ITEM REGISTER"),
     ("03-open-items.md", "O", "OPEN ITEMS"),
     ("04-assumptions.md", "A", "ASSUMPTIONS"),
+    # Two letters, because the item sheets already own "S" and a reviewer citing "S-4"
+    # must not have to ask which series it came from.
+    ("05-scope-of-review.md", "SR", "SCOPE OF REVIEW"),
 )
 
 #: Every per-item sheet takes this prefix. One section, because the sheets are one series a
