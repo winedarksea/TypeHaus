@@ -130,11 +130,6 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
     # Take an entry out rather than leaving it stale — that is what the assertion message
     # below asks of the next person.
     accepted: set[tuple[str, tuple[str, ...]]] = {
-        # RM-B-GYM's west wall north of D-B-GYM: 6.96' of wall space to the nearest
-        # receptacle against NEC 210.52(A)'s 6'-0". **Owner call, 2026-09-07** — the 0.96"
-        # over is accepted rather than answered with a box, because the only station that
-        # would close it lands on the stretch the gym's equipment stands against.
-        ("electrical.receptacle_spacing", ("RM-B-GYM",)),
         # D-G-SERVICE's landing. **Owner call, 2026-09-07, and DELIBERATELY OPEN** — the
         # garage was centred on the house ridge, which forced its service door to x=10'-0"
         # (a 36" RO must sit on a stud line measured from its own wall's start, and at

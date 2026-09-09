@@ -196,7 +196,7 @@ VENT_BRANCHES_ATTIC = [
     # horizontal clears it by 13"; if the SUNNERSTA's top measures nearer 36" the rim climbs
     # with it and this run has to climb too. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
     # it wants a vertex on the served fixture's wet wall (W-A-STU-W's axis) — so keep it.
-    PipeRun(tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
+    PipeRun(uid="VK3C96KFRF", tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
             path=(pt(ft(13, 1), ft(17, 4)), pt(ft(13, 1), ft(17, 4)),
                   pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2),

@@ -64,13 +64,10 @@ DOOR_TYPES = [
     # the interior doors carry.
     DoorType(tag="DT-INT-SWING36", width=ft(3), height=ft(6, 8),
              source="2026-09-07 basement equipment route — D-B-FURN and D-B-SHOP"),
-    # D-B-GYM's leaf: glazed, so the gym's south daylight reaches the windowless hall, and
-    # tempered per the note above. ** WIDENED 32" -> 36" ON 2026-09-09 **, which retires
-    # DT-INT-SWING32-GLAZED — D-B-GYM was its only user. The gym is the third room on the
-    # basement equipment route and now carries the same leaf as D-B-FURN and D-B-SHOP.
-    DoorType(tag="DT-INT-SWING36-GLAZED", width=ft(3), height=ft(6, 8), glazed=True,
-             tempered=True,
-             source="2026-09-09 basement hall — 36\" equipment route with borrowed light"),
+    # DT-INT-SWING36-GLAZED and DT-INT-SWING32-GLAZED both retired 2026-09-09: D-B-GYM (the
+    # only user of either) went from a 32" glazed leaf to a 36" ROUGH OPENING, no leaf at
+    # all — the hall and the gym are one circulation space now, so there is nothing to
+    # glaze. See D-B-GYM's own note in storeys/basement.py.
     DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True),

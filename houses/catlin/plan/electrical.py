@@ -1086,7 +1086,7 @@ MAIN_EQUIPMENT = [
     # mudroom + mech closet; the stair volume it blows into belongs to EQ-M-HP2-LIVING's
     # 768 sf claim, not counted twice here.
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(11, 10.5), ft(35, 1.375)), footprint=(inch(33), inch(8)),
+              position=pt(m(3.66415), m(10.6761)), footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP3-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),

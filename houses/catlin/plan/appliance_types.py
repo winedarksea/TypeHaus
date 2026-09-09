@@ -295,6 +295,35 @@ BAR_REFRIGERATOR = ApplianceType(
 )
 
 
+# ** AND THE 24" ONE DOES NOT FIT THE KITCHENETTE THE OWNER BOUGHT (2026-09-09). ** The
+# SUNNERSTA's top is 22" deep and the cavity under it takes a CUBE fridge, not the 24" x 24"
+# x 34" envelope above — which is why this second entry exists and why APPL-BAR-FRIDGE-24 is
+# kept above, unreferenced and still priced, on the `glazed-green-brick` convention.
+#
+# ** ITS THREE DIMENSIONS ARE PROVISIONAL AND SAYING SO IS THE POINT. ** 19" x 19" x 20" is
+# the ordinary 1.7 cu ft cube envelope and it is what a 22"-deep top is designed around, but
+# the SUNNERSTA's own clear opening is one of the three numbers nobody has measured (see
+# plan/fixtures.py). Measure the unit, then either confirm this or retype to what is bought —
+# every clearance downstream of a `# TODO verify` dimension is provisional, which is the
+# EQ-T-GREE-SLIM24 lesson written on the other side of this house.
+#
+# POWER_120 only, NO ICE MAKER LINE, and NOTHING THAT COOKS — both arguments above carry over
+# verbatim and neither is weakened by the appliance getting smaller.
+BAR_REFRIGERATOR_CUBE = ApplianceType(
+    tag="APPL-BAR-FRIDGE-CUBE-19",
+    name='19" cube refrigerator, under the SUNNERSTA worktop (class allowance)',
+    footprint=(inch(19), inch(19)), height=inch(20),
+    plan_symbol="refrigerator",
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120,
+                       position=(ft(0), ft(0), ft(1))),),
+    source='Cube all-refrigerator, ~1.7 cu ft (19" x 19" x 20" nominal), 120V/15A '
+           "cord-and-plug, no water connection, sized to sit in FT-STUDIO-KITCHENETTE-4422's "
+           "cavity. CLASS ALLOWANCE: final appliance selection by owner, and the envelope "
+           "itself is provisional until the unit's clear opening is measured.",
+)
+
+
 APPLIANCE_TYPES = (LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
                    FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
-                   BAR_REFRIGERATOR)
+                   BAR_REFRIGERATOR, BAR_REFRIGERATOR_CUBE)

@@ -212,7 +212,7 @@ ATTIC_BACKING = [
     # ** THE RAKE IS WHY IT IS NOT HIGHER. ** W-A-BATH-S runs from x 9'-7 1/2" east, where the
     # 6:12 underside `1 1/2" + x/2` is only 4'-11 1/4"; a band any taller runs its west end into
     # the roof plane, which is `structural.member_interference`'s business and not a guess.
-    WallBacking(tag="BK-A-BATH-S", wall_ref="W-A-BATH-S",
+    WallBacking(uid="DHRK7N7J1Y", tag="BK-A-BATH-S", wall_ref="W-A-BATH-S",
                 elevation=inch(46), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="SUNNERSTA kitchenette wall anchor rail"),
 ]

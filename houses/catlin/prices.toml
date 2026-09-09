@@ -1787,7 +1787,12 @@
 # this row cannot be a manufacturer's price the way the Frigidaire columns below are. $250 is
 # a builder-grade 24" beverage box; $1,400 is a specified undercounter unit. Labour is a plug
 # and a levelling — no water, deliberately: the type states no ice-maker connection.
-"APPL-BAR-FRIDGE-24" = { material = { low = 250, high = 1400 }, labour = { low = 60, high = 160 } }  # 1 ea
+"APPL-BAR-FRIDGE-24" = { material = { low = 250, high = 1400 }, labour = { low = 60, high = 160 } }  # 0 ea — RETIRED 2026-09-09 and kept priced (the `glazed-green-brick` convention): the SUNNERSTA's 22" top cannot take a 24" box
+# The cube that replaced it (2026-09-09), under FT-STUDIO-KITCHENETTE-4422's worktop. Same
+# class-allowance logic as the row above and a much narrower band, because a ~1.7 cu ft cube
+# is a commodity: $120 is the big-box own-brand, $400 a name-brand or a glass-door one. Labour
+# is unchanged — it is still a plug and a levelling, and still no water line.
+"APPL-BAR-FRIDGE-CUBE-19" = { material = { low = 120, high = 400 }, labour = { low = 60, high = 160 } }  # 1 ea
 "APPL-FRIG-PRO-ALLFRIDGE" = { material = { low = 3299, high = 3699 }, labour = { low = 75, high = 200 } }  # 1 ea. FPRU19F8WF, $3,299 at Home Depot/Lowe's against a $3,699 pre-promo list. The pair is ~$6,600, roughly 2x the old fridge+freezer allowance — a Professional column pair is what that costs, and the Bosch alternative was ~$13,000
 "APPL-LG-DISHWASHER" = { material = { low = 679, high = 1149 }, labour = { low = 150, high = 350 } }  # 1 ea. LDTS5552S, $679 stainless on LG.com against a $1,149 MSRP
 "APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2999 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
@@ -2158,18 +2163,20 @@
 # no stepped top, no counter, no hardware to line up. High end is a cabinet shop spraying
 # it; low end is the carpenter who is already hanging the gypsum.
 "FT-BATH2-CAB-4506" = { material = { low = 175, high = 450 }, labour = { low = 275, high = 800 } }  # 1 ea
-# RM-A-STUDIO's wet-bar base (2026-09-01), the cabinet FX-A-STUDIO-BAR-SINK's Mount(WALL, 27")
-# always implied and never had. House-local rather than CASE-B* because it is 18" deep, not the
-# catalog's 24": D-A-STUBATH's swing arc is 0.42" off its front face and a 24" box puts 52 in^2
-# inside it (see plan/furniture_types.py for the depth sweep).
-# Priced BETWEEN the two catalog bases it sits between on width and under on depth —
-# CASE-B15 $130-330 and CASE-B24 $170-420 — because it is 24" wide like the B24 but carries
-# 25% less carcass, and like CASE-SINK-BASE-36 it has no drawer box (the bowl and trap take
-# the space), which is material out, not in. Labour is the same $90-220 every base in this
-# file carries: setting and scribing a base is the same half-hour whatever its depth. The
-# solid-surface top and the bowl cut-out are NOT here — the top bills with the other counter
-# material and the bowl is the fixture.
-"FT-STUDIO-BAR-BASE-2418" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 1 ea
+# RM-A-STUDIO's wet bar (2026-09-01, retagged and repriced 2026-09-09). It was a house-local
+# 24" x 18" base standing in for the casework FX-A-STUDIO-BAR-SINK's Mount(WALL, 27") always
+# implied; the owner bought an IKEA SUNNERSTA mini-kitchen instead — article 40313363, ONE
+# PIECE carrying the sink, the worktop and the fridge cavity — and it went onto W-A-BATH-S
+# (see plan/furniture_types.py and plan/placeables.py).
+# ** MATERIAL IS THE PUBLISHED PRICE, NOT A BAND: ** $149 is what IKEA lists the unit at, both
+# low and high, because a flat-pack SKU has no spread. What the two ends of LABOUR carry is
+# the assembly and the wall anchoring IKEA requires (BK-A-BATH-S in plan/backing.py): $90 is
+# an hour of a carpenter's time on a unit that arrives in a box, $220 is the same hour when
+# the anchor rail has to be found and the unit scribed to a raked wall.
+# NOT HERE: the faucet, the trap and the site plumbing. The US listing sells the tap
+# separately (other markets bundle a LAGAN mixer and a LILLVIKEN trap), and the bowl is the
+# FIXTURE — see the `[plumbing]` rows.
+"FT-STUDIO-KITCHENETTE-4422" = { material = { low = 149, high = 149 }, labour = { low = 90, high = 220 } }  # 1 ea
 # The four closet shelf-and-rod runs (2026-08-30). Ventilated epoxy-coated steel on wall
 # standards — the ordinary reach-in fit-out, and the exact article the pantry note above
 # says CANNOT be substituted there. Material is per-foot shelf, rod, standards, brackets
@@ -3995,7 +4002,7 @@
 # Low is hollow-core molded prehung (Steves 5-pack works out to $161.60 ea at Home Depot);
 # high is solid-core MDF prehung ($519 Masonite 5-panel, $548 Stile 7-lite).
 # ** THE SAME MINIMUM-SIZE FLOOR APPLIES: a 24" door is barely cheaper than a 30". **
-"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 135, high = 280 } }  # 3 ea — was 26% low at the top for exactly the floor reason
+"DT-INT-SWING24" = { material = { low = 145, high = 480 }, labour = { low = 135, high = 280 } }  # 4 ea (D-A-STUBATH joined 2026-09-09) — was 26% low at the top for exactly the floor reason
 # 24x36, RM-A-POCKET's ERV service access under the attic's 6:12 west rake (2026-08-29). The
 # ONE place the minimum-size floor above does NOT apply: this is not a prehung passage door in
 # a smaller leaf, it is an access panel with hinges and a knob — a flush hollow-core blank cut
@@ -4009,7 +4016,7 @@
 # it loses in height (a 6'-0" leaf is a stock size at most millwork suppliers, so there is
 # no special-order adder) and the labour does not move — hanging a door is hanging a door.
 "DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 135, high = 280 } }  # 1 ea
-"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 12 ea — high end is solid-core paint-grade
+"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 11 ea (D-A-STUBATH left 2026-09-09) — high end is solid-core paint-grade
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 5 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
 # the 32" row above with a shade added for the wider leaf and slab — a 36" prehung is a stock
@@ -4017,14 +4024,6 @@
 # jamb pack.
 "DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 150, high = 315 } }  # 2 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door
-# D-B-GYM, borrowing the gym's south daylight for a windowless hall. Bracketed off the 30"
-# glazed row above: six more inches of leaf and of tempered lite. `tempered=True` is not a line
-# item here — R308.4.1 makes glazing in a door hazardous by definition, so every glazed door in
-# this house is tempered and every glazed row already carries it. ** REPLACES
-# DT-INT-SWING32-GLAZED (2026-09-09) ** when D-B-GYM widened to 36": the step off the 32" glazed
-# figures is the same shade the plain 36" row takes off the plain 32" one, because a 36" glazed
-# prehung is a stock size too and the hang is the same either way.
-"DT-INT-SWING36-GLAZED" = { material = { low = 395, high = 1010 }, labour = { low = 175, high = 370 } }  # 1 ea
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.
@@ -4067,7 +4066,7 @@
 # corner bead on three edges of two faces, mud, sand — which puts them on the DRYWALL sub rather
 # than the trim carpenter. A wood-cased opening would instead be $150-350 in labour over a
 # site-built jamb lining, and is NOT what is priced here.
-"None" = { material = { low = 20, high = 55 }, labour = { low = 85, high = 210 } }  # 4 ea — cased openings, drywall return
+"None" = { material = { low = 20, high = 55 }, labour = { low = 85, high = 210 } }  # 5 ea (D-B-GYM joined 2026-09-09, retyped from a glazed 32" door to a 36" cased opening) — cased openings, drywall return
 
 [footing_bedding]
 # RESEARCHED 2026-08-08 — [low, high] $/cy delivered, by aggregate spec. Basis: #57 washed
@@ -5223,10 +5222,15 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # counter element behind this — so the box, the counter, the splash and the toe kick are
 # what this row is, and it must not also be read as covering either appliance.
 #
-# $850 is a stock 24" RTA base with a laminate top; $2,300 is a made-to-fit cabinet with a
-# solid-surface counter. That is the same $75-200/LF RTA basis the [placeables] CASE-* rows
-# use, taken to one box, plus the top.
-cabinet-studio-wet-bar = { low = 850, high = 2300 }
+# ** DELETED 2026-09-09, AND THE COMMENT ABOVE IS KEPT ONLY TO SAY WHY. ** Its own premise —
+# "there is no casework element and no counter element behind this" — was already false when
+# it was written: FURN-A-STUDIO-BAR-BASE has carried its own priced `[placeables]` row since
+# 2026-09-01, so the box was billed twice. It is doubly false now. The casework IS the
+# purchase: an IKEA SUNNERSTA kitchenette at $149 all in, one piece carrying the sink, the
+# worktop and the fridge cavity, priced on `"FT-STUDIO-KITCHENETTE-4422"`. A $149 flat-pack
+# cannot also carry an $850-2,300 allowance. Deleted rather than zeroed, deliberately — a
+# zeroed row still reads as scope somebody has to account for. The faucet, the trap and the
+# site plumbing are the real uncovered scope and they belong on the fixture, not on the box.
 # THE GUEST STUDIO'S FLOOR (2026-08-29). RM-A-STUDIO carries `floor_finish=None`, which is a
 # SPEC and not an omission: FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that
 # grade precisely because these rooms walk on it, and `takeoff/finishes.py` correctly orders

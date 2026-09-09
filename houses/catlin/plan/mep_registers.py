@@ -530,7 +530,7 @@ REGISTERS_MAIN = [
     # for the 12" face without cutting and heading a stud. z=7'-6" (top 8'-4") matches the
     # head's 7'-0"..8'-0" band, clear of D-M-ENTRY's head.
     Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
-            position=pt(ft(10, 3.875), ft(34)), type_ref="REG-T-TRANSFER-1210",
+            position=pt(m(3.14904), m(10.5382)), type_ref="REG-T-TRANSFER-1210",
             rotation=deg(90),
             mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6))),
 ]

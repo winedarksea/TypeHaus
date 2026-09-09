@@ -1362,33 +1362,32 @@ ATTIC_PLACEABLES = [
     # own proposal. FX-A-STUDIO-BAR-SINK is in plan/fixtures.py; power is off
     # ED-A-STUDIO-BAR-GFCI, which came across with it (plan/electrical_attic.py).
     #
-    # ** THE FRIDGE DOES NOT GO UNDER THE KITCHENETTE, AND THAT IS AN OPEN MEASUREMENT. **
-    # APPL-BAR-FRIDGE-24 is 24" deep and 34" tall; the SUNNERSTA top is 22" deep, so the
-    # catalog appliance cannot go in the unit's own cavity. Until the unit's clear opening is
-    # measured off the assembly instructions, the fridge stays a free-standing piece with a
-    # home of its own — if a cube fridge does fit, mint an appliance type sized to what is
-    # bought and delete this station.
+    # ** THE FRIDGE GOES UNDER THE KITCHENETTE, AND IT HAD TO GET SMALLER TO DO IT. **
+    # APPL-BAR-FRIDGE-24 is 24" deep and 34" tall against a 22"-deep SUNNERSTA top, so the
+    # old catalog envelope cannot go in the cavity the unit is built around. It is retyped to
+    # APPL-BAR-FRIDGE-CUBE-19 (plan/appliance_types.py), keeping tag and uid so the GlobalId
+    # follows the element. ** THE CUBE'S DIMENSIONS ARE PROVISIONAL: ** the unit's clear
+    # opening is unmeasured (plan/fixtures.py lists all three open measurements), so measure
+    # it before buying — if a cube will not fit, the fridge becomes a free-standing piece
+    # again and needs a home, and there is no wall left in this room that takes one well.
     #
-    # It stands immediately WEST of the unit on the same wall, back on W-A-BATH-S's south face
-    # at y 17'-1 5/8": c/l (9'-3 15/16", 16'-1 5/8"), footprint x 8'-3 15/16"..10'-3 15/16",
-    # y 15'-1 5/8"..17'-1 5/8", its east face flush on the unit's west end. That is the LOW
-    # end of the rake and deliberately so — `1 1/2" + x/2` gives 4'-4 3/8" over its west face
-    # and 5'-3 15/16" over its east, and a 34" box is the tallest thing that belongs there.
-    # A person stands at the BOWL, at the tall end, which is the whole point of the move.
+    # c/l (11'-2 15/16", 16'-2 5/8") sits it under the unit's WEST end — x 10'-3 15/16"..
+    # 12'-1 15/16" inside the unit's 10'-3 15/16"..14'-0", on the unit's own centreline in y.
+    # That is the LOW end of the rake and deliberately so: the fridge and the storage take the
+    # 5'-6" end and the bowl and the person using it take the 7'-2" end.
     #
     # ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a cooktop here turns the
     # studio into a second dwelling unit and brings IRC R302.3's two-family separation down on
-    # the attic floor and the centre wall. The type carries the same warning and it is written
-    # twice on purpose. The SUNNERSTA is sold in markets that offer a hob for it; do not buy
-    # one.
+    # the attic floor and the centre wall. Both types carry the same warning and it is written
+    # three times on purpose — the SUNNERSTA is sold in markets that offer a hob for it. Do
+    # not buy one.
     #
-    # `rotation=deg(-90)` backs it onto the same wall the kitchenette backs onto — the
-    # footprint is square, so only the plan symbol and the door swing read the rotation, but
-    # they do read it. It came off W-A-C2's west face with the rest of the bar, which is what
-    # unburied REG-A-HP-WEST (plan/mep_registers.py) — the floor boot that answers R303.1
-    # Exception 1 for this room and had a fridge standing on it.
-    Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
-              room="RM-A-STUDIO", position=pt(inch(111.9375), inch(193.625)),
+    # `rotation=deg(-90)` turns its door to open into the room off the unit's west end; the
+    # footprint is square, so only the plan symbol and that door swing read it. Leaving
+    # W-A-C2's west face is what unburied REG-A-HP-WEST (plan/mep_registers.py), the floor
+    # boot that answers R303.1 Exception 1 for this room and had a fridge standing on it.
+    Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-CUBE-19",
+              room="RM-A-STUDIO", position=pt(inch(134.9375), inch(194.625)),
               rotation=deg(-90)),
     # ** THE WET BAR IS ONE PRODUCT NOW, AND IT IS ON THE BATH WALL. ** The owner chose an
     # IKEA SUNNERSTA mini-kitchen (44 1/8" x 22" x 54 3/4", $149, article 40313363), which

@@ -280,15 +280,13 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["demand_amps"] < 200
 
 
-#: The one 210.52(A) gap catlin carries on purpose, accepted by the owner 2026-09-07.
-#:
-#: RM-B-GYM's west wall north of `D-B-GYM` is `W-B-CS2`, a bare 12" pour carrying
-#: `SL-M-DECK`. From the door's north jamb round the corner to `ED-B-GYM-RC3` is 6.96'
-#: against the 6' rule — 0.96' over, and closing it means a box on cast concrete, which is
-#: why `plan/storeys/basement.py` put `ED-B-GYM-RC8` south of the door instead. The finding
-#: is left LIVE in `haus check` rather than designed away; this names it so that any OTHER
-#: room appearing here still fails the suite. See plans/TODO.md.
-_ACCEPTED_SPACING_GAPS = {("electrical.receptacle_spacing", "RM-B-GYM")}
+#: RM-B-GYM's 210.52(A) gap, accepted by the owner 2026-09-07, is RETIRED 2026-09-09: with
+#: `D-B-GYM` retyped from a door to a bare rough opening (`type_ref=None`), the doorway
+#: break `electrical.receptacle_spacing` reads no longer breaks the wall run there — a
+#: `RoughOpening` still counts as a doorway under NEC 210.52(A)(2), just as a door does —
+#: and the room now passes outright. `_ACCEPTED_SPACING_GAPS` is empty rather than deleted
+#: so the next gap this house accepts has a slot to land in.
+_ACCEPTED_SPACING_GAPS: set[tuple[str, str]] = set()
 
 
 def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
@@ -302,10 +300,10 @@ def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
     # `_HABITABLE`, so 210.52 spacing was not evaluated for it at all; as a guest BEDROOM it
     # is, and seven new receptacles (plan/electrical.py) are what close the gaps the check
     # named. RM-A-EAST-UNFIN and RM-A-POCKET are still storage and still not counted.
-    # 11, not 12, since 2026-09-07: RM-B-GYM is the accepted gap above, so it reports a
-    # FAIL where it used to report a PASS. The room is still evaluated — it moved
-    # verdicts, it did not drop out.
-    assert len(passes) == 11
+    # Back to 12, 2026-09-09: RM-B-GYM's gap (accepted 2026-09-07 while D-B-GYM was a
+    # door) closed on its own when the door retyped to a bare rough opening — see
+    # `_ACCEPTED_SPACING_GAPS` above.
+    assert len(passes) == 12
     # The kitchen-counter rule stays visibly unevaluated.
     assert any(f.result.value == "unknown" for f in findings)
 
