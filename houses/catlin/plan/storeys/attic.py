@@ -718,13 +718,18 @@ FLOOR = [
                                  # either side of the hall opening hang off it.
                                  bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",
                                                "BM-S-HALL")),
-                # NOT `plywood-subfloor` like every other deck in the house:
-                # RM-A-WEST-UNFIN and RM-A-EAST-UNFIN take no covering, so this sheet is
-                # their finished floor and is specified as the sanded-face underlayment
-                # grade it has to be. Same 3/4" (23/32 Performance Category), same species
-                # and R-value — a grade and a price change, not a section change.
-                # RM-A-STUDY gets oak over it and is indifferent.
-                subfloor=DeckLayer(material_ref="plywood-underlayment-sanded",
+                # ** BACK TO `plywood-subfloor`, THE HOUSE STANDARD, 2026-09-09. ** It was
+                # the sanded-face underlayment grade from 2026-08-27 for one reason: the
+                # attic rooms took no covering, so this sheet was their finished floor. That
+                # reason is gone. RM-A-STUDIO now carries `floor_finish="vinyl-sheet"`
+                # (storeys/attic_studio.py), which wants a flat structural deck and supplies
+                # its own wear surface; RM-A-STUBATH was already vinyl; RM-A-STUDY is oak
+                # over it and was always indifferent. What is left walking on the bare panel
+                # is RM-A-EAST-UNFIN, unfinished STORAGE, where a structural subfloor is the
+                # normal and correct surface. Same 3/4" (23/32 Performance Category), same
+                # species and R-value — a grade and a price change, not a section change,
+                # and it takes the `finish-studio-floor-sealer` allowance out with it.
+                subfloor=DeckLayer(material_ref="plywood-subfloor",
                                    thickness=inch(0.75)),
                 # The SECOND storey's ceiling, and the last deck in the house to get one:
                 # the same 5/8" board FS-M-* / SL-M-DECK hang over the basement and

@@ -298,20 +298,28 @@ OPENINGS = [
     # a stray edit from another session's canvas work, not an authored decision. This is a
     # fresh siting, not a correction of that one.
     #
-    # ** THE LOW JAMB IS THE BINDING CONSTRAINT, AS BEFORE. ** W-A-BATH-S runs in x from
-    # 9'-7 1/2" to 18'-0" and the 6:12 underside is `1 1/2" + x/2`, so a 6'-8" head plus its
-    # header needs 2 x (80 + 2) = 13'-8" of x at the LOW (west) jamb. At the new station the
-    # leading (east) jamb is 16'-4" and the near (west) jamb, where `from_node` offsets to, is
-    # 14'-4" — 1'-0 3/4" clear of the 13'-3 1/4" the rake demands, with the hinge staying on
-    # the higher east jamb where the header has the most margin.
+    # ** THE STUD MODULE PICKED THE STATION, NOT THE EYE. ** W-A-BATH-S lays out from its own
+    # start node, so its legal door centres are N-A-WW-S + n x 16" — absolute x ≡ 3 1/2"
+    # mod 16". The centre is 14'-11 1/2" and the rough opening is
+    # 13'-11 1/2"..15'-11 1/2". ** `from_node`'s offset is to the NEAR JAMB, not the centre
+    # ** (`resolve/pipeline.py`), so 4'-4" here is 13'-11 1/2" absolute and the centre falls
+    # 12" further east; authoring 5'-4" to "put the centre on the module" moves the centre
+    # OFF it and re-arms the FAIL. A first pass put the RO at 14'-4"..16'-4" on an eyeballed
+    # 8" clear of the unit; `structural.door_framing_module` reported it 4 1/2" off and
+    # cutting two studs where one would do, and the module won — the kitchenette slid 4 1/2"
+    # west instead (plan/placeables.py), which is the cheaper of the two moves.
+    #
+    # ** THE LOW JAMB IS THE BINDING CONSTRAINT, AS BEFORE. ** The 6:12 underside is
+    # `1 1/2" + x/2`, so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the
+    # LOW (west) jamb, i.e. x >= 13'-3 1/4". The west jamb is 13'-11 1/2" — 8 1/4" clear —
+    # with the hinge on the higher east jamb where the header has the most margin.
     #
     # ** THE ARC CLEARS THE UNIT BY 4". ** Hinged east and swinging out, the leaf sweeps
-    # x 14'-4"..16'-4", reaching y 15'-1 5/8" — clear of the kitchenette's east end
-    # (x 14'-0") by 4", and clear of the shower's NE corner box the same way the old siting
-    # was. The rough opening (14'-4"..16'-4") keeps the bath entry much as it was and leaves
-    # the person at the sink 8" clear of the doorway.
+    # x 13'-11 1/2"..15'-11 1/2", reaching y 15'-1 5/8" — clear of the kitchenette's east end
+    # (x 13'-7 1/2") by 4". Going further east is not free: at 15'-11 1/2" the leaf
+    # already lands opposite the shower pan, and one more 16" step opens the door onto it.
     Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
-         position=from_node("N-A-WW-S", ft(4, 8.5)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-A-WW-S", ft(4, 4)), flip_hinge=False, flip_swing=True),
 ]
 
 # ============================== ROOMS =================================================
@@ -342,16 +350,23 @@ ROOMS = [
     # (6:12, current since 2026-09-01), not the pre-6:12 `5'-0" + x/3` this passage used to quote:
     # 7'-0" now arrives at x=13'-9" and 5'-0" at x=9'-9".
     #
-    # `floor_finish=None` IS THE CHEAP MOVE AND IS HOW YOU SAY IT. FS-ATTIC's deck is already
-    # `plywood-underlayment-sanded`, specified that grade PRECISELY because these rooms walk on it.
-    # `takeoff/finishes.py` then skips the room entirely — no carpet, pad, tack strip or SF ordered
-    # — while the room still appears on the schedule as a None row, so the area is not silently
-    # missing. Two honest caveats: a sanded plugged panel is WALKABLE, not FINISHED (unsealed it
-    # greys, stains and telegraphs its joints, hence the `finish-studio-floor-sealer` allowance),
-    # and the priced alternative is one word — `floor_finish="carpet"`, ~357 SF at $3.35 ~ $1,200.
-    # Present it to the owner that way rather than deciding it here.
+    # ** `vinyl-sheet` OVER A STANDARD SUBFLOOR, 2026-09-09, AND IT IS THE CHEAPER OF THE TWO
+    # ANSWERS THIS ROOM HAS HAD. ** It carried `floor_finish=None` on a
+    # `plywood-underlayment-sanded` deck: the room walked on the structural panel, the takeoff
+    # correctly ordered no covering, and the room still showed on the schedule as a None row so
+    # the area was never silently missing. What that never fixed is that a sanded plugged panel
+    # is WALKABLE, not FINISHED — unsealed it greys, stains and telegraphs its joints, which is
+    # why it had to carry the `finish-studio-floor-sealer` allowance as scope with no BOM row.
+    #
+    # Sheet vinyl retires both. FS-ATTIC drops to `plywood-subfloor`, the grade every other deck
+    # in the house uses (storeys/attic.py), the panel premium comes off ~40 sheets, the sealer
+    # allowance is deleted, and the room gets a covering that is genuinely durable and genuinely
+    # cheap — the same product RM-M-BATH1, RM-M-LAUNDRY, the main hall band and RM-A-STUBATH
+    # already buy, at ~$4-8/SF material. It is also seamless and waterproof, which a room with a
+    # wet bar in it wants. ~357 SF. The carpet alternative that used to be written here is still
+    # one word and still ~$1,200; vinyl is the cheaper and harder-wearing of the two.
     Room(uid="CAR401AAAA", tag="RM-A-STUDIO", seed=pt(ft(7), ft(8)),
-         occupancy=Occupancy.BEDROOM, floor_finish=None,
+         occupancy=Occupancy.BEDROOM, floor_finish="vinyl-sheet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     # ** THE TAG IS `RM-A-STUBATH`, NOT `RM-A-STUDIO-BATH`, AND THAT IS NOT COSMETIC. **
     # `electrical.room_lighting` matches devices to a room by NAME — `ED-{room.tag[3:]}-*` — so a

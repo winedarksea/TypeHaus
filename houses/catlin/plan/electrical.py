@@ -675,7 +675,7 @@ BASEMENT_EQUIPMENT = [
     # caused. 6'-6" puts the top at 88 13/16" with 6 9/16" of clear above it, which is the
     # air Gree's Multi R32 wall-mount installation wants over the cabinet.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(inch(317), inch(10.5625)), footprint=(inch(32), inch(8)),
+              position=pt(m(7.83384), m(0.278247)), footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6)),
@@ -725,10 +725,10 @@ MAIN_DEVICES = [
     # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
     # the room's only 120V outlet.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10, 2), ft(18, 2.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(m(3.33058), m(5.53486)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
-                                 recessed_into_host_surface=True)),
+                                 recessed_into_host_surface=True), room="RM-M-LAUNDRY"),
     # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
     # face; fridge + freezer + PoE WiFi share the backup kitchen circuit.
     # This box stays behind its own appliance (freezer y 27'-4 7/8"..30'-1 3/4") — the
@@ -2107,13 +2107,15 @@ NEC_FILL_MAIN = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
     # on the STUDY face opposite ED-M-LIVING-RC7.
-    # x = 13'-8 1/2" is W-M-LS's resolved study face plus half this type's 1" depth;
+    # x = 13'-9 1/2" is W-M-LS's resolved study face plus half this type's 1" depth — W-M-LS
+    # moved +1" east 2026-09-09 (funding part of the BATH2 jog realignment), and this offset
+    # moved the same 1" to stay on the wall's new face;
     # y = 19'-4" centres it on FURN-M-STUDY-DESK, whose top is 29 1/2" — so 32" puts the box
     # 2 1/2" clear of the desk exactly as ED-M-STUDY-RC1 does, and the two outlets a seated
     # person reaches are at one height on two walls. It is 4'-0" south of REG-M-SUP4's riser
     # bay (y=20'-8"), so the box and the 3" duct in that cavity never meet.
     ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(inch(164.375), ft(19, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(inch(165.375), ft(19, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(32)), rotation=deg(90)),
     ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,

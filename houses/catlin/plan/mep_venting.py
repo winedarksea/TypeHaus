@@ -34,17 +34,18 @@ from typehaus import (
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
-    # Bath2 takeoff on W-M-BA2E (x=8') -> across the hall -> bath1 takeoff on W-M-BAE
-    # (x=6') -> north through the storage-room ceiling -> chase. 2" for two water closets.
+    # Bath2 takeoff on W-M-BA2E (x=8'-2", +2" east 2026-09-09's jog realignment) -> across
+    # the hall -> bath1 takeoff on W-M-BAE (x=6') -> north through the storage-room ceiling
+    # -> chase. 2" for two water closets.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(6), ft(24)),
+            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8, 2), ft(18)), pt(ft(8, 2), ft(24)), pt(ft(6), ft(24)),
                   pt(ft(6), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
             # FX-M-BATH1-LAV: no new pipe needed — this run's x=6' leg is W-M-BAE's own stud
             # bay and it passes 1'-0" north of the lavatory's drain point at (6', 23'), so
             # the trap arm ties into the leg already drawn there — well inside Table 1002.2's
-            # 42" for 1.5". FX-M-LAUNDRY-SINK, same terms: this run's x=8' leg is W-M-BA2E's
-            # own stud bay and PR-B-LSINK-DRAIN arrives against that wall 3" south of the
+            # 42" for 1.5". FX-M-LAUNDRY-SINK, same terms: this run's x=8'-2" leg is
+            # W-M-BA2E's own stud bay and PR-B-LSINK-DRAIN arrives against that wall 3" south of the
             # leg's start, so the tub wet-vents off the laundry stack with no new pipe. The
             # trap arm is the 45" that branch runs below the deck, inside Table 1002.2's 60"
             # for 2". The washer itself needs no entry — an Appliance declares no
@@ -137,9 +138,13 @@ VENT_BRANCHES_ATTIC = [
     # x=9'-7 1/2" would give the shower a 6'-7 1/8" arm against Table 1002.2's 5'-0" for 2" — a
     # FAIL. Starting at (16'-2 5/8", 20'-8"), directly over the pan, makes the shower's arm ~0
     # and leaves the others clear: WC 1'-5 3/8" (limit 6'-0"), lav 10 3/8" (limit 3'-6"). The
-    # bar sink used to ride this run too and no longer does — with the kitchenette on
-    # W-A-BATH-S its arm to this line is marginal against Table 1002.2's 60", so it has
-    # PR-A-BAR-VENT of its own below.
+    # ** THE BAR SINK IS NAMED HERE AND ON PR-A-BAR-VENT, AND BOTH ARE TRUE. ** Its revent
+    # tees into this run's vertical and this run carries it the rest of the way to the
+    # chase, so both pipes carry its vent air. `mep.trap_arm_length` takes the NEAREST point
+    # of any serving run, so the arm is measured to its own riser, not to this line — which
+    # is what the revent was built for. Dropping this run from `serves` FAILs
+    # `mep.vent_reachability`: `vent_path.py` wants a run landing on a VentRun, and
+    # PR-A-BAR-VENT lands on a PipeRun.
     #
     # From there it runs west to the W-A-STU-W axis, north through the pocket at ~7'-0", and
     # west to VR-M-RADON-VENT at (1'-0", 34'-6"), which carries PipeSystem.VENT to the roof. It
@@ -172,7 +177,8 @@ VENT_BRANCHES_ATTIC = [
                   pt(ft(9, 7.5), ft(34, 6))),
             diameter=inch(2),
             elevations=(ft(3, 5), ft(3, 6), ft(3, 9)),
-            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
+            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
+                    "FX-A-STUDIO-BAR-SINK")),
     # ** THE BAR'S OWN REVENT, AND IT IS WHAT MAKES THE KITCHENETTE ROBUST RATHER THAN
     # MARGINAL. ** FX-A-STUDIO-BAR-SINK used to ride PR-A-STUBATH-VENT above, whose nearest
     # point is over the shower; with the bowl at the SUNNERSTA's east end (plan/fixtures.py)
@@ -182,8 +188,10 @@ VENT_BRANCHES_ATTIC = [
     #
     # ** IT COSTS NO BORED STUD AND NO BEARING WALL. ** The unit backs onto W-A-BATH-S, a 2x4
     # NONBEARING partition that already carries pipe at its west end. The 2" rises in that
-    # cavity behind the bowl at x=13'-1" and runs WEST inside the same wall to the stack,
-    # tying into PR-A-STUBATH-VENT on the vertical at (9'-7 1/2", 20'-8").
+    # cavity behind the bowl at x=12'-8 1/2" and runs WEST inside the same wall to the stack,
+    # tying into PR-A-STUBATH-VENT on the vertical at (9'-7 1/2", 20'-8"). It stops at that
+    # tee rather than running a duplicate 14' north to the chase, which is why the fixture
+    # names both runs (see above) — the pipe billed here is the pipe that gets built.
     #
     # The repeated first vertex is the riser — the idiom PR-A-STUBATH-DRAIN uses. Elevations
     # are STOREY-RELATIVE (the attic datum is ft(20); see the note above on what an absolute
@@ -197,7 +205,7 @@ VENT_BRANCHES_ATTIC = [
     # with it and this run has to climb too. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
     # it wants a vertex on the served fixture's wet wall (W-A-STU-W's axis) — so keep it.
     PipeRun(uid="VK3C96KFRF", tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(13, 1), ft(17, 4)), pt(ft(13, 1), ft(17, 4)),
+            path=(pt(inch(152.5), ft(17, 4)), pt(inch(152.5), ft(17, 4)),
                   pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
             diameter=inch(2),
             elevations=(inch(-4.25), ft(3, 4), ft(3, 5), ft(3, 6)),

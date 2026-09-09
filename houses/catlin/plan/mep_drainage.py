@@ -191,7 +191,7 @@ DRAINS = [
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(8), ft(20)), pt(ft(8), ft(20)), pt(ft(6), ft(20))),
+            path=(pt(ft(8, 2), m(6.04653)), pt(ft(8, 2), m(6.04653)), pt(ft(6), ft(20)),),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 5.8375)),
             serves=("FX-M-LAUNDRY",)),
@@ -460,7 +460,7 @@ CONDENSATE_MAIN = [
 # the branch below it, and condensate isn't a drainage fixture at all.
 LAUNDRY_MAIN = [
     PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
-            path=(pt(ft(8), ft(20)), pt(ft(8), ft(20))),
+            path=(pt(ft(8, 2), ft(20)), pt(ft(8, 2), ft(20))),
             diameter=inch(2), material="pvc",
             elevations=(ft(3), ft(0)),
             wall_refs=("W-M-BA2E",)),
@@ -668,15 +668,15 @@ STUDIO_DRAINS = [
     # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
     # The bar was three pieces on W-A-C2's west face and is now one SUNNERSTA kitchenette on
     # the bath wall (plan/placeables.py), so this branch no longer crosses the studio floor
-    # from the centre wall: it drops under the bowl at (13'-1", 16'-2 5/8"), runs 3'-5 1/2"
+    # from the centre wall: it drops under the bowl at (12'-8 1/2", 16'-2 5/8"), runs 3'-1"
     # WEST inside the single joist bay between y 16'-0" and 17'-4" — parallel to the joists,
     # no web to cut — and turns north to the stack on the x 9'-7 1/2" wet-wall line. The old
     # 4" tailpiece dog-leg onto a bay centre is gone with it.
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(13, 1), inch(194.625)), pt(ft(9, 7.5), inch(194.625)),
+            path=(pt(inch(152.5), inch(194.625)), pt(ft(9, 7.5), inch(194.625)),
                   pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
-            # 1" over the 3'-5 1/2" west leg and 1" over the 3'-1 3/8" north one — both clear
+            # 1" over the 3'-1" west leg and 1" over the 3'-1 3/8" north one — both clear
             # P3005.3's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole
             # profile sits inside FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), and it
             # lands at 19'-5 3/4" — above PR-A-STUBATH-DRAIN's own 19'-3 1/2" entry on the
@@ -687,10 +687,11 @@ STUDIO_DRAINS = [
     # ** THE LAVATORY AND THE SHOWER, COLLECTED IN THE WET WALL. ** Both were 15"-27" from any
     # pipe naming them until 2026-09-07. This 2" leg runs south inside W-A-STU-W's 5 1/2"
     # staggered cavity — under the bottom plate, through two FS-ATTIC I-joist webs at y=256"
-    # and y=240" — from the lavatory's drop to the west leg's own drop point at (9'-7 1/2",
+    # and y=240" — from the lavatory's drop, which followed its basin 2" north to y 21'-4 5/8"
+# when the bare bowl became a 24" vanity (plan/fixtures.py), to the west leg's drop at (9'-7 1/2",
     # 19'-4"), where it lands exactly on that vertex at 19'-3 1/2".
     PipeRun(uid="FY6M0PTE7C", tag="PR-A-STUBATH-LAV-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(9, 7.5), inch(258.625)), pt(ft(9, 7.5), inch(258.625)),
+            path=(pt(ft(9, 7.5), inch(256.625)), pt(ft(9, 7.5), inch(256.625)),
                   pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
             elevations=(ft(20, 0.75), ft(19, 4.25), ft(19, 3.5)),

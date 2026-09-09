@@ -317,8 +317,15 @@ This is the part of the pass with a deadline on it.
   being thinned and several sibling SKUs came back discontinued.
 - Confirm the **Robern round unit's cleat spacing** off the sheet in the carton, and its CCT
   on the box label.
-- **`RM-A-STUBATH`'s vanity contradiction** is still open: `fixture_types.py` says
-  `FX-VANITY-36-SHALLOW` is used there, `fixtures.py` still places `FX-LAV-COMPACT`.
+- ~~**`RM-A-STUBATH`'s vanity contradiction**~~ — closed 2026-09-09 at `FX-VANITY-24-SHALLOW`,
+  not the 36" `fixture_types.py` named. The north wall gives 18 5/8" of depth before the water
+  closet's UPC 402.5 envelope and 24" of width between the GFCI plate and the shower, so 24" is
+  what the wall measures. The 21 3/4"-deep IKEA HAVBÄCK/ORRSJÖN combo (795.306.95, $419) was
+  priced and rejected on both counts. Its shower went neo-angle in the same pass.
+- **Confirm the neo-angle base's published door opening is 22 5/8" or less** before the
+  enclosure is ordered. `FX-SHOWER-36-NEO-COMBO` is drawn to a 16"-per-leg corner cut, which
+  inscribes a 30 1/2" circle against IRC P2708.1's 30" — half an inch of margin, and a deeper
+  cut spends it.
 - **The studio wet bar's bowl** — if it handles ice and glassware, a vitreous-china lav is
   the wrong product and it wants a stainless bar sink.
 - Take one drawing of the peninsula to three Twin Cities fabricators, and **vet the shop

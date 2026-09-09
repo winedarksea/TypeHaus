@@ -27,7 +27,7 @@ from library.placeables.fixtures import (
     _water_closet_required_clearance,
 )
 
-from typehaus.model import FixtureType, Service, inch
+from typehaus.model import FixtureType, Footprint2D, Service, inch, pt
 
 # ---------------------------------------------------------------------------
 # WATER CLOSETS
@@ -204,6 +204,59 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
               'waiting for a January vacation.',
 })
 
+# RM-A-STUBATH's shower as built, and the reason it is not the plain 36" square above.
+#
+# ** THE CUT CORNER IS THE WHOLE POINT. ** The pan sits in the room's NE corner and the bath
+# door is in the south wall opposite it, so the pan's SW corner is the thing a person walks
+# into on the way in. A square 36" pan leaves 19 1/4" between its south face and the wall you
+# enter through, across the full width of the door. Cutting that corner back 16" on each leg
+# opens the diagonal: at the door's east jamb there are 20 3/8", at x=15'-0" there are
+# 31 7/8", and the shower's own entrance — which now faces SW into the middle of the room
+# rather than south at the door — has 38 1/2" in front of it instead of 19 1/4". That is the
+# clearance IPC 405.3.1 and UPC 402.5 ask for at a shower entrance; the IRC, which is what
+# actually governs this house, asks for none, so this is comfort bought deliberately.
+#
+# ** IT STILL PASSES IRC P2708.1, AND THAT IS ARITHMETIC, NOT A PRODUCT CLAIM. ** P2708.1
+# wants 900 sq in of interior area and a 30" minimum finished dimension, i.e. a 30" circle
+# inscribed at the top of the threshold. For a corner pan of leg L with a 45 degree cut of
+# `a` per leg, the inscribed circle has diameter 2(L + (L - a)) / (2 + sqrt 2) and the area is
+# L^2 - a^2/2. Taken on the FINISHED interior — 34" legs inside a 36" base, a=16" — that is a
+# ** 30 1/2" circle and 1,028 sq in **, both over. It is not over by much: the margin is half
+# an inch, so ** confirm the ordered base's published door opening is 22 5/8" or less ** (16"
+# of cut per leg is 16 x sqrt 2). A 38" base restores the margin and gives back 2" of the
+# room, which is the trade this pan exists to avoid.
+#
+# ** THE PENTAGON IS THE PLAN OUTLINE; THE SYMBOL STILL DRAWS A SQUARE. ** `footprint_shape`
+# is read only by `resolve/placeables.py:_local_footprint`, so collision and wall attachment
+# see the true five-sided outline while the "shower" glyph and the 3D massing draw the 36"
+# bounding box — the same acknowledged split FT-SECTIONAL-U-MEDIA carries. Local +y is the
+# object's BACK, so the ring below puts the wall corner at (+18, +18) and cuts the (-18, -18)
+# corner; the fixture is authored with no rotation, which lands that corner in the room's NE.
+#
+# Valve, trim and head are SHOWER_36_COMBO's unchanged — one outlet, one magnetic combo head,
+# and the same ASSE 1016 rough this file's header argument applies to every shower here.
+SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
+    "tag": "FX-SHOWER-36-NEO-COMBO",
+    "name": 'Shower, 36" neo-angle, pressure-balance valve with a two-in-one combo head',
+    "footprint_shape": Footprint2D(points=(
+        pt(inch(18), inch(18)),
+        pt(inch(-18), inch(18)),
+        pt(inch(-18), inch(-2)),
+        pt(inch(-2), inch(-18)),
+        pt(inch(18), inch(-18)),
+    )),
+    "source": 'RM-A-STUBATH, owner selection 2026-09-09, replacing the 36" square pan. Same '
+              'Delta MultiChoice R10000-UNBX rough (ASSE 1016), same single-function trim, '
+              'same Moen Engage Magnetix 26010SRN two-in-one head; what changes is the base '
+              'and the enclosure. CLASS ALLOWANCE for the base and glass: a 36" x 36" '
+              'neo-angle acrylic or solid-surface receptor with a three-panel pivot '
+              'enclosure (DreamLine Prism / Kohler Purist class). ** THE 16" CORNER CUT IS '
+              'THE SPECIFICATION AND IT IS NOT UNIVERSAL: ** confirm the ordered base before '
+              'the enclosure is bought, because a deeper cut takes the P2708.1 circle under '
+              '30". The freeze note on SHOWER_36_COMBO applies unchanged — every supply and '
+              'this valve stay on an interior partition inside the thermal envelope.',
+})
+
 # RM-S-BATH1 and RM-S-SUITEBATH. The two 60" combos, and the two places a handshower earns
 # its diverter outright: bathing children, rinsing hair over the rim, rinsing the tub itself.
 # Slide bar in one, wall elbow and hook in the other — same valve either way.
@@ -227,5 +280,5 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
 
 WC_AND_SHOWER_TYPES = (
     TOTO_SP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_DRAKE,
-    SHOWER_36_DIVERTED, SHOWER_36_COMBO, TUBSHOWER_60_DIVERTED,
+    SHOWER_36_DIVERTED, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
 )

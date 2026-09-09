@@ -237,7 +237,7 @@ MAIN_PLACEABLES = [
     # because deleting a 5' console is a furniture decision, not a consequence of moving a
     # fireplace; the cost of keeping it is written above so the call can be made on the facts.
     Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
-              position=pt(ft(26, 11), ft(1, 10)), rotation=deg(180)),
+              position=pt(m(8.25967), m(0.415496)), rotation=deg(180)),
     # East living-room storage: EIGHT 23 5/8" BESTA units, RE-LAID 2026-09-06 about the
     # fireplace surround. Their backs sit directly on the east wall's interior face at
     # x=35'-5 3/8"; rotation -90 puts each back against that wall and opens it toward the room.
@@ -1044,8 +1044,12 @@ MAIN_PLACEABLES = [
     Furniture(uid="1HYRGFZMA0", tag="FURN-M-MUDC-SHELF", type_ref="FT-CLOSET-SHELFROD-60",
               room="RM-M-MUD-CLOSET", position=pt(m(0.96118), m(8.36092)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # RM-M-CLOSET: 113 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
-    # y 17'-8 5/8"). A 96" run leaves 8 5/8" either end — the walk-in's turn-in space.
+    # RM-M-CLOSET: 111 1/4" of clear wall on the north side (W-M-CLN/W-M-CLN2, face
+    # y 17'-8 5/8"), measured from W-M-BA2E2's closet face at x=8'-5 3/8" to W-M-CLN2's end.
+    # A 96" run leaves 6 5/8" west and 8 5/8" east — the walk-in's turn-in space, 2" of it
+    # spent on the west end when W-M-BA2E/BA2E2's line moved 2" east on 2026-09-09 (it read
+    # 113 1/4" and a symmetric 8 5/8" both ends before that). The rod is not re-centred for
+    # 2": moving it buys nothing anyone can stand in.
     Furniture(uid="TM01W8E003", tag="FURN-M-CLOSET-SHELF", type_ref="FT-CLOSET-SHELFROD-96",
               room="RM-M-CLOSET", position=pt(inch(156), inch(204.625)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
@@ -1371,8 +1375,8 @@ ATTIC_PLACEABLES = [
     # it before buying — if a cube will not fit, the fridge becomes a free-standing piece
     # again and needs a home, and there is no wall left in this room that takes one well.
     #
-    # c/l (11'-2 15/16", 16'-2 5/8") sits it under the unit's WEST end — x 10'-3 15/16"..
-    # 12'-1 15/16" inside the unit's 10'-3 15/16"..14'-0", on the unit's own centreline in y.
+    # c/l (10'-10 7/16", 16'-2 5/8") sits it under the unit's WEST end — x 10'-0 15/16"..
+    # 11'-7 15/16" inside the unit's own footprint, on its centreline in y.
     # That is the LOW end of the rake and deliberately so: the fridge and the storage take the
     # 5'-6" end and the bowl and the person using it take the 7'-2" end.
     #
@@ -1387,7 +1391,7 @@ ATTIC_PLACEABLES = [
     # W-A-C2's west face is what unburied REG-A-HP-WEST (plan/mep_registers.py), the floor
     # boot that answers R303.1 Exception 1 for this room and had a fridge standing on it.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-CUBE-19",
-              room="RM-A-STUDIO", position=pt(inch(134.9375), inch(194.625)),
+              room="RM-A-STUDIO", position=pt(inch(130.4375), inch(194.625)),
               rotation=deg(-90)),
     # ** THE WET BAR IS ONE PRODUCT NOW, AND IT IS ON THE BATH WALL. ** The owner chose an
     # IKEA SUNNERSTA mini-kitchen (44 1/8" x 22" x 54 3/4", $149, article 40313363), which
@@ -1401,15 +1405,19 @@ ATTIC_PLACEABLES = [
     # W-A-BATH-S it puts the bowl at the EAST end, nearest the stack — which is what the short
     # revent in plan/mep_venting.py hangs on and what takes the arm well inside 60".
     #
-    # c/l (12'-1 15/16", 16'-2 5/8"): back on W-A-BATH-S's 17'-1 5/8" face, occupying
-    # x 10'-3 15/16"..14'-0" and y 15'-3 5/8"..17'-1 5/8". Rotation is omitted, i.e. `deg(0)`,
+    # c/l (11'-9 7/16", 16'-2 5/8"): back on W-A-BATH-S's 17'-1 5/8" face, occupying
+    # x 9'-11 3/8"..13'-7 1/2" and y 15'-3 5/8"..17'-1 5/8". ** IT SAT 4 1/2" FURTHER EAST
+    # FOR ONE BUILD ** and moved west when `structural.door_framing_module` put D-A-STUBATH's
+    # only legal centre at 14'-11 1/2" (storeys/attic_studio.py): the door's station is on a
+    # 16" module and the unit's is not, so the unit is what yields. Its west end still stands
+    # 3 7/8" clear of the wall's own west end at 9'-7 1/2". Rotation is omitted, i.e. `deg(0)`,
     # which backs it NORTH onto the wall — local +y is the object's BACK
     # (`resolve/placeables.py`), a convention all three bar pieces used to get backwards.
-    # 14'-0" leaves 4" to D-A-STUBATH's arc at its new station (storeys/attic_studio.py).
+    # Its east end leaves 4" to D-A-STUBATH's arc (storeys/attic_studio.py).
     #
     # The tag and the uid are kept, so the element's GlobalId follows it across the retype the
     # way RM-A-STUDIO kept CAR401AAAA. BK-A-BATH-S (plan/backing.py) is the anchor rail IKEA
     # requires; a 54 3/4" unanchored flat-pack is not buildable.
     Furniture(uid="4GVQGBXMS3", tag="FURN-A-STUDIO-BAR-BASE", type_ref="FT-STUDIO-KITCHENETTE-4422",
-              room="RM-A-STUDIO", position=pt(inch(145.9375), inch(194.625))),
+              room="RM-A-STUDIO", position=pt(inch(141.4375), inch(194.625))),
 ]

@@ -333,9 +333,11 @@ Two glazing gaps still leave the French doors out entirely, both wanting product
   pin a Pyodide smoke test into CI, or bump Pyodide to 0.28.x (newer GEOS). Until then,
   `pytest` passing proves nothing about the published app's geometry.
 
-- Remove any floor drain from the plant room (it's not likely to flood, smaller water spills are the more likely concern) and then add a mop sink basin with a cold water fill (no hot). It can likely reuse the hydrant's existing PR-M-CW-BALC-HYD-RUN
+- Remove any floor drain from the plant room (it's not likely to flood, smaller water spills are the more likely concern) and then add a mop sink basin with a cold water fill (no hot). It can likely reuse the hydrant's existing PR-M-CW-BALC-HYD-RUN. Or else perhaps https://www.ikea.com/us/en/p/sunnersta-kitchenette-40313363/
 - Pocket door possibly for basement bathroom
 - Optimize the sunken garden wall heights and corners for a single pour with basement (XPS in forms)
+- Double check the electric fireplace will mount into the brick. Brick likely needs a metal lintel to hold the brick part above the fireplace. Oksana also wants the fireplace lower (not eye leve, but just a bit above floor level, like a traditional fireplace)
+- Kitchen has lights stuck above cabinets. Might want to swap some cans for under counter lighting.
 
 - **The writeback can't address a `FoundationWall` as `type: "Wall"`** — a PATCH comes back
   422 even though the wall is authored in an editable file. A UI drag of a foundation wall

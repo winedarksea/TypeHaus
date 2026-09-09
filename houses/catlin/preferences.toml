@@ -186,4 +186,11 @@ suppress = [
   # between them. Left suppressed so the report stays clean while it is decided; re-open it
   # deliberately, do not let a cleanup silently keep it.
   "structural.door_framing_module:D-G-OVERHEAD",
+
+  # D-M-BATH2's RO was moved flush against FX-M-BATH2-SINK's east edge (24-15/16") on
+  # 2026-09-09, off W-M-BDN1's 16" module by ~8" with no legal station nearby (32"/48"
+  # both put the leaf back into the vanity or the shower). W-M-BDN1 is INT_2X4_PARTITION,
+  # NONBEARING — one extra cut stud, not a header redesign. Left suppressed because
+  # missing the module IS the trade this move makes, not an oversight.
+  "structural.door_framing_module:D-M-BATH2",
 ]

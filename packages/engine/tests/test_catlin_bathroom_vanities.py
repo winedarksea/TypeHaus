@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from shapely.geometry import Polygon, box
 
 from typehaus.resolve import resolve
@@ -85,16 +86,49 @@ def test_every_bathroom_lavatory_is_a_vanity_with_a_cabinet():
     assert remaining == [], f"a bare 24in bowl survived: {remaining}"
 
 
-def test_the_attic_guest_bath_was_deliberately_left_alone():
-    """RM-A-STUBATH keeps its compact bowl, and that is a decision, not an omission.
+def test_the_attic_guest_bath_takes_the_one_vanity_its_wall_measures():
+    """RM-A-STUBATH got a cabinet on 2026-09-09, and 24" x 18" is not a preference.
 
-    Its water closet sits on the west wall, and that puts the toilet's 24" front envelope
-    across the north wall a vanity would have used. There is no 30"+ run left in the room
-    that a cabinet's own front clearance does not then push into the shower. If the attic
-    bath is re-laid out, this is the test to delete.
+    This test used to pin the opposite decision -- the room kept its bare 18" x 14" bowl,
+    because the water closet's UPC 402.5 envelope crosses the north wall a vanity would want.
+    The envelope did not move; what moved is the shower, which went neo-angle and gave the
+    wall back its east end. Three numbers box the cabinet in, each from a different file, and
+    every one of them is a silent failure: widen it and it eats ED-A-STUBATH-GFCI's only legal
+    plate (E3901.6 wants a receptacle within 36" of the basin), deepen it and it stands in the
+    water closet's envelope, slide it east and it runs through the shower pan.
     """
     model = _model()
-    assert _obj(model, "FX-A-STUBATH-LAV").type_ref == "FX-LAV-COMPACT"
+    obj = _obj(model, "FX-A-STUBATH-LAV")
+    assert obj.type_ref == "FX-VANITY-24-SHALLOW"
+    x0, x1, y0, y1 = _bbox(obj)
+    # North face of W-A-HALL-S, and 18" of depth is all there is before the WC envelope's
+    # y = 20'-7" (247").
+    assert y1 == pytest.approx(265.625, abs=0.01)
+    assert y0 >= 247.0, f"the carcass reaches y={y0:.3f}, inside the water closet's envelope"
+    # ED-A-STUBATH-GFCI centres a 4" plate at x=150", so its east edge is x=152".
+    assert x0 >= 152.0, f"the carcass starts at x={x0:.3f}, over the GFCI plate"
+    # FX-A-STUBATH-SH's west panel. The counter scribes to it and must not pass it.
+    assert x1 <= 176.63, f"the carcass ends at x={x1:.3f}, inside the shower pan"
+
+
+def test_the_attic_showers_cut_corner_still_holds_p2708_1():
+    """The neo-angle is only legal while its corner cut stays shallow.
+
+    IRC P2708.1 wants 900 sq in of interior area and a 30" minimum finished dimension. The
+    pan is drawn to a 16"-per-leg cut, which on the FINISHED interior (34" legs inside a 36"
+    base) inscribes 30 1/2" -- half an inch of margin. A deeper cut spends it, and nothing in
+    the engine grades a shower compartment, so this arithmetic lives here or nowhere.
+    """
+    model = _model()
+    shower = _obj(model, "FX-A-STUBATH-SH")
+    assert shower.type_ref == "FX-SHOWER-36-NEO-COMBO"
+    outline = Polygon([(p[0] / IN, p[1] / IN) for p in shower.footprint])
+    assert len(outline.exterior.coords) == 6, "the pan resolved as a rectangle, not a pentagon"
+    # Shrink the pan's own outline to the finished interior, then measure the largest circle
+    # that fits: `buffer(-r)` empties exactly when r passes the inscribed radius.
+    interior = outline.buffer(-1.0)
+    assert interior.area >= 900.0, f"interior is {interior.area:.0f} sq in, under P2708.1's 900"
+    assert not interior.buffer(-15.0).is_empty, "a 30in circle no longer fits the compartment"
 
 
 def test_each_vanity_backs_its_walls_finish_face_not_the_rooms_clear_face():

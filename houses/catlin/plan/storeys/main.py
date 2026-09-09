@@ -370,16 +370,33 @@ NODES = [
     # loop closed; a straight line needs nothing.
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 6))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 4))),
-    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 4))),
+    # ** THE BATH'S EAST WALL IS ONE PLANE AT x=8'-2", AND THE JOG IS GONE — 2026-09-09. **
+    # It ran x=8'-0" for a year, then briefly jogged: 8 3/8" east at W-M-BA2E2 to buy
+    # D-M-BATH2 a stud-module station clear of the vanity, then 4 3/8". Both are retired.
+    # The door is positioned flush off the vanity instead (see D-M-BATH2 below), so the only
+    # thing the line still has to do is clear the shower pan — and it does that at ONE
+    # station, +2" east of where it always sat, with no jog wall, no second assembly and no
+    # step in either room's face. What the 2" buys is the tub deck: N-M-TUBDK-E and
+    # SL-M-TUBDK follow this wall's west face, and RM-M-BATH2 pays RM-M-LAUNDRY back through
+    # W-M-LS (below) rather than taking it all out of the laundry.
+    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8, 2), ft(22, 4))),
     # The closet/laundry line moved north 8" (y 17'-4" -> 18'-0"), taking
     # W-M-CLN/CLN2 with it. Costs 8" each off RM-M-LAUNDRY and RM-M-STUDY; bounded by
     # FX-M-LAUNDRY (40" deep, room now 48 3/4" clear). Bonus: y=18'-0" is also where the
     # basement's 12" cast wall W-B-CW2 runs, so the partition now lands on solid concrete.
-    Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(18))),
-    Node(uid="FA752F2VPX", tag="N-M-D2B", position=pt(ft(8, 8.375), ft(18))),
-    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8, 8.375), ft(13))),
-    Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(18))),
-    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 4))),
+    #
+    # N-M-D2 is a THREE-WAY node: W-M-BA2E dies here from the north, W-M-BA2E2 carries the
+    # same line on south, and W-M-CLN tees east. The split is the authoring convention for a
+    # tee, not a change of wall — both segments are one assembly on one axis.
+    # (`N-M-D2B`, uid FA752F2VPX, was the jog's east node and is retired with it. Never
+    # reuse the uid.)
+    Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8, 2), ft(18))),
+    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8, 2), ft(13))),
+    # W-M-LS moves east 1": Study loses 1", and Laundry nets -1" once combined with the
+    # BA2E move above — not "a few inches" out of Study, which would overshoot and net
+    # Laundry a gain instead of the intended small loss.
+    Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 5), ft(18))),
+    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 5), ft(22, 4))),
     Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(18))),
     # RM-M-MECH: the framed MEP shaft closet in the house's NW corner,
     # replacing FURN-M-MUD-CLOSET-N. 6' wide (west wall to 6" shy of D-M-ENTRY's far
@@ -442,8 +459,9 @@ NODES = [
     # ** BOTH FREE ENDS ARE `open_end=True` AND THEY HAVE TO BE. ** `integrity.wall_loop_open`
     # is an ERROR on any node with exactly one wall edge, and these two genuinely die into a
     # finished wall face rather than tee into another wall. The positions ARE those faces —
-    # y=22'-0 5/8" is W-M-HS1's room side after its retype, x=7'-8 5/8" is W-M-BA2E's — so
-    # the knee walls butt them with no gap to caulk.
+    # y=22'-0 5/8" is W-M-HS1's room side after its retype, x=7'-10 5/8" is W-M-BA2E's new
+    # west face (moved +2" east 2026-09-09 with the jog realignment) — so the knee walls
+    # butt them with no gap to caulk.
     #
     # The consequence to know about: an unclosed component has no recoverable winding, so
     # `resolve/orientation.py` falls back to `outward_sign = +1` for both of these walls.
@@ -458,7 +476,7 @@ NODES = [
     Node(uid="YJ36WFQV9C", tag="N-M-TUBDK-N", position=pt(ft(4, 6.25), ft(22, 0.615)),
          open_end=True),
     Node(uid="JJJGMEWYJD", tag="N-M-TUBDK-C", position=pt(ft(4, 6.25), ft(16, 4.625))),
-    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 8.615), ft(16, 4.625)),
+    Node(uid="QSFPKZQV7C", tag="N-M-TUBDK-E", position=pt(ft(7, 10.615), ft(16, 4.625)),
          open_end=True),
     # --- RM-M-LIVING's fireplace surround, W-M-FIRE-* -------------------------------------
     #
@@ -779,7 +797,7 @@ WALLS = [
          end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-M-HS2 follows W-M-HS1 to the same wet-wall assembly and the reason is
     # GEOMETRY, not plumbing: retyping HS1 alone put a 1" step in RM-M-BATH2's north face at
-    # x=6'-0", and the tub deck straddles that line (x 4'-4"..7'-8 5/8"). The deck's head
+    # x=6'-0", and the tub deck straddles that line (x 4'-4"..7'-10 5/8"). The deck's head
     # would have had to be a stepped polygon returning 1" behind the bath for no reason
     # anyone could see. One plane at y=22'-0 5/8" costs one assembly swap.
     #
@@ -796,8 +814,17 @@ WALLS = [
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
          end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
-    Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2B",
-         end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
+    # ** SAME ASSEMBLY AS W-M-BA2E, SAME AXIS, AND BOTH HALVES OF THAT ARE DELIBERATE. **
+    # This segment spent a few hours as an `INT_2X4_PARTITION` 8 3/8" (then 4 3/8") east of
+    # the line, which is what a jog costs: two assemblies, a 1" step in both the bath's and
+    # the closet's faces, a jog wall to close it, and a 2x4 cavity on the one wall in this
+    # room a shower valve, a spout and a shower arm actually land on (BK-M-BA2E2 has always
+    # called it a wet wall). It is back on N-M-D2 and back on the plumbing assembly: the two
+    # segments are ONE wall on the drawing and one 5 1/2" staggered cavity on the job, split
+    # only because W-M-CLN tees in at N-M-D2. The 6.75" assembly puts its bath face at
+    # x=7'-10 5/8", which is what FX-M-BATH2-SH's pan is struck off.
+    Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
+         end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
@@ -859,9 +886,10 @@ WALLS = [
     # followed it north. Nothing stood on the closet face. (Both figures are the
     # double-gwb retype; the single-gwb retype above gave 5/8" back — RM-M-LAUNDRY reads
     # 46 1/4" deep today, and the closet boundary below reads 17'-8 5/8".)
-    Wall(uid="8XB93RXT4G", tag="W-M-BA2N", start_node="N-M-D2", end_node="N-M-D2B",
-         assembly="INT_2X4_STAGGERED_GWB", top=ft(9), stacks_on="W-B-CW2"),
-    Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2B",
+    # (`W-M-BA2N`, uid 8XB93RXT4G, was the 8 3/8"-then-4 3/8" jog wall that closed the step
+    # between W-M-BA2E and W-M-BA2E2. The two are collinear again, so it has no length and is
+    # deleted rather than shrunk. Never reuse the uid.)
+    Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
          end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. ** IT STACKS ON NOTHING SINCE 2026-09-07, AND THAT IS
@@ -1107,40 +1135,38 @@ OPENINGS = [
     # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
     Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
          position=from_node("N-M-PAN1", inch(7.5))),
-    # ** AT x 2'-9"..5'-3" SINCE 2026-09-09, ONE STUD BAY EAST OF WHERE IT SAT. ** For a
-    # year this opened at x 1'-5"..3'-11" with FX-M-BATH2-SINK's east face 10 5/8" inside
-    # it: you entered a 30" doorway through a 19 3/8" gap, past the corner of a 36" counter.
-    # Nothing in the engine grades an object standing in a doorway, so nothing said so — the
-    # plan sheet did, and the owner read it there.
+    # ** AT x 2'-0 15/16"..4'-6 15/16" SINCE 2026-09-09, FLUSH AGAINST THE VANITY. ** The
+    # RO's west jamb lands exactly at FX-M-BATH2-SINK's east face — zero gap, no setback for
+    # casing, a scribe/filler against the cabinet end panel taking up the difference. That
+    # replaces the answer this door carried for a few hours (a full stud-module station a bay
+    # east of the vanity, bought by jogging W-M-BA2E2 8 3/8" east and dropping it to a 2x4):
+    # the owner wanted a lighter touch, so THE JOG IS GONE ENTIRELY — the bath's east wall is
+    # one plane on one assembly again — the vanity stays 48"x18", and the door is positioned
+    # directly off the vanity instead of off the stud grid.
     #
-    # ** THE DOOR COULD NOT SIMPLY SLIDE. ** W-M-BDN1 lays out from N-M-W3 on a 0" residue
-    # mod 16", so the only legal centres are 32" (where it was) and 48" (where it is); every
-    # station between costs a second cut stud and `structural.door_framing_module` fails on
-    # it. 48" needs the shower's west face at 5'-6" or better for casing, and the shower
-    # stood at 4'-8 5/8" — which is why W-M-BA2E2 moved 8 3/8" east and dropped to a 2x4
-    # (see the WALLS section). The vanity went to 48 x 18 in the same pass. Result: 30" of
-    # clear opening, the vanity's east face 8 1/16" clear of the west jamb, and 3" of wall
-    # between the east jamb and the pan.
+    # ** THIS BREAKS `structural.door_framing_module`, AND THAT IS ACCEPTED. ** 24-15/16" is
+    # off W-M-BDN1's 16" module by ~8", with no legal station (32"/48") that keeps the door
+    # off both the vanity and the shower. W-M-BDN1 is INT_2X4_PARTITION, NONBEARING, so the
+    # cost is one extra cut stud, not a header redesign — suppressed in preferences.toml.
     #
-    # ** THE OUT-SWING STAYS, AND NOT BECAUSE OF THE VANITY ANY MORE. ** It clears both
-    # jambs now either way. It swings out because an out-swinging bathroom door cannot be
-    # barricaded by a person who falls against it inside. RM-M-BED's side was re-checked,
-    # not assumed: FURN-M-BED moved 2" east on the same pass because the arc grazed its
-    # north-west corner by 2 in2 at the new station.
+    # ** THE SHOWER PAYS FOR THE WALL, NOT FOR THIS DOOR. ** W-M-BA2E2 was flush (0"
+    # clearance) against the shower pan's east edge, so pulling the wall back onto
+    # W-M-BA2E's line took the pan with it: FX-M-BATH2-SH's position.x is 7'-0" ->
+    # 6'-4 5/8" (plan/fixtures.py). That leaves 3 11/16" of wall between this RO's east
+    # jamb and the pan — the casing margin, which the jogged version had spent.
     #
-    # ** THE HINGE IS THE WEST JAMB (x=2'-9"). ** The leaf opens back against W-M-BDN1 west
-    # of the opening, and west is the jamb that keeps the arc off the bed — hinged east the
-    # disc reaches the bed's face at full radius. `test_the_bathroom_door_swings_out_and_
-    # clears_the_vanity` pins the jamb as well as the side.
+    # ** THE OUT-SWING STAYS.** It swings out because an out-swinging bathroom door cannot be
+    # barricaded by a person who falls against it inside. RM-M-BED's side was re-checked at
+    # this more-west station: FURN-M-BED's clearance to the swing arc still holds.
     #
-    # ** THE TWO FLAGS ARE INDEPENDENT, AND DID NOT USED TO BE. ** Before 2026-09-09 this
-    # was `flip_hinge=True` alone, written when `_door_swing_clearance` let `flip_hinge`
-    # fall through to the swing SIDE as well; the two renderers never agreed with it, and
-    # the sheets drew this leaf swinging IN, across the vanity, for as long as it was
-    # authored that way. `flip_hinge` now picks the jamb and only the jamb (W-M-BDN1 runs
-    # +x, so the unflipped jamb is the EAST one), and `flip_swing` picks the side.
+    # ** THE HINGE IS STILL THE WEST JAMB.** The leaf opens back against W-M-BDN1 west of the
+    # opening, which is what keeps the arc off the bed — hinged east the disc reaches the
+    # bed's face at full radius. That argument is unchanged by the station moving west; it
+    # gets easier, not harder, since the arc is now further from the bed. `flip_hinge` picks
+    # the jamb (W-M-BDN1 runs +x, so the unflipped jamb is the EAST one) and `flip_swing`
+    # picks the side, independently, per the 2026-09-09 fix that split the two flags apart.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(2, 9)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-W3", inch(24.9425)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -1819,8 +1845,8 @@ FLOOR_OPENINGS = [
                  bearing_refs=("W-B-E1",)),
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(4, 9.685), ft(16, 11.926)),
-                          pt(ft(7, 7.435), ft(16, 11.926)),
-                          pt(ft(7, 7.435), ft(21, 9.614)),
+                          pt(ft(7, 9.435), ft(16, 11.926)),
+                          pt(ft(7, 9.435), ft(21, 9.614)),
                           pt(ft(4, 9.685), ft(21, 9.614)))),
 ]
 
@@ -1842,8 +1868,8 @@ FLOOR_OPENINGS = [
 # whose field finish already IS tile.
 SLABS = [
     Slab(uid="W92SX7DVJ0", tag="SL-M-TUBDK",
-         outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 8.615), ft(16, 2.375)),
-                  pt(ft(7, 8.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
+         outline=(pt(ft(4, 4), ft(16, 2.375)), pt(ft(7, 10.615), ft(16, 2.375)),
+                  pt(ft(7, 10.615), ft(22, 0.615)), pt(ft(4, 4), ft(22, 0.615))),
          thickness=inch(2.25), assembly="TUBDECK_INT_PLY_CAP",
          top_elevation=inch(22.25), openings=("FO-M-TUBDK",)),
 ]
@@ -1999,15 +2025,18 @@ PANELING = [
     # already calls out for the basin. W-M-BA2E runs y 22'-4" -> 18'-0" and never touches
     # the pan. The spans below are struck off the fixture's authored position and NOT off
     # `Room.clear_face`, which is inset from the wall AXIS and would land the band inside
-    # the studs. FX-M-BATH2-SH sits at (6'-2 5/8", 14'-8 3/8"), so the 36" pan occupies
-    # x 4'-8 5/8"..7'-8 5/8" and y 13'-2 3/8"..16'-2 3/8":
+    # the studs. FX-M-BATH2-SH's `position` is the pan's CENTRE, not the corner the
+    # "6'-2 5/8"" figure once quoted here — the honest centre was 7'-0" and is now
+    # 6'-4 5/8", moved -5 3/8" west 2026-09-09 when W-M-BA2E2 came off its jog and back
+    # onto W-M-BA2E's line — so the 36" pan occupies x 4'-10 5/8"..7'-10 5/8" and
+    # y 13'-2 3/8"..16'-2 3/8" (y unchanged):
     #   * W-M-BA2E2 runs south from N-M-D2 (y=18'-0"), so the pan's north edge is
-    #     18'-0" - 16'-2 3/8" = 1'-9 5/8" along it. The 2 3/8" residue is W-M-BDN1's own
-    #     half-thickness, which is where the pan stops.
-    #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 5'-6" along it, ending on x = 8'-6".
-    #     Both numbers moved 9 3/8" east with the pan on 2026-09-09.
-    # D-M-BATH2 sits at 2'-9"..5'-3" on W-M-BDN1, and its east jamb stops 3" short of the
-    # span — that 3" is the door casing, and it is the whole margin the move left.
+    #     18'-0" - 16'-2 3/8" = 1'-9 5/8" along it. Unchanged — the shower's y never moved.
+    #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-10 5/8" along it, ending on
+    #     x = 7'-10 5/8" — which IS W-M-BA2E2's bath face, so the two spans meet in the
+    #     pan's corner with nothing between them.
+    # D-M-BATH2 now sits at 2'-0 15/16"..4'-6 15/16" on W-M-BDN1 — flush against the vanity,
+    # clear of this span by 3 11/16" of wall.
     #
     # ** W-M-TUBDK-S IS ALSO A BOUNDING WALL AND MUST NOT BE SPANNED. ** It is the tub
     # deck's 20 3/4" knee wall; a 7'-0" band would clamp to its top and buy 5.3 SF of
@@ -2025,7 +2054,7 @@ PANELING = [
                  replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
                                      length=ft(3)),
-                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(5, 6),
+                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 10.615),
                                      length=ft(3)))),
 ]
 

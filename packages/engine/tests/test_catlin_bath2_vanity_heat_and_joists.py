@@ -188,10 +188,11 @@ def test_the_vanity_clears_the_window_over_it():
 
 def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     """** THE CONSTRAINT THAT NEARLY COST THE VANITY ITS SIZE. ** D-M-BATH2's 30" opening
-    runs x 2'-0"..4'-6" and the cabinet's east face lands at x=1'-11 5/8" — 3 5/8" inside
-    it. Swinging IN, the leaf clipped the cabinet by 25 in2. The door was turned around
-    rather than the cabinet shrunk, so BOTH of these must stay true: the arc is on the
-    BEDROOM side of W-M-BDN1, and the bedroom side is empty.
+    runs x 2'-0 15/16"..4'-6 15/16" since 2026-09-09's lighter-touch jog realignment — the
+    RO's west jamb lands flush against the cabinet's east face, zero gap, rather than a
+    full stud bay clear of it. Swinging IN, the leaf would clip the cabinet outright. The
+    door was turned around rather than the cabinet shrunk, so BOTH of these must stay true:
+    the arc is on the BEDROOM side of W-M-BDN1, and the bedroom side is empty.
 
     ** THE HINGE JAMB IS PINNED HERE TOO, AND THAT IS THE NEWER HALF. ** Nothing asserted
     it until 2026-09-09, which is how `_door_swing_clearance` came to hang an unflipped leaf
@@ -209,8 +210,8 @@ def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     assert swing.bounds[3] <= wall_y + 1e-6, "the door swings back into the bathroom"
     # `swing_clearance`'s first vertex IS the hinge — the sector is built out from it.
     hinge_x = door.swing_clearance[0][0] / M_PER_IN
-    assert round(hinge_x, 2) == 17.0, (
-        f"hinged at x={hinge_x:.2f}in, not the WEST jamb at 17in the owner chose")
+    assert round(hinge_x, 4) == 24.9425, (
+        f"hinged at x={hinge_x:.4f}in, not the WEST jamb at 24.9425in the owner chose")
 
     for tag in ("FX-M-BATH2-SINK", "FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB"):
         assert not swing.intersects(Polygon(_canvas(model, tag).footprint)), tag

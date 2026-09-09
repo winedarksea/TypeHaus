@@ -212,11 +212,11 @@ ATTIC_LIGHTING = [
     # FAIL on R303.1 (see the lumen floor in the header). Same 1,800 lm fixture, same circuit,
     # same switch — a near-flush 4" drop instead of a hung one.
     #
-    # It sits over the BOWL at (13'-1", 16'-2 5/8"), not over the middle of the unit: that is
+    # It sits over the BOWL at (12'-8 1/2", 16'-2 5/8"), not over the middle of the unit: that is
     # the tall end (`1 1/2" + x/2` = 6'-8 7/8") and the end a person actually stands at. A 4"
     # drop puts the shade bottom at ~6'-4 7/8", over a counter and not over the floor.
     ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 1), inch(194.625)), type_ref="ED-T-LT-PENDANT-BAR",
+                     position=pt(inch(152.5), inch(194.625)), type_ref="ED-T-LT-PENDANT-BAR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
@@ -245,14 +245,17 @@ ATTIC_LIGHTING = [
                      # the one station in this bath the new plane keeps.
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(7),
                                  recessed_into_host_surface=True)),
-    # The over-mirror bar (owner, 2026-09-06). On W-A-STU-N's bath face (y=22'-1 5/8"), on
-    # FX-A-STUBATH-LAV's centreline at x=13'-6", back on the face — a 2"-deep body at
-    # y=22'-0 5/8". 6'-6" is the height both RM-S-VANITY bars take. ED-T-LT-MIRROR is the
+    # The over-mirror bar (owner, 2026-09-06). On W-A-HALL-S's bath face (y=22'-1 5/8"), on
+    # FX-A-STUBATH-LAV's centreline, back on the face — a 2"-deep body at y=22'-0 5/8".
+    # ** IT FOLLOWED THE BASIN 2 5/8" EAST, 13'-6" -> 13'-8 5/8" (2026-09-09), ** when the
+    # bare bowl became a 24" vanity (plan/fixtures.py). A 24" bar over a 24" carcass is only
+    # centred if both are; off-centre it reads as a mistake from the doorway.
+    # 6'-6" is the height both RM-S-VANITY bars take. ED-T-LT-MIRROR is the
     # 24" damp-rated bar already in the schedule, so this is a second instance of an
     # existing row and not a new product: 1,300 lm of front light at a basin, which the
     # ceiling can (a downlight behind your head) never gave this mirror.
     ElectricalDevice(uid="3W86JZVH61", tag="ED-A-STUBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 6), inch(264.625)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(inch(164.625), inch(264.625)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH", rotation=deg(180),
                      controlled_by=("ED-A-STUBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -261,15 +264,15 @@ ATTIC_LIGHTING = [
     # reported it floating 1.6" off that face; the door wall is both the better station and the
     # one whose finish face the house's standard 1" box offset lands on cleanly.
     #
-    # ** IT MOVED WEST WITH THE DOOR, 14'-3" -> 13'-8" (2026-09-09). ** D-A-STUBATH's rough
-    # opening is 14'-4"..16'-4" now, so 14'-3" left the plate 1" off the west jamb and inside
-    # its pack. 13'-8" is on the LATCH side (the hinge is the east jamb) with 8" to the jamb,
-    # and it is also the only band left in this cavity: PR-A-BAR-VENT rises at x=13'-1", so
+    # ** IT MOVED WEST WITH THE DOOR, 14'-3" -> 13'-3" (2026-09-09). ** D-A-STUBATH's rough
+    # opening is 13'-11 1/2"..15'-11 1/2" now, so 14'-3" fell INSIDE it. 13'-3" is on the
+    # LATCH side (the hinge is the east jamb) with 8 1/2" to the jamb, and it is also the only
+    # band left in this cavity: PR-A-BAR-VENT rises at x=12'-8 1/2", so
     # the box has to sit east of that riser and west of the jamb pack. ** NOTHING GRADES
     # EITHER OF THOSE ** — no rule tests a wall device against a rough opening or against a
     # pipe in its own bay — so both clearances are held here and by eye in the viewer.
     ElectricalDevice(uid="DD20R7F44T", tag="ED-A-STUBATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(13, 8), ft(17, 7.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(13, 3), ft(17, 7.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to

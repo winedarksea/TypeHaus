@@ -93,8 +93,10 @@ proposing any design change.
   movable instances that reference them live in the editable modules above. **`plan/
   fixture_types.py` holds SEVEN selections** — `FX-KOHLER-UNDERSCORE-6036`
   (the drop-in bath) and `FX-VANITY-51-SINGLE` (RM-M-BATH2's vanity), plus
-  the five vanities that replaced this house's remaining bare lavatories:
-  `FX-VANITY-24-SHALLOW` (RM-M-BATH1), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
+  the six vanities that replaced this house's remaining bare lavatories:
+  `FX-VANITY-24-SHALLOW` (RM-M-BATH1 and, since 2026-09-09, RM-A-STUBATH — 24" is the whole
+  width that bath's north wall has between ED-A-STUBATH-GFCI's plate and the neo-angle shower
+  it got in the same pass), `FX-VANITY-30-SHALLOW` (RM-S-VANITY, TWICE — a 60"
   double alcove is two 30" bases under one 61" top, which is how one is actually built and
   which keeps two drains and two lavatories in the schedule instead of collapsing them),
   `FX-VANITY-30-SINGLE` (RM-S-SUITEBATH), `FX-VANITY-36-SHALLOW` (RM-B-BATH — 18" deep

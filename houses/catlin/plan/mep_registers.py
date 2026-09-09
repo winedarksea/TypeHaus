@@ -651,10 +651,10 @@ REGISTERS_ATTIC = [
             # the wall and outside the room, and `integrity.placeable_room_mismatch` says so.
             # The riser stays on the axis in the staggered cavity; the offset is the boot
             # crossing the finish.
-            position=pt(ft(9, 11.875), ft(19, 4)), duct_ref="DU-A-ERV-R-STUBATH",
+            position=pt(m(3.03309), m(6.58678)), duct_ref="DU-A-ERV-R-STUBATH",
             # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH: this is the house's only
             # WALL-mounted extract, and on the ceiling type the resolver read its 7" face as
             # 7" of projection into the room. See plan/mep_hvac.py.
             type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
-            mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4))),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(4, 4)), rotation=deg(90)),
 ]

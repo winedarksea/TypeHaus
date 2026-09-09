@@ -603,7 +603,7 @@
 # split — FS-SECOND before that), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { material = { low = 17, high = 26 }, labour = { low = 48, high = 85 } }  # 64 sheets — +25 with the basement ceiling (2026-08-21)
-"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 64 sheets — was 104 until FS-ATTIC's 40 moved to the sanded row below (2026-08-27)
+"plywood-subfloor" = { material = { low = 42, high = 62 }, labour = { low = 18, high = 32 } }  # 100 sheets — FS-ATTIC's 40 came back off the sanded row below when RM-A-STUDIO took sheet vinyl (2026-09-09)
 # FS-ATTIC only (2026-08-27). Same 23/32 T&G panel as the row above in every structural
 # sense, but ordered sanded-face and plugged because the two unfinished lofts walk on it
 # bare — a grade premium of roughly a third over CDX (CDX 23/32 runs $45-65/sheet mid-2026;
@@ -611,7 +611,7 @@
 # for the same reason: on a covered deck the fasteners are driven and forgotten, and here
 # they are set below the face and the T&G joints are walked flat before anything is stacked
 # on them. CONFIDENCE: MEDIUM — the grade premium is a retail-shelf comparison, not a quote.
-"plywood-underlayment-sanded" = { material = { low = 58, high = 88 }, labour = { low = 22, high = 38 } }  # 40 sheets (FS-ATTIC, 1,253 SF net)
+"plywood-underlayment-sanded" = { material = { low = 58, high = 88 }, labour = { low = 22, high = 38 } }  # 0 sheets — RETIRED 2026-09-09 and kept priced (the glazed-green-brick convention): FS-ATTIC was the only deck on this grade and it went back to plywood-subfloor
 # The nailbase top deck (ROOF). Labour is well above the plywood row below it and
 # that is not padding: every sheet is set on 6" of foam with nothing under it but the screw
 # being driven, so it is a two-man lay-and-hold operation with a 10" screw on a 16 x 24 grid.
@@ -2336,7 +2336,7 @@
 # should be a one-word `type_ref` change, not a re-derivation of a price. The ordering
 # constraint above (FX-LAV-24 > FX-LAV-COMPACT) still has to hold if either is edited.
 "FX-LAV-24" = { material = { low = 250, high = 950 }, labour = { low = 200, high = 460 } }  # 0 ea
-"FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea
+"FX-LAV-COMPACT" = { material = { low = 110, high = 420 }, labour = { low = 150, high = 330 } }  # 1 ea — the studio bar bowl only, since RM-A-STUBATH took a vanity 2026-09-09
 # RM-M-BATH2's 54" vanity (2026-08-29). Read, like FX-LAV-24 above, as the whole assembly:
 # cabinet, counter, basin and faucet. That is the only reason the numbers are several times
 # a lavatory's — this row carries a 54" carcass with six drawers on soft-close undermount
@@ -2381,7 +2381,7 @@
 # Sources: homedepot.com / lowes.com / menards.com 2026 in-stock vanity and vanity-top
 # listings, Home Decorators Cabinetry 2026 list prices for vanity sink bases against drawer
 # bases, and the homeguide 2026 sink-install labour band this section already uses.
-"FX-VANITY-24-SHALLOW" = { material = { low = 300, high = 1100 }, labour = { low = 200, high = 470 } }  # 1 ea
+"FX-VANITY-24-SHALLOW" = { material = { low = 300, high = 1100 }, labour = { low = 200, high = 470 } }  # 2 ea — RM-A-STUBATH joined RM-M-BATH1 2026-09-09
 "FX-VANITY-30-SHALLOW" = { material = { low = 380, high = 1350 }, labour = { low = 220, high = 510 } }  # 2 ea
 "FX-VANITY-30-SINGLE" = { material = { low = 400, high = 1400 }, labour = { low = 220, high = 510 } }  # 1 ea
 "FX-VANITY-36-SHALLOW" = { material = { low = 470, high = 1650 }, labour = { low = 240, high = 560 } }  # 1 ea
@@ -2476,7 +2476,15 @@
 # Delta. ** The risk is stock, not money: Delta is thinning its stainless SHOWERING line and
 # several sibling SKUs came back discontinued. If -SS has gone, the substitute is Moen Spot
 # Resist Brushed Nickel throughout at roughly the same band.
-"FX-SHOWER-36-COMBO" = { material = { low = 450, high = 1200 }, labour = { low = 220, high = 510 } }  # 2 ea
+"FX-SHOWER-36-COMBO" = { material = { low = 450, high = 1200 }, labour = { low = 220, high = 510 } }  # 1 ea — RM-B-SAUNA only; RM-A-STUBATH went neo-angle 2026-09-09
+# RM-A-STUBATH's neo-angle. Same valve, trim and head as the row above — what the premium
+# buys is the base and the enclosure: a five-sided receptor is a lower-volume moulding and a
+# three-panel pivot enclosure is three pieces of glass and two hinged joints against one
+# panel and one door. Material carries the base and the glass together because they are
+# bought as a matched pair; labour is up on the square only for the extra panel to set and
+# seal. An unpriced type is silently dropped from the takeoff, which is why this row lands in
+# the same commit as the type.
+"FX-SHOWER-36-NEO-COMBO" = { material = { low = 750, high = 1900 }, labour = { low = 280, high = 620 } }  # 1 ea
 "FX-SHOWER-36-DIVERTED" = { material = { low = 700, high = 1600 }, labour = { low = 260, high = 600 } }  # 1 ea
 "FX-TUBSHOWER-60-DIVERTED" = { material = { low = 900, high = 2600 }, labour = { low = 450, high = 1050 } }  # 2 ea
 "FX-TUB-60" = { material = { low = 400, high = 1600 }, labour = { low = 330, high = 800 } }  # 1 ea
@@ -2724,7 +2732,7 @@
 # is defensible" clause above is retired with that — 257 sf split three ways is a
 # mobilisation-dominated scope again, and the resilient crew is walking a stair between each
 # one. Expect a LUMP, and read the $/SF below as a floor on it, not as the price.
-"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 257 SF
+"vinyl-sheet" = { material = { low = 4, high = 8 }, labour = { low = 6, high = 12 } }  # 655 SF — RM-A-STUDIO's ~357 joined it 2026-09-09
 # ** TOMBSTONE: `walnut-floor`, rated and retired 2026-09-05. ** For a few hours RM-S-SUITE
 # and RM-S-CLOSET were 181.7 SF net of the family's own site-milled 4/4 walnut T&G, rated
 # here at $3-8 material (stock valued at $2/sf plus kiln drying and a moulder run) over
@@ -5231,17 +5239,14 @@ cabinet-study-booth-cushions = { low = 250, high = 800 }
 # cannot also carry an $850-2,300 allowance. Deleted rather than zeroed, deliberately — a
 # zeroed row still reads as scope somebody has to account for. The faucet, the trap and the
 # site plumbing are the real uncovered scope and they belong on the fixture, not on the box.
-# THE GUEST STUDIO'S FLOOR (2026-08-29). RM-A-STUDIO carries `floor_finish=None`, which is a
-# SPEC and not an omission: FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that
-# grade precisely because these rooms walk on it, and `takeoff/finishes.py` correctly orders
-# no carpet, pad or tack strip for the room. But a sanded plugged panel is WALKABLE, not
-# FINISHED — unsealed it greys, stains and telegraphs its joints — so the sealer is real scope
-# with no BOM row behind it. Two coats of clear penetrating floor sealer over ~357 SF.
-#
-# ** THE PRICED ALTERNATIVE IS ONE WORD. ** `floor_finish="carpet"` on the Room bills ~357 SF
-# at the house's existing carpet rate, roughly $1,200, and this allowance goes away. That is
-# an owner decision, not a modelling one; it is written here so it can be put to them.
-finish-studio-floor-sealer = { low = 350, high = 900 }
+# THE GUEST STUDIO'S FLOOR SEALER IS DELETED (2026-08-29, removed 2026-09-09). It bought two
+# coats of clear penetrating sealer over ~357 SF of sanded-face underlayment, because that
+# panel was RM-A-STUDIO's finished floor and unsealed it greys and stains. The room now takes
+# `floor_finish="vinyl-sheet"` over a standard `plywood-subfloor` deck, so there is no exposed
+# panel left to seal and this allowance would bill a coating nobody applies. Deleted rather
+# than zeroed, the same call the wet-bar casework allowance above got: a zeroed row still
+# reads as scope somebody has to account for. The revert is `floor_finish=None` on the Room
+# plus the sanded grade back on FS-ATTIC's `subfloor` — both one word.
 # THE KNEE-WALL CHASE COST $0 IN THE END, AND THE TRAIL IS WORTH KEEPING (2026-08-29).
 # It was priced three ways in one day. First as FURN-A-STUDIO-PLINTH, a 21'-8" x 18" x 16"
 # bench at $1,400-$3,200, because the x=1'-0" chase carried DU-S-ERV-HP-FEED's 6" beside a 3"

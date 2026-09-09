@@ -159,8 +159,10 @@ def test_the_catlin_bands_are_the_five_authored_ones(bands):
         assert band.thickness_m == pytest.approx(0.5 * _IN, abs=1e-6)
     # RM-M-BATH2's marble-look shower surround: the 36" pan's two closed sides,
     # 3'-0" x 7'-0" each on a zero offset. The walls are W-M-BA2E2 and W-M-BDN1 and NOT
-    # W-M-BA2E — FX-M-BATH2-SH's `wall_ref` names the riser's wall, three feet west of the
-    # pan, which is the trap this assertion exists to hold. W-M-TUBDK-S bounds the room too
+    # W-M-BA2E — FX-M-BATH2-SH's `wall_ref` names the riser's wall, which since 2026-09-09
+    # is collinear with W-M-BA2E2 but still stops four feet NORTH of the pan (it runs
+    # y 18'-0"..22'-4"), so it is not a wall this band can land on. That is the trap this
+    # assertion exists to hold. W-M-TUBDK-S bounds the room too
     # and must stay out: it is the tub deck's 20 3/4" knee wall, and a room-wide band would
     # clamp to its top and buy 5.3 SF of shower panel on a bath apron. Authoring `spans` is
     # what excludes it.
