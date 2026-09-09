@@ -55,6 +55,7 @@ from typehaus.emit.draw.schedules import (
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
+from typehaus.emit.draw.schedules.structural_notes import _write_structural_notes
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.sheet_writer import (
     LEDGER,
@@ -172,14 +173,14 @@ def build_sheet_index(model: ResolvedModel,
     sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
                             north_arrow=True))
 
-    # S-002 / A-002 — the specification sheets. Type 0 is general information within a
-    # discipline, which is what a specification is: it governs the whole of that
-    # discipline's work rather than any one drawing. They come first in their series for
-    # the same reason a project manual comes before the drawings.
-    if specification_sections(model):
-        sheets.append(SheetSpec("S-002", "Structural specifications",
-                                page=partial(_write_specifications,
-                                             disciplines=("03", "05"))))
+    # S-001 — general structural notes, and it is UNCONDITIONAL. It replaces S-002, whose
+    # gate was "any specification section exists": on catlin that printed one bullet, and
+    # on a house with nothing authored it printed no sheet at all — precisely the house
+    # that most needs a sheet saying what is and is not known. Divisions 03/05 are now one
+    # block on it, so A-002 still keeps the remainder and nothing prints twice.
+    sheets.append(SheetSpec("S-001", "General structural notes",
+                            page=partial(_write_structural_notes, profile=profile,
+                                         preferences=preferences, house_dir=house_dir)))
 
     if has_foundation_content(model):
         sheets.append(SheetSpec("S-100", "Foundation plan",

@@ -91,9 +91,11 @@ def test_a_procedure_is_on_the_spec_sheet_and_not_on_the_detail(catlin_model_ro)
 
 
 def test_both_specification_sheets_are_in_the_set(catlin_model_ro):
+    """A-002 keeps its own sheet; the structural half moved onto S-001's block 5."""
     sheets = {s.number: s.title for s in build_sheet_index(catlin_model_ro)}
     assert sheets["A-002"] == "Architectural specifications"
-    assert sheets["S-002"] == "Structural specifications"
+    assert "S-002" not in sheets, "the structural spec sheet is now a block on S-001"
+    assert sheets["S-001"] == "General structural notes"
 
 
 def test_the_two_specification_sheets_partition_the_sections(catlin_model_ro):

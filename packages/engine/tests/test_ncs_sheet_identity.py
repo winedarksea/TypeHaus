@@ -44,6 +44,7 @@ def test_the_type_digit_agrees_with_the_content(catlin_model_ro):
     expect = {
         # cover, notes, symbols legend, energy — all general information
         "G-001": "0", "G-002": "0", "G-003": "0", "G-004": "0",
+        "S-001": "0",                                # general structural notes
         "C-101": "1", "S-100": "1",                  # site and foundation are plans
         "A-201": "2", "A-202": "2", "A-203": "2", "A-204": "2",
         "A-301": "3",
@@ -106,3 +107,27 @@ def test_the_symbols_legend_explains_what_the_set_draws(catlin_model_ro):
 def test_no_sheet_number_is_used_twice(catlin_model_ro):
     numbers = _numbers(catlin_model_ro)
     assert len(numbers) == len(set(numbers))
+
+
+def test_s002_is_gone_and_s001_replaces_it(catlin_model_ro):
+    """The spec sheet's gate was "any section exists", so it vanished on a bare house.
+
+    S-001 is unconditional and carries divisions 03/05 as one of its six blocks.
+    """
+    numbers = _numbers(catlin_model_ro)
+    assert "S-002" not in numbers
+    assert numbers.index("S-001") < numbers.index("S-100")
+
+
+def test_sheet_numbers_ascend_within_a_discipline(catlin_model_ro):
+    """NCS numbering is only navigable if the pile is in it.
+
+    The braced-wall loop used to run before the roof-framing loop, so the set emitted
+    every S-103.n and *then* the S-102.n behind them. Every existing test checked the
+    discipline letter and none checked the number, so the set read out of order for a
+    reviewer flipping through it and nothing said so.
+    """
+    for letter in _DISCIPLINE_ORDER:
+        series = [n for n in _numbers(catlin_model_ro) if n.startswith(f"{letter}-")]
+        keys = [tuple(int(part) for part in n.split("-")[1].split(".")) for n in series]
+        assert keys == sorted(keys), f"{letter} sheets are out of order: {series}"
