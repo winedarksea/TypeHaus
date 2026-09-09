@@ -19,7 +19,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager, suppress
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 
 from typehaus.emit.draw.typography import wrap_columns_for
@@ -137,6 +137,33 @@ def set_seal_block(block: SealBlock | None) -> Iterator[None]:
 
 def seal_block() -> SealBlock | None:
     return _SEAL.get()
+
+
+def seal_block_for(profile, house_dir) -> SealBlock:
+    """The seal cell every S-sheet and the cover carry, for one set being written.
+
+    The four lines print RULED AND BLANK unless the set went out past ``--sealed``, which
+    is read off the issue stamp rather than passed down a second time: ``cmd_sheets`` only
+    appends ``· SEALED`` after its own final gate opened, so the stamp and the seal cell
+    read one decision and cannot disagree — the invariant the stamp already holds.
+
+    A name comes from ``engineering.toml``, which this engine reads and never writes. With
+    no register, or none this house declares, the lines stay blank: a filled NAME line is a
+    claim about a human act, and only a human may make it.
+    """
+    block = SealBlock(certification=getattr(profile, "seal_certification", None))
+    if " · SEALED" not in _ISSUE.get() or house_dir is None:
+        return block
+    from typehaus.engineering.register import load_register
+
+    signoffs = load_register(house_dir).signoffs
+    if not signoffs:
+        return block
+    # The first signoff is the one the structural set rests on. A second sealer covers other
+    # items and is named on S-603, where there is room to say what each one covers.
+    first = signoffs[0]
+    return replace(block, credit=first.credit(), engineer=first.engineer,
+                   license=first.license, sealed_on=first.sealed_on.isoformat())
 
 
 def _carries_seal(number: str) -> bool:
