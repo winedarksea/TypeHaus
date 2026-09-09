@@ -234,6 +234,21 @@ def test_s100_schedules_the_authored_reinforcement(catlin_model):
     assert "FOUNDATION REINFORCEMENT SCHEDULE" in _joined(build_foundation_plan(catlin_model))
 
 
+def test_s100_reinforcement_schedule_renders_a_plain_pour_honestly(catlin_model,
+                                                                   monkeypatch):
+    """A house may pour its foundation plain (ACI 318-19 §14.1.4) and this house may yet
+    decide to — notes/rebar_backout.md is that argument. The sheet must then print no
+    reinforcement schedule at all rather than an empty heading or an invented mat."""
+    import typehaus.emit.draw.foundation_schedule as schedule
+
+    monkeypatch.setattr(schedule, "_reinforced_elements", lambda model: [])
+    assert reinforcement_schedule(catlin_model).rows == ()
+    titles = [table.title for table in build_foundation_schedules(catlin_model)]
+    assert "FOUNDATION REINFORCEMENT SCHEDULE" not in titles
+    # ...and the sill anchorage, which is derived and not authored, is unaffected.
+    assert "SILL ANCHORAGE SCHEDULE" in titles
+
+
 def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     notes = " | ".join(foundation_general_notes(catlin_model))
     assert "RADON CONTROL — MN 1303.2400" in notes
