@@ -271,6 +271,15 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # Lowest outdoor temperature the unit is rated to operate at (cold-climate heat pumps).
     # Compared against the site heating design temperature by the HVAC schedule.
     min_operating_temp_f: float | None = None
+    # Rated seasonal efficiencies, as the datasheet publishes them — the three numbers the
+    # MN energy certificate posted at the panel has a line for. HSPF2/SEER2 are the AHRI
+    # 210/240-2023 ratings (a 2023-and-later heat pump publishes these, not HSPF/SEER);
+    # AFUE is the combustion equivalent. Never derived from one another and never defaulted:
+    # a certificate that states an efficiency nobody measured is worse than one that says
+    # "not modelled".
+    hspf2: float | None = None
+    seer2: float | None = None
+    afue: float | None = None
     # True for resistance heat that *supplements* a zone rather than carrying it: an electric
     # fireplace, a radiant mat. It never claims a zone of its own however it is rated — but
     # its output does count toward the zone that contains its room, because at design temp

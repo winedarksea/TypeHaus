@@ -700,8 +700,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     round the wrong way is a FAIL, not a preference: `code.R315_co_every_sleeping_area` fails
     outright if every CO alarm on a storey is inside a bedroom.
   - ** THE ERV'S HEADROOM IS NEARLY GONE. ** The sixth bedroom took
-    `code.N1103_6_whole_house_ventilation` to **210 cfm provided against 203 required**. A
-    seventh bedroom, or ~250 sf more conditioned floor, fails it and wants a bigger machine.
+    `code.N1103_6_whole_house_ventilation` to **210 cfm provided against 205 required**
+    (MN 1322 R403.5: 0.02 cfm/sf + 15 cfm per bedroom+1). A seventh bedroom, or ~250 sf
+    more conditioned floor, fails it and wants a bigger machine.
 - **`W-A-SN` IS A 12 3/4" BOOKCASE WALL, AND ITS SOUTH FACE IS PINNED**
   (`INT_2X4_BOOKCASE_12`). That face is the only thing covering `FO-A-STAIR`'s north
   edge: move the wall north and `code.R312_1_guard` FAILs with ~14'-3" of unguarded well.

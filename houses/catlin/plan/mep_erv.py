@@ -182,7 +182,7 @@ EQUIPMENT_ERV_ATTIC = [
 #     design too and it wants a CONTROLS INTERLOCK (blower continuous, or on ERV call), which
 #     the schema has no field for — so it is written here and in plans/TODO.md. It matters
 #     because code.N1103_6_whole_house_ventilation is already tight, 210 cfm provided against
-#     203 required. (At the 206 cfm HVI actually certifies, tighter still: 206 against 203.
+#     205 required. (At the 206 cfm HVI actually certifies, tighter still: 206 against 205.
 #     That is the live verdict `ventilation_cfm` moves, and why the field is left at 210
 #     pending a deliberate decision — see plan/mep_erv_types.py.)
 # Keeping it costs the second lane past the machine, which SF-S-HP1's width already carries.

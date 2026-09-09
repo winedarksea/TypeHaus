@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.analysis import assembly_r_value
-from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.registry import CheckContext, Preferences, Tier, check
 from typehaus.energy import _storey_is_conditioned
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
@@ -288,6 +288,56 @@ _MAX_ACH50 = 3.0
 _AIR_LEAKAGE_REF = "N1102.4.1.2"
 
 
+@dataclass(frozen=True)
+class AirLeakageSummary:
+    """The blower-door line, as both the check and G-004/G-005 need it.
+
+    One function, two consumers — the same shape as ``evaluate_envelope``. ``result`` is a
+    ``Result`` so the sheet can colour the row exactly as the check graded it, and
+    ``message`` is the one sentence both print; nothing downstream re-derives a verdict from
+    the numbers and risks disagreeing with the finding beside it.
+    """
+
+    max_ach50: float
+    ach50: float | None
+    cfm50: float | None
+    result: Result
+    message: str
+    fix_hint: str | None = None
+
+
+def air_leakage_summary(prefs: Preferences) -> AirLeakageSummary:
+    """Grade the authored blower-door result against N1102.4.1.2's flat 3.0 ACH50.
+
+    ``cfm50`` without ``ach50`` is UNKNOWN, not a conversion: dividing CFM50 by a volume
+    this engine does not resolve as a single figure would turn a *measurement* into an
+    estimate, which is the one thing a blower-door number must never become.
+    """
+    def summary(result: Result, message: str, fix_hint: str | None = None
+                ) -> AirLeakageSummary:
+        return AirLeakageSummary(max_ach50=_MAX_ACH50, ach50=prefs.ach50, cfm50=prefs.cfm50,
+                                 result=result, message=message, fix_hint=fix_hint)
+
+    if prefs.cfm50 is not None and prefs.ach50 is None:
+        return summary(Result.UNKNOWN,
+                       f"UNKNOWN — the house states cfm50 = {prefs.cfm50:g} but no ach50, "
+                       "and converting between them needs a conditioned volume this engine "
+                       "does not resolve")
+    if prefs.ach50 is None:
+        return summary(Result.UNKNOWN,
+                       "UNKNOWN — no blower-door result authored ([envelope].ach50 in "
+                       f"preferences.toml); N1102.4.1.2 requires {_MAX_ACH50:g} ACH50 or "
+                       "less")
+    if prefs.ach50 > _MAX_ACH50 + 1e-9:
+        return summary(Result.FAIL,
+                       f"envelope leaks {prefs.ach50:g} ACH50; N1102.4.1.2 allows at most "
+                       f"{_MAX_ACH50:g}",
+                       "tighten the air barrier, or correct [envelope].ach50 to the tested "
+                       "value")
+    return summary(Result.PASS,
+                   f"envelope tests at {prefs.ach50:g} ACH50 (<= {_MAX_ACH50:g})")
+
+
 @check(Tier.CODE, "code.N1102_4_air_leakage")
 def air_leakage(ctx: CheckContext) -> list[Finding]:
     """N1102.4.1.2 — envelope air leakage at or under 3.0 ACH50.
@@ -295,36 +345,12 @@ def air_leakage(ctx: CheckContext) -> list[Finding]:
     This is the one energy requirement with a *test* behind it rather than a table lookup,
     and the number is already authored: ``preferences.ach50`` (or ``cfm50``, which wins
     when both are present because a test report states CFM50 and the ACH50 is derived from
-    it — see the Preferences docstring).
-
-    Deriving ACH50 from CFM50 needs the conditioned volume, which this engine does not
-    resolve as a single figure. So a house that states only ``cfm50`` reports UNKNOWN with
-    that reason rather than a volume guess: the whole point of a blower-door number is that
-    it is measured.
+    it — see the Preferences docstring). All of the grading lives in
+    ``air_leakage_summary`` so the energy sheet prints the finding rather than its own
+    second opinion.
     """
-    cid = "code.N1102_4_air_leakage"
-    prefs = ctx.preferences
-    if prefs.cfm50 is not None and prefs.ach50 is None:
-        return [Finding(
-            severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
-            message=(f"UNKNOWN — the house states cfm50 = {prefs.cfm50:g} but no ach50, and "
-                     "converting between them needs a conditioned volume this engine does "
-                     "not resolve"),
-            result=Result.UNKNOWN)]
-    if prefs.ach50 is None:
-        return [Finding(
-            severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
-            message=("UNKNOWN — no blower-door result authored ([envelope].ach50 in "
-                     f"preferences.toml); N1102.4.1.2 requires {_MAX_ACH50:g} ACH50 or less"),
-            result=Result.UNKNOWN)]
-    if prefs.ach50 > _MAX_ACH50 + 1e-9:
-        return [Finding(
-            severity=Severity.ERROR, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
-            message=(f"envelope leaks {prefs.ach50:g} ACH50; N1102.4.1.2 allows at most "
-                     f"{_MAX_ACH50:g}"),
-            fix_hint="tighten the air barrier, or correct [envelope].ach50 to the tested value",
-            result=Result.FAIL)]
+    summary = air_leakage_summary(ctx.preferences)
+    severity = Severity.ERROR if summary.result is Result.FAIL else Severity.WARN
     return [Finding(
-        severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
-        message=f"envelope tests at {prefs.ach50:g} ACH50 (<= {_MAX_ACH50:g})",
-        result=Result.PASS)]
+        severity=severity, check_id="code.N1102_4_air_leakage", code_ref=_AIR_LEAKAGE_REF,
+        message=summary.message, fix_hint=summary.fix_hint, result=summary.result)]

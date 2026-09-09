@@ -34,7 +34,7 @@ MN_2024 = JurisdictionProfile(
         "outside it; "
         "R314/R315 smoke and CO alarms per storey and per sleeping area. "
         "Light and ventilation: R303.1 glazing and openable area, R303.3 local exhaust, "
-        "N1103.6 whole-house ventilation rate. "
+        "MN 1322 R403.5 whole-house ventilation rate. "
         "Site: R401.3 lot drainage away from the foundation, local setbacks, and whether "
         "the parcel ring those setbacks are measured on is a certified survey. "
         "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
@@ -186,7 +186,9 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R303.3", "IRC M1507"), blocking=False),
         PermitItemSpec("Whole-house ventilation rate",
                        ("code.N1103_6_whole_house_ventilation",),
-                       ("IRC N1103.6", "ASHRAE 62.2"), blocking=False),
+                       # Minnesota's own arithmetic, not ASHRAE 62.2's and not the IRC's:
+                       # 0.02 cfm/sf + 15 cfm per (bedroom + 1), half of it continuous.
+                       ("MN 1322 R403.5",), blocking=False),
         PermitItemSpec("Attic access", ("code.R807_1_attic_access",), ("IRC R807.1",),
                        blocking=False),
         PermitItemSpec("Attic ventilation", ("code.R806_2_attic_ventilation",),
