@@ -166,11 +166,17 @@ ATTIC_LIGHTING = [
     # plate, so the only full-height wall in a 356 sf room is the centre wall, x=18'-0",
     # west face at x=17'-8 5/8" and the device line 2" off it at 17'-6 5/8" (a 4"-deep
     # body's own half — the offset ED-A-STUDY-SPOT uses on the far side of the same wall).
-    # Of its 17'-4" run the bar takes y 12'-6"..17'-1" (APPL-A-STUDIO-FRIDGE and
-    # FURN-A-STUDIO-BAR-BASE), leaving y 0..12'-6" for sconces: five at 2'-6" centres from
-    # y=2'-0" to y=12'-0", clear of ED-A-STUDIO-SW's plate at y=6'-0"/46" by height.
-    # ** THAT IS WHY IT IS NOT EIGHT SCONCES: ** eight would not fit the wall, and five plus
-    # a 1,800 lm pendant clears the floor by more than eight of these would.
+    # Five at 2'-6" centres from y=2'-0" to y=12'-0", clear of ED-A-STUDIO-SW's plate at
+    # y=6'-0"/46" by height.
+    #
+    # ** THE WALL'S NORTH END IS FREE AGAIN AND NO SIXTH SCONCE IS WANTED (2026-09-09). **
+    # The bar used to take y 12'-6"..17'-1" of this wall and that is what stopped the run at
+    # 12'-0"; the whole 17'-4" is bare now that the kitchenette is on W-A-BATH-S. The count
+    # stands anyway: five plus the 1,800 lm pendant is 5,900 lm against a 4,457 lm floor —
+    # 32% clear, the margin this scheme was specified to hold — and a sixth fitting buys
+    # light where nobody stands and spends the ALWAYS_ON headroom the backup cycle is graded
+    # against. ** IT IS NOT EIGHT EITHER: ** eight would not fit the wall even now with the
+    # switch and the two device lines on it.
     ElectricalDevice(uid="QTA0008AAA", tag="ED-A-STUDIO-WALL1", kind=DeviceKind.LIGHT,
                      position=pt(inch(210.6), ft(2)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
@@ -196,18 +202,24 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    # The bar pendant (owner, 2026-09-06). Centred on the bar run at (16'-9", 14'-10") — the
-    # midpoint of APPL-A-STUDIO-FRIDGE (y 12'-6"..14'-6") and FURN-A-STUDIO-BAR-BASE
-    # (y 15'-1"..17'-1"), with FX-A-STUDIO-BAR-SINK between them. The ceiling there is
-    # 1 1/2" + 201"/2 = 8'-6 3/4", and a 2'-6" assembly hung off it puts the shade bottom at
-    # 6'-0 3/4" — 3'-0" over a 36" counter, the same clearance ED-M-DINING-PEND takes over
-    # the dining table. ** THIS FIXTURE IS 31% OF THE ROOM'S CODE LUMENS: ** drop it, or
-    # substitute anything under 1,800 lm, and RM-A-STUDIO goes to a FAIL on R303.1.
+    # The bar pendant (owner, 2026-09-06), FOLLOWED THE BAR ONTO W-A-BATH-S AND LOST ITS DROP
+    # (2026-09-09). It hung at (16'-9", 14'-10") on a 2'-6" drop under the centre wall's
+    # 8'-6 3/4" ceiling. Over the kitchenette the rake gives 6'-3" at the unit's west end and
+    # 7'-2" at its east, so 30" of drop would put the shade below head height.
+    #
+    # ** THE OUTPUT IS WHAT COULD NOT CHANGE, SO THE FITTING DID. ** This is 31% of the room's
+    # code lumens: drop it, or substitute anything under 1,800 lm, and RM-A-STUDIO goes to a
+    # FAIL on R303.1 (see the lumen floor in the header). Same 1,800 lm fixture, same circuit,
+    # same switch — a near-flush 4" drop instead of a hung one.
+    #
+    # It sits over the BOWL at (13'-1", 16'-2 5/8"), not over the middle of the unit: that is
+    # the tall end (`1 1/2" + x/2` = 6'-8 7/8") and the end a person actually stands at. A 4"
+    # drop puts the shade bottom at ~6'-4 7/8", over a counter and not over the floor.
     ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(ft(16, 9), ft(14, 10)), type_ref="ED-T-LT-PENDANT-BAR",
+                     position=pt(ft(13, 1), inch(194.625)), type_ref="ED-T-LT-PENDANT-BAR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
                      controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=ft(2, 6))),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
     # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.
@@ -244,13 +256,20 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH", rotation=deg(180),
                      controlled_by=("ED-A-STUBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    # On W-A-BATH-S's north face, east of D-A-STUBATH's leaf (which parks x 11'-3 5/8" to
-    # 13'-9 5/8") — the wall you reach for on the way in. It was first put on W-A-STU-W beside
-    # the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face` reported it
-    # floating 1.6" off that face; the door wall is both the better station and the one whose
-    # finish face the house's standard 1" box offset lands on cleanly.
+    # On W-A-BATH-S's north face — the wall you reach for on the way in. It was first put on
+    # W-A-STU-W beside the lavatory, and `test_wall_mounted_devices_resolve_against_a_wall_face`
+    # reported it floating 1.6" off that face; the door wall is both the better station and the
+    # one whose finish face the house's standard 1" box offset lands on cleanly.
+    #
+    # ** IT MOVED WEST WITH THE DOOR, 14'-3" -> 13'-8" (2026-09-09). ** D-A-STUBATH's rough
+    # opening is 14'-4"..16'-4" now, so 14'-3" left the plate 1" off the west jamb and inside
+    # its pack. 13'-8" is on the LATCH side (the hinge is the east jamb) with 8" to the jamb,
+    # and it is also the only band left in this cavity: PR-A-BAR-VENT rises at x=13'-1", so
+    # the box has to sit east of that riser and west of the jamb pack. ** NOTHING GRADES
+    # EITHER OF THOSE ** — no rule tests a wall device against a rough opening or against a
+    # pipe in its own bay — so both clearances are held here and by eye in the viewer.
     ElectricalDevice(uid="DD20R7F44T", tag="ED-A-STUBATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(14, 3), ft(17, 7.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(13, 8), ft(17, 7.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to

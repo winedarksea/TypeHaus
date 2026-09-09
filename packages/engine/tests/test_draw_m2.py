@@ -104,6 +104,44 @@ def test_the_architectural_plan_leaves_the_trade_devices_to_their_own_sheets() -
         assert "A-FLR-HEAT" not in layers, storey
 
 
+def test_every_hinged_door_hangs_on_the_same_jamb_in_the_model_and_the_drawing():
+    """** THE GUARD THAT WAS MISSING FOR A YEAR. ** `resolve/pipeline.py` computes the leaf
+    sweep that `integrity.door_swing_conflict` defends; `emit/draw/floorplan.py` draws the
+    leaf a builder reads. Until 2026-09-09 they disagreed about WHICH JAMB an unflipped door
+    hangs on -- the resolver used the wall's start node, both renderers the end node -- so
+    the check defended a quadrant no leaf sweeps and the sheets drew arcs through casework
+    the model called clear. Three catlin doors had been authored around it.
+
+    Nothing compared the two, so nothing caught it. This does, on the reference house, for
+    every hinged door at once.
+
+    A French pair is excluded deliberately: `door-swing-double` is centre-anchored (its
+    insert is the opening centre, not a hinge) and `swing_clearance` models a pair as ONE
+    half-width leaf, so the two are not comparable here. That gap is real and is not this
+    test's business.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    catlin, _ = resolve(load_plan(house).plan)
+    in_m = 0.0254
+
+    drawn: dict[str, tuple[float, float]] = {}
+    for storey in {s.tag for s in catlin.plan.storeys}:
+        for node in build_floorplan(catlin, storey).nodes:
+            if isinstance(node, Symbol) and node.name == "door-swing" and node.uid:
+                drawn[node.uid] = node.insert
+
+    compared = 0
+    for opening in catlin.openings:
+        if not opening.swing_clearance or opening.uid not in drawn:
+            continue
+        compared += 1
+        hinge = opening.swing_clearance[0]        # the sector is built out from the hinge
+        insert = drawn[opening.uid]
+        assert abs(hinge[0] / in_m - insert[0]) < 0.01, opening.tag
+        assert abs(hinge[1] / in_m - insert[1]) < 0.01, opening.tag
+    assert compared >= 25, f"only {compared} hinged doors compared -- the sweep went quiet"
+
+
 def test_floorplan_door_symbol_reflects_both_handing_flips(model):
     flipped = copy.deepcopy(model)
     door = flipped.plan.by_tag("D-101")

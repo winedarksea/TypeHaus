@@ -250,7 +250,7 @@ MAIN_FIXTURES = (
     # PR-B-SH2-DRAIN picks the waste up on its way to the stack. Left alone deliberately:
     # the pan moved 4 1/4", which does not move a trap that is already offset.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36-DIVERTED", room="RM-M-BATH2",
-            position=pt(ft(6, 2.615), ft(14, 8.375)), wall_ref="W-M-BA2E",
+            position=pt(ft(7), ft(14, 8.375)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
     # ** THE KOHLER K-5713-W1-0 UNDERSCORE, AND IT IS A DROP-IN. ** The bath has no skirt:
     # it drops through SL-M-TUBDK and sits on a 1"-2" mortar bed on the subfloor, and Kohler
@@ -304,38 +304,43 @@ MAIN_FIXTURES = (
     # The faces here are read off the walls' own layer polygons: W-M-W3 at x=6.635",
     # W-M-BDN1 at y=158.375", W-M-HS1 at y=264.615", W-M-BA2E at x=92.615".
     #
-    # So the centre is x=17 1/8" (21" of depth off the west face) and y=15'-5 3/8" (54" of
+    # So the centre is x=15 15/16" (18" of depth off the west face) and y=15'-2 3/8" (48" of
     # length off the south face), hard into the room's real south-west corner. It runs NORTH
-    # and stops at y=17'-8 3/8". ** The run available is 57 1/4", not the 59" a clear_face
-    # reading suggests, and 54" leaves 3 1/4" ** to where FX-M-BATH2-WC's 21" P2705.1 front
-    # clearance begins at y=17'-11 5/8". That is the one dimension to re-check if the water
-    # closet ever moves west or south. rotation +90 turns the 54" length north/south and
-    # puts the cabinet front (local -y) facing EAST into the room; the clearance zone
+    # and stops at y=17'-2 3/8", which leaves 9 1/4" to where FX-M-BATH2-WC's 21" P2705.1
+    # front clearance begins at y=17'-11 5/8". rotation +90 turns the 48" length north/south
+    # and puts the cabinet front (local -y) facing EAST into the room; the clearance zone
     # projects with it.
     #
-    # ** D-M-BATH2 SWINGS OUT BECAUSE OF THIS CABINET, AND THE TWO CANNOT BOTH CHANGE BACK.
-    # ** The door's 30" opening runs x 2'-0"..4'-6" and this cabinet's east face is at
-    # x=1'-11 5/8", 3 5/8" inside it; swinging IN, the leaf clips the cabinet by 25 in2
-    # (`integrity.door_swing_conflict`, an UNKNOWN — `haus check --only fail` stays clean
-    # through it, so it is found in the takeoff's findings rather than at the gate). Turning
-    # the door out was chosen over shortening this to 45 1/2" or thinning it to 17" because
-    # that costs no storage. Re-hang the door inward and the vanity has to give up one of
-    # its two dimensions; see storeys/main.py.
+    # ** 48 x 18, NOT 51 x 21, AND THE ENDS ARE SWAPPED — 2026-09-09. ** All three numbers
+    # moved together for one reason: the owner wanted a real aisle at the basin. What the
+    # room now holds is 41 1/16" of floor between this face and the shower for the south 36"
+    # of the run, and 26 1/16" to the tub deck's access panel for the north 12". So the 30"
+    # SINK BASE goes SOUTH and the drawer bank takes the pinch (see the type's `source`).
+    # 18" deep is the house's own -SHALLOW depth, already on four other vanities, and it is
+    # the cheap boxed-combo depth rather than a premium one; 48" is on the stock width
+    # ladder where 51" never was.
+    #
+    # ** THE DOOR NO LONGER TOUCHES THIS CABINET AT ALL. ** D-M-BATH2 used to open at
+    # x 1'-5"..3'-11" with this vanity's east face 10 5/8" inside it, which is what the plan
+    # sheet kept showing. It now opens at x 2'-9"..5'-3" — a full stud bay east, bought by
+    # moving W-M-BA2E2 (see storeys/main.py) — and its west jamb clears this east face at
+    # x=2'-1" by 8 1/16". The out-swing STAYS, and not because of the cabinet: an
+    # out-swinging bathroom door cannot be barricaded by someone who falls against it.
     #
     # WIN-M-BATH2 is not in the way and is worth saying so, because it nearly is: the window
     # runs y 18'-6 1/2"..20'-9 1/2" with a 3'-0" sill, which is the SAME plane as this
-    # counter. It clears the cabinet's north end by 11 7/8" of bare wall.
+    # counter. It clears the cabinet's north end by 20 1/8" of bare wall.
     #
-    # ``drain_position`` is unchanged, deliberately: the basin sits over the 30" sink base
-    # at the NORTH end, centreline y=16'-3 5/8", 20" x 15 1/2" about it — spanning
-    # x 3 3/8"..18 7/8", y 15'-5 5/8"..17'-1 5/8". The authored tailpiece at (1'-0", 16'-6")
-    # falls inside that rectangle, 2 3/8" north of the basin centreline and effectively on
-    # its x centre. Re-pointing the pipe would put PR-B-SINK2-DRAIN into a diagonal trap arm
-    # 2 3/8" off PR-B-SH2-DRAIN's line for nothing.
-    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-51-SINGLE",
-            room="RM-M-BATH2", position=pt(inch(17.135), inch(183.875)), rotation=deg(90),
+    # ``drain_position`` MOVED with the basin and had to: the basin sits over the 30" sink
+    # base at the SOUTH end now, centreline y=14'-5 3/8", 20" x 15 1/2" about it — spanning
+    # x 8 3/16"..23 11/16", y 13'-7 3/8"..15'-3 3/8". PR-B-SINK2-DRAIN's first two points
+    # follow it (plan/mep_drainage.py); its tie into PR-B-MAIN-DRAIN at (3'-0", 16'-6") is
+    # UNCHANGED, so the branch simply runs diagonally under the floor instead of straight,
+    # and still holds 4.19"/ft where 0.25" is the floor.
+    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SHALLOW",
+            room="RM-M-BATH2", position=pt(inch(15.9425), inch(182.375)), rotation=deg(90),
             wall_ref="W-M-W3",
-            drain_position=pt(ft(1), ft(16, 6))),
+            drain_position=pt(ft(1), ft(14, 5.375))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------
     # 62 3/4"x48 3/4" alcove behind D-M-LAUN (56" bifold spanning the north side) — a
     # closet, not a room you stand in: both appliances back onto the south wall (rotation
@@ -704,9 +709,10 @@ ATTIC_FIXTURES = (
     Fixture(uid="P63E8HB7WZ", tag="FX-A-STUBATH-SH", type_ref="FX-SHOWER-36-COMBO", room="RM-A-STUBATH",
             position=pt(ft(16, 2.625), ft(20, 7.625)), wall_ref="W-A-STU-W",
             drain_position=pt(ft(16, 2.625), ft(20, 7.625))),
-    # ** THE WET BAR'S SINK, BACK-TO-BACK WITH THE BATH THROUGH THE SAME WET WALL. ** It is on
-    # W-A-STU-W's WEST face, so the bar and the bathroom share one stack, one vent and one
-    # 5 1/2" cavity instead of running a second branch across the studio floor.
+    # ** THE WET BAR'S SINK, ON THE STUDIO FACE OF THE BATH WALL. ** It sits in a SUNNERSTA
+    # kitchenette backed onto W-A-BATH-S (plan/placeables.py) and collects into the same stack
+    # the bath does: a 2" branch west inside the joist band and a 2" revent west inside
+    # W-A-BATH-S's own cavity. One stack, one riser, no second branch across the studio floor.
     #
     # It is an FX-LAV-COMPACT used as a bar sink, and that is deliberate rather than lazy: 18" x
     # 14" is dimensionally exact for a bar bowl, it is the cheapest wet fixture in the catalog,
@@ -722,33 +728,34 @@ ATTIC_FIXTURES = (
     # `Occupancy.KITCHEN` — that would put a 25 sf nook in `_HABITABLE` (graded for 8% glazing on
     # its own), in `_GFCI_OCCUPANCIES` and in `_STALE_OCCUPANCIES` (demanding its own exhaust
     # terminal). It is part of RM-A-STUDIO and it stays that way.
-    # ** THE BAR IS ON THE CENTRE WALL, NOT W-A-STU-W'S WEST FACE. ** There is no station
-    # near that wall the 6:12 rake makes usable, and the wall itself only runs
-    # y 17'-4"..22'-4" — inside the bath's own band. It goes to W-A-C2's west face at
-    # y 16'-8", SOUTH of the bath box, where the ceiling is 8'-7 1/2" and the counter is
-    # against the one full-height wall the studio has. `wall_ref` still names the wet wall
-    # (see the block above): the drain crosses the joist field west to the same stack and
-    # the bar is still on one branch, one vent.
+    # ** THE BAR CAME OFF THE CENTRE WALL ONTO W-A-BATH-S, 2026-09-09. ** It stood on W-A-C2's
+    # west face at y 16'-8" for a rake argument that is still true — there is no station on
+    # the x 9'-7 1/2" wet wall the 6:12 underside makes usable — but the owner picked a
+    # SUNNERSTA kitchenette (FT-STUDIO-KITCHENETTE-4422), whose top is NOT reversible, and the
+    # bowl sits at the unit's right-hand end. Backed onto the centre wall that end is SOUTH,
+    # ~76" of trap arm from the bath vent against Table 1002.2's 60" for 2"; backed onto
+    # W-A-BATH-S it is EAST, the end nearest the stack. So the unit went to the bath wall and
+    # D-A-STUBATH slid east past it (plan/storeys/attic_studio.py), which is what stops a
+    # person at this bowl from blocking the bathroom door.
     #
-    # `rotation=deg(90)` backs the sink onto W-A-C2's east face (deg(0) backs south, deg(180)
-    # north, deg(-90) west — compare FX-A-STUBATH-WC above). Back on the finish face at c/l
-    # x 17'-1 5/8" (17'-8 5/8" less half the 14" depth), c/l y 16'-4", drain under the bowl.
-    # Footprint x 16'-6 5/8"..17'-8 5/8", y 15'-7"..17'-1".
+    # x 13'-1" is 11" in from the unit's east end (x 14'-0"), y 16'-2 5/8" is the unit's own
+    # centreline. ** BOTH ARE PROVISIONAL ON ONE MEASUREMENT: ** IKEA publishes no bowl
+    # position within the top, so measure the unit — from the right-hand end and back from the
+    # front edge — before the plumber sets the arm. The revent (plan/mep_venting.py) is what
+    # gives that measurement room to move: without it the arm lands within an inch of 60".
     #
-    # ** y 16'-4" IS NOT A BAY CENTRE, AND THAT COSTS PR-A-BAR-DRAIN A 4" LEG, DELIBERATELY. **
-    # 16'-8" is the bay centre and it is where the note above says this sink is — but the wall
-    # it dies into is W-A-BATH-S, whose SOUTH face is 17'-1 5/8", not the 17'-6 3/8" north
-    # face the bath is measured from. At 16'-8" the bowl stood 3 3/8" inside that wall, which
-    # is to say the position the comment claimed was never buildable either. 16'-4" leaves
-    # 5/8". Going the other way to 15'-4", the next bay centre south — which would have made
-    # one continuous 3'-7" counter with APPL-A-STUDIO-FRIDGE, the "4'-0" bank" the note above
-    # wishes for, and D-A-STUBATH's arc stops at x 16'-4" so the swing does not reach it —
-    # puts the trap arm at 65" against Table 1002.2's 60" for a 2" arm. `mep.trap_arm_length`
-    # FAILed it outright. 16'-4" measures 53". The bank stays a sink, a gap and a fridge.
+    # ** `wall_ref` STILL NAMES W-A-STU-W AND MUST. ** It names the WET WALL, not the host —
+    # the drain and both supplies still collect in that 5 1/2" staggered cavity. Pointing it
+    # at W-A-BATH-S raises `advisory.wet_wall_depth`: a 2x4 partition is not a wet wall, even
+    # though the 2" revent rises in it.
+    #
+    # ** THE 27" MOUNT IS THE KITCHEN-SINK IDIOM AND IS THE THIRD OPEN MEASUREMENT. ** If the
+    # SUNNERSTA's worktop measures nearer 36", raise it — and re-check that the revent's
+    # horizontal still clears the flood rim by P3104.4's 6".
     Fixture(uid="11TZJE81BZ", tag="FX-A-STUDIO-BAR-SINK", type_ref="FX-LAV-COMPACT", room="RM-A-STUDIO",
-            position=pt(ft(17, 1.625), ft(16, 4)), rotation=deg(90), wall_ref="W-A-STU-W",
+            position=pt(ft(13, 1), inch(194.625)), wall_ref="W-A-STU-W",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(17, 1.625), ft(16, 4))),
+            drain_position=pt(ft(13, 1), inch(194.625))),
 )
 
 

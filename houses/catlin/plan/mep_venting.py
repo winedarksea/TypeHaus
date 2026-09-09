@@ -136,8 +136,10 @@ VENT_BRANCHES_ATTIC = [
     # check measures to the nearest point of the serving run. Starting it at the wet-wall axis
     # x=9'-7 1/2" would give the shower a 6'-7 1/8" arm against Table 1002.2's 5'-0" for 2" — a
     # FAIL. Starting at (16'-2 5/8", 20'-8"), directly over the pan, makes the shower's arm ~0
-    # and leaves the others clear: WC 1'-5 3/8" (limit 6'-0"), lav 10 3/8" (limit 3'-6"), bar
-    # sink ~1'-0".
+    # and leaves the others clear: WC 1'-5 3/8" (limit 6'-0"), lav 10 3/8" (limit 3'-6"). The
+    # bar sink used to ride this run too and no longer does — with the kitchenette on
+    # W-A-BATH-S its arm to this line is marginal against Table 1002.2's 60", so it has
+    # PR-A-BAR-VENT of its own below.
     #
     # From there it runs west to the W-A-STU-W axis, north through the pocket at ~7'-0", and
     # west to VR-M-RADON-VENT at (1'-0", 34'-6"), which carries PipeSystem.VENT to the roof. It
@@ -170,8 +172,36 @@ VENT_BRANCHES_ATTIC = [
                   pt(ft(9, 7.5), ft(34, 6))),
             diameter=inch(2),
             elevations=(ft(3, 5), ft(3, 6), ft(3, 9)),
-            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
-                    "FX-A-STUDIO-BAR-SINK")),
+            serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
+    # ** THE BAR'S OWN REVENT, AND IT IS WHAT MAKES THE KITCHENETTE ROBUST RATHER THAN
+    # MARGINAL. ** FX-A-STUDIO-BAR-SINK used to ride PR-A-STUBATH-VENT above, whose nearest
+    # point is over the shower; with the bowl at the SUNNERSTA's east end (plan/fixtures.py)
+    # that arm lands within an inch of Table 1002.2's 60" on dimensions nobody has measured,
+    # and holding it under 60" without a revent forces D-A-STUBATH so far east that it opens
+    # onto a 19 1/4" strip in front of the shower.
+    #
+    # ** IT COSTS NO BORED STUD AND NO BEARING WALL. ** The unit backs onto W-A-BATH-S, a 2x4
+    # NONBEARING partition that already carries pipe at its west end. The 2" rises in that
+    # cavity behind the bowl at x=13'-1" and runs WEST inside the same wall to the stack,
+    # tying into PR-A-STUBATH-VENT on the vertical at (9'-7 1/2", 20'-8").
+    #
+    # The repeated first vertex is the riser — the idiom PR-A-STUBATH-DRAIN uses. Elevations
+    # are STOREY-RELATIVE (the attic datum is ft(20); see the note above on what an absolute
+    # would do here) and rise monotonically from -4 1/4", PR-A-BAR-DRAIN's own head in the
+    # joist band, to 3'-6" — which is exactly PR-A-STUBATH-VENT's elevation at the plan point
+    # they share, so the two profiles meet rather than pass.
+    #
+    # ** THE HORIZONTAL MUST STAY 6" ABOVE THE BOWL'S FLOOD RIM, P3104.4, AND THAT IS THE
+    # WORKTOP MEASUREMENT. ** At the authored 27" mount the rim is ~2'-3" AFF and the 3'-4"
+    # horizontal clears it by 13"; if the SUNNERSTA's top measures nearer 36" the rim climbs
+    # with it and this run has to climb too. The vertex on x 9'-7 1/2" is what `mep.vent_reachability` reads —
+    # it wants a vertex on the served fixture's wet wall (W-A-STU-W's axis) — so keep it.
+    PipeRun(tag="PR-A-BAR-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(13, 1), ft(17, 4)), pt(ft(13, 1), ft(17, 4)),
+                  pt(ft(9, 7.5), ft(17, 4)), pt(ft(9, 7.5), ft(20, 8))),
+            diameter=inch(2),
+            elevations=(inch(-4.25), ft(3, 4), ft(3, 5), ft(3, 6)),
+            serves=("FX-A-STUDIO-BAR-SINK",)),
 ]
 
 # THE STACK JOGS EAST INSIDE THE ATTIC. `chase_position` is still (1'-0", 34'-6"): the shaft
@@ -181,7 +211,7 @@ VENT_BRANCHES_ATTIC = [
 # — the riser cannot rise there at all, let alone reach the 23'-10" wall exit.
 #
 # So it jogs, and it jogs BELOW THE DECK: `chase_offset_elevation` 19'-6" is inside
-# FS-ATTIC's 11 7/8" I-joist band (19'-0 7/8"..20'-0"), so the 3" pipe crosses through the
+# FS-ATTIC's 11 7/8" I-joist band (19'-0 1/8"..20'-0"), so the 3" pipe crosses through the
 # joist WEBS — the ordinary place a stack offsets, and 12'-4" of it in a bay that already
 # carries PR-A-STUBATH-VENT's line. It comes up at x=13'-4" and everything above is as it
 # was: exit at 23'-10" through the gable, 2'-6" out, up the cladding to a derived

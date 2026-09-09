@@ -164,10 +164,19 @@ def test_the_hall_baths_forty_eight_fits_between_the_door_arc_and_the_shelf():
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-S-BATH1-LAV"))
     assert round(x1 - x0, 2) == 21.0 and round(y1 - y0, 2) == 48.0
 
-    swing = next(Polygon(o.swing_clearance) for o in model.openings
-                 if o.tag == "D-S-BATH1" and o.swing_clearance)
+    door = next(o for o in model.openings
+                if o.tag == "D-S-BATH1" and o.swing_clearance)
+    swing = Polygon(door.swing_clearance)
     cab = box(x0 * IN, y0 * IN, x1 * IN, y1 * IN)
     assert not cab.intersects(swing), "the 48in vanity is inside D-S-BATH1's swing"
+    # ** AND IT CLEARS ONLY FROM THE WEST JAMB. ** W-S-BD-N1B runs +x, so the unflipped
+    # jamb is the EAST one at x=114" and a leaf hung there sweeps 15.6 in2 of this carcass —
+    # which is what the plan sheets drew until `_door_swing_clearance` was corrected on
+    # 2026-09-09. `flip_hinge` on the door is the fix, and this is what defends it.
+    # The first vertex of the sector IS the hinge.
+    hinge_x = door.swing_clearance[0][0] / IN
+    assert round(hinge_x, 2) == 84.0, (
+        f"D-S-BATH1 hinged at x={hinge_x:.2f}in; off the WEST jamb the 48in cabinet is gone")
 
     sx0, _, sy0, _ = _bbox(_obj(model, "FURN-S-BATH1-SHELF"))
     assert sy0 - y1 >= 0, "the vanity runs past the shower return shelf"

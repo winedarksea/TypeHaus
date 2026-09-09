@@ -100,35 +100,41 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # WIN-M-BATH2 is not in the way, and the margin is bigger than a first read of the storey
 # file suggests: its comment quotes "y 19'-8"" for a ``from_node`` offset that is the
 # opening's NEAR EDGE, and W-M-W3 is authored north-to-south, so the 27" unit actually runs
-# y 18'-10 1/2"..21'-1 1/2". That leaves 14 1/8" of bare wall between this cabinet's north
-# end and the opening -- comfortable, though the window's 3'-0" sill IS the same plane as
-# the 36" counter, so a cabinet that ever runs north has no height to hide in.
+# y 18'-10 1/2"..21'-1 1/2". Since the 2026-09-09 shuffle this cabinet ends at y=17'-2 3/8"
+# and the gap is 20 1/8", though the window's 3'-0" sill IS the same plane as the 36"
+# counter, so a cabinet that ever runs north has no height to hide in.
 #
-# The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30". The room
-# gives 30 5/8" of aisle between this face and the tub deck's west face, so the
-# recommendation IS met in fact -- but authoring 30" as a REQUIRED zone would make a
-# guideline read as code in every clearance finding, which it is not.
-BATH2_VANITY_51 = FixtureType(
-    tag="FX-VANITY-51-SINGLE",
-    name='Vanity, 51" single basin with drawer bank',
-    footprint=(inch(51), inch(21)),
+# The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30", and the
+# room now beats the recommendation across the whole cabinet: 41 1/16" of aisle to the
+# shower for the south 36" of the run and 26 1/16" to the tub deck for the north 12". The
+# BASIN sits in the 41" half deliberately (see the type's `source`). Authoring 30" as a
+# REQUIRED zone would make a guideline read as code in every clearance finding, which it
+# is not -- but the numbers above are what the owner asked the room to hold.
+BATH2_VANITY_48 = FixtureType(
+    tag="FX-VANITY-48-SHALLOW",
+    name='Vanity, 48" single basin with drawer bank',
+    footprint=(inch(48), inch(18)),
     height=inch(41.5),
     plan_symbol="vanity",
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(inch(51), inch(21), inch(21), "lavatory front clearance"),),
+    clearances=(front_zone(inch(48), inch(18), inch(21), "lavatory front clearance"),),
     source="RM-M-BATH2 vanity, owner selection 2026-08-29, narrowed 54 in. to 51 in. on "
-           "2026-09-06 when the water closet became a real product. 51 x 21 in. carcass, "
+           "2026-09-06 when the water closet became a real product, and 51 x 21 in. to "
+           "48 x 18 in. on 2026-09-09 to open the room's approach. 48 x 18 in. carcass, "
            "22 in. counter with a 1 in. overhang, finished counter 36 in. (comfort height, "
            "NKBA Bathroom Planning Guideline 7 allows 32-43 in.). ONE basin: a single "
            "rectangular undermount, 20 x 15 1/2 in. overall with a 17 1/4 x 13 in. cutout "
            "and a 5 1/4 in. bowl -- Kohler Caxton K-20000-0 (PROD-KOHLER-K-20000), chosen "
            "over the Verticyl K-2882 this first named, whose vertical sides and tight "
            "corner radii are exactly what stops a cloth reaching the corner in one pass. "
-           "Cabinet breakdown: 21 in. bank of four drawers at the south end (6/9/9/9 in. "
-           "fronts, 19 in. boxes) + 30 in. sink base at the north end with a pair of doors "
-           "and one interior shelf (SB-M-BATH2-VAN), the trap kept high and tight to the "
+           "Cabinet breakdown: 30 in. sink base at the SOUTH end with a pair of doors "
+           "and 18 in. bank of three drawers at the north end (6/6/6 in. fronts, 16 in. "
+           "boxes). The ends were swapped on 2026-09-09: the tub deck stands 26 in. off "
+           "this face at the room's north end and the shower stands 41 in. off it at the "
+           "south, so the basin belongs south and the drawers take the pinch. "
+           "One interior shelf (SB-M-BATH2-VAN), the trap kept high and tight to the "
            "wall so the base stays usable. QUARTZ with an undermount rather than the "
-           "integral solid-surface top the four small vanities take: this and the 48 in. "
+           "integral solid-surface top the four small vanities take: this and the hall "
            "hall-bath unit are the two busiest decks and the two that are fabricated "
            "rather than bought boxed."
 )
@@ -331,7 +337,7 @@ VANITY_48_SINGLE = FixtureType(
 # chips it and voids its warranty. Swan Contour ships single-hole with 4"/8" knockouts you
 # simply never break out; plugging holes with a deck plate afterwards defeats the whole point.
 
-FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_51,
+FIXTURE_TYPES = (KOHLER_UNDERSCORE_6036, BATH2_VANITY_48,
                  VANITY_24_SHALLOW, VANITY_30_SHALLOW, VANITY_30_SINGLE,
                  VANITY_36_SHALLOW, VANITY_48_SINGLE,
                  *WC_AND_SHOWER_TYPES)

@@ -64,11 +64,13 @@ DOOR_TYPES = [
     # the interior doors carry.
     DoorType(tag="DT-INT-SWING36", width=ft(3), height=ft(6, 8),
              source="2026-09-07 basement equipment route — D-B-FURN and D-B-SHOP"),
-    # D-B-GYM's leaf once the hall reached the sauna wall: same 32" as before, glazed, so
-    # the gym's south daylight reaches the windowless hall. tempered per the note above.
-    DoorType(tag="DT-INT-SWING32-GLAZED", width=ft(2, 8), height=ft(6, 8), glazed=True,
+    # D-B-GYM's leaf: glazed, so the gym's south daylight reaches the windowless hall, and
+    # tempered per the note above. ** WIDENED 32" -> 36" ON 2026-09-09 **, which retires
+    # DT-INT-SWING32-GLAZED — D-B-GYM was its only user. The gym is the third room on the
+    # basement equipment route and now carries the same leaf as D-B-FURN and D-B-SHOP.
+    DoorType(tag="DT-INT-SWING36-GLAZED", width=ft(3), height=ft(6, 8), glazed=True,
              tempered=True,
-             source="2026-09-07 basement hall — borrowed light for a hall with no window"),
+             source="2026-09-09 basement hall — 36\" equipment route with borrowed light"),
     DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True),
@@ -377,7 +379,8 @@ NODES = [
     # FX-M-LAUNDRY (40" deep, room now 48 3/4" clear). Bonus: y=18'-0" is also where the
     # basement's 12" cast wall W-B-CW2 runs, so the partition now lands on solid concrete.
     Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(18))),
-    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13))),
+    Node(uid="FA752F2VPX", tag="N-M-D2B", position=pt(ft(8, 8.375), ft(18))),
+    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8, 8.375), ft(13))),
     Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(18))),
     Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 4))),
     Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(18))),
@@ -796,8 +799,8 @@ WALLS = [
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
          end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
-    Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
-         end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
+    Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2B",
+         end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
     # W-M-LS and W-M-CLN2 (below) are RM-M-STUDY's west and south walls, and the study is
     # now a built-in call booth (FURN-M-STUDY-BENCH / -DESK). STAGGERED, originally
     # STAGGERED_DOUBLE_GWB at STC 52, not INT_2X4_RC_DOUBLE_GWB, which reaches STC 54 in
@@ -859,7 +862,9 @@ WALLS = [
     # followed it north. Nothing stood on the closet face. (Both figures are the
     # double-gwb retype; the single-gwb retype above gave 5/8" back — RM-M-LAUNDRY reads
     # 46 1/4" deep today, and the closet boundary below reads 17'-8 5/8".)
-    Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
+    Wall(uid="8XB93RXT4G", tag="W-M-BA2N", start_node="N-M-D2", end_node="N-M-D2B",
+         assembly="INT_2X4_STAGGERED_GWB", top=ft(9), stacks_on="W-B-CW2"),
+    Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2B",
          end_node="N-M-E2", assembly="INT_2X4_STAGGERED_GWB", top=ft(9),
          stacks_on="W-B-CW2"),
     # Staggered per the W-M-LS note. ** IT STACKS ON NOTHING SINCE 2026-09-07, AND THAT IS
@@ -1105,34 +1110,40 @@ OPENINGS = [
     # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
     Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
          position=from_node("N-M-PAN1", inch(7.5))),
-    # ** SWINGS OUT INTO RM-M-BED SINCE 2026-08-29, AND THE VANITY IS WHY. ** RM-M-BATH2's
-    # 54" x 21" vanity stands hard in the room's south-west corner, and its east face at
-    # x=1'-11 5/8" is 3 5/8" inside this door's 30" opening (x 2'-0"..4'-6"). Hinged east and
-    # swinging IN, the leaf's arc reaches y=14'-2 1/8" where it passes that face, and it
-    # clipped the cabinet by 25 in2 — `integrity.door_swing_conflict` said so. The three ways
-    # out were: shorten the vanity to 45 1/2", thin it to 17", or turn the door around. The
-    # owner chose the door, which is the only one of the three that costs no
-    # storage at all.
+    # ** AT x 2'-9"..5'-3" SINCE 2026-09-09, ONE STUD BAY EAST OF WHERE IT SAT. ** For a
+    # year this opened at x 1'-5"..3'-11" with FX-M-BATH2-SINK's east face 10 5/8" inside
+    # it: you entered a 30" doorway through a 19 3/8" gap, past the corner of a 36" counter.
+    # Nothing in the engine grades an object standing in a doorway, so nothing said so — the
+    # plan sheet did, and the owner read it there.
     #
-    # RM-M-BED's side is clear and that was checked rather than assumed — 30" of floor
-    # behind this opening, x 2'-0"..4'-6", holds no furniture, no device and no fixture. An
-    # out-swinging bathroom door is also the safer arrangement on its own merits: a person
-    # who falls against it inside cannot barricade the room.
+    # ** THE DOOR COULD NOT SIMPLY SLIDE. ** W-M-BDN1 lays out from N-M-W3 on a 0" residue
+    # mod 16", so the only legal centres are 32" (where it was) and 48" (where it is); every
+    # station between costs a second cut stud and `structural.door_framing_module` fails on
+    # it. 48" needs the shower's west face at 5'-6" or better for casing, and the shower
+    # stood at 4'-8 5/8" — which is why W-M-BA2E2 moved 8 3/8" east and dropped to a 2x4
+    # (see the WALLS section). The vanity went to 48 x 18 in the same pass. Result: 30" of
+    # clear opening, the vanity's east face 8 1/16" clear of the west jamb, and 3" of wall
+    # between the east jamb and the pan.
     #
-    # The hinge is the EAST jamb (x=3'-11"), so the leaf parks against the bedroom wall east
-    # of the opening rather than swinging back across the bedroom.
+    # ** THE OUT-SWING STAYS, AND NOT BECAUSE OF THE VANITY ANY MORE. ** It clears both
+    # jambs now either way. It swings out because an out-swinging bathroom door cannot be
+    # barricaded by a person who falls against it inside. RM-M-BED's side was re-checked,
+    # not assumed: FURN-M-BED moved 2" east on the same pass because the arc grazed its
+    # north-west corner by 2 in2 at the new station.
     #
-    # ** THE FLAGS READ THE OPPOSITE WAY ROUND FROM HOW THEY DID BEFORE 2026-09-09, AND THE
-    # ARRANGEMENT ON THE FLOOR IS UNCHANGED. ** This was `flip_hinge=True` alone, written
-    # when `_door_swing_clearance` let `flip_hinge` fall through to the swing SIDE as well;
-    # the two renderers never agreed with it, and the sheets drew this leaf swinging IN,
-    # across the vanity, for as long as it was authored that way. `flip_hinge` now picks the
-    # jamb and only the jamb, so the EAST jamb is the unflipped one here (W-M-BDN1 runs +x)
-    # and `flip_swing` is what turns the leaf OUT into RM-M-BED.
-    # ** DO NOT DROP `flip_swing`. ** It is the out-swing, and without it the leaf clips the
-    # vanity by 25 in2 exactly as described above.
+    # ** THE HINGE IS THE WEST JAMB (x=2'-9"). ** The leaf opens back against W-M-BDN1 west
+    # of the opening, and west is the jamb that keeps the arc off the bed — hinged east the
+    # disc reaches the bed's face at full radius. `test_the_bathroom_door_swings_out_and_
+    # clears_the_vanity` pins the jamb as well as the side.
+    #
+    # ** THE TWO FLAGS ARE INDEPENDENT, AND DID NOT USED TO BE. ** Before 2026-09-09 this
+    # was `flip_hinge=True` alone, written when `_door_swing_clearance` let `flip_hinge`
+    # fall through to the swing SIDE as well; the two renderers never agreed with it, and
+    # the sheets drew this leaf swinging IN, across the vanity, for as long as it was
+    # authored that way. `flip_hinge` now picks the jamb and only the jamb (W-M-BDN1 runs
+    # +x, so the unflipped jamb is the EAST one), and `flip_swing` picks the side.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", ft(1, 5)), flip_swing=True),
+         position=from_node("N-M-W3", ft(2, 9)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -1996,9 +2007,10 @@ PANELING = [
     #   * W-M-BA2E2 runs south from N-M-D2 (y=18'-0"), so the pan's north edge is
     #     18'-0" - 16'-2 3/8" = 1'-9 5/8" along it. The 2 3/8" residue is W-M-BDN1's own
     #     half-thickness, which is where the pan stops.
-    #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-8 5/8" along it, ending on
-    #     x = 7'-8 5/8" = N-M-TUBDK-E.
-    # D-M-BATH2 sits at 1'-5"..3'-11" on W-M-BDN1, clear of the span.
+    #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 5'-6" along it, ending on x = 8'-6".
+    #     Both numbers moved 9 3/8" east with the pan on 2026-09-09.
+    # D-M-BATH2 sits at 2'-9"..5'-3" on W-M-BDN1, and its east jamb stops 3" short of the
+    # span — that 3" is the door casing, and it is the whole margin the move left.
     #
     # ** W-M-TUBDK-S IS ALSO A BOUNDING WALL AND MUST NOT BE SPANNED. ** It is the tub
     # deck's 20 3/4" knee wall; a 7'-0" band would clamp to its top and buy 5.3 SF of
@@ -2016,7 +2028,7 @@ PANELING = [
                  replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-M-BA2E2", start=ft(1, 9.625),
                                      length=ft(3)),
-                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(4, 8.615),
+                        PanelingSpan(wall_ref="W-M-BDN1", start=ft(5, 6),
                                      length=ft(3)))),
 ]
 

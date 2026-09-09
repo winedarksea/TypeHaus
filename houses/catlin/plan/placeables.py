@@ -758,7 +758,7 @@ MAIN_PLACEABLES = [
     # one off ED-M-BED-RC1; y=9'-3" holds the foot zone clear of that same pair. This is the
     # one bedroom where the queen keeps all three zones whole with room left over.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
-              position=pt(m(2.58782), m(2.80531))),
+              position=pt(m(2.63862), m(2.80531))),
 
     # --- mudroom (RM-M-MUDROOM) --------------------------------------------------------
     # Both mudroom closets are framed rooms, not furniture (RM-M-MECH, RM-M-MUD-CLOSET,
@@ -890,26 +890,6 @@ MAIN_PLACEABLES = [
     # side of that wall, in RM-M-LAUNDRY, which is where the panel goes: laundry face of
     # W-M-BA2E at the drain's own y. Base at 6" puts the opening at 6"..1'-8", the band
     # the tee and trap occupy.
-    Furniture(uid="TEBYP46W7Y", tag="FURN-M-BATH2-TUB-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-M-LAUNDRY",
-              position=pt(ft(8, 3.375), ft(19, 4.8)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
-    # The SECOND panel into the same bath: the
-    # Kohler K-5713-W1 is a drop-in sitting in the framed box W-M-TUBDK-W/-S make, and its
-    # install guide asks for access "for future servicing of the power supply or heater
-    # components" — the Bask heated surface's board and the outlet ED-M-BATH2-TUB-RC feeding
-    # it (plan/electrical.py). The panel above cannot serve them: it opens off RM-M-LAUNDRY
-    # into W-M-BA2E's cavity for the trap and the waste-and-overflow, on the far side of a
-    # bath that fills its bay to within 3/16".
-    #
-    # So this one opens the box itself, from inside RM-M-BATH2, through the deck's west knee
-    # wall. Centred at y=16'-10" it lands opposite ED-M-BATH2-TUB-RC in the box's foot bay —
-    # the 4" of open box south of the bath, which is the only part of the enclosure a hand
-    # can work in. The 14" opening runs y 16'-3"..17'-5", clearing the knee wall's own south
-    # end at 16'-2 3/8" by 5/8"; base 3" puts it at 3"..17" in a wall whose framing runs
-    # 3/4"..20", so it clears top and bottom too. It cannot move much further south.
-    #
-    # Kohler specifies neither a size nor a location for it, so 14x14 is this house's own
-    # answer — the same type as the trap panel, which is the size a hand and a meter need.
     Furniture(uid="1AQVMB4JJD", tag="FURN-M-BATH2-TUBDK-AP", type_ref="FT-ACCESS-PANEL-1414",
               room="RM-M-BATH2", position=pt(ft(4, 3.5), ft(16, 10)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(3))),
@@ -1375,45 +1355,62 @@ ATTIC_PLACEABLES = [
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-A-STUDY", position=pt(ft(26, 6), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar ---------------------------------------
-    # The other half of the wet bar; FX-A-STUDIO-BAR-SINK is in plan/fixtures.py. Both stand on
-    # W-A-C2's WEST face in a single counter run: the sink over the north half, this box under
-    # the south half, its power off ED-A-STUDIO-BAR-GFCI.
+    # ** IT MOVED OFF THE CENTRE WALL ONTO W-A-BATH-S, 2026-09-09. ** The bar used to be three
+    # pieces on W-A-C2's west face — a base, a fridge and a sink — with D-A-STUBATH swinging
+    # out into them, so a person at the bowl blocked the bathroom door. It is now a SUNNERSTA
+    # kitchenette against the bath wall with the door slid east past it, which is the owner's
+    # own proposal. FX-A-STUDIO-BAR-SINK is in plan/fixtures.py; power is off
+    # ED-A-STUDIO-BAR-GFCI, which came across with it (plan/electrical_attic.py).
     #
-    # ** x=17'-0", NOT ON THE x 9'-7 1/2" WET WALL. ** At 6:12 off a plate the roof
-    # underside there is 4'-11" and you cannot stand at a counter under it.
+    # ** THE FRIDGE DOES NOT GO UNDER THE KITCHENETTE, AND THAT IS AN OPEN MEASUREMENT. **
+    # APPL-BAR-FRIDGE-24 is 24" deep and 34" tall; the SUNNERSTA top is 22" deep, so the
+    # catalog appliance cannot go in the unit's own cavity. Until the unit's clear opening is
+    # measured off the assembly instructions, the fridge stays a free-standing piece with a
+    # home of its own — if a cube fridge does fit, mint an appliance type sized to what is
+    # bought and delete this station.
     #
-    # y=13'-6", NOT the 1'-6" south of the sink a 24" box under a 24" opening wants: that
-    # put it inside D-A-STUBATH's outward arc, which `integrity.door_swing_conflict` named.
-    # The bath door has nowhere else to swing (see plan/storeys/attic_studio.py's OPENINGS),
-    # so the fridge yields and the counter run reads as sink-then-gap-then-fridge over
-    # 3'-2" rather than as one 4'-0" bank. The sink did not move: it is the fixture with a
-    # trap arm, and Table 1002.2's 5'-0" for a 2" arm is what pins it to y 16'-8". ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a
-    # cooktop here turns the studio into a second dwelling unit and brings IRC R302.3's
-    # two-family separation down on the attic floor and the centre wall. The type carries the
-    # same warning and it is written twice on purpose.
+    # It stands immediately WEST of the unit on the same wall, back on W-A-BATH-S's south face
+    # at y 17'-1 5/8": c/l (9'-3 15/16", 16'-1 5/8"), footprint x 8'-3 15/16"..10'-3 15/16",
+    # y 15'-1 5/8"..17'-1 5/8", its east face flush on the unit's west end. That is the LOW
+    # end of the rake and deliberately so — `1 1/2" + x/2` gives 4'-4 3/8" over its west face
+    # and 5'-3 15/16" over its east, and a 34" box is the tallest thing that belongs there.
+    # A person stands at the BOWL, at the tall end, which is the whole point of the move.
     #
-    # ** c/l 16'-8 5/8", NOT 17'-0". ** 17'-0" is W-A-C2's AXIS, not its face — a 24" box
-    # centred there stands 3 3/8" inside the wall it is supposed to lean on, and nothing
-    # grades an appliance against wall geometry. c/l 16'-8 5/8" is 17'-8 5/8" (the face) less
-    # half the 24" depth. `rotation=deg(90)`, matching the bar sink (plan/fixtures.py):
-    # deg(-90) would back a placeable onto its WEST side, facing it into the wall. The
-    # footprint is square, so only the plan symbol and the door swing read the rotation — but
-    # they do read it.
+    # ** SINK AND FRIDGE, AND NOTHING THAT COOKS: ** a range or a cooktop here turns the
+    # studio into a second dwelling unit and brings IRC R302.3's two-family separation down on
+    # the attic floor and the centre wall. The type carries the same warning and it is written
+    # twice on purpose. The SUNNERSTA is sold in markets that offer a hob for it; do not buy
+    # one.
+    #
+    # `rotation=deg(-90)` backs it onto the same wall the kitchenette backs onto — the
+    # footprint is square, so only the plan symbol and the door swing read the rotation, but
+    # they do read it. It came off W-A-C2's west face with the rest of the bar, which is what
+    # unburied REG-A-HP-WEST (plan/mep_registers.py) — the floor boot that answers R303.1
+    # Exception 1 for this room and had a fridge standing on it.
     Appliance(uid="7B10E5QBCF", tag="APPL-A-STUDIO-FRIDGE", type_ref="APPL-BAR-FRIDGE-24",
-              room="RM-A-STUDIO", position=pt(ft(16, 8.625), ft(13, 6)), rotation=deg(90)),
-    # ** THE THIRD PIECE OF THE BAR. **
-    # FX-A-STUDIO-BAR-SINK carries `Mount(WALL, elevation=27")` -- the identical mount to
-    # FX-M-KITCH-SINK -- and that only describes a buildable thing because FURN-M-KIT-SINKBASE
-    # stands under the kitchen sink; this is that base for the bar sink.
+              room="RM-A-STUDIO", position=pt(inch(111.9375), inch(193.625)),
+              rotation=deg(-90)),
+    # ** THE WET BAR IS ONE PRODUCT NOW, AND IT IS ON THE BATH WALL. ** The owner chose an
+    # IKEA SUNNERSTA mini-kitchen (44 1/8" x 22" x 54 3/4", $149, article 40313363), which
+    # replaces the house-local 24"x18" base that used to stand on W-A-C2's west face with
+    # D-A-STUBATH swinging into it. The whole derivation is on FT-STUDIO-KITCHENETTE-4422 in
+    # plan/furniture_types.py; read it before moving this.
     #
-    # 18" deep, not the catalog's 24": D-A-STUBATH's arc reaches x 16'-2 1/2" and a 24" box
-    # off the 17'-8 5/8" face puts 52 in^2 inside it (21" puts 15 in^2; 18" clears by 0.42").
-    # The whole derivation is on FT-STUDIO-BAR-BASE-2418 in plan/furniture_types.py -- read it
-    # before making this deeper. Same arc that pinned the fridge to y 13'-6".
+    # ** THE TOP IS NOT REVERSIBLE, AND THAT PICKED THE WALL. ** The bowl is at the unit's
+    # right-hand end as you face it. On the centre wall that puts the bowl at the SOUTH end,
+    # roughly 76" of trap arm from the bath vent against Table 1002.2's 60" for 2". On
+    # W-A-BATH-S it puts the bowl at the EAST end, nearest the stack — which is what the short
+    # revent in plan/mep_venting.py hangs on and what takes the arm well inside 60".
     #
-    # c/l (16'-11 5/8", 16'-1"): the wall face less half the 18" depth, and 24" of width whose
-    # NORTH face lands on the sink's at y 17'-1", taking the same 5/8" scribe to W-A-BATH-S.
-    # The sink (y 15'-7"..17'-1") sits fully over it; 7" of open floor is left to the fridge.
-    Furniture(uid="4GVQGBXMS3", tag="FURN-A-STUDIO-BAR-BASE", type_ref="FT-STUDIO-BAR-BASE-2418",
-              room="RM-A-STUDIO", position=pt(ft(16, 11.625), ft(16, 1)), rotation=deg(90)),
+    # c/l (12'-1 15/16", 16'-2 5/8"): back on W-A-BATH-S's 17'-1 5/8" face, occupying
+    # x 10'-3 15/16"..14'-0" and y 15'-3 5/8"..17'-1 5/8". Rotation is omitted, i.e. `deg(0)`,
+    # which backs it NORTH onto the wall — local +y is the object's BACK
+    # (`resolve/placeables.py`), a convention all three bar pieces used to get backwards.
+    # 14'-0" leaves 4" to D-A-STUBATH's arc at its new station (storeys/attic_studio.py).
+    #
+    # The tag and the uid are kept, so the element's GlobalId follows it across the retype the
+    # way RM-A-STUDIO kept CAR401AAAA. BK-A-BATH-S (plan/backing.py) is the anchor rail IKEA
+    # requires; a 54 3/4" unanchored flat-pack is not buildable.
+    Furniture(uid="4GVQGBXMS3", tag="FURN-A-STUDIO-BAR-BASE", type_ref="FT-STUDIO-KITCHENETTE-4422",
+              room="RM-A-STUDIO", position=pt(inch(145.9375), inch(194.625))),
 ]

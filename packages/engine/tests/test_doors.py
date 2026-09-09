@@ -78,9 +78,11 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # an air handler or a water heater actually passes through, so both went to a full
         # 36". Nothing else interior did.
         "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
-        # D-B-GYM once the hall ran south to the sauna wall — the same 32" leaf, now glazed
-        # so the gym's south daylight reaches a hall that has no window of its own.
-        "DT-INT-SWING32-GLAZED": (32.0, DoorOperation.SWING, False, True),
+        # D-B-GYM: glazed so the gym's south daylight reaches a hall that has no window of
+        # its own, and 36" since 2026-09-09 so the gym joins the basement equipment route.
+        # W-B-CS3 holds it — 46" of stud line, not the 42 3/16" of hall-side face the 32"
+        # leaf was once argued from.
+        "DT-INT-SWING36-GLAZED": (36.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30-TRIMLESS": (30.0, DoorOperation.SWING, False, False),

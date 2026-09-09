@@ -137,11 +137,16 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(17, 7.625), ft(3)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
-    # ** RC5 IS A GFCI DEVICE ** — not because it moved, but because the
-    # wet bar did: FX-A-STUDIO-BAR-SINK is on this same wall at y 16'-8" now, 4'-8" north of
-    # this box, and `_sink_points` projects E3902.10's 6'-0" radius from every Service.DRAIN
-    # fixture. CKT-RC-ATTIC stays `gfci=False` and the protection rides the device, which is
-    # the house rule (circuits.py). RC4 at y 3'-0" is 13'-8" away and stays ordinary.
+    # ** RC5 STAYS A GFCI DEVICE, AND SINCE 2026-09-09 IT IS BY CHOICE RATHER THAN BY RULE. **
+    # It was made GFCI because the wet bar stood on this same wall: `_sink_points` projects
+    # E3902.10's 6'-0" radius from every Service.DRAIN fixture, and the bar sink was 4'-8"
+    # north of this box. The bar is on W-A-BATH-S now (plan/placeables.py) and the bowl
+    # measures 6'-2 1/2" from here — 2 1/2" OUTSIDE the circle. That margin is not worth
+    # banking: the bowl's position within the SUNNERSTA's top is an unmeasured number
+    # (plan/fixtures.py), and 3" of it either way puts this box back inside E3902.10. Same
+    # trade RC7 carries two blocks down — over-protection is never a violation. CKT-RC-ATTIC
+    # stays `gfci=False` and the protection rides the device, which is the house rule
+    # (circuits.py). RC4 at y 3'-0" is further again and stays ordinary.
     ElectricalDevice(uid="CX9R0H14DZ", tag="ED-A-STUDIO-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(17, 7.625), ft(12)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
@@ -151,16 +156,18 @@ NEC_FILL_ATTIC = [
     # `_sink_points`' actual behaviour and it is wider than it sounds: the shower and the water
     # closet project circles too. RC6 lands 3'-8" from FX-A-STUBATH-SH through the bath wall, so
     # it is a GFCI device whatever it is called. ** RC7 IS GFCI BY CHOICE, NOT BY RULE. **
-    # The bar sink is at (17'-0", 16'-8") and the nearest Service.DRAIN fixture to RC7's
-    # (3'-0", 21'-0 5/8") is the water closet at 10'-6", so E3902.10 does not reach it. The
+    # The bar sink is at (13'-1", 16'-2 5/8") since the kitchenette moved to W-A-BATH-S — 11'-2"
+    # from RC7's (3'-0", 21'-0 5/8") — and the nearest Service.DRAIN fixture to RC7 is still
+    # the water closet at 10'-6", so E3902.10 does not reach it. The
     # device stays GFCI: it is a FLOOR box in a room with a wet bar, and dropping protection
     # off an in-deck receptacle to save a few dollars is the wrong trade. Over-protection is
     # never a violation.
     # The west eave line's pair. x=1'-7 5/8" is the floor-box station described in the
     # eave-line note above, 8 1/8" clear of the rafter plate; deg(90) turns them east into
     # the room, mirroring RC4/RC5's deg(270) on the centre wall opposite. Plain, not GFCI:
-    # the nearest Service.DRAIN fixture is the bar sink at (17'-0", 16'-8"), and at 18'-9"
-    # (RC8) and 15'-5" (RC9) neither is inside E3902.10's 6'-0" circle.
+    # the nearest Service.DRAIN fixture is the bar sink at (13'-1", 16'-2 5/8"), and at 15'-4"
+    # (RC8) and 11'-5 1/2" (RC9) neither is inside E3902.10's 6'-0" circle. Both distances
+    # SHRANK when the kitchenette crossed the room and both still clear it by a wide margin.
     ElectricalDevice(uid="F1MW3S3JD5", tag="ED-A-STUDIO-RC8", kind=DeviceKind.RECEPTACLE,
                      position=pt(inch(19.625), ft(6)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
@@ -185,8 +192,16 @@ NEC_FILL_ATTIC = [
                      circuit="CKT-RC-ATTIC", room="RM-A-STUDIO",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      rotation=deg(270)),
+    # ** RC6 MOVED EAST OF THE DOOR, 15'-6" -> 17'-2" (2026-09-09), BECAUSE IT WAS INSIDE THE
+    # ROUGH OPENING. ** D-A-STUBATH slid east with the kitchenette and its RO is 14'-4"..16'-4"
+    # now; 15'-6" is dead centre in it. ** NOTHING GRADES THAT ** — no rule in this engine
+    # tests a wall device against an opening — so it is caught here and by eye, and it is
+    # exactly the defect ED-G-SW/ED-G-EXT-SW still carry in the garage. West of the unit is not
+    # available (the kitchenette starts 8 7/16" off this wall's own west end), so east of the
+    # door it is: 17'-2" leaves 10" to the jamb pack and 10" to the W-A-C2 corner. It stays a
+    # GFCI device — the bowl is 4'-2" away through the same wall face, inside E3902.10.
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(15, 6), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(17, 2), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(180)),
     ElectricalDevice(uid="NZQNA1VMKW", tag="ED-A-STUDIO-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -199,18 +214,24 @@ NEC_FILL_ATTIC = [
     # and it is a lavatory here. CKT-RC-ATTIC is `gfci=False` deliberately (circuits.py: "the
     # handful in an E3902 location … are GFCI devices instead"), so this follows the house rule
     # and is a GFCI DEVICE rather than a re-typed circuit.
-    # Follows the bar to W-A-C2's west face (see plan/fixtures.py), onto the
-    # same x 17'-7 5/8" line RC4/RC5 already stand on and turned west into the room the same
-    # way. `test_wall_mounted_devices_resolve_against_a_wall_face` is what settles that
-    # number — authored an inch further west it resolved floating 1" clear of the finish.
-    # y=15'-0 1/2" is the middle of the 1'-1" gap between the sink's south edge (bowl spans
-    # y 15'-7"..17'-1", plan/fixtures.py) and APPL-A-STUDIO-FRIDGE's 14'-6" north face:
-    # beside both, reachable by both, and `code.E3902_gfci_locations` measures it at 1.4'
-    # against E3902.10's 6'-0".
+    # ** IT FOLLOWED THE BAR ONTO W-A-BATH-S, AND IT IS AT 4'-10" BECAUSE THE UNIT IS
+    # 4'-6 3/4" TALL (2026-09-09). ** It stood on W-A-C2's west face at 3'-6", beside a 3'-0"
+    # counter. The SUNNERSTA is 54 3/4" to the top of its rail, so every station under 4'-7"
+    # on this wall is BEHIND the unit — the "a tall unit swallows a receptacle from the NEC
+    # ring and the spacing check never notices" case, and this engine has no rule that would
+    # have said so. 4'-10" clears the rail by 3 1/4" and the 6:12 underside at this station is
+    # 7'-0", so there is a foot of wall above it.
+    #
+    # x=13'-9" is 8" east of the bowl, over the unit's east end (which stops at 14'-0") and
+    # 7" west of D-A-STUBATH's rough opening — the one band on this wall that is neither
+    # behind the unit's rail nor inside the door. `code.E3902_gfci_locations` measures it at
+    # 0.7' against E3902.10's 6'-0". `rotation=deg(180)` faces it south into the studio, off
+    # the wall's south face at y 17'-0 5/8" — the same line RC6 stands on, and the number
+    # `test_wall_mounted_devices_resolve_against_a_wall_face` settles.
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17, 7.625), ft(15, 0.5)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(13, 9), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58)), rotation=deg(180)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no
     # sink — and on the new CKT-BATH-ATTIC rather than the general attic circuit.
     # Its prior station failed `code.E3901_6_bathroom_receptacle` (IRC E3901.6 / NEC

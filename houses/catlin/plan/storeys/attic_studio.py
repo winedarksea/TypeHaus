@@ -287,34 +287,31 @@ OPENINGS = [
     # call, not a code one.
     Door(uid="Y3R3YMXFVJ", tag="D-A-POCKET", host="W-A-STU-N", type_ref="DT-INT-ACCESS24",
          position=from_node("N-A-PK-W", ft(7))),
-    # Into the bath off the studio. `flip_hinge` parks the leaf against the wall, clear of the
-    # shower's SW corner.
+    # Into the bath off the studio. The SUNNERSTA kitchenette moved onto W-A-BATH-S at its
+    # west end (plan/placeables.py) and blocks the door's old outward arc, so the door slides
+    # east — the owner's own proposal — to make room. Hinge stays on the east jamb
+    # (`flip_hinge=False`, this door's original flag); the leaf still swings out into the
+    # studio (`flip_swing=True`, unchanged).
     #
-    # ** IT MOVED 2" WEST AND ITS SWING WAS SETTLED BY ELIMINATION. ** Three
-    # arrangements were tried and `integrity.door_swing_conflict` / `mep.pocket_occupancy`
-    # decided between them:
-    #   * INWARD, into the bath, sweeps FX-A-STUBATH-SH. The 36" pan is already in the NE
-    #     corner — 16'-2 5/8"/20'-7 5/8" is the maximum x and y the bath box allows — and the
-    #     door cannot move far enough west to miss it, because the 6:12 rake needs its low
-    #     jamb at x >= 13'-8".
-    #   * A POCKET has nowhere to go either way: 18" short of cavity to the east, and to the
-    #     west the cavity is where PR-A-STUBATH-DRAIN, PR-A-CW/HW-STUBATH and
-    #     PR-S-SUITEBATH-VENT all cross W-A-BATH-S. `mep.pocket_occupancy` named all four.
-    #   * OUTWARD, into the studio, is what is left, and it works with 2" to spare once the
-    #     leaf moves from x 14'-0" to 13'-10" — the arc then stops at 16'-4", clear of
-    #     FX-A-STUDIO-BAR-SINK's 16'-5". APPL-A-STUDIO-FRIDGE moved south with it (see
-    #     plan/placeables.py); the sink, its drain, its vent and its GFCI did not move.
+    # ** IT WAS ALREADY A UI DRAG TO x 13'-10", 10" WEST OF THE RAKE LIMIT, AND THIS OVERWRITES
+    # IT. ** That drag is the source of the standing `structural.door_framing_module` FAIL —
+    # a stray edit from another session's canvas work, not an authored decision. This is a
+    # fresh siting, not a correction of that one.
     #
-    # ** IT ALSO MOVED EAST ON THE SAME PASS, 11'-3 5/8" -> 13'-10" (leading jamb), FOR THE
-    # RAKE ITSELF. ** W-A-BATH-S runs in x from 9'-7 1/2" to 18'-0" and the 6:12 underside is
-    # `1 1/2" + x/2`, so a 6'-8" head plus its header needs 2 x (80 + 2) = 13'-8" of x at the
-    # LOW (west) jamb. It stood at 11'-3 5/8", where there are only 5'-9 1/2", and the header
-    # came out through the raked plate. At 13'-10" there are 7'-0 1/2" — 2" of margin — and
-    # the leaf ends at 16'-4", clear of N-A-BW-E. This is also the move the bath wanted
-    # anyway: the fixtures went east into the tall half on the same pass (plan/fixtures.py),
-    # so the door now opens onto them rather than into the low strip behind them.
-    Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING30",
-         position=from_node("N-A-WW-S", ft(4, 1)), flip_hinge=False, flip_swing=True),
+    # ** THE LOW JAMB IS THE BINDING CONSTRAINT, AS BEFORE. ** W-A-BATH-S runs in x from
+    # 9'-7 1/2" to 18'-0" and the 6:12 underside is `1 1/2" + x/2`, so a 6'-8" head plus its
+    # header needs 2 x (80 + 2) = 13'-8" of x at the LOW (west) jamb. At the new station the
+    # leading (east) jamb is 16'-4" and the near (west) jamb, where `from_node` offsets to, is
+    # 14'-4" — 1'-0 3/4" clear of the 13'-3 1/4" the rake demands, with the hinge staying on
+    # the higher east jamb where the header has the most margin.
+    #
+    # ** THE ARC CLEARS THE UNIT BY 4". ** Hinged east and swinging out, the leaf sweeps
+    # x 14'-4"..16'-4", reaching y 15'-1 5/8" — clear of the kitchenette's east end
+    # (x 14'-0") by 4", and clear of the shower's NE corner box the same way the old siting
+    # was. The rough opening (14'-4"..16'-4") keeps the bath entry much as it was and leaves
+    # the person at the sink 8" clear of the doorway.
+    Door(uid="ENHDGC87MN", tag="D-A-STUBATH", host="W-A-BATH-S", type_ref="DT-INT-SWING24",
+         position=from_node("N-A-WW-S", ft(4, 8.5)), flip_hinge=False, flip_swing=True),
 ]
 
 # ============================== ROOMS =================================================
@@ -338,11 +335,12 @@ OPENINGS = [
 # it False would buy back ~3.9 cfm of whole-house ventilation margin if that ever gets tight.
 ROOMS = [
     # Seed moved (9'-0", 20'-0") -> (7'-0", 8'-0"): the old point is now 4" west of the wet bar's
-    # back wall. R305 PASSES on the sloped path and the margin is worth writing down: the rule needs
-    # >=50% of the floor at 7'-0" and NO habitable area below 5'-0". The roof underside is
-    # 5'-0" + x/3, so 7'-0" arrives at x=6'-0" and 12' of the 18' width clears it — 67%. The STORAGE
-    # loft was already in scope for this rule (only UNCONDITIONED and GARAGE are out) and already
-    # passed; the studio is a subset of the same x range and grades the same.
+    # back wall. R305 PASSES on the sloped path via Exception 1's *required floor area* (70 sf)
+    # scoping, not a whole-room fraction (see CLAUDE.md) — the STORAGE loft was already in scope
+    # for this rule (only UNCONDITIONED and GARAGE are out) and already passed; the studio is a
+    # subset of the same x range and grades the same. The roof underside is `1 1/2" + x/2`
+    # (6:12, current since 2026-09-01), not the pre-6:12 `5'-0" + x/3` this passage used to quote:
+    # 7'-0" now arrives at x=13'-9" and 5'-0" at x=9'-9".
     #
     # `floor_finish=None` IS THE CHEAP MOVE AND IS HOW YOU SAY IT. FS-ATTIC's deck is already
     # `plywood-underlayment-sanded`, specified that grade PRECISELY because these rooms walk on it.

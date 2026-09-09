@@ -1015,20 +1015,28 @@ OPENINGS = [
     # the furnace room used to be five rooms away (stair -> playroom -> gym -> aisle ->
     # workshop -> furnace).
     #
-    # D-B-GYM keeps its uid and its 32" leaf and moves onto W-B-CS3, the framed 4'-4" of
-    # the x=18' line between the rotated sauna and the y=18' cross wall. ``from_node``
-    # offsets the opening's near *edge*, so 6" leaves half a foot of wall at the sauna end
-    # and 1'-3" at the north — and that 1'-3" is spent: ED-B-GYM-RC8 stands in it, because
-    # everything north of N-B-C1 on this line is W-B-CS2's 12" pour.
-    # It swings east into the gym on the default (left-hand normal of W-B-CS3's
-    # north-to-south direction).
+    # D-B-GYM keeps its uid and moves onto W-B-CS3, the framed 3'-10" of the x=18' line
+    # between the rotated sauna and the y=13'-10" pour. ``from_node`` offsets the opening's
+    # near *edge*, so 2 9/16" is the whole north jamb allowance — everything north of
+    # N-B-C1 on this line is W-B-CS2's 12" pour. It swings east into the gym on the default
+    # (left-hand normal of W-B-CS3's north-to-south direction).
     # ** IT OPENS ONTO THE HALL, NOT THE WORKSHOP, SINCE 2026-09-07, AND IT IS GLAZED FOR
-    # THAT REASON. ** Same uid, same 32" leaf, same position; only the room on its west
-    # side changed when the hall ran south to the sauna wall. The hall has no window, so
-    # the gym's south glazing is its daylight — hence DT-INT-SWING32-GLAZED (tempered by
-    # definition, storeys/main.py). ** IT STAYS 32". ** W-B-CS3 offers 42 3/16" of framed
-    # run; a 36" RO leaves 3/16" for two jamb packs, which is nothing.
-    Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3", type_ref="DT-INT-SWING32-GLAZED",
+    # THAT REASON. ** The hall has no window, so the gym's south glazing is its daylight.
+    #
+    # ** 32" -> 36" ON 2026-09-09, AND THE SAUNA WALL DID NOT MOVE. ** The earlier "it stays
+    # 32"" note measured the leaf against 42 3/16" — N-B-C1's pour face down to W-B-SA-N2's
+    # north GWB face — and 42 3/16" less 6" of jamb pack really does leave only 3/16". But
+    # W-B-SA-N2 BUTTS this wall's west face: its studs stop at x=17'-8 5/8", clear of
+    # W-B-CS3's own stud line at x 17'-9 1/4"..18'-2 3/4". So the run a jamb pack lives in
+    # is the wall's full 46", not the hall-side face, and the near edge does not move: the
+    # opening grows 4" SOUTH, the south king lands at y=10'-5 3/16" and clears the sauna
+    # wall's finished face by 5/8". Nothing else here moved — ED-B-GYM-RC8 is at y=10'-1",
+    # still south of the RO, and `integrity.door_swing_conflict` is unchanged.
+    # The one cost is `structural.door_framing_module`, now UNKNOWN: W-B-CS3 reaches its
+    # 16" grid 6" along itself, so a 36" RO cuts three stud lines where two would do and no
+    # station on a 46" wall fixes that. Advisory, no citation, and it does not gate
+    # `haus print`. Narrowing a leaf to save one cripple is not a trade this house makes.
+    Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3", type_ref="DT-INT-SWING36-GLAZED",
          position=from_node("N-B-C1", ft(0, 2.5625)), flip_swing=False, flip_hinge=False),
     # Used to be D-B-STAIR, opening into the workshop through W-B-CW2's concrete; on
     # 2026-07-30 the shaft's south 3'-0" became RM-B-BATH, and on 2026-09-05 the bathroom

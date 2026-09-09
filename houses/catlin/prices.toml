@@ -4017,11 +4017,14 @@
 # jamb pack.
 "DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 150, high = 315 } }  # 2 ea
 "DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door
-# D-B-GYM, borrowing the gym's south daylight for a windowless hall (2026-09-07). Bracketed off
-# the 30" glazed row above: two more inches of leaf and of tempered lite. `tempered=True` is not
-# a line item here — R308.4.1 makes glazing in a door hazardous by definition, so every glazed
-# door in this house is tempered and every glazed row already carries it.
-"DT-INT-SWING32-GLAZED" = { material = { low = 375, high = 960 }, labour = { low = 170, high = 360 } }  # 1 ea
+# D-B-GYM, borrowing the gym's south daylight for a windowless hall. Bracketed off the 30"
+# glazed row above: six more inches of leaf and of tempered lite. `tempered=True` is not a line
+# item here — R308.4.1 makes glazing in a door hazardous by definition, so every glazed door in
+# this house is tempered and every glazed row already carries it. ** REPLACES
+# DT-INT-SWING32-GLAZED (2026-09-09) ** when D-B-GYM widened to 36": the step off the 32" glazed
+# figures is the same shade the plain 36" row takes off the plain 32" one, because a 36" glazed
+# prehung is a stock size too and the hang is the same either way.
+"DT-INT-SWING36-GLAZED" = { material = { low = 395, high = 1010 }, labour = { low = 175, high = 370 } }  # 1 ea
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.

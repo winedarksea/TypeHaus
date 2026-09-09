@@ -238,8 +238,10 @@ SUPPLY = [
     #     W-M-CLN starts at x=8'-3 3/8": the two only TOUCH, so no point is inside both and a
     #     leg claiming either one leaves its structure footprint — `mep.wet_wall_occupancy` is
     #     an ERROR about exactly this. `None` is the honest answer, and it is the same `None`
-    #     the sleeved basement crossing already carries: the 4 1/2" from x=8'-0" to
-    #     x=8'-4 1/2" is the corner post, and it is bored.
+    #     the sleeved basement crossing already carries: the 10 3/4" from x=8'-0" to
+    #     x=8'-10 3/4" is bored post, and it grew when W-M-BA2E2 moved 8 3/8" east
+    #     (2026-09-09) and put a second, T-junction post at x=8'-6" right behind the
+    #     original corner post — one continuous bore covers both.
     # The wall this all rides in is why W-M-CLN was retyped (storeys/main.py). Through the
     # 2x4 partition that was there, this leg bores every stud between x=8'-0" and the sink
     # and `mep.wet_wall_occupancy` grades it `long_horizontal`; through the staggered pair it
@@ -248,7 +250,7 @@ SUPPLY = [
             path=(pt(ft(8), ft(16)), pt(ft(8), ft(20, 7.2)),
                   pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2)),
                   pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(18, 1)),
-                  pt(ft(8, 4.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),
+                  pt(ft(8, 10.75), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),
                   pt(ft(11, 6.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(12, 1.4375),
@@ -261,7 +263,7 @@ SUPPLY = [
             path=(pt(ft(5, 6), ft(24)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(7, 10), ft(21, 2.4)), pt(ft(7, 10), ft(18, 1)),
-                  pt(ft(8, 4.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
+                  pt(ft(8, 10.75), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
                   pt(ft(12, 2.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 1.4375),

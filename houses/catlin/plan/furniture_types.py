@@ -742,44 +742,33 @@ BATH2_CAB_4506 = FurnitureType(
 )
 
 
-# --- RM-A-STUDIO's wet-bar base -----------------------------------------------------------
+# --- RM-A-STUDIO's wet bar: an IKEA SUNNERSTA kitchenette ----------------------------------
 #
-# FX-A-STUDIO-BAR-SINK is ``Mount(WALL, elevation=27")``, the identical mount to
-# FX-M-KITCH-SINK -- and that mount only describes a real thing because a run of casework
-# stands under the kitchen sink. Under the bar sink there was nothing: the studio block's
-# comments describe a counter that existed as prose only, and the sink hung on the wall.
+# ** RETIRED 2026-09-09: ** the studio's wet bar used to be a house-local 24"x18" base under
+# FX-A-STUDIO-BAR-SINK, on the CENTRE WALL (W-A-C2), with D-A-STUBATH swinging out into it —
+# the door blocked from opening fully with someone at the sink. The owner picked a real
+# product instead: an IKEA SUNNERSTA mini-kitchen, 44 1/8" x 22" x 54 3/4", $149, article
+# 40313363 — one piece carrying the sink, the counter and the fridge cavity together, and
+# it moves the whole bar off the centre wall onto the bath wall, W-A-BATH-S, which is what
+# frees D-A-STUBATH's swing and REG-A-HP-WEST underneath the old fridge. See
+# plan/placeables.py and plan/fixtures.py for the siting.
 #
-# ** 18" DEEP, AND THE CATALOG HAS NO SUCH BASE. ** Every ``library.placeables.casework``
-# base is ``_BASE_DEPTH`` = 24". Measured against D-A-STUBATH's real swing polygon, from
-# W-A-STU-W's west face at x 17'-8 5/8":
-#     24" deep -> 52.4 in^2 inside the arc
-#     21" deep -> 15.4 in^2 inside the arc
-#     18" deep -> clear, by 0.42"
-# The bath door has nowhere else to swing (see storeys/attic_studio.py's OPENINGS) -- it is
-# the same arc that pushed APPL-A-STUDIO-FRIDGE south to y 13'-6" -- so the cabinet is what
-# yields, and 18" is the deepest that fits. That is not a compromise dimension: an 18"
-# vanity/bar base under an 18" x 14" bowl is a stock depth, and the bowl is only 14" deep,
-# so nothing is lost off the back.
+# ** ITS TOP IS NOT REVERSIBLE, AND THAT SETTLED WHICH WALL IT WENT ON. ** The bowl is at the
+# unit's right-hand end facing it. On the centre wall that puts the bowl 76" from the bath
+# vent against a 60" trap-arm limit; on W-A-BATH-S it puts the bowl at the EAST end, nearest
+# the stack, which is what makes the short revent in mep_venting.py possible at all.
 #
-# House-local rather than a catalog addition because the depth is set by ONE door's arc in
-# ONE room. A generic 18" base would be a reasonable ``casework.py`` entry on its own
-# merits, but promoting it belongs in CONTRIBUTING's review, not in this fix.
-#
-# 24" wide in y, north face flush with the sink's at y 17'-1" (the same 5/8" scribe to
-# W-A-BATH-S the sink takes), leaving 7" of open floor to the fridge -- the run stays the
-# "sink, gap, fridge" the studio block already describes, now with the sink standing on
-# something. It steps 6" shallower than the 24" fridge beside it, which is what an 18" base
-# next to a 24" appliance looks like anywhere.
-#
-# No ``clearances``, per the casework rule. ``work_surface=True``: it is the bar counter.
-STUDIO_BAR_BASE_2418 = FurnitureType(
-    tag="FT-STUDIO-BAR-BASE-2418", name='Studio wet-bar base, 24" x 18"',
-    footprint=(inch(24), inch(18)), height=ft(3),
+# House-local, not a catalog addition, for the same reason the base it replaces was: one
+# product picked for one room. ``storage=True``/``work_surface=True`` carry over from the
+# old base; ``clearances`` stays unset, per the casework convention.
+STUDIO_KITCHENETTE_4422 = FurnitureType(
+    tag="FT-STUDIO-KITCHENETTE-4422", name='SUNNERSTA kitchenette, 44 1/8" x 22"',
+    footprint=(inch(44.125), inch(22)), height=inch(54.75),
     storage=True, work_surface=True, plan_symbol="sink-base",
-    source="Stock 18\"-deep frameless vanity/bar base with two doors, no drawer box (the "
-           "bowl and its trap take the space), on a site-scribed toe kick, with a 24\" x "
-           "18\" solid-surface top cut for FX-A-STUDIO-BAR-SINK's 18\" x 14\" bowl. 36\" "
-           "finished height, matching the 27\" bowl mount the fixture already carries.",
+    source="IKEA SUNNERSTA mini-kitchen, article 40313363, $149. 44 1/8\" x 22\" x 54 3/4\", "
+           "sink at the right-hand end facing the unit (top is NOT reversible). The US "
+           "listing sells the faucet separately; other markets bundle a LAGAN mixer tap and "
+           "a LILLVIKEN trap. Carries the fridge cavity underneath.",
 )
 
 
@@ -860,5 +849,5 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,
-                   CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_BAR_BASE_2418,
+                   CLOSET_SHELF_36, BATH2_CAB_4506, STUDIO_KITCHENETTE_4422,
                    MANTEL_WALNUT_46, PORCH_LOUNGE_27)

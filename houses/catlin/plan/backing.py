@@ -205,4 +205,14 @@ ATTIC_BACKING = [
     WallBacking(uid="GCV1Y8MJ5J", tag="BK-A-STU-W", wall_ref="W-A-STU-W",
                 elevation=inch(32), height=inch(24), profile="0.75x24.0",
                 purpose="wet wall (short): bar sink valve and towel ring"),
+    # IKEA requires the SUNNERSTA kitchenette (FURN-A-STUDIO-BAR-BASE, plan/placeables.py) be
+    # anchored to the wall, and a 44 1/8" x 54 3/4" flat-pack on an attic deck is exactly the
+    # thing that walks away from an unanchored screw. 46" puts a 2x8 flat at 46"..53 1/4", which
+    # takes the unit's own top rail (~52") anywhere along its 10'-3 15/16"..14'-0" run.
+    # ** THE RAKE IS WHY IT IS NOT HIGHER. ** W-A-BATH-S runs from x 9'-7 1/2" east, where the
+    # 6:12 underside `1 1/2" + x/2` is only 4'-11 1/4"; a band any taller runs its west end into
+    # the roof plane, which is `structural.member_interference`'s business and not a guess.
+    WallBacking(tag="BK-A-BATH-S", wall_ref="W-A-BATH-S",
+                elevation=inch(46), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="SUNNERSTA kitchenette wall anchor rail"),
 ]

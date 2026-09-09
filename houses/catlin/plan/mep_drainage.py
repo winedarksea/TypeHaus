@@ -185,7 +185,8 @@ DRAINS = [
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.6375)),
             serves=("FX-M-BATH2-SH",)),
     PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(1), ft(16, 6)), pt(ft(1), ft(16, 6)), pt(ft(3), ft(16, 6))),
+            path=(pt(ft(1), ft(14, 5.375)), pt(ft(1), ft(14, 5.375)),
+                  pt(ft(3), ft(16, 6))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
             serves=("FX-M-BATH2-SINK",)),
@@ -664,23 +665,23 @@ STUDIO_DRAINS = [
             diameter=inch(3), material="pvc",
             elevations=(ft(19, 4), ft(19, 3.5), ft(9, 8), ft(9, 6.5)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH")),
-    # ** THE BAR IS NOT BACK-TO-BACK WITH THE BATH. ** It is on W-A-C2's west face at
-    # (17'-0", 16'-8") because the 6:12 rake leaves nothing usable at the wet wall, so its
-    # 2" branch crosses the joist field west on the y=16'-8" bay centre (200" = 8 + 12 x 16)
-    # and turns north to the stack head. Seven feet of extra 2" PVC in a bay it shares with
-    # nothing — the price of a counter you can stand at.
-    # ** THE HEAD IS UNDER THE BOWL, WITH A 4" TAILPIECE LEG. ** The sink sits on W-A-C2's
-    # face, clear of W-A-BATH-S's 17'-1 5/8" south face, c/l at y 16'-4", 4" off the 16'-8"
-    # bay centre — so the arm drops at the bowl, turns 4" north onto the bay, and only then
-    # runs west. The 16'-8" leg is 1/4"/ft; the 4" leg is 0.75"/ft.
+    # ** THE HEAD FOLLOWED THE BOWL ONTO W-A-BATH-S AND THE RUN GOT SHORTER, 2026-09-09. **
+    # The bar was three pieces on W-A-C2's west face and is now one SUNNERSTA kitchenette on
+    # the bath wall (plan/placeables.py), so this branch no longer crosses the studio floor
+    # from the centre wall: it drops under the bowl at (13'-1", 16'-2 5/8"), runs 3'-5 1/2"
+    # WEST inside the single joist bay between y 16'-0" and 17'-4" — parallel to the joists,
+    # no web to cut — and turns north to the stack on the x 9'-7 1/2" wet-wall line. The old
+    # 4" tailpiece dog-leg onto a bay centre is gone with it.
     PipeRun(uid="ZY2V3KWMVK", tag="PR-A-BAR-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(17, 1.625), ft(16, 4)), pt(ft(17, 1.625), ft(16, 8)),
-                  pt(ft(9, 7.5), ft(16, 8)), pt(ft(9, 7.5), ft(19, 4))),
+            path=(pt(ft(13, 1), inch(194.625)), pt(ft(9, 7.5), inch(194.625)),
+                  pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
-            # 2" over the 7'-11" west leg and 1" over the 4'-0" north one — 1/4"/ft on both,
-            # which `mep.drain_slope` grades segment by segment. The whole profile sits inside
-            # FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), through the webs.
-            elevations=(ft(19, 7.75), ft(19, 7.5), ft(19, 5.5), ft(19, 4.5)),
+            # 1" over the 3'-5 1/2" west leg and 1" over the 3'-1 3/8" north one — both clear
+            # P3005.3's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole
+            # profile sits inside FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), and it
+            # lands at 19'-5 3/4" — above PR-A-STUBATH-DRAIN's own 19'-3 1/2" entry on the
+            # same vertical, so the two inlets do not collide.
+            elevations=(ft(19, 7.75), ft(19, 6.75), ft(19, 5.75)),
             serves=("FX-A-STUDIO-BAR-SINK",)),
 
     # ** THE LAVATORY AND THE SHOWER, COLLECTED IN THE WET WALL. ** Both were 15"-27" from any

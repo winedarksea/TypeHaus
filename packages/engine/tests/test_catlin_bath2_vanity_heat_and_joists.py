@@ -189,9 +189,15 @@ def test_the_vanity_clears_the_window_over_it():
 def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     """** THE CONSTRAINT THAT NEARLY COST THE VANITY ITS SIZE. ** D-M-BATH2's 30" opening
     runs x 2'-0"..4'-6" and the cabinet's east face lands at x=1'-11 5/8" — 3 5/8" inside
-    it. Hinged east and swinging IN, the leaf clipped the cabinet by 25 in2. The door was
-    turned around rather than the cabinet shrunk, so BOTH of these must stay true: the arc
-    is on the BEDROOM side of W-M-BDN1, and the bedroom side is empty.
+    it. Swinging IN, the leaf clipped the cabinet by 25 in2. The door was turned around
+    rather than the cabinet shrunk, so BOTH of these must stay true: the arc is on the
+    BEDROOM side of W-M-BDN1, and the bedroom side is empty.
+
+    ** THE HINGE JAMB IS PINNED HERE TOO, AND THAT IS THE NEWER HALF. ** Nothing asserted
+    it until 2026-09-09, which is how `_door_swing_clearance` came to hang an unflipped leaf
+    on the opposite jamb from the one both renderers draw and go a year unnoticed. The side
+    is a clearance result; the jamb is the owner's handing choice (storeys/main.py) and only
+    a test defends it.
 
     Note this surfaced as `integrity.door_swing_conflict`, an UNKNOWN rather than a FAIL —
     `haus check --only fail` stayed clean through it. It was found by reading the takeoff's
@@ -201,6 +207,10 @@ def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     swing = Polygon([(p[0], p[1]) for p in door.swing_clearance])
     wall_y = 156.0 * M_PER_IN                      # W-M-BDN1's axis; the bath is y > this
     assert swing.bounds[3] <= wall_y + 1e-6, "the door swings back into the bathroom"
+    # `swing_clearance`'s first vertex IS the hinge — the sector is built out from it.
+    hinge_x = door.swing_clearance[0][0] / M_PER_IN
+    assert round(hinge_x, 2) == 17.0, (
+        f"hinged at x={hinge_x:.2f}in, not the WEST jamb at 17in the owner chose")
 
     for tag in ("FX-M-BATH2-SINK", "FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB"):
         assert not swing.intersects(Polygon(_canvas(model, tag).footprint)), tag

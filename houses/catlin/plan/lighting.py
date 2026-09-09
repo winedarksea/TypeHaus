@@ -84,7 +84,7 @@ BASEMENT_LIGHTING = [
     # the same day's shrink took the bay back out to 7'-10 3/16" (x 0'-8"..8'-6 3/16"), so
     # the panel returns to the bay's centre at x=4'-7 1/8", rounded to 4'-7".
     ElectricalDevice(uid="QTB0005AAA", tag="ED-B-WORKSHOP-PANEL1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4, 7), ft(6)), type_ref="ED-T-LT-PANEL",
+                     position=pt(m(0.93205), m(2.36993)), type_ref="ED-T-LT-PANEL",
                      circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5)), rotation=deg(90)),
@@ -759,7 +759,7 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(inch(7.635), m(4.71393)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(inch(7.635), inch(173.375)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(90),
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -812,7 +812,7 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 4.375), ft(16, 10)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(8, 11.74), ft(16, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # room=RM-M-MUD-CLOSET: the closet conversion framed a room around this ceiling point,
