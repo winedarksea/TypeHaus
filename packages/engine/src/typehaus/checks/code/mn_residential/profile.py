@@ -244,13 +244,17 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Lot drainage away from the foundation",
                        ("code.R401_3_grading", "code.R401_3_impervious"), ("IRC R401.3",)),
         PermitItemSpec("Site setbacks", ("code.site_setback",), ("local zoning",)),
-        # Blocking from the day it lands: every setback, lot-area and coverage figure on
-        # the set is measured off the parcel ring, so an uncertified ring makes all of
-        # them uncertified too. A house whose survey has not come back suppresses it in
-        # its own preferences.toml, with the reason, and deletes that line the day the
-        # survey lands — which is a record; a non-blocking checklist line is not.
+        # NON-BLOCKING, deliberately. Every setback, lot-area and coverage figure on the
+        # set is measured off the parcel ring, so an uncertified ring is a real gap — but
+        # it is a gap the *reviewer* closes, not one the engine can. The survey is a
+        # separate submittal by a licensed land surveyor and arrives on its own schedule;
+        # a house drawn against a placeholder lot still has a foundation plan, a framing
+        # plan and an energy certificate worth printing and reading. Blocking here would
+        # only teach a house to suppress the line, and a suppressed check says nothing on
+        # the sheet, while this one prints "PLACEHOLDER — NOT A SURVEY" in stamp red on
+        # the cover. An honest red line beats a silent one.
         PermitItemSpec("Certified parcel survey", ("code.site_parcel_is_surveyed",),
-                       ("local zoning",)),
+                       ("local zoning",), blocking=False),
         PermitItemSpec("Energy prescriptive envelope", ("code.energy_prescriptive",),
                        ("IRC N1102.1.2",)),
         PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),

@@ -124,11 +124,15 @@ from typehaus.model.registry import (
 )
 from typehaus.model.site import (
     Basemap,
+    Benchmark,
     Contour,
+    Easement,
+    ErosionControl,
     ImperviousSurface,
     MonthlyNormal,
     SetbackSpec,
     SpotElevation,
+    StreetFrontage,
     UtilityLine,
     WindowWell,
     load_basemap_geojson,
@@ -279,6 +283,7 @@ __all__ = [
     "Sump", "SumpPump", "VentRun",
     "MonthlyNormal", "SetbackSpec", "SpotElevation", "ImperviousSurface", "WindowWell",
     "UtilityLine",
+    "Easement", "ErosionControl", "StreetFrontage", "Benchmark",
     "Contour", "Basemap",
     "load_basemap_geojson",
     "LayerFunction", "LayerDatum", "ControlLayer", "JunctionPolicy", "Occupancy",
