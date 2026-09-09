@@ -322,6 +322,11 @@ def test_panel_schedule_sheet_is_in_the_permit_set(catlin_model):
     numbers = {sheet.number for sheet in build_sheet_index(catlin_model)}
     assert "E-601" in numbers
     assert {"E-101", "E-102", "E-103", "E-104", "E-105"} <= numbers  # all five storeys
+    # The panel schedule is what a plan checker wants; the power plans are not on the
+    # checklist (electrical is permitted by the State Board of Electricity).
+    permit = {sheet.number for sheet in build_sheet_index(catlin_model, sets="permit")}
+    assert "E-601" in permit
+    assert not [n for n in permit if n.startswith("E-1")]
 
 
 def test_conduit_run_developed_length(project):

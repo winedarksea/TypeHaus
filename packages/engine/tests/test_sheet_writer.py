@@ -201,6 +201,10 @@ def test_every_sheet_has_the_same_paper_size(catlin_model):
     # set's paper rather than a second preset — so it follows the set onto any paper.
     assert {s.size for s in sheets} <= {LEDGER, PORTRAIT_LEDGER}
     assert [s.number for s in sheets if s.portrait] == ["E-602"]
+    # E-602 serves the E-2xx lighting plans, which the permit set does not carry, so the
+    # permit set has no portrait sheet at all.
+    permit = build_sheet_index(catlin_model, sets="permit")
+    assert [s.number for s in permit if s.portrait] == []
 
 
 # --- paper, threaded through the whole set ------------------------------------

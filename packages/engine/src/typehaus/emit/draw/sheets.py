@@ -71,8 +71,13 @@ from typehaus.takeoff import hardware_takeoff
 # The schedule writers live in ``schedules/`` but are re-exported here: this module is
 # still the one name the rest of the engine (and the tests) import a permit sheet from.
 __all__ = [
+    "BOTH_SETS",
+    "FULL_ONLY",
+    "FULL_SET",
+    "PERMIT_SET",
     "PORTRAIT_LEDGER",
     "SheetSpec",
+    "resolve_set_name",
     "build_sheet_index",
     "write_compare_sheet",
     "write_permit_set",
@@ -109,6 +114,18 @@ if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
     from typehaus.checks.registry import Preferences
 
+#: The two sets this composer knows how to emit. ``full`` is everything; ``permit`` is
+#: the submittal. They are named rather than a bool because a third one (a bid set, an
+#: as-built) is a sheet-list question and not a new flag on every spec.
+PERMIT_SET = "permit"
+FULL_SET = "full"
+BOTH_SETS = frozenset({PERMIT_SET, FULL_SET})
+FULL_ONLY = frozenset({FULL_SET})
+
+#: ``--details`` was the older name for the same filter and only ever had two values.
+_DETAILS_ALIAS = {"primary": PERMIT_SET, "all": FULL_SET}
+
+
 SceneFn = Callable[[ResolvedModel], Scene]
 PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
 
@@ -128,10 +145,17 @@ class SheetSpec:
     # second preset. ``size`` resolves the two.
     portrait: bool = False
     north_arrow: bool = False          # stamp a north arrow in the viewport (plan sheets)
-    # Whether the sheet belongs in the *primary* set. Plans/sections/schedules and
-    # authored details always do; a derived transition detail only when its Transition
-    # is starred (model/views.py). ``build_sheet_index(details="primary")`` filters on it.
-    primary: bool = True
+    # Which SETS this sheet belongs to. "full" is everything this engine can draw;
+    # "permit" is what a Saint Paul DSI plan checker is asked to review, which is a
+    # deliberately smaller thing — no separate E or P drawings (fixtures go on the floor
+    # plans), no BOM, no room finish schedule, and only the starred derived details.
+    # ``build_sheet_index(sets="permit")`` filters on it at the return.
+    sets: frozenset[str] = BOTH_SETS
+
+    @property
+    def primary(self) -> bool:
+        """Deprecated alias for permit-set membership. Kept for one release."""
+        return PERMIT_SET in self.sets
     # What this sheet is ABOUT, for a caller that needs to find one without parsing its
     # title — ``{"storey": "main"}`` on the plan sheets. A dict rather than fields because
     # the set has no fixed vocabulary and a title is prose, not an index.
@@ -146,13 +170,20 @@ class SheetSpec:
 def build_sheet_index(model: ResolvedModel,
                       preferences: Preferences | None = None,
                       profile: JurisdictionProfile | None = None,
-                      details: str = "all",
+                      details: str | None = None,
                       paper: tuple[float, float] = LEDGER,
-                      house_dir: Path | None = None) -> list[SheetSpec]:
-    """Assemble the ordered permit-set sheet list — the one place sheet order/content lives.
+                      house_dir: Path | None = None,
+                      sets: str = FULL_SET) -> list[SheetSpec]:
+    """Assemble the ordered sheet list — the one place sheet order/content lives.
 
-    ``details="all"`` (default) keeps every derived transition detail; ``"primary"``
-    keeps only starred ones (the curated set a builder actually opens).
+    ``sets="full"`` (the library default) is everything this engine can draw;
+    ``"permit"`` is the submittal — no separate E or P drawings, no BOM, no room finish
+    schedule, and only the starred derived details. ``haus print`` defaults the other way
+    round, to ``permit``, which is the same asymmetry ``details`` already had: a bare call
+    in a test wants everything, a person printing wants what they will hand in.
+
+    ``details=`` is the deprecated older name and maps ``"primary"``->``"permit"``,
+    ``"all"``->``"full"``.
 
     ``paper`` is stamped onto every spec on the way out rather than threaded through the
     thirty-odd constructors below: sheet *content* has no opinion about sheet size, and a
@@ -232,8 +263,11 @@ def build_sheet_index(model: ResolvedModel,
                                 north_arrow=True, keywords={"storey": storey_tag}))
 
     if model.all_members():
+        # Full only: a bill of materials is a builder's document, not a plan check's.
+        # S-602 stays in the permit set (the framing inspection is run against it) and so
+        # does S-603 (it says which items rest on a seal).
         sheets.append(SheetSpec("S-601", "Framing schedule / bill of materials",
-                                page=_write_framing_bom))
+                                page=_write_framing_bom, sets=FULL_ONLY))
 
     # Hardware gets its own sheet rather than a second page under S-103: a PageFn that
     # emits two pages would put the cover's printed index one page out of step with the
@@ -298,11 +332,12 @@ def build_sheet_index(model: ResolvedModel,
     for derived in derive_detail_slices(model):
         tr = derived.transition
         starred = bool(tr.stars(derived.key)) if tr is not None else False
-        if details == "primary" and not starred:
-            continue
+        # NUMBERED BEFORE FILTERED. ``FIRST_DETAIL_SHEET`` numbers every derived detail,
+        # so a detail's number is the same in the permit set and the full set — a callout
+        # on A-101 pointing at A-517 must not move because a sheet ahead of it dropped.
         sheets.append(SheetSpec(f"A-{next_detail}", _derived_detail_title(derived),
                                 scene=partial(_derived_detail_scene, derived=derived),
-                                primary=starred))
+                                sets=BOTH_SETS if starred else FULL_ONLY))
         next_detail += 1
 
     # A-601 used to be doors, windows AND fixtures on one sheet. They are three schedules
@@ -312,12 +347,17 @@ def build_sheet_index(model: ResolvedModel,
                             page=partial(_write_opening_schedule, kinds="door")))
     sheets.append(SheetSpec("A-602", "Window schedule",
                             page=partial(_write_opening_schedule, kinds="window")))
-    sheets.append(SheetSpec("A-603", "Room finish schedule", page=_write_room_finish_schedule))
+    sheets.append(SheetSpec("A-603", "Room finish schedule",
+                            page=_write_room_finish_schedule, sets=FULL_ONLY))
 
     plumbing_storeys = [s.tag for s in storeys if has_plumbing_content(model, s.tag)]
     for index, storey_tag in enumerate(plumbing_storeys, start=1):
+        # Full only. The Saint Paul DSI new-construction checklist asks for fixtures on
+        # the floor plans and lists no separate P drawings; 1-2 family plumbing is exempt
+        # from MN 4714 plan review. `[print] permit_add = ["P-1"]` restores them.
         sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
-                                scene=partial(build_plumbing_plan, storey=storey_tag)))
+                                scene=partial(build_plumbing_plan, storey=storey_tag),
+                                sets=FULL_ONLY))
 
     # P-2xx: the drainage plans, one per storey with stormwater content — the same
     # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
@@ -325,9 +365,10 @@ def build_sheet_index(model: ResolvedModel,
     # sanitary/domestic rough-in on P-10x, and merging them buries the buried work.
     drainage_storeys = [s.tag for s in storeys if has_drainage_content(model, s.tag)]
     for index, storey_tag in enumerate(drainage_storeys, start=1):
+        # Full only: the grading and discharge story a reviewer wants belongs on C-101.
         sheets.append(SheetSpec(f"P-{200 + index}", f"Drainage plan — {storey_tag}",
                                 scene=partial(build_drainage_plan, storey=storey_tag),
-                                north_arrow=True))
+                                north_arrow=True, sets=FULL_ONLY))
 
     hvac_storeys = [s.tag for s in storeys if has_hvac_content(model, s.tag)]
     for index, storey_tag in enumerate(hvac_storeys, start=1):
@@ -336,8 +377,11 @@ def build_sheet_index(model: ResolvedModel,
 
     electrical_storeys = [s.tag for s in storeys if has_electrical_content(model, s.tag)]
     for index, storey_tag in enumerate(electrical_storeys, start=1):
+        # Full only, same reason as P-1xx: electrical is permitted by the State Board of
+        # Electricity, not by DSI, and the checklist names no E drawings.
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
-                                scene=partial(build_electrical_plan, storey=storey_tag)))
+                                scene=partial(build_electrical_plan, storey=storey_tag),
+                                sets=FULL_ONLY))
 
     # E-2xx: the lighting plans, one per storey that has luminaires. A separate series
     # from the E-10x power sheets on purpose — an electrician wiring devices and a reader
@@ -346,7 +390,8 @@ def build_sheet_index(model: ResolvedModel,
     lighting_storeys = [s.tag for s in storeys if has_lighting_content(model, s.tag)]
     for index, storey_tag in enumerate(lighting_storeys, start=1):
         sheets.append(SheetSpec(f"E-{200 + index}", f"Lighting plan — {storey_tag}",
-                                scene=partial(build_lighting_plan, storey=storey_tag)))
+                                scene=partial(build_lighting_plan, storey=storey_tag),
+                                sets=FULL_ONLY))
 
     if model.plan.library.circuits:
         sheets.append(SheetSpec("E-601", "Panel schedule / service load",
@@ -354,13 +399,41 @@ def build_sheet_index(model: ResolvedModel,
 
     if lighting_storeys:
         sheets.append(SheetSpec("E-602", "Luminaire schedule / lighting controls",
-                                page=_write_luminaire_schedule, portrait=True))
+                                page=_write_luminaire_schedule, portrait=True,
+                                sets=FULL_ONLY))
 
     if _has_data_content(model):
         sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
-                                page=_write_data_schedule))
+                                page=_write_data_schedule, sets=FULL_ONLY))
 
-    return [replace(sheet, paper=paper) for sheet in sheets]
+    return [replace(sheet, paper=paper) for sheet in sheets
+            if _in_set(sheet, resolve_set_name(sets, details), preferences)]
+
+
+def resolve_set_name(sets: str, details: str | None) -> str:
+    """``details=`` wins when given, because a caller passing it means it."""
+    if details is not None:
+        return _DETAILS_ALIAS.get(details, FULL_SET)
+    return sets
+
+
+def _in_set(sheet: SheetSpec, name: str, preferences: Preferences | None) -> bool:
+    """Whether ``sheet`` belongs in the named set, after the house's own overrides.
+
+    ``permit_drop`` beats ``permit_add`` so a house cannot write a contradiction that
+    silently resolves one way; and neither touches the full set, which is by definition
+    everything the engine drew.
+    """
+    if name == FULL_SET:
+        return True
+    options = preferences.print_options if preferences is not None else None
+    drop = options.permit_drop if options is not None else ()
+    add = options.permit_add if options is not None else ()
+    if any(sheet.number.startswith(prefix) for prefix in drop):
+        return False
+    if any(sheet.number.startswith(prefix) for prefix in add):
+        return True
+    return name in sheet.sets
 
 
 def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
@@ -371,9 +444,10 @@ def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
 def write_permit_set(model: ResolvedModel, output: Path,
                      preferences: Preferences | None = None,
                      profile: JurisdictionProfile | None = None,
-                     details: str = "all",
+                     details: str | None = None,
                      paper: tuple[float, float] = LEDGER,
                      house_dir: Path | None = None,
+                     sets: str = FULL_SET,
                      ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
@@ -396,7 +470,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
     sheets = build_sheet_index(model, preferences, profile, details=details,
-                               paper=paper, house_dir=house_dir)
+                               paper=paper, house_dir=house_dir, sets=sets)
     index = [(sheet.number, sheet.title) for sheet in sheets]
     # ``set_paper`` is how the table pages learn the paper: they compose their own figures
     # inside ``schedules/`` against a preset name, and this is the only place that knows

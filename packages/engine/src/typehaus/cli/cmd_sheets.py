@@ -124,10 +124,16 @@ def print_sheets(
     handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
     profile: str | None = typer.Option(
         None, help="jurisdiction profile (default: preferences.toml, else the engine default)"),
-    details: str = typer.Option(
-        "primary", help="primary | all — 'primary' (default) keeps only starred transition "
-                        "details (Transition.star) in the composed set; 'all' composes "
-                        "every derived detail sheet"),
+    set_: str = typer.Option(
+        "permit", "--set",
+        help="permit (default) | full. 'permit' is the submittal a plan checker reviews: "
+             "no separate E or P drawings (fixtures are on the floor plans), no bill of "
+             "materials, no room finish schedule, and only the starred transition "
+             "details. 'full' is every sheet this engine can draw, under its own "
+             "filename. A house tunes the split with [print] permit_add / permit_drop."),
+    details: str | None = typer.Option(
+        None, "--details", hidden=True,
+        help="deprecated alias for --set: primary -> permit, all -> full"),
     paper: str = typer.Option(
         "ledger", help="ledger (11x17) | arch-d (24x36). The paper decides the drawn "
                        "scale: a bigger sheet gives select_scale a bigger viewport, so "
@@ -160,6 +166,7 @@ def print_sheets(
         resolve_paper,
         set_issue_status,
     )
+    from typehaus.emit.draw.sheets import resolve_set_name
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -225,10 +232,15 @@ def print_sheets(
             FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION)
         if sealed:
             issue += " · SEALED"
-        name = f"permit_set{PAPER_SUFFIX[paper]}.pdf"
+        # The full set writes its OWN file rather than overwriting the submittal. The two
+        # are different documents — one is what was handed in — and a set already sent out
+        # must never be silently replaced by a different one.
+        chosen = resolve_set_name(set_, details)
+        stem = "permit_set_full" if chosen == "full" else "permit_set"
+        name = f"{stem}{PAPER_SUFFIX[paper]}.pdf"
         with set_issue_status(issue):
             path, composed = write_permit_set(model, out / name, preferences,
-                                              profile=jurisdiction, details=details,
+                                              profile=jurisdiction, sets=chosen,
                                               paper=size, house_dir=d)
         console.print(f"wrote {path}")
         # The set's own table of contents, on disk. A vector PDF says nothing about which

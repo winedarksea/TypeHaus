@@ -29,6 +29,11 @@ def test_the_sheet_index_carries_a_lighting_plan_per_storey_plus_the_schedule(ca
     # The power sheets are untouched: two series, two readers.
     assert [n for n in numbers if n.startswith("E-1")]
     assert numbers.index("E-601") < numbers.index("E-602")
+    # ...and neither reaches the permit set: DSI's checklist names no E drawings, and
+    # E-602 exists to serve the E-2xx sheets.
+    permit = {sheet.number for sheet in build_sheet_index(catlin_model, sets="permit")}
+    assert not [n for n in permit if n.startswith("E-2")]
+    assert "E-602" not in permit and "E-601" in permit
 
 
 def test_every_storey_with_luminaires_gets_a_sheet(catlin_model):

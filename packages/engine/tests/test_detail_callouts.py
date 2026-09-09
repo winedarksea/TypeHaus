@@ -28,9 +28,18 @@ def test_the_two_numberings_agree(catlin_model_ro):
     callout naming a sheet the set does not emit is worse than no callout.
     """
     derived = detail_sheet_numbers(catlin_model_ro)
-    index = [s.number for s in build_sheet_index(catlin_model_ro)
+    index = [s.number for s in build_sheet_index(catlin_model_ro, sets="full")
              if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}")]
     assert sorted(derived.values()) == sorted(index)
+
+
+def test_a_detail_keeps_its_number_in_both_sets(catlin_model_ro):
+    """``FIRST_DETAIL_SHEET`` numbers EVERY derived detail, so the permit set drops sheets
+    without renumbering the ones it keeps. A callout pointing at A-560 must not move
+    because an unstarred sheet ahead of it was filtered out."""
+    full = {s.number: s.title for s in build_sheet_index(catlin_model_ro, sets="full")}
+    for sheet in build_sheet_index(catlin_model_ro, sets="permit"):
+        assert full[sheet.number] == sheet.title
 
 
 def test_the_section_calls_out_the_details_it_passes_through(catlin_model_ro):

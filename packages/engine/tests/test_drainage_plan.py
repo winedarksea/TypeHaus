@@ -84,3 +84,6 @@ def test_drainage_sheets_join_the_index_in_the_p200_series(catlin_model):
     assert len(numbers) == expected
     assert "P-201" in sheets and sheets["P-201"].title.startswith("Drainage plan")
     assert sheets["P-201"].north_arrow
+    # Full set only: the grading and discharge story a reviewer wants is on C-101.
+    permit = {s.number for s in build_sheet_index(catlin_model, sets="permit")}
+    assert not [n for n in permit if n.startswith("P-2")]
