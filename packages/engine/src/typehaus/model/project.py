@@ -71,6 +71,22 @@ class Site(HausModel):
     # allowable. Stated apart from ``soil_class`` because a report routinely gives one
     # without the other.
     soil_bearing_psf: float | None = None
+    # --- Parcel identity (title block, cover PROJECT DATA, C-101) -----------------------
+    # Facts about the lot, not preferences about how to grade it, so they live on the model.
+    # A permit reviewer reads all four off the title block before anything else.
+    address: str | None = None
+    pin: str | None = None  # county parcel identification number
+    legal_description: str | None = None
+    zoning_district: str | None = None  # St Paul post-Ord. 23-43: "RL" | "H1" | "H2"
+    # Where the parcel ring came from. ``None`` means nobody has said, which is a different
+    # and worse answer than an honest "placeholder": the drawing then cannot mark itself.
+    # ``"survey"`` is the only value a permit set may print without a caveat, and it earns
+    # ``survey_by`` / ``survey_date`` beside it.
+    parcel_basis: Literal["placeholder", "survey"] | None = None
+    survey_by: str | None = None  # licensed surveyor of record
+    survey_date: str | None = None  # ISO date of the certified survey
+    # NOTE: no stored lot area. It is derived from ``parcel`` (emit/draw/site_metrics.py) so
+    # the cover sheet and C-101 cannot disagree about the same ring.
     parcel: tuple[Point2D, ...] = ()  # closed CCW ring, plan frame
     setbacks: tuple[SetbackSpec, ...] = ()
     spot_elevations: tuple[SpotElevation, ...] = ()
@@ -102,6 +118,13 @@ class Project(HausModel):
     format_version: int = 1
     requires_engine: str = ">=0.1,<0.2"
     active_code_profile: str | None = None
+    # Title-block identity. No ``firm``/``architect``: Minn. Stat. 326.03 exempts a one- or
+    # two-family dwelling from needing a design professional at all, so a set that printed an
+    # empty ARCHITECT row would be asserting a gap that is not one. ``preparer`` is whoever
+    # drew the set, licensed or not.
+    number: str | None = None  # project / job number
+    owner: str | None = None
+    preparer: str | None = None
     # Viewer's default 3D framing, expressed as (right, down) clicks of the pan buttons
     # (Panel3D.tsx `pan()`, one click == VIEW_PAN_STEP_FRACTION of the fit radius) applied on
     # top of the whole-building three-quarter fit. (0, 0) reproduces today's plain fit.

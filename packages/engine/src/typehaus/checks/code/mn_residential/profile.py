@@ -35,7 +35,8 @@ MN_2024 = JurisdictionProfile(
         "R314/R315 smoke and CO alarms per storey and per sleeping area. "
         "Light and ventilation: R303.1 glazing and openable area, R303.3 local exhaust, "
         "N1103.6 whole-house ventilation rate. "
-        "Site: R401.3 lot drainage away from the foundation, local setbacks. "
+        "Site: R401.3 lot drainage away from the foundation, local setbacks, and whether "
+        "the parcel ring those setbacks are measured on is a certified survey. "
         "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
         "target. "
         "Attic: R807.1 access and R806.2 ventilation net free area. "
@@ -89,6 +90,13 @@ MN_2024 = JurisdictionProfile(
     # regional presumption for a house with no soils report (→ ``checks/soil.py``).
     soil_class="GM",
     climate=MN_ZONE_6,
+    # Minn. R. 1800.4200 subp. 4, verbatim. Subp. 3 requires it on EACH sheet the
+    # licensee is responsible for, not once on the cover.
+    seal_certification=(
+        "I hereby certify that this plan, specification, or report was prepared by me "
+        "or under my direct supervision and that I am a duly Licensed Professional "
+        "Engineer under the laws of the state of Minnesota."
+    ),
     permit_items=(
         PermitItemSpec("Ceiling height / habitable attic", ("code.R305_ceiling_height",),
                        ("IRC R305",)),
@@ -234,6 +242,13 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Lot drainage away from the foundation",
                        ("code.R401_3_grading", "code.R401_3_impervious"), ("IRC R401.3",)),
         PermitItemSpec("Site setbacks", ("code.site_setback",), ("local zoning",)),
+        # Blocking from the day it lands: every setback, lot-area and coverage figure on
+        # the set is measured off the parcel ring, so an uncertified ring makes all of
+        # them uncertified too. A house whose survey has not come back suppresses it in
+        # its own preferences.toml, with the reason, and deletes that line the day the
+        # survey lands — which is a record; a non-blocking checklist line is not.
+        PermitItemSpec("Certified parcel survey", ("code.site_parcel_is_surveyed",),
+                       ("local zoning",)),
         PermitItemSpec("Energy prescriptive envelope", ("code.energy_prescriptive",),
                        ("IRC N1102.1.2",)),
         PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),

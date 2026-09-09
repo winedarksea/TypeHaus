@@ -70,6 +70,12 @@ class JurisdictionProfile:
     # means the profile states none, and the energy check reports UNKNOWN rather than
     # silently applying Minnesota's numbers.
     climate: PrescriptiveEnvelope | None = field(default=None)
+    # The licensure certification a sealing professional must letter onto each sheet they
+    # are responsible for (Minn. R. 1800.4200 subp. 3-4 in Minnesota). It is the
+    # jurisdiction's own wording, verbatim, which is why it is data on the profile and not a
+    # string in the sheet writer: a profile that states none prints none, rather than
+    # printing Minnesota's sentence over another state's set.
+    seal_certification: str | None = None
 
     def permit_check_ids(self) -> frozenset[str]:
         return frozenset(cid for item in self.permit_items for cid in item.check_ids)

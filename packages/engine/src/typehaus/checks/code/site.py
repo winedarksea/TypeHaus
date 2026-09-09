@@ -1,5 +1,8 @@
 """Site setback check (→ Permit-ready plan set Phase 4).
 
+Two rules over one parcel: the setback distances, and whether the ring they are measured
+on came from a licensed surveyor at all.
+
 Shapely is already a dependency (checks/advisory, checks/building_science). Distance is
 measured from every wall-axis endpoint to the finite parcel-edge segment the setback
 applies to — a reasonable approximation near corners without a full offset-polygon solve.
@@ -65,3 +68,31 @@ def site_setback(ctx: CheckContext) -> list[Finding]:
                 "satisfied by every wall",
             ))
     return out
+
+
+@check(Tier.CODE, "code.site_parcel_is_surveyed")
+def site_parcel_is_surveyed(ctx: CheckContext) -> list[Finding]:
+    """Is the parcel ring a certified survey, or a stand-in someone drew?
+
+    Every setback, lot-area and coverage number on the permit set is measured off
+    ``Site.parcel``. A reviewer accepts those only from a survey by a licensed land
+    surveyor, so the question the drawing has to answer is not "is the ring closed" but
+    "who measured it". ``Site.parcel_basis`` is the answer and nothing infers it: a ring
+    with no stated basis reads as UNKNOWN, not as a survey, because the failure mode of
+    guessing here is a set that silently claims a measurement nobody made.
+    """
+    cid = "code.site_parcel_is_surveyed"
+    site = ctx.plan.project.site
+    basis = site.parcel_basis
+    if basis is None:
+        return [_unknown(cid, "the parcel states no basis (Site.parcel_basis): the lot "
+                         "lines, setbacks and coverage on this set rest on a ring nobody "
+                         "has certified")]
+    if basis == "placeholder":
+        return [_fail(cid, "the parcel ring is a PLACEHOLDER, not a survey — lot lines, "
+                      "setbacks, lot area and coverage on this set are not measured", ())]
+    if not site.survey_by:
+        return [_unknown(cid, "the parcel is stated as surveyed but names no surveyor "
+                         "(Site.survey_by)")]
+    dated = f" dated {site.survey_date}" if site.survey_date else ""
+    return [_pass(cid, f"parcel per certified survey by {site.survey_by}{dated}")]
