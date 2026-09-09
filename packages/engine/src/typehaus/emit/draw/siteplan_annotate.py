@@ -60,7 +60,7 @@ _LABEL_TEXT_IN = 1.8
 _SETBACK_TEXT_IN = 2.0
 _STREET_TEXT_IN = 2.4
 _LOT_LINE_OFFSET_IN = 3.0  # lettering sits outboard of the line it measures, per text height
-_ENTRANCE_MARK_IN = 4.0  # half-diagonal of the X drawn at a point-located measure
+_ENTRANCE_MARK_IN = 4.0  # half-diagonal of a point-located mark, in text heights
 
 
 def emit_site_annotations(builder: SceneBuilder, model: ResolvedModel, site: Site) -> None:
@@ -222,6 +222,7 @@ _EROSION_LABELS = {
 
 
 def _emit_erosion_controls(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> None:
+    """Silt fence, rock entrance and inlet protection, each drawn as what it is."""
     height = _scaled(metrics, _LABEL_TEXT_IN)
     for control in site.erosion_controls:
         path = [p.xy_m for p in control.path]
