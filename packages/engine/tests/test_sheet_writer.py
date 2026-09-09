@@ -351,21 +351,69 @@ def test_the_title_block_carries_the_cells_a_permit_set_needs(catlin_model):
         assert fragment in printed, f"the title block does not print {fragment!r}"
 
 
-def test_the_seal_box_is_reserved_and_never_drawn_in(catlin_model):
-    """`schedules/structural.py` puts it plainly: drawing a stamp would be forging one."""
+def _title_block_texts(model, number: str, seal=None) -> list[str]:
+    """Every string the title block letters for one sheet number, under one seal block."""
     import matplotlib.pyplot as plt
 
-    from typehaus.emit.draw.sheet_writer import sheet_chrome
+    from typehaus.emit.draw.sheet_writer import set_seal_block, sheet_chrome
 
     fig = plt.figure(figsize=(36.0, 24.0))
     try:
-        sheet_chrome(fig, catlin_model, "A-101", "Main floor plan", size=(36.0, 24.0))
-        texts = [t.get_text() for ax in fig.axes for t in ax.texts]
+        with set_seal_block(seal):
+            sheet_chrome(fig, model, number, "A sheet", size=(36.0, 24.0))
+        return [t.get_text() for ax in fig.axes for t in ax.texts]
     finally:
         plt.close(fig)
-    assert texts.count("SEAL") == 1
-    # Nothing that could read as a licence, a name against a stamp, or a state.
-    assert not [t for t in texts if "P.E." in t or "LICENSE" in t.upper()]
+
+
+def test_the_seal_box_is_reserved_and_never_drawn_in(catlin_model):
+    """`schedules/structural.py` puts it plainly: drawing a stamp would be forging one.
+
+    Minn. R. 1800.4200 subp. 3 puts the certification on each sheet a licensee is
+    responsible for, and subp. 4's four lines are the instrument. So this asserts three
+    separate things: an A-sheet carries no certification apparatus at all; an S-sheet
+    without a seal block rules the lines and names nobody; and an S-sheet WITH one prints
+    the credit and still draws no stamp.
+    """
+    from typehaus.emit.draw.sheet_writer import SealBlock
+
+    architectural = _title_block_texts(catlin_model, "A-101")
+    assert architectural.count("SEAL") == 1
+    assert not [t for t in architectural if "LICENSE" in t.upper() or "CERTIFIC" in t.upper()]
+
+    ruled = _title_block_texts(catlin_model, "S-101.1", SealBlock(certification="x"))
+    assert ruled.count("SEAL") == 1
+    assert "LICENSE NO. ____________" in ruled
+    assert "SEE S-001 FOR CERTIFICATION" in ruled
+    # Nothing that reads as a name against a stamp nobody made.
+    assert not [t for t in ruled if "P.E." in t]
+
+    sealed = _title_block_texts(catlin_model, "S-101.1", SealBlock(
+        certification="x", credit="Jane Doe, PE (MN 12345), 2026-09-14",
+        engineer="Jane Doe, PE", license="MN 12345", sealed_on="2026-09-14"))
+    assert "NAME Jane Doe, PE" in sealed
+    assert "LICENSE NO. MN 12345" in sealed
+    # The signature is a human act even when the seal is recorded: it stays ruled.
+    assert "SIGNATURE ____________" in sealed
+    # And the stamp itself is still only a reserved area.
+    assert sealed.count("SEAL") == 1
+
+
+def test_the_certification_apparatus_reaches_s_sheets_and_the_cover_only(catlin_model):
+    """Cell 5's ruled lines are a claim about scope, so they go where the scope is.
+
+    A licensee is responsible for the structural set; ruling a licence line on a lighting
+    plan would invite a signature over work no engineer took.
+    """
+    from typehaus.emit.draw.sheet_writer import SealBlock
+
+    seal = SealBlock(certification="x")
+    for number in ("S-001", "S-100", "S-603", "G-001"):
+        assert "SEE S-001 FOR CERTIFICATION" in _title_block_texts(
+            catlin_model, number, seal), number
+    for number in ("A-101", "E-601", "M-101", "G-004", "C-101"):
+        assert "SEE S-001 FOR CERTIFICATION" not in _title_block_texts(
+            catlin_model, number, seal), number
 
 
 def test_the_stamp_is_red_only_for_the_engines_own_two_defaults():

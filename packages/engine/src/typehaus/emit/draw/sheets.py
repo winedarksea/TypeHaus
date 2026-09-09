@@ -52,6 +52,7 @@ from typehaus.emit.draw.schedules import (
     _write_room_finish_schedule,
     _write_specifications,
     _write_symbols_legend,
+    _write_ventilation_sheet,
     write_compare_sheet,
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
@@ -71,8 +72,10 @@ from typehaus.emit.draw.sheet_writer import (
     compose_sheet,
     paper_for,
     set_paper,
+    set_seal_block,
 )
 from typehaus.emit.draw.siteplan import build_site_plan
+from typehaus.emit.draw.title_block import SealBlock
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff import hardware_takeoff
 
@@ -201,6 +204,12 @@ def build_sheet_index(model: ResolvedModel,
     # is general project information and belongs with the code summary it restates.
     sheets.append(SheetSpec("G-004", "Energy compliance summary",
                             page=partial(_write_energy_sheet, preferences=preferences)))
+    # G-005 is ventilation + the MN Energy Code Compliance Certificate. It is its own sheet
+    # rather than half of G-004 because the certificate is posted at the panel and read on
+    # its own, and because G-004 was already a full page of compliance.
+    sheets.append(SheetSpec("G-005", "Ventilation and energy certificate",
+                            page=partial(_write_ventilation_sheet,
+                                         preferences=preferences)))
     sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
                             north_arrow=True))
 
@@ -445,7 +454,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
     # ``set_paper`` is how the table pages learn the paper: they compose their own figures
     # inside ``schedules/`` against a preset name, and this is the only place that knows
     # which paper the *set* is on (→ sheet_writer.schedule_sheet).
-    with PdfPages(output) as pdf, set_paper(paper):
+    with PdfPages(output) as pdf, set_paper(paper), set_seal_block(_seal_block(profile, house_dir)):
         for sheet in sheets:
             if sheet.number == "G-001":
                 _write_cover(pdf, model, index, profile, preferences)
@@ -456,6 +465,35 @@ def write_permit_set(model: ResolvedModel, output: Path,
                 pdf.savefig(fig)
                 _close(fig)
     return output, {"index": index}
+
+
+def _seal_block(profile: JurisdictionProfile, house_dir: Path | None) -> SealBlock:
+    """The seal cell every S-sheet and the cover carry.
+
+    The four lines print RULED AND BLANK unless this set went out past ``--sealed``, which
+    is read off the issue stamp rather than passed down a second time: ``cmd_sheets`` only
+    appends ``· SEALED`` after its own final gate opened, so the stamp and the seal cell
+    read one decision and cannot disagree — the invariant the stamp already holds.
+
+    A name comes from ``engineering.toml``, which this engine reads and never writes. With
+    no register, or none this house declares, the lines stay blank: a filled NAME line is a
+    claim about a human act, and only a human may make it.
+    """
+    from typehaus.emit.draw.title_block import _ISSUE
+
+    block = SealBlock(certification=profile.seal_certification)
+    if " · SEALED" not in _ISSUE.get() or house_dir is None:
+        return block
+    from typehaus.engineering.register import load_register
+
+    signoffs = load_register(house_dir).signoffs
+    if not signoffs:
+        return block
+    # The first signoff is the one the structural set rests on. A second sealer covers other
+    # items and is named on S-603, where there is room to say what each one covers.
+    first = signoffs[0]
+    return replace(block, credit=first.credit(), engineer=first.engineer,
+                   license=first.license, sealed_on=first.sealed_on.isoformat())
 
 
 def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:

@@ -141,3 +141,128 @@ def test_wall_comparison_pairs_the_authored_wall_variants(catlin_model):
     assert comparison["baseline_assembly"] == "INT_2X4_PARTITION"
     assert comparison["upgrade_assembly"] == "EXT_2X6"
     assert comparison["heating_savings_btu_per_hour"] > 0
+
+
+# --- G-004 / G-005: one summary, two consumers ------------------------------------------
+
+
+def test_g004_states_the_compliance_path_and_the_air_leakage_target(catlin_model, tmp_path):
+    """The two statements a reviewer opens G-004 to find, read off the composed figure.
+
+    Asserted against what is DRAWN, not against the source, so a block that stops being
+    lettered fails here even while its code still exists.
+    """
+    from typehaus.checks.registry import Preferences
+    from typehaus.emit.draw.schedules.energy import _write_energy_sheet
+
+    printed = _sheet_text(_write_energy_sheet, catlin_model, "G-004",
+                          "Energy compliance summary", tmp_path)
+    assert "PRESCRIPTIVE" in printed
+    assert "MN 1322" in printed
+    assert "ENVELOPE AIR LEAKAGE" in printed
+    leakage = _air_leakage(Preferences())
+    assert f"{leakage.max_ach50:g} ACH50 at 50 Pa" in printed
+    assert "blower-door test is required" in printed
+
+
+def test_g005_worksheet_is_the_check_s_own_numbers(catlin_model, tmp_path):
+    """MN 1322 R403.5's TVR and CVR, and the sheet may not restate either.
+
+    One function, two consumers: the worksheet is built from ``whole_house_summary``, so a
+    rate printed here and a rate graded by the check cannot disagree.
+    """
+    from typehaus.checks.code.mn_residential.ventilation import whole_house_summary
+    from typehaus.emit.draw.schedules.energy import _write_ventilation_sheet
+
+    vent = whole_house_summary(catlin_model, catlin_model.plan)
+    assert vent is not None
+    printed = _sheet_text(_write_ventilation_sheet, catlin_model, "G-005",
+                          "Ventilation and energy certificate", tmp_path)
+    assert f"{vent.total_rate_cfm:.0f} cfm" in printed
+    assert f"{vent.continuous_rate_cfm:.0f} cfm" in printed
+    assert "0.02 cfm/sf + 15 cfm x (bedrooms + 1)" in printed
+    assert vent.provided_cfm is not None and f"{vent.provided_cfm:.0f} cfm" in printed
+
+
+def test_g005_certificate_rules_its_field_blanks_and_names_radon(catlin_model, tmp_path):
+    """The certificate is posted at the panel and its blanks are FIELD acts.
+
+    A tested ACH50 and an installer's signature are things a person does; an engine that
+    filled them in would be forging them. And the radon cross-reference has to be on the
+    sheet a reviewer reads for mechanical systems, not only on S-100.
+    """
+    from typehaus.emit.draw.schedules.energy import _write_ventilation_sheet
+
+    printed = _sheet_text(_write_ventilation_sheet, catlin_model, "G-005",
+                          "Ventilation and energy certificate", tmp_path)
+    assert "TO BE POSTED AT THE PANEL" in printed
+    assert "TESTED ENVELOPE LEAKAGE  __________ ACH50" in printed
+    assert "CONTRACTOR / INSTALLER" in printed and "SIGNED" in printed
+    assert "RADON CONTROL PER MN 1303.2400 — SEE S-100." in printed
+
+
+def test_g005_never_invents_an_efficiency(catlin_model):
+    """A type that publishes no HSPF2/SEER2/AFUE prints NOT MODELLED, and a type that
+    does prints what it publishes. A certificate that states an efficiency nobody measured
+    is worse than one that says the number is missing."""
+    from typehaus.emit.draw.schedules.energy import NOT_MODELLED, _equipment_rows
+
+    rows = _equipment_rows(catlin_model)
+    assert rows
+    efficiencies = {row[0]: row[-1] for row in rows}
+    assert NOT_MODELLED in efficiencies.values()
+    rated = [value for value in efficiencies.values() if value != NOT_MODELLED]
+    assert rated, "catlin authors at least one rated unit"
+    assert all(any(token in value for token in ("HSPF2", "SEER2", "AFUE", "SRE"))
+               for value in rated)
+
+
+def test_a602_prints_u_factor_and_never_defaults_shgc(catlin_model, tmp_path):
+    """The column a reviewer looks for first, and the one that must stay honest.
+
+    Catlin authors a U-factor on every window type and an SHGC on none, so the schedule has
+    to print both truthfully: a defaulted SHGC on a permit schedule is a compliance claim
+    nobody made.
+    """
+    from typehaus.emit.draw.schedules.openings import _energy_columns
+
+    types = {item.tag: item for item in catlin_model.plan.library.window_types}
+    assert types
+    columns = [_energy_columns(spec, False) for spec in types.values()]
+    assert all(len(c) == 5 for c in columns)
+    assert all(c[0] != "—" for c in columns), "every catlin window type states a U-factor"
+    doors = {item.tag: item for item in catlin_model.plan.library.door_types}
+    assert all(len(_energy_columns(spec, True)) == 1 for spec in doors.values())
+
+
+class _Capture:
+    """Stands in for a ``PdfPages``. ``schedule_sheet`` closes the figure right after it
+    saves, so the only moment the lettering exists is inside ``savefig``."""
+
+    def __init__(self) -> None:
+        self.printed: list[str] = []
+
+    def savefig(self, fig) -> None:
+        self.printed.extend(t.get_text() for t in fig.texts)
+        self.printed.extend(t.get_text() for ax in fig.axes for t in ax.texts)
+        # ``_add_table`` letters through matplotlib Table cells, which are not ax.texts.
+        for ax in fig.axes:
+            for child in ax.get_children():
+                cells = getattr(child, "get_celld", None)
+                if cells is not None:
+                    self.printed.extend(c.get_text().get_text() for c in cells().values())
+
+
+def _sheet_text(writer, model, number: str, name: str, tmp_path) -> str:
+    """Compose one table page and return everything it lettered."""
+    from typehaus.checks.registry import Preferences
+
+    pdf = _Capture()
+    writer(pdf, model, number, name, preferences=Preferences())
+    return " | ".join(pdf.printed)
+
+
+def _air_leakage(prefs):
+    from typehaus.checks.code.mn_energy import air_leakage_summary
+
+    return air_leakage_summary(prefs)

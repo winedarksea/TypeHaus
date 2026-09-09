@@ -9,20 +9,25 @@ numbered (A-6xx, S-1xx, E-6xx) and how a reader looks for them.
 from __future__ import annotations
 
 from typehaus.emit.draw.schedules.architectural import (
-    _write_cover,
-    _write_energy_sheet,
     _write_general_notes,
-    _write_opening_schedule,
-    _write_room_finish_schedule,
     _write_specifications,
     _write_symbols_legend,
 )
 from typehaus.emit.draw.schedules.compare import write_compare_sheet
+from typehaus.emit.draw.schedules.cover import _write_cover
 from typehaus.emit.draw.schedules.electrical import (
     _has_data_content,
     _write_data_schedule,
     _write_luminaire_schedule,
     _write_panel_schedule,
+)
+from typehaus.emit.draw.schedules.energy import (
+    _write_energy_sheet,
+    _write_ventilation_sheet,
+)
+from typehaus.emit.draw.schedules.openings import (
+    _write_opening_schedule,
+    _write_room_finish_schedule,
 )
 from typehaus.emit.draw.schedules.structural import (
     _write_engineering_register,
@@ -45,6 +50,7 @@ __all__ = [
     "_write_opening_schedule",
     "_write_room_finish_schedule",
     "_write_symbols_legend",
+    "_write_ventilation_sheet",
     "_write_specifications",
     "_write_panel_schedule",
     "write_compare_sheet",

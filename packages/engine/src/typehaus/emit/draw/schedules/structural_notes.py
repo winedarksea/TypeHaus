@@ -13,6 +13,7 @@ below either prints a number or admits it has none.
 
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -273,6 +274,34 @@ def limits_block(model: ResolvedModel, house_dir: Path | None) -> list[str]:
     ]
 
 
+def certification_block(profile: JurisdictionProfile | None) -> list[str]:
+    """The jurisdiction's own certification sentence — printed here, once, in full.
+
+    Minn. R. 1800.4200 subp. 3 puts the certification on *each* sheet a licensee is
+    responsible for, and the ruled NAME / LICENSE NO. / DATE / SIGNATURE lines in every
+    S-sheet's title block are that instrument. Subp. 4's sentence is long, so it prints
+    here and every title block cross-references it — the same "say it once" split the
+    specification sheets use.
+
+    A profile that states no certification adds no block. Lettering Minnesota's sentence
+    over another state's set would be a false statement about which board licensed it.
+    """
+    text = getattr(profile, "seal_certification", None)
+    if not text:
+        return []
+    return [
+        *textwrap.wrap(text, width=_MAX_LINE_CHARS),
+        "",
+        "The signature, typed or printed name, date and licence number are ruled in the",
+        "title block of each sheet the licensee is responsible for. This engine never",
+        "draws a stamp and never writes engineering.toml: a seal is a human act, and the",
+        "set records it rather than performing it.",
+        "",
+        "An engineered requirement that carries no seal is listed on S-603 and rests on",
+        "this engine's own calculation. See out/calcs/ for the arithmetic (`haus calcs`).",
+    ]
+
+
 def _write_structural_notes(pdf, model: ResolvedModel, number: str, name: str, *,
                             profile: JurisdictionProfile | None = None,
                             preferences: Preferences | None = None,
@@ -292,6 +321,9 @@ def _write_structural_notes(pdf, model: ResolvedModel, number: str, name: str, *
          structural_specification_block(model)),
         ("WHAT THIS SHEET DOES NOT SAY", limits_block(model, house_dir)),
     ]
+    certification = certification_block(profile)
+    if certification:
+        blocks.append(("PROFESSIONAL CERTIFICATION", certification))
     clipped = [(title, [_clip(line) for line in lines]) for title, lines in blocks]
     with schedule_sheet(pdf, model, number, name, heading_xy=(0.03, 0.945)) as fig:
         overflow = _lay_out_blocks(fig, clipped)

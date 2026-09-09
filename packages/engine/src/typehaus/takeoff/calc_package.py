@@ -21,12 +21,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any
 
 from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
 from typehaus.engineering.deferred import DEFERRALS
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
+from typehaus.takeoff.calc_criteria import _criteria
 from typehaus.takeoff.calc_sheet import STATUS_LABEL, render_sheet, sheet_filename
 
 #: Printed on the cover, and meant to be read. A draft package is a working document; a set
@@ -85,6 +85,7 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
         "02-item-register.md": _register_page(inputs),
         "03-open-items.md": _open_items(inputs),
         "04-assumptions.md": _assumptions(inputs),
+        "05-scope-of-review.md": _scope_of_review(inputs),
     }
     for record in inputs.records:
         if only is not None and record.item_id != only:
@@ -181,156 +182,53 @@ def _status_counts(records: Sequence[EngineeringRecord]) -> dict[Status, int]:
     return counts
 
 
-# --- design criteria -------------------------------------------------------------------
+def _scope_of_review(inputs: PackageInputs) -> str:
+    """05 — what a seal over this package would and would not cover. One page.
 
-def _criteria(inputs: PackageInputs) -> str:
-    from typehaus import wind
-    from typehaus.engineering import soil as soil_module
-
-    site = getattr(getattr(inputs.model, "plan", None), "project", None)
-    site = getattr(site, "site", None)
-    blocks = [
-        heading(f"Design criteria — {inputs.house}"),
-        "Every value on this page is **derived from the model**, not typed here. A criteria "
-        "sheet that can drift from the calculations it fronts is worse than none.",
-        heading("1. Wind", 2),
-        _wind_block(wind, site, inputs),
-        heading("2. Snow", 2),
-        _snow_block(site),
-        heading("3. Ground", 2),
-        _soil_block(soil_module, site),
-        heading("4. Materials", 2),
-        _materials_block(inputs),
-        heading("5. Service conditions", 2),
-        _service_block(inputs),
-    ]
-    return document(*blocks)
-
-
-def _wind_block(wind: Any, site: Any, inputs: PackageInputs) -> str:
-    basis = wind.wind_basis(site) if site is not None else None
-    if basis is None:
-        return ("This model carries no complete wind basis (a speed, an exposure and a risk "
-                "category are all required). Every wind-driven item reports it as a missing "
-                "input rather than assuming one.")
-    heights = sorted({round(float(q.value), 2) for record in inputs.records
-                      for q in record.inputs if q.name == "mean_roof_height"})
-    rows = [
-        ["V_ult, basic wind speed", basis.speed_mph, "mph",
-         "ASCE 7-16 Fig. 26.5-1 via MN Rules 1309.0301 (115 mph statewide)"],
-        ["Exposure category", basis.exposure, "", "ASCE 7-16 §26.7.3 — surface roughness "
-         "determined for this site"],
-        ["Risk category", basis.risk_category, "", "ASCE 7-16 Table 1.5-1 — a dwelling is II"],
-        ["K_d, directionality", wind.K_D_BUILDINGS, "", "ASCE 7-16 Table 26.6-1"],
-        ["K_zt, topographic factor", wind.K_ZT_FLAT, "", "ASCE 7-16 §26.8.2 — none of the "
-         "three conditions of §26.8.1 is met"],
-        ["K_e, ground elevation factor", 1.0, "", "ASCE 7-16 §26.9 — permitted at all "
-         "elevations; the conservative side of a 3 % effect at this site"],
-        ["ASD wind factor", wind.ASD_WIND_FACTOR, "", "ASCE 7-16 §2.4.1 combination 5/6 — "
-         "every capacity cited in this package is an ASD allowable"],
-    ]
-    for height in heights:
-        rows.append([f"q_z at {height:g} ft (mean roof height)",
-                     wind.velocity_pressure_psf(basis, height), "psf",
-                     "ASCE 7-16 eq. 26.10-1, strength level"])
-    return table(["Quantity", "Value", "Unit", "Source"], rows)
-
-
-def _snow_block(site: Any) -> str:
-    ground = getattr(site, "ground_snow_load_psf", None) if site is not None else None
-    if ground is None:
-        return ("This model carries no ground snow load. Every snow-driven item reports it "
-                "as a missing input.")
-    return table(["Quantity", "Value", "Unit", "Source"],
-                 [["p_g, ground snow load", ground, "psf",
-                   "IRC Table R301.2(1) — a jurisdictional figure, authored on the site, "
-                   "not derived"]])
-
-
-def _soil_block(soil_module: Any, site: Any) -> str:
-    soil_class = getattr(site, "soil_class", None) if site is not None else None
-    presumptive = soil_module.presumptive(soil_class)
-    if presumptive is None:
-        return (f"This model declares no usable soil group (`soil_class` = "
-                f"{soil_class!r}). No lateral pressure, bearing value or base friction is "
-                f"presumed: a calculation that needs one reports it as a missing input, "
-                f"because guessing the ground is the one assumption a retaining wall "
-                f"cannot survive.")
-    bed = soil_module.aggregate_bed()
-    rows = [
-        ["Declared soil group", presumptive.soil_class, "", "IRC Table R405.1 / Unified"],
-        ["IBC presumptive class", presumptive.ibc_class, "", presumptive.citation],
-        ["Active equivalent fluid pressure", presumptive.active_efp_psf_per_ft, "psf/ft",
-         "IBC Table 1610.1"],
-        ["At-rest equivalent fluid pressure", presumptive.at_rest_efp_psf_per_ft, "psf/ft",
-         "IBC Table 1610.1 — used where the wall is restrained against rotation"],
-        ["Allowable bearing", presumptive.allowable_bearing_psf, "psf",
-         "IBC Table 1806.2"],
-        ["Lateral bearing", presumptive.lateral_bearing_psf_per_ft, "psf/ft",
-         "IBC Table 1806.2"],
-        ["Base friction coefficient (native)", presumptive.friction_coefficient, "",
-         "IBC Table 1806.2"],
-        ["Base friction coefficient (on washed stone)", bed.friction_coefficient, "",
-         f"{bed.citation} — a footing bearing on a replacement stone section slides on "
-         f"stone, not on the retained soil behind the wall"],
-        ["Soil unit weight band", f"{soil_module.SOIL_UNIT_WEIGHT_BAND_PCF[0]:g}–"
-         f"{soil_module.SOIL_UNIT_WEIGHT_BAND_PCF[1]:g}", "pcf",
-         "not a code value — loose-to-medium silty gravel through well compacted"],
-        ["Concrete unit weight", soil_module.CONCRETE_UNIT_WEIGHT_PCF, "pcf",
-         "conventional, and not in dispute"],
-    ]
-    return table(["Quantity", "Value", "Unit", "Source"], rows)
-
-
-#: Input names that describe a *material*, and the row each becomes. Derived from what the
-#: calculations actually consumed, so a material nothing is designed against never appears.
-_MATERIAL_INPUTS = {
-    "fc": ("f'c, specified concrete compressive strength", "psi"),
-    "fy": ("f_y, specified yield strength of reinforcement", "psi"),
-    "Fb_adjusted": ("F_b', adjusted bending design value", "psi"),
-    "E_adjusted": ("E', adjusted modulus of elasticity", "psi"),
-    "concrete_unit_weight": ("Concrete unit weight", "pcf"),
-}
-
-
-def _materials_block(inputs: PackageInputs) -> str:
-    """Material properties, collected from the values the calculations actually consumed.
-
-    Not read off the assemblies: an assembly a calculation never looked at would then be
-    printed as a design criterion, which is precisely the drift this page exists to
-    prevent. Where one calc used 3,000 psi and another 5,000, both appear, with the items
-    that used each — that disagreement is a fact a reviewer needs, not a thing to average.
+    The register says what each item *is*; this says what signing it *means*. It is the
+    page a reviewer asked for a scope letter reads, and the reason it is generated rather
+    than written is the same as everywhere else here: a scope that can drift from the items
+    it scopes is worse than none.
     """
-    seen: dict[tuple[str, float], list[str]] = {}
-    for record in inputs.records:
-        for quantity in record.inputs:
-            if quantity.name in _MATERIAL_INPUTS:
-                seen.setdefault((quantity.name, round(float(quantity.value), 6)),
-                                []).append(record.item_id)
-    if not seen:
-        return "_No calculation in this package consumed a declared material property._"
-    rows = []
-    for (name, value), items in sorted(seen.items()):
-        label, unit = _MATERIAL_INPUTS[name]
-        rows.append([label, value, unit, len(items),
-                     ", ".join(f"`{i}`" for i in sorted(items)[:4])
-                     + (", …" if len(items) > 4 else "")])
-    return table(["Property", "Value", "Unit", "Items", "Used by"], rows) + \
-        "\n\nWhere one value appears twice, two calculations were run against two different " \
-        "strengths. That is reported and not reconciled."
+    computed = [r for r in inputs.records if r.status is Status.OK]
+    incomplete = [r for r in inputs.records if r.status is Status.INCOMPLETE]
+    deferred = [r for r in inputs.records if r.status is Status.NO_CALC]
+    sealed = [r for r in inputs.records
+              if inputs.register.freshness(r)[0].value == "fresh"]
+    return document(
+        heading(f"Scope of review — {inputs.house}"),
+        "What a professional seal over this package covers, and what it does not. "
+        f"{len(inputs.records)} engineered item(s) in three states.",
+        table(["State", "Items", "What a seal over it would mean"], [
+            ["**Computed**", len(computed),
+             "This engine derived a demand and a capacity and the item checks out. A seal "
+             "here is a review of THIS arithmetic against THIS model — the reviewer is "
+             "adopting the calculation, not re-deriving it."],
+            ["**Incomplete**", len(incomplete),
+             "A demand or a capacity is missing an input. Nothing may be sealed here until "
+             "the input is authored; see `03-open-items.md` for what each one needs."],
+            ["**Deferred**", len(deferred),
+             "This engine computes nothing and never will — a component manufacturer's or "
+             "another engineer's sealed design governs. A seal on this package does NOT "
+             "reach these; each names its own responsible designer."],
+        ]),
+        heading("What a seal does not cover, in any state", 2),
+        bullets([
+            "**The model.** A seal is pinned to a fingerprint of the elements it covers "
+            "(`02-item-register.md`). Move one of them and the seal goes stale, by design.",
+            "**Anything outside these item ids.** Every requirement met from a "
+            "prescriptive table is graded by `haus check` and is not in this package.",
+            "**Means and methods, MEP, energy, and the architectural set.** This package "
+            "is structural calculation only.",
+            "**Quantities.** The bill of materials is derived from the same model and is "
+            "the contractor's to confirm.",
+        ]),
+        heading("Where it stands now", 2),
+        f"{len(sealed)} of {len(inputs.records)} item(s) carry a fresh seal in "
+        "`engineering.toml`. The engine reads that file and never writes it: a seal is a "
+        "human act, and this package records it rather than performing it.",
+    )
 
-
-def _service_block(inputs: PackageInputs) -> str:
-    """The distinct bases the package rests on — one row per standard actually cited."""
-    bases: dict[str, list[str]] = {}
-    for record in inputs.records:
-        if record.basis:
-            bases.setdefault(record.basis, []).append(record.item_id)
-    if not bases:
-        return "_No basis is recorded on any item._"
-    rows = [[basis, len(items), ", ".join(sorted({i.split("/")[0] for i in items}))]
-            for basis, items in sorted(bases.items())]
-    return table(["Basis", "Items", "Kinds"], rows)
 
 
 # --- register and gap pages --------------------------------------------------------------

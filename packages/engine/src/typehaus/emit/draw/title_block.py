@@ -146,7 +146,7 @@ def _carries_seal(number: str) -> bool:
     the structural set; lettering it on a lighting plan would claim a scope no engineer
     took. The cover carries it because the set's gate statement is there.
     """
-    return number.startswith("S-") or number in ("G-001", "A-000")
+    return number.startswith("S-") or number == "G-001"
 
 
 def content_box(size: tuple[float, float]) -> tuple[float, float, float, float]:
@@ -330,8 +330,8 @@ def _draw_seal_cell(ax, cell, pad: float, seal: SealBlock | None, label) -> None
     # Bottom half: the four lines, filled from the signoff where there is one.
     filled = {"NAME": seal.engineer, "LICENSE NO.": seal.license, "DATE": seal.sealed_on}
     span = stamp_bot - (seal_bot + pad)
-    step = span / 4.6
-    y = stamp_bot - step * 0.9
+    step = span / 5.4
+    y = stamp_bot - step * 0.8
     for line in ("NAME", "LICENSE NO.", "DATE", "SIGNATURE"):
         value = filled.get(line)
         label(box_x0, y, f"{line} {value}" if value else f"{line} ____________", 5.0)
