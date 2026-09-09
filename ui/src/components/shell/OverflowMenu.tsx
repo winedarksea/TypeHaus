@@ -2,7 +2,7 @@ import { useStore } from "../../state/store";
 import { useTheme, useDensity, type ThemePreference, type Density } from "../../theme/theme";
 import { promptInstall, type PwaState } from "../../pwa/register";
 import { Menu, type MenuSection } from "../ui/Menu";
-import { DOCUMENTS_DESTINATION } from "./navigationConfig";
+import { DOCUMENT_DESTINATIONS } from "./navigationConfig";
 import type { IconName } from "../../icons/names";
 
 const DENSITIES: { id: Density; label: string; icon: IconName }[] = [
@@ -32,6 +32,7 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
+  const documentsTab = useStore((s) => s.documentsTab);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
 
@@ -40,21 +41,21 @@ export function OverflowMenu({ pwa, compact = false }: { pwa: PwaState; compact?
     // actions the bar no longer has room for, so they come first.
     ...(compact
       ? [
-          // One item, not seven: the readers moved into the Documents hub, which the bottom
-          // nav already has a slot for. This is the escape hatch for a viewport narrow
-          // enough that the bar is the only chrome left.
+          // Three items, not seven: the readers moved into the Documents hub's Reports tab,
+          // and a menu row is cheap enough to name each tab. This is the escape hatch for a
+          // viewport narrow enough that the bar is the only chrome left.
           {
             id: "documents",
             label: "Read",
-            items: [{
-              id: "documents",
-              label: DOCUMENTS_DESTINATION.label,
-              icon: DOCUMENTS_DESTINATION.icon,
-              hint: DOCUMENTS_DESTINATION.hint,
-              selected: detailView === "documents",
-              onSelect: () => (detailView === "documents"
-                ? setDetailView("none") : openDocuments()),
-            }],
+            items: DOCUMENT_DESTINATIONS.map((doc) => ({
+              id: `documents-${doc.tab}`,
+              label: doc.label,
+              icon: doc.icon,
+              hint: doc.hint,
+              selected: detailView === "documents" && documentsTab === doc.tab,
+              onSelect: () => (detailView === "documents" && documentsTab === doc.tab
+                ? setDetailView("none") : openDocuments(doc.tab)),
+            })),
           },
           {
             id: "actions",

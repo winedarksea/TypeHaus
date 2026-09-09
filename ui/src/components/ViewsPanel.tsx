@@ -178,6 +178,48 @@ export function ViewsPanel() {
         <button className="btn icon-btn" onClick={() => setActivePanel(null)} title="Close views"><Icon name="close" /></button>
       </div>
 
+      <h3>Disciplines</h3>
+      {/* Both viewers read this same set. A trade the 2D plan has no geometry for (roof
+          surfaces, the site sheet, below-grade solids) is marked rather than left to look
+          broken when its checkbox does nothing on the plan side. */}
+      <div className="trade-grid">
+        {ALL_TRADES.map((trade) => {
+          const planOnly3D = !TRADE_SURFACES[trade].plan;
+          return (
+            <label key={trade} className={`trade-chip${visibleTrades[trade] ? " on" : ""}`}
+              title={planOnly3D ? `${TRADE_LABEL[trade]} — drawn in 3D only` : TRADE_LABEL[trade]}>
+              <input
+                type="checkbox"
+                checked={visibleTrades[trade]}
+                onChange={(e) => setTradeVisible(trade, e.target.checked)}
+              />
+              {TRADE_LABEL[trade]}
+              {planOnly3D && <span className="trade-surface" aria-label="3D only">3D</span>}
+            </label>
+          );
+        })}
+      </div>
+      {viewMode === "2d" && (
+        <div className="muted views-hint">Trades marked 3D have no plan geometry to hide.</div>
+      )}
+
+      <h3>Assembly layers</h3>
+      {/* Per-layer visibility (→ TODO "a per-layer visibility control would settle it"): drop
+          the weather skin and the cavity fill independently, in the plan and the model alike,
+          so a closure band can be told apart from the insulation behind it. */}
+      <div className="trade-grid">
+        {ALL_LAYER_VISIBILITY_GROUPS.map((group) => (
+          <label key={group} className={`trade-chip${visibleLayerGroups[group] ? " on" : ""}`}>
+            <input
+              type="checkbox"
+              checked={visibleLayerGroups[group]}
+              onChange={(e) => setLayerGroupVisible(group, e.target.checked)}
+            />
+            {LAYER_VISIBILITY_GROUP_LABEL[group]}
+          </label>
+        ))}
+      </div>
+
       <h3>Level</h3>
       <select value={activeStorey ?? ""} onChange={(e) => setActiveStorey(e.target.value || null)} style={{ width: "100%" }}>
         {model.storeys.map((s) => (
@@ -237,31 +279,6 @@ export function ViewsPanel() {
         </button>
       </div>
 
-      <h3>Disciplines</h3>
-      {/* Both viewers read this same set. A trade the 2D plan has no geometry for (roof
-          surfaces, the site sheet, below-grade solids) is marked rather than left to look
-          broken when its checkbox does nothing on the plan side. */}
-      <div className="trade-grid">
-        {ALL_TRADES.map((trade) => {
-          const planOnly3D = !TRADE_SURFACES[trade].plan;
-          return (
-            <label key={trade} className={`trade-chip${visibleTrades[trade] ? " on" : ""}`}
-              title={planOnly3D ? `${TRADE_LABEL[trade]} — drawn in 3D only` : TRADE_LABEL[trade]}>
-              <input
-                type="checkbox"
-                checked={visibleTrades[trade]}
-                onChange={(e) => setTradeVisible(trade, e.target.checked)}
-              />
-              {TRADE_LABEL[trade]}
-              {planOnly3D && <span className="trade-surface" aria-label="3D only">3D</span>}
-            </label>
-          );
-        })}
-      </div>
-      {viewMode === "2d" && (
-        <div className="muted views-hint">Trades marked 3D have no plan geometry to hide.</div>
-      )}
-
       {/* Ground opacity is a companion to the Site checkbox above, not a replacement for it:
           the checkbox answers "is there ground at all", this answers "how much of the basement
           does it let through". The default is the translucent reference the sheet has always
@@ -290,23 +307,6 @@ export function ViewsPanel() {
         {visibleTrades.earth
           ? "Site sheet only, in 3D. At 100% the earth is solid and hides everything below grade."
           : "Site is hidden — turn it on under Disciplines to use this."}
-      </div>
-
-      <h3>Assembly layers</h3>
-      {/* Per-layer visibility (→ TODO "a per-layer visibility control would settle it"): drop
-          the weather skin and the cavity fill independently, in the plan and the model alike,
-          so a closure band can be told apart from the insulation behind it. */}
-      <div className="trade-grid">
-        {ALL_LAYER_VISIBILITY_GROUPS.map((group) => (
-          <label key={group} className={`trade-chip${visibleLayerGroups[group] ? " on" : ""}`}>
-            <input
-              type="checkbox"
-              checked={visibleLayerGroups[group]}
-              onChange={(e) => setLayerGroupVisible(group, e.target.checked)}
-            />
-            {LAYER_VISIBILITY_GROUP_LABEL[group]}
-          </label>
-        ))}
       </div>
 
       <h3>Labels</h3>

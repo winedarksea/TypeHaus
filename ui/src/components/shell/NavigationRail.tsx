@@ -3,7 +3,7 @@ import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
 import { ToolRailSection } from "./ToolRailSection";
-import { DOCUMENTS_DESTINATION } from "./navigationConfig";
+import { DOCUMENT_DESTINATIONS } from "./navigationConfig";
 
 /**
  * The permanent left navigation rail.
@@ -22,6 +22,7 @@ export function NavigationRail() {
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
+  const documentsTab = useStore((s) => s.documentsTab);
   const documentsOpen = detailView === "documents";
 
   const findings = model ? visibleFindings(model.findings) : [];
@@ -56,19 +57,26 @@ export function NavigationRail() {
       })}
 
       {/* Documents sits with the panels rather than with the tools: it is a destination
-          you go to, not something you do to the drawing. It replaced the top bar's Reports
-          menu — see navigationConfig.DOCUMENTS_DESTINATION. */}
-      <button
-        className={`rail-item${documentsOpen ? " active" : ""}`}
-        aria-pressed={documentsOpen}
-        title={DOCUMENTS_DESTINATION.hint}
-        onClick={() => (documentsOpen ? setDetailView("none") : openDocuments())}
-      >
-        <span className="rail-indicator">
-          <Icon name={DOCUMENTS_DESTINATION.icon} size={22} />
-        </span>
-        <span className="rail-label">{DOCUMENTS_DESTINATION.label}</span>
-      </button>
+          you go to, not something you do to the drawing. One entry per tab, so a report is
+          one click rather than two — see navigationConfig.DOCUMENT_DESTINATIONS. Active
+          follows the open tab, and re-clicking the open one returns to the canvas. */}
+      {DOCUMENT_DESTINATIONS.map((doc) => {
+        const active = documentsOpen && documentsTab === doc.tab;
+        return (
+          <button
+            key={doc.tab}
+            className={`rail-item${active ? " active" : ""}`}
+            aria-pressed={active}
+            title={doc.hint}
+            onClick={() => (active ? setDetailView("none") : openDocuments(doc.tab))}
+          >
+            <span className="rail-indicator">
+              <Icon name={doc.icon} size={22} />
+            </span>
+            <span className="rail-label">{doc.label}</span>
+          </button>
+        );
+      })}
 
       <div className="rail-divider" role="separator" />
 

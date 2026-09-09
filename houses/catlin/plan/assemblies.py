@@ -3538,40 +3538,42 @@ MATERIALS = [
              r_per_inch=0.0, density=2700.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#383838",
              source="garage ICF stem exterior protection band (all four walls) + the stem-top Z-flash at the corrugated panel base; 3105-H14 or 5005 painted aluminium flat sheet, 2-coat 70% PVDF (Kynar 500/Hylar 5000), 0.040\" min / 0.050\" preferred, stock 48\" x 120\" ripped into two 24\" bands with no waste (second best if sheet is unobtainable: 0.024\" heavy-gauge 24\" trim coil, never 0.019\"); fixed with #9 316 stainless gasketed screws (EPDM washer is the dielectric break) into KDAT furring, every exposed edge hemmed or folded; NEVER in contact with concrete or fresh mortar (alkali strips the oxide film) and never lapped metal-to-metal against the steel corrugated panel above"),
-    # The garage's accent coil. Brake-formed PVDF-coated
-    # stock in the same family as `metal-dark-exterior` above, sharing its reasoning: colour
-    # is an albedo, so it is authored a step darker than the chip reads in hand, and it is
-    # NOT named "*seam*" — renderers key the ribbed standing-seam finish off that substring
-    # and this is flat formed trim. It is keyed into the two renderer palettes BY TAG
-    # (`_FINISH_BASE` in emit/gltf/palette.py, `FINISH_BASE` in ui/src/nordic/palette.ts,
-    # kept in step by hand) rather than by a declared `finish`, because a fascia and a ridge
-    # cap are framed MEMBERS: `memberColor` is handed the palette and no catalog, so a
-    # material's authored `color` is invisible to it and only the tag lookup reaches. That is
-    # the same reason `metal-dark-exterior` above is tag-keyed.
+    # `metal-copper-penny` — the garage's accent coil from 2026-08-26 to 2026-09-08, carrying
+    # both the vented ridge cap and all six fascia pieces. **Referenced by nothing now.** The
+    # garage roof edge went to `metal-dark-exterior` above, so the garage no longer departs
+    # from the house's ONE exterior dark, and the accent that made it its own building is now
+    # the Classic Green door wall and the Charcoal Gray stem band alone.
     #
-    # `metal-copper-penny` — the garage's ONE accent coil, carrying both the vented ridge cap
-    # and all six fascia pieces. Two members, one coil, one order: the fascia is
-    # named on the `FasciaBoard` in `_GARAGE_EAVE_TRIM` and the cap through
-    # `Roof.edge_trim_material` on RF-GARAGE, and the two paths landing on one material is
-    # the point — a cap in a different colour from the fascia under it reads as a mistake
-    # rather than as a choice. The fascia wore Western States "Regal Blue" before this
-    # (see `metal-fascia-regal-blue` below, kept and unreferenced).
+    # Kept, unreferenced, the way `metal-fascia-regal-blue` below is: a metallic PVDF is the
+    # same product on the same substrate as a solid colour, so coming back is a one-word
+    # `material=` swap — but in TWO places, the `FasciaBoard` in `_GARAGE_EAVE_TRIM` and
+    # `Roof.edge_trim_material` on RF-GARAGE, which is the whole trap. A cap in a different
+    # colour from the fascia under it reads as a mistake rather than as a choice, and no
+    # check catches the drift.
     #
-    # THE FASCIA'S SUBSTRATE CHANGED WITH ITS COLOUR, and that is the durable half of this.
-    # The weather face was 5/4 cellular PVC; a PVDF metallic is a metal coil finish PVC
-    # cannot be ordered in, and a dark trim colour on cellular PVC is the classic failure —
-    # PVC's thermal movement is high enough that trim makers require a solar-reflective
-    # vinyl-safe coating for dark colours and cap the LRV outright. Formed metal over the
-    # existing 2x6 spf sub-fascia nailer has neither problem and is the ordinary detail on a
-    # metal-roofed building. The SOFFIT stays cellular PVC: it is vented, out of the weather,
-    # and white under an overhang is what keeps a soffit from reading as a shadow.
+    # THE FASCIA'S SUBSTRATE CHANGED WITH THIS COLOUR AND MUST NOT BE REVERTED WITH IT.
+    # The weather face was 5/4 cellular PVC; a dark trim colour on cellular PVC is the
+    # classic failure — PVC's thermal movement is high enough that trim makers require a
+    # solar-reflective vinyl-safe coating for dark colours and cap the LRV outright, and the
+    # near-black it wears now is further past that cap than the metallic was. Formed metal
+    # over the existing 2x6 spf sub-fascia nailer has neither problem and is the ordinary
+    # detail on a metal-roofed building. The SOFFIT stays cellular PVC: it is vented, out of
+    # the weather, and white under an overhang is what keeps a soffit from reading as a
+    # shadow.
+    #
+    # Both renderers reach this tone BY TAG (`_FINISH_BASE` in emit/gltf/palette.py,
+    # `FINISH_BASE` in ui/src/nordic/palette.ts, kept in step by hand), not by a declared
+    # `finish`: a fascia and a ridge cap are framed MEMBERS, and `memberColor` is handed the
+    # palette and no catalog, so a material's authored `color` never reaches them. Those rows
+    # stay while this material does. Not named "*seam*" — renderers key the ribbed
+    # standing-seam finish off that substring and this is flat formed trim.
     #
     # A metallic PVDF is a two-coat mica/pearl system, so it reads differently by viewing
-    # angle in a way a flat albedo cannot express — this is the mid-tone of that range.
+    # angle in a way a flat albedo cannot express — this hex is the mid-tone of that range.
     Material(tag="metal-copper-penny", name="Copper Penny PVDF-coated formed metal trim",
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#8a4f2a",
-             source="RF-GARAGE vented ridge cap + the six garage eave/rake fascia pieces — \"Copper Penny\" PVDF/Kynar metallic (mica) coil over 24 ga. steel, the standard trade colour for a copper look without copper's cost or its runoff staining; brake-formed, and on the fascia lapped over a 2x6 spf sub-fascia nailer. A metallic is angle-dependent and this hex is the mid-tone, so a physical chip governs"),
+             source="garage vented ridge cap + eave/rake fascia, 2026-08-26 to 2026-09-08 only — \"Copper Penny\" PVDF/Kynar metallic (mica) coil over 24 ga. steel, the standard trade colour for a copper look without copper's cost or its runoff staining; brake-formed, and on the fascia lapped over a 2x6 spf sub-fascia nailer. A metallic is angle-dependent and this hex is the mid-tone, so a physical chip governs"),
     # `metal-fascia-regal-blue` — Western States "Regal Blue"
     # (westernstatesmetalroofing.com/regal-blue), PVDF. **Referenced by nothing**: the garage
     # fascia wore it before going to the copper penny above.

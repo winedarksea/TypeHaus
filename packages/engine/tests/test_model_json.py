@@ -146,16 +146,19 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
              if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
     assert gable and all(m["material"].startswith(("standing-seam", "corrugated"))
                           for m in gable)
-    # The garage's cap is Copper Penny, not the roofing's own stock. RF-GARAGE authors
-    # `edge_trim_material`, so its vented ridge cap takes the same PVDF metallic coil as
-    # its six fascia pieces — the one place on the site that does not follow the house's
-    # `#1c1f24`. The two are named through DIFFERENT fields (this one is
-    # the Roof's, the fascia's is the FasciaBoard's) with nothing keeping them in step, so
-    # the tag is pinned exactly here rather than by prefix: a cap that quietly reverted to
-    # the roofing stock while the fascia under it stayed copper is precisely the drift this
-    # can catch, and it does not look like a bug in any render — it looks like a choice.
+    # The garage's cap is trim coil, not the roofing's own stock, and it is the SAME coil as
+    # the fascia under it. RF-GARAGE authors `edge_trim_material`, so its vented ridge cap
+    # takes the house's one exterior dark like the six fascia pieces do (it wore "Copper
+    # Penny" metallic 2026-08-26 to 2026-09-08). The two are named through DIFFERENT fields —
+    # this one is the Roof's, the fascia's is the FasciaBoard's — with nothing else keeping
+    # them in step, so both are pinned exactly here rather than by prefix: a cap that quietly
+    # reverted to the roofing stock, or a colour changed in one place only, is precisely the
+    # drift this can catch, and neither looks like a bug in any render — each looks like a
+    # choice.
     garage_cap = [m for m in garage["members"] if m["category"] == "ridge_cap"]
-    assert garage_cap and all(m["material"] == "metal-copper-penny" for m in garage_cap)
+    assert garage_cap and all(m["material"] == "metal-dark-exterior" for m in garage_cap)
+    garage_fascia = [m for m in garage["members"] if m["category"] == "fascia"]
+    assert garage_fascia and {m["material"] for m in garage_fascia} == {"spf", "metal-dark-exterior"}
     studs = [m for m in house["members"] if m["category"] == "rafter"]
     assert studs and all(m["material"] is None for m in studs)
 

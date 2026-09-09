@@ -99,7 +99,9 @@ export function CommandPalette() {
       { id: "reader-plumbing", title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
       { id: "reader-data", title: "Data (low-voltage schedule)", group: "Model", run: () => setDetailView("data") },
       { id: "reader-estimate", title: "Estimate (priced rows, bid ladder)", group: "Model", run: () => setDetailView("estimate") },
-      { id: "reader-documents", title: "Documents (drawings, notes, reports)", group: "Model", run: () => openDocuments() },
+      { id: "documents-drawings", title: "Drawings (the permit set)", group: "Model", run: () => openDocuments("drawings") },
+      { id: "documents-notes", title: "Notes (design and product notes)", group: "Model", run: () => openDocuments("notes") },
+      { id: "documents-reports", title: "Reports (assembly, BOM, circuits, HVAC…)", group: "Model", run: () => openDocuments("reports") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
     ]
       // The published build does not offer every reader (state/public.ts). Filtering the

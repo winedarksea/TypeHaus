@@ -2058,11 +2058,11 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - The **gable triangle above a wall comes along for free**: `resolve/roof_edge.py` builds
     the wall→roof closure from the host wall's own layers, so an override picks up in the
     closure with nothing authored for it.
-- **The garage's roof edge is one Copper Penny coil — fascia and ridge cap both.**
-  The garage is the one place on the site that does not follow the house's
-  single `#1c1f24` exterior dark. `metal-copper-penny` is a PVDF *metallic* (mica) coil and
-  it carries seven members: the six fascia pieces and the vented ridge cap. **The two are
-  named through DIFFERENT fields and nothing keeps them in step but this line.**
+- **The garage's roof edge is one coil — fascia and ridge cap both — and it is the house's
+  exterior dark.** `metal-dark-exterior` (`#1c1f24`) carries seven members here: the six
+  fascia pieces and the vented ridge cap. **The two are named through DIFFERENT fields and
+  nothing keeps them in step but this line and one assertion** (`test_model_json.py` pins
+  both tags).
   - **The fascia is six pieces** — two eaves and four rakes — named on the `FasciaBoard`
     inside `_GARAGE_EAVE_TRIM` (`plan/storeys/garage.py`); the 2x6 spf sub-fascia nailer
     behind it is unchanged.
@@ -2070,15 +2070,20 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     field drives the ridge cap **and the corner trim**
     (`resolve/roof_trim.py::_edge_trim_material`); a 16" overhang frames fascia + soffit and
     **no** corner trim, which is the only reason naming it recolours exactly one member.
-    Give this roof a zero overhang and the copper would spread to the corner trim as well.
+    Give this roof a zero overhang and the trim colour would spread to the corner trim too.
   - **So changing the accent colour is a TWO-PLACE edit.** Change one and the cap and the
-    fascia under it drift apart, with no check to catch it — a cap in a different colour
-    from its own fascia reads as a mistake rather than as a choice.
-  - **The fascia's SUBSTRATE changed with its colour, and that half must not be reverted.**
-    The weather face was 5/4 cellular PVC; a PVDF metallic is a metal coil finish PVC cannot
-    be ordered in, and a dark trim colour on cellular PVC is the classic failure — PVC's
-    thermal movement forces a solar-reflective vinyl-safe coating and trim makers cap the
-    LRV outright. Formed metal over a wood nailer has neither problem and is the ordinary
+    fascia under it drift apart — a cap in a different colour from its own fascia reads as a
+    mistake rather than as a choice.
+  - **The garage wore "Copper Penny" PVDF metallic here from 2026-08-26 to 2026-09-08**, and
+    was the one place on the site departing from the house's single exterior dark. It no
+    longer is: the garage's own accents are now the Classic Green door wall and the Charcoal
+    Gray stem band. `metal-copper-penny` is **kept and referenced by nothing**, the way
+    `metal-fascia-regal-blue` is, so coming back is a one-word swap in the two places above.
+  - **The fascia's SUBSTRATE changed with the 2026-08-26 colour, and that half must not be
+    reverted.** The weather face was 5/4 cellular PVC; a dark trim colour on cellular PVC is
+    the classic failure — PVC's thermal movement forces a solar-reflective vinyl-safe coating
+    and trim makers cap the LRV outright, and `#1c1f24` is further past that cap than the
+    metallic was. Formed metal over a wood nailer has neither problem and is the ordinary
     detail on a metal-roofed building. **The SOFFIT stays cellular PVC and stays white**:
     vented, out of the weather, and white is what keeps an overhang from reading as a
     shadow.
@@ -2086,20 +2091,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     and a ridge cap are framed MEMBERS, and `memberColor` is handed the palette and no
     catalog, so a material's authored `color` is invisible to it and only the tag lookup
     reaches. `_FINISH_BASE` (`emit/gltf/palette.py`) and `FINISH_BASE`
-    (`ui/src/nordic/palette.ts`), kept in step **by hand**. Same reason
-    `metal-dark-exterior` is tag-keyed.
-  - The tag does not contain **"seam"**, deliberately: both renderers key the ribbed
-    standing-seam finish off that substring and this is flat formed stock. It carries no
+    (`ui/src/nordic/palette.ts`), kept in step **by hand**. `metal-dark-exterior` already had
+    its rows, so this swap added none — and the `metal-copper-penny` rows stay while that
+    material does.
+  - Neither tag contains **"seam"**, deliberately: both renderers key the ribbed
+    standing-seam finish off that substring and this is flat formed stock. Trim carries no
     `skin_family` either — that field is about the wall/roof continuous-skin reading at a
     zero-overhang edge, and trim is not skin.
-  - `#8a4f2a` is an **approximation**. The manufacturer publishes no RGB and its own page
-    warns the on-screen swatch differs from the panel, and a metallic's colour is
-    angle-dependent in a way a flat albedo cannot express, so this is a mid-tone. A physical
-    chip governs.
-  - **`metal-fascia-regal-blue` is kept and referenced by nothing.** The fascia briefly wore Western
-    States "Regal Blue". Same product, same substrate, so going blue
-    again is a one-word `material=` swap on the FasciaBoard — the same convention
-    `glazed-green-brick` and `standing-seam-nailstrip-26-green` are kept under.
 - **The garage ICF stem is covered on BOTH faces above grade, and the second face was
   missing until 2026-09-02.** `notes/garage_wall_detail_side.md` has always asked for
   protective covering on both sides of the exposed EPS; only the inside was built.

@@ -47,10 +47,10 @@ export const ALL_TRADES: Trade[] = [
 // panel is code-split, and reaching into a builder for one number would drag the whole
 // renderer back into the main bundle.
 //
-// The default is the long-standing translucent reference — enough earth to read grade, still
-// see-through to the basement. 1 buries the basement behind real dirt; the Site discipline
+// The default reads as ground first — solid enough to sit on, still translucent enough to
+// pick out the basement behind it. 1 buries the basement behind real dirt; the Site discipline
 // checkbox still turns the sheet off outright, which is a different question.
-export const DEFAULT_EARTH_OPACITY = 0.28;
+export const DEFAULT_EARTH_OPACITY = 0.7;
 
 // The work surfaces: the assembly / transition reader, the whole-model bill of parts, the
 // panel schedule, and the luminaire schedule. Only one is up at a time — they are full-width

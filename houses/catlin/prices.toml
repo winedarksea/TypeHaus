@@ -4435,21 +4435,23 @@
 #
 # Each key blends more than one product, because the price key is the CATEGORY and the BOM
 # puts several materials under one:
-#   fascia        38.3 LF of 9"x1" PVC (sunken garden) + ~107 LF of formed PVDF metallic
-#                 (garage, "Copper Penny") + 106.2 LF of SPF 1.5x5.5 sub-fascia. PVC trim is
+#   fascia        38.3 LF of 9"x1" PVC (sunken garden) + ~107 LF of formed solid-colour PVDF
+#                 (garage, near-black) + 106.2 LF of SPF 1.5x5.5 sub-fascia. PVC trim is
 #                 $3-7/LF, prefinished formed metal fascia is $4-9/LF, and the SPF is
 #                 ~$1-1.6/LF, so the range is the blend and the mix matters if it changes.
 #                 **The garage's ~107 LF was cellular-PVC 1x6.8 until 2026-08-26** and is
 #                 metal now (see houses/catlin/CLAUDE.md for why the substrate changed with
 #                 the colour); the blend moved up slightly inside the same range rather than
 #                 out of it, so the numbers below did not move.
-#   ridge_cap     36.8 LF dark formed metal + 26.7 LF "Copper Penny" formed metal (garage,
-#                 2026-08-26 — was the roof's own standing-seam stock).
-#   THE METALLIC UPCHARGE SPANS BOTH ROWS. "Copper Penny" is a PVDF METALLIC (mica), a
-#   premium coil at typically a 10-20% upcharge over solid-colour PVDF, and since 2026-08-27
-#   it carries the garage fascia as well as the cap — ~134 LF between the two rows, not the
-#   26.7 LF the cap alone was. Both blends still land inside their ranges below, so no number
-#   moved; it is the reason to check BOTH rows against a real quote rather than the blend.
+#   ridge_cap     63.5 LF dark formed metal, all one coil since 2026-09-08 — 36.8 LF house
+#                 plus the garage's 26.7 LF (2026-08-26 — was the roof's own standing-seam
+#                 stock).
+#   THE METALLIC UPCHARGE IS GONE FROM BOTH ROWS. From 2026-08-26 the garage's ~134 LF of cap
+#   and fascia was "Copper Penny", a PVDF METALLIC (mica) at typically a 10-20% upcharge over
+#   solid colour; on 2026-09-08 it went to the house's near-black solid PVDF. That is the
+#   only trim colour on the building now, so both blends are single-coil and sit a little
+#   lower inside the ranges below rather than at their metallic-blended middle. No number
+#   moved — but a quote taken while the metallic stood is now HIGH, not low.
 #   drip_flashing 21.5 LF plain aluminium + 78.4 LF dark formed metal + 76.5 LF of the
 #   garage's PVDF aluminium (STEM_TOP_Z_FLASHING, new 2026-09-03 — the Z at the stem-top
 #   band/corrugated-panel junction, which until then was modelled by nothing). It replaced
@@ -4492,7 +4494,7 @@
 "wall_corner" = { material = { low = 3, high = 7 }, labour = { low = 2.5, high = 5 } }  # 89.5 LF — 4 pieces, 22.37' each, at the four house corners. The PBR<->board & batten transition
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 176.4 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
-"fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed PVDF metallic (garage "Copper Penny", metal since 2026-08-26) over SPF
+"fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x
 "wrb_counterflashing" = { material = { low = 1.5, high = 4 }, labour = { low = 9.5, high = 19 } }  # 21 LF — 21 feet is below any sub's minimum, so the labour here is a $200-400 LUMP spread over the run, not a real per-foot rate

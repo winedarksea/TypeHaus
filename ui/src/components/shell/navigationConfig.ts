@@ -1,5 +1,5 @@
 import type { IconName } from "../../icons/names";
-import type { DetailView, Tool, ToolGroup } from "../../state/vocabulary";
+import type { DetailView, DocumentsTab, Tool, ToolGroup } from "../../state/vocabulary";
 
 /**
  * The chrome's contents as data rather than as repeated JSX, so adding a destination or a
@@ -39,13 +39,32 @@ export const REPORTS: ReportSpec[] = [
 ];
 
 /**
- * The Documents destination, shared by the rail and the bottom nav.
+ * The Documents destination, one entry per tab of the hub.
  *
  * It replaced the top bar's Reports menu rather than sitting beside it: the readers above
  * are one of three things a contractor reads (the drawings and the house's notes are the
- * other two), and three trigger surfaces for one question — "what am I building to?" — is
- * two too many.
+ * other two). One trigger was one too few, though — "Documents" names the container, not
+ * the thing you came for, so reaching a report cost a click into the hub and a second onto
+ * its tab strip. The strip stays (a note's "on sheet A-401" chip still has to cross to the
+ * drawings), and the rail now enters it at the right tab.
  */
+export interface DocumentsDestinationSpec {
+  tab: DocumentsTab;
+  label: string;
+  icon: IconName;
+  hint: string;
+}
+
+export const DOCUMENT_DESTINATIONS: DocumentsDestinationSpec[] = [
+  { tab: "drawings", label: "Drawings", icon: "drawing",
+    hint: "The permit set — sheets, details, schedules" },
+  { tab: "notes", label: "Notes", icon: "note",
+    hint: "Design and product notes for this house" },
+  { tab: "reports", label: "Reports", icon: "report",
+    hint: "Assembly, bill of materials, circuits, HVAC, plumbing, lighting, data" },
+];
+
+/** The hub as one destination — the phone bar has room for a container, not three tabs. */
 export const DOCUMENTS_DESTINATION = {
   id: "documents" as const,
   label: "Documents",

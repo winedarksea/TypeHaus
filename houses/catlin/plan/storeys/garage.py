@@ -357,13 +357,15 @@ ROOMS = [
 # override on one of these walls would carry into its gable triangle with nothing authored
 # for the closure itself. None is authored today; W-G-E's green was reverted.
 # Eave + rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by the
-# weather face — brake-formed PVDF metal in "Copper Penny", six pieces, two eaves and four
-# rakes, THE SAME COIL AS THE RIDGE CAP. One coil and one order for both: a cap in a
-# different colour from the fascia under it reads as a
-# mistake rather than as a choice. The substrate changed with the colour on purpose — a
-# PVDF metallic is a metal coil finish PVC cannot be ordered in, and a dark trim colour on
-# cellular PVC is the classic failure (PVC's thermal movement forces a solar-reflective
-# vinyl-safe coating and an LRV cap). See the `metal-copper-penny` Material comment in
+# weather face — brake-formed PVDF metal in the house's near-black `metal-dark-exterior`,
+# six pieces, two eaves and four rakes, THE SAME COIL AS THE RIDGE CAP. One coil and one
+# order for both: a cap in a different colour from the fascia under it reads as a
+# mistake rather than as a choice. It wore "Copper Penny" metallic from 2026-08-26 until
+# 2026-09-08; the garage now follows the house's ONE exterior dark like every other dark
+# metal element on the envelope. The substrate stays METAL and that half is not reverted —
+# a dark trim colour on cellular PVC is the classic failure (PVC's thermal movement forces
+# a solar-reflective vinyl-safe coating and an LRV cap), and this colour is darker than the
+# one that argument was written for. See the `metal-dark-exterior` Material comment in
 # plan/assemblies.py.
 # The SOFFIT stays cellular PVC and stays white: vented, out of the weather, and a white
 # soffit is what keeps an overhang from reading as a shadow. A vented PVC soffit closes the
@@ -385,7 +387,7 @@ ROOMS = [
 # `downspout_ref` as "the west eave drains to nothing".
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
-            FasciaBoard(material="metal-copper-penny", thickness=inch(1), depth=inch(6))),
+            FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
@@ -440,7 +442,7 @@ ROOFS = [
     Roof(uid="CGRF01AAAA", tag="RF-GARAGE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-G-E", "W-G-W"),
          assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="y",
-         edge_trim_material="metal-copper-penny",
+         edge_trim_material="metal-dark-exterior",
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
