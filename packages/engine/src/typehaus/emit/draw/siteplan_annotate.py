@@ -180,8 +180,15 @@ def _emit_streets(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> N
             builder.add(Polyline(points=(_in(centre_a), _in(centre_b)), layer="C-PROP",
                                  lineweight=LIGHT, linetype="CENTER"))
             mid = ((centre_a[0] + centre_b[0]) / 2, (centre_a[1] + centre_b[1]) / 2)
-        builder.add(Text(anchor=_in(mid), content=label,
-                         height=_scaled(metrics, _STREET_TEXT_IN),
+        height = _scaled(metrics, _STREET_TEXT_IN)
+        run = math.hypot(b[0] - a[0], b[1] - a[1]) or 1.0
+        # Off the line it names, on the far side from the lot — lettering struck through by
+        # its own centreline is the commonest way a site plan becomes unreadable.
+        outward = ((b[1] - a[1]) / run, -(b[0] - a[0]) / run)
+        anchor = _in(mid)
+        builder.add(Text(anchor=(anchor[0] + outward[0] * height,
+                                 anchor[1] + outward[1] * height), content=label,
+                         height=height,
                          rotation=_reading_angle(b[0] - a[0], b[1] - a[1]),
                          layer="C-PROP", align="center"))
 
@@ -230,7 +237,7 @@ def _emit_erosion_controls(builder: SceneBuilder, site: Site, metrics: BlockMetr
             continue
         label = _EROSION_LABELS.get(control.kind, control.kind.upper().replace("_", " "))
         if control.description:
-            label += f" — {control.description}"
+            label += f" — {control.description.upper()}"
         if len(path) >= 2:
             builder.add(Polyline(points=tuple(_in(p) for p in path), layer=EROSION_LAYER,
                                  lineweight=PROFILE, linetype="DASHED"))
