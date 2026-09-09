@@ -12,7 +12,7 @@ re-export these names for its existing callers, so the module-level edge runs on
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.assembly import Layer
@@ -79,7 +79,7 @@ def foundation_general_notes(model: ResolvedModel,
     return notes
 
 
-def _water_control_layers(assembly) -> list:
+def _water_control_layers(assembly: Any) -> list[Any]:
     """Layers that dampproof the earth face, by the criterion ``code.R406_1_dampproofing``
     uses — one definition, so the sheet and the verdict cannot disagree about one wall."""
     return [layer for layer in assembly.layers
@@ -176,7 +176,7 @@ def _soil_gas_course_notes(model: ResolvedModel) -> list[str]:
     return lines
 
 
-def _radon_riser_notes(model: ResolvedModel, risers: list) -> list[str]:
+def _radon_riser_notes(model: ResolvedModel, risers: list[Any]) -> list[str]:
     """Subpart 5's vent: which run, how big, and where its derived terminus is."""
     from typehaus.resolve.vent_termination import derived_termination_elevation
 
@@ -194,7 +194,8 @@ def _radon_riser_notes(model: ResolvedModel, risers: list) -> list[str]:
     return lines
 
 
-def _fan_power_notes(model: ResolvedModel, risers: list, device_kind) -> list[str]:
+def _fan_power_notes(model: ResolvedModel, risers: list[Any],
+                     device_kind: Any) -> list[str]:
     """Subpart 6 — an approved box at the anticipated fan location.
 
     Reach and riser point come from the check that grades this, so the sheet names the
@@ -205,9 +206,9 @@ def _fan_power_notes(model: ResolvedModel, risers: list, device_kind) -> list[st
 
     if not risers:
         return []
-    boxes = [e for e in model.plan.all_elements()
-             if getattr(e, "element_kind", None) == "ElectricalDevice"
-             and getattr(e, "kind", None) is device_kind.JUNCTION_BOX]
+    boxes: list[Any] = [e for e in model.plan.all_elements()
+                        if getattr(e, "element_kind", None) == "ElectricalDevice"
+                        and getattr(e, "kind", None) is device_kind.JUNCTION_BOX]
     # A box that declares a ROOM is skipped, and that is the conservative half of the
     # check's own rule rather than a second one: the reach test is plan-only in a
     # four-storey house, so a lighting supply two floors up falls inside the radius, and

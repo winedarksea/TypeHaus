@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.draw.foundation_notes import (
     _under_slab_note,
@@ -35,9 +36,12 @@ from typehaus.emit.draw.structural_common import (
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
 from typehaus.takeoff.hardware_config import FT_TO_M
 
-# ``foundation_general_notes`` and ``foundation_sheet_findings`` moved to
-# ``foundation_notes`` and are re-exported here: S-100's builder and two test modules import
-# them from this module, and the split is an internal one.
+if TYPE_CHECKING:
+    from typehaus.model.assembly import ConcreteSpec
+    from typehaus.model.rebar import ReinforcementSpec
+
+# The notes half moved to ``foundation_notes`` and is re-exported here: S-100's builder and
+# two test modules import it from this module, and the split is an internal one.
 __all__ = [
     "FoundationMarks",
     "bearing_solids",
@@ -353,7 +357,6 @@ def anchorage_schedule(model: ResolvedModel) -> ScheduleTable:
     carries no pitch. The ordinary case is derived: a framed wall stacked on concrete makes
     a sill-plate construction return and ``takeoff/anchors`` counts a strap anchor along it
     at a pitch — a derivation S-100 was already running and throwing away as a WARN.
-
     Grouped by what the plate lands on and on which storey: a mudsill over a foundation
     wall and a partition plate on a slab are two conditions sharing one part number.
     """
@@ -366,18 +369,18 @@ def anchorage_schedule(model: ResolvedModel) -> ScheduleTable:
 
 
 def _anchor_bolt_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
-    """Authored cast-in bolts, grouped by product. ``Connector`` holds no diameter or
-    embedment, so the schedule states the model number and says where the rest lives."""
+    """Authored cast-in bolts by product. ``Connector`` holds no diameter or embedment."""
     from typehaus.model.enums import ConnectorKind
 
     bolts = [e for e in model.plan.all_elements()
-             if e.element_kind == "Connector" and e.kind is ConnectorKind.ANCHOR_BOLT]
-    grouped: dict[str, list] = {}
+             if e.element_kind == "Connector"
+             and getattr(e, "kind", None) is ConnectorKind.ANCHOR_BOLT]
+    grouped: dict[str, list[Any]] = {}
     for bolt in sorted(bolts, key=lambda e: e.tag):
-        grouped.setdefault(bolt.size or "", []).append(bolt)
-    rows = []
+        grouped.setdefault(str(getattr(bolt, "size", "") or ""), []).append(bolt)
+    rows: list[tuple[str, ...]] = []
     for index, (size, items) in enumerate(sorted(grouped.items()), start=1):
-        walls = sorted({tag for bolt in items for tag in bolt.connects})
+        walls = sorted({tag for bolt in items for tag in getattr(bolt, "connects", ())})
         rows.append((f"A{index}", "CAST-IN ANCHOR BOLT", size or "NOT STATED",
                      "AUTHORED PER BOLT — SEE PLAN", str(len(items)),
                      _abbreviate(", ".join(walls))))
@@ -389,7 +392,7 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
 
     The per-run count repeats ``takeoff/anchors.mudsill_anchor_rows``'s rule rather than
     calling it: that function answers for the whole house, this table per condition.
-    ``takeoff`` is the authority and the two must agree — asserted, not hoped for, in
+    ``takeoff`` is the authority and the two must agree — asserted in
     ``test_structural_sheets``.
     """
     from typehaus.takeoff.anchors import mudsill_anchor_rows
@@ -405,14 +408,14 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     part = str(takeoff[0]["part_number"]) if takeoff else "NOT STATED"
     wall_tags = {wall.tag for wall in model.walls}
     foundation_tags = {wall.tag for wall in foundation_walls(model)}
-    grouped: dict[tuple[str, str], list] = {}
+    grouped: dict[tuple[str, str], list[Any]] = {}
     for ret in returns:
         host = ret.element_tags[0] if ret.element_tags else ""
         kind = ("FOUNDATION WALL" if host in foundation_tags
                 else "SLAB" if host in {solid.tag for solid in model.solids}
                 else "CONCRETE")
         grouped.setdefault((ret.storey, kind), []).append(ret)
-    rows = []
+    rows: list[tuple[str, ...]] = []
     for index, ((storey, kind), runs) in enumerate(sorted(grouped.items()), start=1):
         count = sum(max(rules.minimum_anchors_per_run,
                         int(math.floor(ret.length_m / (rules.mudsill_anchor_pitch_ft
@@ -433,15 +436,15 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
 
     Reads ``ReinforcementSpec`` off the elements S-100 draws and prints nothing where a
     pour carries none: ACI 318-19 §14.1.4 permits plain concrete in a footing, so an absent
-    spec is a legal condition, not a hole to fill with a plausible mat. ELEMENT keys back
-    through the sheet's own marks (FW1, F2, S3), which the reader can find on the drawing.
+    spec is legal, not a hole to fill with a plausible mat. ELEMENT keys back through the
+    sheet's own marks (FW1, F2, S3), which the reader can find on the drawing.
     """
     from typehaus.resolve.concrete import concrete_spec_of
 
     marks = foundation_marks(model)
     mark_of = {**marks.wall, **marks.footing, **marks.pad, **marks.slab}
-    grouped: dict[tuple, list[tuple[str, str]]] = {}
-    specs: dict[tuple, object] = {}
+    grouped: dict[tuple[str, str, str], list[tuple[str, str]]] = {}
+    specs: dict[tuple[str, str, str], ReinforcementSpec] = {}
     for element in _reinforced_elements(model):
         spec = element.reinforcement
         key = (element.element_kind, spec.model_dump_json()
@@ -472,7 +475,7 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
     )
 
 
-def _reinforced_elements(model: ResolvedModel) -> list:
+def _reinforced_elements(model: ResolvedModel) -> list[Any]:
     """Foundation-scope pours carrying an authored ``ReinforcementSpec``, in tag order.
 
     The four element kinds this sheet draws as foundation. A cast pier is a ``Post`` with a
@@ -485,7 +488,7 @@ def _reinforced_elements(model: ResolvedModel) -> list:
                   key=lambda element: element.tag)
 
 
-def _cover_text(spec, concrete) -> str:
+def _cover_text(spec: ReinforcementSpec, concrete: ConcreteSpec | None) -> str:
     """The element's own cover, else the mix's, else the truth. The element outranks the
     mix by design: a stem cast against earth buys cover the plant ticket knows nothing
     about."""
