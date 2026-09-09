@@ -71,12 +71,16 @@ def test_the_criteria_block_prints_the_wind_basis_the_calcs_used(catlin_model_ro
 
 def test_a_silent_model_prints_not_stated_and_never_a_default(catlin_model, profile):
     """Decision #32. A missing value is a missing value, not zero and not a guess."""
+    # ``Site``/``Project``/``PlanModel`` are pydantic (``model_copy``); ``ResolvedModel``
+    # is a plain dataclass (``dataclasses.replace``). Getting that backwards raises.
+    from dataclasses import replace
+
     site = catlin_model.plan.project.site
     bare = site.model_copy(update={"ground_snow_load_psf": None,
                                    "design_wind_speed_mph": None})
     project = catlin_model.plan.project.model_copy(update={"site": bare})
     plan = catlin_model.plan.model_copy(update={"project": project})
-    stripped = catlin_model.model_copy(update={"plan": plan})
+    stripped = replace(catlin_model, plan=plan)
     rows = design_criteria_block(stripped, profile)
     snow = next(line for line in rows if line.startswith("GROUND SNOW LOAD"))
     wind = next(line for line in rows if line.startswith("DESIGN WIND"))
