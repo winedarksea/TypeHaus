@@ -288,6 +288,44 @@ Three independent mechanical checks. Two are already runnable.
 
 ---
 
+## 7. The permit-set question: is the unreinforced concrete unreinforced *by design*?
+
+**Written 2026-09-09**, when the permit set grew an S-100 reinforcement schedule and the
+question "what does this sheet say about the footings and the basement slab" had to have an
+answer that was not silence. §4 already sorts every unreinforced pour in this house into two
+lists; this section states which list is which, so nobody reads a blank schedule row as a
+gap and authors steel to close it.
+
+**PLAIN CONCRETE, DELIBERATELY — nothing to add, and adding it would be wrong:**
+
+- **The 26 house and garage strip footings** and `FT-SG-W1`/`E1`. IRC Table R403.1 sizes a
+  plain-concrete wall footing for a one- or two-family dwelling from wall load and soil
+  bearing alone; no bar is prescribed and none is required. These are §4 item 6.
+- **`FT-SG-COL`/`FCOL`, the two belled piers, and the four breezeway pads.** Graded as
+  plain concrete and passing — **ACI 318-19 §14.1.4** expressly permits plain concrete in a
+  footing — with the working shown in `notes/sunken_garden_piers.md` §5. These are §4 item 5.
+- **`SL-B-FLOOR` and the other slabs on grade.** No mesh and no bar: macro-synthetic fibre
+  at 4 lb/cy replaces the mesh (ACI 544.4R recognises it for drying-shrinkage and thermal
+  crack control), which is why `INTERIOR_SLAB_MIX` exists as a separate mix from
+  `POLISHED_MIX`'s plastic-shrinkage-only micro-monofilament. Control joints are still
+  required on that slab and are still not modelled anywhere — that IS a gap, and it is a
+  jointing gap, not a steel one.
+
+So S-100's reinforcement schedule prints the walls, the retaining footings and the column
+cages that carry bar, and prints nothing for the pours above, correctly. What it must not do
+is invent a `#4 @ 16" O.C. E.W.` for a slab whose specification is fibre.
+
+**STILL A REAL GAP, and unchanged by this section** — §4 items 1, 2 and 3, in that order of
+size: the basement walls' horizontal temperature-and-shrinkage steel, the garage ICF stems'
+bar size, and `SL-M-DECK`'s cap schedule. §5 is the order to close them in, §3's gate is
+still CLOSED, and none of the three was closed here by authoring a number.
+
+**Why this is a note and not a model field.** "Plain by design" and "not yet authored" are
+different claims and the model has one spelling for both — an absent `ReinforcementSpec`.
+Until it can tell them apart, the record has to, and this is the record.
+
+---
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

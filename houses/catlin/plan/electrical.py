@@ -301,6 +301,11 @@ EQUIPMENT_TYPES = (
                   name="Gree FLEXX Ultra R32 concealed ducted air handler, 24k",
                   footprint=(inch(43.5), inch(21.25)), height=inch(18.125),
                   cooling_capacity_btuh=24000,
+                  # AHRI 215213329 rates the MATCHED PAIR, so the same two numbers sit on
+                  # the air handler and on EQ-T-GREE-FLEXX-ULTRA-24-OD below. Both are read
+                  # off this type's own source note; neither is derived from the other.
+                  hspf2=10.0,
+                  seer2=18.0,
                   source="Gree FLEXX Ultra R32 air handler FXU24HP230V1R32AH, matched to EQ-T-GREE-FLEXX-ULTRA-24-OD. Cabinet 18 1/8 x 21 1/4 x 43 1/2 in (W x D x H as shipped), net weight 135.6 lb, laid horizontally for ceiling mount with the 18 1/8 in face vertical — the orientation that minimises soffit depth, so `height` is 18 1/8 in and the 43 1/2 in dimension is the plan long axis. Airflow to 760 cfm against an external static pressure of 1.0 in. w.c., which is what lets it drive the 750 cfm this duct system is sized to with margin; the DUC24 it replaced claimed 1030 cfm in prose and really topped out at 736 at 0.8 in. w.c. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate (AHRI 215213329). 24 VAC thermostat terminals and a factory electric heat kit (4.6 / 5.5 / 9.2 kW) — the DUC24 had NEITHER, so EQ-S-HP1-STRIP could not physically be interlocked with the heat pump at all, which is the defect this retype closes. The indoor unit carries no heating rating of its own on purpose: the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against the outdoor type.",
                   # Real face positions. Air crosses the cabinet the LONG way — in one
                   # 18 1/8 x 21 1/4 end and out the other — which is what the source note's
@@ -326,6 +331,8 @@ EQUIPMENT_TYPES = (
                   heating_capacity_at_design_btuh=21000,
                   cooling_capacity_btuh=24000,
                   min_operating_temp_f=-22.0,
+                  hspf2=10.0,
+                  seer2=18.0,
                   source="Gree FXU24HP230V1R32AO (FLEXX Ultra, R32). 39 x 37 13/16 x 14 9/16 in overall (W x H x D), foot pattern 29 3/4 in across the width by 15 9/16 in across the depth, net weight 187.4 lb. Electrical MCA 21 A / MOCP 25 A at 208-230 V, single phase. LOW-TEMPERATURE HEATING, read from Gree's FLEXX Ultra Extended Ratings at 70 F return — not interpolated, unlike the VIR24 record this replaced: -22 F 18,000 Btu/h at COP 1.49; -20 F 19,500 at 1.53; -15 F 21,000 at 1.57; and a flat 24,000 Btu/h from -5 F all the way to 47 F. NOTE that this document's COP column is TRUE COP (W/W), unlike the All-Match Extended Ratings whose column is Btu/h per watt. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate certified (AHRI 215213329). min_operating_temp_f -22 F per the operating envelope. heating_capacity_at_design_btuh is the -15 F read value, so the unit covers its whole operating range unaided: at -22 F it still makes 18,000 Btu/h against a ~16,400 Btu/h load, which is what demotes EQ-S-HP1-STRIP from a design-condition necessity to true sub-lockout backup.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
@@ -340,6 +347,12 @@ EQUIPMENT_TYPES = (
                   heating_capacity_at_design_btuh=23687,
                   cooling_capacity_btuh=28400,
                   min_operating_temp_f=-22.0,
+                  # AHRI 215218915 (non-ducted). The three heads carry NO efficiency of
+                  # their own for the same reason they carry no heating rating: the rating
+                  # is the system's, and printing it three more times would read as four
+                  # rated machines where there is one.
+                  hspf2=10.0,
+                  seer2=21.0,
                   source="Gree MUL30HP230V1R32AO. OUTLINE AND FEET, from the Gree Multi R32 Installation & Service Manual S3 outline diagram p.31 (the 30k has its own sheet; the 18/24k share a smaller one): 40 5/32 x 32 33/64 x 16 13/16 in overall, foot holes 25 in apart across the width and 15 19/32 in across the depth, net weight 145.5 lb. The record read 37 x 16 in until 2026-08-28 — 37 1/8 in is the width of the cabinet TOP, which is narrower than its base, and the 3 in of missing width put the unit within an inch of the balcony rim. RATINGS, from the 30 MBH submittal (AHRI 215218915 non-ducted): SEER2 21, EER2 13.6, HSPF2 10.0, MCA 23 A / MOCP 30 A, heating range -22 F to 75 F. Datasheet chart: 30,000 Btu/h at 47F, 27,000 Btu/h at 5F, ~24,500 Btu/h at -13F, ~21,500 Btu/h at -22F. ** -15F AT-DESIGN IS A READ VALUE SINCE 2026-08-31, NOT AN INTERPOLATION: 23,687 Btu/h from the Extended Ratings, replacing a 23,500 that was linearly interpolated between the -13F and -22F chart points. ** Cooling 28,400 Btu/h per datasheet. ** THE HARDWARE IS NOT CHANGING, and that was researched rather than assumed: no Gree single-zone below -22 F exists at 9-12k at any size, and the only real -31 F multi is R-410A — MULTIU36 makes 25,910 Btu/h at -22 F on 5.57 kW where this unit makes 22,600 on 3.70 kW, i.e. 50% more power for 15% more heat, while giving up HSPF2 10.0 -> 8.6 and SEER2 21 -> 16. This system already runs to -22 F, below the -20 F hard floor. **",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
@@ -363,6 +376,9 @@ EQUIPMENT_TYPES = (
                   name="Gree Sapphire R32 wall-mount head, 9.1k (VFD soft start)",
                   footprint=(inch(38.1875), inch(10.125)), height=inch(13.65625),
                   cooling_capacity_btuh=9100,
+                  # AHRI 214802444, the matched pair — same numbers on the outdoor unit.
+                  hspf2=11.2,
+                  seer2=30.0,
                   source="Gree SAP09HP230V1R32AH, the Sapphire R32 9k wall-mounted indoor unit, from the Sapphire R32 9 MBH 230 V submittal (AHRI 214802444): 38 3/16 x 13 21/32 x 10 1/8 in (W x H x D), net weight 33.1 lb. It is a MUCH bigger head than the Multi R32 pair — 5 3/8 in wider, 2 7/8 in taller and 2 1/4 in deeper than EQ-T-GREE-HEAD-9 — which is what a SEER2 30 / HSPF2 11.2 coil costs in volume, and it matters here because this head hangs over the stair. This replaced a REPRESENTATIVE PLACEHOLDER (33 x 8 x 12, 'TODO verify datasheet') on 2026-08-31. True VFD inverter: the soft start is why this is the one system on the backup battery circuit. Heating is rated on EQ-T-GREE-SAPPHIRE-9-OD.",
                   ports=()),
     EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9-OD",
@@ -373,6 +389,8 @@ EQUIPMENT_TYPES = (
                   heating_capacity_at_design_btuh=7400,
                   cooling_capacity_btuh=9100,
                   min_operating_temp_f=-22.0,
+                  hspf2=11.2,
+                  seer2=30.0,
                   source="Gree SAP09HP230V1R32AO, from the Sapphire R32 9 MBH 230 V submittal (AHRI 214802444): 34 3/8 x 21 27/32 x 14 51/64 in (W x H x D), net weight 78.3 lb, MCA 11 A / MOCP 15 A, SEER2 30.0, HSPF2 11.2, heating range -22 F to 86 F. The outline was 31 x 23 x 13 in until 2026-08-31 — 3 3/8 in narrow and 1 13/16 in shallow. PUBLISHED HEATING, read: 10,600 Btu/h at 47 F, 11,500 at 5 F, 8,900 at 17 F. That 17 F figure is the one the old record got worst: it carried '~11,500-13,000 Btu/h at 5F' and nothing at 17 F, which read as a machine making 12,000 in the middle of its range. It makes 8,900. ** WHICH NUMBER GOVERNS AT DESIGN, AND WHY IT IS NOT GREE'S. ** Gree's own low-ambient table gives ~9,130 Btu/h at -22 F at a 70 F return, at an implied COP of 2.62. A COP of 2.62 at -22 F is not physically plausible for a single-stage residential air-source machine — the best cold-climate units published anywhere are near 1.5 there — and the 8,200 the previous record carried was that table's 90 F-return column, which is a different measurement again. AHRI/NEEP's cold-climate listing says 7,400 Btu/h at 1.32 kW, COP 1.64, at -22 F. THIS DESIGN USES NEEP. heating_capacity_at_design_btuh is 7,400 — the -22 F read value, deliberately used unadjusted at the -15 F design temperature rather than interpolated upward, because the zone is 926 Btu/h and buying margin by interpolation would be spending credibility to gain nothing. min_operating_temp_f -22 F per the operating envelope.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
