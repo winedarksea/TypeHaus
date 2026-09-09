@@ -126,6 +126,45 @@ def test_grade_line_is_drawn_outboard_of_the_building_only(section):
     assert min(p[0] for p in right.points) >= inner_lo
 
 
+def test_section_ground_runs_are_flat_at_the_soil_plane(section):
+    """A cut has soil on both sides of it, so the section keeps the symmetric 10' band.
+
+    That band is exactly what a *facade* must not use, and the difference is deliberate:
+    an elevation looks at one wall, and the ground behind it is the far side of the house.
+    Both of this cut's runs sample the near ring on each side and come out flat at -3'-0",
+    which is what the sheet has always drawn — the elevation fix must not move it.
+    """
+    runs = [n for n in section.nodes
+            if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD"
+            and len(n.points) > 1 and n.points[0][1] == n.points[-1][1]]
+    assert len(runs) == 2
+    for run in runs:
+        assert {round(point[1], 6) for point in run.points} == {-36.0}
+
+
+def test_a_structure_spot_beside_the_cut_is_not_section_ground(catlin_model, plane):
+    """The court floor reads -9'-1" and stands within the cut's own 10' band."""
+    from typehaus.emit.draw.elevation_annotate import grade_profile_points
+    from typehaus.emit.draw.elevation_project import view_for
+    from typehaus.model.site import SpotElevation
+    from typehaus.quantities import ft, m, pt
+
+    from test_site_checks import _model_with_site
+
+    args = (view_for("south"), plane.station_m, -6.0, 12.0)
+    base = grade_profile_points(catlin_model, *args)
+    spots = catlin_model.plan.project.site.spot_elevations
+    on_the_cut = SpotElevation(position=pt(ft(20), m(plane.station_m)),
+                               elevation=ft(-9), kind="structure")
+
+    with_structure = _model_with_site(catlin_model, spot_elevations=(*spots, on_the_cut))
+    assert grade_profile_points(with_structure, *args) == base
+
+    as_ground = on_the_cut.model_copy(update={"kind": "grade"})
+    with_ground = _model_with_site(catlin_model, spot_elevations=(*spots, as_ground))
+    assert grade_profile_points(with_ground, *args) != base
+
+
 def test_grade_carries_its_hatch_and_its_caption(section):
     ticks = [n for n in section.nodes
              if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD" and len(n.points) == 2

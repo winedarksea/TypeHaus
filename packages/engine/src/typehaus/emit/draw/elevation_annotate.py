@@ -49,8 +49,21 @@ from typehaus.emit.draw.scene import (
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
-#: How far to either side of the facade a spot elevation still describes this ground line.
+#: The symmetric band a **section** captures spot elevations in, either side of the cut
+#: line. A cut has soil on both sides of it, so 10' each way is the right reach there.
 _CAPTURE_BAND_M = 3.048  # 10'
+
+#: How far *outboard* of a facade a spot elevation still describes that facade's ground
+#: line. R401.3 authors a second ring ~9' out, perpendicular to the wall and 6" lower — a
+#: station about the fall away from the building, not a station along it. Projected onto the
+#: wall line it drew a 4" V in the middle of the south elevation. 4' keeps the near ring and
+#: drops the far one.
+_FACADE_GRADE_BAND_M = 1.2192  # 4'
+
+#: ...and how far *inboard* (behind the facade plane, into the building). Only the slop
+#: between the cladding face and a station authored a foot or two off the wall, never
+#: enough to reach a courtyard floor or the far side of the house.
+_INBOARD_SLACK_M = 0.3048  # 12"
 
 #: How far past the building the ground line runs on, and the air before the first
 #: annotation column.
@@ -99,31 +112,51 @@ def grade_datum(model: ResolvedModel) -> float:
     return site.grade.meters if site.grade is not None else 0.0
 
 
-def grade_profile_points(model: ResolvedModel, view: ElevationView, facade_depth: float,
-                         lo_u: float, hi_u: float) -> list[tuple[float, float]]:
+def grade_profile_points(model: ResolvedModel, view: ElevationView, plane_depth: float,
+                         lo_u: float, hi_u: float, *,
+                         band_m: float = _CAPTURE_BAND_M,
+                         inboard_slack_m: float = _CAPTURE_BAND_M,
+                         ) -> list[tuple[float, float]]:
     """The (u, z) ground profile in **metres**, sampled for one viewing direction.
 
-    Spot elevations within a 10' capture band of ``facade_depth``, extended flat 24" past
-    the building; flat ``Site.grade`` when fewer than two spots are in band (decision 2).
-    Split out of :func:`emit_grade_profile` so a section — which cuts the same ground along
-    the same kind of (u, depth) frame — can draw the profile at its own lettering size.
+    ``plane_depth`` is the depth of the plane the ground is being drawn against — a
+    facade's dominant cladding plane, or a section's cut station. A spot elevation counts
+    when it lies between ``band_m`` *outboard* of that plane and ``inboard_slack_m``
+    *behind* it, and when it reads ``kind == "grade"``: the top of a sunken-court floor is
+    an elevation of a structure, not of the soil, and a ground line drawn through it dives
+    into a courtyard that is nowhere near the wall.
+
+    The two reaches are separate because the two callers are. A **section** cuts earth on
+    both sides of the line and takes the symmetric default. An **elevation** looks at a
+    wall: ground outboard of it is the ground being drawn, ground far behind it is the far
+    side of the house, so :func:`emit_grade_profile` passes the tighter facade pair.
+
+    Fewer than two captured spots is not a failure — it is a flat ground line, at the one
+    spot's own elevation, or at ``Site.grade`` when there is none at all (decision 2).
+    Extended flat 24" past the building either way.
     """
     site = model.plan.project.site
 
-    captured: list[tuple[float, float]] = []
+    captured: list[tuple[float, float, float]] = []
     for spot in site.spot_elevations:
+        if spot.kind != "grade":
+            continue
         x, y = spot.position.xy_m
-        if abs(view.depth_of(x, y) - facade_depth) <= _CAPTURE_BAND_M:
-            captured.append((view.u_of(x, y), spot.elevation.meters))
-    captured.sort(key=lambda item: item[0])
+        offset = view.depth_of(x, y) - plane_depth
+        if -band_m <= offset <= inboard_slack_m:
+            captured.append((view.u_of(x, y), spot.elevation.meters, abs(offset)))
+    # Two stations at the same u is a tie the drawing has to break, and it must not break it
+    # by authoring order: sorting on |offset| makes the one nearest the plane win, which is
+    # the one describing this ground.
+    captured.sort(key=lambda item: (item[0], item[2]))
     deduped: list[tuple[float, float]] = []
-    for u, z in captured:
+    for u, z, _offset in captured:
         if deduped and abs(u - deduped[-1][0]) < 1e-6:
-            continue  # nearest-in-band point already kept (sorted by u, first wins)
+            continue
         deduped.append((u, z))
 
     if len(deduped) < 2:
-        grade_z = grade_datum(model)
+        grade_z = deduped[0][1] if deduped else grade_datum(model)
         points = [(lo_u - _EXTEND_M, grade_z), (hi_u + _EXTEND_M, grade_z)]
     else:
         sample_us = sorted({lo_u - _EXTEND_M, hi_u + _EXTEND_M,
@@ -136,10 +169,13 @@ def emit_grade_profile(b: SceneBuilder, model: ResolvedModel, view: ElevationVie
                         facade_depth: float, lo_u: float, hi_u: float) -> None:
     """The elevation's ground line, its hatch and its "GRADE" caption.
 
-    Kept from the wireframe elevation term for term — it reads real spot elevations and it
-    works; only the projection of a spot into (u, z) moved, so a mirrored view now puts the
-    profile the same way round as the building it belongs to."""
-    points = grade_profile_points(model, view, facade_depth, lo_u, hi_u)
+    Sampled against the *facade* band rather than the symmetric section one: an elevation
+    draws the ground in front of one wall, and a station 9' out or 20' behind describes
+    other ground.
+    """
+    points = grade_profile_points(model, view, facade_depth, lo_u, hi_u,
+                                  band_m=_FACADE_GRADE_BAND_M,
+                                  inboard_slack_m=_INBOARD_SLACK_M)
     poly = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in points)
     b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=CUT_HEAVY))
     emit_grade_hatch(b, points)

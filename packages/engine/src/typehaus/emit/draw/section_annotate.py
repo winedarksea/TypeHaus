@@ -227,7 +227,12 @@ def _emit_grade(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
 
     The section draws a basement and its footings; without this nothing on the sheet says
     which of that is buried. Sampled from the same spot elevations the elevations read, in
-    a capture band around the cut line rather than around a facade.
+    a capture band around the cut line rather than around a facade — and the *symmetric*
+    default band, deliberately: a cut has soil on both sides of it, where a facade has
+    ground on one side and the rest of the house on the other. Structure spots (a sunken
+    court floor) are already excluded by ``grade_profile_points``; the court's own outline
+    reaches the sheet through ``_footprint_at_grade`` / ``_outboard_profiles``, which clip
+    the ground line at buried geometry.
 
     Drawn **outboard of the building only**. A section's ground line stops where it meets
     the foundation; run straight through, it draws earth across the basement it is

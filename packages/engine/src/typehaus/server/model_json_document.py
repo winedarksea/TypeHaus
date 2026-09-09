@@ -78,7 +78,8 @@ def _document_header(
             # them in the shared UI contract so a future earth surface can triangulate the
             # same authored grade data without inventing a second source of truth.
             "spot_elevations": [
-                {"position": list(spot.position.xy_m), "elevation_m": spot.elevation.meters}
+                {"position": list(spot.position.xy_m), "elevation_m": spot.elevation.meters,
+                 "kind": spot.kind}
                 for spot in model.plan.project.site.spot_elevations
             ],
         },

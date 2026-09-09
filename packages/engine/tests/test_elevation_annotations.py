@@ -12,6 +12,7 @@ import pytest
 
 from typehaus.emit.draw.elevation import build_elevation
 from typehaus.emit.draw.elevation_annotate import ANNO_HEIGHT_IN
+from typehaus.emit.draw.lineweights import CUT_HEAVY
 from typehaus.emit.draw.scene import ArchDimension, Leader, Polyline, Symbol, Text
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
@@ -31,13 +32,79 @@ def _leader_texts(scene) -> list[str]:
     return [node.text for node in scene.nodes if isinstance(node, Leader)]
 
 
-def test_south_elevation_grade_profile_interpolates_spots(catlin_model):
-    scene = build_elevation(catlin_model, "south")
-    grade = [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD"
-             and len(n.points) > 2]
-    assert grade
-    z_values = {round(p[1] / 39.37007874015748, 2) for p in grade[0].points}
-    assert z_values  # a real (non-empty) interpolated profile, not a crash
+def _grade_profile(scene) -> Polyline:
+    """The ground-line polyline itself, not one of its 45° hatch ticks."""
+    runs = [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD"
+            and n.lineweight == CUT_HEAVY]  # the hatch ticks are LIGHT two-point segments
+    assert len(runs) == 1
+    return runs[0]
+
+
+def test_south_grade_line_is_flat_within_an_inch(catlin_model):
+    """The soil plane here is flat; the drawing has to say so.
+
+    It did not. The sampler captured every spot within 10' of the facade plane on *either*
+    side, so R401.3's second ring — 9' out, 6" lower, a station about the fall *away* from
+    the wall rather than a station along it — printed as a 4" V in the middle of the
+    principal elevation. Only the two near-wall stations describe this ground line, and
+    they differ by 1".
+    """
+    profile = _grade_profile(build_elevation(catlin_model, "south"))
+    zs = [point[1] for point in profile.points]
+    assert max(zs) - min(zs) <= 2.0  # model inches
+
+
+def test_south_grade_line_carries_no_far_station(catlin_model):
+    """The specific artefact: a vertex at the far ring's u, at the far ring's elevation."""
+    profile = _grade_profile(build_elevation(catlin_model, "south"))
+    assert not [p for p in profile.points if abs(p[0] - 18.0 * 12.0) < 1.0]
+    assert not [p for p in profile.points if abs(p[1] - -(3.0 * 12.0 + 4.0)) < 1.0]
+
+
+def test_north_grade_line_is_flat(catlin_model):
+    profile = _grade_profile(build_elevation(catlin_model, "north"))
+    assert len({round(point[1], 6) for point in profile.points}) == 1
+
+
+@pytest.mark.parametrize("facing", ["east", "west"])
+def test_side_grade_lines_never_dive_into_the_sunken_court(catlin_model, facing):
+    """The court floor stands 9' *behind* both side facade planes and reads -9'-1".
+
+    Captured as ground it ramped the east profile to -7'-4" and the west to -6'-0" — three
+    to four feet of imaginary excavation against the principal side elevations. It is a
+    structure spot, and structure is not soil.
+    """
+    profile = _grade_profile(build_elevation(catlin_model, facing))
+    floor_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
+    assert min(point[1] for point in profile.points) >= floor_in - 6.0
+
+
+def test_a_structure_spot_at_the_facade_is_not_ground_but_a_grade_spot_is(catlin_model):
+    """``kind`` is the invariant, not the geometry: the same point, twice, two profiles.
+
+    The bands alone fix today's sheets. They are not enough on their own —
+    ``_dominant_plane_depth`` is area-derived and moves when the building does, and a court
+    floor that lands inside the band would be drawn as soil again.
+    """
+    from typehaus.model.site import SpotElevation
+    from typehaus.quantities import ft, pt
+
+    from test_site_checks import _model_with_site
+
+    base = _grade_profile(build_elevation(catlin_model, "south")).points
+    at_facade = SpotElevation(position=pt(ft(20), ft(-2)), elevation=ft(-8),
+                              kind="structure")
+    spots = catlin_model.plan.project.site.spot_elevations
+
+    structure = _model_with_site(catlin_model, spot_elevations=(*spots, at_facade))
+    assert _grade_profile(build_elevation(structure, "south")).points == base
+
+    ground = _model_with_site(
+        catlin_model,
+        spot_elevations=(*spots, at_facade.model_copy(update={"kind": "grade"})))
+    moved = _grade_profile(build_elevation(ground, "south")).points
+    assert moved != base
+    assert min(point[1] for point in moved) < -8.0 * 12.0 + 1.0
 
 
 def test_starter_grade_profile_falls_back_to_flat_site_grade(starter_model):
@@ -178,3 +245,7 @@ def test_below_grade_geometry_is_dashed_on_its_own_layer(catlin_model):
     for node in buried:
         assert node.linetype == "DASHED"
         assert max(point[1] for point in node.points) <= grade_z + 1e-6
+    # The sunken court is the thing the flat ground line stopped drawing itself around, and
+    # this is where it is supposed to read instead: its floor and its south retaining wall,
+    # dashed, below the line — the elevation convention for buried work.
+    assert {"SL-SG-FIELD", "W-SG-S"} <= {node.tag for node in buried if node.tag}

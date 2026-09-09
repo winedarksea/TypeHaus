@@ -1424,7 +1424,9 @@ export interface Model {
     // structure, resolved from every slab finishing at or below grade
     // (resolve/site_earth.py). Absent on older model.json, which leaves the sheet uncut.
     earth_voids?: Vec2[][];
-    spot_elevations?: { position: Vec2; elevation_m: number }[];
+    // kind "structure" is the top of something built (a sunken-court floor, a wall cap) —
+    // a real elevation, but not the soil plane; absent on older model.json.
+    spot_elevations?: { position: Vec2; elevation_m: number; kind?: "grade" | "structure" }[];
   };
   underlays?: Underlay[];
   storeys: Storey[];

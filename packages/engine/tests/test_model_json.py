@@ -288,8 +288,11 @@ def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload
     assert {"grade_m", "parcel", "spot_elevations"} <= site.keys()
     assert site["grade_m"] is None or isinstance(site["grade_m"], float)
     assert isinstance(site["parcel"], list)
-    assert all(set(spot) == {"position", "elevation_m"}
+    assert all(set(spot) == {"position", "elevation_m", "kind"}
                for spot in site["spot_elevations"])
+    # "structure" is the sunken-court floor and the retaining cap: real elevations the UI
+    # may draw, and the reason an elevation's ground line does not pass through them.
+    assert {spot["kind"] for spot in site["spot_elevations"]} == {"grade", "structure"}
 
 
 def test_model_json_serializes_finished_height_above_average_grade(catlin_payload):

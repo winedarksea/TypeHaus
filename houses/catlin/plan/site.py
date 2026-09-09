@@ -142,8 +142,17 @@ SITE = Site(
     # Grade stations. Two rings per house side let code.R401_3_grading measure the fall
     # away from the foundation: a near-wall point (~2-3' out) plus a ~9'-out point that has
     # dropped 6" (5%+ per IRC R401.3, "6 inches within the first 10 feet"). Each side reads
-    # slightly below the -2'-10" grade plane right at the wall and keeps falling. Distinct
-    # y-stations also feed every elevation's 10'-deep grade-capture band.
+    # slightly below the -2'-10" grade plane right at the wall and keeps falling.
+    #
+    # ** THE "10'-DEEP GRADE-CAPTURE BAND" CLAIM THAT USED TO SIT HERE WAS A BUG, NOT AN
+    # INVARIANT. ** An elevation drew its ground line through every spot within 10' of the
+    # facade plane *on either side*, so each facade's own far ring — 9' out and 6" down,
+    # perpendicular to the wall, describing the fall away from it and not a station along
+    # it — printed as a 4" V in the middle of the drawing, and the sunken-court floor 9'
+    # behind the E/W planes ramped those two 3-4' into the ground. The soil plane here is
+    # flat. `emit_grade_profile` now captures 4' outboard / 12" inboard (and only
+    # `kind="grade"` spots), which is the near ring and nothing else. Do not re-author
+    # these stations to suit a drawing: R401.3 is what they are for.
     #
     # The nine house-perimeter stations moved with grade; their
     # *differences* — which is all R401.3 reads — are untouched. The four southern garden
@@ -180,7 +189,15 @@ SITE = Site(
         #
         # None of these four move with GRADE: they are the tops of structures, not readings
         # of the soil plane. But they must move when those structures do, and the first two
-        # just did.
+        # just did. That is what `kind="structure"` says, and it is load-bearing in two
+        # directions: it keeps all four out of every ground line (the court floor sat 9'
+        # behind the east and west facade planes and dragged those profiles down 3-4'), and
+        # it does **not** take them out of anything that wants a real elevation —
+        # `engineering/balcony_wind.ground_below_ft` still takes the site's lowest spot,
+        # court floor included, because the court *is* the surface under the balcony, and
+        # `code.R401_3_grading` still reads every station (these four are 20'+ from the
+        # footprint, outside its 10' band, so they never join the perimeter ring anyway).
+        # The stations therefore do not move; only their label does.
         #
         # ** THE GARDEN FLOOR READS -9'-1 7/16" SINCE 2026-09-05 — THE FLUSH COURT. **
         # `params/sunken_garden.SPEC.court_step_down_in` went back to 0, so the court surface
@@ -198,10 +215,12 @@ SITE = Site(
         # reason the columns need no re-sizing. Do not restore that comment: a station here
         # is a structural input, and the stale-annotation trap it warned about is exactly
         # the one it was itself an instance of.
-        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -1.4375)),
-        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375)),
-        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
-        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6)),
+        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -1.4375),
+                      kind="structure"),
+        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375),
+                      kind="structure"),
+        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6), kind="structure"),
+        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6), kind="structure"),
     ),
     # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
     # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.
