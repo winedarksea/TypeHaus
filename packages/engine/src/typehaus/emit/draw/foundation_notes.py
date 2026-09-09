@@ -72,9 +72,161 @@ def foundation_general_notes(model: ResolvedModel,
     drainage = _drainage_note(model)
     if drainage:
         notes.append(drainage)
+    notes.extend(_dampproofing_notes(model))
+    notes.extend(radon_control_notes(model))
     notes.append("FOOTING, PAD, WALL AND SLAB GEOMETRY IS RESOLVED FROM THE PLAN SOURCE; "
                  "SIZES ARE AUTHORED, NOT ENGINEERED.")
     return notes
+
+
+def _water_control_layers(assembly) -> list:
+    """Layers that dampproof the earth face, by the criterion ``code.R406_1_dampproofing``
+    uses — one definition, so the sheet and the verdict cannot disagree about one wall."""
+    return [layer for layer in assembly.layers
+            if ControlLayer.WATER in (layer.control or set())
+            and layer.function in (LayerFunction.MEMBRANE, LayerFunction.SHEATHING,
+                                   LayerFunction.CLADDING)]
+
+
+def _dampproofing_notes(model: ResolvedModel) -> list[str]:
+    """R406.1 — what actually dampproofs each foundation-wall assembly, named.
+
+    Assembly by assembly rather than wall by wall: dampproofing is a layer, and a house
+    with thirteen basement walls has two or three answers, not thirteen. Walls whose
+    assembly carries no water-control layer are listed but not judged — whether R406.1
+    reaches a given wall is ``code.R406_1_dampproofing``'s question (it also asks whether
+    the wall encloses space below grade, which this sheet does not re-derive).
+    """
+    from typehaus.emit.draw.foundation_schedule import foundation_walls
+
+    by_assembly: dict[str, list[str]] = {}
+    for wall in foundation_walls(model):
+        by_assembly.setdefault(wall.assembly, []).append(wall.tag)
+    notes, bare = [], []
+    for assembly_tag, tags in sorted(by_assembly.items()):
+        assembly = model.plan.library.resolve_assembly(assembly_tag)
+        proofed = _water_control_layers(assembly) if assembly is not None else []
+        if proofed:
+            notes.append(f"DAMPPROOFING (IRC R406.1): {assembly_tag} "
+                         f"({len(tags)} WALL(S)) CARRIES '{proofed[0].name.upper()}' — "
+                         f"{_layer_thickness(proofed[0])} "
+                         f"{proofed[0].material_ref.upper()} — ON THE EARTH FACE, FROM THE "
+                         "TOP OF FOOTING TO FINISHED GRADE.")
+        else:
+            bare.append(assembly_tag)
+    if bare:
+        notes.append("NO WATER-CONTROL LAYER IS MODELLED IN " + ", ".join(bare)
+                     + "; SEE code.R406_1_dampproofing FOR WHICH OF THESE R406.1 REACHES.")
+    return notes
+
+
+def radon_control_notes(model: ResolvedModel) -> list[str]:
+    """MN 1303.2400-.2402 passive soil-gas control, item by item off the model.
+
+    The rule has eight field items and this model carries five of them. Each line is
+    derived or says "NOT MODELLED" against its own subpart — never a plausible default,
+    which on a radon system would be a sheet telling an installer something nobody decided.
+    """
+    from typehaus.model.enums import DeviceKind, PipeSystem
+    from typehaus.model.mep import Sump, VentRun
+
+    notes = ["RADON CONTROL — MN 1303.2400 (PASSIVE SOIL-GAS SYSTEM). THE ITEMS BELOW ARE "
+             "READ OFF THIS MODEL; ANYTHING MARKED NOT MODELLED IS A FIELD ITEM."]
+    notes.extend(_soil_gas_course_notes(model))
+    sumps = [e for e in model.plan.all_elements()
+             if isinstance(e, Sump) and e.radon_vent]
+    risers = [e for e in model.plan.all_elements()
+              if isinstance(e, VentRun) and PipeSystem.RADON in e.systems]
+    if sumps:
+        notes.append("SUBP. 3-4: COLLECTION POINT " + ", ".join(
+            f"{sump.tag} ({sump.diameter.inches:.0f}\" PIT, "
+            f"{'SEALED' if sump.sealed_cover else 'UNSEALED'} COVER, VENT "
+            f"{sump.vent_ref or 'NOT NAMED'})" for sump in sorted(sumps, key=lambda s: s.tag))
+            + ". THE 10 FT OF PERFORATED PIPE UNDER THE MEMBRANE IS NOT MODELLED.")
+    else:
+        notes.append("SUBP. 3: NO SEALED COLLECTION POINT IS MODELLED.")
+    notes.extend(_radon_riser_notes(model, risers))
+    notes.append("SUBP. 5: \"RADON GAS VENT SYSTEM\" LABELLING AT EACH STOREY AND THE 24\" "
+                 "CLEAR FOR A FUTURE FAN ARE NOT MODELLED — FIELD ITEMS.")
+    notes.extend(_fan_power_notes(model, risers, DeviceKind))
+    return notes
+
+
+def _soil_gas_course_notes(model: ResolvedModel) -> list[str]:
+    """Subpart 2's gas-permeable course and the membrane over it, per interior slab.
+
+    Read as "the stack the slab assembly puts below its structure", which is the same
+    reading ``_under_slab_note`` prints in the slab schedule. The model states a material
+    and a thickness; it states no aggregate gradation and no membrane lap, and the note
+    says so rather than printing the code minimum as though someone had authored it.
+    """
+    from typehaus.emit.draw.foundation_schedule import slabs_on_grade
+
+    lines = []
+    for slab in slabs_on_grade(model):
+        if not _within_the_building(model, slab):
+            continue
+        stack = _under_slab_note(model, slab)
+        if not stack:
+            lines.append(f"SUBP. 2: {slab.tag} HAS NO UNDER-SLAB STACK MODELLED — NO "
+                         "GAS-PERMEABLE COURSE AND NO SOIL-GAS MEMBRANE.")
+            continue
+        lines.append(f"SUBP. 2: {slab.tag} — {stack} (OUTBOARD OF THE POUR). AGGREGATE "
+                     "GRADATION AND THE 12\" MEMBRANE LAP ARE NOT MODELLED.")
+    return lines
+
+
+def _radon_riser_notes(model: ResolvedModel, risers: list) -> list[str]:
+    """Subpart 5's vent: which run, how big, and where its derived terminus is."""
+    from typehaus.resolve.vent_termination import derived_termination_elevation
+
+    if not risers:
+        return ["SUBP. 5: NO VENT RUN CARRIES THE RADON SYSTEM."]
+    lines = []
+    for riser in sorted(risers, key=lambda r: r.tag):
+        top = derived_termination_elevation(model, riser)
+        terminus = (f"TERMINATING {elevation_feet(top)} (DERIVED, 12\" ABOVE THE ROOF "
+                    "SURFACE)" if top is not None else
+                    "WITH NO DERIVABLE ROOF TERMINATION")
+        lines.append(f"SUBP. 5: VENT {riser.tag}, {riser.diameter.inches:.0f}\" DIA., "
+                     f"{terminus}. THE 12\" AND THE 10 FT TO AN OPENING ARE GRADED BY "
+                     "code.MN_1303_2402_radon AND mep.vent_termination_height.")
+    return lines
+
+
+def _fan_power_notes(model: ResolvedModel, risers: list, device_kind) -> list[str]:
+    """Subpart 6 — an approved box at the anticipated fan location.
+
+    Reach and riser point come from the check that grades this, so the sheet names the
+    same box the verdict does rather than a second nearest-box rule.
+    """
+    from typehaus.checks.code.mn_residential.radon import _FAN_BOX_REACH
+    from typehaus.resolve.vent_termination import exterior_riser_point
+
+    if not risers:
+        return []
+    boxes = [e for e in model.plan.all_elements()
+             if getattr(e, "element_kind", None) == "ElectricalDevice"
+             and getattr(e, "kind", None) is device_kind.JUNCTION_BOX]
+    # A box that declares a ROOM is skipped, and that is the conservative half of the
+    # check's own rule rather than a second one: the reach test is plan-only in a
+    # four-storey house, so a lighting supply two floors up falls inside the radius, and
+    # subpart 6 forbids the fan's box in conditioned space anyway. A box with no room is
+    # outside the building, which is where the rule wants this one.
+    named = []
+    for riser in sorted(risers, key=lambda r: r.tag):
+        rx, ry = exterior_riser_point(riser)
+        for box in boxes:
+            if getattr(box, "room", None):
+                continue
+            bx, by = box.position.xy_m
+            if ((bx - rx) ** 2 + (by - ry) ** 2) ** 0.5 <= _FAN_BOX_REACH.meters:
+                named.append(box.tag)
+    if named:
+        return [f"SUBP. 6: POWER FOR A FUTURE FAN AT {', '.join(sorted(set(named)))}, "
+                f"WITHIN {_FAN_BOX_REACH.inches / 12:.0f} FT OF THE RISER."]
+    return ["SUBP. 6: NO JUNCTION BOX IS MODELLED WITHIN "
+            f"{_FAN_BOX_REACH.inches / 12:.0f} FT OF THE RISER FOR A FUTURE FAN."]
 
 
 def _lowest_adjacent_grade_notes(model: ResolvedModel, frost_depth_in: float) -> list[str]:
@@ -188,12 +340,13 @@ def _drainage_note(model: ResolvedModel) -> str:
 
 
 def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:
-    """What S-100 can say about sill anchorage, which depends on what the model carries.
+    """What S-100 cannot say about sill anchorage — which is now only the empty case.
 
-    ``ConnectorKind.ANCHOR_BOLT`` lets a house author cast-in bolts with a diameter and an
-    embedment, and the take-off separately derives MASA mudsill anchors off the sill runs at
-    a stated pitch — which IS modelled anchorage even though it is not a bolt. A flat "not
-    modelled" would misreport a hundred and twenty-five derived anchors.
+    ``ConnectorKind.ANCHOR_BOLT`` lets a house author cast-in bolts, and the take-off
+    separately derives strap anchors off the sill runs at a stated pitch. Either is real
+    anchorage and both now SCHEDULE (``anchorage_schedule``); what used to be a WARN over a
+    hundred and thirty-seven derived anchors was the sheet declining to print a number it
+    was already holding. The finding survives for the house that models neither.
     """
     from typehaus.emit.draw.foundation_schedule import foundation_walls
     from typehaus.model.enums import ConnectorKind
@@ -209,16 +362,7 @@ def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:
     rows = mudsill_anchor_rows(model, config.sill_plate_anchors,
                                config.sill_plate_takeoff_category)
     if rows:
-        pitch = config.sill_plate_anchors.mudsill_anchor_pitch_ft
-        return [Finding(
-            severity=Severity.WARN, check_id="sheet.foundation.sill_anchorage",
-            message=(f"sill-plate anchorage is {rows[0]['count']} {rows[0]['part_number']} "
-                     f"mudsill anchors at {pitch:g} ft o.c.; a cast strap has no bolt "
-                     "diameter or embedment to schedule, so S-100 shows the pitch and not a "
-                     "bolt spacing"),
-            element_tags=walls, result=Result.UNKNOWN,
-            fix_hint=("author Connector elements of kind ANCHOR_BOLT where a cast-in bolt is "
-                      "wanted instead of, or beside, the strap"))]
+        return []  # derived anchors, scheduled by mark on the sheet
     return [Finding(
         severity=Severity.WARN, check_id="sheet.foundation.sill_anchorage",
         message="sill-plate anchorage is not modelled — no sill-plate construction return "
@@ -243,14 +387,19 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
 
     findings: list[Finding] = []
     slabs = slabs_on_grade(model)
-    if slabs:
+    # ``Slab.reinforcement`` exists now, so this reports the pours that state none rather
+    # than the schema that could not hold one. A plain slab is legal; a plain slab the
+    # sheet is silent about is not, which is why it is still named here.
+    unreinforced = [slab.tag for slab in slabs
+                    if getattr(model.plan.by_tag(slab.tag), "reinforcement", None) is None]
+    if unreinforced:
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.foundation.slab_reinforcement",
-            message="slab reinforcement is not an authored input — Slab carries thickness and "
-                    "assembly only, so S-100 shows no reinforcement callout",
-            element_tags=tuple(slab.tag for slab in slabs), result=Result.UNKNOWN,
-            fix_hint="add a reinforcement field to model.floors.Slab (bar size, spacing, "
-                     "cover) and schedule it here",
+            message="no slab on grade carries a ReinforcementSpec, so S-100 shows no slab "
+                    "reinforcement callout: " + ", ".join(unreinforced),
+            element_tags=tuple(unreinforced), result=Result.UNKNOWN,
+            fix_hint="author reinforcement=ReinforcementSpec(bars=(BarSpec(...),)) on the "
+                     "Slab, or record the decision to pour it plain",
         ))
     unretarded = [slab.tag for slab in slabs
                   if _within_the_building(model, slab)
@@ -264,8 +413,24 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
             fix_hint="add a MEMBRANE layer with control={VAPOR} below the slab's STRUCTURE "
                      "layer in the slab assembly",
         ))
-    if foundation_walls(model):
+    walls = foundation_walls(model)
+    if walls:
         findings.extend(_sill_anchorage_findings(model))
+    # Presence only. WHICH walls R406.1 reaches is code.R406_1_dampproofing's question and
+    # it asks a second one this sheet does not re-derive (does the wall enclose space below
+    # grade); a house with no water-control layer anywhere has nothing for either to print.
+    if walls and not any(
+            _water_control_layers(assembly)
+            for assembly in {model.plan.library.resolve_assembly(wall.assembly)
+                             for wall in walls} if assembly is not None):
+        findings.append(Finding(
+            severity=Severity.WARN, check_id="sheet.foundation.dampproofing",
+            message="no foundation-wall assembly carries a water-control layer, so S-100 "
+                    "shows no dampproofing callout (IRC R406.1)",
+            element_tags=tuple(wall.tag for wall in walls)[:1], result=Result.UNKNOWN,
+            fix_hint="add a MEMBRANE layer with control={WATER} outboard of the STRUCTURE "
+                     "layer in the foundation wall assembly",
+        ))
     unscheduled = [solid.tag for solid in bearing_solids(model)
                    if solid.category == "footing" and model.plan.by_tag(solid.tag) is None]
     if unscheduled:

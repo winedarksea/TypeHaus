@@ -10,6 +10,7 @@ returns a :class:`Finding` naming the missing input instead of printing a plausi
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from typehaus.emit.draw.foundation_notes import (
@@ -32,6 +33,7 @@ from typehaus.emit.draw.structural_common import (
     wall_length_m,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
+from typehaus.takeoff.hardware_config import FT_TO_M
 
 # ``foundation_general_notes`` and ``foundation_sheet_findings`` moved to
 # ``foundation_notes`` and are re-exported here: S-100's builder and two test modules import
@@ -44,7 +46,9 @@ __all__ = [
     "foundation_general_notes",
     "foundation_marks",
     "foundation_sheet_findings",
+    "anchorage_schedule",
     "foundation_walls",
+    "reinforcement_schedule",
     "slabs_on_grade",
 ]
 
@@ -205,10 +209,13 @@ def _wall_key(wall: ResolvedWall) -> tuple:
 
 
 def build_foundation_schedules(model: ResolvedModel) -> list[ScheduleTable]:
-    """The keyed S-100 schedules: footings/pads, foundation walls, slabs on grade."""
+    """The keyed S-100 schedules: footings/pads, foundation walls, slabs on grade,
+    sill anchorage, reinforcement. An empty table is dropped rather than printed as a
+    heading over nothing."""
     marks = foundation_marks(model)
     tables = [_bearing_schedule(model, marks), _wall_schedule(model, marks),
-              _slab_schedule(model, marks)]
+              _slab_schedule(model, marks), anchorage_schedule(model),
+              reinforcement_schedule(model)]
     return [table for table in tables if table.rows]
 
 
@@ -336,3 +343,154 @@ def footing_steps(model: ResolvedModel
             steps.append((lower, upper, ((low_at[0] + high_at[0]) / 2.0,
                                          (low_at[1] + high_at[1]) / 2.0)))
     return steps
+
+
+def anchorage_schedule(model: ResolvedModel) -> ScheduleTable:
+    """How the wood above is fastened to the concrete below — MARK, part, pitch, count.
+
+    Two shapes, and the sheet prints whichever the model carries. An authored
+    ``ConnectorKind.ANCHOR_BOLT`` is placed one at a time, so it schedules by location and
+    carries no pitch. The ordinary case is derived: a framed wall stacked on concrete makes
+    a sill-plate construction return and ``takeoff/anchors`` counts a strap anchor along it
+    at a pitch — a derivation S-100 was already running and throwing away as a WARN.
+
+    Grouped by what the plate lands on and on which storey: a mudsill over a foundation
+    wall and a partition plate on a slab are two conditions sharing one part number.
+    """
+    rows = _anchor_bolt_rows(model) or _mudsill_anchor_schedule_rows(model)
+    return ScheduleTable(
+        title="SILL ANCHORAGE SCHEDULE",
+        columns=("MARK", "TYPE", "PART", "SPACING", "QTY", "WALLS"),
+        rows=tuple(rows),
+    )
+
+
+def _anchor_bolt_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
+    """Authored cast-in bolts, grouped by product. ``Connector`` holds no diameter or
+    embedment, so the schedule states the model number and says where the rest lives."""
+    from typehaus.model.enums import ConnectorKind
+
+    bolts = [e for e in model.plan.all_elements()
+             if e.element_kind == "Connector" and e.kind is ConnectorKind.ANCHOR_BOLT]
+    grouped: dict[str, list] = {}
+    for bolt in sorted(bolts, key=lambda e: e.tag):
+        grouped.setdefault(bolt.size or "", []).append(bolt)
+    rows = []
+    for index, (size, items) in enumerate(sorted(grouped.items()), start=1):
+        walls = sorted({tag for bolt in items for tag in bolt.connects})
+        rows.append((f"A{index}", "CAST-IN ANCHOR BOLT", size or "NOT STATED",
+                     "AUTHORED PER BOLT — SEE PLAN", str(len(items)),
+                     _abbreviate(", ".join(walls))))
+    return rows
+
+
+def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
+    """Strap anchors along the sill-plate construction returns.
+
+    The per-run count repeats ``takeoff/anchors.mudsill_anchor_rows``'s rule rather than
+    calling it: that function answers for the whole house, this table per condition.
+    ``takeoff`` is the authority and the two must agree — asserted, not hoped for, in
+    ``test_structural_sheets``.
+    """
+    from typehaus.takeoff.anchors import mudsill_anchor_rows
+    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+
+    config = DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    rules = config.sill_plate_anchors
+    returns = [ret for ret in model.construction_returns
+               if ret.takeoff_category == config.sill_plate_takeoff_category]
+    if not returns:
+        return []
+    takeoff = mudsill_anchor_rows(model, rules, config.sill_plate_takeoff_category)
+    part = str(takeoff[0]["part_number"]) if takeoff else "NOT STATED"
+    wall_tags = {wall.tag for wall in model.walls}
+    foundation_tags = {wall.tag for wall in foundation_walls(model)}
+    grouped: dict[tuple[str, str], list] = {}
+    for ret in returns:
+        host = ret.element_tags[0] if ret.element_tags else ""
+        kind = ("FOUNDATION WALL" if host in foundation_tags
+                else "SLAB" if host in {solid.tag for solid in model.solids}
+                else "CONCRETE")
+        grouped.setdefault((ret.storey, kind), []).append(ret)
+    rows = []
+    for index, ((storey, kind), runs) in enumerate(sorted(grouped.items()), start=1):
+        count = sum(max(rules.minimum_anchors_per_run,
+                        int(math.floor(ret.length_m / (rules.mudsill_anchor_pitch_ft
+                                                       * FT_TO_M) + 1e-9)) + 1)
+                    for ret in runs)
+        carried = sorted({tag for ret in runs for tag in ret.element_tags[1:]
+                          if tag in wall_tags})
+        rows.append((
+            f"A{index}", f"SILL PLATE ON {kind} — {storey.upper()}", part,
+            f"{feet_inches(rules.mudsill_anchor_pitch_ft / M_TO_FT)} O.C. "
+            f"(MIN {rules.minimum_anchors_per_run} PER PLATE RUN)",
+            str(count), _abbreviate(", ".join(carried)) or f"{len(runs)} SILL RUN(S)"))
+    return rows
+
+
+def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
+    """The steel in the foundation pours, one row per bar role.
+
+    Reads ``ReinforcementSpec`` off the elements S-100 draws and prints nothing where a
+    pour carries none: ACI 318-19 §14.1.4 permits plain concrete in a footing, so an absent
+    spec is a legal condition, not a hole to fill with a plausible mat. ELEMENT keys back
+    through the sheet's own marks (FW1, F2, S3), which the reader can find on the drawing.
+    """
+    from typehaus.resolve.concrete import concrete_spec_of
+
+    marks = foundation_marks(model)
+    mark_of = {**marks.wall, **marks.footing, **marks.pad, **marks.slab}
+    grouped: dict[tuple, list[tuple[str, str]]] = {}
+    specs: dict[tuple, object] = {}
+    for element in _reinforced_elements(model):
+        spec = element.reinforcement
+        key = (element.element_kind, spec.model_dump_json()
+               if hasattr(spec, "model_dump_json") else repr(spec),
+               _cover_text(spec, concrete_spec_of(model.plan, getattr(element, "assembly",
+                                                                     None))))
+        grouped.setdefault(key, []).append(
+            (mark_of.get(element.tag, element.tag), element.tag))
+        specs[key] = spec
+    rows: list[tuple[str, ...]] = []
+    for index, (key, members) in enumerate(sorted(grouped.items(),
+                                                  key=lambda item: item[0][0]), start=1):
+        spec = specs[key]
+        element_kind, _identity, cover = key
+        keys = _abbreviate(", ".join(sorted({mark for mark, _tag in members})), 20)
+        lap = f"CLASS {spec.lap_class}" if spec.lap_class else "NOT STATED"
+        for bar in spec.bars:
+            quantity = (f'{bar.spacing.inches:g}" O.C.' if bar.spacing is not None
+                        else f"({bar.count})" if bar.count is not None else "NOT STATED")
+            rows.append((f"R{index}", f"{keys} ({len(members)})",
+                         bar.role.upper(), f"#{bar.bar}", quantity,
+                         str(bar.layers), cover, lap))
+    return ScheduleTable(
+        title="FOUNDATION REINFORCEMENT SCHEDULE",
+        columns=("MARK", "ELEMENT", "ROLE", "BAR", "SPACING/COUNT", "LAYERS", "COVER",
+                 "LAP"),
+        rows=tuple(rows),
+    )
+
+
+def _reinforced_elements(model: ResolvedModel) -> list:
+    """Foundation-scope pours carrying an authored ``ReinforcementSpec``, in tag order.
+
+    The four element kinds this sheet draws as foundation. A cast pier is a ``Post`` with a
+    cage of its own and is scheduled with the column it is, not here.
+    """
+    kinds = {"FoundationWall", "Footing", "Pad", "Slab"}
+    return sorted((element for element in model.plan.all_elements()
+                   if element.element_kind in kinds
+                   and getattr(element, "reinforcement", None) is not None),
+                  key=lambda element: element.tag)
+
+
+def _cover_text(spec, concrete) -> str:
+    """The element's own cover, else the mix's, else the truth. The element outranks the
+    mix by design: a stem cast against earth buys cover the plant ticket knows nothing
+    about."""
+    if spec.cover is not None:
+        return f'{spec.cover.inches:.2g}"'
+    if concrete is not None and concrete.cover is not None:
+        return f'{concrete.cover.inches:.2g}" (MIX)'
+    return "NOT STATED"

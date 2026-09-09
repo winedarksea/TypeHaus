@@ -9,14 +9,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundation_schedule import (
+    anchorage_schedule,
     build_foundation_schedules,
     footing_steps,
     foundation_general_notes,
     foundation_marks,
     foundation_sheet_findings,
+    reinforcement_schedule,
     slabs_on_grade,
 )
 from typehaus.emit.draw.foundationplan import build_foundation_plan
@@ -68,7 +69,8 @@ def test_s100_has_a_keyed_foundation_schedule(catlin_model):
     marks = foundation_marks(catlin_model)
     titles = [table.title for table in build_foundation_schedules(catlin_model)]
     assert titles == ["FOOTING / PAD SCHEDULE", "FOUNDATION WALL SCHEDULE",
-                      "SLAB-ON-GRADE SCHEDULE"]
+                      "SLAB-ON-GRADE SCHEDULE", "SILL ANCHORAGE SCHEDULE",
+                      "FOUNDATION REINFORCEMENT SCHEDULE"]
     text = _joined(build_foundation_plan(catlin_model))
     # every mark the schedule defines is keyed onto the plan
     for mark in {*marks.footing.values(), *marks.pad.values(), *marks.wall.values(),
@@ -171,8 +173,15 @@ def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
 
 def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
     ids = {finding.check_id for finding in foundation_sheet_findings(catlin_model)}
-    assert {"sheet.foundation.slab_reinforcement",
-            "sheet.foundation.sill_anchorage"} <= ids
+    # Slab steel stays on the missing list: no Slab on grade carries a ReinforcementSpec.
+    assert "sheet.foundation.slab_reinforcement" in ids
+    # Sill anchorage has LEFT it. The 137 MASA anchors were derived all along and the sheet
+    # was declining to print a number it was already holding; they schedule now, so the
+    # WARN survives only for a house that models neither a strap nor an anchor bolt.
+    assert "sheet.foundation.sill_anchorage" not in ids
+    # Every foundation wall assembly that R406.1 could reach is dampproofed, so the
+    # presence finding does not fire either.
+    assert "sheet.foundation.dampproofing" not in ids
     # `sheet.foundation.vapour_retarder` is NOT in that set: SLAB_FLOOR and
     # GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745 Class A retarder over a 4" capillary
     # break, and the exterior slabs that never needed one — the garden floor, the garage
@@ -184,6 +193,63 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
         assert check_id in sheet_text
     # no invented reinforcement callout anywhere on the sheet
     assert "O.C. E.W." not in sheet_text
+
+
+def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
+    from typehaus.takeoff.anchors import mudsill_anchor_rows
+    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+
+    table = anchorage_schedule(catlin_model)
+    assert table.columns == ("MARK", "TYPE", "PART", "SPACING", "QTY", "WALLS")
+    assert table.rows, "137 MASA anchors are derived; the sheet must show them"
+    pitch = CONFIG.sill_plate_anchors.mudsill_anchor_pitch_ft
+    # The printed pitch IS the takeoff's, not a second number that looks like it.
+    assert all(row[3].startswith(f"{pitch:.0f}'-0\" O.C.") for row in table.rows), table.rows
+    assert {row[2] for row in table.rows} == {"MASA"}
+    # The table splits the house by condition; the split must not lose or gain an anchor.
+    takeoff = mudsill_anchor_rows(catlin_model, CONFIG.sill_plate_anchors,
+                                  CONFIG.sill_plate_takeoff_category)
+    assert sum(int(row[4]) for row in table.rows) == takeoff[0]["count"]
+    # Both conditions are on this house and they are not the same detail: a mudsill over a
+    # foundation wall, and a partition plate on the basement slab.
+    types = {row[1].split(" — ")[0] for row in table.rows}
+    assert types == {"SILL PLATE ON FOUNDATION WALL", "SILL PLATE ON SLAB"}
+    assert "MASA" in _joined(build_foundation_plan(catlin_model))
+
+
+def test_s100_schedules_the_authored_reinforcement(catlin_model):
+    table = reinforcement_schedule(catlin_model)
+    assert table.columns == ("MARK", "ELEMENT", "ROLE", "BAR", "SPACING/COUNT", "LAYERS",
+                             "COVER", "LAP")
+    rows = {(row[2], row[3], row[4], row[6], row[7]) for row in table.rows}
+    # `_B8_STEEL` on the basement walls: IRC Table R404.1.2(8), 2" cover, no lap class
+    # authored — and the schedule says "NOT STATED" rather than assuming a class.
+    assert ("VERTICAL", "#5", '41" O.C.', '2"', "NOT STATED") in rows
+    # The sunken-garden retaining footing mat: cover comes from ReinforcementSpec.cover (3"),
+    # which outranks the mix's, and both mat directions print.
+    assert ("BOTTOM-X", "#6", '10" O.C.', '3"', "CLASS B") in rows
+    assert ("TOP-X", "#6", '10" O.C.', '3"', "CLASS B") in rows
+    # Nothing is invented for the pours that carry no spec.
+    assert all(row[3].startswith("#") for row in table.rows)
+    assert "FOUNDATION REINFORCEMENT SCHEDULE" in _joined(build_foundation_plan(catlin_model))
+
+
+def test_s100_radon_block_is_derived_item_by_item(catlin_model):
+    notes = " | ".join(foundation_general_notes(catlin_model))
+    assert "RADON CONTROL — MN 1303.2400" in notes
+    # Subp. 2 — the course under the pour, read off the slab assembly, not a code minimum.
+    assert "SUBP. 2: SL-B-FLOOR — 2\" XPS, 10 MIL POLYETHYLENE, 4\" CAPILLARY-BREAK-STONE" \
+        in notes
+    # ...and what the model does NOT say is said as such, never as a default.
+    assert "AGGREGATE GRADATION AND THE 12\" MEMBRANE LAP ARE NOT MODELLED" in notes
+    assert "SUBP. 3-4: COLLECTION POINT SM-B-RADON" in notes and "SEALED COVER" in notes
+    assert "SUBP. 5: VENT VR-M-RADON-VENT" in notes
+    assert "NOT MODELLED — FIELD ITEMS" in notes
+    # Subp. 6 names the same two boxes code.MN_1303_2402_radon passes on, and only those:
+    # a box that declares a room is a lighting supply on some other storey.
+    assert "SUBP. 6: POWER FOR A FUTURE FAN AT ED-A-NEMA-JB, ED-A-PV-JB" in notes
+    # R406.1 reads the assembly's water-control layer rather than asserting a product.
+    assert "DAMPPROOFING (IRC R406.1): BASEMENT_8 (8 WALL(S)) CARRIES 'DAMP-PROOF'" in notes
 
 
 def test_s100_is_not_a_floor_plan(catlin_model):
