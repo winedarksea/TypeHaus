@@ -125,3 +125,130 @@ def test_catlin_basemap_fixture_loads(catlin_model):
     basemap = load_basemap_geojson(fixture)
     assert len(basemap.parcel) == 4
     assert basemap.contours  # contour lines present in the survey fixture
+
+
+# --- C3: what a zoning reviewer reads on C-101 -------------------------------------------
+
+def _with_site(model, **updates):
+    """Frozen pydantic edit path (mirrors ``test_site_checks._model_with_site``)."""
+    import copy
+
+    edited = copy.copy(model)
+    site = model.plan.project.site.model_copy(update=updates)
+    project = model.plan.project.model_copy(update={"site": site})
+    edited.plan = model.plan.model_copy(update={"project": project})
+    return edited
+
+
+def _texts(scene, layer: str) -> list[str]:
+    from typehaus.emit.draw.scene import Text
+
+    return [n.content for n in scene.nodes if isinstance(n, Text) and n.layer == layer]
+
+
+def _fully_annotated(catlin_model):
+    """Catlin plus every C-101 input the house may not have authored yet.
+
+    C3's drawing code lands before (and independently of) the house data, so the sheet is
+    exercised here against a site that carries one of everything rather than waiting on
+    ``houses/catlin`` to grow a driveway.
+    """
+    from typehaus.model.site import Benchmark, Easement, ErosionControl, StreetFrontage
+    from typehaus.quantities import ft, pt
+
+    easement = Easement(kind="utility", width=ft(6),
+                        outline=(pt(ft(62), ft(-60)), pt(ft(68), ft(-60)),
+                                 pt(ft(68), ft(105)), pt(ft(62), ft(105))),
+                        description="DOC. NO. TBD")
+    fence = ErosionControl(kind="silt_fence",
+                           path=(pt(ft(-32), ft(-60)), pt(ft(68), ft(-60))))
+    entrance = ErosionControl(kind="construction_entrance", path=(pt(ft(18), ft(105)),))
+    return _with_site(
+        catlin_model,
+        zoning_district="RL",
+        parcel_basis="placeholder",
+        easements=(easement,),
+        erosion_controls=(fence, entrance),
+        streets=(StreetFrontage(name="TBD Avenue", edge=2, right_of_way_ft=60.0),),
+        benchmark=Benchmark(position=pt(ft(68), ft(105)), elevation=ft(0),
+                            description="top nut of hydrant"),
+    )
+
+
+def test_layer_census_gains_the_c3_annotation_layers(catlin_model):
+    layers = set(build_site_plan(_fully_annotated(catlin_model)).by_layer())
+    assert {"C-ANNO-TABL", "C-PROP-EASE", "C-EROS", "C-ANNO-BMRK"} <= layers
+
+
+def test_setback_labels_carry_required_and_provided(catlin_model):
+    labels = _texts(build_site_plan(catlin_model), "C-PROP-SETB")
+    front = [line for line in labels if line.startswith("FRONT SETBACK")]
+    assert front == ["FRONT SETBACK 30'-0\" REQ / 40'-3\" PROVIDED"]
+    assert all("REQ" in line and "PROVIDED" in line for line in labels)
+
+
+def test_lot_lines_print_length_and_bearing(catlin_model):
+    from typehaus.emit.draw.site_metrics import lot_line_dimensions
+
+    labels = _texts(build_site_plan(catlin_model), "C-PROP")
+    dims = lot_line_dimensions(catlin_model.plan.project.site)
+    assert len(dims) == 4
+    for _edge, length_ft, bearing in dims:
+        assert f"{length_ft:.2f}'  {bearing}" in labels
+
+
+def test_coverage_percentage_agrees_with_site_metrics(catlin_model):
+    """The one number the cover and C-101 must not disagree about."""
+    from typehaus.emit.draw.site_metrics import building_coverage_ft2, lot_area_ft2
+
+    site = catlin_model.plan.project.site
+    expected = building_coverage_ft2(catlin_model) / lot_area_ft2(site) * 100.0
+    rows = [line for line in _texts(build_site_plan(catlin_model), "C-ANNO-TABL")
+            if line.startswith("BUILDING COVERAGE")]
+    assert rows and f"({expected:.1f}%)" in rows[0]
+
+
+def test_the_zoning_table_prints_the_district_maximum(catlin_model):
+    rows = [line for line in _texts(build_site_plan(_fully_annotated(catlin_model)),
+                                    "C-ANNO-TABL")
+            if line.startswith(("BUILDING COVERAGE", "BUILDING HEIGHT"))]
+    assert any("40% MAX" in row for row in rows)  # RL, St Paul Ord. 23-43
+    assert any("35' MAX" in row for row in rows)
+
+
+def test_a_placeholder_parcel_says_so_on_the_face_of_the_sheet(catlin_model):
+    notes = " ".join(_texts(build_site_plan(_fully_annotated(catlin_model)), "C-ANNO-TABL"))
+    assert "PLACEHOLDER PARCEL" in notes and "NOT A SURVEY" in notes
+    surveyed = _with_site(_fully_annotated(catlin_model), parcel_basis="survey",
+                          survey_by="A. Surveyor", survey_date="2026-01-01")
+    notes = " ".join(_texts(build_site_plan(surveyed), "C-ANNO-TABL"))
+    assert "PLACEHOLDER" not in notes
+    # the note is wrapped, so read it back word-wise rather than as one span
+    assert "CERTIFIED SURVEY" in notes and "A. SURVEYOR" in notes and "2026-01-01" in notes
+
+
+def test_erosion_control_street_easement_and_benchmark_read(catlin_model):
+    scene = build_site_plan(_fully_annotated(catlin_model))
+    assert "SILT FENCE" in _texts(scene, "C-EROS")
+    assert "ROCK CONSTRUCTION ENTRANCE" in _texts(scene, "C-EROS")
+    assert any("6'-0\" UTILITY EASEMENT" in t for t in _texts(scene, "C-PROP-EASE"))
+    assert any("TBD AVENUE — 60' R.O.W." in t for t in _texts(scene, "C-PROP"))
+    assert any("BENCHMARK EL." in t for t in _texts(scene, "C-ANNO-BMRK"))
+
+
+def test_the_table_sits_clear_of_the_lot_it_describes(catlin_model):
+    from typehaus.emit.draw.scene import Text
+
+    scene = build_site_plan(_fully_annotated(catlin_model))
+    parcel_x = [p.xy_m[0] / 0.0254 for p in catlin_model.plan.project.site.parcel]
+    table = [n for n in scene.nodes if isinstance(n, Text) and n.layer == "C-ANNO-TABL"]
+    assert table and all(n.anchor[0] > max(parcel_x) for n in table)
+
+
+def test_starter_omits_the_site_data_it_does_not_have(starter_dir: Path):
+    result = load_plan(starter_dir)
+    model, _findings = resolve(result.plan)
+    layers = set(build_site_plan(model).by_layer())
+    assert not ({"C-PROP-EASE", "C-EROS", "C-ANNO-BMRK"} & layers)
+    # The zoning table is not optional: a lot with no easements still has an area.
+    assert "C-ANNO-TABL" in layers

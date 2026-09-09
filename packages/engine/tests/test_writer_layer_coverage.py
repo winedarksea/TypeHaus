@@ -49,3 +49,13 @@ def test_the_two_writer_tables_cover_the_same_layers():
     """A layer styled for print but not for CAD exports wrong, and vice versa."""
     assert sorted(set(PDF_LAYER_STYLE) - set(DXF_LAYER_STYLE)) == []
     assert sorted(set(DXF_LAYER_STYLE) - set(PDF_LAYER_STYLE)) == []
+
+
+def test_the_c101_zoning_layers_are_styled_before_a_house_authors_them():
+    """C-101's easement / erosion / table / benchmark layers draw only when the site data
+    exists, so the census above cannot see them until a house authors one. They are still
+    layers both writers must know, and a house authoring a silt fence must not be the
+    moment anyone finds out."""
+    for layer in ("C-PROP-EASE", "C-EROS", "C-ANNO-TABL", "C-ANNO-BMRK"):
+        assert layer in PDF_LAYER_STYLE, layer
+        assert layer in DXF_LAYER_STYLE, layer
