@@ -1,9 +1,37 @@
 # haus: editable
 # Parcel/setbacks/utilities are placeholders the user can correct. The four structures
 # already span ~102' N-S (sunken garden at y=-29.8' to the garage at y=72'), so a
-# 100'-wide x 165'-deep parcel is the minimum "plausible" lot that clears the 30'/25'
+# 100'-wide x 165'-deep parcel is the minimum "plausible" lot that clears the 30'/10'
 # front/rear placeholders without immediately failing code.site_setback; a real survey
 # will replace all of this.
+#
+# ** WHAT "ALL OF THIS" IS, FIELD BY FIELD. ** The sentence above used to be a gesture. A
+# reviewer needs to know exactly which numbers on C-101 nobody measured, so
+# ``parcel_basis="placeholder"`` states it in the model (``code.site_parcel_is_surveyed``
+# reports it, the cover prints "PLACEHOLDER - NOT A SURVEY" in stamp red) and this list
+# names every field that basis covers:
+#
+#   * ``parcel`` — a drawn 100' x 165' rectangle. No corner has been located.
+#   * ``setbacks`` — the RL district minima, not a plat's building lines.
+#   * ``address``, ``pin``, ``legal_description`` — no lot has been bought. All absent
+#     except a placeholder address; nothing is invented.
+#   * ``streets`` — name "TBD", a 60' ROW assumed as the St Paul residential norm.
+#   * ``erosion_controls`` — real design decisions (where the fence and the entrance go),
+#     drawn against a parcel ring nobody surveyed, so the LINES are placeholders even
+#     though the intent is not.
+#   * ``easements=()`` — an empty tuple is a claim, and it is the one claim here that a
+#     title search rather than a survey settles. See its own note below.
+#   * every ``SpotElevation`` and both ``*_elevation`` fields on the hardscapes: these are
+#     DESIGN elevations relative to the main-floor datum, not shots off a benchmark. There
+#     is no ``benchmark`` for the same reason — a benchmark is a physical object a field
+#     crew recovers, and authoring one would be the only outright fiction in the file.
+#
+# ** ZONING: RL, POST-ORD. 23-43. ** Saint Paul repealed R1-R4/RT1/RT2 on 2023-11-26; the
+# one-family districts are now RL / H1 / H2. RL is the most restrictive of the three
+# (9,000 sf lot, 60' width, 35' height, front 30' / side 10' / rear 10', 40% max lot
+# coverage), so a placeholder lot is graded against RL until the real parcel names its
+# district — a house that clears RL clears H1 and H2 as well. The rear setback was 25'
+# here, which was an R4-era number for a district that no longer exists.
 #
 # **Grade sits 2'-10" below the main floor.** The model's vertical datum is the main floor,
 # so "the house comes 2'-10" out of the ground" is authored the way a drawing set states it:
@@ -21,11 +49,13 @@
 # -2'-10" at the street/north side and around the house, the sunken-garden floor still at
 # -9'-4", and the raised-garden apron now standing 3'-4" proud of the soil.
 from typehaus import (
+    ErosionControl,
     ImperviousSurface,
     MonthlyNormal,
     Site,
     SetbackSpec,
     SpotElevation,
+    StreetFrontage,
     UtilityKind,
     UtilityLine,
     deg,
@@ -131,13 +161,62 @@ SITE = Site(
     # A single-family dwelling: ASCE 7-16 Table 1.5-1 / IBC Table 1604.5 Risk Category II,
     # which is the map V_ult above is read from.
     risk_category="II",
+    # Title-block and site-plan identity. No lot has been purchased, so the address is a
+    # stand-in and `pin` / `legal_description` stay unauthored rather than invented — an
+    # empty row on the cover is a gap a reviewer can see, a made-up parcel number is not.
+    address="LOT TBD - Saint Paul, Ramsey County, MN",
+    zoning_district="RL",
+    # The one field that makes every dimension on C-101 honest. `code.site_parcel_is_surveyed`
+    # FAILs on this value, deliberately and permanently, until a licensed land surveyor's
+    # certificate arrives: then this becomes "survey" and `survey_by` / `survey_date` name
+    # the document. It is a non-blocking permit item, so the set still prints and carries
+    # the red PLACEHOLDER marker to the reviewer rather than being withheld from them.
+    parcel_basis="placeholder",
     parcel=(pt(ft(-32), ft(-60)), pt(ft(68), ft(-60)), pt(ft(68), ft(105)),
             pt(ft(-32), ft(105))),
+    # RL minima (Ord. 23-43): front 30', side 10', rear 10'. Edge indices run
+    # parcel[e] -> parcel[e+1]: 0 is the south/rear line, 2 the north/front line at the
+    # street. REAR read 25' until 2026-09-09 — a repealed R4 number.
     setbacks=(
-        SetbackSpec(edge=0, distance=ft(25), label="REAR"),
+        SetbackSpec(edge=0, distance=ft(10), label="REAR"),
         SetbackSpec(edge=1, distance=ft(10), label="SIDE"),
         SetbackSpec(edge=2, distance=ft(30), label="FRONT"),
         SetbackSpec(edge=3, distance=ft(10), label="SIDE"),
+    ),
+    # ** AN EMPTY TUPLE IS AN ASSERTION, AND THIS ONE IS NOT YET EARNED. ** No easement is
+    # known on this parcel because no title search has been run on a parcel that has not
+    # been chosen. A recorded utility, drainage or access easement is the one thing on a
+    # site plan a footprint may not cross, so this stays () with the reason attached rather
+    # than being read as "the lot is clear". A title commitment, not the survey, settles it.
+    easements=(),
+    # The public street this lot fronts, and the right-of-way the 30' front setback is
+    # measured from the near line of. 60' is Saint Paul's ordinary residential ROW; the name
+    # is TBD with the lot. Edge 2 is the north line, which is where the front setback,
+    # the water service and the driveway already agree the street is.
+    streets=(StreetFrontage(name="TBD", edge=2, right_of_way_ft=60.0),),
+    # Erosion and sediment control, as the site plan shows it (MPCA CSW / St Paul DSI). These
+    # are design decisions, not survey products: they move when the parcel does.
+    erosion_controls=(
+        # Silt fence around the DOWNHILL half of the lot. The soil plane is flat at -2'-10"
+        # and every grade station falls away from the house, but the excavation that matters
+        # is the sunken garden's — 9'-1" deep, 30' off the rear line — so the sediment this
+        # site can lose leaves to the south. The fence runs 2' inside the west, rear and east
+        # lines, from y=20' (level with the house's midpoint, above which the ground drains
+        # back to the street) around the bottom of the lot and up the east side to match.
+        ErosionControl(
+            kind="silt_fence",
+            path=(pt(ft(-30), ft(20)), pt(ft(-30), ft(-58)),
+                  pt(ft(66), ft(-58)), pt(ft(66), ft(20))),
+            description="silt fence, trenched 6 in, 2 ft inside the W/S/E lot lines",
+        ),
+        # Rock construction entrance where vehicles leave the site, which is the only place
+        # they can: the driveway's crossing of the north right-of-way. 20' of the drive
+        # centreline, its full 12' width, is the mat.
+        ErosionControl(
+            kind="construction_entrance",
+            path=(pt(ft(18), ft(105)), pt(ft(18), ft(85))),
+            description="rock construction entrance, 20 ft x 12 ft, 1-2 in clear rock",
+        ),
     ),
     # Grade stations. Two rings per house side let code.R401_3_grading measure the fall
     # away from the foundation: a near-wall point (~2-3' out) plus a ~9'-out point that has
@@ -241,6 +320,7 @@ SITE = Site(
                      pt(ft(22), ft(40)), pt(ft(14), ft(40))),
             near_elevation=ft(-2, -11),  # -1" below grade at the foundation
             far_elevation=ft(-3, -1),    # -3" at the 4' outer edge (4.2% away)
+            kind="walk",
         ),
         # side patio on the east wall (x=36'), draining east toward the side-yard grade
         ImperviousSurface(
@@ -249,6 +329,7 @@ SITE = Site(
                      pt(ft(42), ft(22)), pt(ft(36), ft(22))),
             near_elevation=ft(-2, -11),  # -1" below grade at the foundation
             far_elevation=ft(-3, -2),  # -4" below grade at the 6' outer edge (4.2% away)
+            kind="patio",
         ),
         # The two pads in the pocket east of the porch, both authored in
         # params/sunken_garden.py. They were one 56.9 sf pour for a day; on 2026-09-04 the
@@ -269,6 +350,7 @@ SITE = Site(
                      pt(ft(32, 7), ft(0, -10)), pt(ft(29), ft(0, -10))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
+            kind="pad",
         ),
         # SL-M-HP3PAD, the north-side equipment pad under EQ-M-HP3-OD (params/hp3_pad.py),
         # x 9'-9"..13'-1" by y 36'-10 1/4"..38'-11" — 6.9 sf, the smallest of the three and
@@ -284,6 +366,7 @@ SITE = Site(
                      pt(ft(13, 1), ft(38, 11)), pt(ft(9, 9), ft(38, 11))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -9),
+            kind="pad",
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
         # x 32'-9 1/4"..36'-5 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04, moved
@@ -301,6 +384,7 @@ SITE = Site(
                      pt(ft(36, 5.75), ft(39, 4)), pt(ft(32, 9.25), ft(39, 4))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
+            kind="pad",
         ),
         # SL-SG-STAIRPAD, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
         # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is
@@ -312,6 +396,35 @@ SITE = Site(
                      pt(ft(35, 3), ft(-6)), pt(ft(28, 6), ft(-6))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -10),
+            kind="stair",
+        ),
+        # ** THE DRIVEWAY, NEW 2026-09-09. ** The garage's overhead door faced a lot with no
+        # approach to it: notes/garage_orientation_lot.md records that the drive premise was
+        # retired in the rotation, and it was retired one structure too far. Saint Paul DSI
+        # will not review a garage a car cannot reach, and the drive is also the only place
+        # a vehicle can leave the site, which is what the rock construction entrance above
+        # is sited on.
+        #
+        # Geometry: 12'-0" wide, centred on D-G-OVERHEAD (the door spans x 10'..26' on
+        # W-G-N, so its centreline is x=18'), from the garage face at y=64'-8 5/8" north to
+        # the right-of-way at y=105'. 12' is the ORDINANCE width, not the door width: Ord.
+        # 23-43 caps a driveway in the front yard at 12'-0" and the 16' door gets its flare
+        # in the apron, off this rectangle. 484 sf of paving against the 1,000 sf cap
+        # (15% of a 16,500 sf lot is 2,475, so 1,000 governs) — under a fifth of it.
+        #
+        # ** IT IS OUTSIDE code.R401_3_impervious's REACH AND THE ELEVATIONS ARE STILL REAL. **
+        # That check measures against the PRIMARY foundation footprint (the house, y<=36')
+        # and skips any surface whose nearest vertex is past 10'; this one starts 28'-9"
+        # north of the house. The near/far pair below is the drive's own fall to the street,
+        # 10" over 40'-4" (2.07%), starting 1" below the -2'-10" garage threshold so the
+        # apron sheds away from the slab rather than into it.
+        ImperviousSurface(
+            label="driveway",
+            outline=(pt(ft(12), ft(64, 8.625)), pt(ft(24), ft(64, 8.625)),
+                     pt(ft(24), ft(105)), pt(ft(12), ft(105))),
+            near_elevation=ft(-2, -11),
+            far_elevation=ft(-3, -9),
+            kind="driveway",
         ),
     ),
     # ``UtilityLine.depth`` is a bury depth *below finished grade* (emit/ifc/site.py reads

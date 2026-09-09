@@ -101,6 +101,13 @@ _project = Project(
     building=Building(name="Catlin House"),
     format_version=format_version,
     requires_engine=requires_engine,
+    # Title-block identity, printed on every sheet. No firm or architect row: Minn. Stat.
+    # 326.03 exempts a one- or two-family dwelling from needing a design professional, and
+    # this set is drawn by the owner. ``preparer`` is whoever drew it, licensed or not — the
+    # PE seal, when it comes, covers the S-sheets and lives in ``engineering.toml``.
+    number="CAT-2026-001",
+    owner="Colin Catlin",
+    preparer="Colin Catlin (owner-drawn, Type:Haus)",
     # The start position the model is reviewed from.
     default_view_pan=(1.0, 1.0),
     # Required: any ClearanceZone carrying a ``code_profile`` (in this catalog, only the
