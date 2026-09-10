@@ -353,6 +353,7 @@ Two glazing gaps still leave the French doors out entirely, both wanting product
 - Optimize the sunken garden wall heights and corners for a single pour with basement (XPS in forms)
 - Double check the electric fireplace will mount into the brick. Brick likely needs a metal lintel to hold the brick part above the fireplace. Oksana also wants the fireplace lower (not eye leve, but just a bit above floor level, like a traditional fireplace)
 - Kitchen has lights stuck above cabinets. Might want to swap some cans for under counter lighting.
+- Make sure the kitchen cabinets align with IKEA sizes (we plan to do mostly an IKEA kitchen). It looks like their MAXIMERA style drawers and make for tall pantry cabinets.
 
 - **The writeback can't address a `FoundationWall` as `type: "Wall"`** — a PATCH comes back
   422 even though the wall is authored in an editable file. A UI drag of a foundation wall

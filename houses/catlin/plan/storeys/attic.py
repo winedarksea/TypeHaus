@@ -472,8 +472,8 @@ OPENINGS = [
     # 12'-0" / 24'-0" on 2026-09-06, which is where they are.
     #
     # Both stations are stud lines on layout line LL-W-A-N1 (144" and 288", 16" multiples),
-    # which is what a 30" RO needs — it BREAKS studs, so it cannot sit on a bay centre
-    # (8 mod 16) the way the 14" family does — and they mirror about the 18'-0" ridge.
+    # which is what a 27" or 30" RO needs — either BREAKS studs, so neither can sit on a bay
+    # centre (8 mod 16) the way the 14" family does — and they mirror about the 18'-0" ridge.
     # The return outboard is what finally squares the facade: WIN-S-STAIR-N moved to 12'-0"
     # and WIN-S-HALL-N in from 29'-4" to 24'-0", so BOTH gable units stack EXACTLY on a
     # second-storey partner and the north face reads as one rectangle of four rather than
@@ -482,13 +482,26 @@ OPENINGS = [
     # and was withdrawn in favour of moving what was already there. See second.py's
     # WIN-S-HALL-N note.
     #
-    # ** THE RAKE IS THE BINDING CONSTRAINT AT THIS STATION, AND IT HOLDS BY 5". ** WT-3036
-    # on the gable's 2'-0" sill puts the head at 5'-0" (60"), needing 2 x (60 + 2) = 124" of
-    # clearance from the outer jamb to the eave. At 12'-0" / 24'-0" the outer jambs land at
-    # 129" (the 145" quoted for 13'-4" / 22'-8" was the slack the inboard pair had). 129 >
-    # 124, and structural.truss_wall_opening_support confirms both jamb pairs still bear on
-    # an outrigger within 1" — but there is no third bay outboard, so this pair cannot move
-    # west/east again without a shorter unit.
+    # ** THE RAKE IS THE BINDING CONSTRAINT AT THIS STATION, AND IT HOLDS BY 6 1/2". ** A
+    # 36"-tall unit on the gable's 2'-0" sill puts the head at 5'-0" (60"), needing
+    # 2 x (60 + 2) = 124" of clearance from the outer jamb to the eave. At 12'-0" / 24'-0"
+    # the outer jambs land at 130 1/2" (the 145" quoted for 13'-4" / 22'-8" was the slack
+    # the inboard pair had). 130 1/2 > 124, and structural.truss_wall_opening_support
+    # confirms both jamb pairs still bear on an outrigger within 1" — but there is no third
+    # bay outboard, so this pair cannot move west/east again without a shorter unit.
+    #
+    # ** RETYPED WT-3036 -> WT-2736 ON 2026-09-10: 3" NARROWER, SAME HEIGHT. ** 30x36 read
+    # too square on the facade, and 27" is the width the second-storey pair took the same
+    # day (WT-2748 there), so the stack is now a two-storey column of ONE width with the
+    # attic unit simply 12" shorter under the rake. The offsets grew 1 1/2" to hold the
+    # centres — `from_node` resolves to the near JAMB, not the centre — so the ROs are
+    # 10'-10 1/2"..13'-1 1/2" and 22'-10 1/2"..25'-1 1/2", and the stations did not move.
+    #
+    # ** THE RAKE IS WHY THIS PAIR DID NOT GROW TALLER WITH THE ONE BELOW. ** The 3" of
+    # width buys 1 1/2" of run per jamb, so the margin goes 5" -> 6 1/2", worth about 3 1/4"
+    # of head. A 48" unit at this sill heads at 6'-0" and needs 148"; there is no version of
+    # this gable that has it. Dropping the sill to buy the height instead runs into R312.2 —
+    # at 20'-0" of storey elevation any sill under 24" is a fall-protection unit.
     #
     # (This paragraph read "12'-8"" for the stair window and argued an 8" miss until
     # 2026-09-06; the offset in second.py always resolved to 13'-4". That was a prose
@@ -496,21 +509,25 @@ OPENINGS = [
     #
     # ** WIN-A-N1 REHOSTS W-A-N2 -> W-A-N2B. ** x=12'-0" is east of N-A-N3 (x=10'-0"), where
     # the north wall split, so the window is simply on the other piece now. Its RO runs
-    # 10'-9"..13'-3", clearing that node by 9" — the whole unit is on W-A-N2B.
+    # 10'-10 1/2"..13'-1 1/2", clearing that node by 10 1/2" — all of it on W-A-N2B.
     # W-A-N2's own comment spends a paragraph arguing that keeping the tag on the WEST piece
     # is what preserves this window's host and its from_node offset verbatim — that argument
-    # is now spent, and the tag stays on the west piece for the PV/NEMA boxes alone
+    # is doubly spent (the offset moved 1 1/2" with the 2026-09-10 retype), and the tag
+    # stays on the west piece for the PV/NEMA boxes alone
     # (test_catlin_outdoor_structures.py). W-A-N2B runs N-A-N1 (x=18') -> N-A-N3 (x=10'), so
     # the offset is measured east-to-west: 18'-0" - 3'-5" - 15" = the 13'-4" centre.
     #
     # At x=12'-0" the west unit fronts FO-A-HALL, the stair void — it daylights a
     # double-height space rather than a room. That is an amenity, not a code problem: the
     # sill is 11'-0" above the floor below and nowhere near R312.2's 24" fall-protection
-    # trigger, and R303.1 asks nothing of a hall.
-    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-3036",
-           position=from_node("N-A-N1", ft(4, 9)), sill_height=ft(2)),   # ctr x 12'-0"
-    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
-           position=from_node("N-A-NE", ft(10, 9)), sill_height=ft(2)),  # ctr x 24'-0"
+    # trigger, and R303.1 asks nothing of a hall. The 2026-09-10 narrowing pulled its west
+    # jamb 1 1/2" east, so the radon riser's clearance went 9 5/8" -> 11 1/8"
+    # (mep_venting.py) and the PV junction box's 5" -> 6 1/2" (electrical.py). Both are
+    # hand-coordinated, not graded — a later WIDENING here spends that back.
+    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2B", type_ref="WT-2736",
+           position=from_node("N-A-N1", ft(4, 10.5)), sill_height=ft(2)),   # ctr x 12'-0"
+    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-2736",
+           position=from_node("N-A-NE", ft(10, 10.5)), sill_height=ft(2)),  # ctr x 24'-0"
     # ** THE FOUR EAVE WINDOWS ARE GONE. ** WIN-A-W-S (CAX308AAAA), WIN-A-W-N
     # (CAX306AAAA), WIN-A-E-S (CAX309AAAA) and WIN-A-E-N (CAX310AAAA) were the knee-wall
     # pair on each side — WT-1424s chosen for HEIGHT rather than width, because a 5'-0" knee

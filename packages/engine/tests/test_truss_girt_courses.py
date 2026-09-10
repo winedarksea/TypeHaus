@@ -206,8 +206,8 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     156", 4" apart, on different walls but on ONE module, so any phase clean for one group
     is 4" off for the other.
 
-    **RE-SWEPT 2026-09-01 for the 24" module**, at 1/8" from -16" to +8", and the winner is
-    ``course_offset = 0`` — 13 exact hits and 30 slivers, against 9/24 at the -3.5" phase the
+    **RE-SWEPT 2026-09-01 for the 24" module**, at 1/8" from -16" to +8", and the winner was
+    ``course_offset = 0`` — 13 exact hits and 30 slivers then, against 9/24 at the -3.5" phase the
     32" module used. Two things to read before changing either number. A finer module frames
     a third more courses, so *more* of them fall within 7" of an opening edge no matter what
     the phase is: 30 slivers at 24" is not worse layout than 19 at 32", it is more course.
@@ -245,6 +245,23 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     seven more slivers (39, 40, 40 against 33), and a sliver is the defect this rule was
     written for. -3.5" is fewer slivers still (24) and remains ILLEGAL: it leaves a 24.75"
     bay, over the module.
+
+    ** RE-SWEPT 2026-09-10, AND THE EXACT HITS CAME BACK: 12/33 -> 14/33. ** The north
+    facade's four units were retyped off WT-3036 (30x36 read too square); the second-storey
+    pair took WT-2748 at a **2'-3 1/2" sill**, and 27-1/2" is the SILL half of the rule at
+    the top of this docstring — a course tops out flush with the rough opening, so the sill
+    course IS the field course. Two edges that were 9-1/2" from anything are now exact, and
+    the two heads that were 6" under the 72" course are 3-1/2" under it: still slivers, so
+    the sliver count did not move. The attic pair narrowed to WT-2736 at the same sill and
+    height, which touches neither edge.
+
+    The sill was chosen for this. A round 2'-6" was on the table and is what the facade
+    argument alone would have taken; it puts the sill 2-1/2" over the course and casts a
+    sliver for nothing. Re-swept at 1/8" from -16" to +8" over the current model, zero is
+    the exact-hit leader among legal phases again (+4.5" reaches 15 but for 41 slivers;
+    +8"/-16" match 14 for 38), and it is the least-slivered of that whole group. -3.5"
+    still shows fewest slivers (24, now at only 10 exact) and is still ILLEGAL on its
+    24.75" bay.
     """
 
     conflicts: list[tuple[str, str, float]] = []

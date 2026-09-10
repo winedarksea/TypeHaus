@@ -313,7 +313,10 @@ corner, and withdrawn the same day in favor of the moves above — 23'-4" was th
 the module and node `N-S-B5` allowed, 8" off the ideal and aligned with no column. Its one
 lasting mark: `FURN-S-BED3-WARD` and `FURN-S-DESK3` swapped slots to clear the north wall in
 `placeables.py`, and the swap is still needed today, because the wardrobe stood over x
-22'-1.5"..24'-1.5" and `WIN-S-HALL-N`'s RO is 22'-9"..25'-3". The tag was reused within
+22'-1.5"..24'-1.5" and `WIN-S-HALL-N`'s RO is 22'-10 1/2"..25'-1 1/2". The desk that took
+its slot has a 30" top, which the 2026-09-10 sill drop put 2 1/2" UNDER — a desk under a
+window, the way the Study 2 table sits under `WIN-S-STUDY1`, and ungraded either way. The
+tag was reused within
 hours for the WT-1424 at x=34'-0" that stands now — a different wall of the same room, a
 different argument entirely.
 
@@ -357,8 +360,9 @@ moved nothing.
 The north gable's history: `WIN-A-N1` moved 7'-4"→8'-0", mirroring `WIN-A-N2` at 28'-0"
 about x=18', then to 6'-8"/29'-4" when the three-storey column moved to bring `WIN-M-KITCH`
 onto the sink below (`WIN-A-N1` moved with it to hold the mirror). The rake then moved it
-again: WT-3036 on the gable's 2'-0" sill puts the head at 5'-0", needing 2×(60+2)=124" of
-clearance to the outer jamb, and 6'-8" gives only 65" — landing the pair at 12'-0"/24'-0". It
+again: a 36" unit on the gable's 2'-0" sill puts the head at 5'-0", needing 2×(60+2)=124"
+of clearance to the outer jamb, and 6'-8" gives only 65" — landing the pair at
+12'-0"/24'-0". It
 went one bay further in to 13'-4"/22'-8" on **2026-09-03** and came back out to
 12'-0"/24'-0" on **2026-09-06**, where it now sits.
 
@@ -367,8 +371,38 @@ went one bay further in to 13'-4"/22'-8" on **2026-09-03** and came back out to
 partner and the north face reads as one rectangle of four.
 
 The 145" clearance once quoted for the rake-binding note was the slack the inboard
-13'-4"/22'-8" pair had; at the current 12'-0"/24'-0" station the true figure is 129" against
-124" needed. `WIN-A-N1` was rehosted from `W-A-N2` to `W-A-N2B` on an earlier move.
+13'-4"/22'-8" pair had; at the current 12'-0"/24'-0" station the true figure is 130 1/2"
+against 124" needed. `WIN-A-N1` was rehosted from `W-A-N2` to `W-A-N2B` on an earlier move.
+
+**The rectangle narrowed to one width (2026-09-10).** All four north units were WT-3036, and
+30x36 is 1:1.2 — square enough to read as a mistake in `elev_north.png`. The gable pair took
+**WT-2736** and the second-storey pair **WT-2748** at a **2'-3 1/2" sill**, so the facade is
+now two stacks of one 27" rough opening, 48" tall below and 36" above. Nothing moved: the
+centres stay on 12'-0"/24'-0", but every offset had to grow 1 1/2" to keep them there,
+because `from_node` resolves to the opening's near JAMB and not its centre
+(`resolve/pipeline.py`'s `_opening_center`). That is the trap to know before any retype on
+this facade — a pure type swap silently walks the whole rectangle sideways.
+
+Three things settled the numbers. The attic could not grow taller with the pair below: a 48"
+unit there needs 148" of run against 130 1/2" available, and buying the height off the sill
+instead puts it under R312.2's 24". The second-storey sill went to 27 1/2" rather than a
+round 2'-6" because 27 1/2" is an exact girt-course hit — the sill course becomes the field
+course and casts no sliver — which took `test_truss_girt_courses.py` from 12 exact hits to
+14 with slivers unchanged at 33. And 27 1/2" keeps 3 1/2" over R312.2, which is real margin
+rather than paper margin: `sill_m` is measured off the SUBFLOOR, so an authored 24" would
+be 23 1/16" to an inspector's tape.
+
+The narrowing paid out at the gable as well. Both jambs came inboard 1 1/2", so the rake
+margin went 5" → 6 1/2", the radon riser's clearance to `WIN-A-N1` 9 5/8" → 11 1/8", and the
+PV junction box's 5" → 6 1/2". None of those three is graded; a later rewidening spends all
+of them back at once.
+
+**The north second storey was never on the 6'-0" head line.** `CLAUDE.md` and `second.py`
+both said it was until 2026-09-10. Commit `5487fd79` had raised both sills ft(3) → ft(3, 6)
+in a silent hunk of another change, putting the head at 6'-6" against `WIN-S-BED3-N`'s
+6'-0", and no prose followed. The retype leaves them at 6'-3 1/2", so the gap is 3 1/2"
+rather than 6". The face is a row of three on one rectangle with a 14" corner unit outboard,
+and it is now documented as one.
 
 This document claimed the stair window sat at 12'-8" and argued an 8" miss, until
 **2026-09-06**; that was never true — the authored offset always resolved to 13'-4", and

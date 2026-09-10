@@ -6,7 +6,7 @@ segment boundaries, ridge elevation).
 
 from typehaus import ExaggerationSpec, Slice, SliceKind, ft, inch, m, pt
 
-from params.breezeway import DETAIL_CUT_Y_FT
+from params.north_entry_frame import DETAIL_CUT_Y_FT
 
 DETAIL_SLICES = [
     # West basement wall + footing + slab edge (cut at y=18', the mid-height bearing
@@ -65,14 +65,14 @@ DETAIL_SLICES = [
          crop=(pt(m(8.4), m(2.7)), pt(m(11.3), m(5.8)))),
     # Breezeway cross section — the one detail that captures the whole enclosure. Cut
     # transversely (direction="x", so the plane is x-z) on the breezeway's *south frame
-    # line* (``DETAIL_CUT_Y_FT``, published by params/breezeway.py rather than typed here):
+    # line* (``DETAIL_CUT_Y_FT``, published by params/north_entry_frame.py rather than typed here):
     # pad, pier, both floor beams, a joist, the decking, both standing polycarbonate sheets,
     # both roof beams, a rafter and its two drainage wedges, and the roof sheet.
     #
     # It does NOT cross the 6x6 post, and no station can cross both any more: the posts sit
     # 4 11/32" inboard of this line so their pier pads clear the two buildings' foundations,
     # while the joists and rafters stay on the frame line where the sheets need bearing.
-    # See the post-line block in params/breezeway.py.
+    # See the post-line block in params/north_entry_frame.py.
     #
     # The crop runs from below the frost-depth pads (-4') to above the crown (+8'-6"), and
     # 9" past the 4'-6" glazing envelope (x = 6'-9" to 11'-3") on each side. **It was

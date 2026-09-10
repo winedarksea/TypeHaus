@@ -1,7 +1,11 @@
-> Current north entry, 2026-09-10: the selected extruded gable supersedes the historical
-> four-foot glazed breezeway notes below. Garage +30in north; bridge composite finish 0;
-> SL-G-STEP-0/pads/piers/glazing retired; east tiers and west slat screen; HP3 west in open
-> yard. See notes/north_entry_structure.md and notes/hp3_north_relocation.md.
+> Current north entry, 2026-09-10 (engineered pass): the passage is its own roof on its own
+> structure — `RF-BW-CANOPY`, three 24' trusses between two 3-ply 2x12 KDAT headers on two
+> 6x6 KDAT columns on cast piers. The landing bears on FIVE piers and touches nothing on the
+> house; the tiers are box frames at an 18" going on 42" footings; `SC-BW-WEST` is in-fill and
+> `RL-BW-SCREEN` is the guard. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
+> pads, glazing and the six invented seat connectors retired; HP3 west in open yard. See
+> notes/north_entry_structure.md (the bearing map), notes/north_entry_piers.md (the
+> arithmetic) and notes/hp3_north_relocation.md.
 
 # Catlin house — agent guide
 
@@ -140,7 +144,13 @@ not instruction: when it disagrees with this file or the model, it is the one th
   air.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
-- `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.
+- `params/north_entry_frame.py` — the north entry STRUCTURE: geometry constants, the beam
+  factory, the five beams, five piers and their footings, the two KDAT roof columns, the two
+  interior posts, and the seat/cap connectors. Publishes every constant `breezeway.py` and
+  `plan/views.py` read, so the two cannot drift.
+- `params/breezeway.py` — what sits on that: the landing, the box tiers and their piers, the
+  guards, the slat screen and the annotations. The canopy `Roof` itself is authored in
+  `plan/storeys/garage.py`, because a roof belongs to a storey.
 - `notes/*.md` — construction detail notes migrated from the original repo.
 
 **Editability rule (enforced):** any UI-movable element (Furniture/Fixture/Appliance/
@@ -156,13 +166,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Site and the four structures
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
-- **STALE — pending the north-entry rewrite.** `params/breezeway.py`'s posts-and-glazing breezeway design is retired for an extruded garage gable; it now holds only a foundation bridge (FS-BW-FLOOR, FS-BW-GARAGE), beams (BM-BW-*), a stair (ST-BW-ENTRY), a railing (RL-BW-ENTRY), and a slat screen (SC-BW-WEST). See notes/north_entry_structure.md for the current design. (→ DESIGN-LOG.md, "Site and the four structures")
+- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. Its sheathing runs continuous across the garage south wall line and **that diaphragm is the canopy's entire lateral system**; both column bases are standoffs, not moment connections. Five cast piers (`PT-BW-W`/`-E`/`-RE`/`-GW`/`-GE`) bottom at −9'-9 7/16" **with the house footing, ten inches away — cast them in the open basement excavation or they undermine it**. Nothing here names a `W-B-*` tag. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem becomes a curb-free grade beam there.
-- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, `RL-G-SERVICE`). **STALE:** `SL-G-STEP-0` is retired per `notes/north_entry_structure.md` — `FS-BW-GARAGE` replaces it — but comments in `plan/storeys/garage.py` and `plan/assemblies.py` still say it survives. Pending the north-entry rewrite.
+- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, `RL-G-SERVICE`). `SL-G-STEP-0` is retired — `FS-BW-GARAGE` replaces it — though stray comments in `plan/storeys/garage.py` and `plan/assemblies.py` still name it.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped; a shorter plate would push the 3-ply LVL header into the truss heels.
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
@@ -600,7 +610,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **The north face has no column, a deliberate trade** (→ DESIGN-LOG.md): the upper facade
   reads as one rectangle instead — `WIN-A-N1`/`WIN-S-STAIR-N` at **12'-0"**,
   `WIN-A-N2`/`WIN-S-HALL-N` at **24'-0"**, each attic unit over its second-storey partner,
-  mirrored about the ridge. `WIN-M-KITCH` stands alone below, dead-centred on the sink run.
+  mirrored about the ridge. Since 2026-09-10 **all four are 27" wide** (attic WT-2736,
+  second WT-2748), so the two stacks are columns of one width and one rough opening rather
+  than four squarish 30x36s. `from_node` resolves to the near JAMB, so every one of those
+  four offsets grew 1 1/2" to hold its centre — do the same on any future retype here. `WIN-M-KITCH` stands alone below, dead-centred on the sink run.
   `WIN-S-BED3-N` (WT-1424, x 34'-0", sill 4'-0") sits over `WIN-M-KITCH-N`, completing a
   **corner pair** with `WIN-S-BED3` (east wall y=34'-0", each 2'-0" off the corner) — a
   two-storey column — and satisfies R303.1 Exception 1 for `RM-S-BED3` (12.2 sf glazed/6.1
@@ -655,22 +668,35 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   lost its guard with the wall, so `RL-A-STAIR` gained a 3'-0" east leg (`code.R312_1_guard`).
 
 - **Head lines.** West face: every main/second head on one 6'-0" line — 27" units at a
-  3'-0" sill, 14" units at 4'-0". South face shares a 2'-8" sill. North second storey joins
-  the 6'-0" line: `WIN-S-HALL-N`/`WIN-S-STAIR-N` are WT-3036 at 3'-0" sill, `WIN-S-BED3-N` a
-  WT-1424 at 4'-0" (as is `WIN-S-BED3` around the corner) — leaving the east face's 3'-0"
-  datum (`WIN-S-BED1`/`WIN-S-BED2` still hold it) when it was retyped down to a 14" unit,
-  the rule working, not an exception.
+  3'-0" sill, 14" units at 4'-0". South face shares a 2'-8" sill. `WIN-S-BED3-N` is a
+  WT-1424 at a 4'-0" sill (as is `WIN-S-BED3` around the corner), so it heads at 6'-0" —
+  leaving the east face's 3'-0" datum (`WIN-S-BED1`/`WIN-S-BED2` still hold it) when it was
+  retyped down to a 14" unit, the rule working, not an exception.
+  **The north second storey is a ROW, not a head line**, and this entry claimed otherwise
+  until 2026-09-10. `WIN-S-HALL-N`/`WIN-S-STAIR-N` are **WT-2748 at a 2'-3 1/2" sill**,
+  heading at 6'-3 1/2", 3 1/2" over `WIN-S-BED3-N`. (They were never on the 6'-0" line:
+  commit `5487fd79` had put them at a 3'-6" sill and a 6'-6" head with no note.) The sill is
+  2'-3 1/2" because 27 1/2" is an **exact girt-course hit** — see **Girt course module**'s
+  NEW-OPENING RULE; taking it moved `test_truss_girt_courses.py` from 12 exact hits to 14
+  with slivers unchanged at 33. It is also 3 1/2" clear of R312.2, which matters because
+  `sill_m` is off the SUBFLOOR and finished floor is 15/16" higher.
 
 - **Gables** read symmetric about the ridge before answering to anything below. The north
   gable is symmetric at **12'-0" / 24'-0"** (144"/288", both stud lines, mirrored about the
   18'-0" ridge — see **Columns** for why those stations also stack the second storey).
-  **The rake is binding here and holds by 5"**: outer jambs land 129" from their eaves
-  against the 124" the 5'-0" head needs; `structural.truss_wall_opening_support` confirms
-  both jamb pairs bear on an outrigger within 1", and there is no third bay outboard —
-  **this pair cannot move out again without a shorter unit.** Recheck before any further
-  move: the radon riser is 9 5/8" clear of `WIN-A-N1`'s west jamb (`mep_venting.py`), the PV
-  junction box 5" clear of its framing bumper (`electrical.py`).
-  `WIN-A-N1` (hosted on `W-A-N2B`) has RO 10'-9"..13'-3", clearing the x=10'-0" split by 9";
+  **The rake is binding here and holds by 6 1/2"**: outer jambs land 130 1/2" from their
+  eaves against the 124" a 5'-0" head needs; `structural.truss_wall_opening_support`
+  confirms both jamb pairs bear on an outrigger within 1", and there is no third bay
+  outboard — **this pair cannot move out again without a shorter unit.** The pair is
+  **WT-2736** since 2026-09-10 (30x36 read too square), matching the second storey's new
+  27" width so the stack is a column of one width, the attic unit simply 12" shorter under
+  the rake. It could not grow taller with the pair below: a 48" unit here needs 148" of run,
+  and buying the height off the sill instead lands under R312.2's 24".
+  Recheck before any further move: the radon riser is 11 1/8" clear of `WIN-A-N1`'s west
+  jamb (`mep_venting.py`), the PV junction box 6 1/2" clear of its framing bumper
+  (`electrical.py`) — both widened by the narrowing, and a rewidening spends them back.
+  `WIN-A-N1` (hosted on `W-A-N2B`) has RO 10'-10 1/2"..13'-1 1/2", clearing the x=10'-0"
+  split by 10 1/2";
   at x=12'-0" it fronts `FO-A-HALL`, daylighting the stair void rather than a room — an
   amenity, not a code problem.
   **The south gable carries FOUR openings**, mirrored about x=18', reading west→east S2,
@@ -972,11 +998,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     past that the uplift pass FAILs members under the deck, reported nowhere near it.
     `sheet_goods_takeoff` reads `deck_outline` for sheet area; `ceiling_below` keeps the
     framed extent. (→ DESIGN-LOG.md, "Decks and the garage")
-- **STALE — pending the north-entry rewrite.** `PT-BW-1..4`, `SL-BW-DECK`, `GL-BW-ROOF`, the
-  polycarbonate canopy glazing, and `_EW_FT`/`_GLAZING_CENTER_X` no longer exist. The north
-  entry is now a foundation bridge (`FS-BW-FLOOR`, `FS-BW-GARAGE`), beams `BM-BW-*`, a stair
-  `ST-BW-ENTRY`, a railing `RL-BW-ENTRY`, and a slat screen `SC-BW-WEST`. See
-  `notes/north_entry_structure.md`.
+- **`PT-BW-1..4`, `SL-BW-DECK`, `GL-BW-ROOF`, the polycarbonate canopy glazing, `RL-BW-WEST`
+  and `_EW_FT`/`_GLAZING_CENTER_X` no longer exist.** `BM-BW-RW`/`-RE` DO — the tags are
+  deliberately reused for the canopy's two roof headers, on the same bearing lines. The
+  landing is `FS-BW-FLOOR`/`FS-BW-GARAGE` on five piers; the tiers are `carriage="box"`, so
+  **no member of `ST-BW-ENTRY` is a stringer** and the drawings and takeoff both read that
+  field. Tread supports at 9" o.c. — the STAIR rating of a capped composite board, which runs
+  8"-12" against 16" for the same board as decking; read the delivered board's own ASTM D7032
+  stair row. See `notes/north_entry_structure.md`.
 - **The garage wall was rebuilt; both the garage wall and its roof are current.**
   `GARAGE_WALL_2X6` is **2x6 @24" o.c. / 2" ccSPF in the bays / 5/8" CDX / 7/8" corrugated
   exposed-fastener panel**, trusses at 24" o.c. to match (`GARAGE_ROOF`, framing factor
@@ -1345,14 +1374,19 @@ haus print . --sealed                       # the submittal gate — exits 1 tod
 - **No `engineering.toml` exists yet**, so every item reads `unsealed` and the sealed gate
   is shut. That is the true state, not a gap in the setup — the engine reads that file and
   never writes it, and pinning a seal stays a human act.
-- **Five items are deferred to a designer of record** (both roofs' rafters and uplift path,
-  and the overhead-door header). `out/calcs/03-open-items.md` names who owns each.
-- **Two open engineering questions** are real and are on that page, not hidden: the
+- **Seven items are deferred to a designer of record** — all THREE roofs' rafters and uplift
+  path, and the overhead-door header. `out/calcs/03-open-items.md` names who owns each.
+  `RF-BW-CANOPY` joined on 2026-09-10 and its deferral carries a condition the others do not:
+  **quote its trusses against the DRIFT case, not the ground snow.** A fabricator reading
+  "50 psf ground snow" prices ordinary trusses, and the surcharge off the house gable also
+  reaches 3'-10" into the garage roof, so ITS two southernmost trusses are drift trusses too.
+  S-001 prints the number; `preferences.toml [structural] roof_beam_snow_psf` is where it lives.
+- **One open engineering question** is real and is on that page, not hidden: the
   concealed-fastener wall panel's withdrawal allowable over 24" open girts, which no
-  manufacturer publishes (`notes/board_batten_girt_span.md`), and the breezeway piers'
-  axial demand, which has no modelled plan area to shoelace
-  (`notes/breezeway_piers.md` §3 bounds it and says why that is not a doubt about the
-  section).
+  manufacturer publishes (`notes/board_batten_girt_span.md`). **The old second one is
+  closed** — the breezeway piers had no modelled plan area to shoelace, and
+  `engineering/pier_basis.py::_roof_fields` now gives a roof-on-beams one. Their successors
+  publish a real axial ratio against a real tributary (`notes/north_entry_piers.md` §6).
 
 ## The loop: edit → build → check → *look* → fix
 ```
