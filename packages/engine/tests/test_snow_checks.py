@@ -197,7 +197,10 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     # authority beside its verdict — still UNKNOWN, still blocking, but with an id a
     # professional seal can cover.
     assert all(f.authority is Authority.ENGINEERED for f in findings)
-    assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE"}
+    # RF-BW-CANOPY joined them on 2026-09-10 — a second trussed roof, and so a second item
+    # that resolves no rafters at all rather than the wrong table row for the ones it has.
+    assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE",
+                                                      "rafter/RF-BW-CANOPY"}
     # The roof names its series ("11.875 TJI 230") so the price row and the PE scope both
     # key off something orderable. Either spelling is an engineered profile the sawn table
     # does not publish, which is the point being asserted.
@@ -205,8 +208,10 @@ def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -
     # The trussed garage roof is the case the two-gate split exists for: this engine will
     # never compute it, so the item can never reach draft and correctly blocks a *sealed*
     # submittal without pretending anything was computed.
-    garage = next(f for f in findings if f.engineering_item == "rafter/RF-GARAGE")
-    assert "this engine computes none" in garage.message
+    for tag in ("RF-GARAGE", "RF-BW-CANOPY"):
+        trussed = next(f for f in findings if f.engineering_item == f"rafter/{tag}")
+        assert "resolves no rafters" in trussed.message, tag
+        assert "this engine computes none" in trussed.message, tag
 
 
 def test_catlin_sliding_snow_has_no_pair_left_to_screen(catlin_model) -> None:

@@ -69,18 +69,28 @@ def test_each_post_is_graded_by_what_it_actually_bears_on(post, findings) -> Non
     assert "does not bear on a resolvable Pad" not in finding.message
 
 
-def test_only_the_two_belled_piers_remain_engineered(findings) -> None:
-    """The whole point of the change: eight handoffs become two.
+def test_only_the_belled_piers_remain_engineered(findings) -> None:
+    """The whole point of the change: eight handoffs become the piers that really are one.
 
-    An ENGINEERED finding names an item a professional seal has to cover. Six of the eight
-    named items nobody could ever design, because the footing they named does not exist.
+    An ENGINEERED finding names an item a professional seal has to cover. Six of the original
+    eight named items nobody could ever design, because the footing they named does not exist.
+
+    **Seven since 2026-09-10**, and the five new ones are the same condition, not a
+    regression: the north entry piers each bear on their own ``Footing`` with an authored
+    ``bottom_elevation``, which is a belled pier, and IRC Table R507.3.1 publishes flat-pad
+    rows only. Their bearing is a design against the site's own allowable pressure — graded
+    by ``engineering/spread_footing.py`` and oracled by ``notes/north_entry_piers.md`` §6.
     """
     engineered = {f.element_tags[1] for f in findings
                   if f.authority is Authority.ENGINEERED and len(f.element_tags) > 1
                   and f.element_tags[1].startswith("PT-")}
-    assert engineered == {"PT-SG-COL", "PT-SG-FCOL"}
+    # PT-BW-RE is deliberately absent: it carries the east roof column and NO deck, so this
+    # rule -- which walks a deck's own posts -- never reaches it. Its footing is graded by
+    # engineering/spread_footing.py all the same.
+    assert engineered == {"PT-SG-COL", "PT-SG-FCOL",
+                          "PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
     items = {f.engineering_item for f in findings if f.engineering_item}
-    assert items == {"spread_footing/PT-SG-COL", "spread_footing/PT-SG-FCOL"}
+    assert items == {f"spread_footing/{tag}" for tag in engineered}
 
 
 def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findings) -> None:

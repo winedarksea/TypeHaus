@@ -144,6 +144,13 @@ _ORACLE = {
 # W-SG-W1/E1 rather than on their own belled piers, and what governs them is BENDING at a
 # fixed base, not bearing. §4 and §5 of that note.
 _CORNER_PIERS = ("PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
+# The north entry's 12" cast piers, all thirteen of them, in scope since 2026-09-10. Five
+# carry the landing seats and the canopy's roof columns; eight are the box-tier footings
+# under ST-BW-ENTRY at the Zone II 42" (AN-BW-TIERS). Every one is a `PIER_CONCRETE_12` on
+# its own `Footing`, which is precisely this module's gate — the retired sonotubes they
+# replaced were `Pier` elements standing under WOOD posts and were never in it.
+_ENTRY_PIERS = ("PT-BW-W", "PT-BW-E", "PT-BW-RE", "PT-BW-GW", "PT-BW-GE")
+_TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E"))
 # The wind rows rose 0.5% on 2026-09-03 and no member moved. `balcony_wind.ground_below_ft`
 # takes the LOWEST site spot elevation as the ground under this deck, and the two over the
 # sunken garden fell 4 11/16" (the court's flood step, plus 1 7/16" of stale annotation).
@@ -209,7 +216,8 @@ def piers(catlin_plan):
 
 
 def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
-    """Two belled piers, four pad-borne ones, and four standing on a concrete wall top.
+    """Two belled piers, four standing on a concrete wall top, and thirteen at the north
+    entry.
 
     A post on a FLOOR or on a WOOD post is somebody else's rule, and so is a wood post on
     anything. The wall case joined this module on 2026-09-03: the four balcony corner
@@ -217,9 +225,17 @@ def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
     fell out of the enumeration entirely and the check that named them reported "an
     engineer's design governs, and this engine computes none" about a column the engine
     could compute perfectly well.
+
+    The north entry joined it on 2026-09-10 for the same reason from the other direction:
+    the passage's four wood-post-on-sonotube stacks became thirteen cast piers, each on its
+    own ``Footing``, and the pier is now the member rather than the thing a member stands
+    on. ``PT-BW-CW`` / ``PT-BW-CE`` — the 6x6 KDAT roof columns on top of two of them —
+    stay out, because a wood post on anything is somebody else's rule.
     """
-    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_CORNER_PIERS}
+    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL",
+                          *_CORNER_PIERS, *_ENTRY_PIERS, *_TIER_PIERS}
     assert not set(_BREEZEWAY_PIERS) & set(piers)
+    assert not {"PT-BW-CW", "PT-BW-CE", "PT-BW-IC", "PT-BW-IE"} & set(piers)
 
 
 def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:

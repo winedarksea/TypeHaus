@@ -44,8 +44,13 @@ AUTHORED_POST_BASES = set()  # passage posts retired; foundation seats replace t
 #: derive two phantom ABU66.
 AUTHORED_TENSION_TIES = {"PT-SG-BR2", "PT-SG-BF2"}
 
-#: The four breezeway roof-beam-to-post joints already strapped with a KBS1Z by hand.
-AUTHORED_POST_BEAM_STRAPS = {"BM-BW-RW", "BM-BW-RE"}
+#: The north entry's two canopy-header-to-column joints, authored as CCQ46SDS2.5 column caps
+#: (``CN-BW-CAP-W`` / ``CN-BW-CAP-E``) with RF-BW-CANOPY on 2026-09-10. The tags are the ones
+#: the retired breezeway roof beams used to carry; they name real members again, and the
+#: guard is the same one it always was — a joint an authored connector already makes must not
+#: be derived a strap on top.
+AUTHORED_POST_BEAM_JOINTS = {frozenset({"BM-BW-RW", "PT-BW-CW"}),
+                             frozenset({"BM-BW-RE", "PT-BW-CE"})}
 
 
 @pytest.fixture(scope="module")
@@ -101,15 +106,28 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
     rather than working around it: the member's own ends ARE its bearings, at the plate top.
     It also picks up the two GABLE-END trusses, which carried no heel block and so went
     untied — 26 ties over 13 trusses where there were 22 over 11.
+
+    Scoped per roof since 2026-09-10, when RF-BW-CANOPY became catlin's second trussed roof:
+    a house-wide count would read 34 against RF-GARAGE's 13 and say nothing about either.
+    The canopy's 4 trusses bear on BEAMS rather than a wall plate — the rule does not care
+    which, and this is the case that says so.
     """
     roof = next(roof for roof in catlin_model_ro.roofs if roof.tag == "RF-GARAGE")
     trusses = [m for m in roof.members if m.category == "roof_truss"]
-    tied = [c for c in connections if c.member_category == "roof_truss"]
-    assert len(tied) == 2 * len(trusses) > 0
+    tied = [c for c in connections
+            if c.member_category == "roof_truss" and c.assembly_tag == "RF-GARAGE"]
+    assert len(tied) == 2 * len(trusses) == 26
     # W-G-E / W-G-W since 2026-09-07: the overhead door turned north and RF-GARAGE's ridge
     # turned with it, so the trusses span east-west and bear on the other pair. The count is
     # untouched — a square garage under a rotated gable frames the same number of trusses.
     assert {c.support_tag for c in tied} == {"W-G-E", "W-G-W"}
+
+    canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
+    canopy_trusses = [m for m in canopy.members if m.category == "roof_truss"]
+    canopy_tied = [c for c in connections
+                   if c.member_category == "roof_truss" and c.assembly_tag == "RF-BW-CANOPY"]
+    assert len(canopy_tied) == 2 * len(canopy_trusses) == 8
+    assert {c.support_tag for c in canopy_tied} == {"BM-BW-RW", "BM-BW-RE"}
     assert not [c for c in connections
                 if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]
 
@@ -208,22 +226,30 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     tied = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.TENSION_TIE}))
     assert tied >= AUTHORED_TENSION_TIES, "the fixture's authored tension ties moved"
     rows = post_base_rows(catlin_model_ro, RULES)
-    assert [row["part_number"] for row in rows] == ["ABU44"], (
-        "an ABU66SS row means either the Connector.connects guard stopped matching, or "
-        "TENSION_TIE fell out of the covered set and the two centre pillars are being "
-        "bought a base they do not take")
-    assert rows[0]["count"] == 2
-    for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
-        assert tag not in rows[0]["basis"]
-    # And the nine really are all of them, so what is NOT in the row above is coverage
-    # rather than silence: four authored bases, two authored ties, two derived, one squash
-    # block. The four balcony corner columns are absent because they are no longer WOOD —
-    # the filter below is on section, and a "12 round" is not a 6x6.
+    # ABU66 joined the order on 2026-09-10 with PT-BW-CW / PT-BW-CE, the canopy's two 6x6
+    # KDAT roof columns: each stands on a 12" cast pier, declares it, and carries no authored
+    # base of its own, so this is the rule doing exactly the job it exists for. An ABU66SS
+    # row would still be the failure — that is the balcony centre pillars' part, and its
+    # appearance means either the Connector.connects guard stopped matching or TENSION_TIE
+    # fell out of the covered set and those two are being bought a base they do not take.
+    assert [row["part_number"] for row in rows] == ["ABU44", "ABU66"]
+    counts = {row["part_number"]: row["count"] for row in rows}
+    assert counts == {"ABU44": 2, "ABU66": 2}
+    for row in rows:
+        for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
+            assert tag not in row["basis"]
+    # And the nine really are all of them, so what is NOT in the rows above is coverage
+    # rather than silence: four authored bases, two authored ties, four derived, three squash
+    # blocks. The four balcony corner columns are absent because they are no longer WOOD —
+    # the filter below is on section, and a "12 round" is not a 6x6. PT-BW-IC / PT-BW-IE
+    # joined the squash-block side on 2026-09-10: 1'-6 1/2" of 6x6 under the interior
+    # cantilever's end, below blocking_max_height_ft, so they bear and do nothing else.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by and not e.within_wall
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
-        "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE"}
+        "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE",
+        "PT-BW-CW", "PT-BW-CE", "PT-BW-IC", "PT-BW-IE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
@@ -260,7 +286,11 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    assert row["count"] == 2
+    # 2 -> 4 on 2026-09-10. Every derived base is on concrete again: the two stairwell 4x4s
+    # on the basement slab, plus PT-BW-CW / PT-BW-CE on their 12" cast piers. One bolt per
+    # base and no more — a fifth would mean a base got counted twice upstream.
+    assert row["count"] == 4
+    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
@@ -288,8 +318,26 @@ def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
 
 
-def test_retired_post_beam_straps_are_not_billed(catlin_model_ro):
-    assert post_beam_strap_rows(catlin_model_ro, RULES) == []
+def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):
+    """The canopy's two header-on-column joints are made by hand; only the bare ones derive.
+
+    Catlin billed no strap at all between the breezeway's retirement and 2026-09-10. The
+    north entry brought the rule back to life with four beam-on-wood-post joints, and they
+    split two and two, which is what makes the guard readable: BM-BW-RW/RE land on the roof
+    columns under an authored CCQ46SDS2.5 cap and must NOT be strapped again, while
+    BM-BW-FC/FE land on PT-BW-IC/IE — the posts that ended the interior cantilever, with
+    nothing authored at their tops — and must be.
+    """
+    rows = post_beam_strap_rows(catlin_model_ro, RULES)
+    assert len(rows) == 1
+    assert rows[0]["part_number"] == "KBS1Z"
+    assert rows[0]["count"] == 2
+    assert "BM-BW-FC->PT-BW-IC" in rows[0]["basis"]
+    assert "BM-BW-FE->PT-BW-IE" in rows[0]["basis"]
+    for joint in AUTHORED_POST_BEAM_JOINTS:
+        beam, post = sorted(joint)
+        assert f"{beam}->{post}" not in rows[0]["basis"], joint
+        assert f"{post}->{beam}" not in rows[0]["basis"], joint
 
 
 def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(

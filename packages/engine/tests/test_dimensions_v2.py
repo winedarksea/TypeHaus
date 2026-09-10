@@ -217,15 +217,21 @@ def test_roof_plan_has_downslope_arrows_with_pitch_notes(catlin_model, roof_scen
         expected = 90.0 if roof.ridge_direction == "x" else 0.0
         rotations = {a.rotation for a in arrows if a.uid == roof.uid}
         assert rotations == {expected, (expected + 180.0) % 360.0}
-    # The two roofs differ in pitch (RF-HOUSE 6:12, RF-GARAGE 4:12), so the note is
-    # per-plane and per-roof, not one string for the house.
+    # The roofs differ in pitch (RF-HOUSE 6:12, RF-GARAGE and — since 2026-09-10 —
+    # RF-BW-CANOPY both 4:12), so the note is per-plane and per-roof, not one string for the
+    # house. Counted per PITCH now that two roofs share one: a bare "4:12" cannot say which
+    # roof drew it, so the plain notes are two per gable and the labelled note, which does
+    # name its roof, is exactly one apiece. Asserting only the plain count would pass on a
+    # canopy that drew RF-GARAGE's note twice and none of its own.
+    texts = [n.content for n in roof_scene.nodes if isinstance(n, Text)]
     for roof in gables:
         pitch = catlin_model.plan.by_tag(roof.tag).pitch
         note = f"{pitch.rise:g}:{pitch.run:g}"
-        notes = [n for n in roof_scene.nodes if isinstance(n, Text) and n.content == note]
-        assert len(notes) == 2, (roof.tag, note, [n.content for n in roof_scene.nodes
-                                                 if isinstance(n, Text)])
-    assert {"4:12", "6:12"} <= {n.content for n in roof_scene.nodes if isinstance(n, Text)}
+        sharing = [r for r in gables
+                   if catlin_model.plan.by_tag(r.tag).pitch == pitch]
+        assert texts.count(note) == 2 * len(sharing), (roof.tag, note, texts)
+        assert texts.count(f"{roof.tag}  {note}") == 1, (roof.tag, texts)
+    assert {"4:12", "6:12"} <= set(texts)
 
 
 def test_roof_plan_ridge_is_dashed(catlin_model, roof_scene):

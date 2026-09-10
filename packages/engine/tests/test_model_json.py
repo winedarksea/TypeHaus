@@ -297,7 +297,11 @@ def test_model_json_serializes_finished_height_above_average_grade(catlin_payloa
     # -2'-10": grade sits that far below the main floor, and the zoning height every roof
     # is measured for grew by exactly that much with it.
     assert summary["average_ground_grade_m"] == pytest.approx(-0.8636)
-    assert {row["roof_tag"] for row in summary["roofs"]} == {"RF-HOUSE", "RF-GARAGE"}
+    # RF-BW-CANOPY joined the summary on 2026-09-10. Every roof is measured, including one
+    # on the garage storey — a low canopy cannot be left out of a zoning height just because
+    # it is obviously not the tallest thing on the site.
+    assert {row["roof_tag"] for row in summary["roofs"]} == {"RF-HOUSE", "RF-GARAGE",
+                                                            "RF-BW-CANOPY"}
     assert all(row["peak_above_grade_m"] > row["midpoint_above_grade_m"] > 0
                for row in summary["roofs"])
 
@@ -394,8 +398,12 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
     assert stairs["ST-S2A"]["landing_depth_m"] is None
     for tag, stair in stairs.items():
         if tag == "ST-BW-ENTRY":
-            assert stair["tread_depth_m"] == pytest.approx(inch(24).meters)
+            # 24" -> 18" on 2026-09-10, when the flight became four composite BOX tiers on
+            # 42" footings instead of a cut-stringer run (AN-BW-TIERS). The tread is the
+            # tier's full depth and there is no nose, so tread and going are the same 18".
+            assert stair["tread_depth_m"] == pytest.approx(inch(18).meters)
             assert stair["nosing_depth_m"] == 0
+            assert stair["going_depth_m"] == pytest.approx(inch(18).meters)
             continue
         assert stair["tread_depth_m"] == pytest.approx(inch(11).meters)
     # The two EXTERIOR flights are the exception and each states why in its own source: 11"

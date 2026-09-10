@@ -80,17 +80,21 @@ def test_the_capacity_question_is_a_named_item_not_a_retired_one(ctx) -> None:
     from typehaus.findings import Authority
 
     items = uplift_capacity_items(ctx)
+    # RF-BW-CANOPY joined them on 2026-09-10. One item per ROOF, so the north entry's truss
+    # canopy raises its own capacity question rather than being folded into the garage's —
+    # it is a different span on different bearings under a different drift case.
     assert {f.engineering_item for f in items} == {"lateral_uplift/RF-HOUSE",
-                                                   "lateral_uplift/RF-GARAGE"}
+                                                   "lateral_uplift/RF-GARAGE",
+                                                   "lateral_uplift/RF-BW-CANOPY"}
     assert all(f.authority is Authority.ENGINEERED for f in items)
     # Still blocking, exactly as the UNKNOWNs it replaced were. Adopting the register moved
     # no gate; it only gave the outstanding work a name.
     assert all(f.result is Result.UNKNOWN for f in items)
 
 
-def test_both_roofs_are_covered_at_their_bearings(findings) -> None:
+def test_every_roof_is_covered_at_its_bearings(findings) -> None:
     covered = {f.element_tags[0]: f for f in findings if f.result is Result.PASS}
-    for roof in ("RF-HOUSE", "RF-GARAGE"):
+    for roof in ("RF-HOUSE", "RF-GARAGE", "RF-BW-CANOPY"):
         assert "derived uplift ties" in covered[roof].message, roof
 
 
@@ -203,8 +207,24 @@ def test_an_authored_hurricane_tie_connects_a_beam_to_its_column(findings) -> No
         assert "an authored strap or cap" in finding.message
 
 
-def test_retired_roof_straps_do_not_appear_in_the_load_path(findings):
-    assert not [f for f in findings if set(f.element_tags) & {"BM-BW-RW", "BM-BW-RE"}]
+def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
+    """``BM-BW-RW`` / ``BM-BW-RE`` name real members again as of 2026-09-10.
+
+    They were the retired breezeway roof beams, and this test used to assert that nothing in
+    the load path still mentioned them — a dead tag haunting a report is the failure it was
+    written for. RF-BW-CANOPY reuses the two tags for its 3-2x12 KDAT headers, so the
+    assertion inverts rather than disappearing: each header is a link in the path twice over
+    — the trusses landing on it above, and the column it lands on below — and both must be
+    covered, or the canopy is a roof the check has nothing to say about.
+    """
+    for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RE", "PT-BW-CE")):
+        below = next(f for f in findings if f.element_tags == (header, column))
+        assert below.result is Result.PASS
+        assert "an authored strap or cap" in below.message  # CN-BW-CAP-W / -E
+    above = next(f for f in findings if f.element_tags[0] == "RF-BW-CANOPY")
+    assert above.result is Result.PASS
+    assert set(above.element_tags[1:]) == {"BM-BW-RW", "BM-BW-RE"}
+    assert "8 derived uplift ties" in above.message  # 4 trusses, both ends of each
 
 
 def test_the_sill_and_the_stacked_walls_are_both_reported(findings) -> None:

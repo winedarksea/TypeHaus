@@ -74,8 +74,14 @@ def test_default_treads_are_eleven_inches_with_a_one_inch_nose(catlin_model):
     # that ices.
     for stair in catlin_model.stairs:
         if stair.tag == "ST-BW-ENTRY":
-            assert stair.tread_depth_m == pytest.approx(inch(24).meters)
+            # The third exception, and it is not a board at all: 18" (was 24") since
+            # 2026-09-10, when the flight became four composite BOX tiers on 42" footings
+            # rather than a cut-stringer run. The "tread" is the tier's whole walking
+            # surface — face-fastened square-edge deck boards on supports at 9" o.c. — so
+            # there is nothing for a nose to overhang and the going is the full 18".
+            assert stair.tread_depth_m == pytest.approx(inch(18).meters)
             assert stair.nosing_depth_m == 0
+            assert stair.going_depth_m == pytest.approx(inch(18).meters)
             continue
         assert stair.tread_depth_m == pytest.approx(inch(11).meters)
         if stair.tag in ("ST-G-SERVICE", "ST-SG-PORCH"):

@@ -470,13 +470,46 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _delivered_to_posts(ctx: CheckContext, supports: tuple[str, ...],
+                        depth: int = 0) -> dict[str, float]:
+    """``post tag -> fraction of one beam's load`` that actually reaches a Post.
+
+    ** A LOAD PATH CAN BE MORE THAN ONE BEAM DEEP. ** The north entry landing's joists bear
+    on three floor beams, those bear on two SEAT beams, and only the seats bear on piers.
+    Stopping one level down and keeping whatever happened to be a Post handed the whole
+    landing to the two posts under the interior cantilever and gave the four piers carrying
+    it nothing. A support that is itself a Beam passes its share on to ITS supports.
+
+    A support that is neither (a bearing wall, a pier direct) keeps its share and falls out
+    here, so the fractions deliberately need not sum to 1.
+
+    **The twin of ``engineering/pier_basis.py::_delivered_to_posts``**, and deliberately a
+    restatement rather than an import: ``engineering`` may not import ``checks``. If one
+    moves, MOVE THE OTHER — ``test_pier_calcs.py::test_the_two_tributary_rules_agree`` is
+    what notices when they drift, and it has.
+    """
+    out: dict[str, float] = {}
+    if not supports or depth > 4:
+        return out
+    each = 1.0 / len(supports)
+    for tag in supports:
+        element = ctx.plan.by_tag(tag)
+        if isinstance(element, Post):
+            out[tag] = out.get(tag, 0.0) + each
+        elif isinstance(element, Beam):
+            for post, fraction in _delivered_to_posts(
+                    ctx, tuple(element.bearing_refs or ()), depth + 1).items():
+                out[post] = out.get(post, 0.0) + each * fraction
+    return out
+
+
 def _deck_posts(ctx: CheckContext, deck: _Deck) -> list[Post]:
-    """Posts under a deck: whatever its beams name as bearing. De-duplicated by tag, since
-    two beams may land on the same post."""
+    """Posts under a deck: whatever its beams deliver to, down the whole beam chain.
+    De-duplicated by tag, since two beams may land on the same post."""
     seen: dict[str, Post] = {}
     for beam in _deck_beams(ctx, deck):
-        for ref in beam.bearing_refs:
-            element = ctx.plan.by_tag(ref)
+        for tag in _delivered_to_posts(ctx, tuple(beam.bearing_refs or ())):
+            element = ctx.plan.by_tag(tag)
             if isinstance(element, Post) and element.tag not in seen:
                 seen[element.tag] = element
     return list(seen.values())
@@ -536,13 +569,12 @@ def _tributaries_ft2(ctx: CheckContext, deck: _Deck) -> dict[str, float] | None:
         # POST. A porch beam that runs from a column to a bearing WALL delivers half its
         # load to each, and a split that counted only the posts would hand the column the
         # wall's half as well.
-        supports = beam.bearing_refs or ()
+        supports = tuple(beam.bearing_refs or ())
         if not supports:
             return fallback
-        share = strip_ft * length_ft / len(supports)
-        for tag in supports:
-            if isinstance(ctx.plan.by_tag(tag), Post):
-                out[tag] = out.get(tag, 0.0) + share
+        share = strip_ft * length_ft
+        for tag, fraction in _delivered_to_posts(ctx, supports).items():
+            out[tag] = out.get(tag, 0.0) + share * fraction
     return out
 
 

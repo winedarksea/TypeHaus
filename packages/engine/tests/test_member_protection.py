@@ -26,8 +26,11 @@ PLY_BEAMS = {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"}
 #: because the common "double joist" roll is 3 1/8" and would leave a 3 1/2" top uncovered
 #: at both arrises. Same SKU, different width, and the BOM's width column is what says so.
 GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
+#: The north entry canopy's two headers, added with RF-BW-CANOPY on 2026-09-10: 3-ply 2x12
+#: KDAT, so 4 1/2" across and two open ply seams each, exactly the PLY_BEAMS case outdoors.
+CANOPY_HEADERS = {"BM-BW-RW", "BM-BW-RE"}
 #: Every beam on the wide roll, whatever its width.
-BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS
+BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS | CANOPY_HEADERS
 
 
 @pytest.fixture(scope="module")
@@ -51,7 +54,7 @@ def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):
     one roll width for both and leave whichever is wider under-covered.
     """
     by_tag = {tag: row for row in rows for tag in row["tags"]}
-    for tag in PLY_BEAMS:
+    for tag in PLY_BEAMS | CANOPY_HEADERS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(4.5), tag
     for tag in GLULAM_BEAMS:
@@ -66,9 +69,11 @@ def test_beam_length_is_the_axis_length(rows):
     """
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
-    # 2 back beams at 10' + 2 front beams at 10' = 40.0'
-    assert wide[0]["length_ft"] == pytest.approx(40.0, abs=0.1)
-    assert wide[0]["count"] == 4
+    # 2 back beams at 10' + 2 front beams at 10' = 40.0', plus (2026-09-10) the canopy's two
+    # 3-2x12 headers at 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to GARAGE_Y_SOUTH 43'-2 5/8" —
+    # for 11.4' more. Same 4 1/2" width, same roll, one row: 51.4' over 6 members.
+    assert wide[0]["length_ft"] == pytest.approx(51.4, abs=0.1)
+    assert wide[0]["count"] == 6
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]
     assert len(glulam) == 1

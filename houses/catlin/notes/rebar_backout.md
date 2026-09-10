@@ -1,7 +1,20 @@
-> North-entry update 2026-09-10: retiring PR-BW-1..4 removes 18.0 lb of #3 ties and
-> 78.9 lb of #5 vertical steel with their concrete. Current column rows are 52.5/225.8 lb;
-> total authored steel is 3,899.9 lb. The backout gate remains closed; historic tables below
-> describe the former pier scheme.
+> **North-entry update 2026-09-10, second pass.** The engineered north entry adds THIRTEEN
+> 12" cast piers -- five at the canopy and landing, eight under the rebuilt tiers -- each
+> `(4) #5 vertical with #3 ties @ 10" o.c.`, galvanized. Column rows go to **118.6 lb #3 and
+> 504.5 lb #5**, total authored steel to **4,244.7 lb**, and the ratio in §3 to **28.0 lb/cy**
+> against the 26.8 recorded below.
+>
+> ⚠ **The first pass of that change billed the concrete and none of the steel**, because the
+> cages were authored only as free-text `vertical_reinforcement`. `reinforcement_takeoff`
+> reads the structured `ReinforcementSpec` and nothing else, so 3.18 cy went in with zero
+> pounds against it and the ratio SAGGED to 25.74. `test_rebar_backout.py` is what noticed.
+> **Author both spellings on every new cast column**: a drawing string nobody bills and a
+> takeoff row nobody draws are the two halves of the same mistake.
+>
+> **The gate below stays closed regardless.** 4,244.7 lb at $1.05-1.35/lb is $4,457-5,730
+> against a $10,000-18,000 register -- still well under half, so the rate cut is still not
+> authorised and §3's conclusion is unchanged. Historic tables below describe the former
+> pier scheme.
 
 # Rebar back-out — the reconciliation, and why the rate cut is NOT taken yet
 

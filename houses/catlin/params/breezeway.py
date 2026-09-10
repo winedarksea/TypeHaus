@@ -23,8 +23,9 @@ penetrating oil finish applied on installation. AN-BW-KDAT carries it onto the d
 """
 
 from typehaus import (
-    Annotation, Beam, Connector, ConnectorKind, DeckLayer, Footing, FloorSystem, JoistSpec,
-    Node, Post, Railing, RailingKind, SlatScreen, Stair, ft, inch, pt,
+    Annotation, BarSpec, Beam, Connector, ConnectorKind, DeckLayer, Footing, FloorSystem,
+    JoistSpec, Node, Post, Railing, RailingKind, ReinforcementSpec, SlatScreen, Stair,
+    ft, inch, pt,
 )
 
 from params.foundations import SITE_GRADE
@@ -205,6 +206,25 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
 #
 # `bottom_elevation` is what makes these bear at depth rather than pin to the storey datum
 # (-> Footing.bottom_elevation), and the shaft above each grows to suit.
+# ** THE CAGE MUST BE STRUCTURED, NOT ONLY PROSE, OR ITS STEEL BILLS ZERO. **
+# `vertical_reinforcement` is a free-text string for the drawings; `reinforcement_takeoff`
+# reads `reinforcement` and nothing else. Authoring only the string added 3.18 cy of concrete
+# to this house and exactly no pounds of steel, which `notes/rebar_backout.md`'s lb/cy ratio
+# is what noticed. Both spellings, always, and keep them saying the same thing.
+#
+# Galvanized, house-wide (ASTM A767 cl. 1): these piers stand up to 18 1/2" out of the ground
+# at a salted entry on an EXPOSED_MIX (ACI 318-19 class F3 + C2). Stainless was considered for
+# this house and rejected; do not substitute epoxy.
+_ENTRY_PIER_CAGE = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0), coating="hdg-a767"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)",
+)
+
 PIERS = []
 FOOTINGS = []
 for _uid, _tag, _x, _height, _top in (
@@ -227,6 +247,7 @@ for _uid, _tag, _x, _height, _top in (
         # that is why these bars are here -- the 1% floor is a creep/shrinkage/accidental-
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+        reinforcement=_ENTRY_PIER_CAGE,
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Footing(
         uid=f"BWF{_uid[4:8]}AA", tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
@@ -259,6 +280,7 @@ for _uid, _tag, _x in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT),
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
         height=ft(BEARING_TOP_FT - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+        reinforcement=_ENTRY_PIER_CAGE,
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Footing(
         uid=f"BWFG{_tag[-2:]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
@@ -420,7 +442,12 @@ for _i in range(TREAD_COUNT):
         TIER_PIERS.append(Post(
             uid=f"BWTP{_i}{_j}AAAA", tag=_t, position=pt(ft(_x), ft(_y)),
             size="12 round", height=ft(_top - _TIER_FOOTING_TOP_FT),
-            assembly="PIER_CONCRETE_12", supported_by=f"FT-BW-T{_i + 1}{'WE'[_j]}"))
+            assembly="PIER_CONCRETE_12",
+            # The top tier's shaft is h/d 4.4, past the 3 where a PLAIN cast column stops
+            # being gradeable, so all eight carry the cage rather than four of them.
+            vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+            reinforcement=_ENTRY_PIER_CAGE,
+            supported_by=f"FT-BW-T{_i + 1}{'WE'[_j]}"))
         TIER_FOOTINGS.append(Footing(
             uid=f"BWTF{_i}{_j}AAAA", tag=f"FT-BW-T{_i + 1}{'WE'[_j]}", under=_t,
             width=inch(24), depth=inch(TIER_FOOTING_THICKNESS_IN),

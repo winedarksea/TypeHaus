@@ -134,9 +134,25 @@ def test_u_stair_landings_split_one_riser_apart_inside_the_landing_zone(
 
 # ---------------------------------------------------------------- 3. raked stringers
 def test_stringers_are_raked_and_never_drop_below_the_subfloor(catlin_model):
+    """Every CUT-STRINGER flight. A box carriage is a different member and a different rule.
+
+    ``ST-BW-ENTRY`` became ``carriage="box"`` on 2026-09-10 — four composite box tiers on
+    42" footings, and AN-BW-TIERS says "NO cut stringers" in as many words: DCA 6 forbids a
+    stringer bearing on a pad not founded below frost, and the tiers are how the north entry
+    avoids one. It therefore resolves no stringer at all, which is why it is excluded here
+    rather than exempted from the assertions below. The exclusion is EARNED, not assumed —
+    a box stair that quietly started resolving stringers, or a cut-stringer flight that
+    quietly stopped, would fail on the two assertions in the branch.
+    """
     for stair in catlin_model.stairs:
         subfloor = _subfloor(catlin_model, stair)
         stringers = [m for m in stair.members if m.category == "stringer"]
+        if catlin_model.plan.by_tag(stair.tag).carriage == "box":
+            assert not stringers, stair.tag
+            # A box tier carries its treads on rims and joists instead; a flight with
+            # neither carriage is a flight held up by nothing.
+            assert [m for m in stair.members if m.category == "landing_framing"], stair.tag
+            continue
         assert stringers, stair.tag
         for stringer in stringers:
             assert stringer.z0_end_m is not None and stringer.z1_end_m is not None, (
