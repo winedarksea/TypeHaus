@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "typehaus"
-version = "0.1.0"
+version = "0.1.1"
 description = "Type:Haus — infrastructure-as-code for residential houses."
 readme = "README.md"
 license = "MIT"
