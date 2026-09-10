@@ -97,7 +97,7 @@ def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findin
     # The untouched branch still runs: every breezeway pad is still graded on its area.
     pads = {f.element_tags[1] for f in findings
             if len(f.element_tags) > 1 and f.element_tags[1].startswith("PD-BW-")}
-    assert pads == {"PD-BW-1", "PD-BW-2", "PD-BW-3", "PD-BW-4"}
+    assert not pads  # foundation bridge retires every passage pad
 
 
 def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:

@@ -152,7 +152,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
 
     spacing = (spec.spacing.meters if spec.spacing is not None else _DEFAULT_SPACING_M)
     depth = _member_depth_m(spec.member)
-    z1 = storey.elevation.meters
+    z1 = (system.top_elevation.meters if system.top_elevation is not None
+          else storey.elevation.meters)
     z0 = z1 - depth
 
     cant_m = spec.cantilever.meters if spec.cantilever else 0.0

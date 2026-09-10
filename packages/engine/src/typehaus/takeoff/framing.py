@@ -194,6 +194,9 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ``model.all_members()`` is the complete resolved member set (walls, floors, roofs,
     stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
+    from typehaus.takeoff.stairs import separate_stair_wear_members
+
+    wear_members = {(m.parent_uid, m.child_key) for m in separate_stair_wear_members(model)}
     cuts: dict[tuple[str, str, str], list[float]] = defaultdict(list)
     # Continuous support is a property of the member; ordering is a property of the group. A
     # group orders as spliceable only when EVERY member in it is — one member that spans,
@@ -201,6 +204,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # bought in pieces it cannot be built from.
     splice: dict[tuple[str, str, str], bool] = {}
     for member in model.all_members():
+        if (member.parent_uid, member.child_key) in wear_members:
+            continue  # separately specified wear boards bill by area in sheet_goods
         if rip_stock(member.profile, member.material) is not None:
             # A plywood rip is ordered by the SHEET (``takeoff/sheet_rips``) and bills in
             # ``sheet_goods``. Leaving it here as well would order the same wood twice, once
@@ -353,7 +358,13 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     Every row is explicitly tied to its material and thickness; this makes a 4x8-sheet
     estimate auditable instead of silently grouping unlike panel products.
     """
+    from typehaus.takeoff.stairs import separate_stair_wear_members
+
     areas: dict[tuple[str, str, float], float] = defaultdict(float)
+    for member in separate_stair_wear_members(model):
+        section = cross_section(member.profile)
+        areas[("stair wear surface", member.material, section.depth_m)] += (
+            member.length_m * section.width_m)
     openings_by_wall: dict[str, float] = defaultdict(float)
     for opening in model.openings:
         openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m

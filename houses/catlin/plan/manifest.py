@@ -2,13 +2,10 @@
 
 Structures (all in the shared project-north frame, house sheathing SW corner at 0,0):
 - House: 36'x36' at sheathing; basement / main / second / attic storeys.
-- Garage: freestanding 24'x24' ICF stem + 2x6 walls, 4' north of the house
-  (its own ``garage`` storey at the stem top elevation).
-- Sunken garden / porch / balcony: one freestanding arched concrete structure,
-  5" south of the house (params/sunken_garden.py).
-- Breezeway: enclosed 4'x8' polycarbonate shelter on freestanding 6x6 posts, spanning
-  the 4'-0 1/8" gap between the house entry and the garage service door
-  (params/breezeway.py — deck, posts, beams, rafters, glazing).
+- Garage: 24'x24' frost-depth ICF, shifted 30in north; full-width 6ft south gable extrusion.
+- Sunken garden / porch / balcony: freestanding arched concrete structure south of house.
+- North entry: shared composite bridge landing and interior garage continuation, broad
+  east tiers and an on-edge wood screen; roof structure is an explicit off-model package.
 
 This file is NOT ``# haus: editable``: it is the plain-Python assembler. The engine
 reads ``format_version``/``requires_engine`` via the dialect path (AST, no import).

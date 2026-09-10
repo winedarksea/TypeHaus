@@ -330,11 +330,11 @@ SITE = Site(
         # walk: even a zero-clearance cabinet puts the pad's east edge at 14'-4 11/16".
         # The walk loses 7 sf (32 -> 25); the fall it is graded on is in y and unchanged.
         ImperviousSurface(
-            label="front walk",
-            outline=(pt(ft(15, 9), ft(36)), pt(ft(22), ft(36)),
-                     pt(ft(22), ft(40)), pt(ft(15, 9), ft(40))),
-            near_elevation=ft(-2, -11),  # -1" below grade at the foundation
-            far_elevation=ft(-3, -1),    # -3" at the 4' outer edge (4.2% away)
+            label="north entry drained paver landing and east approach",
+            outline=(pt(ft(19, 6), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
+                     pt(ft(30), ft(42, 10.75)), pt(ft(19, 6), ft(42, 10.75))),
+            near_elevation=ft(-2, -10),
+            far_elevation=ft(-3, -0.5),  # 2% eastward; first 36in is the lower landing
             kind="walk",
         ),
         # side patio on the east wall (x=36'), draining east toward the side-yard grade
@@ -421,21 +421,21 @@ SITE = Site(
         # is sited on.
         #
         # Geometry: 12'-0" wide, centred on D-G-OVERHEAD (the door spans x 10'..26' on
-        # W-G-N, so its centreline is x=18'), from the garage face at y=64'-8 5/8" north to
+        # W-G-N, so its centreline is x=18'), from the garage face at y=67'-2 5/8" north to
         # the right-of-way at y=105'. 12' is the ORDINANCE width, not the door width: Ord.
         # 23-43 caps a driveway in the front yard at 12'-0" and the 16' door gets its flare
-        # in the apron, off this rectangle. 484 sf of paving against the 1,000 sf cap
+        # in the apron, off this rectangle. About 454 sf of paving against the 1,000 sf cap
         # (15% of a 16,500 sf lot is 2,475, so 1,000 governs) — under a fifth of it.
         #
         # ** IT IS OUTSIDE code.R401_3_impervious's REACH AND THE ELEVATIONS ARE STILL REAL. **
         # That check measures against the PRIMARY foundation footprint (the house, y<=36')
         # and skips any surface whose nearest vertex is past 10'; this one starts 28'-9"
         # north of the house. The near/far pair below is the drive's own fall to the street,
-        # 10" over 40'-4" (2.07%), starting 1" below the -2'-10" garage threshold so the
+        # 10" over 37'-9 3/8" (2.20%), starting 1" below the -2'-10" garage threshold so the
         # apron sheds away from the slab rather than into it.
         ImperviousSurface(
             label="driveway",
-            outline=(pt(ft(12), ft(64, 8.625)), pt(ft(24), ft(64, 8.625)),
+            outline=(pt(ft(12), ft(67, 2.625)), pt(ft(24), ft(67, 2.625)),
                      pt(ft(24), ft(105)), pt(ft(12), ft(105))),
             near_elevation=ft(-2, -11),
             far_elevation=ft(-3, -9),
@@ -452,8 +452,8 @@ SITE = Site(
         # label="FRONT")) and grade "at the street/north side") — a municipal water main
         # does not run behind the house. Terminates at the hydrant, the first thing it
         # reaches.
-        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(5), ft(72)), pt(ft(5), ft(59, 6))),
-                    entry=pt(ft(5), ft(59, 6)), depth=ft(6)),
+        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(11), ft(72)), pt(ft(11), ft(62))),
+                    entry=pt(ft(11), ft(62)), depth=ft(6)),
         UtilityLine(kind=UtilityKind.POWER, path=(pt(ft(-32), ft(18)), pt(ft(0), ft(18))),
                     entry=pt(ft(0), ft(18)), depth=ft(3)),
     ),

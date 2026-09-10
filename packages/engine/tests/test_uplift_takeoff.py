@@ -36,9 +36,7 @@ RULES = CONFIG.uplift
 #: two CENTRE pillars went from an ABU66SS to an inverted CCQ column cap — an ABU has no published
 #: value bearing on framing, and the R317.1.4 standoff it was cited for governs wood on
 #: CONCRETE. See ``houses/catlin/notes/balcony_moment_columns.md``.
-AUTHORED_POST_BASES = {
-    "PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4",
-}
+AUTHORED_POST_BASES = set()  # passage posts retired; foundation seats replace them
 
 #: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
 #: as ``post_base_rows`` is concerned — a post whose joint is already made must not be bought
@@ -262,7 +260,7 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    assert row["count"] == 6
+    assert row["count"] == 2
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
@@ -290,21 +288,8 @@ def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
 
 
-def test_authored_post_beam_straps_are_not_derived_a_second_time(catlin_model_ro) -> None:
-    row = post_beam_strap_rows(catlin_model_ro, RULES)[0]
-    for beam in AUTHORED_POST_BEAM_STRAPS:
-        assert beam not in row["basis"], f"{beam} is authored a KBS1Z and was derived again"
-    # What is left is the breezeway's two FLOOR beams on four posts (4) — those share their
-    # posts with the strapped roof beams, which is exactly why the guard has to key on the
-    # tag PAIR and not on the post alone.
-    #
-    # The sunken garden contributed six of these (three balcony beams, each landing on two
-    # of the six pillars) until 2026-09-03. All six joints are now AUTHORED: an HGAM10
-    # masonry gusset at each of the four cast-column seats, and a CCQ46SDS2.5 column cap at
-    # each of the two wood centre pillars. The two E-W brace rails that used to add eight
-    # more dropped out on 2026-08-30 and were deleted outright with the braces.
-    assert row["count"] == 4
-    assert row["part_number"] == "KBS1Z"
+def test_retired_post_beam_straps_are_not_billed(catlin_model_ro):
+    assert post_beam_strap_rows(catlin_model_ro, RULES) == []
 
 
 def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(

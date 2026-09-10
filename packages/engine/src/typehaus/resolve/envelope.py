@@ -39,6 +39,9 @@ from typehaus.resolve.stairs import _resolve_stair
 def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
     """Populate derived non-wall envelope geometry and return precise bad-ref findings."""
     findings: list[Finding] = []
+    from typehaus.resolve.screens import resolve_screens
+
+    findings.extend(resolve_screens(model))
     plan = model.plan
     for wall in model.walls:
         if wall.z1_m <= wall.z0_m:
@@ -546,7 +549,7 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     # standing on the deck starts. (The porch's rear-centre balcony pillar is the case: its
     # north edge has no masonry railing to be grouted into, so it stands on the decking.)
     solid_top.update({
-        e.tag: (s.elevation.meters
+        e.tag: ((e.top_elevation.meters if e.top_elevation is not None else s.elevation.meters)
                 + (e.subfloor.thickness.meters if e.subfloor is not None else 0.0))
         for s in model.plan.storeys
         for e in model.plan.storey_elements(s.tag)

@@ -183,7 +183,7 @@ def test_layer_census_gains_the_c3_annotation_layers(catlin_model):
 def test_setback_labels_carry_required_and_provided(catlin_model):
     labels = _texts(build_site_plan(catlin_model), "C-PROP-SETB")
     front = [line for line in labels if line.startswith("FRONT SETBACK")]
-    assert front == ["FRONT SETBACK 30'-0\" REQ / 40'-3\" PROVIDED"]
+    assert front == ["FRONT SETBACK 30'-0\" REQ / 37'-9\" PROVIDED"]
     assert all("REQ" in line and "PROVIDED" in line for line in labels)
 
 

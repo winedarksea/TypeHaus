@@ -99,6 +99,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
         _emit_roof_cut(b, model, roof, plane, crop, joints, ladder_labels, scale)
 
     emit_framing_cuts(b, model, model.floors, plane, crop)
+    emit_framing_cuts(b, model, model.stairs, plane, crop)
     # ...and the sheet those joists carry, which no pass drew until 2026-09-03.
     emit_floor_deck_cuts(b, model, plane, crop)
 

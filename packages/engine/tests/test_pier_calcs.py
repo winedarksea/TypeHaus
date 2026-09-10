@@ -218,7 +218,8 @@ def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
     engineer's design governs, and this engine computes none" about a column the engine
     could compute perfectly well.
     """
-    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_CORNER_PIERS, *_BREEZEWAY_PIERS}
+    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_CORNER_PIERS}
+    assert not set(_BREEZEWAY_PIERS) & set(piers)
 
 
 def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
@@ -232,90 +233,6 @@ def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
             assert assembly_structure_material(catlin_plan, element.assembly) == "concrete"
     # The wood posts standing on the breezeway piers are not themselves piers.
     assert not {"PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4"} & set(piers)
-
-
-@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_the_breezeway_load_path_reproduces_its_note(tag, piers) -> None:
-    """§2 of ``notes/breezeway_piers.md``, term by term."""
-    want = _BREEZEWAY_ORACLE
-    pier = piers[tag]
-    assert pier.height_in == pytest.approx(want["height_in"], abs=0.01)
-    assert pier.gross_area_in2 == pytest.approx(want["gross_in2"], rel=0.001)
-    assert pier.height_in / pier.diameter_in == pytest.approx(want["h_over_d"], abs=0.01)
-    assert pier.tributary_ft2 == pytest.approx(want["tributary_ft2"], abs=0.001)
-    assert pier.roof_tributary_ft2 == pytest.approx(want["roof_tributary_ft2"], abs=0.001)
-    assert pier.roof_snow_psf == pytest.approx(want["roof_snow_psf"], abs=0.001)
-    assert pier.carried_dead_lb == pytest.approx(want["carried_dead_lb"], abs=0.5)
-    assert pier.self_weight_lb == pytest.approx(want["self_weight_lb"], abs=0.5)
-    assert pier.dead_lb == pytest.approx(want["dead_lb"], abs=1.0)
-    assert pier.live_lb == pytest.approx(want["live_lb"], abs=0.5)
-    assert pier.service_lb == pytest.approx(want["service_lb"], abs=1.0)
-    assert pier.factored_lb == pytest.approx(want["factored_lb"], abs=1.5)
-
-
-@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_the_roof_field_closed_the_axial_gap(tag, results) -> None:
-    """§3 of the note, as re-worked 2026-09-04.
-
-    This test used to assert the opposite — that the axial state was OMITTED because the
-    breezeway roof had no plan area to divide. ``pier_basis._rafter_fields`` gave it one by
-    reading what the model already said: three rafters naming the same two beams are a
-    framed field, and the covering authored over it (``GL-BW-ROOF``) sets its extent.
-
-    What is asserted here is that the gap is closed *and stayed honest*: a real axial ratio,
-    no ``missing`` entry, and no beam still flagged as unaccounted.
-    """
-    record = results[f"deck_post/{tag}"]
-    assert record.status is Status.OK, record.missing
-    names = [state.name for state in record.limit_states]
-    assert "axial, tied column" in names
-    assert all(state.ok for state in record.limit_states)
-    assert not record.missing
-
-
-@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_the_roof_share_is_snow_not_deck_live(tag, piers) -> None:
-    """A roof is not a deck. 50 psf ground snow beats IRC Table R301.5's 40 psf, so folding
-    the roof share into ``tributary_ft2`` would understate every one of these piers."""
-    want = _BREEZEWAY_ORACLE
-    pier = piers[tag]
-    assert pier.live_lb == pytest.approx(
-        want["tributary_ft2"] * 40.0 + want["roof_tributary_ft2"] * want["roof_snow_psf"],
-        abs=0.5)
-    # The whole point: grading the roof at deck live would lose 40 lb a pier.
-    assert pier.live_lb > (want["tributary_ft2"] + want["roof_tributary_ft2"]) * 40.0
-
-
-@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_the_roof_field_prefers_the_covering_to_the_framed_rectangle(tag, piers) -> None:
-    """§3: the rafters oversail each beam by 2 3/4", so the framed rectangle (16.125 ft2)
-    is a 10.4% under-count of what ``GL-BW-ROOF`` actually covers (18.0 ft2). The larger
-    governs, because an understated tributary is an understated demand.
-
-    Both numbers moved with the 4'-6" widening — the rafters span the glazing lines, so the
-    framed rectangle is 4.5' x 3.5833' and the covering 4.5' x 4.0'. The RELATION is what
-    this test is about and it is unchanged: the covering is the larger, and it should be.
-    """
-    framed_share = (4.5 * (40.4167 - 36.8333)) / 4.0
-    assert piers[tag].roof_tributary_ft2 == pytest.approx(18.0 / 4.0, abs=0.001)
-    assert piers[tag].roof_tributary_ft2 > framed_share
-
-
-@pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
-def test_the_breezeway_cage_is_acis_minimum(tag, results) -> None:
-    """§4 of the note. The 1% floor is a creep/shrinkage rule, indifferent to §3's gap."""
-    want = _BREEZEWAY_ORACLE
-    record = results[f"deck_post/{tag}"]
-    states = {state.name: state for state in record.limit_states}
-    assert states["longitudinal steel"].demand == pytest.approx(want["min_steel_in2"], abs=0.001)
-    assert states["longitudinal steel"].capacity == pytest.approx(want["steel_in2"], abs=0.001)
-    assert states["bar count"].capacity == 4.0
-    assert states["tie size"].capacity == 3.0
-    assert states["tie spacing"].capacity == pytest.approx(want["tie_spacing_in"], abs=0.01)
-    assert states["minimum eccentricity"].demand == pytest.approx(
-        want["e_magnified_in"], abs=0.001)
-    assert states["minimum eccentricity"].capacity == pytest.approx(
-        want["e_capped_in"], abs=0.001)
 
 
 def test_a_pad_borne_pier_gets_no_engineered_bearing_record(results) -> None:

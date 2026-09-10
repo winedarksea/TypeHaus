@@ -635,6 +635,10 @@
 "cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 20 sheets
 
 [hardware]
+# Schematic installed allowances, not supplier quotations. Replace with the engineered
+# fabrication bid; includes anchors/flashing/shims, and may exceed the removed pier cost.
+"BW-ENGINEERED-FIXED-SEAT" = { low = 200, high = 600 }
+"BW-ENGINEERED-SLIDING-SEAT" = { low = 250, high = 750 }
 # RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and
 # small-box retail prices pulled per part number from Fasteners Plus, Connectors Only and
 # Lowe's, then widened downward because contractor-carton pricing runs 25-40% under
@@ -3720,6 +3724,8 @@
 "SG_VENEER_BEAM_14" = { material = { low = 215, high = 280 }, labour = { low = 210, high = 430 } }  # ~1.05 CY
 
 [timber]
+# On-edge 2x4 screen stock; same material volume rate as KDAT posts, higher fixing labour.
+"screen_slat:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 645, high = 1290 } }
 # NEW 2026-08-22 — [low, high] $/cy, by solid category, qualified by assembly. This is the
 # WOOD half of `structural_solids`: [concrete] above bills the rows whose material is
 # concrete, this one bills the rows whose material is engineered or treated lumber, and

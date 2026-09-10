@@ -205,19 +205,16 @@ def test_stud_carries_orient(catlin_payload):
     assert all(m["orient"] is not None and len(m["orient"]) == 2 for m in studs)
 
 
-def test_a_tapered_member_carries_its_own_plan_width(catlin_payload):
-    """A drainage wedge's vertical extent classifies it as neither flat-laid nor on edge, so
-    the resolver states its plan width outright (``FramedMember.plan_width_m``). Without that
-    field on the wire the viewer re-derived it and drew a 3-1/2" shim as a 1-1/2" ribbon on
-    edge, and only the .glb agreed with the take-off."""
-    wedges = [m for brace in catlin_payload["braces"] for m in brace["members"]
-              if brace.get("kind") == "wedge"]
-    assert wedges
-    assert all(m["plan_width_m"] == pytest.approx(0.0889, abs=1e-6) for m in wedges)
-    studs = [m for w in catlin_payload["walls"] for m in w["members"]
-             if m["category"] == "stud"]
-    assert studs and all(m["plan_width_m"] is None for m in studs), (
-        "ordinary lumber states no override — it stays on the flat-vs-on-edge rule")
+def test_a_tapered_member_carries_its_own_plan_width():
+    from typehaus.resolve.model import FramedMember
+    from typehaus.server.model_json_shared import _member_json
+
+    # Independent of the retired polycarbonate canopy: preserve the wire contract.
+    member = FramedMember("WEDGE", "taper", "wedge", "2x4", (0, 0), (1, 0),
+                          0, 0.01, 1, z0_end_m=0, z1_end_m=0.03, plan_width_m=0.0889)
+    assert _member_json(member)["plan_width_m"] == pytest.approx(0.0889)
+    ordinary = FramedMember("STUD", "stud", "stud", "2x4", (0, 0), (0, 0), 0, 2, 2)
+    assert _member_json(ordinary)["plan_width_m"] is None
 
 
 def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
@@ -396,6 +393,10 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
     assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(0.9144)  # 3'-0"
     assert stairs["ST-S2A"]["landing_depth_m"] is None
     for tag, stair in stairs.items():
+        if tag == "ST-BW-ENTRY":
+            assert stair["tread_depth_m"] == pytest.approx(inch(24).meters)
+            assert stair["nosing_depth_m"] == 0
+            continue
         assert stair["tread_depth_m"] == pytest.approx(inch(11).meters)
     # The two EXTERIOR flights are the exception and each states why in its own source: 11"
     # boards with NO nose, so the going is the full 11". ST-G-SERVICE keeps the 3'-8" run the

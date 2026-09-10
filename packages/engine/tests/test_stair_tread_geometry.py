@@ -60,7 +60,9 @@ def test_every_tread_is_a_full_depth_board(catlin_model):
             section = cross_section(tread.profile)
             assert section.width_m == pytest.approx(tread_depth, abs=_PROFILE_ROUND_TRIP_M), (
                 tread.child_key)
-            assert section.depth_m == pytest.approx(_TREAD_THICKNESS_M), tread.child_key
+            authored = catlin_model.plan.by_tag(stair.tag)
+            thickness = authored.tread_thickness.meters if authored.tread_thickness else _TREAD_THICKNESS_M
+            assert section.depth_m == pytest.approx(thickness), tread.child_key
 
 
 def test_default_treads_are_eleven_inches_with_a_one_inch_nose(catlin_model):
@@ -71,6 +73,10 @@ def test_default_treads_are_eleven_inches_with_a_one_inch_nose(catlin_model):
     # the compaction a nose buys is worth nothing on either — and outdoors a nose is a lip
     # that ices.
     for stair in catlin_model.stairs:
+        if stair.tag == "ST-BW-ENTRY":
+            assert stair.tread_depth_m == pytest.approx(inch(24).meters)
+            assert stair.nosing_depth_m == 0
+            continue
         assert stair.tread_depth_m == pytest.approx(inch(11).meters)
         if stair.tag in ("ST-G-SERVICE", "ST-SG-PORCH"):
             assert stair.nosing_depth_m == 0.0

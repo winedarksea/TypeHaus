@@ -91,7 +91,7 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     # hydrant went with it: the clear zone is derived from FT-GF-W's 45° influence line, so
     # holding the absolute x would have put the shutoff inside that footing's own 20" strip.
     assert x * _M_TO_FT == pytest.approx(11.0, abs=1e-6)
-    assert y * _M_TO_FT == pytest.approx(59.5, abs=1e-6)
+    assert y * _M_TO_FT == pytest.approx(62.0, abs=1e-6)
     # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
     # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
@@ -239,7 +239,7 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     # x=11'-0" since 2026-09-07: the pit rides HYDRANT_X_FT, and the hydrant moved 6'-0"
     # east with the garage that sets its footing clearances.
     assert x_ft == pytest.approx(11.0, abs=1e-6)
-    assert y_ft == pytest.approx(59.5, abs=1e-6)
+    assert y_ft == pytest.approx(62.0, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
     # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
     # Depths are read from grade, not from the house datum: grade is at -2'-6", so the

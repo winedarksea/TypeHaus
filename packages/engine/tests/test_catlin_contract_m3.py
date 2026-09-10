@@ -60,7 +60,7 @@ GARAGE_SIZE_FT = 24.0
 # (The Zip-R vs 5/8" CDX choice moves nothing here: the wall's ``alignment`` puts whichever
 # sheathing it carries on the node line, so only the cladding's own thickness is in this
 # chain.)
-GARAGE_GAP_FT = 4.71875
+GARAGE_GAP_FT = 7 + 2.625 / 12  # selected 30in north move
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the RAFTER PLATE
 # by its depth less the seat drop across the plate (5.5" depth x 6:12 pitch = 2.75" — the
@@ -2086,7 +2086,7 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
     # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
     # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
     for stair in stairs.values():
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
@@ -2145,7 +2145,7 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # `top_elevation` rather than as concrete `Slab`s invisible to every stair rule.
     # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
     # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
-    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
     # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
     # 4 1/2" well partition, measured to W-B-STR/W-B-STR3's stud-line plywood face.
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)

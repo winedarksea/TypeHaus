@@ -1,3 +1,8 @@
+> Current north entry, 2026-09-10: the selected extruded gable supersedes the historical
+> four-foot glazed breezeway notes below. Garage +30in north; bridge composite finish 0;
+> SL-G-STEP-0/pads/piers/glazing retired; east tiers and west slat screen; HP3 west in open
+> yard. See notes/north_entry_structure.md and notes/hp3_north_relocation.md.
+
 # Catlin house — agent guide
 
 This directory **is the state**: the house is defined by the editable plan source under

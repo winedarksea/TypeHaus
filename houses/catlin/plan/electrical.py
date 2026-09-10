@@ -822,27 +822,11 @@ MAIN_DEVICES = [
                      position=pt(ft(28, 7.625), ft(-4, -6)), rotation=deg(90),
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
-    # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
-    # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
-    # of the breezeway.
-    # Offset per the can's true 3 1/4" depth (see ED-M-HP1-DISC's note on this convention).
-    #
-    # ** 5'-0" WAS A DEFECT AND IS FIXED (2026-09-04). ** A WALL mount measures from its
-    # storey datum, and `main` is 0'-0" while the grade this can is operated from is -2'-10".
-    # ft(5) therefore hung the handle 7'-10" above that grade, against NEC 404.8(A)'s
-    # 6'-7" ceiling — the same arithmetic that put ED-M-HP1/HP2-DISC at 2'-2" above the
-    # pocket grade and passed. ft(3, 6) reads 6'-4" and clears. Verified 2'-2 3/4" clear of
-    # D-M-ENTRY's near jamb, so the lower handle fouls nothing.
-    # ** IT DID NOT TRAVEL WITH ITS UNIT ON 2026-09-09, AND THAT IS A CHOICE. ** EQ-M-HP3-OD
-    # went 2'-4" east; this can stayed at x 4'-0". It cannot follow: the cabinet now stands
-    # 8" off W-M-N2 with its back to it, so the wall directly behind it is unreachable, and
-    # the next clear stretch is east of the pad at x 15'-5"+ — past the front walk, and
-    # further from the panel. Straight-line to the cabinet centre is **9'-10"**, well inside
-    # NEC 440.14's 50 ft, and the 4'-6" of breezeway now on that line is transparent
-    # polycarbonate; the enclosure was already on it before the move. Re-siting system 3's
-    # outdoor unit (params/hp3_pad.py) is what should carry this can with it.
+    # HP3's west-yard position puts this disconnect beside the cabinet, with a 30" clear
+    # working band x=3'-1"..5'-7" between its pad and the connector screen. The 3'-6"
+    # main-relative mount is 6'-4" above grade. CKT-HP3 remains on the backup supply.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4, 4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-2 3/8"). Floor sensor is FH-M-BATH2's `stat` point.
@@ -1015,51 +999,15 @@ MAIN_EQUIPMENT = [
               position=pt(ft(30, 8.08), ft(-1, -9.655)), footprint=(inch(40.16), inch(16.81)),
               rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
-    # System 3's outdoor unit: north side beside the mudroom door, under ED-M-HP3-DISC, for
-    # the short lineset run to the head over the stairs — a straight punch through W-M-N2:
-    # the unit (x 10'-0"..12'-10 3/8") sits directly opposite EQ-M-HP3-STAIR (x 10'-6"..
-    # 13'-3") on that wall's inside face.
-    #
-    # ** IT NOW STANDS ON SOMETHING (2026-09-04). ** `params/hp3_pad.py` carries SL-M-HP3PAD
-    # and PT-M-HP3-L1..4 / CN-M-HP3-A1..4, and `mount.elevation` is the other half of that
-    # coupling exactly as it is on HP1/HP2: a FLOOR mount measures from the storey datum,
-    # `main` is 0'-0", the pad tops out at -2'-8" and the stand is 18", so the cabinet's base
-    # is at -1'-2" and all three outdoor units share one number. It carried NO mount at all
-    # until now, which put this cabinet's base on the main datum — 2'-10" in the air over
-    # bare soil, with no pad, no stand and nothing under it. Nothing reported that:
-    # `mep.deck_equipment_support_coverage` sees no deck equipment in this house any more,
-    # and no check asks what a FLOOR-mounted exterior machine is standing on.
-    # `test_catlin_outdoor_structures.py` is what holds the two files together.
-    #
-    # ** THREE OTHER FIGURES MOVED WITH IT, AND ALL THREE WERE STALE RATHER THAN CHOSEN. **
-    #  - `footprint` was (31, 13) — the outline the TYPE record shed on 2026-08-31 when the
-    #    SAP09 submittal replaced a placeholder. The type's footprint is what geometry reads
-    #    (resolve/placeables.py `_local_footprint` prefers it), so the plan has been drawing
-    #    34 3/8 x 14 51/64 while every comment said 31 x 13. Restated, not changed.
-    #  - `rotation` was absent, i.e. deg(0), which is the same convention HP1/HP2 use to
-    #    face SOUTH — local -y is the discharge. Here that aimed the fan at the house wall
-    #    two inches away. deg(180) turns the discharge NORTH across the slot, 25 11/16" of
-    #    clear air to the garage cladding, and puts the back — the side the lineset leaves
-    #    on — against the wall it punches through.
-    #  - `position` was (3.44566 m, 11.3941 m), which with the real cabinet left 1 15/16"
-    #    behind it. It is now derived: west face on the round foot at x 10'-0" (6" clear of
-    #    D-M-ENTRY's near jamb, and clear of that door's R311.3 landing), back face 8" off
-    #    the cladding at y 36'-7 1/4". That is a 4 1/16" move north and 1 9/16" east.
-    #    The same pair is written in params/hp3_pad.py, which this module cannot import.
-    #
-    # ** IT MOVED 2'-4" EAST ON 2026-09-09; x ONLY, y IS UNTOUCHED. ** The west face at
-    # x 10'-0" was also the breezeway's east glazing line, and cabinet and glass
-    # interpenetrated by 5/16" at 0 FAIL. Widening the breezeway deck to cover
-    # D-G-SERVICE's R311.3 landing moved that glass to x 11'-3 5/16", so the cabinet went
-    # to x 12'-4"..15'-2 3/8" — 12 11/16" clear of it, Gree's 12" lesser-side minimum.
-    # The straight punch through W-M-N2 survives on 12 3/4" of shared station with
-    # EQ-M-HP3-STAIR (x 10'-7 3/4"..13'-4 3/4"); see params/hp3_pad.py::_CAB_X0_IN, which
-    # also records the y-axis clearances this position still does NOT meet.
-    #
-    # No `drain_pan` / `pan_drain_ref`, as before and as on HP1/HP2: defrost meltwater off a
-    # unit at grade drips onto its own pad.
+    # HP3 is west of the connector roof/screen, discharging NORTH into open yard.
+    # Rear clearance is 12" to north cladding; cabinet x=0..2'-10 3/8". Pad and 18" stand
+    # are in params/hp3_pad.py. Their shared base remains -1'-2" (20" above site grade).
+    # The former straight lineset punch is replaced by a high-level wall-supported dogleg
+    # above the entry, then a drop west of the screen; notes/hp3_north_relocation.md gives
+    # its route. Refrigerant geometry is not an engine element; outdoor_ref preserves the
+    # connection to the indoor head. Defrost drains to the west-yard gravel, off the walk.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(13, 9.1875), ft(37, 10.6484375)),
+              position=pt(ft(1, 5.1875), ft(38, 2.6484375)),
               footprint=(inch(34.375), inch(14.796875)), rotation=deg(180),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
@@ -1305,10 +1253,10 @@ SECOND_EQUIPMENT = [
 # run, and holding it still keeps `CD-B-GARAGE` and its three sleeves untouched.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(6, 8.75), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     position=pt(ft(6, 8.75), ft(58, 6.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 5.375)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(43, 11.375)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
@@ -1321,7 +1269,7 @@ GARAGE_EQUIPMENT = [
     # this corner someone stands over with a hose — without moving the heater off
     # FURN-G-WORKBENCH, which it is here to blow down over.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(m(2.042254), m(17.858)), footprint=(inch(14), inch(9)),
+              position=pt(m(2.042254), m(18.62)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
               circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -1454,7 +1402,7 @@ CONDUIT_TRUNKS = [
     # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
     # always used — none of its three sleeves moved.
     ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25),
-               path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(41, 9.375))),
+               path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(44, 3.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
@@ -1751,7 +1699,7 @@ CONDUIT_SLEEVES = [
     # mid-depth — 3" of concrete either side — and no future move of the wall line at this
     # scale can reach it.
     SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
-                      position=pt(ft(16), ft(41, 2.125)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(43, 8.125)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     # The stub-up, 3 3/8" north of the stem's inside face, at 41'-9" — 2 3/8" of concrete
@@ -1759,7 +1707,7 @@ CONDUIT_SLEEVES = [
     # 2 3/8" margin is what protects it, not half the bore's clearance to the slab edge. The
     # conduit runs up the inside face of W-G-S from here to ED-G-EV-1450.
     SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
-                      position=pt(ft(16), ft(41, 9.375)), pipe_diameter=inch(1.25),
+                      position=pt(ft(16), ft(44, 3.375)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240),
     # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
     # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in

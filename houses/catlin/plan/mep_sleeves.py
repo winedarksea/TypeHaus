@@ -156,7 +156,7 @@ GARAGE_SLEEVES = [
     # 9" inside the beam's east end. `integrity.sleeve_in_opening` catches a sleeve naming a
     # host it no longer sits in — and it is what will catch the next move of that door.
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
-                      position=pt(ft(11), ft(41, 0.875)), pipe_diameter=inch(0.75),
+                      position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]

@@ -56,7 +56,8 @@ def _notch_z(surface_m: float) -> float:
     return surface_m - _TREAD_THICKNESS_M
 
 
-def _tread_board_profile(tread_depth_m: float) -> str:
+def _tread_board_profile(tread_depth_m: float,
+                         thickness_m: float = _TREAD_THICKNESS_M) -> str:
     """Profile string for a tread board of ``going_m`` depth.
 
     A ``deck WxT`` profile renders at its true plan width (see framing/profiles.py), so the
@@ -64,7 +65,7 @@ def _tread_board_profile(tread_depth_m: float) -> str:
     instead drew every one of them as a 1.5"-wide strip — the *thickness* face of the stock,
     which is what a member's plan footprint is built from, not its depth.
     """
-    return f"deck {tread_depth_m / inch(1).meters:g}x{_TREAD_THICKNESS_IN:g}"
+    return f"deck {tread_depth_m / inch(1).meters:g}x{thickness_m / inch(1).meters:g}"
 
 
 def _grid_positions(span: float, spacing: float) -> list[float]:

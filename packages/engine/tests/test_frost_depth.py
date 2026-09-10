@@ -57,8 +57,9 @@ def test_frost_depth_passes_at_the_authored_grade(catlin_model):
 
 
 def test_dropping_grade_makes_unmoved_footings_shallow(catlin_model):
-    # Grade 3'-0" below the datum leaves catlin's 42"-deep footings only 6" under soil.
-    matched = _on_the_plane(_frost(_model_at_grade(catlin_model, ft(-3))))
+    # Lower the plane below the garage footings; the retired passage pads no longer
+    # provide the former shallow footing example.
+    matched = _on_the_plane(_frost(_model_at_grade(catlin_model, ft(-7))))
     assert matched and any(f.result.value == "fail" for f in matched)
     failures = [f for f in matched if f.result.value == "fail"]
     # The reported depth is measured to grade, so it must be shallower than the frost

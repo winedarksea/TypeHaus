@@ -383,34 +383,12 @@ def test_the_porch_guards_doorway_is_the_stair_throat_and_not_an_open_side(catli
     assert opening == pytest.approx(inch(36).meters, abs=0.02)
 
 
-def test_the_slab_census_reaches_the_garage_step(catlin_ctx):
-    """``SL-G-STEP-0`` is a ``Slab``, so it was in no guard rule's census at all.
-
-    ``code.R312_1_guard_height`` censused ``FloorSystem``s and ``code.R312_1_guard``
-    censused ``FloorOpening``s; a slab landing 34" over the grade beside it was graded by
-    nothing. **The census reaching this slab at all is what this test is for**, and that is
-    what it still asserts.
-
-    ** IT WENT FAIL -> PASS ON 2026-09-07, AND THE FIX WAS NOT A GUARD. ** The landing's open
-    edges were open because ``ST-G-SERVICE`` did not stand under it: the flight ran
-    x 5'-0"..8'-0" beneath a landing at x 6'-6"..9'-6", a stale offset left over from an older
-    ``SERVICE_DOOR_OFFSET`` that nothing graded. Centring the garage on the house ridge forced
-    the flight to move (at x=5'-0" its rail would have stood inside the new west wall) and
-    putting it square under its own door closed the drop. See
-    notes/garage_orientation_lot.md §6.2.
-
-    If this ever goes back to FAIL, the flight has drifted off its landing again — check that
-    before reaching for a guard.
-    """
-    from typehaus.checks.code.mn_residential.fall_protection import (
-        raised_surface_guard_height,
-    )
+def test_the_replacement_garage_landing_is_in_the_guard_census(catlin_ctx):
+    from typehaus.checks.code.mn_residential.fall_protection import raised_surface_guard_height
 
     findings = {f.message.split(":")[0]: f for f in raised_surface_guard_height(catlin_ctx)}
-    assert "SL-G-STEP-0" in findings, sorted(findings)
-    step = findings["SL-G-STEP-0"]
-    assert step.result is Result.PASS, step.message
-    assert "SL-G-STEP-0" in step.message
+    assert "SL-G-STEP-0" not in findings
+    assert findings["FS-BW-GARAGE"].result is Result.PASS
 
 
 def test_an_interior_seam_between_two_floor_systems_is_not_an_open_side(catlin_ctx):
@@ -463,25 +441,13 @@ def test_a_column_on_the_wall_top_splits_the_threshold():
             == pytest.approx(inch(18).meters, abs=1e-4))
 
 
-def test_a_glazed_vestibule_closes_its_own_edges(catlin_ctx):
-    """The breezeway is a glazed bridge, and glass closes an edge the way a wall does.
-
-    Its deck stands 35" over the site's grade datum — over R312.1.1's trigger — and it
-    carries no ``Railing`` and no ``Wall`` on either long side. What it carries is
-    ``GL-BW-WALL-W``/``-E``, 8'-0" of glazing running the full length of both, and a guard
-    inside a wall of glass is a rail inside a wall. Credit the glass and it PASSes; drop the
-    glazing category and both sides come back as 4'-0" of open side, which is the assertion
-    that keeps this a derivation rather than a coincidence.
-    """
+def test_the_open_connector_has_real_guards_instead_of_glazing_credit(catlin_ctx):
     from typehaus.checks.code.mn_residential import fall_protection as fp
 
-    findings = {f.message.split(":")[0]: f
-                for f in fp.raised_surface_guard_height(catlin_ctx)}
-    assert findings["FS-BW-FLOOR"].result is Result.PASS, findings["FS-BW-FLOOR"].message
-
-    deck = next(f for f in catlin_ctx.model.floors if f.tag == "FS-BW-FLOOR")
-    closing = _closing_tags(catlin_ctx, deck.deck_z1_m)
-    assert {"GL-BW-WALL-W", "GL-BW-WALL-E"} <= closing, sorted(closing)
+    findings = {f.message.split(":")[0]: f for f in fp.raised_surface_guard_height(catlin_ctx)}
+    assert findings["FS-BW-FLOOR"].result is Result.PASS
+    assert catlin_ctx.plan.by_tag("GL-BW-WALL-W") is None
+    assert catlin_ctx.plan.by_tag("RL-BW-WEST").height.inches >= 36
 
 
 def _closing_tags(ctx, surface):

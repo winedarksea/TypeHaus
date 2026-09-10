@@ -1,3 +1,8 @@
+> North-entry update 2026-09-10: retiring PR-BW-1..4 removes 18.0 lb of #3 ties and
+> 78.9 lb of #5 vertical steel with their concrete. Current column rows are 52.5/225.8 lb;
+> total authored steel is 3,899.9 lb. The backout gate remains closed; historic tables below
+> describe the former pier scheme.
+
 # Rebar back-out — the reconciliation, and why the rate cut is NOT taken yet
 
 **House:** catlin, Ramsey County, Minnesota.

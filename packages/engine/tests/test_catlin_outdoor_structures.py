@@ -1211,62 +1211,27 @@ def test_hp3s_stand_is_a_rail_pair_that_lands_wholly_on_its_pad(catlin_model) ->
     assert 17.5 > _HP3_CAB_D_IN
 
 
-def test_hp3s_cabinet_faces_the_slot_and_clears_both_walls(catlin_model) -> None:
-    """Rotation and back clearance, which moved together on 2026-09-04.
+def test_hp3_has_open_yard_airflow_and_its_coordinated_pad(catlin_model):
+    from shapely.geometry import Polygon, box
 
-    ``rotation`` was absent — deg(0), the same convention HP1/HP2 use to discharge SOUTH —
-    which aimed this fan at a house wall 1 15/16" away. deg(180) turns the discharge north
-    across the 4'-0 1/2" slot and puts the back, the side the lineset leaves on, against the
-    wall it punches through. The cabinet's own extent is the TYPE's 34 3/8 x 14 51/64
-    (resolve/placeables.py prefers the type's footprint), not the 31 x 13 the element
-    carried; the element now restates the type rather than contradicting it.
-    """
-    unit = next(e for s in catlin_model.plan.storeys
-                for e in catlin_model.plan.storey_elements(s.tag)
-                if getattr(e, "tag", "") == "EQ-M-HP3-OD")
-    assert unit.rotation.degrees == pytest.approx(180.0)
-    assert unit.footprint[0].inches == pytest.approx(_HP3_CAB_W_IN)
-    assert unit.footprint[1].inches == pytest.approx(_HP3_CAB_D_IN)
-    cx_in, cy_in = (v / INCH for v in unit.position.xy_m)
-    # 8" of back clearance to the house cladding; the discharge reads 25 11/16" of clear
-    # slot to the garage's. **Both are UNDER Gree's published minima (12" air inlet,
-    # 6'-6" discharge — greecomfort.com's mini-split cheat sheet, sourced 2026-09-09), and
-    # that is a known, owner-accepted, deferred defect**: the 48 1/2" slot cannot give a
-    # 14 51/64"-deep cabinet more than 33 11/16" front+back at any position or rotation, so
-    # only re-siting the unit fixes it. `params/hp3_pad.py::_BACK_CLEAR_IN` carries the
-    # numbers. These two are pinned so the y position cannot drift while that is pending.
-    assert (cy_in - _HP3_CAB_D_IN / 2.0) - _HP3_CLADDING_Y_IN == pytest.approx(8.0)
-    assert _HP3_GARAGE_CLADDING_Y_IN - (cy_in + _HP3_CAB_D_IN / 2.0) > 24.0
-    # ** WEST FACE AT x 12'-4", MOVED 2'-4" EAST ON 2026-09-09. ** It was x 10'-0", which
-    # was also the breezeway's east glazing line — cabinet and glass interpenetrated by
-    # 5/16" at 0 FAIL, because nothing grades an Equipment against a solid. Widening the
-    # breezeway to 4'-6" (so `D-G-SERVICE` gets its R311.3 landing) put that glass at
-    # x 11'-3 5/16"; 12'-4" clears it by 12 11/16", Gree's 12" lesser-side minimum.
-    assert cx_in - _HP3_CAB_W_IN / 2.0 == pytest.approx(148.0)
-    # The x clearance that had to be bought, asserted rather than described: the cabinet's
-    # west face against the breezeway's east glazing panel. This is the collision that was
-    # there for two days; it must never come back.
-    glass_e = max(p[0] / INCH for p in _solid(catlin_model, "GL-BW-WALL-E").outline)
-    assert cx_in - _HP3_CAB_W_IN / 2.0 - glass_e >= 12.0
-    # And the straight lineset punch through W-M-N2 survives: the cabinet still shares
-    # station with EQ-M-HP3-STAIR inside, which is what "straight" means here.
-    head = next(e for st in catlin_model.plan.storeys
-                for e in catlin_model.plan.storey_elements(st.tag)
-                if getattr(e, "tag", "") == "EQ-M-HP3-STAIR")
-    head_cx = head.position.xy_m[0] / INCH
-    head_half = head.footprint[0].inches / 2.0
-    shared = min(cx_in + _HP3_CAB_W_IN / 2.0, head_cx + head_half) - max(
-        cx_in - _HP3_CAB_W_IN / 2.0, head_cx - head_half)
-    assert shared > 6.0, f"the lineset punch is no longer straight: {shared:.2f}in shared"
-    # And the whole cabinet stands over its pad.
-    from shapely.geometry import box
-
-    pad = _solid(catlin_model, _HP3_PAD).outline
-    xs = [p[0] / INCH for p in pad]
-    ys = [p[1] / INCH for p in pad]
-    assert box(min(xs), min(ys), max(xs), max(ys)).contains(
-        box(cx_in - _HP3_CAB_W_IN / 2.0, cy_in - _HP3_CAB_D_IN / 2.0,
-            cx_in + _HP3_CAB_W_IN / 2.0, cy_in + _HP3_CAB_D_IN / 2.0))
+    unit = catlin_model.plan.by_tag("EQ-M-HP3-OD")
+    assert unit.rotation.degrees == pytest.approx(180)
+    cx, cy = (v / INCH for v in unit.position.xy_m)
+    west, east = cx - _HP3_CAB_W_IN / 2, cx + _HP3_CAB_W_IN / 2
+    rear, front = cy - _HP3_CAB_D_IN / 2, cy + _HP3_CAB_D_IN / 2
+    assert rear - _HP3_CLADDING_Y_IN >= 12 - 1e-7
+    assert west == pytest.approx(0)
+    # Reserve 24in both sides and 80in of unobstructed north discharge.
+    clearance = box((west - 24) * INCH, rear * INCH,
+                    (east + 24) * INCH, (front + 80) * INCH)
+    for wall in catlin_model.walls:
+        if wall.tag.startswith("W-G"):
+            assert not clearance.intersects(Polygon(wall.layers[0].polygon))
+    screen_west = min(p[0] / INCH for s in catlin_model.solids
+                      if s.tag.startswith("SC-BW-WEST") for p in s.outline)
+    assert screen_west - east >= 24
+    pad = Polygon(_solid(catlin_model, _HP3_PAD).outline)
+    assert pad.contains(box(west * INCH, rear * INCH, east * INCH, front * INCH))
 
 
 # ---------------------------------------------------------------------------------------

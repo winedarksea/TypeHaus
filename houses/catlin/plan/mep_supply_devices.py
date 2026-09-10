@@ -238,12 +238,12 @@ SUPPLY_STOPS = [
 # it at 0'-0".
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(11), ft(59, 6)),
+                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(11), ft(62)),
                   room="RM-GARAGE", model="hydrant's own compression seat, 6' bury",
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(11), ft(59, 6)), elevation=ft(0), room="RM-GARAGE",
+                  position=pt(ft(11), ft(62)), elevation=ft(0), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
     # The weep. PA-G-HYD-VB above protects the hose thread (the only

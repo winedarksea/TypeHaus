@@ -1394,12 +1394,12 @@ SECOND_LIGHTING = [
 # nothing above the garage ceiling to recess a can into.
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(48)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(18), ft(50, 6)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0002AAA", tag="ED-G-LT2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(58)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(18), ft(60, 6)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
@@ -1412,14 +1412,14 @@ GARAGE_LIGHTING = [
     # would want the same luminaire here and not the switching, since five risers is under
     # its six-riser threshold.)
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8, 6), ft(42)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(8, 6), ft(45, 6)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
     # plan/electrical.py's GARAGE_DEVICES comment for the face-position arithmetic.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10, 6), ft(41, 4.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(12, 6), ft(43, 10.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -1455,7 +1455,7 @@ GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT-E", kind=DeviceKind.LIGHT,
                      # x=28'-0" is 2'-0" in from the NE corner. The uid is the original
                      # light's: this element did not stop existing when it was retagged.
-                     position=pt(ft(28), ft(65)), type_ref="ED-T-LT-SCONCE-EXT",
+                     position=pt(ft(28), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
@@ -1463,7 +1463,7 @@ GARAGE_LIGHTING = [
                      # x=8'-0" is 2'-0" in from the NW corner, the exact mirror of -E about
                      # the door's centreline at x=18'-0". Same circuit, same switch: the pair
                      # is one control, not two.
-                     position=pt(ft(8), ft(65)), type_ref="ED-T-LT-SCONCE-EXT",
+                     position=pt(ft(8), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
@@ -1481,7 +1481,7 @@ GARAGE_LIGHTING = [
     # it. It stays here though its luminaires crossed to the far wall: the switch belongs at
     # the door you enter by, not under the lamp.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(10), ft(41, 4.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(12), ft(43, 10.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

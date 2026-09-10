@@ -39,8 +39,7 @@ def test_it_reports_the_pours_it_cleared_by_name():
     """A silent PASS is indistinguishable from a check that never ran."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
-    assert len(passes) == 1
-    assert set(passes[0].element_tags) == {"PD-BW-1", "PD-BW-2", "PD-BW-3", "PD-BW-4"}
+    assert not passes  # no isolated connector pours remain; mutation below proves the rule
 
 
 def test_continuous_foundation_work_is_out_of_scope():
@@ -63,21 +62,18 @@ def test_a_pad_moved_back_onto_the_frame_line_is_caught():
     """
     result = load_plan(CATLIN_DIR)
     plan = result.plan
-    old = plan.by_tag("PD-BW-1")
-    assert isinstance(old, Pad), old
-    x = sum(p.xy_m[0] for p in old.outline) / len(old.outline) / ft(1).meters
+    old = Pad(uid="TESTPAD001", tag="PD-TEST", outline=(), thickness=ft(1),
+              bottom_elevation=ft(-6), assembly="PIER_BASE_12")
+    x = 7.0
     y = 36.833333
     moved = old.model_copy(update={"outline": (
         pt(ft(x - 1.0), ft(y - 1.0)), pt(ft(x + 1.0), ft(y - 1.0)),
         pt(ft(x + 1.0), ft(y + 1.0)), pt(ft(x - 1.0), ft(y + 1.0)))})
-    storey = next(tag for tag, group in plan.elements.items()
-                  if any(el is old for el in group))
     plan = plan.model_copy(update={"elements": {
-        **plan.elements,
-        storey: tuple(moved if el is old else el for el in plan.elements[storey]),
+        **plan.elements, "main": (*plan.elements["main"], moved),
     }})
 
     ctx, _ = build_context(plan, CATLIN_DIR)
     fails = [f for f in _findings(ctx) if f.result is Result.FAIL]
     assert fails, "a pad buried in the house foundation wall must not pass"
-    assert all("PD-BW-1" in f.element_tags for f in fails)
+    assert all("PD-TEST" in f.element_tags for f in fails)

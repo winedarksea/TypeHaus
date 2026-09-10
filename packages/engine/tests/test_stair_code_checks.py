@@ -131,7 +131,7 @@ def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):
     # plumb under the balcony against R311.7.2's 6'-8". A 3" strip of overhead is enough to
     # make the rule applicable; earning N/A back would mean pulling the deck edge off the
     # flight, and the balcony has better reasons to be where it is.
-    assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
+    assert set(findings) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
     assert "FS-SG-DECK" in findings["ST-SG-PORCH"].message
     for finding in findings.values():
         assert finding.result is Result.PASS, finding.message
@@ -150,7 +150,7 @@ def test_width_measures_the_tread_boards():
 
 def test_catlin_stair_widths_pass_at_or_above_the_minimum(catlin_ctx):
     findings = stair_width(catlin_ctx)
-    assert len(findings) == 5  # + ST-G-SERVICE + ST-SG-PORCH (2026-09-03)
+    assert len(findings) == 6  # + ST-G-SERVICE + ST-SG-PORCH (2026-09-03)
     assert all(f.result is Result.PASS for f in findings)
     # ST-S2A rides the 36" limit exactly — the tolerance idiom is what keeps it passing.
     assert any("36.00" in f.message for f in findings)
@@ -241,7 +241,7 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
     and -N, one each side, on the same `guard_and_handrail` pattern and for the same reason.
     """
     findings = stair_handrail(catlin_ctx)
-    assert [f.result for f in findings] == [Result.PASS] * 9, \
+    assert [f.result for f in findings] == [Result.PASS] * 10, \
         [f.message for f in findings]
     assert {f.message.split()[0] for f in findings} == {
         "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
@@ -260,7 +260,7 @@ def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
         lambda e: None if isinstance(e, Railing)
         and e.role in ("handrail", "guard_and_handrail") else e)
     findings = stair_handrail(ctx)
-    assert len(findings) == 5  # + ST-G-SERVICE + ST-SG-PORCH
+    assert len(findings) == 6  # + ST-G-SERVICE + ST-SG-PORCH
     assert all(f.result is Result.UNKNOWN for f in findings)
     assert all("handrail" in f.message for f in findings)
 
@@ -311,7 +311,7 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
     # Eleven since 2026-09-03: ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) and
     # the two level cheeks that return the guard across its threshold (RL-SG-PTHRESH-*).
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-M-STAIRHEAD", "RL-S-STAIR",
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-WEST", "RL-M-STAIRHEAD", "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
                     "RL-SG-PTHRESH-S"], \
@@ -329,7 +329,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
 
     drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD",
+        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-WEST", "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE", "RL-SG-PSTAIR-N",
         "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N", "RL-SG-PTHRESH-S"]
 

@@ -51,7 +51,7 @@ def test_every_catlin_flight_is_walled_guarded_or_inside_its_own_well(ctx):
     """
     findings = stair_open_side_guard(ctx)
     by_stair = _by_stair(findings)
-    assert set(by_stair) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
+    assert set(by_stair) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
     assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
     assert "RL-A-FLIGHT-GUARD" in by_stair["ST-S2A"].message
     # The other three pass without crediting a guard — nothing stands on their sides.

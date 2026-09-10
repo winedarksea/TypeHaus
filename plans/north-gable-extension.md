@@ -4,8 +4,9 @@
 
 **Decision update:** 2026-09-09
 
-**Status:** selected concept and pre-design brief; no model or construction changes are
-authorized by this study.
+**Status:** schematic model implementation authorized by the owner on 2026-09-10.
+Construction release still requires the external engineering, soil and AHJ deliverables below.
+See [implementation record](../houses/catlin/notes/north_entry_structure.md).
 
 ## Decision
 
@@ -326,7 +327,7 @@ These are relative cost drivers, not bids.
 | West edge | Bid slatted wood and corrugated metal together | Both are simple, durable assemblies; selection can follow real pricing and a mock-up. |
 | Finish | Repeat garage metal, house dark trim and existing composite | Limits new trades and custom finish systems. |
 
-Before model implementation, obtain four compact deliverables:
+Before construction procurement, obtain four compact deliverables:
 
 1. **Survey/zoning memo:** moved footprint, roof projection, setbacks, lot coverage and
    attached/detached determination.
@@ -339,8 +340,8 @@ Before model implementation, obtain four compact deliverables:
 
 ## Eventual model work and acceptance checks
 
-This study does not authorize code changes. When the decisions above are engineered and
-approved, the implementation package should:
+The schematic model now implements the package below. The structural and jurisdictional
+items remain design-release requirements, not certifications supplied by the model:
 
 - translate every garage-dependent item 2'-6" north, including foundation, slab, walls,
   roof, doors, interior stair, devices, sleeves, leaders, hydrant dependencies, driveway and

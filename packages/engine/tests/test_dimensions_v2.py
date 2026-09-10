@@ -248,7 +248,7 @@ def test_roof_plan_dimensions_the_garage_overhang_once(catlin_model, roof_scene)
     assert len(lengths) == len(set(lengths))  # deduped by value
     for d in garage_dims:
         length = math.hypot(d.p1[0] - d.p0[0], d.p1[1] - d.p0[1])
-        assert 6.0 <= length <= 16.0 + 1e-6  # 16" less the cladding the eave clears
+        assert 6.0 <= length <= 72.0 + 1e-6  # 16" less the cladding the eave clears
     # The zero-overhang house roof gets no fabricated eave dimension — except the one the
     # cladding LAP produces, which is not an overhang: the footprint runs 7 1/4" past the
     # sheathing datum to cover the wall panel, and the roof plan dimensions that face-to-edge

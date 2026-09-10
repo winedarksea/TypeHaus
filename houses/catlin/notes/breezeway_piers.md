@@ -1,3 +1,6 @@
+> Superseded 2026-09-10: all four passage pads/piers are retired. This is the archived
+> calculation for the former enclosure; see [north entry structure](north_entry_structure.md).
+
 # Breezeway piers PR-BW-1..4 — hand-worked basis
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).

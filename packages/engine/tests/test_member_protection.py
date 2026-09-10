@@ -38,7 +38,9 @@ def rows(catlin_model_ro):
 def test_only_authored_members_are_taped(rows):
     """The section derives nothing. Untaped framing — the whole house — must not appear."""
     taped = {tag for row in rows for tag in row["tags"]}
-    assert taped == BUILT_UP_BEAMS | {"FS-SG-PORCH", "FS-SG-DECK"}
+    assert taped == BUILT_UP_BEAMS | {"FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR", "FS-BW-GARAGE",
+                                     "BM-BW-FW", "BM-BW-FC", "BM-BW-FE",
+                                     "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"}
 
 
 def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):

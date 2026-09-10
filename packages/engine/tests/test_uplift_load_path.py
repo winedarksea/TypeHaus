@@ -117,7 +117,7 @@ def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
     the column's own $/cy rate rather than missing from the order. A reader who takes
     "carries no rebar" as "unpriced scope" goes looking for money that is already there.
     """
-    for column in ("PT-SG-COL", "PT-SG-FCOL", "PR-BW-1", "PR-BW-4"):
+    for column in ("PT-SG-COL", "PT-SG-FCOL"):
         finding = next(f for f in findings
                        if f.element_tags[:1] == (column,)
                        and "outside what a connector-coverage rule governs" in f.message)
@@ -203,20 +203,8 @@ def test_an_authored_hurricane_tie_connects_a_beam_to_its_column(findings) -> No
         assert "an authored strap or cap" in finding.message
 
 
-def test_an_authored_strap_is_not_credited_to_a_neighbouring_beam(findings) -> None:
-    """The breezeway straps its two ROOF beams to PT-BW-1..4; the FLOOR beams are separate.
-
-    Matching an authored connector on either tag alone handed ``CN-BW-KBS-*`` to
-    ``BM-BW-FW``/``FE``, which land on the same four posts and carry none of those straps.
-    That is why the guard keys on the tag PAIR, and why the four floor-beam joints must read
-    as *derived* rather than authored.
-    """
-    for beam in ("BM-BW-RW", "BM-BW-RE"):
-        roof = [f for f in findings if f.element_tags[:1] == (beam,)]
-        assert roof and all("an authored strap or cap" in f.message for f in roof)
-    for beam in ("BM-BW-FW", "BM-BW-FE"):
-        floor = [f for f in findings if f.element_tags[:1] == (beam,)]
-        assert floor and all("a derived KBS1Z strap" in f.message for f in floor)
+def test_retired_roof_straps_do_not_appear_in_the_load_path(findings):
+    assert not [f for f in findings if set(f.element_tags) & {"BM-BW-RW", "BM-BW-RE"}]
 
 
 def test_the_sill_and_the_stacked_walls_are_both_reported(findings) -> None:

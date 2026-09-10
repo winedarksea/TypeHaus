@@ -315,6 +315,10 @@ class Beam(Element):
     end_node: str
     size: str = "3.5x11.875 LVL"
     bearing_refs: tuple[str, ...] = ()
+    # Explicit non-prescriptive design scope, not an engineer's approval or capacity.
+    # Keeps a custom bridge/cantilever on the engineering register instead of applying
+    # a simple-span table to a load path the table does not describe.
+    engineering_note: str | None = None
     datum: FaceRef | None = None
     # Project-frame absolute top of the beam, overriding the derived bearing-stack drop.
     # The resolver normally hangs a beam a joist depth below its storey datum, which it
@@ -378,6 +382,7 @@ class Connector(Element):
     elevation: Length | None = None  # connector center, project-frame absolute
     size: str = ""  # product model, e.g. "APVKB", "H2.5A", "LUS28", "ABU66"
     connects: tuple[str, ...] = ()  # member/wall/post tags the hardware joins
+    source: str | None = None  # design specification for custom fabricated hardware
     axis: str | None = None  # optional in-plane run direction ("x" | "y") for braces
 
 

@@ -123,6 +123,7 @@ from typehaus.model.registry import (
     element_kinds,
     register_constructor,
 )
+from typehaus.model.screens import SlatScreen
 from typehaus.model.site import (
     Basemap,
     Benchmark,
@@ -252,7 +253,7 @@ __all__ = [
     "PlanModel", "Library", "Project", "Site", "Building", "Storey",
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
-    "FoundationWall", "Footing", "Pad", "FootingBedding", "DrainTile", "Post", "Beam",
+    "FoundationWall", "Footing", "Pad", "FootingBedding", "DrainTile", "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell",
     "Dowel", "Connector", "KneeBrace", "Wedge", "Railing", "Fascia", "Gutter", "Flashing",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",

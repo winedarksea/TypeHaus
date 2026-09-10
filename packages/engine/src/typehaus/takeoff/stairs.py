@@ -14,6 +14,7 @@ closed-riser stair still buys a board for every one of them.
 
 from __future__ import annotations
 
+from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedStair
 
@@ -23,6 +24,21 @@ _M2_TO_FT2 = 10.7639104
 # The walking surfaces a stair buys as finish goods, and what each is ordered as.
 _TREAD_CATEGORIES = ("tread", "winder")
 _LANDING_CATEGORY = "landing"
+
+
+def separate_stair_wear_members(model: ResolvedModel):
+    """Explicit finish surfaces ordered by area, excluded from the lumber order.
+
+    A 24-inch composite tier represents several stock deck boards, not one oversized
+    lumber blank. Legacy stairs with no separate finish retain their existing order.
+    """
+    for stair in model.stairs:
+        authored = model.plan.by_tag(stair.tag)
+        if not isinstance(authored, Stair) or authored.tread_material is None:
+            continue
+        for member in stair.members:
+            if member.category in (*_TREAD_CATEGORIES, _LANDING_CATEGORY):
+                yield member
 
 
 def _in_conditioned_space(model: ResolvedModel, stair: ResolvedStair) -> bool:
@@ -83,6 +99,8 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         widest = max((m.length_m for m in treads), default=0.0)
         landing_area = sum(
             m.length_m * cross_section(m.profile).width_m for m in landings)
+        tread_area = sum(m.length_m * cross_section(m.profile).width_m for m in treads)
+        authored = model.plan.by_tag(stair.tag)
         rows.append({
             "stair": stair.tag,
             "conditioned": _in_conditioned_space(model, stair),
@@ -90,6 +108,9 @@ def stair_finish_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "treads": len(treads),
             "tread_run_in": round(stair.tread_depth_m / 0.0254, 2),
             "tread_lf": round(tread_lf * _M_TO_FT, 1),
+            "tread_material": getattr(authored, "tread_material", None)
+                              or getattr(authored, "material", None),
+            "tread_area_sqft": round(tread_area * _M2_TO_FT2, 1),
             "widest_tread_ft": round(widest * _M_TO_FT, 2),
             # One riser board per tread: the face below it. The model has no riser member —
             # a riser is the gap between two treads — but a closed-riser stair buys one.

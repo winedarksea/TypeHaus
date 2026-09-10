@@ -291,7 +291,7 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     assert all(item.sloped for item in rafters)
 
     row = next(row for row in hardware_takeoff(catlin_model)
-               if row["role"] == ROLE_SLOPED_JOIST_HANGER)
+               if row["role"] == ROLE_SLOPED_JOIST_HANGER and "ridge-beam" in row["basis"])
     assert row["part_number"] == "LSSR" and row["count"] == len(ridge_rafters)
 
     # Every catlin floor joist *bears* — on a plate, or on top of a beam — with four

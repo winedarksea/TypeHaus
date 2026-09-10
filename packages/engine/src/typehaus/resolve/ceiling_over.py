@@ -46,11 +46,8 @@ def decks_covering(face: Polygon,
 
     A candidate with NO authored outline cannot be tested and is kept. That is right where
     it is the storey's only deck — catlin's ``FS-ATTIC`` authors none because it spans the
-    whole attic footprint — and it is why a single candidate comes back unfiltered rather
-    than through a test it would fail for lack of data.
+    whole attic footprint — an outlined candidate is always tested, even when it is the only one.
     """
-    if len(candidates) <= 1:
-        return list(candidates)
     return [(storey, deck) for storey, deck in candidates
             if not getattr(deck, "outline", ())
             or Polygon([point.xy_m for point in deck.outline]).intersection(face).area > _EPS]
@@ -64,7 +61,9 @@ def _is_ceiling_deck(element: Any) -> bool:
     model's, not any particular house's.
     """
     if isinstance(element, FloorSystem):
-        return True
+        # An open exterior/entry platform sharing a building storey is not that room's
+        # ceiling. A deck can opt in explicitly by declaring a ceiling below it.
+        return element.service == "floor" or bool(element.ceiling_below)
     return isinstance(element, Slab) and element.datum != "walking_surface"
 
 
@@ -135,7 +134,8 @@ def deck_structure_underside_m(storey: Any, deck: Any) -> float | None:
     section = cross_section(deck.joists.member)
     if section is None:
         return None
-    return storey.elevation.meters - section.depth_m
+    top = deck.top_elevation.meters if deck.top_elevation is not None else storey.elevation.meters
+    return top - section.depth_m
 
 
 def ceiling_underside_m(storey: Any, deck: Any) -> float | None:

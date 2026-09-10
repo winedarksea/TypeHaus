@@ -41,56 +41,16 @@ def _solid_x_span(model, tag: str) -> tuple[float, float]:
     return min(xs), max(xs)
 
 
-def test_breezeway_stays_centred_between_the_two_doors_it_shelters(catlin_model):
-    """The invariant `houses/catlin/CLAUDE.md` says nothing enforces.
+def test_shared_landing_covers_both_door_widths(catlin_model):
+    from shapely.geometry import Polygon, box
 
-    Tolerance is 1/2", not zero: the centre is a derived midpoint, not a snapped one.
-    Half an inch is far tighter than the 3'-6" miss this is here to catch and still leaves
-    room for a deliberate inch of re-centring.
-
-    ** THE XFAIL CAME OFF ON 2026-09-09, AND THE ASSERTION NEVER MOVED. ** It was strict-
-    xfail from 2026-09-07, when the garage was centred on the house ridge and D-G-SERVICE
-    travelled with its wall to x=10'-0" while D-M-ENTRY stayed pinned at x=8'-0" by the
-    W-M-STRW bearing tee — leaving the enclosure 1'-0" off the pair's midpoint and half of
-    the service door opening onto air. The breezeway now spans both doors: 4'-6" centred on
-    their midpoint at x=9'-0". Nothing here was loosened to let that pass.
-    """
-    entry_x, _ = _opening_world_center(catlin_model, ENTRY_DOOR)
-    service_x, _ = _opening_world_center(catlin_model, SERVICE_DOOR)
-    doors_midpoint = (entry_x + service_x) / 2.0
-
-    spans = [_solid_x_span(catlin_model, tag) for tag in BREEZEWAY_GLAZING]
-    glazing_center = (min(s[0] for s in spans) + max(s[1] for s in spans)) / 2.0
-
-    assert glazing_center == pytest.approx(doors_midpoint, abs=0.5 * INCH), (
-        f"the breezeway is centred at x={glazing_center / FT:.3f}' but "
-        f"{ENTRY_DOOR}/{SERVICE_DOOR} are centred at x={doors_midpoint / FT:.3f}' — "
-        f"move _GLAZING_CENTER_X in params/breezeway.py to follow the doors"
-    )
-
-
-def test_breezeway_spans_both_landing_patches_at_four_feet_six(catlin_model):
-    """4'-6" E-W, and it is R311.3 that sets it rather than the sheet.
-
-    **This was `..._is_the_briefs_literal_four_feet` until 2026-09-09.** The brief's E-W
-    term is retired: two doors 2'-0" apart cannot both get a 36"-deep landing out of a
-    4'-0" enclosure, and `code.R311_3_exterior_landing` is what said so. 4'-6" is the
-    smallest half-foot module clearing the 4'-1 15/32" bare tangent that satisfies both
-    patches at the check's 85% bar. The N-S dimension is still the literal uncut sheet and
-    is still 4'-0"; only this one moved.
-
-    Measured panel-centre to panel-centre, which is the glazing line the module authors
-    (`_GLAZING_X0`/`_GLAZING_X1`); outer face to outer face is that plus one sheet
-    thickness, and picking the wrong one of the two is its own small trap.
-
-    Paired with the test above on purpose — "centred" and "wide enough" are one invariant
-    in two halves, and satisfying either alone is how the enclosure drifted last time.
-    """
-    centers = []
-    for tag in BREEZEWAY_GLAZING:
-        lo, hi = _solid_x_span(catlin_model, tag)
-        centers.append((lo + hi) / 2.0)
-    assert max(centers) - min(centers) == pytest.approx(4.5 * FT, abs=0.5 * INCH)
+    deck = catlin_model.plan.by_tag("FS-BW-FLOOR")
+    surface = Polygon([p.xy_m for p in deck.subfloor_outline])
+    for tag in (ENTRY_DOOR, SERVICE_DOOR):
+        x, y = _opening_world_center(catlin_model, tag)
+        south = y - 3 * FT if tag == SERVICE_DOOR else y + 7.25 * INCH
+        patch = box(x - 1.5 * FT, south, x + 1.5 * FT, south + 3 * FT)
+        assert surface.buffer(INCH).covers(patch), tag
 
 
 def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model):

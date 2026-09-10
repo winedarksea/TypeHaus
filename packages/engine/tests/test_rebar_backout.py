@@ -35,15 +35,15 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 # house is galvanized now, which also removes the dissimilar-metal couple a black cage lapped
 # to galvanized dowels would have been.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): 70.5,
-    ("column", "#5", "hdg-a767"): 304.7,
+    ("column", "#3", "hdg-a767"): 52.5,
+    ("column", "#5", "hdg-a767"): 225.8,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
     ("foundation wall", "#4", "hdg-a767"): 527.3,
     ("foundation wall", "#5", "hdg-a767"): 219.0,
     ("foundation wall", "#6", "hdg-a767"): 1039.2,
 }
-_TOTAL_LB = 3996.8
+_TOTAL_LB = 3899.9  # four retired passage cages: -18.0lb #3, -78.9lb #5
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0

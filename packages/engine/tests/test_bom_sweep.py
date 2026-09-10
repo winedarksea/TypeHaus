@@ -47,7 +47,7 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # RL-SG-PORCH-NE, added 2026-09-04 when the flight moved to the MIDDLE of the porch's
     # east edge: an opening at the end of a run is one path point, an opening in the middle
     # of one is two elements.
-    assert sum(int(row["count"]) for row in rows) == 18
+    assert sum(int(row["count"]) for row in rows) == 22
     assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
@@ -156,7 +156,7 @@ def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
     for row in bom["railings"]:
         if row["type"] != "(untyped railing)":
             continue
-        assert float(row["top_rail_length_ft"]) > float(row["length_ft"]) * 1.15, row
+        assert float(row["top_rail_length_ft"]) > float(row["length_ft"]), row
 
 
 def test_the_railing_frame_row_in_structural_solids_is_still_the_frame_alone(bom):

@@ -1,6 +1,6 @@
 # haus: editable
-# Garage — freestanding 24'x24' ICF stem + 2x6 wood walls, 4' north of the house
-# (west walls aligned). Wood walls sit on the ICF stem 22" above grade; the storey
+# Garage — 24'x24' ICF stem + 2x6 wood walls, moved 2'-6" north for the gable connector.
+# Wood walls sit on the ICF stem 22" above grade; the storey
 # elevation is the top of the stem. Overhead door faces NORTH — the street side, which is
 # what plan/site.py has always declared: SetbackSpec edge 2 (north) is "FRONT" and the water
 # service enters from the north. It faced east until 2026-09-07, drawn for a south lot with
@@ -39,39 +39,14 @@ from typehaus import (
 # The garage's two N-S wall lines, published so the ICF stem (params/foundations.py), the
 # slab, and the breezeway (params/breezeway.py) all derive from one number.
 #
-# 40'-8 5/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
-# EPS face is coplanar with the wood wall's SHEATHING face (both land on this line), so the
-# most-proud plane is the 7/8" corrugated panel at y = 40'-7 3/4" — what the breezeway
-# deck/glazing butt against, 4'-0 1/2" north of the house's cladding face
-# (y = 36'-7 1/4"): one UNCUT 4'-0" polycarbonate panel with a 1/2" reveal.
-#
-# Moving the wall lines with the stem (rather than aligning the stem alone) keeps the
-# breezeway slot and its uncut panel unchanged — see CLAUDE.md's ICF stem/wood-wall
-# coplanarity note; do not move these nodes independently of the stem.
-#
-# ** THIS NODE LINE TRACKS THE CLADDING FACE — every time the house's cladding at y=36'
-# stands further proud, this line moves north by the same amount to give the slot back. **
-# The garage's own cladding face moves it too: `GARAGE_WALL_2X6` puts a 7/8" corrugated
-# exposed-fastener panel where a 1/2" nail strip stood (the Zip-R-to-CDX swap behind it
-# moves nothing — both sheathings land on this node line by the wall's own `alignment`), so
-# 3/8" more panel standing proud is 3/8" less clear slot, and the node line gives it back.
-#
-# Each move spends the breezeway's reveal exactly: the slot has to stay 4'-0" on the nose
-# because an uncut 4'-0" polycarbonate sheet cannot be glazed into an opening it exactly
-# fills. Ripping the sheet was the detail-scale answer and is retired; this is the
-# site-scale one, and it is the better trade because the reveal is the only thing in the
-# slot that was ever free.
-#
-# ** DO NOT INSTEAD RECESS THE SHEATHING BEHIND THE NODE LINE to hold the cladding face
-# still. ** That reopens a rain-shelf defect the stem alignment was built to fix: the stem's
-# exterior EPS face would then stand proud of the wall above it, and the ledge that leaves
-# is exactly the shelf water sits on.
-# BOTH lines move together — the garage stays 24'-0" square, the stem, footings, slab and
-# breezeway all derive from these two numbers, and nothing north of the house is dimensioned
-# to a property line closer than 40'. Do NOT move the stem alone: CLAUDE.md's 1/2"
-# ``_axis_match`` tolerance means the whole foundation follows via ``Footing.center_on``.
-GARAGE_Y_SOUTH = ft(40, 8.625)
-GARAGE_Y_NORTH = ft(64, 8.625)
+# The selected study translates both original wall lines north by 30", keeping the
+# foundation quantities and wall/stem alignment. South cladding is y=43'-1 3/4", leaving
+# 6'-6 1/2" clear to the house. The old four-foot polycarbonate module is retired.
+# The south rake is six feet beyond this wall; its 6 1/2" house gap is the envelope joint,
+# not a roof bearing. Do not independently move the ICF or recess its wall sheathing:
+# their coplanar exterior faces prevent a water-catching shelf at the stem top.
+GARAGE_Y_SOUTH = ft(43, 2.625)
+GARAGE_Y_NORTH = ft(67, 2.625)
 
 # The garage's two E-W wall lines, published for the same reason as the pair above: the
 # stem, the footings, the slab and the service-door landing (params/foundations.py) all
@@ -93,22 +68,8 @@ GARAGE_Y_NORTH = ft(64, 8.625)
 # already 6" west of `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s bearing stack lands on
 # the north wall and runs to the footings, and a 36" RO cannot straddle it.
 #
-# So the two doors the breezeway spans are **2'-0" out of line**, and the enclosure now
-# straddles them instead of sitting on a shared centre that no longer exists: 4'-6" of
-# glazing centred on their midpoint at x=9'-0", spanning x 6'-9"..11'-3"
-# (`params/breezeway.py::_EW_FT`). `code.R311_3_exterior_landing` passes both doors — the
-# entry patch at 90.9%, the service patch at 91.7%, against its 85% bar. **This is settled;
-# do not "fix" it by moving the garage back.**
-#
-# ** IT COST TWO THINGS, BOTH RECORDED WHERE THEY LIVE. ** The E-W term of the breezeway's
-# "8 x 4 x 4" brief is retired and its roof sheet is now cut to 4'-6" rather than being an
-# exact half sheet (`params/breezeway.py` docstring). And `EQ-M-HP3-OD` had to move 2'-4"
-# east: its west face was at x=10'-0", which is where the old east glazing line stood, and
-# cabinet and glass INTERPENETRATED by 5/16" at 0 FAIL — nothing in the engine grades an
-# Equipment against a deck or a clearance envelope. That move took SL-M-HP3PAD with it and
-# pushed the front walk's west edge to x=15'-9". The cabinet's y-axis airflow clearances
-# are still short of Gree's published minima and are an accepted, deferred item:
-# `params/hp3_pad.py::_BACK_CLEAR_IN` carries the numbers and is the only record.
+# The two doors stay 2'-0" apart. The shared landing spans x=6'-6"..11'-6" to cover both
+# complete 36" patches; HP3 moves west of the roofed connector (params/hp3_pad.py).
 GARAGE_X_WEST = ft(6)
 GARAGE_X_EAST = ft(30)
 
@@ -218,31 +179,31 @@ WALLS = [
 # finding: nothing grades `back_side`. Confirm it in the viewer.
 STEM_TOP_Z_FLASHING = [
     Flashing(uid="4Z104BJ7TV", tag="TR-G-STEMZ-S1", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(6), ft(40, 8.225)), pt(ft(8, 3), ft(40, 8.225))),
+             path=(pt(ft(6), ft(43, 2.225)), pt(ft(8, 3), ft(43, 2.225))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     Flashing(uid="8JZR6X0A4X", tag="TR-G-STEMZ-S2", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(11, 9), ft(40, 8.225)), pt(ft(30), ft(40, 8.225))),
+             path=(pt(ft(11, 9), ft(43, 2.225)), pt(ft(30), ft(43, 2.225))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     # East: one unbroken run since the overhead door left this wall (2026-09-07).
     Flashing(uid="7PK70E7009", tag="TR-G-STEMZ-E", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(30, 0.4), ft(40, 8.625)), pt(ft(30, 0.4), ft(64, 8.625))),
+             path=(pt(ft(30, 0.4), ft(43, 2.625)), pt(ft(30, 0.4), ft(67, 2.625))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     # North: the two 4'-0" piers flanking the overhead door, walked E->W with the loop, so
     # N1 is the east pier (30'-0"->26'-0") and N2 the west (10'-0"->6'-0"). N2 keeps the uid
     # the retired east pier TR-G-STEMZ-E2 carried.
     Flashing(uid="CZJZNX97MB", tag="TR-G-STEMZ-N1", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(30), ft(64, 9.025)), pt(ft(26), ft(64, 9.025))),
+             path=(pt(ft(30), ft(67, 3.025)), pt(ft(26), ft(67, 3.025))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     Flashing(uid="HQQQFQ576Z", tag="TR-G-STEMZ-N2", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(10), ft(64, 9.025)), pt(ft(6), ft(64, 9.025))),
+             path=(pt(ft(10), ft(67, 3.025)), pt(ft(6), ft(67, 3.025))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     Flashing(uid="DHPT0K1FB2", tag="TR-G-STEMZ-W", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(5, 11.6), ft(64, 8.625)), pt(ft(5, 11.6), ft(40, 8.625))),
+             path=(pt(ft(5, 11.6), ft(67, 2.625)), pt(ft(5, 11.6), ft(43, 2.625))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
 ]
@@ -355,7 +316,7 @@ OPENINGS = [
 ]
 
 ROOMS = [
-    Room(uid="CGR401AAAA", tag="RM-GARAGE", seed=pt(ft(18), ft(60)),
+    Room(uid="CGR401AAAA", tag="RM-GARAGE", seed=pt(ft(18), ft(62, 6)),
          occupancy=Occupancy.GARAGE, conditioned=False,
          floor_finish="sealed-concrete"),
 ]
@@ -402,7 +363,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
-                      slope="1/16 in/ft south on both eaves — east to TR-G-LEADER-E, west to TR-G-LEADER-W",
+                      slope="1/16 in/ft north on both eaves — east to TR-G-LEADER-E, west to TR-G-LEADER-W",
                       downspout_ref="TR-G-LEADER-E"),
 )
 
@@ -424,7 +385,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # south trough end, 16" of overhang south of GARAGE_Y_SOUTH plus the same 3/4".
 _GARAGE_LEADER_E = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
-    position=pt(ft(31, 3.25), ft(39, 5.375)),   # south end of the east trough, on centreline
+    position=pt(ft(31, 3.25), ft(68, 5.875)),   # north end, clear of the entry tiers
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
     # its own if the roof does; these are the two numbers that have to follow it by hand.
     top_elevation=ft(7, 6),             # inside the trough floor
@@ -435,7 +396,7 @@ _GARAGE_LEADER_E = Downspout(
 # an ABSENT uid. It skips `uid=""`, which is why the field is omitted rather than blanked.
 _GARAGE_LEADER_W = Downspout(
     uid="WB6YFR9QB2", tag="TR-G-LEADER-W",
-    position=pt(ft(4, 8.75), ft(39, 5.375)),    # south end of the west trough, on centreline
+    position=pt(ft(4, 8.75), ft(68, 5.875)),    # north end, clear of the west screen
     top_elevation=ft(7, 6),
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
@@ -453,28 +414,15 @@ ROOFS = [
     Roof(uid="CGRF01AAAA", tag="RF-GARAGE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-G-E", "W-G-W"),
          assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="y",
+         edge_overhangs=(("south", ft(6)),),
          edge_trim_material="metal-dark-exterior",
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
 # --- NO SNOW RETENTION, AND THAT IS EARNED (2026-09-07) ---------------------------------
 #
-# Six S-5! ColorGard guards stood on the south slope from 2026-08 until the ridge turned.
-# They were there for one target: the garage shed SOUTH onto the breezeway's polycarbonate
-# canopy GL-BW-ROOF, 3.0' below the eave in the discharge band — a willing 4:12 standing-seam
-# slope over an unwilling multiwall-polycarbonate roof.
-#
-# With the ridge on "y" the south side is a RAKE. A rake sheds ALONG itself into the eave
-# beside it, so nothing discharges over the breezeway at all. The two slopes now face EAST
-# (open ground and the HP1 pad, which is a cabinet at grade and not a roof) and WEST (the
-# window wall and the walk, no roof below). `structural.sliding_snow` only sees ROOFS below a
-# slope, so it reports nothing either way — the absence of a target is the design fact, not
-# the check's silence.
-#
-# ** IF THE RIDGE EVER TURNS BACK, THE GUARDS COME BACK WITH IT. ** They were a row at
-# y = 39'-7 1/4", z = 8'-1", x 1'-4"..8'-0" — canopy width plus a full bay of margin each
-# end, since snow releases at an angle — on `S-5! ColorGard`, whose crossbar bills its seam
-# clamps automatically through StructuralHardware.requires_role.
+# Entry-zone snow retention is authored by params/breezeway.py. Its rail/clamp layout
+# is a supplier-design allowance; north leaders keep meltwater off the east tiers.
 
 ALARMS = [
     # A garage gets a *heat* detector, not smoke: exhaust, dust and outdoor-swing temps would
@@ -521,7 +469,7 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(8, 6), ft(47, 3.25)),
+          width=ft(3), start=pt(ft(8, 6), ft(50, 9.625)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           material="kdat"),
@@ -544,19 +492,11 @@ STAIRS = [
 # the treads (`serves_stair` rakes the rail along the flight's nosing line) and the rail
 # tops out 36" above them, inside R311.7.8.1's 34"-38".
 #
-# FLAGGED, NOT ANSWERED: the landing at 0'-0" is **34" above the garage slab**, over
-# R312.1.1's 30" threshold, so its open east and north sides want a guard as well as this
-# handrail. That is a design decision with a cost and a look to it, and it is the owner's,
-# not this file's.
-#
-# **Nothing in the engine will ask.** `code.R312_1_guard_height` censuses `FloorSystem`s and
-# `code.R312_1_guard` censuses `FloorOpening`s; SL-G-STEP-0 is a `Slab`, so it is in neither
-# census and its 34" drop is invisible to both. That is a real coverage gap, not a pass —
-# recorded in plans/TODO.md rather than papered over here, because the fix is a rule that
-# walks slab edges and belongs with the guard rules, not with this stair.
+# The composite landing continuation has west/east guards in params/breezeway.py.
+
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(8, 6), ft(47, 3.25)), pt(ft(8, 6), ft(43, 7.25))),
+            path=(pt(ft(8, 6), ft(50, 9.625)), pt(ft(8, 6), ft(47, 1.625))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
             base_elevation=ft(-2, -10), post_spacing=inch(36), post_size="2x2",
             rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",

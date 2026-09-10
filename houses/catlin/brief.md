@@ -4,7 +4,7 @@ The real house this tool exists for: a 36'x36' three-storey-plus-basement family
 house in Minnesota (climate zone 6), with a freestanding ICF garage, a freestanding
 two-storey concrete porch / sunken-garden / balcony structure — the balcony carried on
 four 12" cast columns fixed at their bases and two wood posts, under treated glulam beams —
-and a post-mounted breezeway between house and garage.
+and a frost-foundation bridge landing under the garage gable extension.
 
 - **Spatial program:** walkout basement (sauna, gym, playroom, shop), open living
   main floor + main-floor suite, four bedrooms + plant room upstairs, habitable

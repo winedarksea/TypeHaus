@@ -7,7 +7,7 @@ import math
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
-from typehaus.resolve.stairs.common import _notch_z, _tread_board_profile
+from typehaus.resolve.stairs.common import _TREAD_THICKNESS_M, _tread_board_profile
 
 
 def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
@@ -18,20 +18,25 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
     sign = -1 if stair.run_reversed else 1
+    bays = (max(1, math.ceil(width / stair.stringer_spacing.meters - 1e-9))
+            if stair.stringer_spacing is not None else 1)
+    offsets = [width * index / bays for index in range(bays + 1)]
     if along_x:
         end_x, end_y = start_x + sign * going * (risers - 1), start_y
-        strings = (((start_x, start_y), (end_x, end_y)),
-                   ((start_x, start_y + width), (end_x, end_y + width)))
+        strings = [((start_x, start_y + offset), (end_x, end_y + offset))
+                   for offset in offsets]
     else:
         end_x, end_y = start_x, start_y + sign * going * (risers - 1)
-        strings = (((start_x, start_y), (end_x, end_y)),
-                   ((start_x + width, start_y), (end_x + width, end_y)))
+        strings = [((start_x + offset, start_y), (end_x + offset, end_y))
+                   for offset in offsets]
     stringer_depth = cross_section("2x12").depth_m
     # Both ends are notch lines — the first tread board and the arrival subfloor sit *on*
     # them (``_notch_z``), which is what keeps the rake straight and the first and last
     # risers the same height as the rest.
-    spring_notch = _notch_z(z0 + riser)
-    arrival_notch = _notch_z(z0 + riser * risers)
+    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
+                 else _TREAD_THICKNESS_M)
+    spring_notch = z0 + riser - thickness
+    arrival_notch = z0 + riser * risers - thickness
     out = [
         FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
                      spring_notch - stringer_depth, spring_notch,
@@ -39,7 +44,7 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                      z0_end_m=arrival_notch - stringer_depth, z1_end_m=arrival_notch)
         for index, (a, b) in enumerate(strings)
     ]
-    tread_profile = _tread_board_profile(tread_depth)
+    tread_profile = _tread_board_profile(tread_depth, thickness)
     for index in range(risers - 1):
         # The axis is the board's *centreline*, half a going past the riser it sits on: a
         # ``deck`` footprint is centred on the axis, so anchoring it on the riser line would
@@ -60,6 +65,6 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                           (start_x + width, start_y + sign * riser_s))
         top = z0 + riser * (index + 1)  # the finished walking face, board dropped below it
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
-                                a, b, _notch_z(top), top, stair.width.meters,
+                                a, b, top - thickness, top, stair.width.meters,
                                 riser_line=riser_line))
     return tuple(out)

@@ -101,6 +101,15 @@ class Stair(Element):
     # treated exterior flight beside a painted interior one was the same colour as it.
     # A catalog material ref (``kdat``, ``spf``); ``None`` keeps the category palette.
     material: str | None = None
+    # An exterior composite wear surface and its PT carriage are different orders.
+    # None preserves the framing material on the treads and the existing lumber bill.
+    tread_material: str | None = None
+    # Straight flights only: manufacturer maximum support spacing, evenly divided
+    # across the width, including both edge stringers. None retains two edge stringers.
+    stringer_spacing: Length | None = None
+    # Straight flights only; finished rises stay fixed while the framing drops by this
+    # thickness. None retains the ordinary 1 1/2-inch tread board.
+    tread_thickness: Length | None = None
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False

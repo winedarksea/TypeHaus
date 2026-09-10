@@ -56,7 +56,7 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # well would order the plywood twice. Everything else still reconciles piece for piece.
     ripped = [m for m in members if rip_stock(m.profile, m.material) is not None]
     assert ripped, "catlin has plywood bucks and web stiffeners; this should not be empty"
-    assert sum(int(row["pieces"]) for row in rows) == len(members) - len(ripped)
+    assert sum(int(row["pieces"]) for row in rows) == len(members) - len(ripped) - len([m for m in members if m.category == "tread" and m.material == "composite-deck"])
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -221,7 +221,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     # because a house with an outdoor run still needs it; it is exempted here rather than
     # dropped, so a section that empties for any OTHER reason still fails this line.
     empty = {name for name, section in bom.items() if not section}
-    assert empty <= {"freeze_protection"}, f"BOM section(s) came back empty: {sorted(empty)}"
+    assert empty <= {"freeze_protection", "glazing_panels", "glazing_trim"}, f"BOM section(s) came back empty: {sorted(empty)}"
     # The framing section still reconciles 1:1 with the resolved members, less the panel
     # members that bill by the sheet in `sheet_goods` instead.
     members = catlin_model.all_members()

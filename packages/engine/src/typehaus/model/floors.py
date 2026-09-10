@@ -107,6 +107,9 @@ class FloorSystem(Element):
     floor-to-floor rise (→ 11 §Floors)."""
 
     joists: JoistSpec
+    # Absolute joist-top datum for a local deck whose finished boards must meet a
+    # threshold independently of the containing storey's structural floor datum.
+    top_elevation: Length | None = None
     # Sistered plies + blocking under concentrated loads (a post bearing on the deck).
     # Empty is the ordinary case: a deck with no point load on it needs none.
     reinforcements: tuple[JoistReinforcement, ...] = ()

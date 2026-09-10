@@ -53,6 +53,12 @@ def _resolve_stair(
     if rise <= 0:
         return None, [_error("integrity.stair_rise", f"stair {stair.tag} does not rise to "
                              "its destination", stair.tag)]
+    for name in ("stringer_spacing", "tread_thickness"):
+        value = getattr(stair, name)
+        if value is not None and (value.meters <= 0 or stair.layout != "straight"):
+            return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
+                                 f"{name} must be positive and is supported only for "
+                                 "straight flights", stair.tag)]
 
     if stair.floor_opening is None:
         # A run that passes through no floor — a step-down within one storey. There is no
@@ -218,10 +224,12 @@ def _in_stair_material(stair: Stair, members: tuple[FramedMember, ...]
     a PT flight is PT for the same reason its stringers are. A generator that has already
     named a material for a member keeps it — nothing here overrides a more specific answer.
     """
-    if stair.material is None:
+    if stair.material is None and stair.tread_material is None:
         return members
     return tuple(member if member.material is not None
-                 else replace(member, material=stair.material)
+                 else replace(member, material=(stair.tread_material or stair.material)
+                              if member.category in {"tread", "winder", "landing"}
+                              else stair.material)
                  for member in members)
 
 

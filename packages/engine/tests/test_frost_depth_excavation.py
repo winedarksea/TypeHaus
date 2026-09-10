@@ -239,7 +239,7 @@ def test_a_freestanding_column_pad_is_not_called_a_retaining_structure(frost_by_
 def test_footings_away_from_the_excavation_are_unmoved(frost_by_tag):
     """A strict refinement: nothing that used to pass on the global plane stops passing."""
     found = frost_by_tag
-    for tag in ("FT-B-N1", "FT-B-W1", "FT-B-E1", "FT-GF-N", "PD-BW-1"):
+    for tag in ("FT-B-N1", "FT-B-W1", "FT-B-E1", "FT-GF-N"):
         assert found[tag].result is Result.PASS, tag
 
 

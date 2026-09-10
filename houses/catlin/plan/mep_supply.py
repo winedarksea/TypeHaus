@@ -54,7 +54,7 @@ from typehaus.model import m
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(38)), pt(ft(11), ft(38)),
-                  pt(ft(11), ft(59, 6)), pt(ft(11), ft(59, 6))),
+                  pt(ft(11), ft(62)), pt(ft(11), ft(62))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),
