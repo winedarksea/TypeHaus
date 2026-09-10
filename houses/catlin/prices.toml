@@ -1920,7 +1920,7 @@
 # upward opening to collect dust. ** CHROME WAS THE ONLY FINISH CONFIRMED IN STOCK, AND
 # CHROME IS THE ONE METAL THAT FIGHTS WARM OAK ** -- confirm a BN SKU before ordering,
 # or take Modern Forms Loft WS-3624-BN at $143.
-"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 5 ea
+"ED-T-LT-MIRROR" = { material = { low = 118, high = 300 }, labour = { low = 60, high = 135 } }  # 6 ea — the sixth is ED-A-STUDIO-BAR-PEND (2026-09-10), the studio bar's task light: a wall-mounted 24" damp bar replacing a pendant that could not fit under the 6:12 rake. See plan/lighting_attic.py
 # ** REPRICED AND RE-SCOPED 2026-09-06: two of them now, and the second is the primary
 # suite's (owner's call -- an integrated LED mirror, not sconces). ** Robern Vitality
 # YM0030CPFPD3, 30" round Perimeter, at $831.94 sale against $1,479 list. The old $150-500
@@ -1949,7 +1949,7 @@
 # a 36" linear bar pendant is a stocked article at the low end where the dining fixture's
 # high end is an imported statement piece, and this one is specified against a lumen number
 # the room's R303.1 compliance depends on rather than against a look.
-"ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 1 ea
+"ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 3 ea — ED-G-EXT-LT-E and -W, a matching pair flanking D-G-OVERHEAD (one fitting until 2026-09-07), and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill

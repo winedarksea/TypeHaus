@@ -57,11 +57,27 @@ from typehaus.model import m
 # shower pan, where a sconce is the wrong fitting and a 26.6 deg tilt aims INTO the room
 # rather than away from it. Its own note says so.
 #
-# ** AND THE LUMEN FLOOR IS THE CONSTRAINT THAT SHAPED THE LAYOUT, NOT TASTE. ** RM-A-STUDIO
-# is on R303.1 Exception 1 and needs 12.5 lm per square foot of point luminaires; a LightRun
-# counts for nothing. The studio has exactly one mountable wall (the centre wall, ~11 ft of
-# it free of the bar), which is why the scheme is five sconces plus a real pendant over the
-# bar and not eight sconces. See the studio block for the arithmetic.
+# ** THE LUMEN FLOOR SHAPED THIS LAYOUT AND NO LONGER BINDS IT (2026-09-10). ** It read:
+# RM-A-STUDIO is on R303.1 Exception 1 and needs 12.5 lm per square foot of point
+# luminaires, which is why the scheme is five sconces plus a real fitting over the bar and
+# not eight sconces. That was true of a check dividing by the room's whole 356 sf of deck.
+# `code.R303_1_light_and_ventilation` now divides by the area R304.3 lets count — 146 sf,
+# the deck less what the 6:12 rake takes below 5'-0" — and at that denominator the room
+# passes on GLAZING, 13.6 sf against 11.7 sf required. Exception 1 is not reached, so no
+# lumen floor is adjudicated here at all.
+#
+# ** WHAT THAT MEANS FOR ANYTHING BELOW THAT CITES R303.1: it is history, not a
+# constraint. ** The room carries 5,400 lm over 146 sf of floor a person can stand on. Every
+# fitting in the studio block is now a DESIGN choice and may be deleted on taste alone — the
+# opposite of the rule the rest of this header states. Two things are still real: a LightRun
+# would count for nothing if the floor ever came back, and the studio still has exactly one
+# mountable wall (the centre wall, ~11 ft of it free of the bar), so a fitting deleted here
+# cannot simply be re-sited somewhere better.
+#
+# ** THE READING IS ARGUABLE. ** R303.1 does not cite R304.3, and a plan reviewer taking the
+# literal scope puts this room back on Exception 1 with a 4,457 lm floor — which five
+# sconces plus the bar bar only just clear. Read `_r303_floor_area` in
+# checks/code/mn_residential/ventilation.py before deleting a fitting on the strength of it.
 ATTIC_LIGHTING = [
     # A 43 ft2 nook with no wall on the way in to put a switch on, so the fixture carries
     # its own (notes: "spotlight sconce with switch on sconce"). No `controlled_by`,
@@ -156,34 +172,44 @@ ATTIC_LIGHTING = [
     #   * 6 fc delivered, computed as lumens x 0.60 x 0.80 / area_sf — i.e. LUMENS >= 12.5 x
     #     the room's square feet, which at 356.6 sf is 4,457 lm.
     #
-    # ** SIX CANS BECAME FIVE SCONCES AND A PENDANT (2026-09-06), UID FOR UID. ** CAN1..CAN5
-    # keep their uids as WALL1..WALL5 and CAN6's uid carries the bar pendant, so the "nothing
-    # in this file may be deleted" rule in the header holds literally. The count went
-    # 6,000 lm -> 5,900 lm, 8.08 fc -> 7.95 fc: still 32% clear of the floor, which is the
-    # same "survive the room growing 30%" margin the six-can scheme was specified to hold.
+    # ** SIX CANS BECAME FIVE SCONCES AND A PENDANT (2026-09-06), UID FOR UID, AND FIVE
+    # BECAME THREE (2026-09-10). ** CAN1..CAN5 kept their uids as WALL1..WALL5 and CAN6's
+    # uid carries the bar fitting. WALL2 (QTA000BAAA) and WALL4 (KR49G4VP4A) are now DELETED
+    # outright, uids retired — never reuse either.
     #
-    # ** THE LAYOUT IS DICTATED BY THERE BEING ONE WALL. ** Both gables rake to a 1 1/2"
-    # plate, so the only full-height wall in a 356 sf room is the centre wall, x=18'-0",
-    # west face at x=17'-8 5/8" and the device line 2" off it at 17'-6 5/8" (a 4"-deep
-    # body's own half — the offset ED-A-STUDY-SPOT uses on the far side of the same wall).
-    # Five at 2'-6" centres from y=2'-0" to y=12'-0", clear of ED-A-STUDIO-SW's plate at
-    # y=6'-0"/46" by height.
+    # ** WHY IT COULD GO: THE LUMEN FLOOR STOPPED BINDING THIS ROOM. ** Five at 2'-6" was
+    # specified to hold 32% clear of a 4,457 lm R303.1 Exception 1 floor computed over the
+    # room's whole 356 sf. `code.R303_1_light_and_ventilation` divides by R304.3's 146 sf
+    # now, RM-A-STUDIO passes on GLAZING, and Exception 1 is never reached — see this file's
+    # header. Nothing in the code book was holding the fourth and fifth fittings up.
     #
-    # ** THE WALL'S NORTH END IS FREE AGAIN AND NO SIXTH SCONCE IS WANTED (2026-09-09). **
-    # The bar used to take y 12'-6"..17'-1" of this wall and that is what stopped the run at
-    # 12'-0"; the whole 17'-4" is bare now that the kitchenette is on W-A-BATH-S. The count
-    # stands anyway: five plus the 1,800 lm pendant is 5,900 lm against a 4,457 lm floor —
-    # 32% clear, the margin this scheme was specified to hold — and a sixth fitting buys
-    # light where nobody stands and spends the ALWAYS_ON headroom the backup cycle is graded
-    # against. ** IT IS NOT EIGHT EITHER: ** eight would not fit the wall even now with the
-    # switch and the two device lines on it.
+    # ** WHY IT SHOULD GO: 2'-6" IS A WALL-WASH RHYTHM, NOT A ROOM-LIGHTING ONE. ** Five
+    # up/down sconces at 30" centres over a 10'-0" run is a gallery cadence in a room that
+    # is a guest studio, and it was arrived at by dividing a lumen total by a fitting, not by
+    # asking what the wall wanted. Three at **5'-0"** centres — y=2'-0", 7'-0", 12'-0" — keep
+    # the run's own endpoints, so the composition is unchanged and only the infill goes.
+    # 3,500 lm -> 2,100 lm of sconce; the room totals 4,000 lm.
+    #
+    # ** THE ONE THING THIS SPENDS, STATED PLAINLY: the literal-reading fallback is gone. **
+    # If a plan reviewer refuses the R304.3 denominator (the finding prints both areas for
+    # exactly that argument), this room returns to Exception 1 owing 4,457 lm, and 4,000 lm
+    # FAILS it by 457. Five sconces cleared it; four would have (4,700 lm). **The remedy is
+    # to restore ONE fitting**, not to redesign the room — mint a fresh uid at y=4'-6" or
+    # y=9'-6" and the run reads four at 40" centres.
+    #
+    # ** THE LAYOUT IS STILL DICTATED BY THERE BEING ONE WALL. ** Both gables rake to a
+    # 1 1/2" plate, so the only full-height wall in a 356 sf room is the centre wall,
+    # x=18'-0", west face at x=17'-8 5/8" and the device line 2" off it at 17'-6 5/8" (a
+    # 4"-deep body's own half — the offset ED-A-STUDY-SPOT uses on the far side of the same
+    # wall). All three clear ED-A-STUDIO-SW's plate at y=6'-0"/46" by height.
+    #
+    # ** THE WALL'S NORTH END IS BARE AND NO FITTING IS WANTED THERE (2026-09-09). ** The bar
+    # used to take y 12'-6"..17'-1" and that is what stopped the run at 12'-0"; the whole
+    # 17'-4" is free now that the kitchenette is on W-A-BATH-S. A fitting north of 12'-0"
+    # buys light where nobody stands and spends the ALWAYS_ON headroom the backup cycle is
+    # graded against, which was true at five and is true at three.
     ElectricalDevice(uid="QTA0008AAA", tag="ED-A-STUDIO-WALL1", kind=DeviceKind.LIGHT,
                      position=pt(inch(210.6), ft(2)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    ElectricalDevice(uid="QTA000BAAA", tag="ED-A-STUDIO-WALL2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(210.6), ft(4, 6)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -192,34 +218,60 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    ElectricalDevice(uid="KR49G4VP4A", tag="ED-A-STUDIO-WALL4", kind=DeviceKind.LIGHT,
-                     position=pt(inch(210.6), ft(9, 6)), type_ref="ED-T-LT-SCONCE-UD",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
-                     controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="6M2C9K60B8", tag="ED-A-STUDIO-WALL5", kind=DeviceKind.LIGHT,
                      position=pt(inch(210.6), ft(12)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(-90),
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    # The bar pendant (owner, 2026-09-06), FOLLOWED THE BAR ONTO W-A-BATH-S AND LOST ITS DROP
-    # (2026-09-09). It hung at (16'-9", 14'-10") on a 2'-6" drop under the centre wall's
-    # 8'-6 3/4" ceiling. Over the kitchenette the rake gives 6'-3" at the unit's west end and
-    # 7'-2" at its east, so 30" of drop would put the shade below head height.
+    # ** THE BAR PENDANT IS GONE AND A WALL TASK BAR IS IN ITS PLACE (2026-09-10). ** The
+    # pendant was authored with `drop=inch(4)` and NO `elevation`, and that is the whole bug:
+    # `resolve/placeables.py` hangs a bare `drop` off `floor + storey.default_ceiling_height`,
+    # which on this storey is the 11'-0" nominal in plan/manifest.py. It resolved to 10'-8"
+    # above the attic floor with its 2'-6" body running to 13'-2" — four feet ABOVE the roof,
+    # which is what the viewer showed. The same trap ED-S-STAIR-CHAND's note in plan/lighting.py
+    # already warns about, and the same reason SF-S-HP1's air handler carries a `soffit_ref`.
     #
-    # ** THE OUTPUT IS WHAT COULD NOT CHANGE, SO THE FITTING DID. ** This is 31% of the room's
-    # code lumens: drop it, or substitute anything under 1,800 lm, and RM-A-STUDIO goes to a
-    # FAIL on R303.1 (see the lumen floor in the header). Same 1,800 lm fixture, same circuit,
-    # same switch — a near-flush 4" drop instead of a hung one.
+    # ** BUT THE HEIGHT WAS NEVER THE REAL PROBLEM — THERE IS NO ROOM FOR A PENDANT HERE. **
+    # FURN-A-STUDIO-BAR-BASE is 54 3/4" tall and the 6:12 underside `1 1/2" + x/2` over its
+    # west end is 4'-11 1/4"; BK-A-BATH-S (plan/backing.py) already tops out at 53 1/4" for
+    # exactly that reason. Over the bowl at x=12'-8 1/2" the underside is 6'-5 3/4". That
+    # leaves 17"-23" of air above the unit, and the person at this bowl stands in it. The
+    # 2026-09-09 note claimed the fitting became "a near-flush 4" drop"; only the PLACEMENT
+    # changed, and `ED-T-LT-PENDANT-BAR` stayed the 2'-6" hung assembly it always was.
     #
-    # It sits over the BOWL at (12'-8 1/2", 16'-2 5/8"), not over the middle of the unit: that is
-    # the tall end (`1 1/2" + x/2` = 6'-8 7/8") and the end a person actually stands at. A 4"
-    # drop puts the shade bottom at ~6'-4 7/8", over a counter and not over the floor.
+    # ** ED-T-LT-MIRROR, MARK P — A SECOND INSTANCE OF A ROW ALREADY IN THE SCHEDULE, ** the
+    # same move ED-A-STUBATH-MIRROR below makes and for the same reason: a 24" damp-rated LED
+    # task bar is the honest article over a wet-bar bowl, where a decorative pendant was
+    # ambient light in the one place this room wanted task light. Damp rating is not
+    # incidental — this is directly over a sink.
+    #
+    # ** THE STATION IS THE BATH WALL, NOT THE CEILING, ** which is the rule the whole storey
+    # went to on 2026-09-06: a flat trim in a 6:12 plane throws its cone 26.6 deg off plumb,
+    # and a surface fitting on the rake would have taken the same aim penalty the cans did.
+    # On W-A-BATH-S's south face (y=17'-1 5/8"), back on the face — a 2"-deep body at
+    # y=17'-0 5/8" — on FX-A-STUDIO-BAR-SINK's own x, exactly the idiom the bath bar uses.
+    #
+    # 4'-10" AFF, and both bounds are real. Below: the unit's own top rail at ~52", which
+    # BK-A-BATH-S is blocked for; 58" clears it by 6". Above: a 24" bar spans x 11'-8 1/2"..
+    # 13'-8 1/2", where the underside runs 5'-11 3/4"..6'-11 3/4" — the 3" body tops at
+    # 5'-1" with 10 3/4" to the roof plane at its worst station. It is 22"-31" over the
+    # worktop, which is backsplash task height, not a mirror height: 6'-6" is what the two
+    # bars over a BASIN take, and it does not exist at this x.
+    #
+    # ** THE LUMEN QUESTION IS SETTLED AND IT IS NO LONGER A CODE QUESTION (2026-09-10). **
+    # When this fitting was swapped, R303.1 Exception 1 wanted 12.5 lm/sf over the room's
+    # whole 356 sf — 4,450 lm against 5,900 installed — so trading 1,800 lm for 1,300 was
+    # graded against a real floor. The second look that paragraph asked for happened: the
+    # check divides by R304.3's 146 sf now, the room passes on glazing, and Exception 1 is
+    # not reached. See this file's header. The 1,300 lm is a task-lighting number today.
+    #
+    # Tag and uid are kept so the element's GlobalId follows it across the retype, the way
+    # FURN-A-STUDIO-BAR-BASE kept 4GVQGBXMS3 through the SUNNERSTA swap.
     ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(inch(152.5), inch(194.625)), type_ref="ED-T-LT-PENDANT-BAR",
-                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO",
+                     position=pt(inch(152.5), inch(204.625)), type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
                      controlled_by=("ED-A-STUDIO-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(4))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(58))),
     # On W-A-C1B's west face at 6'-0", position unchanged: the two centre-wall segments are
     # collinear, but the wall south of y=5'-7" faces RM-A-STUDY and the studio does not start
     # until that line. A station 5" further south is a switch in the wrong room.

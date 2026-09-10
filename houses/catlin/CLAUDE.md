@@ -620,18 +620,36 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     door is **oak** and always has been. BEDROOM is load-bearing four times: R310
     (PASSing on `WIN-A-S-JUL-W` with nothing added), the whole-house ventilation count,
     R314/R315, and `electrical.receptacle_spacing` evaluating the room at all.
-    **R303.1 is answered by Exception 1, not by glazing** — **13.6 sf against 28.5 sf**
-    (the four eave windows went with the knee walls), and no
-    glazing is added because the south gable's mirror about x=18' is not negotiable and the
-    only levers left are a shed dormer or a roof penetration, both excluded. **The studio's
-    daylight dropped about a third and the owner should see that stated rather than discover
-    it.** Legal, and unchanged in KIND from before — but the lumens below are doing more
-    work than they were. Exception 1
-    needs a fresh-air SUPPLY register in the room (`REG-A-HP-WEST`, re-pointed — **no
-    mini-split**) and **lumens ≥ 12.5 × the room's sq ft**: 4,457 lm at 356.6 sf. Six cans plus
-    the sconce give 6,000 lm = **8.08 fc**, chosen over five cans' 6.9 fc so the margin survives
-    the room growing 30%. **A `LightRun` counts for nothing here** — `_room_lumens` excludes
-    cove and tape by its own docstring.
+    **R303.1 IS ANSWERED ON DAYLIGHT SINCE 2026-09-10, AND IT USED TO BE ANSWERED BY
+    EXCEPTION 1.** The room has **13.6 sf of glazing** (the four eave windows went with the
+    knee walls) and no glazing is added, because the south gable's mirror about x=18' is not
+    negotiable and the only levers left are a shed dormer or a roof penetration, both
+    excluded. **The studio's daylight dropped about a third and the owner should see that
+    stated rather than discover it.**
+    - **What changed is the DENOMINATOR, not the room.** `code.R303_1_light_and_ventilation`
+      divided by the room's whole 356 sf of deck. It now divides by the area R304.3 lets
+      count — **146 sf**, the deck less the 210 sf a 6:12 rake takes below 5'-0" — so the
+      test reads 13.6 sf against **11.7 sf** required and passes on glazing outright, with
+      6.8 sf openable against 5.9. `ResolvedRoom.head_limited_area_m2` is the source and it
+      measures to the roof UNDERSIDE, which is why it reads 146 sf where
+      `code.R305_ceiling_height` says 190 sf off the rafter TOP. The two are not reconciled
+      and both docstrings say so.
+    - **IT IS A READING, AND A PLAN REVIEWER MAY ARGUE IT.** R303.1 says "the floor area of
+      such rooms" and does not cite R304.3; R304.3's own operative words are scoped to
+      R304.1's 70 sf. On the literal reading this room owes 8% of 356 sf, is short, and is
+      back on Exception 1. The finding prints BOTH areas and the section for exactly that
+      conversation — see `_r303_floor_area` in `checks/code/mn_residential/ventilation.py`,
+      which carries the argument and its two known limits.
+    - **SO THE LUMEN FLOOR NO LONGER BINDS THIS ROOM, and every "code number" claim about
+      its fixtures is now stale.** Exception 1 is not adjudicated at all while the room
+      passes on daylight. The old floor was 4,457 lm at 356.6 sf; the room carries 5,400 lm.
+      **Anything in `plan/lighting_attic.py` that says a fitting is held by R303.1 is
+      history** — the fittings are a design choice now, and the room is over-lit for its
+      146 sf. **`REG-A-HP-WEST` stays regardless**: it is the room's fresh-air supply and
+      `mep.ventilation_distribution` grades it on BEDROOM occupancy, not on Exception 1.
+    - **The revert is one helper.** Make `_r303_floor_area` return `area_m2` unconditionally
+      and the room goes straight back onto Exception 1 with its 4,457 lm floor. Nothing else
+      in the check moved, and every other room in the house reports byte-identically.
   - **`RM-A-STUBATH`**, x 9'-10 7/8"..17'-8 5/8", y 17'-6 3/8"..22'-1 5/8", `vinyl-sheet`.
     **The tag is not `RM-A-STUDIO-BATH`, and that is not cosmetic**: `electrical.room_lighting`
     matches devices by `ED-{room.tag[3:]}-*`, so that name would prefix-match the studio and

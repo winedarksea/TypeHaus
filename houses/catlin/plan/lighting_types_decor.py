@@ -191,20 +191,32 @@ DECORATIVE_LUMINAIRE_TYPES = (
                          "UL/ETL/cETLus mark on the fixture itself."),
 
     # M1: the attic studio's bar pendant (2026-09-06). A separate mark from M, not a second
-    # instance of it: M is a 4'-0" dining fixture and this hangs over a 4'-7" bar run in a
-    # 356 sf room, where a 48" linear would read as the dining room's fixture put somewhere
-    # it does not belong.
+    # instance of it: M is a 4'-0" dining fixture and this would have hung over a 4'-7" bar
+    # run in a 356 sf room, where a 48" linear would read as the dining room's fixture put
+    # somewhere it does not belong.
     #
-    # ** ITS LUMENS ARE A CODE NUMBER, NOT A PREFERENCE. ** RM-A-STUDIO is habitable only
-    # under R303.1 Exception 1 and needs 4,457 lm of POINT luminaires; five ED-T-LT-SCONCE-UD
-    # and ED-A-STUDIO-SCONCE give 4,100, so 1,800 lm here is what carries the room and 357 lm
-    # is the whole slack. Substituting a decorative fixture "of about this size" is how that
-    # gets lost — TARGET THE SPECS, NOT THE LOOK, the same way mark M is written: ~36" long,
-    # 1,800 lm or better, 3000 K, CRI 90+, dimmable, 120 V, and a real UL/ETL/cETLus mark.
+    # ** M1 IS CATALOG-ONLY SINCE 2026-09-10, AND IS DELIBERATELY KEPT ** — the same
+    # convention mark N is held under, and for the same purpose: it is the stated revert if
+    # the owner wants a decorative fitting at this bar after all. `luminaire_schedule` builds
+    # its rows from placements, so an unplaced type prints on no sheet and bills nothing.
     #
-    # 2'-6" assembly, not M's 3'-6": the ceiling over the bar is 8'-6 3/4" (the 6:12 plane at
-    # x=16'-9"), and a 3'-6" drop would leave the shade bottom at 5'-0 3/4" — head height at
-    # a counter you stand at.
+    # ** WHY IT CAME OUT: A PENDANT DOES NOT FIT UNDER THIS RAKE. ** The bar moved onto
+    # W-A-BATH-S and FURN-A-STUDIO-BAR-BASE is 54 3/4" tall under a 6:12 underside that is
+    # 4'-11 1/4" at the unit's west end and 6'-5 3/4" over the bowl — 17"-23" of air, and the
+    # person at the bowl stands in it. ED-A-STUDIO-BAR-PEND is a wall-mounted ED-T-LT-MIRROR
+    # now; the whole derivation is on the placement in plan/lighting_attic.py.
+    #
+    # ** AND THE LUMEN ARGUMENT BELOW IS RETIRED OUTRIGHT (2026-09-10). ** The "357 lm of
+    # slack" was stale when this was written (it counted five sconces) and the 1,450 lm that
+    # replaced it lasted a day: `code.R303_1_light_and_ventilation` divides by R304.3's
+    # 146 sf now, RM-A-STUDIO passes on glazing, and Exception 1 is not adjudicated. **No
+    # lumen floor binds that room**, so M1's 1,800 lm is a brightness choice and not a code
+    # number. The rest of the spec still binds if M1 is ever placed: TARGET THE SPECS, NOT
+    # THE LOOK.
+    #
+    # 2'-6" assembly, not M's 3'-6": the ceiling over the bar's ORIGINAL centre-wall station
+    # was 8'-6 3/4" (the 6:12 plane at x=16'-9"), and a 3'-6" drop would have left the shade
+    # bottom at 5'-0 3/4" — head height at a counter you stand at.
     LuminaireType(tag="ED-T-LT-PENDANT-BAR", name='36" linear bar pendant',
                   form=LuminaireForm.CHANDELIER, type_mark="M1",
                   footprint=(ft(3), inch(4)), height=ft(2, 6), plan_symbol="pendant",
@@ -213,8 +225,8 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   ports=_POWER_120,
                   source="Owner selection 2026-09-06 for the attic studio's bar, unit not "
                          "yet chosen. TARGET THE SPECS, NOT THE LOOK — ~36\" long, "
-                         "1800 lm or better (this room's R303.1 Exception 1 count depends "
-                         "on it), 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
+                         "1800 lm or better (a brightness choice since 2026-09-10, NOT "
+                         "the code number it was), 3000 K, CRI 90+, dimmable, 120 V, and a REAL "
                          "UL/ETL/cETLus mark on the fixture itself."),
 
     # --- N: ceiling fans with a light kit ---------------------------------------------

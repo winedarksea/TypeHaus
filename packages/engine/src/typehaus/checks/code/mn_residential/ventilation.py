@@ -75,6 +75,49 @@ _COEFFICIENT_OF_UTILIZATION = 0.60
 _LIGHT_LOSS_FACTOR = 0.80
 
 
+def _r303_floor_area(room) -> tuple[float, str | None]:
+    """``(the sf R303.1 divides by, a phrase naming the reduction)`` for one room.
+
+    ** R304.3 REACHES R303.1, AND THAT IS A READING — SAY SO WHEREVER IT BITES. ** R303.1
+    asks for glazing at 8% "of the floor area of such rooms" and Exception 1 for 6 fc "over
+    the area of the room", and neither sentence cross-references R304.3. What R304.3 says,
+    under the heading *Height effect on room area*, is that floor raking below 5'-0" "shall
+    not be considered as contributing to the minimum required habitable area for that room".
+    Taken together this check reads one floor area per room and applies it to both halves:
+    floor that does not count as habitable area is not floor area a habitability rule
+    divides by, and the daylight test and its artificial-light substitute cannot sensibly
+    disagree about how big the room is.
+
+    ** IT IS ARGUABLE AND A PLAN REVIEWER MAY ARGUE IT. ** The literal scope of R304.3 is
+    R304.1's 70 sf and nothing else, and on that reading catlin's RM-A-STUDIO owes 8% of
+    356 sf rather than of 146 sf — the difference between a room lit under Exception 1 and a
+    room that passes on daylight. So every message this reduction touches prints BOTH areas
+    and the section, rather than quietly reporting the smaller one.
+
+    ``ResolvedRoom.head_limited_area_m2`` is the model's one source for that area
+    (``resolve/roof_geometry.py``), measured to the roof UNDERSIDE. Two limits worth
+    knowing, both in the conservative direction here:
+
+    * It subtracts only what a **roof** rakes down. R304.3's other half — a furred ceiling
+      under 7'-0" — is not applied, so a soffited room keeps its full area.
+    * ``code.R305_ceiling_height`` measures the same rake to the rafter TOP and so reports a
+      LARGER qualifying area (catlin's studio: 190 sf against this 146 sf). The two are not
+      reconciled and the R305 branch says so in its own docstring; this is the honest plane.
+
+    ``None`` for the phrase means nothing was taken off and the caller's messages must stay
+    byte-identical to what they were before this reduction existed.
+    """
+    gross_sf = room.area_m2 * _SF_PER_M2
+    qualifying_m2 = getattr(room, "head_limited_area_m2", None)
+    if qualifying_m2 is None:
+        return gross_sf, None
+    qualifying_sf = qualifying_m2 * _SF_PER_M2
+    if gross_sf - qualifying_sf <= 1e-6:
+        return gross_sf, None
+    return qualifying_sf, (f"R304.3: {gross_sf:.0f} sf of deck less "
+                           f"{gross_sf - qualifying_sf:.0f} sf raking below 5'-0\"")
+
+
 def _openable(ctx: CheckContext, opening) -> bool | None:
     """Is this window operable? ``None`` when its type cannot be resolved."""
     window_type = next((t for t in ctx.plan.library.window_types
@@ -210,7 +253,17 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
         # server put a glazing table in front of a reader instead of scraping it back out of
         # these messages. ``None`` means a window type did not resolve, which is the same
         # UNKNOWN this check has always reported and is NOT the same fact as no glazing.
-        area_sf = room.area_m2 * _SF_PER_M2
+        # ONE floor area for both halves of R303.1, and it is R304.3's, not the deck's —
+        # see ``_r303_floor_area`` for the reading and for why ``basis`` is printed rather
+        # than the smaller number being reported on its own.
+        area_sf, basis = _r303_floor_area(room)
+        if area_sf <= 1e-9:
+            out.append(_unknown(cid, f"{room.tag} has no floor at or above 5'-0\" of head "
+                                "(R304.3), so R303.1 has no floor area to divide by — "
+                                "code.R305_ceiling_height is the finding that grades it",
+                                (room.tag,), code))
+            continue
+        floor_phrase = f"{area_sf:.0f} sf" + (f" floor ({basis})" if basis else " floor")
         if room.glazed_area_m2 is None or room.operable_glazed_area_m2 is None:
             out.append(_unknown(cid, f"{room.tag} has a window whose type does not resolve, "
                                 "so openable area cannot be totalled", (room.tag,), code))
@@ -224,11 +277,11 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
         need_openable = area_sf * _MIN_OPENABLE_FRACTION
         if glazed_sf + 1e-6 < need_glazed or openable_sf + 1e-6 < need_openable:
             if glazed_sf + 1e-6 < need_glazed:
-                short = (f"{room.tag} has {glazed_sf:.1f} sf glazing for a {area_sf:.0f} sf "
-                         f"floor; R303.1 requires {need_glazed:.1f} sf (8%)")
+                short = (f"{room.tag} has {glazed_sf:.1f} sf glazing for a {floor_phrase}; "
+                         f"R303.1 requires {need_glazed:.1f} sf (8%)")
             else:
                 short = (f"{room.tag} has {openable_sf:.1f} sf openable (operable units "
-                         f"counted at half) for a {area_sf:.0f} sf floor; R303.1 requires "
+                         f"counted at half) for a {floor_phrase}; R303.1 requires "
                          f"{need_openable:.1f} sf (4%)")
             verdict, why = _exception_1(ctx, room, area_sf)
             if verdict == "pass":
@@ -243,7 +296,7 @@ def habitable_light_and_ventilation(ctx: CheckContext) -> list[Finding]:
                 out.append(_fail(cid, f"{short}, and {why}", (room.tag,), code))
         else:
             out.append(_pass(cid, f"{room.tag}: {glazed_sf:.1f} sf glazing / "
-                             f"{openable_sf:.1f} sf openable on {area_sf:.0f} sf floor",
+                             f"{openable_sf:.1f} sf openable on {floor_phrase}",
                              code))
     return out
 

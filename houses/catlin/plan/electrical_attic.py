@@ -32,14 +32,21 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(19, 5.375), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC051AAAA", tag="ED-A-EAST-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29, 11.25), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # ** THE SEVEN EAVE-LINE RECEPTACLES ARE FLOOR BOXES. ** Every one of
-    # them — ED-A-STUDIO-RC8/RC9 on the west line, ED-A-EAST-RC5/RC6/RC7 and ED-A-STUDY-RC2
-    # on the east, ED-A-POCKET-RC1 in the pocket, plus ED-A-STUDY-RC3 in the south gable's
-    # low east corner — was a box at 16" on a 5'-0" knee wall. There is no knee wall: those
+    # ** ED-A-EAST-RC4 AND -RC6 ARE DELETED (2026-09-10), uids NEC051AAAA and NEC053AAAA
+    # RETIRED — never reuse either. ** RM-A-EAST-UNFIN is 475 sf of UNFINISHED STORAGE and
+    # `electrical.receptacle_spacing` does not walk it at all (its occupancy list is
+    # {BEDROOM, LIVING, KITCHEN, DINING, OFFICE}), so nothing here was ever holding eight
+    # boxes up — they were authored to a habitable room's cadence in a room that is not one.
+    # RC4 stood **6'-0" from RC5** round the NE corner, which is two outlets within a cord's
+    # length of each other; RC6 was the middle of three at even 126" centres on the east
+    # eave line, and deleting it leaves RC5 and RC7 to cover that wall. Six remain — RC1/RC2
+    # west, RC3 north, RC5/RC7 east, RC8 south — which is a working perimeter for a storage
+    # attic. **This is a taste budget, not a code one: put any of them back freely.**
+    #
+    # ** THE FIVE REMAINING EAVE-LINE RECEPTACLES ARE FLOOR BOXES. ** Every one of
+    # them — ED-A-STUDIO-RC8/RC9 on the west line, ED-A-EAST-RC5/RC7 and ED-A-STUDY-RC2
+    # on the east, plus ED-A-POCKET-RC1 in the pocket — was a box at 16" on a 5'-0" knee
+    # wall. There is no knee wall: those
     # hosts are 1 1/2" rafter plates now and the roof underside at the eave line is
     # `1 1/2" + x/2`, which is 5 1/4" at 7 5/8" off the wall. A 16" box there is not tight,
     # it is outside the building.
@@ -56,10 +63,6 @@ NEC_FILL_ATTIC = [
     # `Mount(kind=FLOOR)` carries no elevation, deliberately: the box is IN the deck.
     ElectricalDevice(uid="NEC052AAAA", tag="ED-A-EAST-RC5", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(34, 4.375), ft(31, 3.25)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
-    ElectricalDevice(uid="NEC053AAAA", tag="ED-A-EAST-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(34, 4.375), ft(20, 9.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
     ElectricalDevice(uid="NEC054AAAA", tag="ED-A-EAST-RC7", kind=DeviceKind.RECEPTACLE,
@@ -84,13 +87,14 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(34, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
-    # RC3 is a floor box for the same reason one wall further round: it stands at x 33'-10 3/4"
-    # in the SOUTH gable, where the rake gives 14 1/8" of wall — less than the 16" the box was
-    # authored at. Its plan station does not move; the gable is what shrank under it.
-    ElectricalDevice(uid="NEC058AAAA", tag="ED-A-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33, 10.75), ft(1, 7.625)), type_ref="ED-T-RECEPTACLE",
-                     circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.FLOOR)),
+    # ** ED-A-STUDY-RC3 IS DELETED (2026-09-10), uid NEC058AAAA RETIRED — never reuse it. **
+    # It was a floor box at x 33'-10 3/4" in the SOUTH gable, and it sat **7 1/8" from
+    # ED-A-STUDY-RC2** — two boxes in one corner of a 16' x 8' room, on the two walls that
+    # meet there. Neither the 210.52 check nor any other rule could see it: each is
+    # legitimately "near the wall" for its own wall, so the pair reads as two compliant
+    # devices rather than as one device twice. The comment above still describes the run as
+    # "RC1 on the south wall between RC4/RC3", which is what a stale corner reads like once
+    # the gable has shrunk under it. RC2 holds the corner alone now.
     ElectricalDevice(uid="NEC059AAAA", tag="ED-A-STUDY-RC4", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(23, 10.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
