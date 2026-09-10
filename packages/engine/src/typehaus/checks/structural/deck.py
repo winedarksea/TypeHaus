@@ -29,6 +29,7 @@ from typehaus.checks.structural.deck_tables import (
     DECK_TOTAL_LOAD_PSF,
     GUARD_MIN_HEIGHT_IN,
     GUARD_REQUIRED_ABOVE_IN,
+    MAX_BEAM_CANTILEVER_RATIO,
     MAX_JOIST_CANTILEVER_RATIO,
     MIN_DECK_FOOTING_SIDE_IN,
     MIN_DECK_FOOTING_THICKNESS_IN,
@@ -242,6 +243,65 @@ def deck_joist_cantilever(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.STRUCTURAL, "structural.deck_beam_cantilever")
+def deck_beam_cantilever(ctx: CheckContext) -> list[Finding]:
+    """Deck BEAM overhang vs. IRC R507.5.1 — not more than a quarter of the back span.
+
+    The sibling of :func:`deck_joist_cantilever`, and it did not exist. R507.5.1 bounds a
+    beam's overhang past its end bearing exactly as R507.6.1 bounds a joist's, and the
+    north entry landing broke it by 67% with nothing looking: two beams running 10'-4 3/8"
+    over bearings 6'-2 1/2" apart, the 4'-1 7/8" tail carrying a stair landing 34" up.
+
+    Measured from the OUTERMOST resolved bearings, so a beam continuous over three supports
+    is graded on the tail past the last one, not on an interior bay.
+    """
+    decks = _decks(ctx)
+    if not decks:
+        return []  # no exterior deck — R507 does not apply
+    out: list[Finding] = []
+    seen: set[str] = set()
+    for deck in decks:
+        for beam in _deck_beams(ctx, deck):
+            if beam.tag in seen:
+                continue  # a beam under two decks is still one beam
+            seen.add(beam.tag)
+            axis = _beam_axis_m(ctx, beam)
+            points = _bearing_points_m(ctx, beam)
+            if axis is None or len(points) < 2:
+                out.append(_unknown(
+                    "structural.deck_beam_cantilever",
+                    f"beam {beam.tag} resolved fewer than two bearing points, so no "
+                    f"overhang can be measured", (deck.tag, beam.tag)))
+                continue
+            # Along the beam's own axis: everything here is a 1-D question on that line.
+            (x0, y0), (x1, y1) = axis
+            length = math.dist((x0, y0), (x1, y1))
+            ux, uy = (x1 - x0) / length, (y1 - y0) / length
+            offsets = sorted((px - x0) * ux + (py - y0) * uy for px, py in points)
+            back_span_ft = (offsets[-1] - offsets[0]) / _M_PER_FT
+            overhang_ft = max(offsets[0] - 0.0, length - offsets[-1]) / _M_PER_FT
+            if overhang_ft <= 1e-6:
+                continue  # ends flush on its bearings — nothing to bound
+            if back_span_ft <= 1e-9:
+                out.append(_unknown(
+                    "structural.deck_beam_cantilever",
+                    f"beam {beam.tag} overhangs {overhang_ft:.2f}' past a back span that "
+                    f"did not resolve", (deck.tag, beam.tag)))
+                continue
+            allowable = back_span_ft * MAX_BEAM_CANTILEVER_RATIO
+            passing = overhang_ft <= allowable + 1e-6
+            out.append(_advisory(
+                "structural.deck_beam_cantilever",
+                f"deck {deck.tag} beam {beam.tag} overhangs {overhang_ft:.2f}', "
+                f"{'within' if passing else 'past'} the {allowable:.2f}' IRC R507.5.1 "
+                f"limit (a quarter of the {back_span_ft:.2f}' back span)",
+                (deck.tag, beam.tag), Result.PASS if passing else Result.FAIL,
+                fix_hint=None if passing else
+                "post the tip, or move the end bearing out under the overhang",
+            ))
+    return out
+
+
 def _deck_beams(ctx: CheckContext, deck: _Deck) -> list[Beam]:
     """The authored Beams a deck's joists bear on (walls/ledgers in bearing_refs are not
     beams and are governed by R507.9, not the beam-span table)."""
@@ -253,12 +313,75 @@ def _deck_beams(ctx: CheckContext, deck: _Deck) -> list[Beam]:
     return beams
 
 
+def _beam_axis_m(ctx: CheckContext, beam: Beam) -> tuple[tuple[float, float],
+                                                          tuple[float, float]] | None:
+    """The beam's plan centreline, from its two authored nodes."""
+    start, end = ctx.plan.by_tag(beam.start_node), ctx.plan.by_tag(beam.end_node)
+    if start is None or end is None:
+        return None
+    p0, p1 = start.position.xy_m, end.position.xy_m
+    return None if math.dist(p0, p1) < 1e-9 else (p0, p1)
+
+
+def _bearing_points_m(ctx: CheckContext, beam: Beam) -> list[tuple[float, float]]:
+    """Where, in plan, each of ``beam``'s bearing refs actually holds it up.
+
+    A Post holds it at a point, which is its position. **A Beam holds it where the two
+    cross**, and that is the case this used to miss: ``BM-BW-FC`` bears on two seat beams,
+    resolved no Posts at all, and fell through to the solid's long side — reporting its
+    whole 10'-4 3/8" node-to-node LENGTH as a span against a table row for 6'-10". A length
+    is not a span, and the difference here is a cantilever nothing else was grading.
+
+    The same fallback ``resolve/floors.py::_bearing_axis`` already makes for a joist
+    bearing, one element up. A wall in ``bearing_refs`` is deliberately not a point: it is
+    a ledger, governed by R507.9, and ``_deck_beams`` says so.
+    """
+    from shapely.geometry import LineString
+    from shapely.ops import nearest_points
+
+    axis = _beam_axis_m(ctx, beam)
+    out: list[tuple[float, float]] = []
+    for ref in beam.bearing_refs:
+        element = ctx.plan.by_tag(ref)
+        if isinstance(element, Post):
+            out.append(element.position.xy_m)
+            continue
+        if axis is None:
+            continue
+        if isinstance(element, Beam):
+            other = _beam_axis_m(ctx, element)
+        else:
+            wall = ctx.model.wall(ref)
+            other = None if wall is None else (wall.axis[0], wall.axis[1])
+        if other is None or _parallel(axis, other):
+            # A support running ALONGSIDE the beam holds it everywhere or nowhere — it is a
+            # ledger condition (R507.9), not a point bearing, and picking the "nearest"
+            # point on a parallel line would be picking an arbitrary one.
+            continue
+        # The point on THIS beam nearest the carrying member: their crossing where they
+        # cross, the seat where one lands on the side of the other.
+        near, _ = nearest_points(LineString(axis), LineString(other))
+        out.append((near.x, near.y))
+    return out
+
+
+def _parallel(a: tuple[tuple[float, float], tuple[float, float]],
+              b: tuple[tuple[float, float], tuple[float, float]]) -> bool:
+    """Within about 5 degrees, by the normalised cross product of the two directions."""
+    (ax0, ay0), (ax1, ay1) = a
+    (bx0, by0), (bx1, by1) = b
+    la, lb = math.dist((ax0, ay0), (ax1, ay1)), math.dist((bx0, by0), (bx1, by1))
+    if la < 1e-9 or lb < 1e-9:
+        return False
+    cross = ((ax1 - ax0) * (by1 - by0) - (ay1 - ay0) * (bx1 - bx0)) / (la * lb)
+    return abs(cross) < 0.087
+
+
 def _beam_span_ft(ctx: CheckContext, beam: Beam) -> float | None:
-    """Clear-ish beam span: the distance between the posts it bears on, or — when the posts
+    """Clear-ish beam span: the distance between the bearings it stands on, or — when they
     cannot be resolved — its own node-to-node length, which is the same thing for a beam
-    that runs post to post."""
-    posts = [ctx.plan.by_tag(ref) for ref in beam.bearing_refs]
-    points = [p.position.xy_m for p in posts if isinstance(p, Post)]
+    that runs bearing to bearing and an OVER-count for one that cantilevers past them."""
+    points = _bearing_points_m(ctx, beam)
     if len(points) >= 2:
         widest = max((x1 - x0) ** 2 + (y1 - y0) ** 2
                      for x0, y0 in points for x1, y1 in points) ** 0.5

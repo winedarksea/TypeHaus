@@ -48,6 +48,7 @@ from typehaus.resolve.model import (
     ResolvedRoof,
     SeatCut,
 )
+from typehaus.resolve.roof_bearing import resolved_bearings
 from typehaus.resolve.roof_geometry import roof_structure_framing
 
 _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth"
@@ -196,8 +197,10 @@ def _eave_plumb_cuts(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float | 
     eave_edges = ("south", "north") if roof.ridge_direction == "x" else ("west", "east")
     overhangs = {edge.lower(): value.meters for edge, value in element.edge_overhangs}
     default = element.overhang.meters if element.overhang is not None else 0.0
-    walls = [wall for tag in element.bearing_refs
-             if (wall := model.wall(tag)) is not None]
+    # Only a WALL has a stud face to plumb-cut to. A canopy header is a beam: its eave
+    # tail stops at the footprint edge, which is where a zero-overhang beam-borne eave
+    # genuinely ends — there is no cladding standing proud of it to lap.
+    walls = [b.wall for b in resolved_bearings(model, element.bearing_refs) if b.wall is not None]
     if not walls:
         return (None, None)
     coords = [point[span_ax] for point in roof.footprint]
@@ -228,11 +231,8 @@ def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[flo
         return fallback
     ridge_ax = 0 if roof.ridge_direction == "x" else 1
     lo = hi = None
-    for tag in element.bearing_refs:
-        wall = model.wall(tag)
-        if wall is None:
-            continue
-        r0, r1 = wall.axis[0][ridge_ax], wall.axis[1][ridge_ax]
+    for bearing in resolved_bearings(model, element.bearing_refs):
+        r0, r1 = bearing.axis[0][ridge_ax], bearing.axis[1][ridge_ax]
         low, high = min(r0, r1), max(r0, r1)
         lo = low if lo is None else min(lo, low)
         hi = high if hi is None else max(hi, high)

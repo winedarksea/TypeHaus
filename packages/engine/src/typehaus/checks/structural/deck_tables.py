@@ -58,6 +58,10 @@ def deck_joist_span_limit(member: str, spacing_in: float) -> tuple[float, float]
 # adjacent (back) span. This is the rule that lets the span tables above be read as span
 # tables: the cantilever is bounded here instead of being counted as span there.
 MAX_JOIST_CANTILEVER_RATIO = 0.25
+# IRC R507.5.1, the beam sibling of R507.6.1 above and the same quarter. Separate
+# constant because they are separate code sections that could diverge, not because
+# they differ today.
+MAX_BEAM_CANTILEVER_RATIO = 0.25
 
 
 # --- IRC Table R507.5(1) — deck beam spans --------------------------------------------

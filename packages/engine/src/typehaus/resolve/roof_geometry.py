@@ -24,6 +24,7 @@ from typehaus.resolve.framing.profiles import (
 )
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.roof_bearing import RoofBearing, resolved_bearings
 
 
 def roof_slope_coordinate(roof: ResolvedRoof, point: tuple[float, float]) -> float:
@@ -129,12 +130,17 @@ def roof_underside_at(model: ResolvedModel, roof: ResolvedRoof,
     return roof_height_at(roof, point) - roof_structure_depth_m(model, roof)
 
 
-def roof_bearing_walls(model: ResolvedModel, roof: ResolvedRoof) -> tuple[ResolvedWall, ...]:
+def roof_bearing_walls(model: ResolvedModel, roof: ResolvedRoof) -> tuple[RoofBearing, ...]:
+    """The roof's resolved bearings — a wall, or a standalone ``Beam`` under a canopy.
+
+    Named "walls" because every caller and every roof in the house predates the beam case.
+    What comes back carries the two things the callers actually read, ``axis`` and ``z1_m``;
+    a caller needing a wall's polygons must go through ``RoofBearing.wall`` and handle None.
+    """
     element = model.plan.by_tag(roof.tag)
     if not isinstance(element, Roof):
         return ()
-    return tuple(wall for tag in element.bearing_refs
-                 if (wall := model.wall(tag)) is not None)
+    return resolved_bearings(model, element.bearing_refs)
 
 
 def roof_is_trussed(model: ResolvedModel, roof: ResolvedRoof) -> bool:

@@ -35,6 +35,7 @@ from typehaus.resolve.model import (
     ResolvedRoof,
     TrussShape,
 )
+from typehaus.resolve.roof_bearing import resolved_bearings
 
 # 2x4 outlookers on edge at 24" o.c. carry the rake overhang; the gable truss drops by
 # their depth so they pass over it and the deck stays planar.
@@ -108,16 +109,13 @@ def build_truss_layout(
     ridge_ax = 1 - span_ax
     bearings: list[tuple[float, float]] = []  # (span coordinate, plate top z)
     along_lo = along_hi = None
-    for tag in element.bearing_refs:
-        wall = model.wall(tag)
-        if wall is None:
-            continue
-        (ax, ay), (bx, by) = wall.axis
+    for bearing in resolved_bearings(model, element.bearing_refs):
+        (ax, ay), (bx, by) = bearing.axis
         span_coord = ay if span_ax == 1 else ax
         r0, r1 = (ay, by) if ridge_ax == 1 else (ax, bx)
         along_lo = min(r0, r1) if along_lo is None else min(along_lo, r0, r1)
         along_hi = max(r0, r1) if along_hi is None else max(along_hi, r0, r1)
-        bearings.append((span_coord, wall.z1_m))
+        bearings.append((span_coord, bearing.z1_m))
     if along_lo is None or along_hi is None or len(bearings) < 2:
         return None
     bearings.sort()

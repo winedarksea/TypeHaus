@@ -31,6 +31,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
     Ring,
 )
+from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.stairs import _resolve_stair
@@ -383,14 +384,18 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
 def _resolve_roof(
     model: ResolvedModel, roof: Roof, storey: str
 ) -> tuple[ResolvedRoof | None, list[Finding]]:
-    walls = [model.wall(tag) for tag in roof.bearing_refs]
-    missing = [tag for tag, wall in zip(roof.bearing_refs, walls, strict=True) if wall is None]
+    # A bearing is a wall OR a standalone Beam — a canopy over an open passage has no wall
+    # under it to name. See resolve/roof_bearing.py for what a bearing has to supply.
+    bearings = roof_bearings(model, roof.bearing_refs)
+    missing = [tag for tag, bearing in zip(roof.bearing_refs, bearings, strict=True)
+               if bearing is None]
     if missing:
         return None, [element_error("integrity.roof_bearing", f"roof {roof.tag} references missing "
-                             f"bearing wall(s): {', '.join(missing)}", roof.tag)]
+                             f"bearing wall(s)/beam(s): {', '.join(missing)}", roof.tag)]
+    walls = [b for b in bearings if b is not None]
     if len(walls) < 2:
         return None, [element_error("integrity.roof_bearing", f"roof {roof.tag} needs at least two "
-                             "bearing walls", roof.tag)]
+                             "bearings", roof.tag)]
     if roof.ridge_direction not in ("x", "y"):
         return None, [element_error("integrity.roof_direction", f"roof {roof.tag} ridge_direction "
                              "must be 'x' or 'y'", roof.tag)]
@@ -400,7 +405,6 @@ def _resolve_roof(
                              f"assembly {roof.assembly!r}", roof.tag)]
     directions: list[tuple[float, float]] = []
     for wall in walls:
-        assert wall is not None
         dx, dy = wall.axis[1][0] - wall.axis[0][0], wall.axis[1][1] - wall.axis[0][1]
         magnitude = math.hypot(dx, dy)
         if magnitude <= 1e-6:
@@ -415,7 +419,7 @@ def _resolve_roof(
             "integrity.roof_footprint", f"roof {roof.tag} has non-parallel bearing walls; "
             "valleys/intersecting roof masses are unsupported", roof.tag,
         )]
-    points = [point for wall in walls if wall is not None for point in wall.axis]
+    points = [point for wall in walls for point in wall.axis]
     # The bearing walls' outermost layer, for the cladding lap below.
     #
     # A bearing wall with no weather skin stands in for the wall it stacks on. Without that,
@@ -426,9 +430,10 @@ def _resolve_roof(
     # its own roof. Everything downstream is then wrong by a plausible-looking amount, which
     # is the worst way for geometry to be wrong.
     clad_walls: list[ResolvedWall] = []
-    for wall in walls:
+    for bearing in walls:
+        wall = bearing.wall
         if wall is None:
-            continue
+            continue  # a Beam has no cladding to lap and no skin to stand in for
         if skin_layers(wall):
             clad_walls.append(wall)
         else:
@@ -458,7 +463,7 @@ def _resolve_roof(
     if run <= 1e-6:
         return None, [element_error("integrity.roof_footprint",
                                     f"roof {roof.tag} has zero run", roof.tag)]
-    plate_top = max(wall.z1_m for wall in walls if wall is not None)
+    plate_top = max(wall.z1_m for wall in walls)
     # ``eave_z_m`` is the rafter-top (deck) plane: a rafter-framed roof rises
     # ``deck_rise_m`` above the plate (only the birdsmouth sinks below it, per the
     # golden eave detail). Truss roofs keep eave == plate top here — ``_frame_trusses``
@@ -468,8 +473,11 @@ def _resolve_roof(
     # structure depth, so which bearing wall answers has to be a decision, not the order
     # somebody happened to type `bearing_refs` in. They agree on every roof here; where they
     # would not, say so rather than let list position pick.
-    bearing_assemblies = sorted({wall.assembly for wall in walls if wall is not None})
-    bearing_assembly = model.plan.library.resolve_assembly(bearing_assemblies[0])
+    bearing_assemblies = sorted({wall.assembly for wall in walls if wall.assembly})
+    # Empty where every bearing is an assembly-less beam; ``deck_rise_m`` takes None and
+    # falls back to a nominal plate depth, which is the right answer for a canopy header.
+    bearing_assembly = (model.plan.library.resolve_assembly(bearing_assemblies[0])
+                        if bearing_assemblies else None)
     rise_to_deck = deck_rise_m(roof_assembly, bearing_assembly, roof.pitch)
     eave = plate_top + (rise_to_deck or 0.0)
     rise = roof.pitch.rise / roof.pitch.run * (run / 2 if roof.form.value == "gable" else run)
