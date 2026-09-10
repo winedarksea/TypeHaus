@@ -11,8 +11,9 @@ from _helpers import CATLIN, HOUSE_IGNORE, HOUSES, REPO_ROOT, STARTER, copy_hous
 
 __all__ = ["CATLIN", "HOUSE_IGNORE", "HOUSES", "REPO_ROOT", "STARTER", "copy_house"]
 
-# The shared ``library`` package lives at the repo root; make it importable for tests that
-# reference it directly (the loader discovers it on its own for plan imports).
+# The repo root, for tests that reach for a sibling tree (scripts/, houses/) by import.
+# The shared catalog is NOT one of them any more: it ships inside the package as
+# ``typehaus.library`` and resolves like any other engine module.
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 

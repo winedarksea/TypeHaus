@@ -16,7 +16,6 @@ the thing that can be wrong against R403.1.6, and it is what prints on the sched
 
 from __future__ import annotations
 
-from typehaus.checks.soil import site_soil_class
 from typehaus.checks.code.mn_residential._common import (
     _fail,
     _pass,
@@ -24,6 +23,7 @@ from typehaus.checks.code.mn_residential._common import (
     _unknown,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.soil import site_soil_class
 from typehaus.findings import Finding
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ControlLayer, LayerFunction

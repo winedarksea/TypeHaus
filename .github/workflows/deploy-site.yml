@@ -11,7 +11,7 @@ on:
       - "landing/**"
       - "ui/**"
       - "packages/engine/src/**"
-      - "library/**"
+      - "packages/engine/src/typehaus/library/**"
       - "houses/catlin/**"
       - ".github/workflows/deploy-site.yml"
   pull_request:
@@ -22,7 +22,7 @@ on:
       # checklist — so a PR that touches the engine, the library or the house has to
       # exercise it here rather than discovering the refusal on main.
       - "packages/engine/src/**"
-      - "library/**"
+      - "packages/engine/src/typehaus/library/**"
       - "houses/catlin/**"
       - ".github/workflows/deploy-site.yml"
   workflow_dispatch:

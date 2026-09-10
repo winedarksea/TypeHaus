@@ -22,9 +22,10 @@ that still identifies the material:
   on the flags alone would come out at seam pitch.
 * **Masonry** — horizontal course bands at :data:`_MASONRY_BAND_M`, **not** the unit's own
   coursing. This house lays 2-2/3" modular in the sunken garden's veneer and laid 2" Roman
-  at the garage wainscot until that wainscot was deleted (2026-09-03); at a quarter-inch scale either is twenty-five lines to the foot and prints
-  as a solid grey block. The band is an indication that this surface is coursed masonry, and
-  it is labelled as such rather than counted.
+  at the garage wainscot until that wainscot was deleted (2026-09-03); at a quarter-inch
+  scale either is twenty-five lines to the foot and prints as a solid grey block. The band
+  is an indication that this surface is coursed masonry, and it is labelled as such rather
+  than counted.
 * **Board finishes** — one line per board, in the direction ``ResolvedLayer.board_run``
   derived from the furring behind it.
 * **Everything else** — nothing. Stucco, parge, concrete and a protection panel have no module

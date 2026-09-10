@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from library.placeables._zones import front_zone
+from typehaus.library.placeables._zones import front_zone
 from typehaus.model import ApplianceType, Service, ServicePort, ft, inch
 
 REFERENCE = "Residential planning allowance; final appliance selection by owner."

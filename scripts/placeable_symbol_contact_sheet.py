@@ -15,7 +15,7 @@ from pathlib import Path
 
 from typehaus.model.placeable_symbols import _REGISTRY, part_hex, plan_symbol_strokes
 
-from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES,
+from typehaus.library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES,
                                 STARTER_FURNITURE_TYPES)
 
 CELL_PX = 190

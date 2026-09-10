@@ -5,9 +5,9 @@ Reference: ``sauna_shower_basement_detail_ifc.png``; dimensions from
 
 There is no shower *assembly* — a shower is a fixture standing in a room — so the
 recognition gate is the fixture itself: a resolved canvas object whose ``FixtureType``
-publishes ``plan_symbol="shower"``, ``"shower-neo-angle"`` or ``"tub-shower"`` (a combo unit gets the same pan/
-tile/glass/HRV vocabulary), cut by the section plane. Everything is then derived from
-that footprint and the walls around it:
+publishes ``plan_symbol="shower"``, ``"shower-neo-angle"`` or ``"tub-shower"`` (a combo
+unit gets the same pan/tile/glass/HRV vocabulary), cut by the section plane. Everything is
+then derived from that footprint and the walls around it:
 
 * **recess** — the 4" drop in the floor structure that makes the pan curbless, finished
   with a mortar bed falling to a center drain;

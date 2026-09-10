@@ -23,11 +23,17 @@ from typehaus.model.assembly import FramingSpec
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import (
-    cross_section, roof_truss_profile, truss_chord_depth_m, truss_heel_height_m,
+    cross_section,
+    roof_truss_profile,
+    truss_chord_depth_m,
+    truss_heel_height_m,
 )
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import (
-    FramedMember, ResolvedModel, ResolvedRoof, TrussShape,
+    FramedMember,
+    ResolvedModel,
+    ResolvedRoof,
+    TrussShape,
 )
 
 # 2x4 outlookers on edge at 24" o.c. carry the rake overhang; the gable truss drops by

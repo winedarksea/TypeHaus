@@ -7,7 +7,7 @@ sites keep working unchanged.
 
 from __future__ import annotations
 
-from library.placeables.appliances import (
+from typehaus.library.placeables.appliances import (
                                            DISHWASHER,
                                            DRYER,
                                            ELECTRIC_RANGE,
@@ -19,7 +19,7 @@ from library.placeables.appliances import (
                                            STARTER_APPLIANCE_TYPES,
                                            WASHER,
 )
-from library.placeables.casework import (
+from typehaus.library.placeables.casework import (
                                            BAR_STOOL,
                                            BASE_15,
                                            BASE_24,
@@ -40,7 +40,7 @@ from library.placeables.casework import (
                                            WALL_30,
                                            WALL_66,
 )
-from library.placeables.fixtures import (
+from typehaus.library.placeables.fixtures import (
                                            FLOOR_DRAIN,
                                            KITCHEN_SINK,
                                            LAVATORY,
@@ -55,7 +55,7 @@ from library.placeables.fixtures import (
                                            WALL_HYDRANT,
                                            WALL_HYDRANT_SELF_DRAINING,
 )
-from library.placeables.furniture import (
+from typehaus.library.placeables.furniture import (
                                            ARMCHAIR,
                                            BOOKCASE,
                                            CHEST,

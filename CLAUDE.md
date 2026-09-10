@@ -9,8 +9,9 @@ scripts/verify.sh                         # the full CI gate
 `.venv/bin/python` is 3.11.16 and `typehaus` is installed **editable** into it, so the
 console script `.venv/bin/haus` is the real entry point. `uv` is **not** installed; ignore
 any `uv sync` / `PYTHONPATH=packages/engine/src python -m typehaus.cli.app` incantation you
-find in older docs. Pytest defaults are configured in `packages/engine/pyproject.toml`
-(`-n 6 --dist loadfile`, ~4 min for the full suite) — bare `pytest` is already parallel.
+find in older docs. Pytest defaults are configured in the **root** `pyproject.toml`, the only
+pytest config in the repo (`-n 6 --dist loadfile`, ~4 min for the full suite) — bare `pytest`
+is already parallel.
 
 ## Non-negotiables
 
@@ -30,8 +31,9 @@ find in older docs. Pytest defaults are configured in `packages/engine/pyproject
 
 - `packages/engine/` — the `typehaus` package: `quantities` → `model` → `source` (load +
   dialect) → `resolve` → `checks` / `takeoff` / `emit` / `server` / `cli`.
-- `library/` — the shared, reviewed catalog of assemblies, materials, and types. Promoting
-  a house-local item into it follows `CONTRIBUTING.md`.
+- `packages/engine/src/typehaus/library/` — the shared, reviewed catalog of assemblies,
+  materials, and types. Plans still spell it `from library import ...`; the loader aliases
+  the name. Promoting a house-local item into it follows `CONTRIBUTING.md`.
 - `houses/catlin/` — the reference house (see its own `CLAUDE.md`); `houses/starter/` — the
   `haus new` template.
 - `ui/` — the React/three.js editor; `plans/` — the living design docs and decision log.

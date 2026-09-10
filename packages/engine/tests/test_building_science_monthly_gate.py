@@ -237,7 +237,7 @@ def test_library_walls_earn_a_real_permeance_verdict() -> None:
     Glaser walk truncates at the vented cavity and the unrated fiber-cement outside it no
     longer forces UNKNOWN. No permeance is invented: the fiber-cement material still
     carries no vapour rating."""
-    from library import HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR, STARTER_MATERIALS
+    from typehaus.library import HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR, STARTER_MATERIALS
 
     library = Library(materials=STARTER_MATERIALS,
                       assemblies=(HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR))

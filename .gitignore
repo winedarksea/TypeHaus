@@ -211,11 +211,13 @@ ui/public/catlin-house.json
 # `packages/*/build` are listed explicitly above and still ignore normally.
 !ui/src/**
 !packages/*/src/**
-!library/**
 !houses/*/plan/**
 !houses/*/params/**
 # ...but re-ignore the genuine artifacts that live *inside* those trees, since a negation
 # re-admits everything it covers, including caches and compiled output.
+# The staged UI is 11 MB of build output that `scripts/package_ui.py` copies out of
+# `ui/dist` at release time; the wheel picks it up via `artifacts`, git never should.
+packages/engine/src/typehaus/server/static/
 __pycache__/
 *.py[cod]
 *.tsbuildinfo

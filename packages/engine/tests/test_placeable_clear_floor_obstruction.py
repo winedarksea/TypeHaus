@@ -9,7 +9,7 @@ limits — and must keep reporting the things that genuinely stand in the way.
 from __future__ import annotations
 
 import pytest
-from library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
+from typehaus.library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
 from typehaus.model import (
     Building,

@@ -19,7 +19,12 @@ def _find_ui_dist(explicit: Path | None) -> Path | None:
     deliver the browser app on another machine. An explicit ``--ui-dir`` is authoritative —
     it is used as-is (returns None if it lacks index.html, so the caller errors) and never falls
     back to discovery. Otherwise the ``TYPEHAUS_UI_DIST`` env var wins, then a walk up from the
-    cwd and this package looks for a repo-root ``ui/dist``. Returns None when nothing is found."""
+    cwd and this package looks for a repo-root ``ui/dist``, and finally the copy staged inside
+    the wheel by ``scripts/package_ui.py``. Returns None when nothing is found.
+
+    The walk-up is tried *before* the packaged copy on purpose: in a checkout, a UI you just
+    rebuilt has to win over the one baked into the installed engine, or every ui/src edit
+    would appear to do nothing."""
     import os
 
     def _valid(path: Path) -> Path | None:
@@ -39,7 +44,16 @@ def _find_ui_dist(explicit: Path | None) -> Path | None:
             if node.parent == node:
                 break
             node = node.parent
-    return None
+    return packaged_ui_dist()
+
+
+def packaged_ui_dist() -> Path | None:
+    """The UI copy staged inside the installed package, or None if the wheel omitted it."""
+    return _packaged() if (_packaged() / "index.html").is_file() else None
+
+
+def _packaged() -> Path:
+    return Path(__file__).resolve().parent.parent / "server" / "static"
 
 
 @app.command()

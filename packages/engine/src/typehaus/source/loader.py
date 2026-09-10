@@ -404,14 +404,10 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
     inserted = added not in sys.path
     if inserted:
         sys.path.insert(0, added)
-    # A plan may reference the shared ``library`` package (the community seam). In a
-    # pip-installed setup it is already importable; in the monorepo (or any checkout that
-    # keeps houses beside a ``library/``) it sits at a directory above the house. Discover
-    # it by walking up without assuming the engine lives in the monorepo (#17).
-    lib_root = _find_library_root(house_dir)
-    lib_added = lib_root is not None and str(lib_root) not in sys.path
-    if lib_added:
-        sys.path.insert(0, str(lib_root))
+    # A plan may reference the shared ``library`` package (the community seam). It ships
+    # *inside* the engine as ``typehaus.library``; ``library`` is the house-facing spelling
+    # and is aliased onto it below, so a plan reads the same from a checkout and from a
+    # wheel (#17).
     try:
         # Drop both house-local module trees: a cached ``params`` module would not only go
         # stale across edits, its module-level elements would never be re-constructed on a
@@ -421,9 +417,10 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
         # was invisible until the process restarted — the same stale-edit hazard the
         # plan/params purge exists to prevent.
         for mod in [m for m in sys.modules
-                    if m in ("plan", "params", "library")
-                    or m.startswith(("plan.", "params.", "library."))]:
+                    if m in ("plan", "params", "library", "typehaus.library")
+                    or m.startswith(("plan.", "params.", "library.", "typehaus.library."))]:
             del sys.modules[mod]
+        _alias_library()
         spec = importlib.util.spec_from_file_location("plan.manifest", manifest)
         assert spec and spec.loader
         module = importlib.util.module_from_spec(spec)
@@ -455,8 +452,6 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
     finally:
         if inserted:
             sys.path.remove(added)
-        if lib_added and lib_root is not None:
-            sys.path.remove(str(lib_root))
 
 
 def _import_error_hint(exc: BaseException) -> str | None:
@@ -488,27 +483,20 @@ def _import_error_hint(exc: BaseException) -> str | None:
             f"fields, not {len(rows)} separate problems.")
 
 
-def _find_library_root(house_dir: Path) -> Path | None:
-    """Walk up from ``house_dir`` to find the directory *containing* a ``library`` package.
+def _alias_library() -> None:
+    """Make ``library`` and ``library.*`` resolve to the packaged ``typehaus.library``.
 
-    Returns the parent that should go on ``sys.path`` so ``import library`` resolves, or
-    ``None`` if no checkout-local ``library/`` exists (a pip-installed one needs no help).
+    The shared catalog lives at ``typehaus/library/`` so a wheel cannot collide with the
+    unrelated ``library`` project on PyPI, but every house's plan source is authored against
+    the short ``from library import ...`` spelling and the editable dialect allowlists it.
+    Aliasing here — right after the ``sys.modules`` purge, so the two stay in step — is what
+    keeps a checkout and a pip install reading the same source.
     """
-    for parent in [house_dir, *house_dir.parents]:
-        if (parent / "library" / "__init__.py").is_file():
-            return parent
-    # Installed from a wheel there is no checkout to walk: `library` ships beside
-    # `typehaus` in site-packages, so it is already importable and needs no sys.path help.
-    # Confirm it really is, so a broken install fails here rather than inside the house's
-    # own `from library import ...`.
-    try:
-        import importlib.resources
-
-        if importlib.resources.files("library").joinpath("__init__.py").is_file():
-            return None
-    except (ImportError, ModuleNotFoundError, TypeError):
-        pass
-    return None
+    package = importlib.import_module("typehaus.library")
+    sys.modules["library"] = package
+    for name, module in list(sys.modules.items()):
+        if name.startswith("typehaus.library."):
+            sys.modules["library." + name[len("typehaus.library."):]] = module
 
 
 # Element kinds the UI can move/edit (drag, rehost, retype, delete). Their edits POST a
@@ -553,13 +541,36 @@ def _identity_check(authored: list, findings: list[Finding]) -> None:
     tag must be caught here or it ships silently (two elements sharing one derived IFC
     GlobalId; a duplicate tag simply vanishing from every downstream view). Both are ERROR
     here, and the checks-tier rule (`integrity.uid_unique`) stays as the mirror.
+
+    An *empty or absent* uid is the third case, and it belongs here for a reason `haus fmt`
+    cannot cover: fmt mints a uid only where the keyword is absent entirely, and
+    ``editable_files`` filters on the ``# haus: editable`` marker, so fmt never visits
+    ``params/*.py`` at all. An element authored there with ``uid=""`` used to load clean,
+    then collide every derived GlobalId onto the value derived from the empty string —
+    erasing that wall's layers from the geometry IR and from every section golden, three
+    layers downstream of the typo.
     """
     by_uid: dict[str, list[str]] = {}
     by_tag: dict[str, int] = {}
+    blank: list[str] = []
     for el in authored:
         by_tag[el.tag] = by_tag.get(el.tag, 0) + 1
         if el.uid:
             by_uid.setdefault(el.uid, []).append(el.tag)
+        else:
+            blank.append(el.tag)
+    if blank:
+        findings.append(Finding(
+            severity=Severity.ERROR,
+            check_id="loader.uid_present",
+            message=(f"{len(blank)} element(s) carry no uid "
+                     f"({', '.join(sorted(blank)[:5])}"
+                     f"{', …' if len(blank) > 5 else ''})"),
+            element_tags=tuple(sorted(blank)),
+            fix_hint="run `haus fmt` on the house; for an element in a non-editable module "
+                     "(params/*.py is never visited by fmt) delete the empty uid= and let "
+                     "fmt mint one, or move the element into a `# haus: editable` file",
+        ))
     for uid, tags in sorted(by_uid.items()):
         if len(tags) > 1:
             findings.append(Finding(

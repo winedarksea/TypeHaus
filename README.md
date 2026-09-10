@@ -61,7 +61,8 @@ cd ui && HAUS_ENGINE=http://127.0.0.1:8000 npm run dev
 
 - `packages/engine/` — the `typehaus` Python package (quantities, model, resolve, emit,
   checks, CLI).
-- `library/` — shared assemblies/materials/types — the community contribution seam.
+- `packages/engine/src/typehaus/library/` — shared assemblies/materials/types, the community
+  contribution seam. Plans import it as `library`; the loader aliases the name.
 - `houses/starter/` — the interim `haus new` template and cold-start delight target.
 - `plans/` — the living design documentation (00–50) and the decision log.
 

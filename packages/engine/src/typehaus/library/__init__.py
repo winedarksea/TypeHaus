@@ -6,7 +6,7 @@ import ...``. Each item is declarative wherever possible so the dialect trust cl
 
 from __future__ import annotations
 
-from library.assemblies import (
+from typehaus.library.assemblies import (
     FOUNDATION_WALL_8_INT,
     FOUNDATION_WALL_8_XPS4,
     FOUNDATION_WALL_8_XPS4_CORE,
@@ -28,16 +28,16 @@ from library.assemblies import (
     INT_2X6_STAGGERED_PLUMBING,
     STARTER_FLOOR,
 )
-from library.doors import STARTER_DOOR_TYPES
-from library.hardware import STRUCTURAL_HARDWARE
-from library.materials import STARTER_MATERIALS
-from library.placeables import (
+from typehaus.library.doors import STARTER_DOOR_TYPES
+from typehaus.library.hardware import STRUCTURAL_HARDWARE
+from typehaus.library.materials import STARTER_MATERIALS
+from typehaus.library.placeables import (
     STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES,
     STARTER_FIXTURE_TYPES,
     STARTER_FURNITURE_TYPES,
 )
-from library.railings import STARTER_RAILING_TYPES
+from typehaus.library.railings import STARTER_RAILING_TYPES
 
 __all__ = [
     "STARTER_MATERIALS",

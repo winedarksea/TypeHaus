@@ -87,7 +87,7 @@ proposing any design change.
   order is enforced by `packages/engine/tests/test_catlin_eave_water.py` — read it before
   moving any of these numbers. All three pieces are ordered in `_CHAIN_MATERIAL`, the
   house's one exterior dark, so the eave line matches the rake's corner trim.
-- `library/placeables/*.py` (repo root, not this directory) — the shared FixtureType/
+- `typehaus/library/placeables/*.py` (inside the engine, not this directory) — the shared FixtureType/
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
   movable instances that reference them live in the editable modules above. **`plan/

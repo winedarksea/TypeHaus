@@ -26,7 +26,7 @@ from typehaus.cli._shared import app, console
 # Trees that must never be ignored. `git check-ignore` over these is what makes the
 # unanchored-pattern bug class (a `build/` rule matching `ui/src/three/build/`) announce
 # itself instead of waiting to be found by a missing import in a shipped commit.
-_SOURCE_TREES = ("packages", "ui", "library", "houses", "scripts")
+_SOURCE_TREES = ("packages", "ui", "houses", "scripts")
 
 _OK, _WARN, _INFO = "ok", "warn", "--"
 
@@ -75,6 +75,22 @@ def _ui_row(root: Path | None) -> _Row:
         return _Row("ui/dist", "not built (cd ui && npm run build)", _WARN)
     built = datetime.fromtimestamp(index.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
     return _Row("ui/dist", f"built {built}", _OK)
+
+
+def _packaged_ui_row() -> _Row:
+    """The UI copy staged inside the package — what a pip install has and a checkout does not.
+
+    A checkout's freshly built ``ui/dist`` outranks it in discovery, so this row exists to
+    answer the other question: would a wheel built from here serve the editor, or the
+    "UI not built" 404?
+    """
+    from typehaus.cli.cmd_serve import packaged_ui_dist
+
+    packaged = packaged_ui_dist()
+    if packaged is None:
+        return _Row("ui (packaged)", "absent (scripts/package_ui.py stages it)", _INFO)
+    size = sum(f.stat().st_size for f in packaged.rglob("*") if f.is_file())
+    return _Row("ui (packaged)", f"{size / 1e6:.1f} MB at {packaged}", _OK)
 
 
 def _serve_row(port: int) -> _Row:
@@ -134,13 +150,14 @@ def doctor(
         _install_row(root),
         _Row("engine", f"version {engine_version()}", _OK),
         _ui_row(root),
+        _packaged_ui_row(),
         _serve_row(port),
         gitignore,
     ]
     colors = {_OK: "green", _WARN: "yellow", _INFO: "dim"}
     for row in rows:
         color = colors[row.status]
-        console.print(f"{row.name:<11} {row.detail:<44} [{color}]{row.status}[/{color}]",
+        console.print(f"{row.name:<13} {row.detail:<44} [{color}]{row.status}[/{color}]",
                       soft_wrap=True)
     for hit in hits:
         console.print(f"  [yellow]{hit}[/yellow]", soft_wrap=True)

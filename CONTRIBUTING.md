@@ -1,7 +1,12 @@
 # Contributing a library item
 
-`library/` is the shared, reviewed catalog. House plans are the right place to try a
-new assembly, transition, material, fixture, or furniture item before it is promoted.
+`packages/engine/src/typehaus/library/` is the shared, reviewed catalog. House plans are the
+right place to try a new assembly, transition, material, fixture, or furniture item before it
+is promoted.
+
+It ships *inside* the engine so a wheel cannot collide with the unrelated `library` project
+on PyPI. House plan source still spells it `from library import ...`; the loader aliases that
+name onto the packaged package, so authoring is unchanged.
 
 ## Promotion flow
 
@@ -9,7 +14,8 @@ new assembly, transition, material, fixture, or furniture item before it is prom
    that house.
 2. Verify the item is generally reusable, declarative, has a stable tag, and does not
    include project coordinates, owner data, or proprietary mesh assets.
-3. Add the item to the focused `library/` module and export it from `library/__init__.py`.
+3. Add the item to the focused module under `typehaus/library/` and export it from that
+   package's `__init__.py`.
    Include the original technical source in `source`; empirical ratings such as STC must
    cite a published test or manufacturer assembly and must not be estimated.
 4. Add the item to the relevant catalog tuple (`ALL_ASSEMBLIES`, materials, types, or
@@ -18,8 +24,7 @@ new assembly, transition, material, fixture, or furniture item before it is prom
 5. Run the library render and model checks:
 
    ```sh
-   PYTHONPATH=packages/engine/src .venv/bin/python -m pytest -q \
-     packages/engine/tests/test_model_and_emit.py
+   .venv/bin/python -m pytest -q packages/engine/tests/test_model_and_emit.py
    ```
 
    The per-item card-render test is the required smoke test for every shared assembly.
@@ -28,7 +33,7 @@ new assembly, transition, material, fixture, or furniture item before it is prom
 
 ## Assets and rights
 
-Only original or redistributably licensed assets belong in `library/`. Imported furniture
+Only original or redistributably licensed assets belong in the shared catalog. Imported furniture
 from a vendor or 3D warehouse remains in `houses/<house>/furniture/` with its source note.
 Do not copy product drawings into the repository merely to support a catalog record; link
 to the authoritative source instead.

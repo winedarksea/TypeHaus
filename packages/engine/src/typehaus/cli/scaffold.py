@@ -37,7 +37,7 @@ def scaffold_house(directory: Path, name: str, template: str = "starter") -> lis
 def _find_template(start: Path, template: str) -> Path | None:
     """Walk up from the new house dir (then cwd) to find ``houses/<template>``.
 
-    Same walk-up discovery as ``loader._find_library_root``: it must not assume the engine
+    Walk-up discovery that must not assume the engine
     is running out of the monorepo.
     """
     for base in (start, Path.cwd()):

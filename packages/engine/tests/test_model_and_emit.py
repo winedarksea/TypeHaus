@@ -25,8 +25,8 @@ def test_elements_are_frozen(project) -> None:
 
 
 def test_card_renders_for_every_library_assembly() -> None:
-    from library import STARTER_MATERIALS
-    from library.assemblies import ALL_ASSEMBLIES
+    from typehaus.library import STARTER_MATERIALS
+    from typehaus.library.assemblies import ALL_ASSEMBLIES
     from typehaus.emit.draw import render_card_svg
 
     lib = Library(materials=STARTER_MATERIALS, assemblies=ALL_ASSEMBLIES)
@@ -38,7 +38,7 @@ def test_card_renders_for_every_library_assembly() -> None:
 
 def test_acoustic_library_presets_have_published_rating_and_truthful_layout() -> None:
     """Library STC values are documented empirical results, never estimates."""
-    from library.assemblies import ALL_ASSEMBLIES
+    from typehaus.library.assemblies import ALL_ASSEMBLIES
     from typehaus.model import LayerFunction, PartitionLayout
 
     # Selected by ``stc is not None`` (a claimed rating), not by an ``INT_`` tag prefix:

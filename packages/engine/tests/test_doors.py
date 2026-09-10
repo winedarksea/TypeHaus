@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from library import STARTER_DOOR_TYPES
+from typehaus.library import STARTER_DOOR_TYPES
 from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
     BYPASS_OVERLAP_IN,

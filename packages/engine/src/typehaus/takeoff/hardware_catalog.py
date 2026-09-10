@@ -235,7 +235,7 @@ def structural_hardware_catalog() -> tuple:
     Imported lazily: the engine package must import without the repo-root ``library``
     package on ``sys.path`` (the plan loader puts it there when a house is loaded).
     """
-    from library.hardware import STRUCTURAL_HARDWARE
+    from typehaus.library.hardware import STRUCTURAL_HARDWARE
 
     return STRUCTURAL_HARDWARE
 
@@ -247,7 +247,7 @@ def hardware_capacity_records() -> tuple:
     orderable and selectable by role, and a capacity record is neither. Only
     ``allowable_for_model`` reads this.
     """
-    from library.hardware import CAPACITY_ONLY_RECORDS
+    from typehaus.library.hardware import CAPACITY_ONLY_RECORDS
 
     return CAPACITY_ONLY_RECORDS
 

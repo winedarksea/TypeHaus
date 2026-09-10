@@ -10,7 +10,7 @@ The four original tags (``FURN-SOFA-84``, ``FURN-QUEEN-BED``, ``FURN-DINING-6``,
 
 from __future__ import annotations
 
-from library.placeables._zones import front_zone, side_zone, surround_zone
+from typehaus.library.placeables._zones import front_zone, side_zone, surround_zone
 from typehaus.model import Footprint2D, FurnitureType, ft, inch, m, pt
 from typehaus.model.placeable_symbols.furniture import sectional_points
 

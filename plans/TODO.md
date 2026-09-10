@@ -204,6 +204,12 @@ for it.
   stair outline, and nothing compares a wall-mount elevation against a stair.
 - **`resolve/mep_queries.py` is 509 lines**, just over the 500-line rule in `AGENTS.md`.
   Splitting it out of scope for now.
+- **`typehaus/library/hardware.py` is 1236 lines** and now counts against the engine's own
+  file-size rule — the shared catalog moved inside the package for 0.1.0 (2026-09-09) so a
+  wheel could not collide with the unrelated `library` project on PyPI. It is a flat catalog
+  of connector records, so the split is by family (anchors, hangers, straps, ties) rather
+  than by behaviour. Left alone deliberately: the move was already a 30-import-site change
+  and a catalog reshuffle on top of it would have made the release diff unreviewable.
 
 ### Structural/framing residuals
 

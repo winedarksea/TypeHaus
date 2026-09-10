@@ -9,7 +9,7 @@ the deck plane lands where the counter is, and the faucet occupies the band abov
 
 from __future__ import annotations
 
-from library.placeables._zones import front_zone
+from typehaus.library.placeables._zones import front_zone
 from typehaus.model import (
     ClearancePolicy,
     ClearanceZone,

@@ -37,14 +37,14 @@ type-haus/
 │       │   ├── diff/            # GlobalId + geometric matchers, report, diff.json
 │       │   ├── server/          # FastAPI app, watchfiles, WebSocket events
 │       │   └── cli/             # typer app (`haus …`)
+│       │   └── library/         # shared assemblies, materials, door/window types,
+│       │                        #   transitions; plans import it as `library`
 │       └── tests/               # unit tests + golden IFC/DXF snapshots + fixtures
 ├── ui/                          # pnpm + Vite + React + TS (editor, 3D viewer)
 ├── houses/
 │   ├── starter/                 # template used by `haus new`
 │   └── catlin/                  # M3: the real house (plan/, params/, notes/, brief.md,
 │                                #   preferences.toml)
-├── library/                     # shared assemblies, materials, door/window types,
-│                                #   transitions (Python modules)
 ├── .claude/
 │   ├── CLAUDE.md → ../CLAUDE.md (or place at root)
 │   └── skills/                  # add-room, add-assembly, import-review, permit-check,
@@ -57,7 +57,8 @@ type-haus/
 
 Packaging: **uv** (workspace + env) with **hatchling** build backend. Python **≥3.11**.
 UI distributed pre-built inside the wheel so `pip install typehaus && haus serve` works
-without node.
+without node — `scripts/package_ui.py` stages `ui/dist` into `typehaus/server/static/`
+before the wheel is built, and `_find_ui_dist` falls back to it.
 
 ## Git topology — app repo, active house, community
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
+from typehaus.library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
 from typehaus.resolve.room_floor import room_floor_elevation
 

@@ -241,7 +241,8 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # `exposed_fastener=True` is the double-billing guard: it is what lets
     # `takeoff.fasteners` bill the panel screws as a counted part instead of leaving them
     # inside a $/SF rate. Without it the screws simply vanish from the bill.
-    Material(tag="corrugated-panel-26", name="7/8\" corrugated exposed-fastener steel panel, 26 ga.",
+    Material(tag="corrugated-panel-26",
+             name="7/8\" corrugated exposed-fastener steel panel, 26 ga.",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="corrugated",
              skin_family="standing-seam", exposed_fastener=True,

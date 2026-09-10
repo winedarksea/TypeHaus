@@ -46,7 +46,7 @@ TYPEHAUS_HOUSE=houses/starter $PY -m pytest -p no:typehaus_checks \
   packages/engine/src/typehaus/checks/pytest_plugin.py
 
 echo "== ruff =="
-.venv/bin/ruff check packages/engine/src library
+.venv/bin/ruff check packages/engine/src
 
 echo "== mypy --strict =="
 .venv/bin/mypy packages/engine/src

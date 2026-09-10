@@ -1,18 +1,19 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.26"]
 build-backend = "hatchling.build"
 
 [project]
 name = "typehaus"
-version = "0.1.0a0"
-description = "Type:Haus — infrastructure-as-code for residential houses. Pre-alpha."
+version = "0.1.0"
+description = "Type:Haus — infrastructure-as-code for residential houses."
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Colin Catlin", email = "colin.catlin@gmail.com" }]
 requires-python = ">=3.11"
 keywords = ["architecture", "BIM", "IFC", "residential", "infrastructure-as-code", "CAD"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -48,6 +49,9 @@ dev = [
 
 [project.urls]
 Homepage = "https://type-haus.com"
+Repository = "https://github.com/colincatlin/TypeHaus"
+Issues = "https://github.com/colincatlin/TypeHaus/issues"
+Documentation = "https://type-haus.com"
 
 [project.scripts]
 haus = "typehaus.cli.app:main"
@@ -56,24 +60,31 @@ haus = "typehaus.cli.app:main"
 typehaus_checks = "typehaus.checks.pytest_plugin"
 
 [tool.hatch.build.targets.wheel]
-# `library` is shipped alongside `typehaus`: every house's plan source does
-# `from library import ...`, so a wheel without it installs an engine that cannot load the
-# house `haus new` just scaffolded. In a source checkout `loader._find_library_root` still
-# finds the repo copy by walking up; installed, it resolves as an ordinary import.
+# The shared catalog lives *inside* the package as `typehaus/library/`, so `packages` covers
+# it. Every house's plan source spells it `from library import ...`; `loader._alias_library`
+# maps that name onto the packaged one. It is deliberately not a top-level `library` in
+# site-packages — that name is taken on PyPI by an unrelated project, and installing both
+# would break one of them.
 packages = ["src/typehaus"]
 # The pre-built UI ships inside the wheel so `pip install typehaus && haus serve`
-# works without node (→ 02 §Repo layout).
+# works without node (→ 02 §Repo layout). `scripts/package_ui.py` stages it there.
 artifacts = ["src/typehaus/server/static/**"]
 
-# `library` lives at the repo root, outside this package dir, so it is force-included rather
-# than listed as a package (hatch requires package paths to be project-relative).
-[tool.hatch.build.targets.wheel.force-include]
-"../../library" = "library"
-# The default `haus new` template ships too, so a pip-installed engine can scaffold a house
-# without a checkout to copy one from (`cli/scaffold._find_template`). Only `starter`: the
-# catlin reference house is a checkout-only template.
-"../../houses/starter/plan" = "typehaus/templates/starter/plan"
-"../../houses/starter/brief.md" = "typehaus/templates/starter/brief.md"
-"../../houses/starter/preferences.toml" = "typehaus/templates/starter/preferences.toml"
-"../../houses/starter/CLAUDE.md" = "typehaus/templates/starter/CLAUDE.md"
+# The `haus new` starter template is staged by `hatch_build.py`, which resolves it in the
+# monorepo (../../houses/starter) or in an extracted sdist (houses/starter) — a static
+# force-include is right in one layout and a build failure in the other.
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
 
+# PyPI gets both artifacts, and an sdist that cannot rebuild an equivalent wheel is a trap:
+# it carries the starter template so the hook above finds it, and the staged UI so a
+# wheel built from the sdist serves the editor too.
+[tool.hatch.build.targets.sdist]
+include = ["src/typehaus", "tests", "README.md", "LICENSE", "pyproject.toml", "hatch_build.py"]
+artifacts = ["src/typehaus/server/static/**"]
+
+[tool.hatch.build.targets.sdist.force-include]
+"../../houses/starter/plan" = "houses/starter/plan"
+"../../houses/starter/brief.md" = "houses/starter/brief.md"
+"../../houses/starter/preferences.toml" = "houses/starter/preferences.toml"
+"../../houses/starter/CLAUDE.md" = "houses/starter/CLAUDE.md"

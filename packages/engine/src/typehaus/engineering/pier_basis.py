@@ -483,7 +483,6 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
     and a guard load is not a storey live load in the first place. ``deck_post`` grades the
     larger.
     """
-    from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
     from typehaus.engineering.balcony_wind import Demand, ground_below_ft, nearest, solid_bands
     from typehaus.engineering.balcony_wind import ft as _bw_ft
     from typehaus.model.elements import Wall
@@ -492,6 +491,7 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
     from typehaus.model.trim import Fascia
     from typehaus.resolve.assembly_material import assembly_structure_material
     from typehaus.wind import velocity_pressure_psf, wind_basis
+    from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
 
     if any(isinstance(e, KneeBrace) for e in ctx.plan.all_elements()):
         return {}

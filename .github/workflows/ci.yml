@@ -18,7 +18,7 @@ jobs:
       - name: Sync workspace
         run: uv sync --all-packages --all-extras
       - name: Ruff
-        run: uv run ruff check packages/engine/src library
+        run: uv run ruff check packages/engine/src
       - name: mypy --strict
         run: uv run mypy packages/engine/src
       - name: pytest
@@ -42,11 +42,18 @@ jobs:
           uv run haus permit-check houses/starter --json > /tmp/permit.json || true
           uv run python -c "import json,sys; d=json.load(open('/tmp/permit.json')); \
             sys.exit(0 if d['items'] else 'permit checklist produced no items')"
-      # A wheel that omits `library/` installs an engine that cannot load the house it just
-      # scaffolded — invisible to every test that runs from the source tree.
+      # The flagship deliverable was built but never printed in CI, so a break in the permit
+      # set only ever surfaced by hand. `haus print` gates on UNKNOWN as well as FAIL, which
+      # makes it a stricter check than `haus check`.
+      - name: Catlin permit print
+        run: uv run haus print houses/catlin
+      # A wheel that omits the shared catalog installs an engine that cannot load the house it
+      # just scaffolded — invisible to every test that runs from the source tree. 0.1.0a0
+      # shipped exactly that break, so the contents are asserted, not assumed.
       - name: Wheel installs and scaffolds a buildable house
         run: |
           uv build --package typehaus --wheel --out-dir /tmp/wheel
+          uv run python scripts/check_wheel.py /tmp/wheel/*.whl
           uv venv /tmp/wheelenv
           VIRTUAL_ENV=/tmp/wheelenv uv pip install /tmp/wheel/*.whl
           cd /tmp && /tmp/wheelenv/bin/haus new /tmp/wheelhouse --name "Wheel House"
@@ -86,3 +93,40 @@ jobs:
       - name: Build (proves every imported module is actually committed)
         run: npm run build
         working-directory: ui
+
+  # PyPI Trusted Publishing: no API token lives in this repo. Runs only after `engine` and
+  # `ui` are green, and only on a published release — 0.1.0a0 was uploaded without either
+  # gate and shipped a wheel that could not load a house.
+  publish:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: [engine, ui]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # The editor ships inside the wheel, so it has to be built and staged before the wheel
+      # is. Skip this and `pip install typehaus && haus serve` answers the "UI not built" 404.
+      - name: Build the UI
+        run: npm ci && npm run build
+        working-directory: ui
+      - name: Stage the UI into the package
+        run: python scripts/package_ui.py
+      - name: Build wheel and sdist
+        run: |
+          python -m pip install --upgrade build
+          python -m build packages/engine --outdir dist
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
