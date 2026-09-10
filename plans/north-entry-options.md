@@ -1,30 +1,40 @@
 # Catlin house north-entry options
 
-**Study date:** 2026-09-07
-**Status:** options report only; no plan or code changes are authorized by this study.
+**Original study:** 2026-09-07
 
-## Conclusion
+**Decision update:** 2026-09-09
 
-All three options can produce a decent north-side entrance, but they solve different
-problems.
+**Status:** decision record; the selected concept is developed in
+[north-gable-extension.md](north-gable-extension.md). No model or construction changes are
+authorized by this study.
 
-1. **A north door followed by a route through the garage is the best minimum-change
-   answer.** It can be pleasant enough for this household if it is designed as a protected
-   42–48-inch pedestrian lane rather than leftover space around parked objects. Its success
-   depends on a full-scale test with the actual two vehicles and mower.
-2. **An enclosed east gallery with a widened entry lantern is the best entrance as an
-   architectural experience.** It gives guests a clean, dry, legible route directly to the
-   mudroom and can hold the bench, package drop and gentle decorative light. It is also a
-   genuine new pavilion, not a glazing-panel substitution.
-3. **A broad relocated north porch is the weakest of the three.** It compromises the north
-   kitchen windows and puts an exterior stair, garage door and house door into one busy wet
-   landing. A compact dogleg porch can mitigate both defects, but the better it becomes, the
-   more it resembles the open or enclosed gallery.
+## Selected direction
+
+The subsequent gable study found a better synthesis than the three original options. The
+selected north entry is now an **open, cold connector under a full-width extrusion of the
+garage's south gable**, with:
+
+- the unbuilt garage moved 2'-6" north while retaining its frost-depth ICF foundation;
+- a compact shared composite upper landing around the house and garage doors;
+- `SL-G-STEP-0` absorbed into `FS-BW-FLOOR`, while the interior `ST-G-SERVICE` flight stays;
+- five broad tiers climbing west from an east approach; and
+- a west screen or wall, with slatted on-edge 2×4s and corrugated metal as the leading
+  price alternates and opal polycarbonate retained for comparison.
+
+This is the architectural idea hiding inside the original compact-dogleg porch, but the
+garage gable supplies the weather roof without a separate pavilion. It gives guests a route
+that avoids the garage interior, keeps the kitchen-side yard open at grade and concentrates
+the raised floor only where the two door landings need it.
+
+The original options below remain as provenance and fallbacks. They are no longer equally
+active recommendations. In particular, the old conclusion favoring the through-garage route
+as the minimum-change answer is superseded.
 
 The south porch can remain the garden/social entrance in every option. In particular, the
-garage route should not be relied upon as the dwelling's required egress route: IRC R311.1
-does not permit the required egress path to travel through a garage. The exact permit
-interpretation belongs to the local official. See [IRC R311.1](https://codes.iccsafe.org/s/IRC2021P2/chapter-3-building-planning/IRC2021P2-Pt03-Ch03-SecR311.1).
+garage route should not be relied upon as the dwelling's required egress route: R311.1 does
+not permit the required egress path to travel through a garage. The exact permit
+interpretation belongs to the local official. See [Minnesota Rule
+1309.0311](https://www.revisor.mn.gov/rules/1309.0311/).
 
 ## What the current plan gives us
 
@@ -34,17 +44,17 @@ not a prefabricated object that can literally be picked up and reused.
 
 | Existing fact | Consequence for the options |
 |---|---|
-| The house is 36 × 36 feet; the garage is 24 × 24 feet and aligned with its west side. | The garage conceals the existing house door from the north street, but leaves a 12-foot-wide exposed part of the north house wall to its east. |
+| The house is 36 × 36 feet; the garage is 24 × 24 feet at x = 6–30 feet, centred on the house ridge rather than aligned to either side. | The garage conceals the central north entry zone; roughly 6-foot house wings remain at both east and west. |
 | The garage slab is inset inside its stem, leaving about 22 feet 1 inch of usable slab in each direction. | A four-foot pedestrian lane has a larger effect on vehicle fit than the nominal 24-foot exterior dimension suggests. |
 | House and garage cladding are only 4 feet ½ inch apart. | This is a protected passage, not enough width for a full porch room or for a normal bench beside a 36-inch route. |
-| The existing 4 × 4-foot breezeway occupies x = 6–10 feet; both present doors are centred at x = 8 feet. | House and garage traffic currently meet face-to-face in the same small cell. |
-| The remaining slot east of the breezeway runs about 14 feet, x = 10–24 feet. | It is almost exactly long enough for an entry landing, five-riser stair and lower landing. |
+| The current breezeway glazing is 4'-6" wide at x = 6'-9"..11'-3". The house door is centred at x = 8 feet and the garage door at x = 10 feet. | The widened current floor only partially covers both door-landing patches; the selected five-foot upper platform must explicitly cover their union. |
+| The full garage-shadow zone spans x = 6–30 feet. | A compact upper landing at the west end plus broad eastward tiers fits under the full-width gable without creating a 24-foot-long raised gallery. |
 | Grade is approximately 35 inches below the breezeway walking surface. | Every direct exterior approach needs five risers, landings, a handrail and protection at open high edges. Minnesota applies its residential stair rules to exterior stairs serving dwellings and garages; see [Minnesota Rule 1309.0311](https://www.revisor.mn.gov/rules/1309.0311/). |
-| The important north kitchen windows are east of the garage, centred near x = 29 feet 4 inches and x = 34 feet. | A porch or opaque roof extending across the exposed 12-foot bay would cover the kitchen's only direct north sky. |
-| HP3 and its pad occupy x = 9 feet 9 inches to 13 feet 1 inch in the entry slot. | Either porch/gallery scheme needs HP3 relocated, including its pad, power, line set, service access and defrost drainage. |
+| The important north kitchen windows are centred near x = 29 feet 4 inches and x = 34 feet; the first straddles the garage's east plane. | The selected full-width gable shelters the first window but leaves the second open. The owners accepted that daylight trade to keep the roof simple. |
+| HP3's current interim cabinet spans about x = 12'-4"..15'-2 3/8", with its pad extending to x = 15'-5", in the entry zone. | The selected roof and tiers require HP3 relocation, including its pad/stand, power, line set, service access and defrost drainage. |
 | The existing breezeway side opening has only about 26½ inches clear between posts, and its side beam soffit is about 6 feet 3½ inches high. | Removing a polycarbonate panel does not make a usable side door. Posts, beam and roof edge all require redesign. |
 | The garage is insulated and heated, with painted 5/8-inch gypsum walls, a sealed slab and three shop lights. | The garage option starts much closer to “finished room” than a typical unfinished garage. |
-| The north garage roof slope presently has no gutter or snow retention. | A new north door needs an independent canopy plus deliberate roof-water and sliding-snow control. |
+| The garage ridge runs north-south, its overhead door and driveway are north, and its eaves drain east/west. | A south gable extrusion preserves those roof falls, but the present south-end leaders must move away from the entry work. |
 
 The controlling modeled sources are the [garage plan](../houses/catlin/plan/storeys/garage.py),
 [breezeway geometry](../houses/catlin/params/breezeway.py),
@@ -56,16 +66,15 @@ The controlling modeled sources are the [garage plan](../houses/catlin/plan/stor
 
 “Scope” is relative construction effort, not a bid estimate.
 
-| Criterion | 1. Moved north porch | 2. Through garage | 3. Enclosed gallery |
-|---|---|---|---|
-| First-time wayfinding | Good only with a visible east portal | Excellent north door; internal route must be obvious | Excellent from east drive; fair from street until corner is visible |
-| Winter comfort | Fair as compact covered dogleg; poor if open | Very good once inside, with a proper north canopy | Best; stair, landing and packages remain dry |
-| Kitchen daylight/view | Poor in broad form; good if kept west of x = 24 feet | Unchanged | Unchanged if the lantern flare stays north of the kitchen sightline |
-| Garage experience | Guests avoid garage | Guests share the room with vehicles and equipment | Guests only see the quieter garage-side door |
-| Storage discipline required | Low | High | Low |
-| Relative construction scope | Medium–high | Lowest | Highest |
-| Best fit | A porch feeling is more important than full enclosure | Everyday simplicity and value | A genuinely clean, gracious guest entrance |
-| Overall view | Do only as the compact version | Preferred minimum-change option | Preferred experience option |
+| Criterion | 1. Porch | 2. Through garage | 3. Enclosed gallery | **Selected extruded gable** |
+|---|---|---|---|---|
+| First-time wayfinding | Good only with a visible east portal | Excellent north door; internal route must be obvious | Excellent from east drive | Good east approach; address/light must announce the turn |
+| Winter comfort | Fair | Very good after first door | Best | Good overhead and west shelter; still outdoor |
+| Kitchen daylight/view | Poor in broad form | Unchanged | Mostly unchanged | First kitchen window sheltered; second remains open |
+| Garage experience | Guests avoid garage | Guests share room with vehicles | Guests avoid garage | Guests avoid garage; service door shares upper landing |
+| Storage discipline | Low | High | Low | Low |
+| Relative scope | Medium–high | Low until the north-wall/door conflicts are resolved | Highest | Medium, concentrated in garage roof and entry framing |
+| Decision | Fallback idea only | Superseded minimum-change route | Premium fallback | **Proceed to schematic/engineering** |
 
 ## Common requirements for any north arrival
 
@@ -78,15 +87,15 @@ The controlling modeled sources are the [garage plan](../houses/catlin/plan/stor
 - Use a generous, nearly level landing; a pan-flashed threshold; a replaceable scraper mat;
   high-traction wet surfaces; and an inward-opening exterior door where the detailed plan
   permits it.
-- Preserve the continuous west wind block. Prefer an east-facing outer door and a
-  90-degree turn before the house door. Cold-region design guidance identifies porches and
-  vestibules as protection from driving rain and snow and specifically notes the value of
+- Preserve a deliberate west edge: a screen for airflow or a wall for stronger wind
+  protection. Prefer a 90-degree turn before the house door. Cold-region design guidance
+  identifies porches and vestibules as protection from driving rain and snow and notes the value of
   turning an entry 90 degrees; see the [U.S. Forest Service Built Environment Image Guide](https://www.fs.usda.gov/sites/default/files/fs_media/fs_document/TheBuiltEnvironmentImageGuide-2001-09.pdf).
 - Keep the garage-side door weatherstripped, self-closing and fire-protective, and obtain an
   early ruling on how an enlarged connector affects garage separation. See
   [Minnesota Rule 1309.0302](https://www.revisor.mn.gov/rules/1309.0302/).
 - Make a future-access decision now. The approximately 35-inch rise would need about 35
-  feet of ramp run at 1:12 before landings, so neither a short porch nor the 14-foot slot
+  feet of ramp run at 1:12 before landings, so neither a short porch nor the roofed approach
   quietly becomes step-free later. Reserve space for a lift if that matters.
 
 ## Option 1 — Move the porch to the north arrival
@@ -94,14 +103,14 @@ The controlling modeled sources are the [garage plan](../houses/catlin/plan/stor
 ### The broad version: not recommended
 
 A literal porch across the north/east face sounds direct, but it creates the two problems
-already identified by the owners. Its plausible footprint is a four-foot connector in the
-house/garage slot opening into roughly a 12-foot-wide by 8-foot-deep porch outside the
-kitchen, x = 24–36 feet.
+already identified by the owners. In the current garage position the exposed east wing is
+only about six feet wide, x = 30–36 feet, and the first kitchen window straddles that edge.
 
-**Kitchen window.** The garage already blocks the house wall west of x = 24 feet. The two
-kitchen windows are in the exposed bay east of that line, so this is precisely where a
-street-visible porch wants to go. The deck and a visually open 36-inch guard are not the
-chief daylight problem: the kitchen glass starts about 41 inches above the raised deck.
+**Kitchen window.** The garage blocks most of the north house wall between x = 6 and 30
+feet. One kitchen window sits near that east edge and the other is farther east, so this is
+precisely where a street-visible porch wants to go. The deck and a visually open 36-inch
+guard are not the chief daylight problem: the kitchen glass starts about 41 inches above
+the raised deck.
 The damaging elements are the opaque roof, deep eave, solid screening and posts in the view
 cones. That roof would remove much of the diffuse north sky and replace a yard/sky view with
 a porch ceiling. A transparent roof only trades that loss for snow cover, summer gain,
@@ -117,15 +126,15 @@ There is also an identity problem. A large porch extending east toward the kitch
 like a room, but its actual destination remains the small mudroom door hidden west behind
 the garage. More roof does not automatically produce clearer wayfinding.
 
-The broad porch also occupies the present HP1 pad outside the kitchen, while its eight-foot
-north projection ends almost exactly on the line where the garage's east overhead-door
-opening begins. It therefore makes a second conflict between porch/stair users and the
-vehicle apron even after the three-door landing is improved.
+The broad porch also occupies the present HP1 pad outside the kitchen and pushes its east
+approach toward the north-facing driveway apron. It therefore creates a second conflict
+between porch/stair users and vehicles even after the three-door landing is improved.
 
 ### A daylight-court version of the broad porch
 
-If a genuine new sitting porch is important, stop the opaque connector roof at x = 24 feet
-and make the kitchen portion an open-to-sky deck/light court. Keep its guard visually open,
+If a genuine new sitting porch is important, stop the opaque connector roof at the garage's
+east plane near x = 30 feet and make the kitchen portion an open-to-sky deck/light court.
+Keep its guard visually open,
 align narrow supports with solid wall rather than glass, put the stair at the far east edge,
 and cover only its top landing with a small independent canopy. A high diffuse translucent
 strip can give partial rain protection, but should not become a nominally “clear” full roof.
@@ -138,7 +147,7 @@ its own right.
 ### The viable version: compact dogleg or “keyhole” porch
 
 If this option is pursued, confine the permanent opaque roof and raised platform to the
-garage-shadow zone, preferably no farther east than x = 24 feet. Bring the exterior stair
+garage-shadow zone, no farther east than x = 30 feet. Bring the exterior stair
 up from the east, parallel to the walls, and give it a widened top landing before the final
 westward approach to the breezeway.
 
@@ -150,7 +159,8 @@ solid wind wall | existing house/garage door cell | 5×6 landing | covered stair
 
 The key moves are:
 
-1. **Keep the kitchen bay open to sky.** Stop the opaque roof at the garage's east plane.
+1. **Keep the east kitchen bay open to sky.** Stop any separate porch roof at the garage's
+   east plane.
    If a short canopy must cross farther east, leave a deliberate light court in front of
    both kitchen windows rather than scattering small skylights over them.
 2. **Separate stair and doors.** The stair should arrive at a 5 × 6-foot turning landing,
@@ -171,10 +181,10 @@ The key moves are:
 
 | Pros | Cons | Mitigation or design response |
 |---|---|---|
-| Guests avoid the garage. | Broad version blocks kitchen light and view. | Keep opaque construction west of x = 24 feet; preserve a full-height open light court in front of both kitchen windows. |
+| Guests avoid the garage. | Broad version blocks kitchen light and view. | Keep any separate porch construction west of the garage's east plane; preserve open sky at the outer kitchen window. |
 | Retains an outdoor porch character. | Stair, house door and garage door compete. | Widen the top landing; turn the stair; swing leaves away from circulation; preferably offset the garage door. |
 | Uses the garage and west wall as wind shelter. | Still colder and wetter than an enclosed room. | Full stair roof, solid west/north baffle, controlled gutter and east-facing approach. |
-| Can be lighter and less costly than the enclosed gallery. | The entry remains hard to see from the north until one reaches the garage corner. | Create a visible portal and address marker at the garage's northeast/east-drive corner, then repeat its light/material at the porch. |
+| Can be lighter and less costly than the enclosed gallery. | The entry remains hard to see from the north until one reaches the garage corner. | Create a visible portal and address marker at the garage's southeast/east-approach corner, then repeat its light/material at the porch. |
 | Leaves dirty boots outside the house. | HP3 is in the approach. | Relocate HP3 as part of the concept, not as a later field adjustment. |
 
 **Residual downside:** after all of these mitigations, this is still an exposed stair and a
@@ -183,14 +193,21 @@ Option 3 is the more coherent use of the same construction zone.
 
 ## Option 2 — North door and a route through the garage
 
-### Recommended layout: north portal plus an L-shaped clean lane
+### Legacy layout: north portal plus an L-shaped clean lane
+
+**Current-plan correction.** This option was sketched before the overhead door moved to the
+north gable. The 16-foot opening now occupies x = 10–26 feet, leaving only four-foot corner
+returns. A new 36-inch person door centred near x = 8 feet no longer drops harmlessly into a
+blank bearing wall: it consumes nearly the whole west return and needs a coordinated corner,
+header and ICF blockout redesign. The north gable wall is nonbearing, but the geometry—not a
+header table—is now the constraint. This makes the route less of a “minimum-change” option
+than the original comparison claimed.
 
 Add a grade-level 36-inch insulated door to `W-G-N`, provisionally centred at global x = 8
-feet. That station aligns with the wall framing module and avoids the buried water service
-at x = 5 feet. The north wall is bearing and its ICF stem stands about 22 inches above the
-slab, so this still needs an engineered header, a preplanned ICF blockout/grade-beam detail,
-jamb reinforcement and flashing. It is straightforward before the ICF pour and unattractive
-as a retrofit.
+feet only if a revised jamb/corner layout proves feasible and the opening remains clear of
+the overhead-door framing. The ICF stem stands about 22 inches above the slab, so the door
+still needs a preplanned blockout/grade-beam detail, jamb reinforcement and flashing. It is
+work to coordinate before the ICF pour and unattractive as a retrofit.
 
 Outside, make a 6–8-foot-wide by roughly 5–6-foot-deep entry portal with a solid west side,
 an east/northeast approach, warm sconce, large address number and protected package ledge.
@@ -291,7 +308,12 @@ to Option 3 rather than be narrowed into an improvised aisle.
 
 ## Option 3 — Enclosed east gallery with a flared entry lantern
 
-### Recommended layout
+### Legacy premium layout
+
+This scheme also predates the selected 2'-6" garage move and the gable extrusion. Its old
+“14-foot slot” dimensions are retained as design provenance, not current construction
+coordinates. If revived, redraw it from the moved garage and current driveway before using
+any dimension below.
 
 Extend a cold, unconditioned enclosure east through the 14-foot slot and flare it into an
 approximately 6 × 6-foot lantern just beyond the garage's southeast corner. Put the outer
@@ -412,35 +434,32 @@ that can move differently, while preserving both existing rainscreen drainage pa
 | Full bench and package drop are possible. | Bench cannot fit in the strict slot. | Put it only in the east flare; otherwise use a shallow fold-down perch. |
 | Easy to clean if detailed correctly. | Cold enclosure can collect meltwater/condensation. | Mineral finishes, scraper mat, controlled drainage, coved base and screened drying path. |
 | Fairy-light atmosphere can make it memorable. | Light can attract insects and create web anchors. | Recess sealed warm points behind a wipeable lens; dim, shield and curfew them; separate task lighting. |
-| Leaves kitchen windows untouched. | Pedestrian route approaches near the east-facing garage apron. | Separate it with contrasting/raised paving, light and a low protective curb, bollard or planting strip. |
+| Leaves kitchen windows untouched. | Pedestrian route approaches the walk around the east edge of the north-facing driveway apron. | Separate it with contrasting/raised paving, light and a low protective curb, bollard or planting strip. |
 
 **Residual downside:** this is a small building project with structural, enclosure,
 mechanical, drainage and permit consequences. Its premium buys a qualitatively better
 arrival, not merely nicer finishes.
 
-## Decision gates and next design work
+## Current decision and next design work
 
-No option should be selected from a generic sketch. The smallest useful next package is:
+The option selection is complete: develop the extruded-gable connector described in
+[north-gable-extension.md](north-gable-extension.md). Its next package must resolve the
+following before the house model changes:
 
-1. **Actual site test:** survey/setbacks, north-street driveway geometry, snow-storage
-   locations and the path around the garage's east side.
-2. **Vehicle test for Option 2:** exact cars, mirrors, open doors, EV cables, mower and
-   likely snowblower at full scale, with a protected 42-inch minimum clean lane.
-3. **Kitchen daylight study for Option 1:** north elevation/section showing both kitchen
-   windows, porch roof edge and winter snow depth. If the opaque roof crosses their bay,
-   treat the option as having failed unless the owners knowingly accept the loss.
-4. **Plan/section for Option 3:** 6 × 6-foot lantern, 14-foot stair/gallery, all door swings,
-   6-foot-8-inch minimum headroom, HP3's new site, roof falls and downspout.
-5. **Early structural/AHJ conference:** north-garage bearing-wall/ICF opening, connector
-   classification, garage separation, frost support and required-egress route.
-6. **Step-free-access decision:** either reserve a lift bay at the gallery lantern or accept
-   that the normal north entrance has five steps and keep another future route available.
+1. **Survey and zoning:** confirm the garage 2'-6" north, driveway grades, full roof
+   projection, lot coverage and whether Saint Paul treats the near-touching roof as attached.
+2. **Excavation/foundation section:** retain frost-depth garage ICF; verify the garage south
+   footing bears on competent native soil or specified engineered fill; fix the house-first,
+   garage-before-backfill sequence.
+3. **Roof structure:** obtain a truss-engineer concept and price for the full-width six-foot
+   gable cantilever, including drift, uplift, fire/draft blocking and a pile-supported fallback.
+4. **Shared landing:** draw every bearing for `FS-BW-FLOOR`, its continuation through the
+   garage door, the retirement of `SL-G-STEP-0`, threshold drainage and differential movement.
+5. **Tiered approach:** fix five equal rises, four broad treads, lower landing, handrail,
+   guards, snow storage and HP3 relocation.
+6. **West edge alternates:** price and mock up the on-edge 2×4 screen and corrugated-metal
+   windwall on the same elevation; keep opal polycarbonate as the additive alternate.
 
-### Suggested decision rule
-
-- Choose **Option 2** if the actual vehicles leave an honest 42–48-inch clean lane and the
-  household is comfortable making garage order part of the architecture.
-- Choose **Option 3B, the cold gallery with flared lantern**, if the garage test fails or if
-  a clean guest entrance is worth a materially larger construction scope.
-- Keep **Option 1** only if the owners specifically want an outdoor porch arrival; use the
-  compact dogleg and do not roof over the kitchen-window bay.
+The through-garage route remains the least exterior construction only if its north-door and
+vehicle-clearance test can be solved. The enclosed gallery remains the premium fallback if a
+fully weather-sealed arrival later becomes more important than cost.
