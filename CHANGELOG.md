@@ -39,7 +39,12 @@ the break, because from a checkout every one of those paths resolves anyway. Do 
 
 ### Known limitations
 
-- `mypy --strict` reports errors across the engine and is not a release gate.
+- **mypy is not a gate**, in CI or in `scripts/verify.sh`. `mypy --strict packages/engine/src`
+  reports 2781 errors in 333 files, and a heavily relaxed run still reports 1119 in 158, so
+  there was no setting under which the step could pass. It blocked the whole engine job, and
+  because `verify.sh` is `set -e` it also meant every build, `haus check houses/catlin`, the
+  full IFC build and the UI stages were never reached by the script documented as the full
+  gate. `[tool.mypy] strict = true` stays in the root `pyproject.toml` for local use.
 - `Room.clear_face` is inset from the wall axis rather than the finish face, which skews room
   polygons and areas on thick walls. Fixing it moves every golden; it is the first item after
   this release.

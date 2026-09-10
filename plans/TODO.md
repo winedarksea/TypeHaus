@@ -204,6 +204,15 @@ for it.
   stair outline, and nothing compares a wall-mount elevation against a stair.
 - **`resolve/mep_queries.py` is 509 lines**, just over the 500-line rule in `AGENTS.md`.
   Splitting it out of scope for now.
+- **mypy is no longer a gate anywhere (2026-09-09).** `mypy --strict packages/engine/src`
+  reports 2781 errors in 333 files; relaxing implicit-optional, missing imports and
+  `no-untyped-def`/`type-arg`/`misc` still leaves 1119 in 158. It was removed from
+  `ci.yml` and `scripts/verify.sh` for 0.1.0, because a `set -e` script stopping at stage 4
+  meant the builds, `haus check houses/catlin`, the full IFC build and the UI stages were
+  never running. Roughly 2000 of the strict errors are mechanical (missing annotations, bare
+  generics, `no_implicit_reexport` wanting `__all__` on hub modules, absent third-party
+  stubs); about 450 — `arg-type`, `call-overload`, `union-attr`, `index` — want individual
+  review and may be latent bugs. Work it module by module and restore both steps at zero.
 - **`typehaus/library/hardware.py` is 1236 lines** and now counts against the engine's own
   file-size rule — the shared catalog moved inside the package for 0.1.0 (2026-09-09) so a
   wheel could not collide with the unrelated `library` project on PyPI. It is a flat catalog

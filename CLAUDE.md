@@ -51,7 +51,7 @@ is already parallel.
 .venv/bin/haus millwork houses/catlin                         # hardwood cut list for the mill
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
-scripts/verify.sh --fast                  # tests + ruff + mypy, skipping builds/bench/npm
+scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
 ```
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,
