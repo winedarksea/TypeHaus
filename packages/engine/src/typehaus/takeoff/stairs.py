@@ -41,6 +41,22 @@ def separate_stair_wear_members(model: ResolvedModel):
                 yield member
 
 
+def cast_stair_members(model: ResolvedModel):
+    """Members of a flight whose construction is authored as pours, not as this flight.
+
+    A ``carriage="cast"`` stair still resolves tread members — every rule that grades a
+    stair reads them, and a flight with no walking surface grades as UNKNOWN width and FAILS
+    R311.7 outright — but its concrete is billed by the ``Slab`` elements that ARE the tiers.
+    Left in ``all_members()`` unfiltered these would bill as 2x stock by the lineal foot,
+    which is the opposite of what they are, so ``framing_takeoff`` drops them here. They are
+    NOT wear members either: a cast nosing is not a finish good ordered by the piece.
+    """
+    for stair in model.stairs:
+        authored = model.plan.by_tag(stair.tag)
+        if isinstance(authored, Stair) and authored.carriage == "cast":
+            yield from stair.members
+
+
 def _in_conditioned_space(model: ResolvedModel, stair: ResolvedStair) -> bool:
     """Does this stair stand in a conditioned room?
 

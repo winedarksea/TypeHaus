@@ -80,8 +80,11 @@ DETAIL_SLICES = [
     # time the enclosure moved, this crop was the thing that did not, so the drawing quietly
     # cropped off part of its own subject. The 2026-09-09 widening to 4'-6" put GL-BW-WALL-E
     # and its sill and hatch trim 3" OUTSIDE the old x=11'-0" edge, and the section goldens
-    # recorded three elements simply vanishing. ** IF _EW_FT OR _GLAZING_CENTER_X MOVES
-    # AGAIN, MOVE THIS TOO ** — nothing links them and no check grades a crop against the
+    # recorded three elements simply vanishing. The enclosure and its `_EW_FT` /
+    # `_GLAZING_CENTER_X` are themselves retired now — the extruded garage gable replaced
+    # them — so what this crop must follow today is the north-entry frame:
+    # ** IF `params/north_entry_frame.py`'s FRAME_Y0_FT/FRAME_Y1_FT OR THE COLUMN LINE
+    # MOVES, MOVE THIS TOO ** — nothing links them and no check grades a crop against the
     # thing it is meant to show.
     Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
          title="North entry: gable, bridge landing and east tiers",

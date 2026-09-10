@@ -114,7 +114,7 @@ by their own predicate (`laid="edge"` + vertical); the girt frame is a SIBLING s
 `glazed-green-brick`. Reverting is three edits:
 
 1. give `EXT_2X6` and `PLANT_EXT_2X6_HUMID` that assembly's layer tuple;
-2. restore `_WALL_OUTBOARD_IN` (`params/roof_trim.py`) and `_HOUSE_CLADDING_Y`
+2. restore `_WALL_OUTBOARD_IN` (`params/roof_trim.py`) and `HOUSE_CLADDING_Y_FT`
    (`params/breezeway.py`) to their 5.5"-proud values, and the garage lines 1" south;
 3. uncomment the Swinburne rows in `prices.toml` (`2-2x4`, `5x0.5 panel`, `5x0.375 panel`,
    `3-2x4`, `3.5x3.5 panel`, `SDWS22400DB`) and comment the girt ones.

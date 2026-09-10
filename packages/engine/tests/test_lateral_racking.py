@@ -172,9 +172,9 @@ def _catlin_preferences():
 
 
 def _catlin_profile():
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
 
-    return MN_2024
+    return MN_2020
 
 
 def test_catlin_has_no_knee_brace_left_and_the_check_does_not_go_silent(catlin_findings):

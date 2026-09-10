@@ -16,26 +16,43 @@ The garage keeps its 24-foot square frost-depth ICF foundation. What changed is 
 passage between house and garage is **its own roof on its own structure**, not a cantilever
 off the garage's gable.
 
-## 1. The canopy
+## 1. The canopy — freestanding
 
-`RF-BW-CANOPY` — three 24'-span trusses at 24" o.c., spanning between two headers on two
-columns. `CANOPY_ROOF` is `GARAGE_ROOF`'s structure with **no insulation and no ceiling**:
-an open outdoor bay has no thermal boundary to hold, and billing one over it would order
-144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
+`RF-BW-CANOPY` — four 24'-span trusses at 24" o.c. on two headers, each header on **two**
+columns of its own. `CANOPY_ROOF` is `GARAGE_ROOF`'s structure with **no insulation and no
+ceiling**: an open outdoor bay has no thermal boundary to hold, and billing one over it
+would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
+
+> ⚠ **The headers bore on `W-G-W` / `W-G-E` until 2026-09-10 and that was never a detail.**
+> A ~3,130 lb point reaction on the END of a stud wall wants a bearing post through the
+> plate, the stud bay, the sill and the ICF stem, and no such post was authored, drawn or
+> billed. `bearing_refs` naming a wall is this engine's idiom for a beam landing ALONG a
+> wall; it grades nothing about one landing on a wall's terminus. **The canopy now carries
+> its own gravity load to its own piers and shares nothing structural with the garage but
+> the sheathing plane.**
 
 | Member | Support | What the drawings must say |
 |---|---|---|
-| `RF-BW-CANOPY` | `BM-BW-RW`, `BM-BW-RE` | Sheathing runs **continuous** across the garage south wall line. Two `Roof` elements, one diaphragm. |
-| `BM-BW-RW` / `-RE` | `PT-BW-CW` / `-CE` and the garage corner at `W-G-W` / `W-G-E` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. Each is a southward extension of a bearing line the garage trusses already use. |
+| `RF-BW-CANOPY` | `BM-BW-RW`, `BM-BW-RE` | Sheathing runs **continuous** across the garage south wall line. Two `Roof` elements, one diaphragm — and that diaphragm is the canopy's only connection to the garage. |
+| truss-to-header | `CN-BW-TRTIE-W1..4`, `-E1..4` | One **stainless `H2.5ASS`** each end of every truss. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
+| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-CE`/`-CNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11" between columns, running 8" past the north column so the roof plane reaches the garage wall. |
 | `PT-BW-CW` / `-CE` | `PT-BW-W` / `PT-BW-RE` | 6x6 KDAT, 7'-8 1/4". `ABU66SS` standoff base on a cast-in `AB-058-10-SS`; `CCQ46SDS2.5` cap at the header. |
+| `PT-BW-CNW` / `-CNE` | `PT-BW-GW` / `PT-BW-RNE` | Identical. `PT-BW-CNW` shares its pier with the garage-side seat beam exactly as `PT-BW-CW` shares one with the house-side seat. |
 
-> ⚠ **The canopy has no lateral system of its own, and that is fine only while the deck
-> stays continuous.** Both column bases are standoffs on a 5/8" cast-in bolt — uplift ties,
-> not moment connections. East-west wind goes into the roof sheathing and spans 6 feet north
-> across the garage south wall line into the garage roof diaphragm; north-south wind runs
-> axially along the two headers and straight into the garage's corner posts. **Both paths
-> die if that joint ever becomes a structurally separate plane.** If it does, put a `KBS1Z`
-> knee brace at each column — a live, rated, priced row in this house at $3.50–6.50.
+> ⚠ **No ladder framing anywhere at this joint, and there used to be thirty lookouts.**
+> `RF-GARAGE`'s south gable and both ends of `RF-BW-CANOPY` are **close rakes** — the roof
+> deck cantilevers past the gable truss and the fascia hangs on it. The garage's south
+> projection is 1 9/16", at a line where the roof does not even end, and the canopy's own
+> south drip edge is 3 3/8". Neither is built with a 2x4 lookout and a 2x6 barge rafter, and
+> the engine framed both until `_FLUSH_RAKE_TOLERANCE_M` went from 1/2" to 6".
+
+> ⚠ **The canopy has no lateral system of its own, and that is unchanged by going
+> freestanding.** All four column bases are standoffs on a 5/8" cast-in bolt — uplift ties,
+> not moment connections. East-west wind goes into the roof sheathing and spans north across
+> the garage south wall line into the garage roof diaphragm; north-south wind runs axially
+> along the two headers. **Both paths die if that sheathing joint ever becomes a structurally
+> separate plane.** If it does, put a `KBS1Z` knee brace at each column — a live, rated,
+> priced row in this house at $3.50–6.50.
 
 ## 2. The landing
 
@@ -70,35 +87,44 @@ landing; a 1/4" drainage/movement break separates its board field at the thresho
 extends three clear feet beyond the ICF inner face, `ST-G-SERVICE` arrives at its north
 edge, and `SL-G-STEP-0` is retired.
 
-## 3. The tiers
+## 3. The tiers — four cast pours on a compacted base
 
-**Four box frames at an 18" going, on footings 42" below finished grade** — not a cut
-carriage. A cut stringer failed three ways here: an 8'-0" horizontal span against DCA 6
-Fig. 28 / IRC R507.13.1's 6'-0", a 4.71" throat against its 5", and treads wanting supports
-closer than 12". **Narrowing the going to 18" fixes the span and does not fix the throat**:
-the notch depth is driven by the long going, so a flatter pitch removes *more* material,
-and holding 5" at 6.8:18 would want an 11.54"-wide member.
+`SL-BW-TIER1..4`, 18" going, one riser (6.8") thick each, **wedding-caked**: tier *i* runs
+from the landing edge east to the front of its own tread, so every tier above the first is
+fully bedded on the one below it and nothing here spans. EXPOSED_MIX (ACI 318-19 F3 + C2),
+broom finish, 1/4" per foot of cross-fall east. `ST-BW-ENTRY` carries the flight's *code*
+geometry — rise, going, width, the guard it serves — and frames nothing (`carriage="cast"`).
 
-> ⚠ **The tread spacing is the STAIR rating, not the decking rating, and they differ by 4"
-> to 7" on the same board.** A composite board is rated for a uniform load as decking and a
-> 300 lb concentrated load as a tread (IRC Table R301.5 fn. c; ICC-ES AC174 §4.1.1 tests it
-> at **1/8" absolute** deflection under 300 lb, not L/288). Published stair spacings run 8"
-> to 12" across the major brands against 16" as decking. **9" o.c. is specified** because it
-> is the floor of that distribution and survives a purchasing change after the boxes are
-> built. IRC R507.2.2.5 makes the delivered board's instruction binding: if its ASTM D7032
-> label says less than 9", the layout follows the board. **Square-edge, face-fastened only** —
-> Fiberon and TimberTech both prohibit grooved planks as stair treads outright.
+This is the third scheme and the two it replaced are worth keeping, because each failed for
+a reason that is easy to walk back into.
 
-42" is Minn. R. 1303.1600 verbatim for Zone II, which is named to include Hennepin. **A deep
-washed-rock section is not a prescriptive alternative**: IRC R403.3 applies only to buildings
-kept at 64°F or warmer and says outright it "shall not be used for unheated spaces such as
-porches", and Minnesota's Rules 1309.0403 amendment carries no exceptions — the aggregate
-route reaches it only through ASCE 32, a stamped engineered submittal.
+**A cut stringer failed three ways.** An 8'-0" horizontal span against DCA 6 Fig. 28 / IRC
+R507.13.1's 6'-0"; a 4.71" throat against its 5"; and treads wanting supports closer than
+12". Narrowing the going to 18" fixes the span and does *not* fix the throat — notch depth
+is driven by the long going, so a flatter pitch removes *more* material, and holding 5" at
+6.8:18 would want an 11.54"-wide member.
 
-**Accept movement in exactly one place**: the joint between the bottom box and the paver
-landing, where the pavers are a flexible field and no riser depends on them. Riser
-uniformity has 3/8" of tolerance (R311.7.5.1) and settlement, not heave, is the failure —
-it turns the flight into a cantilever off `BM-BW-FE`, which nothing in the assembly can do.
+**KDAT box frames on eight 42"-deep piers failed on the piers.** They were laid out running
+east from the stair foot at x=17'-6" while the flight runs **west** to x=11'-6", so all
+eight stood under open ground carrying nothing at all. Nothing in the check tree noticed,
+because nothing grades whether a pier is under the thing it names.
+
+> ⚠ **These are NOT frost-founded and that is a decision, not an oversight.** Minn. R.
+> 1303.1600 puts Zone II at 42"; these bear about 6" down on compacted washed rock. The
+> tiers will move with the ground. A monolithic pour moves **as one piece**, so what a
+> winter costs is the joints at the two ends, not the risers in between — and riser
+> uniformity has only 3/8" of tolerance (R311.7.5.1). At the bottom the pavers are a
+> flexible field and nothing depends on them. **The joint that matters is at the TOP**,
+> where the fourth tier meets a deck landing standing on piers that will not move. Draw it,
+> and expect to shim or re-pour that one riser once.
+>
+> The framed alternative on the same base would have been worse, not equal: a settling box
+> turns the flight into a cantilever off `BM-BW-FE`, which nothing in that assembly can do.
+> And the prescriptive route to a shallow section does not exist here — IRC R403.3 applies
+> only to buildings kept at 64°F or warmer and says outright it "shall not be used for
+> unheated spaces such as porches", Minnesota's Rules 1309.0403 amendment carries no
+> exceptions, and ASCE 32 is a stamped engineered submittal. **This is an owner's decision
+> to accept movement on an unheated exterior terrace, taken knowingly.**
 
 ## 4. The screen, which is now in-fill
 

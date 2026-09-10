@@ -268,7 +268,7 @@ def test_a_post_at_the_deck_edge_is_credited_only_with_what_is_under_it() -> Non
 def test_the_check_delegates_and_the_item_reaches_the_permit_set(catlin_plan, tag) -> None:
     """The record has to arrive somewhere a reader will see it.
 
-    ``structural.deck_post_bearing`` turns it into a Finding, and the mn-2024 profile carries
+    ``structural.deck_post_bearing`` turns it into a Finding, and the mn-2020 profile carries
     a permit item for it — an engineered result on no checklist is work a plan reviewer cannot
     see, which is what ``test_permit_coverage.py`` exists to stop.
     """
@@ -278,7 +278,7 @@ def test_the_check_delegates_and_the_item_reaches_the_permit_set(catlin_plan, ta
     from typehaus.engineering import item_id
     from typehaus.findings import Authority, Result
 
-    report = run(catlin_plan, Path(catlin_plan.source_root), profile="mn-2024")
+    report = run(catlin_plan, Path(catlin_plan.source_root), profile="mn-2020")
     found = [f for f in report.findings
              if f.check_id == "structural.deck_post_bearing" and tag in f.element_tags]
     assert len(found) == 1, found

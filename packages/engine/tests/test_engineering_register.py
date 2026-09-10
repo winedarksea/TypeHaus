@@ -187,8 +187,8 @@ def test_draft_passes_on_the_local_calc_and_sealed_does_not(catlin_plan, tmp_pat
     permit-ready printoff, and it must not wait on a professional signature."""
     from typehaus.checks import evaluate_permit_checklist, run
 
-    report = run(catlin_plan, None, profile="mn-2024")
-    checklist = evaluate_permit_checklist(report, "mn-2024")
+    report = run(catlin_plan, None, profile="mn-2020")
+    checklist = evaluate_permit_checklist(report, "mn-2020")
     engineered = checklist.engineered
     assert engineered, "catlin has engineered requirements; the fixture is wrong if not"
     # Nothing is sealed in the repo, so the final gate is shut and every engineered line

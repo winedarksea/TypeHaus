@@ -43,9 +43,16 @@ OUTLOOKER_PROFILE = "2x4"
 OUTLOOKER_SPACING = inch(24)
 # Outlookers bear on the first interior truss, so the back-span is one truss bay.
 BARGE_RAFTER_PROFILE = "2x6"
-# Below this the gable end is flush (zero rake overhang, #29) — no outlookers, no barge
-# rafter, and no drop, because there is nothing cantilevering past the gable wall.
-_FLUSH_RAKE_TOLERANCE_M = inch(0.5).meters
+# ** BELOW THIS A RAKE IS BUILT CLOSE, NOT LADDERED, AND 1/2" WAS THE WRONG LINE. **
+# A gable end at or under this projection is flush (#29) — no outlookers, no barge rafter and
+# no drop. The bound is not "zero": it is the point where the roof deck stops being able to
+# carry its own edge. A close rake cantilevers the sheathing past the gable truss and hangs
+# the fascia on it, which 7/16" panel spanning 24" o.c. does without help for about half a
+# foot; only past that does anyone frame a ladder. At 1/2" the engine framed 15 2x4 lookouts
+# and a 2x6 barge to carry a 1 9/16" trim projection at the catlin garage's south gable —
+# where the roof does not even end, it runs on as RF-BW-CANOPY — and 15 more for the canopy's
+# own 3 3/8" drip edge. Neither is a thing anyone builds.
+_FLUSH_RAKE_TOLERANCE_M = inch(6.0).meters
 #: One member per truss: the category both the field trusses (``roof.py``) and the gable-end
 #: drop trusses here emit. Consumers that used to name ``top_chord``/``bottom_chord``/
 #: ``truss_web``/``truss_heel`` name this instead.

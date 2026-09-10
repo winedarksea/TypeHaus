@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.checks.code.mn_residential.profile import MN_2024
+from typehaus.checks.code.mn_residential.profile import MN_2020
 from typehaus.checks.integrity.sheet_notes import _artefacts_in, sheet_note_legibility
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.findings import Result
@@ -19,7 +19,7 @@ from typehaus.findings import Result
 def _run(model) -> list:
     return sheet_note_legibility(
         CheckContext(plan=model.plan, model=model, preferences=Preferences(),
-                     profile=MN_2024))
+                     profile=MN_2020))
 
 
 def test_catlin_passes_on_every_bound_note(catlin_model_ro):

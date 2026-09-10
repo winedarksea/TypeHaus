@@ -99,7 +99,7 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 - **No vent mat, and no permeable underlayment.** They were one decision, not two: above the
   underlayment sits a 0-perm metal panel, so the only thing a 20-perm sheet could dry into
   was the gap the mat made. Delete either and the other stops earning its cost. The
-  condensation criterion is IRC/MSRC **R806.5 item 5.3** instead — air-impermeable insulation
+  condensation criterion is IRC/MSRC **R806.5 item 5.1.3** instead — air-impermeable insulation
   in direct contact with the sheathing at the Table R806.5 R-value (R-25 zone 6, R-30 zone 7;
   5" of ccSPF is R-32.5 and clears both), with the air-permeable insulation directly under
   it — under which outward drying is not required. `code.R806_5_unvented_roof` grades it and

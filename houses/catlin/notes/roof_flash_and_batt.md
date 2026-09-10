@@ -149,7 +149,7 @@ crossing at the 99% design hour is a cold snap running a plane wet for hours; a 
 against a monthly mean is a plane running wet for weeks. This assembly does the first and
 not the second, with 8.9 F of seasonal margin — and it does it inside 0.25-perm foam bonded
 to the deck, where the moisture available to condense is what the bay's own air holds, not
-what a season of vapour drive can deliver. That is the whole basis of R806.5 item 5.3.
+what a season of vapour drive can deliver. That is the whole basis of R806.5 item 5.1.3.
 
 **Sensitivity, because the design-hour figure is close.** Foam depth is the lever and it is
 nearly linear over this range:
@@ -170,13 +170,13 @@ grazes the R-49 code minimum with 0.3 to spare, and its seasonal margin falls by
 | 1 | assembly inside the building thermal envelope | the attic is conditioned habitable space | ok |
 | 2 | **no** interior Class I vapour retarder on the ceiling side | latex paint over gypsum — 5 perm, Class III | ok |
 | 4 | CZ 5-8: the air-impermeable insulation is itself Class II or tighter | ccSPF 1.6 perm-in / 5" = **0.32 perm** | ok |
-| 5.3 | air-impermeable insulation in direct contact with the sheathing underside, at the Table R806.5 R-value, with the air-permeable insulation directly under it | 5" ccSPF = **R-32.5** against **R-25** (zone 6) and **R-30** (zone 7); batt directly under it; bay filled to the deck (6.875 + 5.000 = 11.875) | ok |
+| 5.1.3 | air-impermeable insulation in direct contact with the sheathing underside, at the Table R806.5 R-value, with the air-permeable insulation directly under it | 5" ccSPF = **R-32.5** against **R-25** (zone 6) and **R-30** (zone 7); batt directly under it; bay filled to the deck (6.875 + 5.000 = 11.875) | ok |
 
 Zone 7 is in the table deliberately: Minnesota holds both zones and the Duluth handout this
 was first read against is CZ7. R-32.5 clears both rows, so the AHJ conversation cannot go
 wrong on the zone.
 
-> **ORACLE — `haus check` reports:** `PASS code.R806_5_unvented_roof: ROOF: item 5.3 —
+> **ORACLE — `haus check` reports:** `PASS code.R806_5_unvented_roof: ROOF: item 5.1.3 —
 > R-32.5 of air-impermeable insulation in direct contact with the sheathing underside, rated
 > Class II; Table R806.5 zone 6 = R-25 (also clears the zone-7 row, R-30); no ceiling-side
 > Class I retarder (item 2)`.
@@ -189,7 +189,7 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   spacings — an engineered profile is deliberately absent from the IRC R802.4.1 sawn table.
   The design reading is the Trus Joist TJ-4000 roof table, 11 7/8", **Low** slope column
   (a 6:12 guide direction), interpolated to Ps = 35 psf (Pg 50 per MN Rules 1303.1700,
-  Hennepin; 0.7 x 50), against the **18'-0" HORIZONTAL** projection — span tables are
+  Ramsey; 0.7 x 50), against the **18'-0" HORIZONTAL** projection — span tables are
   horizontal, not the 19.9' sloped length. TJI 230 @ 24" reads 19'-3", a 15" margin; the
   TJI 110 that carried this roof at 16" o.c. reads 16'-8" at 24" and does not.
   **Two things make the printed table indicative rather than authoritative here**, and both
@@ -252,7 +252,9 @@ layer in the assembly rot-proof.
   R806.5 (insulation for condensation control) — City of Duluth handout 164.
 - Trus Joist **TJ-4000** Specifier's Guide, 11 7/8" TJI roof span tables and section
   properties (flange and web geometry for the 110/210/230/360/560 series).
-- MN Rules 1303.1700 — ground snow load, 50 psf for Hennepin County.
+- MN Rules 1303.1700 — ground snow load, 50 psf. The rule sets 50 psf in every Minnesota
+  county except twenty-nine named northern ones; this parcel is in **Ramsey**, which is not
+  among them (→ `plan/site.py`).
 - Owens Corning / CertainTeed compressed-batt R-value charts (R-30 8 1/4" batt).
 - ASHRAE Handbook of Fundamentals — winter surface film resistances, RSI 0.12 / 0.03.
 - WMO CIMO Guide Magnus/Tetens saturation curve (the same form

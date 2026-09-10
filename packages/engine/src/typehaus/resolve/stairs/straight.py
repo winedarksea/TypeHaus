@@ -33,6 +33,15 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         end_x, end_y = start_x, start_y + sign * going * (risers - 1)
         strings = [((start_x + offset, start_y), (end_x + offset, end_y))
                    for offset in offsets]
+    if stair.carriage == "cast":
+        # No carriage — the tiers are authored pours (→ ``Stair.carriage``) — but the TREADS
+        # stay. They are not lumber and nothing bills them (``takeoff/stairs.py::
+        # cast_stair_members``); they are the flight's walking surface, and returning ()
+        # instead put ST-BW-ENTRY at UNKNOWN width and a hard R311.7 FAIL, because every rule
+        # that grades a stair measures the treads it resolved and not the numbers authored on
+        # it. A cast nosing IS a tread.
+        return _tread_members(stair, start_x, start_y, z0, risers, riser, going,
+                              tread_depth, nosing, width, sign, along_x)
     if stair.carriage == "box":
         return _box_tier_members(stair, start_x, start_y, z0, risers, riser, going,
                                  tread_depth, nosing, width, sign, along_x, offsets)
@@ -51,13 +60,32 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                      z0_end_m=arrival_notch - stringer_depth, z1_end_m=arrival_notch)
         for index, (a, b) in enumerate(strings)
     ]
-    tread_profile = _tread_board_profile(tread_depth, thickness)
+    out.extend(_tread_members(stair, start_x, start_y, z0, risers, riser, going,
+                              tread_depth, nosing, width, sign, along_x))
+    return tuple(out)
+
+
+def _tread_members(stair: Stair, start_x: float, start_y: float, z0: float,
+                   risers: int, riser: float, going: float, tread_depth: float,
+                   nosing: float, width: float, sign: int,
+                   along_x: bool) -> tuple[FramedMember, ...]:
+    """The walking surfaces, which every carriage has and no carriage owns.
+
+    Shared by all three carriages — a raked stringer flight, a box tier and a cast tier put
+    the SAME surface in the same place, and the three had drifted into three copies of this
+    loop. What differs is the order it lands in, and that is ``takeoff/stairs.py``'s call.
+
+    The axis is the board's *centreline*, half a going past the riser it sits on: a ``deck``
+    footprint is centred on the axis, so anchoring it on the riser line would leave the
+    flight half a going short of the arrival deck. The board spans one going plus the nose
+    beyond the lower riser, so adjacent boards overlap by the nose in plan but are one riser
+    apart vertically, as built treads are.
+    """
+    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
+                 else _TREAD_THICKNESS_M)
+    profile = _tread_board_profile(tread_depth, thickness)
+    out: list[FramedMember] = []
     for index in range(risers - 1):
-        # The axis is the board's *centreline*, half a going past the riser it sits on: a
-        # ``deck`` footprint is centred on the axis, so anchoring it on the riser line would
-        # leave the flight half a going short of the arrival deck.
-        # The board spans one going plus the nose beyond the lower riser.  Adjacent boards
-        # overlap by the nose in plan but are one riser apart vertically, as built treads are.
         centre = going * index + (going - nosing) / 2.0
         riser_s = going * index  # the riser face itself, which the plan drawing marks
         if along_x:
@@ -71,7 +99,7 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
             riser_line = ((start_x, start_y + sign * riser_s),
                           (start_x + width, start_y + sign * riser_s))
         top = z0 + riser * (index + 1)  # the finished walking face, board dropped below it
-        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
+        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", profile,
                                 a, b, top - thickness, top, stair.width.meters,
                                 riser_line=riser_line))
     return tuple(out)
@@ -136,20 +164,6 @@ def _box_tier_members(stair: Stair, start_x: float, start_y: float, z0: float,
             out.append(FramedMember(
                 stair.uid, f"tier-{index:03d}-joist-{step:03d}", "landing_framing",
                 _TIER_FRAME_PROFILE, a, b, frame_z0, frame_z1, abs(going)))
-        # The wear surface, identical to the stringer flight's — see ``_straight_stair_members``.
-        centre = going * index + (going - nosing) / 2.0
-        if along_x:
-            a = (start_x + sign * centre, start_y)
-            b = (start_x + sign * centre, start_y + width)
-            riser_line = ((start_x + sign * back, start_y),
-                          (start_x + sign * back, start_y + width))
-        else:
-            a = (start_x, start_y + sign * centre)
-            b = (start_x + width, start_y + sign * centre)
-            riser_line = ((start_x, start_y + sign * back),
-                          (start_x + width, start_y + sign * back))
-        out.append(FramedMember(
-            stair.uid, f"tread-{index:03d}", "tread",
-            _tread_board_profile(tread_depth, thickness), a, b,
-            top - thickness, top, stair.width.meters, riser_line=riser_line))
+    out.extend(_tread_members(stair, start_x, start_y, z0, risers, riser, going,
+                              tread_depth, nosing, width, sign, along_x))
     return tuple(out)

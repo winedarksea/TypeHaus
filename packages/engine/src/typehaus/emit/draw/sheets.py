@@ -444,7 +444,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
     from typehaus.checks.run import resolve_profile
 
     # The set is composed against one jurisdiction, and it has to be the same one the
-    # checklist gate used — not "mn-2024" spelled out again on the cover and in the notes.
+    # checklist gate used — not "mn-2020" spelled out again on the cover and in the notes.
     if profile is None:
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)

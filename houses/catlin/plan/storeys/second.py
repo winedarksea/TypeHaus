@@ -791,7 +791,7 @@ OPENINGS = [
     # cannot take a bay centre), and they mirror on the 18'-0" ridge, so each attic unit
     # stacks EXACTLY on its second-storey partner.
     #
-    # ** RETYPED WT-3036 -> WT-2748 ON 2026-09-10, AND THE SILL CAME DOWN TO 2'-3 1/2". **
+    # ** RETYPED WT-3036 -> WT-2748 ON 2026-09-10, AND THE SILL WENT TO 3'-4". **
     # 30x36 is 1:1.2 and read too square in elev_north.png. 27x48 is 1:1.78, and it is a
     # RETYPE plus a sill move — the centre stays on 24'-0", so the facade rectangle, the
     # stud line and the stack on WIN-A-N2 are all untouched. The offset had to grow 1 1/2"
@@ -799,16 +799,26 @@ OPENINGS = [
     # (resolve/pipeline.py's `_opening_center`), so a 3" narrowing drags the centre 1 1/2"
     # unless the offset absorbs it. Same arithmetic at all four north units.
     #
-    # ** THE SILL IS 2'-3 1/2" BECAUSE 27 1/2" IS AN EXACT GIRT COURSE HIT. ** The course
-    # module is 24" o.c. at phase zero off the framing base, so a course tops out flush at
-    # 27 1/2" and the sill course IS the field course — no sliver. That is the second half
-    # of CLAUDE.md's NEW-OPENING RULE ("head on a 24" multiple, or sill 3-1/2" above one"),
-    # and taking it moved test_truss_girt_courses.py from 12 exact hits to 14 with the
-    # sliver count unchanged at 33. It is also 3 1/2" clear of R312.2's 24" fall-protection
-    # trigger, which matters because `sill_m` is measured off the SUBFLOOR and the finished
-    # floor is 15/16" higher — an authored 24" would be 23 1/16" to an inspector's tape.
-    # The head follows to 6'-3 1/2", which is 3 1/2" over WIN-S-BED3-N's 6'-0"; the two were
-    # 6" apart before, so the facade's head lines converge rather than diverge.
+    # ** THE SILL IS 3'-4" BECAUSE THAT IS THE HIGH END OF THE GIRT-CLEAR BAND. ** The
+    # course module is 24" o.c. at phase zero off the framing base — 0/24/48/72/96 and a
+    # top course at 116 1/2" on both W-S-N1 and W-S-N2. A 48"-tall unit cannot put BOTH its
+    # sill datum (sill less the 3 1/2" stock face) and its head on a course: the head wants
+    # a 24" sill or a 48" one, the sill datum wants 27 1/2" or 51 1/2", and the two sets
+    # never meet. So neither half of CLAUDE.md's NEW-OPENING RULE is reachable here, and
+    # the next best thing is to be CLEAR of every course rather than near one. That band is
+    # 2'-10 1/2" .. 3'-5"; a sill in it casts no sliver at all, which nets the same board
+    # count as an exact hit that drags a sliver along with it (both 4'-0" and 2'-3 1/2" do
+    # exactly that). 3'-4" is the top even inch of the band, with 8" from the head at 88"
+    # to the 96" course and 11 1/2" from the sill datum at 36 1/2" to the 48" course.
+    # test_truss_girt_courses.py reads 12 exact hits and 31 slivers here, down from 33.
+    #
+    # An earlier pass on 2026-09-10 took 2'-3 1/2" for the exact hit and it sat too LOW on
+    # the facade. The height is a facade judgement and the girts only bound it; the sill is
+    # also well clear of R312.2's 24" fall-protection trigger, which matters because
+    # `sill_m` is measured off the SUBFLOOR and the finished floor is 15/16" higher — an
+    # authored 24" would be 23 1/16" to an inspector's tape. The head follows to 7'-4",
+    # which is 16" over WIN-S-BED3-N's 6'-0" and 4" over the east row's 7'-0"; this pair
+    # deliberately heads higher than anything else on the storey.
     #
     # (The prose here and in CLAUDE.md claimed a 3'-0" sill and a 6'-0" head until
     # 2026-09-10. Commit 5487fd79 had raised both north sills ft(3) -> ft(3, 6) in a silent
@@ -819,11 +829,11 @@ OPENINGS = [
     # 22'-10 1/2"..25'-1 1/2", so the west jamb has 11 1/2" to the node — enough for the
     # jamb pack, which 22'-8" itself would not have had at any width. FURN-S-BED3-WARD stood
     # 6'-6" tall right here (x 22'-1.5"..24'-1.5") and swaps slots with FURN-S-DESK3 in
-    # placeables.py. ** FURN-S-DESK3's top is 30", now 2 1/2" ABOVE this sill ** — a desk
+    # placeables.py. FURN-S-DESK3's top is 30", so it clears this 40" sill by 10" — a desk
     # under a window, the way the study table sits under WIN-S-STUDY1, and nothing in the
     # engine grades it either way.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-2748",
-           position=from_node("N-S-NE", ft(10, 10.5)), sill_height=ft(2, 3.5)),  # ctr x 24'-0"
+           position=from_node("N-S-NE", ft(10, 10.5)), sill_height=ft(3, 4)),  # ctr x 24'-0"
     # Stairwell daylight (2026-07-30 facade pass): the north facade was blank from the
     # entry column to x=21'-11". W-S-N2 runs 18'-0" -> 10'-0", so the offset is measured
     # east-to-west and 4'-10 1/2" off N-S-N1 is a near jamb at 13'-1 1/2", a CENTRE at
@@ -832,10 +842,10 @@ OPENINGS = [
     # exactly stacked.
     #
     # ** RETYPED WT-3036-T -> WT-2748-T ON 2026-09-10 ** with WIN-S-HALL-N, sill and all —
-    # see that unit's note for the proportion, the 1 1/2" offset growth and why 2'-3 1/2"
-    # is the sill. The tempered twin is carried through the retype rather than dropped:
-    # code.R308_4_safety_glazing does not currently name this unit, and lowering the sill
-    # 14 1/2" toward ST-S2A's walking surface is not the moment to find out why.
+    # see that unit's note for the proportion, the 1 1/2" offset growth and why 3'-4" is
+    # the sill. The tempered twin is carried through the retype rather than dropped:
+    # code.R308_4_safety_glazing does not currently name this unit, and moving the sill
+    # over a stairwell is not the moment to find out why.
     #
     # ** MOVED 13'-4" -> 12'-0" ON 2026-09-06 **, one stud bay west, as the west half of
     # the facade rectangle described at WIN-S-HALL-N above. The west jamb lands 10 1/2" off
@@ -843,7 +853,7 @@ OPENINGS = [
     # 8" miss against WIN-A-N1 until 2026-09-06; the offset always resolved to 13'-4" and
     # the prose was simply wrong. The move below is a real move; that correction was not.)
     Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-2748-T",
-           position=from_node("N-S-N1", ft(4, 10.5)), sill_height=ft(2, 3.5)),   # ctr x 12'-0"
+           position=from_node("N-S-N1", ft(4, 10.5)), sill_height=ft(3, 4)),   # ctr x 12'-0"
     # ** THE NE CORNER PAIR, COMPLETED ONE STOREY UP (2026-09-06). ** RM-S-BED3 already had
     # WIN-S-BED3 on its east wall at y=34'-0"; this is its twin on the north wall at
     # x=34'-0" — same WT-1424, plain glass, operable awning. The two now wrap the north-east

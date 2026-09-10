@@ -122,12 +122,21 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
     # untouched — a square garage under a rotated gable frames the same number of trusses.
     assert {c.support_tag for c in tied} == {"W-G-E", "W-G-W"}
 
+    # RF-BW-CANOPY derives NOTHING since 2026-09-10 and that is the point of it being here.
+    # Its four trusses land on treated headers at a salted entry, so the eight ties are
+    # authored stainless (`CN-BW-TRTIE-*`) rather than commodity H2.5A, and `authored_joints`
+    # stands the derived rule down. An empty list here with the connectors present is
+    # coverage; an empty list with them GONE is a roof tied by nothing, which is why the
+    # count of authored ties is asserted alongside it rather than the absence alone.
     canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     canopy_trusses = [m for m in canopy.members if m.category == "roof_truss"]
-    canopy_tied = [c for c in connections
-                   if c.member_category == "roof_truss" and c.assembly_tag == "RF-BW-CANOPY"]
-    assert len(canopy_tied) == 2 * len(canopy_trusses) == 8
-    assert {c.support_tag for c in canopy_tied} == {"BM-BW-RW", "BM-BW-RE"}
+    assert len(canopy_trusses) == 4
+    assert not [c for c in connections if c.assembly_tag == "RF-BW-CANOPY"]
+    authored_ties = [e for storey in catlin_model_ro.plan.storeys
+                     for e in catlin_model_ro.plan.storey_elements(storey.tag)
+                     if getattr(e, "tag", "").startswith("CN-BW-TRTIE-")]
+    assert len(authored_ties) == 2 * len(canopy_trusses) == 8
+    assert {t.size for t in authored_ties} == {"H2.5ASS"}
     assert not [c for c in connections
                 if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]
 
@@ -234,7 +243,9 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # fell out of the covered set and those two are being bought a base they do not take.
     assert [row["part_number"] for row in rows] == ["ABU44", "ABU66"]
     counts = {row["part_number"]: row["count"] for row in rows}
-    assert counts == {"ABU44": 2, "ABU66": 2}
+    # 2 -> 4 on 2026-09-10, when the canopy became freestanding: PT-BW-CNW / PT-BW-CNE are
+    # the two north columns that replaced the headers' undetailed bearing on W-G-W / W-G-E.
+    assert counts == {"ABU44": 2, "ABU66": 4}
     for row in rows:
         for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
             assert tag not in row["basis"]
@@ -249,7 +260,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
         "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE",
-        "PT-BW-CW", "PT-BW-CE", "PT-BW-IC", "PT-BW-IE"}
+        "PT-BW-CW", "PT-BW-CE", "PT-BW-CNW", "PT-BW-CNE", "PT-BW-IC", "PT-BW-IE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
@@ -286,10 +297,11 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    # 2 -> 4 on 2026-09-10. Every derived base is on concrete again: the two stairwell 4x4s
-    # on the basement slab, plus PT-BW-CW / PT-BW-CE on their 12" cast piers. One bolt per
-    # base and no more — a fifth would mean a base got counted twice upstream.
-    assert row["count"] == 4
+    # 2 -> 4 -> 6 on 2026-09-10. Every derived base is on concrete: the two stairwell 4x4s
+    # on the basement slab, plus all FOUR canopy columns on their 12" cast piers once the
+    # canopy went freestanding. One bolt per base and no more — a seventh would mean a base
+    # got counted twice upstream.
+    assert row["count"] == 6
     assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
 
 

@@ -136,18 +136,31 @@ def test_u_stair_landings_split_one_riser_apart_inside_the_landing_zone(
 def test_stringers_are_raked_and_never_drop_below_the_subfloor(catlin_model):
     """Every CUT-STRINGER flight. A box carriage is a different member and a different rule.
 
-    ``ST-BW-ENTRY`` became ``carriage="box"`` on 2026-09-10 — four composite box tiers on
-    42" footings, and AN-BW-TIERS says "NO cut stringers" in as many words: DCA 6 forbids a
-    stringer bearing on a pad not founded below frost, and the tiers are how the north entry
-    avoids one. It therefore resolves no stringer at all, which is why it is excluded here
-    rather than exempted from the assertions below. The exclusion is EARNED, not assumed —
-    a box stair that quietly started resolving stringers, or a cut-stringer flight that
-    quietly stopped, would fail on the two assertions in the branch.
+    ``ST-BW-ENTRY`` went ``carriage="box"`` and then ``carriage="cast"`` on 2026-09-10 —
+    four cast concrete tiers on a compacted base — and AN-BW-TIERS says "no stringers" in as
+    many words: DCA 6 forbids a stringer bearing on a pad not founded below frost, and the
+    tiers are how the north entry avoids one. It therefore resolves no stringer at all,
+    which is why it is excluded here rather than exempted from the assertions below.
+
+    **Every exclusion here is EARNED, and the earning is the point.** A cut-stringer flight
+    that quietly stopped resolving stringers fails the last assertion; a box flight that
+    quietly stopped resolving rims fails its branch; and a CAST flight that resolves no
+    treads is the one that would slip through silently, because an empty members tuple looks
+    like a stair somebody forgot rather than one somebody poured. So the cast branch asserts
+    the treads — which is also what every code rule that grades this flight measures.
     """
     for stair in catlin_model.stairs:
         subfloor = _subfloor(catlin_model, stair)
         stringers = [m for m in stair.members if m.category == "stringer"]
-        if catlin_model.plan.by_tag(stair.tag).carriage == "box":
+        carriage = catlin_model.plan.by_tag(stair.tag).carriage
+        if carriage == "cast":
+            assert not stringers, stair.tag
+            assert not [m for m in stair.members if m.category == "landing_framing"]
+            treads = [m for m in stair.members if m.category == "tread"]
+            assert len(treads) == stair.riser_count - 1, stair.tag
+            assert {m.material for m in treads} == {"concrete"}, stair.tag
+            continue
+        if carriage == "box":
             assert not stringers, stair.tag
             # A box tier carries its treads on rims and joists instead; a flight with
             # neither carriage is a flight held up by nothing.

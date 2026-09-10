@@ -194,9 +194,11 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ``model.all_members()`` is the complete resolved member set (walls, floors, roofs,
     stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
-    from typehaus.takeoff.stairs import separate_stair_wear_members
+    from typehaus.takeoff.stairs import cast_stair_members, separate_stair_wear_members
 
-    wear_members = {(m.parent_uid, m.child_key) for m in separate_stair_wear_members(model)}
+    wear_members = {(m.parent_uid, m.child_key)
+                    for m in (*separate_stair_wear_members(model),
+                              *cast_stair_members(model))}
     cuts: dict[tuple[str, str, str], list[float]] = defaultdict(list)
     # Continuous support is a property of the member; ordering is a property of the group. A
     # group orders as spliceable only when EVERY member in it is — one member that spans,

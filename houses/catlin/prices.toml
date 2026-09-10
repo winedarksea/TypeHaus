@@ -624,7 +624,7 @@
 # Plain ZIP (not ZIP-R) — the roof's structural deck and air-barrier plane. Cheaper than the
 # ZIP-R row below by the whole cost of the foam laminated to it, which this roof buys loose.
 # NOT TAKEN as of 2026-08-31 — 0 sheets. The roof deck is 5/8" CDX now and the air barrier
-# moved off the taped panel onto the ccSPF bonded to its underside (R806.5 item 5.3), so
+# moved off the taped panel onto the ccSPF bonded to its underside (R806.5 item 5.1.3), so
 # there is no ZIP left in the house. Kept for the rate.
 "zip-sheathing" = { material = { low = 36, high = 58 }, labour = { low = 22, high = 44 } }  # 0 sheets (was 45)
 "zip-r" = { material = { low = 78, high = 105 }, labour = { low = 25, high = 50 } }  # 0 sheets (was 20) — retired 2026-08-31, kept for the rate
@@ -726,7 +726,24 @@
 # back-beam line, and CN-SG-TIE-COL/-FCOL were retyped to the HGAM10 below — an H-tie is a
 # wood-to-wood part and both of those joints land on a cast column top. What is left is the
 # 348 the bearing rule derives, and no authored one at all.
-"H2.5A" = { low = 0.8, high = 1.75 }  # 348 ea — all derived
+# 2026-09-10: 348 -> 340. The canopy's eight truss bearings left this row for the stainless
+# one below, which is a retype and not a deletion — RF-BW-CANOPY still ties every truss at
+# both ends, it just buys a different part to do it.
+"H2.5A" = { low = 0.8, high = 1.75 }  # 340 ea — all derived
+# ** THE STAINLESS TWIN, AND IT IS A SEPARATE PART AND A SEPARATE PRICE FOR TWO REASONS. **
+# RF-BW-CANOPY's four trusses land on 3-ply KDAT headers at an entry that is salted every
+# winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
+# ABU66/ABU66SS pair above — one row, priced at the stainless rate, because nothing in the
+# model can say "buy the stainless variant" of a DERIVED part — these eight are AUTHORED, so
+# they carry their own part number and bill on their own row. `library/hardware.py` keeps the
+# H2.5ASS as a capacity-only record with NO allowable: the stainless tie is not the
+# galvanised tie's 700 lbf, the figures in circulation are lower, and none could be confirmed
+# against a primary Simpson table on 2026-09-10.
+# ~4x the galvanised tie, which is the usual stainless multiple on a small stamping and the
+# same shape as the ABU66 -> ABU66SS jump ($55 -> $202) recorded above. Retail listings for
+# the H2.5ASS sit around $3.50-$5.50 each in small quantities; this band is that, widened,
+# and it is a LIST BAND rather than a quote.
+"H2.5ASS" = { low = 3.0, high = 6.5 }  # 8 ea — all authored (CN-BW-TRTIE-W1..4 / -E1..4)
 # The masonry gusset angle at the two beam-on-column joints (CN-SG-TIE-COL, CN-SG-TIE-FCOL),
 # closing the OPEN item that stood in params/sunken_garden.py: those two ties reach a cast
 # column top, and an H2.5A has nothing to nail to there. #14 screws into the 3-ply KDAT beam
@@ -1118,7 +1135,9 @@
 # below**, and the difference is the whole reason it is a separate key:
 #   * the MIX is class F3 + C2 — 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air with SCM caps —
 #     against the piers' 4,000 psi F2, roughly +$25-45/cy on ready-mix;
-#   * the CAGE is hot-dip galvanized (ASTM A767 cl. 1), about +$0.30/lb over black bar, and
+#   * the CAGE is hot-dip galvanized (ASTM A767 cl. 1, galvanized AFTER fabrication — the
+#     class is a coating weight, not a bend order, and these are shop-bent), about +$0.30/lb
+#     over black bar, and
 #     it is a (4) #5 vertical + #3 tie cage at 2" cover with ~30" class B dowels lapped in;
 #   * the four balcony tubes are FREE-STANDING 8'-5" columns seated in a plywood saddle
 #     collar screwed to a wall face and kicked to the porch framing, which is a two-person
@@ -2827,7 +2846,7 @@
 "closed-cell-spray-foam:2.5" = { material = { low = 1.0, high = 1.55 }, labour = { low = 1.5, high = 2.2 } }  # DEAD — pass 2 as one row; kept as the cross-check on :1.5 + :1.0
 # 2026-08-31 — ROOF's FLASH, 1,449.0 SF at 5" against the deck underside. The single
 # largest ccSPF line in the house at 7,245 board-feet, and the one the whole roof redesign
-# turns on: it is the air barrier, the vapour retarder and the R806.5 item 5.3 condensation
+# turns on: it is the air barrier, the vapour retarder and the R806.5 item 5.1.3 condensation
 # control in one bonded application, and it is what let nine layers of outsulation go away.
 #
 # ** THE BOARD-FOOT RATE IS HIGHER HERE THAN IN THE WALL ROWS ABOVE, AND THAT IS DELIBERATE. **
@@ -5129,7 +5148,7 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # ** RETIRED 2026-08-31 — SET TO ZERO, NOT DELETED. ** There is no mat. It and the vapour-
 # permeable synthetic under it were one decision, not two: above the underlayment sits a
 # 0-perm metal panel, so the only thing a 20-perm sheet could dry into was the gap the mat
-# made, and deleting either one strands the other. The roof takes IRC R806.5 item 5.3
+# made, and deleting either one strands the other. The roof takes IRC R806.5 item 5.1.3
 # instead — air-impermeable insulation bonded to the deck underside at the Table R806.5
 # R-value IS the condensation control, and outward drying is not required — so the sentence
 # above ("without it the condensation gate cannot pass at any foam thickness") is still true

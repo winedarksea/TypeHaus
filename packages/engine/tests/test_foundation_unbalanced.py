@@ -247,10 +247,10 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     whether the porch deck braces their head. A third UNKNOWN — W-SG-ARCH, 16" and so off
     the table's thickest published section — went with the wall.
     """
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
 
     ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
-                       preferences=Preferences(), profile=MN_2024)
+                       preferences=Preferences(), profile=MN_2020)
     findings = foundation_unbalanced_fill(ctx)
     by_result = {}
     for f in findings:

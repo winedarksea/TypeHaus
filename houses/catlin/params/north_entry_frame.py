@@ -10,8 +10,16 @@ piers and headers are structure, not a thing the UI drags.
 The bearing map is `notes/north_entry_structure.md`; the arithmetic is
 `notes/north_entry_piers.md`, which oracles `engineering/roof_beam.py` and the pier calcs.
 
-**The landing touches nothing on the house.** Grep this file for `W-B-` and expect nothing
-but comments. Its house-side bearing is two cast piers on the pier line at y=37'-6".
+**The landing touches nothing on the house, and since 2026-09-10 the canopy touches nothing
+on the garage either.** Grep this file for `W-B-` or `W-G-` and expect nothing but comments.
+The landing's house-side bearing is two cast piers on the pier line at y=37'-6"; the canopy
+stands on four columns of its own and shares only the sheathing plane with `RF-GARAGE`.
+
+**Two pier depths, on purpose.** The house-side three reach -9'-9 7/16" because the basement
+excavation is already open to it, so the shaft is the only cost -- and they must be cast
+WHILE it is open or they undermine the house footing ten inches away. The garage-side three
+stop at -7'-0", the garage strip footing's own plane, and are cast with the garage
+foundation. There is no excavation out there to make depth cheap.
 
 **KDAT longevity, house-wide (owner, 2026-09-10).** Every treated member here and in
 `breezeway.py` carries the same four-part detail, stated once rather than per element:
@@ -169,12 +177,26 @@ for index, (suffix, x) in enumerate(zip(("FW", "FC", "FE"), BEAM_X_FT, strict=Tr
          ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT") if suffix == "FW" else
          ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", f"PT-BW-I{suffix[-1]}"))
 
-# ** THE TWO ROOF HEADERS, AND WHERE THEIR NORTH ENDS LAND IS THE ARGUMENT FOR THIS SCHEME. **
-# x=6'-0" and x=30'-0" are the garage's own southwest and southeast corners, where W-G-S
-# meets W-G-W and W-G-E -- the two walls the garage trusses already bear on, directly over
-# the GARAGE_ICF_6 stem and its strip footing. Each header is a southward EXTENSION of an
-# existing bearing line, so its ~3,130 lb reaction lands on a corner post over concrete
-# already sized for truss reactions, and nothing new is required below -1'-0" at the north end.
+# ** THE TWO ROOF HEADERS, AND THE CANOPY THEY CARRY TOUCHES THE GARAGE FOR NOTHING. **
+# These used to bear north on `W-G-W` / `W-G-E`, on the premise that a header landing on the
+# garage's own southwest and southeast corners was a southward EXTENSION of a bearing line
+# already sized for truss reactions. It is not a detail. A ~3,130 lb point reaction on the
+# END of a stud wall wants a real bearing post through the plate, the stud bay, the sill and
+# the ICF stem, and no such post was authored, drawn or billed -- `bearing_refs` naming a wall
+# is the engine's idiom for a beam landing ALONG a wall, and it grades nothing about a beam
+# landing on a wall's terminus.
+#
+# So the canopy is freestanding on four columns of its own (owner, 2026-09-10): PT-BW-CW/CE
+# at the pier line and PT-BW-CNW/CNE at the garage-side line, each on cast concrete to
+# -0'-8 1/4". x=6'-0" and x=30'-0" are still the garage's own corner lines, so the canopy
+# reads as one plane with RF-GARAGE and the sheathing runs continuous across the joint -- and
+# THAT continuity is the only thing the two structures share. It is the canopy's lateral
+# system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
+#
+# The headers run 8" past the north columns to y=GARAGE_Y_SOUTH so the roof plane reaches
+# the garage wall. R507.5.1's quarter-of-the-back-span is a DECK table and does not reach a
+# roof header; what bounds this tail is the header's own bending and shear, which
+# `engineering/roof_beam.py` grades.
 #
 # ** PLY COUNT IS THE LEVER, NOT DEPTH. ** Each header carries a 12' half-span of a 24' truss
 # over the 5'-8 3/4" bay = 72 sf, under the roof-step drift case (42 psf balanced + up to
@@ -184,9 +206,10 @@ for index, (suffix, x) in enumerate(zip(("FW", "FC", "FE"), BEAM_X_FT, strict=Tr
 # against L/240 = 0.30". A 3-1/2"x11-7/8" treated glulam (BEAM_GLULAM_TREATED) is the
 # alternative at ~4x the material rate; take it only if the exposed 3-ply seam is objectionable.
 beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
-     LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "W-G-W"), HEADER_TOP_FT, "3-2x12")
+     LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
+     "3-2x12")
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
-     ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CE", "W-G-E"), HEADER_TOP_FT,
+     ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CE", "PT-BW-CNE"), HEADER_TOP_FT,
      "3-2x12")
 
 # --- piers, pedestals and columns -------------------------------------------------------
@@ -261,28 +284,42 @@ for _uid, _tag, _x, _height, _top in (
 # Two piers instead, at the same elevation and on the same 5'-6" span as the house side, so
 # `structural.deck_beam_span` grades both seat beams identically off two Posts each.
 #
-# ** 18" PADS, AT d/c 0.86, AND THAT IS TIGHTER THAN THE OTHER THREE ON PURPOSE. **
-# These carry landing load only. Once `_delivered_to_posts` started following the beam chain
-# and credited them their real share of the deck they went from nominal to d/c 0.86 on
-# 2,000 psf presumptive soil, against the roof piers' 0.51 -- adequate, and the presumptive
-# value is itself conservative, but it is the tightest bearing ratio in this assembly and it
-# is the first number to revisit if a soils report comes back below 2,000 psf.
+# ** PAD WIDTH IS PER PIER NOW, BECAUSE THEY NO LONGER CARRY THE SAME THING. **
+# PT-BW-GE carries landing load only and stays at 18" (d/c 0.86 on 2,000 psf presumptive
+# soil, the tightest bearing ratio in this assembly and the first number to revisit if a
+# soils report comes back lower). PT-BW-GW and PT-BW-RNE each carry a canopy column as well
+# and take the roof piers' 2'-0".
 #
-# ** WIDENING THEM TO 2'-0" WAS TRIED AND PUT BACK. ** A 2'-0" pad here laps the garage's own
-# strip footing under `W-GF-S1`, and it perturbed the stem band's furring-screw count three
-# screws through the footing-shelter grade read (`local_grade_elevation_m` tests whole-polygon
-# containment). Not worth a margin that was already there.
-# ** THE SAME DEPTH AS THE HOUSE-SIDE THREE, AND THE REASON IS THE HYDRANT, NOT FROST. **
-# W-GF-S1's own underside at -6'-4" would be deep enough for frost and cheap enough to cast
-# with the garage foundation. It is not deep enough to stay out of the way: the hydrant line
-# runs north at x=11'-0" straight through FT-BW-GE, and a footing bearing ABOVE that invert
-# puts the pipe inside its 45 degree influence line. Bearing below it removes the question
-# instead of sleeving it, and these are cast in the same open excavation as the other three.
-GARAGE_PIER_BOTTOM_FT = PIER_BOTTOM_FT
-GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + FOOTING_DEPTH_FT
+# ** THE 2'-0" PADS LAP THE GARAGE'S OWN STRIP FOOTING, AND THAT IS A SEQUENCING NOTE. **
+# `FT-GF-S1`/`-S3` run along y=43'-2 5/8" and bottom at -6'-4"; these pads reach ~8" under
+# them in plan and bear 3'-5" deeper. Cast in the open excavation, deep pours first -- which
+# is the same premise the house-side three already stand on -- that is a pour sequence. Cast
+# after the garage foundation is backfilled it is undermining, and the answer becomes
+# benching. It belongs on the drawings, and AN-BW-STRUCTURE carries it.
+#
+# ** THESE STOP AT THE GARAGE'S OWN FOOTING, AND THAT IS THE WHOLE REASON THEY ARE CHEAP. **
+# The house-side three reach -9'-9 7/16" for one reason and it is not bearing: the basement
+# excavation is already open to that depth, so the extra 2'-9" of shaft costs shaft and
+# nothing else. There is no such excavation out here. The garage's own strip footings bottom
+# at -7'-0" and top at -6'-4", which is 50" of cover against Minn. R. 1303.1600 Zone II's
+# 42", so these are cast with the garage foundation on the same bearing plane, in the same
+# formwork sequence, out of the same pour (owner, 2026-09-10).
+#
+# ** COPLANAR IS ALSO WHAT SETTLES THE LAP. ** PT-BW-GW's and PT-BW-RNE's 2'-0" pads reach
+# about 8" under `FT-GF-S1`/`-S3` in plan. At the house-side depth that was undermining and
+# a sequencing note; at the garage's own depth the two pads simply meet the strip footing
+# edge to edge on one plane, which is an ordinary detail and needs no note at all.
+#
+# ** AND THE HYDRANT PASSES UNDER, NOT THROUGH. ** `PR-G-HYDRANT-CW` runs north at x=11'-0"
+# with its invert at -8'-10", so at this depth it clears the underside of FT-BW-GE by 1'-10"
+# rather than threading between a shaft and a pad. `mep.footing_clearance` grades it.
+GARAGE_FOOTING_THICKNESS_FT = 8 / 12   # the garage strip's own 8", so the two tops align
+GARAGE_PIER_BOTTOM_FT = -7.0
+GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
 PEDESTALS = []
-for _uid, _tag, _x in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT),
-                       ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT)):
+for _uid, _tag, _x, _pad_in in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0),
+                                ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0),
+                                ("BWPT04AAAA", "PT-BW-RNE", ROOF_COLUMN_EAST_X_FT, 24.0)):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
         height=ft(BEARING_TOP_FT - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
@@ -290,9 +327,9 @@ for _uid, _tag, _x in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT),
         reinforcement=ENTRY_PIER_CAGE,
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Footing(
-        uid=f"BWFG{_tag[-2:]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
-        width=inch(18), depth=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
-        bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT)))
+        uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
+        width=inch(_pad_in), depth=ft(GARAGE_FOOTING_THICKNESS_FT),
+        assembly="PIER_BASE_12", bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT)))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
 # k*lu/d = 15.5, nowhere near NDS Sec 3.7.1.4's limit of 50. Standoff base ABU66SS on a
@@ -306,13 +343,18 @@ for _uid, _tag, _x in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT),
 # the standoff-base-plus-cast-in-bolt detail. Stated, not left open.
 COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - BEARING_TOP_FT
 ROOF_COLUMNS = [
-    Post(uid="BWPT07AAAA", tag="PT-BW-CW", position=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT)),
-         size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT",
-         supported_by="PT-BW-W"),
-    Post(uid="BWPT08AAAA", tag="PT-BW-CE",
-         position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(PIER_LINE_Y_FT)),
-         size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT",
-         supported_by="PT-BW-RE"),
+    Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
+         size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier)
+    for _uid, _tag, _x, _y, _pier in (
+        ("BWPT07AAAA", "PT-BW-CW", LANDING_WEST_FT, PIER_LINE_Y_FT, "PT-BW-W"),
+        ("BWPT08AAAA", "PT-BW-CE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT, "PT-BW-RE"),
+        # The two north columns, which is what makes the canopy freestanding. The west one
+        # shares PT-BW-GW with the garage-side seat beam exactly as PT-BW-CW shares PT-BW-W
+        # with the house-side one; the east one has PT-BW-RNE to itself, there being no
+        # landing out at x=30'-0".
+        ("BWPT11AAAA", "PT-BW-CNW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "PT-BW-GW"),
+        ("BWPT12AAAA", "PT-BW-CNE", ROOF_COLUMN_EAST_X_FT, GARAGE_SEAT_Y_FT, "PT-BW-RNE"),
+    )
 ]
 
 # ** THE 4'-2" INTERIOR CANTILEVER IS THE REAL DEFECT AND IT IS CHEAP TO FIX. ** BM-BW-FC

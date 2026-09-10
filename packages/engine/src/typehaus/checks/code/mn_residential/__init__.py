@@ -27,6 +27,6 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     stairs,
     ventilation,
 )
-from typehaus.checks.code.mn_residential.profile import MN_2024, PROFILES, get_profile
+from typehaus.checks.code.mn_residential.profile import MN_2020, PROFILES, get_profile
 
-__all__ = ["MN_2024", "PROFILES", "get_profile"]
+__all__ = ["MN_2020", "PROFILES", "get_profile"]

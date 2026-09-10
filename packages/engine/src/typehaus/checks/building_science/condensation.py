@@ -384,7 +384,7 @@ def _r806_5_deferral(ctx: CheckContext, surface: EnvelopeSurface) -> Finding | N
     100% RH at the deck for every unvented metal roof, at any foam thickness, however it is
     designed — see ``houses/catlin/CLAUDE.md``.
 
-    R806.5 items 5.2 and 5.3 replace the criterion rather than relax it. Air-impermeable
+    R806.5 items 5.1.1 and 5.1.3 replace the criterion rather than relax it. Air-impermeable
     insulation bonded to the sheathing underside, at the Table R806.5 R-value and itself a
     Class II retarder, IS the condensation control: the table is a dew-point calculation for
     the zone, holding the first condensing surface — the foam's own outer face, which is the

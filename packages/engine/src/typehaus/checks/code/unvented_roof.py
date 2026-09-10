@@ -18,19 +18,28 @@ What R806.5 actually asks, and what this module grades:
 * and the insulation is placed by one of the three arrangements in item 5, each with its own
   arithmetic:
 
-  ===========  ==========================================================================
-  item 5.1     air-permeable insulation in the bay ONLY, with rigid board or air-
-               impermeable insulation ABOVE the deck at the Table R806.5 R-value
-  item 5.2     air-impermeable insulation only, in direct contact with the underside of
-               the sheathing
-  item 5.3     BOTH — the air-impermeable layer against the sheathing at the Table R806.5
-               R-value, the air-permeable insulation directly under it. Flash-and-batt.
-  ===========  ==========================================================================
+  =============  ======================================================================
+  item 5.1.1     air-impermeable insulation only, in direct contact with the underside
+                 of the sheathing
+  item 5.1.2     air-permeable insulation in the bay ONLY, with rigid board or air-
+                 impermeable insulation ABOVE the deck at the Table R806.5 R-value
+  item 5.1.3     BOTH — the air-impermeable layer against the sheathing at the Table
+                 R806.5 R-value, the air-permeable insulation directly under it.
+                 Flash-and-batt.
+  =============  ======================================================================
+
+  **These are the 2018/2021 numbers, and they are not a reindex of the 2015 ones.** The
+  2015 edition numbered the same three arrangements 5.1 (above-deck), 5.2 (against the
+  underside) and 5.3 (both); 2018 regrouped them under 5.1 and **swapped the first two**,
+  so a 2015 "5.1" is a 2018 "5.1.2" and a 2015 "5.2" is a 2018 "5.1.1". Reading the old
+  numbers against the current code silently lands on the wrong arrangement, and 2018 also
+  gave item **5.2** an unrelated meaning (vapour diffusion ports, climate zones 1-3).
+  Item 5.1.4 exists as well and this module does not grade it.
 
 Table R806.5 is a *condensation-control* minimum, not an energy one: it is the R needed
 above (or against) the sheathing to hold the first condensing surface above the dew point
 for the zone, and it is why the same 5" of foam that is generous in zone 5 is marginal in
-zone 8. The whole point of items 5.1 and 5.3 is that meeting it makes outward drying
+zone 8. The whole point of items 5.1.2 and 5.1.3 is that meeting it makes outward drying
 unnecessary — which is the reading :mod:`typehaus.checks.building_science.condensation`
 defers to, because a steady-state Glaser walk cannot grade an assembly sealed on its cold
 side by an impermeable metal panel (see ``r806_5_compliance`` and its caller there).
@@ -84,10 +93,11 @@ CLASS_II_MAX_PERMS = 1.0
 class R806_5_Result:
     """What R806.5 makes of one roof assembly.
 
-    ``item`` names the arrangement of item 5 the assembly is built to ("5.1", "5.2", "5.3")
-    or is ``None`` when it matches none of them. ``deck_contact_r`` is the R of the air-
-    impermeable insulation the table governs — above the deck for 5.1, against its underside
-    for 5.2/5.3 — and ``None`` when there is none to measure.
+    ``item`` names the arrangement of item 5 the assembly is built to, in 2018/2021 IRC
+    numbering ("5.1.1", "5.1.2", "5.1.3"), or is ``None`` when it matches none of them.
+    ``deck_contact_r`` is the R of the air-impermeable insulation the table governs —
+    above the deck for 5.1.2, against its underside for 5.1.1/5.1.3 — and ``None`` when
+    there is none to measure.
     """
 
     item: str | None
@@ -109,17 +119,17 @@ class R806_5_Result:
         """Every condition of R806.5 this module can grade, together."""
         return (not self.missing and self.item is not None and self.meets_table
                 and self.interior_class_i_layer is None
-                and (self.item == "5.1" or self.air_impermeable_class in {"I", "II"}))
+                and (self.item == "5.1.2" or self.air_impermeable_class in {"I", "II"}))
 
     @property
     def deck_contact_insulation(self) -> bool:
-        """Item 5.2/5.3 — the air-impermeable layer is against the sheathing, not above it.
+        """Item 5.1.1/5.1.3 — the air-impermeable layer is against the sheathing, not above it.
 
         This is the property :mod:`~typehaus.checks.building_science.condensation` keys on:
         it is the arrangement in which the code says outward drying is not required, so a
         Glaser walk demanding one is grading a criterion the section replaced.
         """
-        return self.item in {"5.2", "5.3"}
+        return self.item in {"5.1.1", "5.1.3"}
 
 
 def _outermost_structure(layers: list[Layer]) -> int | None:
@@ -206,7 +216,7 @@ def r806_5_compliance(assembly: Assembly, library: Library,
                 tightest_class = _retarder_class(
                     _permeance(fill.material_ref, thickness_in, library, missing))
 
-    # Item 5.1: rigid board / air-impermeable insulation ABOVE the deck. Everything outboard
+    # Item 5.1.2: rigid board / air-impermeable insulation ABOVE the deck. Everything outboard
     # of the last STRUCTURE layer that is an INSULATION layer of an air-impermeable material.
     above_deck_r = 0.0
     for layer in layers[(structure_index + 1) if structure_index is not None else 0:]:
@@ -220,10 +230,10 @@ def r806_5_compliance(assembly: Assembly, library: Library,
             above_deck_r += material.r_per_inch * layer.thickness.inches
 
     if bay_air_impermeable_r > 0.0:
-        item = "5.3" if bay_air_permeable_r > 0.0 else "5.2"
+        item = "5.1.3" if bay_air_permeable_r > 0.0 else "5.1.1"
         governing: float | None = bay_air_impermeable_r
     elif above_deck_r > 0.0:
-        item, governing = "5.1", above_deck_r
+        item, governing = "5.1.2", above_deck_r
     else:
         item, governing = None, None
     return R806_5_Result(
@@ -295,19 +305,19 @@ def _finding(assembly_tag: str, tags: tuple[str, ...], result: R806_5_Result) ->
     if result.item is None:
         return _fail(CHECK_ID, f"{assembly_tag}: unvented roof with no insulation in any "
                      "R806.5 item-5 arrangement — no air-impermeable insulation above the "
-                     "deck (5.1) and none against its underside (5.2/5.3)", tags, CODE)
+                     "deck (5.1.2) and none against its underside (5.1.1/5.1.3)", tags, CODE)
     if result.interior_class_i_layer is not None:
         return _fail(CHECK_ID, f"{assembly_tag}: item 2 — a Class I vapour retarder "
                      f"({result.interior_class_i_layer}) is installed on the ceiling side of "
                      "an unvented assembly, which seals the bay on both faces", tags, CODE)
     assert result.deck_contact_r is not None
-    where = ("above the deck" if result.item == "5.1"
+    where = ("above the deck" if result.item == "5.1.2"
              else "in direct contact with the sheathing underside")
     if not result.meets_table:
         return _fail(CHECK_ID, f"{assembly_tag}: item {result.item} — R-"
                      f"{result.deck_contact_r:.1f} of air-impermeable insulation {where}, "
                      f"below the {_zone_note(result)}", tags, CODE)
-    if result.item != "5.1" and result.air_impermeable_class not in {"I", "II"}:
+    if result.item != "5.1.2" and result.air_impermeable_class not in {"I", "II"}:
         return _fail(CHECK_ID, f"{assembly_tag}: item 4 — in climate zone {CLIMATE_ZONE} the "
                      "air-impermeable insulation must itself be a Class II vapour retarder; "
                      "this one is not rated as one", tags, CODE)

@@ -5,7 +5,7 @@ only the Minnesota residential subset the engine actually evaluates and returns 
 exit code for a failure or an unknown result. `haus print` runs the same gate before it writes
 the PDF or DXF sheets.
 
-The current `mn-2024` profile checks:
+The current `mn-2020` profile checks:
 
 - habitable-room and roof-following ceiling height;
 - emergency escape openings for sleeping rooms;

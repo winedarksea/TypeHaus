@@ -408,7 +408,7 @@ RAFTER_PLATE = Assembly(
 # **Referenced by nothing, and that is the point** — like `glazed-green-brick`, it is here so
 # the revert is a swap and not an archaeology exercise. To go back: give EXT_2X6 and
 # PLANT_EXT_2X6_HUMID this layer tuple, restore `_WALL_OUTBOARD_IN` in params/roof_trim.py
-# and `_HOUSE_CLADDING_Y` in params/breezeway.py to their 5.5"-proud values, and uncomment
+# and `HOUSE_CLADDING_Y_FT` in params/north_entry_frame.py to their 5.5"-proud values, and uncomment
 # the corresponding rows in prices.toml. `resolve/framing/truss_frame.py` and its branch of
 # the pass never went anywhere: they are selected by `laid="edge"` + vertical, which is
 # exactly what this tuple says.
@@ -509,7 +509,7 @@ EXT_2X6_SWINBURNE = Assembly(
 # with an R-30C batt compressed in front of it — and the three things that make it work are
 # each recorded where they are decided, not here:
 #
-#   1. **It is legal with zero above-deck foam.** IRC/MSRC R806.5 item 5.3: air-impermeable
+#   1. **It is legal with zero above-deck foam.** IRC/MSRC R806.5 item 5.1.3: air-impermeable
 #      insulation in direct contact with the sheathing underside at the Table R806.5 minimum
 #      (R-25 in zone 6, R-30 in zone 7), with the air-permeable insulation directly under it.
 #      5" of ccSPF is R-32.5 and clears BOTH rows, so the zone reading cannot go wrong.
@@ -521,13 +521,13 @@ EXT_2X6_SWINBURNE = Assembly(
 #      no outward flux the method equilibrates every plane to interior vapour pressure by
 #      construction. The old stack bought its margin by leaving 5.6" of the bay deliberately
 #      UNFILLED as a drying path; this one fills the bay, and the honest answer is that the
-#      criterion changed: R806.5 item 5.3 makes the foam's own outer face the condensing
+#      criterion changed: R806.5 item 5.1.3 makes the foam's own outer face the condensing
 #      surface and holds it warm, and outward drying is not required.
 #      `checks/building_science/condensation.py::_r806_5_deferral` says so in the report.
 #   3. **The air barrier moved from tape to foam.** The taped ZIP was the air/water control
 #      plane; the ccSPF is now the air and vapour plane (bonded, seamless, ~0.32 perm at 5"
 #      = Class II) and the adhered membrane is the water plane. That is a more reliable
-#      pair than a taped panel, and it is what R806.5 item 5.3 contemplates.
+#      pair than a taped panel, and it is what R806.5 item 5.1.3 contemplates.
 #
 # **The vent mat and the permeable underlayment went together, because they were one
 # decision.** Above the underlayment sits an impermeable metal panel: the only thing a
@@ -549,7 +549,7 @@ EXT_2X6_SWINBURNE = Assembly(
 # That cantilever is not graded by anything in the engine and belongs in the PE scope.
 #
 # **24" o.c. forces the heavier joist, and that is the deal.** At 16" a TJI 110 carries the
-# 18'-0" HORIZONTAL span at Ps = 35 psf (Pg 50, Hennepin); at 24" it does not, and the 230 is
+# 18'-0" HORIZONTAL span at Ps = 35 psf (Pg 50, Ramsey); at 24" it does not, and the 230 is
 # the first series that does with margin (19'-3" allowable, 15" spare). Net of the upcharge
 # the framing still comes down, and the better half is thermal: the framing factor falls from
 # 0.07 to 0.05 at no cost. Two things this engine will NOT tell you, recorded so they are not
@@ -605,7 +605,7 @@ ROOF = Assembly(
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof); the screwed nailbase over two 3\" polyiso courses (2026-08-20) deleted 2026-08-31 for 5\" ccSPF flash-and-batt in the bay under an adhered butyl membrane, IRC R806.5 item 5.3",
+    source="catlin-house ifcplot/assemblies.py HOUSE_ROOF (hot roof); the screwed nailbase over two 3\" polyiso courses (2026-08-20) deleted 2026-08-31 for 5\" ccSPF flash-and-batt in the bay under an adhered butyl membrane, IRC R806.5 item 5.1.3",
 )
 
 # --- concrete family -----------------------------------------------------------
@@ -1765,6 +1765,31 @@ GARAGE_STEP_6 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     source="the garage service door's exterior landing (IRC R311.7.6): 6\" outdoors, salt-splashed off the drive, F3+C2 mix. Its base course is not modelled",
+)
+
+# ** THE NORTH ENTRY'S FOUR CAST TIERS, WHICH REPLACED EIGHT DRILLED PIERS. **
+# The terrace was framed KDAT boxes on eight 42"-deep piers until 2026-09-10. The piers were
+# both wrong and unnecessary -- laid out east of a flight that runs WEST, so all eight stood
+# under open ground -- and the owner's call is the ordinary detail: four solid pours,
+# wedding-caked, on a compacted base. One riser thick each, EXPOSED_MIX because they are
+# sky-exposed at a salted entry (ACI 318-19 F3 + C2), and every tier above the first is fully
+# bedded on the one below it, so nothing here spans.
+#
+# ** THIS IS NOT FROST-FOUNDED AND THAT IS A DECISION, NOT AN OVERSIGHT. ** Minn. R.
+# 1303.1600 puts Zone II at 42", and these bear about 6" down. The tiers will move with the
+# ground; a monolithic pour moves as one piece, so what a winter costs is the joint at the
+# TOP -- between the fourth tier and the deck landing, which is on piers and will not move --
+# and the joint at the bottom to the paver field, which is flexible. Riser uniformity
+# (R311.7.5.1, 3/8") is the thing to watch at the top joint. A framed tier on the same base
+# would have been worse: it settles into a cantilever off BM-BW-FE, which nothing in that
+# assembly can do.
+ENTRY_STEP_TIER = Assembly(
+    tag="ENTRY_STEP_TIER",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(6.8),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+    ),
+    source="north entry terrace: one cast tier, 6.8\" = one riser of the 34\" rise in five. Sky-exposed and salted, F3+C2 mix; bears on a compacted washed-rock base that is not modelled (notes/north_entry_structure.md Sec 3)",
 )
 
 RETAINING_FOOTING_96 = Assembly(
@@ -3005,7 +3030,7 @@ MATERIALS = [
     #
     # Its 0.05 perm is NOT a hedge to be argued with. Under a 0-perm metal panel there is no
     # outward drying path at any permeance, which is exactly why the assembly takes the
-    # R806.5 item 5.3 route instead of a drying one; a vapour-open self-adhered sheet (SIGA
+    # R806.5 item 5.1.3 route instead of a drying one; a vapour-open self-adhered sheet (SIGA
     # Majvest SA, Pro Clima SOLITEX MENTO 3000 Connect, ~34-38 perms) would give permeability
     # with nowhere to go, and would give up the self-sealing that is the point. Named here so
     # the option is on the record and was rejected on purpose.
@@ -3337,7 +3362,7 @@ MATERIALS = [
     # ** Thickness stays 1-1/4", and that is not a rounding. ** The cladding face is
     # hand-transcribed into house constants that feed the north/south faces this material
     # lands on: `params/roof_trim.py` `_WALL_OUTBOARD_IN`, `params/breezeway.py`
-    # `_HOUSE_CLADDING_Y`, `params/sunken_garden.py` `gap_to_house_in`, and the exterior
+    # `HOUSE_CLADDING_Y_FT`, `params/sunken_garden.py` `gap_to_house_in`, and the exterior
     # devices in `plan/electrical.py`. The roof footprint re-derives from the bearing walls'
     # outermost layer polygons and those constants do not, so any thickness change makes
     # derived geometry and authored constants silently disagree at the rake ends. Steel
@@ -3392,7 +3417,7 @@ MATERIALS = [
     # this depth, which is why the tag is its own. House-local until a second house wants it
     # (CONTRIBUTING §Promotion flow).
     #
-    # Not air-impermeable, at any density: it is the *air-permeable* half of R806.5 item 5.3,
+    # Not air-impermeable, at any density: it is the *air-permeable* half of R806.5 item 5.1.3,
     # and the ccSPF outboard of it is the half the table governs.
     Material(tag="fiberglass-r30c",
              name="Fiberglass cathedral batt, R-30C compressed to 6-7/8\"",
@@ -4141,6 +4166,7 @@ ASSEMBLIES = [
     GARDEN_COURT_SLAB,
     GARDEN_PUTTING_GREEN,
     GARDEN_STOOP,
+    ENTRY_STEP_TIER,
     GARAGE_STEP_6,
     GARAGE_ROOF,
     CANOPY_ROOF,

@@ -66,7 +66,7 @@ def copy_house(src: Path, dst: Path) -> Path:
     return dst
 
 
-def check_context(plan=None, model=None, *, preferences=None, profile="mn-2024",
+def check_context(plan=None, model=None, *, preferences=None, profile="mn-2020",
                   resolve_findings=None):
     """A ``CheckContext`` from a plan, a model, or both.
 

@@ -100,10 +100,11 @@ SITE = Site(
     # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
     # the -15 F design air.
     soil_temp_f=47.0,
-    # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED. ** The mn-2024 profile
-    # carries GM as a Twin Cities presumption, citing the **Hennepin County** soil survey —
-    # the same wrong-county citation as the snow load below, in the shared engine where no
-    # house could correct it.
+    # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED. ** The mn-2020 profile
+    # carries GM as a regional Twin Cities presumption for any house with no soils report.
+    # (It cited the **Hennepin County** survey by name until 2026-09-10 — the same
+    # wrong-county citation as the snow load below, in the shared engine where no house
+    # could correct it; it now names the metro glacial till regionally instead.)
     #
     # GM (silty gravel to inorganic silt), IRC Table R405.1's 45 psf/ft equivalent-fluid
     # group, is right for this site for the same reason it is right regionally: the whole

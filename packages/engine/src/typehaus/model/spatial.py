@@ -127,6 +127,15 @@ class Stair(Element):
     #
     # Boxes resolve as ``landing_framing``, not ``stringer``: a tier IS a landing, and no
     # member of a box flight is a stringer. Checks that grade a carriage must not find one.
+    #
+    # ``cast`` is the third mode and it frames NOTHING. A poured concrete terrace has no
+    # carriage to generate: each tier is a pour, authored as its own ``Slab`` with its own
+    # outline, thickness, mix and elevation, because that is what a pour is and the model
+    # already says it well. What stays on the ``Stair`` is the flight's CODE geometry — the
+    # rise, the going, the width, the headroom, the guard it serves — which is exactly the
+    # part a stack of slabs cannot state. So a cast flight is one element for the rule and n
+    # elements for the concrete, and the members tuple is empty on purpose rather than by
+    # omission. Grep the house for the tier tags before assuming a cast flight is unbuilt.
     carriage: str = "stringer"
     # Straight flights only; finished rises stay fixed while the framing drops by this
     # thickness. None retains the ordinary 1 1/2-inch tread board.

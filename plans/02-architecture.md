@@ -197,7 +197,7 @@ haus new <name>       scaffold from template (generates project_uuid); interim t
                        --template catlin|minimal, catlin default)
 haus build             [--lod core|framed] [--only ifc|dxf|pdf|json] [--inspect]
                        # --inspect: parse-only, never imports params/ (§Git topology trust model)
-haus check             [--profile mn-2024] [--tier integrity|code|structural|building_science]
+haus check             [--profile mn-2020] [--tier integrity|code|structural|building_science]
                        [--json] [--ifc]
 haus print             [--handoff] full permit set → out/permit_set.pdf + DXFs
                        (+ architect bundle, → 30 §Sheets)

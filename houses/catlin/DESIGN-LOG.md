@@ -376,7 +376,7 @@ against 124" needed. `WIN-A-N1` was rehosted from `W-A-N2` to `W-A-N2B` on an ea
 
 **The rectangle narrowed to one width (2026-09-10).** All four north units were WT-3036, and
 30x36 is 1:1.2 — square enough to read as a mistake in `elev_north.png`. The gable pair took
-**WT-2736** and the second-storey pair **WT-2748** at a **2'-3 1/2" sill**, so the facade is
+**WT-2736** and the second-storey pair **WT-2748** at a **3'-4" sill**, so the facade is
 now two stacks of one 27" rough opening, 48" tall below and 36" above. Nothing moved: the
 centres stay on 12'-0"/24'-0", but every offset had to grow 1 1/2" to keep them there,
 because `from_node` resolves to the opening's near JAMB and not its centre
@@ -385,12 +385,26 @@ this facade — a pure type swap silently walks the whole rectangle sideways.
 
 Three things settled the numbers. The attic could not grow taller with the pair below: a 48"
 unit there needs 148" of run against 130 1/2" available, and buying the height off the sill
-instead puts it under R312.2's 24". The second-storey sill went to 27 1/2" rather than a
-round 2'-6" because 27 1/2" is an exact girt-course hit — the sill course becomes the field
-course and casts no sliver — which took `test_truss_girt_courses.py` from 12 exact hits to
-14 with slivers unchanged at 33. And 27 1/2" keeps 3 1/2" over R312.2, which is real margin
-rather than paper margin: `sill_m` is measured off the SUBFLOOR, so an authored 24" would
-be 23 1/16" to an inspector's tape.
+instead puts it under R312.2's 24".
+
+The second-storey sill took two passes and the second one is the interesting half. The
+girt rule asks for a head on a 24" multiple or a sill 3-1/2" above one, and the first pass
+took the sill half at 2'-3 1/2". It was an exact hit and it sat visibly too low on the
+facade. Going back to it turned up the real constraint: **a 48"-tall unit on a 24" module
+cannot take either half cleanly.** The head half wants a 24" or 48" sill; the sill half
+wants 27-1/2" or 51-1/2"; the two sets never intersect, so whichever edge lands on a
+course, the other edge lands within 7" of one and casts a sliver. Both 2'-3 1/2" and 4'-0"
+score 14 exact against 33 slivers — one board saved, one board wasted, net nothing.
+
+So the pair was placed clear of every course rather than on one. The clear band is
+2'-10 1/2" to 3'-5", and **3'-4"** is its top even inch: head at 88" with 8" to the 96"
+course, sill datum at 36-1/2" with 11-1/2" to the 48" course. Four sliver edges became
+zero, and the whole-house count went 33 → 31 at 12 exact hits. The lesson worth keeping is
+that the NEW-OPENING RULE is a means, not the end — the end is no redundant board, and
+when a unit's height puts the rule's two halves out of reach of each other, the gap
+between courses is where it belongs. 3'-4" also keeps a full 16" over R312.2's trigger,
+which is real margin rather than paper margin: `sill_m` is measured off the SUBFLOOR, so
+an authored 24" would be 23 1/16" to an inspector's tape.
 
 The narrowing paid out at the gable as well. Both jambs came inboard 1 1/2", so the rake
 margin went 5" → 6 1/2", the radon riser's clearance to `WIN-A-N1` 9 5/8" → 11 1/8", and the
@@ -400,9 +414,9 @@ of them back at once.
 **The north second storey was never on the 6'-0" head line.** `CLAUDE.md` and `second.py`
 both said it was until 2026-09-10. Commit `5487fd79` had raised both sills ft(3) → ft(3, 6)
 in a silent hunk of another change, putting the head at 6'-6" against `WIN-S-BED3-N`'s
-6'-0", and no prose followed. The retype leaves them at 6'-3 1/2", so the gap is 3 1/2"
-rather than 6". The face is a row of three on one rectangle with a 14" corner unit outboard,
-and it is now documented as one.
+6'-0", and no prose followed. The retype leaves them at 7'-4", the highest heads on the
+storey. The face is a row of three on one rectangle with a 14" corner unit outboard, and it
+is now documented as one.
 
 This document claimed the stair window sat at 12'-8" and argued an 8" miss, until
 **2026-09-06**; that was never true — the authored offset always resolved to 13'-4", and
@@ -483,6 +497,11 @@ block load — `mep.heating_capacity` passed only by crediting a strip heater th
 aux-heat terminal to interlock with. Gree's FLEXX Ultra answers all three: 760 cfm at 1.0"
 w.c., 21,000 Btu/h read at -15 F (137% of load, unaided), 24 VAC control with a factory heat
 kit, HSPF2 9.0 → 10.0, and ENERGY STAR Cold Climate (AHRI 215213329) where the Vireo is not.
+**The 21,000 at -15 F is itself unverified to a column** (`# TODO verify datasheet`): the AHRI
+certificate number is not a capacity table, no published capacity at 5 F or -13 F was found,
+and "reliable heating to -22 F" is an operating range rather than a rating. Given the
+paragraph above, that is exactly the error this entry is about — resolve it before the
+heat-loss calculation is called closed.
 It costs depth — 18 1/8" against 11 13/16" — which is what took `SF-S-HP1` from a 17" drop to
 21" and its underside to 7'-3". The generalisation of the generalisation: a verified datasheet
 number is only as good as the column it was read from, and three of these were read from the

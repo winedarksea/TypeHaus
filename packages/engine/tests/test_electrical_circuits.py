@@ -797,7 +797,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     work surface. That is the behaviour 210.52(A)(2)(1) describes, and unlike a room
     verdict it cannot be made vacuous by adding a receptacle somewhere else.
     """
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.mep.electrical import _fixed_cabinet_intervals
     from typehaus.checks.registry import CheckContext, Preferences
 
@@ -807,7 +807,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
 
     living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
     ring = [tuple(point) for point in living.clear_face]
-    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2024)
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
     breaks = _fixed_cabinet_intervals(ctx, ring, "main")
     # The east tall bank is 4'-0" of floor-to-ceiling carcass on the living room's boundary,
     # so it has to produce a break, and one long enough to be that bank.
@@ -824,7 +824,7 @@ def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
     model, _ = resolve(plan)
     living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
     ring = [tuple(point) for point in living.clear_face]
-    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2024)
+    ctx = CheckContext(plan=plan, model=model, preferences=Preferences(), profile=MN_2020)
 
     # Give every one of them a countertop and the wall line is unbroken by cabinets: the
     # same carcasses are now work surfaces, which 210.52(A)(2)(1) does not exempt.

@@ -115,7 +115,7 @@ which is precisely why the result should be read as a screening and not a design
 
 | quantity | value | source |
 |---|---|---|
-| soil class | GM (silty gravel) | `checks/code/mn_residential/profile.py` — and note the profile cites a *Hennepin* soil survey for a *Ramsey* parcel; see `plans/TODO.md` |
+| soil class | GM (silty gravel) | `plan/site.py` states it for this Ramsey parcel; the `mn-2020` profile carries the same GM as a regional metro presumption |
 | active equivalent fluid pressure | 45 psf/ft | IBC Table 1610.1, SM/SC/GM/GC — the value the engine already uses |
 | at-rest equivalent fluid pressure | 60 psf/ft | IBC Table 1610.1, same row |
 | allowable vertical bearing | 2,000 psf | IBC Table 1806.2, class 4 |

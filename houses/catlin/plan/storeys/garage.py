@@ -175,8 +175,10 @@ WALLS = [
 # that faces the BUILDING, and the left-hand normal is `normal(d) = (-dy, dx)`
 # (resolve/geometry.py). Walked this way each wall's left-hand normal points inboard, so the
 # turn-down hangs off the outboard end on all six runs and throws water clear of the band
-# instead of back behind it. Get one direction wrong and the drip points at the wall with no
-# finding: nothing grades `back_side`. Confirm it in the viewer.
+# instead of back behind it. Get one direction wrong and the drip points at the wall — which
+# `integrity.drip_flashing_back_side` now grades, by requiring each run's back-side normal to
+# aim at the centroid of the loop its siblings form. It caught four inverted rake returns in
+# `params/roof_trim.py` the day it was written; these six were already right.
 STEM_TOP_Z_FLASHING = [
     Flashing(uid="4Z104BJ7TV", tag="TR-G-STEMZ-S1", kind=TrimKind.DRIP_FLASHING,
              path=(pt(ft(6), ft(43, 2.225)), pt(ft(8, 3), ft(43, 2.225))),
@@ -251,9 +253,9 @@ OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 # outright) or land 8" off the module, cutting two studs where one will do. 96" is also the
 # BETTER station rather than merely the legal one: `D-M-ENTRY` is centred on x = 8'-0" too,
 # so the two doors this breezeway spans are finally concentric.
-# `params/breezeway.py::_GLAZING_CENTER_X` is the midpoint of the two, taking SL-BW-DECK to
-# x 6'-0"..10'-0" and leaving this 36" leaf's jambs (7'-6"/9'-6") a foot of landing clear at
-# each side.
+# (The enclosure that used to be centred on that midpoint — `_GLAZING_CENTER_X`, taking
+# SL-BW-DECK to x 6'-0"..10'-0" — is retired along with SL-BW-DECK itself; the concentric
+# doors survive it, and `FS-BW-FLOOR` is the deck they now share.)
 #
 # Moving this constant is never just moving a door: params/foundations.py gaps the ICF stem
 # into a grade beam on it, so FT-GF-S-DR travels east too, and the water service's protection

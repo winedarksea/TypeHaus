@@ -8,7 +8,7 @@ would report PASS on a house with no hold-downs in it.
 
 from __future__ import annotations
 
-from typehaus.checks.code.mn_residential.profile import MN_2024
+from typehaus.checks.code.mn_residential.profile import MN_2020
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.checks.structural.braced_wall import (
     MAX_LINE_SPACING_FT,
@@ -30,7 +30,7 @@ from typehaus.findings import Result
 
 def _ctx(model):
     return CheckContext(plan=model.plan, model=model, preferences=Preferences(),
-                        profile=MN_2024)
+                        profile=MN_2020)
 
 
 def test_structural_role_is_not_the_input_and_never_was(catlin_model_ro):

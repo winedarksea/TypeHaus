@@ -46,7 +46,7 @@ def test_the_permit_line_is_non_blocking_and_the_integrity_line_is_not_holding_i
     from typehaus.checks.permit import evaluate_permit_checklist
 
     report = run_from_model(catlin_model, [], tier=Tier.CODE)
-    checklist = evaluate_permit_checklist(report, "mn-2024")
+    checklist = evaluate_permit_checklist(report, "mn-2020")
     parcel = [item for item in checklist.items if _CID in item.check_ids]
     assert parcel and not any(item.blocking for item in parcel)
     integrity = [item for item in checklist.items if "integrity.*" in item.check_ids]

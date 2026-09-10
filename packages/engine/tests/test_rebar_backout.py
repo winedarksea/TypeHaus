@@ -35,17 +35,20 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 # house is galvanized now, which also removes the dissimilar-metal couple a black cage lapped
 # to galvanized dowels would have been.
 _SCHEDULE = {
-    # +66.1 lb of #3 and +278.7 lb of #5 on 2026-09-10: the north entry's THIRTEEN 12" cast
-    # piers, each (4) #5 vertical with #3 ties at 10" o.c. See notes/north_entry_piers.md §6.
-    ("column", "#3", "hdg-a767"): 118.6,
-    ("column", "#5", "hdg-a767"): 504.5,
+    # The north entry's SIX 12" cast piers, each (4) #5 vertical with #3 ties at 10" o.c.
+    # See notes/north_entry_piers.md §6. This read 118.6 / 504.5 for a few hours on
+    # 2026-09-10, when there were thirteen: the eight tier piers went with the framed
+    # terrace they were holding up (they stood east of a flight that runs west, under open
+    # ground), and PT-BW-RNE arrived with the canopy's fourth column.
+    ("column", "#3", "hdg-a767"): 90.8,
+    ("column", "#5", "hdg-a767"): 384.8,
     ("footing", "#4", "hdg-a767"): 201.9,
     ("footing", "#6", "hdg-a767"): 1634.2,
     ("foundation wall", "#4", "hdg-a767"): 527.3,
     ("foundation wall", "#5", "hdg-a767"): 219.0,
     ("foundation wall", "#6", "hdg-a767"): 1039.2,
 }
-_TOTAL_LB = 4244.7  # +344.8 lb, the thirteen north entry pier cages (2026-09-10)
+_TOTAL_LB = 4097.2  # +197.3 lb, the six north entry pier cages (2026-09-10)
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
@@ -143,14 +146,18 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
         f"lb/cy figure in §3 both need re-working")
 
     total_lb = sum(r["weight_lb"] for r in reinforcement_takeoff(catlin_model))
-    # ** 26.85 -> 25.74 -> 28.0 ON 2026-09-10, AND THE MIDDLE NUMBER IS THE INTERESTING ONE. **
+    # ** 26.85 -> 25.74 -> 28.0 -> 27.0 ON 2026-09-10, AND 25.74 IS THE INTERESTING ONE. **
     # The north entry put 3.18 cy of concrete in the ground -- thirteen 12" cast piers and
     # their footings -- and at first not one billed pound of steel with it, because those
     # cages were authored as free-text ``vertical_reinforcement`` and carry no structured
     # ``ReinforcementSpec``, which is the only spelling ``reinforcement_takeoff`` can read.
     # This gate is what caught that: the ratio SAGGING is the signal, not the ratio moving.
     # The cages are now authored both ways and the ratio recovers past where it started.
+    # It came back to 27.0 later the same day when eight of the thirteen piers were deleted
+    # outright and four cast stair tiers (plain, unreinforced) took their place — steel out
+    # AND concrete out, which is why the ratio barely moved for a change that removed about
+    # a third of the north entry's pour.
     #
     # Keep both spellings on every new cast column. A drawing string nobody bills and a
     # takeoff row nobody draws are the two halves of the same mistake.
-    assert total_lb / total_cy == pytest.approx(28.0, rel=0.03)
+    assert total_lb / total_cy == pytest.approx(27.0, rel=0.03)

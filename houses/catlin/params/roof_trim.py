@@ -61,7 +61,7 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
 
 The roof is 5/8" plywood straight on the I-joists with a fully-adhered butyl membrane on it
 and the panel clipped to that (plan/assemblies.py ROOF, flash-and-batt in the bay
-under IRC R806.5 item 5.3).
+under IRC R806.5 item 5.1.3).
 
 **The chain itself does not change — only the plane it hangs from.** The drip flashing lies
 ON the structural deck and the membrane laps OVER it, so nothing else in the chain may reach
@@ -291,7 +291,14 @@ _RAKE_RETURN_IN = 12.0  # 1'-0" — a token corner return; the sloped corner tri
 
 def _rake_corner_drips(side: str, w_index: int, e_index: int, y):
     outward = -1.0 if side == "S" else 1.0
-    back_side = "right" if outward < 0 else "left"
+    # ** THE RETURNS RUN ALONG X, THE EAVES ALONG Y, SO THEY CANNOT SHARE `_eave_water`'s
+    # FORMULA. ** `back_side` names the side of p0->p1 facing the BUILDING, and both corners
+    # below are authored west->east (x0 < x1), so d = (+1, 0) and the left-hand normal
+    # `normal(d) = (-dy, dx)` is (0, +1) — north. On the S rake the building is north of the
+    # run, so back_side is "left"; on the N rake it is south, so "right". That is the
+    # opposite of the eaves, whose paths run along +y with `outward` along x. Carrying the
+    # eave formula here inverted all four returns and pointed every turn-down at the wall.
+    back_side = "left" if outward < 0 else "right"
     top_elevation = _above_deck(_DRIP_TOP_IN)
     corners = (
         (w_index, "", _EAVE_X_W, _EAVE_X_W + inch(_RAKE_RETURN_IN)),

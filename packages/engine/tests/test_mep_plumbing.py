@@ -356,7 +356,7 @@ def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
 
     Note what this does *not* assert: that 5 1/2" is a code minimum. It is not — the number is
     ``preferences.toml``'s own planning allowance and the check is ADVISORY tier, in no item of
-    the mn-2024 permit profile. This test holds the house to its own preference, nothing more.
+    the mn-2020 permit profile. This test holds the house to its own preference, nothing more.
     """
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     matched = [f for f in report.findings if f.check_id == "advisory.wet_wall_depth"]

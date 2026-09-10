@@ -18,6 +18,7 @@ import typer
 from rich.table import Table
 
 from typehaus._meta import PROJECT_NAME, engine_version
+from typehaus.checks.code.mn_residential.profile import DEFAULT_PROFILE_NAME
 from typehaus.cli._shared import (
     ExitOn,
     TierName,
@@ -193,7 +194,7 @@ def build(
 @app.command()
 def check(
     house: Path | None = typer.Argument(None),
-    profile: str = typer.Option("mn-2024"),
+    profile: str = typer.Option(DEFAULT_PROFILE_NAME),
     tier: TierName | None = typer.Option(None, help="Restrict to one checks tier."),
     as_json: bool = typer.Option(False, "--json"),
     json_summary: bool = typer.Option(
@@ -273,7 +274,7 @@ def check(
 @app.command(name="permit-check")
 def permit_check(
     house: Path | None = typer.Argument(None),
-    profile: str = typer.Option("mn-2024"),
+    profile: str = typer.Option(DEFAULT_PROFILE_NAME),
     as_json: bool = typer.Option(False, "--json"),
     sealed: bool = typer.Option(
         False, "--sealed",

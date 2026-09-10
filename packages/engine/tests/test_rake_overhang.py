@@ -40,11 +40,20 @@ def test_the_retired_six_foot_rake_would_have_failed_this_rule():
     assert overhang_ft / backspan_ft > 3.0
 
 
-def test_both_catlin_roofs_now_pass_on_a_real_backspan(catlin_ctx_for_rake):
+def test_only_the_one_real_rake_is_left_to_grade(catlin_ctx_for_rake):
+    """RF-GARAGE's NORTH gable, and nothing else in the house.
+
+    Two rakes retired on 2026-09-10 when ``_FLUSH_RAKE_TOLERANCE_M`` went from 1/2" to 6".
+    The garage's SOUTH gable was framing 15 lookouts and a barge rafter to carry a 1 9/16"
+    trim projection at a line where the roof does not even end — RF-BW-CANOPY runs on from
+    it — and the canopy's own south end was framing 15 more for a 3 3/8" drip edge. Neither
+    is built with a ladder; both are close rakes, sheathing cantilevered and a fascia hung on
+    it. So RF-BW-CANOPY has no ladder framing at all now and drops out of this report.
+    """
     findings = _run(catlin_ctx_for_rake)
     assert {f.result for f in findings} == {Result.PASS}
     by_roof = {f.element_tags[0]: f for f in findings}
-    assert set(by_roof) == {"RF-GARAGE", "RF-BW-CANOPY"}
+    assert set(by_roof) == {"RF-GARAGE"}
     for finding in findings:
         assert "one truss bay" in finding.message
         # The rule reports a ratio against a resolved backspan, never a typed length.
@@ -61,6 +70,8 @@ def test_the_rule_reads_the_truss_bay_and_not_the_members_own_length(catlin_ctx_
     """
     outlookers = [m for roof in catlin_ctx_for_rake.model.roofs
                   for m in roof.members if m.category == "outlooker"]
+    assert {m.parent_uid for m in outlookers} == {
+        next(r.uid for r in catlin_ctx_for_rake.model.roofs if r.tag == "RF-GARAGE")}
     assert outlookers, "no ladder framing resolved, so this test proves nothing"
     for member in outlookers:
         plan_length = ((member.p1[0] - member.p0[0]) ** 2

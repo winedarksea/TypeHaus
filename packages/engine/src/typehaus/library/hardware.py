@@ -756,6 +756,31 @@ H25A_HURRICANE_TIE = StructuralHardware(
     ),
 )
 
+H25ASS_HURRICANE_TIE = StructuralHardware(
+    tag="simpson-h2-5ass-hurricane-tie",
+    name="H2.5ASS stainless hurricane/seismic tie",
+    role=ROLE_HURRICANE_TIE,
+    manufacturer=_SIMPSON,
+    model="H2.5ASS",
+    source="Simpson Strong-Tie H2.5ASS, 18 ga Type 316 stainless — the H2.5A above in "
+           "stainless, and the only tie at RF-BW-CANOPY's eight truss bearings. It is a "
+           "SEPARATE record and not a size within the H2.5A family on purpose: "
+           '"H2.5ASS".startswith("H2.5A") is true, so without this row the canopy\'s '
+           "stainless ties would silently take the galvanized tie's price and its 700 lbf. "
+           "The house buys stainless at every KDAT joint (owner, 2026-09-10), and this "
+           "connector is nailed into treated southern pine headers at an entry that is "
+           "salted every winter.",
+    # ** allowable=None IS A STATEMENT, NOT AN OVERSIGHT — see the module header. ** The
+    # stainless H2.5ASS is NOT the galvanized H2.5A's 700 lbf: the figures in circulation for
+    # it are materially lower (a 440/75/70 uplift-F1-F2 row and a 265 lbf stud-to-plate row
+    # both appear in secondary listings of the Simpson C-C catalog), and none of them could be
+    # confirmed against a primary Simpson table or code report on 2026-09-10. Recording a
+    # number nobody read is worse than recording none, because `allowable_for_model` is what a
+    # capacity check would consume. The demand is in `notes/north_entry_piers.md` §4a — about
+    # 256 lbf per tie under 0.6W with no dead relief — and it is under even the lowest figure
+    # in circulation, which is why this is stated rather than resolved.
+)
+
 HGAM10_MASONRY_GUSSET = StructuralHardware(
     tag="simpson-hgam10-masonry-gusset-angle",
     name="HGAM10 masonry gusset angle",
@@ -1232,5 +1257,6 @@ STRUCTURAL_HARDWARE: tuple = (
 #: lookup and price row exactly where it was.
 CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
+    H25ASS_HURRICANE_TIE,
     APVKB_KNEE_BRACE,
 )

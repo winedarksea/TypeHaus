@@ -334,12 +334,12 @@ def test_the_three_lighting_checks_pass_on_the_catlin_house(catlin_model):
 def test_a_fixture_with_no_switch_is_reported(catlin_model):
     """The check has to actually fire — one that only ever passes proves nothing."""
     from typehaus.checks.mep.lighting import lighting_controls
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.registry import CheckContext, Preferences
 
     def context(plan):
         return CheckContext(plan=plan, model=catlin_model, preferences=Preferences(),
-                            profile=MN_2024)
+                            profile=MN_2020)
 
     # Point one fixture at a switch that does not exist: it fails, naming that fixture.
     device = catlin_model.plan.by_tag("ED-M-BED-CAN2")
@@ -369,7 +369,7 @@ def test_dark_sky_lighting_passes_on_the_catlin_house(catlin_model):
 def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
     """Retype the garage-door light to the 4000K, unshielded shop light: both dark-sky
     gradings fail on that one fixture — no cutoff, and over the CCT ceiling."""
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.mep.lighting import dark_sky_lighting
     from typehaus.checks.registry import CheckContext, Preferences
 
@@ -379,7 +379,7 @@ def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
         "garage", [broken if element.tag == device.tag else element
                    for element in catlin_model.plan.storey_elements("garage")])
     context = CheckContext(plan=patched, model=catlin_model, preferences=Preferences(),
-                           profile=MN_2024)
+                           profile=MN_2020)
     failures = [f for f in dark_sky_lighting(context) if f.result.value == "fail"]
     assert [f.element_tags for f in failures] == [("ED-G-EXT-LT-E",), ("ED-G-EXT-LT-E",)]
     assert any("full-cutoff" in f.message for f in failures)
@@ -426,7 +426,7 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
     """
     from dataclasses import replace
 
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.mep.electrical import island_receptacle
     from typehaus.checks.registry import CheckContext, Preferences
 
@@ -450,7 +450,7 @@ def test_an_island_with_no_receptacle_is_reported(catlin_model):
         "main", [element for element in model.plan.storey_elements("main")
                  if element.element_kind != "ElectricalDevice"])
     context = CheckContext(plan=patched, model=model, preferences=Preferences(),
-                           profile=MN_2024)
+                           profile=MN_2020)
     failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
     assert [f.element_tags for f in failures] == [("FURN-M-KIT-PENINSULA",)]
     assert "210.52(C)" in failures[0].message

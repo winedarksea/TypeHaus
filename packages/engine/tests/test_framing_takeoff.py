@@ -56,7 +56,15 @@ def test_framing_takeoff_reconciles_and_groups(catlin_model) -> None:
     # well would order the plywood twice. Everything else still reconciles piece for piece.
     ripped = [m for m in members if rip_stock(m.profile, m.material) is not None]
     assert ripped, "catlin has plywood bucks and web stiffeners; this should not be empty"
-    assert sum(int(row["pieces"]) for row in rows) == len(members) - len(ripped) - len([m for m in members if m.category == "tread" and m.material == "composite-deck"])
+    # And the other family it does not bill: a stair whose walking surface is not lumber.
+    # A composite tread is ordered by the SHEET (`separate_stair_wear_members`); a CAST one
+    # is not ordered at all, because the pour that is the tier is a `Slab` with its own row.
+    # Both still resolve as members — every code rule that grades a stair measures them.
+    not_lumber = [m for m in members if m.category == "tread"
+                  and m.material in {"composite-deck", "concrete"}]
+    assert not_lumber, "catlin has composite and cast treads; this should not be empty"
+    assert sum(int(row["pieces"]) for row in rows) == (
+        len(members) - len(ripped) - len(not_lumber))
     assert not any(rip_stock(str(row["profile"]), row["material"]) for row in rows)
 
     for row in rows:
@@ -223,10 +231,19 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     empty = {name for name, section in bom.items() if not section}
     assert empty <= {"freeze_protection", "glazing_panels", "glazing_trim"}, f"BOM section(s) came back empty: {sorted(empty)}"
     # The framing section still reconciles 1:1 with the resolved members, less the panel
-    # members that bill by the sheet in `sheet_goods` instead.
+    # members that bill by the sheet in `sheet_goods` instead — and less the stair treads
+    # that are not lumber at all. This line had no second term and was RED at HEAD: the
+    # north entry's composite treads left the lumber order on 2026-09-10 and this assertion
+    # was never told, so it read four pieces short and said nothing about which four. The
+    # cast treads that replaced them are the same case (→ the same subtraction in
+    # `test_framing_takeoff_reconciles_and_groups`).
     members = catlin_model.all_members()
     ripped = sum(1 for m in members if rip_stock(m.profile, m.material) is not None)
-    assert sum(int(row["pieces"]) for row in bom["framing"]) == len(members) - ripped
+    not_lumber = sum(1 for m in members if m.category == "tread"
+                     and m.material in {"composite-deck", "concrete"})
+    assert not_lumber, "catlin has treads that are not lumber; this should not be zero"
+    assert sum(int(row["pieces"]) for row in bom["framing"]) == (
+        len(members) - ripped - not_lumber)
 
 
 # Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with

@@ -198,12 +198,12 @@ def test_radiant_under_a_limited_finish_is_advised(catlin_model):
     Polished concrete is exactly what radiant wants, so there is nothing to advise.
     """
     from typehaus.checks.advisory.checks import floor_finish_over_radiant
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.registry import CheckContext, Preferences
 
     findings = floor_finish_over_radiant(CheckContext(
         plan=catlin_model.plan, model=catlin_model, preferences=Preferences(),
-        profile=MN_2024))
+        profile=MN_2020))
     assert findings == []
 
 
@@ -230,14 +230,14 @@ def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(
     from dataclasses import replace
 
     from typehaus.checks.advisory.checks import floor_finish_over_radiant
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.registry import CheckContext, Preferences
 
     dining = next(zone for zone in catlin_model.floor_heat if zone.tag == "FH-M-DINING")
     straddle = replace(dining, zone=_STRADDLING_LOOP)  # 40% plank, 60% cap
     model = replace(catlin_model, floor_heat=[straddle])
     findings = floor_finish_over_radiant(CheckContext(
-        plan=model.plan, model=model, preferences=Preferences(), profile=MN_2024))
+        plan=model.plan, model=model, preferences=Preferences(), profile=MN_2020))
     messages = [f.message for f in findings if "RM-M-LIVING" in f.element_tags]
     assert len(messages) == 1, messages
     assert "lvp floor" in messages[0]

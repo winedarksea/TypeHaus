@@ -177,7 +177,7 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     from typehaus.checks import evaluate_permit_checklist
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
-    checklist = evaluate_permit_checklist(report, "mn-2024")
+    checklist = evaluate_permit_checklist(report, "mn-2020")
     # Every slab either carries an authored assembly or is scoped out of the prescriptive
     # table for a stated reason (the main-floor deck has conditioned space on both faces;
     # the garage slab floors an unheated detached structure), so code.energy_prescriptive is
@@ -477,7 +477,7 @@ def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
     A steady-state Glaser walk cannot grade a stack sealed on its cold side by a 0-perm metal
     panel: with no outward flux it equilibrates every plane to interior vapour pressure by
     construction and reports ~100% RH at the deck for ANY unvented metal roof, however
-    designed. This stack fills the joist bay and takes IRC R806.5 item 5.3 instead, where
+    designed. This stack fills the joist bay and takes IRC R806.5 item 5.1.3 instead, where
     air-impermeable insulation bonded to the sheathing at the Table R806.5 R-value IS the
     condensation control and outward drying is not required.
 

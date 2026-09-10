@@ -94,8 +94,12 @@ def test_the_capacity_question_is_a_named_item_not_a_retired_one(ctx) -> None:
 
 def test_every_roof_is_covered_at_its_bearings(findings) -> None:
     covered = {f.element_tags[0]: f for f in findings if f.result is Result.PASS}
-    for roof in ("RF-HOUSE", "RF-GARAGE", "RF-BW-CANOPY"):
+    for roof in ("RF-HOUSE", "RF-GARAGE"):
         assert "derived uplift ties" in covered[roof].message, roof
+    # RF-BW-CANOPY is covered the other way: its eight truss bearings are AUTHORED stainless
+    # ties (`CN-BW-TRTIE-*`), so the derived rule stands down for it and the message says so.
+    # Covered is covered — what this test guards is that no roof is covered by NOTHING.
+    assert "authored Connector" in covered["RF-BW-CANOPY"].message
 
 
 def test_a_flush_framed_deck_is_covered_by_its_hangers(findings) -> None:
@@ -217,14 +221,18 @@ def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
     — the trusses landing on it above, and the column it lands on below — and both must be
     covered, or the canopy is a roof the check has nothing to say about.
     """
-    for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RE", "PT-BW-CE")):
+    for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RE", "PT-BW-CE"),
+                           ("BM-BW-RW", "PT-BW-CNW"), ("BM-BW-RE", "PT-BW-CNE")):
         below = next(f for f in findings if f.element_tags == (header, column))
         assert below.result is Result.PASS
         assert "an authored strap or cap" in below.message  # CN-BW-CAP-W / -E
     above = next(f for f in findings if f.element_tags[0] == "RF-BW-CANOPY")
     assert above.result is Result.PASS
     assert set(above.element_tags[1:]) == {"BM-BW-RW", "BM-BW-RE"}
-    assert "8 derived uplift ties" in above.message  # 4 trusses, both ends of each
+    # Authored since 2026-09-10, not derived: a freestanding canopy landing on treated
+    # headers buys stainless (CN-BW-TRTIE-W1..4 / -E1..4, one per truss per header), and
+    # `authored_joints` stands the derived rule down pairwise when it sees them.
+    assert "authored Connector" in above.message
 
 
 def test_the_sill_and_the_stacked_walls_are_both_reported(findings) -> None:

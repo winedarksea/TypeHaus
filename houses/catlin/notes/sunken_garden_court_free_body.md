@@ -173,7 +173,7 @@ Repeated here only so this note can be read term by term:
 
 | quantity | value | source |
 |---|---|---|
-| soil class | GM (silty gravel) | MN profile — **and it is a *Hennepin* soil survey for a *Ramsey* parcel** |
+| soil class | GM (silty gravel) | `plan/site.py` states it for this Ramsey parcel; the MN profile carries the same GM regionally |
 | active EFP | 45 psf/ft | IBC Table 1610.1 |
 | **at-rest EFP** | **60 psf/ft** | IBC Table 1610.1, same row — **this is the graded case, see §4** |
 | allowable bearing, on the stone | 3,000 psf | IBC Table 1806.2 class 3 |
@@ -209,7 +209,7 @@ design on that same claim (`structural.frost_depth`, ASCE 32 soil replacement, 2
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
 | stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
 | footing reinforcement | **`#6 @ 10" o.c.` transverse, top AND bottom**, 3" cover — sized in §7; `#4 @ 18"` longitudinal |
-| mix | **`EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar, macro-synthetic fibre |
+| mix | **`EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar (galvanized AFTER fabrication; A780 repair at any cut or field bend), macro-synthetic fibre |
 
 ### Why the footing grew INBOARD and not symmetrically
 
@@ -829,7 +829,7 @@ out of it.
 
 - **ACI 318-19** — Table 20.5.1.3.1, Table 22.2.2.4.3, §11.6.1, §13.2.7.1, §14.5.2.1, §14.5.4
 - **ASCE 7-16** — §2.3.1
-- ASTM A767, ASTM C33, ASTM D422
+- ASTM A767, ASTM A780, ASTM C33, ASTM D422
 - IBC Table 1610.1, IBC Table 1806.2
 - IRC R404.4, IRC Table R301.2(1, IRC Table R402.2, IRC Table R404.1.2(8
 - MN Rules 1309.0301, MN Rules 1309.0402

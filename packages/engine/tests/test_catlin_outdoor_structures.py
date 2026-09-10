@@ -669,9 +669,9 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
     concrete for a 12" auger hole. So this asserts both ends: the bells bear at frost
     depth, AND the two soffits they carry did not move by so much as a hair.
     """
-    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.code.mn_residential.profile import MN_2020
 
-    frost_m = MN_2024.frost_depth_in * INCH
+    frost_m = MN_2020.frost_depth_in * INCH
     floor_top = _solid(catlin_model, "SL-SG-FLOOR").z1_m
 
     for bell_tag, post_tag, beam_tag in (("FT-SG-COL", "PT-SG-COL", "BM-SG-BKW"),
@@ -1123,7 +1123,7 @@ def test_the_flight_is_guarded_both_sides_and_the_porch_guard_opened_for_it(catl
 _HP3_PAD = "SL-M-HP3PAD"
 _HP3_CAB_W_IN, _HP3_CAB_D_IN = 34.375, 14.796875
 _HP3_CLADDING_Y_IN = 36 * 12 + 7.25   # params/roof_trim.py::_WALL_OUTBOARD_IN off y=36'
-_HP3_GARAGE_CLADDING_Y_IN = 40 * 12 + 7.75  # params/breezeway.py::_GARAGE_CLADDING_Y
+_HP3_GARAGE_CLADDING_Y_IN = 40 * 12 + 7.75  # params/north_entry_frame.py::GARAGE_CLADDING_Y_FT
 
 
 def test_hp3_stands_on_a_pad_at_the_same_top_and_height_as_the_pocket_pair(catlin_model

@@ -13,11 +13,18 @@ from __future__ import annotations
 from typehaus.checks.code.mn_energy import MN_ZONE_6
 from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec
 
-MN_2024 = JurisdictionProfile(
-    name="mn-2024",
+MN_2020 = JurisdictionProfile(
+    name="mn-2020",
     edition="Minnesota Residential Code 2020 (MN Rules 1309)",
     effective_date="2020-03-31",
     irc_base="2018 IRC + MN amendments",
+    # The electrical side is a SEPARATE cycle from the residential one and is now ahead of
+    # it: Minnesota adopted the 2026 NEC effective 2026-08-17, so a permit filed on or after
+    # that date is graded against 2026 while everything else here stays 2020/2018. One
+    # profile name cannot carry both editions, which is why this is its own field rather
+    # than being folded into the name — and why the name states the RESIDENTIAL edition,
+    # the one the great majority of these rules come from.
+    nec_base="2026 NEC (MN adoption effective 2026-08-17)",
     coverage_statement=(
         "Encodes a declared subset. "
         "Habitability, egress and circulation: R305 ceiling height, R310 emergency escape "
@@ -425,10 +432,19 @@ MN_2024 = JurisdictionProfile(
     ),
 )
 
-PROFILES: dict[str, JurisdictionProfile] = {"mn-2024": MN_2024}
+PROFILES: dict[str, JurisdictionProfile] = {
+    "mn-2020": MN_2020,
+    # DEPRECATED ALIAS. This profile was called "mn-2024" until 2026-09-10, which named a
+    # code edition that does not exist: there is no 2024 Minnesota residential code, the
+    # edition in force is the 2020 one this profile's own ``edition`` field always stated,
+    # and the name was printed on the cover sheet and S-100 beside that contradiction. The
+    # alias keeps a house whose preferences.toml still says "mn-2024" loading rather than
+    # raising UnknownProfile; it resolves to the same object, so what prints is "mn-2020".
+    "mn-2024": MN_2020,
+}
 
 # The jurisdiction used when neither a flag nor preferences.toml names one.
-DEFAULT_PROFILE_NAME = "mn-2024"
+DEFAULT_PROFILE_NAME = "mn-2020"
 
 
 class UnknownProfile(KeyError):

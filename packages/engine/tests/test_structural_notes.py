@@ -27,7 +27,7 @@ from typehaus.emit.draw.sheets import build_sheet_index
 
 @pytest.fixture(scope="module")
 def profile():
-    return get_profile("mn-2024")
+    return get_profile("mn-2020")
 
 
 def test_s001_is_in_the_set_unconditionally(catlin_model_ro):

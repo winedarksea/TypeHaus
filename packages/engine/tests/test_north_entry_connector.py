@@ -78,29 +78,46 @@ def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_
         assert ft(8.5).meters < end.x.meters < ft(11.5).meters
 
 
-def test_tiers_are_box_frames_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):
-    """The tiers are BOXES now, not a cut carriage, and the paver landing followed them west.
+def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):
+    """The tiers are four CAST pours, and this pins the two things that must move together.
 
     A cut stringer failed three ways here: an 8'-0" horizontal span against DCA 6 Fig. 28 /
     IRC R507.13.1's 6'-0", a 4.71" throat against its 5", and a composite tread wanting
     supports closer than 12". Narrowing the going to 18" fixes the span and does NOT fix the
-    throat -- the notch is driven by the long going, so a flatter pitch removes MORE material.
+    throat -- the notch is driven by the long going, so a flatter pitch removes MORE
+    material. Framed box tiers replaced it and lasted one afternoon: their eight 42" piers
+    were laid out running EAST from the stair foot while the flight runs WEST, so every one
+    of them stood under open ground.
+
+    So: no stringer, no framing, no pier. Four `Slab` pours, WEDDING-CAKED -- each running
+    from the landing edge to the front of its own tread, so every tier above the first is
+    fully bedded on the one below and nothing spans. The treads still resolve, because that
+    is what every code rule grading this flight measures.
     """
     model = catlin_model_ro
     stair = next(s for s in model.stairs if s.tag == "ST-BW-ENTRY")
     treads = [m for m in stair.members if m.category == "tread"]
     assert len(treads) == 4
-    assert {m.material for m in treads} == {"composite-deck"}
-    # Not one member of this flight is a stringer. The drawings and the takeoff read the field.
-    assert not [m for m in stair.members if m.category == "stringer"]
-    boxes = [m for m in stair.members if m.category == "landing_framing"]
-    assert boxes, "the box tiers resolved no framing"
-    # Tread supports at 9" o.c. max -- the STAIR rating of a capped composite board, which
-    # runs 8"-12" across the brands against 16" for the same board as decking.
-    joists = [m for m in boxes if "joist" in m.child_key]
-    ys = sorted({round(m.p0[1], 6) for m in joists})
-    assert max(b - a for a, b in zip(ys, ys[1:], strict=False)) <= inch(9).meters + 1e-8
+    assert {m.material for m in treads} == {"concrete"}
+    # Not one member of this flight is a carriage. The drawings and the takeoff read the field.
+    assert not [m for m in stair.members if m.category in ("stringer", "landing_framing")]
     assert stair.tread_depth_m == pytest.approx(inch(18).meters)
+
+    # And the pours themselves: four, one riser thick, each starting at the landing edge and
+    # ending one going further east than the tier above it.
+    tiers = [model.plan.by_tag(f"SL-BW-TIER{n}") for n in (1, 2, 3, 4)]
+    assert all(t is not None for t in tiers)
+    assert {round(t.thickness.meters, 6) for t in tiers} == {round(inch(6.8).meters, 6)}
+    fronts = [max(p.x.meters for p in t.outline) for t in tiers]
+    assert fronts == sorted(fronts, reverse=True), "the cake is not stepping west"
+    for lower, upper in zip(fronts, fronts[1:], strict=False):
+        assert lower - upper == pytest.approx(inch(18).meters)
+    assert {round(min(p.x.meters for p in t.outline), 6) for t in tiers} == {
+        round(ft(11.5).meters, 6)}, "a tier that does not reach the landing is not bedded"
+
+    # No pier survives under the flight, and the paver landing still starts at its foot.
+    assert not [e for e in model.plan.all_elements()
+                if getattr(e, "tag", "").startswith("PT-BW-T")]
     landing = next(s for s in model.plan.project.site.impervious_surfaces if "paver landing" in s.label)
     assert min(p.x.meters for p in landing.outline) == pytest.approx(ft(17.5).meters)
     assert max(p.x.meters for p in landing.outline) >= ft(22.5).meters

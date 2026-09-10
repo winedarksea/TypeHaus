@@ -167,8 +167,14 @@ def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
         if not surfaces:
             continue
         # The flight springs from the lowest framing it was clipped to (its own subfloor)
-        # and lands on the arrival deck a full design rise above it.
-        springing = min(member.z0_m for member in stair.members)
+        # and lands on the arrival deck a full design rise above it — EXCEPT where the flight
+        # states its own base, which then wins outright. Reading the members is a proxy for
+        # the springing and a good one for a framed flight; it is simply wrong for a cast
+        # one, whose only members are its treads, so the proxy returns the FIRST TREAD and
+        # reports a 1 1/2" bottom riser and a 12" top one on a terrace whose five risers are
+        # equal by construction.
+        springing = (stair.base_elevation_m if stair.base_elevation_m is not None
+                     else min(member.z0_m for member in stair.members))
         arrival = springing + stair.riser_height_m * stair.riser_count
         ladder = [springing, *surfaces, arrival]
         # strict=False: the tail is one shorter than ``ladder`` by construction — the

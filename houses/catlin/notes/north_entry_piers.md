@@ -1,9 +1,19 @@
 # North entry canopy, piers and headers — hand-worked basis
 
 **House:** catlin
-**Structure:** `PT-BW-W`, `PT-BW-E`, `PT-BW-RE`, `PT-BW-GW`, `PT-BW-GE` (cast piers) and
-their footings `FT-BW-*`; `PT-BW-CW`/`PT-BW-CE` (6x6 KDAT roof columns); `BM-BW-RW`/
-`BM-BW-RE` (3-ply 2x12 KDAT roof headers); `RF-BW-CANOPY`.
+**Structure:** `PT-BW-W`, `PT-BW-E`, `PT-BW-RE`, `PT-BW-GW`, `PT-BW-GE`, `PT-BW-RNE` (cast
+piers) and their footings `FT-BW-*`; `PT-BW-CW`/`-CE`/`-CNW`/`-CNE` (6x6 KDAT roof columns);
+`BM-BW-RW`/`BM-BW-RE` (3-ply 2x12 KDAT roof headers); `RF-BW-CANOPY`.
+
+> ⚠ **Revised 2026-09-10, after the first pass, on two owner calls.** (1) The canopy is
+> **freestanding**: its headers bore north on `W-G-W` / `W-G-E` and now bear on two columns
+> of their own, because a ~3,130 lb reaction on the END of a stud wall is not a detail and
+> no bearing post was ever authored. (2) The garage-side piers stop at **-7'-0"**, the
+> garage's own footing plane, not at the house-side -9'-9 7/16" — that depth is cheap only
+> because the basement excavation is already open, and there is no such excavation out here.
+> §6 carries both. The eight framed-terrace piers of the first pass are gone entirely (they
+> stood east of a flight that runs west); the tiers are cast pours and are §7's business,
+> not this note's.
 **Written:** 2026-09-10, by hand, before the calculation it oracles was encoded.
 **Oracle for:** `engineering/roof_beam.py` (§5) and `engineering/pier_basis.py` /
 `engineering/deck_post.py` / `engineering/spread_footing.py` (§6); reproduced by
@@ -38,7 +48,7 @@ comes from. If §3 is wrong, every ratio in §5 and §6 is wrong by the same fac
 
 | term | working | value |
 |---|---|---|
-| pier line | authored, `params/breezeway.py::PIER_LINE_Y_FT` | y = 37'-6" |
+| pier line | authored, `params/north_entry_frame.py::PIER_LINE_Y_FT` | y = 37'-6" |
 | house cladding face | `W-B-N2` axis y=36'-0" + 4" concrete + 3 1/4" foam/skin | y = 36'-7 1/4" |
 | clear, pier face to cladding | 37'-6" − 36'-7 1/4" − 6" (half a 12" round) | 6 3/4" |
 | clear, pier face to concrete | 37'-6" − 36'-4" − 6" | 10 3/4" |
@@ -125,7 +135,31 @@ some of the drift would in practice spill off the eaves. Nothing here credits th
 | net, 0.6D + 0.6W, per column | (0.6(1,706) − 0.6(800)) / 2 | **272 lb** |
 
 Well inside the `ABU66SS` standoff base on its cast-in `AB-058-10-SS`. **Uplift is not a
-governing case here** and the detail needs no change for it.
+governing case here** and the detail needs no change for it. Four columns now rather than
+two, so the per-column net above halves again to about 136 lb.
+
+### 4a. The truss-to-header ties
+
+| term | working | value |
+|---|---|---|
+| bearings per header | 4 truss stations | 4 |
+| gross wind uplift per bearing | 1,706 / 4 | 427 lb |
+| 0.6W, no dead relief | 0.6 (427) | **256 lb** |
+| 0.6W − 0.6D | 0.6 (427 − 200) | 136 lb |
+
+Eight authored `H2.5ASS`, one per bearing — stainless because these land on treated southern
+pine at an entry salted every winter, and the house buys stainless at every KDAT joint.
+
+> ⚠ **The stainless tie is NOT the galvanized tie's 700 lbf, and this house records no
+> number for it.** The figures in circulation for the H2.5ASS are materially lower (a
+> 440/75/70 uplift-F1-F2 row and a 265 lbf stud-to-plate row both appear in secondary
+> listings of the Simpson C-C catalog) and **none could be confirmed against a primary
+> Simpson table or code report on 2026-09-10.** So `library/hardware.py` carries it with
+> `allowable=None`, which is the house's standing way of saying "nobody read the report"
+> rather than handing a capacity check a number nobody sourced. **256 lb is under even the
+> lowest figure in circulation**, which is why one tie per bearing is specified and why this
+> is stated rather than resolved. If a submittal wants it closed, read ESR-2613 or the
+> current C-C catalog for the SS row and record it.
 
 ## 5. The headers — `BM-BW-RW` / `BM-BW-RE` (oracles `engineering/roof_beam.py`)
 
@@ -157,7 +191,43 @@ only if the exposed 3-ply seam is objectionable.
 beam's plies are in contact and share load through their nails alone. Claiming C_r would
 buy 15% of capacity the section has not got.
 
+**The span above is the whole beam, and since 2026-09-10 that is conservative by ~40%.**
+`roof_beam.py` takes node to node, 5.719 ft, as a simple span. What is built is a 4.906 ft
+back span between `PT-BW-CW` and `PT-BW-CNW` with an 8 7/8" tail carrying the roof plane out
+to the garage wall. The real maximum is about 3,370 lb-ft (span moment less half the
+cantilever moment w a²/2 = 321 lb-ft) against the 4,787 above, so **every ratio in this
+section is on the safe side of what is built and none of them was re-pinned.** If the module
+ever learns to resolve a beam's real bearings, expect d/c 0.71 to drop to about 0.50 and
+re-work this table rather than assuming it drifted.
+
 ## 6. The piers (oracles `pier_basis` / `deck_post` / `spread_footing`)
+
+Six piers on **two** bearing planes, and the split is the first thing to read.
+
+| pier | carries | pad | bottom | bearing d/c |
+|---|---|---|---|---|
+| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.90 |
+| `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.51 |
+| `PT-BW-RE` | `PT-BW-CE` | 2'-0" | −9'-9 7/16" | 0.54 |
+| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.84 |
+| `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.76 |
+| `PT-BW-RNE` | `PT-BW-CNE` | 2'-0" | −7'-0" | 0.60 |
+
+**The house-side three reach −9'-9 7/16" for a reason that is not bearing.** The basement
+excavation is already open to that depth, so the extra 2'-9" of shaft costs shaft and
+nothing else — and it must be cast **while that hole is open**, because a shaft bottoming at
+the house footing's own elevation 10" away, cast after backfill, is undermining.
+
+**There is no such excavation on the garage side, so those three stop at −7'-0".** That is
+the garage strip footing's own underside, 50" of cover against Minn. R. 1303.1600 Zone II's
+42", and they are cast with the garage foundation on one bearing plane. It also settles the
+plan lap: `PT-BW-GW`'s and `PT-BW-RNE`'s pads reach about 8" under `FT-GF-S1`/`-S3`, which
+at the house-side depth was undermining and a sequencing note, and at this depth is two
+pours meeting edge to edge.
+
+**And it is what keeps the hydrant simple.** `PR-G-HYDRANT-CW` runs north at x=11'-0" with
+its invert at −8'-10". At −7'-0" it passes 1'-10" **under** `FT-BW-GE` rather than threading
+between a shaft and a pad; `mep.footing_clearance` grades it and passes.
 
 Worst case is `PT-BW-W`, which carries the west roof column **and** the landing's west seat.
 
@@ -209,14 +279,18 @@ against a factored 7.8 kip gives δ_ns ≈ 1.01, and e_min stays under §R22.4.2
 | service load | §6 above | 5,283 lb |
 | presumptive bearing | IBC Table 1806.2, sand/silt/clay, taken at | 2,000 psf |
 | required area | 5,283 / 2,000 | 2.64 ft² |
-| provided | 2'-0" square | **4.00 ft² → d/c 0.51** |
+| provided | 2'-0" square | **4.00 ft²** |
 
-The retired `PR-BW-*` pads were 1.78 ft² against a 1,240 lb load; **they do not cover this**,
-which is why 2'-0" is authored.
+The engine reads 0.90 here rather than the 0.51 this line arithmetic gives, because
+`pier_basis` credits `PT-BW-W` a larger deck share than the round number above once it walks
+the beam chain. **0.90 is the tightest bearing ratio in this structure** and it is the first
+number to revisit if a boring log comes back under 2,000 psf. The retired `PR-BW-*` pads were
+1.78 ft² against a 1,240 lb load; they do not cover any of this, which is why 2'-0" is
+authored on five of the six.
 
 ## 7. What is NOT graded here
 
-- **Adfreeze jacking.** A 12" shaft through Hennepin County's 42" frost depth (Minn. R.
+- **Adfreeze jacking.** A 12" shaft through this parcel's 42" frost depth (Minn. R.
   1303.1600 Zone II — the 60" figure is northern Minnesota, a different zone) is gripped
   over about 11 ft². At even 10 psi of adfreeze that is well past the ~5,300 lb of service
   load holding it down. Resistance comes from the 2'-0" pad with nine feet of soil over it,
@@ -237,7 +311,14 @@ which is why 2'-0" is authored.
   ever becomes a real structural break.** If it does, a `KBS1Z` knee brace at each column is
   the cheap answer and is a live, rated, priced row in this house.
 - **The soil bearing value itself.** 2,000 psf is presumptive, not measured; no boring log
-  exists for this site.
+  exists for this site. `PT-BW-W` at d/c 0.90 is what feels a lower number first.
+- **The four cast terrace tiers, `SL-BW-TIER1..4`.** They are plain concrete on a compacted
+  base, not frost-founded, and no calculation here covers them. Each is one riser thick and
+  fully bedded on the tier below, so there is no span to grade; what is ungraded is
+  **movement**, and the owner has accepted it knowingly. See
+  `notes/north_entry_structure.md` §3 for what a winter costs and which joint pays.
+- **The truss-to-header tie CAPACITY**, for the reason §4a gives: the stainless H2.5ASS's
+  published allowables could not be sourced. The demand is computed; the capacity is not.
 
 ## Sources
 
@@ -252,5 +333,6 @@ which is why 2'-0" is authored.
 - IRC R301.5 and Table R301.5 (deck live load, guard loads), Table R301.7 (deflection),
   R507.5.1 (beam cantilever), R507.6.1 (joist cantilever).
 - IBC Table 1806.2 — presumptive load-bearing values of foundation materials.
-- Minn. R. 1303.1600 — frost depth by zone; Zone II is named to include Hennepin County.
+- Minn. R. 1303.1600 — frost depth by zone; Zone II is named to include Ramsey County, this
+  parcel's own (it names Hennepin too — the depth is the same 42" for both).
 - `plans/north-gable-extension.md` — the 90–101 psf drift screen this note agrees with.

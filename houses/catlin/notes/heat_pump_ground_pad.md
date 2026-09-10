@@ -429,7 +429,7 @@ what surfaced them.
 | | |
 |---|---|
 | south | the house's north cladding face, y 36'-7 1/4" (`_WALL_OUTBOARD_IN` off the y=36' sheathing line) |
-| north | the garage's south cladding face, y 40'-7 3/4" (`params/breezeway.py::_GARAGE_CLADDING_Y`) |
+| north | the garage's south cladding face, y 40'-7 3/4" (`params/north_entry_frame.py::GARAGE_CLADDING_Y_FT`) |
 | west | `D-M-ENTRY`, near jamb x 9'-6", and the R311.3 landing that door owes (x 6'-6"..9'-6") |
 | east | open, out to the front walk at x 14'-0" |
 

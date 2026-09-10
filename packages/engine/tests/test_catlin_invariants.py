@@ -16,13 +16,12 @@ import pytest
 FT = 0.3048
 INCH = 0.0254
 
-# The two doors the breezeway exists to connect, and the enclosure that must stay centred
-# between them. `params/breezeway.py` derives its glazing from _GLAZING_CENTER_X = 8.0 ft;
-# this test never reads that constant — it re-derives the answer from the doors, which is
-# the whole point.
+# The two doors the north entry exists to connect. The enclosure that once had to stay
+# centred between them is retired — so are its `_GLAZING_CENTER_X` and the
+# `GL-BW-WALL-W`/`-E` glazing a module constant here used to name — but the doors, their
+# shared deck and their common level are live, and that is what these tests re-derive.
 ENTRY_DOOR = "D-M-ENTRY"
 SERVICE_DOOR = "D-G-SERVICE"
-BREEZEWAY_GLAZING = ("GL-BW-WALL-W", "GL-BW-WALL-E")
 
 
 def _opening_world_center(model, tag: str) -> tuple[float, float]:

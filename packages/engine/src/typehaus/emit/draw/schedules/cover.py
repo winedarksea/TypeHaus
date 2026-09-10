@@ -302,6 +302,11 @@ def _code_summary_rows(profile: JurisdictionProfile, plan: Any = None) -> list[t
             ("Code edition", profile.edition),
             ("Effective", profile.effective_date),
             ("IRC base", profile.irc_base)]
+    # The electrical cycle runs separately from the residential one and can be AHEAD of it,
+    # so a reader who takes the profile name as the edition for everything reads the
+    # electrical sheets against the wrong code. Omitted where the profile claims nothing.
+    if profile.nec_base:
+        rows.append(("NEC base", profile.nec_base))
     if profile.frost_depth_in is not None:
         rows.append(("Frost depth", f"{profile.frost_depth_in:.0f}\" below lowest "
                                     f"adjacent finished grade (IRC R403.1.4.1)"))

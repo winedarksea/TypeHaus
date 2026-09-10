@@ -116,7 +116,7 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # arrived when the balcony's three beams became glulam and its eight knee braces became four
 # fixed cast columns. `MAX_UNSEALED_ITEMS` rose 5 -> 7 in the same move — the pair of numbers
 # only makes sense read together.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
@@ -137,7 +137,7 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2024": 24}
 # and until `engineering/post_bearing.py` existed nothing in this engine graded it at all —
 # catlin's two centre balcony pillars were over on that limit state at 0 FAIL. It is `draft`
 # from the day it arrives and leaves this lane when `post_bearing/*` is stamped.
-MAX_UNSEALED_ITEMS = {"mn-2024": 8}
+MAX_UNSEALED_ITEMS = {"mn-2020": 8}
 
 
 def _engineered_labels(profile) -> set[str]:
@@ -196,7 +196,7 @@ def test_an_unknown_profile_name_is_refused() -> None:
     """`--profile wi-2024` used to silently evaluate the house against Minnesota."""
     with pytest.raises(UnknownProfile) as exc:
         get_profile("wi-2024")
-    assert "mn-2024" in str(exc.value)  # the error lists what this build does define
+    assert "mn-2020" in str(exc.value)  # the error lists what this build does define
 
 
 def test_the_report_records_which_checks_ran(starter_dir) -> None:
@@ -315,8 +315,8 @@ def test_a_fresh_seal_over_a_failing_item_does_not_open_the_final_gate() -> None
     assert line(Result.PASS).sealed
     assert not line(Result.FAIL).sealed
     # And the whole gate follows the line, so the FAIL cannot be stamped past.
-    assert not PermitChecklist(profile_name="mn-2024", items=(line(Result.FAIL),)).sealed
-    assert PermitChecklist(profile_name="mn-2024", items=(line(Result.PASS),)).sealed
+    assert not PermitChecklist(profile_name="mn-2020", items=(line(Result.FAIL),)).sealed
+    assert PermitChecklist(profile_name="mn-2020", items=(line(Result.PASS),)).sealed
 
 
 def test_a_prescriptive_failure_is_not_sealed_either() -> None:

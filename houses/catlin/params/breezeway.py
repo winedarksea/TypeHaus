@@ -1,9 +1,13 @@
 """North entry DECK, tiers, guards and screen — what sits on the structure.
 
-The structure itself — piers, footings, columns, headers and the five beams — is
+The structure itself — piers, footings, columns, headers and the seven beams — is
 `params/north_entry_frame.py`, split out on 2026-09-10 for AGENTS.md's 500-line rule. Every
 geometry constant is defined there and imported here so the two cannot drift; nothing in
 this file re-derives one.
+
+The four terrace tiers are the exception to "structure lives next door", and deliberately:
+they are cast pours with no framing, so they sit with the thing they carry (the flight)
+rather than with the frame that carries the roof.
 
 See `notes/north_entry_structure.md` for the bearing map, and that module's docstring for
 the house-wide KDAT longevity spec every treated member here also carries.
@@ -11,7 +15,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 
 from typehaus import (
     Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
-    Post, Railing, RailingKind, SlatScreen, Stair, ft, inch, pt,
+    Post, Railing, RailingKind, Slab, SlatScreen, Stair, ft, inch, pt,
 )
 
 from params.foundations import SITE_GRADE
@@ -31,6 +35,7 @@ from params.north_entry_frame import (
     GARAGE_LANDING_WEST_FT,
     GARAGE_SEAT_Y_FT,
     HEADER_SOFFIT_FT,
+    HEADER_TOP_FT,
     HOUSE_CLADDING_Y_FT,
     HOUSE_SEAT_Y_FT,
     LANDING_EAST_FT,
@@ -97,76 +102,50 @@ LOWER_LANDING_END_X_FT = STAIR_FOOT_X_FT + 3
 # and TimberTech both prohibit grooved planks as stair treads outright.
 TREAD_SUPPORT_SPACING_IN = 9.0
 
-# ** BOX FRAMES, NOT CUT STRINGERS, AND A CUT STRINGER FAILS ON THREE COUNTS HERE. **
-# At the old 24" going the horizontal span was 8'-0" against DCA 6 Fig. 28 / IRC R507.13.1's
-# 6'-0"; the remaining throat was 4.71" against 5"; and the treads wanted supports closer
-# than 12". Narrowing the going to 18" fixes the span and does NOT fix the throat: the notch
-# depth R*T/hypot(R,T) is driven by the LONG going, so a flatter pitch removes MORE material,
-# and holding 5" at 6.8:18 would take an 11.54"-wide member -- a 2x12 is 0.29" short and the
-# next size is off every prescriptive table.
+# ** FOUR CAST TIERS ON A COMPACTED BASE, WHICH IS WHERE THIS ARRIVED AFTER TWO WRONG TURNS. **
+# A cut stringer was tried first and fails three ways at this pitch: the horizontal span was
+# 8'-0" against DCA 6 Fig. 28 / IRC R507.13.1's 6'-0"; the throat left after notching 6.8:24
+# was 4.71" against 5"; and no 2x is wide enough to fix it, because the notch depth
+# R*T/hypot(R,T) is driven by the LONG going, so flattening the pitch removes MORE material
+# (5" at 6.8:18 wants an 11.54" throat; a 2x12 is 0.29" short).
 #
-# Four boxes instead, each ~6'-0" x 1'-6", on footings at 42" below finished grade. That
-# depth is not a range: Minn. R. 1303.1600 sets "the minimum allowable footing depth in feet
-# due to freezing is five feet in Zone I and 3-1/2 feet in Zone II", and Zone II is named to
-# include Hennepin. (The 60" figure is northern Minnesota, a different zone.) A deep
-# washed-rock section is NOT a prescriptive alternative: IRC R403.3 applies only to buildings
-# kept at 64F or warmer and says outright it "shall not be used for unheated spaces such as
-# porches", and Minnesota's Rules 1309.0403 amendment carries no exceptions -- the aggregate
-# route reaches it only through ASCE 32, a stamped engineered submittal.
+# KDAT box frames on eight 42"-deep piers were tried second, and the piers were the defect:
+# laid out east of a flight that runs WEST, so all eight stood under open ground carrying
+# nothing at all. They are deleted, and so is the framing they were holding up.
 #
-# ** THE SUPPORT WAS ALWAYS WORSE THAN THE MEMBER. ** The old flight was pinned at the top to
-# a 9'-9" pier and sat at the bottom on pavers on soil. Heave merely lifts a simply-supported
-# member; SETTLEMENT is the failure, because it turns the span into a cantilever off
-# BM-BW-FE, which nothing in that assembly can do -- and riser uniformity has only 3/8" of
-# tolerance (R311.7.5.1), less than one winter gives up. DCA 6 is explicit: "Stringers shall
-# not bear on new or existing concrete pads or patios that are not founded below this depth."
-# Accept movement in exactly ONE place: the joint between the bottom box and the paver
-# landing, where the pavers are a flexible field and no riser depends on them.
+# What is here now is the ordinary detail for an exterior terrace and the owner's call
+# (2026-09-10): four solid pours, wedding-caked, on a compacted washed-rock base. The
+# `Stair` below states the flight's CODE geometry and frames nothing (`carriage="cast"`);
+# the concrete is `TIER_SLABS`, four `Slab` elements with their own mix and elevations.
+# Read `plan/assemblies.py::ENTRY_STEP_TIER` for why this is not frost-founded and what
+# that costs.
+#
+# ** THE ONE JOINT TO WATCH IS AT THE TOP, NOT THE BOTTOM. ** The fourth tier meets a deck
+# landing that stands on piers to -9'-9 7/16" and will not move; the tiers will. Riser
+# uniformity has 3/8" of tolerance (R311.7.5.1) and that joint is where it is spent. At the
+# bottom the pavers are a flexible field and no riser depends on them.
 TIERS = Stair(
     uid="BWST01AAAA", tag="ST-BW-ENTRY", from_storey="main", to_storey="main",
     base_elevation=SITE_GRADE, top_elevation=ft(DECK_FINISH_FT),
     width=ft(STAIR_WIDTH_FT), start=pt(ft(STAIR_FOOT_X_FT), ft(STAIR_Y0_FT)),
     run_direction="x", run_reversed=True, tread_depth=ft(TREAD_DEPTH_FT),
-    nosing_depth=inch(0), material="kdat", carriage="box",
-    stringer_spacing=inch(TREAD_SUPPORT_SPACING_IN),
-    tread_material="composite-deck", tread_thickness=inch(1),
+    nosing_depth=inch(0), material="concrete", carriage="cast",
 )
 
-# Four tier footings per box line, at the Zone II 42". Fine Homebuilding's box-frame footings
-# sit "about 4 feet apart because the rim joist of the box can span the distance between the
-# footings" -- the only span guidance published anywhere for a box tier, since no prescriptive
-# table covers one. DCA 6's nearest hook is that an intermediate stair landing "must be
-# designed and constructed as a non-ledger deck using the details in this document", so the
-# rims and joists size off DCA 6's DECK tables and not off any stair table.
-TIER_FOOTING_DEPTH_IN = 42.0
-TIER_FOOTING_THICKNESS_IN = 8.0
-TIER_RISE_IN = 6.8
-TIER_FRAME_DROP_IN = 1.0 + 7.25   # the 1" tread board and the 2x8 under it
-_TIER_FOOTING_BOTTOM_FT = SITE_GRADE.feet - TIER_FOOTING_DEPTH_IN / 12
-_TIER_FOOTING_TOP_FT = _TIER_FOOTING_BOTTOM_FT + TIER_FOOTING_THICKNESS_IN / 12
-TIER_PIERS = []
-TIER_FOOTINGS = []
-for _i in range(TREAD_COUNT):
-    # Two shafts per box, ~4'-0" apart under a 6'-0" rim, per the only published span
-    # guidance for a box tier. The shaft top is the box's FRAMING underside, so each tier's
-    # pier is one riser taller than the one below it.
-    _x = STAIR_FOOT_X_FT + _i * TREAD_DEPTH_FT + TREAD_DEPTH_FT / 2
-    _top = SITE_GRADE.feet + (_i + 1) * TIER_RISE_IN / 12 - TIER_FRAME_DROP_IN / 12
-    for _j, _y in enumerate((STAIR_Y0_FT + 0.5, STAIR_Y1_FT - 0.5)):
-        _t = f"PT-BW-T{_i + 1}{'WE'[_j]}"
-        TIER_PIERS.append(Post(
-            uid=f"BWTP{_i}{_j}AAAA", tag=_t, position=pt(ft(_x), ft(_y)),
-            size="12 round", height=ft(_top - _TIER_FOOTING_TOP_FT),
-            assembly="PIER_CONCRETE_12",
-            # The top tier's shaft is h/d 4.4, past the 3 where a PLAIN cast column stops
-            # being gradeable, so all eight carry the cage rather than four of them.
-            vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
-            reinforcement=ENTRY_PIER_CAGE,
-            supported_by=f"FT-BW-T{_i + 1}{'WE'[_j]}"))
-        TIER_FOOTINGS.append(Footing(
-            uid=f"BWTF{_i}{_j}AAAA", tag=f"FT-BW-T{_i + 1}{'WE'[_j]}", under=_t,
-            width=inch(24), depth=inch(TIER_FOOTING_THICKNESS_IN),
-            assembly="PIER_BASE_12", bottom_elevation=ft(_TIER_FOOTING_BOTTOM_FT)))
+TIER_RISE_IN = 34.0 / 5.0   # five equal risers from SITE_GRADE to the deck; 6.8" each
+# Wedding-caked, so every tier but the lowest is fully bedded on the one under it and
+# nothing spans: tier i runs from the LANDING edge east to the front of its own tread, and
+# only the strip past the tier above it is walked on. The flight runs west (run_reversed),
+# so the lowest tier is the longest and the easternmost.
+TIER_SLABS = [
+    Slab(uid=f"BWTS0{_i + 1}AAA", tag=f"SL-BW-TIER{_i + 1}",
+         outline=rectangle(LANDING_EAST_FT, STAIR_Y0_FT,
+                           STAIR_FOOT_X_FT - _i * TREAD_DEPTH_FT, STAIR_Y1_FT),
+         thickness=inch(TIER_RISE_IN),
+         top_elevation=ft(SITE_GRADE.feet + (_i + 1) * TIER_RISE_IN / 12),
+         assembly="ENTRY_STEP_TIER")
+    for _i in range(TREAD_COUNT)
+]
 
 
 def guard(uid, tag, path):
@@ -217,11 +196,11 @@ RAILINGS = [
 
 NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
-               text="CANOPY RF-BW-CANOPY: 3 trusses @24in span 24ft between BM-BW-RW/RE on PT-BW-CW/CE; sheathing CONTINUOUS across the garage south wall line — that diaphragm path IS the lateral system; design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
+               text="CANOPY RF-BW-CANOPY IS FREESTANDING: 4 trusses @24in span 24ft on BM-BW-RW/RE, each header on TWO 6x6 KDAT columns of its own (PT-BW-CW/CNW and PT-BW-CE/CNE) over 12in cast piers — NO bearing on W-G-W/W-G-E or on any garage framing; each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*); headers run 8in past the north columns so the roof plane reaches the garage wall; sheathing CONTINUOUS across the garage south wall line — that diaphragm is the canopy's ONLY connection to the garage and IS its lateral system; the south gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter; design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
-               text="LANDING: thicken SL-G-FLOOR to 10in over a 2ft square under PT-BW-IC and PT-BW-IE, cast monolithic with the slab (not modelled — no element says 'monolithic'); seat beams on cast concrete to -0ft 8-1/4in BOTH sides; no bearing on the house; piers cast WITH the basement excavation to -9ft 9-7/16in — casting them after backfill undermines the house footing; hold deck boards 1/2in off the cladding and let the gap drain"),
+               text="LANDING: thicken SL-G-FLOOR to 10in over a 2ft square under PT-BW-IC and PT-BW-IE, cast monolithic with the slab (not modelled — no element says 'monolithic'); seat beams on cast concrete to -0ft 8-1/4in BOTH sides; no bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E/RE) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE/RNE) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. Hold deck boards 1/2in off the cladding and let the gap drain"),
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
-               text="5 equal 6.8in rises; four 18in composite box tiers on 42in footings (Minn. R. 1303.1600 Zone II); NO cut stringers; tread supports at 9in o.c. max — read the delivered board's ASTM D7032 STAIR row, not its decking row; square-edge face-fastened treads only"),
+               text="TERRACE: 5 equal 6.8in rises; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),
                text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1); butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection"),
 ]
@@ -282,11 +261,42 @@ for _i, (_t, _x, _y, _beam) in enumerate((
 # a DERIVED KBS1Z strap here -- a knee brace standing in for a cap, which is not the detail.
 COLUMN_CAPS = [
     Connector(uid=f"BWCC{_i}AAAAAA"[:10], tag=f"CN-BW-CAP-{_s}",
-              kind=ConnectorKind.POST_CAP, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
+              kind=ConnectorKind.POST_CAP, position=pt(ft(_x), ft(_y)),
               elevation=ft(HEADER_SOFFIT_FT), size="CCQ46SDS2.5",
-              connects=(f"BM-BW-R{_s}", f"PT-BW-C{_s}"))
-    for _i, (_s, _x) in enumerate((("W", LANDING_WEST_FT),
-                                   ("E", ROOF_COLUMN_EAST_X_FT)))
+              connects=(f"BM-BW-R{_s[-1]}", f"PT-BW-C{_s}"))
+    for _i, (_s, _x, _y) in enumerate((("W", LANDING_WEST_FT, PIER_LINE_Y_FT),
+                                       ("E", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT),
+                                       ("NW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT),
+                                       ("NE", ROOF_COLUMN_EAST_X_FT, GARAGE_SEAT_Y_FT)))
+]
+
+# ** THE CANOPY'S TRUSS BEARINGS, AUTHORED RATHER THAN DERIVED, AND IN STAINLESS. **
+# `takeoff/uplift.py::bearing_uplift_tie_rows` was already deriving eight commodity H2.5A
+# here, which is the right RULE and the wrong PART: this is a freestanding canopy whose
+# trusses land on treated southern pine at a salted entry, and the house buys stainless at
+# every KDAT joint. A derived row also draws nothing and names nothing on the set, which is
+# how a joint that carries the whole roof's uplift ended up invisible. Authoring the eight
+# stands the derived rule down (`authored_joints` is pairwise) and puts the part on the
+# drawings.
+#
+# One per bearing, not two. Gross wind uplift on the canopy is 1,706 lb per header
+# (notes/north_entry_piers.md Sec 4) over four bearings = 427 lb, so 0.6W is ~256 lb per tie
+# with no dead relief taken at all. Even the lowest H2.5ASS figure in circulation covers
+# that -- but NOT by the margin the galvanized tie's 700 lbf would suggest, which is why
+# `library/hardware.py` carries the stainless tie as its own record with no allowable.
+#
+# The stations are the truss layout's own: `roof_gable.build_truss_layout` walks the bearing
+# axis at the assembly's 24" spacing and always lands the last one on `along_hi`, so a bay
+# that does not divide evenly puts the north truss hard against the garage wall.
+TRUSS_STATION_Y_FT = (PIER_LINE_Y_FT, PIER_LINE_Y_FT + 2.0, PIER_LINE_Y_FT + 4.0,
+                      GARAGE_Y_SOUTH.feet)
+TRUSS_TIES = [
+    Connector(uid=f"BWTT{_i}{_s}AAAA"[:10], tag=f"CN-BW-TRTIE-{_s}{_i + 1}",
+              kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(_x), ft(_y)),
+              elevation=ft(HEADER_TOP_FT), size="H2.5ASS",
+              connects=("RF-BW-CANOPY", f"BM-BW-R{_s}"))
+    for _s, _x in (("W", LANDING_WEST_FT), ("E", ROOF_COLUMN_EAST_X_FT))
+    for _i, _y in enumerate(TRUSS_STATION_Y_FT)
 ]
 
 # Procurement allowance at the two eaves over the entry zone. Supplier must size rail
@@ -300,5 +310,5 @@ SNOW_RETENTION = [
     for i, y in enumerate((38.5, 42.5), 1)
 ]
 
-MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_PIERS, *TIER_FOOTINGS,
-                 SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_CAPS, *SNOW_RETENTION, *NOTES]
+MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
+                 SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_CAPS, *TRUSS_TIES, *SNOW_RETENTION, *NOTES]

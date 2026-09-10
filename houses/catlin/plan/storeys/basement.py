@@ -353,7 +353,7 @@ WALLS = [
     # direction. (Horizontal steel is a separate table, R404.1.2(1) — one #4 within 12" of
     # the top and one at third points above 8' — not screened here.)
     #
-    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2024 profile). The wall runs
+    # **The row, spelled out.** GM soil is 45 psf/ft (mn-2020 profile). The wall runs
     # -13 7/16" (the bearing seat) to -9'-1 7/16" (the slab), so it is **exactly 8'-0"** of
     # pour -> the 8' row, not the 10' row a 9'-4" wall rounds up to. Grade is at
     # -2'-10" (params/site.py), so 6.29' of unbalanced fill -> the 7' row. Footnote f forbids
