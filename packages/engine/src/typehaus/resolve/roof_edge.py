@@ -48,13 +48,44 @@ from typehaus.resolve.roof_trim import roof_trim_members
 
 def resolve_roof_edges(model: ResolvedModel) -> None:
     """Attach the wall→roof closure band and the derived eave/rake trim to every roof."""
+    claimed = _claim_walls(model)
     resolved: list[ResolvedRoof] = []
     for roof in model.roofs:
-        walls = _walls_under_roof(model, roof)
+        walls = tuple(w for w in _walls_under_roof(model, roof)
+                      if claimed.get(w.tag, roof.tag) == roof.tag)
         extra = (_closure_members(model, roof, walls)
                  + roof_trim_members(model, roof, walls))
         resolved.append(replace(roof, members=roof.members + extra) if extra else roof)
     model.roofs = resolved
+
+
+def _claim_walls(model: ResolvedModel) -> dict[str, str]:
+    """``wall tag -> the ONE roof tag that carries its skin up``.
+
+    ** A WALL UNDER TWO ROOFS CLOSED TWICE, AND BOTH BANDS HAD THE SAME KEY. ** The north
+    entry canopy meets the garage at the garage's own south wall, so W-G-S sat inside both
+    footprints and each roof built it a closure band: four duplicate member uids, and the cdx
+    and cladding in that band billed twice. There is one gable wall there, not two.
+
+    Resolved by COVERAGE, not by order: the roof whose footprint contains more of the wall's
+    axis wins. A wall genuinely under one roof and merely touching another's edge -- which is
+    what W-G-S is, tangent to the canopy's north edge and inside the garage's -- goes to the
+    roof that actually covers it. Ties keep the lower roof tag so the answer is stable.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    best: dict[str, tuple[float, str]] = {}
+    for roof in sorted(model.roofs, key=lambda r: r.tag):
+        if len(roof.footprint) < 3:
+            continue
+        area = Polygon(roof.footprint)
+        for wall in _walls_under_roof(model, roof):
+            axis = LineString(wall.axis)
+            covered = axis.intersection(area).length if axis.length > 0 else 0.0
+            prior = best.get(wall.tag)
+            if prior is None or covered > prior[0] + 1e-9:
+                best[wall.tag] = (covered, roof.tag)
+    return {tag: roof_tag for tag, (_covered, roof_tag) in best.items()}
 
 
 # --- shared geometry ---------------------------------------------------------------------

@@ -217,7 +217,7 @@ def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
     move the other.
     """
     from typehaus.model.floors import FloorSystem
-    from typehaus.model.structure import Beam, Post
+    from typehaus.model.structure import Beam
 
     out: dict[str, float] = {}
     resolved = {f.tag for f in ctx.model.floors}
@@ -238,10 +238,12 @@ def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
             if not isinstance(beam, Beam):
                 continue
             beams.append(beam)
-            for bearing in beam.bearing_refs:
-                element = ctx.plan.by_tag(bearing)
-                if isinstance(element, Post) and element.tag not in posts:
-                    posts.append(element.tag)
+            # Down the whole chain, not one level: on the north entry the piers that carry
+            # this deck are two beams away (joists -> floor beam -> seat beam -> pier), and a
+            # one-level walk found only the two posts under the interior cantilever.
+            for tag in _delivered_to_posts(ctx, beam.bearing_refs or ()):
+                if tag not in posts:
+                    posts.append(tag)
         if not posts:
             continue
         weighted = _weighted_shares(ctx, deck, beams, nodes)
@@ -260,7 +262,6 @@ def _weighted_shares(ctx: EngineeringContext, deck: Any, beams: list[Any],
     # Imported, not restated: ``glulam_beam`` is a sibling in this same leaf package, and a
     # third copy of the joist-span walk is a third thing to keep in step.
     from typehaus.engineering.glulam_beam import _joist_span_ft
-    from typehaus.model.structure import Post
 
     strip_ft = _joist_span_ft(ctx, deck)
     if strip_ft is None:
@@ -278,11 +279,45 @@ def _weighted_shares(ctx: EngineeringContext, deck: Any, beams: list[Any],
         supports = beam.bearing_refs or ()
         if not supports:
             return None
-        share = strip_ft * length_ft / len(supports)
-        for tag in supports:
-            if isinstance(ctx.plan.by_tag(tag), Post):
-                out[tag] = out.get(tag, 0.0) + share
+        share = strip_ft * length_ft
+        for tag, fraction in _delivered_to_posts(ctx, supports).items():
+            out[tag] = out.get(tag, 0.0) + share * fraction
     return out or None
+
+
+def _delivered_to_posts(ctx: EngineeringContext, supports: Any,
+                        depth: int = 0) -> dict[str, float]:
+    """``post tag -> fraction of one beam's load`` that actually reaches a Post.
+
+    ** A LOAD PATH CAN BE MORE THAN ONE BEAM DEEP, AND THE NORTH ENTRY IS. ** The landing's
+    joists bear on three floor beams, those bear on two SEAT beams, and only the seats bear on
+    piers. Splitting one level down and keeping whatever happened to be a Post handed the whole
+    landing to the two posts under the interior cantilever and gave the four piers carrying it
+    NOTHING -- a published ratio against a demand missing the deck, which is the specific
+    failure this module exists to refuse.
+
+    So a support that is itself a Beam passes its share on to ITS supports, and so on. A
+    support that is neither (a bearing wall, a pier direct) keeps its share and falls out here,
+    exactly as before -- the fractions returned deliberately need not sum to 1.
+
+    ``depth`` guards a bearing_refs cycle; four levels is far past any real framing chain.
+    """
+    from typehaus.model.structure import Beam, Post
+
+    out: dict[str, float] = {}
+    supports = tuple(supports)
+    if not supports or depth > 4:
+        return out
+    each = 1.0 / len(supports)
+    for tag in supports:
+        element = ctx.plan.by_tag(tag)
+        if isinstance(element, Post):
+            out[tag] = out.get(tag, 0.0) + each
+        elif isinstance(element, Beam):
+            for post, fraction in _delivered_to_posts(
+                    ctx, element.bearing_refs or (), depth + 1).items():
+                out[post] = out.get(post, 0.0) + each * fraction
+    return out
 
 
 def _node_positions(ctx: EngineeringContext) -> dict[str, tuple[float, float]]:
@@ -402,6 +437,57 @@ def _rafter_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]
                     out[support] = out.get(support, 0.0) + share
             accounted.add(tag)
         accounted.update(r.tag for r in rafters)
+    return out, accounted
+
+
+def _roof_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
+    """``post tag -> ft2`` of ROOF carried through a beam, and the beams it accounts for.
+
+    ** THIS EXISTS BECAUSE A ROOF ON BEAMS OTHERWISE PUBLISHED A RATIO AGAINST NOTHING. **
+    :func:`_unmodelled_beams` treats a beam as accounted the moment any ``Roof`` names it in
+    ``bearing_refs`` -- which is right, the load IS a modelled area -- but no roof area ever
+    reached the post. :func:`_deck_tributaries` walks only ``service="deck"`` FloorSystems and
+    :func:`_rafter_fields` fires only where a beam names two other *Beams*. So the north entry
+    canopy's piers would have taken tributary ZERO, raised no ``unmodelled_load`` flag, and let
+    ``deck_post`` print an axial d/c against a demand missing an entire roof. That is the exact
+    failure this module's docstring forbids, and it is worse than an INCOMPLETE.
+
+    ** THE AREA IS THE OVERHANG-EXPANDED FOOTPRINT, NOT THE BEARING RECTANGLE. **
+    ``roof_bearing_footprint`` stops at the bearing lines, and an eave beyond them is real load
+    that a truss carries straight back to the same two headers. Taking the smaller number would
+    UNDER-count, which is the one direction a demand may not err in.
+
+    Split half to each bearing line, then each bearing member's half among the supports IT
+    names -- a support that is not a Post (a wall, a pier direct) keeps its share and falls
+    out, exactly as in :func:`_weighted_shares`. Roofs bearing on walls contribute nothing
+    here and are not skipped specially; they simply resolve no Posts.
+    """
+    from typehaus.model.spatial import Roof
+    from typehaus.model.structure import Beam, Post
+
+    out: dict[str, float] = {}
+    accounted: set[str] = set()
+    for roof in ctx.model.roofs:
+        element = ctx.plan.by_tag(roof.tag)
+        if not isinstance(element, Roof):
+            continue
+        bearings = [ctx.plan.by_tag(ref) for ref in element.bearing_refs]
+        beams = [b for b in bearings if isinstance(b, Beam)]
+        if not beams or len(bearings) < 2:
+            continue
+        area_ft2 = abs(_shoelace([tuple(pt) for pt in roof.footprint])) / (_M_PER_FT ** 2)
+        if area_ft2 <= 0.0:
+            continue
+        share_per_bearing = area_ft2 / len(bearings)
+        for beam in beams:
+            supports = beam.bearing_refs or ()
+            if not supports:
+                continue
+            share = share_per_bearing / len(supports)
+            for support in supports:
+                if isinstance(ctx.plan.by_tag(support), Post):
+                    out[support] = out.get(support, 0.0) + share
+            accounted.add(beam.tag)
     return out, accounted
 
 
@@ -680,7 +766,8 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     pads = {p.tag: p for p in ctx.plan.all_elements() if isinstance(p, Pad)}
     walls = {w.tag: w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)}
     rafter_trib, rafter_accounted = _rafter_fields(ctx)
-    unmodelled = _unmodelled_beams(ctx, rafter_accounted)
+    roof_trib, roof_accounted = _roof_fields(ctx)
+    unmodelled = _unmodelled_beams(ctx, rafter_accounted | roof_accounted)
     tributaries = _deck_tributaries(ctx)
     site = getattr(ctx.plan.project, "site", None)
     snow_psf = float(getattr(site, "ground_snow_load_psf", None) or 0.0)
@@ -705,7 +792,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             # A wood pillar, at a conventional 35 pcf rather than concrete's 150.
             dead = area / 144.0 * post.height.inches / 12.0 * 35.0
         trib = tributaries.get(post.tag, 0.0)
-        roof = rafter_trib.get(post.tag, 0.0)
+        roof = rafter_trib.get(post.tag, 0.0) + roof_trib.get(post.tag, 0.0)
         for tag in below:
             handed_trib[tag] = handed_trib.get(tag, 0.0) + trib / len(below)
             handed_roof[tag] = handed_roof.get(tag, 0.0) + roof / len(below)
@@ -738,7 +825,9 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             tag=post.tag, diameter_in=size[0], round_section=size[1],
             height_in=post.height.inches,
             tributary_ft2=tributaries.get(post.tag, 0.0) + handed_trib.get(post.tag, 0.0),
-            roof_tributary_ft2=rafter_trib.get(post.tag, 0.0) + handed_roof.get(post.tag, 0.0),
+            roof_tributary_ft2=(rafter_trib.get(post.tag, 0.0)
+                            + roof_trib.get(post.tag, 0.0)
+                            + handed_roof.get(post.tag, 0.0)),
             roof_snow_psf=snow_psf,
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
             footing_tag=footing.tag if footing is not None else None,

@@ -821,6 +821,14 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         Quantity("column_height", pier.height_in, "in", 0.01),
         Quantity("gross_area", area, "in2", 0.1),
         Quantity("tributary_area", pier.tributary_ft2, "ft2", 0.01),
+        # ** PUBLISHED SEPARATELY, AND NOT SUMMED INTO THE LINE ABOVE. ** A deck carries IRC
+        # Table R301.5's 40 psf; a roof carries SNOW, which on this site is 50 and therefore
+        # the LARGER. Folding them together would grade the roof's share at 40. It is printed
+        # because a reader seeing "tributary_area 0 ft2" beside a four-figure demand would
+        # reasonably conclude the demand was invented -- which is the failure this pair of
+        # terms exists to make visible.
+        Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),
+        Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
         Quantity("dead_load", pier.dead_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
