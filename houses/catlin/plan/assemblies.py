@@ -1408,6 +1408,21 @@ PIER_CONCRETE_12 = Assembly(
     source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, an SS316-SHIM-35 standoff shim pack under the KDAT soffit (modeled at CN-SG-STDF-COL), and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
 )
 
+# Cast pedestals: the top of a shared pier where a beam end and a post base cannot both sit
+# on a 12" circle (PT-BW-WP), and the two garage-side pedestals that replace a treated plate
+# lying on the ICF stem top. Same EXPOSED_MIX as the piers -- these stand up to 25 3/4" out
+# of the ground at a salted entry, which is an F3/C2 exposure, not an interior pour. The
+# layer thickness here is nominal; each Post's own `size` carries its real section.
+PEDESTAL_CONCRETE = Assembly(
+    tag="PEDESTAL_CONCRETE",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house cast pedestals at the north entry — formed square, cast with the pier or the stem below, stripped to the form line; EXPOSED_MIX (ACI 318-19 class F3 + C2) with A767 galvanized bar",
+)
+
 RAILING_DARK_METAL = Assembly(
     tag="RAILING_DARK_METAL",
     layers=(
@@ -2034,6 +2049,42 @@ GARAGE_ROOF = Assembly(
               function=LayerFunction.FINISH),
     ),
     source="catlin-house detached garage roof (vented 4:12 truss attic); gypsum ceiling + 9.25\" blown fiberglass added 2026-08-20",
+)
+
+# The north entry canopy, over the open passage between the house and the garage.
+#
+# ** STRUCTURALLY IDENTICAL TO GARAGE_ROOF, AND THAT IS THE POINT. ** Same 2x4 fink at
+# 24" o.c., same 9.25" heel, same deck/membrane/roofing. RF-BW-CANOPY bears at +7'-4" on
+# BM-BW-RW/RE, which are southward extensions of the garage's own two truss bearing lines,
+# so the two roof planes are ONE plane: change this layer's depth, spacing or heel and the
+# canopy steps off the garage roof at the joint. The sheathing runs continuous across the
+# garage south wall line even though the `Roof` elements are separate — that continuity is
+# the canopy's whole lateral system (AN-BW-ROOF says so, and so must the drawings).
+#
+# ** WHAT IS DELETED IS THE WHOLE REASON IT IS A SEPARATE ASSEMBLY. ** No `cavity` and no
+# `default_lining`. `roof_ceiling_area_m2` bills off the BEARING footprint, so extending
+# RF-GARAGE over the passage instead would have ordered R-38 blown fiberglass and a 5/8"
+# gypsum ceiling over 144 sf of open outdoor bay — about $350-700 of material, and an
+# insulated ceiling with no conditioned space under it is building-science nonsense besides.
+# An open canopy has no thermal boundary to hold, so it carries none.
+CANOPY_ROOF = Assembly(
+    tag="CANOPY_ROOF",
+    layers=(
+        Layer(name="truss", material_ref="spf", thickness=inch(11.875),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", roof_frame="truss",
+                                  spacing=inch(24),
+                                  heel_height=inch(9.25),
+                                  chord_member="2x4", web_member="2x4")),
+        Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
+              function=LayerFunction.SHEATHING),
+        Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.WATER}),
+        Layer(name="roofing", material_ref="standing-seam-nailstrip", thickness=inch(0.5),
+              function=LayerFunction.CLADDING),
+    ),
+    source="north entry canopy over the open passage; GARAGE_ROOF's structure with no insulation and no ceiling (2026-09-10)",
 )
 
 # --- interior ------------------------------------------------------------------
@@ -4074,6 +4125,7 @@ ASSEMBLIES = [
     BEAM_GLULAM_TREATED,
     POST_KDAT,
     PIER_CONCRETE_12,
+    PEDESTAL_CONCRETE,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,
     GARAGE_WALL_2X6,
@@ -4091,6 +4143,7 @@ ASSEMBLIES = [
     GARDEN_STOOP,
     GARAGE_STEP_6,
     GARAGE_ROOF,
+    CANOPY_ROOF,
     INT_2X6_BRG,
     INT_2X6_BRG_RC,
     INT_2X6_BRG_PLUMBING,

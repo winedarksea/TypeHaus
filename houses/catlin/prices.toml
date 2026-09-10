@@ -651,7 +651,14 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-"ABU66SS" = { low = 150, high = 230 }  # 4 ea — the four BREEZEWAY posts, and nothing else. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
+# ** PRICED AT THE STAINLESS RATE ON PURPOSE, AND THE TWO ROWS ARE ONE PURCHASE. **
+# `takeoff/uplift_joints.py::post_base_anchor_rows` DERIVES a post base from the post's own
+# section and names the catalog model, which is the galvanized ABU66 -- there is no field on
+# a Post that says "buy the stainless variant". This house buys ABU66SS at every treated post
+# base (owner, 2026-09-10: stainless throughout on KDAT), so the derived row is priced at the
+# ABU66SS rate below rather than at a galvanized rate nobody will pay. Keep them equal.
+"ABU66" = { low = 150, high = 230 }  # 2 ea, DERIVED — PT-BW-CW/CE, the two north entry roof columns. Bought as ABU66SS.
+"ABU66SS" = { low = 150, high = 230 }  # 0 ea authored — see ABU66 above, which is the row these actually bill on. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).

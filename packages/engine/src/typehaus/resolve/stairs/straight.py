@@ -1,4 +1,4 @@
-"""The straight flight: two raked 2x12 stringers and full-width tread boards."""
+"""The straight flight: a raked stringer carriage or stacked box tiers, and tread boards."""
 
 from __future__ import annotations
 
@@ -8,6 +8,10 @@ from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import _TREAD_THICKNESS_M, _tread_board_profile
+
+# A tier rim/joist is deck framing, not a stair member: DCA 6 sizes an intermediate
+# landing off its DECK tables, and 2x8 is what the landing beside these tiers uses.
+_TIER_FRAME_PROFILE = "2x8"
 
 
 def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
@@ -29,6 +33,9 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         end_x, end_y = start_x, start_y + sign * going * (risers - 1)
         strings = [((start_x + offset, start_y), (end_x + offset, end_y))
                    for offset in offsets]
+    if stair.carriage == "box":
+        return _box_tier_members(stair, start_x, start_y, z0, risers, riser, going,
+                                 tread_depth, nosing, width, sign, along_x, offsets)
     stringer_depth = cross_section("2x12").depth_m
     # Both ends are notch lines — the first tread board and the arrival subfloor sit *on*
     # them (``_notch_z``), which is what keeps the rake straight and the first and last
@@ -67,4 +74,82 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
                                 a, b, top - thickness, top, stair.width.meters,
                                 riser_line=riser_line))
+    return tuple(out)
+
+
+def _box_tier_members(stair: Stair, start_x: float, start_y: float, z0: float,
+                      risers: int, riser: float, going: float, tread_depth: float,
+                      nosing: float, width: float, sign: int, along_x: bool,
+                      offsets: list[float]) -> tuple[FramedMember, ...]:
+    """One framed box per tread, stacked — the carriage a broad shallow terrace tier wants.
+
+    Each box is a rim front and back with joists between them running FRONT TO BACK (up the
+    run, across the boards), so the spacing that matters is the one the tread product
+    publishes. ``stringer_spacing`` carries it, because for a box it is still exactly what
+    the name says: the centre-to-centre spacing of the supports under the walking surface.
+
+    ** THE TREAD SPACING IS NOT THE DECKING SPACING, AND THEY DIFFER BY 4"-7" ON ONE BOARD. **
+    A composite board is rated for a UNIFORM load as decking and a 300 lb CONCENTRATED load
+    as a stair tread (IRC Table R301.5 fn. c; ICC-ES AC174 §4.1.1 tests it at 1/8" of
+    deflection under 300 lb, an absolute limit, not a ratio). ESR-3771 shows the gap plainly:
+    16" as decking, 11" as a stair tread, identical product. IRC R507.2.2.5 makes the
+    manufacturer's instruction binding and IRC Table R507.7 excludes stairways outright, so
+    the number must be read off the purchased board's STAIR row. Published stair spacings run
+    8" to 12" across the major brands.
+
+    No member here is a stringer and none is notched, so neither of the cut-stringer limits
+    (6'-0" span, 5" throat) applies — see ``Stair.carriage``. They resolve as
+    ``landing_framing``, the category a tier already is.
+    """
+    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
+                 else _TREAD_THICKNESS_M)
+    joist_depth = cross_section(_TIER_FRAME_PROFILE).depth_m
+    out: list[FramedMember] = []
+    for index in range(risers - 1):
+        top = z0 + riser * (index + 1)          # the finished walking face of this tier
+        frame_z1 = top - thickness              # the boards sit on the frame
+        frame_z0 = frame_z1 - joist_depth
+        back = going * index                    # the riser face, measured along the run
+        front = going * (index + 1)
+        # Two rims, across the width at the front and back of this tier's band -- except the
+        # TOP tier, whose front edge bolts to the arrival structure's own rim. Emitting one
+        # there puts a rim inside the landing beam it is fastened to.
+        edges = [("back", back)] + ([] if index == risers - 2 else [("front", front)])
+        for edge, along in edges:
+            if along_x:
+                a, b = ((start_x + sign * along, start_y),
+                        (start_x + sign * along, start_y + width))
+            else:
+                a, b = ((start_x, start_y + sign * along),
+                        (start_x + width, start_y + sign * along))
+            out.append(FramedMember(
+                stair.uid, f"tier-{index:03d}-rim-{edge}", "landing_framing",
+                _TIER_FRAME_PROFILE, a, b, frame_z0, frame_z1, width))
+        # Joists between them, front to back, at the tread product's own support spacing.
+        for step, offset in enumerate(offsets):
+            if along_x:
+                a, b = ((start_x + sign * back, start_y + offset),
+                        (start_x + sign * front, start_y + offset))
+            else:
+                a, b = ((start_x + offset, start_y + sign * back),
+                        (start_x + offset, start_y + sign * front))
+            out.append(FramedMember(
+                stair.uid, f"tier-{index:03d}-joist-{step:03d}", "landing_framing",
+                _TIER_FRAME_PROFILE, a, b, frame_z0, frame_z1, abs(going)))
+        # The wear surface, identical to the stringer flight's — see ``_straight_stair_members``.
+        centre = going * index + (going - nosing) / 2.0
+        if along_x:
+            a = (start_x + sign * centre, start_y)
+            b = (start_x + sign * centre, start_y + width)
+            riser_line = ((start_x + sign * back, start_y),
+                          (start_x + sign * back, start_y + width))
+        else:
+            a = (start_x, start_y + sign * centre)
+            b = (start_x + width, start_y + sign * centre)
+            riser_line = ((start_x, start_y + sign * back),
+                          (start_x + width, start_y + sign * back))
+        out.append(FramedMember(
+            stair.uid, f"tread-{index:03d}", "tread",
+            _tread_board_profile(tread_depth, thickness), a, b,
+            top - thickness, top, stair.width.meters, riser_line=riser_line))
     return tuple(out)

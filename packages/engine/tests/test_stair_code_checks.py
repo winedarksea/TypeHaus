@@ -311,7 +311,7 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
     # Eleven since 2026-09-03: ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) and
     # the two level cheeks that return the guard across its threshold (RL-SG-PTHRESH-*).
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-WEST", "RL-M-STAIRHEAD", "RL-S-STAIR",
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-SCREEN", "RL-M-STAIRHEAD", "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
                     "RL-SG-PTHRESH-S"], \
@@ -329,7 +329,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
 
     drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-WEST", "RL-S-STAIR", "RL-S-STAIRHEAD",
+        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-SCREEN", "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE", "RL-SG-PSTAIR-N",
         "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N", "RL-SG-PTHRESH-S"]
 

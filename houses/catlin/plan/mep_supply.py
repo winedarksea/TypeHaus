@@ -53,6 +53,12 @@ from typehaus.model import m
 # terminal rise is the hydrant's own self-draining barrel and exempt.
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
+            # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
+            # AROUND IT. ** Every rerouting tried here traded one clash for another -- the
+            # 45 degree influence line under the garage-side pads, or an elbow buried inside a
+            # footing. What actually resolves it is depth: all five north-entry footings now
+            # bear BELOW this invert, so `mep.footing_clearance` sees the pipe above their
+            # bearing planes and no influence at all. Keep it that way if a pier ever moves.
             path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(38)), pt(ft(11), ft(38)),
                   pt(ft(11), ft(62)), pt(ft(11), ft(62))),
             diameter=inch(0.75), material="pex",

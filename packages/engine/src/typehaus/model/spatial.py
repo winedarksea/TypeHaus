@@ -107,6 +107,27 @@ class Stair(Element):
     # Straight flights only: manufacturer maximum support spacing, evenly divided
     # across the width, including both edge stringers. None retains two edge stringers.
     stringer_spacing: Length | None = None
+    # How the flight is carried: ``stringer`` (raked, notched 2x12s running the whole run)
+    # or ``box`` (one framed box per tread, stacked). Straight flights only.
+    #
+    # ** A CUT STRINGER HAS TWO PRESCRIPTIVE LIMITS AND A BROAD SHALLOW FLIGHT BREAKS BOTH. **
+    # DCA 6 Fig. 28 / IRC R507.13.1 cap the horizontal span at 6'-0" and the remaining
+    # throat at 5". The throat is ``11.25 - R*T/hypot(R,T)``, and the intuition runs
+    # backwards: a FLATTER pitch removes MORE material, because the notch depth is driven by
+    # the long going. A terrace tier — a 6.8" rise on an 18"-24" going — lands near 4.7"-4.9"
+    # and no 2x is wide enough to fix it (5" at 6.8:18 would want an 11.54" throat, so an
+    # 11.25" 2x12 is 0.29" short and the next size is off every prescriptive table).
+    #
+    # A box tier sidesteps both: nothing is notched, so there is no throat, and each box
+    # spans between its own footings rather than running the flight. It is how broad shallow
+    # tiers are actually built — "essentially a mini deck, long and thin, just with joists in
+    # between" — and DCA 6's hook is that an intermediate landing "must be designed and
+    # constructed as a non-ledger deck using the details in this document", so the rims and
+    # joists size off DCA 6's DECK tables and not off any stair table.
+    #
+    # Boxes resolve as ``landing_framing``, not ``stringer``: a tier IS a landing, and no
+    # member of a box flight is a stringer. Checks that grade a carriage must not find one.
+    carriage: str = "stringer"
     # Straight flights only; finished rises stay fixed while the framing drops by this
     # thickness. None retains the ordinary 1 1/2-inch tread board.
     tread_thickness: Length | None = None

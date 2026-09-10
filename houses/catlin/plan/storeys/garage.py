@@ -414,9 +414,49 @@ ROOFS = [
     Roof(uid="CGRF01AAAA", tag="RF-GARAGE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-G-E", "W-G-W"),
          assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="y",
-         edge_overhangs=(("south", ft(6)),),
+         # ** THE 6'-0" SOUTH EXTRUSION IS GONE, AND IT WAS NEVER AN OVERHANG. ** The ridge
+         # runs north-south, so "south" is a RAKE: `resolve/framing/roof_gable.py` framed it
+         # as ladder rake framing, and the backspan is ONE TRUSS BAY -- 24" at this roof's
+         # spacing. That resolved to 2x4 outlookers cantilevering 88" off a 24" backspan on a
+         # 2x6 barge rafter, with no truss over the passage at all. Conventional practice caps
+         # a cantilevered outlooker near 24"; this was about 4x past anything a supplier will
+         # seal, and nothing in `checks/` or `engineering/` graded an outlooker.
+         #
+         # The passage is now RF-BW-CANOPY below: three real trusses spanning 24' between two
+         # headers on two columns. This roof stops at its own gable end.
+         edge_overhangs=(("south", ft(0)),),
          edge_trim_material="metal-dark-exterior",
          eave_trim=_GARAGE_EAVE_TRIM),
+    # ** THE PASSAGE CANOPY, AND IT IS ITS OWN `Roof` FOR A TAKEOFF REASON, NOT A FRAMING ONE. **
+    # `roof_ceiling_area_m2` bills off the BEARING footprint, so extending RF-GARAGE over the
+    # passage would have ordered 144 sf of R-38 blown fiberglass and 5/8" gypsum ceiling over
+    # an open outdoor bay. CANOPY_ROOF is GARAGE_ROOF's structure with neither.
+    #
+    # ** THE SHEATHING IS STILL CONTINUOUS ACROSS THE GARAGE SOUTH WALL LINE, AND THAT
+    # CONTINUITY IS THE CANOPY'S ENTIRE LATERAL SYSTEM. ** Both column bases are standoffs on
+    # a 5/8" cast-in bolt -- uplift ties, not moment connections. East-west wind goes into the
+    # roof sheathing and spans 6 feet north into the garage roof diaphragm; north-south wind
+    # runs axially along the two headers into the garage's corner posts. Both paths die if
+    # this ever becomes a structurally separate plane. Two `Roof` ELEMENTS, one diaphragm --
+    # the drawings have to say so (AN-BW-ROOF does). If that joint ever becomes a real break,
+    # a KBS1Z knee brace at each column is the cheap answer and is a live row in this house.
+    #
+    # It bears on BEAMS, which `Roof.bearing_refs` could not name until 2026-09-10 --
+    # see resolve/roof_bearing.py. BM-BW-RW/RE top out at +7'-4", the same plate elevation as
+    # W-G-W/W-G-E, so the two roof planes are one plane.
+    Roof(uid="YX2GDZJMBV", tag="RF-BW-CANOPY", form=RoofForm.GABLE,
+         pitch=Pitch(4, 12), bearing_refs=("BM-BW-RW", "BM-BW-RE"),
+         assembly="CANOPY_ROOF", overhang=ft(1, 4), ridge_direction="y",
+         # North butts the garage gable; south stops flush at the house, which is the whole
+         # point of the scheme -- the landing, the four tiers and the paver landing all end up
+         # under roof, so none of them carries snow.
+         # South oversails the pier line by 3 3/8", leaving a 7 3/8" gap to the house
+         # cladding at y=36'-7 1/4" -- the joint plans/north-gable-extension.md specifies: a
+         # formed, positively sloped closure fixed to the CANOPY only, dying at the house in a
+         # replaceable compressible or brush seal, inspectable from below, never filled with
+         # rigid foam or sealant. The two buildings move independently and the joint has to.
+         edge_overhangs=(("north", ft(0)), ("south", ft(0, 3.375))),
+         edge_trim_material="metal-dark-exterior"),
 ]
 
 # --- NO SNOW RETENTION, AND THAT IS EARNED (2026-09-07) ---------------------------------

@@ -331,8 +331,13 @@ SITE = Site(
         # The walk loses 7 sf (32 -> 25); the fall it is graded on is in y and unchanged.
         ImperviousSurface(
             label="north entry drained paver landing and east approach",
-            outline=(pt(ft(19, 6), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
-                     pt(ft(30), ft(42, 10.75)), pt(ft(19, 6), ft(42, 10.75))),
+            # ** THE WEST EDGE FOLLOWS THE STAIR, AND IT IS NOT DERIVED. ** This outline is
+            # authored on the site while `params/breezeway.py::STAIR_FOOT_X_FT` derives from
+            # TREAD_DEPTH_FT, so the two only agree because somebody keeps them agreeing.
+            # The 2026-09-10 going change (24" -> 18") moved the stair foot from x=19'-6" to
+            # x=17'-6"; this edge moved with it. Move it again if the going moves again.
+            outline=(pt(ft(17, 6), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
+                     pt(ft(30), ft(42, 10.75)), pt(ft(17, 6), ft(42, 10.75))),
             near_elevation=ft(-2, -10),
             far_elevation=ft(-3, -0.5),  # 2% eastward; first 36in is the lower landing
             kind="walk",

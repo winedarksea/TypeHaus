@@ -447,7 +447,7 @@ def test_the_open_connector_has_real_guards_instead_of_glazing_credit(catlin_ctx
     findings = {f.message.split(":")[0]: f for f in fp.raised_surface_guard_height(catlin_ctx)}
     assert findings["FS-BW-FLOOR"].result is Result.PASS
     assert catlin_ctx.plan.by_tag("GL-BW-WALL-W") is None
-    assert catlin_ctx.plan.by_tag("RL-BW-WEST").height.inches >= 36
+    assert catlin_ctx.plan.by_tag("RL-BW-SCREEN").height.inches >= 36
 
 
 def _closing_tags(ctx, surface):
