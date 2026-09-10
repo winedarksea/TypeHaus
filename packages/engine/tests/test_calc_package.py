@@ -113,7 +113,7 @@ def test_a_record_carries_the_oracle_of_its_kind(catlin_engineering):
     assert not unoracled, unoracled
 
 
-def test_the_five_deferred_items_name_a_designer_of_record(catlin_engineering):
+def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
     """The items that exist by accident now exist on purpose.
 
     ``header/D-G-OVERHEAD``, ``lateral_uplift/RF-*`` and ``rafter/RF-*`` are computed by
@@ -126,9 +126,15 @@ def test_the_five_deferred_items_name_a_designer_of_record(catlin_engineering):
     ctx, item_ids, _ = catlin_engineering
     deferred = [ctx.engineering[i] for i in item_ids
                 if ctx.engineering[i].status is Status.NO_CALC]
+    # Seven since 2026-09-10: RF-BW-CANOPY, the north entry canopy, is three 24' gable
+    # trusses -- a catalog component, deferred to the fabricator on exactly the same footing
+    # as RF-GARAGE's. Its DRIFT case is what the fabricator must be told (see
+    # notes/north_entry_piers.md §3 and preferences.toml [structural] roof_beam_snow_psf);
+    # a quote against "50 psf ground snow" prices ordinary trusses.
     assert {r.item_id for r in deferred} == {
-        "header/D-G-OVERHEAD", "lateral_uplift/RF-GARAGE", "lateral_uplift/RF-HOUSE",
-        "rafter/RF-GARAGE", "rafter/RF-HOUSE"}
+        "header/D-G-OVERHEAD",
+        "lateral_uplift/RF-BW-CANOPY", "lateral_uplift/RF-GARAGE", "lateral_uplift/RF-HOUSE",
+        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE", "rafter/RF-HOUSE"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id
         assert "no calculation is registered for this kind" not in record.summary

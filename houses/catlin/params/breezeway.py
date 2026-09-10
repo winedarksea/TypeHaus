@@ -290,10 +290,17 @@ ROOF_COLUMNS = [
 # and BM-BW-FE overhang the garage seat by 4'-1 7/8" on a 6'-2 1/2" back span -- 67%, against
 # IRC R507.5.1's 25% -- carrying the top landing of ST-G-SERVICE 34" above the garage slab.
 # Two 6x6 KDAT posts on the slab end it. MIN_DECK_POST_NOMINAL is 6x6, so do not reach for a 4x4.
+#
+# ** THEY BEAR ON THE SLAB, AND THE THICKENING UNDER EACH IS A DRAWING NOTE, NOT AN ELEMENT. **
+# A `Pad` was tried here and is the wrong element: a thickened slab is ONE pour with the slab,
+# and modelling it as an isolated pad reports a concrete_interference lap with `SL-G-FLOOR`
+# and a frost_depth FAIL for a pour inside a heated-adjacent garage. The model has no way to
+# say "monolithic", so the honest record is the slab bearing plus AN-BW-STRUCTURE naming the
+# thickening. `structural.deck_footing_size` reports NOT_APPLICABLE and says why.
 INTERIOR_POSTS = [
     Post(uid=f"BWPT{9 + _i:02d}AAAA", tag=f"PT-BW-I{_s}",
          position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),
-         size="6x6", height=ft(BEARING_TOP_FT - (-(2 + 10 / 12))), assembly="POST_KDAT",
+         size="6x6", height=ft(BEARING_TOP_FT - SITE_GRADE.feet), assembly="POST_KDAT",
          supported_by="SL-G-FLOOR")
     for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT[1:], strict=True))
 ]
@@ -470,7 +477,7 @@ NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
                text="CANOPY RF-BW-CANOPY: 3 trusses @24in span 24ft between BM-BW-RW/RE on PT-BW-CW/CE; sheathing CONTINUOUS across the garage south wall line — that diaphragm path IS the lateral system; design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
-               text="LANDING: seat beams on cast concrete to -0ft 8-1/4in BOTH sides; no bearing on the house; piers cast WITH the basement excavation to -9ft 9-7/16in — casting them after backfill undermines the house footing; hold deck boards 1/2in off the cladding and let the gap drain"),
+               text="LANDING: thicken SL-G-FLOOR to 10in over a 2ft square under PT-BW-IC and PT-BW-IE, cast monolithic with the slab (not modelled — no element says 'monolithic'); seat beams on cast concrete to -0ft 8-1/4in BOTH sides; no bearing on the house; piers cast WITH the basement excavation to -9ft 9-7/16in — casting them after backfill undermines the house footing; hold deck boards 1/2in off the cladding and let the gap drain"),
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
                text="5 equal 6.8in rises; four 18in composite box tiers on 42in footings (Minn. R. 1303.1600 Zone II); NO cut stringers; tread supports at 9in o.c. max — read the delivered board's ASTM D7032 STAIR row, not its decking row; square-edge face-fastened treads only"),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),

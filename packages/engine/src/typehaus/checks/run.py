@@ -101,6 +101,8 @@ def load_preferences(house_dir: Path) -> Preferences:
         structural=StructuralPreferences(
             max_guard_dead_load_on_wood_plf=structural.get(
                 "max_guard_dead_load_on_wood_plf", 50.0),
+            roof_beam_snow_psf=structural.get("roof_beam_snow_psf"),
+            roof_beam_dead_psf=structural.get("roof_beam_dead_psf", 10.0),
         ),
         underlays=underlays,
         print_options=PrintPreferences(

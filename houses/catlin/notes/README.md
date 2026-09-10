@@ -34,7 +34,8 @@ each is kept because the *rule* it established usually outlives the design that 
 | `board_batten_girt_span.md` | `engineering/wall_panel.py` (`tests/test_wall_panel_calcs.py`) | live |
 | `balcony_moment_columns.md` | `engineering/deck_post.py` §5 → `engineering/glulam_beam.py` (`tests/test_pier_section_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
-| `north_entry_structure.md` | bridge seats, cantilever, tiers and engineering scope | schematic |
+| `north_entry_structure.md` | the north entry bearing map and what carries what | live |
+| `north_entry_piers.md` | `engineering/roof_beam.py` §5, `engineering/pier_basis.py` / `deck_post.py` / `spread_footing.py` §6 (`tests/test_north_entry_piers.py`) | live |
 | `hp3_north_relocation.md` | cabinet/stand, airflow and services | schematic |
 | `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); `rafter/RF-*` deferral | live |
 | `centre_pillar_bearing.md` | `engineering/post_bearing.py` (`tests/test_post_bearing.py`) | live |

@@ -123,6 +123,14 @@ class StructuralPreferences:
     # foot of run, which is the load a deck rim designed to R507's 40 psf live + 10 psf dead
     # was drawn expecting. A grouted-CMU-and-brick parapet is eight times it.
     max_guard_dead_load_on_wood_plf: float = 50.0
+    #: Design snow, psf, for a beam carrying a ROOF (``engineering/roof_beam.py``). Authored
+    #: because the engine derives NO part of it: drift, unbalanced and sliding magnitudes are
+    #: computed nowhere in this codebase, and the north entry canopy's governing case is a
+    #: roof-step drift off the house gable. ``None`` is an INCOMPLETE naming this key, never
+    #: a default — a defaulted design load publishes a ratio against a number nobody chose.
+    roof_beam_snow_psf: float | None = None
+    #: Dead load, psf, on the same beam: roofing, deck, framing and its own weight.
+    roof_beam_dead_psf: float = 10.0
 
 
 @dataclass(frozen=True)

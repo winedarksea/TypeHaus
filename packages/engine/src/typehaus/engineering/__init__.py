@@ -30,6 +30,7 @@ from typehaus.engineering import (
     post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
+    roof_beam,  # noqa: F401  (registration)
     spread_footing,  # noqa: F401  (registration)
     wall_panel,  # noqa: F401  (registration)
 )
@@ -66,6 +67,7 @@ __all__ = [
     "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity", "REGISTER_FILENAME",
     "Signoff", "Status",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "deck_post", "deferred", "glulam_beam", "registered_kinds", "retaining_system",
+    "deck_post", "deferred", "glulam_beam", "roof_beam", "registered_kinds",
+    "retaining_system",
     "retaining_wall", "spread_footing", "wall_panel",
 ]

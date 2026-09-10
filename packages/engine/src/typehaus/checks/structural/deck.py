@@ -41,7 +41,7 @@ from typehaus.checks.structural.deck_tables import (
 )
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
-from typehaus.model.floors import FloorSystem
+from typehaus.model.floors import FloorSystem, Slab
 from typehaus.model.structure import Beam, GlazingPanel, Pad, Post, Railing
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedFloor
@@ -381,10 +381,18 @@ def _beam_span_ft(ctx: CheckContext, beam: Beam) -> float | None:
     """Clear-ish beam span: the distance between the bearings it stands on, or — when they
     cannot be resolved — its own node-to-node length, which is the same thing for a beam
     that runs bearing to bearing and an OVER-count for one that cantilevers past them."""
+    axis = _beam_axis_m(ctx, beam)
     points = _bearing_points_m(ctx, beam)
-    if len(points) >= 2:
-        widest = max((x1 - x0) ** 2 + (y1 - y0) ** 2
-                     for x0, y0 in points for x1, y1 in points) ** 0.5
+    if axis is not None and len(points) >= 2:
+        # The LONGEST BAY, not end to end. A beam continuous over three supports spans each
+        # bay separately; measuring corner to corner would report a 9'-7 5/8" span for a
+        # beam whose worst bay is 5'-5 3/4", and R507.5(1) would fail it for a span it does
+        # not have. Ordered along the beam's own axis, so "adjacent" means adjacent.
+        (x0, y0), (x1, y1) = axis
+        length = math.dist((x0, y0), (x1, y1))
+        ux, uy = (x1 - x0) / length, (y1 - y0) / length
+        offsets = sorted((px - x0) * ux + (py - y0) * uy for px, py in points)
+        widest = max(b - a for a, b in zip(offsets, offsets[1:], strict=False))
         if widest > 1e-9:
             return widest / _M_PER_FT
     solid = next((s for s in ctx.model.solids if s.tag == beam.tag), None)
@@ -731,6 +739,21 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             f"Footing rather than a Pad ({where}) — a belled pier, which IRC Table R507.3.1's "
             f"flat-pad rows do not publish. Its bearing is a design against the site's own "
             f"allowable pressure, not a lookup",
+            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+    if isinstance(bearing, Slab):
+        # ** EARNED, NOT ASSUMED. ** R507.3.1 sizes a deck post's own spread footing over
+        # SOIL, and the positive evidence of absence here is that the post lands on a slab on
+        # grade: there is no footing to size because the slab is what bears. What that leaves
+        # ungraded is the slab's own thickening and punching shear under the point load, and
+        # this says so rather than letting it pass silently — a Pad authored beside the slab
+        # is NOT the answer (it reports a concrete_interference lap with the slab it is part
+        # of, because the model has no way to say "monolithic").
+        return not_applicable(
+            "structural.deck_footing_size",
+            f"post {post.tag} bears on {bearing.tag}, a slab on grade ({where}) — IRC "
+            f"R507.3.1 sizes a spread footing over soil and there is none here. NOT graded "
+            f"by this or any other rule: the slab thickening and punching shear under the "
+            f"post, which the drawings must carry as a note",
             (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
     if bearing is None:
         return _unknown(
