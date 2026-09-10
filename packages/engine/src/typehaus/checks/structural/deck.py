@@ -297,11 +297,6 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
                                 (deck.tag,)))
             continue
         for beam in beams:
-            if beam.engineering_note:
-                out.append(_engineered(
-                    ctx, "structural.deck_beam_span", item_id("deck_beam", beam.tag),
-                    beam.engineering_note, (deck.tag, beam.tag), code="IRC R301.1.3"))
-                continue
             span_ft = _beam_span_ft(ctx, beam)
             if span_ft is None:
                 out.append(_unknown("structural.deck_beam_span",

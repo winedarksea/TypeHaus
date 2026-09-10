@@ -315,13 +315,10 @@ def authored_connector_rows(model: ResolvedModel) -> list:
     """
     groups: Counter = Counter()
     carried: Counter = Counter()
-    custom_sources: dict[tuple[str, str], set[str]] = {}
     for _storey, element in _authored_connectors(model):
         if element.kind is ConnectorKind.KNEEBRACE:
             continue
         groups[(element.kind.value, element.size)] += 1
-        if element.source:
-            custom_sources.setdefault((element.kind.value, element.size), set()).add(element.source)
         item = hardware_by_model(element.size)
         if item is not None and item.requires_role is not None:
             # Keyed by (carrier role, requiring part) so the basis text can name what asked
@@ -336,9 +333,6 @@ def authored_connector_rows(model: ResolvedModel) -> list:
         row = hardware_row(
             item, scope="modeled connector", count=count, part_number=size,
             basis=f"{count} modeled {kind.replace('_', ' ')} connector(s) in the plan")
-        if item is None and (kind, size) in custom_sources:
-            row["source"] = "; ".join(sorted(custom_sources[(kind, size)]))
-            row["basis"] += "; custom fabrication allowance, not a catalog purchase instruction"
         rows.append(row)
 
     # Carriers required by a pipe clamp but not otherwise modeled: their own row, keyed by

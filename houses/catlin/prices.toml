@@ -637,8 +637,6 @@
 [hardware]
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
 # fabrication bid; includes anchors/flashing/shims, and may exceed the removed pier cost.
-"BW-ENGINEERED-FIXED-SEAT" = { low = 200, high = 600 }
-"BW-ENGINEERED-SLIDING-SEAT" = { low = 250, high = 750 }
 # RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and
 # small-box retail prices pulled per part number from Fasteners Plus, Connectors Only and
 # Lowe's, then widened downward because contractor-carton pricing runs 25-40% under

@@ -122,7 +122,7 @@ def _beams(ctx: EngineeringContext) -> list[tuple[Any, Any, float, float]]:
             beam = ctx.plan.by_tag(ref)
             if not isinstance(beam, Beam):
                 continue
-            if _SAWN_TABLE_SECTION.match(beam.size or "") and not beam.engineering_note:
+            if _SAWN_TABLE_SECTION.match(beam.size or ""):
                 continue
             span = _beam_span_ft(ctx, beam)
             if span is None:
@@ -237,13 +237,6 @@ def _volume_factor(width_in: float, depth_in: float, span_ft: float) -> float:
 
 
 def _one(deck: Any, beam: Any, span_ft: float, joist_span_ft: float) -> EngineeringRecord:
-    if beam.engineering_note:
-        return EngineeringRecord(
-            item_id=item_id(KIND, beam.tag), kind=KIND, key=beam.tag,
-            basis_version=BASIS_VERSION, basis="IRC R301.1.3 — authored engineered design scope",
-            status=Status.INCOMPLETE, summary=beam.engineering_note,
-            inputs=(), limit_states=(), element_tags=(deck.tag, beam.tag),
-            missing=("engineer-designed member, cantilever, bearing and connection capacity",))
     section = _section(beam)
     tags = (deck.tag, beam.tag)
     if section is None:
