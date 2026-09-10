@@ -416,12 +416,83 @@ def test_a_non_convex_swept_box_falls_back_to_the_mesh_walk() -> None:
 
 # --- the TS fixture -------------------------------------------------------------------
 
+#: The fixture's declared precision, and it is not a knob. ``tubeGeometry.test.ts`` compares
+#: every coordinate in this same file at 1e-9, so a divergence below it is invisible to the
+#: consumer by construction — asserting harder here than the fixture's own reader does buys
+#: nothing and costs portability.
+PARITY_TOLERANCE = 1e-9
+
+
+def _assert_parity(got: object, want: object, where: str) -> None:
+    """Structure exactly, numbers to ``PARITY_TOLERANCE``."""
+    if isinstance(want, dict):
+        assert isinstance(got, dict) and got.keys() == want.keys(), f"{where}: keys differ"
+        for key in want:
+            _assert_parity(got[key], want[key], f"{where}.{key}")
+    elif isinstance(want, list):
+        assert isinstance(got, list) and len(got) == len(want), (
+            f"{where}: length {len(got) if isinstance(got, list) else got!r} != {len(want)}")
+        for index, item in enumerate(want):
+            _assert_parity(got[index], item, f"{where}[{index}]")
+    elif isinstance(want, (int, float)) and not isinstance(want, bool):
+        assert isinstance(got, (int, float)), f"{where}: {got!r} is not a number"
+        assert abs(got - want) <= PARITY_TOLERANCE, (
+            f"{where}: {got!r} != {want!r} (delta {abs(got - want):.3e} > "
+            f"{PARITY_TOLERANCE:.0e}) — run scripts/gen_sweep_parity.py")
+    else:
+        assert got == want, f"{where}: {got!r} != {want!r}"
+
+
+def test_the_parity_comparison_still_catches_a_stale_fixture() -> None:
+    """The tolerance must not be a way of passing. A real regeneration moves far more.
+
+    A mitre that actually changed shifts coordinates by millimetres — 1e-3 and up — so the
+    1e-9 floor is orders of magnitude below anything a genuine drift produces, and orders of
+    magnitude above cross-platform libm noise.
+    """
+    current = json.loads(FIXTURE.read_text())
+
+    def _nudge(payload: dict, delta: float) -> dict:
+        moved = json.loads(json.dumps(payload))
+        moved["cases"][0]["legs"][0][0][0][0] += delta
+        return moved
+
+    _assert_parity(_nudge(current, 1e-12), current, "payload")  # platform noise: tolerated
+
+    for delta in (1e-6, 1e-3, 0.25):
+        with pytest.raises(AssertionError, match="gen_sweep_parity"):
+            _assert_parity(_nudge(current, delta), current, "payload")
+
+
+def test_the_parity_comparison_catches_a_structural_change() -> None:
+    """A dropped case or a leg with a different ring count is not a numeric difference."""
+    current = json.loads(FIXTURE.read_text())
+
+    fewer = json.loads(json.dumps(current))
+    fewer["cases"].pop()
+    with pytest.raises(AssertionError, match="length"):
+        _assert_parity(fewer, current, "payload")
+
+    renamed = json.loads(json.dumps(current))
+    renamed["cases"][0]["name"] = "not-the-same-case"
+    with pytest.raises(AssertionError):
+        _assert_parity(renamed, current, "payload")
+
+
 def test_the_shared_parity_fixture_is_current() -> None:
     """``ui/src/generated/sweepParity.json`` is what the TS port is asserted against.
 
     Stale, it would pin ``tubeGeometry.ts`` to a mitre this module no longer draws — which is
     exactly the silent divergence the fixture exists to prevent. Regenerate with
     ``.venv/bin/python scripts/gen_sweep_parity.py``.
+
+    Compared to ``PARITY_TOLERANCE``, not by equality. The fixture is checked in from one
+    machine and re-derived on another, and the mitre divides by dot products that go to zero
+    on the deliberately near-degenerate cases (``near-collinear-rake``, ``doubling-back``),
+    which amplifies the last-bit differences between two platforms' libm. Bit-exact equality
+    made this test a statement about the runner's CPU rather than about the geometry: it
+    passed on arm64 and failed on CI's x86_64. It went unnoticed for as long as CI's mypy
+    stage was failing ahead of pytest and this test never ran there at all.
     """
     generator = REPO_ROOT / "scripts" / "gen_sweep_parity.py"
     result = subprocess.run([sys.executable, "-c",
@@ -429,5 +500,4 @@ def test_the_shared_parity_fixture_is_current() -> None:
                              f"m=runpy.run_path({str(generator)!r});"
                              f"print(json.dumps(m['payload']()))"],
                             capture_output=True, text=True, check=True)
-    assert json.loads(result.stdout) == json.loads(FIXTURE.read_text()), (
-        "sweepParity.json is stale — run scripts/gen_sweep_parity.py")
+    _assert_parity(json.loads(result.stdout), json.loads(FIXTURE.read_text()), "payload")
