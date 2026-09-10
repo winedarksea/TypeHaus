@@ -147,9 +147,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   porch/balcony concrete structure (5" south gap), enclosed breezeway on freestanding 6x6
   posts spanning that 4' gap door-to-door (`params/breezeway.py`).
   **The breezeway follows the doors, and nothing enforces that but this line.** It is a
-  4'-0" enclosure centred between `D-M-ENTRY` and `D-G-SERVICE`; when either door moves,
-  `_GLAZING_CENTER_X` moves with it (`code.R311_3_exterior_landing` catches a shelter that
-  drifts off its own door). Both doors open onto the deck
+  4'-6" enclosure centred on the MIDPOINT of `D-M-ENTRY` (x 8'-0") and `D-G-SERVICE`
+  (x 10'-0") — x 9'-0", since 2026-09-09; the two are no longer concentric. When either
+  door moves, `_GLAZING_CENTER_X` and `_EW_FT` move with it
+  (`code.R311_3_exterior_landing` catches a shelter that drifts off its own door). Both doors open onto the deck
   at 0'-0", and they reach it from opposite directions:
   `D-M-ENTRY` from the house floor it shares, `D-G-SERVICE` *up* +1'-0" from a garage storey
   that sits at -1'-0". The breezeway deck did not move with grade — it is a bridge
@@ -604,11 +605,14 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     `FS-ATTIC.joists.bearing_refs`** to "support" it: that field is global to the deck and
     would cut all ~34 joist lines there, including the 17 over the suite where nothing stands
     below, and `integrity.floor_bearing_grid` does not test across the joist axis.
-  - **`RM-A-STUDIO`** — `Occupancy.BEDROOM`, **`floor_finish=None`**, the old room retagged in
-    place so uid `CAR401AAAA` and its GlobalId survive. Bare sanded deck is the cheap answer
-    and a spec rather than an omission (`FS-ATTIC` is `plywood-underlayment-sanded` *because*
-    these rooms walk on it); the sealer is a `prices.toml` allowance and `floor_finish="carpet"`
-    is the ~$1,200 alternative to put to the owner. BEDROOM is load-bearing four times: R310
+  - **`RM-A-STUDIO`** — `Occupancy.BEDROOM`, **`floor_finish="vinyl-sheet"`** (2026-09-09), the
+    old room retagged in place so uid `CAR401AAAA` and its GlobalId survive. It carried
+    `floor_finish=None` over a `plywood-underlayment-sanded` deck until that day: a sanded
+    plugged panel is walkable, not finished, so it needed a sealer allowance with no BOM row.
+    Sheet vinyl retires both — `FS-ATTIC` drops to plain `plywood-subfloor`, the sealer
+    allowance is deleted, and ~357 SF joins the house's existing `vinyl-sheet` buy at
+    ~$4-8/SF. Seamless and waterproof, which a room with a wet bar wants. `RM-A-STUDY` next
+    door is **oak** and always has been. BEDROOM is load-bearing four times: R310
     (PASSing on `WIN-A-S-JUL-W` with nothing added), the whole-house ventilation count,
     R314/R315, and `electrical.receptacle_spacing` evaluating the room at all.
     **R303.1 is answered by Exception 1, not by glazing** — **13.6 sf against 28.5 sf**
@@ -1925,17 +1929,34 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `W-G-S`. Then it moved **6'-0" east onto the house ridge**: the garage is x 6'-0"..30'-0",
   centre x=18'-0". `GARAGE_X_WEST`/`GARAGE_X_EAST` are published beside the two y lines and
   the stem, the slab and the landing all derive from them.
-  - **THE MOVE COST THE CONCENTRIC DOORS, AND THAT RED IS DELIBERATE AND OPEN.**
+  - **THE MOVE COST THE CONCENTRIC DOORS, AND THE BREEZEWAY ABSORBED IT ON 2026-09-09.**
     `D-G-SERVICE` had to travel with its wall — the move is in 24" steps (a 36" RO must land
     on a stud line measured from the wall's own start) and at x=8'-0" its king stud would
     stand **5/8"** inside the corner pack, which owns the first 3 5/8" of wall. Its centre is
     x=10'-0" now. **`D-M-ENTRY` could not follow**: its east jamb is already 6" west of
     `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s bearing stack lands and runs to the
     footings, and a 36" RO cannot straddle it. So the two doors the breezeway spans are
-    **2'-0" out of line**, `params/breezeway.py` is untouched at `_GLAZING_CENTER_X = 8.0`,
-    and `code.R311_3_exterior_landing` FAILs on `D-G-SERVICE`. **That is the one deliberate
-    red in this house and it is an owner decision** — centre the garage, look at it, adjust
-    the breezeway after. Do not answer it by moving the garage back.
+    **2'-0" out of line**, so the breezeway **straddles them instead of sitting on a shared
+    centre that no longer exists**: `_EW_FT = 4.5` centred on their midpoint at x=9'-0",
+    glazing x 6'-9"..11'-3". `code.R311_3_exterior_landing` passes both doors (entry 90.9%,
+    service 91.7%, bar 85%). 4'-6" is the smallest half-foot module clear of the 4'-1 15/32"
+    bare tangent. Do not answer any of this by moving the garage back.
+    - **IT COST THE BRIEF'S E-W TERM AND A HEAT PUMP MOVE.** The "8 x 4 x 4" brief is
+      retired in E-W and the roof sheet is now **cut** to 4'-6" instead of being an exact
+      half sheet (the N-S 4'-0" is still the literal uncut sheet in the 4'-0 1/2" slot).
+      And **`EQ-M-HP3-OD` moved 2'-4" east**, to x 12'-4"..15'-2 3/8": its west face had
+      been at x=10'-0", exactly the old east glazing line, and cabinet and glass
+      **interpenetrated by 5/16"** at 0 FAIL — nothing grades an Equipment against a deck
+      or a clearance envelope, so only hand measurement found it. It now clears the glass
+      by 12 11/16" (Gree's 12" lesser-side minimum). `SL-M-HP3PAD` went with it to
+      x 12'-1"..15'-5", which pushed the **front walk's west edge to x=15'-9"** (a
+      zero-clearance cabinet would still have reached it, at 14'-4 11/16").
+    - **THE CABINET'S y-AXIS CLEARANCES ARE STILL SHORT, AND THAT IS A DEFERRED OWNER
+      DECISION.** Gree publishes 12" air inlet and 6'-6" discharge; this position has 8"
+      and 25 11/16". The 48 1/2" slot can never give more than 33 11/16" front+back to a
+      14 51/64"-deep cabinet, at any position or rotation — the fix is re-siting system 3's
+      outdoor unit out of the slot. `params/hp3_pad.py::_BACK_CLEAR_IN` carries the
+      measured numbers and is the **only** record; no check will ever mention it.
   - **`EQ-M-HP1-OD` moved 6'-6" east and `ED-M-HP1-DISC` went to the WEST of it.** That
     cabinet's whole siting argument is that it stands east of the garage's plan extent; the
     garage moved under it. It now oversails the house's NE corner by 3" to keep its 14"

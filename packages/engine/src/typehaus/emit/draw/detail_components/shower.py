@@ -5,7 +5,7 @@ Reference: ``sauna_shower_basement_detail_ifc.png``; dimensions from
 
 There is no shower *assembly* — a shower is a fixture standing in a room — so the
 recognition gate is the fixture itself: a resolved canvas object whose ``FixtureType``
-publishes ``plan_symbol="shower"`` or ``"tub-shower"`` (a combo unit gets the same pan/
+publishes ``plan_symbol="shower"``, ``"shower-neo-angle"`` or ``"tub-shower"`` (a combo unit gets the same pan/
 tile/glass/HRV vocabulary), cut by the section plane. Everything is then derived from
 that footprint and the walls around it:
 
@@ -46,7 +46,8 @@ def shower_objects_in_cut(model, direction: str, station: float):
     out = []
     for obj in model.canvas_objects:
         ftype = _fixture_type(model, obj.type_ref)
-        if ftype is None or getattr(ftype, "plan_symbol", None) not in ("shower", "tub-shower"):
+        if ftype is None or getattr(ftype, "plan_symbol", None) not in (
+                "shower", "shower-neo-angle", "tub-shower"):
             continue
         if not obj.footprint:
             continue

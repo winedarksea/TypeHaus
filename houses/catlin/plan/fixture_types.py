@@ -70,15 +70,14 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # stood inside a code envelope. TOTO's one-piece skirted bowls run 28 1/2" (Nexus) to 30"
 # (Carlyle II); there is no real toilet the 54" survives.
 #
-# So: 51" x 21", which clears the Carlyle II's envelope by 1 3/4" instead of a quarter inch.
-# The 3" comes out of the drawer bank (24" -> 21"), not the sink base. What is left is still
-# five drawers and a full 30" sink base, and the alternative -- a shallower bowl -- would
-# have bought back two inches of cabinet by giving up the skirt, which is the cleanability
-# feature the room exists to have. ** Measure that run off the WALLS' finish faces
+# It went to 51" x 21" on 2026-09-06, clearing the Carlyle II's envelope by 1 3/4" instead
+# of a quarter inch, and then to ** 48" x 18" on 2026-09-09 ** for the aisle rather than for
+# the envelope: 48" is on the stock width ladder where 51" never was, 18" is the house's own
+# -SHALLOW depth (the boxed big-box combos measure 18.6"-18.75"), and the pair leaves
+# 4 1/4" to the water closet's envelope. The three inches of length come out of the drawer
+# bank; the 30" sink base is untouched. ** Measure that run off the WALLS' finish faces
 # and never off `Room.clear_face` ** -- the latter is inset from the wall AXIS, which on
-# this 13 7/8" exterior wall reads six inches out. 21" is the standard manufactured vanity
-# depth (KraftMaid, and the 20"-23" band every mass-market line sits in); the counter
-# overhangs it to 22".
+# this 13 7/8" exterior wall reads six inches out. The counter overhangs the carcass to 19".
 #
 # ``height`` is 41 1/2" and that is NOT the counter -- this file's library twin explains
 # why: a fixture's height is OVERALL including the spout, and ``_deck_height`` subtracts a
@@ -105,9 +104,9 @@ KOHLER_UNDERSCORE_6036 = FixtureType(
 # counter, so a cabinet that ever runs north has no height to hide in.
 #
 # The front clearance is the 21" IRC P2705.1 minimum, not NKBA's recommended 30", and the
-# room now beats the recommendation across the whole cabinet: 41 1/16" of aisle to the
-# shower for the south 36" of the run and 26 1/16" to the tub deck for the north 12". The
-# BASIN sits in the 41" half deliberately (see the type's `source`). Authoring 30" as a
+# room now beats the recommendation across the whole cabinet: 33 11/16" of aisle to the
+# shower for the south 36" of the run and 27 1/16" to the tub deck's access panel for the
+# north 12". The BASIN sits in the wide half deliberately (see the type's `source`). Authoring 30" as a
 # REQUIRED zone would make a guideline read as code in every clearance finding, which it
 # is not -- but the numbers above are what the owner asked the room to hold.
 BATH2_VANITY_48 = FixtureType(
@@ -154,8 +153,8 @@ BATH2_VANITY_48 = FixtureType(
 # with a 22" top). ``-SHALLOW`` is 18" deep and is NOT a premium product: the cheap big-box
 # combos -- the ones that arrive boxed with the top and bowl already on them -- measure
 # 18.6"-18.75" deep, so 18" is what is on the pallet. Three of these rooms cannot take 21"
-# and lose nothing by it. (``FX-VANITY-51-SINGLE`` above predates the suffix convention and
-# is 51" x 21"; it reads correctly under it.)
+# and lose nothing by it. (RM-M-BATH2's ``FX-VANITY-48-SHALLOW`` above joined them on
+# 2026-09-09, from 51" x 21".)
 #
 # ** WIDTHS ARE THE CHEAP STOCK LADDER: 24 / 30 / 36 / 48 / 60. ** Those five are stocked
 # by every big-box and every builder cabinet line, assembled, no lead time. 18", 42", 54"

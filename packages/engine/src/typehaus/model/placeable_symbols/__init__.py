@@ -73,6 +73,11 @@ SYMBOL_NAMES = frozenset({
     # footprint and the only in-wall part that shows is the actuator plate. Its carrier is
     # framing, not a glyph — see ``resolve/framing/carriers.py``.
     "toilet", "toilet-wall-hung", "lavatory", "vanity", "tub", "tub-shower", "shower",
+    # "shower-neo-angle" is the square pan with its room-facing corner off at 45 deg. It is
+    # its own name rather than a flag on "shower" because the cut is a plan outline a person
+    # walks past, not a finish: the glyph, the massing and the catalog ``footprint_shape``
+    # all come off ``plumbing.neo_angle_points`` so they cannot disagree.
+    "shower-neo-angle",
     "kitchen-sink",
     "hydrant", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:

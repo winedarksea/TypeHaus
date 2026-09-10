@@ -334,7 +334,7 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # 601 lb of water is there a few hours a week.
 #
 # ** THE THIRD ENTRY IS THE WASHTOWER, AND IT IS BLOCKING ONLY — NO SISTER. ** FX-M-LAUNDRY
-# stands at (114.06", 238.58"), so its 27"x32 3/4" footprint covers y 222"..255" and its
+# stands at (115.83", 236.64"), so its 27"x32 3/4" footprint covers y 220"..253" and its
 # nearest joist line is the SAME y=240" the bath already sisters — and a sister ply runs the
 # WHOLE joist (``resolve/floors.py`` ``_reinforcement_members``), so the doubled line is
 # already under the machine end to end. Nothing to add there.
@@ -352,9 +352,10 @@ _MECH_Y_S = inch(_MECH_Y.inches - _TRANSITION_DOUBLE.inches)
 # this one would cut its blocks against a bare joist and the bath's ply would then be laid
 # straight through them — ``structural.member_interference``, two FAILs. ``plies=1`` asks
 # for no ply of its own and tops up nothing; it rides the bath entry's finished cluster.
-# x=112.81"..115.31" at 2 1/2" wide, clear of the bath's 73.31"..75.81".
+# x=114.58"..117.08" at 2 1/2" wide, clear of the bath's 73.31"..75.81". The station
+# follows the machine: it moved 1 3/4" east on 2026-09-09 and this constant went with it.
 _TUB_DECK_X = inch(74.56)          # FX-M-BATH2-TUB's centre, and the blocks' axis station
-_LAUNDRY_X = inch(114.06)          # FX-M-LAUNDRY's centre, and its own blocks' station
+_LAUNDRY_X = inch(115.83)          # FX-M-LAUNDRY's centre, and its own blocks' station
 # ** W-M-CLN2 HAS NOTHING UNDER IT SINCE 2026-09-07. ** W-B-CW2B was the only basement wall
 # beneath that run, and the basement hall's extension to the sauna wall deleted it (see
 # storeys/basement.py). The partition is 9'-0" of INT_2X4_STAGGERED_GWB — double board both

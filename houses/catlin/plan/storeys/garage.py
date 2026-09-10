@@ -85,7 +85,7 @@ GARAGE_Y_NORTH = ft(64, 8.625)
 # GARAGE_WALL_2X6's 24" stud lines measured from THIS wall's own start, so the wall line and
 # the door move together in whole modules. 6'-0" is three of them.
 #
-# ** IT COST THE CONCENTRIC DOORS, AND THAT IS AN OPEN ITEM, NOT A SETTLED DESIGN. **
+# ** IT COST THE CONCENTRIC DOORS, AND THE BREEZEWAY ABSORBED THAT ON 2026-09-09. **
 # `D-G-SERVICE` had to go with the wall — at x=8'-0" its king stud would stand 5/8" inside
 # this wall's own corner pack (the sole plate starts 5/8" inboard of the node line and the
 # 3-stud corner takes the next 3", so the corner owns the first 3 5/8" of wall, and the king
@@ -93,11 +93,22 @@ GARAGE_Y_NORTH = ft(64, 8.625)
 # already 6" west of `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s bearing stack lands on
 # the north wall and runs to the footings, and a 36" RO cannot straddle it.
 #
-# So the two doors the breezeway spans are **2'-0" out of line**, and `params/breezeway.py`
-# is still built for the concentric pair — 4'-0" of enclosure centred on x=8'-0", one uncut
-# polycarbonate sheet. `code.R311_3_exterior_landing` will say so about `D-G-SERVICE`.
-# ** THAT IS DELIBERATE AND TEMPORARY (owner's call): centre the garage first, look at it,
-# then adjust the breezeway. ** Do not "fix" it by moving the garage back.
+# So the two doors the breezeway spans are **2'-0" out of line**, and the enclosure now
+# straddles them instead of sitting on a shared centre that no longer exists: 4'-6" of
+# glazing centred on their midpoint at x=9'-0", spanning x 6'-9"..11'-3"
+# (`params/breezeway.py::_EW_FT`). `code.R311_3_exterior_landing` passes both doors — the
+# entry patch at 90.9%, the service patch at 91.7%, against its 85% bar. **This is settled;
+# do not "fix" it by moving the garage back.**
+#
+# ** IT COST TWO THINGS, BOTH RECORDED WHERE THEY LIVE. ** The E-W term of the breezeway's
+# "8 x 4 x 4" brief is retired and its roof sheet is now cut to 4'-6" rather than being an
+# exact half sheet (`params/breezeway.py` docstring). And `EQ-M-HP3-OD` had to move 2'-4"
+# east: its west face was at x=10'-0", which is where the old east glazing line stood, and
+# cabinet and glass INTERPENETRATED by 5/16" at 0 FAIL — nothing in the engine grades an
+# Equipment against a deck or a clearance envelope. That move took SL-M-HP3PAD with it and
+# pushed the front walk's west edge to x=15'-9". The cabinet's y-axis airflow clearances
+# are still short of Gree's published minima and are an accepted, deferred item:
+# `params/hp3_pad.py::_BACK_CLEAR_IN` carries the numbers and is the only record.
 GARAGE_X_WEST = ft(6)
 GARAGE_X_EAST = ft(30)
 

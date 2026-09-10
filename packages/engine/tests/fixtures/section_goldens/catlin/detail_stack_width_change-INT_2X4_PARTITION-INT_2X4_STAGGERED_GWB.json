@@ -1064,62 +1064,6 @@
     },
     {
       "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          215.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          19.68503937007874
-        ],
-        [
-          215.25,
-          19.68503937007874
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW129AAAA",
-      "tag": "stud-006"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          215.25,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          1.4999999999999998
-        ],
-        [
-          218.75000000000003,
-          19.68503937007874
-        ],
-        [
-          215.25,
-          19.68503937007874
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

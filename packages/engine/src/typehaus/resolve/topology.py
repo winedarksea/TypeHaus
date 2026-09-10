@@ -437,6 +437,52 @@ def _shared_bearing(plan: PlanModel, incidents: list[JunctionIncident]) -> bool:
     return None not in materials and len(materials) == 1
 
 
+def _independent_bearing(plan: PlanModel, incidents: list[JunctionIncident]) -> bool:
+    """Two COLLINEAR walls of different bearing materials that stand side by side over the
+    same elevations — a stud wall meeting the end of a pour on one bearing line.
+
+    Neither bears on the other, so there is no transfer between them to detail, and there is
+    nothing for the solver to miter either: collinear incidents leave the node in opposite
+    directions, so their layer polygons abut on the node plane and never overlap. (The
+    conservative fallback measurably removes nothing at such a node — see
+    ``_remove_fallback_overlaps``, which trims by difference against already-placed layers.)
+
+    What each wall carries goes straight down its own path to its own footing; what spans
+    onto the line lands on top of both, and the deck that lands there ties them. Nothing in
+    the code asks for more:
+
+    * IRC R404.1.7 requires bracing/lateral support of a foundation wall only where it
+      retains unbalanced backfill, and exempts walls supporting less than 4 ft of it.
+    * IRC R602.10.8 sends braced-wall-panel-to-concrete connections to R403.1.6, i.e. the
+      framed wall's own sole plate to the concrete *beneath* it, which is a different
+      junction (and a rule the sill-plate return already owns). A bearing line that is not
+      a braced wall line is not asked for a connection at all.
+    * No IRC provision addresses a framed wall abutting a concrete wall end-on in plan where
+      neither supports the other, because that condition has no demand.
+
+    The two guards keep this from becoming a mute button:
+
+    * **Both sides must publish a bearing element.** A junction where one side has nothing
+      to bear on is a modelling gap, not a transition, and stays UNKNOWN.
+    * **The elevation extents must coincide.** Two walls that span the same z stand beside
+      each other for their whole height. A wall whose base sits partway up its neighbour is
+      bearing on it — a ledge or pocket — which is a real transfer, needs a real detail, and
+      still reports UNKNOWN. (A wall stacked fully on another is already a separate bearing
+      tier and never reaches here.)
+
+    Deliberately not extended to ``"l"``: at a corner one wall's end meets the other's FACE,
+    the layer polygons do interpenetrate, and whether that end wants anchoring into the
+    concrete is a question this reasoning has not been checked against.
+    """
+    materials = {_bearing_material(plan, item.assembly) for item in incidents}
+    if None in materials or len(materials) < 2:
+        return False
+    return (max(item.z0_m for item in incidents)
+            - min(item.z0_m for item in incidents) <= _EPS
+            and max(item.z1_m for item in incidents)
+            - min(item.z1_m for item in incidents) <= _EPS)
+
+
 def _wall_z_range(storey, wall) -> tuple[float, float]:
     """Absolute elevation extent of a wall, used to split stacked bearing tiers apart."""
     base = storey.elevation.meters if storey is not None else 0.0
@@ -527,6 +573,10 @@ def _classify_tier(plan: PlanModel, node_tag: str, storey_tag: str,
         or (kind == "t" and _is_basic_mixed_tee(plan, through, branches))
         or (kind in {"t", "x", "complex"} and continuous_tee)
         or (kind in {"collinear", "l"} and _shared_bearing(plan, incidents))
+        # Different bearing materials, but side by side rather than one on the other: two
+        # gravity walls meeting end-on with no transfer between them (→ _independent_bearing,
+        # which carries the code reasoning and both guards).
+        or (kind == "collinear" and _independent_bearing(plan, incidents))
     )
     diagnostic = None if supported else (
         "mixed-assembly junction requires interface rules"

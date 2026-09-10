@@ -10,9 +10,9 @@ applies to — a reasonable approximation near corners without a full offset-pol
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import failed, passed, unknown
+from typehaus.checks._authoring import advisory, failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding
+from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 
 # Setbacks are a *local zoning* requirement, not an IRC one — there is no section number to
@@ -31,6 +31,26 @@ def _fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
 
 def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
     return unknown(cid, reason, tags, code=_SETBACK_REF)
+
+
+def _placeholder(cid: str) -> Finding:
+    """A declared placeholder ring: FAIL result, WARN severity — red, but not a blocker.
+
+    The verdict stays FAIL because it is true of the set: every lot line, setback and
+    coverage figure on C-101 was drawn, not measured, and a reviewer has to see that in
+    red rather than have it fold into the UNKNOWN pile.
+
+    The *severity* is WARN, and that is the correction. ERROR is reserved for a hard
+    blocker, and the permit checklist already declares this line ``blocking=False``
+    (``code/mn_residential/profile.py``, "Certified parcel survey"): the survey is a
+    separate submittal by a licensed land surveyor on its own schedule, not a defect in
+    the building this engine models. Carrying ERROR anyway made ``--exit-on error`` gate
+    on an item the profile had deliberately opened, and misfiled a project state as a
+    fault. This is exactly ``_authoring.advisory``'s WARN/FAIL pairing.
+    """
+    return advisory(cid, "the parcel ring is a PLACEHOLDER, not a survey — lot lines, "
+                    "setbacks, lot area and coverage on this set are not measured",
+                    (), Result.FAIL, code=_SETBACK_REF)
 
 
 @check(Tier.CODE, "code.site_setback")
@@ -89,8 +109,7 @@ def site_parcel_is_surveyed(ctx: CheckContext) -> list[Finding]:
                          "lines, setbacks and coverage on this set rest on a ring nobody "
                          "has certified")]
     if basis == "placeholder":
-        return [_fail(cid, "the parcel ring is a PLACEHOLDER, not a survey — lot lines, "
-                      "setbacks, lot area and coverage on this set are not measured", ())]
+        return [_placeholder(cid)]
     if not site.survey_by:
         return [_unknown(cid, "the parcel is stated as surveyed but names no surveyor "
                          "(Site.survey_by)")]

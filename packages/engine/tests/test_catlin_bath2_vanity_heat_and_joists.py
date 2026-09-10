@@ -2,9 +2,9 @@
 
 Three changes landed together and each is silently breakable from somewhere else:
 
-  * the sink is a 51" ONE-BASIN VANITY, not the double-bowl kitchen sink that stood in for
-    it, and it fits the west wall only because the water closet's code clearance leaves
-    exactly 59";
+  * the sink is a 48" x 18" ONE-BASIN VANITY, not the double-bowl kitchen sink that stood
+    in for it (51" x 21" until 2026-09-09, when the owner traded three inches of cabinet
+    and three of depth for a real aisle at the basin);
   * the radiant mat is the room's ONLY heat source and is sized to a real purchasable
     cable, so `watts` is a nameplate rather than `area x 12`;
   * the bath's floor is answered with blocking and a sister ply, and the four blocks have
@@ -53,11 +53,13 @@ def _finish_face(model, wall_tag, axis, side):
     return max(values) if side == "max" else min(values)
 
 
-# The basin: a 20" x 15 1/2" undermount over the 30" sink base at the vanity's north end.
+# The basin: a 20" x 15 1/2" undermount over the 30" sink base, at the vanity's SOUTH end
+# since 2026-09-09 — the ends were swapped so the basin stands in the wide half of the room
+# (see the type's `source`), and the drain moved with it.
 def _basin(model):
     vanity = Polygon(_canvas(model, "FX-M-BATH2-SINK").footprint)
     vx0, vy0, vx1, vy1 = (v / M_PER_IN for v in vanity.bounds)
-    cx, cy = (vx0 + vx1) / 2, vy1 - 15.0
+    cx, cy = (vx0 + vx1) / 2, vy0 + 15.0
     return box((cx - 7.75) * M_PER_IN, (cy - 10) * M_PER_IN,
                (cx + 7.75) * M_PER_IN, (cy + 10) * M_PER_IN)
 
@@ -69,19 +71,19 @@ def test_the_vanity_is_one_basin_and_no_longer_a_kitchen_sink():
     kitchen sink; it drew two bowls on a bathroom plan and billed as a kitchen sink."""
     plan = _plan()
     sink = _element(plan, "main", "FX-M-BATH2-SINK")
-    assert sink.type_ref == "FX-VANITY-51-SINGLE"
+    assert sink.type_ref == "FX-VANITY-48-SHALLOW"
 
-    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-51-SINGLE"]
+    vanity = {t.tag: t for t in plan.library.fixture_types}["FX-VANITY-48-SHALLOW"]
     assert vanity.plan_symbol == "vanity"
     width, depth = (v.meters / M_PER_IN for v in vanity.footprint)
-    assert (round(width, 4), round(depth, 4)) == (51.0, 21.0)
+    assert (round(width, 4), round(depth, 4)) == (48.0, 18.0)
     # The kitchen sink type survives, because the KITCHEN still uses it.
     assert _element(plan, "main", "FX-M-KITCH-SINK").type_ref == "FX-KITCHEN-SINK-33"
 
 
 def test_the_vanity_stands_on_the_floor_rather_than_hanging_on_the_wall():
     """The old instance carried `Mount(WALL, 27")` to drag a kitchen deck down to lavatory
-    height. A vanity is a floor-standing cabinet; that mount would float a 51" carcass 27"
+    height. A vanity is a floor-standing cabinet; that mount would float the carcass 27"
     up the wall with its toe kick in mid-air."""
     sink = _element(_plan(), "main", "FX-M-BATH2-SINK")
     assert sink.mount.kind.value == "floor"
@@ -94,7 +96,7 @@ def test_the_counter_lands_at_thirty_six_inches():
     Change the height and the counter moves; this is the arithmetic that says by how much."""
     from typehaus.model.placeable_symbols.plumbing import _deck_height
 
-    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-51-SINGLE"]
+    vanity = {t.tag: t for t in _plan().library.fixture_types}["FX-VANITY-48-SHALLOW"]
     deck_m, _faucet = _deck_height(vanity.height.meters)
     # 41.5" less the builder's fixed 0.14 m (5.512") faucet band is 35.99", i.e. 36" to
     # within a hundredth. There is no height that lands on 36.000" in round inches.
@@ -102,7 +104,7 @@ def test_the_counter_lands_at_thirty_six_inches():
 
 
 def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
-    """The 51" is set by this, and the number it is set against was WRONG until 2026-09-06.
+    """The cabinet's length is set by this, and the number it is set against was WRONG until 2026-09-06.
 
     A cabinet may not stand in a code envelope, and the envelope this room is graded on is
     ** UPC 402.5's 24" **, not IRC P2705.1's 21": Minn. R. 1309.0010 subp. 3.D deletes IRC
@@ -119,17 +121,17 @@ def test_the_vanity_fits_the_west_wall_without_entering_the_toilets_clearance():
 
     vanity = Polygon(_canvas(model, "FX-M-BATH2-SINK").footprint)
     vx0, vy0, vx1, vy1 = (v / M_PER_IN for v in vanity.bounds)
-    assert round(vy1 - vy0, 2) == 51.0        # the 51" runs north/south, so rotation applied
-    assert round(vx1 - vx0, 2) == 21.0
+    assert round(vy1 - vy0, 2) == 48.0        # the 48" runs north/south, so rotation applied
+    assert round(vx1 - vx0, 2) == 18.0
     assert abs(vy0 - south_face) < 0.05       # hard into the room's south-west corner
 
     # The bowl faces south (rotation 0), so UPC 402.5's 24" reaches south off its front edge.
     wc = Polygon(_canvas(model, "FX-M-BATH2-WC").footprint)
     envelope_starts = min(p[1] for p in wc.exterior.coords) / M_PER_IN - 24.0
     assert vy1 < envelope_starts, "the cabinet stands in the water closet's code envelope"
-    # ...and the slack is a real margin now rather than a rounding error: 1 3/4", where the
-    # 54" cabinet this replaced left 0.24" and the next deeper bowl would have eaten it.
-    assert 1.0 < envelope_starts - vy1 < 3.5
+    # ...and the slack is a real margin now rather than a rounding error: 4 1/4" at 48",
+    # where the 54" cabinet left 0.24" and the next deeper bowl would have eaten it.
+    assert 3.5 < envelope_starts - vy1 < 5.0
 
 
 def test_the_vanity_backs_onto_the_wall_face_not_the_rooms_clear_face():
@@ -182,13 +184,13 @@ def test_the_vanity_clears_the_window_over_it():
 
     vanity_north = max(p[1] for p in _canvas(model, "FX-M-BATH2-SINK").footprint)
     assert lo > vanity_north
-    # 17 1/8" since the cabinet narrowed to 51" on 2026-09-06; it was 14 1/8" at 54".
-    assert 15.0 < (lo - vanity_north) / M_PER_IN < 20.0
+    # 20 1/8" since the cabinet narrowed to 48" on 2026-09-09; it was 17 1/8" at 51".
+    assert 18.0 < (lo - vanity_north) / M_PER_IN < 22.0
 
 
 def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     """** THE CONSTRAINT THAT NEARLY COST THE VANITY ITS SIZE. ** D-M-BATH2's 30" opening
-    runs x 2'-0 15/16"..4'-6 15/16" since 2026-09-09's lighter-touch jog realignment — the
+    runs x 2'-0 5/8"..4'-6 5/8" since 2026-09-09's lighter-touch jog realignment — the
     RO's west jamb lands flush against the cabinet's east face, zero gap, rather than a
     full stud bay clear of it. Swinging IN, the leaf would clip the cabinet outright. The
     door was turned around rather than the cabinet shrunk, so BOTH of these must stay true:
@@ -210,8 +212,8 @@ def test_the_bathroom_door_swings_out_and_clears_the_vanity():
     assert swing.bounds[3] <= wall_y + 1e-6, "the door swings back into the bathroom"
     # `swing_clearance`'s first vertex IS the hinge — the sector is built out from it.
     hinge_x = door.swing_clearance[0][0] / M_PER_IN
-    assert round(hinge_x, 4) == 24.9425, (
-        f"hinged at x={hinge_x:.4f}in, not the WEST jamb at 24.9425in the owner chose")
+    assert round(hinge_x, 4) == 24.635, (
+        f"hinged at x={hinge_x:.4f}in, not the WEST jamb at 24.635in the owner chose")
 
     for tag in ("FX-M-BATH2-SINK", "FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB"):
         assert not swing.intersects(Polygon(_canvas(model, tag).footprint)), tag
@@ -326,7 +328,7 @@ def test_the_keepout_check_reads_the_rotated_footprint():
 
 def _blocks_by_station(floor):
     """Blocking grouped by its axis (x) station — the bath's is at 74.56", the
-    WashTower's at 114.06". Every invariant below is per-station: two entries at the
+    WashTower's at 115.83". Every invariant below is per-station: two entries at the
     same joist line but different stations SHARE that line's bays legitimately."""
     out: dict[float, list] = {}
     for member in floor.members:
@@ -371,7 +373,7 @@ def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():
 
 
 def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister():
-    """FX-M-LAUNDRY stands at (114.06", 238.58"), whose nearest joist line is the same
+    """FX-M-LAUNDRY stands at (115.83", 236.64"), whose nearest joist line is the same
     y=240" the bath sisters — and a sister runs the WHOLE joist, so the doubled line is
     already under the machine. What it lacked was blocking at its own station: the bath's
     four blocks all sit at x=74.56", 40" west. This is a vibration entry (a ~20 Hz spin
@@ -382,7 +384,14 @@ def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister()
     model = _model()
     floor = next(f for f in model.floors if f.tag == "FS-M-WEST")
     laundry_x = _element(_plan(), "main", "FX-M-LAUNDRY").position.xy_m[0] / M_PER_IN
-    blocks = _blocks_by_station(floor)[round(laundry_x, 2)]
+    # ``_LAUNDRY_X`` (params/main_deck.py) is a plan constant tracking this machine's
+    # centre. It is a constant, not a derivation, so this asks which station is under the
+    # machine rather than keying on its centre to the hundredth — a machine that drifts an
+    # inch in the UI does not move the blocking, and does not have to.
+    stations = _blocks_by_station(floor)
+    station = min(stations, key=lambda x: abs(x - laundry_x))
+    assert abs(station - laundry_x) < 13.5, "no blocking station under the WashTower"
+    blocks = stations[station]
     assert len(blocks) == 2, "one block to the joist line on each side, no more"
     assert len([m for m in floor.members if m.category == "sister_joist"]) == 1
 

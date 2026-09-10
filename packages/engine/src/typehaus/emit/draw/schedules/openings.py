@@ -92,8 +92,8 @@ def _write_room_finish_schedule(pdf, model: ResolvedModel, number: str, name: st
     bounding walls' own assemblies — so it cannot disagree with the model that priced it.
 
     ``—`` is printed where a room states nothing, never a guess. An unstated floor finish on
-    catlin's guest studio is a real decision (bare sanded deck) and a schedule that filled it
-    in with a plausible default would be inventing scope.
+    catlin's two unfinished attic lofts is a real decision (bulk storage walks on the deck)
+    and a schedule that filled it in with a plausible default would be inventing scope.
     """
     rooms = sorted(model.rooms, key=lambda r: (r.storey or "", r.tag))
     types = {item.tag: item for item in (*model.plan.library.fixture_types,

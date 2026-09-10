@@ -75,14 +75,18 @@ DETAIL_SLICES = [
     # See the post-line block in params/breezeway.py.
     #
     # The crop runs from below the frost-depth pads (-4') to above the crown (+8'-6"), and
-    # 1'-0" past the 4'-0" glazing envelope (x = 6'-0" to 10'-0") on each side. **It was
-    # x = 1'-6"..7'-6" until 2026-09-03** — the same 3'-6" of stale arithmetic the module
-    # docstring carried, from when the enclosure was centred on x = 4'-6". The drawing was
-    # cropping off the east half of its own subject.
+    # 9" past the 4'-6" glazing envelope (x = 6'-9" to 11'-3") on each side. **It was
+    # x = 1'-6"..7'-6" until 2026-09-03 and x = 5'-0"..11'-0" until 2026-09-09** — and each
+    # time the enclosure moved, this crop was the thing that did not, so the drawing quietly
+    # cropped off part of its own subject. The 2026-09-09 widening to 4'-6" put GL-BW-WALL-E
+    # and its sill and hatch trim 3" OUTSIDE the old x=11'-0" edge, and the section goldens
+    # recorded three elements simply vanishing. ** IF _EW_FT OR _GLAZING_CENTER_X MOVES
+    # AGAIN, MOVE THIS TOO ** — nothing links them and no check grades a crop against the
+    # thing it is meant to show.
     Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
          title="Breezeway cross section",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
-         crop=(pt(ft(5), ft(-4)), pt(ft(11), ft(8, 6))),
+         crop=(pt(ft(6), ft(-4)), pt(ft(12), ft(8, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
     # ** THE DRAWING THAT PROVES THE ATTIC CHANGE, AND THE ONE THAT WOULD CATCH IT COMING
     # UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the stair

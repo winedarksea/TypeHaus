@@ -148,3 +148,50 @@ def test_wall_hung_toilet_has_no_tank_and_uses_the_whole_depth() -> None:
     tank = model_parts("toilet", width, depth, height)[0]
     plate_part = model_parts("toilet-wall-hung", width, depth, height)[2]
     assert tank["size"][1] > plate_part["size"][1] * 3
+
+
+def test_a_neo_angle_shower_draws_and_masses_its_pentagon_not_its_bounding_box() -> None:
+    """The defect this closes: the type carried a five-sided ``footprint_shape`` that only
+    the resolver's collision test read, so the sheets drew a 36" square and the viewer massed
+    one — the cut corner existed in the model and in no drawing.
+
+    Both halves come off ``neo_angle_points``, so the assertion is that the glyph outline, the
+    pan's swept ring and the catalog outline are one polygon.
+    """
+    from typehaus.model.placeable_symbols.plumbing import (NEO_ANGLE_CUT_FRACTION,
+                                                           neo_angle_points)
+
+    size = 0.9144  # 36"
+    ring = neo_angle_points(size, size, size * NEO_ANGLE_CUT_FRACTION)
+    assert len(ring) == 5
+    # The wall corner survives whole; the diagonally opposite one is gone.
+    assert (size / 2, size / 2) in ring
+    assert (-size / 2, -size / 2) not in ring
+
+    outline = plan_symbol_strokes("shower-neo-angle", size, size)[0]
+    assert outline["closed"] and outline["points"] == ring
+    pan = model_parts("shower-neo-angle", size, size, 2.0)[0]
+    assert pan["points"] == ring
+    # The square pan is untouched: no cut, and its outline is still the plain rectangle.
+    square = plan_symbol_strokes("shower", size, size)[0]
+    assert len(square["points"]) == 4
+
+
+def test_a_box_part_carries_no_ring_and_a_ringed_part_carries_its_bounding_box() -> None:
+    """``points`` is the optional half of the contract: every consumer may fall back to
+    ``center``/``size``, so a ringed part has to state a bounding box that is actually its
+    own. Asserted over the whole registry — a new ringed builder inherits it."""
+    for symbol in sorted(_REGISTRY):
+        for width, depth, height in SIZES:
+            for part in model_parts(symbol, width, depth, height):
+                ring = part["points"]
+                if not ring:
+                    continue
+                xs = [x for x, _ in ring]
+                ys = [y for _, y in ring]
+                cx, cy, _ = part["center"]
+                sx, sy, _ = part["size"]
+                assert cx == pytest.approx((min(xs) + max(xs)) / 2, abs=TOLERANCE)
+                assert cy == pytest.approx((min(ys) + max(ys)) / 2, abs=TOLERANCE)
+                assert sx == pytest.approx(max(xs) - min(xs), abs=TOLERANCE)
+                assert sy == pytest.approx(max(ys) - min(ys), abs=TOLERANCE)

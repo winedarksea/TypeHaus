@@ -1229,13 +1229,35 @@ def test_hp3s_cabinet_faces_the_slot_and_clears_both_walls(catlin_model) -> None
     assert unit.footprint[1].inches == pytest.approx(_HP3_CAB_D_IN)
     cx_in, cy_in = (v / INCH for v in unit.position.xy_m)
     # 8" of back clearance to the house cladding; the discharge reads 25 11/16" of clear
-    # slot to the garage's. Neither is a published minimum for this chassis — Gree's
-    # clearance sheet could not be sourced — but both exceed HP2's published 6" back.
+    # slot to the garage's. **Both are UNDER Gree's published minima (12" air inlet,
+    # 6'-6" discharge — greecomfort.com's mini-split cheat sheet, sourced 2026-09-09), and
+    # that is a known, owner-accepted, deferred defect**: the 48 1/2" slot cannot give a
+    # 14 51/64"-deep cabinet more than 33 11/16" front+back at any position or rotation, so
+    # only re-siting the unit fixes it. `params/hp3_pad.py::_BACK_CLEAR_IN` carries the
+    # numbers. These two are pinned so the y position cannot drift while that is pending.
     assert (cy_in - _HP3_CAB_D_IN / 2.0) - _HP3_CLADDING_Y_IN == pytest.approx(8.0)
     assert _HP3_GARAGE_CLADDING_Y_IN - (cy_in + _HP3_CAB_D_IN / 2.0) > 24.0
-    # West face on the round foot at x 10'-0", 6" clear of D-M-ENTRY's near jamb at 9'-6"
-    # and clear of that door's R311.3 landing entirely.
-    assert cx_in - _HP3_CAB_W_IN / 2.0 == pytest.approx(120.0)
+    # ** WEST FACE AT x 12'-4", MOVED 2'-4" EAST ON 2026-09-09. ** It was x 10'-0", which
+    # was also the breezeway's east glazing line — cabinet and glass interpenetrated by
+    # 5/16" at 0 FAIL, because nothing grades an Equipment against a solid. Widening the
+    # breezeway to 4'-6" (so `D-G-SERVICE` gets its R311.3 landing) put that glass at
+    # x 11'-3 5/16"; 12'-4" clears it by 12 11/16", Gree's 12" lesser-side minimum.
+    assert cx_in - _HP3_CAB_W_IN / 2.0 == pytest.approx(148.0)
+    # The x clearance that had to be bought, asserted rather than described: the cabinet's
+    # west face against the breezeway's east glazing panel. This is the collision that was
+    # there for two days; it must never come back.
+    glass_e = max(p[0] / INCH for p in _solid(catlin_model, "GL-BW-WALL-E").outline)
+    assert cx_in - _HP3_CAB_W_IN / 2.0 - glass_e >= 12.0
+    # And the straight lineset punch through W-M-N2 survives: the cabinet still shares
+    # station with EQ-M-HP3-STAIR inside, which is what "straight" means here.
+    head = next(e for st in catlin_model.plan.storeys
+                for e in catlin_model.plan.storey_elements(st.tag)
+                if getattr(e, "tag", "") == "EQ-M-HP3-STAIR")
+    head_cx = head.position.xy_m[0] / INCH
+    head_half = head.footprint[0].inches / 2.0
+    shared = min(cx_in + _HP3_CAB_W_IN / 2.0, head_cx + head_half) - max(
+        cx_in - _HP3_CAB_W_IN / 2.0, head_cx - head_half)
+    assert shared > 6.0, f"the lineset punch is no longer straight: {shared:.2f}in shared"
     # And the whole cabinet stands over its pad.
     from shapely.geometry import box
 

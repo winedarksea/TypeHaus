@@ -833,6 +833,14 @@ MAIN_DEVICES = [
     # 6'-7" ceiling — the same arithmetic that put ED-M-HP1/HP2-DISC at 2'-2" above the
     # pocket grade and passed. ft(3, 6) reads 6'-4" and clears. Verified 2'-2 3/4" clear of
     # D-M-ENTRY's near jamb, so the lower handle fouls nothing.
+    # ** IT DID NOT TRAVEL WITH ITS UNIT ON 2026-09-09, AND THAT IS A CHOICE. ** EQ-M-HP3-OD
+    # went 2'-4" east; this can stayed at x 4'-0". It cannot follow: the cabinet now stands
+    # 8" off W-M-N2 with its back to it, so the wall directly behind it is unreachable, and
+    # the next clear stretch is east of the pad at x 15'-5"+ — past the front walk, and
+    # further from the panel. Straight-line to the cabinet centre is **9'-10"**, well inside
+    # NEC 440.14's 50 ft, and the 4'-6" of breezeway now on that line is transparent
+    # polycarbonate; the enclosure was already on it before the move. Re-siting system 3's
+    # outdoor unit (params/hp3_pad.py) is what should carry this can with it.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(4), ft(36, 8.875)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
@@ -1039,10 +1047,19 @@ MAIN_EQUIPMENT = [
     #    the cladding at y 36'-7 1/4". That is a 4 1/16" move north and 1 9/16" east.
     #    The same pair is written in params/hp3_pad.py, which this module cannot import.
     #
+    # ** IT MOVED 2'-4" EAST ON 2026-09-09; x ONLY, y IS UNTOUCHED. ** The west face at
+    # x 10'-0" was also the breezeway's east glazing line, and cabinet and glass
+    # interpenetrated by 5/16" at 0 FAIL. Widening the breezeway deck to cover
+    # D-G-SERVICE's R311.3 landing moved that glass to x 11'-3 5/16", so the cabinet went
+    # to x 12'-4"..15'-2 3/8" — 12 11/16" clear of it, Gree's 12" lesser-side minimum.
+    # The straight punch through W-M-N2 survives on 12 3/4" of shared station with
+    # EQ-M-HP3-STAIR (x 10'-7 3/4"..13'-4 3/4"); see params/hp3_pad.py::_CAB_X0_IN, which
+    # also records the y-axis clearances this position still does NOT meet.
+    #
     # No `drain_pan` / `pan_drain_ref`, as before and as on HP1/HP2: defrost meltwater off a
     # unit at grade drips onto its own pad.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(11, 5.1875), ft(37, 10.6484375)),
+              position=pt(ft(13, 9.1875), ft(37, 10.6484375)),
               footprint=(inch(34.375), inch(14.796875)), rotation=deg(180),
               mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
@@ -1410,21 +1427,49 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(27))),
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
-    # North under the house/garage gap to the EV receptacles on W-G-S. East leg runs y=35',
-    # crossing W-B-N2/W-B-N3 once, 4" clear of that wall — see CONDUIT_SLEEVES below.
+    # ** ONE FEEDER, TWO RUNS SINCE 2026-09-09, AND THE SPLIT IS THE POINT. ** The whole
+    # thing used to sit at -4'-0" — the burial depth it wants in the house/garage gap —
+    # which inside the house is five feet off the slab: 6'-1" of it crossed RM-B-STAIR at
+    # head height and `mep.run_in_finished_volume` called it at 36.1". A `ConduitRun` changes
+    # elevation only at its LAST vertex, so a run that has to be high indoors and low
+    # outdoors cannot be one run. CD-B-GARAGE is now the indoor leg, held at the basement
+    # ceiling and turning DOWN at the wall it leaves through; CD-B-GAP-EV below is the
+    # buried leg. Both name the same panel and the same receptacle, because that is what
+    # they are — the conduit schedule and the BOM read one feeder in two rows.
+    #
+    # THE INDOOR LEG'S TWO NUMBERS. -1'-1 3/4" is 1.9" under RM-B-STAIR's -1'-0 1/2"
+    # ceiling, inside the 3" the check allows, and it is chosen against the two runs this
+    # leg crosses rather than against the ceiling: PR-B-CW-TRUNK's x=5'-0" leg at -1'-2.8"
+    # (1 1/16" on centre) and CD-B-DATA-STUDY's x=2'-0" leg at -1'-0.5" (1 1/4"), which is
+    # how two raceways rack together. y moved 35'-0" -> 35'-3" for the same reason:
+    # PR-B-KITCH-DRAIN owns y=35'-0" from x=4'-6" to x=18'-0" and its crown is above this
+    # band, so the old lane is not free at ceiling height. 35'-3" puts the conduit's face
+    # 3/8" off W-B-N2's inside face (35'-4"), which is where it is strapped.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
-                     pt(ft(16), ft(41, 9.375))),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35, 3)), pt(ft(16), ft(35, 3)),
+                     pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
+               start_elevation=ft(-1, -1.75), end_elevation=ft(-4),
+               from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
+    # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
+    # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
+    # always used — none of its three sleeves moved.
+    ConduitRun(uid="5PEMG38MHJ", tag="CD-B-GAP-EV", trade_size=inch(1.25),
+               path=(pt(ft(16), ft(35, 5)), pt(ft(16), ft(41, 9.375))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
     # this feeds) is.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
                path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11))),
-               # -1'-6": the deck soffit is at -13 7/16" and its board at -14 1/16", so the
-               # clear under it is 1 15/16" — still clear, and this is the tightest raceway
-               # in the basement. Its two wall crossings go with it.
-               start_elevation=ft(-1, -6), end_elevation=ft(3, 6),
+               # ** -1'-4", RAISED 2" ON 2026-09-09, AND THE OLD PROSE WAS THE TELL. ** This
+               # block claimed 1 15/16" of clear under the deck board while the run was
+               # authored at -1'-6", where the real gap is 3 9/16" and the raceway hangs 4.3"
+               # into RM-B-PLAY-N below — `mep.run_in_finished_volume` FAILed on it. At -1'-4"
+               # the conduit's top is 1 9/16" under the board at -14 1/16": strapped tight to
+               # the deck framing with room for the ceiling, which is what was always meant.
+               # This is the tightest raceway in the basement. Its two wall crossings go with
+               # it. Do not put it back — a 16'-6" bulkhead to box a 3/4" pipe is not the fix.
+               start_elevation=ft(-1, -4), end_elevation=ft(3, 6),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
@@ -1602,14 +1647,18 @@ BASEMENT_DATA_TRUNKS = [
                      pt(inch(9), ft(8, 6))),
                start_elevation=ft(-4), end_elevation=ft(-5, -10),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-WORKSHOP-DATA1"),
-    # Media room: east along the basement ceiling at -1'-6", through the stair shaft's west
+    # Media room: east along the basement ceiling at -1'-4", through the stair shaft's west
     # wall and the centre wall, then north to the jack behind the television. Held at y=30'
     # so its two sleeves stay a clear foot from CD-B-KITCHEN's at y=29' — the sleeve matcher
     # pairs a run to a hole by proximity, and two holes 6" apart in the same wall confuse it.
+    #
+    # -1'-4" for the same reason CD-B-KITCHEN is (2026-09-09): at -1'-6" it hung 4.3" into
+    # RM-B-PLAY-N, whose finished ceiling IS the deck board at -14 1/16". Both raceways
+    # cross that room, and both had to come up the same 2".
     ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", trade_size=inch(0.75), service=Service.DATA,
                path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(27, 9), ft(30)),
                      pt(ft(27, 9), ft(35, 3))),
-               start_elevation=ft(-1, -6), end_elevation=ft(-6, -10),
+               start_elevation=ft(-1, -4), end_elevation=ft(-6, -10),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-PLAY-N-DATA1"),
     # Study: south and east strapped to the basement ceiling at -1'-0 1/2", then up the
     # study's south wall to the jack.
@@ -1679,10 +1728,12 @@ ATTIC_DATA_DEVICES = [
 # (`mep.sleeve_coverage` matches on them). Wall/footing crossings are horizontal, carry the
 # run's elevation; deck/slab crossings are vertical.
 CONDUIT_SLEEVES = [
-    # CD-B-GARAGE: west to east across the basement at -4', then north under the house/
-    # garage gap and up through the garage slab. The east leg runs at y=35'-0", 4" clear of
-    # W-B-N3/W-B-N2's inside face (35'-4"): no crossing, no hole. W-B-STR at x=10' is framed,
-    # so its crossing is bored, not cast. Only the genuine north punch at x=16'
+    # CD-B-GARAGE / CD-B-GAP-EV: the indoor leg runs west to east at the basement ceiling
+    # on y=35'-3", 1" clear of W-B-N3/W-B-N2's inside face (35'-4"), and turns down at
+    # x=16' where it meets that wall; the buried leg goes on north under the house/garage
+    # gap and up through the garage slab. The 2026-09-09 split moved no sleeve: the turn
+    # lands on the same x=16' station the punch always used. W-B-STR at x=10' is framed, so
+    # its crossing is bored, not cast. Only the genuine north punch at x=16'
     # (SP-B-N2-CD-GAR2) is a hole in concrete.
     SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
                       position=pt(ft(16), ft(35, 6)), pipe_diameter=inch(1.25),

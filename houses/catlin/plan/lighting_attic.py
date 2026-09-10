@@ -286,8 +286,23 @@ ATTIC_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-A-POCKET",
                      controlled_by=("ED-A-POCKET-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(3, 4.5))),
+    # ** IT SWITCHES THE POCKET AND IT LIVES IN THE STUDIO, 2026-09-09 — BOTH HALVES. **
+    # `room=` names the room the device is IN, not the room it controls, and this box is
+    # 1 1/8" off W-A-STU-N's studio-side gypsum (axis y=268", INT_2X4_PARTITION); RM-A-POCKET
+    # does not start until y=268 5/8". `integrity.placeable_room_mismatch` said so. The
+    # STUDIO side is also where it belongs: the pocket is entered through a 24x42 access
+    # door, and IRC M1305.1.3 wants the light switched at the entrance to the appliance
+    # passageway, not reached through the hatch. The `ED-A-POCKET-` tag family is unchanged,
+    # which lighting_attic.py's prefix rule above requires.
+    #
+    # ** AND IT CAME OUT OF THE DOOR'S ROUGH OPENING. ** D-A-POCKET's RO is x 82"..110";
+    # a 4" footprint centred at 8'-6" landed at x 100"..104", i.e. a box in the header over
+    # a 42" leaf. x=6'-8" puts it at 78"..82", clear of the RO by a hair and still at the
+    # door. ** NOTHING GRADES A WALL DEVICE AGAINST A ROUGH OPENING **, so this is held here.
+    # It does not collide with ED-A-STUDIO-AP at x=6'-6": that one mounts at 3'-0", this at
+    # 3'-10".
     ElectricalDevice(uid="G5RDBXPZVD", tag="ED-A-POCKET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 6), ft(22, 0.625)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-A-POCKET", rotation=deg(180),
+                     position=pt(ft(6, 8), ft(22, 0.625)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

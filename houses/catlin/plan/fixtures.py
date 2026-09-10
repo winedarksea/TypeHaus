@@ -312,7 +312,7 @@ MAIN_FIXTURES = (
     # The faces here are read off the walls' own layer polygons: W-M-W3 at x=6.635",
     # W-M-BDN1 at y=158.375", W-M-HS1 at y=264.615", W-M-BA2E at x=94.625".
     #
-    # So the centre is x=15 15/16" (18" of depth off the west face) and y=15'-2 3/8" (48" of
+    # So the centre is x=15 5/8" (18" of depth off the west face) and y=15'-2 3/8" (48" of
     # length off the south face), hard into the room's real south-west corner. It runs NORTH
     # and stops at y=17'-2 3/8", which leaves 9 1/4" to where FX-M-BATH2-WC's 21" P2705.1
     # front clearance begins at y=17'-11 5/8". rotation +90 turns the 48" length north/south
@@ -335,7 +335,7 @@ MAIN_FIXTURES = (
     # entered a 30" doorway through a 19 3/8" gap, past the corner of the counter. A later
     # pass bought a full stud bay of clearance by jogging W-M-BA2E2 8 3/8" east; the owner
     # then wanted a lighter touch, so THE JOG IS GONE ALTOGETHER and the door's RO is
-    # positioned directly off this cabinet's east face (x=24 15/16") instead — no setback
+    # positioned directly off this cabinet's east face (x=24 5/8") instead — no setback
     # for casing, a scribe/filler against the cabinet end panel taking up the difference.
     # `structural.door_framing_module` FAILs on the resulting off-module station and is
     # suppressed in preferences.toml; see the D-M-BATH2 comment in storeys/main.py. The
@@ -353,7 +353,7 @@ MAIN_FIXTURES = (
     # UNCHANGED, so the branch simply runs diagonally under the floor instead of straight,
     # and still holds 4.19"/ft where 0.25" is the floor.
     Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-VANITY-48-SHALLOW",
-            room="RM-M-BATH2", position=pt(inch(15.9425), inch(182.375)), rotation=deg(90),
+            room="RM-M-BATH2", position=pt(inch(15.635), inch(182.375)), rotation=deg(90),
             wall_ref="W-M-W3",
             drain_position=pt(ft(1), ft(14, 5.375))),
     # --- RM-M-LAUNDRY -------------------------------------------------------------------

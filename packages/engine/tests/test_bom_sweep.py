@@ -207,17 +207,18 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     plywood and nothing goes over it. The row exists so the floor is not silently missing
     from the schedule — but it orders zero, because there is nothing to order.
 
-    RM-A-STUDIO is deliberately left BARE — `floor_finish=None` — rather than sealed:
-    FS-ATTIC's deck is `plywood-underlayment-sanded`, authored that grade because these
-    rooms walk on it, and a clear sealer is a `prices.toml` allowance rather than a finish.
-    RM-A-STUBATH is billed separately (vinyl-sheet), and FO-A-HALL's stair-hall void left
-    the schedule entirely because there is no deck there.
+    ** 2026-09-09: 965.3 -> 609.5 SF, and RM-A-STUDIO LEFT THIS ROW. ** The studio took
+    `vinyl-sheet` over a plain `plywood-subfloor` deck (storeys/attic_studio.py), which
+    retired both the sanded-panel premium and the sealer allowance it used to need. What is
+    left here is the two genuinely unfinished lofts. RM-A-STUBATH is billed separately
+    (vinyl-sheet), and FO-A-HALL's stair-hall void left the schedule entirely because there
+    is no deck there.
 
     This row is asserted on its area AND separately on ordering zero AND on its room list:
     any one of the three alone would read a real change as a saving."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
-    assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET", "RM-A-STUDIO"]
-    assert float(row["net_area_sqft"]) == pytest.approx(965.3, abs=1.5)
+    assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET"]
+    assert float(row["net_area_sqft"]) == pytest.approx(609.5, abs=1.5)
     assert float(row["order_area_sqft"]) == 0.0
 
 

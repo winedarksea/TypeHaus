@@ -776,8 +776,14 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
                      controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # ** BOTH THESE SWITCHES FOLLOW W-M-BA2E's FACE, AND IT MOVED (2026-09-09). ** The bath2
+    # east line went 2" east and the W-M-BA2E2 jog came off, so ONE finished face at
+    # x=101 3/8" now serves both — 99 3/8" and 106 3/4" before. A wall device's footprint is
+    # CENTRED on its position, so a 2"-deep switch sits at 102 3/8", half its body off the
+    # face. Left where they were, one buried 2 13/16" into the studs and the other floated
+    # 5 3/8" into the room, and `haus check` graded neither.
     ElectricalDevice(uid="QTM000TAAA", tag="ED-M-LAUNDRY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 4.375), ft(21, 2)), type_ref="ED-T-SWITCH",
+                     position=pt(inch(102.385), ft(21, 2)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # ** A SECOND CAN, AND THE FIRST ONE MOVES, 2026-09-06. ** 48.4 sf, 8'-11 1/2" clear,
@@ -812,7 +818,7 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000WAAA", tag="ED-M-CLOSET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 11.74), ft(16, 10)), type_ref="ED-T-SWITCH",
+                     position=pt(inch(102.385), ft(16, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # room=RM-M-MUD-CLOSET: the closet conversion framed a room around this ceiling point,

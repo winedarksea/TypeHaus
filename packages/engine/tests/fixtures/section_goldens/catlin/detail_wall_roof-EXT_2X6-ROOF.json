@@ -1256,7 +1256,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "plywood-underlayment-sanded"
+      "material": "plywood-subfloor"
     },
     {
       "space": "model",

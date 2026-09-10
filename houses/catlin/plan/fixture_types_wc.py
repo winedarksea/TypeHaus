@@ -27,7 +27,8 @@ from library.placeables.fixtures import (
     _water_closet_required_clearance,
 )
 
-from typehaus.model import FixtureType, Footprint2D, Service, inch, pt
+from typehaus.model import FixtureType, Footprint2D, Service, ft, inch, m, pt
+from typehaus.model.placeable_symbols.plumbing import NEO_ANGLE_CUT_FRACTION, neo_angle_points
 
 # ---------------------------------------------------------------------------
 # WATER CLOSETS
@@ -226,25 +227,25 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
 # of cut per leg is 16 x sqrt 2). A 38" base restores the margin and gives back 2" of the
 # room, which is the trade this pan exists to avoid.
 #
-# ** THE PENTAGON IS THE PLAN OUTLINE; THE SYMBOL STILL DRAWS A SQUARE. ** `footprint_shape`
-# is read only by `resolve/placeables.py:_local_footprint`, so collision and wall attachment
-# see the true five-sided outline while the "shower" glyph and the 3D massing draw the 36"
-# bounding box — the same acknowledged split FT-SECTIONAL-U-MEDIA carries. Local +y is the
-# object's BACK, so the ring below puts the wall corner at (+18, +18) and cuts the (-18, -18)
+# ** THE PENTAGON IS THE PLAN OUTLINE, AND SINCE 2026-09-09 IT IS ALSO THE DRAWING. ** The
+# type names `plan_symbol="shower-neo-angle"`, so the glyph on every sheet and the massing in
+# the viewer and the .glb are the five-sided pan, not its 36" bounding box; `footprint_shape`
+# comes off `neo_angle_points`, the same function the symbol draws from, so the outline the
+# resolver collides against and the outline a person sees cannot drift. Local +y is the
+# object's BACK, so the ring puts the wall corner at (+18, +18) and cuts the (-18, -18)
 # corner; the fixture is authored with no rotation, which lands that corner in the room's NE.
 #
 # Valve, trim and head are SHOWER_36_COMBO's unchanged — one outlet, one magnetic combo head,
 # and the same ASSE 1016 rough this file's header argument applies to every shower here.
+_NEO_SIZE = (ft(3), ft(3))
 SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
     "tag": "FX-SHOWER-36-NEO-COMBO",
     "name": 'Shower, 36" neo-angle, pressure-balance valve with a two-in-one combo head',
-    "footprint_shape": Footprint2D(points=(
-        pt(inch(18), inch(18)),
-        pt(inch(-18), inch(18)),
-        pt(inch(-18), inch(-2)),
-        pt(inch(-2), inch(-18)),
-        pt(inch(18), inch(-18)),
-    )),
+    "plan_symbol": "shower-neo-angle",
+    "footprint_shape": Footprint2D(points=tuple(
+        pt(m(x), m(y)) for x, y in neo_angle_points(
+            _NEO_SIZE[0].meters, _NEO_SIZE[1].meters,
+            _NEO_SIZE[0].meters * NEO_ANGLE_CUT_FRACTION))),
     "source": 'RM-A-STUBATH, owner selection 2026-09-09, replacing the 36" square pan. Same '
               'Delta MultiChoice R10000-UNBX rough (ASSE 1016), same single-function trim, '
               'same Moen Engage Magnetix 26010SRN two-in-one head; what changes is the base '

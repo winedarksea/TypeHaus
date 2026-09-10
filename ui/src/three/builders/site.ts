@@ -154,11 +154,16 @@ export function buildCanvasObjectParts(
       materials.set(part.color, material);
     }
     const [sx, sy, sz] = part.size;
-    const mesh = makeSurfaceMesh(new THREE.BoxGeometry(sx, sz, sy), material);
     // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
     // object's origin, so a part only needs its own local offset expressed the same way.
     const [cx, cy, cz] = part.center;
-    mesh.position.set(cx, cz, -cy);
+    // A ringed part sweeps its own plan outline — a neo-angle shower pan is a pentagon, and a
+    // box would draw a square where the room's diagonal is. `createPlanPrismGeometry` already
+    // lands in the scene frame at the local origin, so only the box branch offsets its mesh.
+    const ring = part.points && part.points.length >= 3
+      ? createPlanPrismGeometry(part.points, cz - sz / 2, cz + sz / 2) : null;
+    const mesh = makeSurfaceMesh(ring ?? new THREE.BoxGeometry(sx, sz, sy), material);
+    if (!ring) mesh.position.set(cx, cz, -cy);
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);

@@ -107,10 +107,14 @@ WALL_SLEEVES = [
                       position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-1.1933)),
+    # Moved to y=16'-5" on 2026-09-09 with PR-B-HW-KITCH's hall crossing: that run steps
+    # north and up to 7'-10 5/8" to clear RM-B-STAIR's ceiling by more than the 3"
+    # `mep.run_in_finished_volume` allows, and this is the hole it now goes through. 5"
+    # north of SP-B-CS2-CW and 0.4" above it — 2 1/2" of concrete between the two bores.
     SleevePenetration(uid="CBPW22AAAA", tag="SP-B-CS2-HW", host_ref="W-B-CS2",
-                      position=pt(ft(18), ft(15, 6)), pipe_diameter=inch(1),
+                      position=pt(ft(18), ft(16, 5)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
-                      purpose=Service.WATER_HOT, center_elevation=ft(-1.3033)),
+                      purpose=Service.WATER_HOT, center_elevation=ft(-1.2333)),
     # PR-B-COND crosses W-B-CS (2x6 stud, not concrete) with a bored hole, not a sleeve —
     # same reasoning as the framed-wall crossings above.
     # Perimeter exits.

@@ -643,17 +643,30 @@ WALLS = [
     # The liner still grows east into the sauna, and `interior_room` still says so
     # explicitly rather than letting the component winding decide.
     #
-    # **One thing this buys, and it is on the record rather than hidden:**
-    # `integrity.junction_fallback` reports N-B-C1 UNKNOWN — the framed run on the x=18'
-    # line is spf and W-B-CS2, collinear with it, is still 12" concrete under the cast band,
-    # so the junction's THROUGH pair is two different bearing materials and the solver has
-    # no interface rule for that. (Since the 2026-09-05 rotation the framed wall AT that
-    # node is W-B-CS3, not this one — same finding, same count, one assembly
-    # along.) It is a real detail and not a modelling
-    # artefact: a stud wall landing in line against the end of a 12" pour wants a bearing
-    # plate and dowels drawn, which is exactly what the UNKNOWN is asking for. The house
-    # answered the same finding at N-B-CW-E by running ONE wall type down the whole line;
-    # that answer is not available here, because W-B-CS2 carries SL-M-DECK and stays a pour.
+    # **N-B-C1 USED TO READ UNKNOWN HERE, AND THAT WAS THE SOLVER BEING OVER-CONSERVATIVE.**
+    # The framed run on the x=18' line is spf and W-B-CS2, collinear with it, is still 12"
+    # concrete under the cast band, so `integrity.junction_fallback` saw two different
+    # bearing materials in one THROUGH pair and asked for an interface rule. The old text
+    # here answered "a bearing plate and dowels" — that predates the 2026-09-05 rotation and
+    # describes a joint this model does not have. **Nothing bears on anything at N-B-C1.**
+    #
+    # W-B-CS3 (the framed segment at the node since the rotation) and W-B-CS2 both span
+    # -109 7/16" to -13 7/16" — side by side over their whole height, each carrying its own
+    # load straight down to its own footing. No beam or post lands at the node. What spans
+    # onto the line lands on TOP of both: FS-M-WEST and FS-M-EAST run their joists in x and
+    # name W-B-CS3 and W-B-CS2 alike in `bearing_refs`, and their deck is the diaphragm
+    # across the joint. W-M-C2 above (y 156"..216") laps the y=166" node by 10" with
+    # continuous plates. So there is no transfer between the two walls to detail, and no
+    # geometry to miter either — collinear layers abut on the node plane and never overlap.
+    #
+    # The code agrees. R404.1.7 asks for lateral support of a foundation wall only where it
+    # retains unbalanced backfill and exempts under 4 ft; W-B-CS2 is `unbalanced_fill=ft(0)`.
+    # R602.10.8 sends braced-wall-panel-to-concrete connections to R403.1.6 — the sole plate
+    # to the concrete BENEATH a wall, which the sill return already owns — and no braced wall
+    # line runs on x=18' on any storey (they are all perimeter, plus the sauna's). Nothing in
+    # the IRC governs a framed wall abutting a pour end-on where neither supports the other.
+    # `resolve/topology._independent_bearing` is where that reasoning lives, guarded so that
+    # a wall bearing on its neighbour still reports UNKNOWN.
     Wall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-SA-NE",
          end_node="N-B-S2", assembly="SAUNA_LINER_INT_2X6_BRG", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
@@ -1444,6 +1457,33 @@ SOFFITS = [
            outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
                     pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
            underside_elevation=inch(88.4375),
+           framing=FramingSpec(member="2x2", spacing=inch(16))),
+    # --- RM-B-GYM: SF-B-HALL's band, carried through the wall -------------------------
+    #
+    # W-B-CS3 is 6 3/4" of framed wall and the service band does not stop at it: DU-B-ERV-R-GYM
+    # comes through it at y=10'-6 5/8" on its way to REG-B-SUP1, and since 2026-09-09
+    # PR-B-COND's collector leg rides beside it at y=10'-11". Both were in RM-B-GYM's air —
+    # `mep.run_in_finished_volume` at 8.4" and 10.6" — and neither is reroutable: the
+    # register is where it is, and a 3" duct under a ceiling can never make the check's 3"
+    # (its own radius spends half of it). This is the answer SF-B-HALL and SF-B-BATH already
+    # gave twice: box them out.
+    #
+    # Same rules, and they are the traps. ONE axis-aligned rectangle (`soffit_clear_section`
+    # frames nothing else). The west edge is W-B-CS3's resolved EAST layer face at
+    # 18'-3 3/8", so the box butts the wall the runs come through rather than reaching into
+    # it. The south edge at 13'-1 1/2" lands on the y=13'-0" ceiling step, which is where
+    # REG-B-SUP1 sits; the east edge at 27'-2 1/2" is 2 1/2" past the collector head. The
+    # LONG axis is x, which is the way both runs travel, so the clear section is read across
+    # the 3'-0" of y.
+    #
+    # `underside_elevation` is storey-relative and this soffit is filed on the BASEMENT,
+    # whose datum is -9'-1 7/16": 7'-3 7/16" is 1 1/16" under the duct's bottom and 1 9/16"
+    # under the pipe's at its deep west end. It leaves 7'-3 7/16" clear — against R305.1's
+    # 7'-0" for a habitable room, and 6'-4" for what may project below it.
+    Soffit(uid="40MXMHYA46", tag="SF-B-GYM",
+           outline=(pt(inch(219.385), inch(121.5)), pt(inch(326.5), inch(121.5)),
+                    pt(inch(326.5), inch(157.5)), pt(inch(219.385), inch(157.5))),
+           underside_elevation=inch(87.4375),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
 ]
 

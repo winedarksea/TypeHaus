@@ -420,6 +420,13 @@ export interface ModelPart {
   center: [number, number, number];
   size: [number, number, number];
   color: string;
+  /**
+   * The plan ring this part sweeps, for the solids a box cannot state — a neo-angle shower
+   * pan is a pentagon. Absent on the box parts, which is nearly all of them; `center`/`size`
+   * are the ring's bounding box either way, so a consumer may ignore this and still draw
+   * something the right size in the right place.
+   */
+  points?: Vec2[];
 }
 
 export interface SpaceSummaryRow {

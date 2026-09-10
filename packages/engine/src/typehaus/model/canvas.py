@@ -78,8 +78,12 @@ def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
                           "closed": stroke["closed"], "weight": stroke["weight"],
                           "fill": part_hex(_lamp(stroke["fill"], lamp)) if stroke["fill"] else None}
                          for stroke in plan_symbol_strokes(symbol, width_m, depth_m)],
+        # ``points`` rides along only when the part is a ring rather than a box, so the wire
+        # stays as small as it was for the ~30 symbols that are all boxes.
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
-                         "color": part_hex(_lamp(part["color"], lamp))}
+                         "color": part_hex(_lamp(part["color"], lamp)),
+                         **({"points": [list(point) for point in part["points"]]}
+                            if part["points"] else {})}
                         for part in model_parts(symbol, width_m, depth_m, height_m)],
     }
 

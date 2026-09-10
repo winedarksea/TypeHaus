@@ -195,11 +195,26 @@ SUPPLY = [
             elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
+    # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
+    # up at (2'-3", 17'-2.4") and stopped at 3'-0" — three feet of bare copper in the middle
+    # of a bathroom floor, 2'-2" from the nearest thing it feeds, which is what
+    # `mep.run_in_finished_volume` reported at the room's full 107 1/2". It now does what
+    # PR-B-CW-BATH1 does twenty lines up: runs west under the deck to W-M-HS1 — BATH2's own
+    # north wall, INT_2X6_STAGGERED_PLUMBING, 5 1/2" of continuous cavity — and splits at the
+    # deck top so the upper leg names the wall it is inside.
+    #
+    # The bay is x=1'-0", between the studs at 7.385" and 16": 3 1/8" of clear each side of a
+    # 7/8" tube. It is the WEST end of the wall deliberately — PR-B-WC1-DRAIN's 3" carrier
+    # drop occupies x=2'-2 3/8" in this same cavity (the bay the old x=2'-3" lane would have
+    # risen into), and FX-M-BATH2-SINK is the fixture nearest this end of the wall.
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(16)), pt(ft(2, 3), ft(16)),
-                  pt(ft(2, 3), ft(17, 2.4)), pt(ft(2, 3), ft(17, 2.4))),
+            path=(pt(ft(5), ft(16)), pt(ft(1), ft(16)),
+                  pt(ft(1), ft(22, 4)), pt(ft(1), ft(22, 4)),
+                  pt(ft(1), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 1.4375)),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(9, 1.4375), ft(12, 1.4375)),
+            wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
@@ -268,11 +283,32 @@ SUPPLY = [
             wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
+    # ** IT STEPS NORTH AND UP TO CROSS RM-B-STAIR (2026-09-09). ** The y=15'-6" hot lane
+    # rides at 7'-9 7/16", which is 3.9" under a 7'-11 3/16" finished ceiling — fine in the
+    # workshop and fine in the gym's east half (that ceiling is 1 9/16" lower), but
+    # `mep.run_in_finished_volume` allows 3" and the hall is neither. 7'-10 5/8" is the
+    # height that clears it, at 2.7" — the number PR-B-CW-TRUNK and the sauna pair already
+    # ride at — and the y=15'-6" lane cannot have it: PR-B-HW-SAUNA occupies it out to
+    # x=17'-3" and PR-B-CW-SAUNA drops across it at x=17'-4".
+    #
+    # So the crossing takes its own lane: north to y=16'-5", 5" clear of PR-B-CW-TRUNK's
+    # y=16'-0" and north of PR-B-CW-SAUNA's head at y=16'-0", across the hall at 7'-10 5/8",
+    # and back down in RM-B-GYM, whose ceiling here is 1 9/16" lower and takes 7'-9 7/16"
+    # at 2.3". Both jogs hold 7'-9 7/16" where they cross y=16'-0", so the 1 3/16" they
+    # already keep under PR-B-CW-TRUNK is unchanged; the east one turns at x=18'-9", 3"
+    # clear of W-B-CS2's east face so the leg is in the room and not along the pour.
+    # SP-B-CS2-HW moves with it (plan/mep_sleeves.py) — the y=15'-6" hole it was cast for
+    # no longer has a pipe in it.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(13, 6), ft(15, 6)),
+                  pt(ft(13, 6), ft(16, 3)), pt(ft(13, 6), ft(16, 5)),
+                  pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 3)),
+                  pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(12, 7.4375)),
+            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 10.6375),
+                        ft(7, 10.6375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375),
+                        ft(7, 9.4375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -299,18 +335,46 @@ SUPPLY = [
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2")),
+    # ** BOTH RISERS FINISH IN W-S-SN3 SINCE 2026-09-09. ** They used to surface at
+    # (13'-7.2"/14'-2.4", 16'-10.8") at 12'-6" and stop there — two stubs standing 2'-6" out
+    # of RM-S-SUITEBATH's floor, 4'-3" from the lavatory they feed and in a wall-free part of
+    # the room. `mep.run_in_finished_volume` called both at that room's full 107 1/2".
+    #
+    # They now make the same move PR-A-CW-STUBATH makes off the same risers: stop in
+    # FS-S-WEST, jog north through the open truss webs to y=22'-4" — W-S-SN3, the staggered
+    # wet wall FX-S-SUITEBATH-WC and -LAV are both plumbed into — and rise inside it to the
+    # 12'-6" stops. Elevations here are BASEMENT-relative (datum -9'-1 7/16"), so the jogs
+    # read 18'-7 3/16" and 18'-11 7/16" = 9'-5 1/2" and 9'-10" project.
+    #
+    # THE TWO JOG HEIGHTS ARE BOTH PINNED, AND NOT BY EACH OTHER. The truss floor is busy:
+    # six ERV branches ride its middle at 9'-1 5/8" (6" round, so 8'-10 5/8"..9'-4 5/8") and
+    # the suite bath's three drains cross above them at 9'-7"..9'-9 1/2". The cold threads
+    # the 2 1/2" gap between the two — 7/8" clear of the ducts, 10/16" clear of
+    # PR-M-S-SUITE-TUB-DRAIN at y=19'-0". The hot cannot: PR-A-HW-STUBATH tees off it at
+    # 9'-7", so it has to be ABOVE the drains and rides at 9'-10", 7/8" under the top chord.
+    # x stays on each riser's own lane, which keeps the cold 2 3/10" clear of
+    # PR-M-S-SUITE-LAV-DRAIN's drop at x=13'-9 1/2". Each rise then SPLITS AT THE SECOND
+    # FLOOR (ft(19,1.4375) basement-rel = 10'-0" project), the way PR-B-CW-SBATH does:
+    # W-S-SN3 starts at the deck it stands on, and a leg naming it from inside the truss
+    # floor is a leg `mep.wet_wall_occupancy` reads as escaping the wall.
     PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
             path=(pt(ft(8), ft(16)), pt(ft(13, 7.2), ft(16, 10.8)),
-                  pt(ft(13, 7.2), ft(16, 10.8))),
+                  pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(13, 7.2), ft(22, 4)),
+                  pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(21, 7.4375)),
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(18, 7.1875),
+                        ft(18, 7.1875), ft(19, 1.4375), ft(21, 7.4375)),
+            wall_refs=(None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 2.4), ft(16, 10.8)),
-                  pt(ft(14, 2.4), ft(16, 10.8))),
+                  pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(14, 2.4), ft(22, 4)),
+                  pt(ft(14, 2.4), ft(22, 4)), pt(ft(14, 2.4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(21, 7.4375)),
+            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(18, 11.4375),
+                        ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            wall_refs=(None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # Stair-foot bathroom, fed off the same pair of runs (same uids) that fed FX-1 until
     # 2026-07-30. They bore W-B-STR2 at their own y (cold 20'-3", hot 19'-9") and now stop

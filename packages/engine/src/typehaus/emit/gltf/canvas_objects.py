@@ -105,8 +105,11 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     lamp = lamp_role(getattr(product_type, "cct_k", None))
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
-        ring = [(cx - sx / 2, cy - sy / 2), (cx + sx / 2, cy - sy / 2),
-                (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
+        # A ringed part carries its own plan outline (a neo-angle pan is a pentagon); a box
+        # part's ring is its bounding rectangle, which for a box is the same statement.
+        ring = list(part["points"]) or [
+            (cx - sx / 2, cy - sy / 2), (cx + sx / 2, cy - sy / 2),
+            (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
         mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
                      item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
                      PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])

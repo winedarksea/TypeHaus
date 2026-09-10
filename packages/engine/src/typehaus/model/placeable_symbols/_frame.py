@@ -37,11 +37,18 @@ class Stroke(TypedDict):
 
 
 class Part(TypedDict):
-    """One axis-aligned massing box of a 3D symbol, in the local frame (metres)."""
+    """One massing solid of a 3D symbol, in the local frame (metres).
+
+    ``points`` is the plan ring an extrusion sweeps; ``()`` means "the box ``center``/``size``
+    describe", which is what nearly every part is. ``center``/``size`` are filled in for a
+    ringed part too — they are its bounding box — so a consumer that has not learned about
+    rings yet degrades to the box rather than drawing nothing.
+    """
 
     center: tuple[float, float, float]
     size: tuple[float, float, float]
     color: str  # a PART_COLORS role
+    points: tuple[Point, ...]
 
 
 # Linear RGBA, matching the convention ``emit/gltf/emitter._PALETTE`` already uses: the same
@@ -196,7 +203,22 @@ def polygon(points: Sequence[Point], *, closed: bool = True,
 def box(cx: float, cy: float, z0: float, z1: float, w: float, d: float, color: str) -> Part:
     """One massing box, spanning ``z0``..``z1`` and centred on ``(cx, cy)`` in plan."""
     return {"center": (cx, cy, (z0 + z1) / 2.0), "size": (abs(w), abs(d), abs(z1 - z0)),
-            "color": color}
+            "color": color, "points": ()}
+
+
+def prism(points: Sequence[Point], z0: float, z1: float, color: str) -> Part:
+    """One massing prism: an arbitrary plan ring swept ``z0``..``z1``.
+
+    For the solids a box genuinely cannot state — a neo-angle shower pan is a pentagon, and
+    a box would draw a 36" square where the room's diagonal actually is. The bounding box is
+    carried alongside so nothing has to special-case a ring to get a size out of a part.
+    """
+    ring = tuple((float(x), float(y)) for x, y in points)
+    xs = [x for x, _ in ring]
+    ys = [y for _, y in ring]
+    return {"center": ((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0, (z0 + z1) / 2.0),
+            "size": (max(xs) - min(xs), max(ys) - min(ys), abs(z1 - z0)),
+            "color": color, "points": ring}
 
 
 def part_hex(role: str) -> str:

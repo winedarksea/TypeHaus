@@ -365,16 +365,20 @@ def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
 def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
-    # 5 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. The fifth
-    # power trunk is CD-A-PV-EAST: a ConduitRun travels flat at its `start_elevation` and
-    # rises only at its LAST point, so "up the chase, then east along the attic deck, then
-    # up the gable" is two runs — the 6:12 roof puts the old single riser's 25'-6" head
-    # 3'-10" outside the building at x=1'-6". The last three are the workshop, study and
+    # 6 power trunks + the 3 ESS microgrid runs + the 8 structured-cabling runs. Two of the
+    # power trunks are second legs of one raceway, for the same reason: a ConduitRun travels
+    # flat at its `start_elevation` and rises only at its LAST point. CD-A-PV-EAST is
+    # "up the chase, then east along the attic deck, then up the gable" — the 6:12 roof puts
+    # the old single riser's 25'-6" head 3'-10" outside the building at x=1'-6".
+    # CD-B-GAP-EV (2026-09-09) is the EV feeder's BURIED leg: CD-B-GARAGE now holds the
+    # basement ceiling out to W-B-N2 and drops to -4'-0" inside the pour, because flat at
+    # -4'-0" from the panel it crossed RM-B-STAIR 5 ft off the slab and
+    # `mep.run_in_finished_volume` FAILed on it. The last three are the workshop, study and
     # media-room drops — and one of them, CD-B-DATA-SHOP, is the answer to "can it share
     # the spa conduit": it runs 6" east of CD-B-SPA and parallel to it the whole way,
     # because NEC 800.133/725 forbids comms sharing a RACEWAY with power and
     # `ConduitRun.service` is one value, never a set.
-    assert len(catlin_model.conduits) == 16
+    assert len(catlin_model.conduits) == 17
     # Not all from the panel: the three microgrid runs start at the PV junction box and at
     # the inverter, and every data run starts at the patch enclosure.
     # CD-A-PV-EAST's from_ref is the RUN it continues rather than a device, which is the

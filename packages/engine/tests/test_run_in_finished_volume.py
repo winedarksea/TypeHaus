@@ -1,13 +1,15 @@
 """``mep.run_in_finished_volume`` — a run hanging in a room somebody lives in.
 
 ``run_route_efficiency`` used to say the model had no per-room ceiling plane and so could
-not ask this. It has had one since the ceiling work; this is the check that asks, and it
-lands red — catlin's basement service corridor is real and the reroute is the commit after
-this one.
+not ask this. It has had one since the ceiling work; this is the check that asks. Catlin's
+basement service corridor was real, and all eleven findings were closed on 2026-09-09 by
+reroutes, walls and one soffit. The house passes.
 
-What these tests pin is the machinery, because that is what has to survive the fix: the
-band's lower edge, the three-dimensional clip, the grace rule, and the honest UNKNOWN over
-the attic.
+What these tests pin is the machinery, because that is what had to survive the fix and is
+what would rot now that nothing exercises it in anger: the band's lower edge, the
+three-dimensional clip, the grace rule, and the honest UNKNOWN over the attic. Each of the
+three defect tests below puts a real, fixed defect back on a mutable model rather than
+leaning on the reference house still being wrong.
 """
 
 from __future__ import annotations
@@ -45,57 +47,100 @@ def test_the_attic_is_reported_unknown_rather_than_passed(findings) -> None:
     assert set(unknowns[0].element_tags) >= {"RM-A-STUBATH", "RM-A-STUDIO", "RM-A-STUDY"}
 
 
-def test_the_known_defects_are_written_down(findings) -> None:
-    """**This is a work list, not a gate**, and it is written down so the reroutes can be
-    measured against it. Two families:
+def test_the_work_list_is_clear(findings) -> None:
+    """**The work list is empty, and this test is the record of what emptied it.**
 
-    the **basement service corridor** — ``RM-B-PLAY-N``'s finished ceiling resolves 5/8"
-    *under* ``SL-M-DECK``'s soffit, so every service beneath that slab is inside the theater
-    by construction, and the sauna's lined ceiling is 2 7/8" lower again than the rest of the
-    storey;
+    Every one of the eleven is named because a silent regression here is a run back in
+    somebody's living room, and because the three answers the check's own hint gives are
+    each represented.
 
-    and **four supply risers that stand in a finished room** — ``PR-B-CW-SUITE`` and
-    ``PR-B-HW-SUITE`` stop 30" above the suite bath's floor, 47" and 51" from the fixtures
-    they name, in open air with no ``wall_refs`` on them. Nothing else in the engine looks at
-    that; it is ``mep.fixture_drain_reach``'s finding for supply, arrived at from the other
-    direction.
+    REROUTED OUT OF THE ROOM: ``PR-M-COND-HEADS`` into ``RM-B-SAUNA``'s service void (that
+    ceiling is 14" lower than the storey's), ``PR-B-COND``'s trunk, and ``PR-B-HW-KITCH``,
+    which steps north and up 1 3/16" to cross ``RM-B-STAIR`` and back down in the gym where
+    the ceiling is lower. ``CD-B-KITCHEN`` and ``CD-B-DATA-MEDIA`` came up 2" to -1'-4",
+    where they sit 1 9/16" under ``SL-M-DECK``'s board — which is what
+    ``plan/electrical.py``'s own prose had claimed all along while the authored elevation
+    said otherwise.
 
-    ``PR-B-KITCH-DRAIN`` is the one that has been fixed, and its absence from this list is
-    the assertion that matters most here: it was the worst of them (14.5 ft at 6.7" into the
-    theater, 9.1 ft at 9.9" into the gym) and it is not in a finished room anywhere now.
+    TAKEN INTO A WALL: ``PR-B-CW-BATH2`` into ``W-M-HS1``, ``PR-B-CW-SUITE`` and
+    ``PR-B-HW-SUITE`` into ``W-S-SN3`` (via ``FS-S-WEST``'s truss webs), and
+    ``PR-B-ERV-COND``'s fall into ``W-B-SA-N``'s cavity, which is the only way that line
+    can reach its receptor at all — the ERV pan is at 4'-6" and the sauna's ceiling is at
+    6'-10 13/16", so it can never travel over it the way ``PR-B-COND`` does.
+
+    BOXED OUT: ``DU-B-ERV-R-GYM`` and ``PR-B-COND``'s gym leg, under ``SF-B-GYM``. A 3"
+    duct under a ceiling can never make the 3" this check allows — its own radius spends
+    half of it — so a box is the only answer there, and this is the one finding whose fix
+    could not have been anything else.
+
+    SPLIT: ``CD-B-GARAGE`` wanted the basement ceiling indoors and -4'-0" of burial in the
+    house/garage gap, and a ``ConduitRun`` changes elevation only at its LAST vertex. It is
+    two runs now — one feeder, both naming ``ED-B-PANEL`` and ``ED-G-EV-1450`` — handing
+    over at a vertical drop inside ``W-B-N2``, at the station its sleeve always punched.
     """
     fails = [f for f in findings if f.result is Result.FAIL]
-    rooms = {f.element_tags[1] for f in fails}
-    assert rooms <= {"RM-B-PLAY-N", "RM-B-GYM", "RM-B-STAIR", "RM-B-SAUNA", "RM-B-BATH",
-                     "RM-M-BATH2", "RM-S-SUITEBATH"}
-    tags = {f.element_tags[0] for f in fails}
-    assert "PR-B-KITCH-DRAIN" not in tags
-    assert {"CD-B-KITCHEN", "CD-B-DATA-MEDIA",
-            "PR-M-COND-HEADS", "CD-B-GARAGE"} <= tags
+    assert not fails, [f.message for f in fails]
+    assert any(f.result is Result.PASS for f in findings), [f.message for f in findings]
 
 
-def test_a_riser_is_reported_as_feet_of_height(findings) -> None:
+def test_a_riser_is_reported_as_feet_of_height(catlin_model) -> None:
     """A riser's plan piece is a point, so there is no length to report and a crossing test
-    alone cannot see it at all. ``PR-B-CW-SUITE`` stands 30" up into the suite bath: the
-    exposure is that height, and the depth is clamped to the room, which is what makes
-    "107.5 below a 107.5-inch room" mean "it occupies the whole of it"."""
-    riser = next(f for f in findings if f.element_tags[0] == "PR-B-CW-SUITE")
+    alone cannot see it at all.
+
+    ``PR-B-CW-SUITE`` used to stop 30" above the suite bath's floor, 51" from the nearest
+    fixture it names and in open air. It now jogs through ``FS-S-WEST`` and rises inside
+    ``W-S-SN3``, so the defect is put back here: the exposure is the riser's HEIGHT, and the
+    depth is clamped to the room, which is what makes "107.5 below a 107.5-inch room" mean
+    "it occupies the whole of it"."""
+    from typehaus.model import ft, inch
+
+    assert not _fails_for(catlin_model, "PR-B-CW-SUITE")
+    original = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-CW-SUITE")
+    head = (ft(13, 7.2).meters, ft(16, 10.8).meters)
+    regressed = dataclasses.replace(
+        original,
+        path=((ft(8).meters, ft(16).meters), head, head),
+        z_m=(inch(-14.8).meters, inch(-14.8).meters, ft(12, 6).meters))
+    model = dataclasses.replace(
+        catlin_model,
+        pipe_runs=tuple(regressed if r.tag == original.tag else r
+                        for r in catlin_model.pipe_runs))
+    fails = _fails_for(model, "PR-B-CW-SUITE")
+    riser = next(f for f in fails if f.element_tags[1] == "RM-S-SUITEBATH")
     assert "107.5\" below RM-S-SUITEBATH" in riser.message
     exposure = float(riser.message.split(" for ")[1].split(" ft")[0])
     assert exposure == pytest.approx(2.5, abs=0.1)
 
 
-def test_it_leads_with_depth_not_length(findings) -> None:
+def test_it_leads_with_depth_not_length(catlin_model) -> None:
     """Ranking by crossing length puts the long shallow runs on top; ranking by intrusion
-    puts the real defects there. ``PR-B-KITCH-DRAIN`` is 14.5 ft into the theater and
-    ``CD-B-GARAGE`` only 6 ft into the stair, but the stair one is 36" deep against the
-    theater's 6.7". The message says the depth first."""
-    fails = [f for f in findings if f.result is Result.FAIL]
-    assert fails
+    puts the real defects there. ``PR-B-KITCH-DRAIN`` was 14.5 ft into the theater and
+    ``CD-B-GARAGE`` only 6 ft into the stair, but the stair one was 36" deep against the
+    theater's 6.7". The message says the depth first.
+
+    ``CD-B-GARAGE``'s pre-split form is put back to say so — flat at -4'-0" the whole way
+    across the house, which is five feet off the basement slab."""
+    from typehaus.model import ft
+
+    assert not _fails_for(catlin_model, "CD-B-GARAGE")
+    original = next(r for r in catlin_model.conduits if r.tag == "CD-B-GARAGE")
+    regressed = dataclasses.replace(
+        original,
+        path=((ft(2).meters, ft(29).meters), (ft(2).meters, ft(35).meters),
+              (ft(16).meters, ft(35).meters), (ft(16).meters, ft(41, 9.375).meters)),
+        z_start_m=ft(-4).meters, z_end_m=ft(5, 10).meters)
+    model = dataclasses.replace(
+        catlin_model,
+        conduits=tuple(regressed if r.tag == original.tag else r
+                       for r in catlin_model.conduits))
+    fails = _fails_for(model, "CD-B-GARAGE")
+    assert [f.element_tags[1] for f in fails] == ["RM-B-STAIR"]
     for finding in fails:
         head = finding.message.split(" below ")[0]
         assert head.endswith('"'), finding.message
         assert "hangs" in head
+    intrusion = float(fails[0].message.split("hangs ")[1].split('"')[0])
+    assert intrusion == pytest.approx(36.1, abs=0.2), fails[0].message
 
 
 def test_a_service_room_ceiling_is_not_a_finished_one() -> None:

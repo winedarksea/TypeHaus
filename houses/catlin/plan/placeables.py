@@ -1354,8 +1354,12 @@ ATTIC_PLACEABLES = [
               room="RM-A-STUDY", position=pt(m(6.14764), m(0.782959)), rotation=deg(-90)),
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
               room="RM-A-STUDY", position=pt(m(7.83976), m(0.671138))),
+    # The west-end seat, TUCKED IN rather than pulled out. A UI drag left its back 8 1/2"
+    # inside the desk's 3'-0" pull-out zone (which ends at x 23'-4 1/4"); that zone exempts
+    # the desk's OWN chair, not a table chair. x=24'-4" clears it by 3/4" and slides the
+    # seat under the table's west end.
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(m(7.18339), m(0.661392)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(ft(24, 4), ft(2, 2)), rotation=deg(90)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-A-STUDY", position=pt(ft(26, 6), ft(4, 2)), rotation=deg(0)),
     # --- the guest studio's wet bar ---------------------------------------

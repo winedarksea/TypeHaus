@@ -53,26 +53,38 @@ pier top is −0'-7 1/4", so 2'-2 3/4" of the shaft stands free above the soil.
 
 Two areas: the deck `FS-BW-FLOOR` below, and — since 2026-09-04 — the roof field above.
 
-| term | working | lb |
-|---|---|---|
-| Deck area | (9.7708 − 6.2292) × (40.4167 − 36.8333) = 3.541667 × 3.583333 | 12.691 ft² |
-| `BM-BW-FW` strip × length | 3.541667' joist span × 3.583333' | 12.691 ft² |
-| its share to each of its 2 posts | 12.691 / 2 | 6.3455 ft² |
-| Tributary, per pier | one beam each, so one share each | **6.3455 ft²** |
-| Deck dead | 6.3455 × 10 psf (IRC R507.1) | 63.46 |
-| Deck live | 6.3455 × 40 psf | **253.82** |
-| Roof field, framed rectangle | 4.0000' rafter span × 3.5833' beam run | 14.333 ft² |
-| Roof field, `GL-BW-ROOF` outline | 4.0' × 4.0' | 16.000 ft² |
-| Roof field taken | the LARGER — the rafters oversail the beams 2 3/4" each end | **16.000 ft²** |
-| its share, per pier | 16.000 / 2 beams / 2 posts | **4.0000 ft²** |
-| Roof dead | 4.0000 × 10 psf | 40.00 |
-| Roof snow | 4.0000 × 50 psf (`Site.ground_snow_load_psf`, flat) | **200.00** |
-| 6x6 KDAT post above | (5.5² / 144) × (82.75 / 12) × 35 pcf | 50.70 |
-| Pier self weight | (113.097 / 144) × (56.75 / 12) × 150 pcf | 557.14 |
-| **D** | 63.46 + 40.00 + 50.70 + 557.14 | **711.30** |
-| **L** | 253.82 + 200.00 | **453.82** |
-| Service | D + L | 1,165.12 |
-| **Factored** | 1.2(711.30) + 1.6(453.82) = 853.56 + 726.11 | **1,579.67** |
+**RE-WORKED 2026-09-09 FOR THE 4'-6" DECK.** The breezeway went from 4'-0" to 4'-6" E-W so
+that `D-G-SERVICE` gets the R311.3 landing it had been missing (`params/breezeway.py::_EW_FT`).
+Every plan dimension in this section moved with it; nothing in §1, §4, §5 or §6 did, because
+the pier's own section and height are untouched. The 4'-0" figures are kept in the right-hand
+column so the two states can be diffed rather than trusted.
+
+| term | working | lb | was (4'-0") |
+|---|---|---|---|
+| Deck area | (11.0208 − 6.9792) × (40.4167 − 36.8333) = 4.041667 × 3.583333 | 14.4826 ft² | 12.691 |
+| `BM-BW-FW` strip × length | 4.041667' joist span × 3.583333' | 14.4826 ft² | 12.691 |
+| its share to each of its 2 posts | 14.4826 / 2 | 7.2413 ft² | 6.3455 |
+| Tributary, per pier | one beam each, so one share each | **7.2413 ft²** | 6.3455 |
+| Deck dead | 7.2413 × 10 psf (IRC R507.1) | 72.41 | 63.46 |
+| Deck live | 7.2413 × 40 psf | **289.65** | 253.82 |
+| Roof field, framed rectangle | 4.5000' rafter span × 3.5833' beam run | 16.125 ft² | 14.333 |
+| Roof field, `GL-BW-ROOF` outline | 4.5' × 4.0' | 18.000 ft² | 16.000 |
+| Roof field taken | the LARGER — the rafters oversail the beams 2 3/4" each end | **18.000 ft²** | 16.000 |
+| its share, per pier | 18.000 / 2 beams / 2 posts | **4.5000 ft²** | 4.0000 |
+| Roof dead | 4.5000 × 10 psf | 45.00 | 40.00 |
+| Roof snow | 4.5000 × 50 psf (`Site.ground_snow_load_psf`, flat) | **225.00** | 200.00 |
+| 6x6 KDAT post above | (5.5² / 144) × (82.75 / 12) × 35 pcf | 50.70 | 50.70 |
+| Pier self weight | (113.097 / 144) × (56.75 / 12) × 150 pcf | 557.14 | 557.14 |
+| **D** | 72.41 + 45.00 + 50.70 + 557.14 | **725.26** | 711.30 |
+| **L** | 289.65 + 225.00 | **514.65** | 453.82 |
+| Service | D + L | 1,239.91 | 1,165.12 |
+| **Factored** | 1.2(725.26) + 1.6(514.65) = 870.31 + 823.44 | **1,693.75** | 1,579.67 |
+
+The E-W post-to-post span is `_EW_FT` less half a dressed 6x6 at each end:
+4.5 − 2(5.5/24) = **4.041667'** = 4'-0 1/2". The N-S frame run is untouched at 3.583333'
+(3'-7"), because the 4'-0 1/2" slot between the two cladding faces did not move. The roof
+covering is the only term where the sheet itself grew: `GL-BW-ROOF` is now 4'-6" × 4'-0",
+cut from an 8'x4' rather than being an exact half of one.
 
 **Snow, not deck live, on the roof share.** The two areas are kept apart in `_Pier` for
 exactly this reason: 50 psf ground snow is larger than IRC Table R301.5's 40 psf occupancy
@@ -81,19 +93,21 @@ pier. No C_e/C_t/C_s reduction is taken — this is a screening load on a pier a
 and the reductions belong to `checks/structural/snow.py` against a roof slope this flat
 field has not got.
 
-**THE TRIBUTARY DOUBLED ON 2026-09-03, AND IT IS DELIBERATELY CONSERVATIVE.** It was
-`12.691 / 4 posts = 3.1727 ft²`, an even split, which is the right answer here — this deck
-*is* a regular four-post grid and each pier really does carry a quarter of it. The rule that
-replaced it weights by each BEAM's own strip, because the even split was badly wrong on the
-sunken garden's two decks (see `sunken_garden_piers.md` §2), and it gives every beam the FULL
-joist span as its strip. `FS-BW-FLOOR` is a single-bay deck on two beams, so the two strips
-cover the same 12.691 ft² twice and each pier is handed 6.3455 ft² where 3.1727 is the truth.
+**THE TRIBUTARY DOUBLED ON 2026-09-03, AND IT IS DELIBERATELY CONSERVATIVE.** An even split
+would be `14.4826 / 4 posts = 3.6207 ft²`, which is the right answer here — this deck *is* a
+regular four-post grid and each pier really does carry a quarter of it. The rule that replaced
+it weights by each BEAM's own strip, because the even split was badly wrong on the sunken
+garden's two decks (see `sunken_garden_piers.md` §2), and it gives every beam the FULL joist
+span as its strip. `FS-BW-FLOOR` is a single-bay deck on two beams, so the two strips cover
+the same 14.4826 ft² twice and each pier is handed 7.2413 ft² where 3.6207 is the truth.
 
 That is a 2× over-count and it is written down rather than absorbed. It is kept because the
 alternative — a per-beam tributary width — would put this engine's post demand out of step
 with the line load `engineering/glulam_beam.py` publishes for the same beam, and because on a
 pier whose real question is §3 below it changes nothing: `structural.deck_footing_size` sizes
-these pads at 1.00 ft² required against 1.78 built, and §4's capacity is 235× the demand.
+these pads at 1.00 ft² required against 1.78 built (and the widening did not move either
+number — 1,239.91 lb service over 1,500 psf is 0.83 ft², still under the 12"-side minimum
+that governs), and §4's capacity is 169× the demand.
 
 The 6x6 uses its DRESSED 5.5" section and a conventional 35 pcf for wood, matching
 `pier_basis._round_size` and `handed_dead`. Its height 82.75" is `_POST_TOP − _PIER_TOP`.
@@ -110,39 +124,47 @@ rather than inventing one**. A `Beam` naming two other `Beam`s as its bearing re
 stating, in the model, that it spans between them; `BM-BW-R1..3` all name `BM-BW-RW` and
 `BM-BW-RE`, so those three rafters are a framed field and that pair of beams carries it.
 The field's plan extent is then the larger of two numbers the model already holds — the
-framed rectangle (4.0' × 3.5833' = 14.333 ft²) and the covering authored over it
-(`GL-BW-ROOF`, 4.0' × 4.0' = 16.000 ft²). The covering wins here, and it should: the
+framed rectangle (4.5' × 3.5833' = 16.125 ft²) and the covering authored over it
+(`GL-BW-ROOF`, 4.5' × 4.0' = 18.000 ft²). The covering wins here, and it should: the
 rafters oversail each beam by 2 3/4", and that eave is real load on real posts. Taking the
-framed rectangle alone would have understated every pier by 10%.
+framed rectangle alone would understate every pier by 10.4%.
 
 **What is still outside the number, and why it does not reopen the item.** Three things:
 
 | | working | lb, all four piers |
 |---|---|---|
-| 3 rafters, 2x6 KDAT × 4'-0" | 3 × 4 × ~1.6 lb/ft | 19 |
+| 3 rafters, 2x6 KDAT × 4'-6" | 3 × 4.5 × ~1.6 lb/ft | 22 |
 | 2 roof beams, 2-2x8 × 3.58' | 2 × 3.58 × ~4.3 lb/ft | 31 |
-| 6 wedges | 12 LF of 2x4 rip | 5 |
+| 6 wedges | 13.5 LF of 2x4 rip | 6 |
 | 2 wall sheets, head half only | 2 × 32 ft² × 0.55 × 0.5 | 18 |
-| **Self weight of the frame, and the standing sheets' heads** | | **~73**, say **18 per pier** |
+| **Self weight of the frame, and the standing sheets' heads** | | **~77**, say **19 per pier** |
 
 The framing's own weight is not in the 10 psf: that figure is a covering allowance, and the
 sticks below it are modelled as sticks. The standing 4'-0" × 8'-0" wall sheets hang their
 heads on the roof beams through the H channels, and they have no plan area over this field
-at all. Together they are **~18 lb per pier**, factored **~22 lb**, against §2's 1,579.67.
+at all. Together they are **~19 lb per pier**, factored **~23 lb**, against §2's 1,693.75.
 
-That is a 1.4% under-count and it is written down rather than absorbed, because the honest
+That is a 1.3% under-count and it is written down rather than absorbed, because the honest
 place for a residual is a note and not a silent margin. It does not reopen the INCOMPLETE
 for one reason only: §4's capacity is **285,893 lb**, so the item sits at **d/c ≈ 0.006**
-and a 1.4% move on the demand is invisible at three decimal places. *The section is not the
+and a 1.3% move on the demand is invisible at three decimal places. *The section is not the
 question and never was.* Were this a ratio anywhere near 1.0, the residual would have to be
 modelled rather than noted.
 
-**The old bound, kept as the check on the new number.** Before the closure this section
-carried a screening estimate — 1,211.67 factored from the deck, plus 1.2(21) + 1.6(200) for
-the roof — reaching *"on the order of 1,560 lb"*. The engine now computes **1,579.67**
-independently of it, 1.3% higher, and higher is the right side: the bound counted the
-covering's actual 0.55 psf where §2 charges a flat 10 psf of roof dead. Two arithmetics
-that were never allowed to see each other agree to within 1.3%.
+**The independent bound, re-worked for the 4'-6" deck and still the check on §2.** Built
+the way the pre-closure screening estimate was, from the deck alone plus a hand estimate of
+the roof, and never allowed to see `pier_basis`:
+
+- deck, factored: 1.2(72.41 + 50.70 + 557.14) + 1.6(289.65) = 816.30 + 463.44 = **1,279.75**
+- roof dead, counted as the covering's ACTUAL 0.55 psf plus the frame residual above:
+  4.5 × 0.55 + 19 ≈ 21.5 lb → 1.2(21.5) = **25.8**
+- roof snow: 1.6(4.5 × 50) = **360.00**
+- bound ≈ 1,279.75 + 25.8 + 360.00 = **~1,665 lb**
+
+§2 computes **1,693.75**, 1.7% higher, and higher is the right side for the same reason it
+was before: the bound counts the covering's real 0.55 psf where §2 charges a flat 10 psf of
+roof dead. Two arithmetics that were never allowed to see each other agree to within 1.7%.
+(At 4'-0" the same pair of methods read ~1,560 and 1,579.67, agreeing to 1.3%.)
 
 ## 4. The cage, and why it is the Code's minimum
 

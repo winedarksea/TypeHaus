@@ -342,7 +342,12 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # Then +19.3 off the second storey: RM-S-NCLOSET, the hall linen closet, left carpet.
     # Then -84.9 back off it later the same day: RM-S-BATH1 went to tile, the one second-
     # storey floor with a radiant mat under it. 808.2 -> 723.3.
-    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(723.3, abs=0.5)
+    #
+    # ** 723.3 -> 722.5 on 2026-09-09, and it is one room's worth of one wall move. ** The
+    # bath2 east line went 2" east onto a single axis; RM-M-LAUNDRY sits on the far side of
+    # it and gave up 2" across its ~62 3/4" width = 0.87 sf. RM-M-BATH2 took the same 2" and
+    # is tile, so the plank total falls rather than moving sideways.
+    assert float(rows["lvp"]["net_area_sqft"]) == pytest.approx(722.5, abs=0.5)
     assert "RM-M-PANTRY" in rows["lvp"]["rooms"]
     assert rows["lvp-underlayment"]["net_area_sqft"] == rows["lvp"]["net_area_sqft"]
     # The oak is the two studies plus the suite pair. It reached 555.9 across three rooms
@@ -354,11 +359,15 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                          "RM-S-SUITE", "RM-S-CLOSET"}
     assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(506.0, abs=0.5)
-    # ** vinyl-sheet has left the main storey entirely. ** What is left is the three rooms
-    # that are genuinely wet or genuinely cheap-and-washable, on three different storeys:
-    # RM-S-PLANT (the spec that started it), RM-A-STUBATH and RM-B-BATH.
-    assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-B-BATH", "RM-S-PLANT"}
-    assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(228.8, abs=0.5)
+    # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
+    # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
+    # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,
+    # RM-A-STUDIO, whose ~356 sf took the same product over a plain plywood deck instead of
+    # walking on a sanded panel under a sealer allowance (storeys/attic_studio.py). That one
+    # room is most of the 228.8 -> 584.7.
+    assert set(rows["vinyl-sheet"]["rooms"]) == {"RM-A-STUBATH", "RM-A-STUDIO",
+                                                 "RM-B-BATH", "RM-S-PLANT"}
+    assert float(rows["vinyl-sheet"]["net_area_sqft"]) == pytest.approx(584.7, abs=0.5)
     # Tile is RM-M-BATH2 (its radiant zone's mass) plus the whole mudroom SUITE — the
     # mudroom itself and BOTH its closets.
     #

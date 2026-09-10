@@ -171,6 +171,12 @@ SITE = Site(
     # certificate arrives: then this becomes "survey" and `survey_by` / `survey_date` name
     # the document. It is a non-blocking permit item, so the set still prints and carries
     # the red PLACEHOLDER marker to the reviewer rather than being withheld from them.
+    #
+    # ** THAT FAIL IS WARN SEVERITY, NOT ERROR, SINCE 2026-09-09. ** It read ERROR, which
+    # contradicted the profile's own `blocking=False` on this line and gated
+    # `haus check --exit-on error` on a missing SUBMITTAL rather than a defect in the
+    # building. The line is still red and still says PLACEHOLDER; it just no longer claims
+    # to be a hard blocker. See checks/code/site.py::_placeholder.
     parcel_basis="placeholder",
     parcel=(pt(ft(-32), ft(-60)), pt(ft(68), ft(-60)), pt(ft(68), ft(105)),
             pt(ft(-32), ft(105))),
@@ -308,16 +314,25 @@ SITE = Site(
     # outer edge, dropped enough to clear 2% over the run. Both ends of both surfaces dropped
     # with grade; the falls they encode are unchanged, and the falls are what R401.3 measures.
     impervious_surfaces=(
-        # Apron on the north wall (y=36'), east of the breezeway (which spans x 0.5-8.5').
-        # Only 4' deep now that the garage stands at y=40.5': it floors the slot between the
-        # two structures, falls away from the house, and drains east rather than north into
-        # the garage stem. (It drained "east to the driveway" until 2026-09-07; the driveway
-        # premise is retired — see notes/garage_orientation_lot.md — and the 4.2% fall is
-        # unchanged and still legal, it simply no longer drains *to* anything named.)
+        # Apron on the north wall (y=36'), east of the breezeway (which spans x 6'-9"..
+        # 11'-3") and east of SL-M-HP3PAD. Only 4' deep now that the garage stands at
+        # y=40.5': it floors the slot between the two structures, falls away from the house,
+        # and drains east rather than north into the garage stem. (It drained "east to the
+        # driveway" until 2026-09-07; the driveway premise is retired — see
+        # notes/garage_orientation_lot.md — and the 4.2% fall is unchanged and still legal,
+        # it simply no longer drains *to* anything named.)
+        #
+        # ** THE WEST EDGE MOVED 14'-0" -> 15'-9" ON 2026-09-09, AND IT WAS FORCED. **
+        # EQ-M-HP3-OD went 2'-4" east to get out of the widened breezeway's east glazing,
+        # taking SL-M-HP3PAD to x 12'-1"..15'-5" — 1'-5" of pad inside this walk. 15'-9"
+        # leaves the pad 4" clear, the same never-touch convention the pad uses against the
+        # house cladding, and there is no version of that move that does not reach this
+        # walk: even a zero-clearance cabinet puts the pad's east edge at 14'-4 11/16".
+        # The walk loses 7 sf (32 -> 25); the fall it is graded on is in y and unchanged.
         ImperviousSurface(
             label="front walk",
-            outline=(pt(ft(14), ft(36)), pt(ft(22), ft(36)),
-                     pt(ft(22), ft(40)), pt(ft(14), ft(40))),
+            outline=(pt(ft(15, 9), ft(36)), pt(ft(22), ft(36)),
+                     pt(ft(22), ft(40)), pt(ft(15, 9), ft(40))),
             near_elevation=ft(-2, -11),  # -1" below grade at the foundation
             far_elevation=ft(-3, -1),    # -3" at the 4' outer edge (4.2% away)
             kind="walk",

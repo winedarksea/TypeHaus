@@ -11,19 +11,31 @@ attachment convention the resolver already uses.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.model.placeable_symbols._families import Builder, Geometry
 from typehaus.model.placeable_symbols._frame import (
     DETAIL_WEIGHT,
     Part,
+    Point,
     box,
     circle,
     clamp,
     ellipse,
     line,
+    polygon,
+    prism,
     rect,
 )
 
-__all__ = ["PLUMBING_SYMBOLS"]
+__all__ = ["NEO_ANGLE_CUT_FRACTION", "PLUMBING_SYMBOLS", "neo_angle_points"]
+
+SQRT_HALF = math.sqrt(0.5)
+
+# 16" off each leg of a 36" base — the DreamLine Prism / Kohler Purist class this house
+# specifies. Not universal: a deeper cut takes the P2708.1 circle under 30", so the ordered
+# base is confirmed against the type's own note before the enclosure is bought.
+NEO_ANGLE_CUT_FRACTION = 16.0 / 36.0
 
 
 def _basin(cx: float, cy: float, width: float, depth: float, z0: float, z1: float,
@@ -221,26 +233,72 @@ def tub_shower() -> Builder:
     return build
 
 
-def shower() -> Builder:
-    """A shower enclosure: the square-with-diagonals convention, plus a pan, curb and glass."""
+# A neo-angle pan is a square with one corner taken off at 45 deg: the two wall legs stay
+# full length and the room-facing corner becomes a third, diagonal panel. The cut is a
+# PRODUCT dimension (a 36" base's is typically 16" per leg, but it is not universal), so it
+# is passed in inches-as-metres rather than assumed to be a fraction of the pan.
+def neo_angle_points(width: float, depth: float, corner_cut: float) -> tuple[Point, ...]:
+    """The pentagon outline shared by the neo-angle glyph and its catalog ``footprint_shape``.
+
+    Exported so the drawn symbol, the 3D massing and the resolver's collision footprint
+    cannot drift. The wall corner is ``(+w/2, +d/2)`` — the object's back, per this module's
+    convention — and the cut takes the diagonally opposite one.
+    """
+    cut = max(0.0, min(corner_cut, width, depth))
+    return ((width / 2, depth / 2), (-width / 2, depth / 2),
+            (-width / 2, -depth / 2 + cut), (-width / 2 + cut, -depth / 2),
+            (width / 2, -depth / 2))
+
+
+def _edge_band(p0: Point, p1: Point, inward: Point, thickness: float) -> tuple[Point, ...]:
+    """A thin quad lying along edge ``p0``-``p1`` and stepping ``thickness`` inward.
+
+    The curb and the glass of a shower are bands on its open edges. Two of a neo-angle's
+    three are axis-aligned and a box would state them, but the diagonal is not, so all three
+    are built the same way rather than special-casing the one that needs it.
+    """
+    dx, dy = inward[0] * thickness, inward[1] * thickness
+    return (p0, p1, (p1[0] + dx, p1[1] + dy), (p0[0] + dx, p0[1] + dy))
+
+
+def shower(*, corner_cut_fraction: float | None = None) -> Builder:
+    """A shower enclosure: the square-with-diagonals convention, plus a pan, curb and glass.
+
+    ``corner_cut_fraction`` turns it neo-angle: the room-facing corner comes off at 45 deg,
+    the glyph draws the true pentagon and the massing extrudes it, so the diagonal a person
+    actually walks through is in the drawing and in the model rather than only in the
+    resolver's collision footprint.
+    """
 
     def build(width: float, depth: float, height: float) -> Geometry:
         curb = clamp(min(width, depth) * 0.06, 0.03, min(width, depth) * 0.12)
         pan_h = min(curb, height * 0.2)
         wall_z0 = min(curb * 2, height * 0.4)
-        strokes = [rect(0, 0, width, depth, fill="porcelain"),
-                   line((-width / 2, -depth / 2), (width / 2, depth / 2)),
-                   line((-width / 2, depth / 2), (width / 2, -depth / 2)),
-                   circle(0, 0, min(width, depth) * 0.04, weight=DETAIL_WEIGHT)]
         glass_t = min(0.012, min(width, depth) * 0.1)
         head = min(0.06, min(width, depth) * 0.2)
-        parts = [box(0, 0, 0.0, pan_h, width, depth, "porcelain"),
-                 box(0, -depth / 2 + curb / 2, 0.0, wall_z0, width, curb, "porcelain"),
-                 # Two enclosing walls of glass; the other two sides are the room's walls.
-                 box(0, -depth / 2 + glass_t / 2, wall_z0, height, width, glass_t, "glass"),
-                 box(-width / 2 + glass_t / 2, 0, wall_z0, height, glass_t, depth, "glass"),
-                 box(0, depth / 2 - head / 2, height * 0.78, height * 0.82, head, head,
-                     "metal")]
+        cut = min(width, depth) * corner_cut_fraction if corner_cut_fraction else 0.0
+        ring = neo_angle_points(width, depth, cut)
+        # The two square diagonals, the second of them clipped back to the cut face: a line
+        # drawn to a corner that is not there reads as a pan overhanging its own enclosure.
+        near = (-width / 2 + cut / 2, -depth / 2 + cut / 2)
+        strokes = [polygon(ring, fill="porcelain") if cut else rect(0, 0, width, depth,
+                                                                   fill="porcelain"),
+                   line(near, (width / 2, depth / 2)),
+                   line((-width / 2, depth / 2), (width / 2, -depth / 2)),
+                   circle(0, 0, min(width, depth) * 0.04, weight=DETAIL_WEIGHT)]
+        # The open edges, in ring order: the -x leg, the diagonal (absent on a square pan),
+        # and the -y leg. Each carries a curb below and a glass panel above it; the +x and
+        # +y sides are the room's own walls.
+        open_edges = [(ring[1], ring[2], (1.0, 0.0))]
+        if cut:
+            open_edges.append((ring[2], ring[3], (SQRT_HALF, SQRT_HALF)))
+        open_edges.append((ring[3], ring[4], (0.0, 1.0)))
+        parts: list[Part] = [prism(ring, 0.0, pan_h, "porcelain")]
+        for p0, p1, inward in open_edges:
+            parts.append(prism(_edge_band(p0, p1, inward, curb), 0.0, wall_z0, "porcelain"))
+            parts.append(prism(_edge_band(p0, p1, inward, glass_t), wall_z0, height, "glass"))
+        parts.append(box(0, depth / 2 - head / 2, height * 0.78, height * 0.82, head, head,
+                         "metal"))
         return tuple(strokes), tuple(parts)
 
     return build
@@ -470,6 +528,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "tub": tub(),
     "tub-shower": tub_shower(),
     "shower": shower(),
+    "shower-neo-angle": shower(corner_cut_fraction=NEO_ANGLE_CUT_FRACTION),
     "floor-drain": floor_drain(),
     "kitchen-sink": kitchen_sink(bowls=2),
 }

@@ -38,17 +38,73 @@ _CLADDING_Y_IN = 36 * 12 + 7.25
 #: Garage south cladding face, ``params/breezeway.py::_GARAGE_CLADDING_Y``. The slot
 #: between the two faces is 48 1/2".
 _GARAGE_CLADDING_Y_IN = 40 * 12 + 7.75
-#: 8" of back clearance. Gree publishes no clearance diagram for this chassis that could be
-#: fetched (every PDF mirror 403s — the same wall `notes/heat_pump_ground_pad.md` hit for
-#: the FXU24/MUL30 stacking allowance), so this is not a read minimum: it is HP2's published
-#: 6" plus two, taken because the slot has the room and because the pad's own south edge
-#: then clears the legs by 2 5/8" instead of a scant half inch. What it costs is the
-#: discharge, which still reads 25 11/16" to the garage cladding — see the note.
+#: 8" of back clearance — **and it is under Gree's published minimum. The figures WERE
+#: sourced on 2026-09-09**, retiring this line's old claim that no clearance diagram could
+#: be fetched: greecomfort.com's own "GREE MINI-SPLIT SYSTEMS CHEAT SHEET" (08262020),
+#: under CLEARANCES, states *"2' clearance from the top, 2' right side, 1' left side,
+#: 6 1/2' discharge (air outlet), and 1' incoming (air inlet) air side"*. Measured against
+#: this siting, in the 48 1/2" slot:
+#:
+#:   air inlet (S, to house cladding)     8"        vs 12"   — 4" short
+#:   discharge (N, to garage cladding)   25 11/16"  vs 78"   — 52 5/16" short
+#:   west side (to GL-BW-WALL-E)         -5/16"     vs 12"   — the cabinet and the
+#:                                                             breezeway's east glazing
+#:                                                             INTERPENETRATE by 5/16"
+#:
+#: **No orientation fits.** The unit's largest face is 34 3/8"; the slot is 48 1/2". Across
+#: the airflow axis that leaves at most 33 11/16" against the 90" (12+78) Gree wants; turned
+#: 90 degrees the discharge could run east to open yard, but the two sides then share
+#: 14 1/8" against 36" (12+24). The slot cannot hold this cabinet to its own manufacturer's
+#: numbers at any position or rotation, and moving it east does not change a single y
+#: dimension above. Nothing in the engine grades an Equipment against a clearance envelope,
+#: which is why this stood at 0 FAIL. Re-siting the unit out of the slot is the fix; that is
+#: an owner decision, not a params edit.
+#:
+#: ** WHERE THAT LEAVES THE 2026-09-09 POSITION: AN OWNER-ACCEPTED INTERIM. ** The 2'-4"
+#: move was made to free the breezeway's glazing, not to fix the airflow, and the owner
+#: accepted the y-axis shortfall as a deferred issue rather than re-site the unit now. As
+#: moved, measured (not asserted) — x 12'-4"..15'-2 3/8", y 37'-3 1/4"..38'-6 3/64":
+#:
+#:   MET      west side, to GL-BW-WALL-E     12 11/16"  vs 12"  (was -5/16", a collision)
+#:   MET      east side, service              open yard vs 24"  (front walk is flat, not
+#:                                                               an obstruction)
+#:   MET      top                             open      vs 24"  (the breezeway roof now
+#:                                                               sheds at x 11'-3", 13"
+#:                                                               west of the cabinet; it
+#:                                                               used to shed onto its lid)
+#:   NOT MET  air inlet (S, to house cladding)  8"      vs 12"  — 4" short
+#:   NOT MET  discharge (N, to garage cladding) 25 11/16" vs 78" — 52 5/16" short
+#:
+#: **The x axis is now right and the y axis cannot be.** Moving east changed no y dimension
+#: and never could: the slot is 48 1/2" and this cabinet is 14 51/64" deep, so front+back
+#: can never exceed 33 11/16" against the 90" (12+78) Gree asks. Turning it 90 degrees
+#: would open the discharge east to the yard but leave the two sides sharing 14 1/8"
+#: against 36". **The fix is re-siting system 3's outdoor unit out of the slot**, which
+#: drags the W-M-N2 lineset punch, ED-M-HP3-DISC and CKT-HP3 with it.
+#:
+#: ** NOTHING WILL REMIND ANYONE. ** No check in this engine grades an Equipment against a
+#: clearance envelope — that is why the 5/16" interpenetration with the glazing stood at
+#: 0 FAIL until it was measured by hand. `haus check` is green on this cabinet and will
+#: stay green however badly it is boxed in. This comment is the only record.
 _BACK_CLEAR_IN = 8.0
-#: West face on the round foot at x 10'-0", which is 6" clear of D-M-ENTRY's near jamb at
-#: x 9'-6" and leaves the entry door's R311.3 landing (x 6'-6"..9'-6") untouched. The
-#: cabinet still straddles the lineset punch through W-M-N2 opposite EQ-M-HP3-STAIR.
-_CAB_X0_IN = 120.0
+#: West face at x 12'-4". ** IT MOVED 2'-4" EAST ON 2026-09-09 AND THE MOVE IS THE
+#: BREEZEWAY'S. ** It stood at x 10'-0", which was 6" clear of D-M-ENTRY's near jamb and
+#: clear of that door's landing — but x 10'-0" is also where the breezeway's east glazing
+#: line stood, and cabinet and glass INTERPENETRATED by 5/16" (z -1'-2"..+0'-7 7/8" against
+#: the panel's -0'-7 1/4"..+7'-4 3/4"), at 0 FAIL. Widening the deck to cover
+#: `D-G-SERVICE`'s R311.3 landing put that glass at x 11'-3 5/16", so the cabinet had to go.
+#:
+#: 2'-4" is chosen, not rounded: it is the smallest whole-inch move that clears the new
+#: glass face by Gree's 12" lesser-side minimum. West face 12'-4" less glass face
+#: 11'-3 5/16" = **12 11/16" clear**. The east face lands at 15'-2 3/8" and the pad at
+#: 15'-5", which is why the front walk's west edge moved to 15'-9" (plan/site.py).
+#:
+#: The lineset still punches W-M-N2 straight: `EQ-M-HP3-STAIR` inside spans x 10'-7 3/4"..
+#: 13'-4 3/4" and the cabinet now spans 12'-4"..15'-2 3/8", so 12 3/4" of station is shared
+#: and the punch sits in it, behind the cabinet's west end. That overlap is the binding
+#: constraint on any further eastward move — past x 13'-4 3/4" the punch stops being
+#: straight and the run has to turn inside the wall.
+_CAB_X0_IN = 148.0
 
 #: The cabinet centre, in inches from the project origin. **This pair is also written in
 #: plan/electrical.py** as ``pt(ft(11, 5.1875), ft(37, 10.6484375))`` and the two files
@@ -66,7 +122,11 @@ _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 454 41/64"
 # wall's runoff into gravel rather than against a lip. The north edge is NOT the same
 # convention against the garage — it stops 20 3/4" short of it, because the pad is sized to
 # the stand rather than to the slot, and that 20 3/4" is the walking route through.
-_PAD_X0_IN, _PAD_X1_IN = 117.0, 157.0
+#: Moved 2'-4" east with the cabinet: x 12'-1"..15'-5". It keeps its 3"/2 5/8" margins on
+#: the cabinet ends, and its east edge now stops 4" short of the front walk's new west edge
+#: at x 15'-9" — the same "never touch, no joint to detail" convention its south edge uses
+#: against the house cladding.
+_PAD_X0_IN, _PAD_X1_IN = 145.0, 185.0
 _PAD_Y0_IN, _PAD_Y1_IN = 442.25, 467.0
 #: Two inches proud of the -2'-10" site grade, the same top as both pocket pads, so all
 #: three cabinets' bases resolve to one number.

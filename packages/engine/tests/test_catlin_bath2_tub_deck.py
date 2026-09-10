@@ -164,8 +164,10 @@ def test_the_deck_cap_is_plywood_over_blocking_and_the_bath_hole_is_cut_out_of_i
     outer = Polygon([p.xy_m for p in slab.outline]).area / (M_PER_IN ** 2)
     hole = next(e for e in plan.storey_elements("main") if getattr(e, "tag", "") == "FO-M-TUBDK")
     cut = Polygon([p.xy_m for p in hole.outline]).area / (M_PER_IN ** 2)
-    # ~19.8 sf of deck with ~13.5 sf of it cut away for the bath.
-    assert 19.0 < outer / 144 < 20.5
+    # ~20.8 sf of deck with ~13.5 sf of it cut away for the bath. The deck grew 2" east
+    # on 2026-09-09 when W-M-BA2E2 came off its jog (storeys/main.py); the CUTOUT did not,
+    # and must not — it is the bath's rim less 1" all round, centred on the bath.
+    assert 20.0 < outer / 144 < 21.5
     assert 13.0 < cut / 144 < 14.0
 
 
@@ -179,7 +181,11 @@ def test_the_knee_walls_frame_and_stand_on_the_subfloor():
         assert round(wall.z1_m / M_PER_IN, 4) == 20.0
         categories = {m.category for m in wall.members}
         assert {"stud", "plate"} <= categories, f"{tag} framed nothing"
-        assert all(m.profile == "2x4" for m in wall.members)
+        # Studs and plates are 2x4. The one member that is not is BK-M-TUBDK-AP
+        # (plan/backing.py), the 2x8 flat framing the tub access panel in the west skirt.
+        assert all(m.profile == "2x4" for m in wall.members if m.category != "blocking")
+        blocks = [m for m in wall.members if m.category == "blocking"]
+        assert {m.profile for m in blocks} <= {"2x8"}, f"{tag} grew unexpected blocking"
 
 
 def test_the_deck_does_not_carve_up_the_room():
@@ -188,7 +194,10 @@ def test_the_deck_does_not_carve_up_the_room():
     face nothing claims."""
     model, _ = resolve(_plan())
     room = next(r for r in model.rooms if r.tag == "RM-M-BATH2")
-    assert 72.0 < room.area_m2 * 10.7639 < 73.5
+    # ~74.4 sf since 2026-09-09: the room's east boundary (W-M-BA2E/E2) moved 2" east with
+    # the jog realignment, which is 1.6 sf of real floor. The band is here to catch the
+    # ~20 sf collapse, not to pin the wall.
+    assert 73.5 < room.area_m2 * 10.7639 < 75.0
 
 
 def test_the_bask_heated_surface_has_its_dedicated_gfci_circuit_and_outlet():

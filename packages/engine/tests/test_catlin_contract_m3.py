@@ -2697,6 +2697,27 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     #     (storeys/basement.py, N-B-S3). The main-floor stud nearest that end now stands over
     #     W-B-S4's pour rather than over a stud, which is what "a stud cannot stack on
     #     concrete" means and not framing coming apart.
-    assert orphan_count <= 125, (
+    #   * **127/254 on 2026-09-09**, +13 over the 114/246 the house measured the commit
+    #     before, and every one of the thirteen is bought by the main floor retiring the
+    #     W-M-BA2N jog and putting the bath2 east line on ONE axis at x=8'-2"
+    #     (storeys/main.py; N-M-D2B is a retired node). Not one stud on any of the three
+    #     walls below moved of its own accord, and none of the three is re-phasable from the
+    #     storey it is on — the wall UNDER it moved:
+    #       - `W-M-CLN` 5 -> 9. It starts at N-M-D2 (x=8'-2") now, not the retired jog node
+    #         N-M-D2B (x=8'-8 3/8"), so its staggered 8" rhythm restarts 6 3/8" west and
+    #         lands 2" off W-B-CW2's 16" module below. The old phase agreed with the
+    #         basement by 3/8" — inside the 1/2" stack tolerance by luck, not by layout —
+    #         and the new start node is the tee where W-M-BA2E and W-M-BA2E2 meet, so there
+    #         is no phase to move without moving the tee.
+    #       - `W-S-SN2` 0 -> 7, **and not one stud changed position on either storey.**
+    #         W-M-HS2 grew 24" -> 26" (x 72"..98") when the line went east, crossing the
+    #         2'-0" minimum in-plane overlap, so W-S-SN2 acquired a carrier it never had.
+    #         Its studs lay out from N-S-V1 at x=70 1/2" and HS2's from x=72", so the two
+    #         grids have always been 1 1/2" apart; what changed is that the metric can now
+    #         see it. Re-phasing means moving N-S-V1, which is the vanity alcove's tee.
+    #       - `W-S-SN3` 10 -> 12. W-M-HS3's studs moved 2" east with the line; SN3 lays out
+    #         from N-S-D4 (x=9'-7 1/2") and stayed put, so two near-misses inside the 1/2"
+    #         tolerance became misses.
+    assert orphan_count <= 127, (
         f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(was 124/255); first offenders {orphans[:12]}")
+        f"(was 127/254); first offenders {orphans[:12]}")

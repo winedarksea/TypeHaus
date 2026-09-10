@@ -58,21 +58,32 @@ _STRUCT_SHORT_BAR_SOURCE = 'BarSpec(role="vertical", bar=4, count=3, coating="hd
 # §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
 # section, tributary and cage — so one row covers them.
 _BW_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
-# REVISED 2026-09-03: the tributary DOUBLED, 3.1727 -> 6.3455 ft², when the split went
-# beam-weighted. FS-BW-FLOOR is a single-bay deck on two beams, and each of them is an EDGE
-# beam given the FULL joist span as its strip — so the two strips cover the deck twice. That
-# is the conservative direction and it is the same over-count `glulam_beam.py` prints on its
-# own record; on a pier bearing 1.78 ft² against a required 1.00 it changes nothing that
+# REVISED 2026-09-03: the tributary DOUBLED when the split went beam-weighted.
+# FS-BW-FLOOR is a single-bay deck on two beams, and each of them is an EDGE beam given the
+# FULL joist span as its strip — so the two strips cover the deck twice. That is the
+# conservative direction and it is the same over-count `glulam_beam.py` prints on its own
+# record; on a pier bearing 1.78 ft² against a required 1.00 it changes nothing that
 # matters, which is why the simpler rule is kept rather than opening a fourth opinion about
 # deck loads. §2 of the note carries both numbers.
+#
+# RE-WORKED 2026-09-09 for the 4'-6" deck: `params/breezeway.py::_EW_FT` went 4.0 -> 4.5 so
+# that D-G-SERVICE gets its R311.3 landing, which moved every plan dimension §2 is built on.
+# **These values are transcribed from `notes/breezeway_piers.md` §2, which was re-worked BY
+# HAND first** — post-to-post span 4.5 - 2(5.5/24) = 4.041667', deck 4.041667 x 3.583333 =
+# 14.4826 ft², half of it per beam; roof covering 4.5 x 4.0 = 18.000 ft², a quarter per
+# pier. The note's independent bound (deck factored + a hand estimate of the roof) reaches
+# ~1,665 lb against the 1,693.75 below, agreeing to 1.7%. Do NOT re-pin these from engine
+# output: the note is the oracle and the engine is what is being checked.
 _BREEZEWAY_ORACLE = {
     "height_in": 56.75, "gross_in2": 113.097, "h_over_d": 4.73,
-    "tributary_ft2": 6.3455, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
+    "tributary_ft2": 7.2413, "carried_dead_lb": 50.70, "self_weight_lb": 557.14,
     # §2 as re-worked 2026-09-04, when the roof field closed the axial gap. The roof share
     # is SNOW-loaded (50 psf) and kept apart from the 40 psf deck tributary on purpose.
-    "roof_tributary_ft2": 4.0, "roof_snow_psf": 50.0,
-    "dead_lb": 711.30, "live_lb": 453.82, "service_lb": 1165.12, "factored_lb": 1579.67,
-    "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 187_011.0,
+    "roof_tributary_ft2": 4.5, "roof_snow_psf": 50.0,
+    "dead_lb": 725.26, "live_lb": 514.65, "service_lb": 1239.91, "factored_lb": 1693.75,
+    # §4. 285,893 lb is the EXPOSED_MIX 5,000 psi figure; this read 187,011 (the presumptive
+    # 3,000 psi the engine used to substitute) until 2026-09-09, unused and stale.
+    "min_steel_in2": 1.1310, "steel_in2": 1.24, "capacity_lb": 285_893.0,
     "tie_spacing_in": 10.0,
     "slenderness": 18.92, "delta_ns": 1.0005, "e_magnified_in": 0.9604, "e_capped_in": 1.20,
 }
@@ -277,11 +288,16 @@ def test_the_roof_share_is_snow_not_deck_live(tag, piers) -> None:
 
 @pytest.mark.parametrize("tag", _BREEZEWAY_PIERS)
 def test_the_roof_field_prefers_the_covering_to_the_framed_rectangle(tag, piers) -> None:
-    """§3: the rafters oversail each beam by 2 3/4", so the framed rectangle (14.333 ft2)
-    is a 10% under-count of what ``GL-BW-ROOF`` actually covers (16.0 ft2). The larger
-    governs, because an understated tributary is an understated demand."""
-    framed_share = (4.0 * (40.4167 - 36.8333)) / 4.0
-    assert piers[tag].roof_tributary_ft2 == pytest.approx(16.0 / 4.0, abs=0.001)
+    """§3: the rafters oversail each beam by 2 3/4", so the framed rectangle (16.125 ft2)
+    is a 10.4% under-count of what ``GL-BW-ROOF`` actually covers (18.0 ft2). The larger
+    governs, because an understated tributary is an understated demand.
+
+    Both numbers moved with the 4'-6" widening — the rafters span the glazing lines, so the
+    framed rectangle is 4.5' x 3.5833' and the covering 4.5' x 4.0'. The RELATION is what
+    this test is about and it is unchanged: the covering is the larger, and it should be.
+    """
+    framed_share = (4.5 * (40.4167 - 36.8333)) / 4.0
+    assert piers[tag].roof_tributary_ft2 == pytest.approx(18.0 / 4.0, abs=0.001)
     assert piers[tag].roof_tributary_ft2 > framed_share
 
 

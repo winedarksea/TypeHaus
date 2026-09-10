@@ -161,8 +161,14 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: authored elevation on a different grade. Both authored ends were re-cut to hold the
 #: 0.3"/ft their comments declare (-13.55" -> -13.728" on the sauna branch, 84.867" ->
 #: 85.042" on the condensate chase); only the free vertex at index 3 moves in either.
+#:
+#: ** PR-B-COND RE-PINNED 2026-09-09, six vertices from five. ** Its gym leg moved north
+#: onto y=10'-11" and out of RM-B-GYM's air into SF-B-GYM's box, and it now leaves that band
+#: southward inside W-B-CS3/W-B-CS instead of running straight west — one more corner. The
+#: head came up 2 5/8" to 7'-8" to keep 1 1/2" between the pipe and the soffit's underside,
+#: so every invert on it moves; the grade is still the one authored fact.
 _PINNED_FT = {
-    "PR-B-COND": [-1.675, -1.9, -2.0125, -2.03296, -8.36979],
+    "PR-B-COND": [-1.45313, -1.67813, -1.72604, -1.83854, -1.85896, -8.36979],
     "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -10.01636, -10.20396],
     "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89677, -10.00133, -10.26379],
 }

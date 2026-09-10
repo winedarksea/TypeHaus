@@ -1,30 +1,35 @@
-"""Breezeway — the enclosed 8' x 4' x 4' polycarbonate shelter between house and garage.
+"""Breezeway — the enclosed 8' x 4' x 4'-6" polycarbonate shelter between house and garage.
 
 One freestanding structure spanning the 4'-0 1/2" slot between the house's north entry
-(``D-M-ENTRY``, centred on x = 4'-0") and the garage's service door (``D-G-SERVICE``,
-centred on x = 5'-0"). It touches neither building: four 6x6 ground-contact posts on
+(``D-M-ENTRY``, centred on x = 8'-0") and the garage's service door (``D-G-SERVICE``,
+centred on x = 10'-0"). It touches neither building: four 6x6 ground-contact posts on
 isolated piers and frost-depth pads carry the whole thing, and the glazing is *snug* to the
 house and garage cladding without lapping into either one's flashing.
 
-**"8 x 4 x 4" is the brief, and this module means it literally.** The glazed
-enclosure is 8'-0" tall x 4'-0" N-S x 4'-0" E-W. The three dimensions are measured on the
-*enclosure*: the foundations below the floor-beam soffit are excluded (they are ground work,
-not room), and so is the ~1" wedge bulge that crowns the roof for drainage.
+**THE "8 x 4 x 4" BRIEF IS RETIRED IN ITS E-W TERM, AND THE ROOF SHEET IS CUT (2026-09-09).**
+The enclosure is 8'-0" tall x 4'-0" N-S x **4'-6" E-W**. Two of the three are still measured
+on the sheet; the third is measured on the building code, and that is the whole change:
 
-That reading falls straight out of the sheet:
+* A standing sheet is still a 4'x8' sheet stood on end and **uncut**: 4'-0" wide N-S,
+  exactly 8'-0" tall, from the floor-beam soffit (-7 1/4") to the roof sheet's underside
+  (+7'-4 3/4"). Nothing of the framing shows below it, nothing of the elevation is open
+  above it, and the 4'-0 1/2" slot is still what that 4'-0" has to fit — ``_REVEAL_FT`` is
+  unchanged at 1/2".
+* **The E-W extent is 4'-6", centred on x = 9'-0"**, so the glazing runs x = 6'-9" to
+  11'-3". It was 4'-0" centred on 8'-0" — the shared centre of two doors that WERE
+  concentric. They are 2'-0" apart now (the garage was centred on the house ridge and took
+  its service door with it), and a 4'-0" enclosure on either centre leaves the other door
+  opening onto air over a 2'-10" drop. 4'-6" straddles both: it is the smallest half-foot
+  module that carries R311.3's 36"-deep landing patch for each of them past the 85%
+  coverage bar. See ``_EW_FT``, which owns that derivation.
+* The roof is **one 4'-6" x 4'-0" sheet, and it is CUT to that** — one cut off an 8'x4',
+  leaving a 3'-6" offcut. It used to be exactly half a sheet with a matching half left
+  over; that symmetry is what the 6" bought and it is gone.
 
-* A standing sheet is a 4'x8' sheet stood on end and **uncut**: 4'-0" wide N-S, exactly
-  8'-0" tall, from the floor-beam soffit (-7 1/4") to the roof sheet's underside
-  (+7'-4 3/4"). Nothing of the framing shows below it and nothing of the elevation is open
-  above it.
-* The E-W extent is 4'-0" glazing line to glazing line, centred on x = 8'-0" — the shared
-  centre of the house entry and the garage service door, which are concentric — so the
-  glazing runs x = 6'-0" to 10'-0".
-* The roof is **one** 4'-0" x 4'-0" sheet: half of an 8'x4', cut once.
-
-The bill is therefore three sheets for the enclosure itself, and only one cut among them:
-two 8'x4' sheets standing whole, one 8'x4' halved for the roof. Three sheets is the whole
-bill: the gap under the deck is left open rather than skirted.
+The bill is therefore still three sheets for the enclosure and still only one cut among
+them: two 8'x4' sheets standing whole, one 8'x4' cut once for the roof. What changed is the
+offcut, not the sheet count. Three sheets is the whole bill: the gap under the deck is left
+open rather than skirted.
 
 The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
 in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head.
@@ -34,7 +39,7 @@ in its lower slot, the roof sheet in its upper — replacing the eave U and the 
 * The roof does not oversail the glazing line as a drip edge; it dies *in* the shared
   channel, so the sill U-channel's weep holes are the assembly's only drainage path.
 * **Headroom is now honest rather than generous.** Clear under the rafters is ~7'-3 1/4",
-  but the roof beams run N-S at x = 6'-2 3/4" / 9'-9 1/4" and their soffit is at +6'-3 1/2" —
+  but the roof beams run N-S at x = 6'-11 3/4" / 11'-0 1/4" and their soffit is at +6'-3 1/2" —
   *below* a 6'-8" door head. Those two beams sit on the glazing lines at the very edges of
   the walk-line, which runs door to door (N-S) up the middle of the 4'-0" width, so a person
   passes between them and not under them. Anyone reaching for the west or east glazing ducks.
@@ -49,7 +54,7 @@ Framing directions (the brief's "opposite rotation"):
      |===================|  N-S floor       |===================|  N-S roof beams
      |-------------------|  beams on        |-------------------|  on the post tops
      |-------------------|  the post        |-------------------|  E-W rafters
-     |===================|  lines           |===================|  crown at x = 8'-0"
+     |===================|  lines           |===================|  crown at x = 9'-0"
      house      E-W joists @ 16"            house    (wedges on every rafter)
                 deck boards N-S
 
@@ -146,7 +151,11 @@ _GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.71875'
 _GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - 0.875 / 12.0  # 40.6458'
 
 _CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.04167' = 4'-0 1/2"
-_PANEL_FT = 4.0  # one 4'x8' sheet, UNCUT in the N-S direction
+#: The N-S glazing dimension, and it is still literally the sheet: a 4'x8' panel stood on
+#: end is 4'-0" across, UNCUT, and the 4'-0 1/2" slot is what it has to fit. This is the
+#: dimension `_REVEAL_FT` is the leftover of. The E-W dimension used to be this number too;
+#: it is `_EW_FT` now and no longer a sheet width — see the note there.
+_PANEL_FT = 4.0
 
 #: The reveal the glazing is held off the garage cladding by, so the sheet has somewhere to
 #: go and the north F-channel has a thickness. **It is free, and it is DERIVED**: the slot
@@ -201,6 +210,16 @@ _PAD_BAND_FT = _GARAGE_STEM_Y - _HOUSE_FOUNDATION_Y  # 4.38125' = 4'-4 9/16"
 # already the 12" minimum side, not the load: 3.2 ft2 tributary at 50 psf on 1500 psf soil
 # needs 0.11 ft2. 1'-4" is the size chosen: 1.78 ft2, comfortably over both the load and the
 # 12" minimum, and 2" of ledge all round the 12" round pier it carries.
+# ** PD-BW-4 NOW SITS OVER THE WATER LATERAL (2026-09-09). ** The E-W widening took the
+# east post line from x 9'-9 1/4" to 11'-0 1/4", and `plan/mep_supply.py`'s hydrant run
+# turns north at x = 11'-0" and travels y 38'-0"..59'-6" at invert -8'-10". PD-BW-4 spans
+# x 10'-4 1/4"..11'-8 1/4", y 39'-2 3/8"..40'-6 3/8", bearing at -6'-4" — directly over it,
+# with **2'-6" of undisturbed till between pad bottom and pipe**. It is not a bearing
+# problem (a 1'-4" pad carrying ~160 lb, dispersed over 2'-6", is negligible) and not a
+# freeze problem (the pipe keeps its full 6'-0" cover; the pad does not reduce it). It IS
+# an EXCAVATION problem: whoever digs this pad hole is digging 2'-6" above a live 3/4" PEX
+# service. Nothing in the engine grades a pad against a pipe below it. Note it on the
+# foundation plan; do not discover it with a bucket.
 _PAD_SIDE_FT = 16.0 / 12.0
 _PAD_HALF_FT = _PAD_SIDE_FT / 2.0
 _FORM_CLEAR_FT = 2.0 / 12.0  # working room between a pad edge and the wall it stands beside
@@ -229,19 +248,34 @@ _POST_Y1 = _POST_MID_Y + _POST_SPACING_FT / 2.0  # 39.8615'
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _GLAZING_Y0 + _PANEL_FT
 
-# E-W: exactly 4'-0", centred midway between the two doors it shelters. `D-M-ENTRY` and
-# `D-G-SERVICE` are now CONCENTRIC at x = 8'-0", so this midpoint is simply their shared
-# centre. This centre must track both doors — nothing else in the plan enforces that but
-# `test_breezeway_stays_centred_between_the_two_doors_it_shelters`, after the enclosure once
-# stood 3'-6" off its own door with nothing catching the drift until
+# E-W: 4'-6", centred on x = 9'-0". **This is the one dimension in the module that is NOT
+# the sheet's** — see `_EW_FT` below. The two doors are 2'-0" out of line (`D-M-ENTRY`
+# centred x 8'-0", `D-G-SERVICE` x 10'-0", since the garage was centred on the house ridge),
+# so there is no shared centre to sit on and the enclosure straddles both instead: 9'-0" is
+# the midpoint of the pair. This centre must track both doors — nothing else in the plan
+# enforces that but `test_breezeway_stays_centred_between_the_two_doors_it_shelters`, after
+# the enclosure once stood 3'-6" off its own door with nothing catching the drift until
 # `code.R311_3_exterior_landing` reported it.
-_GLAZING_CENTER_X = 8.0
-_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 6.0'
-_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 10.0'
+_GLAZING_CENTER_X = 9.0
+
+#: The E-W glazing dimension, and the only number here set by a CODE requirement rather than
+#: by a sheet. R311.3 projects a 36"-deep landing patch outside each exterior door and
+#: `code.R311_3_exterior_landing` asks that a surface cover 85% of it; this deck is that
+#: surface for both doors. The two patches are x 6'-6"..9'-6" (`D-M-ENTRY`, clipped to 99.1%
+#: in y by the house cladding line) and x 8'-6"..11'-6" (`D-G-SERVICE`). Solving both at 85%
+#: gives a bare tangent of 4'-1 15/32" spanning x 6'-11 1/8"..11'-0 5/8".
+#:
+#: 4'-6" is the smallest half-foot module clear of that tangent: it spans x 6'-9"..11'-3"
+#: and covers the entry patch **90.9%** and the service patch **91.7%**, roughly 2 1/4" of
+#: margin on each. A tangent would be a landing that complies by a sixteenth, and the next
+#: cladding-thickness edit would eat it.
+_EW_FT = 4.5
+_GLAZING_X0 = _GLAZING_CENTER_X - _EW_FT / 2.0  # 6.75'
+_GLAZING_X1 = _GLAZING_CENTER_X + _EW_FT / 2.0  # 11.25'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the
 # 4'-0" is the glazed dimension and not a post-centre dimension.
-_POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 6.2292' — west post centre
-_POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 9.7708' — east post centre
+_POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 6.9792' — west post centre
+_POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 11.0208' — east post centre
 # The roof glazing runs to the same E/W lines as the standing sheets, so the two meet in one
 # channel — see the module docstring for the drainage consequence.
 _ROOF_X0, _ROOF_X1 = _GLAZING_X0, _GLAZING_X1
@@ -297,7 +331,7 @@ _GLAZING_THICKNESS_IN = 0.63
 # lets one channel capture both.
 _ROOF_GLAZING_UNDER = _PIER_TOP + _WALL_SHEET_FT  # 7.3958' = +7'-4 3/4"
 
-# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 8'-0". One
+# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 9'-0". One
 # 1" rise over a 2'-0" half-span (~1:24) — shallow, but the roof is now a single bent sheet
 # rather than two flat ones meeting at a crown bar, and 1" over 2'-0" is well inside 16mm
 # multiwall's cold-bend radius. The glazing plane is authored at the *mean* wedge height,
@@ -506,7 +540,7 @@ RAFTERS = [
     for i in range(1, len(_RAFTER_Y) + 1)
 ]
 
-# A back-to-back pair of tapered rips on every rafter: 1" proud at the crown (x = 8'-0"),
+# A back-to-back pair of tapered rips on every rafter: 1" proud at the crown (x = 9'-0"),
 # feathered to nothing at each eave 2'-0" away. Six pieces, ripped from 2x4 KDAT laid flat,
 # so each one shows its 3 1/2" face in plan — which is why the member carries an explicit
 # plan width (a taper's own vertical extent cannot say which way it was laid).
@@ -529,7 +563,7 @@ WEDGES = [
 # Glazing: three 4'x8' sheets, two standing uncut and one halved across the roof.
 # ============================================================================
 # One sheet, 4'-0" x 4'-0" — half of an 8'x4', the only cut in the bill. Flutes run E-W,
-# down-slope from the crown at x = 8'-0" to each eave, so the open (draining) flute ends land
+# down-slope from the crown at x = 9'-0" to each eave, so the open (draining) flute ends land
 # at x = 6'-0" and 10'-0". The sheet bends over the crown rather than butting a second sheet
 # there, which is what retired the crown glazing bar: no joint, nothing to seal.
 ROOF_GLAZING = [

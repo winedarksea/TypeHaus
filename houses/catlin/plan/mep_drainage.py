@@ -191,7 +191,7 @@ DRAINS = [
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(6, 10.0375)),
             serves=("FX-M-BATH2-SINK",)),
     PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(8, 2), m(6.04653)), pt(ft(8, 2), m(6.04653)), pt(ft(6), ft(20)),),
+            path=(pt(ft(8, 2), ft(20)), pt(ft(8, 2), ft(20)), pt(ft(6), ft(20))),
             diameter=inch(2), material="pvc",
             elevations=(ft(9, 1.4375), ft(7, 10.0375), ft(7, 5.8375)),
             serves=("FX-M-LAUNDRY",)),
@@ -431,13 +431,24 @@ SECOND_BRANCH_DRAINS = [
 # Heat-pump condensate (plans/TODO.md §condensate): a collected 3/4" air-gap line, falling
 # continuously to a receptor, never tied into the sanitary system. PR-M-COND-HEADS drops
 # the two main-storey wall heads (master bed + living room, south centre line) through
-# SP-M-COND to the basement collector, which also picks up the gym head. EQ-S-HP1-AH's line
-# down the second-floor chase is still undrawn — a follow-up, recorded rather than guessed.
+# SP-M-COND to PR-B-COND. EQ-S-HP1-AH's line down the second-floor chase is still undrawn
+# — a follow-up, recorded rather than guessed.
+#
+# ** IT NO LONGER CUTS THE GYM DIAGONALLY (2026-09-09). ** The old leg ran from the drop at
+# (17'-6", 1'-0") north-east to a collector at (27'-0", 9'-0"), which put 11'-5" of it in
+# RM-B-GYM's air 8" under the finished ceiling — `mep.run_in_finished_volume`. The drop is
+# already inside RM-B-SAUNA, whose ceiling is 14" lower than the rest of the basement's, so
+# everything above -2'-2 5/8" there is in a service void nobody sees. The run now stays in
+# it: straight north on x=17'-6" to PR-B-COND's y=9'-0" leg, tying in on the trunk instead
+# of at its head. 2" clear of PR-B-CW-SAUNA (x=17'-4") and PR-B-SAUNA-VENT (x=17'-4"), and
+# it crosses nothing else — DU-B-ERV-R-GYM is at y=10'-6 5/8", north of the tie.
 CONDENSATE_MAIN = [
     PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN,
-            path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(27), ft(9))),
+            path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(9))),
             diameter=inch(0.75), material="pvc",
-            elevations=(ft(2, 6), ft(-1.3333), ft(-1.6753))),
+            # 0.3"/ft over the 8'-0" north leg, landing on PR-B-COND's interpolated
+            # -1'-8.9" invert at x=17'-6".
+            elevations=(ft(2, 6), inch(-18.46), inch(-20.86))),
 ]
 
 # --- RM-M-LAUNDRY: the two air gaps -----------------------------------------------------
@@ -551,29 +562,57 @@ LAUNDRY_MAIN = [
 # leg is 5'-0 13/16" and its authored end came up 43.73" -> 43.905" with the drain's move,
 # so the 0.3"/ft this paragraph claims is still true of every leg.
 ERV_CONDENSATE = [
+    # ** IT DROPS IN W-B-SA-N'S CAVITY NOW, NOT IN THE SAUNA (2026-09-09). ** The pan is at
+    # 4'-6" and RM-B-SAUNA's ceiling is at 6'-10 13/16", so this line can NEVER reach that
+    # room the way PR-B-COND does — over its ceiling. Run straight to the grate it crossed
+    # the last 1'-6" of the sauna at 3'-8", waist height, and `mep.run_in_finished_volume`
+    # called it at 39.3". There is no elevation that fixes it and no box worth 39" of drop.
+    #
+    # So the fall is taken where it is already hidden: south to y=10'-0", which is inside
+    # W-B-SA-N's stud core (y 9'-8 3/16"..10'-3 3/16"), then straight down that cavity to
+    # 9 9/16". What is left in the room is the last 1'-10", at floor level, landing the 9"
+    # air gap over FX-B-SAUNA-FD — the run's own final leg to its receptor, which is what an
+    # indirect waste to a floor drain looks like. 0.3"/ft on both horizontals.
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
                   pt(ft(2, 11), ft(13, 3)),
-                  pt(ft(13), ft(13, 3)), pt(ft(13), inch(98.1875)),
-                  pt(ft(13), inch(98.1875))),
+                  pt(ft(13), ft(13, 3)), pt(ft(13), ft(10)),
+                  pt(ft(13), ft(10)), pt(ft(13), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
             # is 0.3"/ft the whole way, and the tie-in at FX-B-SAUNA-FD is 9".
             elevations=(inch(54), inch(53.7), inch(48.45), inch(45.425),
-                        inch(43.905), inch(9))),
+                        inch(44.45), inch(9.545), inch(9))),
 ]
 
+# ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
+# The trunk used to run west on y=9'-0" straight out of the gym at -1'-8 3/4", which is
+# 10.6" under that room's finished ceiling for 8'-8" — `mep.run_in_finished_volume`, and not
+# fixable by elevation: the deck soffit is the ceiling here, so the whole usable band is
+# 1 5/8" deep and 0.3"/ft eats it in five feet.
+#
+# So the gym leg moved north onto y=10'-11", beside DU-B-ERV-R-GYM's y=10'-6 5/8" lane, and
+# SF-B-GYM (plan/storeys/basement.py) boxes the pair — the same band SF-B-HALL carries on
+# the other side of W-B-CS3, continued through the wall. 2 1/2" of clear y between the
+# pipe's surface and the duct's, which is all a 3/4" line beside a 3" duct needs.
+#
+# It leaves that band the only way that stays hidden: SOUTH INSIDE W-B-CS3 AND W-B-CS on
+# x=18'-0", dead centre of both stud cores (13'-4"..15'-2 3/4"), which are continuous
+# across y=10'-0". At y=9'-0" it is back in RM-B-SAUNA's service void and runs west to the
+# drop exactly as before. Head at 7'-8" rather than 7'-5 3/8": the extra 2 5/8" is what
+# leaves 1 1/2" between the pipe and SF-B-GYM's underside at its deep end.
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
-                  pt(ft(13, 6), inch(98.1875)), pt(ft(13, 6), inch(98.1875))),
+            path=(pt(ft(27), ft(10, 11)), pt(ft(18), ft(10, 11)), pt(ft(18), ft(9)),
+                  pt(ft(13, 6), ft(9)), pt(ft(13, 6), inch(98.1875)),
+                  pt(ft(13, 6), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
-            # The 0.3"/ft the comment above states, authored as the grade it is: the two
-            # intermediate inverts solve to exactly the numbers that were hand-written here.
-            # path[3] is the top of the boxed chase's drop and stays authored — a vertical
-            # leg has no plan run to fall over.
-            elevations=(ft(7, 5.3375), None, None, inch(85.042), ft(0, 9)),
+            # The 0.3"/ft the comment above states, authored as the grade it is: the
+            # intermediate inverts solve from it. path[4] is the top of the drop and stays
+            # authored — a vertical leg has no plan run to fall over. 16'-2 3/4" of plan
+            # run from the head takes 4.87" out of 92", which is the 87.13" written here.
+            elevations=(ft(7, 8), None, None, None, inch(87.13), ft(0, 9)),
             slope_in_per_ft=0.3),
 ]
 

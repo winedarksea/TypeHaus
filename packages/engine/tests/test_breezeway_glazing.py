@@ -1,8 +1,11 @@
 """The breezeway's polycarbonate: one continuous skin, and one channel where sheets meet.
 
-The enclosure is 8'-0" x 4'-0" x 4'-0", and every one of those numbers is a *sheet*
-dimension: two 4'x8' sheets stood on end whole and uncut as the E/W walls, and one 8'x4'
-halved to make the 4'x4' roof. The height is measured on the glazing — floor-beam soffit
+The enclosure is 8'-0" x 4'-0" x 4'-6", and the first two are *sheet* dimensions: two
+4'x8' sheets stood on end whole and uncut as the E/W walls. The third is not, and stopped
+being one on 2026-09-09 — the E-W extent is set by R311.3's landing patches for the two
+doors the enclosure spans (`params/breezeway.py::_EW_FT`), so the roof is a 4'-6" x 4'-0"
+piece CUT from an 8'x4' with a 3'-6" offcut, rather than an exact half sheet. Still one
+sheet and still one cut. The height is measured on the glazing — floor-beam soffit
 (-7 1/4") to roof-sheet underside (+7'-4 3/4") — not on the clear headroom above the
 decking.
 
@@ -94,8 +97,11 @@ def test_the_roof_sheet_dies_on_the_standing_sheets_own_line(catlin_model):
     lo, hi = _span_x(roof)
     assert lo == pytest.approx(sum(_span_x(wall_w)) / 2.0, abs=1e-6)
     assert hi == pytest.approx(sum(_span_x(wall_e)) / 2.0, abs=1e-6)
-    # ...and it is exactly 4'-0" wide: half of an 8'x4' sheet, the only cut in the bill.
-    assert hi - lo == pytest.approx(4.0, abs=1e-6)
+    # ...and it is 4'-6" wide. **It was 4'-0" — an exact half of an 8'x4' — until
+    # 2026-09-09**, when the enclosure widened so D-G-SERVICE's R311.3 landing patch is
+    # covered (`params/breezeway.py::_EW_FT`). Still ONE sheet and still the only cut in the
+    # bill; what it is no longer is a symmetric half, and the offcut is 3'-6".
+    assert hi - lo == pytest.approx(4.5, abs=1e-6)
 
 
 @pytest.mark.parametrize("side", ["W", "E"])

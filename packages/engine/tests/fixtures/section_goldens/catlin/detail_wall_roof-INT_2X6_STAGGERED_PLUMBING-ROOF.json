@@ -643,6 +643,62 @@
       "node": "polyline",
       "points": [
         [
+          115.125,
+          283.2224409448819
+        ],
+        [
+          115.875,
+          283.2224409448819
+        ],
+        [
+          115.875,
+          296.0
+        ],
+        [
+          115.125,
+          296.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "ZEF56D047J",
+      "tag": "backing-0-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          115.125,
+          283.2224409448819
+        ],
+        [
+          115.875,
+          283.2224409448819
+        ],
+        [
+          115.875,
+          296.0
+        ],
+        [
+          115.125,
+          296.0
+        ]
+      ],
+      "pattern": "osb",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "struct-1-plywood"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           100.30397637795278,
           305.15198818897636
         ],

@@ -41,28 +41,19 @@ def _solid_x_span(model, tag: str) -> tuple[float, float]:
     return min(xs), max(xs)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "DELIBERATE AND OPEN since 2026-09-07. The garage was centred on the house ridge and "
-    "D-G-SERVICE travelled with its wall to a centre of 10 ft; D-M-ENTRY is pinned at 8 ft "
-    "by the W-M-STRW bearing tee 6 in off its jamb and could not follow. The breezeway is "
-    "left untouched at _GLAZING_CENTER_X = 8.0 by owner decision - centre the garage, look "
-    "at it, adjust the breezeway after. code.R311_3_exterior_landing FAILs on D-G-SERVICE "
-    "for the same reason and is the finding that tracks it. STRICT on purpose: when the "
-    "breezeway is re-centred this test must go green and this marker must come off in the "
-    "same edit. See notes/garage_orientation_lot.md section 6.1."))
 def test_breezeway_stays_centred_between_the_two_doors_it_shelters(catlin_model):
     """The invariant `houses/catlin/CLAUDE.md` says nothing enforces.
 
-    Tolerance is 1/2", not zero: the enclosure is a literal 4'-0" of polycarbonate and the
-    doors are 1'-6" apart in x, so the centre is a derived midpoint, not a snapped one.
+    Tolerance is 1/2", not zero: the centre is a derived midpoint, not a snapped one.
     Half an inch is far tighter than the 3'-6" miss this is here to catch and still leaves
     room for a deliberate inch of re-centring.
 
-    ** IT IS XFAIL TODAY, AND THE ASSERTION BELOW IS UNCHANGED ON PURPOSE. ** The doors are
-    2'-0" apart in x rather than concentric, so their midpoint is x=9'-0" against the
-    glazing's 8'-0". Nothing here was loosened to accommodate that — the miss is exactly the
-    kind this test exists to catch, and the marker records that it is known rather than
-    unnoticed.
+    ** THE XFAIL CAME OFF ON 2026-09-09, AND THE ASSERTION NEVER MOVED. ** It was strict-
+    xfail from 2026-09-07, when the garage was centred on the house ridge and D-G-SERVICE
+    travelled with its wall to x=10'-0" while D-M-ENTRY stayed pinned at x=8'-0" by the
+    W-M-STRW bearing tee — leaving the enclosure 1'-0" off the pair's midpoint and half of
+    the service door opening onto air. The breezeway now spans both doors: 4'-6" centred on
+    their midpoint at x=9'-0". Nothing here was loosened to let that pass.
     """
     entry_x, _ = _opening_world_center(catlin_model, ENTRY_DOOR)
     service_x, _ = _opening_world_center(catlin_model, SERVICE_DOOR)
@@ -78,21 +69,28 @@ def test_breezeway_stays_centred_between_the_two_doors_it_shelters(catlin_model)
     )
 
 
-def test_breezeway_is_the_briefs_literal_four_feet(catlin_model):
-    """Three sheets, one cut: the 4'-0" glazed dimension is the brief, not a preference.
+def test_breezeway_spans_both_landing_patches_at_four_feet_six(catlin_model):
+    """4'-6" E-W, and it is R311.3 that sets it rather than the sheet.
+
+    **This was `..._is_the_briefs_literal_four_feet` until 2026-09-09.** The brief's E-W
+    term is retired: two doors 2'-0" apart cannot both get a 36"-deep landing out of a
+    4'-0" enclosure, and `code.R311_3_exterior_landing` is what said so. 4'-6" is the
+    smallest half-foot module clearing the 4'-1 15/32" bare tangent that satisfies both
+    patches at the check's 85% bar. The N-S dimension is still the literal uncut sheet and
+    is still 4'-0"; only this one moved.
 
     Measured panel-centre to panel-centre, which is the glazing line the module authors
     (`_GLAZING_X0`/`_GLAZING_X1`); outer face to outer face is that plus one sheet
     thickness, and picking the wrong one of the two is its own small trap.
 
-    Paired with the test above on purpose — "centred" and "4 feet wide" are one invariant
+    Paired with the test above on purpose — "centred" and "wide enough" are one invariant
     in two halves, and satisfying either alone is how the enclosure drifted last time.
     """
     centers = []
     for tag in BREEZEWAY_GLAZING:
         lo, hi = _solid_x_span(catlin_model, tag)
         centers.append((lo + hi) / 2.0)
-    assert max(centers) - min(centers) == pytest.approx(4.0 * FT, abs=0.5 * INCH)
+    assert max(centers) - min(centers) == pytest.approx(4.5 * FT, abs=0.5 * INCH)
 
 
 def test_both_breezeway_doors_open_onto_the_deck_at_the_same_level(catlin_model):

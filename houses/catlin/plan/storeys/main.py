@@ -1135,7 +1135,7 @@ OPENINGS = [
     # ``integrity.opening_fits`` sees edge distances of 7 1/2"/8 1/2" against a 1.97" min.
     Door(uid="MSJJGJTJ42", tag="D-M-PANTRY", host="W-M-PAN-S", type_ref="DT-INT-BYPASS60",
          position=from_node("N-M-PAN1", inch(7.5))),
-    # ** AT x 2'-0 15/16"..4'-6 15/16" SINCE 2026-09-09, FLUSH AGAINST THE VANITY. ** The
+    # ** AT x 2'-0 5/8"..4'-6 5/8" SINCE 2026-09-09, FLUSH AGAINST THE VANITY. ** The
     # RO's west jamb lands exactly at FX-M-BATH2-SINK's east face — zero gap, no setback for
     # casing, a scribe/filler against the cabinet end panel taking up the difference. That
     # replaces the answer this door carried for a few hours (a full stud-module station a bay
@@ -1144,7 +1144,12 @@ OPENINGS = [
     # one plane on one assembly again — the vanity stays 48"x18", and the door is positioned
     # directly off the vanity instead of off the stud grid.
     #
-    # ** THIS BREAKS `structural.door_framing_module`, AND THAT IS ACCEPTED. ** 24-15/16" is
+    # (Both the cabinet and this station moved 5/16" west later the same day: the vanity's
+    # first cut was struck off HALF W-M-W3's 13 7/8" nominal thickness rather than off its
+    # finish face at x=6.635", which stood the carcass 5/16" off the wall. The face is the
+    # datum; this station follows the cabinet, as it always has.)
+    #
+    # ** THIS BREAKS `structural.door_framing_module`, AND THAT IS ACCEPTED. ** 24 5/8" is
     # off W-M-BDN1's 16" module by ~8", with no legal station (32"/48") that keeps the door
     # off both the vanity and the shower. W-M-BDN1 is INT_2X4_PARTITION, NONBEARING, so the
     # cost is one extra cut stud, not a header redesign — suppressed in preferences.toml.
@@ -1152,7 +1157,7 @@ OPENINGS = [
     # ** THE SHOWER PAYS FOR THE WALL, NOT FOR THIS DOOR. ** W-M-BA2E2 was flush (0"
     # clearance) against the shower pan's east edge, so pulling the wall back onto
     # W-M-BA2E's line took the pan with it: FX-M-BATH2-SH's position.x is 7'-0" ->
-    # 6'-4 5/8" (plan/fixtures.py). That leaves 3 11/16" of wall between this RO's east
+    # 6'-4 5/8" (plan/fixtures.py). That leaves 3 15/16" of wall between this RO's east
     # jamb and the pan — the casing margin, which the jogged version had spent.
     #
     # ** THE OUT-SWING STAYS.** It swings out because an out-swinging bathroom door cannot be
@@ -1166,7 +1171,7 @@ OPENINGS = [
     # the jamb (W-M-BDN1 runs +x, so the unflipped jamb is the EAST one) and `flip_swing`
     # picks the side, independently, per the 2026-09-09 fix that split the two flags apart.
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-W3", inch(24.9425)), flip_swing=True, flip_hinge=True),
+         position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
     # register or a wall-mounted device anywhere in the cavity, and nothing hangs on that
@@ -1843,10 +1848,15 @@ FLOOR_OPENINGS = [
                           pt(ft(35, 10.75), ft(10, 7.875)),
                           pt(ft(34, 10.125), ft(10, 7.875))),
                  bearing_refs=("W-B-E1",)),
+    # ** THE EAST EDGE FOLLOWS THE BATH, NOT THE WALL (fixed 2026-09-09). ** It was carried
+    # 2" east with W-M-BA2E2's move, which made the hole the rim's full 35 3/4" width and
+    # put it 1" off the bath's centre — an open 1" slot through the cap east of the rim,
+    # with the rim landing on nothing there. The 2" the wall move bought belongs to the DECK
+    # (SL-M-TUBDK below, which does run east to the new face); the cutout stays rim-less-1".
     FloorOpening(uid="KXX3WKN3R7", tag="FO-M-TUBDK", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(4, 9.685), ft(16, 11.926)),
-                          pt(ft(7, 9.435), ft(16, 11.926)),
-                          pt(ft(7, 9.435), ft(21, 9.614)),
+                          pt(ft(7, 7.435), ft(16, 11.926)),
+                          pt(ft(7, 7.435), ft(21, 9.614)),
                           pt(ft(4, 9.685), ft(21, 9.614)))),
 ]
 
@@ -2035,8 +2045,8 @@ PANELING = [
     #   * W-M-BDN1 runs east from N-M-W3 (x=0), so 4'-10 5/8" along it, ending on
     #     x = 7'-10 5/8" — which IS W-M-BA2E2's bath face, so the two spans meet in the
     #     pan's corner with nothing between them.
-    # D-M-BATH2 now sits at 2'-0 15/16"..4'-6 15/16" on W-M-BDN1 — flush against the vanity,
-    # clear of this span by 3 11/16" of wall.
+    # D-M-BATH2 now sits at 2'-0 5/8"..4'-6 5/8" on W-M-BDN1 — flush against the vanity,
+    # clear of this span by 3 15/16" of wall.
     #
     # ** W-M-TUBDK-S IS ALSO A BOUNDING WALL AND MUST NOT BE SPANNED. ** It is the tub
     # deck's 20 3/4" knee wall; a 7'-0" band would clamp to its top and buy 5.3 SF of
