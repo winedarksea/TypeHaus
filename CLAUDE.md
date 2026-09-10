@@ -6,6 +6,11 @@
 scripts/verify.sh                         # the full CI gate
 ```
 
+`scripts/verify.sh` runs in `.venv`, which has accumulated packages nobody declared, so it
+is blind to a missing dependency. `scripts/ci_local.sh` is the one that catches those: it
+builds a throwaway venv from the declared extras alone and runs the CI engine job's steps.
+Run it before touching `pyproject.toml` dependencies or a CI step.
+
 `.venv/bin/python` is 3.11.16 and `typehaus` is installed **editable** into it, so the
 console script `.venv/bin/haus` is the real entry point. `uv` is **not** installed; ignore
 any `uv sync` / `PYTHONPATH=packages/engine/src python -m typehaus.cli.app` incantation you
@@ -52,6 +57,7 @@ is already parallel.
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
+scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only
 ```
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,

@@ -16,6 +16,13 @@ this release.
 - **`scripts/verify.sh` runs to completion again.** It is `set -e` with mypy at stage 4, so
   the builds, `haus check houses/catlin`, the full IFC build and the UI stages were never
   being reached by the script documented as the full gate. All ten stages now run.
+- **`pytest-xdist` is now a declared dependency.** The root `pyproject.toml` carries
+  `-n 6 --dist loadfile` in `addopts` unconditionally, so a pytest without xdist does not
+  fall back to serial — it exits 4 at argument parsing, before collecting a test. It went
+  undeclared because every local `.venv` happened to have it.
+- **`scripts/ci_local.sh`** reproduces the CI engine job in a throwaway venv built from the
+  declared extras alone. `verify.sh` runs in `.venv` and structurally cannot see a missing
+  dependency; this can.
 - **The catlin check stage matches the test it names.** It gated on zero FAILs while
   `test_catlin_carries_no_failures` accepts one — the parcel-ring advisory, owner state
   rather than a defect, already `blocking=False` in the Minnesota profile. The stage now
