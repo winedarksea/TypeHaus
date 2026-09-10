@@ -1970,7 +1970,7 @@
 # room this is the most likely permit snag in the house. Confirm before ordering.
 "ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 1 ea
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
-"ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 17 ea
+"ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 15 ea — was 17 until 2026-09-10, when ED-A-STUDIO-WALL2/WALL4 were deleted: the studio's five-at-30" run went to three at 60" once R303.1 stopped binding it (plan/lighting_attic.py)
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
 # rated to -4 F and some to +14 F; it is the DRIVER, not the LEDs. The category that
 # reliably publishes a cold rating is vaportight/cold-storage, because it sells into freezer
