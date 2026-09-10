@@ -23,6 +23,16 @@ this release.
 - **`scripts/ci_local.sh`** reproduces the CI engine job in a throwaway venv built from the
   declared extras alone. `verify.sh` runs in `.venv` and structurally cannot see a missing
   dependency; this can.
+- **Float goldens are compared with a tolerance, not byte for byte.** CI runs linux x86_64
+  and development happens on arm64; IEEE-754 arithmetic agrees exactly across the two but
+  libm's transcendentals do not, so any coordinate that went through a sine or an `atan2`
+  can differ in its last bits. The sweep parity fixture is graded at 1e-9, the tolerance its
+  TypeScript reader already used. The section goldens are graded at **1/8 inch** on
+  model-space coordinates — the finest tolerance anyone builds to — with drawing parameters
+  (`scale`, `lineweight`, rotations, paper coordinates) held at 1e-9, because 1/8" of slack
+  on `scale` would make 1/4" = 1'-0" compare equal to 3/8". Structure, layers and text stay
+  exact. The trade is explicit: a change moving drawn geometry less than 1/8" no longer
+  registers.
 - **The catlin check stage matches the test it names.** It gated on zero FAILs while
   `test_catlin_carries_no_failures` accepts one — the parcel-ring advisory, owner state
   rather than a defect, already `blocking=False` in the Minnesota profile. The stage now
