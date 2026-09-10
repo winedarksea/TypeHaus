@@ -261,12 +261,17 @@ for _uid, _tag, _x, _height, _top in (
 # Two piers instead, at the same elevation and on the same 5'-6" span as the house side, so
 # `structural.deck_beam_span` grades both seat beams identically off two Posts each.
 #
-# ** 2'-0" PADS LIKE THE OTHER THREE, AND 18" WAS NOT AMPLE. ** These carry landing load
-# only, which looked like a case for a smaller pad -- until `_delivered_to_posts` started
-# following the beam chain and credited them their real share of the deck. At 18" they ran
-# d/c 0.86 on 2,000 psf presumptive soil against the roof piers' 0.51. At 2'-0" they sit at
-# 0.51 too. All five north entry pads are now one size, which is also one fewer thing to get
-# wrong in the field.
+# ** 18" PADS, AT d/c 0.86, AND THAT IS TIGHTER THAN THE OTHER THREE ON PURPOSE. **
+# These carry landing load only. Once `_delivered_to_posts` started following the beam chain
+# and credited them their real share of the deck they went from nominal to d/c 0.86 on
+# 2,000 psf presumptive soil, against the roof piers' 0.51 -- adequate, and the presumptive
+# value is itself conservative, but it is the tightest bearing ratio in this assembly and it
+# is the first number to revisit if a soils report comes back below 2,000 psf.
+#
+# ** WIDENING THEM TO 2'-0" WAS TRIED AND PUT BACK. ** A 2'-0" pad here laps the garage's own
+# strip footing under `W-GF-S1`, and it perturbed the stem band's furring-screw count three
+# screws through the footing-shelter grade read (`local_grade_elevation_m` tests whole-polygon
+# containment). Not worth a margin that was already there.
 # ** THE SAME DEPTH AS THE HOUSE-SIDE THREE, AND THE REASON IS THE HYDRANT, NOT FROST. **
 # W-GF-S1's own underside at -6'-4" would be deep enough for frost and cheap enough to cast
 # with the garage foundation. It is not deep enough to stay out of the way: the hydrant line
@@ -286,7 +291,7 @@ for _uid, _tag, _x in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT),
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Footing(
         uid=f"BWFG{_tag[-2:]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
-        width=ft(2), depth=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
+        width=inch(18), depth=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
         bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT)))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
