@@ -70,9 +70,49 @@ def _assemblies_in_use(model: ResolvedModel) -> list[str]:
     return sorted(tags)
 
 
+def _snow_case_rows(site: object, preferences: Preferences | None) -> list[str]:
+    """Flat-roof, drift and unbalanced, as far as this model honestly knows them.
+
+    ``p_f`` is DERIVED (0.7 C_e C_t I_s p_g at C_e = I_s = 1.0 and C_t = 1.0, a heated
+    building) because that arithmetic is a one-liner nobody disagrees with. The drift is
+    AUTHORED, because the engine computes no part of it, and it prints the note that derives
+    it rather than a bare number. Unbalanced and sliding print as not computed, which is the
+    truth — a blank row would read as "zero".
+    """
+    ground = getattr(site, "ground_snow_load_psf", None)
+    rows: list[str] = []
+    if ground:
+        rows.append(_row("FLAT-ROOF SNOW (P_F)",
+                         f"{0.7 * float(ground):.0f} psf "
+                         f"(0.7 C_e C_t I_s P_G, C_e = C_t = I_s = 1.0)"))
+    structural = getattr(preferences, "structural", None)
+    drift = getattr(structural, "roof_beam_snow_psf", None)
+    if drift:
+        rows.append(_row("DRIFT / STEP SNOW",
+                         f"{float(drift):.1f} psf DESIGN AT THE NORTH ENTRY CANOPY "
+                         f"(ASCE 7 SEC 7.7 ROOF-STEP DRIFT OFF THE HOUSE GABLE) — "
+                         f"SEE NOTES/NORTH_ENTRY_PIERS.MD SEC 3"))
+        rows.append(_row("", "THE DRIFT TRIANGLE REACHES 3'-10\" INTO THE GARAGE ROOF: "
+                             "ITS TWO SOUTHERNMOST TRUSSES ARE DRIFT TRUSSES"))
+    else:
+        rows.append(_row("DRIFT / STEP SNOW", NOT_STATED))
+    rows.append(_row("UNBALANCED / SLIDING SNOW",
+                     "NOT COMPUTED BY THIS MODEL — DESIGNER OF RECORD"))
+    return rows
+
+
 def design_criteria_block(model: ResolvedModel,
-                          profile: JurisdictionProfile | None) -> list[str]:
-    """IRC Table R301.2(1) / IBC 1603.1 climatic and geographic design criteria."""
+                          profile: JurisdictionProfile | None,
+                          preferences: Preferences | None = None) -> list[str]:
+    """IRC Table R301.2(1) / IBC 1603.1 climatic and geographic design criteria.
+
+    ** GROUND SNOW ALONE IS NOT WHAT A TRUSS FABRICATOR NEEDS. ** This block printed p_g and
+    stopped, and a fabricator reading "50 psf ground snow" prices ordinary trusses. On this
+    house the governing roof case is a Sec 7.7 roof-step drift off the north gable that
+    roughly doubles the balanced load over the entry canopy and reaches 3.8 ft into the
+    garage roof besides. The flat-roof, drift and unbalanced rows below exist so the number
+    reaches the sheet the bid is taken from.
+    """
     site = getattr(getattr(model.plan, "project", None), "site", None)
     basis = wind_basis(site) if site is not None else None
     lines = [
@@ -80,6 +120,7 @@ def design_criteria_block(model: ResolvedModel,
         _row("MODEL CODE", _value(getattr(profile, "irc_base", None))),
         _row("GROUND SNOW LOAD", _value(getattr(site, "ground_snow_load_psf", None), " psf")),
     ]
+    lines.extend(_snow_case_rows(site, preferences))
     # V_ult through ``wind_basis`` rather than off the site directly: a speed with no
     # exposure produces no pressure, and the calcs read it through the same gate. A sheet
     # that printed the half-authored speed would print a number no calculation used.
@@ -313,7 +354,8 @@ def _write_structural_notes(pdf, model: ResolvedModel, number: str, name: str, *
     house that most needed a sheet saying what is and is not known — got no sheet at all.
     """
     blocks: list[tuple[str, list[str]]] = [
-        ("DESIGN CRITERIA — IRC TABLE R301.2(1)", design_criteria_block(model, profile)),
+        ("DESIGN CRITERIA — IRC TABLE R301.2(1)",
+         design_criteria_block(model, profile, preferences)),
         ("FOUNDATIONS AND CONCRETE — ACI 318-19", concrete_block(model)),
         ("WOOD FRAMING", wood_framing_block(model)),
         ("ANCHORAGE AND CONNECTIONS", anchorage_block(model)),
