@@ -130,7 +130,7 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     # when EQ-M-HP1-OD crossed from the pocket to the north face east of the garage
     # (params/hp1_north_pad.py). **SL-SG-STOOP was the seventh and is RETIRED (2026-09-05):**
     # it was a 7-1/4" block of the old flush floor left as the R311.3 landing when the court
-    # dropped, and `court_step_down_in` going back to 0 made the whole 532 sf court that
+    # dropped, and `court_step_down_in` going back to 0 made the whole 494 sf court that
     # plane again, so the landing is SL-SG-FLOOR and the block is redundant.
     #
     # SL-SG-FIELD is not a pour at all: 12" of growing medium over the sunken garden's
@@ -225,10 +225,16 @@ def test_s100_schedules_the_authored_reinforcement(catlin_model):
     # `_B8_STEEL` on the basement walls: IRC Table R404.1.2(8), 2" cover, no lap class
     # authored — and the schedule says "NOT STATED" rather than assuming a class.
     assert ("VERTICAL", "#5", '41" O.C.', '2"', "—") in rows
-    # The sunken-garden retaining footing mat: cover comes from ReinforcementSpec.cover (3"),
-    # which outranks the mix's, and both mat directions print.
-    assert ("BOTTOM-X", "#6", '10" O.C.', '3"', "B") in rows
-    assert ("TOP-X", "#6", '10" O.C.', '3"', "B") in rows
+    # The sunken-garden court footing mat: cover comes from ReinforcementSpec.cover (3"),
+    # which outranks the mix's, and both mat directions print. It was `#6 @ 10"` until
+    # 2026-09-10, when all five strips narrowed 96" -> 84" and took 22% off the toe moment
+    # with them (notes/sunken_garden_court_free_body.md §7e).
+    assert ("BOTTOM-X", "#5", '12" O.C.', '3"', "B") in rows
+    assert ("TOP-X", "#5", '12" O.C.', '3"', "B") in rows
+    # The stem keeps `#6 @ 10"` at 2" cover, so the sheet carries two bar sizes on one pour
+    # and a reader must not collapse them. That is a real change from the one-bar schedule
+    # the mat and the stem shared before the narrowing.
+    assert ("VERTICAL", "#6", '10" O.C.', '3"', "B") in rows
     # Nothing is invented for the pours that carry no spec.
     assert all(row[3].startswith("#") for row in table.rows)
     assert "FOUNDATION REINFORCEMENT SCHEDULE" in _joined(build_foundation_plan(catlin_model))

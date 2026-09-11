@@ -46,13 +46,16 @@ def test_a_mat_bills_at_area_over_spacing(rows) -> None:
     runs — the run length cancels. That one expression serves a wall's verticals, a wall's
     horizontals, a footing's transverse mat and a slab's mat alike.
 
-    The court's three retaining footings carry ``#6 @ 10"`` top AND bottom, so their #6 is
-    exactly twice their #4 @ 18" bottom-only mat scaled by the spacing ratio: (2 / (10/12))
-    against (1 / (18/12)), i.e. 3.6x.
+    All five court footings carry ``#5 @ 12"`` top AND bottom, so their #5 is exactly twice
+    their #4 @ 18" bottom-only mat scaled by the spacing ratio: (2 / (12/12)) against
+    (1 / (18/12)), i.e. 3.0x. It was ``#6 @ 10"`` and 3.6x until 2026-09-10, when the strips
+    narrowed 96" -> 84" and took 22% off the toe moment with them. **The point of this test
+    is the CANCELLATION, not either figure**: the mat's plan area divides out, so this ratio
+    depends only on the two spacings and never on how wide or long the strips are.
     """
-    six = _row(rows, "#6", "footing")
+    five = _row(rows, "#5", "footing")
     four = _row(rows, "#4", "footing")
-    assert six["length_ft"] / four["length_ft"] == pytest.approx(3.6, rel=0.01)
+    assert five["length_ft"] / four["length_ft"] == pytest.approx(3.0, rel=0.01)
 
 
 def test_weight_is_the_astm_unit_mass(rows) -> None:

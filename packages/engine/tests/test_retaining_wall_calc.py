@@ -148,8 +148,11 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         assert record.status is Status.OK, record.summary
         assert record.governing is not None
         assert record.governing.name == "base restraint", record.summary
-        # 1.77 against 1.50. Carried as required/achieved, so the ratio is under 1.
-        assert record.ratio == pytest.approx(1.5 / 1.77, abs=0.02)
+        # 1.63 against 1.50. Carried as required/achieved, so the ratio is under 1.
+        # It was 1.77, then 1.80 with the flush tops, and 1.63 since the court shortened
+        # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
+        # deliberate purchase, not a regression: notes/sunken_garden_court_free_body.md §4.
+        assert record.ratio == pytest.approx(1.5 / 1.63, abs=0.02)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.

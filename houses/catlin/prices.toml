@@ -1300,7 +1300,7 @@
 "slab:SG_FROST_WING_XPS1" = { low = 0, high = 0 }  # 0.08 cy of foam — bills in [envelope_layers]
 "slab:SG_FROST_WING_XPS2" = { low = 0, high = 0 }  # 0.14 cy of foam — bills in [envelope_layers]
 # ** THIS ZERO IS LOAD-BEARING. ** SL-SG-FIELD is the sunken-garden court's open centre —
-# 147 sf of sand, fabric and stone, 18" deep — and it is a `Slab` for the same reason the
+# 160 sf of sand, fabric and stone, 18" deep — and it is a `Slab` for the same reason the
 # frost wings are. Delete this row and `cli/prices.candidate_keys` falls back to the bare
 # "slab" $/cy above and orders **8.2 cy of concrete that does not exist**. The build-up
 # bills by the square foot in [envelope_layers], off the same assembly the model draws.

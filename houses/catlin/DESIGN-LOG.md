@@ -1680,7 +1680,11 @@ one of them was about length.
   And the structural cost is one-sided: shortening removes base friction from the capacity
   and **nothing** from the demand, because `W-SG-W2` and `W-SG-E2` cancel identically and
   the resultant is the south wall's thrust alone, over the court's WIDTH. There is a hard
-  floor near **23'-4"** clear where the friction under the remaining run stops reaching it.
+  floor at **23'-11"** clear where the friction under the remaining run stops reaching it —
+  and that floor is a function of the strip width, so it MOVED with the narrowing: it was
+  23'-3" at 8'-0". Taking the width first raised the floor under the length, which leaves
+  about **2'-1"** rather than the 2'-8" the width cut alone would have bought. The two cuts
+  are not independent and the floor must be re-derived, never quoted.
   The saving is $700-1,300 per foot. `plans/cost-options.md` had a row pricing 28' → 16' at
   $9,700-16,600; that row is not available as written — 16' fails sliding in all four soil
   corners.

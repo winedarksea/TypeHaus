@@ -73,7 +73,7 @@ GARDEN_FLOOR = "SL-SG-FLOOR"
 # 2026-09-03 for a flood step, which left the threshold 14 1/2" over the floor in front of
 # it — past R311.3's allowance with no landing — so a 23.7 sf block of the old flush floor
 # (SL-SG-STOOP) was left standing where the door needed it. `court_step_down_in` went back
-# to 0 on 2026-09-05, the whole 532 sf court is that plane again, and the stoop was retired
+# to 0 on 2026-09-05, the whole 494 sf court is that plane again, and the stoop was retired
 # as redundant. The step from the threshold has been the SAME 7 1/4" throughout all three
 # arrangements — it is the curb, and the curb never moved.
 PATIO_LANDING = "SL-SG-FLOOR"
@@ -124,7 +124,7 @@ def test_the_flood_threshold_stays_under_one_riser_of_step_down(catlin_model):
     surprise, and the reason the two live in one test file.
 
     **The landing is the court floor again since 2026-09-05.** SL-SG-STOOP is retired and
-    `court_step_down_in` is back to 0, so the court is one 532 sf surface flush with the
+    `court_step_down_in` is back to 0, so the court is one 494 sf surface flush with the
     basement floor plane and this 7 1/4" curb is the ONLY riser between it and the house.
 
     The second assertion changed sides with it, and deliberately. It used to demand a

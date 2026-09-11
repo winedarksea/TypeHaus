@@ -360,8 +360,15 @@ all. Two PLAN dimensions did, and they act on opposite halves of the system row:
   because the E-W thrusts cancel identically (§1) and the resultant is the south wall's
   alone. The south wall is the court's WIDTH, which did not change. So the demand term
   `3,072.3 × 20.0` is untouched and the capacity falls 7%. **Court length is not the lever
-  it looks like**, and this is the arithmetic of why: there is a hard structural floor near
-  23'-4" clear, where the capacity has fallen to the 1.50 line.
+  it looks like**, and this is the arithmetic of why: there is a hard structural floor at
+  **23'-11" clear**, where the capacity has fallen to the 1.50 line —
+  `run = 61,446 × 1.50 / 1,899.6 = 48.520'`, and `run = 2(L − 9.6667) + 20`.
+
+  ** ⚠ THE FLOOR MOVED WITH THE FOOTING, AND IT MOVED THE WRONG WAY. ** At the 8'-0" strip
+  it was 23'-3" (`F` 1,952.1, run 47.215'). Narrowing the strip took 150 plf off `W`, so
+  the same 1.50 needs 1'-4" more wall to stand on. **The two cuts are not independent**:
+  taking the width first raised the floor under the length, and about 2'-1" of shortening
+  is what is left rather than the 2'-8" the width cut alone would have allowed.
 * **The footing narrowed 8'-0" → 7'-0", centred.** That takes 150 plf off `W`, another 2.7%
   off `F`, and it is the cheap half: the toe carries only its own concrete, while the heel
   carries the 9'-1 7/16" soil column that is three fifths of `W`. Cut the same yard of
@@ -477,8 +484,11 @@ The single highest-value thing anyone can buy before pouring remains a **geotech
 boring**: μ = 0.25 is the presumptive floor for a broad class, and a real test on a genuine
 silty gravel could plausibly support 0.35–0.45 on the native soil itself, which would make
 the whole question moot — and would change the answer more than any amount of concrete. That
-is true twice over now: the 2026-09-10 pass spent 0.17 of system FS on plan, and a boring
-that supported 0.40 on the native soil would hand back four times as much.
+is true twice over now. The 2026-09-10 pass spent **0.17** of system FS on plan. A boring
+that supported μ = 0.40 on the native soil would take the case above from 1.16 to
+`0.40/0.25 × 1.163 = 1.86` — a gain of **0.70**, four times what the shortening cost — and
+it would do something no amount of concrete can: remove the design's dependence on how the
+stone bed gets built.
 
 ---
 
@@ -683,12 +693,13 @@ The toe is designed for the **upward pressure alone**: the footing's own 150 psf
 and relieves it, and is dropped. That is not laziness — keeping it means factoring a
 *relieving* dead load, which ASCE 7-16 §2.3.1 takes at 0.9 and this module has no
 combination machinery for. Taken properly — `1.6 x M_pressure - 0.9 x M_concrete` — the
-factored demand would be about **10% lighter**. It costs 10% and it costs no argument at
-all.
+factored demand would be about **7% lighter**. It costs 7% and it costs no argument at all.
 
-The figure GROWS as the wall gets shorter, which is worth expecting rather than being
-surprised by: the relief is the footing's own weight, which does not move, set against a
-pressure that falls with the wall. It was 8% at the 36" cap.
+The figure grows as the wall gets shorter and SHRANK when the toe did, and both are worth
+expecting rather than being surprised by. The relief is the footing's own weight over the
+toe, so it goes as the toe length SQUARED: 8% at the 36" cap, 10% with the flush tops, and
+**7%** now that the toe is 3'-0" — narrowing cut the relief 44% against a demand that fell
+only 22%. It is the one figure in §7 that the narrowing moved in the reassuring direction.
 
 ```
 rectangle   851.4 x 3.000                = 2,554.1 lb   arm 1.500'  =  3,831.2
@@ -1041,9 +1052,11 @@ the stone bed being built as specified — 1.16 without it.**
 stands at 1.63 now, because the court was deliberately shortened 2'-0" and the footing
 narrowed 12". That is 20% over the code minimum reduced to **8.6%** over it, and the no-stone
 sensitivity from 1.29 to 1.16. Both were already this design's stated exposure and both were
-spent knowingly; neither was discovered. **There is a hard structural floor near 23'-4" of
-clear length** — below it the base friction under 52'-8" of run stops reaching the south
-wall's unopposed thrust — so this court has about 2'-8" of length left in it and no more.
+spent knowingly; neither was discovered. **There is a hard structural floor at 23'-11" of
+clear length** — below it the base friction under the remaining run stops reaching the south
+wall's unopposed thrust — so this court has about **2'-1"** of length left in it and no more.
+That floor is itself a function of the strip width (it was 23'-3" at 8'-0"), so it must be
+re-derived, not quoted, if either dimension moves again.
 
 **1.63 against 1.50 is a screening that clears. It is not a stamp.**
 
