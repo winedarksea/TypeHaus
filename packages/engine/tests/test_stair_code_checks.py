@@ -239,12 +239,17 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
 
     Nine since 2026-09-03: ST-SG-PORCH, the porch's stair to grade, carries RL-SG-PSTAIR-S
     and -N, one each side, on the same `guard_and_handrail` pattern and for the same reason.
+
+    Ten since 2026-09-10: ST-BW-ENTRY, the north entry terrace, carries RL-BW-ENTRY on the
+    same pattern. The COUNT assertion had already moved to 10 and the tag set had not, so
+    this read red for a rail that was authored and passing — which is the failure mode a
+    census test exists to prevent and has to be able to survive itself.
     """
     findings = stair_handrail(catlin_ctx)
     assert [f.result for f in findings] == [Result.PASS] * 10, \
         [f.message for f in findings]
     assert {f.message.split()[0] for f in findings} == {
-        "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH"}
+        "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
 
 
 def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
