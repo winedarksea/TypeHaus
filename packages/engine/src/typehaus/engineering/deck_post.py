@@ -35,7 +35,7 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
-from typehaus.engineering.pier_basis import _Pier, cast_piers
+from typehaus.engineering.pier_basis import LIVE_LOAD_FACTOR, _Pier, cast_piers
 from typehaus.engineering.registry import (
     EngineeringContext,
     calc,
@@ -47,6 +47,7 @@ from typehaus.engineering.retaining_basis import (
     PRESUMPTIVE_FC_PSI,
     REINFORCEMENT_FY_PSI,
 )
+from typehaus.wind import ASD_WIND_FACTOR
 
 KIND = "deck_post"
 
@@ -56,8 +57,10 @@ KIND = "deck_post"
 #: ``_detailing_only`` arrived and a pier whose axial demand the model cannot state stopped
 #: publishing a d/c against an under-count and started publishing the six detailing limits
 #: with the axial one named as missing; to "4" when ``_moment_column`` arrived and a column
-#: that IS a deck's lateral system started being graded in BENDING at its base.
-BASIS_VERSION = "4"
+#: that IS a deck's lateral system started being graded in BENDING at its base; to "5" when
+#: the two base moments stopped being compared at working stress against a strength
+#: capacity and were put on ASCE 7-16 §2.3.1's factored basis.
+BASIS_VERSION = "5"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -99,6 +102,21 @@ PHI_COMPRESSION_TIED = 0.65
 #: and it is the one that would apply if the leaning-column assumption below failed.
 NONSWAY_SLENDERNESS_FLOOR = 34.0
 SWAY_SLENDERNESS_LIMIT = 22.0
+
+#: ** THE MOMENT SIDE IS STRENGTH-LEVEL, AND IT WAS NOT UNTIL 2026-09-11. **
+#: ``phi*Mn`` is a strength capacity and ``Pu`` is a factored axial load, so a P-M
+#: interaction point comparing them against an ASD moment mixes two bases inside one
+#: comparison. ``pier_basis`` publishes both base moments at working stress — wind because
+#: ``balcony_wind.storey_shear_lb`` bakes §2.4.1's 0.6 in, the guard because R301.5's 200 lb
+#: is a service concentrated load — so both are converted here, once, on the way in.
+#:
+#: ASCE 7-16 §2.3.1 combination 4 (1.2D + 1.0W + L + 0.5S) pairs wind at **1.0W**, so the
+#: strength value is the ASD one divided back out by §2.4.1's 0.6. Combination 2
+#: (1.2D + 1.6L) is what the guard load takes, and 1.6 is already ``pier_basis``'s
+#: ``LIVE_LOAD_FACTOR`` — imported rather than restated so the axial and the moment side
+#: cannot drift apart on the same number.
+STRENGTH_FROM_ASD_WIND = 1.0 / ASD_WIND_FACTOR
+GUARD_LOAD_FACTOR = LIVE_LOAD_FACTOR
 
 #: ACI 318-19 §25.7.2.1 — ties are #3 for longitudinal bars #10 and smaller, #4 above that.
 _TIE_BAR_FOR_SMALL_LONGITUDINAL = 3
@@ -219,12 +237,20 @@ def _slenderness(pier: _Pier) -> tuple[float, float, float, float]:
 
 #: The independent hand pass this module is checked against — see ``Oracle``.
 #: Three notes, because one kind covers three families of pier: the sunken-garden cast piers,
-#: the balcony moment columns, and the breezeway piers whose section is still open.
+#: the balcony moment columns, and the north entry's piers and canopy columns.
+#:
+#: ** THE THIRD ENTRY NAMED A SUPERSEDED NOTE UNTIL 2026-09-11, AND THE LINT PASSED. **
+#: It read ``breezeway_piers.md``, which is archived at its own first line — all four piers
+#: it works were retired on 2026-09-10 — while ``north_entry_piers.md``, the live oracle for
+#: the six piers and two canopy columns that replaced them, was named by nothing. The lint
+#: only asserts that a named note EXISTS on disk, so an oracle pointing at an obsolete
+#: calculation reads exactly like one pointing at a current one. §8 of the new note is the
+#: canopy's lateral hand-working.
 oracled_by(
     KIND,
     Oracle(note="sunken_garden_piers.md", section="§4", test="tests/test_pier_calcs.py"),
     Oracle(note="balcony_moment_columns.md", test="tests/test_pier_section_calcs.py"),
-    Oracle(note="breezeway_piers.md"),
+    Oracle(note="north_entry_piers.md", section="§8", test="tests/test_pier_calcs.py"),
 )
 
 
@@ -494,9 +520,12 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     Every other record in this module grades a leaning column — one whose storey shear goes
     somewhere else, so the section only ever sees axial load and ACI's minimum eccentricity.
     This one has nowhere to send it. ``pier_basis._base_moments`` derives what arrives at the
-    base (wind on the deck at the Fig. 29.3-1 Case A/B ceiling, and the R301.5 guard load
-    taken wholly on one column), and the section is checked against the P-M interaction
-    point at its own factored axial load rather than against the axial cap alone.
+    base (wind on the deck or the roof, and the R301.5 guard load taken wholly on one
+    column), and the section is checked against the P-M interaction point at its own
+    factored axial load rather than against the axial cap alone.
+
+    **Both moments arrive at working stress and are FACTORED here**, because ``phi*Mn`` is a
+    strength capacity — see ``STRENGTH_FROM_ASD_WIND``.
 
     The six detailing limits are unchanged and still published: a bending column is subject
     to every one of them and to more besides.
@@ -510,7 +539,10 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     cover_in = _cover_in(pier)
     phi_mn, phi, neutral_axis = _pm_point(pier, cage, cover_in, demand)
     slenderness, magnifier = _sway_magnifier(pier, demand)
-    governing = max(pier.wind_base_moment_lb_ft, pier.guard_base_moment_lb_ft)
+    # Both arrive at working stress and are graded at strength — see STRENGTH_FROM_ASD_WIND.
+    wind_mu = pier.wind_base_moment_lb_ft * STRENGTH_FROM_ASD_WIND
+    guard_mu = pier.guard_base_moment_lb_ft * GUARD_LOAD_FACTOR
+    governing = max(wind_mu, guard_mu)
     lap = _class_b_lap_in(cage, fc_psi)
 
     states = (
@@ -518,13 +550,14 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
                    f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — {_fc_note(pier)}, "
                    f"fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
-        LimitState("bending at base, wind", pier.wind_base_moment_lb_ft, phi_mn, "lb-ft",
+        LimitState("bending at base, wind", wind_mu, phi_mn, "lb-ft",
                    f"ACI 318-19 §22.4 P-M interaction at Pu {demand:,.0f} lb, phi "
-                   f"{phi:.2f}, c {neutral_axis:.2f}\" — ASCE 7-16 §29.3 storey shear at "
-                   f"0.6W (§2.4.1)"),
-        LimitState("bending at base, guard", pier.guard_base_moment_lb_ft, phi_mn, "lb-ft",
-                   "IRC R301.5 — a 200 lb concentrated load in any direction at the top of "
-                   "the guard, taken wholly on this column rather than shared"),
+                   f"{phi:.2f}, c {neutral_axis:.2f}\" — storey shear at ASCE 7-16 "
+                   f"§2.3.1's 1.0W, the ASD value / {ASD_WIND_FACTOR:.1f}"),
+        LimitState("bending at base, guard", guard_mu, phi_mn, "lb-ft",
+                   f"IRC R301.5 — a 200 lb concentrated load in any direction at the top "
+                   f"of the guard, taken wholly on this column rather than shared, at "
+                   f"ASCE 7-16 §2.3.1's {GUARD_LOAD_FACTOR:.1f}L"),
         LimitState("magnified moment (sway)", governing * magnifier, phi_mn, "lb-ft",
                    f"ACI 318-19 §6.6.4.5.2 delta {magnifier:.3f} at k "
                    f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:.1f}, k*lu/r {slenderness:.0f} "
@@ -538,14 +571,21 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         *_detailing_states(pier, area, minimum_steel, cage),
     )
     over = any(not state.ok for state in states)
-    which = "the guard load" if pier.guard_base_moment_lb_ft >= pier.wind_base_moment_lb_ft \
-        else "wind"
+    which = "the guard load" if guard_mu >= wind_mu else "wind"
     notes = common + (
         f"CAGE: {pier.vertical_reinforcement} — As {steel:.2f} in2, rho "
         f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
         f"{COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag requires. This is the MINIMUM cage the Code "
         f"permits, not a chosen margin.",
         f"LATERAL: {pier.moment_basis}.",
+        f"LOAD BASIS: both base moments are graded at STRENGTH against a strength capacity. "
+        f"Wind arrives from ``pier_basis`` at ASD — ``balcony_wind`` bakes §2.4.1's "
+        f"{ASD_WIND_FACTOR:.1f} in — and is divided back out to ASCE 7-16 §2.3.1's 1.0W: "
+        f"{pier.wind_base_moment_lb_ft:,.0f} -> {wind_mu:,.0f} lb-ft. The guard's 200 lb is "
+        f"a SERVICE concentrated load and takes {GUARD_LOAD_FACTOR:.1f}L: "
+        f"{pier.guard_base_moment_lb_ft:,.0f} -> {guard_mu:,.0f} lb-ft. Until 2026-09-11 "
+        f"both were compared at working stress against phi*Mn, which mixed two bases inside "
+        f"one P-M point; no column was re-sized by the correction.",
         f"BENDING GOVERNS, and {which} governs the bending: {governing:,.0f} lb-ft against "
         f"phi*Mn {phi_mn:,.0f} lb-ft at this column's own axial load, d/c "
         f"{governing / phi_mn:.2f} before magnification and "
@@ -557,8 +597,9 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         f"{SWAY_SLENDERNESS_LIMIT:.0f}, so the moment is magnified above. The magnifier is "
         f"{magnifier:.3f} — near unity, because the axial load is about "
         f"{100.0 * demand / capacity:.0f}% of capacity and P-delta needs P to bite.",
-        f"DOWELS: a class B lap of {lap:.0f}\" on #{cage.bar} bars, cast with the wall pour "
-        f"below and lapped into the column's own cage. psi_e is 1.0 for GALVANIZED bar "
+        f"DOWELS: a class B lap of {lap:.0f}\" on #{cage.bar} bars, cast with the "
+        f"{'wall' if pier.shared_wall_footing else 'footing'} pour below and lapped into "
+        f"the column's own cage. psi_e is 1.0 for GALVANIZED bar "
         f"(ACI 318-19 §25.4.2.5); it is epoxy coating that takes 1.2-1.5, and reading the "
         f"epoxy row for a galvanized bar would lengthen every lap in this house by half.",
         (f"f'c IS THE {pier.specified_fc_psi:,.0f} psi THIS POUR SPECIFIES, read from the "
@@ -570,11 +611,14 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
          f"above is understated wherever the real mix is richer — the safe direction, and "
          f"named here so nobody reconciles this record against the drawing and concludes "
          f"one of them is wrong. Authoring the mix is what closes it."),
-        "SCREENING: the base is taken as FIXED, which the doweled lap into the wall top is "
-        "detailed to deliver and which no calculation here proves; shear in the column is "
-        "not graded (the section is enormous relative to a few hundred pounds, but 'enormous' "
-        "is a judgement); and torsion, the wall-top joint's own capacity and the foundation's "
-        "rotational stiffness are all outside it. A stamped design is what closes those.",
+        (f"SCREENING: the base is taken as FIXED, which the doweled lap into the "
+         f"{'wall top' if pier.shared_wall_footing else 'footing'} is detailed to deliver "
+         f"and which no calculation here proves — nothing here grades the EMBEDMENT that "
+         f"fixity needs against IBC 1807.3.2.1, and on a shallow-founded column that is the "
+         f"assumption most likely to be the weak one. Shear in the column is not graded "
+         f"(the section is enormous relative to a few hundred pounds, but 'enormous' is a "
+         f"judgement); and torsion, the joint's own capacity and the foundation's rotational "
+         f"stiffness are all outside it. A stamped design is what closes those."),
     )
     return EngineeringRecord(
         item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
@@ -585,8 +629,8 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                  f"system — {pier.vertical_reinforcement}, at d/c "
                  f"{governing * magnifier / phi_mn:.2f} in bending on {which}"),
         inputs=_inputs(pier, area, steel, cage) + (
-            Quantity("wind_base_moment", pier.wind_base_moment_lb_ft, "lb-ft", 1.0),
-            Quantity("guard_base_moment", pier.guard_base_moment_lb_ft, "lb-ft", 1.0),
+            Quantity("wind_base_moment_Mu", wind_mu, "lb-ft", 1.0),
+            Quantity("guard_base_moment_Mu", guard_mu, "lb-ft", 1.0),
             Quantity("phi_Mn", phi_mn, "lb-ft", 1.0),
             Quantity("cover", cover_in, "in", 0.125),
         ),

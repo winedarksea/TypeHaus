@@ -119,10 +119,17 @@ def lateral_racking(ctx: CheckContext) -> list[Finding]:
     if not braces:
         return _grade_moment_columns(ctx)
 
+    # ** THE MOMENT ARM RUNS WHETHER OR NOT SOME OTHER STRUCTURE IS BRACED. ** Until
+    # 2026-09-11 one brace anywhere in the plan sent this function down the braced path and
+    # the fixed-base columns lost their finding entirely — the mirror of the global bail
+    # ``pier_basis.knee_braced`` replaced on the calculation side, and the same silence.
+    # ``_grade_moment_columns`` skips the structures the braces actually belong to.
+    moment_findings = _grade_moment_columns(ctx)
+
     basis = wind_basis(ctx.plan.project.site)
     tags = tuple(sorted(b.tag for b in braces))
     if basis is None:
-        return [structural_advisory(
+        return [*moment_findings, structural_advisory(
             _CID,
             f"{len(braces)} knee brace(s) carry the whole lateral resistance of a "
             f"freestanding structure, and no wind demand can be computed: the site authors "
@@ -143,7 +150,7 @@ def lateral_racking(ctx: CheckContext) -> list[Finding]:
     height_ft = top_ft - ground_ft
     q_h = velocity_pressure_psf(basis, height_ft)
 
-    out: list[Finding] = []
+    out: list[Finding] = [*moment_findings]
     for axis in ("x", "y"):
         here = tuple(b for b in braces if b.axis == axis)
         if not here:
@@ -326,8 +333,18 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
     all. Without the gate the two porch columns would each be reported as "the lateral
     system", which is a false claim about a real structure, and one that would then read as
     a PASS the moment their axial record came back OK.
+
+    **A ROOF on headers is the same structure and was missed until 2026-09-11.** The north
+    entry canopy's two cast columns carry a roof header, not a deck, so the
+    ``service == "deck"`` filter walked straight past them while
+    ``notes/north_entry_structure.md`` §1a called them the east lateral system in print.
+    ``engineering/pier_basis._roof_base_moments`` computes their base moment now, and this
+    arm is what keeps the check naming the same members the calculation grades — the two
+    drifting apart is the failure this function's own docstring warns about.
     """
+    from typehaus.engineering.pier_basis import knee_braced
     from typehaus.model.floors import FloorSystem
+    from typehaus.model.spatial import Roof
     from typehaus.resolve.assembly_material import assembly_structure_material
 
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
@@ -337,7 +354,10 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
                        key=lambda d: d.tag):
         if _bears_on_a_wall(ctx, deck):
             continue
-        for tag in sorted(_deck_bearing_posts(ctx, deck)):
+        here = _deck_bearing_posts(ctx, deck)
+        if knee_braced(ctx.plan, {*here, *(deck.joists.bearing_refs or ()), deck.tag}):
+            continue
+        for tag in sorted(here):
             post = posts.get(tag)
             if post is None:
                 continue
@@ -351,6 +371,68 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
                 f"IRC R507 grades",
                 (deck.tag, tag),
                 fix=f"seal `deck_post/{tag}` in engineering.toml"))
+
+    for roof in sorted((e for e in ctx.plan.all_elements() if isinstance(e, Roof)),
+                       key=lambda r: r.tag):
+        if _roof_bears_on_a_wall(ctx, roof):
+            continue
+        here = _roof_bearing_posts(ctx, roof)
+        if knee_braced(ctx.plan, {*here, *(roof.bearing_refs or ()), roof.tag}):
+            continue
+        for tag in sorted(here):
+            post = posts.get(tag)
+            if post is None:
+                continue
+            if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
+                continue
+            out.append(engineered(
+                ctx, _CID, item_id("deck_post", tag),
+                f"roof {roof.tag} carries no knee brace and no shear wall on this line: "
+                f"its lateral system is the cast concrete column {tag}, fixed at its base. "
+                f"A fixed-base column resists frame shear by BENDING, which no "
+                f"prescriptive table in the IRC grades",
+                (roof.tag, tag),
+                fix=f"seal `deck_post/{tag}` in engineering.toml"))
+    return out
+
+
+def _roof_bears_on_a_wall(ctx: CheckContext, roof) -> bool:
+    """Does any header under this roof land in a wall? Then it is not freestanding.
+
+    ``_bears_on_a_wall``'s argument, one element up: a ``Roof`` names its bearing members
+    directly rather than through a joist field, so the walk is shorter and the conclusion
+    identical. A roof whose ``bearing_refs`` are walls outright resolves no ``Beam`` at all
+    and falls out below without reaching here.
+    """
+    from typehaus.model.elements import Wall
+    from typehaus.model.structure import Beam
+
+    for ref in roof.bearing_refs or ():
+        beam = ctx.plan.by_tag(ref)
+        if not isinstance(beam, Beam):
+            continue
+        if any(isinstance(ctx.plan.by_tag(b), Wall) for b in beam.bearing_refs or ()):
+            return True
+    return False
+
+
+def _roof_bearing_posts(ctx: CheckContext, roof) -> set[str]:
+    """The posts under a roof, through the headers it bears on.
+
+    The walk ``engineering/pier_basis._roof_fields`` makes, restated here for the reason
+    ``_deck_bearing_posts`` is restated: ``engineering`` may not import ``checks``, and the
+    dependency the other way would drag a tributary calculation into a lateral check.
+    """
+    from typehaus.model.structure import Beam
+
+    out: set[str] = set()
+    for ref in roof.bearing_refs or ():
+        beam = ctx.plan.by_tag(ref)
+        if not isinstance(beam, Beam):
+            continue
+        for bearing in beam.bearing_refs or ():
+            if isinstance(ctx.plan.by_tag(bearing), Post):
+                out.add(bearing)
     return out
 
 

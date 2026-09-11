@@ -667,7 +667,18 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # 0.12 until 2026-09-10; the denominator rose 17% when the assembly's 5,000 psi mix
     # became readable. Not one demand moved: wind is a pressure on a guard and a deck, and
     # the guard case is R301.5's 200 lb. Neither has an opinion about the concrete.
-    assert guard.demand / guard.capacity == pytest.approx(0.10, abs=0.01)
+    #
+    # 0.10 -> 0.16 on 2026-09-11, and this time it is the NUMERATOR. Both base moments were
+    # compared at working stress against phi*Mn, a strength capacity, evaluated at a
+    # factored Pu — two bases inside one P-M point. The guard's SERVICE 200 lb now takes
+    # ASCE 7-16 §2.3.1's 1.6L and wind goes from 0.6W back to 1.0W. Nothing about the
+    # structure moved and no column is re-sized: a sixth of phi*Mn is still a section
+    # nowhere near spent. See deck_post.STRENGTH_FROM_ASD_WIND.
+    assert guard.demand / guard.capacity == pytest.approx(0.16, abs=0.01)
+    assert guard.demand == pytest.approx(
+        _CORNER_ORACLE[tag]["guard_lb_ft"] * 1.6, abs=2.0), "1.6L, not the service load"
+    assert states["bending at base, wind"].demand == pytest.approx(
+        _CORNER_ORACLE[tag]["wind_lb_ft"] / 0.6, abs=2.0), "1.0W, not 0.6W"
     axial = states["axial, tied column"]
     assert axial.demand / axial.capacity < 0.03, "axial is not what governs, and never was"
 
@@ -779,3 +790,173 @@ def test_only_off_table_deck_beams_reach_the_glulam_calc(results) -> None:
     second engineered record for it would be two authorities on one span."""
     beams = {key.split("/", 1)[1] for key in results if key.startswith("deck_beam/")}
     assert beams == {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
+
+
+# --- the north entry canopy: a ROOF-carrying moment column ------------------------------
+#
+# `notes/north_entry_piers.md` §8 is the hand pass these reproduce. Until 2026-09-11 both
+# columns published `SCREENING: axial only, no moment and no lateral case.` while
+# `notes/north_entry_structure.md` §1a called them the canopy's east lateral system in
+# print — a false claim the tests did not catch because nothing asked.
+_CANOPY_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
+#: §8's table, term by term. The ASD base moment is the roof-plane shear on the full shaft
+#: plus the shaft drag at its own mid-height lever; `deck_post` then divides by 0.6 for
+#: §2.3.1's 1.0W.
+_CANOPY_ORACLE = {
+    "PT-BW-RE": {"height_ft": 15.349, "drag_arm_ft": 9.957, "wind_asd_lb_ft": 9_461.0},
+    "PT-BW-RNE": {"height_ft": 12.729, "drag_arm_ft": 7.337, "wind_asd_lb_ft": 7_680.0},
+}
+#: §8: 0.6 x 18.335 psf x 0.85 x 1.80, the ASD pressure every band below is multiplied by.
+_CANOPY_ASD_PRESSURE_PSF = 16.831
+#: §8: the N-S case governs — the gable-end triangle (26.667' x 4.444'/2 = 59.26 ft2) with
+#: no header band, because both headers run north-south and present their ends to N-S wind.
+_CANOPY_TOP_SHEAR_LB = 997.4
+#: Two 12" shafts, each 10.78' of exposed length (eave +7.951' down to Site.grade -2.833').
+_CANOPY_DRAG_SHEAR_LB = 363.0
+
+
+@pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
+def test_a_roof_carrying_column_is_a_lateral_system_too(tag, piers) -> None:
+    """The whole of finding 1. A canopy column carries a roof header, not a deck, and every
+    path into the moment machinery was gated on ``FloorSystem.service == "deck"``."""
+    pier = piers[tag]
+    assert pier.lateral_system is True
+    assert pier.wind_base_moment_lb_ft > 0.0
+    # No guard on a canopy, and the slot is left at zero rather than filled with an
+    # invented 200 lb.
+    assert pier.guard_base_moment_lb_ft == 0.0
+    assert "RF-BW-CANOPY" in pier.moment_basis
+
+
+@pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
+def test_the_canopy_base_moment_reproduces_the_note(tag, piers) -> None:
+    """§8 term by term: two shears at two lever arms, all of it on the two cast columns."""
+    want = _CANOPY_ORACLE[tag]
+    pier = piers[tag]
+    assert pier.height_in / 12.0 == pytest.approx(want["height_ft"], abs=0.01)
+    hand = (_CANOPY_TOP_SHEAR_LB / 2.0) * want["height_ft"] \
+        + (_CANOPY_DRAG_SHEAR_LB / 2.0) * want["drag_arm_ft"]
+    assert hand == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
+    assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
+
+
+def test_nothing_is_claimed_for_the_west_shear_panel(piers) -> None:
+    """The frame's whole shear goes on the two cast columns.
+
+    W-BW-SCREEN is a sheathed 2x4 panel on the west line and is the canopy's west lateral
+    system in fact. Splitting between it and a 12" cast column is a relative-rigidity
+    judgement this engine has no standing to make, so it makes none and takes the whole
+    frame shear east — the same reasoning ``_base_moments`` applies to the guard load.
+    """
+    for tag in _CANOPY_COLUMNS:
+        assert "NOTHING is claimed for a sheathed panel" in piers[tag].moment_basis
+    # And the west line's own columns are wood, so they never reach this module at all.
+    assert "PT-BW-CW" not in piers and "PT-BW-CNW" not in piers
+
+
+@pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
+def test_the_canopy_column_is_graded_in_bending_and_it_checks_out(tag, results) -> None:
+    """A real d/c in BENDING, not `SCREENING: axial only`. The section is not re-sized."""
+    record = results[f"deck_post/{tag}"]
+    assert record.status is Status.OK, record.summary
+    states = {state.name: state for state in record.limit_states}
+    assert set(states) >= {"bending at base, wind", "bending at base, guard",
+                           "magnified moment (sway)", "axial, tied column"}
+    assert all(state.ok for state in record.limit_states)
+    wind = states["bending at base, wind"]
+    assert wind.demand == pytest.approx(
+        _CANOPY_ORACLE[tag]["wind_asd_lb_ft"] / 0.6, rel=0.005), "1.0W, not 0.6W"
+    # Bending governs and wind governs the bending — the reverse of the balcony, which has
+    # a guard and almost no wind area.
+    assert wind.demand > states["bending at base, guard"].demand
+    magnified = states["magnified moment (sway)"]
+    assert 0.4 < magnified.demand / magnified.capacity < 0.85, (
+        "the demand is a deliberate over-read (see §8's 2.1x against the §27.3.2 hand "
+        "pass); if this ever reaches 1.0 the note's wood alternate is back on the table")
+    assert "no moment and no lateral case" not in " ".join(record.notes)
+
+
+def test_the_canopy_demand_bounds_the_free_roof_provision(piers) -> None:
+    """§8's whole argument, as a number.
+
+    ASCE 7-16 §27.3.2 is the literal provision and its C_N comes out of Fig. 27.3-4, a
+    copyrighted grid this repository does not hold — the same problem Fig. 29.3-1 poses.
+    So the roof's vertical projection is taken as a SOLID SIGN at MAX_VERIFIED_CASE_AB
+    instead. §8 works the §27.3.2 case by hand at about 470 lb ASD across the frame; the
+    surrogate must be comfortably above it, or the bound is not one.
+    """
+    from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
+
+    frame_shear = _CANOPY_TOP_SHEAR_LB + _CANOPY_DRAG_SHEAR_LB
+    assert frame_shear / 470.0 > 2.0
+    for tag in _CANOPY_COLUMNS:
+        basis = piers[tag].moment_basis
+        assert f"C_f {MAX_VERIFIED_CASE_AB:.2f}" in basis
+        assert "Fig. 27.3-4" in basis and "a bound, not a reading" in basis
+
+
+def test_one_knee_brace_does_not_silence_every_other_column(tmp_path) -> None:
+    """The latent defect found beside finding 1, and the reason it had to be fixed now.
+
+    ``_base_moments`` bailed GLOBALLY on the first ``KneeBrace`` in the plan. The owner has
+    accepted knee braces as a fallback at the canopy, and `notes/north_entry_piers.md` §7
+    names a KBS1Z at each column as the cheap answer if the roof joint ever becomes a real
+    break — so one brace authored there would have switched moment grading off for the four
+    BALCONY columns half a house away, at zero FAIL and with nothing in any report to read.
+    """
+    from typehaus.engineering.pier_basis import knee_braced
+
+    plan = _catlin()
+    # No brace anywhere today, so nothing is braced and every structure keeps its moment.
+    assert knee_braced(plan, {"PT-SG-BF1", "PT-SG-BF3"}) is False
+    assert knee_braced(plan, {"PT-BW-RE", "PT-BW-RNE"}) is False
+
+    braced = _with_a_canopy_knee_brace(plan)
+    assert knee_braced(braced, {"PT-BW-RE", "PT-BW-RNE", "BM-BW-RE"}) is True, \
+        "the brace is on the canopy and the canopy must see it"
+    assert knee_braced(braced, {"PT-SG-BF1", "PT-SG-BF3", "BM-SG-BLW"}) is False, \
+        "a canopy brace must not reach across the house and silence the balcony"
+
+
+def _catlin():
+    from pathlib import Path
+
+    from typehaus.source import load_plan
+
+    catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    result = load_plan(catlin)
+    assert result.plan is not None
+    return result.plan
+
+
+def _with_a_canopy_knee_brace(plan):
+    """catlin's elements plus the one KBS1Z §7 names, at PT-BW-RE.
+
+    A stub plan rather than an authored element: ``knee_braced`` reads exactly two things,
+    ``all_elements`` and ``by_tag``, and adding a real brace to the house would move the
+    model every other test in this file measures. The point under test is the SCOPE of the
+    bail, not the brace's geometry.
+    """
+    from typehaus.model.structure import KneeBrace
+    from typehaus.quantities import ft, inch
+
+    column = plan.by_tag("PT-BW-RE")
+    brace = KneeBrace(
+        uid="TESTKB0001", tag="CN-BW-TESTKB", position=column.position,
+        soffit_elevation=inch(76.75), leg=ft(2), axis="y", member="2x6",
+        post_size="12 round", connects=("PT-BW-RE", "BM-BW-RE"))
+    return _PlanWith(plan, brace)
+
+
+class _PlanWith:
+    """``plan`` with one more element, for ``knee_braced``'s two-method interface."""
+
+    def __init__(self, plan, extra) -> None:
+        self._plan = plan
+        self._extra = extra
+
+    def all_elements(self):
+        return [*self._plan.all_elements(), self._extra]
+
+    def by_tag(self, tag: str):
+        return self._extra if tag == self._extra.tag else self._plan.by_tag(tag)
