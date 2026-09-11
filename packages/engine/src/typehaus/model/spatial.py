@@ -193,6 +193,19 @@ class Roof(Element):
     overhang: Length | None = None
     edge_overhangs: tuple[tuple[str, Length], ...] = ()  # per-edge overrides
     ridge_direction: str = "x"
+    # Which of the two ridge-axis ends may be a GABLE END, by compass name. A gable end
+    # takes a drop/gable-end frame instead of a field truss, and SBCA's own definition is
+    # that such a frame has continuous vertical support from the end wall or beam under its
+    # bottom chord — it is not a truss and does not span.
+    #
+    # ``None`` derives both ends from that definition: a wall top plate running under the
+    # end station makes it a gable end, and nothing under it makes it a field truss.
+    # A tuple NARROWS the derived answer and can never widen it, which is the whole point —
+    # authoring an end here cannot conjure a gable frame over thin air, but it can say "that
+    # plate belongs to somebody else's building", which no geometry can tell. ``()`` is
+    # therefore "neither end is mine": RF-BW-CANOPY's north end station lands on the garage's
+    # W-G-S plate, and the canopy is required to share no gravity with the garage.
+    gable_ends: tuple[str, ...] | None = None
     # Edge closure (fascia boards + soffit). Derived along every eave and rake from the
     # resolved roof plane, so it tracks a raised-heel lift instead of drifting from it.
     eave_trim: EaveTrim | None = None

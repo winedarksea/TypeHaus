@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { metalPanelProfileFor } from "./builders/walls";
 import {
   applyMasonryWallUv,
   applyStandingSeamWallUv,
@@ -149,6 +150,21 @@ export function runMaterialGeometryTests() {
     "The substring test cannot reach the corrugated panel either — the finish dispatch does");
   assert(metalPanelProfileForFinish("corrugated") === CORRUGATED_PROFILE,
     "An authored finish of 'corrugated' selects the corrugated profile");
+  // The DECLARED finish is not gated on the layer function; the GUESS is. `ENTRY_SCREEN_SKIRT`
+  // is one corrugated sheet filed as STRUCTURE — a self-supporting skin whose single layer IS
+  // the element, the shape `integrity.assembly_layers` forces on it — and under a blanket
+  // cladding gate it rendered as a flat grey slab beside the corrugated wall it continues.
+  assert(metalPanelProfileFor("structure", "corrugated-panel-26", "corrugated")
+    === CORRUGATED_PROFILE,
+    "A declared corrugated finish renders corrugated on a structure layer too");
+  assert(metalPanelProfileFor("cladding", "corrugated-panel-26", "corrugated")
+    === metalPanelProfileFor("structure", "corrugated-panel-26", "corrugated"),
+    "The layer function must not change what a DECLARED finish renders as");
+  // The substring guess stays gated: it cannot tell a rib from a fold, so letting it fire on
+  // a structure layer would corrugate things nobody declared.
+  assert(metalPanelProfileFor("cladding", "made-up-seam-thing", undefined) === SEAM_PROFILE
+    && metalPanelProfileFor("structure", "made-up-seam-thing", undefined) === null,
+    "An undeclared ref that merely contains 'seam' still only reads as a skin on cladding");
   assert(Math.abs(CORRUGATED_PROFILE.moduleM - CORRUGATED_PITCH_M) < 1e-9,
     "The corrugation pitch is 2-2/3in, the tightest module of the three");
   assert(CORRUGATED_PROFILE.moduleM < RIBBED_PANEL_PROFILE.moduleM,

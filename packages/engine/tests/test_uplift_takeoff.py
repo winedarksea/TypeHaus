@@ -118,7 +118,7 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
 
     Scoped per roof since 2026-09-10, when RF-BW-CANOPY became catlin's second trussed roof:
     a house-wide count would read 34 against RF-GARAGE's 13 and say nothing about either.
-    The canopy's 4 trusses bear on BEAMS rather than a wall plate — the rule does not care
+    The canopy's 3 trusses bear on BEAMS rather than a wall plate — the rule does not care
     which, and this is the case that says so.
     """
     roof = next(roof for roof in catlin_model_ro.roofs if roof.tag == "RF-GARAGE")
@@ -132,19 +132,31 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
     assert {c.support_tag for c in tied} == {"W-G-E", "W-G-W"}
 
     # RF-BW-CANOPY derives NOTHING since 2026-09-10 and that is the point of it being here.
-    # Its four trusses land on treated headers at a salted entry, so the eight ties are
+    # Its three trusses land on treated headers at a salted entry, so the six ties are
     # authored stainless (`CN-BW-TRTIE-*`) rather than commodity H2.5A, and `authored_joints`
-    # stands the derived rule down. An empty list here with the connectors present is
+    # stands the derived rule down.
+    #
+    # THREE, not four, since 2026-09-11. The fourth stood on the 8" tail the headers run past
+    # their north columns — out of the 24" module and 1 1/2" off the garage wall — because
+    # `build_truss_layout` forces a last station onto the end of the bearing so a gable wall
+    # never ends up short of one. `RF-BW-CANOPY` authors `gable_ends=()`, neither end of it is
+    # a gable line, and an off-module end station that is not a gable line carries no truss.
+    #
+    # An empty list here with the connectors present is
     # coverage; an empty list with them GONE is a roof tied by nothing, which is why the
     # count of authored ties is asserted alongside it rather than the absence alone.
     canopy = next(r for r in catlin_model_ro.roofs if r.tag == "RF-BW-CANOPY")
     canopy_trusses = [m for m in canopy.members if m.category == "roof_truss"]
-    assert len(canopy_trusses) == 4
+    assert len(canopy_trusses) == 3
+    # And every one is a FIELD truss. A gable-end frame is supported continuously by the wall
+    # under its bottom chord and does not span, so a gable member on a roof with no wall under
+    # either end is one no plant can build — which is what `gable_ends` exists to prevent.
+    assert not any(m.truss.gable for m in canopy_trusses)
     assert not [c for c in connections if c.assembly_tag == "RF-BW-CANOPY"]
     authored_ties = [e for storey in catlin_model_ro.plan.storeys
                      for e in catlin_model_ro.plan.storey_elements(storey.tag)
                      if getattr(e, "tag", "").startswith("CN-BW-TRTIE-")]
-    assert len(authored_ties) == 2 * len(canopy_trusses) == 8
+    assert len(authored_ties) == 2 * len(canopy_trusses) == 6
     assert {t.size for t in authored_ties} == {"H2.5ASS"}
     assert not [c for c in connections
                 if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]

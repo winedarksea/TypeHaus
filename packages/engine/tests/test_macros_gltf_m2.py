@@ -643,13 +643,28 @@ def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
                  "corrugated-panel-26", "board-batten-24"):
         assert _material_finish_color(skin, "cladding", authored) == _hex_rgba(_SEAM_BASE), skin
 
-    # Scoped to a cladding layer: the same ref naming a structural layer keeps its own colour,
-    # and so does a material whose finish states a real colour of its own.
-    assert _material_finish_color("pbr-panel-26", "structure", authored) == _hex_rgba(hatch_tone)
+    # **A DECLARED metal skin is the coil white on ANY layer function (2026-09-11).** These two
+    # lines asserted the hatch tone on a structure layer while no assembly in either house put
+    # a metal skin there; `ENTRY_SCREEN_SKIRT` now does — one corrugated sheet whose single
+    # layer IS the element, which is the shape `integrity.assembly_layers` forces on a
+    # self-supporting skin (`BASEMENT_BRICK_VENEER`, `RETAINING_BLOCK_12`). Under the old
+    # scoping it exported slate grey beside the corrugated wall it continues, which is this
+    # test's own docstring describing the defect `glb-emitter-parity` exists to catch, one
+    # layer function over.
+    assert _material_finish_color("pbr-panel-26", "structure", authored) == _hex_rgba(_SEAM_BASE)
     assert (_material_finish_color("board-batten-24", "structure", authored)
-            == _hex_rgba(hatch_tone))
+            == _hex_rgba(_SEAM_BASE))
+    # The SCOPING that mattered is untouched, and it was never about the layer function: a
+    # finish is a SPEC, not a colourway, so an authored colour still wins wherever the finish
+    # is not one of the metal skins. `cmu` is not, and these two greys stay apart.
     assert _material_finish_color("cmu-8", "structure", authored) == _hex_rgba("#b8b3ab")
     assert _material_finish_color("cmu-12", "structure", authored) == _hex_rgba("#a8a49c")
+    assert _material_finish_color("cmu-8", "cladding", authored) == _hex_rgba("#b8b3ab")
+
+    # The substring GUESS keeps its cladding gate — it cannot tell a rib from a fold, so a ref
+    # that merely contains "seam" and declares nothing must not repaint a structural layer.
+    assert (_material_finish_color("standing-seam-snaplock", "structure", authored)
+            == _hex_rgba(hatch_tone)), "an undeclared 'seam' ref stays scoped to cladding"
 
 
 def test_raked_wall_body_follows_the_rake():

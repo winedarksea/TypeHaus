@@ -301,8 +301,10 @@
 # billed as stick lumber. That is the same error the 2026-08-29 attic measurement had to
 # correct by hand for the main house; it was live in the garage and nobody had noticed.
 #
-# "24 roof truss" — RF-GARAGE, live. 4:12, 2x4 fink, 9 1/4" energy heel, 24" o.c., 11 field
-# trusses; the two gable ends are their own row below.
+# "24 roof truss" — live on BOTH north-end roofs. 4:12, 2x4 fink, 9 1/4" energy heel, 24"
+# o.c.: RF-GARAGE's 11 field trusses, plus all THREE of RF-BW-CANOPY's, which are field
+# trusses and not gable ends because neither canopy end has a wall under it. RF-GARAGE's two
+# gable ends are their own row below.
 # $4.50-8.00 per SF of the 576 SF bearing footprint, delivered and set, which is a 24'
 # residential fink a little under the 36' rate per SF; 312 LF of span (all 13 trusses,
 # gable ends included — they are the same package) carries it, so
@@ -310,16 +312,18 @@
 # Per truss that reads $160-283 delivered and $40-71 to set, which is the sanity check.
 # CONFIDENCE: MEDIUM. No fabricator quote — an energy heel and a 4:12 are both ordinary,
 # but a truss package is quoted, not looked up, and the spread is where that shows.
-"24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 264 LF — RF-GARAGE, 11 field trusses at 24'-0"
-# "24 gable roof truss" — the two drop trusses at the ends of the same package. A gable end
-# is not a fink: it is the same span plated with verticals at stud spacing so the end can be
-# sheathed like a wall, and it arrives that way rather than as a truss plus a bundle of
-# loose studs to infill on site. More lumber, no plated web joints, and the same handling —
+"24 roof truss" = { material = { low = 6.65, high = 11.80 }, labour = { low = 1.65, high = 2.95 } }  # 336 LF — 11 RF-GARAGE field + 3 RF-BW-CANOPY, all at 24'-0"
+# "24 gable roof truss" — the two drop trusses at the ends of the RF-GARAGE package, and
+# only that package. A gable end is not a fink: it is the same span plated with verticals at
+# stud spacing so the end can be sheathed like a wall, and it arrives that way rather than as
+# a truss plus a bundle of loose studs to infill on site. It is also NOT A SPANNING MEMBER —
+# its bottom chord is supported continuously by the wall under it — which is why only the two
+# ends standing on W-G-S and W-G-N buy this row, and why RF-BW-CANOPY buys none of it. More lumber, no plated web joints, and the same handling —
 # the plants that publish a differential put it at roughly 10-15% over the field truss, so
 # this is the row above plus 12%, on the identical per-LF-of-span basis. Setting it is the
 # same crane pick, so the labour side is not marked up. CONFIDENCE: MEDIUM, and it inherits
 # the row above's — change one of these and check the other still agrees with it.
-"24 gable roof truss" = { material = { low = 7.45, high = 13.20 }, labour = { low = 1.65, high = 2.95 } }  # 48 LF — RF-GARAGE, 2 gable ends at 24'-0"
+"24 gable roof truss" = { material = { low = 7.45, high = 13.20 }, labour = { low = 1.65, high = 2.95 } }  # 48 LF — RF-GARAGE only, 2 gable ends at 24'-0"
 # "36 roof truss" — STILL DORMANT, and now for the only honest reason: nothing in this
 # house spans 36'. It is the trussed-cold-attic alternative in plans/cost-options.md, whose
 # $5.00-9.00 per SF OF ROOF FOOTPRINT over a 36' x 36' plan is the anchor both rows use.
@@ -633,6 +637,12 @@
 # underlayment row and a thickness above the 1/2" the struct-1-plywood row is basised on;
 # labour is that row's, unchanged, because hanging a sheet is hanging a sheet.
 "cdx-plywood" = { material = { low = 30, high = 52 }, labour = { low = 16, high = 34 } }  # 20 sheets
+# ENTRY_SCREEN_WALL's east ply — one sheet, 26.8 SF net. 5/8" APA Rated Siding 303 with an
+# MDO face at $70-120 the 4x8 sheet: roughly double the CDX row above it, which is the whole
+# point of the tag (a bonded resin-fibre paint substrate, not a C/D sheathing face). RETAIL
+# SHELF PRICING, not a quoted yard price. Labour is a touch over the CDX row's — same hang,
+# but a finish face gets its joints laid out and its screws set to a line.
+"siding-303-mdo" = { material = { low = 70, high = 120 }, labour = { low = 20, high = 40 } }  # 1 sheet
 
 [hardware]
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
@@ -3514,6 +3524,17 @@
 # same basis the [sheet_goods] row below carries. Labour is a touch under the Structural 1
 # row's: it is the same hang-and-nail operation, on a one-storey box, off a 6' ladder.
 "cdx-plywood" = { material = { low = 1.1, high = 1.9 }, labour = { low = 0.95, high = 1.8 } }  # 631.3 SF
+# ENTRY_SCREEN_WALL's east ply, and only that — the one panel doing shear AND the finished
+# face of the screen under the canopy (plan/assemblies.py::siding-303-mdo). Dearer than the
+# `cdx-plywood` row above it for the reason it exists: an MDO overlay is a bonded resin-fibre
+# paint substrate, not a C/D sheathing face. Material $2.20-3.80/SF is 5/8" Rated Siding 303
+# with an MDO face at roughly $70-120 the 32 SF sheet — RETAIL SHEET PRICING, not a quoted
+# yard price, and the widest range in this table for that reason. Labour is above the CDX
+# row's: it is the same hang-and-screw operation, but it is a finish face, so the joints are
+# laid out, the panel is not cut short and the screws are set to a line.
+# NOTE: this row must stay PRICED. An unpriced material is silently dropped from the BOM and
+# the total FALLS, which reads like a saving and is an artifact.
+"siding-303-mdo" = { material = { low = 2.2, high = 3.8 }, labour = { low = 1.2, high = 2.2 } }  # 26.8 SF
 
 [wall_structure]
 # RESEARCHED 2026-08-08 — [low, high] $/cy PLACED, by wall assembly. Keyed on assembly, not
@@ -3762,6 +3783,19 @@
 # $12-20/SF of face and the geogrid and drainage stone behind them $3-6/SF, both pre-tax
 # yard prices. There is no ready-mix in this row at all — see the [basis_notes] warning.
 "RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 245.0 SF of face
+# THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
+# layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
+# rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per
+# SF of face, not per cubic yard. Keyed on the bare assembly tag like the row above: the
+# stack is one layer of one material, so a `:corrugated-panel-26` qualifier would name the
+# only thing it could ever name.
+# Material is the [envelope_layers] `corrugated-panel-26` rate UNCHANGED, because it is
+# literally the same panel off the same order as the wall above it and the garage beside it.
+# Labour is roughly half again the wall rate: this is a 13 1/2" strip, so it is all cut edge,
+# layout and end lap per square foot and none of the run that makes a wall panel cheap.
+# THERE IS NO READY-MIX IN THIS ROW AT ALL — see the [basis_notes] warning. It must not be
+# escalated with a concrete index.
+"ENTRY_SCREEN_SKIRT" = { material = { low = 1.6, high = 2.6 }, labour = { low = 4.0, high = 7.0 }, unit = "SF" }
 # THE TWO SUNKEN-GARDEN CURBS (2026-08-28), and they are the most expensive concrete in
 # the house per cubic yard by a wide margin — correctly, because there is almost no
 # concrete in them. W-B-S2 and W-B-S3 are 7 1/4" x 6" curbs under the framed walkout, about
@@ -6166,7 +6200,7 @@ pipe_fittings   = "material only, and derived rather than quoted — see the tab
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and BASEMENT_BRICK_VENEER (with its one live per-material row BASEMENT_BRICK_VENEER:brown-brick — the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and are kept there for the revert) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12, ENTRY_SCREEN_SKIRT (a 26ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-26 rate) and BASEMENT_BRICK_VENEER (with its one live per-material row BASEMENT_BRICK_VENEER:brown-brick — the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and are kept there for the revert) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUCQ410-SDS is the exception and says why"

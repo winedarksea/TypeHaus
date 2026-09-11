@@ -41,8 +41,17 @@ BWL_LAYER = "S-WALL-BRCE"
 #: Wood structural panel sheathing, by the material refs a house actually uses. A method is
 #: a property of what is fastened to the studs, so this is the one lookup that decides which
 #: R602.10.4 row a line could be built to.
+#:
+#: ``siding-303-mdo`` joined on 2026-09-11 and is the one entry that is not a sheathing grade:
+#: APA Rated Siding 303 is a wood structural panel with published shear values (SDPWS Table
+#: 4.3B), sold as a finished face. `ENTRY_SCREEN_WALL` carries it on its sheltered east face
+#: opposite 5/8" CDX, and without this row the union below saw two materials, one unknown, and
+#: called the whole line "not rated" — a false statement about a line whose west face alone is
+#: ordinary CDX. What this row does NOT do is count that face: bracing LENGTH still comes from
+#: panels, which are not modelled, so the line stays UNKNOWN either way.
 _WSP_MATERIALS = frozenset({
     "struct-1-plywood", "cdx-plywood", "cdx", "osb", "zip-sheathing", "plywood",
+    "siding-303-mdo",
 })
 
 #: IRC R602.10.4 method names, as a plan reviewer reads them.

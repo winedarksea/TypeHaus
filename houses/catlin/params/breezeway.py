@@ -16,7 +16,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 from typehaus import (
     Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
     Node, Post, Railing, RailingKind, Slab, SlatScreen, Stair, Wall,
-    ft, inch, pt,
+    face, ft, inch, pt,
 )
 
 from params.foundations import SITE_GRADE
@@ -47,6 +47,7 @@ from params.north_entry_frame import (
     MOVEMENT_GAP_IN,
     PIER_LINE_Y_FT,
     ROOF_COLUMN_EAST_X_FT,
+    SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
     rectangle,
 )
@@ -227,7 +228,7 @@ RAILINGS = [
 
 NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
-               text="CANOPY RF-BW-CANOPY IS FREESTANDING AND BRACES ITSELF: 4 trusses @24in span 24ft on BM-BW-RW/RE. EAST header lands on PT-BW-RE and PT-BW-RNE, 12in CAST CONCRETE COLUMNS running unbroken from footing to header soffit, FIXED at the base — these are the east lateral system, and they take a shim pack + HGAM10 gusset at the top, NOT a post cap (no wood under that header). WEST header on two 6x6 KDAT columns PT-BW-CW/CNW over 12in piers; the west lateral system is W-BW-SCREEN, the sheathed panel under the slats. NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
+               text="CANOPY RF-BW-CANOPY IS FREESTANDING AND BRACES ITSELF: 3 trusses @24in span 24ft on BM-BW-RW/RE. EAST header lands on PT-BW-RE and PT-BW-RNE, 12in CAST CONCRETE COLUMNS running unbroken from footing to header soffit, FIXED at the base — these are the east lateral system, and they take a shim pack + HGAM10 gusset at the top, NOT a post cap (no wood under that header). WEST header on two 6x6 KDAT columns PT-BW-CW/CNW over 12in piers; the west lateral system is W-BW-SCREEN, the sheathed panel under the slats. NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
                text="LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they are posted at their tips on PT-BW-IC and PT-BW-IE, 4x4 KDAT 25-3/4in tall on ABU44 standoff bases with cast-in AB-058-10-SS bolts. Thicken SL-G-FLOOR to 10in over a 2ft square under each post, cast monolithic with the slab (not modelled — no element says 'monolithic'). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E/RE) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE/RNE) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. PT-BW-RE and PT-BW-RNE carry on ABOVE the bearing plane as full-height columns — one continuous pour each, footing to header soffit, no cold joint at the deck. Hold deck boards 1/2in off the house cladding and let the gap drain"),
@@ -235,7 +236,7 @@ NOTES = [
     Annotation(uid="BWAN02AAAA", tag="AN-BW-TIERS", position=pt(ft(16), ft(39)),
                text="TERRACE: 5 equal 6.8in rises; four CAST tiers (SL-BW-TIER1..4), 18in going, wedding-caked so each is fully bedded on the one below, on a compacted washed-rock base — NOT frost-founded, and that is a decision: a monolithic pour moves as one piece and the joint that matters is at the TOP, against a deck landing on piers that will not move (R311.7.5.1 allows 3/8in of riser variation and that joint is where it is spent). EXPOSED_MIX (ACI 318-19 F3+C2), broom finish, 1/4in per foot of cross-fall to the east. No wood, no stringers, no piers — the eight drilled piers this replaced stood east of the flight under open ground"),
     Annotation(uid="BWAN04AAAA", tag="AN-BW-KDAT", position=pt(ft(9), ft(41)),
-               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1); butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing under CDX and corrugated on BOTH faces; every cut end inside that panel gets the same M4 treatment before it is closed up, because nothing reaches it afterwards"),
+               text="ALL KDAT: 304 stainless fasteners (IRC R317.3.1); butyl joist tape over every beam/rim top; field-treat every cut end, notch and hole with 2% copper naphthenate per AWPA M4 (IRC R317.1.1 — required, not advisory); finish with a PIGMENTED penetrating oil on installation, recoat 2-3yr horizontal. NO silicate/'liquid glass' — it is a masonry densifier, leaches from wood and adds no UV protection. W-BW-SCREEN is KDAT 2x4 framing, CDX and corrugated on the WEST face and one 5/8in APA Rated Siding 303 MDO panel on the sheltered EAST face; every cut end inside that panel gets the same M4 treatment before it is closed up, because nothing reaches it afterwards. The east ply is a FINISH face: prime all six edges and both faces before hanging, then two coats of exterior acrylic. W-BW-SCREEN-SKIRT carries the west corrugated down over the sill, the seat beams and the two column standoff bases, stopping 1in ABOVE the pier tops — do not seal that edge to the concrete, it is how the flutes drain and the column bases dry"),
 ]
 
 # ** THE WEST SIDE IS A SOLID SHEAR PANEL WITH A SLAT CLERESTORY OVER IT (owner, 2026-09-10). **
@@ -254,8 +255,9 @@ NOTES = [
 # rather than a plate over air, and which doubles as the deck's west rim.
 #
 # What that leaves exposed below the panel is 7 1/4" of deck framing and, under it, the seat
-# beams over their piers: treated stock with a butyl cap, standing on concrete, both meant to
-# be seen and both reachable to inspect. The shear still reaches concrete in one step -- the
+# beams over their piers. That band was left deliberately bare for a day; `W-BW-SCREEN-SKIRT`
+# below closes it, and the paragraph beside that wall says why. The shear still reaches
+# concrete in one step -- the
 # sill lands on the two seats, and each of those crosses this line directly over a pier, with
 # PT-BW-CW and PT-BW-CNW standing on the same two tops.
 #
@@ -284,13 +286,61 @@ SCREEN_PANEL_NODES = [
 # is the thing this panel braces. `base_elevation` is absolute, so the storey datum does not
 # move it.
 GARAGE_STOREY_ELEMENTS = []
+# ** THE STUD LINE HOLDS THE DATUM, NOT THE MIDDLE OF THE STACK (2026-09-11). ** The panel
+# is centred between PT-BW-CW and PT-BW-CNW, two 6x6s on the same x=6'-0" node line, and the
+# 2x4s are what die into them. Left to centre on its own axis the stack would re-centre when
+# the east corrugated skin came off, sliding every plate and stud 7/16" east off the columns
+# -- `structural.member_interference` reports that six times over, once per plate/column pair.
+# It would also slide the WEST corrugated face 7/16" east off the plane it shares with the
+# garage's own panel, which is the one plane on this wall that is not free to move.
+# `alignment=face("stud-ext", offset=inch(-1.75))` is a hardcoded HALF of the 2x4, the same
+# idiom (and the same trap) as `W-B-CS`/`W-B-CS3` in params/main_deck.py: an offset that
+# stopped matching the stud would slide the axis off x=6'-0" silently. The west cladding face
+# resolves to `SCREEN_CLADDING_WEST_X_FT`, which the skirt below reads rather than re-derives.
 SCREEN_PANEL = Wall(
     uid="BWWS01AAAA", tag="W-BW-SCREEN",
     start_node="N-BW-SCREEN-S", end_node="N-BW-SCREEN-N",
     assembly="ENTRY_SCREEN_WALL", base_elevation=ft(DECK_JOIST_TOP_FT),
     top=ft(SCREEN_PANEL_TOP_FT - DECK_JOIST_TOP_FT), guard=True,
+    alignment=face("stud-ext", offset=inch(-1.75)),
 )
 GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL])
+
+# ** THE BAND BELOW THE PANEL IS CLOSED AFTER ALL (owner, 2026-09-11). ** The paragraph above
+# leaves 7 1/4" of deck framing and the seat beams over their piers on show, "both meant to be
+# seen and both reachable to inspect". That is reversed. What sits in that band is BM-BW-SCSILL,
+# the two seat beams, and the two ABU66SS standoff bases under PT-BW-CW/-CNW -- treated wood and
+# a stainless base in the splash zone off a 4'-0" wall with no gutter over it. Running the west
+# skin down over it keeps bulk water off the column bases, which is worth more than the
+# inspection access: the bases are still reachable from the east, where nothing covers them.
+#
+# The bottom edge STAYS OPEN. It stops 1" above the cast pier tops, so the flutes drain, the
+# band behind it vents, and the column bases dry. It is not sealed to the concrete and must
+# not be. A 13 1/2" drop off a continuous sheet is a cantilever, not a span, so there is no
+# bottom girt down there to trap water and rot.
+#
+# It is its OWN element with its OWN nodes, both `open_end=True`. Sharing N-BW-SCREEN-S/-N with
+# the panel would put two walls on one node pair and collapse the junction polygons. No
+# `stacks_on` in either direction either: the band between them is zero, so
+# `extend_walls_to_platform` has nothing to do, and the link would only invite a lift.
+# `haus fmt` does not visit params/*.py, so these uids are hand-assigned in the local BW
+# namespace and a collision is a hard load-time ERROR.
+SCREEN_SKIRT_BASE_FT = BEARING_TOP_FT + 1 / 12          # -1'-2 1/2", held 1" off the pier top
+SCREEN_SKIRT_NODES = [
+    Node(uid="BWNS03AAAA", tag="N-BW-SKIRT-S",
+         position=pt(ft(SCREEN_CLADDING_WEST_X_FT + 0.875 / 24), ft(SCREEN_START_Y_FT)),
+         open_end=True),
+    Node(uid="BWNS04AAAA", tag="N-BW-SKIRT-N",
+         position=pt(ft(SCREEN_CLADDING_WEST_X_FT + 0.875 / 24), ft(SCREEN_END_Y_FT)),
+         open_end=True),
+]
+SCREEN_SKIRT = Wall(
+    uid="BWWS02AAAA", tag="W-BW-SCREEN-SKIRT",
+    start_node="N-BW-SKIRT-S", end_node="N-BW-SKIRT-N",
+    assembly="ENTRY_SCREEN_SKIRT", base_elevation=ft(SCREEN_SKIRT_BASE_FT),
+    top=ft(DECK_JOIST_TOP_FT - SCREEN_SKIRT_BASE_FT),
+)
+GARAGE_STOREY_ELEMENTS.extend([*SCREEN_SKIRT_NODES, SCREEN_SKIRT])
 SCREEN = SlatScreen(
     uid="BWSC001AAA", tag="SC-BW-WEST", start=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)),
     end=pt(ft(LANDING_WEST_FT), ft(SCREEN_END_Y_FT)),
@@ -445,16 +495,22 @@ INTERIOR_POST_BASES = [
 # drawings.
 #
 # One per bearing, not two. Gross wind uplift on the canopy is 1,706 lb per header
-# (notes/north_entry_piers.md Sec 4) over four bearings = 427 lb, so 0.6W is ~256 lb per tie
-# with no dead relief taken at all. Even the lowest H2.5ASS figure in circulation covers
+# (notes/north_entry_piers.md Sec 4) over THREE bearings = 569 lb, so 0.6W is ~341 lb per tie
+# with no dead relief taken at all (it was 427 / ~256 while a fourth truss stood at the
+# garage wall; the same uplift now shares over one bearing fewer). Even the lowest H2.5ASS figure in circulation covers
 # that -- but NOT by the margin the galvanized tie's 700 lbf would suggest, which is why
 # `library/hardware.py` carries the stainless tie as its own record with no allowable.
 #
-# The stations are the truss layout's own: `roof_gable.build_truss_layout` walks the bearing
-# axis at the assembly's 24" spacing and always lands the last one on `along_hi`, so a bay
-# that does not divide evenly puts the north truss hard against the garage wall.
-TRUSS_STATION_Y_FT = (PIER_LINE_Y_FT, PIER_LINE_Y_FT + 2.0, PIER_LINE_Y_FT + 4.0,
-                      GARAGE_Y_SOUTH.feet)
+# ** THREE TRUSSES, AND THE FOURTH WAS AN ARTEFACT (2026-09-11). ** The stations are the
+# truss layout's own. `roof_gable.build_truss_layout` walks the bearing axis at the
+# assembly's 24" spacing and forces a last station onto `along_hi` so a gable wall never ends
+# up with the field stopping short of it -- and these headers run 8" past their north columns
+# to reach the garage wall, so that forced station stood a fourth truss 1 1/2" off W-G-S,
+# out of module, in the plane the fire/draft closure and the garage's south cladding want
+# clear. `RF-BW-CANOPY` authors `gable_ends=()`: neither end of this roof is a gable line,
+# and the engine now drops an off-module end station that is not one. The deck bridges the
+# last 1'-9 3/8" to RF-GARAGE's own gable truss, one ordinary bay.
+TRUSS_STATION_Y_FT = (PIER_LINE_Y_FT, PIER_LINE_Y_FT + 2.0, PIER_LINE_Y_FT + 4.0)
 TRUSS_TIES = [
     Connector(uid=f"BWTT{_i}{_s}AAAA"[:10], tag=f"CN-BW-TRTIE-{_s}{_i + 1}",
               kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(_x), ft(_y)),

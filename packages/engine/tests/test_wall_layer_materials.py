@@ -147,3 +147,31 @@ def _findings_for(*, layer: str, material: str):
 
     ctx = CheckContext(plan=_Plan(), model=None, preferences=None, profile=None)
     return wall_layer_material(ctx)
+
+
+def test_a_declared_metal_skin_is_coil_white_on_a_structure_layer(catlin_model) -> None:
+    """`ENTRY_SCREEN_SKIRT` is one corrugated sheet filed as STRUCTURE, and it must not
+    export slate grey beside the wall it continues.
+
+    The same doctrine `test_gltf_colors_glazed_green_brick_green` pins for the basement
+    veneer: a self-supporting skin whose single layer IS the element gets its colour from
+    the material, never from what the layer is doing. The metal-panel branch was the one
+    place still gating a DECLARED finish on `function == "cladding"`, so the skirt fell
+    through to its authored `color` — which for all five of the house's white skins is the
+    drawing hatch tone, not the paint.
+
+    The substring GUESS stays gated, and that is the other half of this test.
+    """
+    from typehaus.emit.gltf.emitter import _hex_rgba, _material_finish_color
+    from typehaus.emit.gltf.palette import authored_colors
+
+    authored = authored_colors(catlin_model)
+    coil_white = _hex_rgba("#e8e8e2")
+    for function in ("structure", "cladding"):
+        assert _material_finish_color("corrugated-panel-26", function, authored) == coil_white
+        assert _material_finish_color("pbr-panel-26", function, authored) == coil_white
+
+    # The guess is not ungated: a ref that merely contains "seam" and declares no finish
+    # still only reads as a skin on a cladding layer.
+    assert (_material_finish_color("made-up-seam-thing", "structure", authored)
+            != _material_finish_color("made-up-seam-thing", "cladding", authored))

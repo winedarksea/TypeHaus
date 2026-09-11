@@ -54,6 +54,11 @@ LANDING_WEST_FT = 6.0  # the column line; also the screen panel and the west doo
 # The deck used to reach 11'-6" to cover two offset door patches (`D-M-ENTRY` at 8'-0",
 # `D-G-SERVICE` at 10'-0"); with the doors an inch apart the RO's east jamb covers both.
 LANDING_EAST_FT = SERVICE_RO_EAST_FT
+# ** THE WEST CORRUGATED PLANE, PUBLISHED SO NOTHING RE-DERIVES IT. ** `W-BW-SCREEN` carries
+# `alignment=face("stud-ext", offset=inch(-1.75))` (params/breezeway.py): its 2x4s centre on
+# this column line, so the west face lands a half stud + 5/8" CDX + 7/8" corrugated out.
+# `W-BW-SCREEN-SKIRT` READS THIS: a drifted skirt is a 7/16" step in steel, graded by nothing.
+SCREEN_CLADDING_WEST_X_FT = LANDING_WEST_FT - (1.75 + 0.625 + 0.875) / 12
 # ** THE STEM'S FINISHED INSIDE FACE, NOT ITS NODE LINE. ** `W-GF-W` is 11" of ICF off the
 # node line at x=6'-0" plus the 5/8" `gwb-stem` board GARAGE_ICF_6 carries on its inside
 # face from grade up, so 11 5/8". The stair and the interior landing's east guard stand

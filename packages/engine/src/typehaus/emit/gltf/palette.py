@@ -406,8 +406,18 @@ def _material_finish_color(material_ref: str | None,
     # the coil white on a cladding layer (its finish is in `_METAL_PANEL_FINISHES`), the green
     # coil still gets its green (its tag carries "seam", matching "classic-green-seam"), and
     # everything else keeps what it authored.
+    #
+    # **The DECLARED half is not gated on ``function``; the GUESS is.** A material that
+    # authors ``finish="corrugated"`` has said what it is, and it is the same coil-white sheet
+    # whether an assembly files it as cladding or as its one structural layer.
+    # ``ENTRY_SCREEN_SKIRT`` is the second kind — a self-supporting skin whose single layer IS
+    # the element, the shape ``integrity.assembly_layers`` forces on it — and under a blanket
+    # cladding gate it fell through to its authored ``color``, which for all five skins is the
+    # drawing hatch tone, so the skirt exported slate grey beside the white wall it continues.
+    # ``_is_standing_seam`` keeps the gate: a substring test on the ref cannot tell a rib from
+    # a fold. Mirrors ``ui/src/three/builders/walls.ts`` — keep the two in step.
     declared_skin = declared in _METAL_PANEL_FINISHES
-    if function == "cladding" and (declared_skin or _is_standing_seam(material_ref)):
+    if declared_skin or (function == "cladding" and _is_standing_seam(material_ref)):
         return _hex_rgba(_FINISH_BASE.get(declared, _SEAM_BASE))
     if material is not None:
         return _hex_rgba(material_color(material.hatch, material.color))

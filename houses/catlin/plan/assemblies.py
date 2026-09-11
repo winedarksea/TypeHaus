@@ -1380,8 +1380,8 @@ BEAM_GLULAM_TREATED = Assembly(
 #
 #  1. **It is the canopy's north-south lateral system.** The canopy is freestanding, its two
 #     east columns are cast concrete fixed at the base, and this panel is what answers the
-#     west side. Sheathed BOTH faces because it is exposed both ways and a screen wall with
-#     one bare face is not a finished thing -- and the second skin is free shear.
+#     west side. The WEST face carries the shear panel; the east siding ply is not counted,
+#     which is conservative and needs no new calc (it is a rated panel and could be).
 #  2. **It is the guard.** `Wall.guard=True`; a solid wall admits no 4" sphere, which is the
 #     reasoning `code.R312_1_3_guard_opening_limit` already applies to a masonry parapet.
 #  3. **It closes the deck framing.** The panel starts at the pier tops, so the joists, the
@@ -1393,16 +1393,21 @@ BEAM_GLULAM_TREATED = Assembly(
 # here. It carries NO `control` set for the same reason -- there is no assembly behind it to
 # keep water off, so nothing here is a WRB and nothing should claim to be.
 #
-# Corrugated on both faces, `corrugated-panel-26`, which is the garage's own panel: the two
-# structures already share a roof plane and a sheathing plane, and a different profile on the
-# one wall standing under that joint would read as a mistake. The 7/8" flute is the drainage
-# and vent cavity exactly as it is on the garage (no furring), open at the bottom.
+# Corrugated on the WEST FACE ONLY, `corrugated-panel-26`, which is the garage's own panel:
+# the two structures already share a roof plane and a sheathing plane, and a different profile
+# on the one wall standing under that joint would read as a mistake. The 7/8" flute is the
+# drainage and vent cavity exactly as it is on the garage (no furring), open at the bottom.
+#
+# The EAST face takes no corrugated panel (owner, 2026-09-11). It stands UNDER the canopy
+# roof, so it is a finish problem, not a weather problem, and buying the house's
+# exposed-fastener steel for a sheltered face is paying weather money for it. `siding-in` is
+# one 5/8" APA Rated Siding 303 panel doing both jobs -- a rated wood structural panel that
+# takes paint. It is NOT named `cdx-in`: a layer called CDX that is not CDX is how the next
+# reader gets it wrong.
 ENTRY_SCREEN_WALL = Assembly(
     tag="ENTRY_SCREEN_WALL",
     layers=(
-        Layer(name="cladding-in", material_ref="corrugated-panel-26", thickness=inch(0.875),
-              function=LayerFunction.CLADDING),
-        Layer(name="cdx-in", material_ref="cdx-plywood", thickness=inch(0.625),
+        Layer(name="siding-in", material_ref="siding-303-mdo", thickness=inch(0.625),
               function=LayerFunction.SHEATHING),
         Layer(name="stud", material_ref="kdat", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE,
@@ -1412,7 +1417,43 @@ ENTRY_SCREEN_WALL = Assembly(
         Layer(name="cladding-out", material_ref="corrugated-panel-26", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),
-    source="north entry west screen, lower panel — KDAT 2x4 at 16in o.c., 5/8in CDX and 7/8in corrugated BOTH faces. Shear panel for the freestanding canopy's north-south direction, guard per IRC R312.1, and the closure over the deck framing. No cavity fill and no control layers: an outdoor screen wall with weather on both sides",
+    source="north entry west screen, lower panel — KDAT 2x4 at 16in o.c.; WEST face 5/8in CDX under 7/8in corrugated, EAST face one 5/8in APA Rated Siding 303 panel doing shear and finish together. The shear rests on the west face alone; the east ply is not counted. Guard per IRC R312.1, and the closure over the deck framing. No cavity fill and no control layers: an outdoor screen wall, sheltered on the east by the canopy",
+)
+
+# ** THE SAME SHEET, CARRIED DOWN OVER THE DECK FRAMING (owner, 2026-09-11). **
+# `W-BW-SCREEN` bottoms at -0'-1" on BM-BW-SCSILL, and below it sit that 2x8 KDAT sill/rim,
+# the two seat beams, and the ABU66SS standoff bases under PT-BW-CW/-CNW, all the way to the
+# pier tops at -1'-3 1/2". An earlier pass left that band deliberately bare. This closes it:
+# the same `corrugated-panel-26` run down 13 1/2" more, stopping 1" above the cast tops so the
+# flutes stay open at the bottom, water leaves, and the column bases dry. A 13 1/2" drop off a
+# continuous sheet is a cantilever, not a span, so there is no bottom girt and nothing to rot.
+#
+# ** ONE LAYER, AND IT IS STRUCTURE, NOT CLADDING. ** `integrity.assembly_layers`
+# (checks/integrity/checks.py) errors on an `enclosure` assembly with no STRUCTURE layer, and
+# a self-supporting skin whose one layer IS the element is the case BASEMENT_BRICK_VENEER and
+# RETAINING_BLOCK_12 already set. Two consequences, written here rather than discovered:
+#
+#   * It bills through `takeoff/wall_structure.py`, not `envelope_layers` -- its own row of
+#     about 7.4 SF, keyed `ENTRY_SCREEN_SKIRT:corrugated-panel-26` in prices.toml.
+#   * `takeoff/fasteners.py::_exposed_fastener_cladding_layer` reads only the outermost
+#     CLADDING layer, so the skirt's own field screws are NOT counted. Small and knowable.
+#     (That same function is why dropping ENTRY_SCREEN_WALL's inner panel changed no screw
+#     count either: only the outermost cladding layer was ever read.)
+#
+# ** WHY IT IS A SECOND ELEMENT AND NOT A LOWER `base_elevation` ON THE PANEL. ** `Layer.extent`
+# is clamped to its wall (resolve/layer_bands.py), so a layer cannot run below its wall's base;
+# and the framing solver takes its plate elevation from `rw.base_ref_z_m`
+# (resolve/framing/solver.py) regardless of any band, so dropping the panel's base would put a
+# sole plate on the pier tops and re-open the `structural.member_interference` clash with both
+# seat beams that params/breezeway.py records. Two model elements for one physical sheet is
+# the price of that, and it is the cheaper of the two.
+ENTRY_SCREEN_SKIRT = Assembly(
+    tag="ENTRY_SCREEN_SKIRT",
+    layers=(
+        Layer(name="skirt-panel", material_ref="corrugated-panel-26", thickness=inch(0.875),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="north entry west screen, SKIRT — one 7/8\" 26ga corrugated sheet, the same panel and the same plane as ENTRY_SCREEN_WALL's west face, carried from the deck joist plane at -0'-1\" down to 1\" above the pier tops. Closes the sill/rim, the two seat beams and the column standoff bases. Self-supporting single skin: the one layer IS the element, per BASEMENT_BRICK_VENEER and RETAINING_BLOCK_12. Open at the bottom edge so the flutes drain",
 )
 
 POST_KDAT = Assembly(
@@ -3135,6 +3176,23 @@ MATERIALS = [
              r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
              color="#c9a86a",
              source="APA Rated Sheathing, CDX (C-face/D-back, exterior glue) — the ordinary sheathing grade, NOT the shear-rated Structural 1 the house walls carry; 5/8\" Performance Category spans the garage's 24\" o.c. studs. Thermal/vapour fields per the plywood series used for struct-1-plywood and plywood-subfloor"),
+    # `ENTRY_SCREEN_WALL`'s EAST ply, and only that. One panel does two jobs there: it is a
+    # rated wood structural panel (SDPWS Table 4.3B publishes shear values for Rated Siding
+    # exactly as for Rated Sheathing) AND it is the finished, paint-ready face of the screen
+    # under the canopy. That is why it is not `cdx-plywood`: a CDX C/D face is a sheathing
+    # face, and nothing on this wall covers it.
+    #
+    # MDO (medium density overlay): a resin-treated fibre overlay bonded to the face, which
+    # is the standard paint substrate and what stops the veneer's grain telegraphing through
+    # a coating. Exterior bond, because the wall is outdoors even where it is sheltered.
+    # Thermal/vapour numbers are the plywood series' (cdx-plywood, struct-1-plywood,
+    # plywood-subfloor) — the overlay is not modelled as a separate retarder, which is
+    # conservative for drying to the east and is the only side that can dry here.
+    Material(tag="siding-303-mdo",
+             name="5/8\" APA Rated Siding 303, MDO smooth face (Exterior)",
+             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
+             color="#b9a583",
+             source="APA Rated Siding 303 (apawood.org), Exterior bond, MDO smooth face; a wood structural panel carrying published shear values (SDPWS Table 4.3B) and a paint-ready overlay. Thermal/vapour fields per the plywood series used for cdx-plywood, struct-1-plywood and plywood-subfloor"),
     # FS-ATTIC's deck sheet, and only FS-ATTIC's. The two unfinished lofts
     # RM-A-WEST-UNFIN / RM-A-EAST-UNFIN take no floor covering at all, so this panel IS the
     # walking surface — it is walked on, swept and stacked on with nothing over it. A
@@ -4224,6 +4282,7 @@ ASSEMBLIES = [
     GARDEN_PUTTING_GREEN,
     GARDEN_STOOP,
     ENTRY_STEP_TIER,
+    ENTRY_SCREEN_SKIRT,
     ENTRY_SCREEN_WALL,
     GARAGE_STEP_6,
     GARAGE_ROOF,

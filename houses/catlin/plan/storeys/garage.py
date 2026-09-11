@@ -502,6 +502,25 @@ ROOFS = [
     Roof(uid="YX2GDZJMBV", tag="RF-BW-CANOPY", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("BM-BW-RW", "BM-BW-RE"),
          assembly="CANOPY_ROOF", overhang=ft(1, 4), ridge_direction="y",
+         # ** NEITHER END OF THIS ROOF IS A GABLE END, AND ONE OF THEM LOOKS LIKE ONE. **
+         # A gable-end frame is plated with verticals at stud spacing and no engineered web
+         # joints, and it is supported continuously by the wall under its bottom chord; it
+         # does not span. The SOUTH end has nothing under it at all -- 24' between BM-BW-RW
+         # and BM-BW-RE over the open passage -- and the engine derives that on its own.
+         # The NORTH end it cannot: that station lands on W-G-S's plate, which is a real
+         # wall and the wrong building's. Saying so here is what keeps the canopy carrying
+         # its own gravity to its own piers (notes/north_entry_structure.md Sec 1a), and it
+         # is also what drops the truss that used to stand 1 1/2" off the garage wall --
+         # right where the fire/draft closure and the south cladding want a clear plane.
+         # The deck bridges 1'-9 3/8" from the last canopy truss to RF-GARAGE's gable, which
+         # is one ordinary bay at this 24" spacing and shorter than every other bay on the
+         # roof. That last bay's sheathing lands on the garage's gable truss, so a sliver of
+         # canopy deck load does cross: half a 1'-9 3/8" bay over 24 feet, ~1,800 lb under the
+         # 73.7 psf drift case the headers are sized for (~900 lb balanced). It lands on a
+         # frame bearing continuously on W-G-S, so it spreads to ~75 plf on a 2x6 wall already
+         # carrying half a garage bay -- trivial, but real. Sec 1a's "never gravity" is about
+         # the STRAP line, not the deck edge; the drawings say so.
+         gable_ends=(),
          # North butts the garage gable; south stops flush at the house, which is the whole
          # point of the scheme -- the landing, the four tiers and the paver landing all end up
          # under roof, so none of them carries snow.

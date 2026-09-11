@@ -14,7 +14,7 @@ import {
 import {
   applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
-  metalPanelProfileForFinish, SEAM_PROFILE,
+  metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
 import { buildMembers, categoryColor, isSkinMember, type SkinLine } from "../members";
 import {
@@ -93,10 +93,7 @@ export function buildWall(
     // nothing falls back to `isStandingSeam`, which is a substring test on the ref and cannot
     // tell a rib from a fold. `pbr-panel-26` has no "seam" in its tag on purpose, so without
     // this branch it would render as flat grey.
-    const declaredPanel = metalPanelProfileForFinish(appearance?.finish);
-    const seamProfile = ly.function === "cladding"
-      ? (declaredPanel ?? (isStandingSeam(ly.material) ? SEAM_PROFILE : null))
-      : null;
+    const seamProfile = metalPanelProfileFor(ly.function, ly.material, appearance?.finish);
     const seam = seamProfile !== null;
     // Masonry (brick/CMU/stone) gets coursing + recessed mortar, not a flat fill — a brick
     // veneer or CMU wythe otherwise read like painted drywall. The style (module + mortar +
@@ -234,6 +231,34 @@ export function buildWall(
 // put one — the inner girt, the outer girt and, beside them, foam and vent-gap bands that are
 // NOT furring and correctly stay on Walls. Routing on the layer group rather than the wall
 // type handles both without the rule changing.
+/** The metal-panel profile a wall layer renders with, or null for an untextured one.
+ *
+ * A metal panel finish is DECLARED first and guessed second. `metalPanelProfileForFinish`
+ * reads the material's authored `finish` — "ribbed-panel" for the house's exposed-fastener
+ * PBR, "corrugated" for the garage's, "standing-seam" for anything that says so.
+ *
+ * **The DECLARED half is not gated on the layer function; the GUESS is.** A material that
+ * authors `finish="corrugated"` has said what it is, and it is the same sheet whether an
+ * assembly files it as cladding or as its one structural layer. `ENTRY_SCREEN_SKIRT` is the
+ * second kind — a self-supporting skin whose single layer IS the element, the shape
+ * `integrity.assembly_layers` forces on it — and under a blanket cladding gate it rendered
+ * as a flat grey slab beside the corrugated wall it continues. The masonry and plank
+ * branches in `buildWall` never carried that gate, for the same reason.
+ *
+ * `isStandingSeam` keeps it: a substring test on the ref cannot tell a rib from a fold, so
+ * letting it fire on a structure layer would corrugate things nobody declared. Mirrors
+ * `emit/gltf/palette.py::_material_finish_color` — keep the two in step.
+ */
+export function metalPanelProfileFor(
+  layerFunction: string,
+  materialRef: string,
+  declaredFinish: string | null | undefined,
+): MetalPanelProfile | null {
+  const declared = metalPanelProfileForFinish(declaredFinish);
+  if (declared !== null) return declared;
+  return layerFunction === "cladding" && isStandingSeam(materialRef) ? SEAM_PROFILE : null;
+}
+
 const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
 
 /** Which trade draws one wall member: the stick trade, or the envelope the member continues.

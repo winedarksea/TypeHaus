@@ -29,6 +29,7 @@ from typehaus.resolve.framing.profiles import (
     truss_heel_height_m,
 )
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
+from typehaus.resolve.intervals import subtract as subtract_spans
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedModel,
@@ -53,6 +54,26 @@ BARGE_RAFTER_PROFILE = "2x6"
 # where the roof does not even end, it runs on as RF-BW-CANOPY — and 15 more for the canopy's
 # own 3 3/8" drip edge. Neither is a thing anyone builds.
 _FLUSH_RAKE_TOLERANCE_M = inch(6.0).meters
+# ** A GABLE END IS A WALL LINE, AND THE ENGINE USED TO TAKE IT ON FAITH. **
+# The first and last truss stations were gable ends unconditionally, whatever was or was not
+# under them. That is not what a gable end frame is: SBCA's own definition is a frame "where
+# the bottom chord has continuous vertical support provided by the end wall or beam", plated
+# with verticals at stud spacing and no engineered web joints. It does not span, and it is
+# billed on its own row (`roof_truss_profile(..., gable=True)`) at a premium over a field
+# truss. Handing that member to an end station standing over open air — catlin's north-entry
+# canopy, whose south end hangs 24' between two headers with no wall at all — asks a truss
+# plant to quote a frame that cannot carry its own bottom chord.
+#: A wall may stop this far under the plate and still be read as carrying a gable end. A
+#: gable wall is built to the plate its neighbours are built to; a knee wall or a parapet
+#: stub is not, and must not buy a gable frame the fabricator would then have to span.
+_GABLE_PLATE_TOLERANCE_M = inch(2.0).meters
+#: How much of the bearing-to-bearing span the wall (or walls, where an opening split one)
+#: has to run under before it counts as continuous support. "Continuous" means the whole
+#: bottom chord; the slack is for the corner geometry at each end and nothing else.
+_GABLE_COVERAGE_TOLERANCE_M = inch(12.0).meters
+#: A hair, in metres. Separates "the grid divided evenly" from "the bearing ran on past the
+#: grid", and "this wall runs along the ridge" from "it crosses it".
+_TOL_M = 1e-6
 #: One member per truss: the category both the field trusses (``roof.py``) and the gable-end
 #: drop trusses here emit. Consumers that used to name ``top_chord``/``bottom_chord``/
 #: ``truss_web``/``truss_heel`` name this instead.
@@ -91,6 +112,11 @@ class TrussLayout:
     #: heel arithmetic — but the truss's own drawing needs the number back.
     heel_m: float
     positions: tuple[float, ...]
+    #: ``(lo, hi)`` — whether each end station is a gable end, i.e. has a wall plate running
+    #: under it that this roof is allowed to sit on. Derived (``_gable_ends``), narrowed by
+    #: ``Roof.gable_ends``. A False end takes a field truss, and if its station is off the
+    #: spacing module it takes no truss at all — see ``build_truss_layout``.
+    gable_ends: tuple[bool, bool] = (True, True)
 
     @property
     def span_mid(self) -> float:
@@ -103,6 +129,64 @@ class TrussLayout:
         """Top of the deck plane at a span coordinate."""
         half = (self.foot_hi - self.foot_lo) / 2.0 or 1.0
         return self.ridge_z_m - (self.ridge_z_m - self.eave_z_m) * abs(span - self.span_mid) / half
+
+
+#: The compass name of each ridge-axis end, ``(lo, hi)``, keyed by ridge direction. The same
+#: vocabulary ``Roof.edge_overhangs`` already uses, so one roof spells its edges one way.
+_END_NAMES = {"x": ("west", "east"), "y": ("south", "north")}
+
+
+def _wall_supports(model: ResolvedModel, ridge_direction: str, along: float,
+                   span_lo: float, span_hi: float, plate_top_m: float) -> bool:
+    """Is there a wall plate running under the whole of a truss station at ``along``?
+
+    The gable-end test, and it is deliberately about the WALL rather than about the station's
+    position in the list. Several walls may answer — an overhead door or a service door
+    splits a gable wall into segments, and the bottom chord over them is supported just the
+    same — so their span extents are accumulated and the shortfall is what is graded.
+
+    A wall qualifies when it runs perpendicular to the ridge (a gable wall does; a bearing
+    wall parallel to it does not), sits within its own thickness of the station, and reaches
+    the plate. Reaching it, not matching it: a raked gable wall carried to the underside of
+    the deck supports the chord exactly as a flat one at the plate does.
+    """
+    ridge_ax = 0 if ridge_direction == "x" else 1
+    span_ax = 1 - ridge_ax
+    cuts: list[tuple[float, float]] = []
+    for wall in model.walls:
+        (ax, ay), (bx, by) = wall.axis
+        start, end = (ax, ay), (bx, by)
+        if abs(start[ridge_ax] - end[ridge_ax]) > _TOL_M:
+            continue  # runs along the ridge, so it is a bearing line and not a gable line
+        half_thickness = (wall.thickness_m or 0.0) / 2.0
+        if abs(start[ridge_ax] - along) > half_thickness + _TOL_M:
+            continue
+        tops = [z for z in (wall.z1_m, wall.top_z0_m, wall.top_z1_m) if z is not None]
+        if not tops or max(tops) < plate_top_m - _GABLE_PLATE_TOLERANCE_M:
+            continue
+        cuts.append((min(start[span_ax], end[span_ax]), max(start[span_ax], end[span_ax])))
+    if not cuts:
+        return False
+    gaps = subtract_spans(span_lo, span_hi, cuts)
+    return sum(hi - lo for lo, hi in gaps) <= _GABLE_COVERAGE_TOLERANCE_M
+
+
+def _gable_ends(model: ResolvedModel, element: Roof, ridge_direction: str,
+                along_lo: float, along_hi: float, span_lo: float, span_hi: float,
+                plate_top_m: float) -> tuple[bool, bool]:
+    """Which ends are gable ends: derived from the walls, then narrowed by the author.
+
+    The narrowing only ever subtracts, which is what makes the field safe to hand to a plan.
+    Geometry can see that a plate runs under a station; it cannot see that the plate belongs
+    to a different building, which is the one thing an author has to be able to say.
+    """
+    lo, hi = (_wall_supports(model, ridge_direction, along, span_lo, span_hi, plate_top_m)
+              for along in (along_lo, along_hi))
+    if element.gable_ends is None:
+        return lo, hi
+    allowed = {name.lower() for name in element.gable_ends}
+    lo_name, hi_name = _END_NAMES.get(ridge_direction, _END_NAMES["y"])
+    return lo and lo_name in allowed, hi and hi_name in allowed
 
 
 def build_truss_layout(
@@ -135,6 +219,21 @@ def build_truss_layout(
     if positions[-1] < along_hi - 1e-9:
         positions.append(along_hi)
 
+    gable_ends = _gable_ends(model, element, roof.ridge_direction, along_lo, along_hi,
+                             bearings[0][0], bearings[-1][0], max(z for _, z in bearings))
+    # ** AN OFF-MODULE END STATION IS A GABLE LINE OR IT IS NOTHING. **
+    # The last station is forced onto ``along_hi`` so a gable wall never ends up with the
+    # truss field stopping short of it. Where that end is NOT a gable line, the tip is just
+    # the end of a bearing that ran on past its truss field — catlin's canopy headers carry
+    # 8" past their north columns so the deck reaches the garage wall — and standing a truss
+    # out of module on it is an invention. Dropping it is safe by construction: ``count`` is
+    # a ROUND, so the last on-module station is within one spacing of ``along_hi`` and the
+    # bay left behind is never longer than an ordinary one.
+    residue = (positions[-1] - along_lo) % spacing
+    off_module = min(residue, spacing - residue) > _TOL_M
+    if not gable_ends[1] and off_module and len(positions) > 1:
+        positions.pop()
+
     chord = spec.chord_member or spec.member
     web = spec.web_member or "2x4"
     return TrussLayout(
@@ -149,12 +248,20 @@ def build_truss_layout(
         chord_depth_m=truss_chord_depth_m(spec),
         heel_m=truss_heel_height_m(spec),
         positions=tuple(positions),
+        gable_ends=gable_ends,
     )
 
 
 def is_gable_end_position(layout: TrussLayout, index: int) -> bool:
-    """The first and last truss stations sit on the gable walls."""
-    return index in (0, len(layout.positions) - 1)
+    """Does this station take a gable-end frame rather than a field truss?
+
+    Only the two end stations can, and only where ``_gable_ends`` found a plate under them.
+    An end station over open air takes an ordinary field truss, which is the member that
+    actually spans bearing to bearing.
+    """
+    if index == 0:
+        return layout.gable_ends[0]
+    return index == len(layout.positions) - 1 and layout.gable_ends[1]
 
 
 def truss_member(layout: TrussLayout, pos: float, key: str,

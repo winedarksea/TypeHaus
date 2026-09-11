@@ -2174,14 +2174,17 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     assert by_storey["main"] >= 25
     assert by_storey["second"] >= 30
     assert by_storey["attic"] >= 12
-    # FIVE, and only one of them is the garage. Four are its wood-framed walls — it was 8
+    # SIX, and only one of them is the garage. Four are its wood-framed walls — it was 8
     # until 2026-09-03, when the east wainscot's own veneer walls (2 piers + 2 SE/NE corner
     # returns) went with it, and the garage's base skin became a banded LAYER on the stem
     # rather than a wall. The fifth, since 2026-09-10, is `W-BW-SCREEN`: the north entry
     # canopy's west shear panel, filed on this storey with the canopy roof it braces, because
     # every "how big is this building" and "where are its braced wall lines" derivation is
-    # scoped by storey and on `main` it joined the HOUSE's.
-    assert by_storey["garage"] == 5
+    # scoped by storey and on `main` it joined the HOUSE's. The sixth, since 2026-09-11, is
+    # `W-BW-SCREEN-SKIRT`, that panel's own corrugated skirt over the deck framing: a second
+    # model element for one physical sheet, because a wall's layers cannot run below its base
+    # and a lower base would drop the panel's sole plate into the two seat beams.
+    assert by_storey["garage"] == 6
     rooms = {r.tag for r in catlin_model.rooms}
     # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place (same uid, CAR401AAAA),
     # and split off RM-A-STUBATH and RM-A-POCKET as new rooms.

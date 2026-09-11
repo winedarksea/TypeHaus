@@ -104,7 +104,14 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # shares with W-GF-N-DR was N-GF-N-BRICK, a relic of the deleted brick wainscot, and it
     # sits at exactly the rotated door's east jamb. Retagged N-GF-N-DRE in place. Its south
     # twin W-GF-S3 is still a true fossil and is still kept on the uid-churn argument.
-    assert len({tag for row in rows for tag in row["tags"]}) == 43
+    #
+    # **44 SINCE 2026-09-11**, and the one that joined is not concrete: `W-BW-SCREEN-SKIRT`,
+    # one 7/8" corrugated sheet over the north entry's deck framing. It is in this table for
+    # the same reason `RETAINING_BLOCK_12` and `BASEMENT_BRICK_VENEER` are — a self-supporting
+    # skin's single layer IS its STRUCTURE layer, so it prices on the assembly tag here rather
+    # than through `[envelope_layers]`. Its `prices.toml` row carries the zero-ready-mix
+    # warning the [basis_notes] entry already states for the other two.
+    assert len({tag for row in rows for tag in row["tags"]}) == 44
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -121,8 +128,15 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # rather than a replacement for the first: `brown-brick` is still the sunken garden's
     # veneer. The material had been in the catalog and unreferenced since the porch parapet
     # was retired.
+    # `corrugated-panel-26` ARRIVED 2026-09-11 with `W-BW-SCREEN-SKIRT`, and it is METAL back in
+    # this table for the first time since `aluminum-flat-pvdf` left it three paragraphs up —
+    # for the identical reason that one was here: a free-standing sheet whose panel IS the
+    # assembly's STRUCTURE layer prices on the assembly tag, not through `[envelope_layers]`.
+    # The same panel on the wall ABOVE the skirt is a CLADDING layer and still bills there, so
+    # one material is legitimately split across the two tables. Do not "tidy" that into one.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "white-brick", "spf"}
+        "concrete", "retaining-block", "brown-brick", "white-brick", "spf",
+        "corrugated-panel-26"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is

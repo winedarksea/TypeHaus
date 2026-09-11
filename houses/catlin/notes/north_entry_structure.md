@@ -18,10 +18,30 @@ off the garage's gable.
 
 ## 1. The canopy — freestanding
 
-`RF-BW-CANOPY` — four 24'-span trusses at 24" o.c. on two headers, each header on **two**
-columns of its own. `CANOPY_ROOF` is `GARAGE_ROOF`'s structure with **no insulation and no
-ceiling**: an open outdoor bay has no thermal boundary to hold, and billing one over it
-would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
+`RF-BW-CANOPY` — **three** 24'-span trusses at 24" o.c. on two headers, each header on
+**two** columns of its own. `CANOPY_ROOF` is `GARAGE_ROOF`'s structure with **no insulation
+and no ceiling**: an open outdoor bay has no thermal boundary to hold, and billing one over
+it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
+
+> ⚠ **It was four until 2026-09-11, and the fourth was an artefact of the layout rule.**
+> `roof_gable.build_truss_layout` forces a last truss station onto the end of the bearing so
+> a gable wall never ends up with the field stopping short of it. These headers run 8" past
+> their north columns to reach the garage wall, so that forced station stood a fourth truss
+> **1 1/2" off `W-G-S`, out of module** — back to back with `RF-GARAGE`'s own gable truss,
+> two 24' frames in 3 inches, in exactly the plane the fire/draft closure and the garage's
+> south cladding need clear (§5). The roof now authors `gable_ends=()` and the engine drops
+> an off-module end station that is not a gable line. The deck bridges the last **1'-9 3/8"**
+> to `RF-GARAGE`'s gable truss, which is shorter than every other bay on the roof.
+>
+> **The last bay is the one place a little gravity does cross, and it is worth stating.**
+> That bridging sheathing lands on `RF-GARAGE`'s gable truss and hands it half a 1'-9 3/8"
+> bay over 24 feet: roughly **1,800 lb** under the 73.7 psf drift case the headers are sized
+> for, about 900 lb balanced. The whole canopy sits inside the 9.8' drift zone off the house
+> gable, so the drift number is the one that governs here, not the balanced one. It lands on
+> a frame bearing **continuously** on `W-G-S` — a gable-end frame is supported that way or it
+> is not one — so it spreads to about **75 plf** on a 2x6 wall already carrying half a garage
+> bay. Trivial, and real. §1a's "never gravity" is about the **strap line**, not about the
+> deck edge; do not read it as absolute.
 
 > ⚠ **The headers bore on `W-G-W` / `W-G-E` until 2026-09-10 and that was never a detail.**
 > A ~3,130 lb point reaction on the END of a stud wall wants a bearing post through the
@@ -34,14 +54,22 @@ would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 | Member | Support | What the drawings must say |
 |---|---|---|
 | `RF-BW-CANOPY` | `BM-BW-RW`, `BM-BW-RE` | Sheathing runs **continuous** across the garage south wall line. Two `Roof` elements, one diaphragm — and that diaphragm is the canopy's only connection to the garage. |
-| truss-to-header | `CN-BW-TRTIE-W1..4`, `-E1..4` | One **stainless `H2.5ASS`** each end of every truss. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
-| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11" between columns, running 8" past the north column so the roof plane reaches the garage wall. **The two headers do not land on the same thing.** |
+| truss-to-header | `CN-BW-TRTIE-W1..3`, `-E1..3` | One **stainless `H2.5ASS`** each end of every truss. Six, not eight, since the fourth truss went. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
+| `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11" between columns, running 8" past the north column so the roof plane reaches the garage wall. That tail carries **no truss** — it backs the deck edge and the fascia return and nothing else. **The two headers do not land on the same thing.** |
 | `PT-BW-CW` / `-CNW` | `PT-BW-W` / `PT-BW-GW` | 6x6 KDAT, 7'-8 1/4", the WEST pair. `ABU66SS` standoff base on a cast-in `AB-058-10-SS`; `CCQ46SDS2.5` cap at the header. `PT-BW-CNW` shares its pier with the garage-side seat beam exactly as `PT-BW-CW` shares one with the house-side seat. |
 | `PT-BW-RE` / `-RNE` | `FT-BW-RE` / `FT-BW-RNE` | The EAST pair, and they are **not** columns on piers — they are one 12" cast concrete pour each, footing to header soffit, **fixed at the base**. No wood on this side at all, so the top joint is an `SS316-SHIM-35` pack under an `HGAM10` gusset, never a post cap. |
 
+> ⚠ **NEITHER END OF THE CANOPY IS A GABLE END, and the engine used to think both were.**
+> A gable-end frame is plated with verticals at stud spacing, has no engineered web joints,
+> and is supported **continuously by the wall or beam under its bottom chord** — it does not
+> span, and it bills on its own row at a premium. All three canopy trusses are ordinary
+> **field** trusses spanning 24' between the two headers, because there is no wall under
+> either canopy end: the south end hangs over the open passage, and the north end's plate
+> belongs to the garage. `RF-GARAGE` keeps its two, on `W-G-S` and `W-G-N`.
+
 > ⚠ **No ladder framing anywhere at this joint, and there used to be thirty lookouts.**
 > `RF-GARAGE`'s south gable and both ends of `RF-BW-CANOPY` are **close rakes** — the roof
-> deck cantilevers past the gable truss and the fascia hangs on it. The garage's south
+> deck cantilevers past the last truss and the fascia hangs on it. The garage's south
 > projection is 1 9/16", at a line where the roof does not even end, and the canopy's own
 > south drip edge is 3 3/8". Neither is built with a 2x4 lookout and a 2x6 barge rafter, and
 > the engine framed both until `_FLUSH_RAKE_TOLERANCE_M` went from 1/2" to 6".
@@ -89,9 +117,13 @@ north-south case rather than this one. `PT-BW-RE` lands at **d/c 0.71** magnifie
 `PT-BW-RNE` at **0.55**, both OK, on the ACI minimum cage and with no section change.
 `notes/north_entry_piers.md` §8 is the hand pass and §8c is the arithmetic of the gap.
 
-**West — a sheathed shear panel.** `W-BW-SCREEN`, KDAT 2x4 at 16" o.c. under 5/8" CDX and
-7/8" corrugated on **both** faces, deck to +4'-0", 6'-6 3/4" long. Aspect ratio 1.63:1,
-inside SDPWS's 3.5:1. It is also the guard and the closure over the deck framing.
+**West — a sheathed shear panel.** `W-BW-SCREEN`, KDAT 2x4 at 16" o.c., deck to +4'-0",
+6'-6 3/4" long. Aspect ratio 1.63:1, inside SDPWS's 3.5:1. It is also the guard and the
+closure over the deck framing. **The shear rests on the WEST face alone** — 5/8" CDX under
+7/8" corrugated. The east face is a 5/8" APA Rated Siding 303 MDO panel, which is a rated
+wood structural panel and could be counted; it is not, which is conservative and needs no
+new number. The panel was sheathed and clad on both faces until 2026-09-11, and the second
+skin was already described there as free shear, so nothing the capacity rests on moved.
 
 **North — the garage joint is a tie, and the two roofs move together.** Sharing a roof plane
 and a sheathing course while being free to move apart was the odd part, not the tie. Seven
@@ -233,13 +265,38 @@ because nothing grades whether a pier is under the thing it names.
 
 ## 4. The screen — a solid shear panel with a slat clerestory over it
 
-**Bottom, deck to +4'-0": `W-BW-SCREEN`.** KDAT 2x4 at 16" o.c. under 5/8" CDX and 7/8"
-`corrugated-panel-26` on **both** faces — the garage's own panel, because the two structures
-already share a roof plane and a different profile on the one wall standing under that joint
-would read as a mistake. It runs the full deck edge, house cladding to garage wall, on its own
-2x8 sill (`BM-BW-SCSILL`) spanning the two seat beams between the two columns. It does three
-jobs: the canopy's north-south shear panel (§1a), the guard, and the closure over the deck
-framing.
+**Bottom, deck to +4'-0": `W-BW-SCREEN`.** KDAT 2x4 at 16" o.c. It runs the full deck edge,
+house cladding to garage wall, on its own 2x8 sill (`BM-BW-SCSILL`) spanning the two seat
+beams between the two columns. It does three jobs: the canopy's north-south shear panel
+(§1a), the guard, and the closure over the deck framing.
+
+**The two faces are not the same, and that is the 2026-09-11 decision.** WEST takes 5/8" CDX
+under 7/8" `corrugated-panel-26` — the garage's own panel, because the two structures already
+share a roof plane and a different profile on the one wall standing under that joint would
+read as a mistake. EAST takes one 5/8" APA Rated Siding 303 panel with an MDO face, doing
+shear and finish together. That face stands **under the canopy roof**: it is a finish problem,
+not a weather problem, and buying the house's exposed-fastener steel for a sheltered face is
+paying weather money for it. The shear is taken on the west face alone.
+
+The wall carries `alignment=face("stud-ext", offset=inch(-1.75))` so its 2x4s stay centred on
+the `PT-BW-CW`/`-CNW` column line at x=6'-0". Without it the stack re-centres when the east
+skin comes off and slides every plate 7/16" east off the two 6x6s, which
+`structural.member_interference` reports six times over — and it slides the west corrugated
+face off the plane it shares with the garage panel, which is the one plane here that is not
+free to move.
+
+**`W-BW-SCREEN-SKIRT`, −0'-1" down to −1'-2 1/2".** The same corrugated sheet, carried 13 1/2"
+further down over `BM-BW-SCSILL`, the two seat beams and the `ABU66SS` standoff bases under
+the two columns. An earlier pass left that band bare on purpose — treated stock and stainless
+bases "meant to be seen and reachable to inspect" — and this reverses it: keeping bulk water
+off the column bases off a 4'-0" wall with no gutter over it is worth more than the access,
+and the bases are still reachable from the east, where nothing covers them. **The bottom edge
+stays open**, 1" clear of the cast pier tops, so the flutes drain and the band vents. A 13 1/2"
+drop off a continuous sheet is a cantilever, not a span, so there is no bottom girt to trap
+water. It is its own element with its own node pair rather than a lower base on the panel:
+`Layer.extent` is clamped to its wall, and the framing solver takes its plate elevation from
+the wall base regardless of any band, so dropping the panel's base would put a sole plate on
+the pier tops and re-open the seat-beam clash §4 already records.
 
 **Top, +4'-0" to the header soffit: `SC-BW-WEST`.** 2'-4 3/4" of on-edge 2x4 slats at a 1 1/2"
 clear gap, sitting on the panel's top plate and restrained at the header soffit. In-fill only,
@@ -285,7 +342,10 @@ buildings move independently and the joint has to. Maintain the house rainscreen
 > meet.
 
 Provide fire/draft closure at the original garage south gable plane, retain garage gypsum,
-and confirm the service door's rating and self-closing requirement with the AHJ. **The
+and confirm the service door's rating and self-closing requirement with the AHJ. **That plane
+is clear now**: nothing of the canopy stands in it since the fourth truss went (§1), so the
+garage's south cladding and its insulation run full height to the deck underside, which is
+the face the entry actually sees. **The
 movement joint is not a fire separation.**
 
 **Drainage, and the margin is worth stating rather than discovering.** Both garage eaves

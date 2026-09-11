@@ -9,6 +9,7 @@ One synthetic 20'x14' truss-roofed building exercises the whole roof edge:
 
 from __future__ import annotations
 
+import itertools
 import math
 import uuid
 
@@ -24,6 +25,7 @@ from typehaus.model import (
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import rect_between
 from typehaus.emit.gltf.emitter import is_roof_framing_member
 from typehaus.resolve.roof_geometry import roof_height_at
@@ -44,11 +46,17 @@ _EAVE_TRIM = EaveTrim(
 
 
 def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
-          roof_layers=(), overhang=OVERHANG, pitch=Pitch(4, 12)) -> PlanModel:
+          roof_layers=(), overhang=OVERHANG, pitch=Pitch(4, 12),
+          drop_walls=(), east_ft=20.0, gable_ends=None) -> PlanModel:
     """A 20'x14' box with a raised-heel truss roof.
 
     The east gable is split at the ridge into two ``ToRoof`` segments; the west gable stays
     a flat 9' wall, so one plan covers both the raked-wall path and the closure path.
+
+    ``drop_walls`` takes a gable wall away so the end station over it has nothing under it;
+    ``east_ft`` runs the two bearing walls past the 24" module so the layout forces an
+    off-module last station; ``gable_ends`` is the ``Roof`` override. The three together are
+    what the gable-end derivation is tested on.
     """
     wall_assembly = Assembly(tag="EXT", layers=(
         Layer(name="stud", material_ref="wood", thickness=inch(5.5),
@@ -74,10 +82,10 @@ def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
                     default_ceiling_height=ft(PLATE_TOP_FT))
     nodes = (
         Node(uid="N000000001", tag="N-SW", position=pt(ft(0), ft(0))),
-        Node(uid="N000000002", tag="N-SE", position=pt(ft(20), ft(0))),
-        Node(uid="N000000003", tag="N-NE", position=pt(ft(20), ft(14))),
+        Node(uid="N000000002", tag="N-SE", position=pt(ft(east_ft), ft(0))),
+        Node(uid="N000000003", tag="N-NE", position=pt(ft(east_ft), ft(14))),
         Node(uid="N000000004", tag="N-NW", position=pt(ft(0), ft(14))),
-        Node(uid="N000000005", tag="N-E-RIDGE", position=pt(ft(20), ft(7))),
+        Node(uid="N000000005", tag="N-E-RIDGE", position=pt(ft(east_ft), ft(7))),
     )
     top = ToRoof(roof_ref="RF") if gable_top is None else gable_top
     walls = (
@@ -92,9 +100,11 @@ def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
         Wall(uid="W000000005", tag="W-W", start_node="N-NW", end_node="N-SW",
              assembly="EXT", top=ft(PLATE_TOP_FT)),
     )
+    walls = tuple(wall for wall in walls if wall.tag not in drop_walls)
     roof = Roof(uid="RF00000001", tag="RF", form=RoofForm.GABLE, pitch=pitch,
                 bearing_refs=("W-S", "W-N"), assembly="TRUSS_ROOF", overhang=overhang,
-                ridge_direction=RIDGE_DIRECTION, eave_trim=eave_trim)
+                ridge_direction=RIDGE_DIRECTION, eave_trim=eave_trim,
+                gable_ends=gable_ends)
     library = Library(
         materials=(Material(tag="wood", name="Wood", r_per_inch=1.2),),
         assemblies=(wall_assembly, roof_assembly),
@@ -145,6 +155,73 @@ def test_to_roof_wall_reaches_the_lifted_plane_not_the_pre_lift_one(resolved):
 
 
 # --- 2. gable-end truss + rake framing -----------------------------------------------------
+
+# ** A GABLE END IS A WALL LINE. ** The four tests below are the whole of that rule. Before
+# 2026-09-11 the first and last stations were gable ends unconditionally, so a roof with no
+# wall under an end — catlin's north-entry canopy, spanning 24' between two headers over an
+# open passage — ordered a frame that SBCA defines as having "continuous vertical support
+# provided by the end wall or beam" under its bottom chord. That frame does not span.
+
+def _trusses(model):
+    return [m for m in _roof(model).members if m.category == "roof_truss"]
+
+
+def test_an_end_with_no_wall_under_it_takes_a_field_truss() -> None:
+    """Drop the west gable wall and the west end stops being a gable end.
+
+    Nothing else about the roof moves: the bearing walls, the span and the station count are
+    the fixture's own. Only the member at x=0 changes, from a frame that cannot span to the
+    fink that actually carries that end.
+    """
+    model, _ = resolve(_plan(drop_walls=("W-W",)))
+    trusses = _trusses(model)
+    west, east = trusses[0], trusses[-1]
+    assert not west.truss.gable and "gable" not in west.profile
+    assert east.truss.gable, "the east gable wall is still there and still buys the frame"
+
+
+def test_the_override_can_take_a_gable_end_away() -> None:
+    """``gable_ends=()`` says neither end is mine, even where a plate runs under both.
+
+    This is the case geometry cannot reach. The plate under catlin's canopy at its north end
+    is real, and it belongs to the garage; an author has to be able to say so.
+    """
+    model, _ = resolve(_plan(gable_ends=()))
+    assert not any(m.truss.gable for m in _trusses(model))
+
+
+def test_the_override_can_never_add_a_gable_end() -> None:
+    """Naming an end that has no wall under it does not conjure a frame over thin air.
+
+    The field only ever NARROWS the derived answer. If it could widen it, it would be a way
+    to order a member the plant cannot build, which is the bug this whole rule replaces.
+    """
+    model, _ = resolve(_plan(drop_walls=("W-W",), gable_ends=("west", "east")))
+    trusses = _trusses(model)
+    assert not trusses[0].truss.gable
+    assert trusses[-1].truss.gable
+
+
+def test_an_off_module_end_station_that_is_not_a_gable_line_carries_no_truss() -> None:
+    """A bearing that runs on past its truss field does not earn a truss on the tip.
+
+    The layout forces a last station onto the end of the bearing so a gable wall never ends
+    up with the field stopping short of it. Run the bearings to 21' with no wall at that end
+    and that forced station is just the end of a cantilevered tail — catlin's canopy headers
+    carry 8" past their north columns so the deck reaches the garage wall. The deck bridges
+    the last bay, which is never longer than an ordinary one because the station count is a
+    round.
+    """
+    on_module, _ = resolve(_plan(drop_walls=("W-E1", "W-E2")))
+    past_module, _ = resolve(_plan(drop_walls=("W-E1", "W-E2"), east_ft=21.0))
+    spacing = DEFAULT_SPACING.meters
+    assert len(_trusses(on_module)) == 16, "20' of bearing is exactly fifteen 16-in bays"
+    assert len(_trusses(past_module)) == 16, "the extra foot buys no seventeenth truss"
+    stations = [m.p0[0] for m in _trusses(past_module)]
+    gaps = [b - a for a, b in itertools.pairwise(stations)]
+    assert max(gaps) == pytest.approx(spacing, abs=1e-9), "every bay stays on the module"
+
+
 
 def test_gable_ends_are_dropped_gable_trusses(resolved):
     """Every station is one fabricated truss; the two ends are the gable version of it.

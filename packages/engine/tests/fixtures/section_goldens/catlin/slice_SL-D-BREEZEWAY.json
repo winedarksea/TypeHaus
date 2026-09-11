@@ -7,34 +7,6 @@
       "node": "polyline",
       "points": [
         [
-          74.3125,
-          -1.0
-        ],
-        [
-          75.3125,
-          -1.0
-        ],
-        [
-          75.3125,
-          47.99999999999999
-        ],
-        [
-          74.3125,
-          47.99999999999999
-        ]
-      ],
-      "layer": "A-WALL",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWWS01AAAA",
-      "tag": "W-BW-SCREEN/cladding-in"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           73.5625,
           -1.0
         ],
@@ -56,7 +28,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "BWWS01AAAA",
-      "tag": "W-BW-SCREEN/cdx-in"
+      "tag": "W-BW-SCREEN/siding-in"
     },
     {
       "space": "model",
@@ -84,7 +56,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "cdx-plywood"
+      "material": "siding-303-mdo"
     },
     {
       "space": "model",
@@ -225,6 +197,62 @@
       "closed": true,
       "uid": "BWWS01AAAA",
       "tag": "W-BW-SCREEN/cladding-out"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          68.6875,
+          -14.500000000000002
+        ],
+        [
+          69.6875,
+          -14.500000000000002
+        ],
+        [
+          69.6875,
+          -0.9999999999999992
+        ],
+        [
+          68.6875,
+          -0.9999999999999992
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWWS02AAAA",
+      "tag": "W-BW-SCREEN-SKIRT/skirt-panel"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          68.6875,
+          -14.500000000000002
+        ],
+        [
+          69.6875,
+          -14.500000000000002
+        ],
+        [
+          69.6875,
+          -0.9999999999999992
+        ],
+        [
+          68.6875,
+          -0.9999999999999992
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "corrugated-panel-26"
     },
     {
       "space": "model",
@@ -2568,7 +2596,7 @@
         74.0625,
         38.07999999999999
       ],
-      "text": "cdx-in 0.625\" (NTS)",
+      "text": "siding-in 0.625\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2580,20 +2608,20 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          74.8125,
-          35.47999999999999
+          69.18750000000001,
+          -3.119999999999999
         ],
         "name": ""
       },
       "at": [
         47.00000000000001,
-        35.47999999999999
+        -3.119999999999999
       ],
       "to": [
-        74.8125,
-        35.47999999999999
+        69.18750000000001,
+        -3.119999999999999
       ],
-      "text": "cladding-in 0.875\" (NTS)",
+      "text": "skirt-panel 0.875\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
