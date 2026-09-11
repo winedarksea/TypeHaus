@@ -9,8 +9,8 @@ The assertions worth reading before changing any of them:
 
 * :func:`test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete` is the finding that
   produced this whole calculation, pinned as a regression on the CALCULATION rather than on
-  the house. A 4'-0" toe under 899 psf is a real flexural cantilever, and a 12" plain strip
-  carries a third of it. If a future change makes that pass without steel, the change
+  the house. A 3'-0" toe under 1,307 psf is a real flexural cantilever, and a 12" plain strip
+  carries under half of it. If a future change makes that pass without steel, the change
   is wrong.
 * :func:`test_the_plain_branch_gives_up_two_inches_of_its_thickness` pins ACI 318-19
   §14.5.1.7 — a plain footing cast against soil is graded on ``h - 2``.
@@ -25,26 +25,37 @@ from __future__ import annotations
 import pytest
 
 # §7a-§7e, worked by hand against §4's governing at-rest / 110 pcf case.
-_TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 4.0, 3.0, 8.0, 1.0
-# Re-oracled three times: the stem shortened 10.37' -> 9.62' -> 9.2865' -> 9.1198' as the
-# footings rose to the court plane, the wall tops came down to 36" above grade, and then all
-# five court walls came flush with the porch datum (2026-09-10). W fell each time and the
-# resultant walked back toward mid-base — e 0.87' -> 0.57' -> 0.4466' -> 0.3865'. The toe
-# pressure falls with e and the heel pressure RISES, which is why these two move opposite ways.
-_Q_TOE, _Q_HEEL = 899.3, 495.1
+_TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 3.0, 3.0, 7.0, 1.0
+# Re-oracled four times. THREE HEIGHT CUTS, which shortened the stem 10.37' -> 9.62' ->
+# 9.2865' -> 9.1198' and walked the resultant back toward mid-base each time — e 0.87' ->
+# 0.57' -> 0.4466' -> 0.3865' — flattening the trapezoid and dropping the toe pressure.
+#
+# ** THEN THE STRIP NARROWED, AND EVERYTHING IN THIS BLOCK WENT THE OTHER WAY. ** 8'-0"
+# offset 6" into the court -> 7'-0" centred, toe 4'-0" -> 3'-0", heel HELD at 3'-0". The
+# base is 12% narrower under an unchanged W_stem and W_heel, so e jumps back to 0.8005' and
+# the toe-tip pressure 45% to 1,307 psf. The toe CANTILEVER is 12" shorter at the same time,
+# and that wins: the moment goes as the arm squared and the pressure only linearly, so
+# §7b's Mu falls 22% (10,649 -> 8,319) even as the diagram steepens. That is what lets §7e
+# drop the mat from `#6 @ 10"` to `#5 @ 12"`.
+_Q_TOE, _Q_HEEL = 1307.4, 243.4
 
 #: `SUNKEN_GARDEN_WALL` states `EXPOSED_MIX`, so every capacity below is on the
 #: 5,000 psi the pour SPECIFIES, not the presumptive 3,000 the engine used to assume.
 _FC_PSI = 5000.0
 
 _ORACLE = {
-    "toe flexure": (10649.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
-    "heel flexure": (8303.0, 19755.0),
-    "footing one-way shear": (4286.0, 10978.0),  # lb/ft, reinforced branch at d
+    "toe flexure": (8319.0, 11865.0),         # Mu, phi*Mn  ft-lb/ft, with #5 @ 12"
+    "heel flexure": (8303.0, 11865.0),
+    "footing one-way shear": (4131.0, 11057.0),  # lb/ft, reinforced branch at d
 }
+# ** THE TWO FLEXURE ROWS NOW READ THE SAME NUMBER, AND THAT IS ARITHMETIC. ** The toe and
+# the heel are both 3'-0" cantilevers since the narrowing, and at e = 0.8005' the trapezoid
+# happens to load the toe within 16 ft-lb/ft of what the soil column loads the heel. They are
+# still two independent derivations off two different conventions (§7b drops the footing's
+# own weight, §7c drops the pressure under the heel) and must not be collapsed into one.
 #: §7b/§7c/§7d as the PLAIN section the house had before 2026-09-03.
 _PLAIN_CAPACITY = 3536.0
-_PLAIN_SHEAR = (4151.0, 6788.0)
+_PLAIN_SHEAR = (3961.0, 6788.0)
 
 _WALLS = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 
@@ -76,7 +87,7 @@ def _state(states, name):
 
 
 def test_the_geometry_is_the_one_the_note_worked(geometry_and_case) -> None:
-    """A 4'-0" toe and a 3'-0" heel on an 8'-0" base. Everything in §7 rests on these."""
+    """A 3'-0" toe and a 3'-0" heel on a 7'-0" base. Everything in §7 rests on these."""
     geometry, _case = geometry_and_case
     assert geometry.toe_ft == pytest.approx(_TOE_FT, abs=0.01)
     assert geometry.heel_ft == pytest.approx(_HEEL_FT, abs=0.01)
@@ -110,16 +121,17 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
         geometry_and_case) -> None:
     """§7b — the finding that produced this calculation, pinned on the CALCULATION.
 
-    This must never come out passing. If a future change lets an unreinforced 4'-0" toe under
-    899 psf report OK, that change has broken the check rather than fixed the footing — and
+    This must never come out passing. If a future change lets an unreinforced 3'-0" toe under
+    1,307 psf report OK, that change has broken the check rather than fixed the footing — and
     the house would silently lose the mat it is now designed with.
 
-    The name says "five times" and the number is 3.01. It was 5.18 at the presumptive
-    3,000 psi, and it has come down three times since on wall height alone. The name is kept
-    because what it pins is the SHAPE of the answer — a plain strip is over by a multiple,
-    not by a margin — and renaming it every time the multiple moves would lose the thread
-    back to the finding. Unlike §6's stem bar table, no row of this one has changed sides:
-    the footing needs its mat at every height this wall has stood at.
+    The name says "five times" and the number is 2.35. It was 5.18 at the presumptive
+    3,000 psi, came down three times on wall height alone to 3.01, and came down again to
+    2.35 when the toe narrowed 4'-0" -> 3'-0". The name is kept because what it pins is the
+    SHAPE of the answer — a plain strip is over by a multiple, not by a margin — and renaming
+    it every time the multiple moves would lose the thread back to the finding. Unlike §6's
+    stem bar table, no row of this one has changed sides: the footing needs its mat at every
+    height and every width this wall has stood at.
     """
     from typehaus.engineering.retaining_basis import _Geometry, footing_states
 
@@ -127,7 +139,7 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     bare = _Geometry(**{**geometry.__dict__, "footing_reinforcement": None})
     toe = _state(footing_states(bare, case), "toe flexure")
     assert toe.capacity == pytest.approx(_PLAIN_CAPACITY, rel=0.002)
-    assert toe.demand / toe.capacity == pytest.approx(3.01, rel=0.01)
+    assert toe.demand / toe.capacity == pytest.approx(2.35, rel=0.01)
     assert not toe.ok
 
     heel = _state(footing_states(bare, case), "heel flexure")
@@ -137,7 +149,7 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     # SHEAR, by contrast, PASSES as plain once the real 5,000 psi mix is read (it was 1.04
     # over at the presumptive 3,000). Pinned deliberately: a reader who saw only this row
     # change sides might conclude the mix fixed the footing. It did not — flexure above is
-    # still three times over, and flexure is the row that decides whether steel is needed.
+    # still over twice, and flexure is the row that decides whether steel is needed.
     shear = _state(footing_states(bare, case), "footing one-way shear")
     assert (shear.demand, shear.capacity) == (
         pytest.approx(_PLAIN_SHEAR[0], rel=0.002), pytest.approx(_PLAIN_SHEAR[1], rel=0.002))
@@ -189,12 +201,14 @@ def test_the_toe_takes_no_credit_for_the_footings_own_weight(geometry_and_case) 
     # comparison has to carry it, and it is exactly the argument this conservatism exists to
     # avoid having.
     #
-    # ** IT GROWS AS THE WALL GETS SHORTER. ** The relief is the footing's own weight and
-    # does not move; the pressure it is set against falls with the wall. 8% at the 36" cap,
-    # 10% with the flush tops. Expect this figure to drift up, not to stay put.
+    # ** IT GROWS AS THE WALL GETS SHORTER AND SHRANK WHEN THE TOE DID. ** The relief is the
+    # footing's own weight over the toe, which goes as the toe length SQUARED, so narrowing
+    # 4'-0" -> 3'-0" cut it 44% against a demand that fell only 22%. 8% at the 36" cap, 10%
+    # with the flush tops, ~7% at the 3'-0" toe. It is the one figure in this module that the
+    # narrowing moved in the reassuring direction.
     relief_service = 150.0 * _DEPTH_FT * _TOE_FT ** 2 / 2.0
     proper = EARTH_PRESSURE_LOAD_FACTOR * pressure_only - 0.9 * relief_service
-    assert proper / state.demand == pytest.approx(0.90, rel=0.02)
+    assert proper / state.demand == pytest.approx(0.927, rel=0.02)
 
 
 def test_the_heel_takes_no_credit_for_the_pressure_under_it(geometry_and_case) -> None:
@@ -231,10 +245,14 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
     Run, it does not pass. The HEEL is the row that settles it and it needs no assumption
     about the bracing at all — §7c's convention drops the upward pressure under the heel,
     so the demand is soil and geometry alone: Mu 8,303 against a plain 12" strip's 3,536,
-    **d/c 2.35**. The toe reads 2.35-2.94 as a free cantilever, which is the conservative
-    bound. The mat was owed either way, and once it is owed the widening from 84" to 96"
-    costs concrete and stone alone — so all five strips are one width, one offset, one mat
-    and one continuous form line.
+    **d/c 2.35**. The mat is owed on these two whatever is assumed about the bracing.
+
+    **The BAR came down on 2026-09-10 and the mat did not.** All five strips narrowed
+    96" -> 84" centred, which took 22% off the toe moment and brought `#5 @ 12"` from 0.90
+    to 0.70, so the schedule is `#5 @ 12"` now rather than the stem's `#6 @ 10"`. `#4 @ 12"`
+    is not available below it: 0.200 in2/ft fails flexure and falls under ACI 318-19
+    §7.6.1.1's `0.0018 Ag = 0.259`. All five strips are still one width, one offset (zero),
+    one mat and one continuous form line.
     """
     from typehaus.model.structure import Footing
 
@@ -243,20 +261,23 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
         spec = footings[f"FT-{wall[2:]}"].reinforcement
         assert spec is not None, f"FT-{wall[2:]} lost its mat"
         roles = {b.role: b for b in spec.bars}
-        assert roles["bottom-x"].bar == 6
-        assert roles["bottom-x"].spacing.inches == pytest.approx(10.0)
-        assert roles["top-x"].bar == 6
-        assert roles["top-x"].spacing.inches == pytest.approx(10.0)
+        assert roles["bottom-x"].bar == 5
+        assert roles["bottom-x"].spacing.inches == pytest.approx(12.0)
+        assert roles["top-x"].bar == 5
+        assert roles["top-x"].spacing.inches == pytest.approx(12.0)
         assert spec.cover.inches == pytest.approx(3.0)
+        # 0.310 in2/ft against ACI 318-19 §7.6.1.1's 0.0018 Ag = 0.259. This is the guard on
+        # `#4 @ 12"`, which is the tempting next step down and fails both tests.
+        assert 0.31 * 12.0 / roles["bottom-x"].spacing.inches > 0.0018 * 12.0 * 12.0
 
     for braced in ("FT-SG-W1", "FT-SG-E1"):
         spec = footings[braced].reinforcement
         assert spec is not None, f"{braced}'s plain heel is 2.35x over; it needs the mat"
         roles = {b.role: b for b in spec.bars}
-        assert roles["bottom-x"].bar == 6
-        assert roles["bottom-x"].spacing.inches == pytest.approx(10.0)
+        assert roles["bottom-x"].bar == 5
+        assert roles["bottom-x"].spacing.inches == pytest.approx(12.0)
         assert spec.cover.inches == pytest.approx(3.0)
-        assert footings[braced].width.inches == pytest.approx(96.0)
+        assert footings[braced].width.inches == pytest.approx(84.0)
 
 
 def test_a_bar_authored_as_a_count_is_not_read_as_a_spacing() -> None:

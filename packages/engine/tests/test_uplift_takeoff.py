@@ -36,7 +36,11 @@ RULES = CONFIG.uplift
 #: two CENTRE pillars went from an ABU66SS to an inverted CCQ column cap — an ABU has no published
 #: value bearing on framing, and the R317.1.4 standoff it was cited for governs wood on
 #: CONCRETE. See ``houses/catlin/notes/balcony_moment_columns.md``.
-AUTHORED_POST_BASES = set()  # passage posts retired; foundation seats replace them
+# The canopy's two WEST columns, authored as ABU66SS on 2026-09-10 so the order names the
+# stainless part the house actually buys rather than the galvanized one the section-based
+# derivation reaches for. The east pair is not here because it no longer exists: PT-BW-RE and
+# PT-BW-RNE run full height in cast concrete and carry no wood column at all.
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW"}
 
 #: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
 #: as ``post_base_rows`` is concerned — a post whose joint is already made must not be bought
@@ -50,7 +54,7 @@ AUTHORED_TENSION_TIES = {"PT-SG-BR2", "PT-SG-BF2"}
 #: guard is the same one it always was — a joint an authored connector already makes must not
 #: be derived a strap on top.
 AUTHORED_POST_BEAM_JOINTS = {frozenset({"BM-BW-RW", "PT-BW-CW"}),
-                             frozenset({"BM-BW-RE", "PT-BW-CE"})}
+                             frozenset({"BM-BW-RW", "PT-BW-CNW"})}
 
 
 @pytest.fixture(scope="module")
@@ -235,17 +239,18 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     tied = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.TENSION_TIE}))
     assert tied >= AUTHORED_TENSION_TIES, "the fixture's authored tension ties moved"
     rows = post_base_rows(catlin_model_ro, RULES)
-    # ABU66 joined the order on 2026-09-10 with PT-BW-CW / PT-BW-CE, the canopy's two 6x6
-    # KDAT roof columns: each stands on a 12" cast pier, declares it, and carries no authored
-    # base of its own, so this is the rule doing exactly the job it exists for. An ABU66SS
-    # row would still be the failure — that is the balcony centre pillars' part, and its
-    # appearance means either the Connector.connects guard stopped matching or TENSION_TIE
-    # fell out of the covered set and those two are being bought a base they do not take.
-    assert [row["part_number"] for row in rows] == ["ABU44", "ABU66"]
+    # ABU66 joined the order on 2026-09-10 with the canopy's 6x6 KDAT roof columns and left
+    # it again the same day: the house buys stainless at every treated post base, and the
+    # derived rule names the catalog model for the SECTION, which is the galvanized ABU66.
+    # `CN-BW-BASE-W` / `-NW` author those two joints as ABU66SS instead, which stands the
+    # derivation down. The 4x4 rung is what is left, and it is the dry interior pair.
+    #
+    # An ABU66 row reappearing is the failure now, and it means an authored base stopped
+    # matching. An ABU66SS row would be a different failure — that is the balcony centre
+    # pillars' part, and it means TENSION_TIE fell out of the covered set.
+    assert [row["part_number"] for row in rows] == ["ABU44"]
     counts = {row["part_number"]: row["count"] for row in rows}
-    # 2 -> 4 on 2026-09-10, when the canopy became freestanding: PT-BW-CNW / PT-BW-CNE are
-    # the two north columns that replaced the headers' undetailed bearing on W-G-W / W-G-E.
-    assert counts == {"ABU44": 2, "ABU66": 4}
+    assert counts == {"ABU44": 2}
     for row in rows:
         for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
             assert tag not in row["basis"]
@@ -260,7 +265,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
         "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE",
-        "PT-BW-CW", "PT-BW-CE", "PT-BW-CNW", "PT-BW-CNE", "PT-BW-IC", "PT-BW-IE"}
+        "PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
 
 
 def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
@@ -297,12 +302,16 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    # 2 -> 4 -> 6 on 2026-09-10. Every derived base is on concrete: the two stairwell 4x4s
-    # on the basement slab, plus all FOUR canopy columns on their 12" cast piers once the
-    # canopy went freestanding. One bolt per base and no more — a seventh would mean a base
-    # got counted twice upstream.
-    assert row["count"] == 6
-    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
+    # 2 -> 4 -> 6 -> 4 on 2026-09-10, and the last step is the east pair leaving: PT-BW-RE
+    # and PT-BW-RNE became full-height CAST columns, so the two wood columns that stood on
+    # them are gone and so are their bases. What is left on concrete is the two stairwell
+    # 4x4s on the basement slab and the canopy's two WEST columns on their 12" piers.
+    #
+    # The population is the union of authored and derived bases, which is why this no longer
+    # equals the derived rows alone: `CN-BW-BASE-W` / `-NW` are authored ABU66SS and still
+    # each need their cast-in bolt.
+    assert row["count"] == 4
+    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 2
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
@@ -334,11 +343,12 @@ def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):
     """The canopy's two header-on-column joints are made by hand; only the bare ones derive.
 
     Catlin billed no strap at all between the breezeway's retirement and 2026-09-10. The
-    north entry brought the rule back to life with four beam-on-wood-post joints, and they
-    split two and two, which is what makes the guard readable: BM-BW-RW/RE land on the roof
-    columns under an authored CCQ46SDS2.5 cap and must NOT be strapped again, while
-    BM-BW-FC/FE land on PT-BW-IC/IE — the posts that ended the interior cantilever, with
-    nothing authored at their tops — and must be.
+    north entry brought the rule back to life, and the population splits, which is what
+    makes the guard readable: BM-BW-RW lands on PT-BW-CW / PT-BW-CNW under an authored
+    CCQ46SDS2.5 cap and must NOT be strapped again, while BM-BW-FC/FE land on PT-BW-IC/IE —
+    the posts that ended the interior cantilever, with nothing authored at their tops — and
+    must be. BM-BW-RE is in neither set as of 2026-09-10: it lands on cast concrete, and a
+    beam-on-WOOD-post rule has no business there.
     """
     rows = post_beam_strap_rows(catlin_model_ro, RULES)
     assert len(rows) == 1

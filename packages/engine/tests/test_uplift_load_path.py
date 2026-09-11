@@ -102,15 +102,19 @@ def test_every_roof_is_covered_at_its_bearings(findings) -> None:
     assert "authored Connector" in covered["RF-BW-CANOPY"].message
 
 
-def test_a_flush_framed_deck_is_covered_by_its_hangers(findings) -> None:
-    """FS-BW-FLOOR's four 2x8 joists sit IN their beams, so no tie can be derived for them.
+def test_a_deck_bearing_on_top_of_its_beams_is_covered_by_derived_ties(findings) -> None:
+    """FS-BW-FLOOR's joists SIT ON their two seat beams, so an ordinary tie covers them.
 
-    Before hangers counted, this floor was the check's loudest false positive: every one of
-    its joist ends carries a LUS hanger and the report called it a break in the load path.
+    They used to hang flush IN three north-south floor beams, and this was the check's
+    loudest false positive until hangers counted: every joist end carried a LUS and the
+    report called it a break in the load path. The middle tier of beams went on 2026-09-10
+    and the joists turned to run north-south straight on the two seat beams instead, which
+    is the ordinary joist-on-beam joint the derived rule was always written for. The hanger
+    branch is still live and still exercised by the two garage-landing carriers.
     """
     deck = next(f for f in findings if f.element_tags[:1] == ("FS-BW-FLOOR",))
     assert deck.result is Result.PASS
-    assert "hangers" in deck.message
+    assert "BM-BW-HOUSE-SEAT" in deck.message and "BM-BW-GARAGE-SEAT" in deck.message
 
 
 def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
@@ -221,11 +225,17 @@ def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
     — the trusses landing on it above, and the column it lands on below — and both must be
     covered, or the canopy is a roof the check has nothing to say about.
     """
-    for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RE", "PT-BW-CE"),
-                           ("BM-BW-RW", "PT-BW-CNW"), ("BM-BW-RE", "PT-BW-CNE")):
+    # Only the WEST header still lands on wood. PT-BW-RE and PT-BW-RNE became full-height
+    # cast concrete columns on 2026-09-10 — the canopy's east lateral system — so BM-BW-RE
+    # lands on a pour and its joint is a shim pack plus an HGAM10 gusset, which is the
+    # concrete-to-wood detail the two seat beams and the porch columns already use. A
+    # beam-on-WOOD-post strap rule has nothing to say about it, and should not.
+    for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RW", "PT-BW-CNW")):
         below = next(f for f in findings if f.element_tags == (header, column))
         assert below.result is Result.PASS
-        assert "an authored strap or cap" in below.message  # CN-BW-CAP-W / -E
+        assert "an authored strap or cap" in below.message  # CN-BW-CAP-W / -NW
+    assert not [f for f in findings if f.element_tags[:1] == ("BM-BW-RE",)
+                and f.result is not Result.PASS]
     above = next(f for f in findings if f.element_tags[0] == "RF-BW-CANOPY")
     assert above.result is Result.PASS
     assert set(above.element_tags[1:]) == {"BM-BW-RW", "BM-BW-RE"}

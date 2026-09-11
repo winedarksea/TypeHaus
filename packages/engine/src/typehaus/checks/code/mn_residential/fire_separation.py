@@ -113,9 +113,18 @@ def garage_separation(ctx: CheckContext) -> list[Finding]:
     if not garages:
         return [_unknown(cid, "no garage modeled, so no separation requirement applies",
                          (), code)]
+    # ** ON THE GARAGE'S OWN STOREY, AND THAT IS NOT A SHORTCUT. ** `_separating_walls` is a
+    # PLAN distance test, so an unstoreyed room list lets it pair a garage-storey wall with a
+    # room twelve feet below it. Catlin's detached garage did exactly that the moment a wall
+    # was authored on the garage storey reaching south over the house footprint: the report
+    # read "W-BW-SCREEN separates RM-GARAGE from RM-B-FURNACE", a basement room, across four
+    # feet of outdoor air. R302.6 governs the wall BETWEEN the garage and the dwelling, and
+    # that wall bounds both — so both rooms are on its storey by construction. Habitable
+    # space ABOVE a garage is a different sub-rule and `_habitable_above` still answers it.
     dwelling = [(room, Polygon(room.clear_face)) for room in ctx.model.rooms
                 if room.occupancy not in (Occupancy.GARAGE.value,
                                           Occupancy.UNCONDITIONED.value)
+                and room.storey == garages[0].storey
                 and len(room.clear_face) >= 3]
     assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
     doors = [e for e in ctx.plan.all_elements() if e.element_kind == "Door"]

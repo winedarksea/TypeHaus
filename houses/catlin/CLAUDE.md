@@ -4,8 +4,10 @@
 > garage for nothing but the shared sheathing diaphragm. SIX piers on TWO depths: house-side
 > −9'-9 7/16" (cast with the open basement excavation), garage-side −7'-0" (cast with the
 > garage footings). The landing touches nothing on the house; the tiers are four CAST pours
-> on a compacted base, no wood and no piers; `SC-BW-WEST` is in-fill and `RL-BW-SCREEN` is
-> the guard. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
+> on a compacted base, no wood and no piers. The canopy BRACES ITSELF: `PT-BW-RE`/`-RNE` are
+> full-height cast columns fixed at the base (east) and `W-BW-SCREEN` is a sheathed shear
+> panel (west); the garage joint is a tied diaphragm, not the lateral system. `W-BW-SCREEN`
+> is also the guard, with `SC-BW-WEST` a slat clerestory over it; `RL-BW-SCREEN` is retired. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
 > pads, glazing and the six invented seat connectors retired; HP3 west in open yard. See
 > notes/north_entry_structure.md (the bearing map), notes/north_entry_piers.md (the
 > arithmetic) and notes/hp3_north_relocation.md.
@@ -169,7 +171,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Site and the four structures
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
-- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding**: each header lands on two 6x6 KDAT columns of its own (`PT-BW-CW`/`-CNW`, `PT-BW-CE`/`-CNE`) and on no garage framing at all. It bore on `W-G-W`/`W-G-E` until the owner revision — a ~3,130 lb reaction on the END of a stud wall, with no bearing post authored, drawn or billed. Its sheathing runs continuous across the garage south wall line and **that diaphragm is the canopy's entire lateral system and its only connection to the garage**; all four column bases are standoffs, not moment connections. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived — the derived rule would have bought the galvanized H2.5A. **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
+- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing; `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing through `D-G-SERVICE`'s rough opening. `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
@@ -1006,7 +1008,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     past that the uplift pass FAILs members under the deck, reported nowhere near it.
     `sheet_goods_takeoff` reads `deck_outline` for sheet area; `ceiling_below` keeps the
     framed extent. (→ DESIGN-LOG.md, "Decks and the garage")
-- **`PT-BW-1..4`, `SL-BW-DECK`, `GL-BW-ROOF`, the polycarbonate canopy glazing, `RL-BW-WEST`
+- **`PT-BW-1..4`, `SL-BW-DECK`, `GL-BW-ROOF`, the polycarbonate canopy glazing, `RL-BW-WEST`, `RL-BW-SCREEN`, `BM-BW-FW`, `PT-BW-CE`/`-CNE`
   and `_EW_FT`/`_GLAZING_CENTER_X` no longer exist.** `BM-BW-RW`/`-RE` DO — the tags are
   deliberately reused for the canopy's two roof headers, on the same bearing lines. The
   landing is `FS-BW-FLOOR`/`FS-BW-GARAGE` on six piers. **`PT-BW-T1W..T4E` and their
@@ -1265,14 +1267,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Sunken garden court
 
 - **The court is one surface, one riser.** `SPEC.court_step_down_in = 0`; `SL-SG-FLOOR` is
-  flush with the basement floor plane and the 532 sf court reads as one floor. The only step
+  flush with the basement floor plane and the 494 sf court reads as one floor. The only step
   is the 7 1/4" riser at `D-B-PATIO`. `SL-SG-STOOP` is retired — never reuse uid `SGS503AAAA`.
   `code.R311_3_exterior_landing` reads "D-B-PATIO lands on SL-SG-FLOOR, 7.3" below threshold".
 - **Do not lower the court below the flush plane** — 7 1/4" is the legal ceiling, not a
   preference: R311.3.2 caps a non-required, inward-swinging door's riser at 7 3/4"
   (`_MAX_NONREQUIRED_STEP_DOWN`), and any lower step needs its own landing (→ DESIGN-LOG.md,
   "Sunken garden court").
-- Ponding over the court is ~321 cf against ~191 cf of 100-yr/24-hr rain (~1.7x); the
+- Ponding over the court is ~298 cf against ~177 cf of 100-yr/24-hr rain (~1.7x); the
+  two cubic-foot figures scale with the court's area and moved when it shortened to 26'-0"
+  — **the 1.7x ratio does not**, because both terms scale by the same 494/532. Cite the
+  ratio, not the volumes, unless the volumes are what is being asked for. The
   governing case is snowmelt over a frozen grate, where `DRW-SG-MAIN` contributes nothing.
 - **`W-SG-ARCH` must not move, and since 2026-09-10 the reason is no longer the ratio.**
   Dropping its top to the rim underside gives a 10 1/4" section at phi-Pn 60,712 lb, which
@@ -1358,27 +1363,47 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   lead: its bed bottoms 9" below the well and stops 2" from the shaft, feeding the column
   through its side. Note: `drainage.discharge_consistency` resolves the tag but never checks
   where the pipe actually terminates — verify inverts by hand.
+- **The well is pinned off `_y_ax_mid`, NOT off the court's midpoint.** `_WELL_SOUTH_OF_ARCH_FT`
+  = 3'-10" holds it at y = -14.8333. It was `(_y_in_s + _y_in_n) / 2`, written out twice, and
+  the 2'-0" shortening would have walked it 1'-0" north — putting the shaft's north edge
+  inside `FB-SG-ARCH`'s bed band, which nothing grades. The leads are 6'-6" each now, not
+  5'-6": they run from `_field_x_*` to the well centre and the toe reach fell 12".
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- Current stem/toe state: system FS **1.80** (d/c 0.833), stem flexure **0.61**, toe
-  flexure **0.54**, stem length **9.1198'**. Every schedule in the stem bar table now
-  clears, `#6 @ 16"` included at 0.97 — `#6 @ 10"` is held on one-bar-one-spacing with the
-  footing mat and on §5's stone-bed dependence, not on arithmetic.
-- **ALL FIVE court strips are 8'-0" x 1'-0" with a 6" court-side offset and the same
-  `#6 @ 10"` mat (2026-09-10).** FT-SG-W1/E1 were 84" and PLAIN on the argument that they
-  are braced and the table answers them. The argument skipped the question: **nothing in
-  the engine grades a footing's own flexure except on the retaining set**, and their 3'-0"
-  plain HEEL is Mu 8,303 against a plain 12" strip's 3,536, **d/c 2.35** — a row that needs
-  no assumption about the bracing credit at all, since §7c drops the upward pressure under
-  the heel. The toe reads 2.35-2.94 as a free cantilever. The mat was owed either way, so
-  the widening bought a continuous form line for concrete and stone alone. Rebar 4,071 →
-  4,750 lb; the ratio 27.0 → 31.2 lb/cy, which is the right direction for a reinforcement
-  finding. `SPEC.footing_width_in` (84") is kept, unreferenced, as the revert.
+- **The court is 26'-0" x 19'-0" clear and there is a structural floor near 23'-4".**
+  Shortening it removes base friction from the capacity and **nothing** from the demand: the
+  E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
+  wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700
+  to $1,300 a foot, against 0.09 of system FS per foot.
+- Current stem/toe state: system FS **1.63** (d/c 0.921), stem flexure **0.61**, toe
+  flexure **0.70**, heel flexure **0.70**, stem length **9.1198'**. Every schedule in the
+  stem bar table clears, `#6 @ 16"` included at 0.97; `#6 @ 10"` is held on that 3% margin
+  and on §5's stone-bed dependence. The one-bar-one-spacing half of that argument is gone —
+  the footing mat is `#5` now, so the pour already carries two bar sizes.
+- **ALL FIVE court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a
+  `#5 @ 12"` mat (2026-09-10).** They were 96" with a 6" court-side offset for one revision
+  and the 96" was a fossil: §3 widened the strip because the resultant fell outside the
+  kern, which was true at `H` 11.3698' and is not at 10.1198' (e 0.800' against a kern of
+  1.167', a 31% margin). **The outboard edge does not move either way** — 96/24 − 6/12 and
+  84/24 are both 3.5' — which is what `params/raised_garden.py`'s 3'-0" apron clear needs.
+  The whole 12" comes off the TOE, so the planted field GREW 147 → 160 sf as the court got
+  shorter. **Never cut the heel**: a foot of toe costs 0.05 of system FS, a foot of heel
+  0.21, for the same yard of concrete.
+- **The mat and the width are one decision.** Narrowing removed 22% of the toe moment, which
+  is what lets `#5 @ 12"` read 0.70 where it read 0.90 at 8'-0". `#4 @ 12"` is NOT the next
+  step down: it fails flexure and falls under ACI 318-19 §7.6.1.1's `0.0018 Ag = 0.259`.
+  FT-SG-W1/E1 keep the mat they gained — their 3'-0" plain HEEL is Mu 8,303 against a plain
+  12" strip's 3,536, **d/c 2.35**, and nothing in the engine grades a footing's own flexure
+  except on the retaining set. Rebar 4,828 → 3,515 lb; the ratio 31.6 → 23.8 lb/cy, and
+  **that sag is a bar-size cut, not a hidden row** (a bar size removes steel and no
+  concrete). `SPEC.footing_width_in` is the one width and `_RETAINING_FOOTING_WIDTH_IN`
+  reads it — there is no second 84 meaning something else.
 - **THE CLOSURE BOARD IS THE JOINT, AND THE JOINT IS THE FOOTING.** `foam_length` reads
-  `_RETAINING_FOOTING_WIDTH_IN` and the block is centred on the FOOTING, not the wall axis
-  — all 12" of the widening went to the court side, so a board on the axis hangs 6" past
-  one end and leaves 6" of bare footing-to-footing concrete at the other.
+  `_RETAINING_FOOTING_WIDTH_IN` and the block is centred on the FOOTING, not the wall axis.
+  The two coincide at a zero offset; they did not while the strips carried a 6" inboard
+  offset, when a board on the axis hung 6" past one end and left 6" of bare
+  footing-to-footing concrete at the other. Keep the expression, not the coincidence.
 - **One thermal-break product: `THERMAL_BREAK_IN` / `THERMAL_BREAK_PSI`.** The thickness
   was stated three times in two files and the rating twice, once in prose because `Layer`
   has no compressive field. **The break cannot go on one purchase order today** — the two
@@ -1386,7 +1411,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   and nothing reconciles them — so `test_catlin_contract_m3` pins every site against the
   constants. A comment is not a guard; the retaining top's spot elevations proved that.
 - **One bar arrangement on the whole plane**: #5 GFRP at 8" o.c., count derived from board
-  width (12 across the 96" footing joint, 2 across the 12" wall end). Neither count was
+  width (10 across the 84" footing joint, 2 across the 12" wall end — 84/8 is an exact 10.5
+  and `round` takes it DOWN). Neither count was
   required by any computed limit state. **The bars are why the board exists** — a `Dowel`'s
   foam block is the only way the engine resolves an XPS solid at a joint, so `count=0`
   deletes the board from the model, the bill and the drawings (and `_resolve_dowel` lays
@@ -1427,13 +1453,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     zero plan lap against every house strip.
   - `prices.toml`'s `thermal_break` row bills the four closure boards by SF of 2" 40 psi
     XPS — the four boards are not the same size, so check totals against SF, never against
-    count. (The two footing boards grew 84" → 96" with the strips on 2026-09-10.)
+    count. (The two footing boards went 84" → 96" → 84" on 2026-09-10, with the strips.)
   - **FLAGGED FOR THE ENGINEER, NOT TAKEN: trimming the wall beddings' surplus stone.**
     Worth $835-1,250 and the only four-figure item in the simplification pass, and the one
     that touches a load-bearing claim. It collides with the drywell top, with a 5"
     clearance the model already flags as the one to watch, and with the μ = 0.35 friction
     argument that carries the ENTIRE sliding margin (`notes/sunken_garden_court_free_body.md`
-    §5 — at μ = 0.25 the court is at FS 1.29 against 1.50). Do not take it on a takeoff
+    §5 — at μ = 0.25 the court is at FS 1.16 against 1.50). Do not take it on a takeoff
     reading.
 - **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
   full height (plinth to top), 129.2 SF, one BOM row `BASEMENT_BRICK_VENEER:brown-brick`.

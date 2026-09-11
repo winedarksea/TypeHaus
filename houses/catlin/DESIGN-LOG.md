@@ -1448,9 +1448,11 @@ pocket was possible there at all.
 itself, a 23.7 sf stoop a riser above it, `W-SG-ARCH` standing 3 3/4" proud as a mow strip,
 and the veneer beam. The owner called it back to one flush plane.
 
-- The trade taken: water now climbs 7 1/4" to the threshold instead of 14 1/2" — 321 cf of
-  ponding over the court rather than 643, against ~191 cf of direct 100-year/24-hour rain, so
-  about 1.7x where it had been 3.4x with the drywell assumed fully failed. The case to watch
+- The trade taken: water now climbs 7 1/4" to the threshold instead of 14 1/2" — 298 cf of
+  ponding over the court rather than 597, against ~177 cf of direct 100-year/24-hour rain, so
+  about 1.7x where it had been 3.4x with the drywell assumed fully failed. (All three volumes
+  scale with the court's plan area and fell when it shortened to 26'-0" on 2026-09-10; the
+  1.7x and the 3.4x do not move, because both terms of each scale together.) The case to watch
   is not summer rain but snowmelt over a frozen grate, where `DRW-SG-MAIN` contributes
   nothing by definition — the 7 1/4" curb is the entire dam.
 - 7 1/4" was not a preference; it was the ceiling. R311.3.2 allows one riser of 7 3/4"
@@ -1665,3 +1667,79 @@ ever been on it and the only one a Twin Cities yard stocks off the shelf.
   crowns at 81 5/8", the window's at 52 5/8". Viewer-only; an exported `.glb` still shows the
   plain spandrel.
 
+
+**Fourth pass — the smallest workable court, and a footing that was a fossil (2026-09-10).**
+The owner asked what the smallest workable sunken garden is, against five goals: daylight
+into the basement gym and sauna, an outdoor space four people can do yoga in without feeling
+trapped, the foundation for the porch and balcony, a private place to lie down and look at
+stars, and room for a water lily bowl and plants. Two findings shaped the answer, and only
+one of them was about length.
+
+- **Court length is not the lever it looks like.** Daylight is governed by the 8'-8" porch
+  overhang, not by the south wall — moving the south wall north does not brighten the gym.
+  And the structural cost is one-sided: shortening removes base friction from the capacity
+  and **nothing** from the demand, because `W-SG-W2` and `W-SG-E2` cancel identically and
+  the resultant is the south wall's thrust alone, over the court's WIDTH. There is a hard
+  floor near **23'-4"** clear where the friction under the remaining run stops reaching it.
+  The saving is $700-1,300 per foot. `plans/cost-options.md` had a row pricing 28' → 16' at
+  $9,700-16,600; that row is not available as written — 16' fails sliding in all four soil
+  corners.
+- **The footing was a fossil.** `notes/sunken_garden_court_free_body.md` §3 records that the
+  eccentricity check forced the strip 7'-0" → 8'-0". It did, at a retained height of
+  11.3698'. Three height cuts have since brought that wall to 10.1198', and at 7'-0" centred
+  the resultant lands 0.800' off centre against a kern of 1.167' — a **31% margin**. The
+  note's discipline of adding a table row after each height cut was applied to §6's stem bar
+  schedule and never to §3's width. The rejected row had crossed sides, exactly as `#6 @ 16"`
+  and `#5 @ 10"` did.
+- **The outboard edge does not move, which is the one thing that may not.** At 96" with a 6"
+  inboard offset the outboard reach is `96/24 − 6/12 = 3.5'`; at 84" centred it is
+  `84/24 = 3.5'`. The raised garden's apron measures its 3'-0" clear off that edge — the
+  owner's own figure from the brief — and it does not move. The whole 12" comes off the TOE,
+  on the court side, so **the planted field grows from 147 sf to 160 sf while the court gets
+  shorter.**
+- **Never cut the heel.** A foot of toe is 150 plf out of 5,578 and costs 0.05 of system FS.
+  The same yard of concrete off the heel takes the 9'-1 7/16" soil column with it and costs
+  **0.21**. The heel is held at 3'-0" and always should be.
+- **The mat and the width are one decision.** Narrowing removed 22% of the toe moment, which
+  is what lets the mat come down `#6 @ 10"` → `#5 @ 12"` (0.90 at 8'-0", 0.70 at 7'-0").
+  `#4 @ 12"` is not available below it: 0.200 in² fails flexure and falls under ACI 318-19
+  §7.6.1.1's `0.0018 Ag = 0.259`. The "one bar, one spacing" half of §6's rejection of
+  `#6 @ 16"` on the stem dissolves with this — the pour carries two bar sizes now — and that
+  rejection survives on its own 3% margin.
+- **What it costs, stated rather than discovered.** System sliding FS **1.80 → 1.63**, from
+  20% over the code minimum to 8.6% over it; the no-stone sensitivity at μ = 0.25 **1.29 →
+  1.16**; overturning 2.94 → 2.41; `e`/kern 0.387/1.333 → 0.800/1.167; q_max 899 → 1,307 psf
+  against 3,000 allowable. Both of the first two were already the design's stated exposure.
+  The highest-value purchase before pouring is still a geotechnical boring — §5 says it would
+  change the answer more than any amount of concrete, and that is true twice over now.
+- **Two real problems the change created, and both are fixed here.** `DRW-SG-MAIN` was
+  derived from the court's north-south midpoint in two independent places, so shortening
+  walked it 1'-0" north and put the north edge of its 5'-0" shaft inside `FB-SG-ARCH`'s bed
+  band — which nothing grades (`structural.concrete_interference` sees isolated pours and
+  every court footing is `under=`-hosted; `drainage.discharge_consistency` resolves tags and
+  never asks where the pipe goes). It is now one expression pinned off `_y_ax_mid` with a
+  stated clearance. And two `SpotElevation` stations in `plan/site.py` recorded the top of
+  `W-SG-S` at y = −29; that axis moved to −27.3333, leaving both out in the apron. They feed
+  `balcony_wind.ground_below_ft`. Moved with the wall.
+- **Three factual corrections went in alongside, agreed separately.**
+  `engineering/retaining_basis.py`'s docstring said the toe is buried 6 1/2" and contributes
+  under 1%; the toe is buried **0"** (the court floor is the footing top and the rim carries
+  `FO-SG-TOE-*` voids over it), so `toe_embedment_ft = 0.0` is correct for a different reason
+  than the one stated — and the stated one is what a later reader would "fix" in the unsafe
+  direction. IBC Table 1610.1's **GM** active row is **40 psf/ft**, not the 45 the notes cite;
+  45 is the GC and SM row, the direction is safe, and the frozen screening note is flagged
+  rather than edited. And §8 ranked sequencing as the strongest objection to a slab strut: it
+  is the weakest, because footnote g is satisfied by ordering. What kills the strut is that
+  `SL-SG-FLOOR` is a 3 1/2" rim around a gravel field with seven voids in it — **there is no
+  continuous concrete path across the court for a strut to be.**
+- **One gap closed while here.** The "net rim polygon intersects every `FT-SG-*` at 0.000 sf"
+  invariant existed only as a comment, and this pass moved both of its inputs at once. It is
+  asserted now (`test_retaining_court.py::test_the_net_rim_laps_no_footing`), scoped to the
+  five wall strips — the two belled pier bases top out 2'-6" lower and a plan lap there is
+  not a lap.
+- **And the 2026-09-10 flush tops, which had no entry.** All five court walls came flush with
+  the porch datum at 0'-0" earlier the same day: one form height, one strip-and-set, one
+  continuous top line, no 2" jog at the porch corner. `SPEC.retaining_top_ft` is `porch_top_ft`
+  now rather than a figure derived off grade, so the owner's 36"-out-of-the-yard is a RESULT
+  (40" against the -3'-4" yard the site authors) and not the constraint. The tops fell 2",
+  stem 9.2865' → 9.1198', which took sliding 1.77 → 1.80 for free.

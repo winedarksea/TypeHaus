@@ -1823,7 +1823,10 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     xs = [p[0] for p in garden.outline]
     ys = [p[1] for p in garden.outline]
     assert max(xs) - min(xs) == pytest.approx(ft(19).meters)
-    assert max(ys) - min(ys) == pytest.approx(ft(28).meters)
+    # 28'-0" until 2026-09-10: the court was shortened to the smallest length that still
+    # holds the porch, the balcony and a yoga-sized field. See the free-body note's §4 for
+    # what the 2'-0" costs in sliding, and for the ~23'-4" structural floor below it.
+    assert max(ys) - min(ys) == pytest.approx(ft(26).meters)
 
     # The porch/balcony framing members are authored (their 3D resolution is Phase 2).
     elements = [el for tag in ("basement", "main", "second")
@@ -1922,10 +1925,14 @@ def test_one_bar_arrangement_holds_the_whole_closure_board(catlin_model):
         for stem in ("DW-SG-W1-", "DW-SG-E1-", "DW-SG-W1-STEM-", "DW-SG-E1-STEM-"):
             if solid.tag.startswith(stem) and not solid.tag.endswith("FOAM"):
                 bars.setdefault(stem, []).append(solid)
-    # 12 across the 96" footing joint, 2 across the 12" wall end.
+    # 10 across the 84" footing joint, 2 across the 12" wall end. It was 12 across a 96"
+    # joint until the strips narrowed on 2026-09-10 — and 84 / 8 is an exact 10.5, which
+    # `round` takes DOWN under banker's rounding. See `_break_bar_count`: the tie is left
+    # where the rule puts it, because no limit state sizes these bars.
     assert len(bars["DW-SG-W1-STEM-"]) == 2
     assert len(bars["DW-SG-E1-STEM-"]) == 2
-    assert len(bars["DW-SG-W1-"]) == 12 + 2  # the stem bars share the prefix
+    assert len(bars["DW-SG-W1-"]) == 10 + 2  # the stem bars share the prefix
+    assert sunken_garden._break_bar_count(84.0) == 10
     assert sunken_garden._break_bar_count(96.0) == 12
     assert sunken_garden._break_bar_count(12.0) == 2
     assert sunken_garden._break_bar_count(1.0) == 2, "never fewer than two"
@@ -2003,17 +2010,18 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         foam = next(s for s in catlin_model.solids if s.tag == block)
         xs = [x for x, _y in strip.outline]
         fxs = [x for x, _y in foam.outline]
-        # 96", not 84": the porch strips were widened to match the retaining set on
-        # 2026-09-10 (their plain heel is 2.35x over and the mat was owed either way), and
-        # the board IS the joint, so it went with them. The board is read off the strip
-        # rather than restated so the two cannot disagree.
+        # 84" again. The porch strips went 84" -> 96" on 2026-09-10 to match the retaining
+        # set's form line, and all five came back to 84" centred later the same day when
+        # the 96" was found to be a fossil of a taller wall. The board IS the joint, so it
+        # went both ways with them, and it is read off the strip rather than restated so the
+        # two cannot disagree — which is the whole reason this assertion survived two moves.
         joint_in = (max(xs) - min(xs)) / inch_m
-        assert joint_in == pytest.approx(96.0, abs=1e-6), garden
+        assert joint_in == pytest.approx(84.0, abs=1e-6), garden
         assert (max(fxs) - min(fxs)) / inch_m == pytest.approx(joint_in, abs=1e-6), block
-        # And CENTRED on the strip, not on the wall axis. All 12" of the widening went to
-        # the court side (the outboard edge is where the apron measures its 3'-0" clear
-        # from), so a board on the axis would hang 6" past the footing at one end and
-        # leave 6" of bare footing-to-footing concrete at the other.
+        # And CENTRED on the strip, not on the wall axis. The two coincide at a zero offset
+        # and did NOT while the widening carried a 6" inboard offset, when a board on the
+        # axis would have hung 6" past the footing at one end and left 6" of bare
+        # footing-to-footing concrete at the other.
         assert (min(fxs) + max(fxs)) / 2 == pytest.approx((min(xs) + max(xs)) / 2,
                                                           abs=1e-6), block
         assert min(fxs) == pytest.approx(min(xs), abs=1e-6), block
@@ -2159,10 +2167,14 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     assert by_storey["main"] >= 25
     assert by_storey["second"] >= 30
     assert by_storey["attic"] >= 12
-    # The four wood-framed walls, and only those. It was 8 until 2026-09-03: the other four
-    # were the east wainscot's own veneer walls (2 piers + 2 SE/NE corner returns), deleted
-    # with it. The garage's base skin is a banded LAYER on the stem now, not a wall.
-    assert by_storey["garage"] == 4
+    # FIVE, and only one of them is the garage. Four are its wood-framed walls — it was 8
+    # until 2026-09-03, when the east wainscot's own veneer walls (2 piers + 2 SE/NE corner
+    # returns) went with it, and the garage's base skin became a banded LAYER on the stem
+    # rather than a wall. The fifth, since 2026-09-10, is `W-BW-SCREEN`: the north entry
+    # canopy's west shear panel, filed on this storey with the canopy roof it braces, because
+    # every "how big is this building" and "where are its braced wall lines" derivation is
+    # scoped by storey and on `main` it joined the HOUSE's.
+    assert by_storey["garage"] == 5
     rooms = {r.tag for r in catlin_model.rooms}
     # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place (same uid, CAR401AAAA),
     # and split off RM-A-STUBATH and RM-A-POCKET as new rooms.

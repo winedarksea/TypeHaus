@@ -660,7 +660,7 @@
 # which stands the derived rule down and puts the real part number on both. The ABU66 row
 # stays at the galvanized rate, at 0 ea, as the revert.
 "ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
-"ABU66SS" = { low = 150, high = 230 }  # 4 ea authored — CN-BW-BASE-W/E/NW/NE, the north entry canopy columns. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope); 0 until 2026-09-10, when these four stopped billing on the galvanized row above
+"ABU66SS" = { low = 150, high = 230 }  # 2 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns. It was 10 until 2026-09-03 (the four balcony corner pillars became cast concrete and a doweled lap replaced their bases), 6 later that day (the two CENTRE pillars went to the MSTA12Z/L50Z base tie below), 0 until 2026-09-10 when these stopped billing on the galvanized ABU66 row above, and 4 -> 2 the same day when PT-BW-RE/-RNE became full-height cast columns and the two EAST wood columns went with them
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
@@ -692,7 +692,7 @@
 # prose inside two assembly `source` strings before that, bought on the job and priced
 # nowhere. 316 stainless plate, 3-1/2" square, stacked to the 1/2"-1" a cast top is finished
 # to; the range is a small stack of shims, not one plate.
-"SS316-SHIM-35" = { low = 9, high = 22 }  # 6 ea
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 12 ea — 4 balcony/porch column tops, 4 north entry seat-beam bearings, 2 under the east canopy header on its cast columns, 2 porch
 # 16 ea -> 8 on 2026-08-30 (second pass). The four E-W braces' feet became FACE LAPS rather
 # than butt joints — see the KneeBrace.foot_lap block in params/sunken_garden.py — and a
 # lapped foot is bolted through the 1 1/2" brace and the whole 5 1/2" pillar behind it. That
@@ -761,7 +761,7 @@
 # than ZMAX because it stands in the weather over a sunken garden with no enclosure above
 # it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
 # (they ship with the connector, which is why there is no separate fastener row).
-"CCQ46SDS2.5" = { low = 140, high = 200 }  # 2 ea — both authored (CN-SG-CAP-R2/-F2)
+"CCQ46SDS2.5" = { low = 140, high = 200 }  # 4 ea — CN-SG-CAP-R2/-F2 and CN-BW-CAP-W/-NW. The canopy's EAST header takes no cap: it lands on cast concrete, where the joint is an SS316-SHIM-35 pack under an HGAM10 gusset
 # HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
 # not what the plan calls for.
 "HUCQ" = { low = 45, high = 95 }  # 4 ea
@@ -805,7 +805,7 @@
 # NOT do. A 24" x 1-1/4" 20ga strap tie is $3.50-4.50 single-piece retail (Fasteners Plus /
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
-"LSTA24" = { low = 2.75, high = 5.5 }  # 28 ea
+"LSTA24" = { low = 2.75, high = 5.5 }  # 26 ea — 19 derived over the house ridge, 7 authored as CN-BW-JOINT-1..7, the diaphragm continuity ties across the garage south wall line
 "LUS" = { low = 2, high = 6 }  # 42 ea
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
@@ -826,7 +826,7 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
-"AB-058-10-SS" = { low = 12, high = 28 }  # 6 ea — one cast-in bolt per POST BASE that lands on concrete, which is not the same set as the ABU66SS above: 4 breezeway ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one. Was 10 before the four balcony corner bases went away with their pillars (2026-09-03)
+"AB-058-10-SS" = { low = 12, high = 28 }  # 4 ea — one cast-in bolt per POST BASE that lands on concrete: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
@@ -1032,7 +1032,14 @@
 # Priced at the girt screw's rate less the length: quantity and length are usable, the SKU is
 # not. In a salted splash zone the anchor that actually gets bought is STAINLESS.
 "SDWS22500DB" = { low = 0.85, high = 1.35 }
-"SP6" = { low = 1.5, high = 2.75 }  # 424 ea
+"SP6" = { low = 1.5, high = 2.75 }  # 318 ea
+# The 2x4 rung of the same ladder, and the house's only 2x4 exterior framing: W-BW-SCREEN,
+# the north entry's west screen panel. Same part family, one size down, so the same band less
+# the material — a stud plate tie is a small stamping and the two sizes retail within pennies
+# of each other. **In this location it should be bought STAINLESS or A153 Class D HDG**, like
+# every other fastener touching KDAT here (AN-BW-KDAT); the catalog carries no SS variant, so
+# the band is widened upward rather than the row being wrong about the part.
+"SP4" = { low = 1.4, high = 3.25 }  # 6 ea — W-BW-SCREEN only
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
 "STHD" = { low = 18, high = 32 }  # 41 ea
 
@@ -1196,7 +1203,7 @@
 # At $6-14/LF installed that is $18-42/SF. The money is within 3% of the $/cy rate it replaces;
 # what changes is that the multiplier is now 3, not ~230, so the rate is one an estimator can
 # check against a quote. See plans/cost-options.md on whether 761 LF is the right LENGTH.
-"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 256.9 SF = 770.7 LF @ $6-14/LF
+"drain_tile" = { low = 18, high = 42, unit = "SF" }  # 254.0 SF = 762.0 LF @ $6-14/LF (-2.9 SF on 2026-09-10: the court shortened 28' -> 26', so the south wall's bed ring and the two side rings lost 4'-0" of run between them, and the narrower strips shortened every ring's cross-run)
 # The stone itself is only $88-110/cy at this size: 4.71 cy is 6.6 tons, a third of a tandem,
 # so a light-load haul charge ($150-250) roughly doubles the truckload rate. The rest of this
 # range is the excavation, the geotextile wrap and the placement, which no other line carries.
@@ -1262,7 +1269,11 @@
 # replaced did.
 # 2026-09-03: the sunken-garden court floor became a RIM around an open field, and both
 # halves land in this row's fallback. SL-SG-FLOOR fell 5.75 -> 3.96 cy (FO-SG-FIELD and
-# FO-SG-ARCH voided out of it) and SL-SG-STOOP, D-B-PATIO's 7 1/4" landing, added 0.53. Both
+# FO-SG-ARCH voided out of it), and is **1.32 cy today** — it fell again to 1.11 when the
+# five FO-SG-TOE-* voids opened over the wall strips, and came back UP to 1.32 on 2026-09-10
+# when the strips narrowed 8'-0" -> 7'-0" and handed the rim back 12" of walking surface on
+# three sides. Shortening the court 28' -> 26' took 38 sf off the other way; the narrowing
+# wins. And SL-SG-STOOP, D-B-PATIO's 7 1/4" landing, added 0.53. Both
 # are the same pour on the same day as the rest of this row's slabs-on-grade, so neither
 # earns a qualified key or a short-load premium — unlike HP_PAD_ON_GRADE below, which is a
 # separate trip. The field itself is sand and stone and is zeroed by qualified key above.
@@ -2900,16 +2911,16 @@
 # foundation — wheelbarrowed or conveyed, not tailgated, which is the whole spread between
 # the ends. Compaction is nominal by design: an open-graded stone is placed, not compacted
 # to a proctor, and the absence of fines IS the capillary break.
-"capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1830.3 SF — 4" #57, screeded (-146.7 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
+"capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1829.0 SF — 4" #57, screeded (-160.3 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
 # The sunken-garden court's USGA field build-up (plan/assemblies.GARDEN_PUTTING_GREEN).
-# 146.7 SF each; every course is reached 9' down by conveyor or crane bucket, which is what
+# 160.3 SF each; every course is reached 9' down by conveyor or crane bucket, which is what
 # puts all five at the top of their labour bands. A minted material with no row here is
 # SILENTLY DROPPED from the bill and the total falls, so all five must be present.
-"rootzone-sand" = { material = { low = 2.1, high = 3.8 }, labour = { low = 1.2, high = 2.8 } }  # 146.7 SF — 12" of USGA-spec rootzone (was 8"), placed and graded. Lab-qualified sand carries a premium over a landscape blend
-"usga-choker-sand" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.35, high = 0.8 } }  # 146.7 SF — 2" intermediate layer, 1-4 mm, placed uniform
-"usga-bridging-gravel" = { material = { low = 0.9, high = 1.7 }, labour = { low = 0.4, high = 0.9 } }  # 146.7 SF — 4" of 3/8" USGA coarse gravel, screeded. Washed, gradation-tested stone, roughly double a #57 base rate
-"geotextile-separation" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.25, high = 0.6 } }  # 146.7 SF — non-woven, lapped 12", on the clay subgrade only
-"kbg-sod" = { material = { low = 0.75, high = 1.4 }, labour = { low = 0.6, high = 1.4 } }  # 146.7 SF — Kentucky bluegrass sod, laid and rolled. USGA Step 7 requires it washed or sand-grown, which is the premium over field-grown sod. Irrigation is an [allowances] line, not a layer
+"rootzone-sand" = { material = { low = 2.1, high = 3.8 }, labour = { low = 1.2, high = 2.8 } }  # 160.3 SF — 12" of USGA-spec rootzone (was 8"), placed and graded. Lab-qualified sand carries a premium over a landscape blend
+"usga-choker-sand" = { material = { low = 0.45, high = 0.9 }, labour = { low = 0.35, high = 0.8 } }  # 160.3 SF — 2" intermediate layer, 1-4 mm, placed uniform
+"usga-bridging-gravel" = { material = { low = 0.9, high = 1.7 }, labour = { low = 0.4, high = 0.9 } }  # 160.3 SF — 4" of 3/8" USGA coarse gravel, screeded. Washed, gradation-tested stone, roughly double a #57 base rate
+"geotextile-separation" = { material = { low = 0.2, high = 0.45 }, labour = { low = 0.25, high = 0.6 } }  # 160.3 SF — non-woven, lapped 12", on the clay subgrade only
+"kbg-sod" = { material = { low = 0.75, high = 1.4 }, labour = { low = 0.6, high = 1.4 } }  # 160.3 SF — Kentucky bluegrass sod, laid and rolled. USGA Step 7 requires it washed or sand-grown, which is the premium over field-grown sod. Irrigation is an [allowances] line, not a layer
 "cabinet-plywood" = { material = { low = 2.5, high = 4.5 }, labour = { low = 4, high = 8 } }  # 101.2 SF — casework fabrication hours, not a sheet-goods rate
 # RETIRED 2026-08-23, kept as a row rather than deleted. The 3,515.7 SF was the outer 2" of
 # EXT_2X6's rigid-CI stack, which the truss wall replaced with spray foam; EPS is now
@@ -5072,7 +5083,7 @@ concrete-pumping = { low = 4600, high = 7800 }
 # So $0.00-12.50/SF, and the LOW END OF ZERO IS THE POINT: take the code minimum and this row
 # is correctly nothing, because the money is already in [envelope_layers]. THE DECISION IS
 # STILL UNMADE; what changed is only that choosing "minimum" no longer costs twice.
-# Driver unchanged — the below-grade face, 1,010.2 SF today — so it still follows the wall.
+# Driver unchanged — the below-grade face, 1,016.4 SF today — so it still follows the wall.
 # (The 1,116.3 SF this comment used to claim was itself two passes out of date.)
 foundation-damp-or-waterproofing = { low = 0.0, high = 12.50, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
 # ** DRIVEN 2026-09-01, AND THE TWO OPENINGS ARE NOT THE ONES THIS ROW NAMED. **

@@ -253,8 +253,17 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings):
     """The finding says what is engineered and names the item a seal can cover — it does not
     try to be the calculation. A base moment against a section's phi*Mn is
     ``engineering/deck_post.py``'s arithmetic, and duplicating it here would be two
-    authorities on one number."""
+    authorities on one number.
+
+    The population doubled on 2026-09-10 and the second half is the north entry: FS-BW-FLOOR
+    stands on cast piers, and the check reaches them the same way it reaches the balcony's
+    corner pillars. It is the same delegation, so the item prefix is what is asserted rather
+    than the tag — a finding that stopped naming a `deck_post/` item would mean this check
+    had started grading the moment itself.
+    """
     for finding in catlin_findings:
         assert "fixed at its base" in finding.message
         assert "no knee brace and no shear wall" in finding.message
-        assert finding.engineering_item.startswith("deck_post/PT-SG-B")
+        assert finding.engineering_item.startswith("deck_post/")
+    decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
+    assert decks == {"FS-SG-DECK", "FS-BW-FLOOR"}

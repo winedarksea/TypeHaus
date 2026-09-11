@@ -91,7 +91,7 @@ from typehaus.resolve.framing.profiles import cross_section
 @dataclass(frozen=True)
 class SunkenGardenSpec:
     clear_width_ft: float = 19.0  # E-W between wall inner faces (widened for the 6x6 grid)
-    clear_length_ft: float = 28.0  # N-S between wall inner faces
+    clear_length_ft: float = 26.0  # N-S between wall inner faces
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
     gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
     # The house's real BELOW-GRADE outboard face, on the south run: 0.05" damp-proofing +
@@ -135,13 +135,12 @@ class SunkenGardenSpec:
     # The overhang itself is a weather detail: the balcony gains a 12" drip past the porch
     # floor, so the deck edge sheds clear of the beam and column tops below it.
     balcony_front_overhang_ft: float = 1.0
-    # ** UNREFERENCED SINCE 2026-09-10, AND KEPT AS THE REVERT. ** All five court strips
-    # are `_RETAINING_FOOTING_WIDTH_IN` (96") now; this was the porch strips' 84" while
-    # they were narrower than the retaining set. Nothing reads it. Kept rather than deleted
-    # because the widening is one line to undo and this is the number to put back — but it
-    # cannot be put back alone: the porch strips' own heel cantilever needs the mat at
-    # either width, which is the finding that made the widening nearly free.
-    footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel, RETIRED
+    # ** THE ONE WIDTH, AND `_RETAINING_FOOTING_WIDTH_IN` READS IT. ** There were two 84s
+    # here for two revisions meaning different things — this one retired, and the live
+    # strip at 96" — which is exactly the shape a stale number takes. All five court strips
+    # are this, centred on the wall axis with a zero offset. See the banner above
+    # `_RETAINING` for why the 96" was a fossil of a taller wall.
+    footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
     footing_thickness_in: float = 12.0
     # The MN profile's design frost depth (``checks/code/mn_residential/profile.py``:
     # ``frost_depth_in=42.0``), transcribed here because this module has to derive two
@@ -179,8 +178,8 @@ class SunkenGardenSpec:
     # D-B-PATIO, instead of a 23.7 sf landing perched a riser above 508 sf of floor.
     #
     # **What it costs is half the freeboard, and that is the whole cost.** Water in the
-    # court now climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 532 sf
-    # that is 321 cf of ponding rather than 643 cf — against roughly 191 cf of direct
+    # court now climbs 7 1/4" to the threshold instead of 14 1/2". Over the court's 494 sf
+    # that is 298 cf of ponding rather than 597 cf — against roughly 177 cf of direct
     # 100-year/24-hour rainfall (NOAA Atlas 14, ~4.3" for the Twin Cities), so the margin
     # with the drywell assumed FULLY FAILED goes from about 3.4x to about 1.7x. Still over
     # unity, and the curb is still a dam; but the case to watch is not summer rain, it is
@@ -505,10 +504,13 @@ _court_top = inch(_court_top_in)
 # RETAINING toes at all: their tops are the court plane 3 1/2" above this, and
 # The five `FO-SG-TOE-*` openings void the rim over all five wall footings, so no two of
 # them share a cubic inch: the three retaining strips take W/E/S, and the two porch strips
-# take N-W/N-E now that they top out on this plane as well. Measured after the cut — the
-# net rim polygon's intersection with every FT-SG-* footprint is 0.000 sf, which is the
-# assertion worth keeping, because ``structural.concrete_interference`` grades only ISOLATED
-# pours and every FT-SG-* carries ``under=``: a lap here reads as 0 FAIL and bills twice.
+# take N-W/N-E now that they top out on this plane as well. The net rim polygon's
+# intersection with each of those five footprints is 0.000 sf — **asserted since 2026-09-10
+# by `test_retaining_court.py::test_the_net_rim_laps_no_footing`**, where it was a hand
+# measurement before. It matters because ``structural.concrete_interference`` grades only
+# ISOLATED pours and every FT-SG-* carries ``under=``: a lap reads as 0 FAIL and bills
+# twice. (FT-SG-COL / FT-SG-FCOL are excluded and always were: those two belled bases top
+# out 2'-6" under this slab and their shafts pass through it, so a plan lap is not a lap.)
 _rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 
 # ** THE THREE RETAINING FOOTINGS ARE THE COURT'S WALKING SURFACE (2026-09-05). **
@@ -972,7 +974,7 @@ WALLS = [
     # Graded as three ISOLATED cantilevers, each resisting by its own base friction, they
     # reach FS 0.73 against 1.5 — the arithmetic of a wall nobody built. W-SG-W2
     # (axis x=8'-0") and W-SG-E2 (axis x=28'-0") face each other across a 19'-0" court, same
-    # height, same 18'-4" length, cast into W-SG-S at their south ends through monolithic
+    # height, same 16'-4" length, cast into W-SG-S at their south ends through monolithic
     # corners — **their thrusts cancel through the concrete between them.** Only the 20'-0"
     # south wall is unopposed. The U was open at its NORTH end and that was the real defect;
     # W-SG-ARCH above closes it, and `engineering/retaining_system.py` sums the whole court
@@ -1279,43 +1281,41 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # bearing on `_wall_bottom` like everything else there is no trimmed inch to give back, and
 # a one-off thickness on two of five footings is a dimension a detailer has to notice.
 # ============================================================================
-# THE THREE RETAINING FOOTINGS GROW INBOARD ONLY: 7'-0" -> 8'-0", OFFSET 6".
+# ALL FIVE COURT STRIPS ARE 7'-0" CENTRED: THE 8'-0" WAS A FOSSIL (2026-09-10).
 # ============================================================================
-# At at-rest the resultant on a 7'-0" base falls OUTSIDE the middle third — e = 1.30' against
-# a kern of 1.17' — so the heel lifts and the trapezoidal bearing distribution the record
-# reports stops describing anything. That is a real limit state and it is the one thing the
-# grade beam does not fix: closing the loop answers sliding, and eccentricity is a moment
-# question about one wall's own footing.
+# The strip went 7'-0" -> 8'-0" because the resultant fell outside the middle third — e
+# 1.30' against a kern of 1.17'. That was true, at a retained height of 11.3698'. Three
+# height cuts have since brought this wall to 10.1198', and §3's own discipline of adding
+# a table row after each cut was applied to the stem bar schedule and never here. At 7'-0"
+# centred the resultant now lands 0.800' off centre against a kern of 1.167' — a 31 percent
+# margin, the same crossed-sides rejection §6 made of `#6 @ 16"` and `#5 @ 10"`.
 #
-# **Widening symmetrically is what you would reach for and it is the one thing that does not
-# fit.** `params/raised_garden.py` measures its apron's 3'-0" clear offset — the owner's own
-# figure, from the brief — so the legs' inner faces land EXACTLY on these footings' outboard
-# edges at x = 4.5 / 31.5 and y = -32.833. Tangent, no overlap, and
-# `test_catlin_outdoor_structures.py` asserts it. Any symmetric widening walks the outboard
-# edge under the apron and moves a wall the brief pins.
+# ** THE OUTBOARD EDGE DOES NOT MOVE, WHICH IS THE ONE THING THAT MAY NOT. **
+# `params/raised_garden.py` measures its apron's 3'-0" clear off that edge — the owner's own
+# figure, from the brief — and `test_catlin_outdoor_structures.py` asserts it. At 96" with a
+# 6" inboard offset the outboard reach is 96/24 - 6/12 = 3.5'; at 84" centred it is
+# 84/24 = 3.5'. Identical. The whole 12" comes off the TOE, on the court side, where the
+# garden floor is — so the planted field GROWS as the strip narrows.
 #
-# The court side is free, so the concrete goes there instead. `Footing.offset` slides the
-# strip 6" toward the toe, which leaves the OUTBOARD edge exactly where the 7'-0" strip left
-# it — 4.0' + 0.5' half-stem + 3.0' heel = 4.5 on the west, and the mirror east and south —
-# and puts the extra 12" of width entirely under the garden floor where nothing is. Toe
-# 4'-0" / heel 3'-0". The apron does not move, its assertion does not change, and the heel —
-# the term that carries the stabilising column of soil — is untouched at 3'-0".
+# ** NEVER CUT THE HEEL. ** The heel is held at 3'-0" and carries the stabilising column of
+# soil: a foot of toe costs 150 plf out of 5,578, a foot of heel costs four times the
+# system factor of safety for the same yard of concrete. -2.10 CY over the three runs,
+# exactly reversing the widening.
 #
-# +2.10 CY over the three runs.
+# ** THE MAT AND THE WIDTH ARE ONE DECISION, NOT TWO. ** Narrowing removes 22 percent of the
+# toe moment, which is what lets the mat drop from `#6 @ 10"` to `#5 @ 12"`: at 8'-0" a
+# `#5 @ 12"` mat reads 0.90 on the toe, at 7'-0" it reads 0.70. `#4 @ 12"` is NOT the next
+# step down — it fails flexure and falls below ACI 318-19 §7.6.1.1 minimum steel.
 #
-# ** AND FT-SG-W1/E1 CAME WITH THEM ON 2026-09-10. ONE WIDTH, FIVE STRIPS, ONE FORM LINE. **
-# The porch strips kept 84" for two revisions on the grounds that they are braced top and
-# bottom, the prescriptive table answers them, and neither has an eccentricity question.
-# The first two are still true. The third was never the question, and the whole argument
-# skipped the one that was: **nothing in this engine grades a footing's own flexure except
-# on the retaining set**, so a 3'-0" PLAIN concrete cantilever under the two walls carrying
-# the balcony's four moment-fixed columns had never been run at all.
-#
-# It was run before the widening was decided, both ways, and it does not pass either way:
+# ** FT-SG-W1/E1 NARROW WITH THEM, AND THAT IS CORRECT. ** The porch strips were widened to
+# 96" on 2026-09-10 for a continuous form line, not for a limit state, and a continuous line
+# at 7'-0" is just as continuous. What they were NOT bought for the form line is the mat,
+# and they keep it: nothing in this engine grades a footing's own flexure except on the
+# retaining set, so a 3'-0" PLAIN concrete cantilever under the two walls carrying the
+# balcony's four moment-fixed columns had never been run at all. It does not pass plain:
 #
 #   plain phi*Mn on a 12" strip cast against soil (h-2 = 10", 5,000 psi)   3,536 ft-lb/ft
 #   toe 3'-0", as built     Mu  8,319-10,376   d/c 2.35-2.94   FAILS
-#   toe 4'-0", widened      Mu 10,649-13,049   d/c 3.01-3.69   FAILS
 #   HEEL 3'-0", either way  Mu  8,303          d/c 2.35        FAILS
 #
 # (The toe range brackets 0 to 2,000 plf of superstructure line load at the stem, and reads
@@ -1325,47 +1325,44 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # geometry and soil alone and does not move with the bracing credit. It is the row that
 # settles this.)
 #
-# So the mat is owed on these two whatever is assumed about the bracing, and once it is
-# owed the widening costs concrete and stone and nothing else — the expensive half was
-# already being bought. With `_RETAINING_FOOTING_MAT` the strips read heel 0.42, toe 0.58
-# at 4'-0" (0.45 at 3'-0"), all comfortable.
-#
-# **What the widening buys is the last two jogs in the court's form line.** All five strips
-# are now 8'-0" x 1'-0" with the same 6" inboard offset, so the outboard edge runs
-# unbroken at x = 4.500 / 31.500 and the inboard at 12.500 / 23.500. The outboard edge is
-# the one that may not move — `params/raised_garden.py` measures its 3'-0" clear off it,
-# the owner's figure from the brief — and the offset is what keeps all 12" of the widening
-# on the court side.
+# All five strips are 7'-0" x 1'-0" centred on the wall axis, zero offset, so the outboard
+# edge runs unbroken at x = 4.500 / 31.500 and the inboard at 11.500 / 24.500.
 _RETAINING = ("W-SG-W2", "W-SG-E2", "W-SG-S")
-_RETAINING_FOOTING_WIDTH_IN = 96.0
-# Positive along the LEFT-hand normal of each wall's own start->end direction, which is the
-# frame `resolve/geometry.rect_between` lays the strip out in. All three wind the same way
-# around the court (W2 runs MW->SW, E2 runs SE->ME, S runs SW->SE), so +6" is "into the
-# court" for every one of them — checked, not assumed: see the footing-edge assertions in
-# `test_retaining_court.py`.
-_RETAINING_FOOTING_OFFSET_IN = 6.0
+_RETAINING_FOOTING_WIDTH_IN = SPEC.footing_width_in  # 84.0
+# Zero since 2026-09-10, with the strip back at 7'-0": the offset existed only to keep the
+# 12" of widening on the court side, and there is no widening to keep there. The field kept
+# it as a named constant rather than dropping `Footing.offset` altogether because the sign
+# convention is the non-obvious part and is worth one place to read it — positive is along
+# the LEFT-hand normal of each wall's own start->end direction, the frame
+# `resolve/geometry.rect_between` lays the strip out in, and all three retaining walls wind
+# the same way around the court (W2 runs MW->SW, E2 runs SE->ME, S runs SW->SE), so a
+# positive offset would be "into the court" for every one of them. Checked, not assumed:
+# see the footing-edge assertions in `test_retaining_court.py`.
+_RETAINING_FOOTING_OFFSET_IN = 0.0
 
-# ** THE 4'-0" TOE IS A CANTILEVER, AND IT WAS UNREINFORCED UNTIL 2026-09-03. **
+# ** THE 3'-0" TOE IS A CANTILEVER, AND IT WAS UNREINFORCED UNTIL 2026-09-03. **
 #
 # `_RET_REBAR` above is the STEM's steel, and until `engineering/retaining_basis.py` grew
 # `footing_states` nothing in this repo ever asked what the FOOTING carried. It carries a
-# lot: 1,275 psf of bearing pressure on a 4'-0" cantilever is 14,176 ft-lb/ft factored, and
-# a 12" PLAIN strip is good for 3,536 — **d/c 4.01**, with the heel 2.63 over. That was a
-# real gap in the design, not a reporting artifact, and
+# lot: a 12" PLAIN strip is good for 3,536 ft-lb/ft and the cantilever asks several times
+# that at either width. That was a real gap in the design, not a reporting artifact, and
 # `notes/sunken_garden_court_free_body.md` §7 is its oracle.
 #
-# `#6 @ 10"` both faces is the answer, and it is deliberately the SAME bar and spacing the
-# stem already uses: one bar size on this pour is one bundle to order, one bender's setup
-# and one thing for an inspector to count. Bottom (toe) 0.72, top (heel) 0.47, shear 0.51.
+# `#5 @ 12"` both faces is the answer at a 3'-0" toe, and it is one bar size on this pour:
+# one bundle to order, one bender's setup and one thing for an inspector to count. Bottom
+# (toe) 0.70, top (heel) 0.70. It was `#6 @ 10"` while the toe was 4'-0"; narrowing the
+# strip removed 22 percent of the toe moment and the mat came down with it. `#5 @ 12"`
+# gives 0.310 in2/ft against ACI 318-19 §7.6.1.1's 0.0018 Ag = 0.259, and 12" clears
+# §24.4.3.3's 18" maximum. `#4 @ 12"` is not available: it fails flexure AND minimum steel.
 #
 # 3" cover is ACI 318-19 Table 20.5.1.3.1(a) — cast against and permanently in contact with
 # ground — and it is the cover this whole footing is designed on, not a durability upgrade
 # bolted onto a `d` sized against something looser.
 _RETAINING_FOOTING_MAT = ReinforcementSpec(
     bars=(
-        BarSpec(role="bottom-x", bar=6, spacing=inch(10.0),
-                note="transverse, resists the 4'-0\" toe cantilever; hook the toe end"),
-        BarSpec(role="top-x", bar=6, spacing=inch(10.0),
+        BarSpec(role="bottom-x", bar=5, spacing=inch(12.0),
+                note="transverse, resists the 3'-0\" toe cantilever; hook the toe end"),
+        BarSpec(role="top-x", bar=5, spacing=inch(12.0),
                 note="transverse, resists the 3'-0\" heel carrying 9.29' of soil"),
         BarSpec(role="bottom-y", bar=4, spacing=inch(18.0),
                 note="longitudinal distribution steel; carries no graded limit state"),
@@ -1379,8 +1376,8 @@ FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
             # ONE WIDTH, ONE OFFSET, ONE MAT, ALL FIVE STRIPS (2026-09-10). The
             # `_RETAINING` branch that used to decide all three is gone: the porch strips
-            # went 84" -> 96" and gained the mat, because their plain 3'-0" heel is 2.35
-            # times over as plain concrete and nothing was grading it. See the block above
+            # took the mat, because their plain 3'-0" heel is 2.35 times over as plain
+            # concrete and nothing was grading it. See the block above
             # `_RETAINING` for the arithmetic. `_RETAINING` itself survives and still
             # matters — it is what `lateral_support` and the R404.4 engineered analysis key
             # on, and those two walls are still braced and still not cantilevers.
@@ -1583,9 +1580,20 @@ FOOTING_BEDDING.append(
 # 6' of fabric-wrapped stone below (unwrapped, this clay silts its voids shut in a
 # season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the two collided.
 _SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM
+# ** PINNED OFF THE GRADE BEAM, NOT OFF THE COURT'S MIDPOINT (2026-09-10). ** It was
+# `(_y_in_s + _y_in_n) / 2`, written out twice, and the 2'-0" court shortening walked it
+# 1'-0" north — putting the north edge of the 5'-0" shaft at -11.3333, INSIDE FB-SG-ARCH's
+# 24" bed band and 1'-8" from the beam's south face. Nothing grades that:
+# `structural.concrete_interference` sees isolated pours and every court footing is
+# `under=`-hosted, and `drainage.discharge_consistency` resolves tags and never asks where
+# the pipe goes. So the well now measures a STATED clearance south of the beam's axis and
+# cannot drift on any future length change. 3'-10" holds the well exactly where it is
+# today, 3'-4" south of the beam's south face, with the shaft's north edge 10" clear of it.
+_WELL_SOUTH_OF_ARCH_FT = 3.0 + 10.0 / 12.0
+_sg_well_y = _y_ax_mid - _WELL_SOUTH_OF_ARCH_FT  # -14.8333
 GARDEN_DRYWELL = Drywell(
     uid="SGDR01AAAA", tag="DRW-SG-MAIN",
-    position=pt(ft(_cx), ft((_y_in_s + _y_in_n) / 2.0)),
+    position=pt(ft(_cx), ft(_sg_well_y)),
     diameter=ft(5), depth=ft(6), geotextile=True,
     top_elevation=_SG_DRYWELL_TOP,
     # Every FT-SG-* bearing bed, plus the field's own underdrain. FD-SG-FIELD is named as a
@@ -1602,7 +1610,7 @@ GARDEN_DRYWELL = Drywell(
 # `structural_solids_takeoff` and `envelope_layer_takeoff` — so the rim bills net concrete.
 # But `resolve/site_earth` and `checks/code/mn_residential/egress._landing_surfaces` both
 # read `solid.outline` and ignore voids, so the court still reads as ONE excavation floor
-# and ONE R311.3 landing across all 532 sf. Both of those are TRUE, because the field tops
+# and ONE R311.3 landing across all 494 sf. Both of those are TRUE, because the field tops
 # out on exactly the same plane as the rim.
 #
 # Keeping the tag and the uid matters just as much. `_below_grade_floors` iterates sorted by
@@ -1612,24 +1620,28 @@ GARDEN_DRYWELL = Drywell(
 # governing surface in a dozen messages. If a frost message ever says SL-SG-FIELD, the two
 # `top_elevation`s have drifted apart — that is an elevation bug, not a test bug.
 #
-# The rim is what the toes and the porch bay leave: the retaining strips project 4'-0"
-# inboard on three sides and the porch roofs the north bay, so the open field is only
-# ~147 sf of the court's 532.
+# The rim is what the toes and the porch bay leave: the retaining strips project 3'-6"
+# inboard on three sides and the porch roofs the north bay, so the open field is
+# ~160 sf of the court's 494. (It was 147 of 532 while the strips reached 4'-6" and the
+# court ran 28'-0": shortening the court and narrowing the strips on 2026-09-10 moved those
+# two the OPPOSITE way, and the field grew as the court shrank.)
 #
 # The court-side edge of every strip, derived so it cannot drift from the footing: wall
-# axis, half the 8'-0" strip, plus the 6" the strip is offset INTO the court.
+# axis, half the 7'-0" strip, plus whatever the strip is offset INTO the court (zero now).
 #
-# ** ONE REACH FOR ALL FIVE SINCE 2026-09-10. ** There was a `_ret_toe_reach_ft` here at
-# `SPEC.footing_width_in / 24` — 84" centred on the axis, no offset, 3'-6" — and it is
-# retired with the narrower strip. It is not a cosmetic tidy-up: `FO-SG-TOE-N-W/N-E` void
-# the rim over the porch strips and read this number, so leaving it at 3'-6" over a strip
-# that now reaches 4'-6" would lap 12" of rim slab over 12" of footing. The invariant is
-# that the net rim polygon's intersection with every FT-SG-* footprint is 0.000 sf, and
-# `structural.concrete_interference` grades ISOLATED pours only and would not catch it.
+# ** ONE REACH FOR ALL FIVE, AND IT IS BACK TO 3'-6". ** It was 3'-6" while all five strips
+# were 84" centred, went to 4'-6" for the 96"-plus-6"-offset day, and is 3'-6" again. The
+# expression is what matters, not the figure: `FO-SG-TOE-N-W/N-E` void the rim over the
+# porch strips and read this number, so a reach that disagrees with the strip by 12" laps
+# 12" of rim slab over 12" of footing in whichever direction it disagrees. The invariant is
+# that the net rim polygon's intersection with each of the five WALL footprints is 0.000 sf,
+# and `structural.concrete_interference` grades ISOLATED pours only and would not catch it.
+# Asserted since 2026-09-10 — `test_the_net_rim_laps_no_footing` — because the court's
+# length and this reach are its two inputs and that pass moved both at once.
 _ret_toe_reach_ft = _RETAINING_FOOTING_WIDTH_IN / 24.0 + _RETAINING_FOOTING_OFFSET_IN / 12.0
 _field_x_w = (_x_in_w - _half) + _ret_toe_reach_ft   # 12.5
 _field_x_e = (_x_in_e + _half) - _ret_toe_reach_ft   # 23.5
-_field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -24.833
+_field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -23.833
 # The grade beam's south face. North of it is the porch bay, which stays paved.
 _field_y_n = _y_ax_mid - _half                       # -11.5
 _field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
@@ -1645,9 +1657,17 @@ _field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
 # excavation under a footing, while this is "a run somebody put where the water goes".
 #
 # ** ONE LATERAL, AND THAT IS THE CHEAPEST ANSWER THAT IS ALSO THE RIGHT ONE. ** USGA caps
-# lateral spacing at 15'-0". The field is 11'-0" wide, so a single centre lateral on the
-# long (13'-4") axis leaves 5'-6" of reach each side, inside the cap with room over. USGA
-# wants >=0.5% fall, which over 13'-4" is 0.8" — trivial against the drop into the well.
+# lateral spacing at 15'-0". The field is 13'-0" wide E-W, so a single centre lateral leaves
+# 6'-6" of reach each side — an effective spacing of 13'-0", inside the cap with room over.
+# USGA wants >=0.5% fall, which over the lateral's 12'-4" is 0.74" — trivial against the
+# drop into the well.
+#
+# ** THE FIELD'S PROPORTIONS FLIPPED ON 2026-09-10 AND THE LATERAL DID NOT MOVE. ** It was
+# 11'-0" E-W x 13'-4" N-S, and this run was on the LONG axis; the court shortening and the
+# strip narrowing took it to 13'-0" x 12'-4", so the run is now on the shorter one. The
+# check that matters is the REACH (half the perpendicular width) against the 15'-0" cap, and
+# it went 5'-6" -> 6'-6", still well inside. A second lateral would be owed only past
+# 15'-0" of E-W width, which this field cannot reach inside a 19'-0" court.
 #
 # ** NO PERIMETER "SMILE" DRAIN, DELIBERATELY. ** USGA's trench is 6" wide x 8" deep cut
 # INTO the subgrade, which here bottoms at -135 7/16" — 5" below W-SG-ARCH's underside. Run
@@ -1716,15 +1736,14 @@ GARDEN_UNDERDRAIN = FrenchDrain(
 # 9" BELOW the well's top and stops 2" from the shaft in plan, so it feeds the column
 # through its side and a lead would be a pipe running uphill.
 #
-# Each run is 5'-6" of trench from the strips' court face at `_field_x_*` to the well's own
-# centre — 3'-0" of it in open ground and the last 2'-6" inside the shaft. Drawn to the
+# Each run is 6'-6" of trench from the strips' court face at `_field_x_*` to the well's own
+# centre — 4'-0" of it in open ground and the last 2'-6" inside the shaft. Drawn to the
 # CENTRE rather than to the face for the same reason FD-SG-FIELD is: a band that stops on
 # the cylinder's edge reads in section as a pipe that does not arrive.
 #
 # The invert IS `_SG_WALL_BED_BOTTOM`, the same expression the well's top is, so the two
 # cannot drift apart into a lead that runs uphill — which is exactly what happened to the
 # well itself when the footings rose.
-_sg_well_y = (_y_in_s + _y_in_n) / 2.0
 _WELL_LEAD = dict(invert=_SG_WALL_BED_BOTTOM, trench_width=inch(12), trench_depth=inch(8),
                   discharge_ref="DRW-SG-MAIN")
 GARDEN_LEAD_W = FrenchDrain(
@@ -1817,7 +1836,7 @@ GARDEN_FLOOR_OPENINGS = [
     # `ResolvedSolid.voids`, which `structural_solids_takeoff` and `envelope_layer_takeoff`
     # DO subtract, while `site_earth` and `_landing_surfaces` read `solid.outline` and ignore
     # them. So the rim bills net concrete and the court still reads as ONE excavation floor
-    # and ONE R311.3 landing across all 532 sf.
+    # and ONE R311.3 landing across all 494 sf.
     #
     # The three rectangles partition the court south of the beam exactly, with the field:
     # each runs from the wall's court face (`_x_in_*` / `_y_in_s`) out to that strip's own
@@ -1898,7 +1917,7 @@ GARDEN_FIELD = Slab(
 # block of the OLD flush floor was left standing where the door needed it, and the court
 # fell away from it on three sides.
 #
-# The court is flush again, so the whole 532 sf floor IS that plane. The landing is not
+# The court is flush again, so the whole 494 sf floor IS that plane. The landing is not
 # deleted — it is everywhere. `_landing_patch` projects x 18'-10"..23'-10",
 # y -3'-5 3/8"..-0'-5 3/8" and `_LANDING_COVERAGE` wants 85% of it; the court's north 5"
 # strip (the insulation gap to the house) can never be covered by anything, which caps any
@@ -3226,20 +3245,26 @@ THERMAL_BREAK_BAR_SPACING_IN = 8.0
 
 
 def _break_bar_count(board_width_in: float) -> int:
-    """Bars across a closure board — one rule, both blocks. Minimum two."""
+    """Bars across a closure board — one rule, both blocks. Minimum two.
+
+    ** 84" LANDS ON AN EXACT HALF AND ROUNDS DOWN. ** `84 / 8 = 10.5`, and Python's `round`
+    is banker's rounding, so this returns 10 (8.4" o.c.) rather than 11 (7.6"). Either is a
+    fine field spacing and neither is required by any graded limit state — nothing in this
+    engine sizes these bars — so the rule is left alone rather than nudged to win a tie.
+    Worth knowing before reading a bar count that looks one short.
+    """
     return max(2, round(board_width_in / THERMAL_BREAK_BAR_SPACING_IN))
 
 
-# ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS, AND THAT MATTERS SINCE
-# 2026-09-10. ** `Dowel.foam_length` centres the block on `position`. While the porch
-# strips were 84" centred on the axis the two coincided and the axis was the obvious thing
-# to write; the strips now carry `_RETAINING_FOOTING_OFFSET_IN` — all 12" of the widening
-# went to the court side, because the outboard edge is where `params/raised_garden.py`
-# measures its 3'-0" clear from and may not move. So the joint runs x 4.500..12.500 while
-# the wall axis is 8.000, and a board centred on the axis would cover 4.000..12.000: 6" of
-# board hanging past the footing into nothing at the outboard end, and **6" of bare
-# footing-to-footing concrete at the court end**. The third sign (+1 into the court, -1 on
-# the east leg) is what keeps the board on the pour it separates.
+# ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS. ** `Dowel.foam_length`
+# centres the block on `position`, and the two coincide again now that the strips are 84"
+# centred with a zero offset — but the expression stays, because it is what makes them
+# coincide rather than an assumption that they do. They did NOT for one revision: the strips
+# carried a 6" inboard offset, the joint ran x 4.500..12.500 against a wall axis of 8.000,
+# and a board written on the axis would have covered 4.000..12.000 — 6" hanging past the
+# footing into nothing outboard, and **6" of bare footing-to-footing concrete at the court
+# end**. The third sign (+1 into the court, -1 on the east leg) is what keeps the board on
+# the pour it separates whenever the offset is not zero.
 _DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",

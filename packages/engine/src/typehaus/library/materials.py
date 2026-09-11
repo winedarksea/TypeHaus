@@ -244,6 +244,11 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="corrugated-panel-26",
              name="7/8\" corrugated exposed-fastener steel panel, 26 ga.",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             # 26 ga. is 0.0179" of steel = 3.55 kg/m2 flat; the corrugation's developed
+             # length runs about 10% over its coverage, so 3.9. The 7/8" `thickness` above
+             # is the PROFILE DEPTH — it is what the panel occupies in the wall, not what it
+             # is made of, and a dead load taken off it reads a sheet of solid steel.
+             areal_density_kg_m2=3.9,
              color="#6b7076", finish="corrugated",
              skin_family="standing-seam", exposed_fastener=True,
              source=f"{_UAF}: continuous sheet steel is vapour-impermeable, as `standing-seam` "

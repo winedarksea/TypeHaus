@@ -462,11 +462,14 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
     south, west, east = (walls[t] for t in _APRON_TAGS[:3])
     # The south leg runs corner to corner, 28'.
     assert abs(south.axis[1][0] - south.axis[0][0]) == pytest.approx(28 * FT, abs=1e-9)
-    assert {round(y / FT, 4) for _, y in south.axis} == {-33.3333}
+    # -33.3333 until the court shortened 28'-0" -> 26'-0" on 2026-09-10. The apron follows
+    # the wall it measures off: 3'-0" clear of FT-SG-S's outboard edge, which is itself
+    # W-SG-S's axis less half the 7'-0" strip. Both moved 2'-0" north together.
+    assert {round(y / FT, 4) for _, y in south.axis} == {-31.3333}
     # The legs run north from those corners to the arch wall's own axis plane, at -10.5: the
     # apron closes against RL-SG-BALCONY (``BALCONY_FRONT_AXIS_Y_FT``), not -9.5.
     for leg in (west, east):
-        assert {round(y / FT, 4) for _, y in leg.axis} == {-10.5, -33.3333}
+        assert {round(y / FT, 4) for _, y in leg.axis} == {-10.5, -31.3333}
     assert {round(x / FT, 4) for _, x in ((0, west.axis[0][0]), (0, west.axis[1][0]))} == {4.0}
     assert {round(x / FT, 4) for _, x in ((0, east.axis[0][0]), (0, east.axis[1][0]))} == {32.0}
 

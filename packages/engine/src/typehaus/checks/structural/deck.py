@@ -43,7 +43,7 @@ from typehaus.checks.structural.deck_tables import (
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem, Slab
-from typehaus.model.structure import Beam, GlazingPanel, Pad, Post, Railing
+from typehaus.model.structure import Beam, GlazingPanel, Pad, Post
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedFloor
 

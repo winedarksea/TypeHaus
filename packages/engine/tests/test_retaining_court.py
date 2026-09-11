@@ -25,16 +25,27 @@ from typehaus.engineering.retaining_system import KIND
 _M_PER_FT = 0.3048
 
 # §4 of the note, at the graded case (at-rest 60 psf/ft, 110 pcf, mu 0.35 on the stone bed).
-# Re-oracled by hand THREE times, and the top of the wall has come down each time: the
-# footings rose 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' ->
-# 10.62'), the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865',
-# H -> 10.2865'), and on 2026-09-10 all five court walls came flush with the porch datum at
-# 0'-0" (stem -> 9.1198', H -> 10.1198'). Thrust goes as H^2 while the resisting weights
-# fall linearly, so all three moves pushed every one of these the same way.
+# Re-oracled by hand FOUR times. The first three took the top of the wall down: the footings
+# rose 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' -> 10.62'),
+# the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865', H -> 10.2865'),
+# and on 2026-09-10 all five court walls came flush with the porch datum at 0'-0"
+# (stem -> 9.1198', H -> 10.1198'). Thrust goes as H^2 while the resisting weights fall
+# linearly, so all three of those pushed every one of these the same way, and were free.
+#
+# ** THE FOURTH IS DIFFERENT IN KIND AND IT SPENDS MARGIN. ** H does not move at all. Two
+# PLAN dimensions do: the court's clear length 28'-0" -> 26'-0", which takes 2'-0" off each
+# side wall, and the footing strip 8'-0" offset 6" -> 7'-0" centred, toe 4'-0" -> 3'-0".
+#
+# The DEMAND is untouched. The E-W thrusts cancel identically (see the cancellation test
+# below), so the resultant is the south wall's thrust alone and the south wall is the
+# court's WIDTH, which did not change. `_NOTE_RESULTANT_LB` is therefore the ONE number in
+# this block that does not move, and that is a structural fact rather than a coincidence.
+# Every capacity-side figure falls: 4'-0" of base friction gone from the run, and 150 plf
+# off W as the strip narrows.
 _NOTE_RESULTANT_LB = 61_446.0
-_NOTE_CAPACITY_LB = 110_620.0
-_NOTE_CANCELLED_LB = 112_651.0
-_NOTE_SYSTEM_FS = 1.80
+_NOTE_CAPACITY_LB = 100_047.0
+_NOTE_CANCELLED_LB = 100_362.0
+_NOTE_SYSTEM_FS = 1.63
 # §8: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
 #
@@ -140,18 +151,20 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.29 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.16 and does NOT check.
 
-    **This assertion pins a failure and that is the point.** The whole margin between 1.29
-    and 1.80 is the washed-stone bed, and the bed is an authored claim
+    **This assertion pins a failure and that is the point.** The whole margin between 1.16
+    and 1.63 is the washed-stone bed, and the bed is an authored claim
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.80 as robust.
+    so out loud; this says so in the suite, so that nobody later reads 1.63 as robust.
 
-    Three height cuts have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at
-    the 36" cap, to 1.29 with the flush tops — and none changed anything about the argument:
-    it is still short of 1.50, and 0.35 versus 0.25 is still the difference between a court
-    that stands and one that does not. mu multiplies the same W on both sides, so no amount
-    of shortening can close this gap. Only the bed can.
+    Four passes have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at the
+    36" cap, to 1.29 with the flush tops, to 1.16 when the court shortened and the strip
+    narrowed — and none changed anything about the argument: it is still short of 1.50, and
+    0.35 versus 0.25 is still the difference between a court that stands and one that does
+    not. mu multiplies the same W on both sides, so no amount of geometry can close this
+    gap. Only the bed can. The fourth pass moved it the WRONG way, knowingly: 1.29 -> 1.16
+    is the accepted price of the 2'-0" and the 12", stated in §4 and carried in §5.
     """
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_system import _free_body, _loops, _members
@@ -171,7 +184,7 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     site = presumptive("GM").friction_coefficient
     assert site == pytest.approx(0.25)
     on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(1.29, abs=0.01)
+    assert on_site / on_stone_demand == pytest.approx(1.16, abs=0.01)
     assert on_site / on_stone_demand < 1.5
 
 
@@ -243,12 +256,21 @@ def test_the_stem_is_reinforced_and_a_plain_one_would_not_be_covered_at_all(
     assert plain_demand / stem_flexure(thin, case)[1] > 0.97
 
 
-def test_the_footings_grew_inboard_only_and_the_apron_did_not_move(catlin_model) -> None:
-    """§3. The whole reason ``Footing.offset`` exists, asserted where it can be seen.
+def test_the_footings_narrowed_inboard_only_and_the_apron_did_not_move(catlin_model) -> None:
+    """§3. The east and west edges are the invariant; the toe is what moves under them.
 
     The raised garden's apron measures its 3'-0" clear off these footings' OUTBOARD edges —
-    the owner's figure, from the brief — so those edges may not move. All 12" of the widening
-    is toe, into the court, where nothing is.
+    the owner's figure, from the brief — so those edges may not move. **The premise of this
+    test inverted on 2026-09-10 and its assertions did not, which is exactly what it is
+    for.** The strip went 7'-0" -> 8'-0" offset 6" into the court, and has now come back to
+    7'-0" CENTRED; the two spellings put the outboard reach in the same place
+    (``96/24 - 6/12 == 84/24 == 3.5'``), so the x figures below survived a widening AND a
+    narrowing unchanged. The toe edges moved both times, by the full 12", into the court
+    where nothing is.
+
+    ``FT-SG-S``'s y edges are the exception and move for a different reason: the court's
+    clear length went 28'-0" -> 26'-0", so that whole wall walked 2'-0" north with its
+    footing. Its own toe reach narrowed by the same 12" every other strip did.
     """
     edges = {}
     for solid in catlin_model.solids:
@@ -257,18 +279,63 @@ def test_the_footings_grew_inboard_only_and_the_apron_did_not_move(catlin_model)
             ys = [y / _M_PER_FT for _, y in solid.outline]
             edges[solid.tag] = (min(xs), max(xs), min(ys), max(ys))
 
-    # Outboard edges, unchanged from the 7'-0" strip they replaced.
+    # Outboard edges. The two x figures are the point of the test and have not moved through
+    # either the widening or the narrowing.
     assert edges["FT-SG-W2"][0] == pytest.approx(4.5, abs=1e-6)
     assert edges["FT-SG-E2"][1] == pytest.approx(31.5, abs=1e-6)
-    assert edges["FT-SG-S"][2] == pytest.approx(-32.8333, abs=1e-3)
-    # Inboard edges, 12" further into the court than they were.
-    assert edges["FT-SG-W2"][1] == pytest.approx(12.5, abs=1e-6)
-    assert edges["FT-SG-E2"][0] == pytest.approx(23.5, abs=1e-6)
-    assert edges["FT-SG-S"][3] == pytest.approx(-24.8333, abs=1e-3)
-    # 8'-0" overall on all three, and the heel still 3'-0".
+    # -32.8333 until the court shortened: wall axis -27.3333 less half the 7'-0" strip.
+    assert edges["FT-SG-S"][2] == pytest.approx(-30.8333, abs=1e-3)
+    # Inboard edges, 12" back OUT of the court from where the 8'-0" strip put them.
+    assert edges["FT-SG-W2"][1] == pytest.approx(11.5, abs=1e-6)
+    assert edges["FT-SG-E2"][0] == pytest.approx(24.5, abs=1e-6)
+    assert edges["FT-SG-S"][3] == pytest.approx(-23.8333, abs=1e-3)
+    # 7'-0" overall on all three, and the heel still 3'-0".
     for tag, (x0, x1, y0, y1) in edges.items():
         span = (x1 - x0) if tag != "FT-SG-S" else (y1 - y0)
-        assert span == pytest.approx(8.0, abs=1e-6), tag
+        assert span == pytest.approx(7.0, abs=1e-6), tag
+
+
+def test_the_net_rim_laps_no_footing(catlin_model) -> None:
+    """The court's one unasserted invariant, asserted (2026-09-10).
+
+    ``SL-SG-FLOOR``'s ``outline`` spans the whole court and its five ``FO-SG-TOE-*`` voids
+    cut it back over the five wall footings, so the rim bills NET concrete while every
+    derivation that gates on ``category == "slab"`` still sees one floor. That only holds if
+    the voids exactly cover the footings: a lap bills the same cubic foot twice, in two
+    sections, and **nothing grades it.** ``structural.concrete_interference`` reports on
+    ISOLATED pours and every ``FT-SG-*`` carries ``under=``, so a lap here reads as 0 FAIL.
+
+    It lived as a comment in ``params/sunken_garden.py`` and as a hand measurement in the
+    free-body note for five days. The 2026-09-10 pass moved BOTH of its inputs at once — the
+    court's clear length and the strips' toe reach — which is the moment to stop measuring it
+    by hand.
+    """
+    from shapely.geometry import Polygon
+
+    solids = {s.tag: s for s in catlin_model.solids}
+    rim = solids["SL-SG-FLOOR"]
+    net = Polygon(list(rim.outline))
+    assert rim.voids, "SL-SG-FLOOR resolves no voids; the FO-SG-* openings are not landing"
+    for void in rim.voids:
+        net = net.difference(Polygon(list(void)))
+    assert net.area > 0, "the rim voided away entirely"
+
+    # The five WALL strips, not all seven FT-SG-*. FT-SG-COL and FT-SG-FCOL are the belled
+    # piers' bases: they top out at -11.62', two and a half feet under the rim's -9.41'
+    # underside, and their shafts pass up through it. A plan lap there is not a lap.
+    footings = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S")
+    assert set(footings) <= set(solids), sorted(set(footings) - set(solids))
+    for tag in footings:
+        # These five ARE the court's walking surface: their tops are the rim's top, not its
+        # underside. That coplanarity is why a plan lap would be a real double bill.
+        assert solids[tag].z1_m == pytest.approx(rim.z1_m, abs=1e-9), (
+            f"{tag} no longer tops out on the court floor; this test's premise is that the "
+            f"five wall strips and the rim share one plane")
+        lap_sf = net.intersection(
+            Polygon(list(solids[tag].outline))).area / _M_PER_FT ** 2
+        assert lap_sf == pytest.approx(0.0, abs=1e-6), (
+            f"the net rim laps {tag} by {lap_sf:.3f} sf — that concrete bills twice, once "
+            f"in the slab section and once in the footing one, and no check grades it")
 
 
 def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(

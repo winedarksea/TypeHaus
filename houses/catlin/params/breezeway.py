@@ -15,7 +15,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 
 from typehaus import (
     Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
-    Node, Post, Railing, RailingKind, Slab, SlatScreen, Stair, StructuralRole, Wall,
+    Node, Post, Railing, RailingKind, Slab, SlatScreen, Stair, Wall,
     ft, inch, pt,
 )
 
@@ -47,7 +47,6 @@ from params.north_entry_frame import (
     PIER_LINE_Y_FT,
     ROOF_COLUMN_EAST_X_FT,
     SCREEN_PANEL_TOP_FT,
-    SEAT_TOP_FT,
     rectangle,
 )
 from plan.storeys.garage import GARAGE_Y_SOUTH
@@ -236,27 +235,25 @@ NOTES = [
 # closure over the deck framing, all one element (→ plan/assemblies.py::ENTRY_SCREEN_WALL).
 # Top: the slats below, now a 2'-4 3/4" clerestory band from +4'-0" to the header soffit.
 #
-# ** THE PANEL STARTS BELOW THE DECK AT -0'-8 1/4", AND NOT AT THE PIER TOPS. ** Starting it
-# at the boards would put the shear into the deck and ask the deck to hand it down. Starting
-# it at the SEAT BEAM tops gets it out of the deck: the sill plate lands on BM-BW-HOUSE-SEAT
-# and BM-BW-GARAGE-SEAT where it crosses them, and both of those cross this line directly
-# over a pier -- PT-BW-W at y=37'-6" and PT-BW-GW at y=42'-5 3/4" -- with PT-BW-CW and
-# PT-BW-CNW standing on the same two tops. The shear reaches concrete in one step.
+# ** THE PANEL STARTS AT -0'-1", THE JOIST PLANE, AND NOT AT THE PIER TOPS. ** The first
+# intent was to run it the whole way down to the cast tops at -1'-3 1/2", and the framing in
+# that band is what stopped it: the two seat beams and the deck joists already occupy -0'-1"
+# to -1'-3 1/2" on this line, and a sill plate down there is in the same space as both seats
+# (`structural.member_interference` says so, twice). It stands on BM-BW-SCSILL instead -- its
+# own 2x8, spanning the two seats between the two columns -- which is a real bearing line
+# rather than a plate over air, and which doubles as the deck's west rim.
 #
-# It does NOT run on down to the pier tops at -1'-3 1/2", which was the first intent, because
-# the two seat beams already occupy that band: their west ends land on those very piers, and a
-# sill plate there is in the same space as both of them (`structural.member_interference`
-# reports exactly that, twice). What is left exposed below the panel is 7 1/4" of seat beam
-# over a pier -- treated stock with a butyl cap, over concrete, both meant to be seen -- and
-# open air only in the 4'-11 3/4" between the two beams. The 7 1/4" of panel that would have
-# covered it is a skirt, not a load path, and it is not worth a clash to draw.
+# What that leaves exposed below the panel is 7 1/4" of deck framing and, under it, the seat
+# beams over their piers: treated stock with a butyl cap, standing on concrete, both meant to
+# be seen and both reachable to inspect. The shear still reaches concrete in one step -- the
+# sill lands on the two seats, and each of those crosses this line directly over a pier, with
+# PT-BW-CW and PT-BW-CNW standing on the same two tops.
 #
 # ** THE SLATS ARE IN-FILL AGAIN, AND THE ROLE FIELD SAYS SO. ** With a solid wall covering
 # the guard zone, `SC-BW-WEST` is back to `role="screen"`: it is above the guard line, it
 # guards nothing, and a slat band claiming to be a guard when a wall beside it already is one
-# would put the same edge in the census twice. The two cross rails stay -- BM-BW-SCHI is the
-# panel's head plate and the slats' sill, BM-BW-SCLO is now inside the panel as its mid-height
-# blocking -- because they are what carries the slat band to PT-BW-CW and PT-BW-CNW.
+# would put the same edge in the census twice. It stands on the panel's own top plate; the
+# two cross rails an earlier pass added for it are deleted (→ params/north_entry_frame.py).
 SCREEN_PITCH_IN = 3.0
 SCREEN_START_Y_FT = DECK_SHEET_SOUTH_Y_FT
 SCREEN_END_Y_FT = GARAGE_Y_SOUTH.feet
@@ -267,21 +264,31 @@ SCREEN_PANEL_NODES = [
     Node(uid="BWNS02AAAA", tag="N-BW-SCREEN-N",
          position=pt(ft(LANDING_WEST_FT), ft(SCREEN_END_Y_FT)), open_end=True),
 ]
+# ** IT IS FILED ON THE GARAGE STOREY, NOT ON MAIN, AND THAT IS NOT A FILING DETAIL. **
+# Every derivation that answers "how big is this building" and "where are its braced wall
+# lines" is scoped BY STOREY -- it is the only thing keeping the garage's own walls out of
+# the house's numbers. Filed on `main`, this screen made `braced_wall_lines("main")` return a
+# fifth perimeter line for a freestanding panel forty feet from the house, and stretched the
+# overall dimension chain from 36'-0" to 43'-2 5/8". It belongs with `RF-BW-CANOPY`, which is
+# authored on the garage storey for the same reason (a roof belongs to a storey), and which
+# is the thing this panel braces. `base_elevation` is absolute, so the storey datum does not
+# move it.
+GARAGE_STOREY_ELEMENTS = []
 SCREEN_PANEL = Wall(
     uid="BWWS01AAAA", tag="W-BW-SCREEN",
     start_node="N-BW-SCREEN-S", end_node="N-BW-SCREEN-N",
-    assembly="ENTRY_SCREEN_WALL", base_elevation=ft(SEAT_TOP_FT),
-    top=ft(SCREEN_PANEL_TOP_FT - SEAT_TOP_FT), guard=True,
-    structural_role=StructuralRole.NONBEARING,
+    assembly="ENTRY_SCREEN_WALL", base_elevation=ft(DECK_JOIST_TOP_FT),
+    top=ft(SCREEN_PANEL_TOP_FT - DECK_JOIST_TOP_FT), guard=True,
 )
+GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL])
 SCREEN = SlatScreen(
     uid="BWSC001AAA", tag="SC-BW-WEST", start=pt(ft(LANDING_WEST_FT), ft(SCREEN_START_Y_FT)),
     end=pt(ft(LANDING_WEST_FT), ft(SCREEN_END_Y_FT)),
     base_elevation=ft(SCREEN_PANEL_TOP_FT),
     height=ft(HEADER_SOFFIT_FT - SCREEN_PANEL_TOP_FT),
     slat_face=inch(1.5), slat_depth=inch(3.5), clear_gap=inch(1.5),
-    assembly="POST_KDAT", supported_by="BM-BW-SCHI",
-    engineering_note="In-fill only, and above the guard line: the slats carry IRC Table R301.5 fn. f's 50 lb over 1 sqft (d/c ~0.33) over a 2ft 4-3/4in span between BM-BW-SCHI and BM-BW-RW's soffit. The guard is W-BW-SCREEN below them, and the 200 lb guard load never reaches a slat.",
+    assembly="POST_KDAT", supported_by="W-BW-SCREEN",
+    engineering_note="In-fill only, and above the guard line: the slats carry IRC Table R301.5 fn. f's 50 lb over 1 sqft (d/c ~0.33) over a 2ft 4-3/4in span between W-BW-SCREEN's top plate and BM-BW-RW's soffit. The guard is W-BW-SCREEN below them, and the 200 lb guard load never reaches a slat.",
 )
 
 # ** THE FOUR SEAT-BEAM BEARINGS ARE REAL HARDWARE NOW, NOT SIX INVENTED PART NUMBERS. **
@@ -444,7 +451,13 @@ TRUSS_TIES = [
 JOINT_TIE_COUNT = 7
 JOINT_TIES = [
     Connector(uid=f"BWJT{_i:02d}AAAA"[:10], tag=f"CN-BW-JOINT-{_i + 1}",
-              kind=ConnectorKind.HOLD_DOWN,
+              # TENSION_TIE, not HOLD_DOWN, and the difference is not cosmetic. A HOLD_DOWN
+              # naming a roof is what `structural.uplift_path_coverage` and
+              # `takeoff/uplift.py` read as "this roof's BEARING uplift is authored" — so
+              # seven straps across a joint stood down all twenty-six of RF-GARAGE's derived
+              # H2.5A truss ties and the garage roof lost its hold-downs outright. A drag tie
+              # across a diaphragm joint is not a bearing tie and must not be filed as one.
+              kind=ConnectorKind.TENSION_TIE,
               position=pt(ft(LANDING_WEST_FT + _i * (ROOF_COLUMN_EAST_X_FT - LANDING_WEST_FT)
                              / (JOINT_TIE_COUNT - 1)), ft(GARAGE_Y_SOUTH.feet)),
               elevation=ft(HEADER_TOP_FT), size="LSTA24",
@@ -465,5 +478,5 @@ SNOW_RETENTION = [
 ]
 
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
-                 *SCREEN_PANEL_NODES, SCREEN_PANEL, SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *COLUMN_CAPS, *EAST_HEADER_BEARINGS, *TRUSS_TIES, *JOINT_TIES,
+                 SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *COLUMN_CAPS, *EAST_HEADER_BEARINGS, *TRUSS_TIES, *JOINT_TIES,
                  *SNOW_RETENTION, *NOTES]

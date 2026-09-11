@@ -45,24 +45,33 @@ rate.
 
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
-| column | #3 | hdg-a767 | 241.5 LF | 90.8 lb | all twelve cast columns, ties |
-| column | #5 | hdg-a767 | 368.9 LF | 384.8 lb | all twelve cast columns, verticals |
-| footing | #4 | hdg-a767 | 414.1 LF | 276.6 lb | all five `FT-SG-*` strips, longitudinal |
-| footing | #6 | hdg-a767 | 1,490.6 LF | 2,238.9 lb | all five `FT-SG-*` strips, mat top + bottom |
-| foundation wall | #4 | hdg-a767 | 775.2 LF | 517.8 lb | `W-SG-W2/E2/S` horizontal |
+| column | #3 | hdg-a767 | 277.5 LF | 104.3 lb | all twelve cast columns, ties |
+| column | #5 | hdg-a767 | 430.4 LF | 448.9 lb | all twelve cast columns, verticals |
+| footing | #4 | hdg-a767 | 343.6 LF | 229.5 lb | all five `FT-SG-*` strips, longitudinal |
+| footing | #5 | hdg-a767 | 1,030.9 LF | 1,075.2 lb | all five `FT-SG-*` strips, mat top + bottom |
+| foundation wall | #4 | hdg-a767 | 720.5 LF | 481.3 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 210.0 LF | 219.0 lb | the eight 8" basement runs |
-| foundation wall | #6 | hdg-a767 | 680.5 LF | 1,022.1 lb | `W-SG-*` verticals |
-| | | | | **4,750.0 lb** | **2.38 ton** |
+| foundation wall | #6 | hdg-a767 | 636.8 LF | 956.5 lb | `W-SG-*` verticals |
+| | | | | **3,514.7 lb** | **1.76 ton** |
 
-**The two `footing` rows gained 37% on 2026-09-10, and it is the one row change here that
-is a DESIGN change rather than a geometry one.** `FT-SG-W1`/`E1` were 84" and plain. The
-engine grades a footing's own flexure only on the retaining set, so their 3'-0" plain
-cantilever — under the two walls carrying the balcony's four moment-fixed columns — had
-never been run at all. Run, it does not pass: the HEEL alone is Mu 8,303 against a plain
-12" strip's 3,536, **d/c 2.35**, and that row needs no assumption about the bracing credit
-because §7c's convention drops the upward pressure under the heel. The mat was owed either
-way, so widening them to 96" to match the retaining set cost concrete and stone alone and
-bought one width, one offset and one continuous form line around the court.
+**The footing mat row gained 37% on 2026-09-10 and then changed bar size, later the same
+day, for -1,164 lb.** `FT-SG-W1`/`E1` were 84" and plain, and the engine grades a footing's
+own flexure only on the retaining set, so their 3'-0" plain cantilever — under the two walls
+carrying the balcony's four moment-fixed columns — had never been run at all. Run, it does
+not pass: the HEEL alone is Mu 8,303 against a plain 12" strip's 3,536, **d/c 2.35**, and
+that row needs no assumption about the bracing credit because §7c's convention drops the
+upward pressure under the heel. **The mat is still owed.** What changed is the bar: all five
+strips narrowed 96" → 84" centred, which took 22% off the toe moment and brought `#5 @ 12"`
+from d/c 0.90 to 0.70, so the mat came down from `#6 @ 10"`. `#4 @ 12"` is not available
+below it — it fails flexure and falls under ACI 318-19 §7.6.1.1's `0.0018 Ag`.
+
+**Note the row is keyed on the BAR**, so this reads as a schedule *shape* change rather than
+a value one: the `footing #6` row is gone and a `footing #5` row is new. It does not merge
+with the `foundation wall #5` row; scope keeps them apart.
+
+**The court also shortened 28'-0" → 26'-0" in the same pass**, which is where the rest of the
+-1,313 lb comes from: `W-SG-W2`/`E2` lose 2'-0" each, so 4'-0" comes off the retaining run
+and off two of the five footing strips.
 
 **Both `foundation wall` rows moved again on 2026-09-05 — the slot closure — and again no
 schedule changed.** `W-B-S4` grew 10" west when the south wall's split came off the retaining
@@ -155,7 +164,7 @@ W/E toes were extended 6" north to the footings they are cut for); `PORCH_FOOTIN
 (shafts 7 1/4" shorter as the bells came back up to 42"). The excavation fell further than
 the pour did: 9" across the whole under-porch footprint, and the same 9" off `DRW-SG-MAIN`.
 
-**`GARDEN_COURT_SLAB` is 1.95 cy and the court has moved three times under it.** It fell
+**`GARDEN_COURT_SLAB` is 1.32 cy and the court has moved four times under it.** It fell
 5.75 -> 3.96 on 2026-09-03 when the court dropped 7 1/4" for a flood step and the floor
 became a **rim** around an open field, with `GARDEN_STOOP` adding 0.53 back as the
 door's landing. On **2026-09-05 the court came back flush** (`court_step_down_in` -> 0, one
@@ -167,15 +176,23 @@ simply carry 49 1/4" of cover instead of 42" (params/sunken_garden `_pier_bell_b
 
 **Then, later on 2026-09-05, it halved: 3.92 -> 1.95 cy.** The three retaining footings rose
 9" so that their tops ARE the court's walking surface, and `FO-SG-TOE-W/E/S` void the rim
-over all three. What is left of the pour is the porch bay and the beam's own line — about
-184 sf of the court's 532. The SLAB ITSELF was deliberately NOT deleted: `resolve/site_earth`,
-`egress._landing_surfaces`, `server/space_summary` and `_frost_protection_footprints` all gate
-on `category == "slab"`, and voids are invisible to the first two, so `SL-SG-FLOOR`'s outline
-still spans all 532 sf while its volume bills net. The 1.97 cy that came off is concrete that
-was being poured on top of footings, over fill, for nothing.
+over all three. What is left of the pour is the porch bay and the beam's own line. The SLAB
+ITSELF was deliberately NOT deleted: `resolve/site_earth`, `egress._landing_surfaces`,
+`server/space_summary` and `_frost_protection_footprints` all gate on `category == "slab"`,
+and voids are invisible to the first two, so `SL-SG-FLOOR`'s outline still spans the whole
+court while its volume bills net. The 1.97 cy that came off is concrete that was being poured
+on top of footings, over fill, for nothing.
+
+**On 2026-09-10 the court went 28'-0" → 26'-0" and the strips 96" → 84", and the rim went
+UP.** Those two move the rim in opposite directions and the second wins: the court's outline
+loses 38 sf, but each toe void's reach falls from 4'-6" to 3'-6" a side, which hands back more
+rim than the shortening takes: **1.11 → 1.32 cy**. The court is now **494 sf** with a
+**160 sf** field and a 3'-0" concrete walking rim on three sides where it was 4'-0". The net rim polygon's intersection
+with every `FT-SG-*` footprint is still 0.000 sf, and since this pass that is **asserted**
+(`test_retaining_court.py::test_the_net_rim_laps_no_footing`) rather than measured by hand.
 
 `SG_VENEER_BEAM_14` (1.10 cy) is the veneer's grade beam, new 2026-09-05, and
-`FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — now **8.15 cy** of sand, gravel
+`FOUNDATION_WALL_12_INT` grew 5.25 -> 6.57. `SL-SG-FIELD` — now **8.91 cy** of sand, gravel
 and fabric, the USGA profile having gone from 12" to 18" the same day — does **not** appear
 above and must not be added to it: this filter takes a STRUCTURE layer of material
 `concrete`, and `GARDEN_PUTTING_GREEN` has neither.
@@ -202,12 +219,20 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          4,750 lb / 152.26 cy   =  31.2 lb/cy   (2026-09-10)
+billed          3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
+  was           4,828 lb / 152.69 cy   =  31.6 lb/cy   (2026-09-10, first pass)
   was           3,992 lb / 148.78 cy   =  26.8 lb/cy
-register ~5 t  10,000 lb / 148.78 cy   =  67.2 lb/cy
+register ~5 t  10,000 lb / 147.64 cy   =  67.7 lb/cy
 ```
 
-At a black-bar material price of $1.05-1.35/lb, **3,992 lb is $4,192-5,389.** The allowance
+**The second pass took the ratio DOWN 7.8 lb/cy, and it is the one sag in this note that is
+not a hiding place.** -1,313 lb against only -5.05 cy, because the larger half of it is a bar
+size coming down (`#6 @ 10"` → `#5 @ 12"` on five strips) and a bar size removes steel and no
+concrete at all. The 25.74 sag below was steel that existed and the takeoff could not see.
+This is steel that is not there, because §7e of `sunken_garden_court_free_body.md` re-ran the
+toe at its new 3'-0" length and found the bigger bar carrying 43% of unused capacity.
+
+At a black-bar material price of $1.05-1.35/lb, **3,515 lb is $3,691-4,745.** The allowance
 register (`plans/cost-options.md`, `prices.toml` `[allowances]`) carries rebar at
 **$10,000-18,000**, and the plan's acceptance condition is explicit:
 
@@ -220,12 +245,20 @@ billing 42% of the steel would make the estimate FALL by the difference — the 
 type drops from the BOM and the saving looks real when it is an artifact" hazard, arriving
 from the other direction and for about $6,000.
 
-26.8 lb/cy is also low on its own terms. A lightly reinforced residential foundation runs
-40-80 lb/cy; the register's 66.2 sits inside that and this house — with three retaining
-walls at `#6 @ 10"` both ways — has no business being below it. The 2026-09-05 footing rise
-moved the ratio 27.3 -> 26.8 and it moved BOTH terms: 119 lb of steel and 3.5 cy of concrete
-came out together, and the ratio fell because the concrete that left (the rim's voided
-2 cy) carried no steel at all.
+23.8 lb/cy is also low on its own terms, and lower than it has been. A lightly reinforced
+residential foundation runs 40-80 lb/cy; the register's ~67 sits inside that and this house
+— with three retaining walls at `#6 @ 10"` vertical and a mat both ways under five strips —
+has no business being below it. The 2026-09-05 footing rise moved the ratio 27.3 -> 26.8 and
+it moved BOTH terms: 119 lb of steel and 3.5 cy of concrete came out together, and the ratio
+fell because the concrete that left (the rim's voided 2 cy) carried no steel at all.
+
+**The gap is still the unauthored steel §4 lists and not this cut** — the basement walls'
+horizontals, `GARAGE_ICF_6`'s bar size, `SL-M-DECK`'s cap schedule. But the cut has eaten the
+margin this figure had, and the next DESIGN reduction in steel is the one to look at twice
+rather than wave through. **The saving is also invisible in `haus takeoff`**, by design:
+`[reinforcement]` in `prices.toml` is empty and `[rebar_inclusive]` declares the $/cy rates
+already contain the steel, so pricing a bar is a hard error. The 1,313 lb is real in the yard
+and worth nothing in the estimate until §5's rate cut happens.
 
 ## 4. Where the missing ~2.9 tons is
 

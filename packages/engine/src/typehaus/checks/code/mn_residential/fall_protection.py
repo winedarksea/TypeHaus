@@ -53,7 +53,6 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
     no stair wells reports UNKNOWN — never PASS by absence.
     """
     from typehaus.model.floors import FloorOpening, FloorOpeningPurpose, FloorSystem
-    from typehaus.model.structure import Railing
     from typehaus.resolve.floors import _rectangular_opening_box
 
     cid, code = "code.R312_1_guard", "R312.1"
@@ -209,8 +208,6 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
       eaves, where there is no walking surface on either side to guard.
     """
     from shapely.geometry import LineString, Point, Polygon
-
-    from typehaus.model.structure import Railing
 
     cid, code = "code.R312_1_guard_height", "R312.1.1"
     surfaces = [(floor.tag, list(floor.deck_outline), floor.deck_z1_m)
@@ -403,8 +400,12 @@ def guard_opening_limit(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no guard railings in the plan", (), code)]
     out: list[Finding] = []
     for wall in guard_walls:
-        out.append(_pass(cid, f"{wall.tag} is a solid masonry guard — no opening for a 4\" "
-                         "sphere", code))
+        # "Masonry" was the only kind of guard wall this house had when the branch was
+        # written, and it is a claim rather than a reading — `W-BW-SCREEN` is a sheathed KDAT
+        # panel and the report called it masonry. What R312.1.3 actually turns on is that the
+        # wall is SOLID, which is true of both, so that is what it now says.
+        out.append(_pass(cid, f"{wall.tag} is a solid wall standing as a guard — no opening "
+                         "for a 4\" sphere", code))
     for guard in guards:
         out.append(_grade_guard(ctx, guard, cid, code))
     return out

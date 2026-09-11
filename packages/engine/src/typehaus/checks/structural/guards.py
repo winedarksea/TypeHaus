@@ -43,6 +43,9 @@ _BEARING_PLAN_TOL_M = 0.10
 #: Stations along the guard's run, so a guard that starts on a wall and ends over a deck is
 #: read as what it is rather than as whichever support happened to be found first.
 _STATION_STEP_M = 0.25
+#: Wood fraction of a framed layer that states no cavity fill to read one off. The field
+#: default elsewhere in the engine for 16" o.c. studs with plates, corners and jamb packs.
+_DEFAULT_FRAMING_FACTOR = 0.23
 
 #: Material hatch families that carry a masonry guard without further thought. ``concrete``
 #: is the catalog's family for both poured concrete and masonry units (cmu, brick all hatch
@@ -90,14 +93,20 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
                         "states no density, so its dead load cannot be derived", (tag,))
     supports = _supports_along(ctx, wall)
     named = sorted({name for _kind, name in supports if name})
-    if any(kind is None for kind, _name in supports):
-        return _unknown(_CHECK_ID, f"guard wall {tag} carries {load_plf:.0f} plf but part "
-                        "of its run has nothing modeled under it at its base elevation, so "
-                        "what it bears on cannot be identified", (tag,))
+    # The allowance is asked FIRST, and the ordering is the docstring's own "whatever it
+    # stands on". A guard light enough that ordinary wood framing carries it does not raise a
+    # question about its bearing line, so failing to identify that line is not missing data —
+    # it is an answer nobody needed. Asked the other way round, a 67 plf framed screen panel
+    # standing partly over open deck reported UNKNOWN, which is this check demanding an input
+    # its own threshold had already made irrelevant.
     if load_plf <= allowance_plf + 1e-9:
         return _advisory(_CHECK_ID, f"guard wall {tag} weighs {load_plf:.0f} plf, at or "
                          f"under the {allowance_plf:.0f} plf ordinary wood framing carries; "
                          "its support does not have to be hard", (tag,), Result.PASS)
+    if any(kind is None for kind, _name in supports):
+        return _unknown(_CHECK_ID, f"guard wall {tag} carries {load_plf:.0f} plf but part "
+                        "of its run has nothing modeled under it at its base elevation, so "
+                        "what it bears on cannot be identified", (tag,))
     soft = sorted({name for kind, name in supports if kind == "wood"})
     if soft:
         return _advisory(
@@ -122,10 +131,50 @@ def _dead_load_plf(ctx: CheckContext, wall, height_m: float) -> float | None:
     """
     mass_per_area = 0.0
     materials = {material.tag: material for material in ctx.plan.library.materials}
+    # ``ResolvedLayer`` carries no ``framing``: the stud layout is a property of the AUTHORED
+    # layer, and a cavity fill resolves as its own layer rather than as a field on its host.
+    # So the framing factor is read back off the assembly, by layer name.
+    assembly = next((a for a in getattr(ctx.plan.library, "assemblies", ())
+                     if a.tag == getattr(wall, "assembly", None)), None)
+    authored = {getattr(layer, "name", ""): layer
+                for layer in (getattr(assembly, "layers", ()) if assembly else ())}
     for layer in wall.depth_layers():
         if layer.function in (LayerFunction.AIRGAP.value, "air_gap"):
             continue
+        # A FRAMED layer is mostly cavity. Weighing a 2x4 stud layer as 3 1/2" of solid wood
+        # over the whole wall face is the same overstatement a profiled sheet makes, and in
+        # the same direction: it read a 31 plf screen panel at 67 and sent it looking for a
+        # masonry bearing line. The framing factor is the cavity fill's own where one is
+        # stated (it is the number that layer already uses for its R-value), and the 16" o.c.
+        # field default otherwise. The fill itself is added at full area, because a batt or a
+        # foam does occupy the whole cavity.
+        source = authored.get(getattr(layer, "name", "") or "")
+        if source is not None and getattr(source, "framing", None) is not None:
+            fills = getattr(source, "cavity_fills", ()) or ()
+            factor = next((f.framing_factor for f in fills
+                           if getattr(f, "framing_factor", None) is not None),
+                          _DEFAULT_FRAMING_FACTOR)
+            material = materials.get(layer.material_ref or "")
+            density = getattr(material, "density", None)
+            if density is None:
+                return None
+            mass_per_area += layer.thickness_m * density * factor
+            for fill in fills:
+                fill_material = materials.get(getattr(fill, "material_ref", "") or "")
+                fill_density = getattr(fill_material, "density", None)
+                if fill_density is None:
+                    return None
+                thickness = getattr(fill, "thickness", None)
+                mass_per_area += ((thickness.meters if thickness is not None
+                                   else layer.thickness_m) * fill_density * (1.0 - factor))
+            continue
         material = materials.get(layer.material_ref or "")
+        # A profiled sheet states its own kg/m2 and that wins: its `thickness` is the depth
+        # it occupies in the wall, not a depth of material (→ Material.areal_density_kg_m2).
+        areal = getattr(material, "areal_density_kg_m2", None)
+        if areal is not None:
+            mass_per_area += areal
+            continue
         density = getattr(material, "density", None)
         if density is None:
             return None

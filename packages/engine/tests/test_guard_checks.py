@@ -48,26 +48,32 @@ def catlin_ctx():
     return ctx
 
 
-def test_catlin_has_no_masonry_guard_left_to_grade(catlin_ctx):
-    """One NOT_APPLICABLE, and it says why rather than silently returning nothing.
+def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):
+    """The house gained its first ``Wall.guard`` on 2026-09-10, and it is a light one.
 
-    A rule that emits no findings is indistinguishable from a rule that never ran, which is
-    the failure mode this asserts against: the house has no ``Wall.guard`` and the check has
-    to say so, and to name the two rules that do grade the stick guard that replaced it.
+    ``W-BW-SCREEN`` is the north entry's west panel: KDAT 2x4 at 16" o.c. under 5/8" CDX and
+    7/8" corrugated on both faces, closing the passage from the deck to +4'-0" and doing
+    three jobs at once — the canopy's north-south shear panel, the guard, and the closure
+    over the deck framing.
 
-    The verdict is N/A rather than UNKNOWN, and the distinction is the point: nothing here
-    is missing from the model or waiting on an author. Every wall was read, and none of them
-    is a guard.
+    It weighs about 33 plf, which is what makes this test worth having. The same wall read
+    **402 plf** before two derivations were fixed in this module on the same day: a profiled
+    sheet was weighed as 7/8" of solid steel, and a framed layer as 3 1/2" of solid wood over
+    the whole wall face. Either one alone sent a screen panel looking for a masonry bearing
+    line. The assertion is on the ORDER of magnitude, not the digits — a framed screen wall
+    is tens of plf and a grouted-CMU parapet is hundreds, and this check only means anything
+    while it can tell them apart.
     """
     findings = masonry_guard_bearing(catlin_ctx)
     assert len(findings) == 1, [f.message for f in findings]
     finding = findings[0]
-    assert finding.result is Result.NOT_APPLICABLE
-    assert "no wall" in finding.message and "guard" in finding.message
-    assert "structural.deck_guard" in finding.message
-    assert "code.R312_1_guard_height" in finding.message
-    assert not [w for w in catlin_ctx.plan.all_elements()
-                if getattr(w, "guard", False)]
+    assert finding.result is Result.PASS
+    assert "W-BW-SCREEN" in finding.message
+    assert "does not have to be hard" in finding.message
+    plf = float(finding.message.split("weighs ")[1].split(" plf")[0])
+    assert 20 <= plf <= 50, finding.message
+    assert [w.tag for w in catlin_ctx.plan.all_elements()
+            if getattr(w, "guard", False)] == ["W-BW-SCREEN"]
 
 
 # --- synthetic supports --------------------------------------------------------------------
@@ -447,7 +453,14 @@ def test_the_open_connector_has_real_guards_instead_of_glazing_credit(catlin_ctx
     findings = {f.message.split(":")[0]: f for f in fp.raised_surface_guard_height(catlin_ctx)}
     assert findings["FS-BW-FLOOR"].result is Result.PASS
     assert catlin_ctx.plan.by_tag("GL-BW-WALL-W") is None
-    assert catlin_ctx.plan.by_tag("RL-BW-SCREEN").height.inches >= 36
+    # `RL-BW-SCREEN` went on 2026-09-10 with the metal guard it named: the west edge is
+    # closed by `W-BW-SCREEN`, a solid sheathed panel, and a Railing standing 1 1/2" off it
+    # was two elements doing one job. The edge is still guarded and still graded — by the
+    # wall's own 4'-0" of height, which is what this now reads.
+    assert catlin_ctx.plan.by_tag("RL-BW-SCREEN") is None
+    panel = catlin_ctx.plan.by_tag("W-BW-SCREEN")
+    assert panel is not None and panel.guard
+    assert panel.top.inches >= 36
 
 
 def _closing_tags(ctx, surface):
@@ -457,3 +470,40 @@ def _closing_tags(ctx, surface):
             if solid.category in ec._ENCLOSING_SOLID_CATEGORIES
             and solid.z0_m <= surface + 0.1
             and solid.z1_m >= surface + inch(36).meters - 0.02}
+
+
+# --- a slat screen that declares itself the guard ----------------------------------------
+
+def test_a_slat_screen_can_be_the_guard_and_is_graded_on_its_own_gap():
+    """``SlatScreen.role="guard"`` puts a screen into every R312 population.
+
+    Catlin does not use this today — its west screen sits ABOVE a solid guard wall and stays
+    `role="screen"` — and that is exactly why the capability needs its own test rather than
+    riding on the reference house. A screen of on-edge slats at a clear gap under 4",
+    standing at a raised edge, satisfies R312.1 on its own terms; before this existed the
+    only way to model one was to stand a redundant Railing an inch away from it.
+
+    The two halves both matter: the screen must appear in ``guard_lines`` (so the coverage
+    derivations can close an edge with it) and it must carry its ``clear_gap`` through as the
+    sphere dimension (so it is graded on a number it already states, not on the claim).
+    """
+    from typehaus.checks.guard_lines import guard_lines
+    from typehaus.model.screens import SlatScreen
+    from typehaus.quantities import ft, inch, pt
+
+    def screen(role):
+        return SlatScreen(uid="SC00000001", tag="SC-TEST", start=pt(ft(0), ft(0)),
+                          end=pt(ft(0), ft(8)), base_elevation=ft(0), height=inch(42),
+                          slat_face=inch(1.5), slat_depth=inch(3.5), clear_gap=inch(1.5),
+                          assembly="POST_KDAT", supported_by="BM-TEST", role=role)
+
+    plan = SimpleNamespace(all_elements=lambda: [screen("screen")])
+    assert guard_lines(plan) == []
+
+    plan = SimpleNamespace(all_elements=lambda: [screen("guard")])
+    lines = guard_lines(plan)
+    assert [line.tag for line in lines] == ["SC-TEST"]
+    assert lines[0].height.inches == pytest.approx(42)
+    assert lines[0].baluster_spacing.inches == pytest.approx(1.5)
+    assert lines[0].infill == "balusters"
+    assert len(lines[0].path) == 2

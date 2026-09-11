@@ -74,10 +74,10 @@ buildable hole.
 | element | carries |
 |---|---|
 | `BM-BW-RW` / `BM-BW-RE` | half the canopy roof each: 80.0 ft² |
-| `PT-BW-CW` / `PT-BW-CE` | half of one header's reaction each |
+| `PT-BW-CW` / `PT-BW-CNW` | half of the WEST header's reaction each — the only wood columns left |
 | `PT-BW-W` | the west roof column **and** the landing's west seat |
 | `PT-BW-E` | the landing's east seat |
-| `PT-BW-RE` | the east roof column |
+| `PT-BW-RE` | the east header directly: it IS the east column, cast to the soffit |
 | `PT-BW-GW` / `PT-BW-GE` | the garage-side seat beam, landing load only |
 
 **No snow on the landing, the tiers or the paver landing.** The canopy runs x=6'-0" to
@@ -204,14 +204,25 @@ re-work this table rather than assuming it drifted.
 
 Six piers on **two** bearing planes, and the split is the first thing to read.
 
+> ⚠ **Two of the six are not piers, and the bearing numbers below are unchanged by that.**
+> `PT-BW-RE` and `PT-BW-RNE` became full-height 12" cast columns on 2026-09-10, running
+> unbroken from footing to header soffit and fixed at the base — the canopy's east lateral
+> system (`notes/north_entry_structure.md` §1a). Same section, same cage, same pad, same
+> footing: the shaft simply does not stop at −1'-3 1/2". **What is NOT re-worked here is the
+> consequence of the fixed base**, and it is the engineer of record's: the base moment is a
+> lateral demand this section was never asked to carry, `PT-BW-RNE` has 4'-2" of embedment
+> below grade against roughly 5'-6" that IBC 1807.3.2.1's non-constrained formula wants for
+> it in presumptive sand, and k·l_u/r on the exposed 9'-2 3/4" is about 74 as a SWAY column
+> where §6's slenderness reading below was taken non-sway.
+
 | pier | carries | pad | bottom | bearing d/c |
 |---|---|---|---|---|
 | `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.90 |
 | `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.51 |
-| `PT-BW-RE` | `PT-BW-CE` | 2'-0" | −9'-9 7/16" | 0.54 |
+| `PT-BW-RE` | the east header (full-height column) | 2'-0" | −9'-9 7/16" | 0.54 |
 | `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.84 |
 | `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.76 |
-| `PT-BW-RNE` | `PT-BW-CNE` | 2'-0" | −7'-0" | 0.60 |
+| `PT-BW-RNE` | the east header (full-height column) | 2'-0" | −7'-0" | 0.60 |
 
 **The house-side three reach −9'-9 7/16" for a reason that is not bearing.** The basement
 excavation is already open to that depth, so the extra 2'-9" of shaft costs shaft and

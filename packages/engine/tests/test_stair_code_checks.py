@@ -316,10 +316,16 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
     # Eleven since 2026-09-03: ST-SG-PORCH's two raked guard-handrails (RL-SG-PSTAIR-*) and
     # the two level cheeks that return the guard across its threshold (RL-SG-PTHRESH-*).
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-SCREEN", "RL-M-STAIRHEAD", "RL-S-STAIR",
+    # RL-BW-SCREEN left the census on 2026-09-10 and `W-BW-SCREEN` replaced it: a solid
+    # sheathed guard WALL, which passes the way a masonry parapet does. `SC-BW-WEST`, the
+    # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
+    # line, so R312.1.3 has no fall to protect there and the screen declares `role="screen"`
+    # rather than claiming to be a guard beside one.
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
+                    "RL-BW-GARAGE-W", "RL-M-STAIRHEAD", "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
-                    "RL-SG-PTHRESH-S"], \
+                    "RL-SG-PTHRESH-S", "W-BW-SCREEN"], \
         [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
 
@@ -333,8 +339,11 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
     from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
 
     drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
+    # RL-BW-SCREEN left with the metal guard it named; W-BW-SCREEN, which closed that edge
+    # instead, is a solid wall and has no drawn gap to quote.
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E", "RL-BW-GARAGE-W", "RL-BW-SCREEN", "RL-S-STAIR", "RL-S-STAIRHEAD",
+        "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
+        "RL-BW-GARAGE-W", "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE", "RL-SG-PSTAIR-N",
         "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N", "RL-SG-PTHRESH-S"]
 

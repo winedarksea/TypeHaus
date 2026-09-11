@@ -50,9 +50,16 @@ def test_each_framed_storey_gets_its_four_perimeter_lines(catlin_model_ro):
         assert len(lines) == 4, f"{storey}: {[line.tag for line in lines]}"
         assert {line.direction for line in lines} == {"x", "y"}
         assert all(abs(line.length_ft - 36.0) < 0.5 for line in lines)
+    # The garage storey carries FIVE, and the odd one out is not a garage wall at all:
+    # `W-BW-SCREEN` is the north entry canopy's west shear panel, filed on this storey with
+    # the canopy roof it braces. It is genuinely a braced wall line — sheathed both faces,
+    # standing on the seat beams over two piers — and 6'-6 3/4" long rather than 24'-0",
+    # which is why the length assertion below excludes it by tag instead of by count.
     garage = braced_wall_lines(catlin_model_ro, "garage")
-    assert len(garage) == 4
-    assert all(abs(line.length_ft - 24.0) < 0.5 for line in garage)
+    assert len(garage) == 5, [line.tag for line in garage]
+    perimeter = [line for line in garage if "W-BW-SCREEN" not in line.wall_tags]
+    assert len(perimeter) == 4
+    assert all(abs(line.length_ft - 24.0) < 0.5 for line in perimeter)
 
 
 def test_a_poured_wall_is_not_a_braced_wall_line(catlin_model_ro):

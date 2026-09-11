@@ -40,28 +40,40 @@ _SCHEDULE = {
     # 2026-09-10, when there were thirteen: the eight tier piers went with the framed
     # terrace they were holding up (they stood east of a flight that runs west, under open
     # ground), and PT-BW-RNE arrived with the canopy's fourth column.
-    ("column", "#3", "hdg-a767"): 90.8,
-    ("column", "#5", "hdg-a767"): 384.8,
-    # ** +37% ON 2026-09-10: THE PORCH STRIPS GAINED THE MAT AND THE WIDTH. **
-    # FT-SG-W1/E1 were 84" plain. Nothing in the engine grades a footing's own flexure
-    # except on the retaining set, so their 3'-0" PLAIN cantilever under the two walls
-    # carrying the balcony's four moment-fixed columns had never been run. Run, the HEEL
-    # alone is Mu 8,303 against a plain 12" strip's 3,536 — d/c 2.35, and that row needs
-    # no assumption about the bracing at all (§7c drops the upward pressure under the
-    # heel). The mat was owed either way; once owed, widening to 96" to match the
-    # retaining set cost concrete and stone alone and bought a continuous form line.
-    ("footing", "#4", "hdg-a767"): 276.6,
-    ("footing", "#6", "hdg-a767"): 2238.9,
-    ("foundation wall", "#4", "hdg-a767"): 517.8,
+    ("column", "#3", "hdg-a767"): 104.3,
+    ("column", "#5", "hdg-a767"): 448.9,
+    # ** THE FOOTING MAT ROW CHANGED BAR SIZE ON 2026-09-10: #6 @ 10" -> #5 @ 12". **
+    # It went +37% earlier the same day, when FT-SG-W1/E1 gained the retaining set's mat —
+    # nothing in the engine grades a footing's own flexure except on the retaining set, so
+    # their 3'-0" PLAIN cantilever under the two walls carrying the balcony's four
+    # moment-fixed columns had never been run, and the HEEL alone is Mu 8,303 against a
+    # plain 12" strip's 3,536, d/c 2.35. The mat is still owed. What changed is the bar:
+    # all five strips narrowed 96" -> 84", which removed 22% of the toe moment and brought
+    # `#5 @ 12"` from 0.90 to 0.70. See sunken_garden_court_free_body.md §7e — and note
+    # that `#4 @ 12"` is NOT available below this, on ACI 318-19 §7.6.1.1 minimum steel.
+    #
+    # ** THE ROW IS KEYED ON THE BAR, SO THIS IS A SHAPE CHANGE AND NOT A VALUE ONE. **
+    # ("footing", "#6") is gone and ("footing", "#5") is new, which the shape assertion
+    # catches before the per-row one. The footing #5 row and the foundation-wall #5 row are
+    # different scopes and do not merge.
+    ("footing", "#4", "hdg-a767"): 229.5,
+    ("footing", "#5", "hdg-a767"): 1075.2,
+    ("foundation wall", "#4", "hdg-a767"): 481.3,
     ("foundation wall", "#5", "hdg-a767"): 219.0,
-    ("foundation wall", "#6", "hdg-a767"): 1022.1,
+    ("foundation wall", "#6", "hdg-a767"): 956.5,
 }
-# -26.6 lb on 2026-09-10: the five court walls came flush with the porch datum, taking 2"
-# off three retaining stems. Steel authored as a SPACING is `area / spacing`, so 2" off a
-# 57'-0" run is 9.5 sf of plane gone from both the horizontal (#4) and the vertical (#6)
-# mats. Same bars, same spacings, less wall — and the #6 row also carries W-SG-W1/E1, whose
-# tops did not move.
-_TOTAL_LB = 4750.0
+# ** -1,312.9 lb ON 2026-09-10, AND IT COMES FROM TWO SEPARATE MOVES. **
+#
+# The mat's bar size (above) is the larger half: #6 @ 10" -> #5 @ 12" on all five strips,
+# about -1,164 lb, and it takes out steel and NO concrete.
+#
+# The court's clear length went 28'-0" -> 26'-0" for the rest. That shortens W-SG-W2 and
+# W-SG-E2 by 2'-0" each, which is 4'-0" off the retaining run and 4'-0" off two of the five
+# footing strips. Steel authored as a SPACING is `area / spacing`, so a foot off what is now
+# a 52'-8" run of retaining wall is 4.75 sf of plane gone from both the horizontal (#4) and
+# the vertical (#6) mats. Same bars, same spacings, less wall — and the wall #6 row also
+# carries W-SG-W1/E1, whose lengths did not move.
+_TOTAL_LB = 3514.7
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
@@ -154,7 +166,7 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(152.26, rel=0.02), (
+    assert total_cy == pytest.approx(147.64, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
@@ -174,10 +186,24 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # Keep both spellings on every new cast column. A drawing string nobody bills and a
     # takeoff row nobody draws are the two halves of the same mistake.
     #
-    # 27.0 -> 31.2 on 2026-09-10, and this one is a DESIGN change rather than a bookkeeping
+    # 27.0 -> 31.6 on 2026-09-10, and that one was a DESIGN change rather than a bookkeeping
     # one: FT-SG-W1/E1 gained the retaining set's mat, because their 3'-0" PLAIN heel is
     # 2.35x over and nothing in the engine was grading it. +680 lb of #6 and #4 against
     # +1.2 cy. **A ratio RISING on a reinforcement finding is the right direction** — the
-    # sag at 25.74 was steel that existed and was not billed; this is steel that did not
+    # sag at 25.74 was steel that existed and was not billed; that was steel that did not
     # exist and now does.
-    assert total_lb / total_cy == pytest.approx(31.2, rel=0.03)
+    #
+    # ** THEN 31.6 -> 23.8, LATER THE SAME DAY, AND THIS SAG IS NOT THE 25.74 KIND. **
+    # The court shortened 28'-0" -> 26'-0" and all five strips narrowed 96" -> 84", and the
+    # mat came down with them, #6 @ 10" -> #5 @ 12". -1,313 lb against only -5.05 cy, so the
+    # ratio falls hard: a bar-size cut removes steel and NO concrete at all, which is the
+    # one move that can drop this figure without anything being hidden from it. The sag at
+    # 25.74 was steel the takeoff could not SEE; this is steel that is not there, because
+    # sunken_garden_court_free_body.md §7e re-ran the toe at its new length and found the
+    # bigger bar was carrying 43% of unused capacity.
+    #
+    # ** 23.8 lb/cy IS LOW AND §3 SAYS SO. ** A lightly reinforced residential foundation
+    # runs 40-80. The gap is still the unauthored steel §3 lists, not this cut — but the cut
+    # has eaten into the margin this figure had, and a further DESIGN reduction in steel is
+    # now the thing to look at twice.
+    assert total_lb / total_cy == pytest.approx(23.81, rel=0.03)

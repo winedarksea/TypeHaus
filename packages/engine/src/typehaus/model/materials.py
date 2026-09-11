@@ -29,6 +29,14 @@ class Material(HausModel):
     # ``0.0`` is meaningful and distinct from ``None``: a true vapour barrier, not missing data.
     vapor_permeance_perms: float | None = None
     density: float | None = None  # kg/m³ (thermal mass / dead load headroom)
+    # kg/m² of finished surface, for a layer whose THICKNESS is a profile depth rather than a
+    # depth of material. A 7/8" corrugated panel is 7/8" of wall and about 0.018" of steel,
+    # so `density × thickness` overstates its weight by roughly fifty times — which nothing
+    # noticed until `structural.masonry_guard_bearing` weighed a framed screen guard at
+    # 402 plf and sent it looking for a masonry bearing line. Where this is stated it WINS
+    # over `density × thickness` for dead load; `density` stays what it is (the material's
+    # own, for thermal mass), and nothing else reads this.
+    areal_density_kg_m2: float | None = None
     specific_heat: float | None = None  # J/kg·K (dynamic-sim headroom, unused)
     # Presentation: hatch/color key into the Nordic palette (→ 21 §Nordic preset).
     hatch: str | None = None

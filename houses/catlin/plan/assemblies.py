@@ -1736,7 +1736,7 @@ GARDEN_COURT_SLAB = Assembly(
     source="sunken-garden court floor: 3 1/2\" unconditioned slab, sky-exposed and saw-cut, F3+C2 mix. Its base course is not modelled",
 )
 
-# The sunken-garden court's open centre: 147 sf of turf inside the SL-SG-FLOOR rim
+# The sunken-garden court's open centre: 160 sf of turf inside the SL-SG-FLOOR rim
 # (params/sunken_garden.GARDEN_FIELD). It is a USGA putting-green profile, built to the
 # *Recommendations for a Method of Putting Green Construction*, 2018 revision, Steps 3-5.
 #
@@ -1772,7 +1772,7 @@ GARDEN_COURT_SLAB = Assembly(
 # That is what keeps the field out of `concrete_mix_matches_exposure` (it drops from
 # `with_spec`, and that check's UNKNOWN branch only fires when NO pour in the house states a
 # mix) and out of `concrete_cover_meets_minimum`. Every layer is a `_BILLABLE` function, so
-# all 147 sf of each bills through `envelope_layer_takeoff`; prices.toml carries a zero
+# all 160 sf of each bills through `envelope_layer_takeoff`; prices.toml carries a zero
 # `slab:GARDEN_PUTTING_GREEN` row so `structural_solids_takeoff` does not ALSO order 8.15 cy
 # of concrete that does not exist. Irrigation is an `[allowances]` line, not a layer.
 GARDEN_PUTTING_GREEN = Assembly(

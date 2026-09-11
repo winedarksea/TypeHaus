@@ -91,31 +91,21 @@ HEADER_TOP_FT = 7 + 4 / 12
 HEADER_SOFFIT_FT = HEADER_TOP_FT - 11.25 / 12
 ROOF_COLUMN_EAST_X_FT = 30.0
 
-# ** THE TWO SCREEN RAILS, WHICH ARE WHAT LETS THE SCREEN BE THE GUARD (owner, 2026-09-10). **
-# The screen used to stand beside a separate metal guard on the same line -- two elements an
-# inch apart doing one job -- because a 2x4 slat cantilevered off the deck cannot take IRC
-# Table R301.5's 200 lb: resolving that base moment over a 5 1/4" arm needs ~1,700 lb of
-# tension per slat, and the Virginia Tech tests behind DCA 6 measured 178 lb ultimate for a
-# 1/2" lag. Nothing about the SLAT changed. What changed is that the load no longer goes
-# through one.
+# ** THE SLAT CLERESTORY'S SILL IS THE PANEL'S TOP PLATE, AND THERE ARE NO RAILS. **
+# An earlier pass at this put two 2x6 cross rails on the column line at +1'-0" and +3'-0" to
+# carry the guard load into PT-BW-CW and PT-BW-CNW, because the screen was then open slats
+# for its whole height and a 2x4 slat cantilevered off the deck cannot take IRC Table
+# R301.5's 200 lb (resolving that base moment over a 5 1/4" arm wants ~1,700 lb of tension
+# per slat, against the 178 lb ultimate the Virginia Tech tests behind DCA 6 measured for a
+# 1/2" lag). The solid panel superseded both: at +4'-0" it covers the guard zone outright,
+# and two rails at +1'-0" and +3'-0" were left buried inside its own studs doing nothing the
+# wall was not already doing. They are deleted, and the slats sit on the panel's top plate.
 #
-# Two rails on the passage side of the screen, spanning PT-BW-CW to PT-BW-CNW and carrying
-# into the piers through the columns that are already there. The 200 lb lands on the upper
-# rail at the guard line, which is a 4'-11 3/4" simple span: M = 249 lb-ft, S = 7.56 in3,
-# f_b = 395 psi against an Fb near 850 psi wet-service, d/c 0.46. The slats are in-fill
-# spanning 2'-0" between the rails and carry only Table R301.5 fn. f's 50 lb over a square
-# foot. `SC-BW-WEST.role="guard"` is what tells the engine the screen IS the guard now.
-#
-# ** ON EDGE AND SET OFF THE DECK, WHICH IS THE OWNER'S OWN OBJECTION HONOURED. ** A top and
-# bottom PLATE would work structurally and is the wrong detail outdoors: a flat plate on the
-# deck is a horizontal ledge in the splash and snow line, under a screen, unreachable to
-# clean and slow to dry -- the classic rot start. These are on edge (1 1/2" of upward-facing
-# grain, not 3 1/2"), the lower one is held 12" clear of the boards so the snow line and the
-# hose pass under it, and both take the same butyl cap every other beam top here takes.
-SCREEN_RAIL_TOP_FT = (1.0, 3.0)     # lower rail top +1'-0"; upper rail top = the guard line
-SCREEN_RAIL_X_FT = LANDING_WEST_FT + 3 / 12 + 1.5 / 24   # against the columns' east face
-# The solid panel's head, and the slat clerestory's sill. +4'-0" clears the 36" guard line by
-# a foot and leaves 2'-4 3/4" of slat under the header soffit.
+# They also cost something while they existed, which is worth recording: bearing on the two
+# columns, they gave `engineering/pier_basis.py` two beams carrying no modelled plan area, so
+# PT-BW-W and PT-BW-GW could not publish an axial demand and `structural.lateral_racking`
+# went UNKNOWN on both. A member with a LINE load and no area is a real gap in that module;
+# this design no longer walks into it.
 SCREEN_PANEL_TOP_FT = 4.0
 
 
@@ -259,13 +249,26 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
      ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
      "3-2x12")
 
-# The two screen rails (see SCREEN_RAIL_TOP_FT above). They run the full deck edge, so each
-# cantilevers ~10" south and ~9" north of its columns to meet the house and the garage -- a
-# guard's ENDS are openings in it as surely as the gaps between its slats are.
-for _index, (_suffix, _top) in enumerate(zip(("SCLO", "SCHI"), SCREEN_RAIL_TOP_FT,
-                                             strict=True), 8):
-    beam(_index, f"BM-BW-{_suffix}", SCREEN_RAIL_X_FT, DECK_SHEET_SOUTH_Y_FT,
-         SCREEN_RAIL_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), _top, "2x6")
+# ** THE SCREEN PANEL'S SILL, WHICH IT CANNOT DO WITHOUT AND NEARLY DID. **
+# W-BW-SCREEN stands on the column line at x=6'-0" and weighs 77 plf. Nothing was under it
+# between the two seat beams -- the deck's westmost joist is 3 3/4" east of this line -- so
+# its sill plate spanned 4'-11 3/4" carrying ~385 lb, which a flat 2x4 plate does not do
+# (f_b ~2,200 psi). `structural.masonry_guard_bearing` is what said so, and it was right:
+# a guard over the house's 50 plf allowance has to name its bearing line.
+#
+# A 2x8 between the two columns is the whole fix. Span 4'-11 3/4", w 77 plf, M 239 lb-ft,
+# S 13.14 in3, f_b 218 psi -- d/c ~0.26 wet-service.
+#
+# ** IT SITS IN THE JOIST PLANE, NOT IN THE SEAT PLANE, AND THAT IS FORCED. ** At the seat
+# top it would be at the same elevation as BM-BW-HOUSE-SEAT and BM-BW-GARAGE-SEAT, whose
+# west ends are on this same line, and two beams crossing at one elevation is a clash in a
+# model with no hanger (`structural.member_interference` reported it). Topped with the
+# joists instead it lands ON both seats, which is an ordinary bearing, and it doubles as the
+# deck's west rim -- the joist field starts 3 3/4" east of this line to clear the columns,
+# so without it that strip of board had nothing under it either.
+beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT,
+     LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
+     ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"), DECK_JOIST_TOP_FT, "2x8")
 
 # --- piers, pedestals and columns -------------------------------------------------------
 #

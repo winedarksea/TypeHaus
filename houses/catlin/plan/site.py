@@ -333,7 +333,10 @@ SITE = Site(
         # and took them to 0'-0". This is data, not prose: `engineering/balcony_wind`
         # reads the site's spot elevations and nothing reconciles these two against
         # `params/sunken_garden.SPEC.retaining_top_ft`. Move them with the wall.
-        # Both are inside the apron's U (x 4'..32', y -33.33'..-9.5') and stay there.
+        # ** AND A FOURTH TIME, IN y RATHER THAN IN z (2026-09-10). ** The court shortened
+        # 28'-0" -> 26'-0", which walked `W-SG-S`'s axis from -29.3333 to -27.3333 and left
+        # both stations 1'-8" south of the wall they record, out in the apron. Moved with
+        # it. Both are inside the apron's U (x 4'..32', y -31.33'..-9.5') and stay there.
         #
         # None of these four move with GRADE: they are the tops of structures, not readings
         # of the soil plane. But they must move when those structures do, and the first two
@@ -367,8 +370,8 @@ SITE = Site(
                       kind="structure"),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375),
                       kind="structure"),
-        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0), kind="structure"),
-        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0), kind="structure"),
+        SpotElevation(position=pt(ft(10), ft(-27, -4)), elevation=ft(0), kind="structure"),
+        SpotElevation(position=pt(ft(26), ft(-27, -4)), elevation=ft(0), kind="structure"),
     ),
     # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
     # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.

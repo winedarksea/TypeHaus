@@ -21,8 +21,14 @@ Conventions, so that a reader comparing rows compares like with like:
 * a safety factor is carried as ``required / achieved`` so that, like every strength ratio
   beside it, **> 1 is over**;
 * **passive resistance on the toe is neglected** unless the model can establish the toe's
-  embedment. It is the standard conservative treatment and it barely matters here — on the
-  catlin walls the toe is buried 6 1/2" and contributes under 1% of the resistance;
+  embedment. It is the standard conservative treatment, and on the catlin court walls it is
+  not a conservatism at all: **the toe is buried 0"**. The footing top IS the court floor
+  (2026-09-05), and the rim slab carries an ``FO-SG-TOE-*`` void over each strip, so nothing
+  laps the toe and there is no soil to mobilise. ``toe_embedment_ft = 0.0`` is therefore the
+  correct value rather than a safe one. (This bullet read "buried 6 1/2", contributes under
+  1%" until 2026-09-10; it had been stale since the footings rose, and it is exactly the kind
+  of sentence a later reader would "correct" in the UNSAFE direction by restoring a passive
+  term that has nothing to push against.)
 * **the wall stands ON its footing.** ``FoundationWall.bottom_elevation`` is the wall's own
   underside, which ``resolve/envelope.py::_resolve_footing`` makes the footing's TOP. So the
   stem is the wall's full height, and ``H`` for the free body is that height **plus** the
