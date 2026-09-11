@@ -138,14 +138,41 @@ y=37'-6", not brackets standing off the basement concrete.
 > both y stations by a canopy column standing on that same pier and rising through the deck
 > band. The columns own x=6'-0"; the seats get the piers.
 
-> ⚠ **`PT-BW-IC`/`-IE` bear on `SL-G-FLOOR` and the thickening under them is a NOTE, not an
-> element.** Thicken the slab to 10" over a 2'-0" square under each, cast monolithic. A `Pad`
-> was tried and is the wrong element: a thickening is one pour with the slab, and modelling
-> it separately reports a `concrete_interference` lap with the slab it is part of.
-> `structural.deck_footing_size` reports NOT_APPLICABLE and names this as what it excludes.
+> ⚠ **`PT-BW-IC`/`-IE` bear on `SL-G-FLOOR` as cast — no thickening, and no anchor bolt
+> (owner, 2026-09-11).** A "thicken to 10" over a 2'-0" square, monolithic" note stood here
+> for a day. The slab never wanted it: 8.1 ft² tributary at IRC R507.1's 50 psf is ~405 lb per
+> post, ~600 lb with the stair's top reaction, which under a 3 1/2" square is a lighter load
+> at a lower contact pressure than one tire of the car that parks on this slab. Spread through
+> the 3 1/2" pour it reaches the 1" under-slab XPS at about 5 psi against a 40 psi board.
 >
-> **They are 4x4 KDAT, 25 3/4" tall, on `ABU44` standoff bases with cast-in `AB-058-10-SS`
-> bolts (owner, 2026-09-11).** The first pass authored 6x6s sized off the PIER top, so they
+> **What wanted the 10" was the bolt.** `AB-058-10-SS` is 5/8" × 10" and needs something like
+> 8" of embedment; the slab is 3 1/2" on foam, so the bolt could not live in it and dragged a
+> thickening along to house itself. The bases are now authored `anchored=False`: download
+> crosses the plate into the pour, which is bearing and needs no bolt, and the joint claims
+> **no uplift and no lateral**. That is outside ESR-1622's tabulated configuration, which is
+> measured through the anchor — and ESR-1622 §5.8 puts the anchor and the concrete support
+> outside its own scope, which makes it the designer's call rather than the report's.
+> The order is 4 `AB-058-10-SS`, not 6.
+>
+> ⚠ **AND HERE IS WHAT NOBODY GRADES.** With no base anchor these two are leaning columns:
+> they carry gravity and lean on the braced system for stability. `RL-BW-GARAGE-E`'s 200 lb
+> guard load has to reach ground through the landing into the seat beams and down
+> `PT-BW-GW`/`GE`, whose `ABU66SS` bases ARE anchored. **No check in this engine follows that
+> path.** `structural.uplift_path_coverage` now reports these two NOT_APPLICABLE and says
+> why, which is honest about the joint and silent about the diaphragm. If a reviewer wants it
+> closed, the cheap answer is one anchor back in the east base, not the thickening back.
+>
+> `structural.deck_footing_size` still reports NOT_APPLICABLE and correctly: R507.3.1 sizes a
+> spread footing over soil and no soil is in this load path. A `Pad` stays the wrong element
+> for any future thickening — one pour with the slab has no element that says "monolithic",
+> and an isolated pad reports a `concrete_interference` lap with the slab it is part of.
+>
+> **They are 4x4 KDAT, 25 3/4" tall, on `ABU44` standoff bases, unanchored (owner,
+> 2026-09-11).** The 1" standoff is the reason the part is here and it is not a dry-location
+> nicety: `SL-G-FLOOR` is authored `EXPOSED_MIX` for ACI exposure class **C2** on the
+> house's own reasoning that chloride arrives on the car and pools on a floor nobody rinses,
+> and this corner is 3'-0" inside the service door where plowed snow is walked in. The
+> standoff keeps the post's end grain out of that water. The first pass authored 6x6s sized off the PIER top, so they
 > stopped at −1'-3 1/2" under carriers whose soffit is −0'-8 1/4" — a 7 1/4" gap nothing
 > graded. `structural.deck_post_size` reads Table R507.4's 6'-9" for a 4x4 against 2'-1 3/4".
 

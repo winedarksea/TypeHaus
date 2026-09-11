@@ -3359,8 +3359,10 @@ for _row, _y, _rise in _PILLAR_ROWS:
     #   * **ABU66SS — unrated.** Every published value an ABU has is measured with the
     #     stirrup bearing on CONCRETE through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts
     #     that anchor and its footing outside its own scope. On a deck there is no pour, no
-    #     cast-in bolt and no basis for the table — and library/hardware.py already records
-    #     that the *stainless* ABU66SS is not in ESR-1622 at all. Its 1" standoff was cited
+    #     cast-in bolt and no basis for the table. (The stainless ABU66SS is still not in
+    #     ESR-1622, but that is no longer why it fails here: L-F-SSNAILS rates it at the
+    #     galvanized ABU66's numbers since 2026-09-11. It fails on the JOINT — those numbers
+    #     are concrete-bearing numbers and this is wood-on-wood.) Its 1" standoff was cited
     #     to IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE.
     #   * **DTT2Z — right idea, wrong shape.** One-sided: eccentric on a 6x6, needing a 1/2"
     #     rod driven through the joist pack to a nut in the beam bay, and contributing

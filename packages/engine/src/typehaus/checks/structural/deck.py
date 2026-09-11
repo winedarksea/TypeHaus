@@ -777,16 +777,17 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
         # ** EARNED, NOT ASSUMED. ** R507.3.1 sizes a deck post's own spread footing over
         # SOIL, and the positive evidence of absence here is that the post lands on a slab on
         # grade: there is no footing to size because the slab is what bears. What that leaves
-        # ungraded is the slab's own thickening and punching shear under the point load, and
-        # this says so rather than letting it pass silently — a Pad authored beside the slab
-        # is NOT the answer (it reports a concrete_interference lap with the slab it is part
-        # of, because the model has no way to say "monolithic").
+        # ungraded is the slab's own bending and punching shear under the point load, and
+        # this says so rather than letting it pass silently. If the answer turns out to be a
+        # thickening, a Pad authored beside the slab is NOT how to model it (it reports a
+        # concrete_interference lap with the slab it is part of, because the model has no way
+        # to say "monolithic") — it stays a drawing note.
         return not_applicable(
             "structural.deck_footing_size",
             f"post {post.tag} bears on {bearing.tag}, a slab on grade ({where}) — IRC "
             f"R507.3.1 sizes a spread footing over soil and there is none here. NOT graded "
-            f"by this or any other rule: the slab thickening and punching shear under the "
-            f"post, which the drawings must carry as a note",
+            f"by this or any other rule: the slab's own bending and punching shear under the "
+            f"point load, and the bearing of whatever is under the slab",
             (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
     if bearing is None:
         return _unknown(

@@ -60,6 +60,19 @@ def tags_covered_by(model: ResolvedModel, kinds: frozenset) -> set:
 
 
 
+def unanchored_post_tags(model: ResolvedModel) -> set:
+    """Tags named by an authored POST_BASE that declares ``anchored=False``.
+
+    A bearing-only base takes no cast-in bolt, so :func:`post_base_anchor_rows` must not
+    bill one. See ``Connector.anchored`` for what the plan is claiming when it sets this.
+    """
+    unanchored: set = set()
+    for element in _authored_connectors(model):
+        if element.kind is ConnectorKind.POST_BASE and not getattr(element, "anchored", True):
+            unanchored.update(element.connects)
+    return unanchored
+
+
 def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
     """Every PAIR of tags one authored connector of ``kinds`` names together.
 
@@ -198,6 +211,7 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     ``Connector`` elements *and* the ones ``post_base_rows`` derives. They are one order.
     """
     covered = tags_covered_by(model, frozenset({ConnectorKind.POST_BASE}))
+    unanchored = unanchored_post_tags(model)
     stocked = catalogued_post_sizes()
     by_storey: Counter = Counter()
     tags: list = []
@@ -217,6 +231,10 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
         if not (post.tag in covered or post.supported_by):
             continue
         if not bears_on_concrete(model, post):
+            continue
+        # A base the plan declares bearing-only has no bolt to buy: download crosses the
+        # plate into the pour, and the joint gives up the uplift and lateral the bolt buys.
+        if post.tag in unanchored:
             continue
         by_storey[storey] += 1
         tags.append(post.tag)

@@ -315,9 +315,12 @@ values. A steel-governed row would not take C_M.
 * **`ABU66SS` stainless standoff base, until 2026-09-03.** It has no published value at this
   joint: every ABU number is measured with the stirrup bearing on CONCRETE through a 5/8"
   cast-in anchor, and ESR-1622 §5.6 puts even that anchor outside its own scope. On a deck
-  there is no pour and no cast-in bolt. (`library/hardware.py` also records that the
-  *stainless* ABU66SS is not in ESR-1622 at all — §3.2.1 evaluates ASTM A653 galvanised steel
-  and Table 2 lists no SS model.) And the reason for the standoff went with the concrete: the
+  there is no pour and no cast-in bolt. (The stainless ABU66SS is still absent from ESR-1622
+  — §3.2.1 evaluates ASTM A653 galvanised steel and Table 2 lists no SS model — but since
+  2026-09-11 that is no longer a capacity objection: Simpson letter L-F-SSNAILS rates it at
+  the galvanised ABU66's values. The objection here survives it, because those values are
+  measured bearing on CONCRETE and this joint is wood-on-wood.) And the reason for the
+  standoff went with the concrete: the
   1" gap was cited to IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE.
 * **`DTT2Z` deck tension tie, for part of the same day.** A joint Simpson do publish for a
   post on framing, and ESR-2330 §3.2.1 covers the -Z suffix (the report is **ESR-2330**, not

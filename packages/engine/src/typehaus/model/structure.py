@@ -384,6 +384,21 @@ class Connector(Element):
     connects: tuple[str, ...] = ()  # member/wall/post tags the hardware joins
     source: str | None = None  # design specification for custom fabricated hardware
     axis: str | None = None  # optional in-plane run direction ("x" | "y") for braces
+    #: A POST_BASE landing on concrete WITHOUT a cast-in anchor bolt.
+    #:
+    #: Simpson publish an ABU's uplift and lateral values *through* a 5/8" anchor the base
+    #: does not include, and ESR-1622 §5.8 then puts that anchor's own design outside the
+    #: report. Set this False and the base is a bearing-and-standoff device only: download
+    #: passes through the plate into the pour, which is bearing and needs no anchor, and the
+    #: joint claims NO uplift and NO lateral. ``takeoff/uplift_joints.post_base_anchor_rows``
+    #: stops billing the bolt and ``checks/structural/uplift_path`` stops reporting an uplift
+    #: path that is not there.
+    #:
+    #: It is a real configuration and not a shortcut: a 5/8" x 10" cast-in bolt cannot live
+    #: in a 3-1/2" slab, so a base on a slab-on-grade either drags a thickening along to
+    #: house the bolt or gives up the ratings the bolt buys. Only set it where the demand is
+    #: gravity — catlin's PT-BW-IC/-IE carry a landing inside a garage, where uplift is nil.
+    anchored: bool = True
 
 
 @register_element

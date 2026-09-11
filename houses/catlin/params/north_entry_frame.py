@@ -460,12 +460,27 @@ ROOF_COLUMNS = [
 # and its "R507.4 wants 6x6" decoration only prints when the height is over the table.
 INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE.feet
 #
-# ** THEY BEAR ON THE SLAB, AND THE THICKENING UNDER EACH IS A DRAWING NOTE, NOT AN ELEMENT. **
-# A `Pad` was tried here and is the wrong element: a thickened slab is ONE pour with the slab,
-# and modelling it as an isolated pad reports a concrete_interference lap with `SL-G-FLOOR`
-# and a frost_depth FAIL for a pour inside a heated-adjacent garage. The model has no way to
-# say "monolithic", so the honest record is the slab bearing plus AN-BW-STRUCTURE naming the
-# thickening. `structural.deck_footing_size` reports NOT_APPLICABLE and says why.
+# ** THEY BEAR ON THE SLAB AS CAST, AND THE THICKENING IS GONE (owner, 2026-09-11). ** This
+# carried a "thicken to 10in over a 2ft square under each post, monolithic" note for a day.
+# Two passes killed it:
+#
+#   * **The slab never needed it.** 8.1 ft2 tributary (the number `deck_post_size` prints) at
+#     IRC R507.1's 50 psf is ~405 lb per post, ~600 lb with ST-G-SERVICE's top reaction. Under
+#     a 3-1/2" square that is a LOWER contact pressure and a third the load of one tire of the
+#     car this slab is already designed for. Spread through 3-1/2" of concrete it reaches the
+#     1" under-slab XPS at roughly 5 psi against a 40 psi board, and only ~1 psi of that is
+#     the sustained dead load that creep cares about.
+#   * **What actually wanted the 10in was the ANCHOR BOLT.** AB-058-10-SS is 5/8" x 10" and
+#     needs ~8" of embedment; the slab is 3-1/2" on foam. The bolt could not live in the slab,
+#     so it dragged a thickening along to house itself. Dropping the bolt drops the thickening
+#     -- see `params/breezeway.py::INTERIOR_POST_BASES`, where the base is authored
+#     `anchored=False`: download crosses the plate into the pour, and the joint claims no
+#     uplift and no lateral. Both are nil here.
+#
+# `structural.deck_footing_size` still reports NOT_APPLICABLE, and correctly: R507.3.1 sizes a
+# spread footing over soil and there is no soil in this load path. A `Pad` remains the wrong
+# element for any future thickening -- ONE pour with the slab has no element that says
+# "monolithic", and an isolated pad reports a concrete_interference lap with `SL-G-FLOOR`.
 INTERIOR_POSTS = [
     Post(uid=f"BWPT{9 + _i:02d}AAAA", tag=f"PT-BW-I{_s}",
          position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),

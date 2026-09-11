@@ -83,20 +83,40 @@ def test_no_allowable_is_a_fabricated_zero(item):
 # --- the stainless trap ------------------------------------------------------------------
 
 
-def test_the_stainless_base_does_not_inherit_the_galvanised_report():
-    """ESR-1622 evaluates ASTM A653 galvanised steel and lists no SS model. Neither may we.
+def test_the_stainless_parts_match_carbon_by_a_letter_not_by_a_prefix_match():
+    """The right answer, arrived at the right way — and the wrong way still has to be shut.
 
-    This is the specific bug ``allowable_for_model`` exists to prevent, and it is a live one:
-    ``hardware_by_model`` prefix-matches, so it hands back the ABU66 record for "ABU66SS" —
-    which is right for finding a product family and catastrophic for finding a capacity.
-    Retailers make exactly this mistake and cite ESR-1622 for the stainless part.
+    Until 2026-09-11 both stainless records here carried no capacity, because ESR-1622 and
+    ESR-2613 genuinely do not cover the SS models and the house declines to read a retailer
+    listing as a report. Simpson engineering letter L-F-SSNAILS closes it: a stainless
+    connector carries the CARBON connector's published allowables, and the only reduction is
+    smooth-shank nail withdrawal, which a SCNR ring-shank substitution buys back.
+
+    So the numbers now agree with the carbon parts. **That makes this test more important,
+    not less**: an agreeing number is exactly what a silent prefix-match fallthrough would
+    also produce, and ``hardware_by_model`` really does hand back the ABU66 record for
+    "ABU66SS". The assertions below pin that the agreement is AUTHORED — a distinct record,
+    naming the letter in its own citation — rather than inherited.
     """
     galvanised = allowable_for_model("ABU66")
     stainless = allowable_for_model("ABU66SS")
     assert galvanised is not None and galvanised.uplift_lb == 2190.0
-    assert stainless is not None, "the SS part must carry an explicit empty record"
-    assert stainless.is_empty, "ESR-1622 publishes nothing for the stainless ABU"
-    assert stainless is not galvanised
+    assert stainless is not None and not stainless.is_empty
+    assert stainless is not galvanised, "parity must be a record, never a shared object"
+    assert stainless.uplift_lb == galvanised.uplift_lb
+    assert stainless.download_lb == galvanised.download_lb
+    assert "L-F-SSNAILS" in stainless.citation, \
+        "the parity must name the letter that grants it, not the report that refuses it"
+    # The carbon record must NOT start citing the letter: it needs no parity argument.
+    assert "L-F-SSNAILS" not in galvanised.citation
+    # Same story at the hurricane tie, where the letter also explains the lower figures that
+    # were in circulation: they are the stainless SMOOTH-shank table.
+    tie = allowable_for_model("H2.5ASS")
+    assert tie is not None and tie.uplift_lb == allowable_for_model("H2.5A").uplift_lb == 700.0
+    assert "SSA8D" in tie.fasteners, "the nail the 700 lbf is conditional on must be named"
+    # An SS part nobody has recorded still returns None rather than the carbon numbers —
+    # the exact-match rule is what makes the parity above a statement instead of an accident.
+    assert allowable_for_model("ABU1212SS") is None
     # The prefix match that would have caused it, still doing its own job correctly.
     assert hardware_by_model("ABU66SS") is not None
 
@@ -194,7 +214,10 @@ def test_the_knee_brace_role_serves_a_part_with_a_published_capacity():
 #: a claim that a report changed or a new one was found — which is exactly the moment it
 #: should be hard to do silently.
 _NO_PUBLISHED_LOAD = {
-    "ABU66SS": "ESR-1622 evaluates galvanised A653 steel; no stainless model is in Table 2",
+    # "ABU66SS" left here on 2026-09-11: L-F-SSNAILS rates a stainless connector at its
+    # carbon twin's values, which is precisely the "from Simpson directly, not from the
+    # ABU66 row" the empty record was holding out for. See
+    # ``test_the_stainless_parts_match_carbon_by_a_letter_not_by_a_prefix_match``.
     "APVKB45-6": "IAPMO ER-102's AP-series index does not list APVKB; ER-280 has no table",
     "APVB12-6": "a through-bolt is an NDS Ch. 12 calculation, not a product rating",
     "BOLT-12X8-HDG": "a bolt through a lapped wood joint has no product rating either — "

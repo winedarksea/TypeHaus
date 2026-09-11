@@ -57,6 +57,7 @@ from typehaus.takeoff.uplift_joints import (
     catalogued_post_sizes,
     is_squash_block,
     tags_covered_by,
+    unanchored_post_tags,
 )
 from typehaus.wind import capacity_caveat
 
@@ -287,6 +288,11 @@ def _post_links(ctx: CheckContext) -> list:
     # ``not_evaluable``, and ``haus print --sealed`` gates on an UNKNOWN at a joint that in
     # fact has its part.
     tied = tags_covered_by(ctx.model, frozenset({ConnectorKind.TENSION_TIE}))
+    # A base the plan declares bearing-only is a stirrup with an empty anchor hole. It is
+    # still a base, so it must not fall past to ``is_squash_block`` on a 2 ft post — but
+    # reporting it as a covered uplift joint would be the reverse error, and a louder one:
+    # ``Connector.anchored=False`` is the plan SAYING no uplift is developed here.
+    bearing_only = unanchored_post_tags(ctx.model)
     based = stirruped | anchored | tied
     topped = authored_joints(ctx.model, _POST_TOP_KINDS)
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
@@ -310,6 +316,15 @@ def _post_links(ctx: CheckContext) -> list:
                                "column's own bar cage, not a connector, and this model "
                                "carries no rebar to point at (the steel is inside the "
                                "column's own $/cy rate, not missing from the order)")))
+        elif tag in bearing_only:
+            links.append(Link(
+                f"post {tag} to {post.supported_by or 'its bearing'}", (tag,), None,
+                not_governed=("its base is authored bearing-only (Connector.anchored is "
+                              "False) — no cast-in bolt, so download crosses the plate into "
+                              "the pour and the joint claims NO uplift and NO lateral. There "
+                              "is no connector here for a coverage rule to find, by design. "
+                              "Whether the DEMAND is in fact nil is a separate statement, "
+                              "and this rule derives no demand")))
         elif tag in based:
             # Named, not generalised to "a base": printing "an authored post base" against a
             # gasketed lag would be the same misreport in prose that the shared

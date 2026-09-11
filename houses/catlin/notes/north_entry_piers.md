@@ -159,16 +159,31 @@ two, so the per-column net above halves again to about 136 lb.
 Eight authored `H2.5ASS`, one per bearing — stainless because these land on treated southern
 pine at an entry salted every winter, and the house buys stainless at every KDAT joint.
 
-> ⚠ **The stainless tie is NOT the galvanized tie's 700 lbf, and this house records no
-> number for it.** The figures in circulation for the H2.5ASS are materially lower (a
-> 440/75/70 uplift-F1-F2 row and a 265 lbf stud-to-plate row both appear in secondary
-> listings of the Simpson C-C catalog) and **none could be confirmed against a primary
-> Simpson table or code report on 2026-09-10.** So `library/hardware.py` carries it with
-> `allowable=None`, which is the house's standing way of saying "nobody read the report"
-> rather than handing a capacity check a number nobody sourced. **256 lb is under even the
-> lowest figure in circulation**, which is why one tie per bearing is specified and why this
-> is stated rather than resolved. If a submittal wants it closed, read ESR-2613 or the
-> current C-C catalog for the SS row and record it.
+> ⚠ **CLOSED 2026-09-11, and the number that looked wrong is what closed it.** This note
+> said for a day that the stainless H2.5ASS was not the galvanized tie's 700 lbf, because the
+> figures in circulation for it were materially lower — a 440/75/70 uplift-F1-F2 row in
+> secondary listings of the Simpson C-C catalog — and none could be tied to a primary table.
+>
+> Simpson engineering letter **L-F-SSNAILS** explains both halves at once. A stainless
+> connector carries the carbon connector's published allowables; the one thing that reduces
+> them is that stainless SMOOTH-shank nails withdraw less than carbon ones, and the letter's
+> Nail Substitution Chart recovers the full carbon values with Strong-Drive SCNR Type 316
+> ring-shank nails. **The 440/75/70 row is real — it is the stainless smooth-shank table.**
+> It was never a bad figure, it was the answer to a different installation.
+>
+> So the H2.5ASS is a **700 / 110 / 110** part here, and `library/hardware.py` records it,
+> against 256 lb of demand.
+>
+> ⚠ **THE NAIL IS NOW A SPECIFICATION ITEM.** That 700 lbf is conditional on **SSA8D**
+> stainless ring-shank nails, five to the rafter and five to the plates, substituting for the
+> catalog's 8d common 0.131 x 2-1/2 in. Drive these eight ties with stainless SMOOTH-shank
+> nails and each is worth 440 lbf instead, at 0 FAIL, with nothing in the model able to see
+> it. The canopy survives either nail at 256 lb; the drawings must still say SSA8D.
+>
+> ⚠ **The letter states its own expiry: "valid until 12/31/2024".** No later revision could
+> be retrieved on 2026-09-11. It is the manufacturer's own statement about its own part,
+> which is exactly what this note previously asked for, but a submittal should re-pull the
+> current letter rather than cite this one.
 
 ## 5. The headers — `BM-BW-RW` / `BM-BW-RE` (oracles `engineering/roof_beam.py`)
 
@@ -385,8 +400,12 @@ do not cover any of this, which is why 2'-0" is authored on five of the six.
   fully bedded on the tier below, so there is no span to grade; what is ungraded is
   **movement**, and the owner has accepted it knowingly. See
   `notes/north_entry_structure.md` §3 for what a winter costs and which joint pays.
-- **The truss-to-header tie CAPACITY**, for the reason §4a gives: the stainless H2.5ASS's
-  published allowables could not be sourced. The demand is computed; the capacity is not.
+- ~~**The truss-to-header tie CAPACITY**, for the reason §4a gives: the stainless H2.5ASS's
+  published allowables could not be sourced.~~ **Closed 2026-09-11** — L-F-SSNAILS rates a
+  stainless connector at its carbon twin's values, so the tie is 700/110/110 against 256 lb.
+  What is ungraded now is narrower and is a SPECIFICATION risk rather than a capacity one:
+  that parity is conditional on SSA8D ring-shank nails, and no check in this engine can see
+  which nail was driven. See §4a.
 
 ## 8. The canopy's east columns in BENDING (oracles `roof_moment.roof_base_moments`)
 

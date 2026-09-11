@@ -23,7 +23,11 @@ are the reason the field exists at all rather than a "capacity" column somebody 
 
 Every one of these was pulled from the report itself, not from a retailer listing. That
 distinction turned out to matter: several retailers cite ESR-1622 for the ABU66SS, and
-ESR-1622 does not cover it.
+ESR-1622 does not cover it. **What covers it is a Simpson engineering letter rather than a
+code report** — see ``_L_F_SSNAILS`` below. A stainless connector is rated at its carbon
+twin's published loads; the only thing stainless costs is NAIL withdrawal, and a ring-shank
+substitution buys that back. Two records in this file said "unrated" for two years on the
+strength of having read the code report and stopped there.
 """
 
 from __future__ import annotations
@@ -343,6 +347,39 @@ CS16_COIL_STRAP = StructuralHardware(
 #: ICC-ES ESR-1622, the ABU family's evaluation report.
 _ESR_1622 = "ICC-ES ESR-1622 (Simpson Strong-Tie post base connectors), Table 2, read 2026-08-30"
 
+#: **The letter that rates every stainless connector in this file.** Simpson engineering
+#: letter L-F-SSNAILS, read 2026-09-11 from the Simpson technical-notes PDF: a stainless
+#: connector carries the CARBON connector's published allowable loads. The one mechanism
+#: that reduces them is nail withdrawal — the USDA Forest Products Laboratory found
+#: stainless SMOOTH-shank nails withdraw less than carbon smooth-shank ones — and the letter
+#: gives a substitution chart that buys the full carbon values back with Strong-Drive SCNR
+#: Type 316 ring-shank connector nails. The relevant rows here:
+#:
+#:     8d common  0.131 x 2-1/2 in  ->  SSA8D  (hand-drive) / T10A250MCN (collated)
+#:     16d common 0.162 x 3-1/2 in  ->  SSA16D (hand-drive)
+#:
+#: This is why two records below stopped saying "unrated". It also explains the lower
+#: figures that were in circulation for the H2.5ASS and could not be tied to a report: a
+#: 440/75/70 row IS a real Simpson table — the stainless SMOOTH-shank one — and it is the
+#: number you get if you nail the part with the wrong stainless nail.
+#:
+#: ** TWO CONDITIONS RIDE WITH IT, AND NEITHER IS OPTIONAL. **
+#:   1. The letter's own first line: "Simpson Strong-Tie stainless-steel connectors are
+#:      required to be installed using stainless-steel fasteners." Every bolt, screw and
+#:      nail at a stainless connector is stainless, not only the nails in the chart.
+#:   2. **The copy read is L-F-SSNAILS23 and it states its own expiry: "valid until
+#:      12/31/2024, when it will be re-evaluated by Simpson Strong-Tie."** It is 21 months
+#:      past that date. No later revision could be retrieved on 2026-09-11. The parity is
+#:      recorded because it is the manufacturer's own statement about its own part and is
+#:      the thing the older "unrated" note asked for, but a submittal should pull the
+#:      current letter rather than this one.
+_L_F_SSNAILS = ("Simpson Strong-Tie engineering letter L-F-SSNAILS23 (1 Jan 2023), read "
+                "2026-09-11: a stainless connector carries the carbon connector's published "
+                "allowables; only stainless SMOOTH-shank nails reduce them, and the letter's "
+                "Nail Substitution Chart restores full values with Strong-Drive SCNR Type "
+                "316 ring-shank nails. **The letter states it is valid until 12/31/2024** "
+                "and no later revision could be retrieved — re-pull it for a submittal")
+
 ABU_POST_BASE = StructuralHardware(
     tag="simpson-abu66-standoff-post-base",
     name="ABU66 standoff post base (6x6)",
@@ -376,21 +413,25 @@ ABU_POST_BASE = StructuralHardware(
     ),
 )
 
-#: **The stainless ABU is not the galvanised ABU with a different finish, as far as any
-#: published number is concerned.** Retailers list the ABU66SS under "ICC Certification ABU -
-#: ESR 1622" and that citation does not survive reading the report: ESR-1622 §3.2.1 evaluates
-#: connectors "fabricated from galvanized steel in accordance with ASTM A653", and its Table 2
-#: lists ABU44/44R/46/46R/5-5/5-6/66/66R/88/88R/1010/1010R/1212/1212R — no SS model anywhere.
-#: 316L stainless has a lower yield than the A653 SS Grade 33/40 the tables are built on, so
-#: this is not a case where the galvanised number is obviously conservative either.
+#: **The stainless ABU carries the galvanised ABU's numbers, and it took a letter rather
+#: than a code report to say so (2026-09-11).** ESR-1622 genuinely does not cover it —
+#: §3.2.1 evaluates connectors "fabricated from galvanized steel in accordance with ASTM
+#: A653" and Table 2 lists ABU44Z/44RZ/46Z/46RZ/5-5Z/5-6Z/65Z/66Z/66RZ/88Z/88RZ/1010Z/
+#: 1010RZ/1212Z/1212RZ, every one of them the Z, none of them stainless. So the retailer
+#: listings that cite ESR-1622 for this part are still citing a report that does not cover
+#: it, and this record is still separate from ``ABU_POST_BASE`` for that reason.
 #:
-#: This record exists so that ``allowable_for_model("ABU66SS")`` returns an explicit "read the
-#: report, it does not cover this part" rather than falling through to the ABU66's numbers by
-#: prefix match — which is precisely what ``hardware_by_model`` would do and why
-#: ``allowable_for_model`` is exact-match only. It is not in ``STRUCTURAL_HARDWARE``'s role
-#: dispatch at all — it lives in ``CAPACITY_ONLY_RECORDS`` at the foot of this file, not in
-#: ``STRUCTURAL_HARDWARE``, so no BOM line, role lookup or ``hardware_by_model`` result moves
-#: because of it. ``ABU_POST_BASE`` still serves ROLE_POST_BASE at 6x6, exactly as before.
+#: What changed is that the old note asked for exactly one thing — "a stainless allowable
+#: has to come from Simpson directly, not from the ABU66 row" — and ``_L_F_SSNAILS`` is
+#: Simpson saying it directly. The letter's parity is unconditional on the STEEL; the only
+#: reduction it names is stainless smooth-shank nail withdrawal. **These ten bases are
+#: BOLTED**, 2 - 1/2" through the post, and the governing uplift value recorded below is the
+#: bolted one, so the nail mechanism does not touch it at all. The 16d nails that also go
+#: into the post are specified SSA16D anyway, per the letter's chart and its first line.
+#:
+#: It stays in ``CAPACITY_ONLY_RECORDS`` rather than ``STRUCTURAL_HARDWARE``, so no BOM line,
+#: role lookup or ``hardware_by_model`` result moves because of this change either.
+#: ``ABU_POST_BASE`` still serves ROLE_POST_BASE at 6x6, exactly as before.
 ABU66SS_POST_BASE = StructuralHardware(
     tag="simpson-abu66ss-standoff-post-base",
     name="ABU66SS standoff post base (6x6), 316L stainless",
@@ -401,14 +442,25 @@ ABU66SS_POST_BASE = StructuralHardware(
     source="Simpson Strong-Tie ABU66SS stainless adjustable post base "
            "(strongtie.com/abu) — the stainless variant of the ABU66, specified here "
            "because these ten bases stand at grade in a wet location",
+    # The ABU66's own row, carried across by L-F-SSNAILS. The BOLTED uplift is recorded for
+    # the same reason it is on the galvanised record: this house bolts its bases, footnote 4
+    # says the nailed and bolted values are not cumulative, and a base carrying the nailed
+    # 2,475 while installed with bolts is over-rated by 13%. Lateral stays None — ESR-1622
+    # publishes no F1/F2 row for the ABU family in either steel, and parity cannot conjure a
+    # number that does not exist on the carbon side.
     allowable=AllowableLoads(
-        fasteners="12-16d into the post, 2 - 1/2 in bolts through the post, "
-                  "1 - 5/8 in cast-in anchor bolt (as for the galvanised ABU66)",
-        citation=(_ESR_1622 + " — **ABU66SS IS NOT IN IT**. §3.2.1 evaluates ASTM A653 "
-                  "galvanised steel and Table 2 lists no stainless model. Retailer listings "
-                  "citing ESR-1622 for this part are citing a report that does not cover it. "
-                  "No allowable load is recorded because none is published; a stainless "
-                  "allowable has to come from Simpson directly, not from the ABU66 row"),
+        uplift_lb=2190.0,
+        download_lb=18205.0,
+        load_duration_factor=1.6,   # uplift; the download is published at C_D 1.0/1.15/1.25
+        species=None,               # the report tabulates by connector, not by lumber species
+        fasteners="12-SSA16D stainless ring-shank into the post (the letter's substitution "
+                  "for the catalog's 16d common), 2 - 1/2 in STAINLESS bolts through the "
+                  "post, 1 - 5/8 in stainless cast-in anchor bolt (AB-058-10-SS). Every "
+                  "fastener at a stainless connector is stainless — L-F-SSNAILS, line 1",
+        citation=(_L_F_SSNAILS + ". The values are the ABU66 row of " + _ESR_1622 +
+                  "; ABU66SS is NOT in that table and the parity is the letter's, not the "
+                  "report's. §5.8 still puts the anchor bolt and the concrete support "
+                  "outside scope, in either steel"),
     ),
 )
 
@@ -770,15 +822,40 @@ H25ASS_HURRICANE_TIE = StructuralHardware(
            "The house buys stainless at every KDAT joint (owner, 2026-09-10), and this "
            "connector is nailed into treated southern pine headers at an entry that is "
            "salted every winter.",
-    # ** allowable=None IS A STATEMENT, NOT AN OVERSIGHT — see the module header. ** The
-    # stainless H2.5ASS is NOT the galvanized H2.5A's 700 lbf: the figures in circulation for
-    # it are materially lower (a 440/75/70 uplift-F1-F2 row and a 265 lbf stud-to-plate row
-    # both appear in secondary listings of the Simpson C-C catalog), and none of them could be
-    # confirmed against a primary Simpson table or code report on 2026-09-10. Recording a
-    # number nobody read is worse than recording none, because `allowable_for_model` is what a
-    # capacity check would consume. The demand is in `notes/north_entry_piers.md` §4a — about
-    # 256 lbf per tie under 0.6W with no dead relief — and it is under even the lowest figure
-    # in circulation, which is why this is stated rather than resolved.
+    # ** RESOLVED 2026-09-11, AND THE OLD NOTE'S PUZZLE IS WHAT RESOLVED IT. ** This record
+    # carried no allowable for a day on the grounds that the figures in circulation for the
+    # H2.5ASS were materially lower than the galvanized H2.5A's 700 lbf — a 440/75/70
+    # uplift-F1-F2 row in secondary listings of the C-C catalog — and could not be tied to a
+    # primary table. `_L_F_SSNAILS` explains both halves at once: the 440/75/70 row is a real
+    # Simpson table, the STAINLESS SMOOTH-SHANK one, and the letter says the full carbon
+    # values are recovered by substituting Strong-Drive SCNR ring-shank nails. The number was
+    # not wrong; it was the answer to a different installation.
+    #
+    # ** WHICH MAKES THE NAIL A SPECIFICATION ITEM, NOT A PURCHASING DETAIL. ** 700 lbf here
+    # is conditional on SSA8D. Drive this tie with stainless smooth-shank nails and the joint
+    # is worth 440 lbf, at 0 FAIL, with nothing in the model able to tell. The demand is in
+    # `notes/north_entry_piers.md` §4a — about 256 lbf per tie under 0.6W with no dead relief
+    # — so the canopy survives either nail; the record says SSA8D because the next house may
+    # not.
+    allowable=AllowableLoads(
+        uplift_lb=700.0,
+        lateral_f1_lb=110.0,
+        lateral_f2_lb=110.0,
+        load_duration_factor=1.6,
+        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**; catlin frames SPF at "
+                "SG 0.42 and ESR-2613 publishes no SPF column for the hurricane ties. This "
+                "caveat is the carbon record's and rides across unchanged: stainless parity "
+                "is about the steel and the nails, and repairs nothing about species",
+        fasteners="5 - SSA8D stainless ring-shank to the rafter and 5 - SSA8D to the plates "
+                  "— the letter's substitution for the catalog's 5 - 0.131 in x 2-1/2 in "
+                  "(8d common) each side. **With stainless SMOOTH-shank nails instead, this "
+                  "tie is a 440/75/70 part, not a 700/110/110 one**",
+        citation=(_L_F_SSNAILS + ". The values are the H2.5A row of ICC-ES ESR-2613 "
+                  "(Simpson hurricane ties) Table 1, read 2026-08-30; H2.5ASS is not in "
+                  "that report and the parity is the letter's. ESR-2613 footnote 2 requires "
+                  "a unity check across uplift + both lateral directions under simultaneous "
+                  "loading, footnote 5 states the uplift already carries the wind increase"),
+    ),
 )
 
 HGAM10_MASONRY_GUSSET = StructuralHardware(

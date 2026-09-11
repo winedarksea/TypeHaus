@@ -42,7 +42,9 @@ RULES = CONFIG.uplift
 # PT-BW-RNE run full height in cast concrete and carry no wood column at all.
 # The canopy's two west columns on ABU66SS, and since 2026-09-11 the two interior landing
 # posts on ABU44 (CN-BW-IBASE-C/-E): 4x4 KDAT standing 25 3/4" on the garage slab, authored
-# so the 1" standoff and the cast-in bolt are on the drawings.
+# so the 1" standoff is on the drawings — and so the base can say `anchored=False`, which no
+# derived base can. There is no cast-in bolt under those two; see
+# ``test_every_post_base_on_concrete_is_bought_its_anchor``.
 AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
 
 #: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
@@ -299,28 +301,36 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
 def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
-    Six of catlin's eight bases land on concrete — four breezeway piers and two on the
-    basement slab — and each needs one cast-in anchor. **Both** sunken-garden bases are now
-    on framing: PT-SG-BF2 joined PT-SG-BR2 on the porch deck on 2026-09-03 when it came off
-    PT-SG-FCOL's top, and the four wall-top bases went away entirely with the pillars that
-    became cast columns.
+    Four of catlin's bases land on concrete AND take a bolt — the canopy's two west columns on
+    their 12" piers, and the two stairwell 4x4s on the basement slab. **Both** sunken-garden
+    bases are on framing: PT-SG-BF2 joined PT-SG-BR2 on the porch deck on 2026-09-03 when it
+    came off PT-SG-FCOL's top, and the four wall-top bases went away entirely with the pillars
+    that became cast columns.
+
+    ** AND TWO BASES LAND ON CONCRETE AND TAKE NO BOLT, WHICH IS THE INTERESTING HALF. **
+    PT-BW-IC / PT-BW-IE stand on the garage slab under the interior landing. Their bases are
+    authored ``anchored=False`` (2026-09-11): a 5/8" x 10" cast-in bolt needs something like
+    8" of embedment and SL-G-FLOOR is 3-1/2" on 1" of XPS, so the bolt could not live there
+    without dragging a slab thickening along to house itself. Both went. Those bases transfer
+    download by bearing and claim no uplift and no lateral, which is a real configuration and
+    the one thing that must not silently re-acquire a bolt.
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
     # 2 -> 4 -> 6 -> 4 on 2026-09-10 (the east pair left: PT-BW-RE and PT-BW-RNE became
-    # full-height CAST columns, so the two wood columns on them and their bases went), then
-    # 6 on 2026-09-11: PT-BW-IC / PT-BW-IE grew from squash blocks into 25 3/4" posts on
-    # authored ABU44 standoffs, on the garage SLAB, each wanting its cast-in bolt. On concrete
-    # now: the two stairwell 4x4s on the basement slab, the canopy's two WEST columns on
-    # their 12" piers, and the two interior landing posts.
+    # full-height CAST columns, so the two wood columns on them and their bases went), 6 on
+    # 2026-09-11 when PT-BW-IC / PT-BW-IE grew from squash blocks into 25 3/4" posts on
+    # authored ABU44 standoffs, and 4 again the same day when those two went bearing-only.
     #
-    # The population is the union of authored and derived bases, which is why this no longer
-    # equals the derived rows alone: `CN-BW-BASE-W` / `-NW` (ABU66SS) and `CN-BW-IBASE-C` /
-    # `-E` (ABU44) are authored and still each need their bolt.
-    assert row["count"] == 6
-    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 4
+    # The population is the union of authored and derived bases, which is why this does not
+    # equal the derived rows alone: `CN-BW-BASE-W` / `-NW` (ABU66SS) are authored and each
+    # still need their bolt.
+    assert row["count"] == 4
+    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 2
+    assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
+        "a bearing-only base must not be billed a cast-in anchor"
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:

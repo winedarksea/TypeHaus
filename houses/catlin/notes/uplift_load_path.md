@@ -36,7 +36,7 @@ wall that moves takes its hardware with it.
 | Bottom plate of a framed wall on a framed floor band | LTP4 | 108 | 4' o.c., min 2 per wall |
 | Across the floor band where framed walls stack | CS16 | 72 straps (2 coils) | 8 at the corners + 64 along the runs at 4' o.c. |
 | Wood post standing on concrete | ABU44 | 2 | one per 4x4 that declares a bearing |
-| Cast-in bolt under a post base landing on concrete | AB-058-10-SS | 6 | one per base, authored or derived |
+| Cast-in bolt under a post base landing on concrete | AB-058-10-SS | 4 | one per base, authored or derived, that TAKES one |
 
 Roughly **$590–1,160 of material** on a house whose hardware line was already $11.9k, plus
 **$120–280** for the ten post-base anchors and **$44–80** for the two ABU44s the second pass
@@ -125,7 +125,7 @@ stirrup with a hole in it. Simpson's published uplift and lateral values are tak
 a 5/8" anchor, and they ship none — "anchor bolt by others". Ten ABU66SS had been on the BOM
 for two years with no anchor under any of them, which is a schedule that reads as complete
 while being short the part its capacity is measured through. `post_base_anchor_rows` bills
-one per base landing on concrete: ten of the twelve.
+one per base landing on concrete *that takes one*.
 
 The two it skips are the point of the rule. `PT-SG-BR2`/`BF2` stand on **`FS-SG-PORCH`** —
 the porch deck, not a pour — and a base on framing is bolted or screwed to it, fixings that
@@ -138,11 +138,25 @@ both members of its joint, so the authored-connector guard returns `PR-BW-1..4` 
 posts on them, and a first cut of this rule bought four bolts for four piers that have no
 base at all.
 
-The bolt is **304 stainless**, and that is not gold-plating: ten of the twelve fasten an
-ABU66SS at grade, and a hot-dip bolt under a stainless stirrup in standing water corrodes
-preferentially — the anchor, not the stirrup. The two on the dry basement slab can take a
-galvanised bolt at $3-7. That is a ~$25 purchasing swap, filed with the MiTek ones below
-rather than split into a second product for one role.
+The bolt is **304 stainless**, and that is not gold-plating: it fastens an ABU66SS at grade,
+and a hot-dip bolt under a stainless stirrup in standing water corrodes preferentially — the
+anchor, not the stirrup. The two on the dry basement slab can take a galvanised bolt at $3-7.
+That is a ~$25 purchasing swap, filed with the MiTek ones below rather than split into a
+second product for one role.
+
+> ⚠ **A BASE ON CONCRETE CAN STILL TAKE NO BOLT, AND TWO OF THEM DO (2026-09-11).**
+> `PT-BW-IC`/`-IE` stand on `SL-G-FLOOR` under the interior landing, and their bases are
+> authored `Connector.anchored=False`. The reason is dimensional before it is structural: an
+> `AB-058-10-SS` is 5/8" × 10" and wants something like 8" of embedment, while the garage slab
+> is 3 1/2" of concrete on 1" of XPS. The bolt cannot live there without dragging a 10" slab
+> thickening along to house itself, and both went.
+>
+> What the base gives up is exactly what the bolt buys: the joint transfers **download by
+> bearing only** and claims **no uplift and no lateral**. That is outside ESR-1622's tabulated
+> configuration, which is measured through the anchor — and ESR-1622 §5.8 puts the anchor and
+> the concrete support outside its own scope, which is what makes it the designer's call. It
+> is honest here because these posts stand inside a garage under a landing heavier than any
+> wind on it. `structural.uplift_path_coverage` reports both NOT_APPLICABLE and says so.
 
 ## What is still authored by hand
 

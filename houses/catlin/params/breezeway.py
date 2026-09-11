@@ -380,13 +380,17 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
 # with it -- `post_base_anchor_rows` unions the authored and derived populations on purpose,
 # so all four keep their AB-058-10-SS.
 #
-# ** AND THE STAINLESS BASE IS UNRATED, WHICH IS WHY THIS IS A DETAIL NOTE AND NOT A CAPACITY
-# CLAIM. ** ESR-1622 Table 2 lists no SS model; 316L's yield is below the A653 SS Grade 33/40
-# the ABU tables are built on, so the galvanized number is not even obviously conservative.
-# `library/hardware.py::ABU66SS_POST_BASE` carries `allowable=None` and says so. What makes
-# that acceptable here is that uplift is not the governing case: net 0.6D+0.6W is ~230 lb per
-# column (north_entry_frame.py), and the base is a standoff and a hold-down, never a moment
-# connection.
+# ** THE STAINLESS BASE IS RATED AT THE GALVANIZED BASE'S NUMBERS (2026-09-11). ** ESR-1622
+# Table 2 still lists no SS model, and this file said for a day that the ABU66SS was therefore
+# unrated. Simpson engineering letter L-F-SSNAILS answers it directly: a stainless connector
+# carries the carbon connector's allowables, and the only thing that reduces them is stainless
+# SMOOTH-shank nail withdrawal, which a Strong-Drive SCNR ring-shank substitution buys back.
+# These bases are BOLTED, so the nail mechanism never touches the governing number: 2,190 lb
+# uplift, 18,205 lb download. Net 0.6D+0.6W is ~230 lb per column (north_entry_frame.py).
+#
+# Two conditions come with the letter and both are drawing items: every fastener at a
+# stainless connector is stainless (the 1/2" through-bolts included, not only the anchor),
+# and the 16d nails into the post are SSA16D. See `library/hardware.py::ABU66SS_POST_BASE`.
 COLUMN_BASES = [
     Connector(uid=f"BWCB{_i}AAAAAA"[:10], tag=f"CN-BW-BASE-{_s}",
               kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)),
@@ -398,17 +402,35 @@ COLUMN_BASES = [
     ))
 ]
 
-# ** THE TWO INTERIOR POST BASES, AUTHORED FOR A DIFFERENT REASON: THE STANDOFF IS THE DETAIL. **
-# PT-BW-IC/-IE are 4x4 KDAT standing on the garage slab, inside, dry -- the galvanized ABU44
-# is the right part and the derived rule would have named it. What the derived row cannot say
-# is WHY: a 1" standoff off a slab that gets plowed snow walked onto it, so the end grain never
-# sits in water, and the cast-in AB-058-10-SS that `post_base_anchor_rows` derives for a base
-# on concrete. Authoring the base puts both on the drawings and takes the two posts out of
-# the derived ABU44 row (`tags_covered_by` is by tag). Elevation is the slab top.
+# ** THE TWO INTERIOR POST BASES, AND THEY TAKE NO ANCHOR BOLT (owner, 2026-09-11). **
+# PT-BW-IC/-IE are 4x4 KDAT standing on SL-G-FLOOR, and the 1" standoff is the whole reason
+# the part is here: this corner is not dry. The garage slab is authored EXPOSED_MIX for ACI
+# exposure class C2 precisely because chloride arrives on the car and pools on a floor nobody
+# rinses, and this base sits 3'-0" inside the service door where plowed snow is walked in.
+# The standoff keeps the post's end grain out of that water.
+#
+# ** WHY `anchored=False`, AND WHAT IT COSTS. ** A cast-in AB-058-10-SS is 5/8" x 10". It
+# needs something like 8" of embedment and the slab is 3-1/2" thick on 1" of XPS, so the bolt
+# cannot live here at all -- it drags a 10"-deep thickening along to house itself. The
+# thickening was authored for a day on that basis and is gone: the base is bearing-only, so
+# download crosses the plate into the pour and the joint claims NO uplift and NO lateral.
+# That is outside ESR-1622's tabulated configuration, which is measured through the anchor,
+# and §5.8 makes it the designer's call by putting the anchor and the concrete support
+# outside its own scope.
+#
+# It is honest here because the demand is gravity and nothing else. These posts stand inside
+# a garage under a landing that weighs more than any wind on it; uplift is nil. The landing's
+# lateral -- a 200 lb guard load on RL-BW-GARAGE-E -- reaches ground through the seat beams
+# on PT-BW-GW/GE, whose ABU66SS bases ARE anchored. **What nothing grades is that path**, and
+# `notes/north_entry_structure.md` carries it as an ungraded item rather than a claim.
+#
+# The slab itself was never the question: 8.1 ft2 tributary at IRC R507.1's 50 psf is ~405 lb
+# per post on a 3-1/2" square, which is a lighter load at a lower contact pressure than the
+# car tire this slab is already designed for.
 INTERIOR_POST_BASES = [
     Connector(uid=f"BWIB{_i}AAAAAA"[:10], tag=f"CN-BW-IBASE-{_s}",
               kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),
-              elevation=SITE_GRADE, size="ABU44",
+              elevation=SITE_GRADE, size="ABU44", anchored=False,
               connects=(f"PT-BW-I{_s}", "SL-G-FLOOR"))
     for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT, strict=True))
 ]
