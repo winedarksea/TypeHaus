@@ -54,8 +54,11 @@ def test_both_full_door_landing_patches_fit_the_shared_deck(catlin_plan):
     deck_south = house_face + ft(0, 0.5).meters
     assert surface.buffer(1e-8).covers(box(ft(6.5).meters, deck_south,
                                          ft(9.5).meters, deck_south + ft(3).meters))
-    assert surface.buffer(1e-8).covers(box(ft(8.5).meters, garage_face - ft(3).meters,
-                                         ft(11.5).meters, garage_face))
+    # D-G-SERVICE's RO is 6'-7"..9'-7" since 2026-09-11 (the garage's SW corner), one inch
+    # off D-M-ENTRY's; the deck's east edge IS that jamb, so this patch fits exactly.
+    assert surface.buffer(1e-8).covers(box(ft(6, 7).meters, garage_face - ft(3).meters,
+                                         ft(9, 7).meters, garage_face))
+    assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(9, 7).meters)
 
 
 def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_model_ro):
@@ -75,7 +78,15 @@ def test_interior_landing_has_three_clear_feet_and_real_continuing_beams(catlin_
                                           f"PT-BW-I{tag[-1]}"}
         end = model.plan.by_tag(beam.end_node).position
         assert end.y.meters == pytest.approx(y_end)
-        assert ft(8.5).meters < end.x.meters < ft(11.5).meters
+        # Inside the RO (6'-7"..9'-7"): the west carrier is sistered to FS-BW-FLOOR's joist
+        # at 7'-3 3/4" and the east one's face is on the jamb.
+        assert ft(6, 7).meters < end.x.meters < ft(9, 7).meters
+    # And the sheet is flush to the stem's finished face plus the 3'-0" flight below it,
+    # a quarter inch off W-G-W's gyp face on the west — the west guard is the wall.
+    assert min(p.x.meters for p in floor.subfloor_outline) == pytest.approx(ft(6, 7).meters)
+    assert max(p.x.meters for p in floor.subfloor_outline) == pytest.approx(
+        ft(9, 11.625).meters)
+    assert model.plan.by_tag("RL-BW-GARAGE-W") is None
 
 
 def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin_model_ro):
@@ -112,15 +123,17 @@ def test_tiers_are_cast_pours_at_an_18in_going_over_a_clear_lower_landing(catlin
     assert fronts == sorted(fronts, reverse=True), "the cake is not stepping west"
     for lower, upper in zip(fronts, fronts[1:], strict=False):
         assert lower - upper == pytest.approx(inch(18).meters)
+    # The landing's east edge is the service door's east jamb since 2026-09-11 (9'-7", was
+    # 11'-6"), and the stair foot followed it west to 15'-7".
     assert {round(min(p.x.meters for p in t.outline), 6) for t in tiers} == {
-        round(ft(11.5).meters, 6)}, "a tier that does not reach the landing is not bedded"
+        round(ft(9, 7).meters, 6)}, "a tier that does not reach the landing is not bedded"
 
     # No pier survives under the flight, and the paver landing still starts at its foot.
     assert not [e for e in model.plan.all_elements()
                 if getattr(e, "tag", "").startswith("PT-BW-T")]
     landing = next(s for s in model.plan.project.site.impervious_surfaces if "paver landing" in s.label)
-    assert min(p.x.meters for p in landing.outline) == pytest.approx(ft(17.5).meters)
-    assert max(p.x.meters for p in landing.outline) >= ft(22.5).meters
+    assert min(p.x.meters for p in landing.outline) == pytest.approx(ft(15, 7).meters)
+    assert max(p.x.meters for p in landing.outline) >= ft(20, 7).meters
 
 
 def test_the_single_garage_slab_cannot_become_a_basement_ceiling(catlin_plan):

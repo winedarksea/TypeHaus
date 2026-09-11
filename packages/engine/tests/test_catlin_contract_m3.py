@@ -1424,10 +1424,13 @@ def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_m
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    # 9, not 4. Two splits are door gaps, in stems that carry one rather than running a
+    # 9, not 4. One split is a door gap, in a stem that carries one rather than running a
     # continuous 22" band across it — the NORTH at the overhead door (W-GF-N2/W-GF-N-DR/
-    # W-GF-N) and the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
-    # not climb a 22" curb any more happily than a car will.
+    # W-GF-N): a car will not climb a 22" curb. The south split at W-GF-S1/W-GF-S-DR/W-GF-S2
+    # WAS the service door's gap and is a second fossil since 2026-09-11: the door's sill has
+    # been +1'-0" over the stem top since the north-entry landing, so nothing needed the stem
+    # out of the way, and when the door moved into the SW corner (RO 6'-7"..9'-7") the two
+    # nodes stayed pinned at x 8'-3"/11'-9" so `SP-GF-S-HYD` keeps its host FT-GF-S-DR.
     #
     # ** IT WAS 10 UNTIL 2026-09-07. ** The overhead door faced east; the gap it opened was
     # in the east stem, and that wall carried three segments where it now carries one
@@ -1460,8 +1463,9 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # Reading them off ``site.grade`` is the assertion: the reveal, the bury and the slab
     # are properties of the ground, and the house datum is not the ground.
     grade_m = catlin_model.plan.project.site.grade.meters
-    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-N-DR", "W-GF-S-DR")}
-    assert grade_beams == {"W-GF-N-DR", "W-GF-S-DR"}
+    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-N-DR", "W-GF-S-DR")
+                   if w.z1_m < grade_m + inch(22.0).meters - 1e-6}
+    assert grade_beams == {"W-GF-N-DR"}, "W-GF-S-DR is full stem again; only the car's door gaps"
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
     assert slab.z1_m == pytest.approx(grade_m)
     for wall in stem:
@@ -1565,10 +1569,11 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
 
     **The Z is new scope and has no check behind it.** The band's top and the corrugated
     panel's base both land on the stem top, and a rainscreen's cavity water arrives exactly
-    there; until this change that junction was modelled by nothing at all. It breaks at both
-    stem gaps — there is no stem, and so no band and no Z, across the 16'-0" overhead door or
-    the 3'-0" service door. Nothing grades a missing flashing run, so the count and the break
-    stations are pinned here or nowhere.
+    there; until this change that junction was modelled by nothing at all. It breaks at the
+    one stem gap — there is no stem, and so no band and no Z, across the 16'-0" overhead
+    door. (It broke at the service door too until 2026-09-11, when that gap closed: the
+    door's sill is +1'-0", not the slab.) Nothing grades a missing flashing run, so the count
+    and the break stations are pinned here or nowhere.
     """
     grade_m = catlin_model.plan.project.site.grade.meters
 
@@ -1594,8 +1599,8 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
     # plus a "-LAP" seam solid, so count the "-DRIP" ones: one per authored run.
     zs = [s for s in catlin_model.solids if str(s.tag).startswith("TR-G-STEMZ-")]
     drips = [z for z in zs if str(z.tag).endswith("-DRIP")]
-    assert len(drips) == 6, \
-        "south and north are each broken by a stem gap; east and west run whole"
+    assert len(drips) == 5, \
+        "north is broken by the overhead door's stem gap; south, east and west run whole"
     # It sits ON the stem top, which is the garage storey datum: grade + GARAGE_STEM_REVEAL.
     stem_top_m = grade_m + ft(1, 10).meters
     assert max(z.z1_m for z in zs) == pytest.approx(stem_top_m)
@@ -1607,7 +1612,9 @@ def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_m
     # `metal-dark-exterior` steel trim coil would pass every other check in the suite.
     flashings = [f for f in catlin_model.plan.elements_of_kind("Flashing")
                  if str(getattr(f, "tag", "")).startswith("TR-G-STEMZ-")]
-    assert len(flashings) == 6
+    assert len(flashings) == 5
+    assert {f.tag for f in flashings} == {"TR-G-STEMZ-S1", "TR-G-STEMZ-E", "TR-G-STEMZ-N1",
+                                          "TR-G-STEMZ-N2", "TR-G-STEMZ-W"}
     assert {f.material for f in flashings} == {"aluminum-flat-pvdf"}
     # `back_side` decides which end the turn-down hangs off, and pointing it at the wall
     # throws cavity water BEHIND the band with no finding anywhere. The loop is authored

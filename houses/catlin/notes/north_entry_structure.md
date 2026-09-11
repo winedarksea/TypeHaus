@@ -104,10 +104,10 @@ y=37'-6", not brackets standing off the basement concrete.
 
 | Member | Support | What the drawings must say |
 |---|---|---|
-| `BM-BW-HOUSE-SEAT` | `PT-BW-W`, `PT-BW-E` | 5'-6" between two 12" round piers, soffit −1'-3 1/2". `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour), `HGAM10` gusset (the tie). |
+| `BM-BW-HOUSE-SEAT` | `PT-BW-W`, `PT-BW-E` | 3'-7" between two 12" round piers (5'-6" until 2026-09-11, when the deck's east edge came in to `D-G-SERVICE`'s jamb at x=9'-7"), soffit −1'-3 1/2". `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour), `HGAM10` gusset (the tie). |
 | `BM-BW-GARAGE-SEAT` | `PT-BW-GW`, `PT-BW-GE` | Identical span, elevation and detail. |
 | `BM-BW-SCSILL` | Both seat beams | The screen panel's sill and the deck's west rim in one member, on the column line at x=6'-0" where the joist field cannot reach. |
-| `BM-BW-FC` / `-FE` | Both seat beams **and** `PT-BW-IC` / `-IE` | Continue into the garage to the interior landing, through `D-G-SERVICE`'s rough opening and over the ICF stem. The tips are POSTED. |
+| `BM-BW-FC` / `-FE` | Both seat beams **and** `PT-BW-IC` / `-IE` | Continue into the garage to the interior landing, under `D-G-SERVICE`'s sill and 3 3/4" over the continuous ICF stem (`W-GF-S-DR` is full stem since 2026-09-11; its door gap dated from when the door opened at the slab). The west one is sistered to the deck's second joist at 7'-3 3/4"; the east one's face is on the RO's east jamb at 9'-7". The tips are POSTED. |
 | `FS-BW-FLOOR` joists | Both seat beams | 2x8 at 12" o.c. running **north-south**, bearing on top, cantilevering 9 1/2" south and 7 1/4" north. Joist tape, stainless fasteners. |
 
 > ⚠ **ONE TIER OF BEAMS, and it was two until 2026-09-10.** This landing was framed pier →
@@ -128,6 +128,11 @@ y=37'-6", not brackets standing off the basement concrete.
 > was tried and is the wrong element: a thickening is one pour with the slab, and modelling
 > it separately reports a `concrete_interference` lap with the slab it is part of.
 > `structural.deck_footing_size` reports NOT_APPLICABLE and names this as what it excludes.
+>
+> **They are 4x4 KDAT, 25 3/4" tall, on `ABU44` standoff bases with cast-in `AB-058-10-SS`
+> bolts (owner, 2026-09-11).** The first pass authored 6x6s sized off the PIER top, so they
+> stopped at −1'-3 1/2" under carriers whose soffit is −0'-8 1/4" — a 7 1/4" gap nothing
+> graded. `structural.deck_post_size` reads Table R507.4's 6'-9" for a 4x4 against 2'-1 3/4".
 
 > ⚠ **Hold the deck boards 1/2" off the house cladding and let the gap drain.** Boards run
 > tight to a rainscreened wall dam the drainage plane and hold water against it. Abutting is
@@ -136,8 +141,13 @@ y=37'-6", not brackets standing off the basement concrete.
 
 The garage-side floor system is the structural zone inside the door, not a second concrete
 landing; a 1/4" drainage/movement break separates its board field at the threshold. It
-extends three clear feet beyond the ICF inner face, `ST-G-SERVICE` arrives at its north
-edge, and `SL-G-STEP-0` is retired.
+extends three clear feet beyond the ICF stem's finished inside face (x=6'-11 5/8" — the 11"
+ICF plus its 5/8" `gwb-stem` board), `ST-G-SERVICE` arrives at its north edge flush to that
+face, and `SL-G-STEP-0` is retired. **Since 2026-09-11 it stands in the garage's SW corner**:
+sheet x 6'-7"..9'-11 5/8", a quarter inch off `W-G-W`'s gyp face, so the wall is its west
+guard (`RL-BW-GARAGE-W` is deleted) and `RL-G-SERVICE` is a wall-mounted handrail on
+`W-G-W` — one bracket on a stud at the landing end, one on 2x12 blocking (`BK-G-W-RAIL-FOOT`,
+`plan/backing.py`) at the foot.
 
 ## 3. The tiers — four cast pours on a compacted base
 
@@ -157,8 +167,9 @@ is driven by the long going, so a flatter pitch removes *more* material, and hol
 6.8:18 would want an 11.54"-wide member.
 
 **KDAT box frames on eight 42"-deep piers failed on the piers.** They were laid out running
-east from the stair foot at x=17'-6" while the flight runs **west** to x=11'-6", so all
-eight stood under open ground carrying nothing at all. Nothing in the check tree noticed,
+east from the stair foot at x=17'-6" while the flight runs **west** to x=11'-6" (the landing
+edge then; 15'-7" and 9'-7" since 2026-09-11), so all eight stood under open ground
+carrying nothing at all. Nothing in the check tree noticed,
 because nothing grades whether a pier is under the thing it names.
 
 > ⚠ **These are NOT frost-founded and that is a decision, not an oversight.** Minn. R.

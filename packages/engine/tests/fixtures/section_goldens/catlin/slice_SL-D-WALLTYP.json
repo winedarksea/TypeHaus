@@ -4255,6 +4255,62 @@
       "node": "polyline",
       "points": [
         [
+          -17.175,
+          -113.75000000000001
+        ],
+        [
+          6.825000000000001,
+          -113.75000000000001
+        ],
+        [
+          6.825000000000001,
+          -113.125
+        ],
+        [
+          -17.175,
+          -113.125
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGDW01AAAA-06",
+      "tag": "DW-SG-W1-7"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -17.175,
+          -113.75000000000001
+        ],
+        [
+          6.825000000000001,
+          -113.75000000000001
+        ],
+        [
+          6.825000000000001,
+          -113.125
+        ],
+        [
+          -17.175,
+          -113.125
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -10.0,
           -2.0
         ],

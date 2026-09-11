@@ -36,14 +36,31 @@ from typehaus import (
 )
 
 from params.foundations import SITE_GRADE
-from plan.storeys.garage import GARAGE_Y_SOUTH
+from plan.storeys.garage import (
+    GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
+)
 
 HOUSE_CLADDING_Y_FT = 36 + 7.25 / 12
 GARAGE_CLADDING_Y_FT = GARAGE_Y_SOUTH.feet - 0.875 / 12
 GARAGE_INSIDE_Y_FT = GARAGE_Y_SOUTH.feet + 11 / 12
-LANDING_WEST_FT = 6.0  # extra west margin keeps screen/guard outside both 36in door patches
-LANDING_EAST_FT = 11.5
-GARAGE_LANDING_WEST_FT = 8.5
+# ** THE SERVICE DOOR SETS THE EAST EDGE OF EVERYTHING HERE (2026-09-11). ** D-G-SERVICE's
+# rough opening is 6'-7"..9'-7" since it moved into the garage's SW corner
+# (plan/storeys/garage.py::SERVICE_DOOR_OFFSET), and the whole landing derives from it:
+# the exterior deck ends on its east jamb, the interior landing's sheet spans its RO, and
+# the two carriers sit just inside it. The west edge is the canopy column line.
+SERVICE_RO_WEST_FT = GARAGE_X_WEST.feet + SERVICE_DOOR_OFFSET.feet
+SERVICE_RO_EAST_FT = SERVICE_RO_WEST_FT + SERVICE_DOOR_WIDTH.feet
+LANDING_WEST_FT = 6.0  # the column line; also the screen panel and the west door patch's edge
+# The deck used to reach 11'-6" to cover two offset door patches (`D-M-ENTRY` at 8'-0",
+# `D-G-SERVICE` at 10'-0"); with the doors an inch apart the RO's east jamb covers both.
+LANDING_EAST_FT = SERVICE_RO_EAST_FT
+# ** THE STEM'S FINISHED INSIDE FACE, NOT ITS NODE LINE. ** `W-GF-W` is 11" of ICF off the
+# node line at x=6'-0" plus the 5/8" `gwb-stem` board GARAGE_ICF_6 carries on its inside
+# face from grade up, so 11 5/8". The stair and the interior landing's east guard stand
+# flush to this face; the framed wall above the stem is thinner (gyp face 6'-6 3/4").
+GARAGE_STEM_INSIDE_X_FT = GARAGE_X_WEST.feet + 11.625 / 12
+GARAGE_LANDING_WEST_FT = SERVICE_RO_WEST_FT
+GARAGE_LANDING_EAST_FT = GARAGE_STEM_INSIDE_X_FT + 3
 GARAGE_LANDING_END_Y_FT = GARAGE_INSIDE_Y_FT + 3
 DECK_FINISH_FT = 0.0
 DECK_JOIST_TOP_FT = -1 / 12
@@ -120,7 +137,7 @@ SCREEN_PANEL_TOP_FT = 4.0
 #
 # ** WHY THE SEATS ARE THE TIER THAT SURVIVES, AND NOT THE OTHER WAY ROUND. ** Putting the
 # north-south beams straight on the piers instead is the obvious alternative and it does not
-# fit: the pier lines are x=6'-0" and x=11'-6", and x=6'-0" is already occupied at BOTH y
+# fit: the pier lines are x=6'-0" and x=9'-7", and x=6'-0" is already occupied at BOTH y
 # stations by a canopy column (PT-BW-CW, PT-BW-CNW) standing on that same pier and rising
 # through the deck band to the header. A beam on that line interpenetrates the column
 # outright. The columns own x=6'-0"; the seats get the piers.
@@ -128,18 +145,30 @@ SCREEN_PANEL_TOP_FT = 4.0
 # ** BM-BW-FC AND BM-BW-FE STAY, AND THEY ARE NOT A SECOND TIER. ** They run north-south in
 # the joist plane, parallel to the joists and bearing on the same two seats, so they add no
 # depth to the stack. What they do that no joist can is reach the interior landing: both pass
-# through D-G-SERVICE's rough opening (over the ICF stem, which tops out 3 3/4" below the joist
-# soffit) and carry FS-BW-GARAGE on the far side, posted at their tips. The west member had no
-# such errand -- it stopped at the garage seat -- which is why it is the one that went.
-BEAM_WIDTH_IN = 3.0
-BEAM_X_FT = (GARAGE_LANDING_WEST_FT + BEAM_WIDTH_IN / 24,
-             LANDING_EAST_FT - BEAM_WIDTH_IN / 24)
+# under D-G-SERVICE's sill, over the ICF stem `W-GF-S-DR` (continuous since 2026-09-11; it
+# tops out at -1'-0", 3 3/4" below the joist soffit) and carry FS-BW-GARAGE on the far side,
+# posted at their tips. The west member had no such errand -- it stopped at the garage seat
+# -- which is why it is the one that went.
+#
 # The joist field's own two edges, each a joist CENTRELINE so the rim lands where it is told.
 # West: clear of the two 6x6 canopy columns on x=6'-0", whose east face is at 6'-3".
-# East: clear of BM-BW-FE, whose west face is at 11'-3".
+# East: clear of BM-BW-FE, whose west face is at 9'-4" -- the rim's east face touches it.
+BEAM_WIDTH_IN = 3.0
 JOIST_MEMBER_WIDTH_IN = 1.5
 FIELD_WEST_X_FT = LANDING_WEST_FT + 3 / 12 + JOIST_MEMBER_WIDTH_IN / 24
 FIELD_EAST_X_FT = LANDING_EAST_FT - BEAM_WIDTH_IN / 12 - JOIST_MEMBER_WIDTH_IN / 24
+# ** THE WEST CARRIER IS SISTERED TO THE DECK'S SECOND JOIST, AND THAT IS FORCED. ** The
+# joist field lays out 12" o.c. from FIELD_WEST_X_FT, so a joist stands at 7'-3 3/4" with
+# its west face at 7'-3"; the stem's finished face is 6'-11 5/8". That is 3 3/8" for a 3"
+# beam: the carrier's east face lands ON the joist (two members side by side, an ordinary
+# bearing, and the same "touch by construction" BM-BW-FE has against the east rim) and its
+# west face is 3/8" off the stem's board. Its 4x4 post is four feet north of that joist's
+# end and clears the board by 1/8". East: the carrier's east face is ON the RO's east jamb,
+# touching the jack. Neither derives from LANDING_EAST_FT; the deck's east edge happens to
+# be the same jamb.
+BEAM_X_FT = (FIELD_WEST_X_FT + 1.0 - (JOIST_MEMBER_WIDTH_IN + BEAM_WIDTH_IN) / 24,
+             SERVICE_RO_EAST_FT - BEAM_WIDTH_IN / 24)
+assert BEAM_X_FT[0] - 3.5 / 24 >= GARAGE_STEM_INSIDE_X_FT, "PT-BW-IC is inside the stem's board"
 HOUSE_SEAT_Y_FT = PIER_LINE_Y_FT
 # ** THE GARAGE SEAT MOVED 6" SOUTH, OFF THE STEM. ** A pedestal under it at the old
 # y=42'-11 3/4" overlapped W-G-S's bottom plate and its corner post outright, and the stem's
@@ -193,13 +222,14 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
     return result
 
 
-# The two seat beams, both on cast concrete at -0'-8 1/4" and both spanning 5'-6" between
-# two bearings. They grade the same way as a result: `structural.deck_beam_span` reads a
-# real 5'-6" span off two Posts on each, rather than one falling back to a length.
-# The two seat beams. Nothing could bear these before: the garage stem tops out at -1'-0",
-# ABOVE this soffit and north of the beam line, which is exactly why six invented stand-off
-# brackets existed. Both now land on two cast piers each, at the same elevation and on the
-# same 5'-6" span, so `structural.deck_beam_span` grades them identically.
+# The two seat beams, both on cast concrete at -0'-8 1/4" and both spanning 3'-7" between
+# two bearings (5'-6" until 2026-09-11, when the deck's east edge came in to the door jamb).
+# They grade the same way as a result: `structural.deck_beam_span` reads a real 3'-7" span
+# off two Posts on each, rather than one falling back to a length.
+# Nothing could bear these before: the garage stem tops out at -1'-0", ABOVE this soffit
+# and north of the beam line, which is exactly why six invented stand-off brackets existed.
+# Both now land on two cast piers each, at the same elevation and on the same span, so
+# `structural.deck_beam_span` grades them identically.
 beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
 beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
@@ -419,7 +449,16 @@ ROOF_COLUMNS = [
 # ** THE 4'-2" INTERIOR CANTILEVER IS THE REAL DEFECT AND IT IS CHEAP TO FIX. ** BM-BW-FC
 # and BM-BW-FE overhang the garage seat by 4'-1 7/8" on a 6'-2 1/2" back span -- 67%, against
 # IRC R507.5.1's 25% -- carrying the top landing of ST-G-SERVICE 34" above the garage slab.
-# Two 6x6 KDAT posts on the slab end it. MIN_DECK_POST_NOMINAL is 6x6, so do not reach for a 4x4.
+# Two KDAT posts on the slab end it.
+#
+# ** 4x4 ON 1" STANDOFF BASES, SIZED TO REACH THE BEAMS (owner, 2026-09-11). ** The first
+# pass authored 6x6s at `BEARING_TOP_FT - SITE_GRADE`, the PIER top, so they stopped at
+# -1'-3 1/2" under carriers whose soffit is -0'-8 1/4": a 7 1/4" gap, and nothing graded it.
+# 25 3/4" from the slab at -2'-10" to the carrier soffit is the height, ABU44 on a cast-in
+# AB-058-10-SS is the base (params/breezeway.py::INTERIOR_POST_BASES), and 4x4 is enough:
+# `structural.deck_post_height` reads DECK_POST_HEIGHT_FT's 6'-9" for a 4x4 against 2'-1 3/4",
+# and its "R507.4 wants 6x6" decoration only prints when the height is over the table.
+INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE.feet
 #
 # ** THEY BEAR ON THE SLAB, AND THE THICKENING UNDER EACH IS A DRAWING NOTE, NOT AN ELEMENT. **
 # A `Pad` was tried here and is the wrong element: a thickened slab is ONE pour with the slab,
@@ -430,7 +469,7 @@ ROOF_COLUMNS = [
 INTERIOR_POSTS = [
     Post(uid=f"BWPT{9 + _i:02d}AAAA", tag=f"PT-BW-I{_s}",
          position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),
-         size="6x6", height=ft(BEARING_TOP_FT - SITE_GRADE.feet), assembly="POST_KDAT",
+         size="4x4", height=ft(INTERIOR_POST_HEIGHT_FT), assembly="POST_KDAT",
          supported_by="SL-G-FLOOR")
     for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT, strict=True))
 ]

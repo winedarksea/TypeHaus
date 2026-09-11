@@ -401,9 +401,11 @@ SITE = Site(
             # authored on the site while `params/breezeway.py::STAIR_FOOT_X_FT` derives from
             # TREAD_DEPTH_FT, so the two only agree because somebody keeps them agreeing.
             # The 2026-09-10 going change (24" -> 18") moved the stair foot from x=19'-6" to
-            # x=17'-6"; this edge moved with it. Move it again if the going moves again.
-            outline=(pt(ft(17, 6), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
-                     pt(ft(30), ft(42, 10.75)), pt(ft(17, 6), ft(42, 10.75))),
+            # x=17'-6", and the 2026-09-11 landing narrowing (LANDING_EAST_FT 11'-6" ->
+            # 9'-7", the service door's east jamb) moved it to x=15'-7"; this edge moved
+            # with it both times. Move it again if either moves again.
+            outline=(pt(ft(15, 7), ft(36, 10.25)), pt(ft(30), ft(36, 10.25)),
+                     pt(ft(30), ft(42, 10.75)), pt(ft(15, 7), ft(42, 10.75))),
             near_elevation=ft(-2, -10),
             far_elevation=ft(-3, -0.5),  # 2% eastward; first 36in is the lower landing
             kind="walk",
@@ -493,8 +495,9 @@ SITE = Site(
         # from. See `_foundation_enclosures` for why that is the rule and not a dodge.
         ImperviousSurface(
             label="house-to-garage passage floor",
-            outline=(pt(ft(4), ft(36, 10.25)), pt(ft(17, 6), ft(36, 10.25)),
-                     pt(ft(17, 6), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
+            # East edge follows the paver landing's west edge above (the stair foot).
+            outline=(pt(ft(4), ft(36, 10.25)), pt(ft(15, 7), ft(36, 10.25)),
+                     pt(ft(15, 7), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
             near_elevation=ft(-2, -10),
             far_elevation=ft(-3),  # 2.8% away from the house, draining east to the landing
             kind="walk",

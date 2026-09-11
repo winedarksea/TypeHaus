@@ -155,9 +155,13 @@ def test_catlin_stair_widths_pass_at_or_above_the_minimum(catlin_ctx):
     # ST-S2A rides the 36" limit exactly — the tolerance idiom is what keeps it passing.
     assert any("36.00" in f.message for f in findings)
     # Every stair now carries handrails, so each pass also reports the measured clear
-    # width past the rail (the R311.7.1 31.5"/27" rules, no longer deferred).
-    assert all("clear past" in f.message for f in findings), \
-        [f.message for f in findings]
+    # width past the rail (the R311.7.1 31.5"/27" rules, no longer deferred) — except
+    # ST-G-SERVICE, whose wall-mounted rail hangs over the ICF stem's ledge 2 5/8" OUTSIDE
+    # the flight's west edge (2026-09-11): it projects into no tread, so the rule has no
+    # clear width to report and says so.
+    by_stair = {f.message.split()[0]: f.message for f in findings}
+    assert "project into no measured flight" in by_stair.pop("ST-G-SERVICE")
+    assert all("clear past" in message for message in by_stair.values()), by_stair
 
 
 def _handrail_at(x_in: float, tag: str = "RL-T"):
@@ -320,9 +324,10 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # sheathed guard WALL, which passes the way a masonry parapet does. `SC-BW-WEST`, the
     # slat band above it, is deliberately NOT here — it starts at +4'-0", above the guard
     # line, so R312.1.3 has no fall to protect there and the screen declares `role="screen"`
-    # rather than claiming to be a guard beside one.
+    # rather than claiming to be a guard beside one. RL-BW-GARAGE-W left on 2026-09-11: the
+    # interior landing moved into the garage's SW corner and W-G-W closes that edge.
     assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
-                    "RL-BW-GARAGE-W", "RL-M-STAIRHEAD", "RL-S-STAIR",
+                    "RL-M-STAIRHEAD", "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",
                     "RL-SG-PTHRESH-S", "W-BW-SCREEN"], \
@@ -343,7 +348,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
     # instead, is a solid wall and has no drawn gap to quote.
     assert sorted(f.message.split()[0] for f in drawn) == [
         "RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
-        "RL-BW-GARAGE-W", "RL-S-STAIR", "RL-S-STAIRHEAD",
+        "RL-S-STAIR", "RL-S-STAIRHEAD",
         "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE", "RL-SG-PSTAIR-N",
         "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N", "RL-SG-PTHRESH-S"]
 

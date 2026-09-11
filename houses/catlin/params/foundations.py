@@ -45,7 +45,6 @@ from plan.storeys.garage import (
     GARAGE_Y_SOUTH,
     OVERHEAD_DOOR_OFFSET,
     OVERHEAD_DOOR_WIDTH,
-    SERVICE_DOOR_OFFSET,
     SERVICE_DOOR_WIDTH,
 )
 
@@ -327,7 +326,10 @@ _STEM_TOP = ft(_GRADE_FT + GARAGE_STEM_REVEAL.feet)
 # would break the ridge closure it carries) — the door reaches down via a negative
 # sill_height in plan/storeys/garage.py instead.
 _GRADE_BEAM_TOP = SITE_GRADE
-# How much wider than the opening the service door's stem gap is formed — see N-GF-S-DRW.
+# The service door's stem gap is CLOSED since 2026-09-11 (see W-GF-S-DR below); these two
+# are the arithmetic that produced its fossil split stations, 2'-3" and 5'-9" off N-GF-SW —
+# the 2026-09-07..11 door offset less/plus the 3" margin the hydrant crossing asked for.
+_FOSSIL_SERVICE_OFFSET = ft(2, 6)
 _SERVICE_GAP_MARGIN = ft(0, 3)
 
 GARAGE_STEM_NODES = [
@@ -343,16 +345,21 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF005AAAA", tag="N-GF-N-DRW",
          position=pt(GARAGE_X_EAST - OVERHEAD_DOOR_OFFSET - OVERHEAD_DOOR_WIDTH,
                      GARAGE_Y_NORTH)),
-    # Service door gap in the south stem (2026-08-01). Unlike the overhead door's gap, this
-    # one gets 3" margin each side: the hydrant line (PR-G-HYDRANT-CW) crosses buried at
-    # x=5'-0", exactly the door's west jamb, so a flush gap would land the crossing on the
-    # joint between two footings and trip mep.footing_clearance in both. The wider block-out
-    # puts it unambiguously inside the grade beam.
+    # ** THE SOUTH STEM'S DOOR SPLIT IS A FOSSIL TOO, SINCE 2026-09-11, AND IT IS PINNED. **
+    # From 2026-08-01 this was the service door's stem gap, 3" wider than the opening each
+    # side because the hydrant line (PR-G-HYDRANT-CW) crossed buried at the door's west jamb
+    # and a flush gap would have put the crossing on a footing joint. The door moved into the
+    # SW corner (SERVICE_DOOR_OFFSET 2'-6" -> 0'-7") and the gap did NOT follow: its sill has
+    # been +1'-0" over the stem top since the north-entry landing, so nothing ever needed the
+    # stem out of the way, and W-GF-S-DR below is plain `_STEM` now. The two nodes stay where
+    # the gap left them (x 8'-3" and 11'-9") on the S-BRICK precedent — moving them would
+    # re-cut FT-GF-S-DR out from under `SP-GF-S-HYD` at x=11'-0" (plan/mep_sleeves.py), and
+    # the crossing is what this footing's identity exists for.
     Node(uid="CGF007AAAA", tag="N-GF-S-DRW",
-         position=pt(GARAGE_X_WEST + SERVICE_DOOR_OFFSET - _SERVICE_GAP_MARGIN,
+         position=pt(GARAGE_X_WEST + _FOSSIL_SERVICE_OFFSET - _SERVICE_GAP_MARGIN,
                      GARAGE_Y_SOUTH)),
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
-         position=pt(GARAGE_X_WEST + SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
+         position=pt(GARAGE_X_WEST + _FOSSIL_SERVICE_OFFSET + SERVICE_DOOR_WIDTH
                      + _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
     # ** THE SOUTH SPLIT IS A LEGACY FOSSIL AND IS KEPT DELIBERATELY. ** It exists only
     # because the SE brick-ledge wainscot return once needed 4'-0" of widened, ledged stem
@@ -388,13 +395,18 @@ _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    bottom_elevation=ft(_GRADE_FT - _FROST))
 
 GARAGE_STEM_WALLS = [
-    # South stem, split three ways at the service door — the east wall's pattern exactly.
-    # W-GF-S1 keeps the original uid as the remnant of the single wall;
-    # the grade beam and the far segment are new.
+    # South stem, split four ways: two fossil splits (N-GF-S-DRW/-DRE, N-GF-S-BRICK) and no
+    # gap. W-GF-S1 keeps the original uid as the remnant of the single wall.
     FoundationWall(uid="CGF101AAAA", tag="W-GF-S1", start_node="N-GF-SW",
                    end_node="N-GF-S-DRW", **_STEM),
+    # ** `_STEM`, NOT `_GRADE_BEAM`, SINCE 2026-09-11. ** This was the service door's grade
+    # beam, dropped to grade so the door could open off the slab — a premise that died when
+    # the door's sill rose to the north-entry landing (+1'-0" over the stem top). With the
+    # door in the SW corner (RO 6'-7"..9'-7") the landing carriers BM-BW-FC/-FE pass over
+    # this stem's top at -1'-0" with 3 3/4" to their soffit. The tag, uid and footing
+    # FT-GF-S-DR are kept because the water-service sleeve names that footing.
     FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
-                   end_node="N-GF-S-DRE", **_GRADE_BEAM),
+                   end_node="N-GF-S-DRE", **_STEM),
     # W-GF-S2 keeps its uid on the remnant (SERVICE_DOOR side); W-GF-S3 is the corner
     # piece. See the legacy-split note on N-GF-S-BRICK above.
     FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
@@ -492,9 +504,10 @@ GARAGE_STEPS = []
 # ** THE LATERAL NOW JOGS, AND THAT IS WHAT THE MOVE COST. ** PR-G-HYDRANT-CW used to run
 # dead straight north at x=5'-0" from the house entry; it turns east 4'-0" in the yard slot
 # at y=38'-0" (plan/mep_supply.py) and crosses the garage's south foundation at x=11'-0",
-# under the grade beam FT-GF-S-DR inside SP-GF-S-HYD's protection sleeve — 22" below its
-# bearing plane, which is the documented worst case and the arrangement this run carried
-# before SERVICE_DOOR_OFFSET last moved. y=59'-6" clears the north
+# under FT-GF-S-DR inside SP-GF-S-HYD's protection sleeve — 22" below its bearing plane,
+# which is the documented worst case. That footing carried a grade beam until 2026-09-11
+# and carries plain stem now; its two nodes are pinned so the host never moves off the
+# crossing again. y=59'-6" clears the north
 # stem footing by 35 7/8" (34" required). That strip is continuous along GARAGE_Y_NORTH and
 # unchanged by the 2026-09-07 door rotation — only its tag over x=5'-0" changed, from
 # FT-GF-N to the grade beam's FT-GF-N-DR, and the grade beam's footing keeps the same

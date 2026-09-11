@@ -841,6 +841,40 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
+    # ** THE NORTH ENTRY'S OWN LIGHT, AND UNTIL 2026-09-11 IT DID NOT EXIST. **
+    # `code.R303_8_exterior_stairway_illumination` wants a luminaire at ST-BW-ENTRY's top
+    # landing, and it PASSED for as long as the landing reached x=11'-6": ED-M-PANTRY-LT, a
+    # wall light INSIDE the pantry at (18'-5", 33'-4 3/8"), sat 3'-10" from the tiers in
+    # plan and the rule's 4'-0" ring has no opinion about the wall between them. Narrowing
+    # the landing to the service door's jamb (x=9'-7") moved the tiers 1'-11" west and the
+    # pantry light fell out of the ring — which is the first honest reading that rule has
+    # given this stair. So: a mark R sconce (the garage-door pair's type) on the house's north
+    # face beside D-M-ENTRY, under the canopy, lighting the landing, the door and the top of
+    # the tiers at once.
+    #
+    # x=11'-4" is W-M-N2's bay centre between the studs at 10'-8" and 12'-0" — east of the
+    # tee at N-M-N2 where W-M-STRW's bearing stack lands, and 1'-10" east of the door's RO.
+    # y is the fixture's CENTRE: the cladding face is 36'-7 1/4" (params/north_entry_frame.py
+    # ::HOUSE_CLADDING_Y_FT) and the 5" body owes it half its depth, so 36'-9 3/4". 6'-4" is
+    # storey-relative on `main` (datum = top of joists), so the 9" housing runs 6'-4"..7'-1"
+    # beside a 6'-8" door head; the canopy's truss chords are at +7'-4" at the headers and
+    # rise toward the ridge, so nothing is overhead within 1'-0".
+    ElectricalDevice(uid="NGK4BKKT48", tag="ED-M-ENTRY-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(11, 4), ft(36, 9.75)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(0),
+                     controlled_by=("ED-M-ENTRY-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 4))),
+    # Its switch, inside the dwelling (R303.8.1 — the garage's ED-G-EXT-SW is in the wrong
+    # building for this one). D-M-ENTRY fills W-M-N3 to within 6" of both ends, so there is
+    # no north-wall station beside the door; the return wall W-M-STRW takes it, on its
+    # mudroom face — x=9'-8 1/8" is ED-M-STORAGE-SW's own face convention on this wall — 7"
+    # south of W-M-N2's gyp face and clear of the wall's top stud at 35'-4 5/8". REG-M-XFER-MUD
+    # shares this bay at 7'-6"..8'-4"; a box at 3'-10" is under it, not in it.
+    ElectricalDevice(uid="1XT4G5S2XX", tag="ED-M-ENTRY-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(9, 8.125), ft(34, 10)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from
     # one end only is the classic thing to get wrong.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
@@ -1412,16 +1446,27 @@ GARAGE_LIGHTING = [
     # would want the same luminaire here and not the switching, since five risers is under
     # its six-riser threshold.)
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8, 6), ft(45, 6)), type_ref="ED-T-LT-SHOP4",
+                     # x=8'-3" is the interior landing's centre (sheet 6'-7"..9'-11 5/8")
+                     # since the service door moved into the SW corner on 2026-09-11.
+                     position=pt(ft(8, 3), ft(45, 6)), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # On W-G-S's INTERIOR face (plan/storeys/garage.py::GARAGE_Y_SOUTH) — see
     # plan/electrical.py's GARAGE_DEVICES comment for the face-position arithmetic.
+    #
+    # ** x=10'-8" IS EAST OF THE DOOR'S JACK, AND 80" IS 46" ABOVE THE LANDING (2026-09-11). **
+    # D-G-SERVICE's RO is 6'-7"..9'-7" since it moved into the SW corner, its east king ends
+    # at 9'-10", and this switch and ED-G-EXT-SW below stand 4" and 10" east of that. Both
+    # were INSIDE the old rough opening (a defect the 2026-09-07 rotation carried forward),
+    # and both were 12" above the landing: a garage device's `Mount.elevation` is measured
+    # off the ROOM FLOOR (`resolve/room_floor.py`), the slab at -2'-10", so 46" resolved to
+    # +1'-0" absolute against a landing at 0'-0". 80" over the slab is +3'-10" absolute, 46"
+    # over the landing you stand on to reach it.
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12, 6), ft(43, 10.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10, 8), ft(43, 10.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
 
     # The garage-door lights (2026-08-02; a PAIR since 2026-09-07): mark R, full-cutoff
     # exterior sconces. The single light followed the overhead door onto W-G-N earlier the
@@ -1467,21 +1512,15 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
-    # Its switch, inside, ganged beside ED-G-SW at the service door (D-G-SERVICE's west
-    # jamb is at 8'-6"; the shop-light switch sits at 10'-6", this one 6" west of it —
-    # ** AND BOTH OF THOSE STATIONS ARE INSIDE THE ROUGH OPENING, WHICH IS A PRE-EXISTING
-    # DEFECT CARRIED FORWARD, NOT A NEW ONE. ** `from_node` offsets the NEAR jamb, so
-    # D-G-SERVICE's RO is 8'-6"..11'-6" and its EAST jamb is 11'-6", not the 8'-6" this note
-    # has claimed since the switches were authored. Nothing grades a wall device against an
-    # opening. The 2026-09-07 move translated both switches faithfully rather than quietly
-    # re-siting them; putting them east of the real east jamb (~12'-0" / 12'-6") is a small
-    # separate edit and is the right fix) —
-    # walk in, one reach turns on the shop lights and BOTH door lights. One switch for the
-    # pair, not one each: they light a single opening and there is no reason to run half of
-    # it. It stays here though its luminaires crossed to the far wall: the switch belongs at
-    # the door you enter by, not under the lamp.
+    # Its switch, inside, beside ED-G-SW at the service door: 6" west of it and 4" east of
+    # the door's east king (see ED-G-SW for the stations and the 80" elevation; nothing
+    # grades a wall device against an opening, so a move of that door must move both by
+    # hand). Walk in, one reach turns on the shop lights and BOTH door lights. One switch
+    # for the pair, not one each: they light a single opening and there is no reason to run
+    # half of it. It stays here though its luminaires crossed to the far wall: the switch
+    # belongs at the door you enter by, not under the lamp.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12), ft(43, 10.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(10, 2), ft(43, 10.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
 ]

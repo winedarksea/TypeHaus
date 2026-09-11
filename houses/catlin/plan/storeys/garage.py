@@ -56,20 +56,21 @@ GARAGE_Y_NORTH = ft(67, 2.625)
 # x 0'..24' — its west wall aligned with the house's — which put its centre on x=12'-0", six
 # feet west of the ridge at x=18'-0". It is x 6'..30' now, centre x=18'-0", dead on it.
 #
-# ** THE MOVE IS IN 24" STEPS AND NOTHING ELSE. ** `D-G-SERVICE`'s 36" RO must sit on one of
-# GARAGE_WALL_2X6's 24" stud lines measured from THIS wall's own start, so the wall line and
-# the door move together in whole modules. 6'-0" is three of them.
+# ** THE MOVE WAS IN 24" STEPS, AND THAT WAS THE HOUSE'S OWN CONVENTION, NOT A RULE. ** This
+# file said until 2026-09-11 that `D-G-SERVICE`'s 36" RO had to sit on one of
+# GARAGE_WALL_2X6's 24" stud lines. It does not: `structural.door_framing_module` grades how
+# many studs an opening interrupts, and the only hard bound at the west end is the corner
+# pack — the sole plate starts 5/8" inboard of the node line and the 3-stud corner takes the
+# next 3", so the corner owns x 6'-0"..6'-3 5/8" and the door's king must clear it. A 36" RO
+# at 6'-7"..9'-7" puts the king at 6'-4"..6'-5 1/2" (3/8" clear) and interrupts the one stud
+# at 8'-0", exactly what the old station at 8'-6"..11'-6" interrupted at 10'-0".
 #
-# ** IT COST THE CONCENTRIC DOORS, AND THE BREEZEWAY ABSORBED THAT ON 2026-09-09. **
-# `D-G-SERVICE` had to go with the wall — at x=8'-0" its king stud would stand 5/8" inside
-# this wall's own corner pack (the sole plate starts 5/8" inboard of the node line and the
-# 3-stud corner takes the next 3", so the corner owns the first 3 5/8" of wall, and the king
-# wants x=6'-3"). Its centre is x=10'-0" now. `D-M-ENTRY` could NOT follow: its east jamb is
-# already 6" west of `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s bearing stack lands on
-# the north wall and runs to the footings, and a 36" RO cannot straddle it.
-#
-# The two doors stay 2'-0" apart. The shared landing spans x=6'-6"..11'-6" to cover both
-# complete 36" patches; HP3 moves west of the roofed connector (params/hp3_pad.py).
+# ** SO THE DOOR IS IN THE CORNER SINCE 2026-09-11, CENTRE x=8'-1", ** one inch off
+# `D-M-ENTRY`'s 8'-0" — the concentric pair the 2026-09-07 move gave up. `D-M-ENTRY` still
+# cannot move: its east jamb is 6" west of `N-M-N2` at x=10'-0", the tee where `W-M-STRW`'s
+# bearing stack lands on the north wall and runs to the footings. The shared landing
+# `FS-BW-FLOOR` is 3'-7" wide (x 6'-0"..9'-7") and covers both complete 36" patches; HP3 is
+# west of the roofed connector (params/hp3_pad.py).
 GARAGE_X_WEST = ft(6)
 GARAGE_X_EAST = ft(30)
 
@@ -148,14 +149,15 @@ WALLS = [
 # the rest of the envelope's dark trim is ordered in is what makes the rule readable off the
 # model, and it keeps band and Z one colour and one coil order.
 #
-# ** IT BREAKS AT BOTH STEM GAPS. ** There is no stem — and so no band and no Z — across the
-# 16'-0" overhead door or the 3'-0" service door, where params/foundations.py drops the stem
-# to a grade beam flush with grade. Six runs, 76 1/2 LF: south 2'-3" + 18'-3", east one
-# unbroken 24'-0", north 4'-0" twice, west 24'-0". (Six runs and the same total before and
-# after the 2026-09-07 rotation — the overhead door's gap simply moved from the east wall to
-# the north.) The break stations are the stem's own gap nodes (N-GF-S-DRW/DRE at the service
-# door's 3" margins, N-GF-N-DRE/DRW flush with the overhead door), authored as literals
-# because this file is `# haus: editable` and the dialect bans arithmetic.
+# ** IT BREAKS AT THE ONE STEM GAP. ** There is no stem — and so no band and no Z — across
+# the 16'-0" overhead door, where params/foundations.py drops the stem to a grade beam flush
+# with grade. Five runs, 80 LF: south one unbroken 24'-0", east 24'-0", north 4'-0" twice,
+# west 24'-0". The south wall was two runs (2'-3" + 18'-3") until 2026-09-11, broken at the
+# service door's own stem gap; that gap is closed (the door sill is +1'-0", not the slab, so
+# nothing needed the stem out of the way — see `W-GF-S-DR` in params/foundations.py) and
+# `TR-G-STEMZ-S2` is retired with it (uid 8JZR6X0A4X, never reuse). The north break stations
+# are the stem's own gap nodes (N-GF-N-DRE/DRW flush with the overhead door), authored as
+# literals because this file is `# haus: editable` and the dialect bans arithmetic.
 #
 # ** `thickness` IS THE FLAT LEG AND IT IS CENTRED ON THE PATH, so the path is NOT a wall
 # face. ** It is the mid-line of what the Z has to cover: from the node line (the CDX/EPS
@@ -174,18 +176,16 @@ WALLS = [
 # AND THAT IS WHY EVERY RUN IS `back_side="left"`. ** `back_side` names the side of the path
 # that faces the BUILDING, and the left-hand normal is `normal(d) = (-dy, dx)`
 # (resolve/geometry.py). Walked this way each wall's left-hand normal points inboard, so the
-# turn-down hangs off the outboard end on all six runs and throws water clear of the band
+# turn-down hangs off the outboard end on all five runs and throws water clear of the band
 # instead of back behind it. Get one direction wrong and the drip points at the wall — which
 # `integrity.drip_flashing_back_side` now grades, by requiring each run's back-side normal to
 # aim at the centroid of the loop its siblings form. It caught four inverted rake returns in
-# `params/roof_trim.py` the day it was written; these six were already right.
+# `params/roof_trim.py` the day it was written; these were already right.
 STEM_TOP_Z_FLASHING = [
+    # South: one unbroken run since the service door's stem gap closed (2026-09-11). It
+    # keeps S1's uid and tag; S2 (11'-9"->30'-0") is retired.
     Flashing(uid="4Z104BJ7TV", tag="TR-G-STEMZ-S1", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(6), ft(43, 2.225)), pt(ft(8, 3), ft(43, 2.225))),
-             top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
-             material="aluminum-flat-pvdf", back_side="left"),
-    Flashing(uid="8JZR6X0A4X", tag="TR-G-STEMZ-S2", kind=TrimKind.DRIP_FLASHING,
-             path=(pt(ft(11, 9), ft(43, 2.225)), pt(ft(30), ft(43, 2.225))),
+             path=(pt(ft(6), ft(43, 2.225)), pt(ft(30), ft(43, 2.225))),
              top_elevation=inch(-12.0), depth=inch(1.5), thickness=inch(0.8),
              material="aluminum-flat-pvdf", back_side="left"),
     # East: one unbroken run since the overhead door left this wall (2026-09-07).
@@ -238,33 +238,31 @@ STEM_TOP_Z_FLASHING = [
 OVERHEAD_DOOR_OFFSET = ft(4)
 OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 
-# Same pair for the service door: identical treatment for the identical reason — it opens
-# off the slab at grade, not the stem top its host wall starts on, so the stem gaps to a
-# grade beam here too.
-# ** 2'-6" OFF N-G-SW, WHICH IS x=10'-0" ABSOLUTE AS OF 2026-09-07. ** It was 6'-6" off a
-# wall starting at x=0'-0" — the same 2'-6" of jamb, the same 24" module, a wall line 6'-0"
-# further east. 2'-6" is the MINIMUM this offset can be: the corner pack owns the first
-# 3 5/8" of wall and the door's king wants 3" before its RO, so anything under ~7" puts the
-# king inside the corner. The centre landed at x=10'-0" and `D-M-ENTRY` stayed at 8'-0" —
-# see GARAGE_X_WEST above for why the entry could not follow and what that leaves open.
-# ** THE ORIGINAL ARGUMENT, WHICH STILL GOVERNS THE MODULE. ** GARAGE_WALL_2X6 frames stud lines at 24n along
-# W-G-S, so a 36" RO must centre on one of them; the nearest legal stations short of 6'-6"
-# either run the threshold off the end of SL-BW-DECK (`code.R311_3_exterior_landing` FAILs
-# outright) or land 8" off the module, cutting two studs where one will do. 96" is also the
-# BETTER station rather than merely the legal one: `D-M-ENTRY` is centred on x = 8'-0" too,
-# so the two doors this breezeway spans are finally concentric.
-# (The enclosure that used to be centred on that midpoint — `_GLAZING_CENTER_X`, taking
-# SL-BW-DECK to x 6'-0"..10'-0" — is retired along with SL-BW-DECK itself; the concentric
-# doors survive it, and `FS-BW-FLOOR` is the deck they now share.)
+# Same pair for the service door. Unlike the overhead door it does NOT gap the stem: its
+# sill is +1'-0" over the garage storey (0'-0" absolute, the breezeway deck), so the ICF stem
+# runs continuous under it and the landing carriers pass 3 3/4" over the stem top.
 #
-# Moving this constant is never just moving a door: params/foundations.py gaps the ICF stem
-# into a grade beam on it, so FT-GF-S-DR travels east too, and the water service's protection
-# sleeve at x=5'-0" was left standing in the wrong pour. `integrity.sleeve_in_opening` caught
-# it as an ERROR the moment the constant moved; the sleeve now names FT-GF-S1, the stem
-# footing that is actually over it (plan/mep_sleeves.py). Nothing about the pipe changed —
-# and FT-GF-S1 only grows westward-to-eastward as this offset climbs, so x=5'-0" stays over
-# it.
-SERVICE_DOOR_OFFSET = ft(2, 6)
+# ** 0'-7" OFF N-G-SW SINCE 2026-09-11: THE DOOR IS HARD IN THE SW CORNER. ** 7" is the
+# minimum this offset can be: the corner pack owns the first 3 5/8" of wall (see
+# GARAGE_X_WEST above) and the king wants 3" before the RO, so the king at 6'-4"..6'-5 1/2"
+# clears the corner by 3/8". RO 6'-7"..9'-7", centre x=8'-1", one inch off `D-M-ENTRY`'s
+# 8'-0". It was 2'-6" (RO 8'-6"..11'-6", centre 10'-0") from 2026-09-07 to 2026-09-11 and
+# 6'-6" off a wall at x=0'-0" before that — every one of those stations a 24" multiple,
+# under a "must sit on the stud module" rule this file invented and the engine never had.
+# What the corner buys: the interior landing and stair sit against `W-G-W`, so the stair's
+# handrail is wall-mounted on ordinary blocking and the landing's west guard is gone; the
+# exterior landing covers both door patches at 3'-7" instead of 5'-6".
+#
+# ** MOVING THIS CONSTANT MOVES MORE THAN A DOOR. ** params/north_entry_frame.py derives the
+# interior landing, both carriers, their posts and the exterior landing's east edge from it
+# (SERVICE_RO_WEST_FT / SERVICE_RO_EAST_FT); the stair, the handrail, the two backing bands
+# in plan/backing.py, the three switch/light stations in plan/lighting.py and the
+# SL-D-NORTH-BRIDGE cut in plan/views.py are LITERALS that follow it by hand. The stem under
+# it no longer follows at all: the two nodes `N-GF-S-DRW/-DRE` are pinned where the retired
+# gap left them (2'-3" and 5'-9" off `N-GF-SW`) as a fossil split, so the water service's
+# sleeve `SP-GF-S-HYD` keeps its host `FT-GF-S-DR` — `integrity.sleeve_in_opening` is what
+# catches a sleeve whose host moved out from under it.
+SERVICE_DOOR_OFFSET = ft(0, 7)
 SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
 
 OPENINGS = [
@@ -546,9 +544,17 @@ ALARMS = [
 # The elevations are literals because this file is `# haus: editable` and may hold only
 # literals; -2'-10" is `params/foundations.SITE_GRADE`, which `plan/site.py` repeats as
 # `Site.grade` and `plan/manifest.py` asserts the two agree. `start` is the foot of the
-# flight — GARAGE_Y_SOUTH + 3'-0" of landing + 4 x 11" of tread = 47'-2 3/8" — and it climbs
-# south (`run_reversed`) back to the landing's north edge. All three y literals below
-# move with GARAGE_Y_SOUTH.
+# flight — the landing's north edge at 47'-1 5/8" plus 4 x 11" of tread = 50'-9 5/8" — and
+# it climbs south (`run_reversed`) back to the landing. The y literals below move with
+# GARAGE_Y_SOUTH.
+#
+# ** x=6'-11 5/8" IS THE STEM'S FINISHED FACE, AND THE FLIGHT IS FLUSH TO IT (2026-09-11). **
+# The ICF stem `W-GF-W` is 11" thick off the node line at x=6'-0" and carries a 5/8" board on
+# its inside face from grade up (GARAGE_ICF_6's `gwb-stem`), so the finished face is
+# 6'-11 5/8"; `params/north_entry_frame.py::GARAGE_STEM_INSIDE_X_FT` is the same number and
+# the landing's east edge and both carriers derive from it. The framed wall above the stem
+# is thinner — its gyp face is at 6'-6 3/4" — which leaves a 4 7/8" ledge on the stem top at
+# -1'-0", accepted as-is (owner).
 #
 # 11" treads with NO nosing, which keeps the run at the 3'-8" the four slabs occupied and
 # leaves an 11" going against R311.7.5.2's 10" minimum. A nose would shorten the run and buy
@@ -557,7 +563,7 @@ STAIRS = [
     Stair(uid="X99TD38ZS3", tag="ST-G-SERVICE",
           from_storey="garage", to_storey="garage",
           base_elevation=ft(-2, -10), top_elevation=ft(0),
-          width=ft(3), start=pt(ft(8, 6), ft(50, 9.625)),
+          width=ft(3), start=pt(ft(6, 11.625), ft(50, 9.625)),
           run_direction="y", run_reversed=True,
           tread_depth=inch(11), nosing_depth=inch(0),
           material="kdat"),
@@ -567,27 +573,36 @@ STAIRS = [
 # Nothing was asking for it while the flight was five slabs, because both handrail rules
 # iterate `model.stairs`.
 #
-# Post-mounted on the west side of the run, not wall-mounted: the flight stands in the
-# open on the garage floor at x=8'-6"..11'-6", with the nearest wall 2'-6" away — still far
-# too far to reach, which is the whole point.
+# ** WALL-MOUNTED ON W-G-W SINCE 2026-09-11. ** The flight is flush to the west stem, so the
+# rail is brackets into the framed wall above it, the way `RL-M-HANDRAIL-W` in
+# plan/storeys/main.py is. `mount="wall"` makes the resolver emit a bracket per station
+# instead of a 36" post on each tread; `post_spacing=48"` on a 3'-9" run puts one bracket at
+# each end of the path and none between. ** THE TOP END IS ON A STUD, 1" PAST THE LANDING
+# EDGE. ** W-G-W's studs are 24" o.c. from N-G-NW, so stud-010 is at y=47'-2 5/8"; the
+# landing edge is 47'-1 5/8", a quarter inch off that stud's face, which would have put the
+# bracket half on the stud and half over WIN-G-S1's bay. Running the rail 1" further (R311.7.8
+# asks for continuity riser to riser and forbids nothing beyond) puts the bracket squarely on
+# the stud and needs no blocking there. The FOOT station is 5" from a stud and gets a
+# `WallBacking` band in plan/backing.py (`BK-G-W-RAIL-FOOT`) — move this path and move it.
+# The rail centreline at x=6'-9" is 2 1/4" off the wall's gyp face at 6'-6 3/4": the 1 1/2"
+# clearance R311.7.1.2 wants plus the bar's own 3/4" radius. It hangs over the stem ledge,
+# 2 5/8" clear of the flight's west edge at 6'-11 5/8".
 #
-# ** THE FLIGHT MOVED EAST 1'-6" ON 2026-09-07, ONTO ITS OWN LANDING. ** It ran x 5'..8'
-# under a landing at x 6'-6"..9'-6" — a stale offset left over from an older
-# SERVICE_DOOR_OFFSET, overlapping the landing by only 1'-6", and nothing graded it. The
-# garage's move east forced the question (at x=5' the rail would have stood inside the new
-# west wall), and the answer is to put the flight under the door it serves. Both x's
-# here and `Stair.start` above are that one station; edit them together. The posts stand on
-# the treads (`serves_stair` rakes the rail along the flight's nosing line) and the rail
-# tops out 36" above them, inside R311.7.8.1's 34"-38".
+# It was post-mounted on the west side of a flight standing in the open at x 8'-6"..11'-6"
+# (2026-09-07 to 2026-09-11), and before that ran x 5'..8' under a landing at 6'-6"..9'-6",
+# a stale offset nothing graded. `serves_stair` rakes the rail along the nosing line and the
+# rail tops out 36" above it, inside R311.7.8.1's 34"-38". The door leaf hinges EAST (the
+# default) and lies along the landing's east side when open, clear of this rail.
 #
-# The composite landing continuation has west/east guards in params/breezeway.py.
+# The composite landing continuation has its east guard in params/breezeway.py; its west
+# edge is closed by W-G-W itself.
 
 RAILINGS = [
     Railing(uid="CX7KN0MZE0", tag="RL-G-SERVICE",
-            path=(pt(ft(8, 6), ft(50, 9.625)), pt(ft(8, 6), ft(47, 1.625))),
+            path=(pt(ft(6, 9), ft(50, 9.625)), pt(ft(6, 9), ft(47, 2.625))),
             kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
-            base_elevation=ft(-2, -10), post_spacing=inch(36), post_size="2x2",
-            rail_count=1, mount="surface", assembly="RAILING_DARK_METAL",
+            base_elevation=ft(-2, -10), post_spacing=inch(48), post_size="2x2",
+            rail_count=1, mount="wall", assembly="RAILING_DARK_METAL",
             role="handrail", serves_stair="ST-G-SERVICE", top_height=inch(36),
             graspable_profile="1.5in round — Type I"),
 ]

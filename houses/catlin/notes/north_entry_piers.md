@@ -217,12 +217,20 @@ Six piers on **two** bearing planes, and the split is the first thing to read.
 
 | pier | carries | pad | bottom | bearing d/c |
 |---|---|---|---|---|
-| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.90 |
-| `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.51 |
+| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.81 |
+| `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.42 |
 | `PT-BW-RE` | the east header (full-height column) | 2'-0" | −9'-9 7/16" | 0.54 |
-| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.84 |
-| `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.76 |
+| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.74 |
+| `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.59 |
 | `PT-BW-RNE` | the east header (full-height column) | 2'-0" | −7'-0" | 0.60 |
+
+> ⚠ **Re-read 2026-09-11, when the landing narrowed.** `LANDING_EAST_FT` came in from 11'-6"
+> to 9'-7" — `D-G-SERVICE`'s east jamb, once the door moved into the garage's SW corner — so
+> both seat beams span 3'-7" instead of 5'-6", the four landing piers `PT-BW-W`/`-E`/`-GW`/
+> `-GE` stand 3'-7" apart on each line, and the deck they share is 23.5 ft² plus the 13.2 ft²
+> interior landing, down from 36.1 + 11.7. Every ratio in this table and every deck term
+> below moved with it; the two east columns carry no landing and did not move. The pier
+> STATIONS on the east line are x=9'-7" now, not 11'-6".
 
 **The house-side three reach −9'-9 7/16" for a reason that is not bearing.** The basement
 excavation is already open to that depth, so the extra 2'-9" of shaft costs shaft and
@@ -245,12 +253,19 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 | term | working | value |
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
-| deck tributary | landing area shared down the beam chain | 23.5 ft² |
+| deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
 | roof live | 40.0 × 50 psf (`pier_basis` screens at ground snow) | 2,000 lb |
-| deck live | 23.5 × 40 psf | 940 lb |
-| dead | (40.0 + 23.5) × 10 psf + self weight + carried | 1,719 lb |
-| service | | **5,283 lb** |
-| factored | 1.2 D + 1.6 L | **7,765 lb** |
+| deck live | 18.4 × 40 psf | 736 lb |
+| dead | (40.0 + 18.4) × 10 psf + self weight + carried | 1,668 lb |
+| service | | **4,404 lb** |
+| factored | 1.2 D + 1.6 L | **6,380 lb** |
+
+**`pier_basis` walks the beam chain and reads the tributaries wider than this line**: 17.0 ft²
+of deck and 47.7 ft² of roof on `PT-BW-W` (it credits the seat, the screen sill and the
+carriers each a share, and the west roof column's header), for 6,835 lb factored against the
+6,380 here. Before the narrowing it read 23.3 / 51.8 and 7,687 lb against 7,765. Same
+order, same conclusion, and the difference is bookkeeping in a load case that is nowhere
+near governing.
 
 **`pier_basis` screens the roof at ground snow (50 psf), not at the 73.7 psf of §3.** That is
 a deliberate under-read in a screening tool, and it is why the pier's ratio is not the number
@@ -287,17 +302,17 @@ against a factored 7.8 kip gives δ_ns ≈ 1.01, and e_min stays under §R22.4.2
 
 | term | working | value |
 |---|---|---|
-| service load | §6 above | 5,283 lb |
+| service load | §6 above | 4,404 lb |
 | presumptive bearing | IBC Table 1806.2, sand/silt/clay, taken at | 2,000 psf |
-| required area | 5,283 / 2,000 | 2.64 ft² |
+| required area | 4,404 / 2,000 | 2.20 ft² |
 | provided | 2'-0" square | **4.00 ft²** |
 
-The engine reads 0.90 here rather than the 0.51 this line arithmetic gives, because
+The engine reads 0.81 here rather than the 0.55 this line arithmetic gives, because
 `pier_basis` credits `PT-BW-W` a larger deck share than the round number above once it walks
-the beam chain. **0.90 is the tightest bearing ratio in this structure** and it is the first
-number to revisit if a boring log comes back under 2,000 psf. The retired `PR-BW-*` pads were
-1.78 ft² against a 1,240 lb load; they do not cover any of this, which is why 2'-0" is
-authored on five of the six.
+the beam chain (0.90 against 0.51 before the 2026-09-11 narrowing). **0.81 is the tightest
+bearing ratio in this structure** and it is the first number to revisit if a boring log comes
+back under 2,000 psf. The retired `PR-BW-*` pads were 1.78 ft² against a 1,240 lb load; they
+do not cover any of this, which is why 2'-0" is authored on five of the six.
 
 ## 7. What is NOT graded here
 

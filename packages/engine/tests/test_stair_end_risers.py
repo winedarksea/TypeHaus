@@ -150,8 +150,10 @@ def test_surfaces_are_found_across_storey_filing(catlin_model):
     A storey-scoped lookup finds only SL-G-FLOOR, 2'-10" under the flight's own foot, and
     reports a 27" top riser. ``surfaces_at`` asks the physical question instead.
     """
+    # (8'-3", 46'-8 3/8") is inside the interior landing's sheet, x 6'-7"..9'-11 5/8" since
+    # the service door moved into the garage's SW corner (2026-09-11; it was 8'-6"..11'-6").
     found = {surface.deck_tag: surface.deck_top_m
-             for surface in surfaces_at(catlin_model, (10.0 * _FT, 46.7 * _FT))}
+             for surface in surfaces_at(catlin_model, (8.25 * _FT, 46.7 * _FT))}
     assert "SL-G-FLOOR" in found and "FS-BW-GARAGE" in found
     assert found["SL-G-FLOOR"] == pytest.approx(inch(-34).meters, abs=1e-9)
     assert found["FS-BW-GARAGE"] == pytest.approx(0.0, abs=1e-9)

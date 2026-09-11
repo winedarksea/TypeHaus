@@ -1211,6 +1211,61 @@ pocket was possible there at all.
     which nicks the "stem and wood wall are coplanar on the outside" promise — inside
     `_axis_match`'s 1/2" and physically true. Do not recess the EPS to hold the face still;
     that re-opens the old rain shelf.
+- **`D-G-SERVICE` into the SW corner, and what the move surfaced (2026-09-11).** The door
+  sat at x=10'-0" because `garage.py` said a 36" RO "must sit on one of GARAGE_WALL_2X6's 24"
+  stud lines" and that 2'-6" was "the MINIMUM this offset can be". Neither was an engine
+  rule: `structural.door_framing_module` counts interrupted studs, and the resolved framing
+  of `W-G-S` showed the corner pack ending at 6'-3 5/8", a lone stud at 8'-0" and the king at
+  8'-3 3/4" — so a RO at 6'-7"..9'-7" interrupts the same single stud and clears the corner by
+  3/8". The owner saw the free bay in the 3D view and chose the corner: the flight goes
+  against `W-G-W`, the handrail becomes brackets on ordinary blocking, the west guard goes,
+  and the exterior landing shrinks to one door jamb (3'-7") instead of covering two offset
+  36" patches (5'-6"). Owner calls the same day: 4x4 KDAT posts on 1" ABU44 standoffs, sized
+  to reach the beams; handrail on 2x blocking as `WallBacking` bands; no furring band and no
+  guard at the stem ledge.
+  - **The stem's finished face is 6'-11 5/8", not the 6'-11" the plan assumed.** GARAGE_ICF_6
+    carries a 5/8" `gwb-stem` board from grade up, and a stringer authored at the ICF's foam
+    face would have stood inside that board along its whole length at 0 FAIL. Everything
+    derives from `GARAGE_STEM_INSIDE_X_FT` now.
+  - **The gwb board also squeezed the west carrier into the deck's joist grid.** Between
+    that board (6'-11 5/8") and `FS-BW-FLOOR`'s second joist (west face 7'-3") there is 3 3/8"
+    for a 3" beam; the plan's "2" inside the stem face" put the beam 1/8" into the joist and
+    `structural.member_interference` said so. The carrier is sistered to the joist instead,
+    3/8" off the board, and a module-level assert keeps its 4x4 post outside the board.
+  - **The landing narrowing could not be its own commit.** With the deck still at 11'-6" the
+    joist field's 12" o.c. layout puts a joist at 9'-3 3/4", inside the new east carrier at
+    9'-4"..9'-7"; only `LANDING_EAST_FT` following the jamb in (so the field ends at 9'-3 1/4"
+    with its rim touching the carrier) clears it. The owner's "separate commit" was traded for
+    a green tree, deliberately, and recorded here.
+  - **The 7 1/4" post gap.** `PT-BW-IC`/`-IE` were authored `height=BEARING_TOP_FT -
+    SITE_GRADE` — the PIER top — under carriers whose soffit is `SEAT_TOP_FT`; 6x6 squash
+    blocks stopping short of the thing they hold, and nothing in `checks/` grades a post that
+    does not reach its beam. `INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE` (25 3/4").
+  - **The rail's landing-end bracket landed 1/4" off a stud, in a window bay.** `W-G-W`'s
+    studs are 24" o.c. from `N-G-NW`; stud-010 is at y=47'-2 5/8" and the landing edge at
+    47'-1 5/8". A backing band there resolved 5 3/4" long — `WIN-G-S1`'s rough-opening
+    exclusion clips backing to the far side of that stud — and still missed the station. The
+    rail runs 1" past the landing edge onto the stud and needs no blocking there; the foot
+    station, 5" from a stud, keeps its 2x12 band (`height` must equal the profile's 11 1/4",
+    `integrity.wall_backing_ref`).
+  - **`code.R303_8_exterior_stairway_illumination` had been passing on a pantry light.**
+    `ED-M-PANTRY-LT`, a wall fixture INSIDE `RM-M-PANTRY`, sat 3'-10" from `ST-BW-ENTRY`'s
+    tiers in plan and the rule's 4'-0" ring has no opinion about walls. Moving the tiers 1'-11"
+    west dropped it out and produced the first honest reading: no exterior light at the north
+    entry at all. `ED-M-ENTRY-LT` (mark R, the garage-door sconce type) on `W-M-N2`'s bay
+    centre and `ED-M-ENTRY-SW` on `W-M-STRW`'s mudroom face — inside the dwelling, per
+    R303.8.1 — are the fix; the garage's `ED-G-EXT-SW` is the wrong building for it.
+  - **Garage switches were 12" above the landing.** `Mount.elevation` on a garage device is
+    off `room_floor_elevation` — the slab at -2'-10" — so `inch(46)` resolved to +1'-0"
+    absolute against a landing at 0'-0". 80" over the slab is 46" over the landing.
+  - **The goldens were 80 scenes stale at HEAD before this change**: `SL-D-NORTH-BRIDGE` had
+    been authored without a blessed golden, so every later sheet number was off by one and
+    the set-membership assertion masked the content drift. Blessed whole, with that slice's
+    cut moved to the door's new centreline (x=8'-1").
+  - Pre-existing red tests NOT touched here (all red at HEAD in a detached worktree):
+    `test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab` (looks for the
+    retired `SL-G-STEP-0`), `test_stairs_resolve_with_code_risers` (`ST-BW-ENTRY`'s 18"
+    going), `test_ifc_emission_when_available` (duplicate GUIDs on `SC-BW-WEST` slats).
 
 ## Exterior colour, balcony and veneer
 

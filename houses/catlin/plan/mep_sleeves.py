@@ -151,10 +151,11 @@ WALL_SLEEVES = [
 GARAGE_SLEEVES = [
     # It crosses the garage's south foundation line at x=11'-0", at -8'-10", inside a 2"
     # protection sleeve. `host_ref=FT-GF-S-DR`: the garage moved 6'-0" east on 2026-09-07 and
-    # the hydrant with it, so the crossing is back under the grade beam beneath D-G-SERVICE,
-    # which is the host this sleeve carried before SERVICE_DOOR_OFFSET last moved. It sits
-    # 9" inside the beam's east end. `integrity.sleeve_in_opening` catches a sleeve naming a
-    # host it no longer sits in — and it is what will catch the next move of that door.
+    # the hydrant with it, so the crossing landed under the grade beam beneath D-G-SERVICE.
+    # The door moved again on 2026-09-11 (into the SW corner) and the footing did NOT follow:
+    # W-GF-S-DR is a full stem now, its nodes pinned at x 8'-3"..11'-9" as a fossil split
+    # precisely so this host stays over the crossing, 9" inside its east end.
+    # `integrity.sleeve_in_opening` catches a sleeve naming a host it no longer sits in.
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
                       position=pt(ft(11), ft(43, 6.875)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",

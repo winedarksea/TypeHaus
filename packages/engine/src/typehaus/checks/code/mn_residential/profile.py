@@ -135,6 +135,14 @@ MN_2020 = JurisdictionProfile(
                         # landing that is an element; a head that lands on a wall TOP is
                         # neither, and had no rule at all — see stair_guards.py.
                         "code.R311_7_1_wall_top_landing",
+                        # R311.7.5.1 twice over, because a flight has an inside and two
+                        # ends. `structural.stair_riser_uniformity` grades the steps
+                        # BETWEEN generated members, which are uniform unless the generator
+                        # is wrong; `code.R311_7_5_1_stair_end_risers` grades the first and
+                        # last against the floors they actually meet, which is where a
+                        # building is. The second is the one a plan reviewer would find by
+                        # hand, and until 2026-09-11 nothing here did.
+                        "code.R311_7_5_1_stair_end_risers",
                         "structural.stair_riser_uniformity"),
                        ("IRC R311.7", "IRC R311.7.5.1")),
         PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),

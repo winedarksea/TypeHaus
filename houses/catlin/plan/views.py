@@ -91,9 +91,11 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
          crop=(pt(ft(4), ft(-4)), pt(ft(32), ft(16))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
+    # Cut on D-G-SERVICE's centreline: x=8'-1" since the door moved into the garage's SW
+    # corner (2026-09-11; it was 10'-0"). Nothing links this to SERVICE_DOOR_OFFSET.
     Slice(uid="BWD902AAAA", tag="SL-D-NORTH-BRIDGE", kind=SliceKind.DETAIL,
          title="North entry longitudinal foundation and threshold section",
-         cut_origin=pt(ft(10), ft(0)), cut_direction="y",
+         cut_origin=pt(ft(8, 1), ft(0)), cut_direction="y",
          crop=(pt(ft(34), ft(-11)), pt(ft(52), ft(16)))),
     # ** THE DRAWING THAT PROVES THE ATTIC CHANGE, AND THE ONE THAT WOULD CATCH IT COMING
     # UNDONE. ** FO-A-HALL takes the attic deck away over x 10'-0"..18'-0", so the stair

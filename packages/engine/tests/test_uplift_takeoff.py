@@ -40,7 +40,10 @@ RULES = CONFIG.uplift
 # stainless part the house actually buys rather than the galvanized one the section-based
 # derivation reaches for. The east pair is not here because it no longer exists: PT-BW-RE and
 # PT-BW-RNE run full height in cast concrete and carry no wood column at all.
-AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW"}
+# The canopy's two west columns on ABU66SS, and since 2026-09-11 the two interior landing
+# posts on ABU44 (CN-BW-IBASE-C/-E): 4x4 KDAT standing 25 3/4" on the garage slab, authored
+# so the 1" standoff and the cast-in bolt are on the drawings.
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
 
 #: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
 #: as ``post_base_rows`` is concerned — a post whose joint is already made must not be bought
@@ -243,7 +246,9 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # it again the same day: the house buys stainless at every treated post base, and the
     # derived rule names the catalog model for the SECTION, which is the galvanized ABU66.
     # `CN-BW-BASE-W` / `-NW` author those two joints as ABU66SS instead, which stands the
-    # derivation down. The 4x4 rung is what is left, and it is the dry interior pair.
+    # derivation down, and `CN-BW-IBASE-C` / `-E` do the same for the two interior landing
+    # posts (ABU44, authored for the standoff detail). The 4x4 rung that is left is the
+    # stairwell pair on the basement slab.
     #
     # An ABU66 row reappearing is the failure now, and it means an authored base stopped
     # matching. An ABU66SS row would be a different failure — that is the balcony centre
@@ -255,11 +260,13 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
         for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
             assert tag not in row["basis"]
     # And the nine really are all of them, so what is NOT in the rows above is coverage
-    # rather than silence: four authored bases, two authored ties, four derived, three squash
-    # blocks. The four balcony corner columns are absent because they are no longer WOOD —
+    # rather than silence: four authored bases, two authored ties, two derived, one squash
+    # block. The four balcony corner columns are absent because they are no longer WOOD —
     # the filter below is on section, and a "12 round" is not a 6x6. PT-BW-IC / PT-BW-IE
-    # joined the squash-block side on 2026-09-10: 1'-6 1/2" of 6x6 under the interior
-    # cantilever's end, below blocking_max_height_ft, so they bear and do nothing else.
+    # were squash blocks for one day (2026-09-10: 1'-6 1/2" of 6x6 stopping 7 1/4" SHORT of
+    # the carriers they were meant to hold, sized off the pier top); since 2026-09-11 they
+    # are 25 3/4" 4x4 posts on authored bases, and they left the squash-block set with the
+    # height.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
             if isinstance(e, Post) and e.supported_by and not e.within_wall
             and e.size in {"6x6", "4x4"}}
@@ -302,16 +309,18 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
 
     row = post_base_anchor_rows(catlin_model_ro, RULES)[0]
     assert row["part_number"] == "AB-058-10-SS"
-    # 2 -> 4 -> 6 -> 4 on 2026-09-10, and the last step is the east pair leaving: PT-BW-RE
-    # and PT-BW-RNE became full-height CAST columns, so the two wood columns that stood on
-    # them are gone and so are their bases. What is left on concrete is the two stairwell
-    # 4x4s on the basement slab and the canopy's two WEST columns on their 12" piers.
+    # 2 -> 4 -> 6 -> 4 on 2026-09-10 (the east pair left: PT-BW-RE and PT-BW-RNE became
+    # full-height CAST columns, so the two wood columns on them and their bases went), then
+    # 6 on 2026-09-11: PT-BW-IC / PT-BW-IE grew from squash blocks into 25 3/4" posts on
+    # authored ABU44 standoffs, on the garage SLAB, each wanting its cast-in bolt. On concrete
+    # now: the two stairwell 4x4s on the basement slab, the canopy's two WEST columns on
+    # their 12" piers, and the two interior landing posts.
     #
     # The population is the union of authored and derived bases, which is why this no longer
-    # equals the derived rows alone: `CN-BW-BASE-W` / `-NW` are authored ABU66SS and still
-    # each need their cast-in bolt.
-    assert row["count"] == 4
-    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 2
+    # equals the derived rows alone: `CN-BW-BASE-W` / `-NW` (ABU66SS) and `CN-BW-IBASE-C` /
+    # `-E` (ABU44) are authored and still each need their bolt.
+    assert row["count"] == 6
+    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 4
 
 
 def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:

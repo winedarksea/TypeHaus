@@ -201,6 +201,15 @@ it was 4x14' + 2x24', which is the rakes and eaves swapping places.
 
 ## 7. The revert recipe
 
+> ⚠ **Written for the 2026-09-07 state, and the service door has moved since.** On
+> 2026-09-11 `D-G-SERVICE` went into the garage's SW corner (`SERVICE_DOOR_OFFSET` 2'-6" →
+> 0'-7", RO 6'-7"..9'-7"), the exterior landing narrowed to its east jamb
+> (`LANDING_EAST_FT` = `SERVICE_RO_EAST_FT`), the stem gap under it closed (`W-GF-S-DR` is
+> `_STEM`, its nodes pinned at x 8'-3"/11'-9" as a fossil for `SP-GF-S-HYD`), and the stair,
+> handrail, backing band, switches and `SL-D-NORTH-BRIDGE` cut are literals that followed it.
+> The `ft(6, 6)` below presumes the door still at 2'-6" off `N-G-SW`; a revert today walks
+> `params/north_entry_frame.py`'s constants and those literals back as well.
+
 Turning the door back east is the table in §3 read right-to-left, plus §4's guard row and
 §6's translation (set `GARAGE_X_WEST`/`GARAGE_X_EAST` back to `ft(0)`/`ft(24)`,
 `SERVICE_DOOR_OFFSET` back to `ft(6, 6)`, and walk §6.2's list backwards). It is a plan-source edit only — no seal is staled, because

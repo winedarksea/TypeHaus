@@ -686,7 +686,7 @@
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
 # prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
-"ABU44" = { low = 22, high = 40 }  # 2 ea
+"ABU44" = { low = 22, high = 40 }  # 4 ea — 2 DERIVED under P-M-STRWELL-N/S, 2 AUTHORED (CN-BW-IBASE-C/-E) under the 4x4 interior landing posts PT-BW-IC/-IE since 2026-09-11, when those went from 6x6 squash blocks short of their beams to 25-3/4in standoff-based posts
 # The shim pack under every wood beam soffit that lands on a pour — the four balcony corner
 # column tops and the two porch column tops. Modelled as a part since 2026-09-03; it was
 # prose inside two assembly `source` strings before that, bought on the job and priced
@@ -826,7 +826,7 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
-"AB-058-10-SS" = { low = 12, high = 28 }  # 4 ea — one cast-in bolt per POST BASE that lands on concrete: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
+"AB-058-10-SS" = { low = 12, high = 28 }  # 6 ea — one cast-in bolt per POST BASE that lands on concrete: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S + the 2 garage-slab ABU44 under PT-BW-IC/-IE (2026-09-11). `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on

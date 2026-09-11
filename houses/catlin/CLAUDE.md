@@ -7,7 +7,13 @@
 > on a compacted base, no wood and no piers. The canopy BRACES ITSELF: `PT-BW-RE`/`-RNE` are
 > full-height cast columns fixed at the base (east) and `W-BW-SCREEN` is a sheathed shear
 > panel (west); the garage joint is a tied diaphragm, not the lateral system. `W-BW-SCREEN`
-> is also the guard, with `SC-BW-WEST` a slat clerestory over it; `RL-BW-SCREEN` is retired. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
+> is also the guard, with `SC-BW-WEST` a slat clerestory over it; `RL-BW-SCREEN` is retired.
+> **2026-09-11: `D-G-SERVICE` is hard in the garage's SW corner** (RO 6'-7"..9'-7", centre
+> x=8'-1", an inch off `D-M-ENTRY`), the landing narrowed to its east jamb (3'-7" wide, piers
+> at x=6'-0"/9'-7"), the interior landing and `ST-G-SERVICE` stand against `W-G-W` with a
+> wall-mounted handrail, `RL-BW-GARAGE-W` is gone, the two carrier-tip posts are 4x4 KDAT on
+> `ABU44` standoffs reaching the beams, the stem gap under the door is closed, and
+> `ED-M-ENTRY-LT` lights the entry landing. Garage +30in north; bridge composite finish 0; SL-G-STEP-0,
 > pads, glazing and the six invented seat connectors retired; HP3 west in open yard. See
 > notes/north_entry_structure.md (the bearing map), notes/north_entry_piers.md (the
 > arithmetic) and notes/hp3_north_relocation.md.
@@ -171,13 +177,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Site and the four structures
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
-- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing; `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing through `D-G-SERVICE`'s rough opening. `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
+- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing; `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem becomes a curb-free grade beam there.
-- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, `RL-G-SERVICE`). `SL-G-STEP-0` is retired — `FS-BW-GARAGE` replaces it — though stray comments in `plan/storeys/garage.py` and `plan/assemblies.py` still name it.
+- `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the 2'-10" drop is five 6.8" risers inside (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W`, one bracket on stud-010 and one on `BK-G-W-RAIL-FOOT`). `SL-G-STEP-0` is retired — `FS-BW-GARAGE` replaces it — though stray comments in `plan/assemblies.py` still name it. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
 - `Stair.floor_opening` is optional (a rise states directly via `base_elevation`/`top_elevation`) — but `structural.stair_riser_uniformity` and `code.R311_7_8_handrail` iterate `model.stairs`, so slabs instead of a `Stair` draw NO riser/handrail finding.
 - Garage plates are 8'-4", not 8'-0" — the door climbed 4" when the storey dropped; a shorter plate would push the 3-ply LVL header into the truss heels.
 - Emitters/placeable resolver read `resolve/room_floor.py::room_floor_elevation` for garage heights, not storey elevation — enforced by `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
@@ -1055,10 +1061,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   2026-09-07.** `GARAGE_X_WEST`/`GARAGE_X_EAST` are published beside the two y lines; stem,
   slab, and landing derive from them. Footprint did not rotate — windows stay on `W-G-W`,
   `D-G-SERVICE` on `W-G-S`. (→ DESIGN-LOG.md, "Decks and the garage")
-  - `D-G-SERVICE`'s centre moved to **x=10'-0"**. `D-M-ENTRY` could not follow — its east
-    jamb is fixed 6" west of `N-M-N2` at x=10'-0", the bearing tee to the footings — so the
-    two doors are 2'-0" out of line. `code.R311_3_exterior_landing` passes both (entry 90.9%,
-    service 91.7%, bar 85%). **Do not answer this by moving the garage back.**
+  - `D-G-SERVICE`'s centre is **x=8'-1"** since 2026-09-11 (`SERVICE_DOOR_OFFSET` 0'-7", RO
+    6'-7"..9'-7"), an inch off `D-M-ENTRY`'s 8'-0"; it was 10'-0" from 2026-09-07. **The
+    "24-inch steps" rule that held it there was the house's own invention** — the engine
+    grades how many studs an opening interrupts, and the only hard bound is the corner pack
+    (x 6'-0"..6'-3 5/8"); the king at 6'-4" clears it by 3/8" and the RO interrupts the one
+    stud at 8'-0". `D-M-ENTRY` still cannot move (its east jamb is 6" west of `N-M-N2`, the
+    bearing tee). `code.R311_3_exterior_landing` passes both on a 3'-7" deck (x 6'-0"..9'-7").
+    **Do not answer anything here by moving the garage back.**
+  - **The interior landing (`FS-BW-GARAGE`) sits in the SW corner**: sheet x 6'-7"..9'-11 5/8"
+    (the RO's west jamb to the stem's finished face + 3'-0"), 1/4" off `W-G-W`'s gyp face, so
+    the wall closes the west edge and `RL-BW-GARAGE-W` is deleted (uid `BWRGGWAAAA` retired).
+    Carriers `BM-BW-FC`/`-FE` at x=7'-1 1/2"/9'-5 1/2": the west one is SISTERED to
+    `FS-BW-FLOOR`'s joist at 7'-3 3/4" (3 3/8" between the stem's board and that joist for a
+    3" beam — forced), the east one's face is on the jamb. `PT-BW-IC`/`-IE` are **4x4 KDAT,
+    25 3/4"**, slab to carrier soffit, on authored `ABU44` + `AB-058-10-SS` (`CN-BW-IBASE-*`);
+    they were 6x6s stopping 7 1/4" SHORT of the beams, sized off the pier top, at 0 FAIL.
+  - **The stem's finished inside face is x=6'-11 5/8", not 6'-11"** — GARAGE_ICF_6's 5/8"
+    `gwb-stem` board is on the ICF from grade up. `GARAGE_STEM_INSIDE_X_FT` carries it; the
+    flight, the landing's east edge and both carriers derive from it. The ledge on the stem
+    top under the framed wall's gyp face (6'-6 3/4") is 4 7/8", accepted (owner).
+  - **`LANDING_EAST_FT = SERVICE_RO_EAST_FT` (9'-7") had to move in the SAME commit as the
+    door**, not the separate one the plan asked for: `FS-BW-FLOOR`'s 12" o.c. joist grid puts
+    a joist at 9'-3 3/4", inside the new east carrier, until the field's east edge follows the
+    deck edge in. Seat beams span 3'-7"; `STAIR_FOOT_X_FT` is 15'-7" and `plan/site.py`'s two
+    paver literals followed it by hand.
+  - **`ED-M-ENTRY-LT`/`-SW` exist because the narrowing exposed a false PASS**:
+    `code.R303_8_exterior_stairway_illumination` had been satisfied for `ST-BW-ENTRY` by
+    `ED-M-PANTRY-LT` — a wall light INSIDE the pantry, 3'-10" from the tiers in plan through a
+    wall. The sconce is on `W-M-N2`'s bay centre at x=11'-4", 6'-4" up; its switch is on
+    `W-M-STRW`'s mudroom face (R303.8.1 wants it inside the dwelling, not in the garage).
   - `EQ-M-HP3-OD` sits at x 12'-4"..15'-2 3/8", `SL-M-HP3PAD` at x 12'-1"..15'-5", clearing
     12 11/16" to the nearest glass (Gree's 12" lesser-side minimum); the front walk's west
     edge is x=15'-9". Nothing grades an Equipment against a deck or clearance envelope, so
@@ -1070,8 +1102,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     clearance to the garage's east gutter. Its disconnect `ED-M-HP1-DISC` is a 6 1/2" can in
     a 14" slot, **NEC 110.26 working space ungraded**. Neither can move further on this face.
   - Aligning `ST-G-SERVICE` under its own landing fixed a standing `code.R312_1_guard_height`
-    FAIL on `SL-G-STEP-0`. `ED-G-SW`/`ED-G-EXT-SW` sit inside `D-G-SERVICE`'s rough opening —
-    a pre-existing, ungraded defect; fix target ~x=12'-0"/12'-6", east of the real jamb.
+    FAIL on `SL-G-STEP-0`. `ED-G-SW`/`ED-G-EXT-SW` sat inside `D-G-SERVICE`'s rough opening
+    AND 12" above the landing (a garage device's `Mount.elevation` is off the SLAB); since
+    2026-09-11 they are at x=10'-8"/10'-2", east of the king, at 80" over the slab = 46" over
+    the landing. `ED-G-LT3` is at the landing's centre, x=8'-3".
   - `notes/garage_orientation_lot.md` is the revert recipe; a south-lot revert must also flip
     `SetbackSpec` edges 0 and 2 (deliberately untouched here).
 - **The garage has no wainscot; its base skin is a uniform 24" band on the ICF stem, all
@@ -1085,9 +1119,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     bands with no waste, so the heavier sheet costs nothing extra per SF over 24" trim coil.
     Second best on supply failure: 0.024" heavy-gauge 24" trim coil. **Never 0.019"** — takes
     a permanent shovel dent. (→ DESIGN-LOG.md, "Decks and the garage")
-  - `STEM_TOP_Z_FLASHING` (`plan/storeys/garage.py`) is six `DRIP_FLASHING` runs, 76.5 LF,
-    broken at both stem gaps. One counter-clockwise loop, every run `back_side="left"` so
-    each wall's inboard normal puts the turn-down outboard on all six. **Nothing grades
+  - `STEM_TOP_Z_FLASHING` (`plan/storeys/garage.py`) is five `DRIP_FLASHING` runs, 80 LF,
+    broken only at the overhead door's stem gap (the service door's gap closed 2026-09-11;
+    `TR-G-STEMZ-S2`/uid `8JZR6X0A4X` retired). One counter-clockwise loop, every run
+    `back_side="left"` so each wall's inboard normal puts the turn-down outboard. **Nothing grades
     `back_side`** — get one wall wrong and the drip points at the wall at 0 FAIL.
     `test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed` pins it; confirm in
     the viewer too.
@@ -1101,6 +1136,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     **do not quietly re-decide it either way**. (→ DESIGN-LOG.md, "Decks and the garage")
   - `W-GF-S3` / `W-GF-N2` are a kept fossil (plain `GARAGE_ICF_6`, nothing stands on them) —
     the wall/room census tests pin the count so a cleanup can't un-split them by accident.
+    `W-GF-S-DR` joined them on 2026-09-11: the service door's grade beam is full stem now, its
+    two nodes PINNED at x 8'-3"/11'-9" (`_FOSSIL_SERVICE_OFFSET`) so `FT-GF-S-DR` stays over
+    the hydrant crossing `SP-GF-S-HYD` names. Nine stem segments, one grade beam.
 - **The garage is white again** (all four walls `GARAGE_WALL_2X6`, `corrugated-panel-26`).
   `standing-seam-nailstrip-26-green` stays in the catalog, referenced by nothing — going
   green again is a one-line `layer_materials=` change. (→ DESIGN-LOG.md, "Decks and the

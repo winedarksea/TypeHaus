@@ -188,6 +188,7 @@ PLAN = (
     )
     .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
                               *breezeway.GARAGE_STOREY_ELEMENTS,
+                              *backing.GARAGE_BACKING,
                               *electrical.GARAGE_ELEMENTS,
                               *fixtures.GARAGE_FIXTURES,
                               *lighting.GARAGE_LIGHTING,

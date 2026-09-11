@@ -36,7 +36,7 @@
 # Elevations are above the storey datum — the same datum `Mount.elevation` and an opening's
 # sill use — and the dialect forbids arithmetic, so every one is a literal.
 
-from typehaus import WallBacking, inch
+from typehaus import WallBacking, ft, inch
 
 
 # --- the wet walls ---------------------------------------------------------------------
@@ -78,9 +78,29 @@ _WET_PROFILE = "0.75x48.0"
 # sit BELOW the wet-wall band's 32" bottom edge — the tub and shower valve bodies they open
 # onto are down at the deck, not up at the bar line.
 
-# The four groups above, filed on the storey each wall stands on — `PlanModel` keys
+# --- handrail brackets --------------------------------------------------------------------
+#
+# ST-G-SERVICE's handrail RL-G-SERVICE is wall-mounted on W-G-W since 2026-09-11
+# (plan/storeys/garage.py). A bracket takes IRC Table R301.5's 200 lb in any direction, and
+# a 2x6 stud bay at 24" o.c. has a stud where the framer put one, not where the bracket
+# lands. `post_spacing=48"` on the 3'-9" rail path resolves one bracket at each end and none
+# between, so there are two stations and they are answered two different ways:
+#
+#  * TOP, y=47'-2 5/8" — the rail's landing end was set ON stud-010 of W-G-W (67'-2 5/8"
+#    less ten 24" modules), so that bracket screws into a stud and wants no blocking. A band
+#    here could not have helped anyway: the station is 1/4" north of WIN-G-S1's bay, whose
+#    rough-opening exclusion clips any backing to the far side of that stud.
+#  * FOOT, y=50'-9 5/8" — the flight's bottom riser, 5" from the nearest stud, so this one
+#    gets a 2x12 laid flat across the bay, 12" long (station 15'-11"..16'-11" from
+#    N-G-NW), 11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
+#    Centred 2 1/2" below the rail top there — the resolver's own `_BRACKET_DROP_M` — so the
+#    arm lands mid-band with ~5" of play: 12"..23 1/4" above the garage datum, against a
+#    rail top at +20 3/4" where the nosing line meets the first riser.
+#
+# Move the rail and move these. `face` is the default "left": W-G-W runs N->S, so its
+# left-hand normal points east, into the garage.
 
-# The four groups above, filed on the storey each wall stands on: `PlanModel` keys elements
+# The groups above, filed on the storey each wall stands on: `PlanModel` keys elements
 # by storey, so a band cannot ride in a list that mixes them.
 
 BASEMENT_BACKING = [
@@ -191,6 +211,13 @@ SECOND_BACKING = [
     WallBacking(uid="W2XZ7J1J2X", tag="BK-S-SN3-AP", wall_ref="W-S-SN3",
                 elevation=inch(4), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="suite bath access panel frame"),
+]
+
+GARAGE_BACKING = [
+    WallBacking(uid="1FTWGZ1WJ3", tag="BK-G-W-RAIL-FOOT", wall_ref="W-G-W",
+                start=ft(15, 11), length=inch(12),
+                elevation=inch(12), height=inch(11.25), profile="1.5x11.25",
+                material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
 ]
 
 ATTIC_BACKING = [
