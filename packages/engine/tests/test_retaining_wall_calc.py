@@ -215,3 +215,99 @@ def test_the_braced_basement_walls_are_not_in_this_suite(catlin_plan) -> None:
     tags = set(enumerate_walls(EngineeringContext(plan=catlin_plan, model=model)))
     assert tags == {"W-SG-E2", "W-SG-S", "W-SG-W2"}
     assert not any(tag.startswith("W-B-") for tag in tags)
+
+
+# --- the column surcharge (finding 6) ----------------------------------------------------
+#
+# ``analyse`` took DEAD LOAD ONLY until 2026-09-11 — stem, footing and the soil column on
+# the heel — and there was no surcharge term anywhere in the engineering package. A
+# fixed-base cast column standing on a wall top delivers a service axial load AND its own
+# base moment, both computed by ``deck_post`` on the column, and neither reached the
+# concrete underneath it.
+#
+# Driven as a free function against hand arithmetic, which is what this module's own
+# docstring keeps it a free function for.
+
+
+def _hand(surcharge=None):
+    from typehaus.engineering.soil import presumptive as _presumptive
+
+    return analyse(CATLIN_SG, _presumptive("GM"), soil_pcf=110.0, surcharge=surcharge)
+
+
+def test_no_surcharge_is_the_wall_as_it_was() -> None:
+    """The default path must be byte-identical to the frozen oracle above, or the term is
+    not a term — it is a rewrite. (It very nearly was: the first draft folded the column
+    into ``resisting`` with a conditional that bound over the whole sum, zeroing the
+    restoring moment on every wall in the house.)"""
+    plain = _hand()
+    assert plain.surcharge is None
+    assert plain.fs_sliding == pytest.approx(ORACLE[(False, 110.0)][0], abs=0.01)
+    assert plain.fs_overturning == pytest.approx(ORACLE[(False, 110.0)][1], abs=0.01)
+
+
+def test_the_axial_helps_and_the_base_moment_hurts() -> None:
+    """Term by term, and the two pull opposite ways — which is the whole reason a column
+    cannot be folded in as one number.
+
+    A 12" round cast column at ~3,500 lb service over a 20' wall is 175 plf; its governing
+    base moment of ~2,500 lb-ft over the same run is 125 lb-ft/ft. The axial presses the
+    footing down, so weight, friction and the restoring moment all rise. The moment is
+    added to OVERTURNING whichever way it points, because wind reverses.
+    """
+    from typehaus.engineering.retaining_basis import Surcharge
+
+    plain = _hand()
+    loaded = _hand(Surcharge(axial_plf=175.0, moment_plf=125.0, arm_ft=3.5,
+                             source="deck_post/PT-TEST"))
+
+    assert loaded.weight_plf == pytest.approx(plain.weight_plf + 175.0, abs=0.5)
+    # mu = 0.25 for GM: every pound of axial buys a quarter pound of sliding resistance.
+    assert loaded.resistance_plf == pytest.approx(plain.resistance_plf + 0.25 * 175.0,
+                                                  abs=0.5)
+    assert loaded.resisting_moment == pytest.approx(
+        plain.resisting_moment + 175.0 * 3.5, abs=1.0)
+    assert loaded.overturning_moment == pytest.approx(
+        plain.overturning_moment + 125.0, abs=0.5)
+    # Sliding improves; overturning is pushed both ways and the net here is a wash to
+    # within a percent, which is exactly why the term has to be carried rather than
+    # assumed to be conservative in one direction.
+    assert loaded.fs_sliding > plain.fs_sliding
+    assert loaded.thrust_plf == pytest.approx(plain.thrust_plf), \
+        "a base moment is not a thrust and must not enter the sliding DEMAND"
+
+
+def test_the_moment_is_taken_as_overturning_whichever_way_it_points() -> None:
+    """Wind reverses, so a sign that helps in one direction hurts in the other and the
+    screening takes the one that hurts."""
+    from typehaus.engineering.retaining_basis import Surcharge
+
+    plus = _hand(Surcharge(axial_plf=0.0, moment_plf=400.0, arm_ft=3.5))
+    minus = _hand(Surcharge(axial_plf=0.0, moment_plf=-400.0, arm_ft=3.5))
+    assert plus.overturning_moment == pytest.approx(minus.overturning_moment)
+    assert plus.overturning_moment > _hand().overturning_moment
+
+
+def test_catlins_own_columns_stand_on_walls_this_module_does_not_enumerate(
+        catlin_plan) -> None:
+    """The machinery above fires on nothing in catlin, and that is a REAL GAP rather than
+    a quiet pass — which is why it is asserted rather than left to be discovered.
+
+    The four balcony corner columns stand on ``W-SG-W1`` and ``W-SG-E1``, both
+    ``lateral_support="top_and_bottom"``. They are basement walls: ``retaining_wall`` does
+    not enumerate them, IRC Table R404.1.2(8) answers them and publishes no surcharge
+    column, and ``spread_footing`` skips their strip footings. So the reactions are named
+    rather than graded — ``column_support/<tag>`` in ``deferred.py``, reported by
+    ``structural.column_on_wall_support``. If this assertion ever flips, the surcharge
+    becomes live on a real wall and ``_column_surcharges`` is what runs.
+    """
+    from typehaus.engineering import EngineeringContext
+    from typehaus.engineering.retaining_wall import _column_surcharges
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    assert _column_surcharges(ctx) == {}
+
+    from typehaus.engineering.deferred import _column_support_keys
+    assert _column_support_keys(ctx) == ["W-SG-E1", "W-SG-W1"]

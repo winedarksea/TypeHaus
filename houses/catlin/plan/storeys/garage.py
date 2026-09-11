@@ -477,14 +477,24 @@ ROOFS = [
     # passage would have ordered 144 sf of R-38 blown fiberglass and 5/8" gypsum ceiling over
     # an open outdoor bay. CANOPY_ROOF is GARAGE_ROOF's structure with neither.
     #
-    # ** THE SHEATHING IS STILL CONTINUOUS ACROSS THE GARAGE SOUTH WALL LINE, AND THAT
-    # CONTINUITY IS THE CANOPY'S ENTIRE LATERAL SYSTEM. ** Both column bases are standoffs on
-    # a 5/8" cast-in bolt -- uplift ties, not moment connections. East-west wind goes into the
-    # roof sheathing and spans 6 feet north into the garage roof diaphragm; north-south wind
-    # runs axially along the two headers into the garage's corner posts. Both paths die if
-    # this ever becomes a structurally separate plane. Two `Roof` ELEMENTS, one diaphragm --
-    # the drawings have to say so (AN-BW-ROOF does). If that joint ever becomes a real break,
-    # a KBS1Z knee brace at each column is the cheap answer and is a live row in this house.
+    # ** THE SHEATHING IS STILL CONTINUOUS ACROSS THE GARAGE SOUTH WALL LINE, AND SINCE
+    # 2026-09-10 THAT IS A TIE AND NOT THE CANOPY'S LATERAL SYSTEM. ** This comment used to
+    # say the opposite -- that east-west wind spanned 6 feet north into the garage roof
+    # diaphragm and north-south wind ran axially into the garage's corner posts -- and it
+    # was indefensible on its own terms: the same joint is required to MOVE (two separately
+    # founded structures), no chords or collector were ever drawn, and four standoff bases
+    # with two pinned caps gave the frame zero lateral stiffness either way.
+    #
+    # The canopy braces itself now. EAST is PT-BW-RE and PT-BW-RNE, one continuous cast pour
+    # each from footing to header soffit, FIXED at the base and graded in bending by
+    # `engineering/roof_moment.roof_base_moments` (d/c 0.71 and 0.55 -- notes/
+    # north_entry_piers.md §8). WEST is W-BW-SCREEN, a sheathed 2x4 shear panel. The two
+    # WEST columns keep their standoff bases, which are uplift ties and not moment
+    # connections; nothing asks them to be. Two `Roof` ELEMENTS, one plane, and seven LSTA24
+    # straps make the continuity a counted connection -- the drawings have to say so
+    # (AN-BW-ROOF does). A KBS1Z knee brace at each column stays the cheap fallback and is a
+    # live row in this house; `pier_basis.knee_braced` is scoped per structure since
+    # 2026-09-11, so authoring one here no longer switches the balcony's moment grading off.
     #
     # It bears on BEAMS, which `Roof.bearing_refs` could not name until 2026-09-10 --
     # see resolve/roof_bearing.py. BM-BW-RW/RE top out at +7'-4", the same plate elevation as

@@ -103,6 +103,52 @@ _declare(Deferral(
 ))
 
 
+_declare(Deferral(
+    kind="column_support",
+    reason="a fixed-base cast column stands on this wall's top and the concrete underneath "
+           "it is graded by nobody. ``deck_post`` computes the column's service axial and "
+           "its base moment ON THE COLUMN; the wall is a basement wall answered "
+           "prescriptively by IRC Table R404.1.2(8), which publishes no surcharge column "
+           "at all, and its strip footing collects no engineered bearing record because "
+           "``spread_footing`` scopes off a shared wall footing on the argument that a "
+           "``retaining_wall`` record already answers for it — which for a "
+           "top-and-bottom-supported wall does not exist. Three things follow and this "
+           "engine computes none of them: the wall-top JOINT's own capacity, DEVELOPMENT "
+           "of the column dowels into the wall top, and the foundation's ROTATIONAL "
+           "RESTRAINT, which every one of those base moments assumes",
+    designer="structural engineer of record",
+    deliverable="a wall-top connection detail carrying the column's axial and base moment "
+                "— dowel size, embedment and development into the stem, any pilaster or "
+                "local thickening, and the bearing pressure under the point — plus a "
+                "statement of the rotational restraint the fixed-base assumption relies on",
+    unblocks="Foundations — the S-100 wall schedule and the column base detail",
+    oracle=(Oracle(note="balcony_moment_columns.md", section="§9",
+                   test="tests/test_pier_calcs.py"),),
+))
+
+
+@keys("column_support")
+def _column_support_keys(ctx: EngineeringContext) -> list[str]:
+    """Every wall with a cast, fixed-base column standing on its top.
+
+    Read off ``pier_basis.cast_piers``' own ``shared_wall_footing`` flag rather than
+    re-walked, because that flag IS the condition: it is set exactly when a concrete post
+    inherits a concrete wall's strip footing as its base, which is the load path this
+    deferral is about. Scoped to a column with a base moment — a leaning column hands its
+    wall a vertical load and nothing else, and an ordinary bearing needs no assignment.
+    """
+    from typehaus.engineering.pier_basis import cast_piers
+
+    out = set()
+    for pier in cast_piers(ctx):
+        if not pier.shared_wall_footing or not pier.lateral_system:
+            continue
+        support = getattr(ctx.plan.by_tag(pier.tag), "supported_by", None)
+        if support:
+            out.add(support)
+    return sorted(out)
+
+
 @keys("lateral_uplift")
 def _uplift_keys(ctx: EngineeringContext) -> list[str]:
     """Every roof. ``structural.uplift_capacity`` names one item per roof unconditionally,

@@ -42,6 +42,7 @@ from typehaus.engineering.registry import (
 from typehaus.engineering.retaining_basis import (
     BASIS,
     REQUIRED_FS,
+    Surcharge,
     _base_interface,
     _Case,
     _Geometry,
@@ -88,6 +89,15 @@ def _retaining_walls(ctx: EngineeringContext) -> list:
     branches (an off-table thickness, a DR cell); those walls still reach the register
     through the check that delegates them, and get a NO_CALC record until someone widens
     this module's scope.
+
+    ** A KNOWN GAP, NOTED 2026-09-11 AND DELIBERATELY NOT TAKEN ON HERE. ** catlin's
+    raised-garden apron walls author no ``lateral_support`` at all, so they fall outside
+    this predicate and get **no engineering record of any kind** — while
+    ``notes/sunken_garden_retaining_screening.md`` calls the apron and the court walls one
+    coupled tiered system whose surcharge is modelled nowhere. That is a real piece of
+    work and a different one: it needs a tiered free body, not a scope widening, and
+    widening the predicate without one would mint isolated-cantilever records for walls
+    whose whole problem is that they are not isolated.
     """
     from typehaus.model.structure import FoundationWall
 
@@ -129,7 +139,80 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
         for member in members:
             systems[member.tag] = (capacity / demand if demand else float("inf"),
                                    demand, capacity, item_id(SYSTEM_KIND, ref))
-    return [_one(ctx, wall, systems.get(wall.tag)) for wall in _retaining_walls(ctx)]
+    columns = _column_surcharges(ctx)
+    return [_one(ctx, wall, systems.get(wall.tag), columns.get(wall.tag))
+            for wall in _retaining_walls(ctx)]
+
+
+def _column_surcharges(ctx: EngineeringContext) -> dict[str, Surcharge]:
+    """``wall tag -> Surcharge``: the cast columns standing on each wall's top.
+
+    ** THE REVIEWER'S FINDING 6, AND THE MECHANISM IS THE ONE ``_restate`` ALREADY USES. **
+    ``retaining_basis.analyse`` took dead load only — stem, footing, soil on the heel — and
+    there was no surcharge term anywhere in this package. A fixed-base column standing on a
+    wall top delivers a service axial load AND its own base moment, both computed by
+    ``deck_post`` on the column, and neither reached the concrete underneath it.
+    ``EngineeringContext`` deliberately cannot read another calc's record, so this imports
+    the other module's *function* and re-derives, the same way ``_loops`` and
+    ``system_factors`` are imported from ``retaining_system`` above. The values are published
+    as fingerprinted ``Quantity`` inputs and cited as ``via deck_post/<tag>``, so moving a
+    column stales this wall's seal.
+
+    ** ON CATLIN THIS RESOLVES TO NOTHING TODAY, AND THAT IS A REAL GAP RATHER THAN A
+    QUIET PASS. ** The four balcony corner columns stand on ``W-SG-W1`` and ``W-SG-E1``,
+    which declare ``lateral_support="top_and_bottom"`` and are therefore basement walls
+    graded prescriptively on IRC Table R404.1.2(8) — out of :func:`_retaining_walls`'
+    scope, and that table has no surcharge column at all. Their strip footings collect no
+    engineered bearing record either, because ``spread_footing`` scopes off
+    ``shared_wall_footing`` on the argument that a wall footing "already has an authority
+    — ``structural.foundation_unbalanced_fill`` against ``retaining_wall/<tag>``", and for
+    these two walls that record does not exist. So the reactions are named rather than
+    graded: ``deferred.py``'s ``column_support`` kind assigns them, and
+    ``structural.column_on_wall_support`` reports them. This function is what makes the
+    machinery correct the day one of those walls comes into scope.
+    """
+    from typehaus.engineering.pier_basis import cast_piers
+    from typehaus.model.structure import FoundationWall
+
+    walls = {w.tag: w for w in _retaining_walls(ctx)}
+    runs = {tag: _wall_run_ft(ctx, wall) for tag, wall in walls.items()}
+    out: dict[str, Surcharge] = {}
+    for pier in cast_piers(ctx):
+        post = ctx.plan.by_tag(pier.tag)
+        wall = ctx.plan.by_tag(getattr(post, "supported_by", None) or "")
+        if not isinstance(wall, FoundationWall) or wall.tag not in walls:
+            continue
+        run_ft = runs.get(wall.tag) or 0.0
+        if run_ft <= 0.0:
+            continue
+        geometry, _ = _geometry(ctx, wall)
+        if geometry is None:
+            continue
+        governing = max(pier.wind_base_moment_lb_ft, pier.guard_base_moment_lb_ft)
+        previous = out.get(wall.tag)
+        # A column sits on the stem, so its axis is the stem's own axis: toe + half the
+        # stem. Two columns on one wall are summed — they are both standing on it.
+        arm_ft = geometry.toe_ft + geometry.stem_thickness_ft / 2.0
+        out[wall.tag] = Surcharge(
+            axial_plf=(previous.axial_plf if previous else 0.0) + pier.service_lb / run_ft,
+            moment_plf=(previous.moment_plf if previous else 0.0) + governing / run_ft,
+            arm_ft=arm_ft,
+            source=(f"{previous.source}, " if previous else "")
+                   + item_id("deck_post", pier.tag))
+    return out
+
+
+def _wall_run_ft(ctx: EngineeringContext, wall) -> float | None:  # type: ignore[no-untyped-def]
+    """The wall's plan length, for smearing a point load over it. ``None`` when unknown."""
+    import math
+
+    from typehaus.engineering.pier_basis import _node_positions
+
+    nodes = _node_positions(ctx)
+    start, end = nodes.get(wall.start_node), nodes.get(wall.end_node)
+    if start is None or end is None:
+        return None
+    return math.dist(start, end) / 0.3048
 
 
 
@@ -158,7 +241,8 @@ def _restate(states: tuple, system: tuple[float, float, float, str] | None) -> t
 
 
 def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
-         system: tuple[float, float, float, str] | None = None) -> EngineeringRecord:
+         system: tuple[float, float, float, str] | None = None,
+         surcharge: Surcharge | None = None) -> EngineeringRecord:
     tag = wall.tag
     missing: list[str] = []
     # **The restrained branch is graded at AT-REST and the free one at active, and the
@@ -196,8 +280,10 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
     # record says so instead of choosing.
     base = _base_interface(ctx, wall) or soil
     low, high = SOIL_UNIT_WEIGHT_BAND_PCF
-    lower = analyse(geometry, soil, at_rest=restrained, soil_pcf=low, base=base)
-    upper = analyse(geometry, soil, at_rest=restrained, soil_pcf=high, base=base)
+    lower = analyse(geometry, soil, at_rest=restrained, soil_pcf=low, base=base,
+                    surcharge=surcharge)
+    upper = analyse(geometry, soil, at_rest=restrained, soil_pcf=high, base=base,
+                    surcharge=surcharge)
     states_low = _restate(_limit_states(lower, geometry, soil, base), system)
     states_high = _restate(_limit_states(upper, geometry, soil, base), system)
     over_low = any(not state.ok for state in states_low)
@@ -222,7 +308,12 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         # the wall's own geometry, and the number it reports would depend on three walls.
         Quantity("system_demand", system[1], "lb", 1.0),
         Quantity("system_capacity", system[2], "lb", 1.0),
-    ) if system is not None else ())
+    ) if system is not None else ()) + ((
+        # What makes MOVING A COLUMN stale this wall's seal. Same argument as the two
+        # above: a number this record depends on that does not live on this element.
+        Quantity("column_axial", surcharge.axial_plf, "plf", 1.0),
+        Quantity("column_base_moment", surcharge.moment_plf, "lb-ft/ft", 1.0),
+    ) if surcharge is not None else ())
     notes = (
         "SCREENING on presumptive code values, not a design: "
         f"{soil.citation}. No geotechnical report is on file for this site.",
@@ -237,6 +328,15 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         f"publishes one. Both ends are run; sliding moves by "
         f"{abs(upper.fs_sliding - lower.fs_sliding):.2f} across it.",
     ) + ((
+        f"COLUMN SURCHARGE: {surcharge.axial_plf:,.0f} plf of service axial and "
+        f"{surcharge.moment_plf:,.0f} lb-ft/ft of base moment stand on this wall's top, "
+        f"from {surcharge.source}. The axial helps — it presses the footing down, so it "
+        f"enters the weight, the friction and the restoring moment at the stem axis "
+        f"{surcharge.arm_ft:.2f}' from the toe. The MOMENT is taken as overturning "
+        f"whichever way it points, because wind reverses. Both are SMEARED over the "
+        f"wall's run: a point load does not really smear, so the local bearing directly "
+        f"under the column is understated and a real design puts a pilaster there.",
+    ) if surcharge is not None else ()) + ((
         f"BASE RESTRAINT: this wall does not resist sliding alone. Its base is held in a "
         f"closed loop of cast concrete and the whole court is graded as one free body by "
         f"{system[3]} — which is why this row's number depends on walls other than this one, "

@@ -171,6 +171,9 @@ class _Case:
     overturning_moment: float
     bearing_psf: float
     eccentricity_ft: float
+    #: The column standing on this wall top, or None where nothing does — which is the
+    #: ordinary case and catlin's, on every wall this module currently has in scope.
+    surcharge: Surcharge | None = None
 
     @property
     def fs_sliding(self) -> float:
@@ -182,9 +185,41 @@ class _Case:
                 if self.overturning_moment else float("inf"))
 
 
+@dataclass(frozen=True)
+class Surcharge:
+    """A column standing on this wall's top, smeared over the wall's run.
+
+    ** THERE WAS NO SURCHARGE TERM ANYWHERE IN THIS PACKAGE UNTIL 2026-09-11. **
+    :func:`analyse` took dead load only — stem, footing and the soil column on the heel —
+    which is right for a wall with nothing on it and silently wrong for one carrying a
+    fixed-base column. The column's own base moment is computed on the column
+    (``deck_post``) and, before this, landed nowhere underneath it.
+
+    Everything here is **per lineal foot of wall**, because that is the free body the rest
+    of this module works in. A point load on a wall top does not really smear, and saying
+    so is the honest caveat: the smeared value understates the local bearing pressure
+    directly under the column and overstates it everywhere else. It is a screening term on
+    a screening calculation, and a real design puts a pilaster or a spread base under the
+    point. ``arm_ft`` is the column's distance from the TOE, the same datum every moment in
+    this module is taken about.
+    """
+
+    #: Service axial delivered to the wall top, lb per lineal foot of wall.
+    axial_plf: float
+    #: Base moment from the column, lb-ft per lineal foot. Taken as ALWAYS overturning:
+    #: wind reverses, so the sign that helps in one direction hurts in the other, and a
+    #: screening calculation takes the one that hurts.
+    moment_plf: float
+    #: Distance from the toe to the column's axis, ft.
+    arm_ft: float
+    #: The engineering item this came from, for the record's citation.
+    source: str = ""
+
+
 def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False,
             soil_pcf: float = SOIL_UNIT_WEIGHT_BAND_PCF[0],
-            base: PresumptiveSoil | None = None) -> _Case:
+            base: PresumptiveSoil | None = None,
+            surcharge: Surcharge | None = None) -> _Case:
     """One load case, per lineal foot, moments about the toe.
 
     ``soil`` is the **retained** material — it sets the pressure on the stem. ``base`` is
@@ -203,7 +238,11 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
 
     # Triangular active (or at-rest) thrust, resultant at H/3 above the base.
     thrust = 0.5 * efp * height * height
-    overturning = thrust * height / 3.0
+    # A fixed-base column's own base moment is delivered INTO the wall top and is taken as
+    # overturning whichever way it points: wind reverses, so the sign that would help in
+    # one direction hurts in the other, and a screening calculation takes the one that
+    # hurts. It is not a thrust, so it does not enter the SLIDING demand.
+    overturning = thrust * height / 3.0 + abs(surcharge.moment_plf if surcharge else 0.0)
 
     # Dead load only. IBC Table 1806.2 footnote a applies the friction coefficient to the
     # dead load, and nothing here is anything else.
@@ -213,14 +252,19 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
     # The column of soil standing on the heel — the term the heel exists for, and the one a
     # footing centred on its stem throws away half of.
     on_heel = geometry.heel_ft * geometry.stem_height_ft * soil_pcf
-    weight = stem + footing + on_heel
+    # A column on the wall top is vertical load like any other: it presses the footing
+    # down, so it helps friction and it helps the restoring moment. Its own BASE MOMENT
+    # does not — that is added to the overturning side below.
+    column = surcharge.axial_plf if surcharge else 0.0
+    weight = stem + footing + on_heel + column
 
     passive = 0.5 * base.lateral_bearing_psf_per_ft * geometry.toe_embedment_ft ** 2
     resistance = base.friction_coefficient * weight + passive
 
     resisting = (footing * geometry.footing_width_ft / 2.0
                  + stem * (geometry.toe_ft + geometry.stem_thickness_ft / 2.0)
-                 + on_heel * (geometry.footing_width_ft - geometry.heel_ft / 2.0))
+                 + on_heel * (geometry.footing_width_ft - geometry.heel_ft / 2.0)
+                 + column * (surcharge.arm_ft if surcharge else 0.0))
 
     # Resultant location, eccentricity from the footing's centre, and the trapezoidal
     # bearing pressure at the toe.
@@ -235,6 +279,7 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
         thrust_plf=thrust, weight_plf=weight, resistance_plf=resistance,
         resisting_moment=resisting, overturning_moment=overturning,
         bearing_psf=bearing, eccentricity_ft=eccentricity,
+        surcharge=surcharge,
     )
 
 

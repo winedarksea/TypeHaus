@@ -271,6 +271,29 @@ _NOT_A_POUR: dict[str, CostCode] = {
     "pad": CostCode("2000", "06 15 00", "floors"),
 }
 
+#: ** THE MIRROR OF ``_NOT_A_POUR``, AND ITS ABSENCE COST A WHOLE TRADE. ** The table above
+#: catches a plank filed as a slab; nothing caught a POUR filed as framing. ``solid_trade``
+#: maps ``"column"`` to ``framing`` — right for a 6x6 post, and every one of catlin's twelve
+#: cast concrete columns is a ``column`` too. They priced out of ``[concrete]``, were filed
+#: NAHB 2000 / CSI 06 11 00 / trade ``framing``, and therefore scheduled into the FRAMER's
+#: package, after the concrete has cured, in the ``weathertight`` milestone instead of
+#: ``foundation``. A cast column is poured with the foundation or it is not poured at all.
+#:
+#: Consulted only when ``material`` *positively* says ``"concrete"`` — a row with no
+#: assembly has said nothing, and silence is not evidence, which is the same contract
+#: ``_NOT_A_POUR`` keeps in the other direction.
+#:
+#: ** THE FIX BELONGS HERE AND NOT IN ``solid_trade``. ** That function is the viewer's and
+#: the glTF emitter's grouping trade; a cast column still *draws* with the columns, and
+#: moving it there would break ``tests/test_solid_trade_parity.py`` and the 3D toggles to
+#: buy nothing. The precedent is one table up: a cast-in anchor bolt is re-filed onto the
+#: concrete trade because it is a pre-pour operation, while staying a piece of hardware.
+_IS_A_POUR: dict[str, CostCode] = {
+    "column": CostCode("1300", "03 30 00", "concrete"),
+    "post": CostCode("1300", "03 30 00", "concrete"),
+    "beam": CostCode("1300", "03 30 00", "concrete"),
+}
+
 
 def _solid_code(key: str, material: str | None) -> CostCode | None:
     """The code for one ``structural_solids`` row, or ``None`` for "it really is concrete".
@@ -287,6 +310,12 @@ def _solid_code(key: str, material: str | None) -> CostCode | None:
         if material and material != "concrete":
             return _NOT_A_POUR.get(category)
         return None
+    if material == "concrete":
+        # A category the trade table calls something else, on a solid that really is a
+        # pour: the twelve cast columns. See ``_IS_A_POUR``.
+        pour = _IS_A_POUR.get(category)
+        if pour is not None:
+            return pour
     return _SOLID_TRADE_CODES.get(trade)
 
 

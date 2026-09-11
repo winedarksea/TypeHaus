@@ -206,3 +206,60 @@ def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(
         category, _, assembly = key.partition(":")
         material = material_of.get((category, assembly or None))
         assert material in (None, "concrete"), f"{key} bills as concrete but is {material}"
+
+
+# --- and the converse, which is what let a whole trade slip ------------------------------
+#
+# ``_NOT_A_POUR`` caught a plank filed as a slab from the day ``_solid_code`` existed, and
+# nothing caught a POUR filed as framing. ``solid_trade`` maps ``"column"`` to ``framing`` —
+# right for a 6x6 post — so all twelve of catlin's cast concrete columns priced out of
+# ``[concrete]``, exported under NAHB 2000 / CSI 06 11 00 / trade ``framing``, scheduled
+# into the framer's package after the concrete had cured, and landed in the
+# ``weathertight`` milestone instead of ``foundation``. The test above only ever asked the
+# other direction, which is exactly why it passed throughout.
+
+
+@pytest.mark.parametrize("key", ["column:PIER_CONCRETE_12",
+                                 "column:SUNKEN_GARDEN_COLUMN_12"])
+def test_a_cast_column_is_filed_with_the_concrete_sub(key) -> None:
+    """A cast column is poured with the foundation or it is not poured at all."""
+    from typehaus.takeoff.cost_codes import cost_code
+
+    code = cost_code("concrete", key, None, "concrete")
+    assert code.trade == "concrete"
+    assert code.csi == "03 30 00"
+    assert code.nahb == "1300"
+
+
+@pytest.mark.parametrize("key", ["column:ELM_TIMBER", "column:POST_WHITE_PAINT",
+                                 "column:POST_KDAT"])
+def test_a_wood_column_stays_with_the_framer(key) -> None:
+    """The other half of the rule, and the one a careless fix would break. ``_IS_A_POUR``
+    is consulted only where ``material`` POSITIVELY says concrete; a wood column says wood
+    and a row with no assembly says nothing, and neither is evidence of a pour."""
+    from typehaus.takeoff.cost_codes import cost_code
+
+    for material in ("wood", None):
+        code = cost_code("concrete", key, None, material)
+        assert code.trade == "framing", f"{key} at material={material!r}"
+        assert code.csi == "06 11 00"
+
+
+def test_every_catlin_pour_reaches_the_concrete_sub(catlin_model, catlin_areas) -> None:
+    """The converse of ``test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete``,
+    end to end on the real house: a priced solid whose ``structure_material`` says concrete
+    must be filed on the concrete trade, whatever its category calls it."""
+    from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.takeoff.bom import bill_of_materials
+
+    prices = load_prices(catlin_model.plan.source_root)
+    bom = bill_of_materials(catlin_model)
+    material_of = {(row["category"], row.get("assembly")): row.get("structure_material")
+                   for row in bom["structural_solids"]}
+    rows = estimate_costs(bom, prices, catlin_areas)["sections"]["concrete"]["rows"]
+    pours = [row for row in rows
+             if material_of.get((row["key"].partition(":")[0],
+                                 row["key"].partition(":")[2] or None)) == "concrete"]
+    assert pours, "the house has cast solids; if this empties, the walk is broken"
+    for row in pours:
+        assert row["trade"] == "concrete", f"{row['key']} is a pour filed as {row['trade']}"

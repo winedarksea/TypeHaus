@@ -553,6 +553,26 @@ above comes from the manufacturer's instructions rather than from the report.
 - **Base fixity itself.** The doweled lap is detailed to deliver it; no calculation here
   proves the wall top's own capacity to receive the moment, nor the foundation's rotational
   stiffness. That is the first thing a stamp should look at.
+
+  **This is a named item on the register since 2026-09-11, and it was not before.** It is
+  three separate assumptions, not one, and the engine now assigns all three by name:
+  `column_support/W-SG-W1` and `column_support/W-SG-E1`, deferred to the structural
+  engineer of record, reported by `structural.column_on_wall_support` and listed in
+  section A of `out/calcs/03-open-items.md`. The three are the **wall-top joint's own
+  capacity**, **development of the column dowels into the stem**, and the **foundation's
+  rotational restraint**.
+
+  The reason they needed naming is worth recording. `deck_post` computes each column's
+  base moment ON THE COLUMN and nothing underneath it received the number: `W-SG-W1` and
+  `W-SG-E1` declare `lateral_support="top_and_bottom"`, so they are basement walls
+  answered by IRC Table R404.1.2(8) — which publishes no surcharge column at all — and
+  `engineering/spread_footing.py` skips their strip footings on the argument that a
+  `retaining_wall/<tag>` record already answers for them, a record these two walls do not
+  have. Four moment-fixed columns therefore stood on concrete that no authority in this
+  engine graded, at zero FAIL. `retaining_basis.Surcharge` gives the free body a column
+  term now, and it fires on any wall `retaining_wall` does enumerate; these two it does
+  not, so they are assigned rather than computed. **A pilaster or a local thickening under
+  each column is the likely answer** and is exactly what the deliverable asks for.
 - **Shear in the column** (the section is enormous against a few hundred pounds, but
   "enormous" is a judgement), torsion, and the diaphragm claim that delivers storey shear to
   four corners rather than six posts.

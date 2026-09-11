@@ -406,6 +406,16 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Freestanding deck lateral resistance",
                        ("structural.lateral_racking",),
                        ("IRC R301.1.3", "IRC R507.9"), blocking=False),
+        # Added 2026-09-11 with the column reactions. A cast column fixed at its base
+        # delivers an axial load AND a base moment into whatever it stands on, and where
+        # that is a foundation WALL TOP the receiving concrete is graded by nobody here:
+        # Table R404.1.2(8) publishes no surcharge column and `spread_footing` scopes off
+        # a shared wall footing. Non-blocking, because `column_support` is a deferred kind
+        # with no calculation registered — the same contract every other kind on this page
+        # keeps, and the day one is registered this item starts gating.
+        PermitItemSpec("Column reactions on a foundation wall top",
+                       ("structural.column_on_wall_support",),
+                       ("IRC R404.1.2", "ACI 318-19 §25.4.2"), blocking=False),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

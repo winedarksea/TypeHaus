@@ -530,8 +530,9 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     The six detailing limits are unchanged and still published: a bending column is subject
     to every one of them and to more besides.
 
-    **Oracle.** ``houses/catlin/notes/balcony_moment_columns.md``, hand-worked in a separate
-    pass; ``tests/test_pier_calcs.py`` reproduces it.
+    **Oracle.** ``houses/catlin/notes/balcony_moment_columns.md`` for a column carrying a
+    deck, ``houses/catlin/notes/north_entry_piers.md`` §8 for one carrying a roof. Both are
+    hand-worked in a separate pass and ``tests/test_pier_calcs.py`` reproduces both.
     """
     steel = cage.area_in2
     fc_psi = _fc_psi(pier)
@@ -572,6 +573,11 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     )
     over = any(not state.ok for state in states)
     which = "the guard load" if guard_mu >= wind_mu else "wind"
+    # How many columns the demand was divided among, read back out of the basis sentence
+    # rather than recomputed — one number, one place, and a wording change here cannot
+    # make the two disagree about the structure.
+    takers = re.search(r"(\d+) (?:fixed )?cast column\(s\)", pier.moment_basis)
+    shear_takers = takers.group(1) if takers else "fixed"
     notes = common + (
         f"CAGE: {pier.vertical_reinforcement} — As {steel:.2f} in2, rho "
         f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
@@ -619,7 +625,17 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
          f"(the section is enormous relative to a few hundred pounds, but 'enormous' is a "
          f"judgement); and torsion, the joint's own capacity and the foundation's rotational "
          f"stiffness are all outside it. A stamped design is what closes those."),
+        (f"SCREENING: the whole frame shear is taken on the {shear_takers} cast column(s) "
+         f"that reach this calculation, and NOTHING is claimed for any other lateral "
+         f"element on the same structure. Where the other line is a sheathed shear panel "
+         f"— the canopy's W-BW-SCREEN is — the split between it and a 12\" cast column is "
+         f"a relative-rigidity judgement this engine has no standing to make, so it makes "
+         f"none and spends the whole demand here. That is the same reasoning the guard "
+         f"load above is loaded WHOLLY onto one column rather than halved across the pair "
+         f"that bounds its bay."
+         if pier.moment_basis else ""),
     )
+    notes = tuple(note for note in notes if note)
     return EngineeringRecord(
         item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
         basis_version=BASIS_VERSION, basis=BASIS,

@@ -113,7 +113,7 @@ def test_a_record_carries_the_oracle_of_its_kind(catlin_engineering):
     assert not unoracled, unoracled
 
 
-def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
+def test_the_nine_deferred_items_name_a_designer_of_record(catlin_engineering):
     """The items that exist by accident now exist on purpose.
 
     ``header/D-G-OVERHEAD``, ``lateral_uplift/RF-*`` and ``rafter/RF-*`` are computed by
@@ -131,7 +131,13 @@ def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
     # as RF-GARAGE's. Its DRIFT case is what the fabricator must be told (see
     # notes/north_entry_piers.md §3 and preferences.toml [structural] roof_beam_snow_psf);
     # a quote against "50 psf ground snow" prices ordinary trusses.
+    # Nine since 2026-09-11: `column_support/W-SG-W1` and `-E1` are the two wall tops
+    # carrying the balcony's four fixed-base cast columns. Their base moments are computed
+    # ON THE COLUMN by `deck_post` and land on concrete nothing in this engine grades —
+    # the wall is answered prescriptively by a table with no surcharge column, and
+    # `spread_footing` skips a shared wall footing. Named rather than silently absorbed.
     assert {r.item_id for r in deferred} == {
+        "column_support/W-SG-E1", "column_support/W-SG-W1",
         "header/D-G-OVERHEAD",
         "lateral_uplift/RF-BW-CANOPY", "lateral_uplift/RF-GARAGE", "lateral_uplift/RF-HOUSE",
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE", "rafter/RF-HOUSE"}

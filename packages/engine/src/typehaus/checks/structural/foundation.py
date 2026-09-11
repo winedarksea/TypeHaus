@@ -305,3 +305,84 @@ def _note_suffix(notes: str) -> str:
     if "l" in notes:
         return "; footnote l allows 2\" less thickness, at f'c 4,000 psi"
     return ""
+
+
+@check(Tier.STRUCTURAL, "structural.column_on_wall_support")
+def column_on_wall_support(ctx: CheckContext) -> list[Finding]:
+    """A fixed-base cast column stands on a wall top. Who grades the concrete under it?
+
+    ** THE REVIEWER'S FINDING 6, AND ON THIS HOUSE IT IS WORSE THAN THE FINDING SAID. **
+    The reviewer read that the garden wall and footing calculations exclude column
+    reactions — true: ``retaining_basis.analyse`` took dead load only until 2026-09-11,
+    when :class:`~typehaus.engineering.retaining_basis.Surcharge` gave it a column term.
+    What that term does not reach is catlin's actual case. The four balcony corner columns
+    stand on ``W-SG-W1`` and ``W-SG-E1``, which declare ``lateral_support="top_and_bottom"``
+    and are basement walls: ``retaining_wall`` does not enumerate them, IRC Table
+    R404.1.2(8) answers them and publishes no surcharge column, and
+    ``engineering/spread_footing.py`` skips their strip footings on the argument that a
+    ``retaining_wall/<tag>`` record already answers for them — a record these two walls do
+    not have. So four base moments are computed on four columns and land on concrete that
+    **no authority in this engine grades at all**.
+
+    ** WHY THIS IS NOT ``defer=True``. ** That flag exists for a check whose item HAS a
+    calculation grading something other than this check's subject — ``structural.frost_depth``
+    on ``retaining_wall/<tag>``, the one call site, which would otherwise report a sliding
+    deficiency as a frost failure. ``column_support/<tag>`` has no calculation at all: it
+    is a ``deferred.py`` kind, so the plain ``engineered()`` path already reports UNKNOWN
+    naming the item and the designer of record, which is exactly the sentence this needs.
+    Passing ``defer`` as well would say nothing more.
+
+    ** IT DOES NOT FAIL, AND THAT IS NOT TIMIDITY. ** Nothing here says the wall is
+    inadequate — a 12" stem carrying 3.5 kip of service axial almost certainly is. What is
+    missing is the joint, the dowel development and the rotational restraint the fixed-base
+    assumption spends, and an UNKNOWN naming the assignment is the honest state of all
+    three. The deferral's ``deliverable`` says what closes it.
+    """
+    cid = "structural.column_on_wall_support"
+    from typehaus.engineering.deferred import _column_support_keys
+
+    walls = _column_support_keys(_engineering_context(ctx))
+    if not walls:
+        # Earned, not assumed: the enumeration ran and found no cast column standing on a
+        # wall top anywhere in the plan. A house of framed posts on their own footings has
+        # no such condition, and saying so is different from saying nothing.
+        return [_advisory(
+            cid, "no cast column stands on a foundation wall's top in this plan, so no "
+            "wall-top joint carries a column base moment", (), Result.NOT_APPLICABLE)]
+
+    out: list[Finding] = []
+    for tag in walls:
+        columns = sorted(_columns_on(ctx, tag))
+        out.append(_engineered(
+            ctx, cid, item_id("column_support", tag),
+            f"{tag} carries {len(columns)} fixed-base cast column(s) on its top "
+            f"({', '.join(columns)}), each delivering a base moment `deck_post` computes "
+            f"ON THE COLUMN. This wall is graded prescriptively (IRC Table R404.1.2(8), "
+            f"which publishes no surcharge column) and its strip footing collects no "
+            f"engineered bearing record, so the wall-top joint's capacity, the dowels' "
+            f"development into the stem and the foundation's rotational restraint are all "
+            f"ungraded",
+            (tag, *columns),
+            code="IRC R404.1.2; ACI 318-19 §25.4.2",
+            fix=f"seal `column_support/{tag}` in engineering.toml"))
+    return out
+
+
+def _engineering_context(ctx: CheckContext):
+    """The ``EngineeringContext`` behind this check's own context.
+
+    ``CheckContext`` already carries the plan and the resolved model, which is everything
+    ``_column_support_keys`` reads; it is rebuilt rather than plumbed because ``checks``
+    may import ``engineering`` and not the reverse, so the adapter has to live on this side.
+    """
+    from typehaus.engineering.registry import EngineeringContext
+
+    return EngineeringContext(plan=ctx.plan, model=ctx.model,
+                              soil_class=getattr(ctx, "soil_class", None))
+
+
+def _columns_on(ctx: CheckContext, wall_tag: str) -> set[str]:
+    from typehaus.model.structure import Post
+
+    return {e.tag for e in ctx.plan.all_elements()
+            if isinstance(e, Post) and getattr(e, "supported_by", None) == wall_tag}

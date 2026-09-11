@@ -687,11 +687,16 @@
 # prose, so the derived rule can see the joint. The third 4x4, P-M-STRLAND-SE, is a
 # 13 7/16" squash block and takes no base (UpliftTieRules.blocking_max_height_ft).
 "ABU44" = { low = 22, high = 40 }  # 4 ea — 2 DERIVED under P-M-STRWELL-N/S, 2 AUTHORED (CN-BW-IBASE-C/-E) under the 4x4 interior landing posts PT-BW-IC/-IE since 2026-09-11, when those went from 6x6 squash blocks short of their beams to 25-3/4in standoff-based posts
-# The shim pack under every wood beam soffit that lands on a pour — the four balcony corner
-# column tops and the two porch column tops. Modelled as a part since 2026-09-03; it was
-# prose inside two assembly `source` strings before that, bought on the job and priced
-# nowhere. 316 stainless plate, 3-1/2" square, stacked to the 1/2"-1" a cast top is finished
-# to; the range is a small stack of shims, not one plate.
+# The shim pack under every wood beam soffit that lands on a pour. Modelled as a part since
+# 2026-09-03; it was prose inside two assembly `source` strings before that, bought on the
+# job and priced nowhere. 316 stainless plate, 3-1/2" square, stacked to the 1/2"-1" a cast
+# top is finished to; the range is a small stack of shims, not one plate.
+#
+# 2026-09-11: this prose said "the four balcony corner column tops and the two porch column
+# tops" — SIX — directly above a trailing comment enumerating TWELVE under a different
+# partition. The trailing comment is the one that matches the model; the six were the 2026-09-03
+# count, before the north entry's four seat-beam bearings and the canopy's two cast column
+# tops existed. One partition now, and it is the one the takeoff derives.
 "SS316-SHIM-35" = { low = 9, high = 22 }  # 12 ea — 4 balcony/porch column tops, 4 north entry seat-beam bearings, 2 under the east canopy header on its cast columns, 2 porch
 # 16 ea -> 8 on 2026-08-30 (second pass). The four E-W braces' feet became FACE LAPS rather
 # than butt joints — see the KneeBrace.foot_lap block in params/sunken_garden.py — and a
@@ -754,10 +759,13 @@
 # quoted number the next time this table is refreshed against a supplier list. Material only,
 # like every row here; the driving is inside the framing rate. The Titen Turbo screws are a
 # concrete anchor bought with the angle and are inside this range.
-"HGAM10" = { low = 5.0, high = 20.0 }  # 6 ea, all authored — the two porch beam-on-column ties (CN-SG-TIE-COL/-FCOL) plus, since 2026-09-03, the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3)
-# The two CENTRE balcony pillars' post caps. A 3-1/2" glulam landing on a 6x6 is a CCQ, not
-# the PC6Z: that cap is published for EQUAL post and beam widths. The other four columns are
-# cast concrete and take the HGAM10 above, so this is 2 ea and will stay 2 ea. HDG rather
+"HGAM10" = { low = 5.0, high = 20.0 }  # 12 ea, all authored — the two porch beam-on-column ties (CN-SG-TIE-COL/-FCOL), the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3) since 2026-09-03, and six more at the north entry since 2026-09-10, the canopy's EAST header on PT-BW-RE/-RNE among them. It read "6 ea" until 2026-09-11 and had done since the day the count doubled; the CCQ46SDS2.5 comment below and notes/north_entry_structure.md §1a both name the canopy joint this row was missing
+# The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
+# columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
+# published for EQUAL post and beam widths. The four balcony CORNER columns are cast
+# concrete and take the HGAM10 above, which is why this said "2 ea and will stay 2 ea" —
+# a sentence that was true about the balcony and was still standing on 2026-09-11, two
+# columns after the canopy made it four. HDG rather
 # than ZMAX because it stands in the weather over a sunken garden with no enclosure above
 # it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
 # (they ship with the connector, which is why there is no separate fastener row).
@@ -1088,50 +1096,27 @@
 # They do now (plan/assemblies.py: BEAM_LVL, BEAM_KDAT, POST_KDAT, PIER_CONCRETE_12), which
 # splits both categories into `category:assembly` groups — so a bare key matches nothing any
 # more, and the wood goes to the new [timber] table. What stays here is what is actually a
-# pour: the five 12" sonotube piers and the 20" round front column. Both are keyed
-# explicitly; leaving them on a bare "column" would have been a rate looking for a row.
+# pour, keyed explicitly; leaving it on a bare "column" would have been a rate looking for
+# a row.
 #
-# 2026-08-28: PT-SG-FCOL WENT ROUND, and this row is re-struck, not escalated. It was
-# $900-2,500/cy over 0.531 cy — $478-1,327 — for a 16" SQUARE, where column forms, plumbing,
-# bracing and the rubbing/patching after strip dominate and ready-mix is under 15% of the
-# cost. A 16" fibre tube deletes most of that: no built panels, no chamfer strips, no arrises
-# to rub. Priced from the same itemised basis as the 12" tubes below, scaled to 0.0517 cy/LF:
-# form $5-12/LF, ready-mix $10.30-16.50/LF, a #4 cage with ties $4-8/LF (material $19-37/LF),
-# then $19-43/LF to lay out, set and brace the tube plumb, place and vibrate, and strip.
-# $38-79/LF installed x 8.06 LF = $306-637, against $478-1,327 square.
+# ** 2026-09-11: THE ROSTER SENTENCE IS RE-STRUCK. ** It read "the five 12" sonotube piers
+# and the 20" round front column", which had been wrong since 2026-09-03 (the 20" column
+# was retired) and wrong twice over since 2026-09-10 (PT-SG-COL moved to the garden-column
+# row, and the north entry went from five piers to six). It is two keys now and neither
+# matches that description: `column:SUNKEN_GARDEN_COLUMN_12`, six 12" round garden columns
+# on the F3+C2 mix, and `column:PIER_CONCRETE_12`, six 12" round north-entry piers of which
+# two run on up as full-height canopy columns.
 #
-# The ~$175-695 saved was the whole reason for that change and it was not free: a 16" round
-# leaves 3.76" of side cover at a 6" plate's corners where the square left 5.00", which
-# foreclosed the MPB66Z moment base plans/TODO.md weighs at this column.
-#
-# 2026-08-29: 16" -> 20", AND THE KEY IS RENAMED WITH THE ASSEMBLY. The column took on
-# PT-SG-BF2's bearing as well as the two front beams' when the balcony's front row moved 12"
-# south, and 16" and 18" have no solution at that overhang (the table is in
-# params/sunken_garden.py::FRONT_COLUMN). **The rename must not be skipped**: an unpriced
-# type is silently dropped from the BOM, so an orphaned ..._16 key would make the takeoff
-# total FALL and the saving would be an artifact of the missing row.
-#
-# Same shaft, same itemised basis, RE-STRUCK PER FOOT rather than escalated per yard — the
-# volume goes up 56% but the form and the labour do not. A 20" round is 2.182 sf: form
-# $6.25-15/LF (circumference, +25% on the 16"), ready-mix $16.16-25.86/LF (volume, at
-# $200-320/cy), and the CAGE $9-17/LF. Material $31.35-58.06/LF. Labour
-# $21-47/LF; the operations are unchanged and a bigger tube is only heavier to brace.
-#
-# ** 2026-08-30: THE CAGE LINE TRIPLED, AND IT IS A CODE MINIMUM, NOT AN UPGRADE. **
-# This row carried "the same #4 cage with ties $4-8/LF" from the day the column went round —
-# a 4-bar #4 cage is 4.41 lb/LF here. **It was never legal.** ACI 318-19 §10.6.1.1 wants at
-# least 0.01 A_g in a column, which on a 20" round (314.16 in2) is 3.142 in2; four #4 bars
-# are 0.80 in2, a QUARTER of it. The authored cage is (8) #6 with #3 ties at 12" (3.52 in2,
-# rho 1.120%) = 13.76 lb/LF, so the line goes $4-8 -> $9-17/LF: **+94 lb of steel, +$61-118
-# on this column.** See notes/sunken_garden_piers.md §4 and `Post.vertical_reinforcement`.
-# Nothing about the POUR changed — same tube, same volume, same labour; only the bar list.
-#
-# The shaft is 10.08 LF, not the 8.06 the old comment carried — it grew 2'-6" on 2026-08-29
-# when the bell was augered to frost depth, and that note was not restruck at the time. So
-# material $316-585 and labour $212-474, $528-1,059 installed against $393-815 for the 16" at
-# the same length: the ~$85-150 step. The rates below are $/cy because that is what the
-# [concrete] table pays in, so they are those totals over the 0.79 cy the BOM resolves (the
-# faceted circle bills a hair under the true 0.0808 cy/LF).
+# ** THREE SUPERSEDED ITEMISATIONS LIVED HERE AND ARE GONE (2026-09-11). ** Between
+# 2026-08-28 and 2026-08-30 this block re-struck the front column's rate three times — a
+# 16" SQUARE at $900-2,500/cy, a 16" ROUND at $38-79/LF, then a 20" ROUND at $52-105/LF
+# with a cage line that tripled when someone noticed four #4 bars were a quarter of ACI
+# 318-19 §10.6.1.1's 1% floor. Every one was superseded by the retirement below, and forty
+# lines of arithmetic about a column that does not exist is not history an estimator can
+# use — it is three rates to mistake for this one. What survives them is the lesson, and it
+# is live: **re-strike a column rate PER FOOT, not per yard.** Form and labour follow the
+# circumference and the operation count; only the ready-mix follows the volume, and it is
+# under a sixth of the cost at this scale. The derivations are in this file's git history.
 #
 # **SUNKEN_GARDEN_COLUMN_20 IS RETIRED** (2026-09-03), with the 20" column it named. Its
 # key is gone rather than left behind: an unpriced type is silently DROPPED from the BOM,
@@ -1149,46 +1134,98 @@
 # bullet — it is a tube in a hole — so if this row is ever re-quoted, ask for the forming
 # line separately rather than assuming six columns of saddle-collar work.
 #
-# PT-SG-FCOL and PT-SG-COL (~10.1 LF each) plus the four balcony corner columns
-# PT-SG-BR1/BR3/BF1/BF3 (8'-5" each, ~36 LF), all 12" round on SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate
-# below**, and the difference is the whole reason it is a separate key:
-#   * the MIX is class F3 + C2 — 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air with SCM caps —
-#     against the piers' 4,000 psi F2, roughly +$25-45/cy on ready-mix;
+# PT-SG-FCOL and PT-SG-COL (10.68 LF each) plus the four balcony corner columns
+# PT-SG-BR1/BR3 (9.18 LF) and PT-SG-BF1/BF3 (9.01 LF) — 57.7 LF over six, all 12" round on
+# SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate below**, and the difference is
+# the whole reason it is a separate key:
 #   * the CAGE is hot-dip galvanized (ASTM A767 cl. 1, galvanized AFTER fabrication — the
 #     class is a coating weight, not a bend order, and these are shop-bent), about +$0.30/lb
-#     over black bar, and
-#     it is a (4) #5 vertical + #3 tie cage at 2" cover with ~30" class B dowels lapped in;
-#   * the four balcony tubes are FREE-STANDING 8'-5" columns seated in a plywood saddle
-#     collar screwed to a wall face and kicked to the porch framing, which is a two-person
-#     day of forming for four columns rather than dropping a tube in a hole;
-#   * a waterstop strip at the wall-top cold joint, and silane at 28 days.
+#     over black bar, and it is a (4) #5 vertical + #3 tie cage at 2" cover with class B
+#     dowels lapped in. **Why galvanized, if the pier row is not:** it is, since
+#     2026-09-11. The exposure argument for both is ACI 318-19 Table 19.3.1.1 class C2 —
+#     worked for the court in `params/sunken_garden.py` (salt arrives on boots and cannot
+#     leave a court with no outlet to daylight) and for the entry in
+#     `notes/north_entry_piers.md` §6 (splash at a shovelled, salted walk). The coating
+#     itself is an OWNER decision recorded as one in `plan/assemblies.py`, not a code
+#     requirement: the 5,000 psi / w/cm 0.40 / 6% air mix satisfies F3 and C2 on its own;
+#   * FREE-STANDING FORMING on FOUR of the six. The balcony corner columns are seated in a
+#     plywood saddle collar screwed to a wall face and kicked to the porch framing, which
+#     is a two-person day of forming for four columns. PT-SG-FCOL and PT-SG-COL are tubes
+#     in a hole and get none of it;
+#   * a waterstop strip at the wall-top cold joint on those same four, and silane at 28 days.
 # ~$60-110/LF installed against the piers' $31-62 covers all of that. PLACEHOLDER pending a
-# concrete quote — the cage and the mix are the two lines to ask about by name.
-"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.53 cy = ~56 LF over six columns (PT-SG-FCOL, PT-SG-COL and the four balcony corners); $/cy, so the line scales
-# The six 12" round sonotube piers of the NORTH ENTRY: PT-BW-W/E/RE at -9'-9 7/16" and
-# PT-BW-GW/GE/RNE at -7'-0". PT-SG-COL left this row on 2026-09-10 for the garden-column
-# row above, which is the mix and cage it is actually poured with. A round pier is cheaper per yard than
-# the square column above because the form is a disposable tube rather than built panels and
-# there is no chamfer, no wash and no rubbing after strip. $31-62/LF installed: fibre tube
-# $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar cage
-# with ties $3-7/LF, then $18-38/LF to lay out, set and brace the tube plumb, place and
-# vibrate, and strip. Labour-dominated, like every small-volume pour in this table.
+# concrete quote — the cage and the forming are the two lines to ask about by name.
 #
-# 2026-08-30: PT-SG-COL's cage went #4 -> #5 — 0.01 A_g on a 12" round (113.10 in2) is
-# 1.131 in2 and four #4 bars are 0.80 in2, so the priced cage was 29% short of ACI 318-19
-# §10.6.1.1. Four #5 is 1.24 in2 and the Code's own four-bar floor for a circular tie
-# (§10.7.3.1(b)). Over PT-SG-COL's 10.68 LF that was +16 lb of steel, +$10-20.
+# ** THREE CORRECTIONS, 2026-09-11, AND NONE OF THEM MOVES A DOLLAR. ** The rate is $/cy and
+# the BOM resolves the volume, so a stale note misleads an estimator without changing a
+# total. (1) The MIX was the first bullet and the stated reason this key is separate: "class
+# F3 + C2 against the piers' 4,000 psi F2, roughly +$25-45/cy". The north entry runs
+# EXPOSED_MIX too since 2026-09-10 — one ticket for the whole court and entry — so the mix
+# is no longer a difference between these two rows and the bullet is struck. The CAGE and
+# the FORMING are what is left, and they are enough. (2) The saddle-collar bullet priced
+# four columns while the $/cy rate is paid on six, two of which are tubes in a hole: if this
+# row is re-quoted, **ask for the forming line separately** rather than assuming six columns
+# of collar work. (3) The dowel lap read "~30" class B". At 5,000 psi a class B lap on #5
+# bar is 27.6" (notes/balcony_moment_columns.md §7) — development goes as 1/sqrt(f'c), so
+# reading the real mix SHORTENED it from the 35.6" the presumptive 3,000 would want. The
+# assembly's own source still specifies ~30", which is longer than required and is what
+# gets built; the number here is now the requirement, not a third figure.
 #
-# 2026-09-03: **the other four piers caught up.** PR-BW-1..4 were 12" round PLAIN columns at
-# h/d 4.7 — past ACI §2.3's pedestal ratio of 3, where §14.1.5 permits no plain column at any
-# stress — with no cage authored and no engineered item reaching them (`cast_piers` indexed
-# footings from `Footing.under` and these bear on `Pad`s, so they fell out with no record at
-# all). They carry the same '(4) #5 vertical, #3 ties @ 10" o.c.' now, oracled by
-# notes/breezeway_piers.md §4. Over their 18.92 LF that is **+28 lb of steel, +$18-36**,
-# scaled off this row's own 2026-08-30 step — the material rate below moves with it.
-# (plans/TODO.md said "~+16 lb per pier", which overstates it about fourfold: 16 lb was the
-# whole of PT-SG-COL's 10.68 LF, not one pier's.)
-"column:PIER_CONCRETE_12" = { material = { low = 498, high = 923 }, labour = { low = 638, high = 1348 } }  # 0.82 cy = 29.6 LF; $/cy, so the line is $931-1,861
+# ** THE DOWELS THEMSELVES ARE NOT IN ANY REBAR LINE, AND THAT IS DELIBERATE. **
+# `[reinforcement]` is empty and `[rebar_inclusive]` sets `concrete = true`, so every $/cy
+# rate above absorbs its own steel; and `takeoff/reinforcement.py` zeroes a lap length on
+# purpose, because a dowel's length is a lap into the pour BELOW and billing it at the
+# member's own height would be inventing a number. notes/rebar_backout.md §4 lists it
+# among six named omissions. Read that note before concluding a bar is missing here.
+"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.53 cy = 57.7 LF over six columns (PT-SG-FCOL, PT-SG-COL and the four balcony corners); $/cy, so the line scales
+# The six 12" round shafts of the NORTH ENTRY: PT-BW-W/E/RE bottoming at -9'-9 7/16" and
+# PT-BW-GW/GE/RNE at -7'-0". **Two of the six are not piers** — PT-BW-RE (15.35 LF) and
+# PT-BW-RNE (12.73 LF) do not stop at the bearing plane, they run on to the canopy header
+# soffit as full-height cast columns, one continuous pour each. Same tube, same cage, same
+# mix, so they stay on this row; what they add is length, and 53.5 LF of it in total.
+#
+# PT-SG-COL left this row on 2026-09-10 for the garden-column row above, which is the mix
+# and cage it is actually poured with.
+#
+# **Cheaper per foot than the garden columns above**, and the comparison is what it always
+# was even though the thing compared has changed twice: the form is a disposable tube
+# dropped in an augered hole rather than a saddle collar built against a wall face, and
+# there is no chamfer, no wash and no rubbing after strip. (This read "cheaper per yard
+# than the SQUARE column above" until 2026-09-11, a dangling reference: the 16" square was
+# retired on 2026-08-29 and the row above is now a 12" round on the same tube.)
+#
+# $32-64/LF installed: fibre tube $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is
+# 0.0291 cy/LF at $200-320/cy), a galvanized 4-bar cage with ties $4.50-8.50/LF, then
+# $18-38/LF to lay out, set and brace the tube plumb, place and vibrate, and strip.
+# Labour-dominated, like every small-volume pour in this table.
+#
+# ** THE CAGE LINE IS RE-STRUCK 2026-09-11, AND THIS ONE IS A REAL RATE GAP, NOT PROSE. **
+# It read "a 4-bar cage with ties $3-7/LF" — black bar. `ENTRY_PIER_CAGE` is hot-dip
+# galvanized (ASTM A767 cl. 1) and has been since 2026-09-10, for the same reason the
+# garden columns are: these stand up to 18 1/2" out of the ground at an entry that is
+# salted every winter, on an EXPOSED_MIX. The garden row charges about +$0.30/lb for
+# exactly that and this row charged nothing. A (4) #5 + #3 tie cage at 10" o.c. on a 12"
+# round with 2" cover is ~5.0 lb/LF (4.17 vertical, 0.87 ties), so the premium is
+# **+$1.50/LF, about +$80 over the six shafts** — and the material rate below moves with
+# it, 498-923 -> 506-949 $/cy. Small, and it was the wrong kind of small: a rate that
+# quietly prices a different product from the one authored.
+#
+# ** THE DOWELS ARE NOT IN ANY REBAR LINE, AND THAT IS DELIBERATE. ** Same as the garden
+# row above: `[rebar_inclusive]` sets `concrete = true`, so this $/cy rate absorbs its own
+# steel, and `takeoff/reinforcement.py` zeroes a lap length on purpose because a dowel's
+# length is a lap into the pour BELOW. The column CAGES do bill. notes/rebar_backout.md §4
+# separates the two laps and is the note to read before concluding a bar is missing.
+#
+# ** THE CAGE-STEP HISTORY THIS ROW CARRIED IS GONE (2026-09-11). ** Two paragraphs
+# recorded a #4 -> #5 correction on PT-SG-COL (+16 lb, 2026-08-30) and the same correction
+# reaching PR-BW-1..4 (+28 lb, 2026-09-03). Neither is about anything on this row any
+# more: PT-SG-COL moved to the garden-column key, and all four PR-BW-* piers were retired
+# with the framed terrace on 2026-09-10. The lesson they taught is live and is why the
+# authored cage is what it is — **four #4 bars are 0.80 in2 against ACI 318-19 §10.6.1.1's
+# 1.131 in2 on a 12" round, 29% short, and a plain column at h/d past 3 is not permitted at
+# any stress under §14.1.5** — so it is stated here once instead of being reconstructed
+# from two obituaries. notes/north_entry_piers.md §6 is the live derivation.
+"column:PIER_CONCRETE_12" = { material = { low = 506, high = 949 }, labour = { low = 638, high = 1348 } }  # 1.51 cy = 53.5 LF over six shafts, two of which run full height as canopy columns; $/cy, so the line scales
 # ** THE LARGEST PROPORTIONAL ERROR IN THE 2026-08-08 FILE, ~5x. ** The old $240-400/cy came
 # out at $0.99-1.66 per LF over the ~800 LF this volume represents, which is roughly the bare
 # pipe and not even all of it. New-construction installed exterior footing drain, open trench,
@@ -3866,11 +3903,24 @@
 "beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.31 cy = ~29 LF over BM-SG-BLW/BLC/BLE = $30-41/LF material, $12-20/LF to set
 "beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.37 cy = ~60 LF. Was 0.59 cy / 94.9 LF: the balcony's centre beam went to glulam and its two E-W brace rails were deleted outright, both on 2026-09-03
 #
-# COLUMN, KDAT — the four breezeway 6x6 posts, 28.4 LF, 0.22 cy. [framing] "6x6" is $5-8.50
-# mat + $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases
-# over open soil, so material is $6.50-11/LF. The bases, the post caps and the structural
-# screws are all in [hardware] already and are NOT in this rate.
-"column:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 323, high = 645 } }  # 0.22 cy = 28.4 LF
+# COLUMN, KDAT — 19.7 LF, 0.13 cy, in TWO sections. [framing] "6x6" is $5-8.50 mat +
+# $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases over
+# open soil, so material is $6.50-11/LF. The bases, the post caps and the structural screws
+# are all in [hardware] already and are NOT in this rate.
+#
+#   * PT-BW-CW and PT-BW-CNW, the canopy's two WEST 6x6 columns, 7.69 LF each. Their two
+#     EAST counterparts went on 2026-09-10 when PT-BW-RE/-RNE became full-height cast
+#     concrete, which is the east lateral system (notes/north_entry_structure.md §1a).
+#   * PT-BW-IC and PT-BW-IE, two 4x4 interior landing posts at 2.15 LF each, authored
+#     2026-09-11 under BM-BW-FC/-FE's tips on ABU44 standoff bases.
+#
+# The comment read "the four breezeway 6x6 posts, 28.4 LF, 0.22 cy" until 2026-09-11. It
+# was stale in both directions at once — two of the four 6x6s are gone and two 4x4s that
+# are not 6x6s at all have arrived — which is exactly the shape of error a $/cy rate hides:
+# the BOM resolves the volume, so the LINE was right the whole time and only the roster an
+# estimator reads was wrong. A quote asked for against "four 6x6 posts" comes back for the
+# wrong bill of sticks at the right total.
+"column:POST_KDAT" = { material = { low = 840, high = 1420 }, labour = { low = 323, high = 645 } }  # 0.13 cy = 19.7 LF: two 6x6 canopy columns (7.69 LF each) and two 4x4 landing posts (2.15 LF each)
 
 [wood_surfaces]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the order quantity, by material tag. Mind the

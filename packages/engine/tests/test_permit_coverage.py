@@ -116,7 +116,15 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # arrived when the balcony's three beams became glulam and its eight knee braces became four
 # fixed cast columns. `MAX_UNSEALED_ITEMS` rose 5 -> 7 in the same move — the pair of numbers
 # only makes sense read together.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
+#
+# RAISED 24 -> 25 on 2026-09-11: "Column reactions on a foundation wall top". A cast column
+# fixed at its base hands the wall it stands on an axial load AND a base moment, and
+# nothing graded the receiving concrete — IRC Table R404.1.2(8) publishes no surcharge
+# column and `engineering/spread_footing.py` scopes off a shared wall footing on the
+# argument that a `retaining_wall/<tag>` record answers for it, which for a
+# top-and-bottom-supported wall does not exist. `MAX_UNSEALED_ITEMS` rose 8 -> 9 in the
+# same move; the pair only makes sense read together.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
@@ -137,7 +145,14 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 # and until `engineering/post_bearing.py` existed nothing in this engine graded it at all —
 # catlin's two centre balcony pillars were over on that limit state at 0 FAIL. It is `draft`
 # from the day it arrives and leaves this lane when `post_bearing/*` is stamped.
-MAX_UNSEALED_ITEMS = {"mn-2020": 8}
+#
+# 8 -> 9 on 2026-09-11: "Column reactions on a foundation wall top". `column_support` is a
+# DEFERRED kind — this engine computes nothing for it by decision, because the wall-top
+# joint's capacity, the dowels' development into the stem and the foundation's rotational
+# restraint are three things a screening tool has no standing to grade. It leaves this lane
+# when the structural engineer of record stamps `column_support/*`, not when this repo
+# learns anything, which is exactly the split the two pins exist to keep visible.
+MAX_UNSEALED_ITEMS = {"mn-2020": 9}
 
 
 def _engineered_labels(profile) -> set[str]:

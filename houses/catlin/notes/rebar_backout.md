@@ -278,8 +278,29 @@ the model has nowhere to state it, or states it in a form nothing can read.
    "4,000 psi concrete and 60 ksi rebar", so there is rebar in the 4 5/8" cap. The model
    carries no rib width or spacing for the EPS T-beam form, so the flexural schedule cannot
    be derived and was not guessed.
-4. **Dowels** — every wall-to-footing and column-to-wall lap. Deliberately not billed: a
-   dowel's length is a lap into the pour below and nothing in this model carries it.
+4. **Dowels** — deliberately not billed, and it is **two** distinct laps, separated here on
+   2026-09-11 because a reviewer counting rebar in the column rows could not tell from one
+   line which of them was accounted for:
+   - **wall-to-footing**, at the base of every `FoundationWall`, and
+   - **column-to-wall**, at the top of `W-SG-W1`/`E1` under the four balcony corner
+     columns, and column-to-footing under the two garden columns and the six north-entry
+     shafts.
+
+   The mechanism is one and the same. `takeoff/reinforcement.py` zeroes a dowel's length
+   on purpose: a dowel's length is a lap into the pour **below**, and billing it at the
+   member's own height would be inventing a number. `Dowel` elements are excluded twice
+   over, carrying no `reinforcement` attribute at all.
+
+   **The column CAGES do bill**, and that is the distinction worth being clear about. The
+   solids loop has a `category == "column"` branch honouring bar count times height — the
+   one place in the takeoff a count rather than a spacing is read — so a 12" round's
+   (4) #5 vertical and its #3 ties are in the 3,515 lb. It is only the lap that is not.
+
+   It is also moot for dollars while the flag below stands: `[reinforcement]` in
+   `prices.toml` is deliberately empty and `[rebar_inclusive]` sets `concrete = true`, so
+   every `$/cy` rate absorbs its own steel. Pricing that table while the flag stands is a
+   hard error in `cli/price_file.py`, by design. The two column rows in `prices.toml`
+   point back here.
 5. **`FT-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. All six
    now name `PIER_BASE_12` and so have a mix, but no steel: the bells are graded as
    PLAIN concrete and pass (`notes/sunken_garden_piers.md` §5), which ACI 318-19 §14.1.4

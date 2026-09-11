@@ -338,7 +338,7 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
     entry canopy's two cast columns carry a roof header, not a deck, so the
     ``service == "deck"`` filter walked straight past them while
     ``notes/north_entry_structure.md`` §1a called them the east lateral system in print.
-    ``engineering/pier_basis._roof_base_moments`` computes their base moment now, and this
+    ``engineering/roof_moment.roof_base_moments`` computes their base moment now, and this
     arm is what keeps the check naming the same members the calculation grades — the two
     drifting apart is the failure this function's own docstring warns about.
     """

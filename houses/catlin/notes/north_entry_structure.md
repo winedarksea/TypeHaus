@@ -70,9 +70,24 @@ the larger number and is not the lateral question:** obstructed Case B reaches a
 **East — two fixed cast columns.** `PT-BW-RE` and `PT-BW-RNE` run unbroken from footing to
 header soffit, 12" round on the same `(4) #5 + #3 @ 10"` HDG cage as the piers, fixed at the
 base. This is the balcony's own lateral system repeated: `notes/balcony_moment_columns.md`
-§4 works the same section at φM_n ≈ 24,700 lb-ft against a demand here near 2,200 lb-ft at
-working stress. `structural.lateral_racking` grades them through `engineering/deck_post.py`
-and both publish a real d/c.
+§4 works the same section, and φM_n is ≈ 24,900 lb-ft at these columns' own axial load.
+
+> ⚠ **This paragraph claimed for a day that the engine graded them, and it did not.** The
+> sentence read "`structural.lateral_racking` grades them through `engineering/deck_post.py`
+> and both publish a real d/c" while every path into that module's moment machinery was
+> gated on a **deck** — a canopy column carries a roof header — so both records actually
+> read `SCREENING: axial only, no moment and no lateral case.` A column the house calls its
+> lateral system, graded axially, is the worst kind of wrong answer: confident, specific,
+> and about the wrong limit state. Fixed 2026-09-11 in the commit that made it true.
+
+**It is true now, and the engine's number is not the 2,200 lb-ft this section used to
+quote.** `engineering/roof_moment.roof_base_moments` will not read Fig. 27.3-4's `C_N` —
+copyrighted, and this repository holds no cell of it — so it bounds the demand instead,
+taking the roof's vertical projection as a solid sign at Fig. 29.3-1's Case A/B ceiling.
+That is **2.1x** the §27.3.2 hand pass below in the same direction, and it grades the
+north-south case rather than this one. `PT-BW-RE` lands at **d/c 0.71** magnified and
+`PT-BW-RNE` at **0.55**, both OK, on the ACI minimum cage and with no section change.
+`notes/north_entry_piers.md` §8 is the hand pass and §8c is the arithmetic of the gap.
 
 **West — a sheathed shear panel.** `W-BW-SCREEN`, KDAT 2x4 at 16" o.c. under 5/8" CDX and
 7/8" corrugated on **both** faces, deck to +4'-0", 6'-6 3/4" long. Aspect ratio 1.63:1,

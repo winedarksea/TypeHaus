@@ -2,7 +2,9 @@
 
 **House:** catlin
 **Structure:** `PT-BW-W`, `PT-BW-E`, `PT-BW-RE`, `PT-BW-GW`, `PT-BW-GE`, `PT-BW-RNE` (cast
-piers) and their footings `FT-BW-*`; `PT-BW-CW`/`-CE`/`-CNW`/`-CNE` (6x6 KDAT roof columns);
+piers, of which `PT-BW-RE` and `PT-BW-RNE` run on up as full-height cast **columns**) and
+their footings `FT-BW-*`; `PT-BW-CW`/`-CNW` (the two surviving 6x6 KDAT roof columns — the
+EAST pair went on 2026-09-10 when the east header moved onto concrete);
 `BM-BW-RW`/`BM-BW-RE` (3-ply 2x12 KDAT roof headers); `RF-BW-CANOPY`.
 
 > ⚠ **Revised 2026-09-10, after the first pass, on two owner calls.** (1) The canopy is
@@ -15,9 +17,16 @@ piers) and their footings `FT-BW-*`; `PT-BW-CW`/`-CE`/`-CNW`/`-CNE` (6x6 KDAT ro
 > stood east of a flight that runs west); the tiers are cast pours and are §7's business,
 > not this note's.
 **Written:** 2026-09-10, by hand, before the calculation it oracles was encoded.
-**Oracle for:** `engineering/roof_beam.py` (§5) and `engineering/pier_basis.py` /
-`engineering/deck_post.py` / `engineering/spread_footing.py` (§6); reproduced by
-`tests/test_north_entry_piers.py`.
+**Oracle for:** `engineering/roof_beam.py` (§5); `engineering/pier_basis.py` /
+`engineering/deck_post.py` / `engineering/spread_footing.py` (§6, axial and bearing); and
+**`roof_moment.roof_base_moments` (§8, the canopy's east columns in BENDING)**, added
+2026-09-11. Reproduced by `tests/test_north_entry_piers.py` and, for §8,
+`tests/test_pier_calcs.py`.
+
+> ⚠ **`deck_post`'s own `oracled_by` named the SUPERSEDED `breezeway_piers.md` until
+> 2026-09-11 and did not name this note at all.** The lint only asserts that a named note
+> exists on disk, so an oracle pointing at a calculation retired on 2026-09-10 read exactly
+> like one pointing at a current one. It names this note and §8 now.
 **Companions:** `notes/north_entry_structure.md` — the bearing map and what carries what,
 without arithmetic. `notes/breezeway_piers.md` — the retired glazed breezeway's piers,
 superseded. `notes/catlin_truss_engineering.md` — the wall the canopy dies against.
@@ -286,6 +295,36 @@ governing either way** — the cage below is what sizes this shaft.
 accidental-moment rule and is indifferent to a d/c of 0.03. Four bars is the Code's own
 minimum for a circular tie (§10.7.3.1(b) — six is the spiral case). Do not thin it.
 
+### Durability — why these are EXPOSED_MIX with galvanized bar
+
+Recorded here 2026-09-11, because a reviewer reading this note could find the section, the
+cage and the slenderness and nowhere find the exposure argument the cage costs money for.
+
+**ACI 318-19 Table 19.3.1.1 class F3 + C2**, the same mix and the same coating as the
+sunken-garden court. F3 is not in question: exterior concrete in Minnesota, in contact with
+water, exposed to freeze-thaw, with deicing chemicals. **C2 is the class that was
+questioned** — it wants "concrete exposed to moisture and an external source of chlorides"
+— and the answer is that Table 19.3.1.1 names *spray* from deicing chemicals as such a
+source. Five of these six shafts stand up to 18 1/2" out of the ground at the north entry,
+which is shovelled and salted every winter and is the walk people arrive on. Occasional
+splash at a column base is the condition the class describes; road-level exposure is not
+the threshold.
+
+**The galvanizing is an owner decision and is recorded as one, not as a code requirement.**
+`plan/assemblies.py` is explicit about that, which is the right way round: C2 with a
+5,000 psi / w/cm ≤ 0.40 / 6% air mix satisfies the Code without it. ASTM A767 cl. 1, shop-
+bent then galvanized — the class is a coating weight, not a bend order. Stainless was
+considered for this house and rejected; **do not substitute epoxy**, whose ψ_e of 1.2-1.5
+would lengthen every lap here by half (galvanized bar reads ψ_e = 1.0, §25.4.2.5).
+
+The court's own chloride reasoning is worked in `params/sunken_garden.py` and is a
+different argument reaching the same class: salt arrives there on boots and a shovel and
+then **cannot leave**, because a sunken court with no outlet to daylight concentrates it
+rather than shedding it. Neither argument depends on the other.
+
+`prices.toml`'s two column rows point here, and the galvanized cage premium is priced on
+both of them — it was missing from the pier row until 2026-09-11.
+
 ### Slenderness
 
 | term | working | value |
@@ -331,11 +370,14 @@ do not cover any of this, which is why 2'-0" is authored on five of the six.
 - **Drift on a gable lower roof** — see §3. §7.7 assumes a flat-ish lower roof.
 - **Bearing and connections at the header ends**, and lateral-torsional stability of the
   headers (C_L is taken as 1.0 on the strength of continuous deck sheathing).
-- **The canopy's lateral system as a separate plane.** It has none. East-west wind goes into
-  the roof sheathing and spans north into the garage roof diaphragm; north-south wind runs
-  axially along the headers into the garage's corner posts. **Both paths die if that joint
-  ever becomes a real structural break.** If it does, a `KBS1Z` knee brace at each column is
-  the cheap answer and is a live, rated, priced row in this house.
+- ~~**The canopy's lateral system as a separate plane.** It has none.~~ **Withdrawn
+  2026-09-10 and re-worked below.** The canopy braces itself: two fixed cast columns east,
+  a sheathed panel west, and the garage joint demoted to a tie
+  (`notes/north_entry_structure.md` §1a). §8 is the hand pass for the east pair. What
+  remains ungraded is not the system but four of its assumptions, and all four are in
+  §8d. A `KBS1Z` knee brace at each column stays the cheap fallback and is a live,
+  rated, priced row in this house — `pier_basis.knee_braced` is scoped per structure since
+  2026-09-11, so authoring one here no longer silences the balcony's moment grading.
 - **The soil bearing value itself.** 2,000 psf is presumptive, not measured; no boring log
   exists for this site. `PT-BW-W` at d/c 0.90 is what feels a lower number first.
 - **The four cast terrace tiers, `SL-BW-TIER1..4`.** They are plain concrete on a compacted
@@ -345,6 +387,146 @@ do not cover any of this, which is why 2'-0" is authored on five of the six.
   `notes/north_entry_structure.md` §3 for what a winter costs and which joint pays.
 - **The truss-to-header tie CAPACITY**, for the reason §4a gives: the stainless H2.5ASS's
   published allowables could not be sourced. The demand is computed; the capacity is not.
+
+## 8. The canopy's east columns in BENDING (oracles `roof_moment.roof_base_moments`)
+
+**Written 2026-09-11, by hand from the authored geometry.** `PT-BW-RE` and `PT-BW-RNE` are
+the canopy's east lateral system (`notes/north_entry_structure.md` §1a). Until this date
+the engine graded them **axially only** — every path into its moment machinery was gated on
+`FloorSystem.service == "deck"`, and a canopy column carries a roof header — so both records
+read `SCREENING: axial only, no moment and no lateral case.` while the house's own guide
+asserted they published a real d/c. §1a's sentence was wrong and is corrected there.
+
+### 8a. Why the engine does not work §27.3.2
+
+The provision that literally governs is ASCE 7-16 §27.3.2, a pitched free roof, and its
+`C_N` comes out of **Fig. 27.3-4** — a copyrighted grid this repository does not hold, the
+same problem `typehaus/wind_tables.py` records for Fig. 29.3-1. §1a works it by hand off
+the standard. The engine will not transcribe, interpolate or curve-fit it.
+
+So the engine takes a **bound** instead, the move `MAX_VERIFIED_CASE_AB` already exists for:
+the roof's own vertical projection, the headers and the shafts are treated as a **solid
+sign** at `C_f = 1.80`, the largest coefficient Fig. 29.3-1's Cases A and B are known to
+reach. That bounds the real answer twice over — a thin inclined plate open on every side is
+a far less obstructive body than a solid sign, and every published free-roof `C_N` is
+smaller in magnitude than 1.80. §8c puts a number on how much.
+
+### 8b. The engine's arithmetic, hand-worked
+
+Geometry, off the resolved roof (`RF-BW-CANOPY`, gable, ridge north-south, 4:12):
+
+| term | working | value |
+|---|---|---|
+| footprint | 26'-8" east-west x 6'-0" north-south, overhangs included | |
+| eave / ridge | resolved | +7.951' / +12.396' |
+| rise | 13.333' x 4/12 | 4.444' |
+| q_h datum | `balcony_wind.ground_below_ft`, the site's LOWEST spot | -9.12' |
+| z | 12.396 + 9.12 | 21.52' |
+| q_h | ASCE 7-16 Sec 26.10, V_ult 115, Exp B, RC II | 18.335 psf |
+| ASD pressure | 0.6 x 18.335 x 0.85 (G) x 1.80 (C_f) | **16.831 psf** |
+
+> **The q_h datum is the sunken garden court, half a house away and nine feet down, and
+> that is deliberate over-reading rather than a bug.** `ground_below_ft` takes the whole
+> site's minimum spot elevation. Against the canopy's own grade at -2'-10" it makes `z`
+> 21.5' instead of 10.8' and `q_h` 18.3 psf instead of about 16.4 — **12% conservative**, in
+> the one direction a demand may err. Exposed SHAFT length does not use it: that reads
+> `Site.grade`, because "how much column stands in the wind" has no safe direction.
+
+Solid bands, per plan direction:
+
+| direction | band | depth x length | area |
+|---|---|---|---|
+| E-W (across the ridge) | slope rise | 4.444' x 6.000' | 26.67 ft2 |
+| | `BM-BW-RE` + `BM-BW-RW` | 11 1/4" x 5.719' x2 | 10.72 ft2 |
+| | **top total** | | **37.39 ft2** |
+| N-S (along the ridge) | gable-end triangle | (4.444'/2) x 26.667' | 59.26 ft2 |
+| | headers | run along the wind, present their ends | 0 |
+| | **top total** | | **59.26 ft2** |
+| both | shaft drag, 2 x 12" round | 1.000' x 10.785' x2 | 21.57 ft2 |
+
+The leeward slope is **not** counted: it stands in the windward slope's own shadow, and
+projecting the same rise twice onto one plane would be double counting. The exposed shaft
+length is the eave at +7.951' down to `Site.grade` at -2.833' = 10.785', an over-read of
+the 9'-2 3/4" actually standing out of the ground.
+
+Shears and moments:
+
+```
+N-S governs:  top    16.831 x 59.26  =   997 lb ASD
+              drag   16.831 x 21.57  =   363 lb ASD
+                                  frame = 1,360 lb ASD
+(E-W for comparison: 16.831 x 37.39 = 629 + 363 = 992 lb ASD)
+```
+
+**All of it on the two cast columns, and nothing claimed for the west panel.** `W-BW-SCREEN`
+is a sheathed 2x4 shear panel and is the west lateral system in fact. Splitting between it
+and a 12" cast column is a relative-rigidity judgement this engine has no standing to make,
+so it makes none and takes the whole frame shear east. Same reasoning as the guard load in
+`notes/balcony_moment_columns.md` §2c, which is loaded wholly onto one column rather than
+halved.
+
+**Two shears, two lever arms.** The roof and the headers deliver at the roof plane; drag on
+a shaft resolves at the mid-height of its exposed length. The lever is the **full shaft**,
+footing top to header soffit — "fixed at the base" taken literally — not the exposed length
+§1a measures against.
+
+| | `PT-BW-RE` | `PT-BW-RNE` |
+|---|---|---|
+| shaft height | 15.349' | 12.729' |
+| drag arm = h - 10.785/2 | 9.957' | 7.337' |
+| roof: 498.7 lb x h | 7,654 lb-ft | 6,348 lb-ft |
+| drag: 181.5 lb x arm | 1,807 lb-ft | 1,332 lb-ft |
+| **M_w, ASD** | **9,461 lb-ft** | **7,680 lb-ft** |
+| M_u = M_w / 0.6 (Sec 2.3.1's 1.0W) | 15,769 lb-ft | 12,799 lb-ft |
+| phi*M_n at this column's Pu | 24,939 lb-ft | ~24,900 lb-ft |
+| d/c before magnification | 0.63 | 0.51 |
+| delta (k 2.1, k*lu/r 129 / 107) | 1.117 | 1.070 |
+| **d/c magnified** | **0.71** | **0.55** |
+
+`phi*M_n` is the same section arithmetic as `notes/balcony_moment_columns.md` §4 — 12" round,
+(4) #5, 2" cover, 5,000 psi — at a slightly higher `P_u`, which is why it reads 24,939
+rather than that note's 24,703. **No size change and no richer cage**: the ACI Sec 10.6.1.1
+minimum these carry is still what sizes them.
+
+### 8c. How much conservatism is in that 0.71
+
+§1a's §27.3.2 hand pass, restated: `Gq_h` 13.94 psf, clear wind flow Case A at theta 18.44
+(`C_NW` +1.10, `C_NL` -0.17), so `C_NW - C_NL` = 1.27 on the 24 ft2 projected area gives
+**425 lb** of roof thrust at strength, plus column drag near 365 lb, for **790 lb strength
+= 474 lb ASD** across the whole frame, east-west.
+
+| | frame shear, ASD |
+|---|---|
+| Sec 27.3.2 hand pass, E-W (the governing case there) | 474 lb |
+| engine surrogate, E-W (same direction) | 992 lb — **2.1x** |
+| engine surrogate, N-S (the case it grades) | 1,360 lb — **2.9x** |
+
+Three separate over-reads compose to it: `C_f` 1.80 against `C_NW - C_NL` 1.27 (1.42x),
+`q_h` at the court datum (1.12x), and the gable-end triangle, which §27.3.2 barely loads at
+all because wind along a free roof's ridge does not press on a projection that has no
+windward face. **A column at d/c 0.71 on this basis is comfortably inside any legitimate
+reading of Fig. 27.3-4**, which is the whole claim the bound is making.
+
+It is also why the reviewer's wood alternate does not come back: the trigger written into
+`plans/` was a canopy moment check returning OVER or wanting a cage richer than the ACI
+minimum, and neither fires.
+
+### 8d. Still the engineer of record's, and now named in the record
+
+- **The fixed-base assumption itself.** `PT-BW-RNE` has 4'-2" of embedment below grade
+  against roughly 5'-6" that IBC 1807.3.2.1's non-constrained formula wants for this moment
+  in presumptive sand, and the 2'-0" pad's contribution is not in that formula at all.
+  Nothing in the engine grades embedment; the record's `SCREENING:` note says so in those
+  words since 2026-09-11.
+- **Slenderness as a SWAY column.** `k*lu/r` is 129 on the full shaft at k 2.1 (107 on
+  `PT-BW-RNE`), against Sec 6.2.5's sway limit of 22. It is computed rather than neglected
+  and the magnifier is small because `P_u` is 2% of capacity — but §6's non-sway reading of
+  30.7 was taken for a different question and does not cover this one.
+- **The joint at the top.** An `SS316-SHIM-35` pack under an `HGAM10` gusset transfers the
+  header reaction; whether it transfers the moment this calculation assumes stays in the
+  column is not graded anywhere.
+- **Torsion and column shear.** Neither is graded. The section is large relative to a few
+  hundred pounds, but "large" is a judgement.
 
 ## Sources
 
