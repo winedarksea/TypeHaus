@@ -24,7 +24,7 @@ import {
   type NoteEntry,
   type PreviewGeometry,
   type SchedulePayload,
-  type SetVisitOp,
+  type VisitOp,
   RevisionConflict,
   type SheetManifest,
   type UnderlayCalibration,
@@ -114,23 +114,24 @@ export class HttpEngineClient implements EngineClient {
     return (await res.json()) as InspectionsPayload;
   }
 
-  async patchVisits(ops: SetVisitOp[]): Promise<SchedulePayload> {
-    // `set_visit` rides the existing /tasks writer — one file, one endpoint — and the
-    // response is the fresh SCHEDULE payload, since the board is what the caller is showing.
-    const res = await fetch(this.url("/tasks"), {
+  async patchVisits(ops: VisitOp[], ifRevision?: string): Promise<SchedulePayload> {
+    // Every visit op rides PUT /schedule, which folds them through the engine's one write
+    // path (`schedule/site_ops.py`) — the same one the CLI and a future in-UI agent use.
+    const res = await fetch(this.url("/schedule"), {
       method: "PUT",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ops }),
+      body: JSON.stringify(ifRevision ? { ops, if_revision: ifRevision } : { ops }),
     });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
-    return this.getSchedule();
+    return (await res.json()) as SchedulePayload;
   }
 
-  async patchInspections(ops: InspectionOp[]): Promise<InspectionsPayload> {
+  async patchInspections(ops: InspectionOp[], ifRevision?: string)
+  : Promise<InspectionsPayload> {
     const res = await fetch(this.url("/inspections"), {
       method: "PUT",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ops }),
+      body: JSON.stringify(ifRevision ? { ops, if_revision: ifRevision } : { ops }),
     });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as InspectionsPayload;

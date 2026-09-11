@@ -4,6 +4,7 @@
 import type {
   Constraint,
   HandoffItem,
+  InspectionsPayload,
   Milestone,
   SchedulePayload,
   Visit,
@@ -127,4 +128,171 @@ export function statusTransitions(visit: Visit): StatusTransition[] {
 /** Visits whose money is done but whose walk is not — the holdback list. */
 export function holdbacks(payload: SchedulePayload | null): Visit[] {
   return (payload?.visits ?? []).filter((visit) => visit.holdback_open);
+}
+
+
+// --- the action list ------------------------------------------------------------------
+//
+// "Next visit" answered a question the board could not actually answer: on a house with
+// nothing ready it showed the first blocked visit, which is where you are GOING, not what
+// to do. The action list answers the real one — what is on me today — in the order the
+// things cost you if you miss them.
+
+export type ActionUrgency = "now" | "today" | "soon" | "release";
+
+export interface BoardAction {
+  id: string;
+  urgency: ActionUrgency;
+  title: string;
+  detail: string;
+  /** The visit to open, when there is one. */
+  slug: string | null;
+  /** True when this action lives on the inspections page. */
+  inspection: string | null;
+}
+
+function days(from: Date, iso: string | null): number | null {
+  if (!iso) return null;
+  const when = Date.parse(iso);
+  if (Number.isNaN(when)) return null;
+  return Math.round((when - from.getTime()) / 86_400_000);
+}
+
+/**
+ * Everything standing on the owner right now, worst first.
+ *
+ * 1. exceptions, expired or expiring locates, threatened bookings
+ * 2. today: bookings, inspection windows open now, calls to make
+ * 3. a lookahead window: visits whose suggested or planned date falls inside it
+ * 4. what releases them: holds with an owner, materials to order, owner checks
+ */
+export function actionList(
+  schedule: SchedulePayload | null,
+  inspections: InspectionsPayload | null,
+  now: Date = new Date(),
+  lookaheadDays = 14,
+): BoardAction[] {
+  if (!schedule) return [];
+  const today = now.toISOString().slice(0, 10);
+  const out: BoardAction[] = [];
+
+  for (const visit of schedule.visits) {
+    for (const item of visit.exceptions) {
+      out.push({
+        id: `exception:${visit.slug}:${item.hold}`, urgency: "now",
+        title: `Went ahead against an open hold — ${visit.label}`,
+        detail: `${item.hold}${item.note ? ` · ${item.note}` : ""} (${item.at})`,
+        slug: visit.slug, inspection: null,
+      });
+    }
+    for (const hold of visit.constraints) {
+      if (hold.ticket_kind !== "locate") continue;
+      const left = days(now, hold.expires);
+      if (hold.expires && left !== null && left <= 3) {
+        out.push({
+          id: `locate:${visit.slug}`, urgency: "now",
+          title: left < 0 ? `Locate ticket EXPIRED — ${visit.label}`
+                          : `Locate ticket expires in ${left} day(s) — ${visit.label}`,
+          detail: hold.derived || hold.label, slug: visit.slug, inspection: null,
+        });
+      } else if (!hold.armed && hold.cleared === null) {
+        out.push({
+          id: `locate-unset:${visit.slug}`, urgency: "release",
+          title: `Locate ticket not called in — ${visit.label}`,
+          detail: hold.derived || hold.label, slug: visit.slug, inspection: null,
+        });
+      }
+    }
+    if (visit.dates.threatened_by_days) {
+      out.push({
+        id: `threat:${visit.slug}`, urgency: "now",
+        title: `Booking threatened by ${visit.dates.threatened_by_days} day(s) — ${visit.label}`,
+        detail: "A predecessor now finishes after this date. The engine will not move it "
+                + "for you: call the sub.",
+        slug: visit.slug, inspection: null,
+      });
+    }
+    if (visit.booked?.date === today) {
+      out.push({
+        id: `booked:${visit.slug}`, urgency: "today",
+        title: `Booked today — ${visit.label}`,
+        detail: [visit.booked.window, visit.assignee].filter(Boolean).join(" · ")
+          || "confirmed",
+        slug: visit.slug, inspection: null,
+      });
+    }
+    const when = visit.dates.planned ?? visit.dates.suggested_start;
+    const ahead = days(now, when);
+    if (ahead !== null && ahead > 0 && ahead <= lookaheadDays
+        && visit.readiness !== "done" && visit.readiness !== "verified") {
+      out.push({
+        id: `ahead:${visit.slug}`, urgency: "soon",
+        title: `${when} — ${visit.label}`,
+        detail: visit.dates.planned ? "planned, not confirmed with the sub"
+                                    : "earliest the sequence allows",
+        slug: visit.slug, inspection: null,
+      });
+    }
+    for (const item of visit.dates.materials) {
+      if (item.received) continue;
+      if (item.ask_now) {
+        out.push({
+          id: `lead:${visit.slug}:${item.id}`, urgency: "release",
+          title: `Lead time unknown — ${item.label || item.id}`,
+          detail: `${visit.label}: ask the supplier and write it into tasks.toml`,
+          slug: visit.slug, inspection: null,
+        });
+      } else if (item.order_by && (days(now, item.order_by) ?? 99) <= lookaheadDays) {
+        out.push({
+          id: `order:${visit.slug}:${item.id}`, urgency: "soon",
+          title: `Order by ${item.order_by} — ${item.label || item.id}`,
+          detail: visit.label, slug: visit.slug, inspection: null,
+        });
+      }
+    }
+    for (const hold of visit.constraints) {
+      if (hold.kind !== "authored" || hold.cleared !== null) continue;
+      if (hold.ticket_kind === "locate") continue;
+      if (!hold.owner && !hold.next_action && !hold.follow_up) continue;
+      out.push({
+        id: `hold:${visit.slug}:${hold.label}`, urgency: "release",
+        title: hold.label,
+        detail: [visit.label, hold.owner ? `on ${hold.owner}` : "", hold.next_action,
+                 hold.follow_up ? `chase ${hold.follow_up}` : ""]
+          .filter(Boolean).join(" · "),
+        slug: visit.slug, inspection: null,
+      });
+    }
+  }
+
+  for (const record of inspections?.inspections ?? []) {
+    if (record.state === "ready" && !record.entry?.requested) {
+      out.push({
+        id: `call:${record.id}`, urgency: "today",
+        title: `Call in — ${record.label}`,
+        detail: inspections?.authorities[record.authority]?.label ?? record.authority,
+        slug: null, inspection: record.id,
+      });
+    }
+    if (record.entry?.scheduled === today) {
+      out.push({
+        id: `appointment:${record.id}`, urgency: "today",
+        title: `Inspection today — ${record.label}`,
+        detail: record.entry.inspector ?? "", slug: null, inspection: record.id,
+      });
+    }
+    const last = record.attempts[record.attempts.length - 1];
+    if (last && last.result !== "pass" && !record.entry?.scheduled) {
+      out.push({
+        id: `reinspect:${record.id}`, urgency: "now",
+        title: `Failed and not rebooked — ${record.label}`,
+        detail: last.corrections.join("; ") || last.date,
+        slug: null, inspection: record.id,
+      });
+    }
+  }
+
+  const rank: Record<ActionUrgency, number> = { now: 0, today: 1, soon: 2, release: 3 };
+  return out.sort((a, b) => rank[a.urgency] - rank[b.urgency]
+    || a.title.localeCompare(b.title));
 }

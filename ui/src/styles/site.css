@@ -146,6 +146,62 @@
   border-bottom: 1px solid var(--md-outline-variant);
 }
 
+.site-banner-error {
+  background: var(--md-error-container);
+  color: var(--md-on-error-container);
+}
+
+/* ── Fields: dates, durations and the free text beside them ───────────────────
+   A date on this surface is PICKED, never stamped. The inspector came on Tuesday and the
+   record gets filled in on Thursday about as often as not, so a "today" button is a lie in
+   the one place the record has to be right. */
+
+.site-field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.site-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 160px;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+}
+
+.site-input {
+  font: inherit;
+  font-size: 14px;
+  color: var(--md-on-surface);
+  background: var(--md-surface-container);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-shape-sm);
+  padding: 8px 10px;
+  min-height: 40px;
+}
+
+.site-input:disabled {
+  opacity: var(--md-state-disabled-content);
+  cursor: not-allowed;
+}
+
+/* The arrival brief: plain text on purpose — it gets pasted into a message, read off a
+   phone in a driveway, or printed and left on a tailgate. */
+.site-brief {
+  margin: 12px 0 0;
+  padding: 12px;
+  background: var(--md-surface-container);
+  border-radius: var(--md-shape-sm);
+  font-family: var(--md-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
 /* ── Cards, sections, lists ────────────────────────────────────────────────── */
 
 .site-card {

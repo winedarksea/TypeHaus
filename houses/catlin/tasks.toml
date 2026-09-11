@@ -8,11 +8,19 @@
 # have to be in the ground before the second one arrives. Dates and assignees are
 # deliberately absent until somebody is actually booked.
 
+# One sub, one mobilisation, three stops — which is exactly what checkpoints are for. The
+# footing inspection sits BETWEEN the first and the second, and before checkpoints existed
+# the only way to say so was to invent two visits for one arrival.
 [visits."task/concrete/building/footings"]
 label = "Footings and the thermal break — house, court, breezeway"
 rows = ["concrete:footing", "concrete:thermal_break", "allowances:concrete-pumping"]
 element_tags = ["FT-*"]
 depends_on = ["task/earth/basement", "task/earth/building", "insp/erosion"]
+checkpoints = [
+  { id = "forms", label = "Forms, steel and the thermal-break board set" },
+  { id = "pour", label = "Pour", after = ["insp/footing"] },
+  { id = "strip", label = "Strip and cure", cure_days = 3 },
+]
 constraints = [
   { label = "rebar fabricated, galvanized after fabrication, delivered and inspected" },
   { label = "thermal-break board on site — it is cast WITH the footing, not after" },
@@ -35,9 +43,10 @@ constraints = [
 [visits."task/concrete/building/slabs"]
 label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
 rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
+        "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
         "hardware:AB-058-10-SS", "allowances:radon-passive-pipe-and-stack",
         "allowances:concrete-cold-weather-protection"]
-element_tags = ["SL-*"]
+element_tags = ["SL-*", "PT-SG-*", "PT-BW-*"]
 # Not the trade order: the sleeves, the radon collection point and the in-floor tube are all
 # plumbing work, and every one of them is under the slab. This is the dependency a
 # (trade x storey) package could not express.
@@ -66,6 +75,22 @@ constraints = [
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 
+# The mason is a different sub on a different trip, and both wythes are built against
+# cured concrete: the veneer stands on W-SG-BRKBM and the firebox on the main deck.
+[visits."task/concrete/building/masonry"]
+label = "Brick — the court veneer and the living-room firebox"
+rows = ["wall_structure:BASEMENT_BRICK_VENEER:brown-brick",
+        "wall_structure:FIREPLACE_BRICK_WYTHE:white-brick"]
+element_tags = ["W-B-BRICK", "W-M-FIRE-*"]
+depends_on = ["task/concrete/basement/walls", "task/concrete/building/slabs"]
+blocks_successors = false
+constraints = [
+  { label = "brick and mortar delivered, one blend, enough for the whole 129 SF field", owner = "owner" },
+  { label = "weeps, soft joints at both ends and the anchor schedule agreed", owner = "owner", next_action = "unreinforced brick cannot span 18'-8\" horizontally — do not anchor the wythe to W-SG-W1/E1" },
+  { label = "scaffold access for the full 8'-5\" field priced in", severity = "attention" },
+  { label = "firebox head is a CUT COURSE on a steel angle lintel, not a rowlock", owner = "owner" },
+]
+
 # The weathertight milestone's last arrival, and the one with the hold that cannot be
 # checked afterwards. There is no WRB on this house: the continuous exterior foam IS the
 # weather plane, the girts are screwed through it, and once the foam is on nobody can see a
@@ -78,7 +103,197 @@ depends_on = ["task/framing/building", "insp/framing", "insp/girt_screws"]
 constraints = [
   { label = "girt screws verified on every wall — one 8\" screw per three-ply block, counted wall by wall" },
   { label = "girt course phase checked against the window heads" },
-  { label = "foam boards and tape delivered, and enough tape for every seam" },
+  { label = "sprayer, rig and installer booked — this foam is SPRAYED (4\" ccSPF), not boards and tape" },
   { label = "all wall penetrations set — nothing goes through the plane afterwards" },
   { label = "confirmed with the sub 48 hours ahead" },
+]
+
+# ---------------------------------------------------------------------------------------
+# The calendar and the subs.
+#
+# `[calendar]` is authored because "legal holidays" is a jurisdiction's answer and a crew's
+# is narrower still. Minn. Stat. 216D.04 counts a locate's 48 hours in working days, and
+# every suggested date in `haus schedule` walks this list.
+# ---------------------------------------------------------------------------------------
+
+[calendar]
+workdays = [0, 1, 2, 3, 4]
+holidays = ["2027-01-01", "2027-05-31", "2027-07-05", "2027-09-06", "2027-11-25",
+            "2027-11-26", "2027-12-24", "2027-12-27"]
+
+# `[contractors]` is empty until somebody is actually hired. A visit with no `contractor`
+# shows the gap; it never blocks. `licence` is asked for only on electrical and plumbing,
+# which are the two trades Minnesota licenses — asking for one on a framer would be the
+# tool inventing a requirement.
+
+# ---------------------------------------------------------------------------------------
+# Preconstruction: the arrivals that draw from no work package at all.
+#
+# These are `site/<label>` standalone visits. Before them the board was blind to every
+# permit, every locate and every long-lead order — the whole of what an owner-builder does
+# in the six months before a shovel moves. None of them has a `duration_days` yet, so each
+# reads "needs confirmation" rather than carrying a date nobody agreed to.
+# ---------------------------------------------------------------------------------------
+
+[visits."site/survey-stakes"]
+label = "Boundary and topographic survey, corners and benchmark staked"
+trade = "earth"
+milestone = "preconstruction"
+constraints = [
+  { label = "licensed surveyor engaged", owner = "owner", next_action = "call three; the as-built at the end is the same survey and the same trip" },
+  { label = "benchmark set where it survives the excavation", owner = "surveyor" },
+  { label = "setbacks staked against the SetbackSpec on S-001", owner = "surveyor" },
+]
+
+[visits."site/building-permit"]
+label = "Building permit — Saint Paul DSI"
+trade = "earth"
+milestone = "preconstruction"
+depends_on = ["site/survey-stakes"]
+constraints = [
+  { label = "approved plan set issued and on site", owner = "owner", next_action = "haus print houses/catlin --sealed once the seals are pinned" },
+  { label = "lead time, appointment window and reinspection fee asked for at issuance", owner = "owner", next_action = "Minn. R. 1300.0210 subp. 4 obliges DSI to state them; write them into [authorities]", follow_up = "at issuance" },
+  { label = "code edition on the permit written into [permit].code_edition", owner = "owner", next_action = "2020 MN code is likely; the 2024-IRC cycle has no adopted date" },
+  { label = "inspection record card received, to be posted on site", owner = "owner" },
+]
+
+[visits."site/construction-management-acknowledgement"]
+label = "Construction Management Acknowledgement — before any work starts"
+trade = "earth"
+milestone = "preconstruction"
+constraints = [
+  { label = "CMA signed and filed", owner = "owner", next_action = "Saint Paul requires it before work starts, separately from the building permit" },
+]
+
+[visits."site/sewer-permit"]
+label = "Sanitary sewer connection permit — Public Works"
+trade = "plumbing"
+milestone = "preconstruction"
+constraints = [
+  { label = "sewer availability and invert confirmed at the main", owner = "owner", next_action = "Public Works 651-266-6234", follow_up = "before the excavation is booked" },
+  { label = "SAC determination and fee", owner = "owner", next_action = "an attention cost item — record the amount in costs.toml", severity = "attention" },
+]
+
+[visits."site/water-permit"]
+label = "Water service permit and tap — Saint Paul Regional Water Services"
+trade = "plumbing"
+milestone = "preconstruction"
+constraints = [
+  { label = "service size and tap location agreed", owner = "owner", next_action = "SPRWS 651-266-6350" },
+  { label = "curb stop location staked before the excavation", owner = "owner" },
+]
+
+[visits."site/row-permit"]
+label = "Right-of-way permit — driveway apron and public walk"
+trade = "concrete"
+milestone = "preconstruction"
+constraints = [
+  { label = "ROW permit issued", owner = "owner", next_action = "Public Works ROW 651-266-6120" },
+  { label = "boulevard tree protection or removal cleared with Forestry", owner = "owner", next_action = "Forestry 651-266-6400" },
+]
+
+[visits."site/radon-permit"]
+label = "Radon plumbing permit — the passive system is its own permit"
+trade = "plumbing"
+milestone = "preconstruction"
+constraints = [
+  { label = "radon plumbing permit pulled", owner = "owner", next_action = "Saint Paul issues this separately from the building permit; the system itself is mandatory under Minn. R. 1303.2400-.2403" },
+]
+
+[visits."site/zoning-and-fees"]
+label = "Zoning design review, SAC and parkland fees"
+trade = "earth"
+milestone = "preconstruction"
+constraints = [
+  { label = "zoning design review cleared", owner = "owner", severity = "attention" },
+  { label = "parkland dedication fee determined", owner = "owner", severity = "attention", next_action = "record the amount in costs.toml — dollars do not live here" },
+]
+
+[visits."site/gopher-state-one-call"]
+label = "Gopher State One Call locate ticket"
+trade = "earth"
+milestone = "preconstruction"
+depends_on = ["site/survey-stakes"]
+# A typed hold: the two dates below are DERIVED from `start` by Minn. Stat. 216D.04 —
+# 48 working hours to arm, 14 calendar days to expire — and nothing else here is.
+# With no `start` authored the board says "needs confirmation" rather than guessing one.
+constraints = [
+  { label = "locate ticket called in", kind = "locate", owner = "owner", next_action = "gopherstateonecall.org or 811; the ticket expires 14 calendar days after notice" },
+  { label = "private utilities located separately — 811 marks the utility's side only", owner = "owner" },
+  { label = "white-lining done before the call", owner = "owner" },
+]
+
+[visits."site/temp-power-and-water"]
+label = "Temporary power and water"
+trade = "electrical"
+milestone = "preconstruction"
+constraints = [
+  { label = "temporary service pole set and energised", owner = "owner", next_action = "Xcel, and the electrical permit covers the temp service" },
+  { label = "water source for the concrete crew agreed", owner = "owner" },
+]
+
+[visits."site/access-and-erosion-control"]
+label = "Site access, rock entrance, silt fence and the dumpster"
+trade = "earth"
+milestone = "preconstruction"
+depends_on = ["site/gopher-state-one-call"]
+constraints = [
+  { label = "rock construction entrance in", owner = "owner" },
+  { label = "silt fence along the downhill edge", owner = "owner", next_action = "it is the erosion inspection's first on-site item" },
+  { label = "spoil and topsoil stockpile located clear of the excavation", owner = "owner" },
+]
+
+[visits."site/long-lead-orders"]
+label = "Long-lead orders — trusses, windows, ERV, steel, cabinets"
+trade = "framing"
+milestone = "preconstruction"
+# Every `lead_days` below is deliberately BLANK until it is quoted. The board says "lead
+# time unknown" and asks for it thirty days before the suggested start; it never defaults
+# one, because a fabricated lead time is the number a schedule gets built on.
+materials = [
+  { id = "roof-trusses", label = "Roof trusses — quote against the DRIFT case, not the ground snow", source = "fabricator TBD" },
+  { id = "floor-trusses", label = "FS-S-WEST open-web floor trusses, 18' trimmable blanks", source = "fabricator TBD" },
+  { id = "windows", label = "Windows and glazed doors, against the RO schedule on A-601" },
+  { id = "erv", label = "Broan B210E75RT and its manifolds" },
+  { id = "heat-pumps", label = "Gree FLEXX Ultra 24 air handler and outdoor units" },
+  { id = "lvl-and-glulam", label = "RB-HOUSE 2-1.75x16 LVL in three 12' pieces; the three treated SYP glulams" },
+  { id = "galvanized-rebar", label = "Rebar, galvanized AFTER fabrication per A767 — say so on the order" },
+  { id = "cabinets", label = "Kitchen and bath casework" },
+  { id = "metal-panel", label = "Board-and-batten and PBR wall panel, Metal Sales — the only verified open-girt report" },
+]
+constraints = [
+  { label = "every lead time above quoted and written in", owner = "owner", next_action = "a blank lead_days is the board asking, not the board defaulting", severity = "attention" },
+]
+
+# ---------------------------------------------------------------------------------------
+# Complete: the arrivals after the last trade package.
+# ---------------------------------------------------------------------------------------
+
+[visits."site/final-survey"]
+label = "As-built survey filed with DSI"
+trade = "earth"
+milestone = "complete"
+blocks_successors = false
+constraints = [
+  { label = "as-built survey filed", owner = "owner", next_action = "the same surveyor as the corners — it is an on-site item of the building final" },
+]
+
+[visits."site/energy-certificate"]
+label = "Energy certificate posted on the electrical panel"
+trade = "electrical"
+milestone = "complete"
+blocks_successors = false
+constraints = [
+  { label = "certificate completed and posted", owner = "owner", next_action = "Minn. R. 1322.0401 — it names the general contractor, which on this build is the owner" },
+]
+
+[visits."site/punch-list"]
+label = "Punch list and close-out"
+trade = "furniture"
+milestone = "complete"
+blocks_successors = false
+constraints = [
+  { label = "certificate of occupancy in hand", owner = "owner" },
+  { label = "every lien waiver received against every payment made", owner = "owner", severity = "attention" },
+  { label = "warranties, manuals and the as-built set filed", owner = "owner", severity = "attention" },
 ]

@@ -36,15 +36,18 @@ DEFAULT_CONSTRAINTS: dict[str, tuple[str, ...]] = {
     "floors": ("subfloor adhesive and fasteners on site",),
     "roof": ("all penetrations set — nothing goes through afterwards",
              "edge metal and underlayment on site", "fall protection rigged"),
-    "walls": ("girt screws verified on every wall",
-              "continuous exterior foam and tape delivered",
+    "walls": ("girt screws verified on every wall — inspect the pattern before the "
+              "sprayer arrives, it is invisible once the foam is on",
+              "sprayer, rig and installer booked; substrate dry and above the product's "
+              "minimum temperature",
               "cladding fastener pattern agreed and mocked up"),
     "openings": ("windows delivered and checked against the RO schedule",
                  "flashing tape and sill pans on site",
                  "rough openings measured before the truck is unloaded"),
     "plumbing": ("fixture schedule confirmed against what was ordered",
                  "test equipment on site"),
-    "electrical": ("state permit filed and the request for inspection in",
+    "electrical": ("permit filed with the authority named in [authorities], and the "
+                   "request for inspection in",
                    "panel and service equipment delivered"),
     "mechanical": ("equipment delivered and staged out of the weather",
                    "balancing report scheduled"),
@@ -60,6 +63,46 @@ ARRIVAL_CONSTRAINTS: tuple[str, ...] = (
     "temporary power and water available",
     "confirmed with the sub 48 hours ahead",
 )
+
+
+#: Row-family order inside a trade, in the order the work actually happens. Replaces an
+#: alphabetical sort, which put ``concrete:flatwork`` second and the footings fourth.
+#: A family this does not name keeps its BOM order, after the ones that are named.
+FAMILY_ORDER: dict[str, tuple[str, ...]] = {
+    "earth": ("excavation", "backfill", "grading"),
+    "concrete": ("footing", "thermal_break", "wall", "column", "slab", "flatwork"),
+    "drainage": ("drain_tile", "drywell", "gutter"),
+    "framing": ("post", "beam", "wall_structure", "joist", "truss", "sheathing"),
+    "floors": ("joist", "sheet_goods", "floor_finish"),
+    "roof": ("sheathing", "membrane", "roofing", "trim", "flashing"),
+    "walls": ("insulation", "furring", "cladding", "trim"),
+    "openings": ("window", "door", "flashing", "hardware"),
+    "plumbing": ("pipe_runs", "plumbing_specialties", "fixtures"),
+    "electrical": ("conduit", "devices", "panel", "luminaires"),
+    "mechanical": ("ducts", "duct_fittings", "equipment", "registers"),
+    "stairs": ("stairs", "railings"),
+    "furniture": ("placeables", "appliances"),
+}
+
+#: Tag prefix -> the row family that arrival belongs to. The BOM carries no join between
+#: an element tag and a BOM row, so this is the map that used to be a character-overlap
+#: guess. A prefix this does not name falls to the package's first family, which is honest:
+#: the owner edits the globs, and that is exactly why they are globs.
+TAG_FAMILY: dict[str, str] = {
+    "FT": "footing", "FB": "footing", "W": "wall", "SL": "slab", "DW": "flatwork",
+    "PT": "column", "BM": "beam", "FS": "joist", "TR": "trim", "RF": "roofing",
+    "WIN": "window", "D": "door", "PR": "pipe_runs", "FX": "fixtures",
+    "DU": "ducts", "REG": "registers", "EQ": "equipment", "ED": "devices",
+    "CD": "conduit", "ST": "stairs", "RL": "railings", "FURN": "placeables",
+    "APPL": "appliances", "DRW": "drywell", "FD": "drain_tile",
+}
+
+
+def family_rank(trade: str, family: str) -> tuple[int, str]:
+    """Sort key: declared order first, then the family's own name as a tie-break."""
+    key = family.split(":", 1)[-1]
+    order = FAMILY_ORDER.get(trade, ())
+    return (order.index(key) if key in order else len(order), key)
 
 
 def _family(row: tuple[str, str]) -> str:
@@ -103,7 +146,7 @@ def propose_visits(item: Any, specs: tuple[Any, ...] = ()) -> list[dict[str, Any
     tags_by_family = _tags_by_family(item, by_family)
     out: list[dict[str, Any]] = []
     previous: str | None = None
-    for family in sorted(by_family):
+    for family in sorted(by_family, key=lambda f: family_rank(item.trade, f)):
         rows = sorted(by_family[family])
         tags = tags_by_family.get(family, ())
         slug = f"{item.slug}/{family.split(':', 1)[-1].split(':')[0]}"
@@ -129,25 +172,20 @@ def _tags_by_family(item: Any, by_family: dict[str, list[tuple[str, str]]]
                     ) -> dict[str, tuple[str, ...]]:
     """Which of the package's element tags belong to each row family.
 
-    The BOM does not carry the join, so this is a naming heuristic and is labelled as one:
-    tags are grouped by their own two-segment family and handed to the row family whose
-    bare key shares the most characters with it. It is a *proposal*; the owner edits the
-    globs, which is exactly why they are globs.
+    The BOM does not carry the join, so this is a declared map (:data:`TAG_FAMILY`) rather
+    than the character-overlap guess it used to be — that guess put footing tags on the
+    flatwork arrival about as often as not. A prefix the map does not name falls to the
+    package's first family. It is still a *proposal*; the owner edits the globs, which is
+    exactly why they are globs.
     """
-    families = sorted(by_family)
-    grouped: dict[str, list[str]] = {}
-    for tag in item.element_tags:
-        grouped.setdefault(_tag_family(tag), []).append(tag)
+    families = sorted(by_family, key=lambda f: family_rank(item.trade, f))
     out: dict[str, list[str]] = {family: [] for family in families}
-    for tag_family, tags in grouped.items():
-        best = max(families, key=lambda f: _overlap(f.split(":", 1)[-1], tag_family))
-        out[best].extend(tags)
+    bare = {family.split(":", 1)[-1]: family for family in families}
+    for tag in item.element_tags:
+        prefix = str(tag).split("-", 1)[0]
+        target = bare.get(TAG_FAMILY.get(prefix, ""), families[0])
+        out[target].append(tag)
     return {family: tuple(sorted(tags)) for family, tags in out.items()}
-
-
-def _overlap(key: str, tag_family: str) -> int:
-    letters = set(key.lower().replace("_", ""))
-    return len(letters.intersection(tag_family.lower().replace("-", "")))
 
 
 def _globs(tags: tuple[str, ...]) -> tuple[str, ...]:

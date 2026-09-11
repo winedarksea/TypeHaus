@@ -119,6 +119,16 @@ def schedule(
         console.print_json(json.dumps(_schedule_payload(model, board, directory)))
         return
 
+    from typehaus.schedule.timing import visit_dates
+    from typehaus.takeoff.task_state import load_tasks
+
+    dates = visit_dates(board, load_tasks(directory))
+    if board.errors:
+        console.print("[red]the sequence graph does not hold — the board below is the "
+                      "last valid state:[/red]")
+        for error in board.errors:
+            console.print(f"  [red]{error}[/red]", soft_wrap=True, markup=False)
+
     for record in board.milestones:
         if milestone is not None and record.id != milestone:
             continue
@@ -130,15 +140,35 @@ def schedule(
             when = f"  [dim]{visit.scheduled}[/dim]" if visit.scheduled else ""
             who = f"  {visit.assignee}" if visit.assignee else ""
             console.print(f"  {mark:<22} {slug}{who}{when}", soft_wrap=True)
+            for exception in visit.exceptions:
+                # Exceptions first, always: "we went ahead anyway" outranks every other
+                # line on this visit.
+                _line("!", "red", f"EXCEPTION {exception['at']}: went ahead against "
+                                  f"{exception['hold']}")
+            _dates(dates.get(slug))
+            for point in visit.checkpoints:
+                tick = {"done": "x", "in_progress": ">"}.get(str(point["status"]), " ")
+                cure = (f"  (+{point['cure_days']}d cure)" if point.get("cure_days")
+                        else "")
+                after = (f"  after {', '.join(point['after'])}" if point.get("after")
+                         else "")
+                _line(tick, "cyan",
+                      f"{point['label'] or point['id']}{after}{cure}")
             for constraint in readiness.blockers:
-                console.print(f"      [red]x[/red] {constraint.label}", soft_wrap=True)
+                _line("x", "red", constraint.label + _hold_detail(constraint))
             for constraint in readiness.attention:
-                console.print(f"      [yellow]?[/yellow] {constraint.label}",
-                              soft_wrap=True)
+                _line("?", "yellow", constraint.label + _hold_detail(constraint))
+            if visit.needs_rewalk:
+                _line("~", "yellow", "the handoff set changed under existing ticks — "
+                                     "needs re-walk")
             if readiness.state in ("done", "in_progress"):
+                skipped = {x["id"]: x["reason"] for x in visit.skipped}
                 for item in handoff_items(model, visit):
-                    tick = "x" if item.id in visit.checked else " "
-                    console.print(f"      [{tick}] {item.label}", soft_wrap=True)
+                    tick = ("x" if item.id in visit.checked
+                            else ("-" if item.id in skipped else " "))
+                    why = (f"  [dim]skipped: {skipped[item.id]}[/dim]"
+                           if item.id in skipped else "")
+                    console.print(f"      [{tick}] {item.label}{why}", soft_wrap=True)
         for inspection_id in record.inspections:
             inspection = board.inspection(inspection_id)
             if inspection is None:
@@ -179,6 +209,47 @@ def inspections(
                           soft_wrap=True)
         for prerequisite in record.unmet:
             console.print(f"     [red]x[/red] {prerequisite.label}", soft_wrap=True)
+
+
+def _line(mark: str, colour: str, text: str) -> None:
+    """One indented line under a visit. ``markup=False`` on the text: a hold that says
+    ``[permit].code_edition`` is not a rich style tag, and rich would eat it."""
+    console.print(f"      [{colour}]{mark}[/{colour}] ", end="")
+    console.print(text, soft_wrap=True, markup=False, highlight=False)
+
+
+def _hold_detail(constraint: Any) -> str:
+    """The three fields that turn a hold into a task, plus a locate's derived dates."""
+    parts = [f"on {constraint.owner}" if constraint.owner else "",
+             f"next: {constraint.next_action}" if constraint.next_action else "",
+             f"chase {constraint.follow_up}" if constraint.follow_up else "",
+             constraint.derived]
+    shown = [p for p in parts if p]
+    return f"  ({'; '.join(shown)})" if shown else ""
+
+
+def _dates(record: Any) -> None:
+    """Suggested / planned / booked, and the threat to a booking. Never a default."""
+    if record is None:
+        return
+    parts: list[str] = []
+    if record.suggested_start:
+        parts.append(f"suggested {record.suggested_start}..{record.suggested_finish}")
+    elif record.why:
+        parts.append(record.why)
+    if record.planned:
+        parts.append(f"planned {record.planned}")
+    if record.booked:
+        parts.append(f"booked {record.booked}")
+    if record.threatened_by_days:
+        parts.append(f"THREATENED by {record.threatened_by_days}d")
+    for item in record.materials:
+        if item.get("why"):
+            parts.append(f"{item['id']}: {item['why']}")
+        elif item.get("order_by") and not item.get("on_site"):
+            parts.append(f"{item['id']}: order by {item['order_by']}")
+    if parts:
+        _line("·", "dim", "; ".join(parts))
 
 
 def _schedule_payload(model: Any, board: Any, directory: Path | None = None

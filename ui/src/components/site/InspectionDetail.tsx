@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Inspection } from "../../model/scheduleTypes";
 import { authorityOf, callWindowOpen, nextCallDate, readinessLabel, telHref }
   from "../../model/inspections";
@@ -21,6 +21,8 @@ export function InspectionDetail({ record }: { record: Inspection }) {
   const model = useStore((s) => s.model);
   const inspections = useStore((s) => s.inspections);
   const setInspection = useStore((s) => s.setInspection);
+  const addAttempt = useStore((s) => s.addAttempt);
+  const writable = useStore((s) => s.writable);
   const tickOnSite = useStore((s) => s.tickOnSite);
   const setSitePage = useStore((s) => s.setSitePage);
   const setSurface = useStore((s) => s.setSurface);
@@ -34,6 +36,12 @@ export function InspectionDetail({ record }: { record: Inspection }) {
   const earliest = nextCallDate(now, authority);
   const today = now.toISOString().slice(0, 10);
   const entry = record.entry;
+  // A date the owner PICKS, not a "today" stamp. The inspector came on Tuesday and this
+  // gets filled in on Thursday about as often as not, and a stamped today is then a lie
+  // in the one place the record has to be right.
+  const [when, setWhen] = useState(today);
+  const [corrections, setCorrections] = useState("");
+  const [approved, setApproved] = useState("");
 
   const locate = (tag: string) => {
     const uid = index.get(tag);
@@ -140,58 +148,131 @@ export function InspectionDetail({ record }: { record: Inspection }) {
         )}
         {href && <a className="site-assist-chip" href={href}>{authority?.phone}</a>}
 
+        <div className="site-field-row">
+          <label className="site-field">
+            <span>Requested</span>
+            <input
+              type="date" className="site-input" value={entry?.requested ?? ""}
+              disabled={!writable}
+              onChange={(e) => void setInspection({ id: record.id,
+                                                    requested: e.target.value || null })}
+            />
+          </label>
+          <label className="site-field">
+            <span>Appointment</span>
+            <input
+              type="date" className="site-input" value={entry?.scheduled ?? ""}
+              disabled={!writable}
+              onChange={(e) => void setInspection({ id: record.id,
+                                                    scheduled: e.target.value || null })}
+            />
+          </label>
+        </div>
+
+        <div className="site-field-row">
+          <label className="site-field">
+            <span>Result date</span>
+            <input type="date" className="site-input" value={when}
+                   disabled={!writable}
+                   onChange={(e) => setWhen(e.target.value)} />
+          </label>
+          <label className="site-field">
+            <span>Corrections (one per line)</span>
+            <textarea className="site-input" rows={2} value={corrections}
+                      disabled={!writable}
+                      onChange={(e) => setCorrections(e.target.value)} />
+          </label>
+          <label className="site-field">
+            <span>Approved scope, for a partial (globs or visit slugs)</span>
+            <input className="site-input" value={approved} disabled={!writable}
+                   placeholder="FT-B-*"
+                   onChange={(e) => setApproved(e.target.value)} />
+          </label>
+        </div>
+
+        {/* Every one of these APPENDS an attempt. Nothing here overwrites the last card:
+            the corrections a reinspection exists to answer live on the attempt that
+            raised them, and a second call used to delete them. */}
         <div className="site-action-row">
-          {!entry?.requested && (
-            <button
-              className="site-button"
-              disabled={record.state !== "ready"}
-              onClick={() => void setInspection({ id: record.id, requested: today })}
-            >
-              Requested today
-            </button>
-          )}
-          {entry?.requested && !entry.result && (
-            <button
-              className="site-button"
-              onClick={() => void setInspection({ id: record.id, scheduled: today })}
-            >
-              Scheduled {entry.scheduled ?? ""}
-            </button>
-          )}
           <button
-            className="site-button"
-            onClick={() => void setInspection({ id: record.id, result: "pass",
-                                                result_date: today })}
+            className="site-button" disabled={!writable}
+            onClick={() => void addAttempt({ id: record.id, date: when, result: "pass" })}
           >
             Passed
           </button>
           <button
-            className="site-button site-button-danger"
-            onClick={() => void setInspection({ id: record.id, result: "fail",
-                                                result_date: today })}
+            className="site-button" disabled={!writable || !approved.trim()}
+            title={approved.trim() ? "" : "A partial must name the scope it released"}
+            onClick={() => void addAttempt({
+              id: record.id, date: when, result: "partial",
+              approved: approved.split(/[,\s]+/).filter(Boolean),
+              corrections: corrections.split("\n").map((x) => x.trim()).filter(Boolean),
+            })}
+          >
+            Partial
+          </button>
+          <button
+            className="site-button site-button-danger" disabled={!writable}
+            onClick={() => void addAttempt({
+              id: record.id, date: when, result: "fail",
+              corrections: corrections.split("\n").map((x) => x.trim()).filter(Boolean),
+            })}
           >
             Failed
           </button>
         </div>
 
         {entry?.inspector && <p className="site-support">Inspector: {entry.inspector}</p>}
-        {entry?.reinspect && <p className="site-support">Reinspection: {entry.reinspect}</p>}
         {entry?.note && <p className="site-support">{entry.note}</p>}
-        {entry?.waived && <p className="site-support">Waived: {entry.waived}</p>}
+        {entry?.waived && (
+          <p className="site-support">
+            Waived by {entry.waived.by}
+            {entry.waived.date ? ` on ${entry.waived.date}` : ""}
+            {entry.waived.ref ? ` (${entry.waived.ref})` : ""}
+          </p>
+        )}
+        {record.scope.length > 0 && (
+          <p className="site-support">This instance covers {record.scope.join(", ")}.</p>
+        )}
+        {record.approved.length > 0 && record.state !== "passed" && (
+          <p className="site-support">
+            Released so far: {record.approved.join(", ")} — every other visit stays blocked.
+          </p>
+        )}
       </section>
 
-      {entry?.history?.length ? (
+      {record.attempts.length > 0 && (
         <section className="site-section">
-          <h3 className="site-section-head">History</h3>
+          <h3 className="site-section-head">
+            {record.attempts.length} attempt{record.attempts.length > 1 ? "s" : ""}
+          </h3>
           <ul className="site-list">
-            {entry.history.map((line, i) => (
-              <li key={`${i}:${line}`} className="site-list-item">
-                <span className="site-list-text"><span className="site-list-title">{line}</span></span>
+            {record.attempts.map((attempt, i) => (
+              <li key={`${attempt.date}:${i}`} className="site-list-item">
+                <span className={`site-dot ${attempt.result === "pass"
+                  ? "site-dot-done" : "site-dot-blocked"}`} aria-hidden />
+                <span className="site-list-text">
+                  <span className="site-list-title">
+                    {attempt.date} — {attempt.result}
+                    {attempt.inspector ? ` · ${attempt.inspector}` : ""}
+                  </span>
+                  {attempt.corrections.map((line) => (
+                    <span key={line} className="site-list-support">· {line}</span>
+                  ))}
+                  {attempt.approved.length > 0 && (
+                    <span className="site-list-support">
+                      released {attempt.approved.join(", ")}
+                    </span>
+                  )}
+                  {attempt.note && (
+                    <span className="site-list-support">{attempt.note}</span>
+                  )}
+                </span>
               </li>
             ))}
           </ul>
         </section>
-      ) : null}
+      )}
     </div>
   );
 }

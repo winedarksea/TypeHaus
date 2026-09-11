@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { currentMilestone, firstBlockerLabel, groupByMilestone, nextVisit }
+import { currentMilestone, firstBlockerLabel, groupByMilestone }
   from "../../model/schedule";
 import { useStore } from "../../state/store";
+import { ActionList } from "./ActionList";
 import { DetailHost } from "./DetailHost";
-import { NextVisitCard } from "./NextVisitCard";
 import { VisitDetail } from "./VisitDetail";
 
 const DOT: Record<string, string> = {
@@ -33,7 +33,7 @@ export function BuildBoard() {
 
   return (
     <div className="site-page">
-      <NextVisitCard visit={nextVisit(schedule)} onOpen={setOpenSlug} />
+      <ActionList onOpen={setOpenSlug} />
 
       <div className="site-chip-row" role="group" aria-label="Filter by milestone">
         <button
@@ -132,6 +132,27 @@ export function BuildBoard() {
             </section>
           );
         })}
+
+      {schedule.dropped_gates.length > 0 && (
+        <details className="site-collapsed">
+          <summary>{schedule.dropped_gates.length} inspection gate(s) not implied</summary>
+          <ul className="site-list">
+            {schedule.dropped_gates.map((gate) => (
+              <li key={`${gate.trade}:${gate.inspection}`} className="site-list-item">
+                <span className="site-list-text">
+                  <span className="site-list-title">
+                    {gate.inspection} does not gate the whole {gate.trade} package
+                  </span>
+                  <span className="site-list-support">
+                    It follows another gate on the same trade, so applying both would be a
+                    loop. Split the package and author the dependency where it belongs.
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
 
       {schedule.stale.length > 0 && (
         <p className="site-support site-stale-footer">

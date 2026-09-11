@@ -11,10 +11,11 @@ import type {
   InspectionOp,
   InspectionsPayload,
   SchedulePayload,
+  VisitOp,
   SetVisitOp,
 } from "../model/scheduleTypes";
 
-export type { InspectionOp, InspectionsPayload, SchedulePayload, SetVisitOp };
+export type { InspectionOp, InspectionsPayload, SchedulePayload, SetVisitOp, VisitOp };
 
 // A patch op mirrors the server's PatchOp (source/ops.py): element-level and flat.
 // `fields` carry authored-unit strings ("12'-6\"") and plain scalars; the server encodes
@@ -425,8 +426,11 @@ export interface EngineClient {
   // those two files and return the fresh payload.
   getSchedule(): Promise<SchedulePayload>;
   getInspections(): Promise<InspectionsPayload>;
-  patchVisits(ops: SetVisitOp[]): Promise<SchedulePayload>;
-  patchInspections(ops: InspectionOp[]): Promise<InspectionsPayload>;
+  // `if_revision` is the content hash the caller's own GET echoed. A mismatch is a 409
+  // carrying the fresh payload, so the caller re-applies against what is on disk rather
+  // than overwriting an edit somebody made in their editor thirty seconds ago.
+  patchVisits(ops: VisitOp[], ifRevision?: string): Promise<SchedulePayload>;
+  patchInspections(ops: InspectionOp[], ifRevision?: string): Promise<InspectionsPayload>;
   // Append one construction note to the detail's Transition.notes markdown file.
   // Resolves to the updated file content; rejects OfflineUnsupported without a server.
   appendDetailNote(key: string, text: string): Promise<string>;

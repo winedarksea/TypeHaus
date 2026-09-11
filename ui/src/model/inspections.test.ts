@@ -1,5 +1,6 @@
 // The inspections page's grouping, wording, and the one date this app is allowed to derive.
-import type { Inspection, InspectionsPayload } from "./scheduleTypes";
+import type { InspectionsPayload } from "./scheduleTypes";
+import { makeAuthority, makeInspection, makeInspections } from "./scheduleFixtures";
 import {
   authorityOf,
   callWindowOpen,
@@ -15,20 +16,14 @@ function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
-function record(partial: Partial<Inspection> & Pick<Inspection, "id">): Inspection {
-  return {
-    label: partial.id, authority: "building", sequence: 0, after: [], gates: [],
-    applies: true, evidence: "", extra: false, state: "not_ready", entry: null,
-    prerequisites: [], checks: [], on_site: [], milestone: "foundation", ...partial,
-  };
-}
+const record = (partial: Parameters<typeof makeInspection>[0]) =>
+  makeInspection({ state: "not_ready", ...partial });
 
-const PAYLOAD: InspectionsPayload = {
-  profile: "mn-2020", checks_pending: false,
+const PAYLOAD: InspectionsPayload = makeInspections({
   authorities: {
-    building: { label: "Saint Paul DSI", phone: "651-266-9002",
-                window: "7:30-9:00 M-F", lead_days: 1 },
-    owner: { label: "Owner's own hold", phone: null, window: null, lead_days: 0 },
+    building: makeAuthority({ label: "Saint Paul DSI", phone: "651-266-9002",
+                              window: "7:30-9:00 M-F", lead_days: 1 }),
+    owner: makeAuthority({ label: "Owner's own hold", lead_days: 0 }),
   },
   inspections: [
     record({ id: "erosion", state: "passed" }),
@@ -43,7 +38,7 @@ const PAYLOAD: InspectionsPayload = {
     record({ id: "girt_screws", milestone: "weathertight", authority: "owner",
              extra: true, state: "not_ready" }),
   ],
-};
+});
 
 export function runInspectionTests(): void {
   const groups = groupInspectionsByMilestone(PAYLOAD);

@@ -1,5 +1,6 @@
 // The board's grouping and its "what is in the way" rules, against a hand-built payload.
-import type { SchedulePayload, Visit } from "./scheduleTypes";
+import type { SchedulePayload } from "./scheduleTypes";
+import { makeConstraint, makeSchedule, makeVisit } from "./scheduleFixtures";
 import {
   attention,
   blockers,
@@ -17,18 +18,9 @@ function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
-function visit(partial: Partial<Visit> & Pick<Visit, "slug">): Visit {
-  return {
-    id: partial.slug, package: partial.slug, label: partial.slug, trade: "concrete",
-    storey: "building", milestone: "foundation", status: "todo", scheduled: null,
-    assignee: null, contact: null, note: null, depends_on: [], rows: [], element_tags: [],
-    checked: [], estimate_fmt: "", holdback_open: false, implicit: true,
-    readiness: "ready", constraints: [], handoff: [], ...partial,
-  };
-}
+const visit = makeVisit;
 
-const PAYLOAD: SchedulePayload = {
-  profile: "mn-2020", checks_pending: false, proposals: {}, stale: [],
+const PAYLOAD: SchedulePayload = makeSchedule({
   milestones: [
     { id: "foundation", label: "Foundation", trades: ["concrete"],
       visits: ["task/concrete/building", "task/earth/building"], inspections: ["footing"],
@@ -38,10 +30,10 @@ const PAYLOAD: SchedulePayload = {
   ],
   visits: [
     visit({ slug: "task/concrete/building", readiness: "blocked", constraints: [
-      { kind: "visit", ref: "task/earth/building", label: "earth complete",
-        cleared: null, severity: "blocking", element_tags: [] },
-      { kind: "attention", ref: "x", label: "UNKNOWN — no soil class",
-        cleared: null, severity: "attention", element_tags: [] },
+      makeConstraint({ kind: "visit", ref: "task/earth/building",
+                       label: "earth complete" }),
+      makeConstraint({ kind: "attention", ref: "x", label: "UNKNOWN — no soil class",
+                       severity: "attention" }),
     ] }),
     visit({ slug: "task/earth/building", trade: "earth", readiness: "done",
             status: "done" }),
@@ -55,7 +47,7 @@ const PAYLOAD: SchedulePayload = {
                 derived: "", checked: false },
             ] }),
   ],
-};
+});
 
 export function runScheduleTests(): void {
   const groups = groupByMilestone(PAYLOAD);
@@ -99,8 +91,7 @@ export function runScheduleTests(): void {
     "with no authored holds, every transition is available");
 
   const held = visit({ slug: "x", constraints: [
-    { kind: "authored", ref: null, label: "girt screws verified", cleared: null,
-      severity: "blocking", element_tags: [] },
+    makeConstraint({ label: "girt screws verified", cleared: null }),
   ] });
   const verified = statusTransitions(held).find((t) => t.status === "verified")!;
   assert(verified.disabledBecause?.includes("girt screws verified"),
@@ -109,8 +100,7 @@ export function runScheduleTests(): void {
     "but DONE is the sub's claim and is never refused");
 
   const cleared = visit({ slug: "x", constraints: [
-    { kind: "authored", ref: null, label: "girt screws verified", cleared: "2027-06-01",
-      severity: "blocking", element_tags: [] },
+    makeConstraint({ label: "girt screws verified", cleared: "2027-06-01" }),
   ] });
   assert(statusTransitions(cleared).find((t) => t.status === "verified")!.disabledBecause
     === null, "clearing the hold opens the walk");
