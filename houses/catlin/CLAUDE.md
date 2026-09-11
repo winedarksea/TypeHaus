@@ -1365,9 +1365,52 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   flexure **0.54**, stem length **9.1198'**. Every schedule in the stem bar table now
   clears, `#6 @ 16"` included at 0.97 — `#6 @ 10"` is held on one-bar-one-spacing with the
   footing mat and on §5's stone-bed dependence, not on arithmetic.
+- **ALL FIVE court strips are 8'-0" x 1'-0" with a 6" court-side offset and the same
+  `#6 @ 10"` mat (2026-09-10).** FT-SG-W1/E1 were 84" and PLAIN on the argument that they
+  are braced and the table answers them. The argument skipped the question: **nothing in
+  the engine grades a footing's own flexure except on the retaining set**, and their 3'-0"
+  plain HEEL is Mu 8,303 against a plain 12" strip's 3,536, **d/c 2.35** — a row that needs
+  no assumption about the bracing credit at all, since §7c drops the upward pressure under
+  the heel. The toe reads 2.35-2.94 as a free cantilever. The mat was owed either way, so
+  the widening bought a continuous form line for concrete and stone alone. Rebar 4,071 →
+  4,750 lb; the ratio 27.0 → 31.2 lb/cy, which is the right direction for a reinforcement
+  finding. `SPEC.footing_width_in` (84") is kept, unreferenced, as the revert.
+- **THE CLOSURE BOARD IS THE JOINT, AND THE JOINT IS THE FOOTING.** `foam_length` reads
+  `_RETAINING_FOOTING_WIDTH_IN` and the block is centred on the FOOTING, not the wall axis
+  — all 12" of the widening went to the court side, so a board on the axis hangs 6" past
+  one end and leaves 6" of bare footing-to-footing concrete at the other.
+- **One thermal-break product: `THERMAL_BREAK_IN` / `THERMAL_BREAK_PSI`.** The thickness
+  was stated three times in two files and the rating twice, once in prose because `Layer`
+  has no compressive field. **The break cannot go on one purchase order today** — the two
+  closure blocks bill by VOLUME into concrete, the beam's board by AREA into insulation,
+  and nothing reconciles them — so `test_catlin_contract_m3` pins every site against the
+  constants. A comment is not a guard; the retaining top's spot elevations proved that.
+- **One bar arrangement on the whole plane**: #5 GFRP at 8" o.c., count derived from board
+  width (12 across the 96" footing joint, 2 across the 12" wall end). Neither count was
+  required by any computed limit state. **The bars are why the board exists** — a `Dowel`'s
+  foam block is the only way the engine resolves an XPS solid at a joint, so `count=0`
+  deletes the board from the model, the bill and the drawings (and `_resolve_dowel` lays
+  `range(max(count, 1))`, so a zero is silently a one).
+- **Do not merge the two closure blocks.** Per end it is already one continuous board on
+  one plane; two objects only because the joint is T-shaped in elevation. Widening the
+  upper one buys foam standing in backfill, and destroys the property that makes it work —
+  the narrow block lands flush with both faces of the 12" pour, so the board is a form face.
+- **`SG_VENEER_BEAM_14`'s layer order is load-bearing for a fire check.** `code.R316_4`
+  reads the innermost layer as facing a room; reversed, a bare 2" of XPS fails it. The
+  tuple order is now pinned as well as the faces, so a sign flip and a tuple flip cannot
+  cancel into a drawing that looks right.
 - **Every wall-to-house joint here needs one continuous 2" XPS board, house-footing-underside
   to porch-wall-top, and nothing checks that continuity** — verify by hand after any footing
-  or wall-top move.
+  or wall-top move. Four sequencing traps are written into `params/sunken_garden.py` above
+  the dowels: the butt joint lands on the court floor plane (lap the upper board); the
+  garden pour cannot lead the house (the stem dowels are epoxied into cured wall with ~1"
+  of tolerance); the beam's board depends on the FT-B-S2/S3 toe trim, which is a HOLD POINT
+  before the house footing pour; and the beam's 20'-0" board is the one with no positive
+  tie at all.
+- **The brick stays, and it is load-bearing for five other things.** If `W-B-BRICK` ever
+  goes it takes `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor
+  item no prescriptive table reaches, the weeps, two soft joints and a slab void with it.
+  Retiring it is a design pass, not a deletion.
   - Stem blocks and footing blocks are sized by different rules and must stay that way: a
     stem block derives as `max(row_span + 8*dia, 12")` off the bar row (right for a 12" wall
     end); a footing block is `Dowel.foam_length` (default derives the old way) because it
@@ -1382,9 +1425,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     north is exactly how a frost check buys a false pass.
   - `test_the_veneer_beam_isolates_the_house_footing` pins the 84" board, full 8" depth, and
     zero plan lap against every house strip.
-  - `prices.toml`'s `thermal_break` row bills the four closure boards by SF (27.6 SF of 2"
-    40 psi XPS, $90-210 each) — the four boards are not the same size, so check totals
-    against SF, never against count.
+  - `prices.toml`'s `thermal_break` row bills the four closure boards by SF of 2" 40 psi
+    XPS — the four boards are not the same size, so check totals against SF, never against
+    count. (The two footing boards grew 84" → 96" with the strips on 2026-09-10.)
+  - **FLAGGED FOR THE ENGINEER, NOT TAKEN: trimming the wall beddings' surplus stone.**
+    Worth $835-1,250 and the only four-figure item in the simplification pass, and the one
+    that touches a load-bearing claim. It collides with the drywell top, with a 5"
+    clearance the model already flags as the one to watch, and with the μ = 0.35 friction
+    argument that carries the ENTIRE sliding margin (`notes/sunken_garden_court_free_body.md`
+    §5 — at μ = 0.25 the court is at FS 1.29 against 1.50). Do not take it on a takeoff
+    reading.
 - **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
   full height (plinth to top), 129.2 SF, one BOM row `BASEMENT_BRICK_VENEER:brown-brick`.
   Glazed brick is unsuitable here: [BIA Tech Note 13](https://www.gobrick.com/media/file/13-ceramic-glazed-brick-exterior-walls.pdf)
