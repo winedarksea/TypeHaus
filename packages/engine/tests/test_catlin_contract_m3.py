@@ -2224,10 +2224,13 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     # once degenerate (coincident/collinear) ring vertices are stripped.
     assert len({member.p0 for member in winders}) == len(winders)
     assert all(member.plan_outline and len(member.plan_outline) >= 3 for member in winders)
-    source = catlin_model.plan.storey(attic.storey)
-    assert source is not None
+    # Off the flight's OWN springing surface, not the storey datum under it: a storey
+    # elevation is the top of joists and ST-S2A springs from the finished oak 1 1/2" above
+    # it (houses/catlin/plan/storeys/attic.py). Reading the datum here re-asserted the very
+    # conflation the authored base_elevation exists to fix.
+    assert attic.base_elevation_m is not None
     assert [member.z1_m for member in winders] == pytest.approx(
-        [source.elevation.meters + attic.riser_height_m * step for step in (1, 2, 3)])
+        [attic.base_elevation_m + attic.riser_height_m * step for step in (1, 2, 3)])
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
         assert stair.layout == "u_split_landing"

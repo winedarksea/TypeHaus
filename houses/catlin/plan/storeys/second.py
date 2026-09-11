@@ -1389,8 +1389,16 @@ STAIRS = [
     # R311.7.6 36" minimum. `turn_direction="left"`, same hand as ST-B2M below: the flight
     # springs east lane on main, arrives west lane on second, so the stack alternates sides
     # as one continuous run.
+    # Both ends are WALKING SURFACES, not storey data — see the note over ST-B2M in
+    # main.py. Wood-deck to wood-deck with the same plank at both ends (RM-M-LIVING and
+    # RM-S-HALL are both `lvp`), so the 15/16" build-up cancels and the rise, riser count
+    # and going are exactly what the storey table gave: 120", 16 risers, 7 1/2". Stating it
+    # anyway is not decoration — derived from the datums the whole flight drew 15/16" low,
+    # its bottom tread 6 1/2" over the floor a foot actually leaves and its top tread 8 1/2"
+    # under the one it reaches, which is the drawing a framer would build from.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6.375),
+          base_elevation=inch(0.9862), top_elevation=inch(120.9862),
           layout="u_split_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]

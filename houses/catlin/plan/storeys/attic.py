@@ -875,8 +875,14 @@ STAIR_HANDRAIL = Railing(
 )
 
 STAIRS = [
+    # Walking surfaces, not storey data — see the note over ST-B2M in main.py. RM-S-STUDY2
+    # at the foot and RM-A-STUDY at the head are both 3/4" oak over 3/4" subfloor, so the
+    # 1 1/2" build-up cancels and the rise stays 120" over 16 risers at 7 1/2". What it
+    # fixes is the flight's elevation: derived from the datums the winders and every tread
+    # drew 1 1/2" low, and the step off the top tread onto the studio floor measured 9".
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
+          base_elevation=inch(121.5), top_elevation=inch(241.5),
           # Enter north at the east edge, then three lower winders turn the climb west.
           # `start` is the origin the run walks from (resolve/stairs/dispatch.py), and with
           # run_reversed on x that is the well's SE corner.

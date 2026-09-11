@@ -549,9 +549,11 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
     assert len(brackets) >= 2
     rail_h = 36 * 0.0254
     # ST-M2S lower flight: first tread top one riser above the main floor, landing at the
-    # far end — the rail rides the walking line, not the authored base_elevation.
-    assert brackets[0].z1_m == pytest.approx(0.1905 + rail_h, abs=2e-2)
-    assert brackets[-1].z1_m == pytest.approx(1.524 + rail_h, abs=2e-2)
+    # far end — the rail rides the walking line, not the authored base_elevation. Both
+    # numbers carry the main floor's 15/16" build-up (3/4" subfloor + plank): the flight
+    # springs from the SURFACE underfoot, not from the storey datum at the joist tops.
+    assert brackets[0].z1_m == pytest.approx(0.1905 + 0.0251 + rail_h, abs=2e-2)
+    assert brackets[-1].z1_m == pytest.approx(1.524 + 0.0251 + rail_h, abs=2e-2)
     for bracket in brackets:
         assert bracket.z1_m - bracket.z0_m < 6 * 0.0254, "a bracket, not a post"
     # The rail is ONE solid now, carrying the 3D polyline it used to be chopped into bands to
@@ -564,7 +566,7 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
     zs = [z for _x, _y, z in path]
     assert zs == sorted(zs), "the rail must climb with the flight"
     assert zs[-1] - zs[0] > 1.0  # the full ~4'4" rise of the lower flight
-    assert 1.524 + rail_h - 0.15 < zs[-1] < 1.524 + rail_h + 0.05
+    assert 1.549 + rail_h - 0.15 < zs[-1] < 1.549 + rail_h + 0.05
 
 
 def _bay_pickets(model, tag):

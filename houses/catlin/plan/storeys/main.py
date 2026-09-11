@@ -1899,9 +1899,29 @@ SLABS = [
 # either lane and does not need one: ST-B2M's top nosing is at floor level on the west and
 # ST-M2S's first tread is at floor level on the east, so both are a flight to step onto, not
 # a drop. Only the 4 1/2" of well partition between them is a real edge — see STAIR_GUARDS.
+# ** THE TWO ENDS ARE WALKING SURFACES, NOT STOREY DATA. ** A storey elevation on a wood
+# bay is the TOP OF JOISTS (params/main_deck.py) and the floor underfoot is 15/16" above it
+# — 3/4" subfloor plus the 6 mm plank. Left to derive its rise from the storey table this
+# flight climbed 9'-1 7/16" from the basement slab to the top of the main joists and stopped
+# there, so the last step up onto the living-room floor was 8 1/4" against 7 5/16" for the
+# other fourteen: over R311.7.5.1's 7 3/4" maximum AND its 3/8" uniformity tolerance, and
+# invisible to every stair check, all of which measure against the same datum the flight was
+# built from. It is the one flight in the house whose ends have different build-ups — the
+# basement is bare sealed slab, main is subfloor + plank — so it is the one the offset does
+# not cancel on.
+#
+# Both literals below are project-frame absolute, and `base_elevation`/`top_elevation` must
+# be authored together (resolve/stairs/dispatch.py). -109.4375" is params/main_deck's
+# BASEMENT_DATUM, which is also the slab top and the sealed-concrete surface RM-B-STAIR
+# walks on; 0.9862" is MAIN_FINISHED_FLOOR_LVP, the plank top in RM-M-LIVING where the
+# flight heads out. This file is editable-dialect and cannot import them, so if either
+# number moves in params, move it here. Rise is 110.4237" over the same 15 risers — 7.3616"
+# each, still clear of 7 3/4" — so the riser count, the run length and the well are
+# unchanged; only the flight's elevation is.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),
+          base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           layout="u_split_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]

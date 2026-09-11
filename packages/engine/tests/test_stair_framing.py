@@ -74,11 +74,14 @@ def winder_stair(catlin_model):
 def _subfloor(catlin_model, stair) -> float:
     """The walking surface this flight springs from.
 
-    The storey datum, for the three flights that rise between two storeys — and NOT for
-    ST-G-SERVICE, which is a step-down within the garage storey from the slab at -2'-10" to
-    a threshold at 0'-0". Its base is 1'-10" *below* the garage datum (the ICF stem top), so
-    reading the datum here would assert its stringers never drop below a plane they start
-    under. ``ResolvedStair`` carries what the flight actually resolved against.
+    Never the storey datum where the flight states its own ends, which in catlin is now
+    every flight: a storey elevation is the TOP OF JOISTS and the surface underfoot is the
+    subfloor plus its finish above that, so the two differ by 15/16" on a plank floor and
+    1 1/2" on an oak one. ST-G-SERVICE is the older reason for the same rule — a step-down
+    within the garage storey, from the slab at -2'-10" to a threshold at 0'-0", whose base
+    is 1'-10" *below* the garage datum (the ICF stem top), so reading the datum here would
+    assert its stringers never drop below a plane they start under. ``ResolvedStair``
+    carries what the flight actually resolved against.
     """
     if stair.base_elevation_m is not None:
         return stair.base_elevation_m
@@ -250,9 +253,12 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert hanger.connection.startswith("concrete-wall-hanger:")
         # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
         assert not hanger.connection.startswith("framed-wall-ledger:")
-        # -1.521 m: the flat bearing seat puts the slab at -9'-1 7/16". The landing rides
-        # the storey.
-        assert hanger.z1_end_m == pytest.approx(-1.521, abs=0.01)
+        # -1.509 m: the flat bearing seat puts the slab at -9'-1 7/16" and the landing
+        # rides the flight off it. It was -1.521 m while ST-B2M derived its rise from the
+        # storey table and stopped at the main JOIST TOPS; the flight now states its own
+        # ends (walking surface to walking surface, houses/catlin/plan/storeys/main.py),
+        # so every riser grew 1/16" and the landing came up with them.
+        assert hanger.z1_end_m == pytest.approx(-1.509, abs=0.01)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
               and m.connection is not None]
