@@ -10,14 +10,21 @@ Nothing here is decided. The plan as authored is the plan; this is the menu.
 
 ## Method — read this before comparing any row
 
-**The baseline.** Every figure is measured against `haus takeoff houses/catlin` on
-2026-09-10, which printed a construction total of **$807,796 – $1,667,219**
-(with furnishings, $816,606 – $1,714,869). That is materially below the
-$917,729 – $1,895,004 baseline `plans/cost-options.md` still carries, so do not
-mix a row from that file with a row from this one without re-striking it.
-The check report on the same day was **1,085 pass · 3 fail · 46 unknown ·
-21 not applicable**, and the calculation package carried **42 engineered items, 25
-of them open**.
+**The baseline, re-struck 2026-09-10 after the bug-fix pass below.**
+`haus takeoff houses/catlin` prints a construction total of
+**$810,802 – $1,671,945** (with furnishings, $819,612 – $1,719,595). That is
+materially below the $917,729 – $1,895,004 baseline `plans/cost-options.md` still
+carries, so do not mix a row from that file with a row from this one without
+re-striking it. The check report is **1,131 pass · 1 fail · 45 unknown ·
+31 not applicable** of 1,208 encoded rules, and the calculation package carries
+**58 engineered items, 27 of them open**.
+
+**The first draft of this file quoted a stale baseline and it is worth saying why.**
+It reported three standing FAILs where there is one, and 42 engineered items where
+there are 58. The house moves daily and this file does not. **Re-read the numbers
+before acting on a row**, and treat every figure here as of its stated date. The
+one standing FAIL is `code.site_parcel_is_surveyed` — see BLD-12, which is the
+finding about exactly that.
 
 **Where the numbers were measured.** Another session was editing this house
 concurrently while this audit ran — `params/breezeway.py` went from 195 to 486
@@ -99,12 +106,12 @@ and only the window half was ever built.
 
 | Status | Items |
 |---|---|
-| draft (engine computed, ratio within capacity) | 17 |
+| draft (engine computed, ratio within capacity) | 31 |
 | OVER | 0 |
 | INCOMPLETE (computed in part, an input missing) | **20** |
-| NO LOCAL CALC (deferred to a designer of record) | 5 |
+| NO LOCAL CALC (deferred to a designer of record) | 7 |
 | covered by a seal in `engineering.toml` | **0** |
-| **Total** | **42, of which 25 open** |
+| **Total** | **58, of which 27 open** |
 
 **All twenty INCOMPLETE items are one question asked twenty times.** Every one is
 a `wall_panel/*` on a north or south facade clad in `board-batten-24`, and every
@@ -127,12 +134,20 @@ setup.
 
 ## 3. Trade-visit map
 
-**`haus tasks` cannot answer this today, and that is worth saying plainly.** The
-command groups work at trade by storey, but most of this house's cost lands in
-rows with no storey tag, so twelve of the thirteen trades report a single
-`building` package. The visit count below is therefore derived by hand from the
-design, not from the model, and the gap is itself a finding for the project
-management work deferred at the foot of `plans/TODO.md`.
+**`haus tasks` cannot answer this today, and the reason is narrower than the first
+draft of this file claimed.** It is not that twelve of thirteen trades collapse into
+one package — all thirteen carry a `building` item and eleven also carry real
+per-storey items. It is that **roughly three-quarters of the low estimate sits in
+`building` by value**: walls are ~100% there, plumbing and mechanical 96%, earth
+95%, drainage 90%, roof 75%, openings 65%.
+
+The mechanism is a join, not missing data. `takeoff/tasks.py::_tags_by_row` keys a
+work item on `(estimate section, price key)`, so two per-storey rows of the same key
+merge and their tags span storeys, which sends the merged row to `building`. The
+placeables takeoff already groups by storey and the tasks join throws that away.
+Fixing it changes the granularity of the estimate join itself, not just the task
+export, so it is named here and deliberately not attempted. The visit count below is
+derived by hand from the design.
 
 | Trade | Distinct mobilisations | Why more than one |
 |---|---|---|
@@ -165,19 +180,28 @@ is still the first thing to remove.
 | BLD-03 | Two floor systems on the main storey | HIGH | **SIMPLIFY** | **−$7,536 to −$13,486** |
 | BLD-02 | The freestanding concrete structure | HIGH | OWNER CALL | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
-| BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
+| BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist (1 of 9 **CLOSED**) | — |
 | BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | split | unpriced |
-| BLD-07 | Unvented roof: painter, insulator, undrawn eave | MED | KEEP + 2 instructions | — |
+| BLD-07 | Unvented roof: painter, insulator, undrawn eave | MED | KEEP + 2 instructions; citation **CLOSED** | — |
 | BLD-04 | 13 one-off assemblies, 10 one-off door types | MED | **SIMPLIFY** | unpriced |
 | BLD-10 | Seven cladding materials, three scopes | MED | **SIMPLIFY** | unpriced |
 | BLD-09 | Four foundation methods | MED | OWNER CALL | ~$500–1,500/extra pour |
 | BLD-11 | 2,000 board feet of owner-milled hardwood | MED | OWNER CALL | unpriced |
 | BLD-15 | Owner-GC licensing, pricing, inspection order | MED | KEEP as checklist | −10 to −20% on subs |
-| BLD-16 | Jurisdiction profile names a code that doesn't exist | LOW | **SIMPLIFY** | — |
-| BLD-14 | Documentation disagrees with the source | LOW | **SIMPLIFY** | — |
+| BLD-16 | Jurisdiction profile named a code that doesn't exist | LOW | **CLOSED 2026-09-10** | — |
+| BLD-14 | Documentation disagrees with the source | LOW | **CLOSED 2026-09-10** | — |
 
-**The two measured simplifications together are −$9,240 to −$18,121, and BLD-01a
-alone takes the house from 25 open engineering items to 5.**
+**The two measured simplifications together are −$9,240 to −$18,121** (as of
+`286ef997`; see BLD-01a on why its engineering-register figure needs re-striking).
+
+**What the 2026-09-10 bug-fix pass closed**, leaving every simplification decision
+open: BLD-16 (the profile name, and an `nec_base` field so the 2026 NEC adoption is on
+record), BLD-14 (eight stale cross-references, three comments naming deleted constants,
+six wrong-county citations), BLD-07's citation (2015 item numbering under a declared
+2018 base, in the engine as well as the house), BLD-02's A767 sequence, and BLD-13
+item 4 — which is now graded, and caught four inverted drip runs nobody had found.
+Three claims in this file did not survive verification and are corrected in place: the
+baseline, the spa GFCI, and the trade-visit count.
 
 **If you do only three things:** authorise the soils report (BLD-12, it gates
 BLD-02 and is code-mandatory for the piers), drop board-and-batten (BLD-01a), and
@@ -216,10 +240,14 @@ The check report is byte-identical, so nothing was traded away to get it. The on
 row group that disappears is the `board-batten-24` line itself, which is the
 consolidation, not a silent drop.
 
-**This is the highest-leverage single edit in the file.** It takes the house from
-twenty-five open engineering items to five, and the five that remain are all
-already assigned to a designer of record: both roofs' rafters, both roofs' uplift
-path, and the overhead-door header.
+**This is the highest-leverage single edit in the file, and its register figure
+needs re-striking before it is quoted.** The measurement above was taken at
+`286ef997`, against a register of 42 items of which 25 were open. That register now
+holds 58 items of which 27 are open. **The twenty INCOMPLETE items this edit removes
+are unchanged** — they are still twenty, still all `wall_panel/*`, still all the same
+missing input — so the edit still empties the INCOMPLETE column outright. What has
+moved is the denominator, and "25 open to 5" is no longer the right sentence. The
+dollar delta is as of `286ef997` and should be re-struck the same way.
 
 **The research makes the case stronger than the model does.** The design's own
 note records that no manufacturer publishes the withdrawal allowable. Three
@@ -388,9 +416,14 @@ design currently does not answer.**
 4. **Hot-dip galvanized bar is a quoted special order with no published stock,
    minimum, or lead time anywhere in the Midwest.** The premium is 25 to 50 percent
    over black, and a small cut-and-bent mixed lot prices at the top of that range.
-   One specification point to fix before quoting: the design names ASTM A767
-   **Class 1**, but Class 2 is the class intended to be fabricated after
-   galvanizing. Class 1 bent after coating needs extensive repair.
+   **The specification point here was stated wrongly in the first draft and is now
+   fixed in the house.** A767's Class 1 and Class 2 are *coating weights*, not a
+   bend-order distinction, so "use Class 2 instead" was not the answer. The real gap
+   was that the design named a class and never named a **sequence**, while these cages
+   are shop-bent — #3 ties to a 6-5/8" bar circle. What the rebar order needs on it is
+   *galvanize after fabrication*, plus coating repair per **ASTM A780** at any field
+   cut or bend, and the note that a **welded** cage leaves A767 altogether for
+   ASTM A123. `houses/catlin/CLAUDE.md` and the court note now say so.
 
 **The mix is not the risk; the order desk is.** Every metro plant runs
 low-water-cement air-entrained mixes daily, so an F3/C2 mix at w/cm 0.40 with 6
@@ -590,13 +623,20 @@ review.
   amps runs $7,700 to $9,500 installed, and $10,000 to $15,000 is a defensible
   budget for 200 to 400 on a house not yet built.
 
-Two smaller items found alongside. **The sauna's omitted GFCI is correct** —
-210.8(F) reaches only outdoor dwelling outlets on circuits of 150 volts to ground
-or less and 50 amperes or less, and a 60 amp indoor circuit is outside it on both
-counts. **But the spa on the same management group is not**: 680.44 requires
-ground-fault protection on the outlet supplying a self-contained or packaged spa,
-indoors or out, plus a disconnect within sight and bonding per 680.42. Do not let
-the sauna reasoning bleed onto the spa circuit. Separately, 2026 NEC 230.70(A) now
+Two smaller items found alongside, and **the first draft of this file got the spa
+wrong.** The sauna's omitted GFCI is correct — 210.8(F) reaches only outdoor dwelling
+outlets on circuits of 150 volts to ground or less and 50 amperes or less, and a
+60 amp indoor circuit is outside it on both counts. The worry was that the same
+reasoning had bled onto the spa, which 680.44 does reach. **It has not.**
+`plan/circuits.py` already authors `CKT-SPA` with `gfci=True`, and `ED-B-SPA-DISC` is
+placed on the porch wall. The design was right.
+
+What is true is that **nothing grades it.** `code.E3902_gfci_locations` populates
+only from 125 V receptacles, so a 240 V hardwired spa outlet is outside its subject
+by construction; no check in the engine cites Article 680 at all, and none grades
+the within-sight disconnect or the 680.42 bonding either. So the `gfci=True` on that
+circuit is authored data no check reads. That is a checking gap, not a design defect,
+and it belongs with BLD-13 rather than here. Separately, 2026 NEC 230.70(A) now
 requires the service disconnect for a one- or two-family dwelling to be outdoors or
 within sight, and explicitly bars remote-control devices.
 
@@ -611,10 +651,22 @@ hold a residential building contractor or remodeler licence.
 
 ### BLD-07 — The unvented roof, the painter, and the eave nobody has drawn. **MED · KEEP with two written instructions**
 
-**The assembly is sound and clears its code test with margin.** One correction:
-the citation is **R806.5 item 5.1.3**, not 5.3 — there is no item 5.3. Table
-R806.5 requires R-25 of air-impermeable insulation in climate zone 6; five inches
-of closed-cell foam is R-33 to R-36. Minnesota does not amend R806.5.
+**The assembly is sound and clears its code test with margin.** Table R806.5
+requires R-25 of air-impermeable insulation in climate zone 6; five inches of
+closed-cell foam is R-33 to R-36. Minnesota does not amend R806.5.
+
+**The citation was wrong throughout, and it is now fixed — CLOSED 2026-09-10.** The
+house and the engine both said "R806.5 item 5.3", which is **2015** numbering. The
+2018 IRC the profile declares as its base regrouped item 5 and the arrangement this
+roof is built to — air-impermeable against the sheathing with air-permeable directly
+under it — is **item 5.1.3**. It is not a reindex, which is the trap: 2015's 5.1 and
+5.2 *swap* on the way to 2018's 5.1.2 and 5.1.1, so a mechanical renumber lands on
+the wrong arrangement. And 2018 has its own item **5.2**, meaning vapour diffusion
+ports in climate zones 1-3, so the old number was not merely stale, it pointed at a
+live rule about something else. `checks/code/unvented_roof.py` carried the 2015
+scheme in the value it computes and prints, so the string reached the check report,
+the design record and the oracle in `notes/roof_flash_and_batt.md`. All of it now
+reads 5.1.3, and the check report is otherwise byte-identical.
 
 **Instruction one, for the painter.** R806.5 item 2 prohibits an interior Class I
 vapour retarder on this ceiling, and it is a code violation rather than a
@@ -851,8 +903,18 @@ must be walked by hand before the work it covers is buried:
 1. The eave roof-deck cantilever over the wall girts.
 2. `Dowel` geometry against the two footings each dowel names.
 3. Thermal-break continuity — a `Footing` resolves to one blob with no polygon.
-4. `Flashing.back_side` on the six garage stem drip runs. One wrong wall points a
-   drip *at* the wall at zero FAIL.
+4. ~~`Flashing.back_side` on the six garage stem drip runs.~~ **CLOSED 2026-09-10 —
+   and it was not the six.** `integrity.drip_flashing_back_side` now grades every drip
+   run by requiring its back-side normal to aim at the centroid of the loop its
+   siblings form. The six garage stem runs were already right, exactly as their own
+   authoring comment claimed. **The four rake corner returns in `params/roof_trim.py`
+   were not.** `_rake_corner_drips` derived `back_side` with the eave runs' formula,
+   but the returns travel along x where the eaves travel along y, so the same
+   expression inverted all four: every turn-down hung on the building side, throwing
+   water behind the cladding at zero FAIL. Fixed, with the reasoning written at the
+   point of derivation and a regression test. The one run the check cannot judge,
+   `TR-SG-DRIP`, is a lone run with no loop, and it reports UNKNOWN rather than
+   guessing.
 5. Aluminium-to-steel and aluminium-to-concrete contact anywhere on the envelope.
 6. Equipment clearance envelopes — HP1's disconnect working space, and HP3's back
    clearance, which is 8 inches against a manufacturer minimum of 12 and can never
@@ -862,12 +924,39 @@ must be walked by hand before the work it covers is buried:
    declares this an unchecked case.
 9. Wall device depth — nothing grades a device against the wall face it sits in.
 
-### BLD-14 — Documentation that disagrees with the source. **LOW · SIMPLIFY**
+### BLD-14 — Documentation that disagrees with the source. **LOW · CLOSED 2026-09-10**
 
-Three sections of `houses/catlin/CLAUDE.md` are marked stale pending the
-north-entry rewrite, and `params/breezeway.py` still carries retired names for
-elements that no longer exist. A sub reading a stale note is a callback with no
-design cause behind it.
+The original finding was half wrong. There is no "north-entry rewrite" marker in
+`houses/catlin/CLAUDE.md` — that claim did not survive checking — and
+`params/breezeway.py`'s own references to retired names are deliberate historical
+record, which is what a design log is for. **What was actually stale was narrower and
+more misleading:** the file was split on 2026-09-10, its structural half moving to
+`params/north_entry_frame.py` with the constants *renamed* on the way, and eight live
+cross-references still sent a reader to the old module for constants that were no
+longer there under names that no longer existed.
+
+Fixed: `CLAUDE.md` (2), `plan/assemblies.py` (2), `notes/outie_window_truss_detail.md`,
+`notes/heat_pump_ground_pad.md`, `notes/north_entry_piers.md`, and
+`tests/test_catlin_outdoor_structures.py` now name
+`params/north_entry_frame.py::HOUSE_CLADDING_Y_FT` / `GARAGE_CLADDING_Y_FT` /
+`PIER_LINE_Y_FT`. Three further comments — in `plan/views.py`, `plan/storeys/garage.py`
+and `tests/test_catlin_invariants.py` — gave live instructions about `_EW_FT` and
+`_GLAZING_CENTER_X`, constants that no longer exist at all; they now say what replaced
+them. `plan/site.py::STAIR_FOOT_X_FT` was checked and is correct as written.
+
+**Two county citations went with it.** `plan/site.py` had already corrected itself to
+Ramsey, but it still described the engine profile as citing a *Hennepin* soil survey,
+and the profile had since been made regional — so the house was stale about the engine.
+Two note tables repeated that claim, and four more citations named Hennepin as the
+example county for this Ramsey parcel's snow load and frost depth. The **numbers do not
+move**: Minn. R. 1303.1700 sets 50 psf in every county but twenty-nine northern ones,
+and 1303.1600 Zone II names both counties at 42". Only the labels were wrong.
+
+**One left deliberately alone.** `prices.toml` sets the sales-tax rate to suburban
+Hennepin's 8.525% on a parcel in Ramsey County, Saint Paul. That is flagged as an
+owner decision dated 2026-08-20 rather than a stale citation, so it is not touched
+here — but it is worth a deliberate second look, because it is a rate applied to the
+whole material total.
 
 ---
 
@@ -935,7 +1024,7 @@ flashing, and missing fire blocking. **Five of those ten are coordination failur
 between trades** — precisely the seam a superintendent normally closes and an
 owner-GC owns personally.
 
-### BLD-16 — The jurisdiction profile names a code edition that does not exist. **LOW · SIMPLIFY**
+### BLD-16 — The jurisdiction profile named a code edition that does not exist. **LOW · CLOSED 2026-09-10**
 
 The engine runs this house against a profile named `mn-2024`. **There is no 2024
 Minnesota residential energy code.** The edition in force is the 2020 Minnesota
@@ -946,13 +1035,27 @@ in rulemaking, expected late 2026 or early 2027.
 The ventilation arithmetic the profile uses is right — Minn. R. 1322.0403 Equation
 R403.5.2 gives total cfm as 0.02 times conditioned square feet plus 15 times
 bedrooms plus one, with the continuous rate at least half the total and never below
-40, balanced within 10 percent. Only the label is wrong. Rename the profile, or at
-minimum note in `checks/code/mn_residential/profile.py` which edition each rule
-actually came from, before a reviewer reads "mn-2024" on a printed sheet and asks.
+40, balanced within 10 percent. Only the label was wrong, and it reached paper: the
+profile's own `edition` field always said 2020, while `foundation_notes.py` printed
+`MN-2024 (Minnesota Residential Code 2020 …)` on S-100 — the contradiction spelled
+out on one line of a permit sheet.
 
-**Separately and more urgently: the electrical side of that profile is now a
-cycle behind.** Minnesota adopted the 2026 National Electrical Code on
-17 August 2026. See BLD-06.
+**Fixed.** The profile is `mn-2020`, and S-100 now reads
+`MN-2020 (Minnesota Residential Code 2020 (MN Rules 1309))`. `"mn-2024"` is kept as a
+deprecated alias in `PROFILES` so a house whose `preferences.toml` still names it
+loads rather than raising `UnknownProfile`; it resolves to the same object, so what
+prints is the corrected name. The two CLI commands that hardcoded the old string now
+read `DEFAULT_PROFILE_NAME`.
+
+**The electrical side was a cycle behind and had no way to say so.** Minnesota adopted
+the 2026 National Electrical Code on 17 August 2026, and one profile name cannot carry
+two cycles. `JurisdictionProfile` now has an `nec_base` field, set to
+`2026 NEC (MN adoption effective 2026-08-17)` and printed on the cover sheet beside the
+IRC base. That records the edition; it does **not** rewrite any electrical check, and
+BLD-06 is still open.
+
+Per-rule edition citations stay undone. `PermitItemSpec` carries article-level
+`code_refs` only, and annotating 64 of them is its own project.
 
 ## Probable KEEPs, named so the audit does not spend time on them
 
@@ -988,9 +1091,8 @@ download, not more searching.
    Cities price for *exterior-side* spray foam. Neither is published. Bid it and
    see. (BLD-01b, BLD-10)
 6. **Hot-dip galvanized rebar minimum order, lot charge and lead time** — not
-   published by any Midwest supplier. Must be quoted. Also fix the A767 class:
-   the design names Class 1, and Class 2 is the class intended for fabrication
-   after galvanizing. (BLD-02)
+   published by any Midwest supplier. Must be quoted. (The A767 item that used to sit
+   here was wrong and is closed: see BLD-02.) (BLD-02)
 7. **Whether the local jurisdiction's ordinance permits owner-performed
    plumbing.** The state exemption can be switched off locally. (BLD-15)
 8. **Whether ch. 327A reaches an owner-builder who sells without occupying.** No
@@ -1009,8 +1111,19 @@ download, not more searching.
   check nobody can drive to zero is a check nobody reads. The half-built precedent
   is `advisory.window_size_variety`; `plans/12-m1-emit.md` planned a door-size
   sibling that was never written.
-- **A trade-visit count over `takeoff/tasks.py`.** Section 3 had to be derived by
-  hand because most rows carry no storey, so twelve of thirteen trades report a
-  single `building` package. Fixing the storey attribution would make the
-  mobilisation count a computed number, and it feeds directly into the project
-  management work deferred at the foot of `plans/TODO.md`.
+- **A trade-visit count over `takeoff/tasks.py`.** Section 3 still has to be derived
+  by hand. The cause is now pinned: `_tags_by_row` keys a work item on
+  `(estimate section, price key)`, so per-storey rows sharing a key merge and their
+  merged tags span storeys, which sends about three-quarters of the low estimate to the
+  `building` package. The placeables takeoff already carries a storey the join throws
+  away. This was examined in the 2026-09-10 pass and deliberately not attempted,
+  because changing the slot granularity changes the *estimate* join and mints new task
+  GlobalIds — the fix is a project, not a patch. It feeds the project management work
+  deferred at the foot of `plans/TODO.md`.
+
+- **Article 680, and the checks BLD-06 would need.** Nothing in the engine cites
+  Article 680, so the spa's GFCI, its within-sight disconnect and its 680.42 bonding are
+  authored and ungraded, and `code.E3902_gfci_locations` cannot reach a 240 V outlet by
+  construction. Likewise `LoadManagement` has no field for the *listing* of the device
+  doing the controlling, which is the whole of BLD-06: the credit is applied to the
+  service calculation with nothing recording what enforces it.
