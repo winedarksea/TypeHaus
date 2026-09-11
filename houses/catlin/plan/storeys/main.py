@@ -1929,14 +1929,16 @@ SLABS = [
 # the two end ones included, is where it is drawn, which
 # `code.R311_7_5_1_stair_end_risers` now measures rather than assumes.
 #
-# What the model cannot yet SAY is that 1" substrate: `Stair.tread_thickness` is the field
-# for it and `resolve/stairs/dispatch.py` accepts it on straight flights only, because only
-# `straight.py` honours it. All three interior flights are U-split or winder. It costs a
-# takeoff refinement, not a dimension — recorded in plans/TODO.md.
+# `tread_thickness` states that 1" substrate, and since 2026-09-11 every layout honours it
+# (it was straight-only for as long as only `straight.py` applied the drop). It buys the
+# treads AND both landing decks — one flight, one stock — and it is a takeoff fact only:
+# `_notch_z` drops each board by exactly this much, so no riser moves and the end risers
+# `code.R311_7_5_1_stair_end_risers` measures are the ones above.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
+          tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
           start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]

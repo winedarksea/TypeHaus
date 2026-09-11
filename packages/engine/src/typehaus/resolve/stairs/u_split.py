@@ -14,6 +14,7 @@ from typehaus.resolve.stairs.common import (
     _grid_positions,
     _notch_z,
     _tread_board_profile,
+    _tread_thickness,
 )
 
 
@@ -66,6 +67,9 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         return (start + sign * s, cross) if along_x else (cross, start + sign * s)
 
     stringer_depth = cross_section("2x12").depth_m
+    # One stock thickness for every walking surface this flight builds — treads and both
+    # landing decks. See ``_notch_z``.
+    thickness = _tread_thickness(stair)
     flight_len = tread * lower_treads  # ``tread`` is the riser-to-riser going here.
     lower_landing_z = z0 + riser * (lower_treads + 1)
     upper_landing_z = lower_landing_z + riser
@@ -83,8 +87,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
             continue
         # Notch lines at both ends: the first tread board sits on one, the landing/arrival
         # deck it bears into on the other (see ``_notch_z``).
-        spring_notch = _notch_z(spring_z + riser)
-        bear_notch = _notch_z(bear_z)
+        spring_notch = _notch_z(spring_z + riser, thickness)
+        bear_notch = _notch_z(bear_z, thickness)
         for index, cross in enumerate((lane_lo, lane_lo + width)):
             out.append(FramedMember(
                 stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12",
@@ -95,13 +99,13 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # Both flights' boards run from their riser toward +s (the lower flight ascends that
     # way, the upper descends it), so both centrelines sit half a going past the riser —
     # see ``_tread_board_profile`` for why the axis is the board centre and not the riser.
-    tread_profile = _tread_board_profile(tread_depth)
+    tread_profile = _tread_board_profile(tread_depth, thickness)
     for index in range(lower_treads):
         top = z0 + riser * (index + 1)
         s = tread * index + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
                                 at(s, lower_lane), at(s, lower_lane + width),
-                                _notch_z(top), top, width,
+                                _notch_z(top, thickness), top, width,
                                 riser_line=(at(tread * index, lower_lane),
                                             at(tread * index, lower_lane + width))))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
@@ -113,16 +117,16 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         s = flight_len - tread * (index + 1) + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
-                                _notch_z(top), top, width,
+                                _notch_z(top, thickness), top, width,
                                 riser_line=(at(flight_len - tread * index, upper_lane),
                                             at(flight_len - tread * index,
                                                upper_lane + width))))
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
-                                 *lower_half, lower_landing_z))
+                                 *lower_half, lower_landing_z, thickness))
     out.extend(_landing_platform(stair, "upper", at, flight_len, landing_depth_m,
-                                 *upper_half, upper_landing_z))
+                                 *upper_half, upper_landing_z, thickness))
     # Well partition between the up and down flights: generated stud framing (not an
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
     # stair springs from and rising to the arrival deck — never past the subfloor into the
@@ -149,8 +153,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
 
 
 def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
-                      lane_lo: float, width: float,
-                      landing_z: float) -> list[FramedMember]:
+                      lane_lo: float, width: float, landing_z: float,
+                      thickness: float) -> list[FramedMember]:
     """One half-width landing platform: full-width deck + joists + perimeter rims.
 
     The deck is a single ``deck WxT`` member (a parseable profile, so it renders at the
@@ -171,11 +175,11 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
     joist_depth = cross_section(_LANDING_JOIST_PROFILE).depth_m
     # ``landing_z`` is the platform's *finished* walking face; its deck is dropped below it
     # and the joists hang under that, so the risers onto and off the landing are equal.
-    deck_bottom = _notch_z(landing_z)
+    deck_bottom = _notch_z(landing_z, thickness)
     z_top, z_bot = deck_bottom, deck_bottom - joist_depth
     mid = lane_lo + width / 2.0
     out = [FramedMember(stair.uid, f"landing-{name}", "landing",
-                        f"deck {width / 0.0254:g}x1.5",
+                        f"deck {width / 0.0254:g}x{thickness / 0.0254:g}",
                         at(s0, mid), at(s0 + depth, mid),
                         deck_bottom, landing_z, depth)]
     for index, offset in enumerate(_grid_positions(depth, _FRAMING_SPACING_M)):

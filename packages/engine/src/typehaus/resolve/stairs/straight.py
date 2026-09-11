@@ -7,7 +7,7 @@ import math
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
-from typehaus.resolve.stairs.common import _TREAD_THICKNESS_M, _tread_board_profile
+from typehaus.resolve.stairs.common import _tread_board_profile, _tread_thickness
 
 # A tier rim/joist is deck framing, not a stair member: DCA 6 sizes an intermediate
 # landing off its DECK tables, and 2x8 is what the landing beside these tiers uses.
@@ -49,8 +49,7 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     # Both ends are notch lines — the first tread board and the arrival subfloor sit *on*
     # them (``_notch_z``), which is what keeps the rake straight and the first and last
     # risers the same height as the rest.
-    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
-                 else _TREAD_THICKNESS_M)
+    thickness = _tread_thickness(stair)
     spring_notch = z0 + riser - thickness
     arrival_notch = z0 + riser * risers - thickness
     out = [
@@ -81,8 +80,7 @@ def _tread_members(stair: Stair, start_x: float, start_y: float, z0: float,
     beyond the lower riser, so adjacent boards overlap by the nose in plan but are one riser
     apart vertically, as built treads are.
     """
-    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
-                 else _TREAD_THICKNESS_M)
+    thickness = _tread_thickness(stair)
     profile = _tread_board_profile(tread_depth, thickness)
     out: list[FramedMember] = []
     for index in range(risers - 1):
@@ -129,8 +127,7 @@ def _box_tier_members(stair: Stair, start_x: float, start_y: float, z0: float,
     (6'-0" span, 5" throat) applies — see ``Stair.carriage``. They resolve as
     ``landing_framing``, the category a tier already is.
     """
-    thickness = (stair.tread_thickness.meters if stair.tread_thickness is not None
-                 else _TREAD_THICKNESS_M)
+    thickness = _tread_thickness(stair)
     joist_depth = cross_section(_TIER_FRAME_PROFILE).depth_m
     out: list[FramedMember] = []
     for index in range(risers - 1):

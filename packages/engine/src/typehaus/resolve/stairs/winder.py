@@ -13,6 +13,7 @@ from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
     _notch_z,
     _tread_board_profile,
+    _tread_thickness,
 )
 
 # A box side is ripped from 2x stock to the box's own height (one riser less the deck it
@@ -111,8 +112,11 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     # the tread boards and the arrival subfloor sit on them (see ``_notch_z``), which is
     # what keeps the rake straight and every finished riser equal.
     stringer_depth = cross_section("2x12").depth_m
-    spring_notch = _notch_z(surface(stair.winder_count))
-    arrival_notch = _notch_z(z0 + riser * risers)
+    # One stock thickness for every walking surface this flight builds — the winder
+    # panels, the straight treads and the box decks under them. See ``_notch_z``.
+    thickness = _tread_thickness(stair)
+    spring_notch = _notch_z(surface(stair.winder_count), thickness)
+    arrival_notch = _notch_z(z0 + riser * risers, thickness)
     # P(0, 0) — ``start`` itself — is the entering outer corner the fan sweeps away from.
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
     outer_corner = P(0.0, width)  # the outer corner the turn sweeps around
@@ -163,23 +167,24 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
             outline.append(outer_corner)
         outline.extend((nosing_point, narrow))
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
-                                narrow, nosing_point, _notch_z(top), top,
+                                narrow, nosing_point, _notch_z(top, thickness), top,
                                 math.hypot(nosing_point[0] - narrow[0],
                                            nosing_point[1] - narrow[1]),
                                 plan_outline=_clean_ring(outline)))
         previous_nosing, previous_narrow = nosing_point, narrow
-    tread_profile = _tread_board_profile(tread_depth)
+    tread_profile = _tread_board_profile(tread_depth, thickness)
     for index in range(straight_treads):
         centre = tread * index + (tread - nosing) / 2.0
         top = surface(index + stair.winder_count)
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
                                 offset(inside, centre, 0.0),
                                 offset(inside, centre, width),
-                                _notch_z(top), top, width,
+                                _notch_z(top, thickness), top, width,
                                 riser_line=(offset(inside, tread * index, 0.0),
                                             offset(inside, tread * index, width))))
     out.extend(_winder_box_framing(stair, z0, riser, fan, P(0.0, 0.0), inside,
-                                   outer_corner, turn, (float(run_u[0]), float(run_u[1]))))
+                                   outer_corner, turn, (float(run_u[0]), float(run_u[1])),
+                                   thickness))
     return tuple(out)
 
 
@@ -214,8 +219,8 @@ def _polyline_midpoint(segments: list[tuple[tuple[float, float], tuple[float, fl
 def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLine],
                         entering_corner: tuple[float, float],
                         inside: tuple[float, float], outer_corner: tuple[float, float],
-                        turn: tuple[float, float],
-                        orient: tuple[float, float]) -> list[FramedMember]:
+                        turn: tuple[float, float], orient: tuple[float, float],
+                        thickness: float = _TREAD_THICKNESS_M) -> list[FramedMember]:
     """Frame the quarter-turn as a tiered corner box — Larry Haun's winder assembly.
 
     Rather than cut a continuous compound-angle carriage through the turn — which no framer
@@ -244,7 +249,7 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
       stringers' notch line springs one riser above that deck, and the departing rim
       under them is doubled (``_SPRING_RIM_PLIES``) because it carries the flight.
     """
-    frame_depth = riser - _TREAD_THICKNESS_M
+    frame_depth = riser - thickness
     rim_profile = _box_rim_profile(frame_depth)
     spring_profile = _box_rim_profile(frame_depth, _SPRING_RIM_PLIES)
     block_depth = cross_section(_BOX_BLOCK_PROFILE).depth_m
@@ -254,7 +259,7 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
     # Box 0's leading edge is the turn square's entering riser face.
     entering = _FanLine(inside, entering_corner, wraps_outer_corner=True)
     for index in range(len(fan)):
-        deck = _notch_z(z0 + riser * (index + 1))  # the box's sides top out under its deck
+        deck = _notch_z(z0 + riser * (index + 1), thickness)  # sides top out under the deck
         base = z0 + riser * index  # ... and land on the tier below (the subfloor at k=0)
         leading = fan[index - 1] if index else entering
         outside = _box_perimeter(leading, outer_corner, turn)

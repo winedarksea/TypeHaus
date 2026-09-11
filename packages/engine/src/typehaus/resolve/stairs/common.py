@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import math
+from typing import TYPE_CHECKING
 
 from typehaus.quantities import inch
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.model.spatial import Stair
 
 _MAX_RISER_M = 7.75 * 0.0254  # IRC R311.7
 _MIN_TREAD_M = 10.0 * 0.0254
@@ -39,7 +43,20 @@ _WELL_PARTITION_THICKNESS_M = inch(
     _WELL_PARTITION_STUD_IN + 2 * _WELL_PARTITION_FINISH_IN).meters
 
 
-def _notch_z(surface_m: float) -> float:
+def _tread_thickness(stair: Stair) -> float:
+    """The stock thickness under this flight's walking surfaces, in metres.
+
+    ``Stair.tread_thickness`` is how a flight says "the substrate is thinner than the
+    default 1 1/2" because a finish makes up the rest" — 1" of ply under 1/2" of
+    carpet-over-cushion, say. It is the *bought* thickness, so it is what the takeoff must
+    bill; ``_notch_z`` drops the board by exactly this much, which is why stating it moves
+    no riser.
+    """
+    return (stair.tread_thickness.meters if stair.tread_thickness is not None
+            else _TREAD_THICKNESS_M)
+
+
+def _notch_z(surface_m: float, thickness_m: float = _TREAD_THICKNESS_M) -> float:
     """The framing elevation directly under a finished walking surface at ``surface_m``.
 
     Every board a foot lands on — a tread, a landing deck, a winder box's deck — is
@@ -52,8 +69,12 @@ def _notch_z(surface_m: float) -> float:
     board thickness and shortens its last by the same amount, because the springing floor
     and the arrival deck are already finished surfaces — checked against IRC R311.7.5.1's
     3/8" tolerance by ``structural.stair_riser_uniformity``.
+
+    ``thickness_m`` is the flight's own stock (``_tread_thickness``). Every surface in one
+    flight has to share it: drop the treads 1" and leave the landing deck at 1 1/2" and the
+    two risers at that landing differ by the 1/2" the deck was not dropped.
     """
-    return surface_m - _TREAD_THICKNESS_M
+    return surface_m - thickness_m
 
 
 def _tread_board_profile(tread_depth_m: float,

@@ -191,10 +191,17 @@ def test_lower_flight_stringers_top_out_at_the_landing_bearing(catlin_model,
     subfloor = _subfloor(catlin_model, stair)
     lower_treads = (stair.riser_count - 3 + 1) // 2
     landing_z = subfloor + stair.riser_height_m * (lower_treads + 1)
-    # The stringer tops out at the landing's *notch* line — the deck it carries sits on it.
+    # The stringer tops out at the landing's *notch* line — the deck it carries sits on it,
+    # dropped by the flight's OWN stock. ST-B2M states 1" (it buys ply under carpet, not a
+    # 1 1/2" tread board), and the deck and the treads must be dropped by the same amount or
+    # the two risers at the landing differ by the difference. Read off the deck rather than
+    # off the authored number: the member is the output this pins.
+    deck = next(m for m in stair.members if m.child_key.startswith("landing-lower"))
+    stock = deck.z1_m - deck.z0_m
+    assert stock == pytest.approx(inch(1).meters)
     for stringer in (m for m in stair.members
                      if m.child_key.startswith("stringer-lower-")):
-        assert stringer.z1_end_m == pytest.approx(landing_z - inch(1.5).meters)
+        assert stringer.z1_end_m == pytest.approx(landing_z - stock)
 
 
 # ----------------------------------------------------------------- 4. well partition
@@ -253,16 +260,46 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
         assert hanger.connection.startswith("concrete-wall-hanger:")
         # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
         assert not hanger.connection.startswith("framed-wall-ledger:")
-        # -1.509 m: the flat bearing seat puts the slab at -9'-1 7/16" and the landing
+        # -1.496 m: the flat bearing seat puts the slab at -9'-1 7/16" and the landing
         # rides the flight off it. It was -1.521 m while ST-B2M derived its rise from the
         # storey table and stopped at the main JOIST TOPS; the flight now states its own
         # ends (walking surface to walking surface, houses/catlin/plan/storeys/main.py),
-        # so every riser grew 1/16" and the landing came up with them.
-        assert hanger.z1_end_m == pytest.approx(-1.509, abs=0.01)
+        # so every riser grew 1/16" and the landing came up with them — and another 1/2"
+        # when the flight stated the 1" stock it buys under its carpet, because the band
+        # bears under a deck that got thinner while its walking face stayed put.
+        assert hanger.z1_end_m == pytest.approx(-1.496, abs=0.01)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
               and m.connection is not None]
     assert any("stringer-lower" in m.child_key for m in tagged)
+
+
+def test_a_u_split_buys_the_stock_it_states_and_moves_no_riser(catlin_model,
+                                                              basement_stair,
+                                                              winder_stair):
+    """``tread_thickness`` on a turned flight: the boards thin, the walking faces do not.
+
+    It was straight-only for as long as only ``straight.py`` applied the drop, which left
+    ST-B2M — carpet over cushion on a U-split — unable to say it buys 1" of ply and billing
+    1 1/2" of substrate it never orders. Every walking surface in ONE flight shares the
+    stock: the treads and both landing decks, or the two risers at a landing differ by the
+    amount the deck was not dropped. ST-S2A states nothing and keeps the 1 1/2" board, which
+    is what makes this a statement about the field and not about the generator.
+    """
+    walking = {"tread", "winder", "landing"}
+    stated = [m for m in basement_stair.members if m.category in walking]
+    default = [m for m in winder_stair.members if m.category in walking]
+    assert stated and default
+    assert {round(m.z1_m - m.z0_m, 6) for m in stated} == {round(inch(1).meters, 6)}
+    assert {round(m.z1_m - m.z0_m, 6) for m in default} == {round(inch(1.5).meters, 6)}
+    # The faces are still one design riser apart, springing included — the thing the drop
+    # exists to protect. ``arrival_elevation_m`` is the floor the flight was drawn to meet.
+    faces = sorted(m.z1_m for m in stated)
+    rise = basement_stair.riser_height_m
+    for lower, upper in zip(faces, faces[1:], strict=False):
+        assert upper - lower == pytest.approx(rise) or upper == pytest.approx(lower)
+    assert faces[0] == pytest.approx(basement_stair.base_elevation_m + rise)
+    assert faces[-1] == pytest.approx(basement_stair.arrival_elevation_m - rise)
 
 
 # ------------------------------------------------------------------- 7. cross-sections

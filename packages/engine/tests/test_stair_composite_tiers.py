@@ -105,7 +105,13 @@ def test_nonpositive_support_or_board_dimensions_report_integrity(name, value):
     assert findings[0].check_id == "integrity.stair_geometry"
 
 
-def test_straight_only_support_options_do_not_silently_apply_to_a_winder():
-    model, findings = _resolve(_tiers(layout="right_angle_winder"))
+def test_stringer_spacing_does_not_silently_apply_to_a_winder():
+    """``stringer_spacing`` is read by the box carriage in ``straight.py`` and nowhere else.
+
+    A winder's boxes and a U-split's landing are laid out by their own rules, so accepting
+    the field on one would be accepting a number nothing reads.
+    """
+    model, findings = _resolve(_tiers(layout="right_angle_winder", winder_count=3,
+                                      turn_direction="right"))
     assert not model.stairs
     assert "only for straight" in findings[0].message

@@ -53,12 +53,18 @@ def _resolve_stair(
     if rise <= 0:
         return None, [_error("integrity.stair_rise", f"stair {stair.tag} does not rise to "
                              "its destination", stair.tag)]
-    for name in ("stringer_spacing", "tread_thickness"):
-        value = getattr(stair, name)
-        if value is not None and (value.meters <= 0 or stair.layout != "straight"):
-            return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
-                                 f"{name} must be positive and is supported only for "
-                                 "straight flights", stair.tag)]
+    # ``stringer_spacing`` is still straight-only: it is read by ``straight.py``'s box
+    # carriage and by nothing else, and a U-split's landing joists and a winder box's
+    # blocking are laid out by their own rules. ``tread_thickness`` is honoured by every
+    # layout — every generator drops its walking surfaces by the flight's own stock.
+    if stair.stringer_spacing is not None and (stair.stringer_spacing.meters <= 0
+                                               or stair.layout != "straight"):
+        return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
+                             "stringer_spacing must be positive and is supported only for "
+                             "straight flights", stair.tag)]
+    if stair.tread_thickness is not None and stair.tread_thickness.meters <= 0:
+        return None, [_error("integrity.stair_geometry", f"stair {stair.tag} "
+                             "tread_thickness must be positive", stair.tag)]
 
     if stair.floor_opening is None:
         # A run that passes through no floor — a step-down within one storey. There is no

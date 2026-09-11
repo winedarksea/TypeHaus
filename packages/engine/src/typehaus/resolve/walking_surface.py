@@ -122,9 +122,24 @@ def surfaces_at(model: ResolvedModel,
         room_tag, finish_ref, finish_in = (
             room_finish_at(model, storey, point) if storey is not None
             else (None, None, 0.0))
+        # A deck carrying its own ``floor_finish`` outranks the room's, which is the FIELD
+        # finish (resolve/rooms.py::_derived_finish_zones bills the same way). Catlin's
+        # RM-M-LIVING is the case: it is authored LVP and spans a wood bay and a polished
+        # concrete band, and its centroid lands on the band. Taking the room's finish there
+        # stood the plank on top of the polish and lifted the floor 6 mm.
+        own = _own_finish(model, tag)
+        if own is not None:
+            finish_ref, finish_in = own, _finish_depth(model, own)
         out.append(FloorSurface(deck_tag=tag, deck_top_m=top, room_tag=room_tag,
                                 finish_ref=finish_ref, finish_in=finish_in))
     return out
+
+
+def _own_finish(model: ResolvedModel, deck_tag: str) -> str | None:
+    """The ``floor_finish`` a ``FloorSystem``/``Slab`` states for itself, if any."""
+    by_tag = getattr(model.plan, "by_tag", None)
+    element = by_tag(deck_tag) if by_tag is not None else None
+    return getattr(element, "floor_finish", None)
 
 
 def room_finish_at(model: ResolvedModel, storey: str, point: tuple[float, float]

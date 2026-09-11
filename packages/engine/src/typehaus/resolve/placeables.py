@@ -19,7 +19,10 @@ from typehaus.resolve.placeable_clear_floor_obstruction import (
     clear_floor_space_obstruction,
 )
 from typehaus.resolve.placeable_groups import PlacementGroupAnchorZone, assign_placement_groups
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import (
+    room_finished_floor_elevation,
+    room_floor_elevation,
+)
 
 _TYPE_COLLECTIONS = (
     ("furniture_types", "Furniture", "furniture"),
@@ -48,9 +51,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # over-the-fixture exemption in ``_clearance_conflicts`` needs a *pair* of bodies, and
     # ``ClearFloorSpaceObstruction`` is a per-body answer with the numbers already spent.
     profiles_by_uid: dict[str, PlaceableBodyProfile] = {}
-    # ``room_floor_elevation`` walks every wall and slab, so the answer is memoised per room
+    # The two floor planes walk every wall, slab and deck, so the pair is memoised per room
     # tag — a hundred placeables in the same room ask the same question.
-    floor_by_room: dict[str, float] = {}
+    floor_by_room: dict[str, tuple[float, float]] = {}
     for storey in plan.storeys:
         # One shape per room, not one per (room, placeable): a per-placeable rebuild costs
         # ~1,700 GEOS polygon builds per resolve. The bounds ride along so the common
@@ -82,14 +85,13 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             footprint = _transformed_polygon(local_footprint, center, rotation)
             resolved_room = _containing_room(room_shapes, center)
             explicit_room = getattr(item, "room", None)
-            # Mount heights are measured off the floor the thing stands on, which is the
-            # storey datum everywhere except where a room's slab is filed on another storey
-            # (→ resolve/room_floor.py). Resolved before the elevation, not after, because the
-            # elevation depends on it.
-            floor = _floor_elevation(model, storey, explicit_room or resolved_room,
-                                     floor_by_room)
+            # Mount heights are measured off the FINISHED floor the thing stands on —
+            # subfloor plus covering, and not the storey datum (→ resolve/room_floor.py).
+            # Resolved before the elevation, not after, because the elevation depends on it.
+            floor, structural_floor = _floor_elevation(
+                model, storey, explicit_room or resolved_room, floor_by_room)
             mount_elevation = resolved_mount_elevation(
-                storey, item, floor_m=floor,
+                storey, item, floor_m=floor, structural_floor_m=structural_floor,
                 soffit_underside_m=_soffit_underside(model, item))
             profile = _body_profile(product_type, item, floor, mount_elevation, local_footprint)
             profiles_by_uid[item.uid] = profile
@@ -182,14 +184,21 @@ def _containing_room(room_shapes: list[tuple[str, Polygon, _Bounds]],
 
 
 def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
-                     cache: dict[str, float]) -> float:
-    """The absolute Z of the floor a placeable in ``room_tag`` stands on."""
+                     cache: dict[str, tuple[float, float]]) -> tuple[float, float]:
+    """(finished, structural) absolute Z for the floor a placeable in ``room_tag`` is on.
+
+    Two planes because two things are measured off them and only one is "AFF": an authored
+    mount height and a body's base stand on the FINISHED floor, and the storey ceiling plane
+    a ceiling mount hangs from is fixed by the frame above — a thicker carpet eats clear
+    height rather than lifting the ceiling.
+    """
     if room_tag is None:
-        return storey.elevation.meters
+        return storey.elevation.meters, storey.elevation.meters
     if room_tag not in cache:
         room = next((r for r in model.rooms if r.tag == room_tag), None)
-        cache[room_tag] = (storey.elevation.meters if room is None
-                           else room_floor_elevation(model, room))
+        cache[room_tag] = ((storey.elevation.meters, storey.elevation.meters) if room is None
+                           else (room_finished_floor_elevation(model, room),
+                                 room_floor_elevation(model, room)))
     return cache[room_tag]
 
 
@@ -216,7 +225,8 @@ def _soffit_underside(model: ResolvedModel, item: object) -> float | None:
 
 def resolved_mount_elevation(storey: object, item: object,
                              floor_m: float | None = None,
-                             soffit_underside_m: float | None = None) -> float:
+                             soffit_underside_m: float | None = None,
+                             structural_floor_m: float | None = None) -> float:
     """The one project-frame Z for a placeable — glTF, the UI, and IFC all read this.
 
     ``Mount`` is the single authoritative height contract: an explicit ``elevation`` is a
@@ -225,9 +235,14 @@ def resolved_mount_elevation(storey: object, item: object,
     ceiling mount with no stated elevation falls back to hanging off the ceiling plane.
 
     ``floor_m`` is the plane those heights are measured from: the storey datum by default,
-    or (from ``resolve_placeables``) the room's actual floor when its slab is filed on
-    another storey (→ resolve/room_floor.py). Callers holding an element that is not in a
-    room — a PipeRun, an unplaced device — keep the storey default.
+    or (from ``resolve_placeables``) the room's FINISHED floor — subfloor plus covering, and
+    tracking a slab filed on another storey (→ resolve/room_floor.py). Callers holding an
+    element that is not in a room — a PipeRun, an unplaced device — keep the storey default.
+
+    ``structural_floor_m`` is the same room's floor WITHOUT its covering, and it is what the
+    storey ceiling plane is built on. The ceiling is fixed by the frame above: laying a
+    thicker carpet spends clear height, it does not lift the joists. Defaults to ``floor_m``,
+    which is the right answer for every caller that has only one plane.
 
     ``soffit_underside_m`` is the *other* plane a ceiling mount can hang from: a device
     installed in a dropped ``Soffit`` box hangs off its clear underside, not the storey
@@ -237,13 +252,14 @@ def resolved_mount_elevation(storey: object, item: object,
     """
     mount = getattr(item, "mount", None)
     floor = storey.elevation.meters if floor_m is None else floor_m
+    structural = floor if structural_floor_m is None else structural_floor_m
     if mount is None:
         return floor
     if mount.elevation is not None:
         return floor + mount.elevation.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
-        plane = (floor + storey.default_ceiling_height.meters
+        plane = (structural + storey.default_ceiling_height.meters
                  if soffit_underside_m is None else soffit_underside_m)
         return plane - drop
     return floor

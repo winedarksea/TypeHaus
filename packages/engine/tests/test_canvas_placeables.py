@@ -5,7 +5,10 @@ from pathlib import Path
 import pytest
 from typehaus.library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import (
+    room_finished_floor_elevation,
+    room_floor_elevation,
+)
 
 from typehaus.model import (
     Appliance,
@@ -425,7 +428,19 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     # cans on 2026-09-06 (plan/lighting_attic.py) and ED-A-STUBATH-CAN1, over the shower
     # pan, is the one the storey deliberately keeps — so it is now the only fitting that can
     # carry this assertion, and the assertion is about the rake either way.
-    assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(ft(7).meters)
+    #
+    # A stated elevation is an AFF number, so it is measured from the FINISHED floor — the
+    # 2 mm of sheet vinyl in RM-A-STUBATH included. That is the whole of the 2026-09-11
+    # change (``room_finished_floor_elevation``); before it, every stated height in the house
+    # was short by its room's covering, up to 1 1/2" on oak.
+    stubath = next(room for room in model.rooms if room.tag == "RM-A-STUBATH")
+    stubath_build_up = (room_finished_floor_elevation(model, stubath)
+                        - room_floor_elevation(model, stubath))
+    # 3/4" of subfloor plus 2 mm of sheet vinyl: the structural answer is the wall base, so
+    # it misses the sheet as well as the covering (→ resolve/room_floor.py).
+    assert stubath_build_up == pytest.approx(inch(0.75 + 0.0787).meters)
+    assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(
+        stubath_build_up + ft(7).meters)
 
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
     assert switch.z_m == pytest.approx(living_floor + inch(48).meters)

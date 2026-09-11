@@ -137,8 +137,12 @@ class Stair(Element):
     # elements for the concrete, and the members tuple is empty on purpose rather than by
     # omission. Grep the house for the tier tags before assuming a cast flight is unbuilt.
     carriage: str = "stringer"
-    # Straight flights only; finished rises stay fixed while the framing drops by this
-    # thickness. None retains the ordinary 1 1/2-inch tread board.
+    # The stock BOUGHT for this flight's walking surfaces — treads, winder panels and
+    # landing decks alike. It is what says "1" of ply under 1/2" of carpet-over-cushion"
+    # instead of the ordinary 1 1/2" tread board, and it is a takeoff fact, not a
+    # dimensional one: every generator drops its boards by exactly this much
+    # (``resolve/stairs/common.py::_notch_z``), so the finished rises do not move. Every
+    # layout honours it. ``None`` retains the 1 1/2" board.
     tread_thickness: Length | None = None
     width: Length
     run_direction: str = "x"
