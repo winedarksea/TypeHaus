@@ -1371,11 +1371,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- **The court is 26'-0" x 19'-0" clear and there is a structural floor near 23'-4".**
+- **The court is 26'-0" x 19'-0" clear and there is a structural floor at 23'-11".**
   Shortening it removes base friction from the capacity and **nothing** from the demand: the
   E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
   wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700
-  to $1,300 a foot, against 0.09 of system FS per foot.
+  to $1,300 a foot, against 0.09 of system FS per foot, and only **2'-1"** of it is left.
+  **Re-derive that floor, never quote it**: it is `run = 61,446 x 1.50 / F` with
+  `run = 2(L - 9.6667) + 20`, so it moves with the strip width. It was 23'-3" at 8'-0".
 - Current stem/toe state: system FS **1.63** (d/c 0.921), stem flexure **0.61**, toe
   flexure **0.70**, heel flexure **0.70**, stem length **9.1198'**. Every schedule in the
   stem bar table clears, `#6 @ 16"` included at 0.97; `#6 @ 10"` is held on that 3% margin

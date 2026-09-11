@@ -1825,7 +1825,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert max(xs) - min(xs) == pytest.approx(ft(19).meters)
     # 28'-0" until 2026-09-10: the court was shortened to the smallest length that still
     # holds the porch, the balcony and a yoga-sized field. See the free-body note's §4 for
-    # what the 2'-0" costs in sliding, and for the ~23'-4" structural floor below it.
+    # what the 2'-0" costs in sliding, and for the 23'-11" structural floor below it.
     assert max(ys) - min(ys) == pytest.approx(ft(26).meters)
 
     # The porch/balcony framing members are authored (their 3D resolution is Phase 2).
