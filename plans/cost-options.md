@@ -349,6 +349,17 @@ steel at 50% (25% on derivatives) while Canadian softwood duties are provisional
 
 ---
 
+## 8 — Items We Definitely Want to Keep in Some Form
+1. The gym
+2. The theater
+3. Sauna
+4. Nice bathtub in the master suite (RM-M-BATH2)
+5. Fireplace
+6. Library space with chair
+7. Plant room
+
+---
+
 ## Open questions
 
 | # | question | what it moves |

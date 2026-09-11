@@ -383,6 +383,7 @@ the future.
   Deliberately not authored around or suppressed — an owner cost/look decision.
   `test_cli_check_output.py::test_catlin_carries_no_failures`'s `accepted` allow-list is where
   to record "leave it" if that's the answer.
+- Do we need to cover the underside of ST-S2A in anyway, or is code fine with exposed wood here? If not we could frame it in as a small closet or as shelves
 
 Two glazing gaps still leave the French doors out entirely, both wanting product data:
 - `checks/building_science/energy_load.py` gives a door a UA but no solar gain — `DoorType`

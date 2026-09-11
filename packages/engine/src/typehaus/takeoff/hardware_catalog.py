@@ -277,9 +277,18 @@ def hardware_by_model(model: str) -> StructuralHardware | None:
 
     A plan may author a specific size within a family ("LUS210" of the LUS family), so an
     exact match wins and a family-prefix match is the fallback.
+
+    **The exact pass reads the capacity-only records too, and the prefix pass must not.**
+    A part catalogued with ``allowable=None`` because its published numbers could not be
+    sourced (ABU66SS, H2.5ASS) is still a real part with a real name, and this is what the BOM
+    prints. Without the first pass reaching them, ``"ABU66SS".startswith("ABU66")`` wins and a
+    line reading "ABU66SS" is captioned "ABU66 standoff post base" — the exact confusion those
+    records exist to prevent. The prefix pass deliberately still does NOT see them: a family
+    fallback onto a part with no allowable would be a worse answer than the family's own.
     """
     catalog = structural_hardware_catalog()
-    exact = next((item for item in catalog if item.model == model), None)
+    exact = next((item for item in (*catalog, *hardware_capacity_records())
+                  if item.model == model), None)
     if exact is not None:
         return exact
     family = [item for item in catalog if model.startswith(item.model)]

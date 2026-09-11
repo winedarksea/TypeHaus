@@ -651,14 +651,16 @@
 # ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
 # posts are not in fact in a wet/corrosive location, this is the wrong part and the row
 # drops by a factor of four.
-# ** PRICED AT THE STAINLESS RATE ON PURPOSE, AND THE TWO ROWS ARE ONE PURCHASE. **
-# `takeoff/uplift_joints.py::post_base_anchor_rows` DERIVES a post base from the post's own
-# section and names the catalog model, which is the galvanized ABU66 -- there is no field on
-# a Post that says "buy the stainless variant". This house buys ABU66SS at every treated post
-# base (owner, 2026-09-10: stainless throughout on KDAT), so the derived row is priced at the
-# ABU66SS rate below rather than at a galvanized rate nobody will pay. Keep them equal.
-"ABU66" = { low = 150, high = 230 }  # 2 ea, DERIVED — PT-BW-CW/CE, the two north entry roof columns. Bought as ABU66SS.
-"ABU66SS" = { low = 150, high = 230 }  # 0 ea authored — see ABU66 above, which is the row these actually bill on. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope)
+# ** THE TWO ROWS SWAPPED PLACES ON 2026-09-10, AND THE LIE THAT IS GONE IS WORTH NAMING. **
+# `takeoff/uplift_joints.py::post_base_rows` DERIVES a post base from the post's own section
+# and names the catalog model for it, which is the galvanized ABU66 -- there is no field on a
+# Post that says "buy the stainless variant". So this file used to price the ABU66 row at the
+# stainless rate with a comment explaining the substitution, and the BOM and the drawings both
+# still said ABU66. The four bases are AUTHORED now (`params/breezeway.py::COLUMN_BASES`),
+# which stands the derived rule down and puts the real part number on both. The ABU66 row
+# stays at the galvanized rate, at 0 ea, as the revert.
+"ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
+"ABU66SS" = { low = 150, high = 230 }  # 4 ea authored — CN-BW-BASE-W/E/NW/NE, the north entry canopy columns. It was 10 until 2026-09-03, when the four balcony corner pillars became cast concrete columns and a doweled lap in the pour replaced their standoff bases; 6 until later the same day, when the two CENTRE pillars went to the MSTA12Z/L50Z base tie below — an ABU has no published value bearing on framing (ESR-1622 evaluates it on concrete through a cast-in anchor and §5.6 puts even that anchor outside its scope); 0 until 2026-09-10, when these four stopped billing on the galvanized row above
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).

@@ -20,6 +20,7 @@ from typehaus.checks.code.mn_residential.edge_coverage import (
     _stair_throat_quads,
     _uncovered_runs,
 )
+from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN, inch
@@ -66,7 +67,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
     if not wells:
         return [_unknown(cid, "no stair floor openings in the plan", (), code)]
 
-    all_railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
+    all_railings = guard_lines(ctx.plan)
     out: list[Finding] = []
     for fs, opening in wells:
         floor = next((f for f in ctx.model.floors if f.tag == fs.tag), None)
@@ -222,7 +223,7 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
         return [_unknown(cid, "no floor decks or slabs resolve, so there is no raised "
                          "walking surface to measure", (), code)]
     grade = ctx.plan.project.site.grade
-    railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
+    railings = guard_lines(ctx.plan)
     out: list[Finding] = []
     for tag, ring, surface in surfaces:
         neighbours = [(Polygon(other_ring), other_z)
@@ -393,8 +394,9 @@ def guard_opening_limit(ctx: CheckContext) -> list[Finding]:
     from typehaus.model.structure import Railing
 
     cid, code = "code.R312_1_3_guard_opening_limit", "R312.1.3"
-    guards = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)
-              and e.role in ("guard", "guard_and_handrail")]
+    guards = [g for g in guard_lines(ctx.plan)
+              if not isinstance(g.source, Railing)
+              or g.source.role in ("guard", "guard_and_handrail")]
     guard_walls = [e for e in ctx.plan.all_elements()
                    if isinstance(e, Wall) and e.guard]
     if not guards and not guard_walls:
@@ -445,6 +447,35 @@ def _grade_guard(ctx: CheckContext, guard, cid: str, code: str) -> Finding:
                  f"{drawn / .0254:.1f}\" between adjacent {guard.infill}", code)
 
 
+def _largest_screen_opening_m(ctx: CheckContext, guard) -> float | None:
+    """The widest clear opening a resolved slat screen leaves, ends included.
+
+    ``resolve/screens.py`` lays the slats out centred on the run, so the leftover is split
+    into two end margins. Those margins are where the screen meets the house cladding and
+    the garage wall, and a 4" sphere does not care which kind of gap it is passing through.
+    """
+    from typehaus.resolve.geometry import length, sub, unit
+
+    prefix = f"{guard.tag}-SLAT-"
+    slats = [s for s in ctx.model.solids
+             if s.category == "screen_slat" and s.tag.startswith(prefix)]
+    if not slats:
+        return None
+    p0, p1 = (p.xy_m for p in guard.path)
+    run = length(sub(p1, p0))
+    if run <= 1e-9:
+        return None
+    axis = unit(sub(p1, p0))
+    spans = []
+    for slat in slats:
+        stations = [(x - p0[0]) * axis[0] + (y - p0[1]) * axis[1] for x, y in slat.outline]
+        spans.append((min(stations), max(stations)))
+    spans.sort()
+    gaps = [spans[0][0], run - spans[-1][1]]
+    gaps += [hi[0] - lo[1] for lo, hi in zip(spans, spans[1:], strict=False)]
+    return max(max(gaps), 0.0)
+
+
 def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     """The widest clear gap between adjacent infill solids, over every bay of the guard.
 
@@ -455,9 +486,18 @@ def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
     ``None`` when the guard resolved no infill at all — which is a different statement from
     "no gap", and is reported as UNKNOWN rather than as a pass.
     """
+    from typehaus.model.structure import Railing
     from typehaus.resolve.geometry import length, normal, project_onto_axis, sub, unit
     from typehaus.resolve.railings import railing_post_stations
 
+    # Bay-by-bay, off the guard's own post rhythm — which only a Railing has. A slat screen
+    # has no posts and no bays, but it DOES draw its slats, so it is measured directly: the
+    # clear run between adjacent slat solids along the screen's own axis, and the two end
+    # margins, which are openings in the guard exactly as the gaps between slats are (the
+    # resolver centres the slat run and leaves half the remainder at each end).
+    if not isinstance(guard.source, Railing):
+        return _largest_screen_opening_m(ctx, guard)
+    guard = guard.source
     prefix = f"{guard.tag}-"
     solids = [s for s in ctx.model.solids
               if s.category in _INFILL_CATEGORIES and s.tag.startswith(prefix)]

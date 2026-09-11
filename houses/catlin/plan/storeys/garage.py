@@ -369,6 +369,44 @@ _GARAGE_EAVE_TRIM = EaveTrim(
                       downspout_ref="TR-G-LEADER-E"),
 )
 
+# ** THE CANOPY'S OWN EDGE, AND IT IS THE GARAGE'S EDGE CONTINUED, NOT A SECOND DETAIL. **
+# RF-BW-CANOPY carried NO eave trim at all until 2026-09-10: bare sheathing edges on both
+# eaves, no fascia, no soffit, no gutter — over the one walking surface between the two
+# buildings. The two roof planes are ONE plane (same 4:12, same +7'-4" bearing, same 16"
+# overhang), so every piece here is dimensionally identical to the garage's and is ordered
+# off the same coil and the same stock.
+#
+# ** ONE TROUGH, AND THE CANOPY DOES NOT GET A LEADER OF ITS OWN. ** The channel runs
+# continuous from the canopy's south end to the garage's north end and falls north into
+# `TR-G-LEADER-E` / `-W`, which is why `downspout_ref` names the garage's east leader
+# rather than inventing one here. A leader at the SOUTH end would discharge onto the entry
+# landing and the four cast tiers — the exact discharge the garage's own leaders were moved
+# north to avoid, and the reason that paragraph above is written the way it is.
+#
+# ** NO SOFFIT, AND THAT IS THE ONE PIECE THAT DOES NOT CONTINUE. ** `_soffit_member` closes
+# the overhang from the fascia's inner face back to a WALL face (`wall_face_inset` reads the
+# resolved cladding polygons), and this canopy has no wall under either eave — it has a
+# header on columns, with open air under it. Declaring a soffit thickness here derived a
+# 5'-9 5/8" panel, which is the measure running away rather than a piece anyone would cut.
+# An open canopy has nothing to close anyway: the underside between the headers is exposed
+# framing by design, and the garage's white PVC soffit is there to feed a VENTED ATTIC this
+# roof does not have. So the tails are exposed, and the fascia and the trough — the two
+# pieces the eye actually reads across the joint — are identical to the garage's.
+#
+# ** THE CAPACITY IS THE ONE NUMBER TO WATCH, AND IT STILL CLEARS. ** Each garage slope
+# sheds ~290 sq ft; the canopy adds ~80 (13'-4" of horizontal projection over a 6'-0" run),
+# so each 3" leader now takes ~370 sq ft against the ~425 sq ft it clears at the 8 in/hr
+# design intensity (params/roof_trim.py works the number). Under, but no longer by much:
+# lengthening the canopy, or widening the overhang, is what would force a 4" leader.
+_CANOPY_EAVE_TRIM = EaveTrim(
+    fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
+            FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
+    gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
+                      top_drop=inch(0.5), edges=("east", "west"),
+                      slope="1/16 in/ft north on both eaves — CONTINUOUS with RF-GARAGE's trough, falling to TR-G-LEADER-E / -W at the garage's north end; no leader at the canopy's south end, which would discharge onto the entry landing",
+                      downspout_ref="TR-G-LEADER-E"),
+)
+
 # One leader per eave. 3" round, not the house's 4": each slope sheds ~290 sq ft against
 # each house eave's 648, and 3" clears ~425 sq ft at the 8 in/hr design intensity
 # (params/roof_trim.py works the number) — so the pair is two independent 3" runs, not a 3"
@@ -465,7 +503,8 @@ ROOFS = [
          # replaceable compressible or brush seal, inspectable from below, never filled with
          # rigid foam or sealant. The two buildings move independently and the joint has to.
          edge_overhangs=(("north", ft(0)), ("south", ft(0, 3.375))),
-         edge_trim_material="metal-dark-exterior"),
+         edge_trim_material="metal-dark-exterior",
+         eave_trim=_CANOPY_EAVE_TRIM),
 ]
 
 # --- NO SNOW RETENTION, AND THAT IS EARNED (2026-09-07) ---------------------------------

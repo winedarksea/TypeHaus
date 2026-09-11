@@ -91,20 +91,65 @@ HEADER_TOP_FT = 7 + 4 / 12
 HEADER_SOFFIT_FT = HEADER_TOP_FT - 11.25 / 12
 ROOF_COLUMN_EAST_X_FT = 30.0
 
-# The two members within the service opening continue to the interior stair. The west
-# member stops outside: the two-foot door offset cannot be bridged through a solid jamb.
+# ** THE TWO SCREEN RAILS, WHICH ARE WHAT LETS THE SCREEN BE THE GUARD (owner, 2026-09-10). **
+# The screen used to stand beside a separate metal guard on the same line -- two elements an
+# inch apart doing one job -- because a 2x4 slat cantilevered off the deck cannot take IRC
+# Table R301.5's 200 lb: resolving that base moment over a 5 1/4" arm needs ~1,700 lb of
+# tension per slat, and the Virginia Tech tests behind DCA 6 measured 178 lb ultimate for a
+# 1/2" lag. Nothing about the SLAT changed. What changed is that the load no longer goes
+# through one.
+#
+# Two rails on the passage side of the screen, spanning PT-BW-CW to PT-BW-CNW and carrying
+# into the piers through the columns that are already there. The 200 lb lands on the upper
+# rail at the guard line, which is a 4'-11 3/4" simple span: M = 249 lb-ft, S = 7.56 in3,
+# f_b = 395 psi against an Fb near 850 psi wet-service, d/c 0.46. The slats are in-fill
+# spanning 2'-0" between the rails and carry only Table R301.5 fn. f's 50 lb over a square
+# foot. `SC-BW-WEST.role="guard"` is what tells the engine the screen IS the guard now.
+#
+# ** ON EDGE AND SET OFF THE DECK, WHICH IS THE OWNER'S OWN OBJECTION HONOURED. ** A top and
+# bottom PLATE would work structurally and is the wrong detail outdoors: a flat plate on the
+# deck is a horizontal ledge in the splash and snow line, under a screen, unreachable to
+# clean and slow to dry -- the classic rot start. These are on edge (1 1/2" of upward-facing
+# grain, not 3 1/2"), the lower one is held 12" clear of the boards so the snow line and the
+# hose pass under it, and both take the same butyl cap every other beam top here takes.
+SCREEN_RAIL_TOP_FT = (1.0, 3.0)     # lower rail top +1'-0"; upper rail top = the guard line
+SCREEN_RAIL_X_FT = LANDING_WEST_FT + 3 / 12 + 1.5 / 24   # against the columns' east face
+# The solid panel's head, and the slat clerestory's sill. +4'-0" clears the 36" guard line by
+# a foot and leaves 2'-4 3/4" of slat under the header soffit.
+SCREEN_PANEL_TOP_FT = 4.0
+
+
+# ** ONE TIER OF BEAMS, NOT TWO, AND THE JOISTS SIT STRAIGHT ON IT (owner, 2026-09-10). **
+# This landing was framed pier -> seat beam (east-west) -> floor beam (north-south) -> joist
+# (east-west) -> board. Three tiers of framing under a 5'-6" x 4'-11 3/4" square, with beams
+# running BOTH ways, which is what the owner saw and it was right: the middle tier does
+# nothing. The seat beams already span pier to pier, and a joist can land on them directly.
+#
+# So the joists run NORTH-SOUTH now, on the two seat beams, and `BM-BW-FW` is deleted outright
+# along with `WEST_BEAM_X_FT` and the 6" west cantilever that existed only to dodge PT-BW-CW.
+#
+# ** WHY THE SEATS ARE THE TIER THAT SURVIVES, AND NOT THE OTHER WAY ROUND. ** Putting the
+# north-south beams straight on the piers instead is the obvious alternative and it does not
+# fit: the pier lines are x=6'-0" and x=11'-6", and x=6'-0" is already occupied at BOTH y
+# stations by a canopy column (PT-BW-CW, PT-BW-CNW) standing on that same pier and rising
+# through the deck band to the header. A beam on that line interpenetrates the column
+# outright. The columns own x=6'-0"; the seats get the piers.
+#
+# ** BM-BW-FC AND BM-BW-FE STAY, AND THEY ARE NOT A SECOND TIER. ** They run north-south in
+# the joist plane, parallel to the joists and bearing on the same two seats, so they add no
+# depth to the stack. What they do that no joist can is reach the interior landing: both pass
+# through D-G-SERVICE's rough opening (over the ICF stem, which tops out 3 3/4" below the joist
+# soffit) and carry FS-BW-GARAGE on the far side, posted at their tips. The west member had no
+# such errand -- it stopped at the garage seat -- which is why it is the one that went.
 BEAM_WIDTH_IN = 3.0
-# ** THE WEST FLOOR BEAM IS OFF THE COLUMN LINE ON PURPOSE. ** PT-BW-CW is a 6x6 standing on
-# the pier at x=6'-0" and rising past the deck to the header, so it occupies the deck's own
-# -1" to -8 1/4" band. A floor beam on the same line interpenetrates it outright
-# (`structural.member_interference` says so). 6'-6" puts the beam's west face 3 1/4" clear of
-# the post, the deck SHEET still runs to x=6'-0" past it, and the joists cantilever 6" west
-# against R507.6.1's quarter of their 2'-1 1/2" back span (6 3/8"). The screen and the guard
-# stay on x=6'-0", in the column line, which is where they want to be.
-WEST_BEAM_X_FT = 6.5
-BEAM_X_FT = (WEST_BEAM_X_FT + BEAM_WIDTH_IN / 24,
-             GARAGE_LANDING_WEST_FT + BEAM_WIDTH_IN / 24,
+BEAM_X_FT = (GARAGE_LANDING_WEST_FT + BEAM_WIDTH_IN / 24,
              LANDING_EAST_FT - BEAM_WIDTH_IN / 24)
+# The joist field's own two edges, each a joist CENTRELINE so the rim lands where it is told.
+# West: clear of the two 6x6 canopy columns on x=6'-0", whose east face is at 6'-3".
+# East: clear of BM-BW-FE, whose west face is at 11'-3".
+JOIST_MEMBER_WIDTH_IN = 1.5
+FIELD_WEST_X_FT = LANDING_WEST_FT + 3 / 12 + JOIST_MEMBER_WIDTH_IN / 24
+FIELD_EAST_X_FT = LANDING_EAST_FT - BEAM_WIDTH_IN / 12 - JOIST_MEMBER_WIDTH_IN / 24
 HOUSE_SEAT_Y_FT = PIER_LINE_Y_FT
 # ** THE GARAGE SEAT MOVED 6" SOUTH, OFF THE STEM. ** A pedestal under it at the old
 # y=42'-11 3/4" overlapped W-G-S's bottom plate and its corner post outright, and the stem's
@@ -169,12 +214,11 @@ beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
 beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
      LANDING_EAST_FT, GARAGE_SEAT_Y_FT, ("PT-BW-GW", "PT-BW-GE"), SEAT_TOP_FT)
-# The three floor beams. FW stops at the garage seat; FC and FE continue into the garage to
-# carry the interior landing, and their tips are POSTED -- see INTERIOR_POSTS below.
-for index, (suffix, x) in enumerate(zip(("FW", "FC", "FE"), BEAM_X_FT, strict=True), 3):
-    beam(index, f"BM-BW-{suffix}", x, FRAME_Y0_FT, x,
-         FRAME_Y1_FT if suffix == "FW" else GARAGE_LANDING_END_Y_FT,
-         ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT") if suffix == "FW" else
+# The two garage-landing carriers. They start at the main landing's south framing edge so the
+# joist field has them all the way through, and run north to the interior landing's end on a
+# post apiece. Uid numbers stay 4 and 5 -- 3 was BM-BW-FW and is not reused.
+for index, (suffix, x) in enumerate(zip(("FC", "FE"), BEAM_X_FT, strict=True), 4):
+    beam(index, f"BM-BW-{suffix}", x, FRAME_Y0_FT, x, GARAGE_LANDING_END_Y_FT,
          ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT", f"PT-BW-I{suffix[-1]}"))
 
 # ** THE TWO ROOF HEADERS, AND THE CANOPY THEY CARRY TOUCHES THE GARAGE FOR NOTHING. **
@@ -208,9 +252,20 @@ for index, (suffix, x) in enumerate(zip(("FW", "FC", "FE"), BEAM_X_FT, strict=Tr
 beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      "3-2x12")
+# ** THE EAST HEADER LANDS ON CONCRETE, NOT ON WOOD (owner, 2026-09-10). ** PT-BW-RE and
+# PT-BW-RNE run unbroken from their footings to this soffit, so there are no 6x6 columns on
+# this side at all -- see FULL_HEIGHT_COLUMNS below for why, and for what it buys.
 beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
-     ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CE", "PT-BW-CNE"), HEADER_TOP_FT,
+     ROOF_COLUMN_EAST_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-RE", "PT-BW-RNE"), HEADER_TOP_FT,
      "3-2x12")
+
+# The two screen rails (see SCREEN_RAIL_TOP_FT above). They run the full deck edge, so each
+# cantilevers ~10" south and ~9" north of its columns to meet the house and the garage -- a
+# guard's ENDS are openings in it as surely as the gaps between its slats are.
+for _index, (_suffix, _top) in enumerate(zip(("SCLO", "SCHI"), SCREEN_RAIL_TOP_FT,
+                                             strict=True), 8):
+    beam(_index, f"BM-BW-{_suffix}", SCREEN_RAIL_X_FT, DECK_SHEET_SOUTH_Y_FT,
+         SCREEN_RAIL_X_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), _top, "2x6")
 
 # --- piers, pedestals and columns -------------------------------------------------------
 #
@@ -255,8 +310,11 @@ for _uid, _tag, _x, _height, _top in (
      BEARING_TOP_FT),
     ("BWPT02AAAA", "PT-BW-E", LANDING_EAST_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
      BEARING_TOP_FT),
-    ("BWPT03AAAA", "PT-BW-RE", ROOF_COLUMN_EAST_X_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
-     BEARING_TOP_FT),
+    # The east one is a COLUMN, not a pier: it does not stop at the bearing plane, it runs
+    # on to the header soffit. Everything else about it -- section, cage, mix, footing -- is
+    # unchanged, which is the point.
+    ("BWPT03AAAA", "PT-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOFFIT_FT - FOOTING_TOP_FT,
+     HEADER_SOFFIT_FT),
 ):
     PIERS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
@@ -317,12 +375,15 @@ GARAGE_FOOTING_THICKNESS_FT = 8 / 12   # the garage strip's own 8", so the two t
 GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
 PEDESTALS = []
-for _uid, _tag, _x, _pad_in in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0),
-                                ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0),
-                                ("BWPT04AAAA", "PT-BW-RNE", ROOF_COLUMN_EAST_X_FT, 24.0)):
+for _uid, _tag, _x, _pad_in, _top in (
+    ("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0, BEARING_TOP_FT),
+    ("BWPT06AAAA", "PT-BW-GE", LANDING_EAST_FT, 18.0, BEARING_TOP_FT),
+    # Again a COLUMN, the north half of the east pair (FULL_HEIGHT_COLUMNS below).
+    ("BWPT04AAAA", "PT-BW-RNE", ROOF_COLUMN_EAST_X_FT, 24.0, HEADER_SOFFIT_FT),
+):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
-        height=ft(BEARING_TOP_FT - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
+        height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_PIER_CAGE,
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
@@ -342,18 +403,13 @@ for _uid, _tag, _x, _pad_in in (("BWPT05AAAA", "PT-BW-GW", LANDING_WEST_FT, 24.0
 # header against 720 lb of dead. Under 0.6D + 0.6W the net is ~230 lb per column, well inside
 # the standoff-base-plus-cast-in-bolt detail. Stated, not left open.
 COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - BEARING_TOP_FT
+FULL_HEIGHT_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
 ROOF_COLUMNS = [
     Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
          size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier)
     for _uid, _tag, _x, _y, _pier in (
         ("BWPT07AAAA", "PT-BW-CW", LANDING_WEST_FT, PIER_LINE_Y_FT, "PT-BW-W"),
-        ("BWPT08AAAA", "PT-BW-CE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT, "PT-BW-RE"),
-        # The two north columns, which is what makes the canopy freestanding. The west one
-        # shares PT-BW-GW with the garage-side seat beam exactly as PT-BW-CW shares PT-BW-W
-        # with the house-side one; the east one has PT-BW-RNE to itself, there being no
-        # landing out at x=30'-0".
         ("BWPT11AAAA", "PT-BW-CNW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "PT-BW-GW"),
-        ("BWPT12AAAA", "PT-BW-CNE", ROOF_COLUMN_EAST_X_FT, GARAGE_SEAT_Y_FT, "PT-BW-RNE"),
     )
 ]
 
@@ -373,7 +429,7 @@ INTERIOR_POSTS = [
          position=pt(ft(_x), ft(GARAGE_LANDING_END_Y_FT)),
          size="6x6", height=ft(BEARING_TOP_FT - SITE_GRADE.feet), assembly="POST_KDAT",
          supported_by="SL-G-FLOOR")
-    for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT[1:], strict=True))
+    for _i, (_s, _x) in enumerate(zip(("C", "E"), BEAM_X_FT, strict=True))
 ]
 
 

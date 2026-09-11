@@ -265,6 +265,24 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # landing left too tall against a trimmer is still reported, by the rules above.
     if "hanger" in kinds and (kinds - {"hanger"}) <= {"trimmer", "header", "joist", "rim"}:
         return True
+    # A beam passing THROUGH a deck's rim, which is the rim being field-cut and not the beam
+    # being in the wrong place. A rim closes the ends of a joist field; where a beam runs on
+    # past that line — the north entry's two garage-landing carriers leaving the landing
+    # through a door's rough opening is the worked example — the rim is built in pieces
+    # butted either side of it, and the beam runs through unbroken. The IR emits the rim as
+    # one member, so it reads as a crossing.
+    #
+    # Scoped so it cannot mask an elevation bug: only these two kinds, only across different
+    # parents, and only where the beam genuinely passes through rather than dying into the
+    # rim (a beam ENDING on a rim is already ``_butt_joint``'s clause, and a beam left too
+    # long so that its tip buries in a rim is still reported, because its endpoint is then
+    # inside the rim's footprint).
+    if kinds == {"rim", "beam"} and not same_parent:
+        from shapely.geometry import Point
+
+        beam, rim = (a, b) if a.kind == "beam" else (b, a)
+        if not any(rim.poly.covers(Point(pt)) for pt in beam.seg):
+            return True
     # Cut joists / trimmers bearing on a floor-opening header (the header carries them).
     return ("header" in kinds
             and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"})

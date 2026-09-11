@@ -1373,6 +1373,48 @@ BEAM_GLULAM_TREATED = Assembly(
 # paint finish nobody is applying. These are bare KDAT 6x6 with a clear water repellent —
 # the breezeway reads as structure, not as trim. 5.5" is the true 6x6 section, matching
 # POST_WHITE_PAINT's body.
+# ** THE NORTH ENTRY'S WEST SCREEN, LOWER PANEL: THIS IS A SHEAR WALL, NOT A SKIRT. **
+# `W-BW-SCREEN` closes the west side of the passage from the pier tops at -1'-3 1/2" up to
+# +4'-0", with `SC-BW-WEST`'s slats carrying on above it to the header soffit. Three jobs,
+# one element (owner, 2026-09-10):
+#
+#  1. **It is the canopy's north-south lateral system.** The canopy is freestanding, its two
+#     east columns are cast concrete fixed at the base, and this panel is what answers the
+#     west side. Sheathed BOTH faces because it is exposed both ways and a screen wall with
+#     one bare face is not a finished thing -- and the second skin is free shear.
+#  2. **It is the guard.** `Wall.guard=True`; a solid wall admits no 4" sphere, which is the
+#     reasoning `code.R312_1_3_guard_opening_limit` already applies to a masonry parapet.
+#  3. **It closes the deck framing.** The panel starts at the pier tops, so the joists, the
+#     two seat beams and the whole -1" to -1'-3 1/2" band are behind it rather than on show.
+#     That is also what puts the shear straight into the piers instead of through the deck.
+#
+# 2x4 KDAT at 16" o.c. and no insulation: this is an outdoor screen, there is nothing on
+# either side of it to condition, and a cavity that cannot dry is the one thing to avoid
+# here. It carries NO `control` set for the same reason -- there is no assembly behind it to
+# keep water off, so nothing here is a WRB and nothing should claim to be.
+#
+# Corrugated on both faces, `corrugated-panel-26`, which is the garage's own panel: the two
+# structures already share a roof plane and a sheathing plane, and a different profile on the
+# one wall standing under that joint would read as a mistake. The 7/8" flute is the drainage
+# and vent cavity exactly as it is on the garage (no furring), open at the bottom.
+ENTRY_SCREEN_WALL = Assembly(
+    tag="ENTRY_SCREEN_WALL",
+    layers=(
+        Layer(name="cladding-in", material_ref="corrugated-panel-26", thickness=inch(0.875),
+              function=LayerFunction.CLADDING),
+        Layer(name="cdx-in", material_ref="cdx-plywood", thickness=inch(0.625),
+              function=LayerFunction.SHEATHING),
+        Layer(name="stud", material_ref="kdat", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="cdx-out", material_ref="cdx-plywood", thickness=inch(0.625),
+              function=LayerFunction.SHEATHING),
+        Layer(name="cladding-out", material_ref="corrugated-panel-26", thickness=inch(0.875),
+              function=LayerFunction.CLADDING),
+    ),
+    source="north entry west screen, lower panel — KDAT 2x4 at 16in o.c., 5/8in CDX and 7/8in corrugated BOTH faces. Shear panel for the freestanding canopy's north-south direction, guard per IRC R312.1, and the closure over the deck framing. No cavity fill and no control layers: an outdoor screen wall with weather on both sides",
+)
+
 POST_KDAT = Assembly(
     tag="POST_KDAT",
     layers=(
@@ -4182,6 +4224,7 @@ ASSEMBLIES = [
     GARDEN_PUTTING_GREEN,
     GARDEN_STOOP,
     ENTRY_STEP_TIER,
+    ENTRY_SCREEN_WALL,
     GARAGE_STEP_6,
     GARAGE_ROOF,
     CANOPY_ROOF,

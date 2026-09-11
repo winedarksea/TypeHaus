@@ -24,6 +24,7 @@ from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import not_applicable
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
     DECK_TOTAL_LOAD_PSF,
@@ -979,7 +980,7 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
         return [_unknown("structural.deck_guard",
                          "the site declares no grade datum to measure a drop against")]
     grade_m = grade.meters
-    railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
+    railings = guard_lines(ctx.plan)
     # A guard need not be a Railing. A masonry parapet standing at the edge is the same
     # fixture in R312.1 terms, and is authored as a Wall with ``guard=True`` so it keeps its
     # layer stack and its cubic-yard take-off (→ checks/structural/guards.py). Without this
