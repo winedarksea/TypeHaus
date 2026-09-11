@@ -56,6 +56,7 @@ ELECTRICAL_DEVICE_TYPES = (
     # NEMA 3R weatherproof exterior junction box with a gasketed blank cover plate.
     ElectricalDeviceType(tag="ED-T-JBOX", name="NEMA 3R weatherproof junction box",
                           footprint=(inch(6), inch(6)), height=inch(4),
+                          plan_symbol="junction-box",
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Kitchen outlets. ED-T-RECEPTACLE above stays a plain 120V duplex — its port list is
@@ -400,21 +401,36 @@ ATTIC_DEVICES = [
 ]
 
 # --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
-# Gasketed blank cover plate, beside the CN-M-VENT-CLAMP riser cluster (24'-4"/24'-10"/
-# 25'-4") it serves — filed on the attic storey because the gable carries siding well above
-# it there, giving a 25'-6" box cladding to grip. 3' east of the riser.
+# Gasketed blank cover plate, at the CN-M-VENT-CLAMP riser cluster's own elevation (24'-4"/
+# 24'-10"/25'-4") — filed on the attic storey because the gable carries siding well above it
+# there, giving a 25'-6" box cladding to grip.
 #
-# ** AT x=16'-4", STILL 3'-0" EAST OF THE RISER. ** The riser jogs east inside the attic to
-# x 13'-4" (mep_venting.py) and the gable's rake is `20'-11 3/8" + x/2`. At x=16'-4" the
-# plane is 29'-1 3/8" and the box hangs with 3'-7" of cladding over it, beside the clamps.
-# MN 1303.2402 subp. 6 wants the fan's box within reach of the riser and
-# `code.MN_1303_2402_radon` grades that at 8'-0"; 3'-0" holds it.
+# ** AT x=13'-10", AS CLOSE TO THE RISER AS THE GABLE ALLOWS. ** The prose above once said
+# 3'-0" east and the box sat at 16'-4", which was 6'-8 1/2": it was written when the riser
+# was expected to come up at x=13'-4", and the riser never did. It exits at x=9'-7 1/2"
+# (mep_venting.py), and everything between it and here is spoken for —
+#   * riser pair          x  9'-5 3/4".. 9'-9 1/2"
+#   * ED-A-PV-JB          x  9'-11" ..10'-5"
+#   * WIN-A-N1's framing  x 10'-7" ..13'-5"  (rough opening 10'-9"..13'-3", head 25'-0")
+# — so the first clear cladding east of the window is x=13'-5", and 13'-10" centres a 6" box
+# 2" clear of that bumper. WEST IS NOT AN OPTION: the rake is `20'-11 3/8" + x/2`, so a
+# 25'-6" box needs x >= 9'-1 1/4" and the 1 1/2" between the riser and the PV box is the
+# whole of what is left there.
+#
+# Going over the window head instead would put the box at x=12'-7 1/2", a true 3'-0" east,
+# but only 6" over a 25'-0" head — on top of the head trim rather than on plain panel.
+#
+# At x=13'-10" the rake is 27'-10 3/8", so the box hangs with 2'-4" of cladding over it, and
+# the roof underside plane `integrity.element_above_roof` reads (`20'-1 1/2" + x/2`) is
+# 27'-0 1/2", 1'-2" over the box's 25'-10" top. MN 1303.2402 subp. 6 wants the fan's box
+# within reach of the riser and `code.MN_1303_2402_radon` grades that at 8'-0"; this is
+# 4'-2 1/2", where the old station spent 6'-8 1/2" of that budget.
 #
 # Both heights below are the same 25'-6": Mount elevation is storey-relative (attic datum
 # 20'), Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(16, 4), ft(36, 10.25)), type_ref="ED-T-JBOX",
+                     position=pt(ft(13, 10), ft(36, 10.25)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 # ** CN-A-NEMA-CLAMP is GONE, and this list is empty on purpose. **

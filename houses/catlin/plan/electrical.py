@@ -148,6 +148,7 @@ DEVICE_TYPES = (
     # circuit, so its port is 240V (circuit_refs reconciles poles against ports).
     ElectricalDeviceType(tag="ED-T-PV-JB", name="PV junction box, NEMA 3R",
                           footprint=(inch(6), inch(6)), height=inch(4),
+                          plan_symbol="junction-box",
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Sauna heaters are hard-wired: a 240V junction box at the heater corner, not a

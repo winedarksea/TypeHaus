@@ -248,6 +248,29 @@ def safety_switch() -> Builder:
     return build
 
 
+def junction_box() -> Builder:
+    """A weatherproof junction box: the can and its gasketed blank cover.
+
+    It exists for the colour as much as the outline. An un-symboled electrical device falls
+    back to the domain amber, and an amber cube on a gable reads as a live device; a NEMA 3R
+    can is grey galvanised steel with a slightly lighter cover plate, which is what this
+    draws. Nothing goes inside the glyph because nothing is visible inside the box — a blank
+    cover is exactly what identifies one — so the plan is the can with the lid inset in it,
+    and the cover stands on the face away from the wall the way ``safety_switch``'s does.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        cover_t = min(0.008, depth * 0.2)
+        strokes = [rect(0, 0, width, depth, fill="metal"),
+                   rect(0, 0, width * 0.72, depth * 0.72, weight=DETAIL_WEIGHT)]
+        parts = [box(0, cover_t / 2, 0.0, height, width, depth - cover_t, "metal"),
+                 box(0, -depth / 2 + cover_t / 2, height * 0.06, height * 0.94,
+                     width * 0.88, cover_t, "appliance-steel")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def grille(*, louvers: int = 5) -> Builder:
     """A supply/return register: the louver lines are the whole symbol."""
 
@@ -289,5 +312,6 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "panel": panel_board(),
     "meter": meter_socket(),
     "disconnect": safety_switch(),
+    "junction-box": junction_box(),
     "register": grille(louvers=5),
 }
