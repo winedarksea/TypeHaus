@@ -1,7 +1,15 @@
 // The board's grouping and its "what is in the way" rules, against a hand-built payload.
 import type { SchedulePayload } from "./scheduleTypes";
-import { makeConstraint, makeSchedule, makeVisit } from "./scheduleFixtures";
 import {
+  makeConstraint,
+  makeDates,
+  makeInspection,
+  makeInspections,
+  makeSchedule,
+  makeVisit,
+} from "./scheduleFixtures";
+import {
+  actionList,
   attention,
   blockers,
   currentMilestone,
@@ -109,5 +117,84 @@ export function runScheduleTests(): void {
   assert(holdbacks({ ...PAYLOAD, visits: [visit({ slug: "y", holdback_open: true })] })
     .length === 1, "and one when a verified visit still owes money");
 
+  runActionListTests();
   console.log("Build-board grouping tests passed.");
+}
+
+/**
+ * The action list, which replaced "Next visit".
+ *
+ * The old card answered a question the board could not answer: with nothing ready it showed
+ * the first BLOCKED visit — where you are going, not what to do — and mid-build it showed
+ * one thing while four others were on fire.
+ */
+function runActionListTests(): void {
+  const now = new Date("2027-05-10T08:00:00Z");
+  const today = "2027-05-10";
+
+  const payload = makeSchedule({
+    visits: [
+      visit({
+        slug: "task/concrete/building/footings", label: "Footings",
+        readiness: "in_progress",
+        exceptions: [{ at: "2027-05-09", hold: "rebar delivered", note: "went ahead" }],
+      }),
+      visit({
+        slug: "site/dig", label: "Excavation", readiness: "blocked",
+        constraints: [makeConstraint({
+          label: "locate ticket", ticket_kind: "locate", ticket_start: "2027-04-28",
+          armed: "2027-04-30", expires: "2027-05-12", derived: "216D.04",
+        })],
+      }),
+      visit({
+        slug: "task/concrete/basement/walls", label: "Walls", readiness: "blocked",
+        booked: { date: today, window: "07:00", confirmed_by: "Nordic", confirmed_at: null,
+                  note: null },
+        dates: makeDates({ slug: "task/concrete/basement/walls", booked: today,
+                           threatened_by_days: 4 }),
+      }),
+      visit({
+        slug: "task/framing/building", label: "Framing", readiness: "blocked",
+        dates: makeDates({ slug: "task/framing/building", suggested_start: "2027-05-20",
+                           materials: [{ id: "trusses", label: "Roof trusses",
+                                         lead_days: null, order_by: null, ordered: null,
+                                         expected: null, received: null, source: null,
+                                         note: null, ask_now: true, why: "lead time unknown" }] }),
+        constraints: [makeConstraint({
+          label: "sealed truss drawings on site", owner: "owner",
+          next_action: "chase the fabricator", follow_up: "2027-05-12" })],
+      }),
+    ],
+  });
+
+  const inspections = makeInspections({
+    authorities: {},
+    inspections: [
+      makeInspection({ id: "erosion", label: "Erosion", state: "ready" }),
+      makeInspection({ id: "footing", label: "Footing", state: "failed",
+                       attempts: [{ date: "2027-05-06", result: "fail", inspector: null,
+                                    corrections: ["bolts off layout"], approved: [],
+                                    note: null }] }),
+    ],
+  });
+
+  const actions = actionList(payload, inspections, now, 14);
+  const at = (id: string) => actions.findIndex((a) => a.id.startsWith(id));
+
+  assert(actions[0].urgency === "now", "the worst thing is first");
+  assert(at("exception:") >= 0, "an exception is on the list");
+  assert(at("threat:") >= 0, "so is a threatened booking");
+  assert(at("locate:") >= 0, "and a locate two days from lapsing");
+  assert(at("reinspect:") >= 0, "and an inspection that failed and was never rebooked");
+  assert(at("booked:") > at("threat:"), "today sits under now");
+  assert(at("ahead:") > at("booked:"), "the lookahead sits under today");
+  assert(at("lead:") > at("ahead:"), "and what releases them is last");
+  assert(at("hold:") > at("ahead:"), "a hold with an owner is a release item");
+
+  // A lookahead of one week drops the 17th, which is exactly what the control is for.
+  const tight = actionList(payload, inspections, now, 7);
+  assert(tight.findIndex((a) => a.id.startsWith("ahead:")) === -1,
+    "the lookahead window is the owner's, not the engine's");
+
+  assert(actionList(null, null, now).length === 0, "no payload, no actions");
 }
