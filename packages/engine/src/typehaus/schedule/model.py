@@ -59,6 +59,22 @@ class Constraint:
     #: ``"blocking"`` or ``"attention"``.
     severity: str = "blocking"
     element_tags: tuple[str, ...] = ()
+    #: The three fields that turn a hold into a task: who is on the hook, what unsticks it,
+    #: and when to chase. Authored on the hold; empty on a derived constraint, which has no
+    #: owner but the model.
+    owner: str | None = None
+    next_action: str | None = None
+    follow_up: str | None = None
+    #: ``"locate"`` for a Gopher State One Call ticket. A typed hold the board can date.
+    ticket_kind: str = ""
+    ticket: str | None = None
+    ticket_start: str | None = None
+    refresh_agreement: bool = False
+    #: Derived from a typed hold: when it arms, when it expires, and the sentence that says
+    #: how. Empty on every untyped hold — see :mod:`typehaus.schedule.locates`.
+    armed: str | None = None
+    expires: str | None = None
+    derived: str = ""
 
     @property
     def met(self) -> bool:
@@ -67,7 +83,12 @@ class Constraint:
     def as_dict(self) -> dict[str, Any]:
         return {"kind": self.kind, "ref": self.ref, "label": self.label,
                 "cleared": self.cleared, "severity": self.severity,
-                "element_tags": list(self.element_tags)}
+                "element_tags": list(self.element_tags), "owner": self.owner,
+                "next_action": self.next_action, "follow_up": self.follow_up,
+                "ticket_kind": self.ticket_kind, "ticket": self.ticket,
+                "ticket_start": self.ticket_start,
+                "refresh_agreement": self.refresh_agreement,
+                "armed": self.armed, "expires": self.expires, "derived": self.derived}
 
 
 @dataclass(frozen=True)
@@ -131,6 +152,35 @@ class Visit:
     holdback_open: bool = False
     #: True when this visit is the whole package (nobody authored a split).
     implicit: bool = True
+    #: True for a ``site/<label>`` visit that draws from no work package at all.
+    standalone: bool = False
+    #: False takes this visit out of package-level predecessor expansion.
+    blocks_successors: bool = True
+    #: True where this visit deliberately shares BOM rows with another.
+    shared_rows: bool = False
+    #: Ordered pauses inside this one arrival, as dicts — the shape
+    #: ``takeoff/visit_state.Checkpoint.as_dict`` writes.
+    checkpoints: tuple[dict[str, Any], ...] = ()
+    #: ``done`` was claimed while a blocking hold was open. Listed first on the board.
+    exceptions: tuple[dict[str, Any], ...] = ()
+    #: Handoff items passed on deliberately, with the reason.
+    skipped: tuple[dict[str, Any], ...] = ()
+    log: tuple[dict[str, Any], ...] = ()
+    updated: str | None = None
+    #: The owner's intent, and the date they actually confirmed with the sub. The engine
+    #: reads both and moves neither — see :mod:`typehaus.schedule.timing`.
+    planned: str | None = None
+    booked: dict[str, Any] | None = None
+    #: Working days on site, authored. ``None`` is "needs confirmation", never a default.
+    duration_days: int | None = None
+    #: What has to be on site before this arrival, as dicts.
+    materials: tuple[dict[str, Any], ...] = ()
+    #: Key into ``[contractors]`` in ``tasks.toml``.
+    contractor: str | None = None
+    #: The handoff set changed under existing ticks — the owner has to walk it again.
+    needs_rewalk: bool = False
+    #: Ticks naming a handoff item this model no longer derives. Reported, never deleted.
+    orphan_ticks: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return {"slug": self.slug, "id": self.id, "package": self.package,
@@ -142,7 +192,20 @@ class Visit:
                 "rows": [{"section": s, "key": k} for s, k in self.rows],
                 "element_tags": list(self.element_tags),
                 "checked": list(self.checked), "estimate_fmt": self.estimate_fmt,
-                "holdback_open": self.holdback_open, "implicit": self.implicit}
+                "holdback_open": self.holdback_open, "implicit": self.implicit,
+                "standalone": self.standalone,
+                "blocks_successors": self.blocks_successors,
+                "shared_rows": self.shared_rows,
+                "checkpoints": [dict(p) for p in self.checkpoints],
+                "exceptions": [dict(x) for x in self.exceptions],
+                "skipped": [dict(x) for x in self.skipped],
+                "log": [dict(x) for x in self.log], "updated": self.updated,
+                "needs_rewalk": self.needs_rewalk,
+                "orphan_ticks": list(self.orphan_ticks),
+                "planned": self.planned, "booked": self.booked,
+                "duration_days": self.duration_days,
+                "materials": [dict(m) for m in self.materials],
+                "contractor": self.contractor}
 
 
 @dataclass(frozen=True)
@@ -203,11 +266,20 @@ class Prerequisite:
 class InspectionReadiness:
     """An inspection, its state, and everything standing between it and a phone call."""
 
+    #: The **instance** key: ``"footing"`` for the default one, ``"footing/court"`` for a
+    #: second. A visit depends on one instance or, by the bare spec id, on all of them.
     id: str
     label: str
     authority: str
     sequence: int
     state: str
+    #: The jurisdiction's spec this instance is of. Equal to ``id`` on the default instance.
+    spec_id: str = ""
+    #: Element-tag globs and/or visit slugs this instance covers. Empty is the whole house.
+    scope: tuple[str, ...] = ()
+    #: The scope released so far — ``("*",)`` on a full pass, the named globs on a partial.
+    approved: tuple[str, ...] = ()
+    attempts: tuple[dict[str, Any], ...] = ()
     after: tuple[str, ...] = ()
     gates: tuple[str, ...] = ()
     applicability: Applicability | None = None
@@ -231,9 +303,30 @@ class InspectionReadiness:
         """Does this inspection stand out of the way of everything it gates?"""
         return self.state in ("passed", "not_applicable", "waived")
 
+    def releases(self, tags: tuple[str, ...]) -> bool:
+        """Is this inspection out of the way *for these elements*?
+
+        A ``partial`` releases only the scope it approved: a visit whose tags fall entirely
+        inside it sees the inspection as resolved, and every other visit stays blocked.
+        That is the whole reason ``partial`` is a third result rather than a soft fail.
+        """
+        from fnmatch import fnmatch
+
+        if self.resolved:
+            return True
+        if self.state != "failed" or not self.approved:
+            return False
+        if "*" in self.approved:
+            return True
+        return bool(tags) and all(
+            any(fnmatch(tag, pattern) for pattern in self.approved) for tag in tags)
+
     def as_dict(self) -> dict[str, Any]:
         return {"id": self.id, "label": self.label, "authority": self.authority,
                 "sequence": self.sequence, "state": self.state,
+                "spec_id": self.spec_id or self.id, "scope": list(self.scope),
+                "approved": list(self.approved),
+                "attempts": [dict(a) for a in self.attempts],
                 "after": list(self.after), "gates": list(self.gates),
                 "applies": (self.applicability.applies
                             if self.applicability is not None else True),
@@ -277,6 +370,17 @@ class Board:
     milestones: tuple[Milestone, ...] = ()
     #: Authored visit/inspection slugs that no longer derive from the model.
     stale: tuple[str, ...] = ()
+    #: Load-time rule violations and dependency loops, each naming its file and key. The
+    #: board renders the last valid state *plus* this banner — a silently dropped edge is
+    #: worse than an error, because nothing says so.
+    errors: tuple[str, ...] = ()
+    #: ``(trade, inspection ref)`` gates the engine refused to imply, and why. Printed by
+    #: ``haus site validate`` so a dropped edge is visible rather than magic.
+    dropped_gates: tuple[tuple[str, str], ...] = ()
+    #: package slug -> everything the package covers, so ``rules.unassigned_scope`` can say
+    #: which rows and tags a hand-written split forgot.
+    package_rows: dict[str, tuple[tuple[str, str], ...]] = field(default_factory=dict)
+    package_tags: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
     def visit(self, slug: str) -> Visit | None:
         for visit in self.visits:

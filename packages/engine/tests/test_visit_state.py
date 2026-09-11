@@ -126,7 +126,7 @@ def test_clearing_a_constraint_is_a_label_keyed_write(tmp_path) -> None:
 
 def test_verified_refuses_while_a_hold_is_open(tmp_path) -> None:
     state = load_tasks(_house(tmp_path))
-    with pytest.raises(ValueError, match="cannot mark verified"):
+    with pytest.raises(ValueError, match="cannot be verified"):
         apply_visit_ops(state, {"op": "set_visit",
                                 "slug": "task/concrete/building/footings",
                                 "status": "verified"})

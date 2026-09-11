@@ -6,9 +6,15 @@
 # one before the first call: they move, and a wrong number on a 7:30am deadline is the one
 # error this file exists to prevent.
 #
-# `[authorities.electrical]` is the STATE's, not the city's: Minnesota licenses and inspects
-# electrical through the Department of Labor and Industry, and a request is filed against the
-# state permit rather than phoned to DSI.
+# Saint Paul does its OWN electrical, plumbing and mechanical inspections. Minn. Stat.
+# 326B.36 subd. 1 and 6 let a municipality run them, and DSI does — on three different
+# numbers, all in the same 7:30-9:00 window, or through the PAULIE portal. The earlier
+# "state inspector" electrical row here was wrong, and it would have sent the first call of
+# the rough-in to an office that does not take it.
+#
+# `lead_days`, the exact appointment window and the reinspection fee are NOT published.
+# Minn. R. 1300.0210 subp. 4 obliges the authority to state them at permit issuance: they
+# are open items, and the board says so until they are filled in.
 #
 # The `[[extra]]` girt-screw hold is NOT an AHJ inspection: no Minnesota rule requires it, and
 # the profile is right not to list it. It is here because the exterior foam is this house's
@@ -16,33 +22,54 @@
 # nobody can see a missed screw again. `authority = "owner"` — a hold the owner placed on
 # themselves is not an AHJ visit, and giving it a phone number would be a lie.
 
+[permit]
+# Filled in at issuance. The code edition is a FIELD and not a constant: the 2024-IRC-based
+# Minnesota code has no adopted effective date yet, so a 2027 permit is most likely still the
+# 2020 cycle — and Saint Paul's 2026 NEC applies to electrical permits pulled after
+# 2026-08-17, which is a different date on a different line.
+code_edition = "mn-2020"
+nec_edition = "2026"
+note = "number, issued and expires are filled in at issuance — not before"
+
 [authorities.building]
-label = "Saint Paul DSI — Inspections"
+label = "Saint Paul DSI — Building and plumbing inspections"
 phone = "651-266-9002"
+portal_url = "https://www.stpaul.gov/paulie"
 window = "7:30-9:00 M-F"
-lead_days = 1
+method = "phone"
+source_url = "https://www.stpaul.gov/departments/safety-inspections"
+confirmed = "2026-09-11"
 
 [authorities.electrical]
-label = "MN DLI — Electrical (state inspector, by area)"
-phone = "651-284-5026"
-window = "file the request for inspection; the area inspector calls back"
-lead_days = 2
+label = "Saint Paul DSI — Electrical inspections"
+phone = "651-266-9003"
+portal_url = "https://www.stpaul.gov/paulie"
+window = "7:30-9:00 M-F"
+method = "phone"
+source_url = "https://www.stpaul.gov/departments/safety-inspections"
+confirmed = "2026-09-11"
 
 [authorities.mechanical]
-label = "Saint Paul DSI — Mechanical"
-phone = "651-266-9002"
+label = "Saint Paul DSI — Mechanical inspections"
+phone = "651-266-9004"
+portal_url = "https://www.stpaul.gov/paulie"
 window = "7:30-9:00 M-F"
-lead_days = 1
+method = "phone"
+source_url = "https://www.stpaul.gov/departments/safety-inspections"
+confirmed = "2026-09-11"
 
 [authorities.owner]
 label = "Owner's own hold — nobody else is checking"
 lead_days = 0
 
 [authorities.plumbing]
-label = "Saint Paul DSI — Plumbing"
+label = "Saint Paul DSI — Plumbing inspections"
 phone = "651-266-9002"
+portal_url = "https://www.stpaul.gov/paulie"
 window = "7:30-9:00 M-F"
-lead_days = 1
+method = "phone"
+source_url = "https://www.stpaul.gov/departments/safety-inspections"
+confirmed = "2026-09-11"
 
 [authorities.report]
 label = "Third-party test report, filed with DSI"

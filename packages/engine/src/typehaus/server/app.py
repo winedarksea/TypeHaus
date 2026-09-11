@@ -181,10 +181,24 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        from typehaus.server.schedule_api import (
+            ScheduleConflict,
+            ScheduleRequestError,
+            apply_site_ops,
+        )
+
         try:
-            apply_task_ops(state.house_dir, body.get("ops"))
+            if any(str(op.get("op")) != "set_task" for op in (body.get("ops") or ())
+                   if isinstance(op, dict)):
+                apply_site_ops(state.house_dir, body, state.model)
+            else:
+                apply_task_ops(state.house_dir, body.get("ops"))
             return JSONResponse(build_tasks_payload(state.model, state.house_dir))
-        except TasksRequestError as exc:
+        except ScheduleConflict as exc:
+            return JSONResponse({"error": str(exc)}
+                                | build_tasks_payload(state.model, state.house_dir),
+                                status_code=409)
+        except (TasksRequestError, ScheduleRequestError) as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
 
     @app.get("/schedule")
@@ -226,19 +240,50 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
     @app.put("/inspections")
     def put_inspections(body: dict[str, Any]) -> Any:
-        """Fold ``{"ops": [...]}`` over inspections.toml, write it, return the fresh payload."""
+        """Fold ``{"ops": [...]}`` through the one write path and return the fresh payload.
+
+        ``if_revision`` is optional and, when sent, is the content hash the client's own
+        ``GET`` echoed: a mismatch returns 409 **with the fresh payload**, so the client
+        re-applies against what is actually on disk rather than overwriting it.
+        """
         from typehaus.server.schedule_api import (
+            ScheduleConflict,
             ScheduleRequestError,
-            apply_inspection_ops,
+            apply_site_ops,
             build_inspections_payload,
         )
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        fresh = lambda: build_inspections_payload(  # noqa: E731 - one expression, used twice
+            state.model, state.house_dir, state.findings, state.checks_pending)
         try:
-            apply_inspection_ops(state.house_dir, body.get("ops"))
-            return JSONResponse(build_inspections_payload(
-                state.model, state.house_dir, state.findings, state.checks_pending))
+            apply_site_ops(state.house_dir, body, state.model)
+            return JSONResponse(fresh())
+        except ScheduleConflict as exc:
+            return JSONResponse({"error": str(exc)} | fresh(), status_code=409)
+        except ScheduleRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.put("/schedule")
+    def put_schedule(body: dict[str, Any]) -> Any:
+        """The visit half of the same vocabulary. Same ops, same rules, same conflict."""
+        from typehaus.server.schedule_api import (
+            ScheduleConflict,
+            ScheduleRequestError,
+            apply_site_ops,
+            build_schedule_payload,
+        )
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        fresh = lambda: build_schedule_payload(  # noqa: E731
+            state.model, state.house_dir, state.findings, state.checks_pending)
+        try:
+            apply_site_ops(state.house_dir, body, state.model)
+            return JSONResponse(fresh())
+        except ScheduleConflict as exc:
+            return JSONResponse({"error": str(exc)} | fresh(), status_code=409)
         except ScheduleRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
 

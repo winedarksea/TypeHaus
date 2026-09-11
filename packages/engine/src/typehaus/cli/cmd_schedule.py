@@ -116,7 +116,7 @@ def schedule(
         return
 
     if as_json:
-        console.print_json(json.dumps(_schedule_payload(model, board)))
+        console.print_json(json.dumps(_schedule_payload(model, board, directory)))
         return
 
     for record in board.milestones:
@@ -181,9 +181,14 @@ def inspections(
             console.print(f"     [red]x[/red] {prerequisite.label}", soft_wrap=True)
 
 
-def _schedule_payload(model: Any, board: Any) -> dict[str, Any]:
+def _schedule_payload(model: Any, board: Any, directory: Path | None = None
+                      ) -> dict[str, Any]:
     from typehaus.schedule.handoff import handoff_items
+    from typehaus.schedule.timing import visit_dates
+    from typehaus.takeoff.task_state import load_tasks
 
+    tasks = load_tasks(directory) if directory is not None else None
+    dates = visit_dates(board, tasks) if tasks is not None else {}
     visits = []
     for visit in board.visits:
         readiness = board.readiness[visit.slug]
@@ -191,10 +196,12 @@ def _schedule_payload(model: Any, board: Any) -> dict[str, Any]:
             "readiness": readiness.state,
             "constraints": [c.as_dict() for c in readiness.constraints],
             "handoff": [item.as_dict() | {"checked": item.id in visit.checked}
-                        for item in handoff_items(model, visit)]})
+                        for item in handoff_items(model, visit)],
+            "dates": (dates[visit.slug].as_dict() if visit.slug in dates else {})})
     return {"profile": board.profile_name, "checks_pending": False,
             "milestones": [m.as_dict() for m in board.milestones],
-            "visits": visits, "proposals": {}, "stale": list(board.stale)}
+            "visits": visits, "proposals": {}, "stale": list(board.stale),
+            "errors": list(board.errors)}
 
 
 def _inspections_payload(directory: Path, board: Any) -> dict[str, Any]:

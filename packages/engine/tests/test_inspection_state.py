@@ -20,11 +20,15 @@ lead_days = 1
 
 [entries.footing]
 requested = "2027-05-04"
-result = "fail"
-result_date = "2027-05-05"
-history = ["2027-05-05 fail: bolts off plate layout"]
 checked = ["permit card posted"]
 requires = ["task/concrete/building/footings"]
+attempts = [
+  { date = "2027-05-05", result = "fail", corrections = ["bolts off plate layout"] },
+]
+
+[entries."footing/court"]
+scope = ["FT-SG-*"]
+requested = "2027-06-01"
 
 [[extra]]
 id = "girt_screws"
@@ -49,6 +53,11 @@ def test_loads_all_three_sections(tmp_path) -> None:
     state = load_inspections(_house(tmp_path))
     assert state.authorities["building"].lead_days == 1
     assert state.entries["footing"].result == "fail"
+    assert state.entries["footing"].attempts[0].corrections == ("bolts off plate layout",)
+    # A second instance of the same spec, with its own scope and its own booking.
+    assert state.instances("footing") == {
+        "footing": state.entries["footing"], "footing/court": state.entries["footing/court"]}
+    assert state.entries["footing/court"].scope == ("FT-SG-*",)
     assert state.entries["footing"].requires == ("task/concrete/building/footings",)
     assert state.extra[0].gates == ("walls",)
     assert state.extra[0].milestone == "weathertight"
@@ -71,12 +80,16 @@ def test_an_extra_becomes_a_real_spec(tmp_path) -> None:
 
 
 @pytest.mark.parametrize("text,message", [
-    ("[entries.footing]\nresult = \"maybe\"\n", "result"),
+    ("[entries.footing]\nattempts = [{ date = \"d\", result = \"maybe\" }]\n", "result"),
+    ("[entries.footing]\nattempts = [{ date = \"d\", result = \"partial\" }]\n",
+     "must name the scope"),
+    ("[entries.footing]\nresult = \"pass\"\n", "old single-result spelling"),
+    ("[entries.footing]\nwaived = \"DSI said so\"\n", "who granted it"),
     ("[entries.footing]\nfinished = \"yes\"\n", "unknown field"),
     ("[authorities.building]\nphone = \"x\"\n", "missing 'label'"),
     ("[[extra]]\nlabel = \"x\"\n", "missing 'id'"),
     ("[wat]\nx = 1\n", "unknown top-level key"),
-    ("[entries.footing]\nhistory = \"one line\"\n", "must be an array"),
+    ("[entries.footing]\nattempts = \"one line\"\n", "must be an array"),
 ])
 def test_malformed_files_raise_naming_the_key(tmp_path, text, message) -> None:
     with pytest.raises(ValueError, match=message):
@@ -86,14 +99,59 @@ def test_malformed_files_raise_naming_the_key(tmp_path, text, message) -> None:
 def test_set_inspection_merges_and_clears(tmp_path) -> None:
     state = load_inspections(_house(tmp_path))
     state = apply_inspection_op(state, {"op": "set_inspection", "id": "footing",
-                                        "result": "pass", "result_date": "2027-05-08"})
-    assert state.entries["footing"].result == "pass"
+                                        "scheduled": "2027-05-08"})
+    assert state.entries["footing"].scheduled == "2027-05-08"
     # A field not named is untouched, which is what makes an optimistic single-field write
     # from a phone safe beside the owner's own editing of the file.
     assert state.entries["footing"].requested == "2027-05-04"
     state = apply_inspection_op(state, {"op": "set_inspection", "id": "footing",
-                                        "result": None})
-    assert state.entries["footing"].result is None
+                                        "scheduled": None})
+    assert state.entries["footing"].scheduled is None
+
+
+def test_a_result_only_ever_arrives_as_an_attempt(tmp_path) -> None:
+    """The failure this replaces: a second call overwrote the first one's card."""
+    state = load_inspections(_house(tmp_path))
+    with pytest.raises(ValueError, match="add_attempt"):
+        apply_inspection_op(state, {"op": "set_inspection", "id": "footing",
+                                    "result": "pass"})
+    state = apply_inspection_op(state, {"op": "add_attempt", "id": "footing",
+                                        "date": "2027-05-08", "result": "partial",
+                                        "approved": ["FT-B-*"]})
+    state = apply_inspection_op(state, {"op": "add_attempt", "id": "footing",
+                                        "date": "2027-05-12", "result": "pass"})
+    entry = state.entries["footing"]
+    assert [a.result for a in entry.attempts] == ["fail", "partial", "pass"]
+    assert entry.result == "pass"
+
+
+def test_a_fail_clears_the_booking_rather_than_keeping_a_reinspect_field(tmp_path) -> None:
+    state = load_inspections(_house(tmp_path))
+    state = apply_inspection_op(state, {"op": "set_inspection", "id": "footing",
+                                        "scheduled": "2027-05-08"})
+    state = apply_inspection_op(state, {"op": "add_attempt", "id": "footing",
+                                        "date": "2027-05-08", "result": "fail"})
+    assert state.entries["footing"].scheduled is None
+
+
+def test_an_instance_needs_a_scope(tmp_path) -> None:
+    state = load_inspections(_house(tmp_path))
+    with pytest.raises(ValueError, match="needs a 'scope'"):
+        apply_inspection_op(state, {"op": "set_instance", "id": "slab/garage"})
+    with pytest.raises(ValueError, match="instance id"):
+        apply_inspection_op(state, {"op": "set_instance", "id": "slab",
+                                    "scope": ["SL-G-*"]})
+    state = apply_inspection_op(state, {"op": "set_instance", "id": "slab/garage",
+                                        "scope": ["SL-G-*"]})
+    assert state.entries["slab/garage"].scope == ("SL-G-*",)
+
+
+def test_the_permit_block_holds_the_code_editions(tmp_path) -> None:
+    state = apply_inspection_op(load_inspections(_house(tmp_path)),
+                                {"op": "set_permit", "code_edition": "mn-2020",
+                                 "nec_edition": "2026"})
+    assert state.permit.code_edition == "mn-2020"
+    assert state.permit.nec_edition == "2026"
 
 
 def test_set_and_remove_extra(tmp_path) -> None:
@@ -124,5 +182,6 @@ def test_the_catlin_file_loads() -> None:
     root = Path(__file__).resolve().parents[3]
     state = load_inspections(root / "houses" / "catlin")
     assert "building" in state.authorities
-    assert state.authorities["electrical"].label.startswith("MN DLI")
+    # Saint Paul runs its own electrical inspections on its own number.
+    assert state.authorities["electrical"].phone == "651-266-9003"
     assert [x.id for x in state.extra] == ["girt_screws"]

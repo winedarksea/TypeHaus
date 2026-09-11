@@ -14,9 +14,11 @@ from typehaus.checks.jurisdiction import InspectionSpec, JurisdictionProfile
 from typehaus.cli.prices import ZERO
 from typehaus.findings import Finding, Result, Severity
 from typehaus.schedule.inspection_state import (
+    Attempt,
     ExtraInspection,
     InspectionEntry,
     InspectionsState,
+    Waiver,
 )
 from typehaus.schedule.readiness import make_ready
 from typehaus.takeoff.task_state import TasksState
@@ -125,9 +127,9 @@ def test_a_gating_inspection_blocks_until_it_passes() -> None:
     assert [c.ref for c in framing.blockers if c.kind == "inspection"] == ["backfill"]
 
     passed = _board(items, inspection_entries={
-        "erosion": InspectionEntry(result="pass"),
-        "footing": InspectionEntry(result="pass"),
-        "backfill": InspectionEntry(result="pass")})
+        "erosion": InspectionEntry(attempts=(Attempt("2027-05-05", "pass"),)),
+        "footing": InspectionEntry(attempts=(Attempt("2027-05-05", "pass"),)),
+        "backfill": InspectionEntry(attempts=(Attempt("2027-05-05", "pass"),))})
     assert passed.readiness["task/framing/building"].state == "ready"
 
 
@@ -195,9 +197,9 @@ def test_inspection_states_walk_the_whole_ladder() -> None:
     assert state({"erosion": InspectionEntry(checked=("silt fence",))})["erosion"] == "ready"
     assert state({"erosion": InspectionEntry(requested="d")})["erosion"] == "requested"
     assert state({"erosion": InspectionEntry(scheduled="d")})["erosion"] == "scheduled"
-    assert state({"erosion": InspectionEntry(result="pass")})["erosion"] == "passed"
-    assert state({"erosion": InspectionEntry(result="partial")})["erosion"] == "failed"
-    assert state({"erosion": InspectionEntry(waived="not required")})["erosion"] == "waived"
+    assert state({"erosion": InspectionEntry(attempts=(Attempt("2027-05-05", "pass"),))})["erosion"] == "passed"
+    assert state({"erosion": InspectionEntry(attempts=(Attempt("2027-05-05", "partial", approved=("FT-B-*",)),))})["erosion"] == "failed"
+    assert state({"erosion": InspectionEntry(waived=Waiver(by="not required"))})["erosion"] == "waived"
 
 
 def test_na_is_earned_from_the_model_and_satisfies_what_it_precedes() -> None:
@@ -219,7 +221,7 @@ def test_na_is_earned_from_the_model_and_satisfies_what_it_precedes() -> None:
 
 def test_waived_and_na_both_satisfy_an_after_dependency() -> None:
     items = [_item("earth")]
-    for entry in (InspectionEntry(waived="DSI says no"), InspectionEntry(result="pass")):
+    for entry in (InspectionEntry(waived=Waiver(by="DSI says no")), InspectionEntry(attempts=(Attempt("2027-05-05", "pass"),))):
         board = _board(items, inspection_entries={"erosion": entry})
         footing = board.inspection("footing")
         met = {p.ref: p.met for p in footing.prerequisites if p.kind == "inspection"}

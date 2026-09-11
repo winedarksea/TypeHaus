@@ -109,12 +109,34 @@ def fireplace(model: Any) -> Applicability:
                          "establish that this house has none — confirm with the AHJ")
 
 
+def garage_separation(model: Any) -> Applicability:
+    """A garage sharing a separation with the dwelling — what subp. 6.H's penetration
+    inspection is about on a house of this kind.
+
+    N/A is earned from rooms, not from walls: an attached garage is a *room* fact, and a
+    house with no rooms modelled establishes nothing either way.
+    """
+    rooms = getattr(model, "rooms", [])
+    if not rooms:
+        return Applicability("garage_separation", None, "no rooms are modelled")
+    named = [str(getattr(room, "tag", "") or getattr(room, "name", ""))
+             for room in rooms
+             if "garage" in f"{getattr(room, 'name', '')} {getattr(room, 'tag', '')}".lower()]
+    if named:
+        return Applicability("garage_separation", True,
+                             f"{len(named)} garage room(s): {', '.join(sorted(named)[:4])}")
+    return Applicability("garage_separation", False,
+                         f"none of {len(rooms)} modelled rooms is a garage, so there is no "
+                         "dwelling-to-garage separation to penetrate")
+
+
 #: key -> probe. ``InspectionSpec.applies_when`` is linted against exactly this mapping.
 PROBES = {
     "gas": gas,
     "stucco": stucco,
     "radiant_slab": radiant_slab,
     "fireplace": fireplace,
+    "garage_separation": garage_separation,
 }
 
 

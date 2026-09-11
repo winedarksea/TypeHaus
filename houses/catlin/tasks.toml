@@ -56,7 +56,11 @@ rows = ["allowances:concrete-driveway-apron-and-walks",
         "allowances:foundation-damp-or-waterproofing"]
 element_tags = ["DW-*"]
 # Last, and deliberately after backfill: a new apron under a loaded truck is a repair.
+# And `blocks_successors = false` because of the other half of that sentence: framing's
+# package-level predecessor is the concrete package, and expanded to every concrete arrival
+# it made the framers wait on the driveway apron — which is poured after they leave.
 depends_on = ["task/concrete/building/slabs", "insp/foundation_backfill"]
+blocks_successors = false
 constraints = [
   { label = "final grade set — the apron is poured to it, not corrected afterwards" },
   { label = "confirmed with the sub 48 hours ahead" },

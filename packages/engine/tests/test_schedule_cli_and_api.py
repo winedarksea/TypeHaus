@@ -113,7 +113,8 @@ def test_get_schedule(client) -> None:
     payload = client.get("/schedule").json()
     assert payload["profile"] == "mn-2020"
     assert [m["id"] for m in payload["milestones"]] == [
-        "foundation", "weathertight", "rough_ins", "insulated", "final"]
+        "preconstruction", "foundation", "weathertight", "rough_ins", "insulated",
+        "final", "complete"]
     assert payload["visits"]
     concrete = [v for v in payload["visits"] if v["trade"] == "concrete"]
     assert concrete and all(v["readiness"] in ("ready", "blocked") for v in concrete)
@@ -124,7 +125,7 @@ def test_get_schedule(client) -> None:
 
 def test_get_inspections(client) -> None:
     payload = client.get("/inspections").json()
-    assert payload["authorities"]["electrical"]["label"].startswith("MN DLI")
+    assert payload["authorities"]["electrical"]["phone"] == "651-266-9003"
     footing = next(r for r in payload["inspections"] if r["id"] == "footing")
     assert footing["prerequisites"]
     # Passes included, unlike the UI's default findings view: before an inspection you

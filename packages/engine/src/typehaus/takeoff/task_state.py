@@ -45,6 +45,55 @@ STATUSES = ("todo", "scheduled", "in_progress", "done", "verified")
 DEFAULT_STATUS = "todo"
 
 _FIELDS = ("status", "started", "completed", "assignee", "note")
+_CALENDAR_FIELDS = ("workdays", "holidays")
+CONTRACTOR_FIELDS = ("name", "phone", "email", "trades", "licence", "coi_expires", "w9",
+                     "contract", "note")
+#: Trades that need a licence named before the first call. Everything else does not, and
+#: asking for one would be the tool inventing a requirement.
+LICENSED_TRADES = ("electrical", "plumbing")
+
+
+@dataclass(frozen=True)
+class Calendar:
+    """Working days and the dates nobody works. Nothing here is derived."""
+
+    #: 0 = Monday. Default is Monday-Friday, which is a convention a house may override.
+    workdays: tuple[int, ...] = (0, 1, 2, 3, 4)
+    holidays: tuple[str, ...] = ()
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"workdays": list(self.workdays), "holidays": list(self.holidays)}
+
+
+@dataclass(frozen=True)
+class Contractor:
+    """One sub, and what is on file for them."""
+
+    key: str
+    name: str
+    phone: str | None = None
+    email: str | None = None
+    trades: tuple[str, ...] = ()
+    licence: str | None = None
+    coi_expires: str | None = None
+    w9: str | None = None
+    contract: str | None = None
+    note: str | None = None
+
+    @property
+    def missing_documents(self) -> tuple[str, ...]:
+        """Attention items, never blocks. A licence only where the trade requires one."""
+        out = [name for name in ("coi_expires", "w9", "contract")
+               if not getattr(self, name)]
+        if not self.licence and any(t in LICENSED_TRADES for t in self.trades):
+            out.append("licence")
+        return tuple(out)
+
+    def as_dict(self) -> dict[str, Any]:
+        return ({"key": self.key}
+                | {name: getattr(self, name) for name in CONTRACTOR_FIELDS}
+                | {"trades": list(self.trades),
+                   "missing_documents": list(self.missing_documents)})
 
 
 @dataclass(frozen=True)
@@ -73,6 +122,17 @@ class TasksState:
     #: ``takeoff/visit_state.py`` — one file, one parser, two modules only because the two
     #: together would be past 500 lines.
     visits: VisitsState = field(default_factory=VisitsState)
+    #: ``(id, label)`` in build order, when the house overrides the engine's rows. Empty
+    #: means the engine's. A milestone is the only grouping coarse enough to answer "where
+    #: am I", and which rows a particular build has is the owner's sentence, not ours.
+    milestones: tuple[tuple[str, str], ...] = ()
+    #: ``[calendar]``: which weekdays are worked and which dates are not. Authored, because
+    #: "legal holidays" is a jurisdiction's answer and a crew's is narrower still.
+    calendar: Calendar = field(default_factory=lambda: Calendar())
+    #: ``[contractors.<key>]``: who is coming, and which documents are on file for them. A
+    #: missing document is an attention item and never a block — great subs without digital
+    #: paperwork have to stay bookable.
+    contractors: Mapping[str, Contractor] = field(default_factory=dict)
 
     def status_of(self, slug: str) -> str:
         entry = self.entries.get(slug)
@@ -109,16 +169,84 @@ def load_tasks(house_dir: Path) -> TasksState:
     if not path.exists():
         return TasksState()
     data = tomllib.loads(path.read_text())
-    unknown = set(data) - {"entries", "visits"}
+    unknown = set(data) - {"entries", "visits", "milestones", "calendar", "contractors"}
     if unknown:
-        raise ValueError(f"{path}: unknown top-level key(s) {sorted(unknown)}; "
-                         "expected [entries.<slug>] and [visits.<slug>] tables")
+        raise ValueError(f"{path}: unknown top-level key(s) {sorted(unknown)}; expected "
+                         "[entries.<slug>], [visits.<slug>], [calendar], "
+                         "[contractors.<key>] and milestones = [...]")
     raw_entries = data.get("entries") or {}
     if not isinstance(raw_entries, dict):
         raise ValueError(f"{path}: 'entries' must be a table of work-item slugs")
     return TasksState(entries={str(slug): _entry(str(slug), raw, path)
                                for slug, raw in raw_entries.items()},
-                      visits=load_visits(data.get("visits") or {}, path))
+                      visits=load_visits(data.get("visits") or {}, path),
+                      milestones=_milestones(data.get("milestones"), path),
+                      calendar=_calendar(data.get("calendar"), path),
+                      contractors=_contractors(data.get("contractors"), path))
+
+
+def _calendar(raw: Any, path: Path) -> Calendar:
+    if not raw:
+        return Calendar()
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path}: [calendar] must be a table")
+    unknown = set(raw) - set(_CALENDAR_FIELDS)
+    if unknown:
+        raise ValueError(f"{path}: [calendar] unknown field(s) {sorted(unknown)}; "
+                         f"expected {list(_CALENDAR_FIELDS)}")
+    days = raw.get("workdays")
+    workdays = tuple(int(d) for d in days) if days else (0, 1, 2, 3, 4)
+    if any(d < 0 or d > 6 for d in workdays):
+        raise ValueError(f"{path}: [calendar] workdays are 0 (Monday) to 6 (Sunday)")
+    return Calendar(workdays=workdays,
+                    holidays=tuple(str(d) for d in (raw.get("holidays") or ())))
+
+
+def _contractors(raw: Any, path: Path) -> dict[str, Contractor]:
+    if not raw:
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path}: 'contractors' must be a table of keys")
+    out: dict[str, Contractor] = {}
+    for key, body in raw.items():
+        where = f"{path}: [contractors.{key}]"
+        if not isinstance(body, dict):
+            raise ValueError(f"{where} must be a table")
+        unknown = set(body) - set(CONTRACTOR_FIELDS)
+        if unknown:
+            raise ValueError(f"{where}: unknown field(s) {sorted(unknown)}; "
+                             f"expected {list(CONTRACTOR_FIELDS)}")
+        if not body.get("name"):
+            raise ValueError(f"{where}: missing 'name'")
+        out[str(key)] = Contractor(
+            key=str(key), name=str(body["name"]),
+            trades=tuple(str(t) for t in (body.get("trades") or ())),
+            **{name: (str(body[name]) if body.get(name) else None)
+               for name in ("phone", "email", "licence", "coi_expires", "w9", "contract",
+                            "note")})
+    return out
+
+
+def _milestones(raw: Any, path: Path) -> tuple[tuple[str, str], ...]:
+    """``milestones = [{ id = "...", label = "..." }, ...]`` — an ordered array, not a
+    table, because the order *is* the build order and a TOML table does not promise one."""
+    if not raw:
+        return ()
+    if not isinstance(raw, list):
+        raise ValueError(f"{path}: 'milestones' must be an array of "
+                         "{ id = \"...\", label = \"...\" } tables, in build order")
+    out: list[tuple[str, str]] = []
+    for index, item in enumerate(raw):
+        if not isinstance(item, dict) or not item.get("id") or not item.get("label"):
+            raise ValueError(f"{path}: milestones #{index + 1} needs an 'id' and a 'label'")
+        unknown = set(item) - {"id", "label"}
+        if unknown:
+            raise ValueError(f"{path}: milestones #{index + 1} has unknown field(s) "
+                             f"{sorted(unknown)}")
+        out.append((str(item["id"]), str(item["label"])))
+    if len({name for name, _ in out}) != len(out):
+        raise ValueError(f"{path}: two milestone rows share an id")
+    return tuple(out)
 
 
 def write_tasks(house_dir: Path, state: TasksState) -> Path:
@@ -140,10 +268,37 @@ def write_tasks(house_dir: Path, state: TasksState) -> Path:
             if value is not None:
                 lines.append(f"{name} = {toml_string(value)}")
         lines.append("")
+    if state.calendar != Calendar():
+        lines.append("[calendar]")
+        lines.append(f"workdays = [{', '.join(str(d) for d in state.calendar.workdays)}]")
+        if state.calendar.holidays:
+            items = ", ".join(toml_string(d) for d in state.calendar.holidays)
+            lines.append(f"holidays = [{items}]")
+        lines.append("")
+    for key in sorted(state.contractors):
+        who = state.contractors[key]
+        lines.append(f"[contractors.{toml_string(key)}]")
+        for name in CONTRACTOR_FIELDS:
+            value = getattr(who, name)
+            if not value:
+                continue
+            if name == "trades":
+                lines.append("trades = ["
+                             + ", ".join(toml_string(t) for t in value) + "]")
+            else:
+                lines.append(f"{name} = {toml_string(value)}")
+        lines.append("")
+    if state.milestones:
+        lines.append("milestones = [")
+        for name, label in state.milestones:
+            lines.append(f"  {{ id = {toml_string(name)}, "
+                         f"label = {toml_string(label)} }},")
+        lines.extend(["]", ""])
     lines.extend(visit_lines(state.visits))
-    path = Path(house_dir) / TASKS_FILENAME
-    path.write_text("\n".join(lines).rstrip("\n") + "\n")
-    return path
+    from typehaus.takeoff.atomic import atomic_write_text
+
+    return atomic_write_text(Path(house_dir) / TASKS_FILENAME,
+                             "\n".join(lines).rstrip("\n") + "\n")
 
 
 def apply_task_op(state: TasksState, op: Mapping[str, Any]) -> TasksState:

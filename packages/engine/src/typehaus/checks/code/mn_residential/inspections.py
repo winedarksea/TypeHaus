@@ -11,10 +11,14 @@ of it happens is authored in ``houses/<name>/inspections.toml``; nothing here is
 **It carries no phone numbers.** Who to call is house-owned (``[authorities]``), exactly as
 prices are — Saint Paul's number does not belong in an engine shipped to Duluth.
 
-**Rough electrical is the State's.** Minnesota licenses and inspects electrical through the
-Department of Labor and Industry, not the municipal building department, so its three
-electrical lines carry ``authority = "electrical"`` and resolve to a different authority
-row. A single "building" everywhere would have the owner calling the wrong office.
+**Who inspects electrical is a house fact, not a profile fact.** Minnesota licenses
+electrical through the Department of Labor and Industry, and Minn. Stat. 326B.36 subd. 1
+and 6 let a municipality run its own electrical, plumbing and mechanical inspections — Saint
+Paul does all three, through DSI, on its own numbers. So the electrical lines carry
+``authority = "electrical"`` to say they resolve to a *different authority row*, and the
+label says nothing about who staffs it: ``[authorities]`` in ``houses/<name>/inspections.toml``
+is where that is answered. The earlier "(State inspector)" labels here were wrong for the
+one city this repo's reference house is in.
 """
 
 from __future__ import annotations
@@ -29,7 +33,9 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         id="erosion", label="Erosion and sediment control",
         authority="building", gates=("earth",),
         check_ids=("code.R401_3_impervious",),
-        on_site=("permit card posted", "silt fence installed along the downhill edge",
+        on_site=("permit card posted",
+                 "inspection record card posted and kept on site (subp. 3)",
+                 "silt fence installed along the downhill edge",
                  "rock construction entrance"),
         milestone="foundation",
         code_refs=("MN Rules 1300.0210", "NPDES construction permit"),
@@ -79,8 +85,13 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         code_refs=("MN Rules 4714.0712", "IRC P2503"),
     ),
     InspectionSpec(
-        id="radon_rough", label="Passive radon system rough-in",
-        authority="building", after=("underground_plumbing",),
+        # An OWNER hold, not an AHJ line. Minn. R. 1300.0210 names no radon rough-in:
+        # the passive system is mandatory under 1303.2400-.2403 and is verified inside the
+        # under-slab and final inspections, and Saint Paul issues a separate radon plumbing
+        # permit. Everything under this slab is invisible the day after the pour, so the
+        # hold is real — it is just the owner's, and giving it a phone number would be a lie.
+        id="radon_rough", label="Passive radon system rough-in (owner's hold)",
+        authority="owner", after=("underground_plumbing",),
         check_ids=("code.MN_1303_2402_radon",),
         on_site=("gas-permeable layer in place", "riser labelled at every storey",
                  "sump cover sealed and gasketed", "junction box in the attic for a fan"),
@@ -130,14 +141,13 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         code_refs=("IRC M1601", "MN Rules 1322 R403.5"),
     ),
     InspectionSpec(
-        # STATE, not the city. See the module docstring.
-        id="rough_electrical", label="Rough electrical (State inspector)",
+        id="rough_electrical", label="Rough electrical",
         authority="electrical", after=("braced_wall",),
         check_ids=("electrical.receptacle_spacing", "code.E3902_gfci_locations",
                    "code.E3902_16_afci", "code.E3901_6_bathroom_receptacle",
                    "electrical.room_lighting", "electrical.circuit_refs",
                    "electrical.panel_spaces", "electrical.wet_location"),
-        on_site=("state electrical permit (request for inspection) filed",
+        on_site=("electrical permit filed with the authority named in [authorities]",
                  "boxes set and secured", "cable stapled and protected at plates"),
         milestone="rough_ins",
         code_refs=("MN Rules 1315", "2026 NEC"),
@@ -158,7 +168,10 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         code_refs=("IRC R502", "IRC R802", "IRC R602"),
     ),
     InspectionSpec(
-        id="insulation", label="Insulation and air barrier",
+        # 1300.0210 subp. 6.F calls this the ENERGY-EFFICIENCY inspection, and the rule
+        # names no "insulation" inspection at all. The name matters: it is the sheet the
+        # certificate under 1322.0401 is checked against, not a look at the batts.
+        id="energy", label="Energy efficiency — insulation, air barrier and certificate",
         authority="building", after=("framing",),
         check_ids=("code.energy_prescriptive", "building_science.condensation",
                    "code.R316_4", "code.R806_5_unvented_roof",
@@ -166,11 +179,11 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         on_site=("air sealing complete at every penetration",
                  "insulation certificate posted", "baffles at the eaves"),
         milestone="insulated",
-        code_refs=("IRC N1102.1.2", "IRC N1102.4"),
+        code_refs=("MN Rules 1300.0210 subp. 6.F", "IRC N1102.1.2", "IRC N1102.4"),
     ),
     InspectionSpec(
         id="blower_door", label="Blower-door test report (third party)",
-        authority="report", after=("insulation",),
+        authority="report", after=("energy",),
         check_ids=("code.N1102_4_air_leakage",),
         on_site=("test report filed with the AHJ", "ACH50 at or below the target"),
         milestone="insulated",
@@ -178,12 +191,28 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
     ),
     InspectionSpec(
         id="drywall", label="Gypsum board — fastening, before taping",
-        authority="building", after=("insulation",),
+        authority="building", after=("energy",),
         check_ids=("code.R302_7_under_stair_protection", "code.R302_13_floor_protection",
                    "code.R316_4"),
         on_site=("board hung and fastened", "rated assemblies complete and continuous"),
         milestone="insulated",
         code_refs=("IRC R702.3",),
+    ),
+    InspectionSpec(
+        # Minn. R. 1300.0210 subp. 6.H: fire-resistance-rated construction and the
+        # penetrations through it. On a house of this kind that is the garage separation,
+        # which is why the applicability probe is a garage and not a rated corridor.
+        id="fire_penetrations",
+        label="Fire-resistance-rated construction and penetrations",
+        authority="building", after=("framing",), applies_when="garage_separation",
+        # Fireblocking is explicitly outside this profile's coverage statement, so it is
+        # an on-site tick below and not a check id that would silently never run.
+        check_ids=("code.R302_5_garage_separation", "code.R302_13_floor_protection"),
+        on_site=("separation complete and continuous to the underside of the roof deck",
+                 "every penetration through the separation firestopped",
+                 "self-closing door set and latching"),
+        milestone="rough_ins",
+        code_refs=("MN Rules 1300.0210 subp. 6.H", "IRC R302.5", "IRC R302.11"),
     ),
     InspectionSpec(
         id="lath", label="Lath and weather barrier (stucco)",
@@ -228,7 +257,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         code_refs=("IRC M1305",),
     ),
     InspectionSpec(
-        id="final_electrical", label="Final electrical (State inspector)",
+        id="final_electrical", label="Final electrical",
         authority="electrical", after=("drywall",),
         check_ids=("electrical.service_load", "electrical.lighting_controls",
                    "code.R327_ess_listing", "code.R327_ess_capacity",
@@ -251,8 +280,10 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    "code.R303_8_exterior_stairway_illumination",
                    "code.R311_3_exterior_landing", "code.site_setback"),
         on_site=("address numbers posted", "alarms installed and sounding",
-                 "final grade away from the foundation", "as-built survey filed"),
+                 "final grade away from the foundation", "as-built survey filed",
+                 "energy certificate posted on the electrical panel, naming the general "
+                 "contractor (MN Rules 1322.0401)"),
         milestone="final",
-        code_refs=("IRC R110",),
+        code_refs=("IRC R110", "MN Rules 1322.0401"),
     ),
 )

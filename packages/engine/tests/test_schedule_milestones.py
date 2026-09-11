@@ -72,6 +72,8 @@ def test_state_is_derived_from_the_visits_in_it() -> None:
     # An EMPTY milestone stays not_started. Claiming "done" for a row with nothing in it
     # would mark a house weathertight because nobody had authored any walls.
     assert by_id["final"].state == "not_started"
+    # `preconstruction` is empty here, and an empty row is never the answer to "where am I".
+    assert by_id["preconstruction"].state == "not_started"
     assert current_milestone(milestones) == "weathertight"
 
 
