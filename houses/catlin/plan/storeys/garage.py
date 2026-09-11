@@ -375,16 +375,23 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 # and a spare. test_drainage_elements.py holds these and the EaveGutter together so a roof
 # change that moves a trough fails there instead of leaving a leader hanging beside it.
 #
-# ** BOTH AT THE SOUTH END, AND THAT IS THE FALL, NOT A HABIT. ** The old south trough fell
-# east to a splash block on the apron at the SE corner; TR-G-LEADER-E keeps that discharge
-# point within an inch, which is why its uid and tag are re-used rather than retired. The
-# west leader mirrors it about x=12'-0". Both run to splash blocks a foot above grade; the
-# ground falls away south toward the breezeway walk on both sides, so neither discharges
-# uphill of the garage.
+# ** BOTH AT THE NORTH END, AND THAT IS THE FALL, NOT A HABIT. ** This paragraph said
+# "both at the SOUTH end" until 2026-09-10 and described both leaders discharging into the
+# passage between the house and the garage — the exact opposite of the coordinates eight
+# lines below, which have put them at y = 68'-5 7/8" (north of GARAGE_Y_NORTH) since the
+# north entry took the south end. The geometry is right and the prose was stale; only the
+# prose moved.
+#
+# North is where they belong. South of the garage is the covered passage, its four cast
+# tiers and the entry landing — 290 sq ft of roof per slope discharging onto the one
+# walking surface between the two buildings, which freezes. North is the open front yard
+# beside the driveway, falling away to the street. `TR-G-LEADER-E` keeps the uid and tag of
+# the retired south-east leader rather than being retired with it, because the pipe is the
+# same pipe on the same eave; the west leader mirrors it about x=18'-0".
 #
 # The x/y here are the trough CENTRELINE, 3/4" inboard of each eave edge: the eave edge is
 # 16" of overhang off each node line (x = 31'-4" east, 4'-8" west), and the y is the
-# south trough end, 16" of overhang south of GARAGE_Y_SOUTH plus the same 3/4".
+# north trough end, 16" of overhang north of GARAGE_Y_NORTH plus the same 3/4".
 _GARAGE_LEADER_E = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
     position=pt(ft(31, 3.25), ft(68, 5.875)),   # north end, clear of the entry tiers

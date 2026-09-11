@@ -217,4 +217,52 @@ def local_grade_elevation_m(
             continue
         if here.distance(polygon) <= reach_m + 1e-9:
             lowest, governing = top_m, tag
+    station = nearest_grade_station(model, here)
+    if station is not None and station[1] < lowest:
+        governing, lowest = station
     return lowest, governing
+
+
+def nearest_grade_station(model: ResolvedModel, here: Any) -> tuple[str, float] | None:
+    """``(label, elevation)`` of the grade station nearest ``here``, or ``None``.
+
+    The second half of :func:`local_grade_elevation_m`. Excavation floors say where the
+    ground has been dug away; grade stations say where the owner's finished yard sits, and
+    on a site whose yard is a bench — flat at -3'-4", rising to the -2'-10" datum in the
+    last few feet around each building — the two answers differ by half a foot over most
+    of the lot. A retaining wall's exposure above grade is measured against the yard, not
+    against the near-house plane it is thirty feet away from.
+
+    Three disciplines, all inherited from the caller and all load-bearing:
+
+    * **Clamped at the global plane.** A station reading ABOVE ``Site.grade`` is ignored
+      here. The refinement is allowed to lower a local grade and never to raise one, so it
+      can only ever make a finding more conservative — it cannot flip one to PASS.
+    * **Degrades to the global plane.** Where nobody has authored a station there is no
+      answer here, and the caller keeps ``Site.grade``. Interpolating a surface through
+      three points thirty feet apart would be fiction with a number on it.
+    * **``kind="grade"`` only.** A ``"structure"`` spot is the top of something standing on
+      the ground — a court floor, a wall top — not a reading of the soil.
+
+    Nearest station, not a triangulation. A contour type already exists for the surveyed
+    case and is already drawn on the site plan; when a survey arrives, contours are the
+    input and an interpolator built on design elevations is thrown away. These remain
+    design elevations off the main-floor datum, not shots off a benchmark.
+    """
+    from shapely.geometry import Point
+
+    grade = site_grade_elevation_m(model)
+    best: tuple[str, float] | None = None
+    best_distance = None
+    for index, spot in enumerate(model.plan.project.site.spot_elevations):
+        if spot.kind != "grade":
+            continue
+        elevation = spot.elevation.meters
+        if elevation >= grade:
+            continue  # never raise a local grade above the global plane
+        distance = here.distance(Point(spot.position.xy_m))
+        if best_distance is None or distance < best_distance:
+            x_ft, y_ft = (value / 0.3048 for value in spot.position.xy_m)
+            best_distance = distance
+            best = (f"grade station {index} at ({x_ft:.1f}', {y_ft:.1f}')", elevation)
+    return best

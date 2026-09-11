@@ -80,21 +80,77 @@ def _wall_is_exterior(ctx: CheckContext, wall, rooms_by_storey_index=None) -> bo
     return wall_is_exterior(ctx.model, wall, rooms_by_storey_index)
 
 
-def _foundation_footprint(ctx: CheckContext):
-    """Largest foundation-wall enclosure (the primary building), or None if unavailable."""
+#: Fraction of an enclosure that must be floored by an open excavation before the
+#: enclosure is read as a hole rather than a building. The sunken court reads 0.93 and the
+#: house and garage read 0.00, so anything in the middle of that range would do; a simple
+#: majority is the one that needs no tuning.
+_EXCAVATION_MAJORITY = 0.5
+
+
+def _foundation_enclosures(ctx: CheckContext) -> list:
+    """Every foundation-wall enclosure a **building** stands in, largest first.
+
+    R401.3 asks that the ground fall away from "the building". A site with one house has
+    one such ring; this one has three — the house at 1,296 sf, the detached garage at 576,
+    and the sunken court's retaining run at 562 — and until 2026-09-10 the helper here kept
+    only the largest and silently discarded the other two. The garage had therefore never
+    been graded by anything, and no station had ever been authored around it.
+
+    Two rings are returned here, not three. **An open excavation is not a building**: the
+    sunken court is ground the site drains *into* by design, and asking grade to fall away
+    from a retaining wall is asking the court to fill. That is earned from positive
+    evidence rather than assumed from a tag — ``resolve.site_earth.open_excavation_floors``
+    already identifies a below-grade slab with no conditioned room over it, and an
+    enclosure a majority floored by one is a hole.
+
+    Empty when no foundation walls resolve, or when they close no ring at all. The caller
+    distinguishes the two, because "no foundation" and "a foundation we could not
+    reconstruct" are different UNKNOWNs.
+    """
     from shapely.geometry import LineString
     from shapely.ops import polygonize, unary_union
+
+    from typehaus.resolve.site_earth import open_excavation_floors
 
     segments = [LineString([wall.axis[0], wall.axis[1]])
                 for wall in ctx.model.walls if wall.is_foundation]
     if not segments:
-        return None
+        return []
     faces = list(polygonize(unary_union(segments)))
     if not faces:
-        return None
+        return []
     merged = unary_union(faces)
     polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
-    return max(polys, key=lambda poly: poly.area)
+    excavations = [polygon for _tag, polygon, _z in open_excavation_floors(ctx.model)]
+    if excavations:
+        dug = unary_union(excavations)
+        polys = [poly for poly in polys
+                 if poly.intersection(dug).area <= _EXCAVATION_MAJORITY * poly.area]
+    return sorted(polys, key=lambda poly: poly.area, reverse=True)
+
+
+def _nearest_enclosure(enclosures: list, point) -> tuple:
+    """``(enclosure, distance to its boundary)`` for the ring ``point`` stands against.
+
+    **The foundation a station is graded against is the nearest one.** A point between two
+    buildings cannot slope away from both, and the code's own exception for drains and
+    swales exists because of it; naming the nearer foundation is what a grading plan does
+    and what the far side being the outlet means. On this site the rule only ever moves one
+    station — the garage's south-west yard point, 2'-0" from the garage and 9'-0" from the
+    house — and both readings pass there.
+    """
+    best, best_distance = None, None
+    for enclosure in enclosures:
+        distance = enclosure.exterior.distance(point)
+        if best_distance is None or distance < best_distance:
+            best, best_distance = enclosure, distance
+    return best, best_distance
+
+
+def _foundation_footprint(ctx: CheckContext):
+    """Largest foundation-wall enclosure (the primary building), or None if unavailable."""
+    enclosures = _foundation_enclosures(ctx)
+    return enclosures[0] if enclosures else None
 
 
 # A storey counts as below grade once its finished floor sits this far under the site's

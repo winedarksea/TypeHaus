@@ -267,6 +267,60 @@ SITE = Site(
         # west side (house wall at x=0)
         SpotElevation(position=pt(ft(-3), ft(14)), elevation=ft(-3)),
         SpotElevation(position=pt(ft(-9), ft(28)), elevation=ft(-3, -4)),
+        # ** THE GARAGE RING, NEW 2026-09-10 — THE GARAGE HAD NEVER BEEN GRADED BY
+        # ANYTHING. ** `code.R401_3_grading` built its footprint by polygonizing every
+        # foundation wall and keeping only the LARGEST ring; the house is 1,296 sf and the
+        # garage 576, so the garage was discarded every time and not one station had ever
+        # been authored around it. The check now iterates every enclosure
+        # (`checks/code/mn_residential/_common.py::_foundation_enclosures`), so these four
+        # are what it reads. The garage's foundation ring is x 6'..30', y 43'-2 5/8"..
+        # 67'-2 5/8" (the stem wall AXES, which is what the check polygonizes).
+        #
+        # ** ONE NEAR STATION PER SIDE, 4'-6" OUT, AND THE 4'-6" IS FORCED. ** The house's
+        # own rings sit at 2-3' and 9'. Neither reach is available here, because a station
+        # is captured by an elevation's ground line when it lies within 4' outboard (or 12"
+        # inboard) of that facade's plane — `emit_grade_profile`'s band — and the garage's
+        # planes are only 6' from the house's on the west and east. 4'-6" out of the garage
+        # is 1'-6" east of the house's west plane and 1'-6" west of its east plane: clear of
+        # both bands, and clear of the house's own 10' grading band as well (each of these
+        # is 19'+ from the house footprint). A 9'-out ring would land at x=-3' and x=39',
+        # squarely inside the house's west and east capture bands, and would drag those two
+        # elevations' ground lines 19' past the end of the house.
+        #
+        # Each reads -3'-1": 3" of fall over 4'-6" is 5.56%, the same bench slope the house
+        # rings encode, against R401.3's 5%. The yard plane they fall to is -3'-4".
+        SpotElevation(position=pt(ft(1, 6), ft(55)), elevation=ft(-3, -1)),
+        SpotElevation(position=pt(ft(34, 6), ft(55)), elevation=ft(-3, -1)),
+        # North of the garage the driveway is the graded surface (`code.R401_3_impervious`
+        # reads it at 2.21% now that it has an enclosure within 10' to be measured against),
+        # so these two sit WEST of it — the drive is x 12'..24' — in open front yard, and
+        # they are the one side with room for both rings: 4'-6" and 9'-0" off y=67'-2 5/8".
+        SpotElevation(position=pt(ft(9), ft(71, 8.625)), elevation=ft(-3, -1)),
+        SpotElevation(position=pt(ft(9), ft(76, 2.625)), elevation=ft(-3, -4)),
+        # ** THE SOUTH YARD RING, NEW 2026-09-10. ** These three are not R401.3 stations —
+        # they are 20'+ from the house and the sunken court's own enclosure is excluded from
+        # grading (an open excavation is ground the site drains INTO by design, which is the
+        # whole point of a sunken garden). They are here for `resolve/site_earth.
+        # local_grade_elevation_m`, which now reads grade stations as well as excavation
+        # floors, and they are what makes the retaining run's exposure above grade a derived
+        # number rather than an assumption: the yard south of the court is a flat plane at
+        # -3'-4", so a wall topping out on the porch datum stands 3'-4" out of it.
+        #
+        # They also set the raised-garden apron's base. `params/raised_garden.py` derives
+        # that base as `RETAINING_WALL_TOP_FT - drop_ft`; with the yard authored at -3'-4"
+        # the drop has to reach past it, which is why the drop grew to 4'-0".
+        #
+        # Sited clear of every facade capture band: x=-6' is 2' west of the house's west
+        # band, x=41' is 1' east of its east band, and y=-38' is 38' south of the south one.
+        # The two side stations are at y=-22' and y=-18', not both at -20': the site plan's
+        # drainage arrows pair a station with the nearest LOWER one within its radius, and
+        # the court-floor pair sits at y=-20'. A yard station collinear with one of those
+        # draws a due-east arrow whose two ends share a y, which is a real drawing artefact
+        # and not only a test one — `test_drainage_arrows_point_downhill` indexes spots by
+        # y and cannot tell such an arrow's ends apart.
+        SpotElevation(position=pt(ft(-6), ft(-22)), elevation=ft(-3, -4)),
+        SpotElevation(position=pt(ft(41), ft(-18)), elevation=ft(-3, -4)),
+        SpotElevation(position=pt(ft(18), ft(-38)), elevation=ft(-3, -4)),
         # sunken garden floor, and the retaining wall's top at the far south. The last two
         # read +0'-6": they record the top of W-SG-S, which params/raised_garden.py's
         # retaining apron now tops out level with (rather than 3' above it, as a since-removed
@@ -305,8 +359,8 @@ SITE = Site(
                       kind="structure"),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375),
                       kind="structure"),
-        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6), kind="structure"),
-        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6), kind="structure"),
+        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 2), kind="structure"),
+        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 2), kind="structure"),
     ),
     # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
     # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.
@@ -374,20 +428,65 @@ SITE = Site(
             kind="pad",
         ),
         # SL-M-HP3PAD, the north-side equipment pad under EQ-M-HP3-OD (params/hp3_pad.py),
-        # x 9'-9"..13'-1" by y 36'-10 1/4"..38'-11" — 6.9 sf, the smallest of the three and
-        # the only one in the slot between the house and the garage. Same top, -2'-8", 2"
-        # proud of grade. It falls 1" from its SOUTH-WEST corner to its NORTH-EAST one,
-        # which is away from the house and toward the open east end of the slot: the front
-        # walk's note two entries up is the reason it is not a straight north fall, since
-        # north is the garage stem, and a straight east fall would leave R401.3 grading a
-        # pad that does not shed away from the wall it abuts.
+        # x -0'-3"..3'-1" by y 37'-2 1/4"..39'-3" — 6.9 sf.
+        #
+        # ** THIS RECORD FOLLOWED ITS SLAB 12'-4" WEST ON 2026-09-10, TWO REVISIONS LATE. **
+        # The pad went to the open north-west yard with EQ-M-HP3-OD (notes/
+        # hp3_north_relocation.md); this surface stayed at x 9'-9"..13'-1", in the slot
+        # between the house and the garage, describing a piece of ground that has had no
+        # pad on it since. Nothing caught it: `code.R401_3_impervious` grades an authored
+        # rectangle against the foundation, and a rectangle in the wrong place still grades.
+        # Cross-check an ImperviousSurface against its Slab after any equipment move — the
+        # two are separate records and only this comment ties them.
+        #
+        # Its fall straightened with the move, and the reason the old one was diagonal went
+        # with it: the pad ran its sheet to the NORTH-EAST only because the garage stem
+        # stood directly north of it and there was nowhere else for the water to go. In the
+        # open yard off the house's north-west corner there is nothing north of it at all,
+        # so it falls 1" straight north over 2'-0 3/4", 4.1% against R401.3's 2%, away from
+        # the wall it abuts.
         ImperviousSurface(
             label="hp3 pad",
-            outline=(pt(ft(9, 9), ft(36, 10.25)), pt(ft(13, 1), ft(36, 10.25)),
-                     pt(ft(13, 1), ft(38, 11)), pt(ft(9, 9), ft(38, 11))),
+            outline=(pt(ft(0, -3), ft(37, 2.25)), pt(ft(3, 1), ft(37, 2.25)),
+                     pt(ft(3, 1), ft(39, 3)), pt(ft(0, -3), ft(39, 3))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -9),
             kind="pad",
+        ),
+        # ** THE PASSAGE FLOOR, NEW 2026-09-10 — AND IT IS A PAVED SURFACE ON PURPOSE. **
+        # The house's north foundation and the garage's south foundation face each other
+        # across 6'-6 1/2" of ground, fully roofed by the canopy. Neither can fall 6" in 10'
+        # away from the other: R401.3's 5% ground rule has no solution in a slot that narrow
+        # with a building on both sides. A PAVED surface owes 2%, not 5%, and that is a
+        # solution — which is why the answer here is paving rather than a swale concept the
+        # model has no word for.
+        #
+        # The strategy already existed at the east end and simply stopped 13'-6" short: the
+        # drained paver landing above runs x 17'-6"..30' on the same y band and carries the
+        # passage's water east into the open approach. This piece is the rest of it, from
+        # x 4'-0" (2' outboard of the screen line, where the passage daylights into the west
+        # yard) east to the stair foot at x 17'-6", where the landing takes over. Same y
+        # band, same construction, one continuous surface in the field; two records only
+        # because an ImperviousSurface is a rectangle and the landing carries its own note.
+        #
+        # 81.6 sf. **It does not touch the driveway/parking cap**: Ord. 23-43 bounds
+        # `_PAVING_KINDS = ("driveway", "pad")` and this is a walk. Paving stands at 478 sf
+        # of the 1,000 sf cap either way — there was room, and this does not spend it.
+        #
+        # It is COVERED, so it takes no direct rain; the code grants no exemption for that
+        # and none is claimed. What the ground under the canopy and the four cast tiers
+        # actually needs is to not pond and to drain out, and 2" over the 6'-0" run does
+        # both. The fall is graded against the HOUSE, which is the foundation it abuts (its
+        # near edge is 10 1/4" off the house and 2'-0" off the garage's stem line at the
+        # closest corner); the garage side is the outlet, not a second thing to fall away
+        # from. See `_foundation_enclosures` for why that is the rule and not a dodge.
+        ImperviousSurface(
+            label="house-to-garage passage floor",
+            outline=(pt(ft(4), ft(36, 10.25)), pt(ft(17, 6), ft(36, 10.25)),
+                     pt(ft(17, 6), ft(42, 10.75)), pt(ft(4), ft(42, 10.75))),
+            near_elevation=ft(-2, -10),
+            far_elevation=ft(-3),  # 2.8% away from the house, draining east to the landing
+            kind="walk",
         ),
         # SL-M-HP1PAD, the north-face pad under EQ-M-HP1-OD (params/hp1_north_pad.py),
         # x 32'-9 1/4"..36'-5 3/4" by y 36'-10"..39'-4" — 9.27 sf, new 2026-09-04, moved

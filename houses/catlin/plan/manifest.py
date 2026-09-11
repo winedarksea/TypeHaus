@@ -91,6 +91,15 @@ assert _site.grade is not None and (
 ), (f"plan/site.py grade {_site.grade.meters}m disagrees with "
     f"params/foundations.py SITE_GRADE {foundations.SITE_GRADE.meters}m")
 
+# ``params/sunken_garden.py`` transcribes the same number a THIRD time, as
+# ``SPEC.site_grade_in``, and for the same reason: a params module cannot import the plan
+# that imports it. That constant carried a comment claiming ``test_retaining_court``
+# asserted the two agreed — **it never did**, and the claim had stood through two grade
+# moves. This is that assertion, beside the one it always said it was beside.
+assert abs(_site.grade.meters - sunken_garden.SPEC.site_grade_in * 0.0254) < 1e-9, (
+    f"plan/site.py grade {_site.grade.meters}m disagrees with "
+    f"params/sunken_garden.py SPEC.site_grade_in {sunken_garden.SPEC.site_grade_in}in")
+
 _project = Project(
     name="Catlin House",
     project_uuid=PROJECT_UUID,

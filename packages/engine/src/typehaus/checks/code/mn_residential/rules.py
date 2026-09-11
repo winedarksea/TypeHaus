@@ -16,7 +16,8 @@ from typehaus.checks.code.mn_residential._common import (
     HABITABLE_OCCUPANCIES,
     SF_PER_M2,
     _fail,
-    _foundation_footprint,
+    _foundation_enclosures,
+    _nearest_enclosure,
     _pass,
     _room_storey,
     _storey_is_below_grade,
@@ -295,10 +296,17 @@ def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Fi
 def foundation_grading(ctx: CheckContext) -> list[Finding]:
     """R401.3 lot drainage — grade must fall away from the foundation within 10 feet.
 
-    The primary building footprint is reconstructed from the foundation walls; every spot
-    elevation outside it and within 10' is a drainage station, and the shallowest measured
-    slope must reach 5% (6" per 10'). Impervious-surface grading (2%) is the sibling
-    requirement asserted separately by ``code.R401_3_impervious``.
+    **Every** foundation enclosure a building stands in is reconstructed from the
+    foundation walls (``_foundation_enclosures`` — the house AND the detached garage, but
+    not the sunken court, which is an open excavation the site drains into by design). A
+    spot elevation outside all of them and within 10' of one is a drainage station, graded
+    against the nearest, and the shallowest measured slope must reach 5% (6" per 10').
+    Impervious-surface grading (2%) is the sibling requirement asserted separately by
+    ``code.R401_3_impervious``.
+
+    Until 2026-09-10 this kept only the LARGEST enclosure, so on a site with a detached
+    garage the garage was discarded and graded by nothing at all — silently, since the
+    house's own stations still answered the rule.
     """
     from shapely.geometry import Point
 
@@ -312,11 +320,10 @@ def foundation_grading(ctx: CheckContext) -> list[Finding]:
     if not any(wall.is_foundation for wall in ctx.model.walls):
         return [_unknown("code.R401_3_grading", "no foundation walls to grade around",
                          (), "R401.3")]
-    footprint = _foundation_footprint(ctx)
-    if footprint is None:
+    enclosures = _foundation_enclosures(ctx)
+    if not enclosures:
         return [_unknown("code.R401_3_grading",
                          "could not reconstruct a foundation footprint", (), "R401.3")]
-    boundary = footprint.exterior
 
     grade_m = site.grade.meters
     band_m = _GRADING_BAND.meters
@@ -324,9 +331,9 @@ def foundation_grading(ctx: CheckContext) -> list[Finding]:
     stations = 0
     for spot in site.spot_elevations:
         point = Point(spot.position.xy_m)
-        if footprint.covers(point):
+        if any(enclosure.covers(point) for enclosure in enclosures):
             continue  # interior grade point, not a perimeter drainage station
-        distance_m = boundary.distance(point)
+        _enclosure, distance_m = _nearest_enclosure(enclosures, point)
         if distance_m <= 1e-6 or distance_m > band_m + 1e-9:
             continue
         stations += 1
@@ -356,11 +363,16 @@ def foundation_grading(ctx: CheckContext) -> list[Finding]:
 def impervious_surface_grading(ctx: CheckContext) -> list[Finding]:
     """R401.3 — impervious surfaces abutting the house must slope >= 2% away from the foundation.
 
-    Each authored ``ImperviousSurface`` (walk/patio/driveway/slab) whose nearest edge lies within
-    10' of the primary foundation footprint is a station. The run away from the foundation comes
-    from the outline (far-edge reach minus near-edge reach), the fall from the authored near/far
-    grade elevations, and the shallowest surface slope must reach 2%. Mirrors
+    Each authored ``ImperviousSurface`` (walk/patio/driveway/slab) whose nearest edge lies
+    within 10' of a foundation enclosure is a station, graded against the enclosure it
+    abuts — the nearest one. The run away from that foundation comes from the outline
+    (far-edge reach minus near-edge reach), the fall from the authored near/far grade
+    elevations, and the shallowest surface slope must reach 2%. Mirrors
     ``code.R401_3_grading`` and emits one finding for the worst surface.
+
+    The garage is the reason "every enclosure" matters here too: its driveway starts ON its
+    north foundation line and 28'-9" from the house's, so under the old largest-enclosure
+    reading it was 10' out of reach and never graded.
     """
     from shapely.geometry import Point
 
@@ -368,12 +380,11 @@ def impervious_surface_grading(ctx: CheckContext) -> list[Finding]:
     surfaces = getattr(site, "impervious_surfaces", ())
     if not surfaces:
         return []  # no impervious surfaces modeled abutting the foundation; rule does not apply
-    footprint = _foundation_footprint(ctx)
-    if footprint is None:
+    enclosures = _foundation_enclosures(ctx)
+    if not enclosures:
         return [_unknown("code.R401_3_impervious",
                          "no foundation footprint to grade impervious surfaces against",
                          (), "R401.3")]
-    boundary = footprint.exterior
     band_m = _GRADING_BAND.meters
     worst: tuple[float, str, float, float] | None = None  # (slope, label, run_m, drop_m)
     stations = 0
@@ -381,6 +392,11 @@ def impervious_surface_grading(ctx: CheckContext) -> list[Finding]:
         verts = [p.xy_m for p in surface.outline]
         if len(verts) < 2:
             continue
+        # One enclosure per surface, chosen by the vertex that comes closest to any of
+        # them: a surface is graded against the foundation it abuts, and measuring its run
+        # off two different rings at once would compare reaches that share no origin.
+        boundary = min((enclosure.exterior for enclosure in enclosures),
+                       key=lambda ring: min(ring.distance(Point(v)) for v in verts))
         dists = [boundary.distance(Point(v)) for v in verts]
         near_i = min(range(len(verts)), key=dists.__getitem__)
         far_i = max(range(len(verts)), key=dists.__getitem__)

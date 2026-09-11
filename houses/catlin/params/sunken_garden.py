@@ -202,8 +202,14 @@ class SunkenGardenSpec:
     railing_height_ft: float = 3.5  # 42" guard above the porch walking surface
     # ``plan/site.py`` authors ``grade=ft(-2, -10)``. Transcribed rather than imported for
     # the same reason ``basement_depth_ft`` is: this file is a params module and the plan
-    # imports it, not the other way round. If site grade ever moves, this moves with it —
-    # ``test_retaining_court`` asserts the two agree so it cannot drift silently.
+    # imports it, not the other way round. If site grade ever moves, this moves with it.
+    #
+    # ** THE GUARD IS IN ``plan/manifest.py``, AND IT DID NOT EXIST UNTIL 2026-09-10. **
+    # This comment used to say ``test_retaining_court`` asserted the two agreed. No such
+    # assertion was ever written, and the claim stood through two grade moves — a comment
+    # that names a guard is not a guard. The real one is the ``assert`` beside the
+    # ``SITE_GRADE`` one in the manifest, which is where the plan and the params modules
+    # are the same program and can be compared.
     site_grade_in: float = -34.0
     # ** 36" ABOVE GRADE IS A CAP, AND IT SETS FOUR WALL TOPS AND ONE WALL BASE AT ONCE. **
     # Owner's call (2026-09-05): the sunken-garden retaining run may stand no more than
