@@ -9,8 +9,8 @@ The assertions worth reading before changing any of them:
 
 * :func:`test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete` is the finding that
   produced this whole calculation, pinned as a regression on the CALCULATION rather than on
-  the house. A 4'-0" toe under 944 psf is a real flexural cantilever, and a 12" plain strip
-  carries under a third of it. If a future change makes that pass without steel, the change
+  the house. A 4'-0" toe under 899 psf is a real flexural cantilever, and a 12" plain strip
+  carries a third of it. If a future change makes that pass without steel, the change
   is wrong.
 * :func:`test_the_plain_branch_gives_up_two_inches_of_its_thickness` pins ACI 318-19
   §14.5.1.7 — a plain footing cast against soil is graded on ``h - 2``.
@@ -26,24 +26,25 @@ import pytest
 
 # §7a-§7e, worked by hand against §4's governing at-rest / 110 pcf case.
 _TOE_FT, _HEEL_FT, _WIDTH_FT, _DEPTH_FT = 4.0, 3.0, 8.0, 1.0
-# Re-oracled 2026-09-05 (twice): the stem shortened 10.37' -> 9.62' -> 9.2865' as the
-# footings rose to the court plane and the wall tops came down to 36" above grade, so W fell
-# and the resultant walked back toward mid-base — e 0.87' -> 0.57' -> 0.4466'. The toe
+# Re-oracled three times: the stem shortened 10.37' -> 9.62' -> 9.2865' -> 9.1198' as the
+# footings rose to the court plane, the wall tops came down to 36" above grade, and then all
+# five court walls came flush with the porch datum (2026-09-10). W fell each time and the
+# resultant walked back toward mid-base — e 0.87' -> 0.57' -> 0.4466' -> 0.3865'. The toe
 # pressure falls with e and the heel pressure RISES, which is why these two move opposite ways.
-_Q_TOE, _Q_HEEL = 944.0, 470.3
+_Q_TOE, _Q_HEEL = 899.3, 495.1
 
 #: `SUNKEN_GARDEN_WALL` states `EXPOSED_MIX`, so every capacity below is on the
 #: 5,000 psi the pour SPECIFIES, not the presumptive 3,000 the engine used to assume.
 _FC_PSI = 5000.0
 
 _ORACLE = {
-    "toe flexure": (11073.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
-    "heel flexure": (8435.0, 19755.0),
-    "footing one-way shear": (4446.0, 10978.0),  # lb/ft, reinforced branch at d
+    "toe flexure": (10649.0, 19755.0),        # Mu, phi*Mn  ft-lb/ft, with #6 @ 10"
+    "heel flexure": (8303.0, 19755.0),
+    "footing one-way shear": (4286.0, 10978.0),  # lb/ft, reinforced branch at d
 }
 #: §7b/§7c/§7d as the PLAIN section the house had before 2026-09-03.
 _PLAIN_CAPACITY = 3536.0
-_PLAIN_SHEAR = (4308.0, 6788.0)
+_PLAIN_SHEAR = (4151.0, 6788.0)
 
 _WALLS = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 
@@ -110,14 +111,15 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     """§7b — the finding that produced this calculation, pinned on the CALCULATION.
 
     This must never come out passing. If a future change lets an unreinforced 4'-0" toe under
-    944 psf report OK, that change has broken the check rather than fixed the footing — and
+    899 psf report OK, that change has broken the check rather than fixed the footing — and
     the house would silently lose the mat it is now designed with.
 
-    The name says "five times" and the number is 3.13. It was 5.18 at the presumptive
-    3,000 psi, and it has come down twice since on wall height alone. The name is kept
+    The name says "five times" and the number is 3.01. It was 5.18 at the presumptive
+    3,000 psi, and it has come down three times since on wall height alone. The name is kept
     because what it pins is the SHAPE of the answer — a plain strip is over by a multiple,
     not by a margin — and renaming it every time the multiple moves would lose the thread
-    back to the finding.
+    back to the finding. Unlike §6's stem bar table, no row of this one has changed sides:
+    the footing needs its mat at every height this wall has stood at.
     """
     from typehaus.engineering.retaining_basis import _Geometry, footing_states
 
@@ -125,11 +127,11 @@ def test_a_footing_with_no_mat_is_five_times_over_as_plain_concrete(
     bare = _Geometry(**{**geometry.__dict__, "footing_reinforcement": None})
     toe = _state(footing_states(bare, case), "toe flexure")
     assert toe.capacity == pytest.approx(_PLAIN_CAPACITY, rel=0.002)
-    assert toe.demand / toe.capacity == pytest.approx(3.13, rel=0.01)
+    assert toe.demand / toe.capacity == pytest.approx(3.01, rel=0.01)
     assert not toe.ok
 
     heel = _state(footing_states(bare, case), "heel flexure")
-    assert heel.demand / heel.capacity == pytest.approx(2.39, rel=0.01)
+    assert heel.demand / heel.capacity == pytest.approx(2.35, rel=0.01)
     assert not heel.ok
 
     # SHEAR, by contrast, PASSES as plain once the real 5,000 psi mix is read (it was 1.04
@@ -183,12 +185,16 @@ def test_the_toe_takes_no_credit_for_the_footings_own_weight(geometry_and_case) 
 
     # The size of the conservatism, stated so nobody removes it thinking it is noise: taking
     # the relief AT ITS PROPER 0.9 FACTOR (ASCE 7-16 §2.3.1 on a counteracting dead load)
-    # would lighten the FACTORED demand by about 8%. Comparing service moments instead
-    # overstates it at 13.5% — the factor is the whole point, so the comparison has to carry
-    # it, and it is exactly the argument this conservatism exists to avoid having.
+    # would lighten the FACTORED demand by about 10%. The factor is the whole point, so the
+    # comparison has to carry it, and it is exactly the argument this conservatism exists to
+    # avoid having.
+    #
+    # ** IT GROWS AS THE WALL GETS SHORTER. ** The relief is the footing's own weight and
+    # does not move; the pressure it is set against falls with the wall. 8% at the 36" cap,
+    # 10% with the flush tops. Expect this figure to drift up, not to stay put.
     relief_service = 150.0 * _DEPTH_FT * _TOE_FT ** 2 / 2.0
     proper = EARTH_PRESSURE_LOAD_FACTOR * pressure_only - 0.9 * relief_service
-    assert proper / state.demand == pytest.approx(0.92, rel=0.02)
+    assert proper / state.demand == pytest.approx(0.90, rel=0.02)
 
 
 def test_the_heel_takes_no_credit_for_the_pressure_under_it(geometry_and_case) -> None:

@@ -25,19 +25,29 @@ from typehaus.engineering.retaining_system import KIND
 _M_PER_FT = 0.3048
 
 # §4 of the note, at the graded case (at-rest 60 psf/ft, 110 pcf, mu 0.35 on the stone bed).
-# Re-oracled by hand TWICE on 2026-09-05, and both ends of the wall moved: the footings rose
-# 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' -> 10.62'), then
-# the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865', H -> 10.2865').
-# Thrust goes as H^2 while the resisting weights fall linearly, so both moves pushed every
-# one of these the same way.
-_NOTE_RESULTANT_LB = 63_487.0
-_NOTE_CAPACITY_LB = 112_207.0
-_NOTE_CANCELLED_LB = 116_392.0
-_NOTE_SYSTEM_FS = 1.77
-# §7: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
+# Re-oracled by hand THREE times, and the top of the wall has come down each time: the
+# footings rose 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' ->
+# 10.62'), the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865',
+# H -> 10.2865'), and on 2026-09-10 all five court walls came flush with the porch datum at
+# 0'-0" (stem -> 9.1198', H -> 10.1198'). Thrust goes as H^2 while the resisting weights
+# fall linearly, so all three moves pushed every one of these the same way.
+_NOTE_RESULTANT_LB = 61_446.0
+_NOTE_CAPACITY_LB = 110_620.0
+_NOTE_CANCELLED_LB = 112_651.0
+_NOTE_SYSTEM_FS = 1.80
+# §8: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
-_NOTE_STRUT_PU_LB = 50_789.0
+#
+# ** DO NOT READ A FALLING Pu AS PERMISSION TO SHRINK THE BEAM. ** The two shallower
+# sections §8 once rejected (10 1/4" and 8 1/2") both PASS at this Pu, at d/c 0.81 and
+# 0.98. What holds 17.5" is the sequencing argument and the absence of redundancy, not the
+# ratio; §8's three-reason block is where that now lives.
+_NOTE_STRUT_PU_LB = 49_157.0
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
+# The exposure of the run above the authored yard, which is a RESULT of the flush tops and
+# not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
+_NOTE_EXPOSURE_IN = 40.0
+_NOTE_EXPOSURE_BAND_IN = (36.0, 48.0)
 
 
 def _results(plan):
@@ -55,7 +65,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert record.status is Status.OK, record.summary
 
     states = {state.name: state for state in record.limit_states}
-    # 1.77 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
+    # 1.80 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
     assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
     assert states["sliding"].demand == pytest.approx(1.5)
     assert states["sliding"].ok
@@ -70,6 +80,43 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert f"{_NOTE_RESULTANT_LB:,.0f}" in record.summary
     assert f"{_NOTE_CAPACITY_LB:,.0f}" in record.summary
     assert any(f"{_NOTE_CANCELLED_LB:,.0f}" in note for note in record.notes)
+
+
+def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(
+        catlin_plan) -> None:
+    """One form height across all five court walls, and the 36" is derived from it.
+
+    The owner's figure was always a BAND — around 36" out of the yard, up to about 48",
+    because a freestanding wall this tall may be read as a guard. It was recorded in
+    ``SPEC.retaining_top_ft`` as a MAXIMUM (``(site_grade_in + 36) / 12``), which is the
+    opposite constraint: under it a lower yard would have pulled five wall tops down rather
+    than letting the exposure grow into the band.
+
+    Both halves are asserted here because each catches a different mistake. The flush tops
+    catch a jog reappearing in the form line; the exposure catches the constraint being
+    inverted again.
+
+    **The exposure is measured against the AUTHORED YARD, not against ``Site.grade``.** The
+    -2'-10" global plane is the near-house bench; the yard these walls stand in is -3'-4",
+    and grading the exposure against the wrong one reports 34" for a wall that is 40" out
+    of the ground beside it. That is also why this is an equality and not an inequality
+    against the plane — see ``params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN``.
+    """
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    tops = {wall.tag: round(wall.z1_m, 9) for wall in model.walls
+            if wall.tag in {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S"}}
+    assert len(tops) == 5, tops
+    assert set(tops.values()) == {0.0}, tops
+
+    yard_m = min(spot.elevation.meters
+                 for spot in catlin_plan.project.site.spot_elevations
+                 if spot.kind == "grade")
+    exposure_in = (0.0 - yard_m) / 0.0254
+    assert exposure_in == pytest.approx(_NOTE_EXPOSURE_IN, abs=0.01)
+    low, high = _NOTE_EXPOSURE_BAND_IN
+    assert low <= exposure_in <= high
 
 
 def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
@@ -93,18 +140,18 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.26 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.29 and does NOT check.
 
-    **This assertion pins a failure and that is the point.** The whole margin between 1.26
-    and 1.77 is the washed-stone bed, and the bed is an authored claim
+    **This assertion pins a failure and that is the point.** The whole margin between 1.29
+    and 1.80 is the washed-stone bed, and the bed is an authored claim
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.77 as robust.
+    so out loud; this says so in the suite, so that nobody later reads 1.80 as robust.
 
-    Two height cuts on 2026-09-05 moved this row — 1.13 to 1.22 when the footings rose, to
-    1.26 when the tops came down to the 36" cap — and neither changed anything about the
-    argument: it is still short of 1.50, and 0.35 versus 0.25 is still the difference between
-    a court that stands and one that does not. mu multiplies the same W on both sides, so no
-    amount of shortening can close this gap. Only the bed can.
+    Three height cuts have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at
+    the 36" cap, to 1.29 with the flush tops — and none changed anything about the argument:
+    it is still short of 1.50, and 0.35 versus 0.25 is still the difference between a court
+    that stands and one that does not. mu multiplies the same W on both sides, so no amount
+    of shortening can close this gap. Only the bed can.
     """
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_system import _free_body, _loops, _members
@@ -124,7 +171,7 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     site = presumptive("GM").friction_coefficient
     assert site == pytest.approx(0.25)
     on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(1.26, abs=0.01)
+    assert on_site / on_stone_demand == pytest.approx(1.29, abs=0.01)
     assert on_site / on_stone_demand < 1.5
 
 
@@ -155,7 +202,22 @@ def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint
 
 def test_the_stem_is_reinforced_and_a_plain_one_would_not_be_covered_at_all(
         catlin_plan) -> None:
-    """§6. The bar schedule is what makes the section work, and it is 4.5x, not marginal."""
+    """§6. The bar schedule is what makes the section work, and it is 4.5x, not marginal.
+
+    ** ⚠ THE GEOMETRY BELOW IS A DELIBERATELY FROZEN MECHANICS ORACLE. DO NOT "CORRECT" IT
+    TO THE HOUSE. ** It is the court as it stood when §6 was first worked — stem 10.3698',
+    H 11.3698' — and the wall has come down three times since (to 9.62'/10.62' when the
+    footings rose, to 9.2865'/10.2865' at the 36" cap, to 9.1198'/10.1198' when the five
+    court walls came flush with the porch datum). Nothing here reads the plan, so it passes
+    unchanged while the house moves under it, and that is the point: these twelve numbers
+    are what an independent hand pass produced from these inputs, and the job of this test
+    is to prove `stem_flexure` still reproduces them. Re-deriving the inputs from today's
+    model would test the arithmetic against itself and verify nothing.
+
+    The live house's stem ratio is pinned where it belongs, against the landed model:
+    `test_the_court_reproduces_the_hand_worked_free_body` above, and
+    `test_concrete_cover.test_the_third_inch_on_the_garden_stems_is_pinned`.
+    """
     from typehaus.engineering.retaining_basis import _Geometry, analyse, stem_flexure
     from typehaus.engineering.soil import presumptive
 

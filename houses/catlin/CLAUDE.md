@@ -1274,9 +1274,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   "Sunken garden court").
 - Ponding over the court is ~321 cf against ~191 cf of 100-yr/24-hr rain (~1.7x); the
   governing case is snowmelt over a frozen grate, where `DRW-SG-MAIN` contributes nothing.
-- **`W-SG-ARCH` must not move.** It carries Pu 62,051 lb; dropping its top to the rim
-  underside gives phi-Pn 60,712 (d/c 1.02) — it is load-bearing, not decorative. Its top and
-  `_rim_underside_in` are the same expression. `FO-SG-ARCH` is retired with the stoop.
+- **`W-SG-ARCH` must not move, and since 2026-09-10 the reason is no longer the ratio.**
+  Dropping its top to the rim underside gives a 10 1/4" section at phi-Pn 60,712 lb, which
+  FAILED at Pu 62,051 (d/c 1.02) and **passes at today's Pu 49,157 (d/c 0.81)**; the 8 1/2"
+  section passes too, by 2%. What holds 12" x 17 1/2" is the SEQUENCING argument — the loop
+  must close before backfill, and a strut whose bottom is tied to a surface that moves is a
+  residue, not a chosen depth — plus no redundancy and a ~1.1 CY saving. Read
+  `notes/sunken_garden_court_free_body.md` §8's three-reason block before shrinking it. Its
+  top and `_rim_underside_in` are the same expression. `FO-SG-ARCH` is retired with the stoop.
   `W-SG-BRKBM` carries no structural load — it is the veneer's thermal foundation only.
 - `_pier_bell_bottom_ft` is **derived**, not pinned: `(_court_top_in - frost_depth_in) / 12`
   — do not pin it again, a pinned literal silently drifts the next time the court moves (→
@@ -1293,10 +1298,25 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `space_summary`'s interior-hole filter is an area-overlap test, not a single
   representative-point containment check — a floor spanning two bays (as `W-SG-ARCH` splits
   this court) needs both bays counted.
-- **`SPEC.retaining_top_ft` derives from grade**: `(site_grade_in + 36)/12`. It doubles as
-  `params/raised_garden.py`'s `RETAINING_WALL_TOP_FT` apron TOP, with BASE = TOP - drop_ft —
-  moving one moves both. Nothing grades a freestanding wall's base against the ground plane,
-  so a wrong constant here goes to 0 FAIL (→ DESIGN-LOG.md, "Sunken garden court").
+- **All five court walls top out on the porch datum. One form height.** `SPEC.
+  retaining_top_ft` is `porch_top_ft` since 2026-09-10, not `(site_grade_in + 36)/12` — the
+  36" was recorded as a MAXIMUM when the owner's call was a band (around 36" out of the
+  yard, up to about 48", because the wall may be read as a guard). The exposure is a RESULT
+  now: `RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN` is 40" against the -3'-4" yard
+  `plan/site.py` authors, pinned by `test_retaining_court`. Keep the terrace name separate
+  from the porch-floor name so a future divergence is a one-line change.
+  - It doubles as `params/raised_garden.py`'s `RETAINING_WALL_TOP_FT` apron TOP, with
+    BASE = TOP - drop_ft — moving one moves both. **`drop_ft` is 4'-0" now, eight whole 6"
+    courses**, which buries the apron's base course 8" in the authored yard; at 3'-0" off
+    the new top it would have stood 4" in the air, the same negative embedment as before
+    arrived at the other way. Nothing grades a freestanding wall's base against the ground
+    plane, so a wrong constant here goes to 0 FAIL (→ DESIGN-LOG.md, "Sunken garden court").
+  - **The apron's `unbalanced_fill` is the DIFFERENTIAL (3'-4"), never `drop_ft`.** It
+    tracks `RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`: the terrace stands that far above the
+    yard and below the yard both faces are in the same ground. Writing the 4'-0" run there
+    hits IRC R404.1.1's 48" threshold exactly and sends five segmental landscape walls into
+    an R404.4 cantilever analysis they have no footing for — five UNKNOWNs, and the wrong
+    model of the wall.
 - `W-SG-W1`/`E1` bottom on `_wall_bottom` like every other wall; `_PORCH_FOOTING_THICKNESS_IN`
   no longer exists. IRC Table R404.1.2(8)'s 10'-0" row still passes at 9'-1 7/16".
 - `FO-SG-TOE-N-W`/`-N-E` void the rim over them, as `W`/`E`/`S` do over the other three toes.
@@ -1312,8 +1332,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- Current stem/toe state: system FS 1.77, stem flexure 0.65, toe flexure 0.56, stem length
-  9.2865'.
+- Current stem/toe state: system FS **1.80** (d/c 0.833), stem flexure **0.61**, toe
+  flexure **0.54**, stem length **9.1198'**. Every schedule in the stem bar table now
+  clears, `#6 @ 16"` included at 0.97 — `#6 @ 10"` is held on one-bar-one-spacing with the
+  footing mat and on §5's stone-bed dependence, not on arithmetic.
 - **Every wall-to-house joint here needs one continuous 2" XPS board, house-footing-underside
   to porch-wall-top, and nothing checks that continuity** — verify by hand after any footing
   or wall-top move.

@@ -13,24 +13,33 @@
 >
 > Every geotechnical input below is still a presumptive code-table value on a site with **no
 > geotechnical report**, and the soil class comes from a survey for the wrong county. **FS
-> 1.77 against 1.50 is a screening that clears. It is not a design and it is not a seal**, and
+> 1.80 against 1.50 is a screening that clears. It is not a design and it is not a seal**, and
 > `FoundationWall.engineering_spec` stays unset for the reason the screening note's §6 gives.
 >
-> **RE-WORKED BY HAND TWICE ON 2026-09-05, AND BOTH ENDS OF THE WALL MOVED.**
+> **RE-WORKED BY HAND THREE TIMES, AND THE TOP OF THE WALL HAS COME DOWN EACH TIME.**
 >
-> *First,* the three retaining footings rose 9" so that their tops became the court's walking
-> surface (`params/sunken_garden._wall_bottom`, which is now `_court_top`): stem 10.37' →
-> 9.62', `H` 11.37' → 10.62'.
+> *First* (2026-09-05), the three retaining footings rose 9" so that their tops became the
+> court's walking surface (`params/sunken_garden._wall_bottom`, which is now `_court_top`):
+> stem 10.37' → 9.62', `H` 11.37' → 10.62'.
 >
-> *Then* the owner capped the run at **36" out of the yard** — `SPEC.retaining_top_ft` is
-> derived from site grade now, and the tops fell 4" from +0'-6" to +0'-2": stem 9.62' →
-> **9.2865'**, `H` 10.62' → **10.2865'**.
+> *Then* (2026-09-05), the owner capped the run at 36" out of the yard and the tops fell 4"
+> from +0'-6" to +0'-2": stem 9.62' → 9.2865', `H` 10.62' → 10.2865'.
 >
-> Thrust goes as `H²` and the resisting weights fall linearly, so both moves pushed the same
-> way and the totals below are the compound of them: FS 1.58 → 1.71 → **1.77** sliding, toe
-> flexure 0.72 → 0.61 → **0.56**, stem flexure 0.72 → **0.65**. **Nothing here was recomputed
-> from the engine's output**; §4, §6 and §7 are worked term by term below and the engine is
-> then checked against them, which is the only order in which an oracle means anything.
+> *Then* (2026-09-10), **all five court walls came flush with the porch datum at 0'-0"** —
+> one form height, one strip-and-set, one continuous top line, no 2-inch jog at the porch
+> corner. The tops fell the last 2": stem 9.2865' → **9.1198'**, `H` 10.2865' →
+> **10.1198'**. `SPEC.retaining_top_ft` is `porch_top_ft` now, not a figure derived off
+> grade; the 36" is a RESULT, and against the yard `plan/site.py` now authors at -3'-4" the
+> run stands 40" out of it.
+>
+> Thrust goes as `H²` and the resisting weights fall linearly, so all three moves pushed the
+> same way and the totals below are the compound of them: FS **1.58 → 1.71 → 1.77 → 1.80**
+> sliding, toe flexure 0.72 → 0.61 → 0.56 → **0.54**, stem flexure 0.72 → 0.65 → **0.61**.
+> **Nothing here was recomputed from the engine's output**; §4, §6 and §7 are worked term by
+> term below and the engine is then checked against them, which is the only order in which
+> an oracle means anything. The third pass was worked before `SPEC.retaining_top_ft` was
+> touched, and the engine then reproduced §4's `system_demand` 61,446.1 lb and
+> `system_capacity` 110,620 lb to the digit.
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Written:** 2026-08-30, by hand, before the calculation it oracles was encoded.
@@ -52,11 +61,11 @@ that same line is why the 2026-09-05 move had to be made by raising the WALL bot
 `depth` pushes only `z0` down and `bottom_elevation` is ignored on this branch:
 
 ```
-                          before 2026-09-05          after
-W-SG-E2     z0             -118.4375"                -109.4375"    (the wall)
-            z1               +6.0000"                  +2.0000"    (36" over grade)
-FT-SG-E2    z0             -130.4375"                -121.4375"    (the footing,
-            z1             -118.4375"                -109.4375"     entirely below it)
+                        before 09-05      after 09-05      after 09-10
+W-SG-E2     z0          -118.4375"        -109.4375"       -109.4375"   (the wall)
+            z1            +6.0000"          +2.0000"          0.0000"   (the porch datum)
+FT-SG-E2    z0          -130.4375"        -121.4375"       -121.4375"   (the footing,
+            z1          -118.4375"        -109.4375"       -109.4375"    wholly below it)
 ```
 
 Two different heights were being conflated, and the choice matters because they differ by a
@@ -64,13 +73,13 @@ whole footing depth:
 
 | quantity | value | what it is for |
 |---|---|---|
-| `unbalanced_fill` | **9.2865'** | the **IRC** quantity — fill against the wall, to the wall's base. R404.1.1's 48" threshold and Table R404.1.2(8)'s rows are read against it. Authored as `_ret_top - _wall_bottom`, so it followed the move on its own. |
-| `H` for stability | **10.2865'** | top of retained soil to the **underside of the footing**. Soil bears on the back of the heel as well as the back of the stem, and the plane being slid along is the footing's underside. |
-| stem height | **9.2865'** | what stands above the footing — the concrete's own weight, the soil column on the heel, and the flexural cantilever in §6. |
+| `unbalanced_fill` | **9.1198'** | the **IRC** quantity — fill against the wall, to the wall's base. R404.1.1's 48" threshold and Table R404.1.2(8)'s rows are read against it. Authored as `_ret_top - _wall_bottom`, so it followed the move on its own. |
+| `H` for stability | **10.1198'** | top of retained soil to the **underside of the footing**. Soil bears on the back of the heel as well as the back of the stem, and the plane being slid along is the footing's underside. |
+| stem height | **9.1198'** | what stands above the footing — the concrete's own weight, the soil column on the heel, and the flexural cantilever in §6. |
 
 **Worked the other way,** for the record — the confusion this convention exists to prevent:
-if the wall bottom were read as the footing underside, the stem would be 8.2865' and `H`
-9.2865', giving a thrust of `½ × 60 × 9.2865² = 2,587 plf` instead of 3,174 — **19% light** — while also
+if the wall bottom were read as the footing underside, the stem would be 8.1198' and `H`
+9.1198', giving a thrust of `½ × 60 × 9.1198² = 2,495 plf` instead of 3,072 — **19% light** — while also
 under-counting the stem's own dead weight and the soil on the heel by a foot each. The two
 errors are in opposite directions and **do not cancel**.
 
@@ -108,11 +117,11 @@ Plan, at the footing level. The court is 19'-0" clear × 28'-0", walls 12" cast 
 Section, one side wall, west (retained) to east (court):
 
 ```
-   +0'-2"   ============  top of wall = top of the terrace the apron holds
-            |          |    (36" over the -2'-10" yard — the owner's cap)
-            | 12" stem |   <-- soil, 9'-3 7/16" of it, pushing this way
+    0'-0"   ============  top of wall = the PORCH DATUM, and the terrace the apron holds
+            |          |    (40" over the -3'-4" yard the site now authors)
+            | 12" stem |   <-- soil, 9'-1 7/16" of it, pushing this way
    terrace  |          |
-   at +0'-2"|          |
+   at 0'-0" |          |
             |          |
   -9'-1 7/16"   +------+----------+    <-- footing TOP = wall bottom = THE COURT FLOOR
                 | 3'-0" |  1'-0"  |  4'-0"      8'-0" x 1'-0" strip
@@ -133,7 +142,7 @@ footprint is 0.000 sf; it was 2.0 sf for one day, where the W/E toes were cut to
 north edge and the footings run 6" further.
 
 **The one thing this drawing says that the old one did not:** `W-SG-W2` and `W-SG-E2` are
-the same wall mirrored about x = 18'-0". Same 12" section, same top (+0'-2"), same bottom
+the same wall mirrored about x = 18'-0". Same 12" section, same top (0'-0"), same bottom
 (−9'-1 7/16"), same 18'-4" length, same footing. Their thrusts are **equal and opposite**,
 and they are joined at the south by `W-SG-S` through a cast corner and at the north by
 `W-SG-ARCH`. What is between them is concrete, not air.
@@ -201,10 +210,10 @@ design on that same claim (`structural.frost_depth`, ASCE 32 soil replacement, 2
 
 | | |
 |---|---|
-| stem | 12" cast concrete, **9'-3 7/16"** above the footing |
+| stem | 12" cast concrete, **9'-1 7/16"** above the footing |
 | footing | **8'-0" wide × 1'-0" deep**, offset **6" toward the court** — toe 4'-0", heel 3'-0" |
-| `H`, top of soil to footing underside | **10.2865'** |
-| retained face | outboard, terrace at +0'-2" — 36" over the yard (the raised garden's apron holds it) |
+| `H`, top of soil to footing underside | **10.1198'** |
+| retained face | outboard, terrace at 0'-0" — the porch datum, 40" over the -3'-4" yard (the raised garden's apron holds it) |
 | resisting face | inboard, court floor at −9'-1 7/16" — **the toe top IS that floor**, so the toe is buried 0" and `toe_embedment_ft` stays the hardcoded 0.0 it always was |
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
 | stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
@@ -254,54 +263,62 @@ SYSTEM:  demand   = | Σ P(m)·L(m)·n̂(m) |     a 2-D resultant
 ### The terms, at at-rest 60 / 110 pcf — the graded case
 
 ```
-P        = ½ × 60 × 10.2865²                      = 3,174.3 plf
-W_stem   = 1.0  ×  9.2865 × 150                   = 1,393.0 plf
+P        = ½ × 60 × 10.1198²                      = 3,072.3 plf
+W_stem   = 1.0  ×  9.1198 × 150                   = 1,368.0 plf
 W_ftg    = 8.0  ×  1.0    × 150                   = 1,200.0 plf
-W_heel   = 3.0  ×  9.2865 × 110                   = 3,064.5 plf
-W                                                 = 5,657.5 plf
-F        = 0.35 × 5,657.5                         = 1,980.1 plf
+W_heel   = 3.0  ×  9.1198 × 110                   = 3,009.5 plf
+W                                                 = 5,577.5 plf
+F        = 0.35 × 5,577.5                         = 1,952.1 plf
 
-M_ot     = 3,174.3 × 10.2865/3                    = 10,883   ft-lb/ft
-M_r      = 1,200×4.0 + 1,393.0×4.5 + 3,064.5×6.5  = 30,988   ft-lb/ft
-x̄        = (30,988 − 10,883)/5,657.5              = 3.5536 ft
-e        = 4.000 − 3.5536                         = 0.4466 ft  (kern B/6 = 1.333 ft) ✓
-q_max    = 5,657.5/8 × (1 + 6×0.4466/8)           =   944 psf  (allow 3,000)          ✓
-FS_ot    = 30,988 / 10,883                        = 2.85       (need 1.50)            ✓
+M_ot     = 3,072.3 × 10.1198/3                    = 10,364   ft-lb/ft
+M_r      = 1,200×4.0 + 1,368.0×4.5 + 3,009.5×6.5  = 30,518   ft-lb/ft
+x̄        = (30,518 − 10,364)/5,577.5              = 3.6135 ft
+e        = 4.000 − 3.6135                         = 0.3865 ft  (kern B/6 = 1.333 ft) ✓
+q_max    = 5,577.5/8 × (1 + 6×0.3865/8)           =   899 psf  (allow 3,000)          ✓
+FS_ot    = 30,518 / 10,364                        = 2.94       (need 1.50)            ✓
 
 SYSTEM
-  total thrust  = 3,174.3 × (18.333 + 18.333 + 20.0) = 179,879 lb
-  resultant     = 3,174.3 × 20.0                     =  63,487 lb   (E-W cancels exactly)
-  cancelled                                          = 116,392 lb
-  capacity      = 1,980.1 × 56.667                   = 112,207 lb
-  FS_sliding    = 112,207 / 63,487                   = 1.77       (need 1.50)         ✓
+  total thrust  = 3,072.3 × (18.333 + 18.333 + 20.0) = 174,097 lb
+  resultant     = 3,072.3 × 20.0                     =  61,446 lb   (E-W cancels exactly)
+  cancelled                                          = 112,651 lb
+  capacity      = 1,952.1 × 56.667                   = 110,620 lb
+  FS_sliding    = 110,620 / 61,446                   = 1.80       (need 1.50)         ✓
 ```
 
 **Every term above moved the same way and for one reason.** `P` goes as `H²`. `H` has now
-fallen twice — 11.3698' → 10.6198' when the footings rose 9", then → 10.2865' when the tops
-came down 4" to the 36" cap — so the thrust is down 21% from where this note started. The
-resisting terms fell too, the stem being 12 3/4" shorter and the soil column on the heel with
-it, but they fall LINEARLY, which is why every ratio improves rather than staying put. Both
-moves made this court more stable, and the reason is the same one each time: thrust is
+fallen three times — 11.3698' → 10.6198' when the footings rose 9", → 10.2865' when the tops
+came down 4" to the 36" cap, → **10.1198'** when all five court walls came flush with the
+porch datum — so the thrust is down 24% from where this note started. The resisting terms
+fell too, the stem being 14 3/4" shorter than it was and the soil column on the heel with
+it, but they fall LINEARLY, which is why every ratio improves rather than staying put. All
+three moves made this court more stable, and the reason is the same one each time: thrust is
 quadratic in height and weight is not.
+
+**The third cut is the smallest and it is the one that was free.** The first two were paid
+for — 9" of extra excavation, then 4" of wall the owner gave up. This one bought a
+simplification (one form height across the court instead of two) and the stability came
+along with it.
 
 ### All four corners of (active, at-rest) × (110, 130 pcf)
 
 | case | system FS | FS overturning | e / kern | q_max |
 |---|---|---|---|---|
-| **at-rest 60, 110 pcf — GRADED** | **1.77** ✓ | **2.85** ✓ | **0.447 / 1.333** ✓ | **944** ✓ |
-| at-rest 60, 130 pcf | 1.94 ✓ | 3.18 ✓ | 0.182 / 1.333 ✓ | 883 ✓ |
-| active 45, 110 pcf | 2.36 ✓ | 3.80 ✓ | 0.035 / 1.333 ✓ | 726 ✓ |
-| active 45, 130 pcf | 2.59 ✓ | 4.24 ✓ | 0.256 / 1.333 ✓ | 926 ✓ |
+| **at-rest 60, 110 pcf — GRADED** | **1.80** ✓ | **2.94** ✓ | **0.387 / 1.333** ✓ | **899** ✓ |
+| at-rest 60, 130 pcf | 1.98 ✓ | 3.29 ✓ | 0.129 / 1.333 ✓ | 840 ✓ |
+| active 45, 110 pcf | 2.40 ✓ | 3.93 ✓ | 0.078 / 1.333 ✓ | 738 ✓ |
+| active 45, 130 pcf | 2.64 ✓ | 4.38 ✓ | 0.294 / 1.333 ✓ | 935 ✓ |
 | required | 1.50 | 1.50 | within B/6 | ≤ 3,000 |
 
 **Read the last TWO rows' `e` with care: they are on the other side of centre.** At active 45
 the resisting moment is large enough that the resultant lands past mid-base, toward the heel —
-4.035' from the toe tip at 110 pcf and 4.256' at 130. The magnitude is what the kern test
+4.078' from the toe tip at 110 pcf and 4.294' at 130. The magnitude is what the kern test
 grades and both clear 1.333' comfortably either way, but those two figures do not mean the
 same thing the top two rows' do, and a reader comparing them straight down the column would
-be misled. **Only one row was on that side before the tops came down**; shortening the stem
-takes proportionally more off the overturning moment than off the resisting one, so the
-resultant walks toward the heel and rows can cross the centre without anything being wrong.
+be misled. **The split is now clean at the load case**: both at-rest rows sit toward the toe
+and both active rows past mid-base. Shortening the stem takes proportionally more off the
+overturning moment than off the resisting one, so the resultant walks toward the heel and
+rows cross the centre without anything being wrong — one row had crossed before the 36" cap,
+and the second crossed with these last two inches.
 
 **The graded row is the worst of the four.** Both ends of the soil band agree on the verdict,
 so the answer does not turn on the one input no code table publishes — which is exactly the
@@ -315,13 +332,13 @@ restraint concedes the point. Worked, as a base-restrained top-free cantilever u
 triangular at-rest load:
 
 ```
-w₀ = 60 × 9.2865 / 12                 = 46.43 lb/in per 12" of wall
+w₀ = 60 × 9.1198 / 12                 = 45.60 lb/in per 12" of wall
 E  = 57,000 √3,000                    = 3,122,000 psi
 Ig = 12 × 12³/12                      = 1,728 in⁴
-δ  = w₀ L⁴ / (30 E I)  ,  L = 111.44"
+δ  = w₀ L⁴ / (30 E I)  ,  L = 109.44"
 
-   uncracked, I = Ig          δ = 0.044"  =  0.00036 H
-   cracked,   I ≈ 0.35 Ig     δ = 0.126"  =  0.00102 H
+   uncracked, I = Ig          δ = 0.040"  =  0.00033 H
+   cracked,   I ≈ 0.35 Ig     δ = 0.115"  =  0.00095 H
 ```
 
 Against Clough & Duncan (1991), as **AASHTO LRFD Table C3.11.1-1** and Caltrans *Trenching
@@ -329,24 +346,26 @@ and Shoring Manual* Table 4-1 — dense sand **0.001H**, medium dense 0.002H, lo
 (Do **not** cite NAVFAC DM 7.02 for these; its figures are 0.0005/0.002, roughly half, and
 citing the friendlier source for the number you want is how a screening stops being one.)
 
-The honest reading: **the answer is now clearly on the at-rest side.** Uncracked the wall
-does not move enough to mobilise the active state at all; cracked it reaches 0.00102 H, at
-the dense-sand 0.001H figure rather than past it — the shorter stem deflects less, and the
-L⁴ term turns each height cut into a much larger one in δ (0.151" → 0.126" → 0.044"/0.126"
-across the two moves). Active is *harder to argue than it was, twice over*. At-rest is
-*defensible*, and it costs 1.77 instead of 2.36 — margin this design can afford. **Active is
-the sensitivity, not the design.**
+The honest reading: **the answer is now clearly on the at-rest side, and it has crossed a
+line.** Uncracked the wall does not move enough to mobilise the active state at all;
+cracked it reaches 0.00095 H, which is **below** the dense-sand 0.001H figure rather than
+at it. It sat at 0.00102 H before these last two inches. The L⁴ term turns each height cut
+into a much larger one in δ (0.151" → 0.126" → 0.115" cracked across the three moves), so
+active is *harder to argue than it was, three times over* — and the wall no longer reaches
+even the friendliest published threshold for mobilising it. At-rest is *defensible*, and it
+costs 1.80 instead of 2.40 — margin this design can afford. **Active is the sensitivity,
+not the design.**
 
 ---
 
 ## 5. ⚠ The corner that does not clear, and what the design therefore depends on
 
-**Without the washed-stone bed, at μ = 0.25 throughout, the system reaches FS 1.26 against
+**Without the washed-stone bed, at μ = 0.25 throughout, the system reaches FS 1.29 against
 the 1.50 required.**
 
 ```
-capacity = 0.25 × 5,657.5 × 56.667  =  80,149 lb
-FS       = 80,149 / 63,487          =  1.26     ✗
+capacity = 0.25 × 5,577.5 × 56.667  =  79,015 lb
+FS       = 79,015 / 61,446          =  1.29     ✗
 ```
 
 That is not a rounding. **0.35 versus 0.25 is the whole margin**, and it rides entirely on
@@ -360,15 +379,16 @@ rather than absorbed:
 
 > **This design depends on the stone bed being built as specified.** Unwashed stone, a fines-
 > contaminated section, a bed placed without compaction, or a tile that does not drain, and
-> the court is at 1.26 and does not meet IRC R404.4. Inspect and document the bed at
+> the court is at 1.29 and does not meet IRC R404.4. Inspect and document the bed at
 > placement. It is not an incidental levelling course; it is the reason the walls stand.
 >
-> Two height cuts have moved this row — 1.13 → 1.22 when the footings rose, → **1.26** when
-> the tops came down to the 36" cap — and neither changed anything about the argument. It is
-> still short of 1.50, the whole margin still rides on μ, and 0.35 versus 0.25 is still the
-> difference between a court that stands and one that does not. Note what the two moves did
-> *not* do: they cannot close this gap, because μ multiplies the same `W` on both sides of
-> the comparison. Only the bed can.
+> Three height cuts have moved this row — 1.13 → 1.22 when the footings rose, → 1.26 at the
+> 36" cap, → **1.29** with the flush tops — and none changed anything about the argument. It
+> is still short of 1.50, the whole margin still rides on μ, and 0.35 versus 0.25 is still
+> the difference between a court that stands and one that does not. Note what the three
+> moves did *not* do: they cannot close this gap, because μ multiplies the same `W` on both
+> sides of the comparison, so the ratio moves only through the geometry and never through
+> the friction. Only the bed can close it.
 
 The single highest-value thing anyone can buy before pouring remains a **geotechnical
 boring**: μ = 0.25 is the presumptive floor for a broad class, and a real test on a genuine
@@ -385,22 +405,22 @@ explicit that these three had none. **A base restraint acts inches from the stem
 relieves none of this.** Fixing sliding alone would have turned the report green over a
 louder, uncomputed failure.
 
-Cantilever from the top of the footing, at-rest, stem 9.2865':
+Cantilever from the top of the footing, at-rest, stem 9.1198':
 
 ```
-M   = ½ × 60 × 9.2865² × 9.2865/3         =  8,008 ft-lb/ft   (service)
-Mu  = 1.6 × 8,008                         = 12,814 ft-lb/ft   (IBC §1605.2 on H)
+M   = ½ × 60 × 9.1198² × 9.1198/3         =  7,585 ft-lb/ft   (service)
+Mu  = 1.6 × 7,585                         = 12,136 ft-lb/ft   (IBC §1605.2 on H)
 S   = 12 × 12²/6                          = 288 in³/ft
-f   = 8,008 × 12 / 288                    = 334 psi           (service flexural tension)
+f   = 7,585 × 12 / 288                    = 316 psi           (service flexural tension)
 ```
 
 **Plain**, ACI 318 §14.5.2, φ = 0.60 (Table 21.2.1):
 
 ```
-φMn = 0.60 × 5√5,000 × 288 / 12           = 5,091 ft-lb/ft    d/c = 2.52   ✗
+φMn = 0.60 × 5√5,000 × 288 / 12           = 5,091 ft-lb/ft    d/c = 2.38   ✗
 ```
 
-**And "2.80 over" understates it.** ACI 318 R22.6.3 says the plain-concrete wall provisions
+**And "2.4 times over" understates it.** ACI 318 R22.6.3 says the plain-concrete wall provisions
 apply *"only for walls laterally supported in such a manner as to prohibit relative lateral
 displacement at top and bottom"*, and that the Code *"does not cover walls without horizontal
 support … Such laterally unsupported walls are to be designed as reinforced concrete
@@ -417,16 +437,19 @@ grades against that 2". The extra inch is bought for class **C2** — see §6a.
 
 | schedule | Aₛ in²/ft | d in | a in | φMn ft-lb/ft | d/c | |
 |---|---|---|---|---|---|---|
-| `#6 @ 16"` | 0.330 | 8.625 | 0.388 | 12,520 | 1.02 | ✗ |
-| `#5 @ 10"` | 0.372 | 8.688 | 0.438 | 14,177 | 0.90 | ✓ sufficient, not selected |
-| `#6 @ 12"` | 0.440 | 8.625 | 0.518 | 16,565 | 0.77 | ✓ sufficient, not selected |
-| **`#6 @ 10"`** | **0.528** | **8.625** | **0.621** | **19,755** | **0.65** | **✓ selected** |
-| `#6 @ 8"` | 0.660 | 8.625 | 0.776 | 24,463 | 0.52 | ✓ more than needed |
+| `#6 @ 16"` | 0.330 | 8.625 | 0.388 | 12,520 | 0.97 | ✓ sufficient, not selected |
+| `#5 @ 10"` | 0.372 | 8.688 | 0.438 | 14,177 | 0.86 | ✓ sufficient, not selected |
+| `#6 @ 12"` | 0.440 | 8.625 | 0.518 | 16,565 | 0.73 | ✓ sufficient, not selected |
+| **`#6 @ 10"`** | **0.528** | **8.625** | **0.621** | **19,755** | **0.61** | **✓ selected** |
+| `#6 @ 8"` | 0.660 | 8.625 | 0.776 | 24,463 | 0.50 | ✓ more than needed |
 
 **`#6 @ 10" o.c.` is retained, and it stopped being the arithmetic minimum on 2026-09-05.**
-Two rows have since crossed the line under it — `#6 @ 12"` at 0.77 and now `#5 @ 10"` at 0.90
-— so the schedule could in principle drop a step or two. It is deliberately **not** taken,
-for two reasons written down here so the question does not have to be re-opened:
+**The table has gained a row under it at each height cut since, and the flush tops gained
+the last one**: `#6 @ 12"` crossed first, then `#5 @ 10"`, and `#6 @ 16"` — the coarsest
+spacing listed, which failed outright at 1.02 two revisions ago — now clears at 0.97. Every
+schedule in this table works. The selection is deliberately **not** dropped, for two reasons
+written down here so the question does not have to be re-opened each time the top of the
+wall moves:
 
 1. **One bar, one spacing, on one pour.** §7 sizes the footing mat at `#6 @ 10"` and the
    footing's own demand did not fall as far (toe d/c 0.56). Two spacings on the same pour is
@@ -434,18 +457,25 @@ for two reasons written down here so the question does not have to be re-opened:
    is a few hundred dollars of bar.
 2. **The margin is not spare.** §5 is unchanged in kind: the entire sliding case rides on
    μ = 0.35, which rides on a stone bed being built as specified, and at μ = 0.25 the court
-   is at 1.26. A wall whose stability depends on a construction claim is the wrong place to
+   is at 1.29. A wall whose stability depends on a construction claim is the wrong place to
    spend flexural margin.
 
-`#5 @ 10"` sat at exactly 1.00 for the two revisions before this one, and was listed only to
-be rejected then; it clears now, which is worth noticing precisely because nothing about the
-bar changed — the wall got shorter twice underneath it.
+**`#6 @ 16"` clearing is the row to be careful with.** It is the one schedule here whose
+passing would actually save something — a third of the bar, at the coarsest spacing a crew
+would place — and it clears at 0.97. That is a 3% margin on a wall whose load case
+(at-rest rather than active) is itself a judgement worth about 25%, and reason 1 above also
+bears on it: §7 sizes the footing mat at `#6 @ 10"`, so `#6 @ 16"` on the stem is two
+spacings on one pour for a few hundred dollars of steel.
+
+`#5 @ 10"` sat at exactly 1.00 for two revisions and was listed then only to be rejected; it
+clears now, which is worth noticing precisely because nothing about the bar changed — the
+wall got shorter three times underneath it.
 
 ### 6a. What the third inch costs, and why it is spent anyway
 
 Cover comes straight off `d`, so this is not a free durability upgrade — it is a purchase,
-and the price is legible: `d` 9.625" → 8.625", φMn 22,131 → 19,755 ft-lb/ft, **d/c 0.58 →
-0.65**. An 11% capacity write-down on the same steel.
+and the price is legible: `d` 9.625" → 8.625", φMn 22,131 → 19,755 ft-lb/ft, **d/c 0.55 →
+0.61**. An 11% capacity write-down on the same steel.
 
 It is spent because cover is the only term in the chloride problem that buys **distance**.
 Every other lever this wall pulls buys *time* against a front that is still advancing —
@@ -456,8 +486,8 @@ added later. These six walls are class **C2**: they take deicing salt off the dr
 and they hold it in a court that has no grade to drain to — the water leaves through
 `DRW-SG-MAIN` or it sits there.
 
-The wall still passes at 0.65, and the structure's governing limit state is unchanged: base
-restraint at FS 1.77, d/c 0.85 (§4). Nothing about this trade moves the number that governs.
+The wall still passes at 0.61, and the structure's governing limit state is unchanged: base
+restraint at FS 1.80, d/c 0.83 (§4). Nothing about this trade moves the number that governs.
 
 It is authored on the **schedule** (`_RET_STEM_STEEL.cover`) and not on the mix, and that
 distinction is load-bearing. `EXPOSED_MIX` pours the footings under these walls too,
@@ -465,8 +495,9 @@ where 3" is the Code figure and free; on the stem it costs 11%. One mix, two fac
 covers — which is exactly why `resolve/concrete.cover_for` reads the element's schedule
 before its mix.
 
-**This table has been re-worked twice on 2026-09-03, and the selection survived both.**
-First at 5,000 psi instead of 3,000, then at 3" cover instead of 2". The two pull opposite
+**This table has been re-worked four times now, and the selection survived every one.**
+Twice on 2026-09-03 — at 5,000 psi instead of 3,000, then at 3" cover instead of 2" — and
+once at each of the two height cuts since. The two pull opposite
 ways — the mix added 2-3% of capacity, the cover took 11% back — and `#6 @ 10"` is the answer
 to all three versions of the question. What did change is its standing: it used to be the
 comfortable choice above a working `#6 @ 12"`, and it is now the only schedule below `#6 @ 8"`
@@ -477,8 +508,9 @@ IRC Table R402.2's presumptive 3,000 psi, because until `ConcreteSpec` existed t
 nowhere for a pour to state a mix and the engine hardcoded that value for every concrete
 calc it ran. `SUNKEN_GARDEN_WALL` now states the 5,000 psi F3+C2 mix it is actually poured
 from, `stem_flexure` reads it, and every capacity above rose 2-3%. **The choice is unchanged
-and so is the reason for it** — the margin at `#6 @ 12"` went 2% to 4%, which is still not a
-margin.
+and so is the reason for it** — the margin at `#6 @ 12"` went 2% to 4%, which was not a
+margin then. It is 27% now, and what carries the selection is reason 1 in §6 rather than the
+arithmetic.
 
 Checked alongside:
 
@@ -489,15 +521,15 @@ Checked alongside:
 * **minimum reinforcement**, ACI 318-19 §11.6.1: ρl ≥ 0.0015 for bars larger than #5 →
   0.216 in²/ft. This is a fraction of the GROSS section and so does not move with cover.
   §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, and this wall is under
-  that line with room: `V = ½ × 60 × 9.2865² = 2,587 lb/ft`, `Vu = 1.6 × 2,587 = 4,139 lb/ft`
-  against `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 8.625 = 5,489 lb/ft`, a 25% margin.
+  that line with room: `V = ½ × 60 × 9.1198² = 2,495 lb/ft`, `Vu = 1.6 × 2,495 = 3,992 lb/ft`
+  against `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 8.625 = 5,489 lb/ft`, a 27% margin.
   (An earlier revision printed `1.6 × 3,226` here and called the margin 6%. The 3,226 was
   `½ × 60 × 10.37²` — the stem height from *before* the footings rose — left behind when the
   rest of the section was re-worked. It never changed a verdict, and it is the exact kind of
   survival this note's term-by-term discipline exists to catch.) **0.528 clears both figures
   either way**, so the selection has never depended on which side of §11.6.2 the wall falls.
-* **one-way shear** at the base: `φVc = 10,978 lb/ft` against `Vu = 4,139 lb/ft`,
-  d/c 0.38 ✓.
+* **one-way shear** at the base: `φVc = 10,978 lb/ft` against `Vu = 3,992 lb/ft`,
+  d/c 0.36 ✓.
 
 **Authoring reinforcement makes the SECTION work. It does not make the DETAILING anything
 this engine has looked at** — bar development into the footing, the corner cold joints, the
@@ -511,7 +543,7 @@ splice at the top of the pour. Those are the engineer's, and §9 says so.
 omission, one member down, and it is worse.** §4 computes the bearing pressure under the
 strip and then stops: that is a stability analysis of a rigid body, and it never asks
 whether the concrete in the strip can carry the pressure it just computed. A **4'-0" toe**
-under 1,038 psf is a flexural cantilever every bit as real as the stem, and it was
+under 899 psf is a flexural cantilever every bit as real as the stem, and it was
 unreinforced.
 
 Added to `engineering/retaining_basis.py::footing_states` on 2026-09-03. Same case as §4
@@ -521,22 +553,22 @@ case from the stem it holds up would be two designs of one wall. And the same mi
 
 ### 7a. The pressure diagram
 
-From §4's governing case: `W = 5,657.5 plf`, `B = 8.000'`, `e = 0.4466'`.
+From §4's governing case: `W = 5,577.5 plf`, `B = 8.000'`, `e = 0.3865'`.
 
 ```
-W/B                    = 5,657.5 / 8         =   707.19 psf
-6e/B                   = 6 x 0.4466 / 8      =    0.33492
-q_toe  = W/B (1 + 6e/B) = 707.19 x 1.33492   =   944.0 psf     (at the toe TIP)
-q_heel = W/B (1 - 6e/B) = 707.19 x 0.66508   =   470.3 psf     (at the heel end)
-slope                   = (944.0 - 470.3)/8   =    59.22 psf/ft
-q at the stem face (x = 4.000' from the tip) =   944.0 - 236.9 =   707.2 psf
+W/B                    = 5,577.5 / 8         =   697.19 psf
+6e/B                   = 6 x 0.3865 / 8      =    0.28990
+q_toe  = W/B (1 + 6e/B) = 697.19 x 1.28990   =   899.3 psf     (at the toe TIP)
+q_heel = W/B (1 - 6e/B) = 697.19 x 0.71010   =   495.1 psf     (at the heel end)
+slope                   = (899.3 - 495.1)/8   =    50.53 psf/ft
+q at the stem face (x = 4.000' from the tip) =   899.3 - 202.1 =   697.2 psf
 ```
 
-The trapezoid keeps flattening — `e` has now gone 0.87' → 0.57' → **0.447'** across the two
-height cuts, dropping the toe pressure 9% more while the heel pressure rose another 13%. That
-is the resultant walking back toward mid-base, and it is the single most useful consequence of
-shortening this wall: the toe cantilever is what governs the footing, and its load is falling
-faster than the stem's.
+The trapezoid keeps flattening — `e` has now gone 0.87' → 0.57' → 0.447' → **0.387'** across
+the three height cuts, dropping the toe pressure another 5% while the heel pressure rose
+another 5%. That is the resultant walking back toward mid-base, and it is the single most
+useful consequence of shortening this wall: the toe cantilever is what governs the footing,
+and its load is falling faster than the stem's.
 
 **q at the stem face lands on `W/B` exactly, and that is a check rather than a coincidence.**
 The stem face sits at 4.000' on an 8.000' base — mid-base — where a linear pressure diagram
@@ -550,13 +582,18 @@ The toe is designed for the **upward pressure alone**: the footing's own 150 psf
 and relieves it, and is dropped. That is not laziness — keeping it means factoring a
 *relieving* dead load, which ASCE 7-16 §2.3.1 takes at 0.9 and this module has no
 combination machinery for. Taken properly — `1.6 x M_pressure - 0.9 x M_concrete` — the
-factored demand would be about **8% lighter**. It costs 8% and it costs no argument at all.
+factored demand would be about **10% lighter**. It costs 10% and it costs no argument at
+all.
+
+The figure GROWS as the wall gets shorter, which is worth expecting rather than being
+surprised by: the relief is the footing's own weight, which does not move, set against a
+pressure that falls with the wall. It was 8% at the 36" cap.
 
 ```
-rectangle   707.2 x 4.000              = 2,828.8 lb   arm 2.000'  =  5,657.5
-triangle    ½(944.0 - 707.2) x 4.000   =   473.7 lb   arm 2.667'  =  1,263.3
-                                            M service              =  6,920.8 ft-lb/ft
-Mu = 1.6 x 6,920.8   (IBC §1605.2 on H, exactly as §6)              = 11,073   ft-lb/ft
+rectangle   697.2 x 4.000              = 2,788.8 lb   arm 2.000'  =  5,577.5
+triangle    ½(899.3 - 697.2) x 4.000   =   404.2 lb   arm 2.667'  =  1,077.9
+                                            M service              =  6,655.4 ft-lb/ft
+Mu = 1.6 x 6,655.4   (IBC §1605.2 on H, exactly as §6)              = 10,649   ft-lb/ft
 ```
 
 **PLAIN, ACI 318-19 §14.5.2.1(a).** And note `h` is **10", not 12"**: §14.5.1.7 takes 2" off
@@ -565,14 +602,15 @@ into a trench. Capacity goes as `h²`, so skipping that overstates the section b
 
 ```
 Sm  = 12 x 10²/6                              = 200 in³/ft
-φMn = 0.60 x 5√5,000 x 200 / 12               = 3,536 ft-lb/ft     d/c = 3.13   ✗
+φMn = 0.60 x 5√5,000 x 200 / 12               = 3,536 ft-lb/ft     d/c = 3.01   ✗
 ```
 
 **Three times over.** ACI §14.1.4 does permit a plain concrete footing — unlike §14.1.5 for a
 column — so unlike the stem in §6 this is not a section *outside* the Code. It is simply a
 section that does not work. (It was **5.18** while the calculation read the presumptive
 3,000 psi; stating the real mix bought 29% of capacity and did not come close to closing a
-factor of five. Two height cuts have since taken it 3.38 → 3.13, which is not close either.)
+factor of five. Three height cuts have since taken it 3.38 → 3.13 → **3.01**, which is not
+close either — and unlike §6's stem table, no row of this one has changed sides.)
 
 ### 7c. Heel flexure
 
@@ -582,11 +620,11 @@ heel's job is to hold a column of earth down, and the pressure that would help i
 the pressure that vanishes when the wall begins to rotate.
 
 ```
-soil on heel   3.000 x  9.2865 x 110          = 3,064.5 lb   arm 1.500' = 4,596.8
+soil on heel   3.000 x  9.1198 x 110          = 3,009.5 lb   arm 1.500' = 4,514.3
 concrete       3.000 x 1.000 x 150            =   450.0 lb   arm 1.500' =   675.0
-                                                  M service             = 5,271.8 ft-lb/ft
-Mu = 1.6 x 5,271.8                                                      = 8,435   ft-lb/ft
-φMn (plain, as above)                         = 3,536 ft-lb/ft     d/c = 2.39   ✗
+                                                  M service             = 5,189.3 ft-lb/ft
+Mu = 1.6 x 5,189.3                                                      = 8,303   ft-lb/ft
+φMn (plain, as above)                         = 3,536 ft-lb/ft     d/c = 2.35   ✗
 ```
 
 ### 7d. One-way shear on the toe
@@ -594,11 +632,11 @@ Mu = 1.6 x 5,271.8                                                      = 8,435 
 ```
 PLAIN: critical section at h = 10" from the stem face (§14.5.5.2(a)),
        i.e. 3.167' from the tip.
-q at 3.167'  =   944.0 -  59.22 x 3.167                        =   756.5 psf
-V service    = ½(944.0 + 756.5) x 3.167                        = 2,692.5 lb/ft
-Vu           = 1.6 x 2,692.5                                   = 4,308   lb/ft
+q at 3.167'  =   899.3 -  50.53 x 3.167                        =   739.3 psf
+V service    = ½(899.3 + 739.3) x 3.167                        = 2,594.4 lb/ft
+Vu           = 1.6 x 2,594.4                                   = 4,151   lb/ft
 φVn = 0.60 x (4/3)√5,000 x 12 x 10                             = 6,788   lb/ft
-                                                                   d/c = 0.63  ✓
+                                                                   d/c = 0.61  ✓
 ```
 
 **And this one PASSES as plain — at 5,000 psi.** At the presumptive 3,000 it was over. It is
@@ -623,8 +661,8 @@ d     = 12 - 3.000 - 0.750/2                            =  8.625 in
 a     = 0.528 x 60,000 / (0.85 x 5,000 x 12)            =  0.621 in
 φMn   = 0.90 x 0.528 x 60,000 x (8.625 - 0.311) / 12    = 19,755 ft-lb/ft
 
-  toe flexure    11,073 / 19,755                                d/c = 0.56   ✓
-  heel flexure    8,435 / 19,755                                d/c = 0.43   ✓
+  toe flexure    10,649 / 19,755                                d/c = 0.54   ✓
+  heel flexure    8,303 / 19,755                                d/c = 0.42   ✓
 ```
 
 Shear re-runs on the reinforced section — critical at `d` rather than `h`, ACI §22.5.5.1,
@@ -632,10 +670,10 @@ Shear re-runs on the reinforced section — critical at `d` rather than `h`, ACI
 
 ```
 cut at d = 8.625" from the face, i.e. 3.281' from the tip
-q at 3.281'  =   944.0 -  59.22 x 3.281                        =   749.7 psf
-Vu = 1.6 x ½(944.0 + 749.7) x 3.281                            = 4,446   lb/ft
+q at 3.281'  =   899.3 -  50.53 x 3.281                        =   733.5 psf
+Vu = 1.6 x ½(899.3 + 733.5) x 3.281                            = 4,286   lb/ft
 φVc = 0.75 x 2√5,000 x 12 x 8.625                              = 10,978  lb/ft
-                                                                   d/c = 0.41  ✓
+                                                                   d/c = 0.39  ✓
 ```
 
 `bottom-y` `#4 @ 18"` longitudinal distribution steel is authored alongside. It carries no
@@ -688,16 +726,45 @@ The garden slab is cheaper and does not work:
   and those are worked through §4 term by term.
 
   The one thing that *would* have changed the strut is shrinking its section, and the court
-  floor tried twice. Holding the beam's TOP against a dropped floor gives a 10 1/4" section:
-  φPn 60,712 lb against Pu 62,051 at the thrust of the day — **d/c 1.02, it fails.** Raising
-  its BOTTOM with the retaining footings on 2026-09-05 would have given 8 1/2", Ag 102 in²,
-  φPn ~50,300 lb — against today's lighter Pu 50,789 that is still **d/c ~1.01, and it still
-  fails.** Two subsequent height cuts have taken 6% off the demand and neither is anywhere
-  near enough to buy that section back. So `_grade_beam_bottom` is
-  now decoupled from `_wall_bottom` and HELD at −10'-10 7/16" while the footings rose to
-  −10'-1 7/16" above it, and the 12" × 17 1/2" section this note grades is the one that gets
-  built. The beam is no longer flush with the retaining footings' undersides; it stands 9"
-  proud below them, which is deliberate and is what `test_retaining_court` now asserts.
+  floor tried twice — once by holding the beam's TOP against a dropped floor (a 10 1/4"
+  section), once by raising its BOTTOM with the retaining footings on 2026-09-05 (8 1/2").
+
+  **⚠ BOTH OF THOSE SECTIONS NOW PASS, AND THIS PARAGRAPH USED TO REJECT THEM BECAUSE THEY
+  FAILED. READ ON BEFORE SHRINKING THIS BEAM.** They failed at the thrust of their day —
+  10 1/4" at d/c 1.02 against Pu 62,051 lb, 8 1/2" at d/c ~1.01 against Pu 50,789 lb — and
+  three height cuts have since taken the demand to **Pu 49,157 lb**, where the arithmetic
+  reads:
+
+```
+  12" x 17 1/2"   Ag 210 in²   φPn 103,655 lb    d/c 0.47   ✓  as built
+  12" x 10 1/4"   Ag 123 in²   φPn  60,712 lb    d/c 0.81   ✓  passes now
+  12" x  8 1/2"   Ag 102 in²   φPn  50,347 lb    d/c 0.98   ✓  passes now, by 2%
+```
+
+  **The section is held, and it is no longer held on the strength ratio.** Three reasons,
+  in the order they bind:
+
+  1. **Sequencing, which is what the whole of §8 rests on.** This beam exists so the loop is
+     closed *before backfill*, and its depth is what decouples it from everything that moves
+     above it: `_grade_beam_bottom` is HELD at −10'-10 7/16" while the five wall footings
+     rose to −10'-1 7/16", so a change to the court floor or to the footing plane cannot
+     reach down and thin this member. Re-tying its bottom to either surface is what both
+     shallower sections *were* — they were never chosen depths, they were the gap left over
+     between two other things, and a strut whose section is a residue gets shaved again the
+     next time something above it moves.
+  2. **2% is not a margin on the only member with no redundancy.** The 8 1/2" section is the
+     entire lateral restraint of a closed loop, and its demand is `0.5 × resultant` with no
+     friction credit — an assumption this section itself calls conservative-by-construction
+     rather than derived. λ is applied on the 20'-0" clear span and the 12" dimension, and φ
+     is the plain-concrete 0.60. Any of those could move a few percent on review.
+  3. **The saving is not real.** 87 in² of concrete over 20 feet is about 1.1 CY. The 9"
+     step in the dig this depth creates is the genuine cost, and it is being paid down from
+     the other end — the beam's *bedding undercut* is what gets trimmed to the wall-bed
+     plane, not the beam.
+
+  The 12" × 17 1/2" section this note grades is therefore the one that gets built. The beam
+  stands 9" proud below the retaining footings' undersides, which is deliberate and is what
+  `test_retaining_court` asserts.
 
 ### The strut check
 
@@ -705,15 +772,15 @@ Force: **half the largest member's whole thrust, with no friction credit.** A wa
 both ends delivers about half its thrust to each end; netting base friction off first would
 spend that friction twice, once here and once in §4's sliding row. Taking the *largest*
 member (the south wall, which the strut does not directly tie) rather than a side wall is
-conservative by 9% — 31,743 lb against 29,098 lb — and keeps the check from having to know
+conservative by 9% — 30,723 lb against 28,163 lb — and keeps the check from having to know
 which walls face each other.
 
 ```
-P     = 0.5 × 63,487                                     = 31,743 lb  (service)
-Pu    = 1.6 × 31,743                                     = 50,789 lb
+P     = 0.5 × 61,446                                     = 30,723 lb  (service)
+Pu    = 1.6 × 30,723                                     = 49,157 lb
 Ag    = 12 × 17.5                                        =    210 in²
 λ     = 1 − (240 / (32 × 12))²                           =  0.609
-φPn   = 0.60 × 0.45 × 3,000 × 210 × 0.609                = 103,655 lb   d/c 0.49  ✓
+φPn   = 0.60 × 0.45 × 3,000 × 210 × 0.609                = 103,655 lb   d/c 0.47  ✓
 ```
 
 ACI 318-19 §14.5.4 (§22.6.5.2 in 318-11). **Note the section number**: §14.5.6 is *bearing*
@@ -814,9 +881,9 @@ Even at 0 FAIL these walls are **screened, not designed**, and the items stay un
 presumptive values only, no geotechnical report, a soil class from a survey for the wrong
 county, an unbounded 110–130 pcf band, no hydrostatic case, no seismic, no global stability,
 no settlement, no compaction surcharge, corner bar development nobody has checked, and **a
-design that depends on the stone bed being built as specified — 1.26 without it.**
+design that depends on the stone bed being built as specified — 1.29 without it.**
 
-**1.77 against 1.50 is a screening that clears. It is not a stamp.**
+**1.80 against 1.50 is a screening that clears. It is not a stamp.**
 
 ---
 

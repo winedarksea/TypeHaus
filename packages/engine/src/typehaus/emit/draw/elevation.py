@@ -93,7 +93,7 @@ def build_elevation(model: ResolvedModel, facing: str) -> Scene:
 
     for piece in pieces:
         _emit_piece(b, piece, facade_depth, grade_z)
-    emit_cladding_texture(b, model, facade, view)
+    emit_cladding_texture(b, model, facade, view, grade_z)
     emit_opening_glyphs(b, model, pieces, view)
 
     lo_u, hi_u = _facade_extent(pieces, facade_depth)

@@ -38,6 +38,16 @@ from typehaus.engineering.soil import presumptive
 # oracle does not exercise — and that shows up in
 # `test_catlin_reports_the_three_free_walls_as_over` below, where it belongs.
 # `notes/sunken_garden_court_free_body.md` §1 works the convention question both ways.
+#
+# ** AND IT IS FROZEN AGAINST THE HOUSE AS WELL AS AGAINST THAT SLIP. ** These numbers are
+# the court of 2026-08-30. The wall has come down three times since — 9.62' when the
+# footings rose to the court plane, 9.2865' at the owner's 36" cap, 9.1198' when all five
+# court walls came flush with the porch datum on 2026-09-10 — and the footing has gone
+# 7'-0" to 8'-0" with a 6" offset. **None of that belongs here.** This module verifies that
+# `analyse()` reproduces a hand pass from the hand pass's own inputs; it will keep passing
+# while the house moves under it, by design. The landed house is graded in
+# `test_retaining_court.py` and `test_retaining_footing_calc.py`, both of which read the
+# plan and both of which were re-pinned at each of those three moves.
 CATLIN_SG = _Geometry(
     tag="W-SG-E2",
     stem_thickness_ft=1.0,

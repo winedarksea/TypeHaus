@@ -91,13 +91,23 @@ _MIN_RUN_M = 0.0762  # 3"
 
 def emit_cladding_texture(b: SceneBuilder, model: ResolvedModel,
                           facade_pieces: list[VisiblePiece],
-                          view: ElevationView) -> None:
+                          view: ElevationView, grade_z: float) -> None:
     """Draw each facade-plane body element's outermost material as a light texture.
 
     ``facade_pieces`` is already banded by the caller — only the dominant plane is textured
     (see the module docstring), and which plane that is is :mod:`elevation`'s decision. The
     roof rides the same list and is admitted only when ``view`` sees its slope face-on.
+
+    **Clipped at grade, the same line :func:`elevation._emit_piece` splits its outlines on.**
+    A buried wall reads as a dashed ``A-WALL-BELW`` outline and carries no finish: there is
+    no texture to see on a face that is under the soil, and drawing one puts board module
+    lines below the ground line. It only became visible on 2026-09-10, when the raised
+    garden's apron base went from 4" ABOVE grade to 8" below it and the south elevation
+    started drawing SRW coursing 14" into the dirt (`test_elevation_projection.
+    test_cladding_texture_stays_inside_the_visible_facade`), but the asymmetry was always
+    here — the outline emitter split at grade from the start and this one never did.
     """
+    from typehaus.emit.draw.elevation_annotate import split_at_grade
     board_runs = _board_run_index(model)
     catalog = {material.tag: material for material in model.plan.library.materials}
     face_on = _face_on_roof_uids(model, view)
@@ -120,7 +130,10 @@ def emit_cladding_texture(b: SceneBuilder, model: ResolvedModel,
         if recipe is None:
             continue
         direction, pitch = recipe
-        for line in _module_lines(piece.geometry, direction, pitch):
+        above, _below = split_at_grade(piece.geometry, grade_z)
+        if above.is_empty:
+            continue
+        for line in _module_lines(above, direction, pitch):
             b.add(Polyline(points=line, layer="A-WALL-FINI", lineweight=_TEXTURE_WEIGHT,
                            uid=candidate.uid, tag=candidate.tag))
 

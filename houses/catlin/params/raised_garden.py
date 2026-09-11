@@ -10,39 +10,50 @@ with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it eff
 east sides, topping out level with the retaining wall and running 3' down. The soil it
 retains is the yard, not a planting bed.
 
-**The apron is fully above grade, which is what the house was lifted for.** Its base sits
-at -2'-6": the house came out of the ground by moving grade down to the apron's own footing
-line, so all three 6"-course feet of it stand proud of the soil instead of two and a half of
-them being buried. What it holds is the 3'-0" raised terrace between it and the
-sunken-garden walls.
+**What the apron holds is the raised terrace between it and the sunken-garden walls.** It
+tops out level with those walls and runs down from there; its base and its 6" levelling pad
+sit in the yard outboard of it.
 
-** THE BASE COURSE HAS NEGATIVE EMBEDMENT. ** Grade is **-2'-10"**
-(`plan/site.py`, `params/foundations.py::SITE_GRADE`) and **the apron does not follow it
-down** — nothing ties `BASE` here to `SITE_GRADE`, and nothing checks the two against each
-other. So the base course of a dry-stacked SRW retaining 3'-0" of fill stands **4" clear of
-finished grade**, with its 6" levelling pad (``undercut``, below) two-thirds exposed.
+** THE BASE COURSE EMBEDMENT WAS NEGATIVE, AND IT IS NOW 8". REDUCED, NOT CLOSED. **
+`drop_ft` was 3'-0" and the top was +0'-6", putting the base at -2'-6" against a **-2'-10"**
+grade plane: the base course of a dry-stacked SRW retaining three feet of fill stood **4"
+clear of finished ground**, with its levelling pad two-thirds exposed. Nothing tied `BASE`
+to the ground and nothing checked the two against each other, so it went to 0 FAIL for two
+revisions.
 
-That is a real defect, not a drafting slip. A segmental retaining wall is a *flexible*
-system and is correctly designed here to ride 42" of frost without a frost footing — but it
-depends absolutely on base-course embedment to resist sliding, and on a buried levelling pad
-to resist erosion and frost lensing at the toe. `unbalanced_fill` below still states 3'-0",
-so the model believes this wall retains three feet and knows nothing holds its toe.
+Two things changed on 2026-09-10 and the defect is arithmetic now rather than invisible:
 
-**It is deliberately not fixed here**, because the fix is an owner's choice between two
-different jobs and the cheaper one is not a change to this module at all: either raise
-finished grade against the outboard face by 10"-12" over a ~4' bench (new `SpotElevation`s
-in the editable `plan/site.py`, ~$700-1,500, and free if the real survey reshapes this yard
-anyway), or drop the apron 4" and add a 6" course (~245 sf of face re-set, $7,350-14,700 at
-this house's own `prices.toml` `RETAINING_BLOCK_12` rate). See `plans/pattern_language_review.md`.
+* The yard is **modelled**. `plan/site.py` authors three south-yard stations at -3'-4" and
+  `resolve/site_earth.local_grade_elevation_m` reads them, so this apron springs from a
+  ground elevation somebody wrote down instead of from an assumed global plane.
+* The **drop is 4'-0"**, eight whole 6" courses. Off a top that is now the porch datum at
+  0'-0", that lands the base at **-4'-0"** against a yard at **-3'-4"**: the base course is
+  buried **8"**, against the ~6" the guidance wants on a 3-foot wall.
+
+**What the wall retains did not change, and it is worth being clear why.** The terrace
+still stands 3'-4" above the yard — the apron top came down 2" with the court walls and the
+yard is where it always was — so `unbalanced_fill` below is 3'-4" and not the 4'-0" drop.
+The extra 8" buys embedment, not retained height. Stating it as the drop would put the run
+on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R404.4
+cantilever analysis they have no footing for; see the note beside `_APRON`.
+
+**What is still open.** 8" of embedment is the number the arithmetic gives, not a number
+anyone has designed to. Sliding, overturning and the global stability of a tiered apron
+beside a 10-foot cut are still ungraded here, exactly as
+`notes/sunken_garden_court_free_body.md` §9 says. **This is a defect reduced from "the toe
+is in the air" to "the toe is buried 8" and nobody has checked the wall".** Do not read the
+fix as a design.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
-    +0'-6"   +----+          +----+   <- apron top = W-SG-* top, both sides level
+    0'-0"    +----+          +----+   <- apron top = W-SG-* top = the porch datum, level
              |    | terrace  |    |
-             | SRW|##########| SG |   <- the 3'-0" of fill the apron now retains, inboard
+             | SRW|##########| SG |   <- 3'-4" of terrace over the yard: what it retains
              |    |          |wall|
-    -2'-6"   +----+          |    |   <- apron base, and its levelling pad below it
-             . . . -- grade -. . . .   <- -2'-10": FOUR INCHES LOWER than the base course
+             |    |          |    |
+    -3'-4"   . . .|. . yard . |. . .   <- authored, three stations in plan/site.py
+             |    |          |    |
+    -4'-0"   +----+          |    |   <- apron base, 8" buried, levelling pad below it
         (yard)                     |
 
 Plan — a U whose north corners return three feet to the balcony railing:
@@ -103,6 +114,7 @@ from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
 
 from params.sunken_garden import (
     BALCONY_FRONT_AXIS_Y_FT,
+    RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN,
     RETAINING_WALL_SPAN_X_FT,
     RETAINING_WALL_THICKNESS_IN,
     RETAINING_WALL_TOP_FT,
@@ -119,7 +131,18 @@ class RaisedGardenSpec:
     # measured from the face and not the axis.
     clear_offset_ft: float = 3.0
     # How far the apron runs down from the sunken-garden wall top it starts level with.
-    drop_ft: float = 3.0
+    #
+    # ** 4'-0", EIGHT WHOLE 6" COURSES, AND IT IS SET BY THE YARD. ** It was 3'-0" while
+    # the yard was an assumed flat plane at the -2'-10" global datum and the apron top was
+    # +0'-6". Both ends moved: the top is the porch datum at 0'-0" now (one form height
+    # across all five court walls), and the yard is authored at -3'-4" by three stations in
+    # `plan/site.py`. A 3'-0" drop off the new top lands the base at -3'-0", which is 4"
+    # ABOVE the ground — the same negative embedment as before, arrived at the other way.
+    #
+    # 4'-0" buries the base course 8". 3'-10" would bury it 6", the figure the guidance
+    # actually wants, and it is not taken: an SRW is laid in whole courses and 3'-10" is
+    # 7.67 of them. The extra 2" is the cheapest inch of embedment on this job.
+    drop_ft: float = 4.0
     block_thickness_in: float = 12.0  # one SRW unit deep
     block_course_height_in: float = 6.0  # SRW coursing
     # The compacted levelling pad the base course beds into: 6" of stone, running 6" past
@@ -189,15 +212,31 @@ NODES = [
 ]
 
 # ``unbalanced_fill`` is authored rather than derived, and has to be. The engine derives
-# unbalanced fill as the depth of soil standing against a wall *below grade*, which for
-# these five legs is now zero — their base is grade. That is a true statement about the
-# outboard (yard) side and a false one about the wall: the 3'-0" of terrace between the
-# apron and the sunken-garden walls bears on the apron's inboard face over its whole height,
-# and a dry-stacked SRW run needs exactly that fill (plus its batter and its drainage stone)
-# to stand at all. Nothing in the model can infer a retained height on the high side of a
-# freestanding wall, so it is stated: 3'-0", the apron's full run.
+# unbalanced fill as the depth of soil standing against a wall *below grade*, which on the
+# outboard (yard) side is only the 8" the base course is buried by. That is a true
+# statement about the yard and a false one about the wall: the raised terrace between the
+# apron and the sunken-garden walls bears on the apron's INBOARD face, and a dry-stacked
+# SRW run needs exactly that fill (plus its batter and its drainage stone) to stand at all.
+# Nothing in the model can infer a retained height on the high side of a freestanding wall,
+# so it is stated.
+#
+# ** IT IS THE DIFFERENTIAL, NOT THE WALL'S RUN, AND CONFLATING THE TWO IS A REAL TRAP. **
+# The number is the height the terrace stands above the yard: the apron tops out with the
+# court walls at 0'-0", the yard is authored at -3'-4", so 3'-4" of fill on the inboard
+# face is unopposed by anything on the outboard one. Below -3'-4" both faces stand in the
+# same undisturbed ground and it balances.
+#
+# It happened to equal ``drop_ft`` while ``drop_ft`` was 3'-0" and the base course stood 4"
+# clear of the yard, because zero outboard soil makes the two the same. They are not the
+# same any more and writing ``ft(SPEC.drop_ft)`` here would state 4'-0" — which is IRC
+# R404.1.1's 48" threshold hit exactly, sending five landscape walls into an R404.4
+# engineered analysis (a cantilever concrete stem on a strip footing) that a segmental
+# gravity wall has no footing for and is the wrong model of anyway. The extra 8" of drop
+# buys EMBEDMENT. It does not retain anything.
+#
+# So it tracks the exposure, which is where that 3'-4" is computed and pinned.
 _APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
-              unbalanced_fill=ft(3))
+              unbalanced_fill=inch(RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN))
 
 WALLS = [
     # The south leg keeps W-RG-BLOCK's tag *and* its uid: the tag is what the energy and
@@ -218,8 +257,9 @@ WALLS = [
 
 # The levelling pad under every leg. Hosted on the wall, not on a footing: there is no
 # footing, and inventing one would order concrete nobody pours. The bed's top is the wall's
-# own underside (-2'-6", which is finished grade since 2026-08-18), so the excavation runs
-# to -3'-0" — 6" below grade, which is what a levelling pad is.
+# own underside — **-4'-0" since 2026-09-10**, 8" below the authored -3'-4" yard — so the
+# excavation runs to -4'-6", which is a buried levelling pad and no longer the two-thirds
+# exposed one the module note used to have to confess to.
 #
 # The bands butt at the shared corner nodes rather than overlapping — ``rect_between`` is
 # not extended past an axis end, the same convention ``_resolve_footing`` follows — so the

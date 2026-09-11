@@ -45,14 +45,14 @@ rate.
 
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
-| column | #3 | hdg-a767 | 187.6 LF | 70.5 lb | all ten cast columns, ties |
-| column | #5 | hdg-a767 | 292.1 LF | 304.7 lb | all ten cast columns, verticals |
+| column | #3 | hdg-a767 | 241.5 LF | 90.8 lb | all twelve cast columns, ties |
+| column | #5 | hdg-a767 | 368.9 LF | 384.8 lb | all twelve cast columns, verticals |
 | footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
 | footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
-| foundation wall | #4 | hdg-a767 | 789.3 LF | 527.3 lb | `W-SG-W2/E2/S` horizontal |
+| foundation wall | #4 | hdg-a767 | 775.2 LF | 517.8 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 210.0 LF | 219.0 lb | the eight 8" basement runs |
-| foundation wall | #6 | hdg-a767 | 691.9 LF | 1,039.2 lb | `W-SG-*` verticals |
-| | | | | **3,997 lb** | **2.00 ton** |
+| foundation wall | #6 | hdg-a767 | 680.5 LF | 1,022.1 lb | `W-SG-*` verticals |
+| | | | | **4,070.6 lb** | **2.04 ton** |
 
 **Both `foundation wall` rows moved again on 2026-09-05 — the slot closure — and again no
 schedule changed.** `W-B-S4` grew 10" west when the south wall's split came off the retaining
@@ -62,13 +62,16 @@ ran 3 13/16" north to close the slot against the house (`params/sunken_garden._y
 which is 1.9 LF more `#6 @ 38" o.c.` on the two porch side walls, +2.8 lb. Same bars, same
 spacings, more wall — the arithmetic is `area / spacing` in both directions.
 
-**The two `foundation wall` rows have lost 159.4 lb across two moves on 2026-09-05, and no
-schedule changed.** First the three retaining footings rose 9" so their tops could become the
+**The two `foundation wall` rows have now lost 186.0 lb across three moves, and no schedule
+changed.** First the three retaining footings rose 9" so their tops could become the
 court's walking surface (`params/sunken_garden._wall_bottom`), shortening the stems above them
 10.37' -> 9.62'; then the run was capped at 36" out of the yard (`SPEC.retaining_top_ft`,
-derived from site grade), taking another 4" off the top and the stem to 9.2865'. Steel
-authored as a SPACING is `area / spacing`, so a foot off a 57'-0" run of wall is 4.75 sf of
-plane gone from both the horizontal (#4) and the vertical (#6) mats. The bar sizes and
+derived from site grade), taking another 4" off the top and the stem to 9.2865'. Then on
+2026-09-10 all five court walls came flush with the porch datum at 0'-0" — one form height
+— taking the last 2" and the stem to 9.1198', which is a further -9.5 lb on the #4 row and
+-17.1 lb on the #6. Steel authored as a SPACING is `area / spacing`, so a foot off a 57'-0"
+run of wall is 4.75 sf of plane gone from both the horizontal (#4) and the vertical (#6)
+mats. The bar sizes and
 spacings are exactly what §6 and §7 of `sunken_garden_court_free_body.md` selected — and both
 are still the selection at the new demand, which that note's §6 works through; there is simply
 less wall.

@@ -5,6 +5,15 @@ untabulated section, a wall that does not say whether it is braced), what an aut
 engineering spec does to it, and that an authored ``unbalanced_fill`` beats the derived
 proxy. The catlin fixture pins the landed verdicts.
 
+** ``_context`` BUILDS A SYNTHETIC WALL AND THAT IS DELIBERATE. ** Its 9' and 10' bottoms
+are chosen to sit either side of the table's rows, not to describe anything in catlin —
+the court's walls have stood at four different heights since this module was written and
+not one of these numbers moved with them. A synthetic fixture is what lets a table test
+name the row it is testing. **Do not re-derive these from the house**: the landed verdicts
+are pinned by ``test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered``
+below, which is the one function here that reads the plan, and it is where a real change
+to the building must show.
+
 The table this reads is the real one, and it is far more permissive than the invented table
 this check used to ship with: a 12" wall at 45 psf/ft retaining 9' on a 9' storey needs no
 vertical steel at all. The old table capped it at 7' and demanded an engineer.

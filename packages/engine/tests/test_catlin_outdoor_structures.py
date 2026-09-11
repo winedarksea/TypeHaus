@@ -66,20 +66,20 @@ def test_pillars_start_at_the_top_of_the_wall_they_bear_on(catlin_model) -> None
     for tag, wall_tag in PILLAR_BEARING_WALL.items():
         wall_top = _wall(catlin_model, wall_tag).z1_m
         assert abs(_solid(catlin_model, tag).z0_m - wall_top) < 1e-9, tag
-    # One wall top, not two: every outer pillar lands on a porch side wall at the porch
-    # floor. The retaining step is what W-SG-W2/E2 stand at, begins 6" south of the front
-    # pillar line, and runs out over the side walls' own tops at the front corners.
+    # One wall top, not two — and since 2026-09-10 that is literally true of all FIVE court
+    # walls, not just of the two a pillar lands on. The retaining run used to stand +0'-6"
+    # and then +0'-2"; it is on the porch datum now, `SPEC.retaining_top_ft` being
+    # `porch_top_ft` rather than a figure derived off grade. One form height, one
+    # strip-and-set, one continuous top line, and no 2-inch jog at the porch corner.
     #
-    # ** THE STEP IS +0'-2", NOT +0'-6", SINCE 2026-09-05. ** The retaining run is capped at
-    # 36" out of the -2'-10" yard on the owner's instruction, and 36" over grade IS +2".
-    # The porch floor at 0.0 did not move with it, so the step down off the porch onto the
-    # terrace grew from 6" to 10" — still a step, still not a stair, and the porch's own
-    # guard (RL-SG-PORCH) is what stands between them.
+    # **There is no step left to assert, so this asserts its absence.** A reader who finds
+    # this failing with a non-zero value has reintroduced a jog in the top line, which is
+    # the thing the flush tops were bought to remove.
     tops = {round(_wall(catlin_model, w).z1_m, 9) for w in PILLAR_BEARING_WALL.values()}
     assert tops == {0.0}
-    step = {round(_wall(catlin_model, w).z1_m, 9) for w in ("W-SG-W2", "W-SG-E2")}
-    assert len(step) == 1
-    assert abs(step.pop() - 2 * INCH) < 1e-9
+    court = {round(_wall(catlin_model, w).z1_m, 9)
+             for w in ("W-SG-W2", "W-SG-E2", "W-SG-S", *PILLAR_BEARING_WALL.values())}
+    assert court == {0.0}, court
 
 
 def test_the_side_walls_run_past_the_front_pillars_they_carry(catlin_model) -> None:
@@ -513,16 +513,36 @@ def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
         assert max(y for _, y in _wall(catlin_model, leg).axis) == pytest.approx(front_y)
 
 
-def test_the_apron_tops_out_level_with_the_wall_it_wraps_and_runs_three_feet_down(
+def test_the_apron_tops_out_level_with_the_wall_it_wraps_and_buries_its_base_course(
         catlin_model) -> None:
+    """The drop is 4'-0" since 2026-09-10, and the last 8" of it is embedment.
+
+    It was 3'-0" while the apron top stood at +0'-6" and the yard was an assumed flat plane
+    at the -2'-10" datum, which left the base course **4" clear of the ground** — a
+    dry-stacked segmental run retaining three feet of fill with nothing holding its toe,
+    at 0 FAIL, for two revisions. Both ends have since moved: the top came down to the
+    porch datum with the four court walls, and `plan/site.py` now authors the south yard as
+    three stations at -3'-4" rather than leaving it to the global plane. A 3'-0" drop off
+    the new top would have reproduced the same negative embedment from the other side.
+
+    The embedment assertion is the one that matters and is new. Nothing in the engine
+    grades a freestanding wall's base against the ground, so this is the only thing
+    watching it; the level-top and whole-course assertions were always here.
+    """
     retaining = _wall(catlin_model, "W-SG-S")
+    yard_m = min(spot.elevation.meters
+                 for spot in catlin_model.plan.project.site.spot_elevations
+                 if spot.kind == "grade")
     for tag in _APRON_TAGS:
         leg = _wall(catlin_model, tag)
         assert abs(leg.z1_m - retaining.z1_m) < 1e-9, f"{tag} must cap level with W-SG-S"
-        assert abs((leg.z1_m - leg.z0_m) - 3 * FT) < 1e-9, tag
+        assert abs((leg.z1_m - leg.z0_m) - 4 * FT) < 1e-9, tag
         # Whole courses: a dry-stacked wall cannot end mid-unit.
         assert abs((leg.z1_m - leg.z0_m) % (6 * INCH)) < 1e-9, tag
-        assert leg.z0_m < 0.0, tag  # mostly below grade, user-accepted
+        # The base course is BURIED, and by at least the ~6" an SRW this tall wants. 3'-10"
+        # would give exactly 6" and is not buildable in whole 6" courses.
+        embedment_in = (yard_m - leg.z0_m) / INCH
+        assert embedment_in == pytest.approx(8.0, abs=0.01), (tag, embedment_in)
 
 
 def test_the_apron_clears_the_sunken_gardens_strip_footings(catlin_model) -> None:

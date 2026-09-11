@@ -211,19 +211,37 @@ class SunkenGardenSpec:
     # ``SITE_GRADE`` one in the manifest, which is where the plan and the params modules
     # are the same program and can be compared.
     site_grade_in: float = -34.0
-    # ** 36" ABOVE GRADE IS A CAP, AND IT SETS FOUR WALL TOPS AND ONE WALL BASE AT ONCE. **
-    # Owner's call (2026-09-05): the sunken-garden retaining run may stand no more than
-    # 36" out of the yard. It used to be +0'-6", which is 40" over the -2'-10" grade.
+    # ** ALL FIVE COURT WALLS TOP OUT ON THE PORCH DATUM. ONE FORM HEIGHT. **
+    # 2026-09-10. The retaining run stood at +0'-2" and the two porch walls at 0'-0", a
+    # 2-inch jog in the top line at the porch corner that bought nothing: two form heights,
+    # two strip-and-sets, and a step a concrete crew has to hit in the middle of a
+    # continuous pour. Flush, the five walls are one line.
     #
-    # This one constant is the terrace plane for the whole south side. ``raised_garden.py``
-    # reads it through ``RETAINING_WALL_TOP_FT`` as its apron TOP and derives its BASE as
-    # ``TOP - drop_ft``; with the drop at 3'-0" that base lands on -34" — site grade
-    # exactly. Before this change the apron's base sat at -30", 4" PROUD of the yard it is
-    # supposed to spring from, while the comment beside it claimed "their base is grade".
-    # Nothing grades a freestanding wall's base against the ground plane, so five SRW legs
-    # floated 4" in the air at 0 FAIL. Capping the top at 36" pins the base to grade as a
-    # consequence, and the 3'-0" drop stays a whole number of 6" courses either way.
-    retaining_top_ft: float = (site_grade_in + 36.0) / 12.0
+    # ** IT IS EXPRESSED AGAINST THE DATUM THAT GOVERNS, NOT AS A LITERAL. ** Written as
+    # ``0.0`` the two would agree today and drift the first time the porch floor moved.
+    # Written this way they are the same number by construction. The terrace name stays
+    # separate from the porch-floor name deliberately: they are different ideas that happen
+    # to share an elevation, and keeping both makes a future divergence a one-line change
+    # rather than an untangling.
+    #
+    # ** THE 36" IS NOW DERIVED, AND IT WAS RECORDED AS THE WRONG KIND OF CONSTRAINT. **
+    # The owner's 2026-09-05 call was that the run stand *around* 36" out of the yard, up
+    # to about 48", because a wall this tall may be read as a guard. It was recorded here
+    # as a MAXIMUM — ``(site_grade_in + 36) / 12`` — which is the opposite constraint, and
+    # under it any further cut in the yard elevation would have pulled the wall tops down
+    # with it. The exposure is a RESULT now: see ``RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN``
+    # below, which is pinned against the authored yard and reports a band, because local
+    # grade is local and the side legs run from 10 to 34 feet out.
+    #
+    # ** THE APRON DROP FOLLOWED IT, AND THAT IS NOT INCIDENTAL. ** ``raised_garden.py``
+    # reads this through ``RETAINING_WALL_TOP_FT`` as its apron TOP and derives its BASE as
+    # ``TOP - drop_ft``. Under the old flat-plane model a 3'-0" drop landed the base on
+    # -34", site grade exactly. Now that the yard is authored at -3'-4" rather than assumed
+    # at the global datum, a 3'-0" drop off a top at 0'-0" would put the base 4" ABOVE the
+    # ground it springs from. The drop grew to 4'-0" — eight whole 6" courses — which
+    # buries the base course 8". Nothing grades a freestanding wall's base against the
+    # ground plane, so this arithmetic is the only thing watching it.
+    retaining_top_ft: float = porch_top_ft
     # porch framing
     column_diameter_in: float = 12.0  # sonotube back-beam support
     # Sonotube centre set south of the deck's north-edge line. Centred on that line, the 12"
@@ -252,7 +270,9 @@ class SunkenGardenSpec:
     # retaining run. Without it the W1/W2 (and E1/E2) junction node would land exactly on
     # `_y_ax_front`, which is also the balcony's front pillar line — so PT-SG-BF1/BF3 would
     # straddle the joint, half over each wall, forcing the bearing map to pick one (the
-    # retaining wall's +6" curb rather than the porch wall carrying the rest of the frame).
+    # retaining wall rather than the porch wall carrying the rest of the frame). The two
+    # tops are flush since 2026-09-10, so the pick would be invisible rather than wrong —
+    # which is worse, not better, and the 18" extension is what keeps it from arising.
     # It clears the 12" round's south face (y -10'-4") by 8" and leaves the front-beam
     # pockets (CN-SG-HGR-FW/FE, on `_y_ax_front`) well in from the end of the wall instead
     # of right at it. That was 3 3/8" to a 5 1/2" square post base before the corners became
@@ -260,9 +280,21 @@ class SunkenGardenSpec:
     #
     # 18", not 6": the balcony's front pillar row sits 4" south of the porch's front edge
     # (`_y_front_pillar`), and it is a 12" round, so the extension must reach past it or
-    # PT-SG-BF1/BF3 would run off the south end of W-SG-W1/E1 onto W-SG-W2/E2 — the +6" curb,
+    # PT-SG-BF1/BF3 would run off the south end of W-SG-W1/E1 onto W-SG-W2/E2 —
     # `lateral_support="unsupported"` R404.4 engineered walls. The extension follows the
     # pillars. W-SG-W2/E2 shorten by 12" and their footings follow.
+    #
+    # ** ⚠ FLUSH TOPS ARE NOT A LICENCE TO DELETE THESE 18 INCHES. ** Part of the argument
+    # for this extension used to be the elevation step: W-SG-W2/E2 stood +0'-6", then
+    # +0'-2", above the porch walls, so a pillar straddling the joint sat half on a curb.
+    # That step is gone — all five court walls top out on the porch datum since
+    # 2026-09-10 — and the surviving reason is the stronger one and is easy to miss:
+    # **W-SG-W2/E2 are unbraced at the head and ENGINEERED** (R404.4, `retaining_wall/
+    # W-SG-E2`), while W-SG-W1/E1 are braced by the arch and the porch frame. A 12" round
+    # column sitting half on one and half on the other is not a bearing this model can
+    # honestly describe: the bearing map must pick one wall, and whichever it picks is a
+    # lie about where half the load goes. Level tops make the two walls look
+    # interchangeable. They are not.
     side_wall_south_extension_in: float = 18.0
     # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
     # cantilever: the south end hangs flush *in* the front beams (nothing to oversail) and
@@ -522,17 +554,35 @@ _ret_unbalanced_fill = _ret_top - _wall_bottom
 # plane, no cut, and the 3 3/4" proud mow strip it briefly was (while the court sat at
 # -116 11/16") is gone along with FO-SG-ARCH.
 #
-# ** IT CANNOT FOLLOW THE COURT DOWN. ** Drop the top to the rim underside and the section
-# is 10 1/4": the note's own strut arithmetic gives phi-Pn 60,712 lb against Pu 62,051 —
-# d/c 1.02, it FAILS. Hold 17 1/2" by lowering the bottom instead and its 42" bed lands
-# 7 1/4" below `_SG_DRYWELL_TOP`, so the bed and the soakaway swap places. 17 1/2" deep at
-# this elevation is the only version of this beam that works.
+# ** IT CANNOT FOLLOW THE COURT DOWN — AND THE REASON CHANGED ON 2026-09-10. ** Drop the
+# top to the rim underside and the section is 10 1/4". That USED to fail outright: phi-Pn
+# 60,712 lb against Pu 62,051 at the thrust of the day, d/c 1.02. Three height cuts have
+# taken Pu to 49,157 lb and **the 10 1/4" section now passes at d/c 0.81**, so the
+# arithmetic no longer rejects it and this comment must not be read as though it does.
+#
+# What holds the section is the SEQUENCING argument, which did not move:
+# `notes/sunken_garden_court_free_body.md` §8 exists because the loop must be closed before
+# any backfill, and a strut whose bottom is tied to whatever surface happens to be under it
+# is a residue rather than a chosen depth — it gets shaved again the next time the court
+# floor or the footing plane moves, which is exactly what these two shallower sections
+# were. Plus: 2% is the margin at 8 1/2" on the one member with no redundancy, and the
+# whole saving is ~1.1 CY. Read §8's three-reason block before shrinking this beam.
+#
+# Holding 17 1/2" by lowering the bottom instead lands its 42" bed 7 1/4" below
+# `_SG_DRYWELL_TOP`, so the bed and the soakaway swap places. 17 1/2" at this elevation is
+# the version of this beam that gets built.
 _grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
 # ** DECOUPLED FROM `_wall_bottom` AND HELD AT -130 7/16" (2026-09-05). ** It used to read
 # `_wall_bottom - footing_thickness`, and when the retaining footings rose 9" to become the
 # court's walking surface this expression would have dragged the beam up with them — cutting
 # the section from 12" x 17 1/2" to 12" x 8 1/2", Ag 210 in² to ~102 in², and taking the
-# strut check from d/c 0.60 to about 1.23. **It fails.**
+# strut check from d/c 0.60 to about 1.23, which FAILED at the thrust of that day.
+#
+# ** IT NO LONGER FAILS, AND THE DECOUPLING IS STILL RIGHT. ** At today's Pu 49,157 lb the
+# 8 1/2" section reads d/c 0.98 — it passes, by 2%. That is the point of decoupling rather
+# than an argument against it: a section arrived at by subtraction between two surfaces
+# that both move is not a design, and the margin it happens to land on this revision is not
+# a reason to accept it.
 #
 # W-SG-ARCH is the court's only real strut: `notes/sunken_garden_court_free_body.md` §8
 # rejects a slab strut for it in as many words ("the beam needs nothing from it", "laterally
@@ -786,7 +836,8 @@ WALLS = [
     # excavation level and one stone plane rather than two, and lets the strut engage those
     # footings directly instead of hanging above them. Its TOP is the rim slab's underside,
     # so the court floor bears on it and nothing of it shows. See `_grade_beam_top` for why
-    # the top cannot move: at 10 1/4" the strut is d/c 1.02 and FAILS.
+    # the top does not move: at 10 1/4" the strut is d/c 0.81 and PASSES since the flush
+    # tops, so what holds the section is sequencing and margin, not the strength ratio.
     #
     # `unbalanced_fill=inch(0)` is authored and is not a formality: without it
     # `_unbalanced_fill_ft`'s grade-plane proxy invents a retained height for a wall buried
@@ -952,6 +1003,29 @@ SOUTH_RETAINING_WALL_NODES = ("N-SG-SW", "N-SG-SE")
 RETAINING_WALL_SPAN_X_FT = (_x_ax_w, _x_ax_e)
 RETAINING_WALL_TOP_FT = SPEC.retaining_top_ft
 RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
+
+# ** HOW FAR THIS RUN STANDS OUT OF THE YARD — COMPUTED, NOT COMMANDED. **
+# The owner's figure is a BAND: around 36" out of the yard, up to about 48", because a
+# freestanding wall this tall may be read as a guard and a guard has a height. It used to
+# be recorded as a maximum, baked into `retaining_top_ft` as `(site_grade_in + 36) / 12`,
+# which is the opposite constraint — under it a lower yard would have pulled the five wall
+# tops down rather than letting the exposure grow into the band.
+#
+# It is a result now. `plan/site.py` authors the south yard as a flat plane at -3'-4"
+# (three stations, read by `resolve/site_earth.local_grade_elevation_m`'s station branch),
+# and the wall tops sit on the porch datum at 0'-0", so the run stands 40" out of it.
+#
+# ** PINNED, SO A CHANGE IS LOUD. ** `test_retaining_court` asserts this number. Do not
+# replace it with an inequality against `SITE_GRADE` — the -2'-10" global plane is the
+# near-house bench, not the yard these walls stand in, and grading the exposure against it
+# would report 34" for a wall that is really 40" out of the ground beside it.
+#
+# One figure and not a range today only because the authored yard is one plane. Local grade
+# IS local: the side legs run from 10 to 34 feet out from the house, and the first station
+# to be authored at a different elevation makes this a range along the wall. Widen it to a
+# (min, max) pair when that happens rather than picking one end.
+RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN = 40.0
+RETAINING_EXPOSURE_BAND_IN = (36.0, 48.0)
 # The porch's front edge — the plane the two front beams and RL-SG-PORCH's south run sit
 # on. Published because a second module must not re-derive it.
 #
@@ -2044,8 +2118,10 @@ _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_fro
 # West / south / east only — the north edge is the 5" house gap. ``base_elevation`` is the
 # walking surface, not the joist tops: the 42" is measured from what a person stands on.
 # The front corners are flush, not stepped: W-SG-W1/E1 run 18" past this line at the porch
-# top so the balcony's front columns bear on them, and the +6" curb of W-SG-W2/E2 starts
-# 18" further south, so the guard runs out over the side walls' own tops. RL-SG-BALCONY is
+# top so the balcony's front columns bear on them, and W-SG-W2/E2 start 18" further south,
+# so the guard runs out over the side walls' own tops. (Those two carried a +0'-6" and then
+# a +0'-2" curb above this plane; the tops are flush since 2026-09-10 and the guard's own
+# base elevation never read that curb.) RL-SG-BALCONY is
 # on a different plane — 12" south of this one — so the two guards read as two edges rather
 # than one.
 #

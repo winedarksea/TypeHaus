@@ -220,9 +220,10 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
     """§6a of ``notes/sunken_garden_court_free_body.md``, both halves.
 
     The 3" is a durability decision above the 2" Code minimum, and it is paid for in section:
-    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.58 -> 0.65 (re-oracled twice
-    on 2026-09-05: the stem shortened 10.37' -> 9.62' when the footings rose, then -> 9.2865'
-    when the wall tops were capped at 36" above grade, and the demand fell with both). Pinned
+    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.55 -> 0.61 (re-oracled three
+    times: the stem shortened 10.37' -> 9.62' when the footings rose, -> 9.2865' when the
+    wall tops were capped at 36" above grade, and -> 9.1198' when all five court walls came
+    flush with the porch datum on 2026-09-10; the demand fell with each). Pinned
     because a later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 11%
     of capacity back — and because the 3" is what keeps the note's selection table honest
     about how much margin `#6 @ 10"` really carries over `#6 @ 12"`.
@@ -236,4 +237,4 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
                     if s.name == "stem flexure")
         assert 'cover 3.00"' in stem.citation, stem.citation
         assert stem.capacity == pytest.approx(19_755, rel=0.002)
-        assert stem.ratio == pytest.approx(0.649, abs=0.005)
+        assert stem.ratio == pytest.approx(0.614, abs=0.005)

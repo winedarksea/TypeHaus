@@ -322,9 +322,17 @@ SITE = Site(
         SpotElevation(position=pt(ft(41), ft(-18)), elevation=ft(-3, -4)),
         SpotElevation(position=pt(ft(18), ft(-38)), elevation=ft(-3, -4)),
         # sunken garden floor, and the retaining wall's top at the far south. The last two
-        # read +0'-6": they record the top of W-SG-S, which params/raised_garden.py's
-        # retaining apron now tops out level with (rather than 3' above it, as a since-removed
-        # planter bed once stood). The plane these two stations sit on is the wall top itself.
+        # read 0'-0": they record the top of W-SG-S, which params/raised_garden.py's
+        # retaining apron tops out level with. The plane these two stations sit on is the
+        # wall top itself.
+        #
+        # ** THEY HAVE NOW BEEN STALE THREE TIMES, AND THE THIRD IS WHY THEY READ A DATUM
+        # RATHER THAN A FIGURE. ** +0'-6" while the retaining run stood 40" over grade,
+        # left at +0'-6" when it was capped at +0'-2" on 2026-09-05, and corrected to
+        # +0'-2" only on 2026-09-10 — the same day the run came flush with the porch datum
+        # and took them to 0'-0". This is data, not prose: `engineering/balcony_wind`
+        # reads the site's spot elevations and nothing reconciles these two against
+        # `params/sunken_garden.SPEC.retaining_top_ft`. Move them with the wall.
         # Both are inside the apron's U (x 4'..32', y -33.33'..-9.5') and stay there.
         #
         # None of these four move with GRADE: they are the tops of structures, not readings
@@ -359,8 +367,8 @@ SITE = Site(
                       kind="structure"),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375),
                       kind="structure"),
-        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 2), kind="structure"),
-        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 2), kind="structure"),
+        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0), kind="structure"),
+        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0), kind="structure"),
     ),
     # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
     # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.
