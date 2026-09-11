@@ -2192,6 +2192,43 @@ def test_wall_and_room_counts_by_storey(catlin_model):
             "RM-A-STUBATH", "RM-A-POCKET", "RM-GARAGE"} <= rooms
 
 
+def test_the_screen_skirt_is_one_sheet_with_the_panel_above_it(catlin_model):
+    """`W-BW-SCREEN-SKIRT` is a SECOND ELEMENT for ONE physical sheet, so the two have to
+    resolve co-planar and co-extensive or the corrugation steps at the joint.
+
+    Two model elements, because `Layer.extent` is clamped to its wall and the framing solver
+    takes its plate elevation from the wall base, so dropping `W-BW-SCREEN`'s base would put a
+    sole plate on the pier tops inside both seat beams. The cost of that split is exactly this
+    invariant, and nothing else in the engine grades it: a skirt drifting off the panel it
+    continues is a step in one plane of steel at 0 FAIL.
+
+    The x band is pinned against the PANEL's own resolved face rather than a literal, so the
+    wall's `alignment` and the skirt's authored centreline cannot drift apart silently.
+    """
+    walls = {w.tag: w for w in catlin_model.walls}
+    panel, skirt = walls["W-BW-SCREEN"], walls["W-BW-SCREEN-SKIRT"]
+    face = next(ly for ly in panel.layers if ly.name == "cladding-out")
+    sheet = next(ly for ly in skirt.layers if ly.name == "skirt-panel")
+    assert face.material_ref == sheet.material_ref == "corrugated-panel-26"
+
+    def band(layer, axis):
+        return (min(p[axis] for p in layer.polygon), max(p[axis] for p in layer.polygon))
+
+    assert band(sheet, 0) == pytest.approx(band(face, 0), abs=1e-9), "not the same plane"
+    assert band(sheet, 1) == pytest.approx(band(face, 1), abs=1e-9), "not the same run"
+    # And they MEET: the skirt's top is the panel's base, no lap and no gap.
+    assert skirt.z1_m == pytest.approx(panel.z0_m, abs=1e-9)
+    # The corrugation datum in the viewer is the model.json `layout_axis ?? axis` (ui/src/three/builders/
+    # walls.ts), so the two must share a start point and a direction or the flutes step at the
+    # joint. Only the component along the run matters — they sit on different planes by design.
+    from typehaus.server.model_json_fabric import _layout_axis
+    (px0, py0), (px1, py1) = _layout_axis(catlin_model, panel.tag) or panel.axis
+    (sx0, sy0), (sx1, sy1) = _layout_axis(catlin_model, skirt.tag) or skirt.axis
+    assert (py0, py1) == pytest.approx((sy0, sy1), abs=1e-9), "different corrugation datum"
+    assert px0 == pytest.approx(px1, abs=1e-9) and sx0 == pytest.approx(sx1, abs=1e-9), \
+        "both runs are north-south, so the x offset between them cancels in the UV"
+
+
 def test_stairs_resolve_with_code_risers(catlin_model):
     stairs = {s.tag: s for s in catlin_model.stairs}
     # ST-G-SERVICE: five risers from the garage slab to the service-door threshold, a
