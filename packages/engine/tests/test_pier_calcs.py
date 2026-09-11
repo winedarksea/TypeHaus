@@ -116,15 +116,19 @@ _ORACLE = {
     "PT-SG-COL": {
         "tributary_ft2": 120.83, "dead_lb": 2534.0, "live_lb": 4833.0,
         "service_lb": 7367.0, "factored_lb": 10_774.0,
-        "bell_area_ft2": 4.909, "bearing_psf": 1651.0,
+        # 4.909 / 1651 while this bell was 30". Both bells are 36" since 2026-09-10 — the
+        # 36" was a fossil from a 20" column and the 30" was set by nothing — which takes
+        # the tightest pier in the house from d/c 0.83 to 0.60 for ~0.09 cy of concrete.
+        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
-        # §4d: PIER_CONCRETE_12 names EXPOSED_MIX (5,000 psi) as of 2026-09-03, so
-        # this column is no longer graded on the presumptive 3,000 its sibling still is.
-        # 187,011 -> 285,893 lb, and E_c goes as sqrt(f'c) so the magnifier eases with it.
-        # THE TWO COLUMNS ARE POURED FROM THE SAME 5,000 psi; the split is the unfinished
-        # migration of SUNKEN_GARDEN_COLUMN_12, not a difference in the concrete.
+        # §4d: 5,000 psi, and both piers have read it since 2026-09-10. This column got
+        # there first (PIER_CONCRETE_12 named EXPOSED_MIX on 2026-09-03) and its sibling
+        # caught up when SUNKEN_GARDEN_COLUMN_12 was given the same spec — completing the
+        # migration this comment used to flag as unfinished. 187,011 -> 285,893 lb, and
+        # E_c goes as sqrt(f'c) so the magnifier eases with it. PT-SG-COL itself moved onto
+        # SUNKEN_GARDEN_COLUMN_12 in the same pass; the two are one type now.
         "capacity_lb": 285_893.0, "tie_spacing_in": 10.0,
         "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
@@ -134,8 +138,15 @@ _ORACLE = {
         "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
-        "capacity_lb": 187_011.0, "tie_spacing_in": 10.0,
-        "slenderness": 42.7, "delta_ns": 1.025, "e_magnified_in": 0.984, "e_capped_in": 1.20,
+        # ** 187,011 -> 285,893 ON 2026-09-10, AND THE SPLIT ABOVE IS CLOSED. **
+        # `SUNKEN_GARDEN_COLUMN_12` stated its 5,000 psi mix in prose only, so this column
+        # was graded on the presumptive 3,000 while PT-SG-COL — the same 12" round at the
+        # same height four feet away, holding the other end of the same frame — read the
+        # real mix off PIER_CONCRETE_12. The register printed the FRONT column as the
+        # weaker of the two, which is backwards. The assembly names EXPOSED_MIX now and
+        # all six of the court's rounds are on it, so the two rows agree.
+        "capacity_lb": 285_893.0, "tie_spacing_in": 10.0,
+        "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
 }
 
@@ -167,9 +178,21 @@ _CORNER_ORACLE = {
     "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1410.3, "guard_lb_ft": 2535.4},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
-_CORNER_PHI_MN_LB_FT = 20_900.0
-#: §7: ld = (60,000 / (25 sqrt(3,000))) x 0.625 = 27.4", x 1.3 for a class B splice.
-_CLASS_B_LAP_IN = 35.6
+#:
+#: ** RE-WORKED AT 5,000 psi ON 2026-09-10. ** `SUNKEN_GARDEN_COLUMN_12` stated its mix in
+#: prose only, so every calc on these four fell back to the presumptive 3,000 while the
+#: identical column four feet away (PT-SG-COL, on PIER_CONCRETE_12) was graded on the 5,000
+#: both are poured from. The assembly names EXPOSED_MIX now. 20,900 -> 24,700 lb-ft, and
+#: only about half of that is the concrete: beta1 steps 0.85 -> 0.80, `c` falls to 2.752",
+#: the concrete resultant moves out to +4.695", and the extreme tension strain rises past
+#: Table 21.2.2's transition band so phi goes 0.872 -> 0.900.
+_CORNER_PHI_MN_LB_FT = 24_700.0
+#: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
+#: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
+#: the real mix SHORTENS the required lap. The assembly's own source text still specifies
+#: "~30in", which is longer than required and is what gets built; this is the requirement,
+#: not the detail.
+_CLASS_B_LAP_IN = 27.6
 
 _PRESUMPTIVE_ALLOWABLE_PSF = 2000.0
 
@@ -310,7 +333,10 @@ def test_the_bell_is_read_as_a_circle_not_the_resolved_square(piers, catlin_mode
     `params/sunken_garden.py` calls that same number a bell DIAMETER. Taking the square
     credits 27% more bearing area than exists, in the unconservative direction.
     """
-    for tag, dia_in in (("PT-SG-COL", 30.0), ("PT-SG-FCOL", 36.0)):
+    # One diameter on both since 2026-09-10, so this now reads as two identical rows. Keep
+    # both: the point is that the CIRCLE is taken, and a single row could be satisfied by a
+    # square of some other bell.
+    for tag, dia_in in (("PT-SG-COL", 36.0), ("PT-SG-FCOL", 36.0)):
         pier = piers[tag]
         circle = math.pi * (dia_in / 2.0) ** 2 / 144.0
         square = (dia_in / 12.0) ** 2
@@ -638,7 +664,10 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     for name in ("bending at base, wind", "bending at base, guard"):
         assert states[name].capacity == pytest.approx(_CORNER_PHI_MN_LB_FT, rel=0.01)
     guard = states["bending at base, guard"]
-    assert guard.demand / guard.capacity == pytest.approx(0.12, abs=0.01)
+    # 0.12 until 2026-09-10; the denominator rose 17% when the assembly's 5,000 psi mix
+    # became readable. Not one demand moved: wind is a pressure on a guard and a deck, and
+    # the guard case is R301.5's 200 lb. Neither has an opinion about the concrete.
+    assert guard.demand / guard.capacity == pytest.approx(0.10, abs=0.01)
     axial = states["axial, tied column"]
     assert axial.demand / axial.capacity < 0.03, "axial is not what governs, and never was"
 

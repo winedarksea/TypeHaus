@@ -1127,11 +1127,21 @@
 # **SUNKEN_GARDEN_COLUMN_20 IS RETIRED** (2026-09-03), with the 20" column it named. Its
 # key is gone rather than left behind: an unpriced type is silently DROPPED from the BOM,
 # so a stale key does nothing, but a key with no type is a row an estimator matches nothing
-# against and reads as an omission. The five cast columns of this structure are one product
+# against and reads as an omission. The cast columns of this structure are one product
 # now — see the row below.
 #
-# PT-SG-FCOL (~10.1 LF) plus the four balcony corner columns PT-SG-BR1/BR3/BF1/BF3 (8'-5"
-# each, ~36 LF), all 12" round on SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate
+# ** SIX COLUMNS SINCE 2026-09-10, NOT FIVE. ** PT-SG-COL, the back-beam column, moved here
+# off the sonotube row below. It is the same 12" round at the same 120 15/16" height over
+# the same z range as PT-SG-FCOL, four feet away, holding up the other end of the same
+# frame, and it takes the same F3+C2 truck and the same galvanized cage. It was billing at
+# the sonotube rate, which is the wrong half of the very distinction this key exists to
+# draw. **The court's price rises by roughly the difference and that is the correction, not
+# an escalation.** What PT-SG-COL does NOT share is the free-standing forming in the third
+# bullet — it is a tube in a hole — so if this row is ever re-quoted, ask for the forming
+# line separately rather than assuming six columns of saddle-collar work.
+#
+# PT-SG-FCOL and PT-SG-COL (~10.1 LF each) plus the four balcony corner columns
+# PT-SG-BR1/BR3/BF1/BF3 (8'-5" each, ~36 LF), all 12" round on SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate
 # below**, and the difference is the whole reason it is a separate key:
 #   * the MIX is class F3 + C2 — 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air with SCM caps —
 #     against the piers' 4,000 psi F2, roughly +$25-45/cy on ready-mix;
@@ -1145,9 +1155,10 @@
 #   * a waterstop strip at the wall-top cold joint, and silane at 28 days.
 # ~$60-110/LF installed against the piers' $31-62 covers all of that. PLACEHOLDER pending a
 # concrete quote — the cage and the mix are the two lines to ask about by name.
-"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.25 cy = ~46 LF over five columns (PT-SG-FCOL + the four balcony corners) = $60-111/LF installed
-# The five 12" round sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at
-# the garden back-beam midspan, 29.6 LF between them. A round pier is cheaper per yard than
+"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.53 cy = ~56 LF over six columns (PT-SG-FCOL, PT-SG-COL and the four balcony corners); $/cy, so the line scales
+# The six 12" round sonotube piers of the NORTH ENTRY: PT-BW-W/E/RE at -9'-9 7/16" and
+# PT-BW-GW/GE/RNE at -7'-0". PT-SG-COL left this row on 2026-09-10 for the garden-column
+# row above, which is the mix and cage it is actually poured with. A round pier is cheaper per yard than
 # the square column above because the form is a disposable tube rather than built panels and
 # there is no chamfer, no wash and no rubbing after strip. $31-62/LF installed: fibre tube
 # $4-9/LF, ready-mix $5.80-9.30/LF (a 12" round is 0.0291 cy/LF at $200-320/cy), a 4-bar cage

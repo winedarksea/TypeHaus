@@ -49,6 +49,7 @@ import math
 from dataclasses import dataclass
 
 from typehaus import (
+    Annotation,
     BarSpec,
     Beam,
     Connector,
@@ -245,10 +246,14 @@ class SunkenGardenSpec:
     # porch framing
     column_diameter_in: float = 12.0  # sonotube back-beam support
     # Sonotube centre set south of the deck's north-edge line. Centred on that line, the 12"
-    # tube would poke 6" into the house cladding and its 30" bell footing would run 15" into
-    # FT-B-S2, whose south face lands exactly on this north-edge line. 15" (bell reach) + 2"
-    # = 17". Cannot shrink. The 2" is plain clearance between the bell's north face and the
-    # house footing's excavation face. The column does NOT move: the whole back-beam line,
+    # tube would poke 6" into the house cladding and its bell footing would run into
+    # FT-B-S2, whose south face lands exactly on this north-edge line. Cannot shrink. The
+    # residue is plain clearance between the bell's north face and the house footing's
+    # excavation face, and the bell went 30" -> 36" on 2026-09-10, which spends 3" of it:
+    # 8" of plan gap becomes 5". Still clear, and the two never meet in section (the bell
+    # bears 34" below the house strip) — but the 17" is now doing more work than it was,
+    # and a further bell increase reaches the house footing. The column does NOT move: the
+    # whole back-beam line,
     # the deck edge and the pockets are anchored to this offset.
     column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
@@ -1053,12 +1058,32 @@ _y_col = _y_in_n - SPEC.column_south_offset_in / 12.0
 _porch_joist_depth_ft = cross_section(SPEC.porch_joist).depth_m / 0.3048
 _back_beam_soffit = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft)  # -18.5"
 _back_beam_mid = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft / 2.0)
-_col_footing_width_in = 30.0  # bell diameter under the 12" sonotube
-# Bell diameter under PT-SG-FCOL. It stayed 36" when the column above it shrank from a
-# 20" round to a 12" one on 2026-09-03: the bell answers to the SOIL, not to the shaft,
-# and the shrink took the bearing from 1,477 to 1,159 psf against a 2,000 psf
-# presumptive. Narrowing it to PT-SG-COL's 30" would put it back at ~1,671 psf, which
-# is worse than the pier this house is now tightest on (notes/sunken_garden_piers.md §3c).
+# ** ONE BELL DIAMETER, 36", ON BOTH PORCH PIERS SINCE 2026-09-10. **
+# These were 30" and 36", and neither number was chosen. The 36" is a fossil: it was sized
+# for a 20" round column and stayed put when the column above it shrank to 12" on
+# 2026-09-03 — correctly, because a bell answers to the SOIL and not to the shaft, but the
+# result was a diameter nothing was any longer setting. The 30" was never set by anything
+# at all; it was simply the other one.
+#
+# What one diameter buys: one under-reamer setting instead of two on a two-pier job, one
+# schedule row, and one number for the driller to hit. What it costs is about 0.09 cy of
+# concrete, ~$27-43. And it lifts the tightest pier in the house: FT-SG-COL's bearing falls
+# as the square of the diameter, (30/36)^2 = 0.694, taking its d/c from 0.83 to 0.60.
+#
+# ** THE BELL GROWS 3" PER SIDE AND THAT REACHES TOWARD THE HOUSE FOOTING — CHECKED. **
+# FT-SG-COL is centred at y = -2'-3", so its north face goes from -12" to -9". FT-B-S2/S3's
+# south face is at -4". The plan gap closes 8" -> 5", and the two do not touch. They also
+# do not overlap vertically: the bell's TOP is at -139 7/16" and the house strip bottoms at
+# -117 7/16", 22" above it (the bell bears another 12" down, at -151 7/16").
+#
+# **What that 22" means is a SEQUENCING constraint, not a clearance one, and it was already
+# true at 30".** A 1:1 influence line down and out from the house footing's south bottom
+# edge reaches y = -2'-2" at the bell's top elevation, and the bell's north face is inside
+# it either way. So the bell is in the house strip's load path and always was — auger these
+# two shafts with the open basement excavation, before or with the house footings, never
+# after. `structural.concrete_interference` grades ISOLATED pours only and will not catch
+# this; nothing else looks at it.
+_col_footing_width_in = 36.0
 _front_footing_width_in = 36.0
 
 # --- the two porch piers are BELL-BOTTOM PIERS, augered to frost depth -------------------
@@ -1122,7 +1147,16 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               position=pt(ft(_cx), ft(_y_col)), size="12 round",
               height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft
                         + _pier_shaft_extension_ft),
-              assembly="PIER_CONCRETE_12",
+              # ** SUNKEN_GARDEN_COLUMN_12, NOT PIER_CONCRETE_12, SINCE 2026-09-10. **
+              # PT-SG-FCOL is the same 12" round at the same 120 15/16" height over the
+              # same z range four feet away, holding the other end of the same frame, and
+              # it was on the other type. The split was also printing this column's partner
+              # as the weaker of the two — the garden type stated its 5,000 psi mix in prose
+              # only, so every calc on PT-SG-FCOL fell back to the presumptive 3,000 while
+              # this one was graded on the real mix. Both come off the same truck. The
+              # retype also drops the grout island PIER_CONCRETE_12 carries and the garden
+              # type refuses (see NO GROUT ISLAND in plan/assemblies.py).
+              assembly="SUNKEN_GARDEN_COLUMN_12",
               # ** THE CAGE IS THE MINIMUM ACI PERMITS, AND IT IS NOT OPTIONAL. **
               # A_g = 113.10 in2, so §10.6.1.1's 1% floor is 1.131 in2; (4) #5 = 1.24 in2
               # (rho 1.096%) clears it by 9.6% and is the Code's own four-bar minimum for a
@@ -1292,8 +1326,10 @@ FOOTINGS = [
             # decides width, offset and mat: the three cantilever strips are 96" x 12", the
             # two braced porch strips 84" x 13". Both pour from EXPOSED_MIX — every
             # footing in this court is inside the excavation and in the freezing zone.
-            assembly=("RETAINING_FOOTING_96" if w.tag in _RETAINING
-                      else "PORCH_FOOTING_84"),
+            # One type for all five strips since 2026-09-10: the two cards were identical
+            # (12" of EXPOSED_MIX) and the porch one declared 13", an inch no footing here
+            # has been built at for revisions. Width is plan geometry, not an assembly.
+            assembly="COURT_FOOTING_12",
             depth=inch(SPEC.footing_thickness_in))
     # W-SG-ARCH is deliberately absent: the buried grade beam carries 219 plf over its own
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
@@ -1403,10 +1439,39 @@ FOOTING_BEDDING = [
     )
     for f in FOOTINGS
 ]
+# ** THE ONE EXCAVATION PLANE — THE COURT'S BEDS ALL BOTTOM HERE. **
+# Every wall bed in this court bottoms at `_SG_WALL_BED_BOTTOM`, the footing underside less
+# the 42" ASCE 32 section. The grade beam's bed is derived to land on the SAME plane rather
+# than carrying its own 42" undercut below a beam that hangs 9" lower than the footings do.
+_SG_WALL_BED_BOTTOM = (_wall_bottom
+                       - inch(SPEC.footing_thickness_in)
+                       - inch(SPEC.aggregate_bedding_depth_in))
+
 # W-SG-ARCH's bed, appended rather than swept up by the comprehension above because it is
-# hosted on the WALL and not on a Footing — the grade beam has none (see WALLS). Same 42"
-# undercut, same NFS claim about the same stone, same 4" sock-wrapped tile to DRW-SG-MAIN,
-# so it joins the existing takeoff group rather than starting a second one. It is NOT
+# hosted on the WALL and not on a Footing — the grade beam has none (see WALLS). Same NFS
+# claim about the same stone, same 4" sock-wrapped tile to DRW-SG-MAIN, so it joins the
+# existing takeoff group rather than starting a second one.
+#
+# ** THE UNDERCUT IS 33", NOT 42", SINCE 2026-09-10, AND THAT CLOSES THE 9" STEP IN THE
+# DIG. ** It read `aggregate_bedding_depth_in` — the footings' 42" — copied because every
+# bed in this court once shared one plane. When `_grade_beam_bottom` was decoupled and HELD
+# 9" below the footings (the section §8 will not give up), the copied 42" went down with it
+# and the excavation grew a second floor along the beam line: one more laser setting, one
+# more compaction schedule, one more tile plane, and the side-feed detail into the drywell
+# that existed only because this bed reached below the well's top.
+#
+# **The 42" is not required here and never was.** It is an ASCE 32 soil-replacement section
+# and this beam is not in the frost population at all: it has no `Footing`, so
+# `structural.frost_depth` — which iterates footing and pad SOLIDS — never sees it, and the
+# reason it has none is that it carries 219 plf over its own 12" of bearing, 219 psf against
+# 3,000 allowable. What the bed is actually for is a compacted, drained, non-frost-
+# susceptible plane to cast a 20' beam on. 33" of it still puts the beam's underside 33"
+# above undisturbed clay, which clears the 42" frost requirement measured from the court
+# floor by 21" on its own.
+#
+# Derived off the wall-bed plane rather than pinned at 33", so it follows if either end
+# moves. If `_grade_beam_bottom` ever rises to the footing plane this goes to 42" on its
+# own — and then the whole question reopens, correctly. It is NOT
 # `cast_foam_in_aggregate`: that is for the house-adjacent footings' thermal break, and this
 # beam is 11'-0" south of the house with unconditioned court on both faces.
 #
@@ -1421,7 +1486,7 @@ FOOTING_BEDDING.append(
     FootingBedding(
         uid="SGB009AAAA", tag="FB-SG-ARCH", host_ref="W-SG-ARCH",
         width=inch(24),
-        undercut=inch(SPEC.aggregate_bedding_depth_in),
+        undercut=_grade_beam_bottom - _SG_WALL_BED_BOTTOM,
         non_frost_susceptible=True,
         drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
     )
@@ -1437,27 +1502,25 @@ FOOTING_BEDDING.append(
 # a 7" levelling course and their beds stop well short of this plane, which is clearance,
 # not a gap to close.
 #
-# ** IT SITS ON THE FIVE WALL BEDS, AND THAT IS WHAT WAS BROKEN. ** Until the retaining
-# footings rose, every bed in this court — five wall beds and the grade beam's — shared one
-# underside, and the well's top of stone WAS that plane: the whole bearing system stood on
-# the soakaway and drained into it by falling into it. Lifting the wall footings 9" left
-# their beds at -13'-7 7/16" with the well still pinned to the beam's at -14'-4 7/16", so
-# the five tiles that feed this well ended 9" above the top of it, discharging into
-# undisturbed clay. `drainage.discharge_consistency` resolves the NAME and never asks where
-# the pipe goes, so it passed; the plan drawings are where it shows, and it showed.
+# ** IT SITS ON THE SIX BEDS, AND THE ONE-PLANE PROPERTY IS BACK. ** Until the retaining
+# footings rose, every bed in this court shared one underside and the well's top of stone
+# WAS that plane: the whole bearing system stood on the soakaway and drained into it by
+# falling into it. Lifting the wall footings 9" left their beds at -13'-7 7/16" with the
+# well still pinned to the beam's at -14'-4 7/16", so the five tiles that feed this well
+# ended 9" above the top of it, discharging into undisturbed clay.
+# `drainage.discharge_consistency` resolves the NAME and never asks where the pipe goes, so
+# it passed; the plan drawings are where it shows, and it showed.
 #
-# So the well follows the WALL beds, which are the ones that feed it, and FB-SG-ARCH's is
-# now the one bed that reaches BELOW it — 9" lower, 2" clear of the shaft in plan, feeding
-# the stone column through its side the way a soakaway beside a trench does rather than
-# from above. That is a real difference from the old "everything stacks on one plane" and
-# it is why the two lead runs below are authored: with the tops level, the tie is a 3'-0"
-# horizontal lead, which is a thing that can be drawn and dug.
+# The well was moved onto the WALL beds, which are the ones that feed it, and FB-SG-ARCH
+# was left as the one bed reaching 9" BELOW it, feeding the stone column through its side.
+# **On 2026-09-10 that last step closed from the other end**: the beam's bed undercut went
+# 42" -> 33" so it bottoms on this same plane. All six beds, the well's top and the two
+# lead runs are now one elevation, which is one laser setting and one compaction schedule,
+# and the side-feed detail is gone. The beam itself still hangs 9" lower — that is §8's
+# held section and it does not move — but its bed no longer hangs with it.
 #
 # 6' of fabric-wrapped stone below (unwrapped, this clay silts its voids shut in a
 # season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the two collided.
-_SG_WALL_BED_BOTTOM = (_wall_bottom
-                       - inch(SPEC.footing_thickness_in)
-                       - inch(SPEC.aggregate_bedding_depth_in))
 _SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM
 GARDEN_DRYWELL = Drywell(
     uid="SGDR01AAAA", tag="DRW-SG-MAIN",
@@ -3503,9 +3566,28 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 # ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
+# ** THE COURT'S SEQUENCING AND PROCUREMENT NOTES (2026-09-10). **
+# Everything below is a field instruction, not geometry. It is here rather than in prose
+# because the model has no element that says "one pour" or "before November", and the three
+# things these say are each worth more than any dimension on this drawing.
+#
+# uid prefix SGAN — `haus fmt` does not visit `params/*.py`, so these are hand-minted and
+# must stay unique by hand; a collision is a load-time ERROR.
+SEQUENCE_NOTES = [
+    Annotation(
+        uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH belled piers in one placement. The bells are augered and under-reamed to 36in at -12ft 7-7/16in and poured MONOLITHICALLY with the shaft above them, which is what a belled pier IS — the Footing and the Post are two elements here only because this model has no single one. Auger both shafts WITH THE OPEN BASEMENT EXCAVATION: FT-SG-COL's bell reaches to within 5in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so augering after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls and W-SG-ARCH, one form height (every top is the porch datum 0ft 0in), one strip-and-set. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+    Annotation(
+        uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
+        text="MIX SUBSTITUTION, PERMITTED: the court comes off ONE ticket. PIER_BASE_12 (the two belled pier bases) specifies BURIED_MIX and everything else here specifies EXPOSED_MIX. Both are 5,000 psi at w/cm <= 0.40; EXPOSED_MIX adds class F3+C2 air entrainment and SCM caps, so it satisfies every requirement BURIED_MIX states and is the richer of the two. SUPPLY THE WHOLE COURT WITH EXPOSED_MIX. Do not read this as an assembly change — PIER_BASE_12 is shared with the north entry's pads, where the buried mix is correct and cheaper, and retyping it would move concrete that is not in this court. This note is the substitution; the schedule is not wrong"),
+    Annotation(
+        uid="SGAN03AAAA", tag="AN-SG-COLDWEATHER", position=pt(ft(_cx), ft(-26)),
+        text="MILESTONE, HARD: the court's LAST placement (3) is before 1 NOVEMBER. Cold-weather protection is priced at zero on a summer-pour assumption and is worth $8,000-21,000 if it slips — heated enclosure, blankets, admixture and extended cure over a 9ft hole with no drainage, which is the expensive end of that range. This placement sits at the end of the longest dependency chain of any concrete in the house: house basement wall poured, cured and surveyed, then the footing trim at FT-B-S2/S3 signed off, then placements (1) and (2), then this. Pulling the six columns forward into (3) rather than leaving them to a fourth pour behind the porch carpentry is as much a schedule hedge as a saving"),
+]
+
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
-                     GARDEN_LEAD_W, GARDEN_LEAD_E,
+                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

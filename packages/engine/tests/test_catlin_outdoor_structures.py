@@ -624,7 +624,7 @@ def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None
 # --- porch third pass: sonotube south-offset + gutter at the drip edge -------
 def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> None:
     """PT-SG-COL stands a south-offset inside the deck's north edge, so the 12" tube clears
-    the house cladding and its 30" bell footing stops short of the house's own footing.
+    the house cladding and its bell footing stops short of the house's own footing.
 
     How far short is not a free number: FT-B-S2's south face already lands on the deck's
     north-edge line, and the bell's north face sits back 2" from it. Everything here is
@@ -632,18 +632,28 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     ``SPEC.column_south_offset_in`` instead of restating it.
 
     The bell is augered to frost depth, so the two footings do not meet at one elevation and
-    there is no joint to dowel or bridge to break. **The clearance has grown twice on
-    2026-09-05 and the bell has not moved for either.** It was 17" of column offset less the
-    bell's own 15" reach, i.e. 2"; then FT-B-S2/S3 gave up 2" of south toe so W-SG-BRKBM's
-    isolation board could sit at -8"..-10", making it 4"; then all four south strips went to
-    a 6" trim so the sunken garden's closure board could have its full 2" across an 84"
-    joint, making it **8"**.
+    there is no joint to dowel or bridge to break. **The clearance grew twice on 2026-09-05
+    and the bell did not move for either.** It was 17" of column offset less the bell's own
+    15" reach, i.e. 2"; then FT-B-S2/S3 gave up 2" of south toe so W-SG-BRKBM's isolation
+    board could sit at -8"..-10", making it 4"; then all four south strips went to a 6" trim
+    so the sunken garden's closure board could have its full 2" across an 84" joint, making
+    it 8".
 
-    That is worth reading as evidence rather than as a number. This assertion is written
-    against `FT-B-S2`'s resolved south face, so it moves when the strip does — and every
-    time it has moved, it has moved AWAY. A bell that is augered to frost depth on its own
-    line does not care what the house strip does; if this ever tightens instead, something
-    has moved the bell.
+    ** THEN THE BELL MOVED, FOR THE FIRST TIME, AND IT SPENT 3" OF THAT. ** On 2026-09-10
+    both pier bells were standardised at 36" — the 36" was a fossil from a 20" column and
+    this one's 30" was set by nothing — so the reach went 15" to 18" and the clearance
+    8" -> **5"**. That is the one direction this number had never gone, and it is why the
+    docstring above says "if this ever tightens, something has moved the bell": something
+    did, deliberately, and the trade was a width, an under-reamer setting and a schedule row
+    against 3" of a gap that has 5" left in it.
+
+    **5" in plan is not the constraint to watch; the 22" of section between them is.** The
+    bell's TOP is at -11'-7 7/16" and the house strip bottoms at -9'-9 7/16" (the bell
+    bears another 12" down, at -12'-7 7/16"). A 1:1 influence line down and out from the
+    strip's south bottom edge reaches y = -2'-2" at the bell's top and the bell's north
+    face is inside it — as it was at 30" too. These two never touch,
+    and the real constraint is SEQUENCING: auger both shafts with the open basement
+    excavation. `AN-SG-PLACEMENTS` says so on the drawing.
     """
     deck_edge_y = max(y for _, y in _porch_outline(catlin_model))
     column = _solid(catlin_model, "PT-SG-COL")
@@ -658,7 +668,9 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     house_footing_s = min(y for _, y in _solid(catlin_model, "FT-B-S2").outline)
     bell_north = max(p[1] for p in bell.outline)
     assert bell_north < house_footing_s, "the bell stops short of the house's own footing"
-    assert house_footing_s - bell_north == pytest.approx(8 * INCH)
+    assert house_footing_s - bell_north == pytest.approx(5 * INCH)
+    # And they never meet in section, which is why 5" of plan gap is comfortable.
+    assert (_solid(catlin_model, "FT-B-S2").z0_m - bell.z1_m) == pytest.approx(22 * INCH)
     assert catlin_model.plan.by_tag("DW-SG-COL") is None
     assert {d.tag for d in catlin_model.plan.all_elements()
             if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1",

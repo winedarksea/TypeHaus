@@ -1286,6 +1286,35 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `_pier_bell_bottom_ft` is **derived**, not pinned: `(_court_top_in - frost_depth_in) / 12`
   — do not pin it again, a pinned literal silently drifts the next time the court moves (→
   DESIGN-LOG.md, "Sunken garden court"). Both bells carry 42" cover; shafts are 128.1875".
+- **Both pier bells are 36" (2026-09-10).** The 36" was a fossil sized for a 20" column
+  that shrank to 12"; PT-SG-COL's 30" was set by nothing. One diameter, one under-reamer
+  setting, one schedule row, ~$27-43, and the tightest pier in the house goes d/c 0.83 →
+  0.60. **What the extra 3" per side spends is the gap to FT-B-S2/S3: 8" → 5" in plan.**
+  They still never meet — the bell's top is 22" below the house strip's bottom — so the
+  live constraint is SEQUENCING, not clearance: auger both shafts with the open basement
+  excavation or they undermine the house footing. `AN-SG-PLACEMENTS` says so on the drawing.
+- **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
+  `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
+  does not carry, and the porch card declared **13"** where every strip is built at 12". The
+  merge removed the lie and a row off the S-100 FOUNDATION SCHEDULE.
+- **All six of the court's 12" cast rounds are `SUNKEN_GARDEN_COLUMN_12`** (PT-SG-COL moved
+  off `PIER_CONCRETE_12`, which is now the north-entry piers and nothing else), and that
+  assembly finally names `concrete=EXPOSED_MIX`. It stated 5,000 psi in prose only, so the
+  register printed **the front column as the weaker of the two identical columns** holding
+  the ends of one frame. Consequences: corner φM_n 20,900 → 24,700 lb-ft (re-derived by
+  hand in notes/balcony_moment_columns.md §4 — β1 steps to 0.80 and φ reaches 0.900, which
+  is half the gain), class B dowel lap 35.6" → 27.6", PT-SG-COL's axial capacity 187k →
+  286k. No demand moved. The retype also drops the grout island PIER_CONCRETE_12 carries.
+- **One excavation plane again**: `FB-SG-ARCH`'s undercut derives to 33", not the footings'
+  42", so all six beds bottom on `_SG_WALL_BED_BOTTOM` with the drywell's top. The 42" was
+  copied and is not required — the beam has no `Footing`, so it is not in the frost
+  population at all. The BEAM still hangs 9" lower; only its bed came up.
+- **Three placements, not four**, and the order is on the drawing (`AN-SG-PLACEMENTS`):
+  footings + both belled piers monolithic; then all five walls + the grade beam at one form
+  height (house basement wall poured, cured and surveyed FIRST, for the epoxied break
+  dowels); then the rim slab with all six columns. `AN-SG-MIX` permits EXPOSED_MIX for the
+  whole court so it comes off one ticket — **do not retype PIER_BASE_12**, it is shared with
+  the north entry. `AN-SG-COLDWEATHER` puts a hard 1 November milestone on placement 3.
 - **`_veneer_beam_bottom` stays held** at -120 3/16", not flush with the slab underside — a
   flush beam is only 10 1/2" deep against ACI 318-19 Table 9.3.1.1's L/16 = 14 1/4" minimum
   for a 19'-0" span. Held, the beam is buried but its 17 3/4" section survives.

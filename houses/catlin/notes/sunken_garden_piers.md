@@ -56,7 +56,7 @@ and its §2 geotechnical table is the one used here.
                               ||  SUNKEN_GARDEN_COLUMN_12 — one concrete layer
    court surface ------------ || ------------------------------------  -9'-1 7/16"
                           +---++---+
-                          |  bell   |   30" / 36" dia x 12", augered
+                          |  bell   |   36" dia x 12", augered (both, 2026-09-10)
         -12'-7 7/16"      +---------+   to frost depth on undisturbed soil
                           | 7" levelling course (NOT a soil replacement) |
 ```
@@ -190,11 +190,20 @@ here would be reading a 42" section's allowable off a bedding one sixth as deep.
 ```
 q = (service + bell self weight) / bell area
 
-PT-SG-COL    bell 30" = 4.909 ft², 12" thick → 736 lb
-             (7,367 + 736) / 4.909  =  1,651 psf   vs 2,000   d/c 0.83   ✓
+PT-SG-COL    bell 36" = 7.069 ft², 12" thick → 1,060 lb
+             (7,367 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
 PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb
              (7,366 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
 ```
+
+** ⚠ THE 30" BELL IS GONE. BOTH ARE 36" SINCE 2026-09-10, AND THE ROW ABOVE IS THE MOVE
+THIS SECTION USED TO RECOMMEND AND DECLINE. ** Everything below in §3c is preserved as the
+reasoning that led here — it reads as a live warning about a tight pier and it is now
+history. What was taken, and why: the 36" was a fossil sized for a 20" column that shrank
+to 12" on 2026-09-03, and the 30" was never set by anything at all, so the court carried
+two under-reamer settings, two schedule rows and two widths for no reason either number
+could give. One diameter costs ~0.09 cy of concrete, about $27-43, and takes the pier with
+the least margin in this structure from 0.83 to 0.60.
 
 Both clear, and **the two swapped places on 2026-09-03**. `PT-SG-FCOL` used to be the one to
 watch at d/c 0.74; it fell to 0.58 when the column shrank from 20" round to 12" and shed
@@ -209,11 +218,11 @@ than a warning.** The deck's 4.83 ft² of new plank cost this pier 8 psf; the tr
 cost it 40 psf; the court's 7 1/4" step cost it 14 more, in 71 lb of extra shaft — and gave
 those 14 back on 2026-09-05 when the court came flush and the shaft came with it, which is
 the only reason this row reads 1,651 rather than 1,665.
-**Widening the bell to 36" would take it to 1,192 psf**, and is the obvious
-move if the balcony grows again; it is not taken now, because 0.83 against a presumptive
-allowable with no boring is a screening margin either way (§6). Two more 3" steps of
-`joist_cantilever_in` would reach roughly 1,667 psf — still clear, and still the wrong place
-to spend the margin quietly.
+**Widening the bell to 36" takes it to 1,192 psf**, and it was taken on 2026-09-10 — not
+for the margin, which at 0.83 against a presumptive allowable with no boring was a
+screening margin either way (§6), but because two bell diameters on a two-pier job is two
+of everything for nothing. The margin is the side effect. Two more 3" steps of
+`joist_cantilever_in` would now reach roughly 1,205 psf rather than 1,667.
 
 ---
 
@@ -458,10 +467,10 @@ cover and do not freeze (§5a's levelling-course diagram, and `BURIED_MIX`'s own
 
 ```
                         PT-SG-COL          PT-SG-FCOL
-bell diameter               30"                36"
-bell area  pi R^2       706.86 in^2       1,017.88 in^2
+bell diameter               36"                36"      (both, since 2026-09-10)
+bell area  pi R^2     1,017.88 in^2       1,017.88 in^2
 P_u (§2)                 10,774 lb           10,772 lb
-q_u = P_u / A            15.242 psi          10.583 psi   (2,195 / 1,524 psf)
+q_u = P_u / A            10.585 psi          10.583 psi   (1,524 psf each)
 ```
 
 ### 5c. Two-way (punching) shear — ACI §14.5.5.1(b)
@@ -489,11 +498,15 @@ phi V_n = 0.60 x 2.66 x 70.711 x 82.54 x 10  =  93,150 lb        (both bells)
 
 Critical section at `h` from the column face, i.e. `5.3175 + 10 = 15.3175"` from the centre.
 
-**On `PT-SG-COL` that falls outside the footing** — a 30" bell has only 15" of radius — so
-there is no section to check. The record publishes the state at a zero demand rather than
-omitting it: a limit state silently absent reads as one nobody thought of.
+**Both bells have a section to check since 2026-09-10.** At 30" `PT-SG-COL` did not: a 30"
+bell has only 15" of radius, the critical section landed 15.32" out, and the record
+published the state at a zero demand rather than omitting it — a limit state silently
+absent reads as one nobody thought of. That behaviour is still guarded
+(`test_pier_section_calcs.test_a_degenerate_one_way_section_is_published_and_not_omitted`,
+which narrows a copy of this pier to 30" precisely because the house no longer has one),
+and the arithmetic below now applies to both.
 
-On `PT-SG-FCOL` (R = 18"):
+On a 36" bell (R = 18"):
 
 ```
 half-chord = sqrt(18^2 - 15.3175^2) = sqrt(324 - 234.63) = 9.454"   ->  b = 18.91"
@@ -538,19 +551,19 @@ PT-SG-FCOL  R = 18"
 
 ### 5f. What this says
 
-**Bearing still governs both bells, and by a wider margin than before** — 0.83 and 0.60
-against a worst section d/c of 0.15, where the same comparison at the presumptive 3,000 psi
-read 0.19. Giving the bells their real mix moved the section states further from governing,
+**Bearing still governs both bells, and by a wider margin than before** — 0.60 on each
+(0.83 and 0.60 until both went to 36") against a worst section d/c of 0.15, where the same
+comparison at the presumptive 3,000 psi read 0.19. Giving the bells their real mix moved the section states further from governing,
 which is the useful direction for a negative result to move: the conclusion below did not
 depend on the 29% it gained. The bells are thick relative to their projection (a 9.68" cantilever on
 an effective 10" section on `PT-SG-COL`), which is exactly the shape that makes flexure and
 shear irrelevant and soil the whole question.
 
 That is a useful negative result rather than a formality. It says the answer to a bearing
-problem here is **width, not thickness**: widening `PT-SG-COL`'s bell to 36" — the move §3c
-names — takes bearing from 0.83 to 0.60 and takes flexure only from 0.121 to 0.147, still
-nowhere near governing. A 36" bell at 12" thick is a sound section, and nobody has to
-re-check it after the fact.
+problem here is **width, not thickness**, and it is what let §3c's widening be taken
+without re-opening the section: `PT-SG-COL` at 36" reads bearing 0.60 and flexure 0.147,
+where at 30" it read 0.83 and 0.121. Both piers are a 36" bell at 12" thick, which is a
+sound section, and nobody had to re-check it after the fact.
 
 ---
 

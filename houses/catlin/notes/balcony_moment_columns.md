@@ -239,7 +239,8 @@ section slightly stronger, and neither moves the verdict: the whole magnificatio
 ## 4. Capacity — the section, worked by hand
 
 12" round, (4) #5 hot-dip galvanized verticals, #3 galvanized ties @ 10" o.c., 2" cover,
-f'c 3,000 psi (see §4a), f_y 60,000 psi.
+**f'c 5,000 psi** (see §4a — it was 3,000 until 2026-09-10 and that was a modelling
+limitation, not the concrete), f_y 60,000 psi.
 
 ```
 A_s = 4 × 0.31 = 1.24 in²        ρ = 1.24/113.10 = 1.096%
@@ -258,43 +259,61 @@ orientation of a four-bar cage, about 8% below the strong one. Deliberate: a rou
 built in a round tube and nothing on site orients the cage to the wind. Each bar then sits
 3.3125 × cos45° = **2.343"** from the section centre.
 
-**Strain compatibility, P-M interaction at P_u = 4,971 lb.** β₁ = 0.85 at 3,000 psi.
-Bisecting the neutral axis to satisfy φP_n = P_u lands at **c = 3.236"**, a = β₁c = 2.751":
+**Strain compatibility, P-M interaction at P_u = 4,971 lb.** **β₁ = 0.80 at 5,000 psi** —
+ACI 318-19 Table 22.2.2.4.3 steps it down 0.05 per 1,000 psi above 4,000, and taking 0.85
+here is the standard slip. Bisecting the neutral axis to satisfy φP_n = P_u lands at
+**c = 2.752"**, a = β₁c = 2.202":
 
 ```
-concrete segment, depth a = 2.751" into a 12" circle
-  chord offset above centre  = 6 − 2.751         = 3.249"
-  A_seg = 36·acos(3.249/6) − 3.249·√(36−3.249²)  = 35.95 − 16.39 = 19.56 in²
-  ȳ_seg = (2/3)(36−3.249²)^1.5 / A_seg           = 4.375" above the centre
-  C_c   = 0.85 × 3,000 × 19.56                   = 49,870 lb   at +4.375"
+concrete segment, depth a = 2.202" into a 12" circle
+  chord offset above centre  = 6 − 2.202         = 3.798"
+  A_seg = 36·acos(3.798/6) − 3.798·√(36−3.798²)  = 31.05 − 16.82 = 14.23 in²
+  ȳ_seg = (2/3)(36−3.798²)^1.5 / A_seg           = 4.695" above the centre
+  C_c   = 0.85 × 5,000 × 14.23                   = 60,473 lb   at +4.695"
 
 tension pair, offset −2.343" (depth from compression fibre 8.343")
-  ε = 0.003 (3.236 − 8.343)/3.236 = −0.00473     yielded
+  ε = 0.003 (2.752 − 8.343)/2.752 = −0.00609     yielded
   F = −60,000 × 0.62                             = −37,200 lb  at −2.343"
 
 compression-side pair, offset +2.343" (depth 3.657" > a, no concrete deduction)
-  ε = 0.003 (3.236 − 3.657)/3.236 = −0.000390
-  F = −29e6 × 0.000390 × 0.62                    =  −7,020 lb  at +2.343"
+  ε = 0.003 (2.752 − 3.657)/2.752 = −0.000987
+  F = −29e6 × 0.000987 × 0.62                    = −17,750 lb  at +2.343"
 
-P_n = 49,870 − 37,200 − 7,020                    =   5,650 lb
-M_n = 49,870(4.375) + (−37,200)(−2.343) + (−7,020)(2.343)
-    = 218,180 + 87,160 − 16,440 = 288,900 lb-in  =  24,080 lb-ft
-ε_t = 0.00473  →  φ = 0.877  (Table 21.2.2, transition on ε_ty = 0.00207)
-φP_n = 4,955 lb ≈ P_u ✓        φM_n = 0.877 × 24,080 =  21,120 lb-ft
+P_n = 60,473 − 37,200 − 17,750                   =   5,523 lb
+M_n = 60,473(4.695) + (−37,200)(−2.343) + (−17,750)(2.343)
+    = 283,921 + 87,160 − 41,589 = 329,492 lb-in  =  27,454 lb-ft
+ε_t = 0.00609  →  φ = 0.900  (Table 21.2.2, past the transition on ε_ty = 0.00207)
+φP_n = 4,971 lb = P_u ✓        φM_n = 0.900 × 27,454 =  24,709 lb-ft
 ```
 
-`engineering/deck_post.py` reports **20,995 lb-ft** for the same section and load. The 0.6%
-is the bisection tolerance and the φ transition rounding, not a disagreement — and at d/c
-0.12 nothing in the verdict below turns on it.
+`engineering/deck_post.py` reports **24,702 lb-ft** on the front row and **24,709** on the
+rear, for the same section and load. Agreement to 0.03%; the residue is the bisection
+tolerance.
+
+**Note what the richer mix does to the SECTION, not only to the number.** A higher f'c
+takes a smaller compression block to balance the same axial load, so `c` falls (3.236" →
+2.752") and the neutral axis moves toward the compression face. Two things follow. The
+concrete resultant sits further out, +4.375" → +4.695", which is most of the gain. And the
+extreme tension strain rises 0.00473 → 0.00609, which carries the section clear of Table
+21.2.2's transition band and takes φ from 0.872 to the full 0.900 — worth another 3% on
+its own. **Neither of those is intuitive from "the concrete got stronger", and the second
+one is the sort of term a reader checks by eye and gets wrong.**
+
+The 17% capacity gain buys nothing that is needed: d/c goes 0.12 → 0.10 on a section that
+was never sized by strength. What it buys is that the drawing and the calculation finally
+state the same concrete.
 
 ### The verdict
 
 | case | demand | φM_n | d/c |
 | --- | ---: | ---: | ---: |
-| wind, E-W | 1,388 lb-ft | 21,000 | **0.07** |
-| guard, R301.5, unshared | 2,502 lb-ft | 21,000 | **0.12** |
-| guard magnified, δ 1.039 | 2,600 lb-ft | 21,000 | **0.12** |
-| axial, §22.4.2.1 | 4,971 lb | 187,000 lb | **0.03** |
+| wind, E-W | 1,385 lb-ft | 24,700 | **0.06** |
+| guard, R301.5, unshared | 2,502 lb-ft | 24,700 | **0.10** |
+| guard magnified, δ 1.030 | 2,577 lb-ft | 24,700 | **0.10** |
+| axial, §22.4.2.1 | 4,947 lb | 285,900 lb | **0.02** |
+
+(The front row, PT-SG-BF1/BF3. The rear row stands 2" proud for the deck's drainage crown
+and reads 1,410 / 2,535 / 2,614 against 24,709 — the same verdict one decimal along.)
 
 **Bending governs and the guard governs the bending, at an eighth of capacity.** The column
 is not sized by any of these — it is sized by the 2" of cover the durability case asked for
@@ -303,19 +322,31 @@ not a strength one. That is worth saying plainly, because a reviewer reading d/c
 otherwise ask why the column is not smaller. It cannot be: 10" fails the cover case, and no
 column may be plain (§14.1.5).
 
-### 4a. Where this note and the engine differ
+### 4a. Where this note and the engine differed, and why they no longer do
 
-**f'c.** The mix specified in `SUNKEN_GARDEN_COLUMN_12` is **5,000 psi** (§6). The engine
-carries no strength on an Assembly, so `engineering/deck_post.py` reads one presumptive
-**3,000 psi** for every concrete calculation in the house, and both this note and the record
-are worked at 3,000. The capacity above is therefore **understated** against what will be
-poured — the safe direction. Reconcile against the drawing, not against this table.
+**f'c — CLOSED 2026-09-10.** This section used to say: the mix specified in
+`SUNKEN_GARDEN_COLUMN_12` is 5,000 psi (§6), the engine carries no strength on an Assembly,
+so `deck_post.py` reads one presumptive 3,000 for every concrete calculation in the house,
+and both this note and the record are worked at 3,000 — understated against what will be
+poured, which is the safe direction.
 
-**φM_n.** An earlier sketch of this design put φM_n near 13 kip-ft. That was a pure-flexure
-estimate that dropped the compression-side bar pair and took a shorter lever arm. The worked
-value above is 20.9 kip-ft, and `haus engineering --item deck_post/PT-SG-BF1` reports
-**20,877 lb-ft** — agreement to 0.4%, which is round-off in the bisection. The verdict does
-not turn on it either way.
+`ConcreteSpec` has existed since 2026-09-03 and **the assembly simply had not been given
+one**, while its 12"-round sibling `PIER_CONCRETE_12` had. The consequence was worse than
+"conservative": PT-SG-FCOL and PT-SG-COL are the same column at the same height four feet
+apart, holding the two ends of the same frame, and the register printed the front one as
+the weaker — which is backwards, since they come off the same truck. The assembly now
+states `concrete=EXPOSED_MIX` and all six of the court's 12" rounds are on it. §4 above is
+re-worked by hand at 5,000 psi accordingly, and the engine was checked against that pass
+and not the other way round.
+
+**What did NOT change.** The demands. Wind is a pressure on a guard and a deck, the guard
+case is R301.5's 200 lb, and neither has any opinion about the concrete. Every d/c in the
+verdict above fell purely because the denominator rose.
+
+**φM_n history.** An earlier sketch of this design put φM_n near 13 kip-ft. That was a
+pure-flexure estimate that dropped the compression-side bar pair and took a shorter lever
+arm. At 3,000 psi the worked value was 20.9 kip-ft against the engine's 20,995; at the real
+5,000 it is **24.7 kip-ft** against 24,702. The verdict has never turned on it.
 
 ---
 

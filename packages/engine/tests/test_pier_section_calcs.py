@@ -34,15 +34,25 @@ import pytest
 # pressure times a geometry that did not move, so all four fall by that same 0.8% and no
 # capacity changes at all. If one of them ever moves on its own, the geometry moved too.
 _ORACLE = {
+    # ** BOTH BELLS ARE 36" SINCE 2026-09-10 AND THESE TWO ROWS ARE NOW TWINS. **
+    # PT-SG-COL's was 30", which was not set by anything — 36" was a fossil from a 20"
+    # column and 30" was simply the other one. Standardising removes a width, an
+    # under-reamer setting and a schedule row for ~0.09 cy of concrete, and takes the
+    # tightest pier in the house from 0.83 to 0.60 on bearing.
+    #
+    # The two rows differ only in the fourth significant figure of the demands, and that
+    # residue is real rather than noise: PT-SG-COL carries 1.2 lb more dead load than
+    # PT-SG-FCOL (a beam-weighted tributary share, §2). Keeping both rows rather than
+    # collapsing them to one is deliberate — if they ever diverge further, something moved.
     "PT-SG-COL": {
-        "bell_in": 30.0,
-        "pressure_psi": 15.242,
-        "punching_demand": 4284.0,
+        "bell_in": 36.0,
+        "pressure_psi": 10.585,
+        "punching_demand": 6267.0,
         "punching_capacity": 93150.0,
-        # §5d: the critical section at h from the face lands 15.32" out on a 15" radius.
-        "one_way_demand": 0.0,
-        "flexure_demand": 12046.0,
-        "flexure_capacity": 99172.0,
+        "one_way_demand": 364.0,
+        "one_way_capacity": 10696.0,
+        "flexure_demand": 17856.0,
+        "flexure_capacity": 121599.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
@@ -50,9 +60,9 @@ _ORACLE = {
         "punching_demand": 6266.0,
         "punching_capacity": 93150.0,
         "one_way_demand": 364.0,
-        "one_way_capacity": 10697.0,
-        "flexure_demand": 17855.0,
-        "flexure_capacity": 121594.0,
+        "one_way_capacity": 10696.0,
+        "flexure_demand": 17854.0,
+        "flexure_capacity": 121599.0,
     },
 }
 
@@ -113,24 +123,50 @@ def test_flexure_reproduces_the_note(tag, records) -> None:
 
 
 def test_one_way_shear_reproduces_the_note(records) -> None:
-    """§5d on the 36" bell, the only one of the two with a section to check."""
-    want = _ORACLE["PT-SG-FCOL"]
-    state = _state(records["PT-SG-FCOL"], "one-way shear")
-    assert state.demand == pytest.approx(want["one_way_demand"], rel=0.02)
-    assert state.capacity == pytest.approx(want["one_way_capacity"], rel=0.001)
-    assert state.ok
+    """§5d, on BOTH bells since 2026-09-10.
 
-
-def test_one_way_shear_reports_a_section_that_does_not_exist(records) -> None:
-    """The 30" bell's critical section falls outside it — published, not omitted.
-
-    A state that vanishes when its geometry degenerates is indistinguishable from one nobody
-    wrote, which is precisely the failure an engineering register exists to prevent.
+    It used to run on PT-SG-FCOL alone, because at 30" PT-SG-COL's critical section at
+    ``h`` from the column face landed 15.32" out on a 15" radius and there was no section
+    to check. Standardising both bells at 36" gives that pier a real one.
     """
-    state = _state(records["PT-SG-COL"], "one-way shear")
-    assert state.demand == 0.0
-    assert "OUTSIDE" in state.citation
-    assert state.ok
+    for tag in ("PT-SG-FCOL", "PT-SG-COL"):
+        want = _ORACLE[tag]
+        state = _state(records[tag], "one-way shear")
+        assert state.demand == pytest.approx(want["one_way_demand"], rel=0.02), tag
+        assert state.capacity == pytest.approx(want["one_way_capacity"], rel=0.001), tag
+        assert state.ok, tag
+
+
+def test_a_degenerate_one_way_section_is_published_and_not_omitted(catlin_plan) -> None:
+    """A state that vanishes when its geometry degenerates is indistinguishable from one
+    nobody wrote, which is precisely the failure an engineering register exists to prevent.
+
+    **There is no degenerate bell in this house any more**, and that is why this test now
+    drives the calculation directly instead of reading PT-SG-COL's record. At 30" its
+    critical section at ``h`` from the column face fell 15.32" out on a 15" radius and the
+    engine published a zero-demand state citing OUTSIDE; at 36" it has a real section.
+    Deleting the test with the geometry would have retired the behaviour it guards, which
+    is exactly the kind of silent loss it exists to catch — the next 30" bell on any house
+    must still get a published state rather than a missing one.
+    """
+    import dataclasses
+
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.engineering.spread_footing import _piers_on_their_own_footing, _section_states
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    pier = next(p for p in _piers_on_their_own_footing(ctx) if p.tag == "PT-SG-COL")
+    assert pier.footing_width_in == 36.0, "the live bell is 36\"; this test narrows a copy"
+    narrow = dataclasses.replace(pier, footing_width_in=30.0)
+
+    states, _notes = _section_states(ctx, narrow)
+    shear = [state for state in states if state.name == "one-way shear"]
+    assert shear, 'a 30" bell must still PUBLISH a one-way shear state'
+    assert shear[0].demand == 0.0
+    assert "OUTSIDE" in shear[0].citation
+    assert shear[0].ok
 
 
 def test_the_effective_thickness_gives_up_two_inches(records) -> None:
@@ -147,10 +183,13 @@ def test_the_effective_thickness_gives_up_two_inches(records) -> None:
 
     assert PLAIN_SOIL_CAST_DEDUCTION_IN == 2.0
     state = _state(records["PT-SG-COL"], "flexure at the column face")
-    # §5e: a 28.05" chord, and the 10" the deduction leaves of a 12" bell.
-    expected = PHI_PLAIN * 5.0 * _ROOT_FC * 28.05 * 10.0 ** 2 / 6.0
+    # §5e: the chord across the bell at the column face, and the 10" the deduction leaves
+    # of a 12" bell. 34.39" on the 36" bell both piers have carried since 2026-09-10 (it
+    # was 28.05" while PT-SG-COL's was 30"): the critical section stands half a 12" round's
+    # equivalent square out, 5.317", so the chord is 2*sqrt(18^2 - 5.317^2).
+    expected = PHI_PLAIN * 5.0 * _ROOT_FC * 34.394 * 10.0 ** 2 / 6.0
     assert state.capacity == pytest.approx(expected, rel=0.001)
-    ungraded = PHI_PLAIN * 5.0 * _ROOT_FC * 28.05 * 12.0 ** 2 / 6.0
+    ungraded = PHI_PLAIN * 5.0 * _ROOT_FC * 34.394 * 12.0 ** 2 / 6.0
     assert ungraded / expected == pytest.approx(1.44, rel=0.01)
 
 

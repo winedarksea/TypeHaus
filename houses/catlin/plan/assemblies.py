@@ -964,14 +964,32 @@ SG_VENEER_BEAM_14 = Assembly(
 # hatch a "12 round" correctly on the size string alone, but what the assembly does is put
 # ``structure_material="concrete"`` on the BOM row so the [concrete] price table's material
 # guard admits it — the same job PIER_CONCRETE_12 does for the five 12" sonotubes. It is a
-# SEPARATE tag from PIER_CONCRETE_12 at the same diameter because the mix, the cage and the
-# seat are all different; billing them from one row would price an F3/C2 galvanized column
-# at a sonotube's rate.
+# SEPARATE tag from PIER_CONCRETE_12 at the same diameter because the cage and the seat are
+# different; billing them from one row would price an F3/C2 galvanized column at a
+# sonotube's rate. That split stays, and since 2026-09-10 it runs between the COURT and the
+# NORTH ENTRY — PIER_CONCRETE_12 is the six north-entry piers and nothing else.
+#
+# ** ALL SIX OF THE COURT'S 12" ROUNDS ARE ON THIS TYPE. ** PT-SG-COL, the back-beam
+# column, was on PIER_CONCRETE_12 while PT-SG-FCOL — the same 12" round, the same
+# 120 15/16" height over the same z range, four feet away, holding up the other end of the
+# same frame — was on this one. One tube order, one cage, one row.
+#
+# ** THE SPLIT WAS PRINTING THE FRONT COLUMN AS THE WEAKER OF THE TWO, WHICH IS BACKWARDS. **
+# PIER_CONCRETE_12 names EXPOSED_MIX and this type named its mix in prose only, so
+# `resolve/concrete.concrete_spec_for` returned None here and every calc on PT-SG-FCOL fell
+# back to the presumptive 3,000 psi while PT-SG-COL was graded on the 5,000 both actually
+# get. They are poured from the same truck on the same day. The `concrete=EXPOSED_MIX`
+# below is that prose made readable; the source text is unchanged and still carries the
+# detailing.
+#
+# It also closes the grout-island follow-up named two paragraphs up: the island lives on
+# PIER_CONCRETE_12 and PT-SG-COL was the one column carrying it. Retyping removes it, which
+# is what the NO GROUT ISLAND paragraph wanted.
 SUNKEN_GARDEN_COLUMN_12 = Assembly(
     tag="SUNKEN_GARDEN_COLUMN_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
     # (single literal: the editable dialect forbids concatenated strings)
@@ -1792,13 +1810,29 @@ ENTRY_STEP_TIER = Assembly(
     source="north entry terrace: one cast tier, 6.8\" = one riser of the 34\" rise in five. Sky-exposed and salted, F3+C2 mix; bears on a compacted washed-rock base that is not modelled (notes/north_entry_structure.md Sec 3)",
 )
 
-RETAINING_FOOTING_96 = Assembly(
-    tag="RETAINING_FOOTING_96",
+# ** ONE TYPE FOR ALL FIVE COURT STRIPS SINCE 2026-09-10, AND THE MERGE FIXED A DEFECT. **
+# This was RETAINING_FOOTING_96 (the three retaining strips) and PORCH_FOOTING_84 (the two
+# braced porch strips), and the split was justified on width — 96" against 84" — which an
+# Assembly does not carry. An assembly is a STACK: a layer of concrete, a thickness, a mix.
+# Both stacks were one 12" layer of EXPOSED_MIX, so the two cards said the same thing about
+# two footings whose only difference is plan geometry.
+#
+# ** AND ONE OF THEM SAID IT WRONG. ** PORCH_FOOTING_84 declared 13", from a day when the
+# porch strips took an extra inch to keep their undersides level with the retaining strips'
+# after the porch bearing rose. All five are 12" in the resolved model and have been for
+# revisions; the card was lying to the detailer, and a schedule was the only place anyone
+# would have met that 13". Merging removes the lie and the row.
+#
+# Dropping the width from the tag is deliberate rather than cosmetic: a name stating a
+# dimension the type does not carry is the reason there were two of these. It also takes a
+# row off the S-100 FOUNDATION SCHEDULE, which is one row from stepping down to 1/8".
+COURT_FOOTING_12 = Assembly(
+    tag="COURT_FOOTING_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
-    source="the sunken-garden court's 8'-0\" x 1'-0\" retaining strips, reinforced #6 @ 10\" transverse top and bottom (notes/sunken_garden_court_free_body.md §7)",
+    source="every strip footing in the sunken-garden court, 1'-0\" deep: the three retaining strips FT-SG-W2/E2/S at 8'-0\" wide, reinforced #6 @ 10\" transverse top and bottom (notes/sunken_garden_court_free_body.md §7), and the two braced porch strips FT-SG-W1/E1 at 7'-0\" wide and plain. One F3+C2 mix throughout: every footing here stands INSIDE the excavation, 8\" under a garden floor itself 9' below site grade, frost-protected by drained NFS stone rather than by depth, and concrete in the freezing zone is F3 concrete however it got protected",
 )
 
 FOOTING_20 = Assembly(
@@ -1829,24 +1863,6 @@ PIER_BASE_12 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
     ),
     source="the 12\" plain bases under the round piers — the sunken garden's two belled footings and the four breezeway pads, all bearing at or below frost depth (IRC R403.1.4); unreinforced by design and graded as plain concrete under ACI 318-19 §14.1.4, see notes/sunken_garden_piers.md §5",
-)
-
-# The two braced porch walls' strips, FT-SG-W1/E1. A separate type from
-# RETAINING_FOOTING_96 because they are a different footing: 84" wide against 96", and
-# 13" deep against 12" — the extra inch is the one params/sunken_garden.py takes to keep their
-# undersides level with the retaining strips' after the porch bearing rose.
-#
-# Same F3 mix as the three retaining strips beside them, for the same reason: every footing in
-# this court stands INSIDE the excavation, 8" under a garden floor that is itself 9' below
-# site grade, and is frost-protected by drained NFS stone rather than by depth. Concrete in
-# the freezing zone is F3 concrete however it got protected.
-PORCH_FOOTING_84 = Assembly(
-    tag="PORCH_FOOTING_84",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(13.0),
-              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
-    ),
-    source="the sunken-garden porch strips FT-SG-W1/E1 — 7'-0\" x 1'-1\", braced walls above rather than cantilevers, frost-protected on ASCE 32 soil replacement like the rest of the court",
 )
 
 FOOTING_FPSF_20 = Assembly(
@@ -4160,8 +4176,7 @@ ASSEMBLIES = [
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,
     FOOTING_20,
-    RETAINING_FOOTING_96,
-    PORCH_FOOTING_84,
+    COURT_FOOTING_12,
     PIER_BASE_12,
     GARDEN_COURT_SLAB,
     GARDEN_PUTTING_GREEN,
