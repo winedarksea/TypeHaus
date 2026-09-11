@@ -5,6 +5,7 @@ import {
   authorityOf,
   callWindowOpen,
   groupInspectionsByMilestone,
+  latestRequest,
   nextCallDate,
   readinessLabel,
   requestable,
@@ -79,14 +80,16 @@ export function runInspectionTests(): void {
   assert(callWindowOpen(wednesdayEarly, "call the area inspector") === null,
     "an AHJ's own prose is shown, never guessed at");
 
-  // One business day from a Wednesday is Thursday; from a Friday it is Monday.
-  assert(nextCallDate(wednesdayEarly, dsi) === "2026-09-10", "one business day ahead");
-  assert(nextCallDate(new Date(2026, 8, 11, 8, 0), dsi) === "2026-09-14",
-    "the weekend does not count as notice");
-  assert(nextCallDate(wednesdayEarly, PAYLOAD.authorities.owner) === "2026-09-09",
-    "zero lead days is today, rolled off a weekend");
-  assert(nextCallDate(wednesdayEarly, undefined) === null,
-    "no authority row, no derived date");
+  // The date is DERIVED BY THE ENGINE against the house calendar and read off the record
+  // here. It used to be counted on the client, which could not see an authored holiday —
+  // making the one date on this screen the one date that was wrong.
+  assert(nextCallDate(record({ id: "x" })) === null, "no derived date, no date");
+  assert(nextCallDate(record({ id: "x", dates: { lead_days: 1,
+    earliest_call: "2026-09-10", latest_request: "2026-09-09", why: "" } }))
+    === "2026-09-10", "the engine's answer is the answer");
+  assert(latestRequest(record({ id: "x", dates: { lead_days: 1,
+    earliest_call: null, latest_request: "2026-09-09", why: "" } })) === "2026-09-09",
+    "and the deadline to call in for a booked appointment comes the same way");
 
   console.log("Inspection readiness tests passed.");
 }

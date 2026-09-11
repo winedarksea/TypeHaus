@@ -113,14 +113,19 @@ def build_schedule_payload(model: Any, house_dir: Path, findings: list[Any],
 def build_inspections_payload(model: Any, house_dir: Path, findings: list[Any],
                               checks_pending: bool = False) -> dict[str, Any]:
     """Every inspection, its state, and everything between it and a phone call."""
+    from typehaus.schedule.timing import inspection_dates
+    from typehaus.takeoff.task_state import load_tasks
+
     board, _items, state = _board(model, house_dir, findings)
+    dates = inspection_dates(board.inspections, state.authorities, load_tasks(house_dir))
     return {"profile": board.profile_name, "checks_pending": bool(checks_pending),
             "revision": site_revision(house_dir),
             "authorities": {key: value.as_dict()
                             for key, value in state.authorities.items()},
             "permit": state.permit.as_dict(),
             "errors": list(board.errors),
-            "inspections": [record.as_dict() for record in board.inspections]}
+            "inspections": [record.as_dict() | {"dates": dates.get(record.id, {})}
+                            for record in board.inspections]}
 
 
 def apply_site_ops(house_dir: Path, body: Any, model: Any = None) -> str:

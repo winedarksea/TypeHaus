@@ -76,24 +76,21 @@ export function callWindowOpen(now: Date, window: string | null): boolean | null
 }
 
 /**
- * The earliest date an inspection could happen, as a *date only* and only from what the
- * authority itself stated.
+ * The earliest date an inspection could happen — read off the record, not computed here.
  *
- * `lead_days` is a number the jurisdiction publishes ("one business day's notice"), not a
- * duration this app invented — the engine computes no dates at all, and this is the one
- * place a date is derived, from an authored number, on the client, for a phone call.
+ * This used to count weekends on the client, which meant it could not see the house's own
+ * `[calendar]`: a holiday the owner authored was a working day to this function, and the
+ * one date on that screen was the one date that was wrong. `schedule/timing.py` derives it
+ * now, from the authority's own published `lead_days` and the house calendar, and an
+ * authority that has published no lead time gets no date and a sentence saying so.
  */
-export function nextCallDate(now: Date, authority: InspectionAuthority | undefined)
-: string | null {
-  if (!authority || authority.lead_days === null) return null;
-  const date = new Date(now.getTime());
-  let remaining = Math.max(0, authority.lead_days);
-  while (remaining > 0) {
-    date.setDate(date.getDate() + 1);
-    if (date.getDay() !== 0 && date.getDay() !== 6) remaining -= 1;
-  }
-  while (date.getDay() === 0 || date.getDay() === 6) date.setDate(date.getDate() + 1);
-  return date.toISOString().slice(0, 10);
+export function nextCallDate(record: Inspection): string | null {
+  return record.dates?.earliest_call ?? null;
+}
+
+/** The last working day to call in for the appointment already booked, or null. */
+export function latestRequest(record: Inspection): string | null {
+  return record.dates?.latest_request ?? null;
 }
 
 export function authorityOf(payload: InspectionsPayload | null, record: Inspection)

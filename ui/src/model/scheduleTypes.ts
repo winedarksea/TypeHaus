@@ -311,6 +311,18 @@ export interface Inspection {
   checks: InspectionCheck[];
   on_site: { label: string; checked: boolean }[];
   milestone: string;
+  /** Derived by `schedule/timing.py` against the house calendar, never by the client. */
+  dates?: InspectionDates;
+}
+
+export interface InspectionDates {
+  lead_days: number | null;
+  /** Earliest this could happen, from the authority's own published notice period. */
+  earliest_call: string | null;
+  /** Last working day to call in for the appointment already booked. */
+  latest_request: string | null;
+  /** Why there is no date, where there is none. */
+  why: string;
 }
 
 export interface InspectionsPayload {

@@ -1,7 +1,13 @@
 import { useMemo, useState } from "react";
 import type { Inspection } from "../../model/scheduleTypes";
-import { authorityOf, callWindowOpen, nextCallDate, readinessLabel, telHref }
-  from "../../model/inspections";
+import {
+  authorityOf,
+  callWindowOpen,
+  latestRequest,
+  nextCallDate,
+  readinessLabel,
+  telHref,
+} from "../../model/inspections";
 import { uidByTag } from "../../model/tagIndex";
 import { useStore } from "../../state/store";
 
@@ -33,7 +39,8 @@ export function InspectionDetail({ record }: { record: Inspection }) {
   const href = telHref(authority);
   const now = new Date();
   const open = callWindowOpen(now, authority?.window ?? null);
-  const earliest = nextCallDate(now, authority);
+  const earliest = nextCallDate(record);
+  const deadline = latestRequest(record);
   const today = now.toISOString().slice(0, 10);
   const entry = record.entry;
   // A date the owner PICKS, not a "today" stamp. The inspector came on Tuesday and this
@@ -94,6 +101,7 @@ export function InspectionDetail({ record }: { record: Inspection }) {
                   type="checkbox"
                   className="site-check"
                   checked={item.checked}
+                  disabled={!writable}
                   aria-label={item.label}
                   onChange={(e) => void tickOnSite(record.id, item.label, e.target.checked)}
                 />
@@ -146,6 +154,10 @@ export function InspectionDetail({ record }: { record: Inspection }) {
             {earliest ? ` · earliest ${earliest}` : ""}
           </p>
         )}
+        {deadline && (
+          <p className="site-support">Call in by {deadline} for the booked appointment.</p>
+        )}
+        {record.dates?.why && <p className="site-support">{record.dates.why}</p>}
         {href && <a className="site-assist-chip" href={href}>{authority?.phone}</a>}
 
         <div className="site-field-row">

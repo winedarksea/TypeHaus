@@ -239,6 +239,35 @@ def latest_request(booked: str | None, lead_days: int | None,
     return calendar.minus_workdays(when, int(lead_days)).isoformat()
 
 
+def inspection_dates(inspections: Any, authorities: Any, tasks_state: Any,
+                     today: date | None = None) -> dict[str, dict[str, Any]]:
+    """Per inspection: the earliest it can happen, and the last day to call it in.
+
+    These two used to live in the UI, where they counted weekends and could not see the
+    house's ``[calendar]``. A holiday the owner authored is a working day to a client that
+    does not know about it, which makes the one date on that screen the one date that is
+    wrong. Both are derived from the authority's own published ``lead_days`` and nothing
+    else: an authority that has not stated one gets ``None`` and the board says so.
+    """
+    calendar = Calendar.of(tasks_state)
+    now = today or date.today()
+    out: dict[str, dict[str, Any]] = {}
+    for record in inspections:
+        authority = (authorities or {}).get(record.authority)
+        lead = getattr(authority, "lead_days", None)
+        booked = (record.entry or {}).get("scheduled") if record.entry else None
+        out[record.id] = {
+            "lead_days": lead,
+            "earliest_call": (calendar.add_workdays(now, int(lead) + 1).isoformat()
+                              if lead is not None else None),
+            "latest_request": latest_request(booked, lead, calendar),
+            "why": ("" if lead is not None else
+                    "no lead time published — Minn. R. 1300.0210 subp. 4 obliges the "
+                    "authority to state it at permit issuance; ask and write it in"),
+        }
+    return out
+
+
 def _topological(board: Any) -> tuple[str, ...]:
     """Visits in dependency order; a node on a cycle comes last, never dropped."""
     edges = {visit.slug: tuple(d.split("#", 1)[0] for d in visit.depends_on
