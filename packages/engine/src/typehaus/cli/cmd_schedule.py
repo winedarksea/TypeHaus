@@ -196,8 +196,26 @@ def inspections(
 
     from typehaus.schedule.inspection_state import load_inspections
 
-    authorities = load_inspections(directory).authorities
+    state = load_inspections(directory)
+    authorities = state.authorities
     console.print(f"[bold]Inspections[/bold]  [dim]{board.profile_name}[/dim]")
+    permit = state.permit
+    if not permit.is_empty:
+        parts = [f"{name} {getattr(permit, name)}" for name in
+                 ("number", "issued", "expires", "code_edition", "nec_edition")
+                 if getattr(permit, name)]
+        console.print(f"[dim]permit: {'; '.join(parts)}[/dim]", soft_wrap=True)
+    # What the authority has NOT told you yet. Minn. R. 1300.0210 subp. 4 obliges them to
+    # state these at issuance, so an empty field is an open item and not a default.
+    unknown = sorted(
+        f"{key}: {', '.join(n for n in ('window', 'lead_days') if getattr(one, n) is None)}"
+        for key, one in authorities.items()
+        if one.phone and (one.window is None or one.lead_days is None))
+    if unknown:
+        console.print("[yellow]not published — ask at permit issuance "
+                      "(MN Rules 1300.0210 subp. 4):[/yellow]", soft_wrap=True)
+        for line in unknown:
+            console.print(f"  {line}", soft_wrap=True, markup=False)
     for record in board.inspections:
         mark = _INSPECTION_MARK.get(record.state, record.state)
         authority = authorities.get(record.authority)
@@ -207,8 +225,22 @@ def inspections(
         if record.applicability is not None and record.applicability.applies is not True:
             console.print(f"     [dim]{record.applicability.evidence}[/dim]",
                           soft_wrap=True)
+        if record.scope:
+            console.print(f"     [dim]covers {', '.join(record.scope)}[/dim]",
+                          soft_wrap=True, markup=False)
+        for attempt in record.attempts:
+            colour = "green" if attempt["result"] == "pass" else "red"
+            console.print(f"     [{colour}]{attempt['date']} {attempt['result']}"
+                          f"[/{colour}]", end="")
+            detail = "; ".join(
+                list(attempt["corrections"])
+                + ([f"released {', '.join(attempt['approved'])}"]
+                   if attempt["approved"] else []))
+            console.print(f"  {detail}" if detail else "", soft_wrap=True, markup=False)
         for prerequisite in record.unmet:
-            console.print(f"     [red]x[/red] {prerequisite.label}", soft_wrap=True)
+            console.print("     [red]x[/red] ", end="")
+            console.print(prerequisite.label, soft_wrap=True, markup=False,
+                          highlight=False)
 
 
 def _line(mark: str, colour: str, text: str) -> None:

@@ -86,6 +86,12 @@ def apply_ops(house_dir: Path, ops: Any, *, if_revision: str | None = None,
     except ValueError as exc:
         raise SiteOpError(str(exc)) from exc
 
+    # The state the REQUEST started from, kept so a verify can be graded against it. Two
+    # ops in one request may not both clear the last hold and verify: that is the owner
+    # claiming they walked work they were still unblocking as they typed, and grading the
+    # verify against the state the earlier op in the same batch produced would allow it.
+    opening = tasks.visits
+
     touched_tasks = touched_inspections = False
     for op in ops:
         if not isinstance(op, Mapping):
@@ -93,6 +99,8 @@ def apply_ops(house_dir: Path, ops: Any, *, if_revision: str | None = None,
         kind = str(op.get("op") or "")
         try:
             if kind in VISIT_OPS:
+                if kind == "set_visit" and op.get("status") == "verified":
+                    _refuse_a_same_request_verify(opening, str(op.get("slug") or ""))
                 tasks = _with_visits(tasks, apply_visit_op(tasks.visits, op))
                 touched_tasks = True
             elif kind in TASK_OPS:
@@ -118,6 +126,20 @@ def apply_ops(house_dir: Path, ops: Any, *, if_revision: str | None = None,
     if touched_inspections:
         write_inspections(directory, inspections)
     return site_revision(directory)
+
+
+def _refuse_a_same_request_verify(opening: Any, slug: str) -> None:
+    from dataclasses import replace
+
+    from typehaus.takeoff.visit_state import VisitEntry
+    from typehaus.takeoff.visit_toml import entry_rule_errors
+
+    entry = opening.entries.get(slug)
+    if entry is None:
+        entry = VisitEntry()
+    errors = entry_rule_errors(slug, replace(entry, status="verified"))
+    if errors:
+        raise SiteOpError(f"set_visit {slug!r}: {errors[0]} (before this request)")
 
 
 def _with_visits(tasks: Any, visits: Any) -> Any:

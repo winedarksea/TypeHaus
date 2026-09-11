@@ -125,18 +125,41 @@ haus schedule houses/catlin                       # the build board: what is rea
 haus schedule houses/catlin --milestone weathertight
 haus schedule houses/catlin --propose task/concrete/building   # a visit split to paste
 haus inspections houses/catlin                    # every inspection, and what stands before each
+haus site validate houses/catlin                  # load + graph + rules; exits 1 on any error
+haus site migrate houses/catlin --write           # fold the old spellings, in place
 ```
 
-- **Readiness is derived; dates are authored** (decision #69). `typehaus/schedule/` is a leaf
-  like `routing/` and `engineering/` — it computes no duration, no lead time and no date.
+- **Readiness is derived; dates come only from authored inputs** (decision #69, loosened).
+  `typehaus/schedule/` is a leaf like `routing/` and `engineering/`. It derives a suggested
+  date from the house's own `[calendar]`, `duration_days`, `cure_days` and `lead_days`, and
+  says **"needs confirmation"** where any of those is absent — never a default. **A booking
+  is never moved**: a predecessor that slips past one marks it *threatened* with the slack.
 - A **visit** (one sub, one arrival) is the schedulable unit, authored in `tasks.toml`'s
   `[visits]`; a package nobody splits is one implicit visit. `--propose` prints, never writes.
+- **`gates` is a default for implicit visits only.** A gate names a trade and a trade is not
+  schedulable: applied to every arrival it made excavation wait on the backfill inspection,
+  which waits on the walls, which wait on the footings, which wait on excavation. Two gates
+  on one trade, one after the other, and the later is dropped — `haus site validate` prints
+  every drop. **Cycles are found and named**, never silently dropped.
+- **Checkpoints** are ordered pauses inside one arrival (forms / pour / strip). A visit's
+  status derives from them, so `status =` on a checkpointed visit is a validation error.
+  A dependency may target `visit#checkpoint`. `blocks_successors = false` takes a late
+  arrival (flatwork, final grading, the punch list) out of package-level expansion.
+- **An inspection has attempts and instances.** A result is an appended `attempt`, never an
+  overwritten slot; a `partial` releases only the scope it `approved`;
+  `[entries."footing/court"]` is a second instance with its own scope and booking. A waiver
+  is a table naming who granted it, because it outranks the model's own evidence.
+- **One write path**: `schedule/site_ops.py`. Both `PUT`s, the CLI and a future in-UI agent
+  fold through the same ops and the same rules; writes are temp-file + `os.replace`; a stale
+  `if_revision` is a 409 with the fresh payload, never a merge.
 - The AHJ's own record lives in `houses/<name>/inspections.toml`
   (`docs/site-state-format.md`), outside the undo journal like `costs.toml` — and the engine
   ships no phone numbers: `[authorities]` is house-owned.
 - **FAIL blocks a visit, UNKNOWN is attention only.** An inspection is stricter and matches
-  the permit gate: its checks must fold to PASS/N/A. `verified` is the owner's own walk,
-  refused while a hold they wrote is still open.
+  the permit gate: its checks must fold to PASS/N/A. `verified` is the owner's own walk and
+  needs every hold cleared, every handoff item ticked or **skipped with a reason**, and every
+  inspection the visit depends on resolved — and one request may not both clear the last hold
+  and verify. `done` under an open hold records an **exception**; the hold stays open.
 - In the UI the site pages are a **second top-level surface** (`#/site/board`), not a reader:
   no canvas, no 3D, nothing of the design workbench is mounted.
 

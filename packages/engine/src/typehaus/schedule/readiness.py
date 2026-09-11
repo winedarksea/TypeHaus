@@ -208,9 +208,12 @@ def visit_readiness(visits: tuple[Visit, ...],
         for dependency in visit.depends_on:
             if dependency.startswith(_INSPECTION_PREFIX):
                 key = dependency[len(_INSPECTION_PREFIX):]
-                # A bare spec id means every instance of it; an instance key means that one.
-                matched = ([inspection_by_id[key]] if key in inspection_by_id
-                           else by_spec.get(key, []))
+                # A bare spec id means EVERY instance of it; a key with a slash in it
+                # means that one. `insp/footing` on a house that pours its footings twice
+                # has to wait for both, and the default instance is not the whole story.
+                matched = (by_spec.get(key, []) if "/" not in key
+                           else [inspection_by_id[key]] if key in inspection_by_id
+                           else [])
                 label = matched[0].label if matched else key
                 if len(matched) > 1:
                     label = f"{matched[0].label.split(' — ')[0]} ({len(matched)} instances)"

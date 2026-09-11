@@ -162,16 +162,29 @@ def test_a_bad_op_persists_nothing(client, house: Path) -> None:
 
 
 def test_put_tasks_set_visit_writes_the_visits_table(client, house: Path) -> None:
-    slug = "task/concrete/building/footings"
+    slug = "task/concrete/basement/walls"
     response = client.put("/tasks", json={"ops": [
-        {"op": "set_visit", "slug": slug, "label": "Footings", "status": "scheduled",
+        {"op": "set_visit", "slug": slug, "label": "Walls", "status": "scheduled",
          "scheduled": "2027-05-04"}]})
     assert response.status_code == 200
     text = (house / "tasks.toml").read_text()
     assert f'[visits."{slug}"]' in text
     # The board picks it up, and the package's implicit visit is gone.
     slugs = {v["slug"] for v in client.get("/schedule").json()["visits"]}
-    assert slug in slugs and "task/concrete/building" not in slugs
+    assert slug in slugs and "task/concrete/basement" not in slugs
+
+
+def test_a_checkpointed_visit_refuses_a_status_write(client) -> None:
+    """The footings visit is three stops, so its status is derived from them."""
+    response = client.put("/tasks", json={"ops": [
+        {"op": "set_visit", "slug": "task/concrete/building/footings",
+         "status": "scheduled"}]})
+    assert response.status_code == 400
+    assert "checkpoint" in response.json()["error"]
+    ok = client.put("/tasks", json={"ops": [
+        {"op": "set_checkpoint", "slug": "task/concrete/building/footings",
+         "checkpoint": "forms", "status": "in_progress"}]})
+    assert ok.status_code == 200
 
 
 def test_set_task_still_works_beside_set_visit(client, house: Path) -> None:
