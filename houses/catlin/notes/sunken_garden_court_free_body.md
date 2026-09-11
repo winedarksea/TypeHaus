@@ -482,9 +482,18 @@ Every other lever this wall pulls buys *time* against a front that is still adva
 w/cm 0.40 slows diffusion, the 25% Class F fly ash refines the pore structure, the ASTM A767
 galvanizing raises the chloride threshold the bar can tolerate. Cover is what sets how far
 the front has to travel before any of that matters, and it is the one term that cannot be
-added later. These six walls are class **C2**: they take deicing salt off the drive above,
-and they hold it in a court that has no grade to drain to — the water leaves through
-`DRW-SG-MAIN` or it sits there.
+added later. These six walls are class **C2**, and the reason stated here until 2026-09-10
+was **wrong in its facts and right in its conclusion**. It said they "take deicing salt off
+the drive above". The drive is north of the garage, on the far side of the house, about 96
+feet away; nothing washes off it to here.
+
+The real argument is the one that made the class necessary in the first place: salt reaches
+this court on boots, a shovel and the dog, from the north walk and the entry tiers, and
+once here it **cannot leave**. There is no grade to daylight. The only outlet is
+`DRW-SG-MAIN`, a soakaway inside the excavation, so every chloride that arrives stays in
+the stone against these faces and cycles through them with each thaw. A drive sheds its
+salt to a ditch. A sunken court concentrates it. **Keep the class; the correction is to the
+sentence.**
 
 The wall still passes at 0.61, and the structure's governing limit state is unchanged: base
 restraint at FS 1.80, d/c 0.83 (§4). Nothing about this trade moves the number that governs.

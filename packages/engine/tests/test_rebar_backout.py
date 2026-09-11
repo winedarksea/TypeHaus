@@ -42,8 +42,16 @@ _SCHEDULE = {
     # ground), and PT-BW-RNE arrived with the canopy's fourth column.
     ("column", "#3", "hdg-a767"): 90.8,
     ("column", "#5", "hdg-a767"): 384.8,
-    ("footing", "#4", "hdg-a767"): 201.9,
-    ("footing", "#6", "hdg-a767"): 1634.2,
+    # ** +37% ON 2026-09-10: THE PORCH STRIPS GAINED THE MAT AND THE WIDTH. **
+    # FT-SG-W1/E1 were 84" plain. Nothing in the engine grades a footing's own flexure
+    # except on the retaining set, so their 3'-0" PLAIN cantilever under the two walls
+    # carrying the balcony's four moment-fixed columns had never been run. Run, the HEEL
+    # alone is Mu 8,303 against a plain 12" strip's 3,536 — d/c 2.35, and that row needs
+    # no assumption about the bracing at all (§7c drops the upward pressure under the
+    # heel). The mat was owed either way; once owed, widening to 96" to match the
+    # retaining set cost concrete and stone alone and bought a continuous form line.
+    ("footing", "#4", "hdg-a767"): 276.6,
+    ("footing", "#6", "hdg-a767"): 2238.9,
     ("foundation wall", "#4", "hdg-a767"): 517.8,
     ("foundation wall", "#5", "hdg-a767"): 219.0,
     ("foundation wall", "#6", "hdg-a767"): 1022.1,
@@ -53,7 +61,7 @@ _SCHEDULE = {
 # 57'-0" run is 9.5 sf of plane gone from both the horizontal (#4) and the vertical (#6)
 # mats. Same bars, same spacings, less wall — and the #6 row also carries W-SG-W1/E1, whose
 # tops did not move.
-_TOTAL_LB = 4070.6
+_TOTAL_LB = 4750.0
 
 #: §3. The allowance register's figure, and the black-bar material price bracketing it.
 _REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
@@ -146,12 +154,12 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(151.10, rel=0.02), (
+    assert total_cy == pytest.approx(152.26, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 
     total_lb = sum(r["weight_lb"] for r in reinforcement_takeoff(catlin_model))
-    # ** 26.85 -> 25.74 -> 28.0 -> 27.0 ON 2026-09-10, AND 25.74 IS THE INTERESTING ONE. **
+    # ** 26.85 -> 25.74 -> 28.0 -> 27.0 -> 31.2, AND 25.74 IS STILL THE INTERESTING ONE. **
     # The north entry put 3.18 cy of concrete in the ground -- thirteen 12" cast piers and
     # their footings -- and at first not one billed pound of steel with it, because those
     # cages were authored as free-text ``vertical_reinforcement`` and carry no structured
@@ -165,4 +173,11 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     #
     # Keep both spellings on every new cast column. A drawing string nobody bills and a
     # takeoff row nobody draws are the two halves of the same mistake.
-    assert total_lb / total_cy == pytest.approx(27.0, rel=0.03)
+    #
+    # 27.0 -> 31.2 on 2026-09-10, and this one is a DESIGN change rather than a bookkeeping
+    # one: FT-SG-W1/E1 gained the retaining set's mat, because their 3'-0" PLAIN heel is
+    # 2.35x over and nothing in the engine was grading it. +680 lb of #6 and #4 against
+    # +1.2 cy. **A ratio RISING on a reinforcement finding is the right direction** — the
+    # sag at 25.74 was steel that existed and was not billed; this is steel that did not
+    # exist and now does.
+    assert total_lb / total_cy == pytest.approx(31.2, rel=0.03)

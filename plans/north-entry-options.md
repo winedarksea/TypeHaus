@@ -4,6 +4,8 @@
 
 **Decision update:** 2026-09-09
 
+**Cost and fire review:** 2026-09-10
+
 **Status:** decision record; the selected concept is developed in
 [north-gable-extension.md](north-gable-extension.md). No model or construction changes are
 authorized by this study.
@@ -26,9 +28,9 @@ garage gable supplies the weather roof without a separate pavilion. It gives gue
 that avoids the garage interior, keeps the kitchen-side yard open at grade and concentrates
 the raised floor only where the two door landings need it.
 
-The original options below remain as provenance and fallbacks. They are no longer equally
-active recommendations. In particular, the old conclusion favoring the through-garage route
-as the minimum-change answer is superseded.
+The original options below remain as provenance and fallbacks. A 2026-09-10 cost review adds
+Option 4, an enclosed garage-shell extension. It does not change the model authorization:
+the extruded-gable connector remains selected until an owner decision says otherwise.
 
 The south porch can remain the garden/social entrance in every option. In particular, the
 garage route should not be relied upon as the dwelling's required egress route: R311.1 does
@@ -46,14 +48,14 @@ not a prefabricated object that can literally be picked up and reused.
 |---|---|
 | The house is 36 × 36 feet; the garage is 24 × 24 feet at x = 6–30 feet, centred on the house ridge rather than aligned to either side. | The garage conceals the central north entry zone; roughly 6-foot house wings remain at both east and west. |
 | The garage slab is inset inside its stem, leaving about 22 feet 1 inch of usable slab in each direction. | A four-foot pedestrian lane has a larger effect on vehicle fit than the nominal 24-foot exterior dimension suggests. |
-| House and garage cladding are only 4 feet ½ inch apart. | This is a protected passage, not enough width for a full porch room or for a normal bench beside a 36-inch route. |
-| The current breezeway glazing is 4'-6" wide at x = 6'-9"..11'-3". The house door is centred at x = 8 feet and the garage door at x = 10 feet. | The widened current floor only partially covers both door-landing patches; the selected five-foot upper platform must explicitly cover their union. |
+| The moved garage leaves about 6'-6 1/2" clear to the house cladding; the six-foot canopy stops 7 3/8 inches short of it. | The open passage works, but a true enclosure must close and detail the remaining movement joint. |
+| The former 4'-6" glazed breezeway is retired. The current upper landing runs x = 6'..11'-6"; the house door is centred at x = 8 feet and the garage door at x = 10 feet. | The modeled landing now covers both door patches and is the datum any alternate must replace. |
 | The full garage-shadow zone spans x = 6–30 feet. | A compact upper landing at the west end plus broad eastward tiers fits under the full-width gable without creating a 24-foot-long raised gallery. |
 | Grade is approximately 35 inches below the breezeway walking surface. | Every direct exterior approach needs five risers, landings, a handrail and protection at open high edges. Minnesota applies its residential stair rules to exterior stairs serving dwellings and garages; see [Minnesota Rule 1309.0311](https://www.revisor.mn.gov/rules/1309.0311/). |
 | The important north kitchen windows are centred near x = 29 feet 4 inches and x = 34 feet; the first straddles the garage's east plane. | The selected full-width gable shelters the first window but leaves the second open. The owners accepted that daylight trade to keep the roof simple. |
 | HP3's current interim cabinet spans about x = 12'-4"..15'-2 3/8", with its pad extending to x = 15'-5", in the entry zone. | The selected roof and tiers require HP3 relocation, including its pad/stand, power, line set, service access and defrost drainage. |
 | The existing breezeway side opening has only about 26½ inches clear between posts, and its side beam soffit is about 6 feet 3½ inches high. | Removing a polycarbonate panel does not make a usable side door. Posts, beam and roof edge all require redesign. |
-| The garage is insulated and heated, with painted 5/8-inch gypsum walls, a sealed slab and three shop lights. | The garage option starts much closer to “finished room” than a typical unfinished garage. |
+| The garage is insulated and has an electric heater, painted 5/8-inch gypsum walls, a sealed slab and three shop lights. | The garage option starts much closer to “finished room” than a typical unfinished garage, although the model still classifies it as unconditioned. |
 | The garage ridge runs north-south, its overhead door and driveway are north, and its eaves drain east/west. | A south gable extrusion preserves those roof falls, but the present south-end leaders must move away from the entry work. |
 
 The controlling modeled sources are the [garage plan](../houses/catlin/plan/storeys/garage.py),
@@ -66,15 +68,15 @@ The controlling modeled sources are the [garage plan](../houses/catlin/plan/stor
 
 “Scope” is relative construction effort, not a bid estimate.
 
-| Criterion | 1. Porch | 2. Through garage | 3. Enclosed gallery | **Selected extruded gable** |
-|---|---|---|---|---|
-| First-time wayfinding | Good only with a visible east portal | Excellent north door; internal route must be obvious | Excellent from east drive | Good east approach; address/light must announce the turn |
-| Winter comfort | Fair | Very good after first door | Best | Good overhead and west shelter; still outdoor |
-| Kitchen daylight/view | Poor in broad form | Unchanged | Mostly unchanged | First kitchen window sheltered; second remains open |
-| Garage experience | Guests avoid garage | Guests share room with vehicles | Guests avoid garage | Guests avoid garage; service door shares upper landing |
-| Storage discipline | Low | High | Low | Low |
-| Relative scope | Medium–high | Low until the north-wall/door conflicts are resolved | Highest | Medium, concentrated in garage roof and entry framing |
-| Decision | Fallback idea only | Superseded minimum-change route | Premium fallback | **Proceed to schematic/engineering** |
+| Criterion | 1. Porch | 2. Through garage | 3. Enclosed gallery | **Selected extruded gable** | 4. Garage-shell extension |
+|---|---|---|---|---|---|
+| First-time wayfinding | Good only with a visible east portal | Excellent north door; internal route must be obvious | Excellent from east drive | Good east approach; address/light must announce the turn | Good if the new east door opens to a full-width entry strip |
+| Winter comfort | Fair | Very good after first door | Best | Good overhead and west shelter; still outdoor | Very good; cold but fully enclosed |
+| Kitchen daylight/view | Poor in broad form | Unchanged | Mostly unchanged | First kitchen window sheltered; second remains open | East return intersects `WIN-M-KITCH`; redesign required |
+| Garage experience | Guests avoid garage | Guests share room with vehicles | Guests avoid garage | Guests avoid garage; service door shares upper landing | Guests avoid vehicles behind the separator |
+| Fire/thermal separation | Detached geometry retained | Detached geometry retained | Depends on connector classification | House remains across an open wall gap | Attached shell; complete garage/entry separation required |
+| Relative scope | Medium–high | Low until the north-wall/door conflicts are resolved | Highest | Medium, concentrated in roof and entry framing | Medium–high; foundation, slab, walls, door and interior stair |
+| Decision | Fallback idea only | Dollar-minimum only if the lane fits | Premium fallback | **Lowest-cost route outside the vehicle bay** | Price alternate; not presumed saving |
 
 ## Common requirements for any north arrival
 
@@ -91,8 +93,10 @@ The controlling modeled sources are the [garage plan](../houses/catlin/plan/stor
   protection. Prefer a 90-degree turn before the house door. Cold-region design guidance
   identifies porches and vestibules as protection from driving rain and snow and notes the value of
   turning an entry 90 degrees; see the [U.S. Forest Service Built Environment Image Guide](https://www.fs.usda.gov/sites/default/files/fs_media/fs_document/TheBuiltEnvironmentImageGuide-2001-09.pdf).
-- Keep the garage-side door weatherstripped, self-closing and fire-protective, and obtain an
-  early ruling on how an enlarged connector affects garage separation. See
+- Keep the garage-side door weatherstripped and specify a self-closing, self-latching rated
+  door as an owner fire-safety upgrade. Minnesota's minimum permits 1-3/8-inch solid-wood,
+  solid- or honeycomb-core steel doors, or a 20-minute door, and requires 1/2-inch gypsum on the
+  garage side; it does not make a complete wall into a rated assembly. See
   [Minnesota Rule 1309.0302](https://www.revisor.mn.gov/rules/1309.0302/).
 - Make a future-access decision now. The approximately 35-inch rise would need about 35
   feet of ramp run at 1:12 before landings, so neither a short porch nor the roofed approach
@@ -440,26 +444,54 @@ that can move differently, while preserving both existing rainscreen drainage pa
 mechanical, drainage and permit consequences. Its premium buys a qualitatively better
 arrival, not merely nicer finishes.
 
-## Current decision and next design work
+## Option 4 — Extend the garage shell; partition off a cold entry strip
 
-The option selection is complete: develop the extruded-gable connector described in
-[north-gable-extension.md](north-gable-extension.md). Its next package must resolve the
-following before the house model changes:
+The credible version is an approximately 24 × 30'-7 3/8" garage shell: the six-foot selected
+roof bay plus its 7 3/8-inch house joint must both be closed. Keep that south strip out of the
+vehicle room. A new east exterior door enters at the garage-slab datum; a full-width wall
+at the old south-garage line separates that strip from cars, charging and garage air; five
+interior rises and a top landing reach `D-M-ENTRY` and, if retained, `D-G-SERVICE`. Keep the
+house wall as the house thermal/air boundary and make the garage/entry wall the independent
+garage thermal boundary. Do not condition the entry from the house system. The new east wall
+at x = 30 feet also intersects the 27-inch-wide `WIN-M-KITCH` opening centred at x = 29'-4".
+Moving that wall/window or using a partial enclosure erodes the simple-shell premise.
 
-1. **Survey and zoning:** confirm the garage 2'-6" north, driveway grades, full roof
-   projection, lot coverage and whether Saint Paul treats the near-touching roof as attached.
-2. **Excavation/foundation section:** retain frost-depth garage ICF; verify the garage south
-   footing bears on competent native soil or specified engineered fill; fix the house-first,
-   garage-before-backfill sequence.
-3. **Roof structure:** obtain a truss-engineer concept and price for the full-width six-foot
-   gable cantilever, including drift, uplift, fire/draft blocking and a pile-supported fallback.
-4. **Shared landing:** draw every bearing for `FS-BW-FLOOR`, its continuation through the
-   garage door, the retirement of `SL-G-STEP-0`, threshold drainage and differential movement.
-5. **Tiered approach:** fix five equal rises, four broad treads, lower landing, handrail,
-   guards, snow storage and HP3 relocation.
-6. **West edge alternates:** price and mock up the on-edge 2×4 screen and corrugated-metal
-   windwall on the same elevation; keep opal polycarbonate as the additive alternate.
+This is not simply the selected roof with inexpensive walls underneath. Relative to the open
+connector it adds about 159 square feet of insulated slab, roughly 310 gross square feet of
+new exterior wall, a 24-foot separator, an exterior door and an interior stair. More
+importantly, its south frost footing returns to the basement overdig/backfill zone that the
+2'-6" garage move was chosen to avoid. Minnesota requires frost-depth footings for an attached
+garage; the south line therefore needs competent engineered fill, a deepened foundation or a
+designed spanning solution—not a floating slab. See the [Minnesota DLI garage fact
+sheet](https://www.dli.mn.gov/sites/default/files/pdf/edu_garages.pdf).
 
-The through-garage route remains the least exterior construction only if its north-door and
-vehicle-clearance test can be solved. The enclosed gallery remains the premium fallback if a
-fully weather-sealed arrival later becomes more important than cost.
+It deletes the selected connector's six piers, four canopy columns, exposed landing frame,
+cast tiers, screen and most exterior guards. Using this house's `prices.toml` rates, those
+credits and the added shell overlap broadly. The working pre-bid judgment is **near parity in
+an unusually favorable foundation detail, and more likely $3,000–$10,000 above the selected
+open connector**. The enclosure is durable and more comfortable, but is not a reliable
+cost-saving simplification.
+
+For ordinary code compliance, the garage/entry wall and its opening must satisfy R302.5/302.6.
+For the owner's EV goal, specify a complete tested one- or two-hour assembly, matching rated
+self-closing door, protected penetrations and continuity to a rated roof/ceiling termination;
+adding “fire-rated drywall” to one face is not an hourly rating. The [Gypsum Association's
+guidance](https://gypsum.org/accordions/11483/) makes the whole-assembly requirement explicit.
+Even that is a time barrier, not a promise to contain an EV battery event: current FSRI testing
+identifies persistent toxic exposure and reignition risk. See [FSRI's 2026 full-scale EV fire
+research summary](https://fsri.org/research-update/researchers-release-evidence-based-ev-battery-fire-response-considerations).
+
+## Cost-first recommendation and decision gate
+
+The **absolute dollar minimum remains Option 2, through the garage**, only if a scaled vehicle,
+door-swing and 42-inch-clear-lane test passes and the owners accept that guest experience. It
+also keeps the house physically and thermally separate from the garage. Do not use it as the
+dwelling's required egress path.
+
+If the north entry must bypass the vehicle room, **keep the selected open extruded-gable
+connector**. It is the likely cheapest durable version of that brief. Price Option 4 only as a
+comfort alternate, with its foundation solution and complete fire assembly named in the bid.
+For the selected scheme, the cheapest fire improvement is a tested upgrade at the garage south
+wall/ceiling and service door while retaining the open gap—not attaching more garage to the
+house. Final selection still requires the truss quote, geotechnical/foundation ruling, Saint
+Paul attachment determination and two comparable contractor prices.

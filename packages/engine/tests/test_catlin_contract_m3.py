@@ -1858,6 +1858,79 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
                 if s.category == "slab" and s.tag.startswith("SL-SG-DECK")]
 
 
+def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
+    """The court's break is one board, and **it cannot go on one purchase order today.**
+
+    That is a takeoff fact rather than an opinion. The two closure blocks resolve as foam
+    solids and bill by VOLUME into the concrete trade; the veneer beam's board is a
+    ``Layer`` on ``SG_VENEER_BEAM_14`` and bills by AREA into insulation. Nothing in the
+    engine reconciles the two, and nothing grades a thermal break for continuity in either
+    representation — so the only thing holding all three to one product is that every site
+    states the same numbers.
+
+    ``params/sunken_garden.THERMAL_BREAK_IN`` and ``THERMAL_BREAK_PSI`` are that statement.
+    The thickness was written three independent times in two files and the rating twice,
+    once as a keyword and once only in prose, because ``Layer`` has no compressive field at
+    all. **A comment is not a guard**: the retaining top's two spot elevations carried one
+    for two revisions and went stale anyway, which is why this is a test.
+    """
+    from params import sunken_garden
+
+    assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.0)
+    assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(40.0)
+    # The constant the court's geometry actually reads.
+    assert sunken_garden.SPEC.closure_break_in == pytest.approx(
+        sunken_garden.THERMAL_BREAK_IN)
+
+    # Both closure blocks, as resolved solids: same thickness across the joint, same rating.
+    for block in ("DW-SG-W1-FOAM", "DW-SG-E1-FOAM",
+                  "DW-SG-W1-STEM-FOAM", "DW-SG-E1-STEM-FOAM"):
+        solid = next(s for s in catlin_model.solids if s.tag == block)
+        ys = [y for _x, y in solid.outline]
+        assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
+            sunken_garden.THERMAL_BREAK_IN, abs=1e-6), block
+
+    # And the veneer beam's board, which is the one that bills through a different trade.
+    beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")
+    board = next(ly for ly in beam.layers if ly.name == "xps-break")
+    ys = [y for _x, y in board.polygon]
+    assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
+        sunken_garden.THERMAL_BREAK_IN, abs=1e-6)
+    # The rating has nowhere to live on a Layer, so it lives in the assembly's prose and
+    # this is what keeps that prose honest.
+    assembly = catlin_model.plan.library.resolve_assembly("SG_VENEER_BEAM_14")
+    assert f"{sunken_garden.THERMAL_BREAK_PSI:.0f} psi" in assembly.source
+
+
+def test_one_bar_arrangement_holds_the_whole_closure_board(catlin_model):
+    """One size, one spacing, count derived from the board — on both blocks.
+
+    They carried ``3 @ 8"`` and ``2 @ 6"`` on one continuous plane, and **neither count nor
+    spacing is required by any computed limit state**: no check and no engineered item
+    grades these bars. Two arrangements on one board is two field instructions and two
+    things to miscount.
+
+    ** ⚠ THE BARS ARE WHY THE BOARD EXISTS. ** A ``Dowel``'s foam block is the only way
+    this engine resolves a real XPS solid at a joint, so dropping the bars does not thin
+    the detail — it deletes the board from the model, the bill and every drawing.
+    ``_resolve_dowel`` lays ``range(max(count, 1))``, so a zero silently becomes a one.
+    """
+    from params import sunken_garden
+
+    bars = {}
+    for solid in catlin_model.solids:
+        for stem in ("DW-SG-W1-", "DW-SG-E1-", "DW-SG-W1-STEM-", "DW-SG-E1-STEM-"):
+            if solid.tag.startswith(stem) and not solid.tag.endswith("FOAM"):
+                bars.setdefault(stem, []).append(solid)
+    # 12 across the 96" footing joint, 2 across the 12" wall end.
+    assert len(bars["DW-SG-W1-STEM-"]) == 2
+    assert len(bars["DW-SG-E1-STEM-"]) == 2
+    assert len(bars["DW-SG-W1-"]) == 12 + 2  # the stem bars share the prefix
+    assert sunken_garden._break_bar_count(96.0) == 12
+    assert sunken_garden._break_bar_count(12.0) == 2
+    assert sunken_garden._break_bar_count(1.0) == 2, "never fewer than two"
+
+
 def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     """W-B-BRICK's load and its cold both leave the house footing alone. The FACE matters.
 
@@ -1879,6 +1952,13 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     beam = catlin_model.wall("W-SG-BRKBM")
     layers = {ly.name: ly for ly in beam.layers}
     assert set(layers) == {"concrete", "xps-break"}
+    # ** THE LAYER ORDER IS LOAD-BEARING FOR A FIRE CHECK, AND THE FACES ALONE DO NOT PIN
+    # IT. ** `code.R316_4` reads the innermost layer of the tuple as the one facing a room,
+    # and a bare 2" of XPS there needs a thermal barrier — reversed, this assembly FAILS.
+    # The y-span assertions below pin where the two layers LAND, which is a consequence of
+    # the tuple order and the wall's outward sign together; this pins the order itself, so
+    # a sign flip and a tuple flip cannot cancel out into a drawing that looks right.
+    assert [ly.name for ly in beam.layers] == ["concrete", "xps-break"]
 
     def span_in(polygon):
         ys = [y for _x, y in polygon]
@@ -1923,8 +2003,19 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         foam = next(s for s in catlin_model.solids if s.tag == block)
         xs = [x for x, _y in strip.outline]
         fxs = [x for x, _y in foam.outline]
-        assert (max(fxs) - min(fxs)) / inch_m == pytest.approx(84.0, abs=1e-6), block
-        assert (max(xs) - min(xs)) / inch_m == pytest.approx(84.0, abs=1e-6), garden
+        # 96", not 84": the porch strips were widened to match the retaining set on
+        # 2026-09-10 (their plain heel is 2.35x over and the mat was owed either way), and
+        # the board IS the joint, so it went with them. The board is read off the strip
+        # rather than restated so the two cannot disagree.
+        joint_in = (max(xs) - min(xs)) / inch_m
+        assert joint_in == pytest.approx(96.0, abs=1e-6), garden
+        assert (max(fxs) - min(fxs)) / inch_m == pytest.approx(joint_in, abs=1e-6), block
+        # And CENTRED on the strip, not on the wall axis. All 12" of the widening went to
+        # the court side (the outboard edge is where the apron measures its 3'-0" clear
+        # from), so a board on the axis would hang 6" past the footing at one end and
+        # leave 6" of bare footing-to-footing concrete at the other.
+        assert (min(fxs) + max(fxs)) / 2 == pytest.approx((min(xs) + max(xs)) / 2,
+                                                          abs=1e-6), block
         assert min(fxs) == pytest.approx(min(xs), abs=1e-6), block
         # ...and it fills the full depth of the two pours' shared face.
         assert (foam.z1_m - foam.z0_m) / inch_m == pytest.approx(8.0, abs=1e-3), block

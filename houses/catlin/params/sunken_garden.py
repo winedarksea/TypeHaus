@@ -104,6 +104,14 @@ class SunkenGardenSpec:
     house_below_grade_face_in: float = 4.175
     # The XPS isolation board between the court's side walls and the house — same 2" and
     # same 40 psi as SG_VENEER_BEAM_14's `xps-break` and the DW-SG-* footing blocks.
+    #
+    # ** IT IS `THERMAL_BREAK_IN` NOW. ** The 2" was stated three independent times in two
+    # files and the 40 psi twice, once outright and once only in prose, because `Layer` has
+    # no compressive field. `THERMAL_BREAK_IN` / `THERMAL_BREAK_PSI` below are the one
+    # statement of each, and `test_catlin_contract_m3` pins every site against them. This
+    # field stays as the name the geometry above reads, and simply takes its value from the
+    # published constant — a comment is what let the retaining top's spot elevations rot
+    # for two revisions.
     closure_break_in: float = 2.0
     wall_thickness_in: float = 12.0  # side + retaining walls
     # The cast column near the porch's front edge: a SHARED bearing, seating both front
@@ -127,7 +135,13 @@ class SunkenGardenSpec:
     # The overhang itself is a weather detail: the balcony gains a 12" drip past the porch
     # floor, so the deck edge sheds clear of the beam and column tops below it.
     balcony_front_overhang_ft: float = 1.0
-    footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
+    # ** UNREFERENCED SINCE 2026-09-10, AND KEPT AS THE REVERT. ** All five court strips
+    # are `_RETAINING_FOOTING_WIDTH_IN` (96") now; this was the porch strips' 84" while
+    # they were narrower than the retaining set. Nothing reads it. Kept rather than deleted
+    # because the widening is one line to undo and this is the number to put back — but it
+    # cannot be put back alone: the porch strips' own heel cantilever needs the mat at
+    # either width, which is the finding that made the widening nearly free.
+    footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel, RETIRED
     footing_thickness_in: float = 12.0
     # The MN profile's design frost depth (``checks/code/mn_residential/profile.py``:
     # ``frost_depth_in=42.0``), transcribed here because this module has to derive two
@@ -686,10 +700,22 @@ _RET_STEM_STEEL = ReinforcementSpec(
     # ** 3", AND IT IS BOUGHT WITH SECTION RATHER THAN FOUND LYING AROUND. **
     # ACI 318-19 Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather, and
     # `structural.concrete_cover_meets_minimum` grades against that. This is 3" — a
-    # durability decision, not a code one, and the reason is class C2: these six walls take
-    # deicing salt off the drive above and hold it against their faces in a court that
-    # cannot drain to daylight. Cover is the only term in the whole chloride problem that
-    # buys DISTANCE; every other lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
+    # durability decision, not a code one, and the reason is class C2.
+    #
+    # ** THE C2 ARGUMENT IS RIGHT AND THE SENTENCE THAT CARRIED IT WAS WRONG. ** It said
+    # these walls take "deicing salt off the drive above". The drive is x 12'..24', y
+    # 67'-2 5/8"..105' — north of the GARAGE, on the far side of the house, about 96 feet
+    # from this court. Nothing washes off it to here.
+    #
+    # What is true is worse, and it is why the class does not change: salt reaches this
+    # court on boots, on a shovel and on the dog, from the north walk and the entry tiers —
+    # and once here it **cannot leave**. There is no grade to daylight. The only outlet is
+    # DRW-SG-MAIN, a soakaway inside the excavation, so every chloride that arrives stays
+    # in the stone against these faces and cycles through them with each thaw. A drive
+    # sheds its salt to a ditch; a sunken court concentrates it.
+    #
+    # Cover is the only term in the whole chloride problem that buys DISTANCE; every other
+    # lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
     #
     # It costs 1" straight off `d`, which is ~11% of the stem's flexural capacity: the
     # #6 @ 10" section goes from d/c 0.81 to 0.90 (notes/sunken_garden_court_free_body.md
@@ -1275,8 +1301,41 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # 4'-0" / heel 3'-0". The apron does not move, its assertion does not change, and the heel —
 # the term that carries the stabilising column of soil — is untouched at 3'-0".
 #
-# +2.10 CY over the three runs. FT-SG-W1/E1 keep the shared 84": they are braced top and
+# +2.10 CY over the three runs.
+#
+# ** AND FT-SG-W1/E1 CAME WITH THEM ON 2026-09-10. ONE WIDTH, FIVE STRIPS, ONE FORM LINE. **
+# The porch strips kept 84" for two revisions on the grounds that they are braced top and
 # bottom, the prescriptive table answers them, and neither has an eccentricity question.
+# The first two are still true. The third was never the question, and the whole argument
+# skipped the one that was: **nothing in this engine grades a footing's own flexure except
+# on the retaining set**, so a 3'-0" PLAIN concrete cantilever under the two walls carrying
+# the balcony's four moment-fixed columns had never been run at all.
+#
+# It was run before the widening was decided, both ways, and it does not pass either way:
+#
+#   plain phi*Mn on a 12" strip cast against soil (h-2 = 10", 5,000 psi)   3,536 ft-lb/ft
+#   toe 3'-0", as built     Mu  8,319-10,376   d/c 2.35-2.94   FAILS
+#   toe 4'-0", widened      Mu 10,649-13,049   d/c 3.01-3.69   FAILS
+#   HEEL 3'-0", either way  Mu  8,303          d/c 2.35        FAILS
+#
+# (The toe range brackets 0 to 2,000 plf of superstructure line load at the stem, and reads
+# the wall as a free cantilever — the conservative bound for the toe, since crediting the
+# bracing walks the resultant back toward the heel. **The HEEL row needs no such bracket**:
+# §7c's convention drops the upward pressure under the heel entirely, so that number is
+# geometry and soil alone and does not move with the bracing credit. It is the row that
+# settles this.)
+#
+# So the mat is owed on these two whatever is assumed about the bracing, and once it is
+# owed the widening costs concrete and stone and nothing else — the expensive half was
+# already being bought. With `_RETAINING_FOOTING_MAT` the strips read heel 0.42, toe 0.58
+# at 4'-0" (0.45 at 3'-0"), all comfortable.
+#
+# **What the widening buys is the last two jogs in the court's form line.** All five strips
+# are now 8'-0" x 1'-0" with the same 6" inboard offset, so the outboard edge runs
+# unbroken at x = 4.500 / 31.500 and the inboard at 12.500 / 23.500. The outboard edge is
+# the one that may not move — `params/raised_garden.py` measures its 3'-0" clear off it,
+# the owner's figure from the brief — and the offset is what keeps all 12" of the widening
+# on the court side.
 _RETAINING = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 _RETAINING_FOOTING_WIDTH_IN = 96.0
 # Positive along the LEFT-hand normal of each wall's own start->end direction, which is the
@@ -1318,14 +1377,16 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
 
 FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
-            width=inch(_RETAINING_FOOTING_WIDTH_IN if w.tag in _RETAINING
-                       else SPEC.footing_width_in),
-            offset=inch(_RETAINING_FOOTING_OFFSET_IN) if w.tag in _RETAINING else None,
-            reinforcement=_RETAINING_FOOTING_MAT if w.tag in _RETAINING else None,
-            # Two footing types, and the branch is the same `_RETAINING` set that already
-            # decides width, offset and mat: the three cantilever strips are 96" x 12", the
-            # two braced porch strips 84" x 13". Both pour from EXPOSED_MIX — every
-            # footing in this court is inside the excavation and in the freezing zone.
+            # ONE WIDTH, ONE OFFSET, ONE MAT, ALL FIVE STRIPS (2026-09-10). The
+            # `_RETAINING` branch that used to decide all three is gone: the porch strips
+            # went 84" -> 96" and gained the mat, because their plain 3'-0" heel is 2.35
+            # times over as plain concrete and nothing was grading it. See the block above
+            # `_RETAINING` for the arithmetic. `_RETAINING` itself survives and still
+            # matters — it is what `lateral_support` and the R404.4 engineered analysis key
+            # on, and those two walls are still braced and still not cantilevers.
+            width=inch(_RETAINING_FOOTING_WIDTH_IN),
+            offset=inch(_RETAINING_FOOTING_OFFSET_IN),
+            reinforcement=_RETAINING_FOOTING_MAT,
             # One type for all five strips since 2026-09-10: the two cards were identical
             # (12" of EXPOSED_MIX) and the porch one declared 13", an inch no footing here
             # has been built at for revisions. Width is plan geometry, not an assembly.
@@ -1555,11 +1616,17 @@ GARDEN_DRYWELL = Drywell(
 # inboard on three sides and the porch roofs the north bay, so the open field is only
 # ~147 sf of the court's 532.
 #
-# The court-side edge of each retaining strip, derived so it cannot drift from the footing:
-# wall axis, half the 8'-0" strip, plus the 6" the strip is offset INTO the court.
+# The court-side edge of every strip, derived so it cannot drift from the footing: wall
+# axis, half the 8'-0" strip, plus the 6" the strip is offset INTO the court.
+#
+# ** ONE REACH FOR ALL FIVE SINCE 2026-09-10. ** There was a `_ret_toe_reach_ft` here at
+# `SPEC.footing_width_in / 24` — 84" centred on the axis, no offset, 3'-6" — and it is
+# retired with the narrower strip. It is not a cosmetic tidy-up: `FO-SG-TOE-N-W/N-E` void
+# the rim over the porch strips and read this number, so leaving it at 3'-6" over a strip
+# that now reaches 4'-6" would lap 12" of rim slab over 12" of footing. The invariant is
+# that the net rim polygon's intersection with every FT-SG-* footprint is 0.000 sf, and
+# `structural.concrete_interference` grades ISOLATED pours only and would not catch it.
 _ret_toe_reach_ft = _RETAINING_FOOTING_WIDTH_IN / 24.0 + _RETAINING_FOOTING_OFFSET_IN / 12.0
-# The porch strips' equivalent: 84" centred on the wall axis, no offset, so half of it.
-_porch_toe_reach_ft = SPEC.footing_width_in / 24.0
 _field_x_w = (_x_in_w - _half) + _ret_toe_reach_ft   # 12.5
 _field_x_e = (_x_in_e + _half) - _ret_toe_reach_ft   # 23.5
 _field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -24.833
@@ -1794,14 +1861,14 @@ GARDEN_FLOOR_OPENINGS = [
     # two openings over one piece of floor is a hole cut twice.
     FloorOpening(uid="SGO007AAAA", tag="FO-SG-TOE-N-W", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_y_ax_mid)),
-                          pt(ft(_x_ax_w + _porch_toe_reach_ft), ft(_y_ax_mid)),
-                          pt(ft(_x_ax_w + _porch_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)),
+                          pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_ax_mid)),
+                          pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)),
                           pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)))),
     FloorOpening(uid="SGO008AAAA", tag="FO-SG-TOE-N-E", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(_x_ax_e - _porch_toe_reach_ft), ft(_y_ax_mid)),
+                 outline=(pt(ft(_x_ax_e - _ret_toe_reach_ft), ft(_y_ax_mid)),
                           pt(ft(_x_in_e), ft(_y_ax_mid)),
                           pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
-                          pt(ft(_x_ax_e - _porch_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)))),
+                          pt(ft(_x_ax_e - _ret_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)))),
 ]
 
 # ** THE OPEN CENTRE IS A USGA PUTTING-GREEN PROFILE, ISOLATED BEHIND ONE ASSEMBLY. **
@@ -3086,17 +3153,115 @@ _dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 #
 # `SPEC.footing_width_in`, not a literal: the block is the joint, and the joint is as wide
 # as the footing. Widen the footing and the board follows it.
-_DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1"), ("E1", _x_ax_e, "FT-B-S4"))
+# ** THE BREAK IS ONE PRODUCT AND THESE TWO CONSTANTS ARE THE ONLY PLACE IT IS STATED. **
+# `THERMAL_BREAK_IN` is the board thickness and `THERMAL_BREAK_PSI` its compressive rating,
+# and they are published here because **the break cannot go on one purchase order today**.
+# That is a takeoff fact rather than an opinion: the two closure blocks resolve as foam
+# solids and bill by VOLUME into the concrete trade, while the veneer beam's board is a
+# `Layer` on `SG_VENEER_BEAM_14` and bills by AREA into insulation. Nothing reconciles the
+# two, so the only thing holding them to one product is that every site reads one number.
+#
+# `Layer` has no compressive field at all, which is why the beam's board carried the 40 psi
+# in prose and the blocks carried it in a keyword. Both read `THERMAL_BREAK_PSI` now, the
+# beam's through its `source` text, and `test_catlin_contract_m3` asserts the sites agree —
+# a comment alone is what let the retaining top's spot elevations rot for two revisions.
+#
+# ** 40 psi (ASTM C578 Type VII), not the slab's 25. ** The board is a FORM FACE here: it
+# takes the fresh concrete head of a 12" pour against it with nothing behind it but a
+# cured house footing, and a board that dishes under the head is a board the two pours
+# have found each other around.
+THERMAL_BREAK_IN = SPEC.closure_break_in
+THERMAL_BREAK_PSI = 40.0
+
+# ** ONE BAR ARRANGEMENT ON THE WHOLE PLANE. ** The two blocks carried `count=3 @ 8"` and
+# `count=2 @ 6"`, on one continuous board, and **neither was required by any computed limit
+# state** — no check and no engineered item grades these bars at all. Two counts and two
+# spacings on one plane is two field instructions for one board and two things to miscount.
+#
+# One size (#5 GFRP, 0.625"), one spacing (8" o.c., the coarser of the two that existed —
+# no new number is invented here), and the COUNT derived from the board it holds. The
+# footing block is 96" wide and takes 12 bars on an 88" row, 4" clear of each end; the stem
+# block is 12" and takes the minimum 2 on an 8" row. **Three bars over eight feet was the
+# old footing figure**, which held the middle of the board and left 44" of it either side
+# free to float and rack against the head of a 12" pour — with no check anywhere that would
+# notice.
+#
+# ** ⚠ THE BARS ARE WHY THE BOARD EXISTS AT ALL. ** A `Dowel`'s foam block is the only way
+# this engine resolves a real XPS solid at a joint (`resolve/accessories._resolve_dowel`),
+# so `count=0` does not thin the detail — it DELETES the board from the model, from the
+# bill and from every drawing. `_resolve_dowel` lays `range(max(count, 1))`, so a zero is
+# silently a one. Never reduce these to nothing; if the tie is ever not wanted, the board
+# needs a different element first.
+THERMAL_BREAK_BAR_IN = 0.625
+THERMAL_BREAK_BAR_SPACING_IN = 8.0
+
+# ** FOUR SEQUENCING TRAPS ON THIS BOARD. EVERY IMPROVEMENT TO THIS DETAIL RESTS ON
+# COMMENTS AND ONE TAKEOFF ROW, SO THEY ARE WRITTEN HERE RATHER THAN ASSUMED. **
+#
+# 1. **The butt joint between the two blocks lands on the court floor plane.** The footing
+#    block runs -117 7/16"..-109 7/16" and the stem block -109 7/16"..0, and -109 7/16" is
+#    exactly `SL-SG-FLOOR` — the wettest, saltiest, most trafficked surface in a court that
+#    drains only to a soakaway and cannot shed chloride at all (§6a of
+#    notes/sunken_garden_court_free_body.md). A butt joint there is a wick straight into
+#    the one plane the whole C2 case is about. **Lap the upper board past the joint**; the
+#    model cannot express a lap, so the drawing and this note are the instruction.
+#
+# 2. **The garden pour cannot lead the house.** The STEM dowels are drilled and epoxied
+#    into cured house wall with roughly an inch of tolerance before they blow through 8" of
+#    concrete and 4 3/16" of foam and coating. The basement wall must be poured, cured and
+#    SURVEYED first — surveyed, because an epoxied dowel has no adjustment. `AN-SG-PLACEMENTS`
+#    carries this as placement (2)'s precondition.
+#
+# 3. **The beam's board depends on a footing trim that is a HOLD POINT.** `FT-B-S2`/`S3`
+#    give up 2" of south toe (via `offset`, keeping all 20" of bearing) so
+#    `SG_VENEER_BEAM_14`'s board has somewhere to bear. Poured full width, the beam has
+#    nowhere to go and the board nothing to bear against, and nobody finds out until the
+#    garden pour. **Sign the trim off before the HOUSE footing pour, not after.**
+#
+# 4. **The longest board is the only one with no positive tie.** `SG_VENEER_BEAM_14`'s is
+#    20'-0" of 2" XPS against the fresh head of a 12" pour, held by nothing — it is a
+#    `Layer`, not a `Dowel`, so it has no bars at all. Fine for crushing at 40 psi; it must
+#    still be held against FLOATING and RACKING, and **no check will notice** either. The
+#    two closure blocks are tied (§ the bars above); this one is on the formwork.
+
+
+def _break_bar_count(board_width_in: float) -> int:
+    """Bars across a closure board — one rule, both blocks. Minimum two."""
+    return max(2, round(board_width_in / THERMAL_BREAK_BAR_SPACING_IN))
+
+
+# ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS, AND THAT MATTERS SINCE
+# 2026-09-10. ** `Dowel.foam_length` centres the block on `position`. While the porch
+# strips were 84" centred on the axis the two coincided and the axis was the obvious thing
+# to write; the strips now carry `_RETAINING_FOOTING_OFFSET_IN` — all 12" of the widening
+# went to the court side, because the outboard edge is where `params/raised_garden.py`
+# measures its 3'-0" clear from and may not move. So the joint runs x 4.500..12.500 while
+# the wall axis is 8.000, and a board centred on the axis would cover 4.000..12.000: 6" of
+# board hanging past the footing into nothing at the outboard end, and **6" of bare
+# footing-to-footing concrete at the court end**. The third sign (+1 into the court, -1 on
+# the east leg) is what keeps the board on the pour it separates.
+_DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
-          position=pt(ft(x), ft(_y_closure_break)),
-          axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,
-          count=3, spacing=inch(8),
+          position=pt(ft(x + court * _RETAINING_FOOTING_OFFSET_IN / 12.0),
+                      ft(_y_closure_break)),
+          axis="y", length=inch(24), diameter=inch(THERMAL_BREAK_BAR_IN),
+          elevation=_dowel_z,
+          count=_break_bar_count(_RETAINING_FOOTING_WIDTH_IN),
+          spacing=inch(THERMAL_BREAK_BAR_SPACING_IN),
           connects=(f"FT-SG-{name}", house_footing),
-          foam_thickness=inch(SPEC.closure_break_in),
+          foam_thickness=inch(THERMAL_BREAK_IN),
           foam_height=inch(_HOUSE_FOOTING_DEPTH_IN),
-          foam_length=inch(SPEC.footing_width_in), foam_psi=40.0)
-    for i, (name, x, house_footing) in enumerate(_DOWEL_AT, start=1)
+          # ** THE JOINT IS AS WIDE AS THE FOOTING, AND THE FOOTING WENT 84" -> 96" ON
+          # 2026-09-10. ** This read `SPEC.footing_width_in`, which is the retired porch
+          # width; it is `_RETAINING_FOOTING_WIDTH_IN` now, the one width all five court
+          # strips share. Left at 84" the board would have covered 84" of a 96" joint and
+          # left a foot of footing-to-footing concrete running straight from a heated
+          # basement strip into a wall standing in an open court — the same defect this
+          # authored length was introduced to fix, re-opened by widening the footing.
+          # Nothing grades a thermal break for continuity.
+          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN), foam_psi=THERMAL_BREAK_PSI)
+    for i, (name, x, house_footing, court) in enumerate(_DOWEL_AT, start=1)
 ]
 
 # --- the stem-level board, and the two bars that hold it captive (2026-09-05) ----------
@@ -3131,12 +3296,22 @@ _stem_height = _porch_top - _wall_bottom
 STEM_DOWELS = [
     Dowel(uid=uid, tag=f"DW-SG-{name}-STEM",
           position=pt(ft(x), ft(_y_closure_break)),
-          axis="y", length=inch(24), diameter=inch(0.625),
+          axis="y", length=inch(24), diameter=inch(THERMAL_BREAK_BAR_IN),
           elevation=_wall_bottom + _stem_height / 2.0,
-          count=2, spacing=inch(6),
+          count=_break_bar_count(SPEC.wall_thickness_in),
+          spacing=inch(THERMAL_BREAK_BAR_SPACING_IN),
           connects=(f"W-SG-{name}", house_wall),
-          foam_thickness=inch(SPEC.closure_break_in),
-          foam_height=_stem_height, foam_psi=40.0)
+          foam_thickness=inch(THERMAL_BREAK_IN),
+          # ** AUTHORED, NOT DERIVED, SINCE 2026-09-10 — AND THE VALUE DOES NOT CHANGE. **
+          # `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12" is the right answer here
+          # and the paragraph above explains why. It is written down anyway, because a
+          # length that happens to come out right is not the same as a length somebody
+          # chose: move these two bars 4" apart and the derivation silently returns 16",
+          # throwing 2" of foam past each face of the 12" pour. The two blocks now state
+          # their lengths the same way and differ only in the number, which is the whole
+          # point — they are sized against different pours and must not be merged.
+          foam_length=inch(SPEC.wall_thickness_in),
+          foam_height=_stem_height, foam_psi=THERMAL_BREAK_PSI)
     for uid, (name, x, house_wall) in zip(("SGDW03AAAA", "SGDW04AAAA"),
                                           _STEM_DOWEL_AT, strict=True)
 ]

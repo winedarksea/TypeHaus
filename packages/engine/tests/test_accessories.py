@@ -263,15 +263,22 @@ def test_knee_brace_member_carries_its_assembly_material(braced_model) -> None:
 def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
     dowels = _solids(catlin_model, "dowel")
     foam = _solids(catlin_model, "thermal_break")
-    # Two locations x (3 footing bars + 2 stem bars). FT-SG-COL is NOT doweled: belling that
-    # pier to frost depth put its top 1'-10" BELOW FT-B-S2's underside, so there is no joint
-    # between the two pours for a bar to cross or foam to break — the separation itself is
-    # the thermal break.
+    # Two locations x (12 footing bars + 2 stem bars). FT-SG-COL is NOT doweled: belling
+    # that pier to frost depth put its top well BELOW FT-B-S2's underside, so there is no
+    # joint between the two pours for a bar to cross or foam to break — the separation
+    # itself is the thermal break.
     #
-    # The stem pair (DW-SG-*-STEM, 2026-09-05) carries the board that closes the slot between
-    # each garden side wall and the house above the footings, so each location now resolves
-    # TWO foam blocks that stack into one continuous plane.
-    assert len(dowels) == 10
+    # The stem pair (DW-SG-*-STEM, 2026-09-05) carries the board that closes the slot
+    # between each garden side wall and the house above the footings, so each location
+    # resolves TWO foam blocks that stack into one continuous plane.
+    #
+    # ** 12 FOOTING BARS, NOT 3, SINCE 2026-09-10. ** The two blocks carried `3 @ 8"` and
+    # `2 @ 6"` on one plane and neither count was required by any computed limit state —
+    # nothing here is graded. One size, one 8" spacing, and the count derived from the
+    # board (`sunken_garden._break_bar_count`): 12 across the 96" footing joint, the
+    # minimum 2 across the 12" wall end. Three bars over eight feet held the middle of the
+    # board and left 44" of it either side free to float against a 12" pour's head.
+    assert len(dowels) == 28
     assert len(foam) == 4
     assert {b.tag.rsplit("-", 1)[0] for b in dowels} == {
         "DW-SG-W1", "DW-SG-E1", "DW-SG-W1-STEM", "DW-SG-E1-STEM"}

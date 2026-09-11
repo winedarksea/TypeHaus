@@ -219,10 +219,22 @@ def test_the_heel_takes_no_credit_for_the_pressure_under_it(geometry_and_case) -
 
 
 def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
-    """All three court footings are authored alike — one bar size for the whole pour.
+    """All FIVE court footings are authored alike — one bar size for the whole pour.
 
-    ``FT-SG-W1``/``E1`` deliberately do NOT: they are braced top and bottom, IRC Table
-    R404.1.2(8) answers them prescriptively, and neither has a toe worth grading.
+    ``FT-SG-W1``/``E1`` deliberately did NOT until 2026-09-10, on the grounds that they are
+    braced top and bottom and IRC Table R404.1.2(8) answers them prescriptively. The first
+    half is still true and the argument still skipped the question: **nothing in this
+    engine grades a footing's own flexure except on the retaining set**, so the 3'-0" plain
+    cantilever under the two walls carrying the balcony's four moment-fixed columns had
+    never been run.
+
+    Run, it does not pass. The HEEL is the row that settles it and it needs no assumption
+    about the bracing at all — §7c's convention drops the upward pressure under the heel,
+    so the demand is soil and geometry alone: Mu 8,303 against a plain 12" strip's 3,536,
+    **d/c 2.35**. The toe reads 2.35-2.94 as a free cantilever, which is the conservative
+    bound. The mat was owed either way, and once it is owed the widening from 84" to 96"
+    costs concrete and stone alone — so all five strips are one width, one offset, one mat
+    and one continuous form line.
     """
     from typehaus.model.structure import Footing
 
@@ -238,7 +250,13 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
         assert spec.cover.inches == pytest.approx(3.0)
 
     for braced in ("FT-SG-W1", "FT-SG-E1"):
-        assert footings[braced].reinforcement is None
+        spec = footings[braced].reinforcement
+        assert spec is not None, f"{braced}'s plain heel is 2.35x over; it needs the mat"
+        roles = {b.role: b for b in spec.bars}
+        assert roles["bottom-x"].bar == 6
+        assert roles["bottom-x"].spacing.inches == pytest.approx(10.0)
+        assert spec.cover.inches == pytest.approx(3.0)
+        assert footings[braced].width.inches == pytest.approx(96.0)
 
 
 def test_a_bar_authored_as_a_count_is_not_read_as_a_spacing() -> None:

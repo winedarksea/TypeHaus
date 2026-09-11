@@ -47,12 +47,22 @@ rate.
 |---|---|---|---:|---:|---|
 | column | #3 | hdg-a767 | 241.5 LF | 90.8 lb | all twelve cast columns, ties |
 | column | #5 | hdg-a767 | 368.9 LF | 384.8 lb | all twelve cast columns, verticals |
-| footing | #4 | hdg-a767 | 302.2 LF | 201.9 lb | `FT-SG-W2/E2/S` longitudinal |
-| footing | #6 | hdg-a767 | 1,088.0 LF | 1,634.2 lb | `FT-SG-W2/E2/S` mat, top + bottom |
+| footing | #4 | hdg-a767 | 414.1 LF | 276.6 lb | all five `FT-SG-*` strips, longitudinal |
+| footing | #6 | hdg-a767 | 1,490.6 LF | 2,238.9 lb | all five `FT-SG-*` strips, mat top + bottom |
 | foundation wall | #4 | hdg-a767 | 775.2 LF | 517.8 lb | `W-SG-W2/E2/S` horizontal |
 | foundation wall | #5 | hdg-a767 | 210.0 LF | 219.0 lb | the eight 8" basement runs |
 | foundation wall | #6 | hdg-a767 | 680.5 LF | 1,022.1 lb | `W-SG-*` verticals |
-| | | | | **4,070.6 lb** | **2.04 ton** |
+| | | | | **4,750.0 lb** | **2.38 ton** |
+
+**The two `footing` rows gained 37% on 2026-09-10, and it is the one row change here that
+is a DESIGN change rather than a geometry one.** `FT-SG-W1`/`E1` were 84" and plain. The
+engine grades a footing's own flexure only on the retaining set, so their 3'-0" plain
+cantilever — under the two walls carrying the balcony's four moment-fixed columns — had
+never been run at all. Run, it does not pass: the HEEL alone is Mu 8,303 against a plain
+12" strip's 3,536, **d/c 2.35**, and that row needs no assumption about the bracing credit
+because §7c's convention drops the upward pressure under the heel. The mat was owed either
+way, so widening them to 96" to match the retaining set cost concrete and stone alone and
+bought one width, one offset and one continuous form line around the court.
 
 **Both `foundation wall` rows moved again on 2026-09-05 — the slot closure — and again no
 schedule changed.** `W-B-S4` grew 10" west when the south wall's split came off the retaining
@@ -192,7 +202,8 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          3,992 lb / 148.78 cy   =  26.8 lb/cy
+billed          4,750 lb / 152.26 cy   =  31.2 lb/cy   (2026-09-10)
+  was           3,992 lb / 148.78 cy   =  26.8 lb/cy
 register ~5 t  10,000 lb / 148.78 cy   =  67.2 lb/cy
 ```
 
