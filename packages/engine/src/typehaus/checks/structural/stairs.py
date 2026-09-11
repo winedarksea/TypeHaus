@@ -146,16 +146,23 @@ def _walking_surfaces(stair: ResolvedStair) -> list[float]:
 
 @check(Tier.STRUCTURAL, "structural.stair_riser_uniformity")
 def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
-    """Measure every riser in each flight against IRC R311.7.5.1's 3/8" spread.
+    """Measure the risers WITHIN each flight against IRC R311.7.5.1's 3/8" spread.
 
-    The rise from the springing floor to the first tread, tread to tread, tread to
-    landing, and the last tread to the arrival deck are all risers a foot has to take, and
-    the code allows 3/8" between the largest and the smallest. Nothing measured them here
-    before, which is how the tread boards came to sit *on* each step's theoretical
-    elevation rather than being dropped to it (``resolve/stairs/common.py::_notch_z``) —
-    a 9" first riser and a 6" last one against a 7.5" design riser, invisible because
-    ``riser_height_m`` is the design number and only the generated members carry the
-    built one.
+    Tread to tread, tread to landing, landing to tread: every step between two generated
+    members, which is what catches a tread board sitting *on* its theoretical elevation
+    rather than dropped to it (``resolve/stairs/common.py::_notch_z``) — a 9" first riser
+    and a 6" last one against a 7.5" design riser, invisible because ``riser_height_m`` is
+    the design number and only the generated members carry the built one.
+
+    ** THE TWO END RISERS ARE NOT THIS CHECK'S ANSWER. ** The springing and arrival used
+    here are the flight's own — an authored ``base_elevation`` or the lowest framing, plus
+    ``riser_count`` design rises — so the ladder closes on itself and the ends can only
+    report what the flight already claims. Measuring them against the floors they really
+    meet needs the deck under the probe and the depth of the finish on it, which is
+    ``code.R311_7_5_1_stair_end_risers`` and ``resolve/walking_surface.py``. Both rules
+    cite R311.7.5.1 and neither subsumes the other: this one grades the flight's interior,
+    where nothing but the generator can be wrong, and that one grades its two ends, where
+    the building is.
     """
     if not ctx.model.stairs:
         return [Finding(severity=Severity.WARN, check_id="structural.stair_riser_uniformity",

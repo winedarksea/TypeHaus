@@ -477,3 +477,191 @@ def stair_handrail(ctx: CheckContext) -> list[Finding]:
         # the other lane's flight would fail both for doing exactly what they should.
         out.extend(flight_continuity_findings(ctx, stair, serving, cid))
     return out
+
+
+# R311.7.5.1: the greatest riser in a flight may exceed the smallest by 3/8", and no riser
+# may exceed 7 3/4". Both limits are measured between WALKING SURFACES, which is the whole
+# difficulty — see ``stair_end_risers``.
+_MAX_RISER_VARIATION = inch(0.375)
+#: Categories whose top face is a surface a foot lands on, ascending order aside.
+_WALKING_CATEGORIES = frozenset({"tread", "winder", "landing"})
+
+
+#: How far off the flight to step, as fractions of a going. One probe is not enough in
+#: either direction: a short step lands on a narrow threshold and a long one clears it. The
+#: outermost reach is bounded by the code rather than by taste — R311.7.6 puts a landing at
+#: least 36" deep in the direction of travel at both ends of a flight, so anything found
+#: within that of the nosing IS this flight's landing and not some other floor. Two goings
+#: is 20"-22" here, comfortably inside it, and the elevation band below is what actually
+#: keeps a surface at the wrong level out.
+#:
+#: ST-SG-PORCH is why the long reaches exist: it heads onto 12" of W-SG-E1's wall top,
+#: decked flush with the porch plank beside it and deliberately NOT MODELLED (3 sf of trim
+#: over concrete with nothing to frame — params/sunken_garden.py). Probing only one going
+#: out lands in that gap and reports UNKNOWN about a surface that is continuous underfoot.
+_PROBE_FRACTIONS = (0.35, 0.6, 1.0, 1.5, 2.0)
+#: How far a candidate surface may sit from where a riser off the end tread would put it
+#: before it is judged to be a different surface entirely rather than a mis-met one. Two
+#: risers: generous enough that a flight landing a whole riser out is still MEASURED (and
+#: fails), tight enough that the slab 2'-10" under a garage flight is not mistaken for the
+#: bridge deck it actually arrives on.
+_END_SURFACE_BAND_RISERS = 2.0
+
+
+def _ascent_probes(stair, at_top: bool) -> list[tuple[float, float]]:
+    """Plan points stepping off the flight at the foot or the head.
+
+    The floor a flight springs from and the floor it arrives at are both beyond the
+    flight's own footprint, and neither can be found by probing a tread. The head is inside
+    the flight's own well, a hole in the very deck being looked for; the foot of an upper
+    flight in a stacked well (catlin's ST-M2S) stands over the well of the flight below it.
+    """
+    walking = sorted((member for member in stair.members
+                      if member.category in _WALKING_CATEGORIES),
+                     key=lambda member: member.z1_m)
+    if len(walking) < 2:
+        return []
+
+    def centre(member):
+        if member.plan_outline:
+            middle = Polygon(member.plan_outline).centroid
+            return middle.x, middle.y
+        return ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
+
+    near, inboard = (walking[-1], walking[-2]) if at_top else (walking[0], walking[1])
+    x0, y0 = centre(near)
+    x1, y1 = centre(inboard)
+    # ``inboard`` is the neighbour INSIDE the run at either end, so ``near - inboard``
+    # always points off the flight — up-and-out at the head, down-and-out at the foot.
+    dx, dy = x0 - x1, y0 - y1
+    span = math.hypot(dx, dy)
+    if span < 1e-9:
+        return []
+    step = max(span, stair.going_depth_m)
+    return [(x0 + dx / span * step * f, y0 + dy / span * step * f)
+            for f in _PROBE_FRACTIONS]
+
+
+@check(Tier.CODE, "code.R311_7_5_1_stair_end_risers")
+def stair_end_risers(ctx: CheckContext) -> list[Finding]:
+    """Measure the first and last risers against the floors they actually meet.
+
+    Everything between two treads is uniform by construction, so a flight's real risk is at
+    its two ends — and nothing here measured them. ``code.R311_7_stair_geometry`` grades the
+    flight's arrival against the *storey elevation*, and ``structural.stair_riser_uniformity``
+    derives its arrival as ``springing + riser_count * rise``; both close the loop on the
+    flight's own design riser, so a flight that lands somewhere other than the floor is
+    uniform and compliant in both. A storey elevation is the TOP OF JOISTS: on catlin the
+    floor underfoot is 15/16" higher, and the basement flight climbed to the joists and left
+    an 8 1/4" step onto the living room at 0 FAIL (plans/TODO.md).
+
+    So both end risers are measured. At a head that owns a floor opening the arrival deck is
+    the one the well is cut in — authoritative, and the only answer available inside a well,
+    since every point of the well is in the hole. Everywhere else the flight is stepped off
+    at several fractions of a going and every surface standing there is collected. Which one
+    the flight means is then an ELEVATION question, answered by taking the candidate nearest
+    where a riser off the end tread would put it: a stair filed on one storey may well
+    arrive on a deck filed on another, and picking by storey reported a 27" riser on the
+    garage service flight for exactly that reason.
+
+    **Never PASS by absence.** A covering whose installed depth the catalog does not state
+    reports UNKNOWN naming the finish, not the deck under it — reporting structure as the
+    surface would under-measure by precisely the thing that is missing. So does a flight
+    whose end sits more than two risers from every modelled surface: that is not a flight
+    meeting its floor badly, it is a floor nobody drew. The one earned NOT_APPLICABLE is a
+    flight with fewer than two walking surfaces, which has no riser to measure.
+    """
+    from typehaus.resolve.walking_surface import deck_owning_opening, room_finish_at
+    from typehaus.resolve.walking_surface import surfaces_at as _surfaces_at
+
+    cid, code = "code.R311_7_5_1_stair_end_risers", "R311.7.5.1"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        walking = sorted(member.z1_m for member in stair.members
+                         if member.category in _WALKING_CATEGORIES)
+        if len(walking) < 2:
+            out.append(not_applicable(cid, f"{stair.tag} resolves fewer than two walking "
+                                       "surfaces, so it has no riser to measure", code))
+            continue
+        # ``ResolvedStair`` carries no opening reference — the authored element does, and
+        # ``resolve/stairs/dispatch.py`` has already refused any stair whose opening no deck
+        # on the destination storey owns, so a tag here is a tag that resolves.
+        opening_tag = getattr(ctx.plan.by_tag(stair.tag), "floor_opening", None)
+        band = _END_SURFACE_BAND_RISERS * stair.riser_height_m
+        met: dict[str, tuple[float, str]] = {}
+        gap: str | None = None
+        for at_top in (False, True):
+            label = "head" if at_top else "foot"
+            storey = stair.to_storey if at_top else stair.storey
+            end_tread = walking[-1] if at_top else walking[0]
+            wanted = end_tread + (stair.riser_height_m if at_top else -stair.riser_height_m)
+            probes = _ascent_probes(stair, at_top)
+            if not probes:
+                gap = f"{stair.tag} has no run direction to step off at the {label}"
+                break
+            candidates = []
+            deck = (deck_owning_opening(ctx.model, storey, opening_tag)
+                    if at_top and opening_tag else None)
+            if deck is not None:
+                deck_tag, deck_top = deck
+                # The well's own deck is the arrival, but its FINISH belongs to the room the
+                # flight steps out into — read at the probes, since a Room's clear_face is
+                # not cut by a floor opening.
+                for probe in probes:
+                    room_tag, finish_ref, finish_in = room_finish_at(
+                        ctx.model, storey, probe)
+                    candidates.append((deck_tag, deck_top, room_tag, finish_ref, finish_in))
+                    if room_tag is not None:
+                        break
+            else:
+                seen = set()
+                for probe in probes:
+                    for surface in _surfaces_at(ctx.model, probe):
+                        key = (surface.deck_tag, round(surface.deck_top_m, 6))
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        candidates.append((surface.deck_tag, surface.deck_top_m,
+                                           surface.room_tag, surface.finish_ref,
+                                           surface.finish_in))
+            near = [row for row in candidates
+                    if abs(row[1] + (row[4] or 0.0) * 0.0254 - wanted) <= band]
+            if not near:
+                gap = (f"{stair.tag} resolves no deck, slab or hardscape within two risers "
+                       f"of where its {label} riser lands "
+                       f"({wanted / .0254:+.1f}\" in the project frame), so the surface it "
+                       "meets there is unmeasured")
+                break
+            deck_tag, deck_top, room_tag, finish_ref, finish_in = min(
+                near, key=lambda row: abs(row[1] + (row[4] or 0.0) * 0.0254 - wanted))
+            if finish_in is None:
+                gap = (f"{stair.tag}'s {label} meets {deck_tag} under {room_tag}'s "
+                       f"{finish_ref!r} finish, whose installed thickness the material "
+                       "catalog does not state, so the surface underfoot is unknown")
+                break
+            met[label] = (deck_top + finish_in * 0.0254, deck_tag)
+        if gap is not None:
+            out.append(_unknown(cid, gap, (stair.tag,), code))
+            continue
+        first = walking[0] - met["foot"][0]
+        last = met["head"][0] - walking[-1]
+        risers = [first, stair.riser_height_m, last]
+        spread = max(risers) - min(risers)
+        tallest = max(risers)
+        detail = (f"{first / .0254:.2f}\" off {met['foot'][1]}, "
+                  f"{stair.riser_height_m / .0254:.2f}\" typical, "
+                  f"{last / .0254:.2f}\" onto {met['head'][1]}")
+        if tallest > _MAX_STAIR_RISER.meters + 1e-6:
+            out.append(_fail(cid, f"{stair.tag} has a {tallest / .0254:.2f}\" riser "
+                             f"({detail}); R311.7.5.1 caps a riser at 7.75\"",
+                             (stair.tag,), code))
+        elif spread > _MAX_RISER_VARIATION.meters + 1e-6:
+            out.append(_fail(cid, f"{stair.tag} risers vary by {spread / .0254:.2f}\" "
+                             f"({detail}); R311.7.5.1 allows 3/8\" between the largest and "
+                             "the smallest", (stair.tag,), code))
+        else:
+            out.append(_pass(cid, f"{stair.tag} meets its floors within "
+                             f"{spread / .0254:.2f}\" ({detail})", code))
+    return out

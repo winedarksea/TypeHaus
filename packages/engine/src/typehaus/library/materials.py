@@ -404,24 +404,48 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # the tongue is face width the mill saws and the floor never sees.
     Material(tag="oak", name="3/4\" white-oak strip flooring", hatch="lumber", color="#c69c6d",
              species="oak", finish="strip-floor", stock_bf_per_sqft=1.0,
-             nominal_quarters=4, milling_profile="T&G",
+             nominal_quarters=4, milling_profile="T&G", finish_thickness_in=0.75,
              source="finish covering, not an assembly layer: thermal/vapour fields unset "
-                    "(no published rating located, and nothing consumes them here)"),
+                    "(no published rating located, and nothing consumes them here). "
+                    "`finish_thickness_in` is the 3/4\" this product's own name states; "
+                    "the rosin paper or felt slip sheet under a nailed strip floor is not "
+                    "a thickness"),
     Material(tag="lvp", name="Luxury vinyl plank, click-lock", hatch="lumber", color="#a08a72",
+             finish_thickness_in=0.2362,
              source="finish covering over its own underlayment; thermal/vapour fields unset "
-                    "for the same reason as the other floor finishes"),
+                    "for the same reason as the other floor finishes. "
+                    "`finish_thickness_in` is 6 mm nominal — the mainstream click-lock "
+                    "plank, 5 mm rigid core plus a 1 mm attached IXPE pad. A separate "
+                    "compressible acoustic mat laid under it is NOT counted: it crushes "
+                    "under load, so the plane underfoot stays the plank's own (the basis "
+                    "houses/catlin/params/main_deck.py works its flush-joint case from). "
+                    "A house on a thicker plank has to say so"),
     Material(tag="lvp-underlayment", name="LVP acoustic underlayment", hatch="membrane",
              color="#d8d3c8",
              source="companion layer under `lvp` — carried so a takeoff can order it with "
                     "the plank rather than leaving it off the schedule"),
     Material(tag="carpet", name="Cut-pile carpet", hatch="batt", color="#9c8f80",
-             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+             finish_thickness_in=0.5,
+             source="finish covering, not an assembly layer; thermal/vapour fields unset. "
+                    "`finish_thickness_in` is the carpet AND its pad, 1/4\" of "
+                    "commercial-weight cut pile over a 1/4\" high-density rebond cushion. "
+                    "The pad is the half that is a judgement: carpet-council guidance caps "
+                    "stair cushion at 3/8\" because a thicker one rolls the nosing "
+                    "underfoot, and 1/4\" is the safe end of that. Selected 2026-09-11 "
+                    "for catlin's ST-B2M and taken as the house default"),
     Material(tag="carpet-pad", name="Bonded-urethane carpet pad", hatch="batt",
              color="#c8b7a0",
              source="companion layer under `carpet` — carried so a takeoff can order it with "
                     "the carpet rather than leaving it off the schedule"),
     Material(tag="tile", name="Porcelain floor tile", hatch="masonry", color="#dfe3e5",
-             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+             finish_thickness_in=0.5,
+             source="finish covering, not an assembly layer; thermal/vapour fields unset. "
+                    "`finish_thickness_in` is the whole tray over the subfloor — tile, its "
+                    "thinset beds and the 1/8\" uncoupling membrane under it — because a "
+                    "room names only the tile. 1/2\" is what catlin's own mudroom "
+                    "arithmetic resolves to (params/main_deck.py puts that floor ~5/16\" "
+                    "proud of a concrete cap standing +15/16\" over a +3/4\" subfloor), "
+                    "and it is an ordinary porcelain-over-DITRA build"),
     Material(tag="tile-uncoupling-membrane", name="Uncoupling membrane, 1/8\"",
              hatch="membrane", color="#d9662a",
              source="companion layer under `tile` — Schluter DITRA or equivalent 1/8\" "
@@ -440,8 +464,11 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "vapour fields; distinct from `sealed-concrete`, which is a roll-on "
                     "sealer over a trowel finish at roughly half the rate"),
     Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",
-             color="#54585c",
-             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+             color="#54585c", finish_thickness_in=0.3125,
+             source="finish covering, not an assembly layer; thermal/vapour fields unset. "
+                    "`finish_thickness_in` is 8 mm, the stock roll thickness this class of "
+                    "flooring is sold in for a home gym; 3/8\" and 1/2\" rolls exist for "
+                    "free-weight platforms and a house laying one has to say so"),
     # Homogeneous sheet vinyl with heat-welded seams — the wet-room floor. Ordered with a
     # 6" integral flash cove where it laps up the wall, which is what makes floor and wall
     # one tray with no base joint; the cove is the waterproofing, so nothing impermeable
@@ -450,8 +477,11 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # ASTM E96 number — and unlike the panel, nothing needs one, because a floor finish is
     # never a layer in a rated assembly.
     Material(tag="vinyl-sheet", name="Heat-welded sheet vinyl, integral flash cove",
-             hatch="membrane", color="#8a9a86",
+             hatch="membrane", color="#8a9a86", finish_thickness_in=0.0787,
              source="finish covering, not an assembly layer; thermal/vapour fields unset. "
+                    "`finish_thickness_in` is 2.0 mm, the homogeneous commercial sheet "
+                    "gauge this detail is built on — the whole sheet is wear layer, which "
+                    "is what lets it be welded and coved. "
                     "Heat-welded seams and a 6\" integral flash cove lapped behind the wall "
                     "membrane — see houses/catlin/notes/plant_room.md for why the cove "
                     "replaces a separate waterproofing layer"),

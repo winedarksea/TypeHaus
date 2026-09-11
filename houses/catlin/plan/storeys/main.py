@@ -1918,6 +1918,21 @@ SLABS = [
 # number moves in params, move it here. Rise is 110.4237" over the same 15 risers — 7.3616"
 # each, still clear of 7 3/4" — so the riser count, the run length and the well are
 # unchanged; only the flight's elevation is.
+#
+# ** THE CARPET DOES NOT MOVE ANY OF THAT. ** This is the carpeted flight (prices.toml
+# [framing]; MW-STANDARD gives the oak to ST-M2S and ST-S2A instead): 1/4" of
+# commercial-weight cut pile over a 1/4" high-density rebond cushion, 1/2" in all, selected
+# 2026-09-11. A tread member's top IS the finished walking surface in this engine — the
+# stringer is notched DOWN by the board thickness (`resolve/stairs/common.py::_notch_z`) so
+# the finished faces land on the theoretical line — so the carpet lives inside the 1 1/2"
+# the member already occupies and the substrate under it is 1", not 1 1/2". Every riser,
+# the two end ones included, is where it is drawn, which
+# `code.R311_7_5_1_stair_end_risers` now measures rather than assumes.
+#
+# What the model cannot yet SAY is that 1" substrate: `Stair.tread_thickness` is the field
+# for it and `resolve/stairs/dispatch.py` accepts it on straight flights only, because only
+# `straight.py` honours it. All three interior flights are U-split or winder. It costs a
+# takeoff refinement, not a dimension — recorded in plans/TODO.md.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 5.0625),

@@ -138,6 +138,24 @@ class Material(HausModel):
     # the one thing about a board a coverage factor cannot carry (a T&G board's face width
     # exceeds its coverage width by the tongue; a shiplap's by the lap).
     milling_profile: str | None = None
+    # How far this finish stands PROUD of what it is laid over, in inches — the number a
+    # walking-surface calculation needs and the one thing a `floor_finish` tag could not
+    # say. A storey datum is the top of joists, a deck's ``deck_z1_m`` is the top of the
+    # subfloor, and the plane a foot actually lands on is this much above that.
+    #
+    # ** IT IS THE WHOLE BUILD-UP, COMPANION LAYERS INCLUDED. ** A room names one finish,
+    # not a stack, so a number that omitted the pad under the carpet or the membrane under
+    # the tile would not answer the only question it is asked. The companion materials
+    # (``carpet-pad``, ``lvp-underlayment``, ``tile-uncoupling-membrane``) therefore leave
+    # this unset: their depth is already inside the finish they are ordered with, and
+    # authoring it twice would count it twice.
+    #
+    # ``None`` is "not authored" and callers must report UNKNOWN rather than assume zero
+    # (#32) — a covering whose depth nobody stated is not a covering with no depth. The
+    # honest zero is ``coating=True``, which says outright that a sealer or a polish adds
+    # no plane of its own; readers must treat a coating as 0.0 without needing a number
+    # here.
+    finish_thickness_in: float | None = None
     # The chosen product this material *is*, by ``Product.tag`` (model/product.py).
     # ``None`` is the ordinary case: "5/8\" type X gypsum board" is a specification, and a
     # specification is what most of a house is bought against. Naming a product narrows it
