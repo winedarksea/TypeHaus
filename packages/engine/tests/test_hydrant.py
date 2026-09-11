@@ -200,8 +200,14 @@ def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
     by_tag = {o.tag: o for o in catlin_model.canvas_objects}
     grade = catlin_model.plan.project.site.grade.meters
     assert by_tag["FURN-G-WORKBENCH"].z_m == pytest.approx(grade, abs=1e-6)
+    # ** ED-G-SW IS AUTHORED AT 80", NOT THE HOUSE'S USUAL 46", AND THAT IS THE POINT OF
+    # THIS ASSERTION RATHER THAN AN EXCEPTION TO IT. ** It is reached from the interior
+    # landing FS-BW-GARAGE, which stands 34" over the slab this datum measures from, so 46"
+    # authored here resolved to 12" over the surface anyone actually stands on to use it
+    # (2026-09-11). 80" over the floor is 46" over the landing. The contract under test is
+    # unchanged: whatever is authored resolves that far above the FLOOR, never the stem top.
     for tag, above_floor_ft in (("ED-G-EV-620", 4.0), ("ED-G-EV-1450", 4.0),
-                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 46 / 12),
+                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 80 / 12),
                                 ("ED-G-LT1", 8.0)):
         assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
             above_floor_ft, abs=1e-6), tag

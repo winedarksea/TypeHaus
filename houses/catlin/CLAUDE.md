@@ -1113,7 +1113,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `off-white-brick`, and both `_BRICKLEDGE` dicts in `params/foundations.py` are deleted
   outright (not kept unreferenced) — revert via git history, not a one-line `assembly=` swap.
   - `GARAGE_ICF_6`'s `coil-gap`+`coil-ext` band always ran behind the former wainscot, so the
-    deletion cost nothing structural: **156.2 SF unchanged**. (→ DESIGN-LOG.md, "Decks and
+    deletion cost nothing structural: **156.2 SF unchanged** that day (162.7 SF since
+    2026-09-11 — the service door's stem gap closed, which is added band, not restored
+    wainscot). (→ DESIGN-LOG.md, "Decks and
     the garage")
   - Stock sheet stays **48"x120" at 0.040-0.050" gauge** — a 48" sheet rips into two 24"
     bands with no waste, so the heavier sheet costs nothing extra per SF over 24" trim coil.
@@ -1175,7 +1177,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `GARAGE_WALL_2X6` already lines with.
   - Outside: `coil-gap`+`coil-ext`, PVDF-painted aluminium (`aluminum-flat-pvdf`) from 2"
     below grade to stem top on a **1/4" vented standoff**, 316 stainless gasketed screws into
-    the ICF webs. 156.2 SF, $781-1,562, the garage's entire base skin, flashed at the top by
+    the ICF webs. 162.7 SF, $813-1,627 (156.2 SF until 2026-09-11, when the service door's
+    stem gap closed and 3'-6" of bare wall gained the band), the garage's entire base skin, flashed at the top by
     `STEM_TOP_Z_FLASHING`.
   - **The standoff is not optional and is not about drainage.** A painted sheet laid flat is
     0 perms — a Class I retarder on the cold side of the stem — and produces a real

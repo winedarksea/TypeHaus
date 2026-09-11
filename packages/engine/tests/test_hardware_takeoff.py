@@ -240,6 +240,14 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # window's jambs pick up two more packed stations — +4, the same "a station moved"
     # arithmetic as the two entries above and not a new kind of change. Its cost is in
     # test_truss_girt_courses, which fell to 12 exact / 33 slivers and was re-swept there.
+    # ** AND 221 -> 224 ON 2026-09-11, WHICH IS THE OPPOSITE AND IS REAL SCOPE. ** The
+    # service door moved into the garage's SW corner and its stem GAP closed with the move:
+    # `W-GF-S-DR` was a grade beam flush with the slab (so it carried no band, the band being
+    # struck from 2" below grade upward) and is plain `_STEM` now, because the door's sill has
+    # been +1'-0" over the stem top since the north-entry landing and nothing ever needed the
+    # stem out of the way. That is 3'-6" of previously bare wall gaining the band: the takeoff
+    # row moves 156.2 -> 162.7 SF and this grid picks up three fasteners. Nine runs still, one
+    # of them no longer a gap. See houses/catlin/DESIGN-LOG.md.
     # ** THE GARAGE BAND WENT 224 -> 221 ON 2026-09-07, AND IT IS A ROUNDING, NOT A SAVING. **
     # The overhead door turned north, so the stem's gap moved off the east wall onto the
     # north: the east run merged from three segments into one unbroken W-GF-E and the north
@@ -248,7 +256,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # "16 in o.c. strips x 24 in o.c. fasteners" grid PER WALL RUN, and re-cutting the same
     # perimeter into differently-sized pieces re-rounds every strip. Nine runs where there
     # were ten. See notes/garage_orientation_lot.md.
-    assert row["count"] == 1118 and furring[0]["count"] == 221
+    assert row["count"] == 1118 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------
