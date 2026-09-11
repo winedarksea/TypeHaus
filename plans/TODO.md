@@ -165,6 +165,59 @@ for it.
   §22.4.2 comparison. Bounding estimate is d/c ≈ 0.007 even at 50 psf snow. Closing it needs
   either a modelled roof area or an engineer-stated demand.
 
+### From the 2026-09-10 `plans/notes.md` triage
+
+Eight sonnet agents read the 2,434-line brainstorm against the built house. Almost all of it
+was already incorporated or decided against; four items survived, and one of those
+(`CKT-SPD` plus the grounding-electrode note in `plan/electrical.py`) is **DONE** rather
+than tracked here. These three are the rest.
+
+- **No low-voltage security or sensing devices exist anywhere** (cameras, video doorbell,
+  access control/readers, water-leak sensors, an outdoor weather station). Grepping every
+  `ED-T-` declaration for `camera|doorbell|lock|access` returns nothing but one comment —
+  `plan/electrical.py` says "future PoE cameras are just another entry here", which is the
+  right shape but nobody made the entries. The structured-cabling half is finished and
+  careful (`ED-T-NET-ENCLOSURE`, three `ED-T-AP-*`, `ED-T-DATA-JACK`, a star topology whose
+  home runs `electrical.data_reachability` actually walks), so this is new device types plus
+  placement plus a PoE budget re-check, on the pattern the access-point rollout already set.
+  **Why it is worth doing before drywall and not after:** a camera or a reader that has no
+  authored position has no authored cable path either, and the AP work already had to fix
+  one device whose footprint collided with the studs it was supposed to sit between. Every
+  one of these is a retrofit at full price once the board is up.
+
+- **Basement equipment sits on the storey datum, and the flood note wanted it on a plinth.
+  MAYBE — needs research first.** `EQ-B-WH` (Rheem ProTerra, `plan/mep_hvac.py`) is authored
+  as `MountKind.FLOOR` with `elevation=None`, and floor-mounted equipment with no elevation
+  bases on the storey datum. **The scope is smaller than it first looked:** the ESS is
+  already off the floor — `EQ-B-ESS-BATT` is wall-mounted at 18" and `EQ-B-ESS-INV` at 4'-0"
+  — so the water heater is the real case, with `EQ-B-SAUNA-HTR` the only other floor-based
+  unit and a sauna stove wanting to be at floor level anyway. The sump half of flood
+  protection IS done (`CKT-SUMP` on the backup panel, `ED-B-SUMP-RC`). **What to research
+  before authoring anything:** (1) whether this basement has a flood exposure worth a plinth
+  at all — it is a walk-out onto the sunken garden, which is itself a drained rain sump with
+  a 7 1/4" threshold, so the honest answer may be that the risk is a burst pipe or a tank
+  failure rather than groundwater, and a 4" housekeeping pad answers that; (2) whether a
+  heat-pump water heater wants the pad for its condensate pan and service clearance
+  regardless of flooding; (3) the cost, which is a few square feet of pad. **The trap if it
+  is authored:**
+  `EQ-B-WH.position` is quoted verbatim as a path endpoint by `PR-B-HW-TRUNK`, `PR-B-CW-WH`
+  and `PR-B-HW-BATH1` and is the datum for `PR-B-WH-TPR` — four literals, one position, and
+  `test_water_heater_connections.py` is what catches a move. Raising the tank means moving
+  all four.
+
+- **Drain-water heat recovery has no model presence. OPTIONAL, probably skipped, tracked so
+  the decision is recorded rather than forgotten.** Grepping the house for `dwhr`,
+  `drain water heat recovery`, `powerpipe` and `equidrain` returns nothing, while every other
+  hot-water efficiency measure in the same block of the brainstorm has a counterpart. A DWHR
+  coil is a vertical section of drain stack wrapped in copper that pre-heats incoming cold
+  with outgoing shower warmth; it only works on a run where hot and cold flow at once, so it
+  wants a **vertical** drain under a shower. **The reason this is probably a skip and not a
+  buy:** the machinery already exists to carry it (it would be a `PipeAccessory`-shaped device
+  on a DWV riser, exactly as `water_hammer_arrestor` and `backflow_preventer` are) — the
+  question is whether any shower in this house drains through enough vertical stack to make
+  a coil pay back, and the second-floor showers are the only candidates. Measure the
+  available vertical before pricing anything.
+
 ### MEP / lighting residuals
 
 - **The AH/ERV blower interlock is a controls fact with no model field.** With the ERV running

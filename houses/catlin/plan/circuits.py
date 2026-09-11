@@ -25,8 +25,8 @@ Conventions:
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
-  ED-B-PANEL carries 14 two-pole + 17 one-pole = 45 of ED-T-PANEL's 54 spaces (nine
-  spare); ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its 12.
+  ED-B-PANEL carries 13 two-pole + 21 one-pole = 47 of ED-T-PANEL's 54 spaces (seven
+  spare); ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole = 8 of its 12.
   ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
@@ -147,6 +147,36 @@ CIRCUITS = (
     # CKT-HP1-STRIP IS DELETED, AND SLOT 18 IS A SPARE 2-POLE AGAIN: the aux heat is now a
     # FACTORY kit inside the air handler's cabinet, fed and staged from the unit, so it
     # rides CKT-HP1-AH above rather than a circuit of its own.
+
+    # --- service surge protection ------------------------------------------------------
+    # ** NEC 2023 230.67 requires an SPD on the service of a dwelling unit ** — Type 1 or
+    # Type 2, and 230.67(C) says it is installed at the service equipment or immediately
+    # adjacent. This is the panel-mounted Type 2 answer: a 2-pole plug-on breaker in
+    # ED-B-PANEL, not a nipple-coupled enclosure beside it, because the west wall at x=10"
+    # is already full — ED-B-BACKUP-PANEL at y=27', ED-B-PANEL at 29', ED-B-NET-PATCH at
+    # 31' and the ERV duct crossing at 31'-4" leave no clear bay. A plug-on breaker also
+    # gives the shortest possible lead length, which is what actually decides let-through
+    # voltage; every inch of conductor adds to the clamped voltage the house sees.
+    #
+    # Slot 10 (with 12) was one of the nine spares. It is high in the right-hand column,
+    # near the main, which is the short-lead position.
+    #
+    # `source=False`, `load_va=0`: an SPD is neither a load nor a power source. It draws
+    # only its indicator LED, so 220.82 counts nothing and the 705.12 busbar check must
+    # NOT see it as a backfeed the way CKT-ESS-GRID is seen.
+    #
+    # NOT on the backup panel: 230.67 is about the SERVICE, so the device belongs on the
+    # service bus. The EG4's load output is protected by the inverter's own surge stage.
+    # A second SPD at ED-B-BACKUP-PANEL is a defensible upgrade and is deliberately not
+    # authored here — one device, on the bus the code names.
+    #
+    # ** NOTHING GRADES THIS. ** No check encodes 230.67 (grep `NEC 230` in checks/ — no
+    # hits), so this comment and the circuit row are the only record that the requirement
+    # was met. If the SPD is ever value-engineered out, it comes out of a code article,
+    # not out of a nice-to-have.
+    Circuit(tag="CKT-SPD", slot=10, panel_ref=_PANEL, breaker_amps=20, poles=2,
+            load_va=0,
+            description="Type 2 surge protective device, service panel (NEC 230.67)"),
 
     # --- electric space heating --------------------------------------------------------
     # Supplemental only — the three heat-pump systems do the heating work, these five

@@ -5513,6 +5513,11 @@ hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
 # both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
 electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
+# CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
+# Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
+# `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $2,450-8,000 lump that
+# has carried it since the row was written, and a dedicated row here would double bill it.
+# Left as is deliberately. See that row's comment for the code tie.
 hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # DRIVEN 2026-08-27 off total duct run — 783.2 LF. Mastic and sealing are per foot of duct and
 # the leakage test is a fixed fee inside the rate; $1.28-3.19/LF is the retired lump over
@@ -5564,6 +5569,14 @@ plumbing-condensate-drains-and-pumps = { low = 600, high = 1600 }
 # produced. Splitting is legal here because the two halves ARE separately known; this is not
 # the forbidden move of dividing a merged installed price.
 plumbing-wall-hung-wc-carrier = { material = { low = 420, high = 900 }, labour = { low = 150, high = 320 }, unit = "ea", driver = "placeables.count[type=FX-TOTO-SP-WH]" }
+# The "surge" in this lump is now a NAMED, CODE-REQUIRED DEVICE, not a general allowance:
+# CKT-SPD in plan/circuits.py, the Type 2 SPD that NEC 2023 230.67 requires on the service
+# of a dwelling. It was never a line anyone could trim, and now the schedule says so. The
+# breaker row above counts CKT-SPD once at the generic $39-81; the device itself is in here.
+# ** THIS LUMP HAS NO WRITTEN BREAKDOWN ** — it was authored as one figure covering the
+# radon fan, the smoke/CO devices, the SPD and commissioning. Worth splitting the day any
+# one of those gets a real quote, because today nothing can say whether $2,450 or $8,000 is
+# the honest number for the SPD's share.
 electrical-radon-fan-smoke-co-surge-and-commissioning = { low = 2450, high = 8000 }
 # Separate from the building permit, which is in the soft-cost row below.
 permits-mep = { low = 1500, high = 4000 }

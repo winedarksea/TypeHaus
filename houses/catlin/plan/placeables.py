@@ -155,6 +155,42 @@ BASEMENT_PLACEABLES = [
               position=pt(ft(31), ft(18, 9.375)), rotation=deg(180)),
     Furniture(uid="2XX4D4BYHR", tag="FURN-B-PLAY-BOOK-E2", type_ref="FT-BOOKCASE-32-90", room="RM-B-PLAY-N",
               position=pt(ft(33, 8), ft(18, 9.375)), rotation=deg(180)),
+    # ** FIRST-REFLECTION TREATMENT IS NOT AUTHORED, AND THE TWO SURFACES THAT WANT IT ARE
+    # THE SIDE WALLS AND THE CEILING. ** Nothing in the engine grades room acoustics, so
+    # this note is the whole record. Two of the four bounces are already answered by
+    # decisions above and elsewhere, which is why only two are left:
+    #
+    # - FLOOR: answered. RM-B-PLAY-N is `floor_finish="carpet"` in storeys/basement.py, so
+    #   the floor bounce is dead already. A rug on top of it would be belt and braces.
+    # - BACK WALL: answered, by accident and well. Four 7'-6" bookcases stand across the
+    #   south face behind the seating. A loaded shelf of irregular spines is a diffuser,
+    #   which is the right treatment for a back wall in a room this short.
+    # - SIDE WALLS: open. West x=18'-6" and east x=35'-0", both bare.
+    # - CEILING: open. 5/8" gypsum straight onto the joist soffit, no plenum anywhere on
+    #   this storey, so it is a hard flat plane directly over the listening axis.
+    #
+    # The geometry, worked off the authored pieces rather than a rule of thumb. Ears sit at
+    # about (26'-9", 22'-6") — the U's back run, the row people actually watch from. The
+    # screen centre is (26'-9", 34'-7 3/4"). Taking L/R speakers flanking it at x=22'-6"
+    # and x=31'-0" on the north wall, the mirror-image construction puts BOTH side-wall
+    # reflection points at ** y = 30'-7" **, and the room is symmetric so it is the same
+    # figure left and right. A 2'x4' panel centred there covers y 29'-7" to 31'-7", which
+    # is ample margin for the speaker positions being an assumption. Centre it near seated
+    # ear height, about 3'-6" AFF.
+    #
+    # The ceiling point is the midpoint of the same path: ** y = 28'-6" **, spanning the
+    # L/R pair in x, so roughly x 22' to 31'.
+    #
+    # ** BOTH SIDE WALLS ARE 12" CONCRETE ** — W-B-CN/CN2 west on FOUNDATION_WALL_12_INT,
+    # W-B-E2 east on BASEMENT_12. Checked, because the south wall is NOT: W-B-CE is
+    # INT_2X6_STAGGERED_PLUMBING, which is why the bookcases anti-tip into studs. Same
+    # condition
+    # as the screen above: mechanical anchors into the pour, no blocking to hit, and no
+    # chance of a French cleat into a stud. Size the fixings before buying panels.
+    #
+    # Deliberately NOT authored as Furniture: panels this size would want real types, uids
+    # and prices.toml rows, and their placement depends on speakers nobody has bought. This
+    # is a finish-stage purchase with no geometry consequence for the build.
 ]
 MAIN_PLACEABLES = [
     # --- the sitting circle, turned onto the fire (2026-09-06) ---------------------------
