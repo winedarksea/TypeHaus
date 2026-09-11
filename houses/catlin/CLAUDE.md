@@ -1075,8 +1075,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Carriers `BM-BW-FC`/`-FE` at x=7'-1 1/2"/9'-5 1/2": the west one is SISTERED to
     `FS-BW-FLOOR`'s joist at 7'-3 3/4" (3 3/8" between the stem's board and that joist for a
     3" beam — forced), the east one's face is on the jamb. `PT-BW-IC`/`-IE` are **4x4 KDAT,
-    25 3/4"**, slab to carrier soffit, on authored `ABU44` + `AB-058-10-SS` (`CN-BW-IBASE-*`);
-    they were 6x6s stopping 7 1/4" SHORT of the beams, sized off the pier top, at 0 FAIL.
+    25 3/4"**, slab to carrier soffit, on authored `ABU44` standoffs (`CN-BW-IBASE-*`) that
+    take **NO cast-in bolt and sit on no thickening** (`anchored=False`, 2026-09-11): a
+    5/8"x10" `AB-058-10-SS` wants ~8" of embedment and `SL-G-FLOOR` is 3 1/2" on 1" of XPS,
+    so the bolt would have dragged a 10" thickening along to house itself. The bases bear
+    only — no uplift, no lateral claimed — and the slab never needed help: 8.1 ft² at 50 psf
+    is a lighter, lower-pressure load than one tire of the car that parks on it. The anchor
+    order is **4, not 6**. They were 6x6s stopping 7 1/4" SHORT of the beams, sized off the
+    pier top, at 0 FAIL.
   - **The stem's finished inside face is x=6'-11 5/8", not 6'-11"** — GARAGE_ICF_6's 5/8"
     `gwb-stem` board is on the ICF from grade up. `GARAGE_STEM_INSIDE_X_FT` carries it; the
     flight, the landing's east edge and both carriers derive from it. The ledge on the stem

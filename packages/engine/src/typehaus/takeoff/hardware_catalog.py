@@ -279,12 +279,17 @@ def hardware_by_model(model: str) -> StructuralHardware | None:
     exact match wins and a family-prefix match is the fallback.
 
     **The exact pass reads the capacity-only records too, and the prefix pass must not.**
-    A part catalogued with ``allowable=None`` because its published numbers could not be
-    sourced (ABU66SS, H2.5ASS) is still a real part with a real name, and this is what the BOM
-    prints. Without the first pass reaching them, ``"ABU66SS".startswith("ABU66")`` wins and a
-    line reading "ABU66SS" is captioned "ABU66 standoff post base" — the exact confusion those
-    records exist to prevent. The prefix pass deliberately still does NOT see them: a family
-    fallback onto a part with no allowable would be a worse answer than the family's own.
+    A capacity-only part (ABU66SS, H2.5ASS, APVKB45-6) is still a real part with a real name,
+    and this is what the BOM prints. Without the first pass reaching them,
+    ``"ABU66SS".startswith("ABU66")`` wins and a line reading "ABU66SS" is captioned "ABU66
+    standoff post base" — the exact confusion those records exist to prevent. The prefix pass
+    deliberately still does NOT see them: a family fallback is a guess, and a guess onto a
+    part that was catalogued separately *because* it is not the family is the wrong one.
+
+    **Note what is no longer the reason.** Two of those three carried ``allowable=None``
+    because their published numbers could not be sourced; since 2026-09-11 the ABU66SS and the
+    H2.5ASS both carry their carbon twin's values, granted by Simpson letter L-F-SSNAILS. The
+    caption argument above is what keeps them here, and it never depended on the capacity.
     """
     catalog = structural_hardware_catalog()
     exact = next((item for item in (*catalog, *hardware_capacity_records())

@@ -743,9 +743,12 @@
 # ABU66/ABU66SS pair above — one row, priced at the stainless rate, because nothing in the
 # model can say "buy the stainless variant" of a DERIVED part — these eight are AUTHORED, so
 # they carry their own part number and bill on their own row. `library/hardware.py` keeps the
-# H2.5ASS as a capacity-only record with NO allowable: the stainless tie is not the
-# galvanised tie's 700 lbf, the figures in circulation are lower, and none could be confirmed
-# against a primary Simpson table on 2026-09-10.
+# H2.5ASS as a capacity-only record, and since 2026-09-11 it carries the galvanised tie's
+# 700/110/110: Simpson letter L-F-SSNAILS rates a stainless connector at its carbon twin's
+# published values. The lower figures that were in circulation (440/75/70) are a real table —
+# the stainless SMOOTH-shank one — and the letter recovers full values with SSA8D ring-shank
+# nails. **That makes the nail a line item: SSA8D, not any stainless nail.** The record stays
+# capacity-only so the BOM caption cannot fall through to the galvanised part's name.
 # ~4x the galvanised tie, which is the usual stainless multiple on a small stamping and the
 # same shape as the ABU66 -> ABU66SS jump ($55 -> $202) recorded above. Retail listings for
 # the H2.5ASS sit around $3.50-$5.50 each in small quantities; this band is that, widened,

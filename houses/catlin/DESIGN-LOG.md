@@ -1241,6 +1241,49 @@ pocket was possible there at all.
     SITE_GRADE` — the PIER top — under carriers whose soffit is `SEAT_TOP_FT`; 6x6 squash
     blocks stopping short of the thing they hold, and nothing in `checks/` grades a post that
     does not reach its beam. `INTERIOR_POST_HEIGHT_FT = SEAT_TOP_FT - SITE_GRADE` (25 3/4").
+  - **Their bases take no anchor, and no thickening under them (owner, same day).** The first
+    pass gave each a cast-in `AB-058-10-SS` and a "thicken `SL-G-FLOOR` to 10" over a 2'-0"
+    square, monolithic" note, and the note's stated reason — punching shear — was not the real
+    one. The slab was never close: `deck_post_size` prints 8.1 ft² tributary, which at IRC
+    R507.1's 50 psf is ~405 lb per post, ~600 lb with `ST-G-SERVICE`'s top reaction. Under a
+    3 1/2" square that is a THIRD the load of one tire of the car that parks on this slab, at
+    a LOWER contact pressure, and spread through the 3 1/2" pour it reaches the 1" under-slab
+    XPS at roughly 5 psi against a 40 psi board — only ~1 psi of it the sustained dead load
+    that creep cares about.
+
+    **What actually wanted the 10" was the bolt.** An `AB-058-10-SS` is 5/8" × 10" and needs
+    something like 8" of embedment; the slab is 3 1/2" on foam, so the bolt could not live in
+    it and dragged the thickening along to house itself. Dropping the bolt dropped the
+    thickening with it. The bases are authored `Connector.anchored=False` — a new field —
+    and the joint transfers download by bearing while claiming no uplift and no lateral. Both
+    are nil here: the posts stand inside a garage under a landing heavier than any wind on it.
+    This is outside ESR-1622's tabulated configuration, which is measured THROUGH the anchor,
+    and §5.8 puts the anchor and the concrete support outside the report's own scope, which is
+    what makes it the designer's call rather than the report's. Anchor order 6 → 4.
+
+    What is ungraded, and is recorded rather than claimed: with no base anchor these are
+    leaning columns, so `RL-BW-GARAGE-E`'s 200 lb guard load reaches ground through the
+    landing into the seat beams and down `PT-BW-GW`/`GE`, whose `ABU66SS` bases ARE anchored
+    — and no check in this engine follows that path.
+  - **Both stainless connectors stopped being "unrated" (2026-09-11).** `ABU66SS` and
+    `H2.5ASS` carried `allowable=None`/an empty record on the strength of having read the code
+    reports and stopped there: ESR-1622 Table 2 lists no stainless ABU, ESR-2613 no stainless
+    H2.5A, and the figures in circulation for the tie were materially LOWER than the carbon
+    part's (a 440/75/70 row against 700/110/110). Simpson engineering letter **L-F-SSNAILS**
+    resolves both at once, and explains the puzzle rather than overruling it: a stainless
+    connector carries the CARBON connector's published allowables, the one mechanism that
+    reduces them is that stainless SMOOTH-shank nails withdraw less than carbon ones, and the
+    letter's substitution chart recovers full values with Strong-Drive SCNR ring-shank nails.
+    **The 440/75/70 row is real — it is the stainless smooth-shank table.** It was the answer
+    to a different installation.
+
+    Two conditions ride with it and both are drawing items, because nothing in the model can
+    see which fastener was driven. The tie's 700 lbf is conditional on **SSA8D**; every
+    fastener at a stainless connector is stainless, the 1/2" through-bolts at the ABU66SS
+    included, not only the anchor. And the letter read is `L-F-SSNAILS23`, which states it is
+    "valid until 12/31/2024" — 21 months stale, with no later revision retrievable on
+    2026-09-11. It is recorded because it is the manufacturer speaking about its own part,
+    which is exactly what the old note held out for, but a submittal should re-pull it.
   - **The rail's landing-end bracket landed 1/4" off a stud, in a window bay.** `W-G-W`'s
     studs are 24" o.c. from `N-G-NW`; stud-010 is at y=47'-2 5/8" and the landing edge at
     47'-1 5/8". A backing band there resolved 5 3/4" long — `WIN-G-S1`'s rough-opening
