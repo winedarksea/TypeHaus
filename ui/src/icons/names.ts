@@ -49,4 +49,8 @@ export type IconName =
   | "density-touch"
   | "theme-system"
   | "theme-light"
-  | "theme-dark";
+  | "theme-dark"
+  // The site surface
+  | "site"
+  | "checklist"
+  | "inspection";

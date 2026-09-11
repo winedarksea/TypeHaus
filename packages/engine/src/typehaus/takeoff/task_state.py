@@ -17,11 +17,17 @@ the site.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
+
+from typehaus.takeoff.visit_state import (
+    VisitsState,
+    load_visits,
+    toml_string,
+    visit_lines,
+)
 
 try:  # tomllib is stdlib on 3.11+; the engine still supports 3.9
     import tomllib
@@ -30,10 +36,12 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
 
 TASKS_FILENAME = "tasks.toml"
 
-#: The status vocabulary. Four values, chosen because they are the ones every PM tool this
-#: exports to already has — Trello lists, Asana sections, Buildertrend's schedule states —
-#: so an import maps rather than translates.
-STATUSES = ("todo", "scheduled", "in_progress", "done")
+#: The status vocabulary. The first four are the ones every PM tool this exports to already
+#: has — Trello lists, Asana sections, Buildertrend's schedule states — so an import maps
+#: rather than translates. ``verified`` is the fifth and is the owner-builder's: ``done`` is
+#: the sub's claim that they are finished, ``verified`` is the owner's own walk of the
+#: handoff list afterwards, and on a house nobody else is checking those are two facts.
+STATUSES = ("todo", "scheduled", "in_progress", "done", "verified")
 DEFAULT_STATUS = "todo"
 
 _FIELDS = ("status", "started", "completed", "assignee", "note")
@@ -61,6 +69,10 @@ class TaskEntry:
 @dataclass(frozen=True)
 class TasksState:
     entries: Mapping[str, TaskEntry] = field(default_factory=dict)
+    #: The ``[visits]`` half of the same file. Parsed and written by
+    #: ``takeoff/visit_state.py`` — one file, one parser, two modules only because the two
+    #: together would be past 500 lines.
+    visits: VisitsState = field(default_factory=VisitsState)
 
     def status_of(self, slug: str) -> str:
         entry = self.entries.get(slug)
@@ -97,15 +109,16 @@ def load_tasks(house_dir: Path) -> TasksState:
     if not path.exists():
         return TasksState()
     data = tomllib.loads(path.read_text())
-    unknown = set(data) - {"entries"}
+    unknown = set(data) - {"entries", "visits"}
     if unknown:
         raise ValueError(f"{path}: unknown top-level key(s) {sorted(unknown)}; "
-                         "expected [entries.<slug>] tables")
+                         "expected [entries.<slug>] and [visits.<slug>] tables")
     raw_entries = data.get("entries") or {}
     if not isinstance(raw_entries, dict):
         raise ValueError(f"{path}: 'entries' must be a table of work-item slugs")
     return TasksState(entries={str(slug): _entry(str(slug), raw, path)
-                               for slug, raw in raw_entries.items()})
+                               for slug, raw in raw_entries.items()},
+                      visits=load_visits(data.get("visits") or {}, path))
 
 
 def write_tasks(house_dir: Path, state: TasksState) -> Path:
@@ -114,17 +127,20 @@ def write_tasks(house_dir: Path, state: TasksState) -> Path:
              "# [entries.\"task/<trade>/<storey>\"]: status / started / completed /",
              "# assignee / note. The slug is the stable work-item id from takeoff/tasks.py;",
              "# `haus tasks` re-derives it every run, so it survives a rebuild.",
-             f"# status is one of: {', '.join(STATUSES)}.", ""]
+             f"# status is one of: {', '.join(STATUSES)}.",
+             "# [visits.\"<package slug>/<label>\"]: one sub, one arrival — see",
+             "# docs/site-state-format.md.", ""]
     for slug in sorted(state.entries):
         entry = state.entries[slug]
         if entry.is_empty:
             continue
-        lines.append(f"[entries.{json.dumps(slug)}]")
+        lines.append(f"[entries.{toml_string(slug)}]")
         for name in _FIELDS:
             value = getattr(entry, name)
             if value is not None:
-                lines.append(f"{name} = {json.dumps(str(value))}")
+                lines.append(f"{name} = {toml_string(value)}")
         lines.append("")
+    lines.extend(visit_lines(state.visits))
     path = Path(house_dir) / TASKS_FILENAME
     path.write_text("\n".join(lines).rstrip("\n") + "\n")
     return path
@@ -149,4 +165,11 @@ def apply_task_op(state: TasksState, op: Mapping[str, Any]) -> TasksState:
         entries.pop(str(slug), None)
     else:
         entries[str(slug)] = updated
-    return TasksState(entries=entries)
+    return replace(state, entries=entries)
+
+
+def apply_visit_ops(state: TasksState, op: Mapping[str, Any]) -> TasksState:
+    """``set_visit``, folded over the ``[visits]`` half of the same state."""
+    from typehaus.takeoff.visit_state import apply_visit_op
+
+    return replace(state, visits=apply_visit_op(state.visits, op))

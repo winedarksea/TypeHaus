@@ -72,6 +72,28 @@ export const DOCUMENTS_DESTINATION = {
   hint: "Permit drawings, design and product notes, and the model reports",
 };
 
+/**
+ * The site surface, as one destination.
+ *
+ * One entry, not two: Board and Inspections are pages *inside* the site surface and have
+ * their own nav there. Putting both in this rail would give the design chrome two rows that
+ * only make sense somewhere else.
+ */
+export const SITE_DESTINATION = {
+  id: "site" as const,
+  label: "Site",
+  icon: "site" as IconName,
+  hint: "The build board and the inspection list — what happens on site",
+};
+
+/** The two pages inside the site surface, for its own navigation bar/rail. */
+export const SITE_PAGES = [
+  { id: "board" as const, label: "Board", icon: "checklist" as IconName,
+    hint: "Visits, what is ready, and what is in the way" },
+  { id: "inspections" as const, label: "Inspections", icon: "inspection" as IconName,
+    hint: "Every inspection and what stands before it" },
+];
+
 export interface ToolSpec {
   id: Tool;
   icon: IconName;

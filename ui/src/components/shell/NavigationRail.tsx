@@ -3,7 +3,7 @@ import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
 import { ToolRailSection } from "./ToolRailSection";
-import { DOCUMENT_DESTINATIONS } from "./navigationConfig";
+import { DOCUMENT_DESTINATIONS, SITE_DESTINATION } from "./navigationConfig";
 
 /**
  * The permanent left navigation rail.
@@ -77,6 +77,19 @@ export function NavigationRail() {
           </button>
         );
       })}
+
+      {/* Getting the thing built. One destination, because the board and the inspections
+          are pages inside it with their own nav. */}
+      <button
+        className="rail-item"
+        title={SITE_DESTINATION.hint}
+        onClick={() => useStore.getState().setSurface("site")}
+      >
+        <span className="rail-indicator">
+          <Icon name={SITE_DESTINATION.icon} size={22} />
+        </span>
+        <span className="rail-label">{SITE_DESTINATION.label}</span>
+      </button>
 
       <div className="rail-divider" role="separator" />
 

@@ -21,12 +21,16 @@ import {
   type EngineClient,
   type EngineEvent,
   type HistoryResult,
+  type InspectionOp,
+  type InspectionsPayload,
   type MacroRequest,
   type MacroResult,
   type PatchOp,
   type PatchResult,
   type NoteEntry,
   type PreviewGeometry,
+  type SchedulePayload,
+  type SetVisitOp,
   type SheetManifest,
   type UnderlayCalibration,
 } from "./EngineClient";
@@ -148,6 +152,25 @@ export class PyodideEngineClient implements EngineClient {
   patchCosts(_ops: CostsOp[]): Promise<EngineCosts> {
     // The offline house is a read-only snapshot — costs.toml has nowhere durable to go.
     return Promise.reject(new OfflineUnsupported("Recording costs"));
+  }
+
+  // The site surface is a *server* surface. The board is derived from tasks.toml and
+  // inspections.toml, which the offline snapshot holds read-only, and a board you cannot
+  // write to is a board that lies the first time you tick something on it. Better to say so.
+  getSchedule(): Promise<SchedulePayload> {
+    return Promise.reject(new OfflineUnsupported("The build board"));
+  }
+
+  getInspections(): Promise<InspectionsPayload> {
+    return Promise.reject(new OfflineUnsupported("Inspections"));
+  }
+
+  patchVisits(_ops: SetVisitOp[]): Promise<SchedulePayload> {
+    return Promise.reject(new OfflineUnsupported("Booking a visit"));
+  }
+
+  patchInspections(_ops: InspectionOp[]): Promise<InspectionsPayload> {
+    return Promise.reject(new OfflineUnsupported("Recording an inspection"));
   }
 
   async appendDetailNote(): Promise<string> {

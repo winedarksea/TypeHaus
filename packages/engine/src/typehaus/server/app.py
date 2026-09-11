@@ -187,6 +187,61 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         except TasksRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
 
+    @app.get("/schedule")
+    def get_schedule() -> Any:
+        """The build board: milestones, visits, readiness, handoff lists, proposals.
+
+        Re-read per request like ``/tasks`` and ``/costs`` — ``tasks.toml`` and
+        ``inspections.toml`` are hand-editable and a cached board would show yesterday's
+        site beside today's plan.
+        """
+        from typehaus.server.schedule_api import (
+            ScheduleRequestError,
+            build_schedule_payload,
+        )
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            return JSONResponse(build_schedule_payload(
+                state.model, state.house_dir, state.findings, state.checks_pending))
+        except ScheduleRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.get("/inspections")
+    def get_inspections() -> Any:
+        """Every inspection the profile requires, plus the house's own extras."""
+        from typehaus.server.schedule_api import (
+            ScheduleRequestError,
+            build_inspections_payload,
+        )
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            return JSONResponse(build_inspections_payload(
+                state.model, state.house_dir, state.findings, state.checks_pending))
+        except ScheduleRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.put("/inspections")
+    def put_inspections(body: dict[str, Any]) -> Any:
+        """Fold ``{"ops": [...]}`` over inspections.toml, write it, return the fresh payload."""
+        from typehaus.server.schedule_api import (
+            ScheduleRequestError,
+            apply_inspection_ops,
+            build_inspections_payload,
+        )
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            apply_inspection_ops(state.house_dir, body.get("ops"))
+            return JSONResponse(build_inspections_payload(
+                state.model, state.house_dir, state.findings, state.checks_pending))
+        except ScheduleRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
     @app.get("/detail")
     def get_detail(key: str) -> Any:  # key carries '|'/':' — a query param, not a path seg
         from typehaus.emit.draw.details import detail_payload

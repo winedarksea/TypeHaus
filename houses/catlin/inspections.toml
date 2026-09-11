@@ -1,0 +1,60 @@
+# inspections.toml — what the AHJ said, beside what the code requires.
+# Written by Type:Haus and safe to edit by hand. See docs/site-state-format.md.
+# Dates are prose: nothing here is computed.
+#
+# The engine ships no phone numbers — these are the house's, like prices.toml. Confirm each
+# one before the first call: they move, and a wrong number on a 7:30am deadline is the one
+# error this file exists to prevent.
+#
+# `[authorities.electrical]` is the STATE's, not the city's: Minnesota licenses and inspects
+# electrical through the Department of Labor and Industry, and a request is filed against the
+# state permit rather than phoned to DSI.
+#
+# The `[[extra]]` girt-screw hold is NOT an AHJ inspection: no Minnesota rule requires it, and
+# the profile is right not to list it. It is here because the exterior foam is this house's
+# weather plane (there is no WRB), the girts are screwed through it, and once the foam is on
+# nobody can see a missed screw again. `authority = "owner"` — a hold the owner placed on
+# themselves is not an AHJ visit, and giving it a phone number would be a lie.
+
+[authorities.building]
+label = "Saint Paul DSI — Inspections"
+phone = "651-266-9002"
+window = "7:30-9:00 M-F"
+lead_days = 1
+
+[authorities.electrical]
+label = "MN DLI — Electrical (state inspector, by area)"
+phone = "651-284-5026"
+window = "file the request for inspection; the area inspector calls back"
+lead_days = 2
+
+[authorities.mechanical]
+label = "Saint Paul DSI — Mechanical"
+phone = "651-266-9002"
+window = "7:30-9:00 M-F"
+lead_days = 1
+
+[authorities.owner]
+label = "Owner's own hold — nobody else is checking"
+lead_days = 0
+
+[authorities.plumbing]
+label = "Saint Paul DSI — Plumbing"
+phone = "651-266-9002"
+window = "7:30-9:00 M-F"
+lead_days = 1
+
+[authorities.report]
+label = "Third-party test report, filed with DSI"
+lead_days = 0
+
+
+[[extra]]
+id = "girt_screws"
+label = "Girt screws verified on every wall, before any foam goes on"
+authority = "owner"
+after = ["framing"]
+gates = ["walls"]
+check_ids = ["structural.girt_course_spacing"]
+on_site = ["every girt block three-ply and fastened", "one 8\" screw per block, counted wall by wall", "course phase checked against the window heads"]
+milestone = "weathertight"

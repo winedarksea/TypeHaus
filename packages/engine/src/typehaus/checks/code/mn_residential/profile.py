@@ -11,6 +11,7 @@ is a new profile here rather than a code change across several modules.
 from __future__ import annotations
 
 from typehaus.checks.code.mn_energy import MN_ZONE_6
+from typehaus.checks.code.mn_residential.inspections import MN_INSPECTIONS
 from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec
 
 MN_2020 = JurisdictionProfile(
@@ -104,6 +105,7 @@ MN_2020 = JurisdictionProfile(
         "or under my direct supervision and that I am a duly Licensed Professional "
         "Engineer under the laws of the state of Minnesota."
     ),
+    inspections=MN_INSPECTIONS,
     permit_items=(
         PermitItemSpec("Ceiling height / habitable attic", ("code.R305_ceiling_height",),
                        ("IRC R305",)),

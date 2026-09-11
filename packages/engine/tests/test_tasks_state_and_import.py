@@ -113,11 +113,15 @@ def test_a_bad_op_persists_nothing(sandbox) -> None:
 
     client = TestClient(create_app(sandbox))
     slug = client.get("/tasks").json()["tasks"][0]["slug"]
+    # The reference house now ships a tasks.toml of its own (its authored [visits]), so
+    # "the file does not exist" is no longer the same claim as "nothing was persisted".
+    path = sandbox / "tasks.toml"
+    before = path.read_text() if path.exists() else None
     response = client.put("/tasks", json={"ops": [
         {"op": "set_task", "slug": slug, "status": "done"},
         {"op": "set_task", "slug": slug, "status": "nonsense"}]})
     assert response.status_code == 400
-    assert not (sandbox / "tasks.toml").exists()
+    assert (path.read_text() if path.exists() else None) == before
 
 
 def test_a_slug_that_no_longer_derives_is_reported_stale_not_dropped(sandbox) -> None:

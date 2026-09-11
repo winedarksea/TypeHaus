@@ -34,6 +34,8 @@ export default defineConfig({
       "/bom": ENGINE,
       "/costs": ENGINE,
       "/tasks": ENGINE,
+      "/schedule": ENGINE,
+      "/inspections": ENGINE,
       "/preview": ENGINE,
       // The Documents hub's two reads (server/documents_api.py).
       "/sheets": ENGINE,

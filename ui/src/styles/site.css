@@ -1,0 +1,520 @@
+/* The site surface — Material Design 3, hand-rolled on the existing role layer.
+
+   No UI kit: this repo has none, and a Lit/web-component library would ship a second token
+   system beside tokens.css's --md-* roles. Everything here reads those roles and nothing
+   else — never a primitive --ink or --bg, which flip meaning between themes (dark makes
+   --ink the paper colour, → the canvas token families in tokens.css). One consequence
+   worth stating: this file defines no colours of its own, so both themes are correct by
+   construction rather than by a second block that has to be kept in sync.
+
+   Sizing is thumb-first. --hit (48px) is the floor for anything tappable, because the case
+   this surface exists for is a gloved hand in a basement. */
+
+.site-app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  overflow: hidden;
+}
+
+/* ── Top app bar (MD3 small, centre-aligned on compact) ─────────────────────── */
+
+.site-appbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 0 4px;
+  background: var(--md-surface-container);
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.site-appbar-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--md-on-surface);
+}
+
+.site-appbar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--hit);
+  min-width: var(--hit);
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  transition: background var(--md-dur-short-2) var(--md-ease-standard);
+}
+
+.site-appbar-action:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-hover) * 100%), transparent);
+}
+.site-appbar-action:active:not(:disabled) {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-press) * 100%), transparent);
+}
+.site-appbar-action:disabled { opacity: var(--md-state-disabled-content); cursor: default; }
+.site-appbar-action-label { font-size: 14px; }
+
+/* ── Navigation bar / rail ─────────────────────────────────────────────────── */
+
+.site-nav-bar {
+  display: flex;
+  justify-content: space-around;
+  background: var(--md-surface-container);
+  border-top: 1px solid var(--md-outline-variant);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+}
+
+.site-nav-rail {
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 16px;
+  background: var(--md-surface-container);
+  border-right: 1px solid var(--md-outline-variant);
+}
+
+.site-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: var(--hit);
+  min-height: var(--hit);
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* The MD3 active indicator: a pill behind the icon, not a colour change on it. */
+.site-nav-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--md-shape-full);
+  transition: background var(--md-dur-short-4) var(--md-ease-standard);
+}
+
+.site-nav-item.active { color: var(--md-on-secondary-container); }
+.site-nav-item.active .site-nav-indicator { background: var(--md-secondary-container); }
+.site-nav-item:hover .site-nav-indicator {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-hover) * 100%), transparent);
+}
+.site-nav-item.active:hover .site-nav-indicator { background: var(--md-secondary-container); }
+
+/* ── Page ──────────────────────────────────────────────────────────────────── */
+
+.site-main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.site-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 12px 96px;
+}
+
+.site-banner {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--md-warn-container);
+  color: var(--md-on-surface);
+  font-size: 13px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+/* ── Cards, sections, lists ────────────────────────────────────────────────── */
+
+.site-card {
+  margin: 4px 0 16px;
+  padding: 12px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-surface-container-low);
+  box-shadow: var(--md-elev-1);
+}
+
+.site-card-head,
+.site-section-head {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+
+.site-card-visit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-height: var(--hit);
+  padding: 8px;
+  border: 0;
+  border-radius: var(--md-shape-md);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  text-align: left;
+  cursor: pointer;
+}
+
+.site-section { margin-bottom: 16px; }
+
+.site-section-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  min-height: var(--hit);
+  padding: 8px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--md-outline-variant);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.site-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* MD3 two/three-line list item: leading status icon, body, trailing supporting text. */
+.site-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: var(--hit);
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.site-list-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  padding: 0;
+}
+
+button.site-list-text { cursor: pointer; }
+button.site-list-text:hover .site-list-title { text-decoration: underline; }
+
+.site-list-title {
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--md-on-surface);
+}
+
+.site-list-support {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--md-on-surface-variant);
+}
+
+.site-support {
+  margin: 8px 0;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+}
+
+.site-stale-footer { opacity: 0.7; }
+
+.site-collapsed > summary {
+  min-height: var(--hit);
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+}
+
+/* ── Status dots ───────────────────────────────────────────────────────────── */
+
+.site-dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-outline);
+}
+
+.site-dot-ready { background: var(--md-success); }
+.site-dot-blocked { background: var(--md-error); }
+.site-dot-attention { background: var(--md-warn); }
+.site-dot-progress { background: var(--md-primary); }
+.site-dot-done { background: var(--md-on-surface-variant); }
+.site-dot-na { background: transparent; border: 1.5px solid var(--md-outline); }
+
+/* ── Chips ─────────────────────────────────────────────────────────────────── */
+
+.site-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.site-filter-chip,
+.site-assist-chip,
+.site-authority-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--md-dur-short-2) var(--md-ease-standard);
+}
+
+.site-filter-chip:hover,
+.site-assist-chip:hover {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-hover) * 100%), transparent);
+}
+
+.site-filter-chip.active {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  border-color: transparent;
+}
+
+.site-assist-chip { text-decoration: none; flex: none; align-self: flex-start; }
+
+.site-authority-chip {
+  flex: none;
+  align-self: center;
+  cursor: default;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+/* The State electrical inspector is a DIFFERENT OFFICE from the city's, and an owner who
+   calls the wrong one loses a day. It is the one authority that gets its own colour. */
+.site-authority-electrical {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  border-color: transparent;
+}
+
+.site-chip {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 6px 12px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  font-size: 13px;
+}
+
+.site-chip-warn { background: var(--md-warn-container); }
+
+/* ── Segmented button ──────────────────────────────────────────────────────── */
+
+.site-segmented {
+  display: flex;
+  width: 100%;
+  margin-bottom: 16px;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-full);
+  overflow: hidden;
+}
+
+.site-segment {
+  flex: 1;
+  min-height: var(--hit);
+  padding: 0 8px;
+  border: 0;
+  border-left: 1px solid var(--md-outline);
+  background: transparent;
+  color: var(--md-on-surface);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.site-segment:first-child { border-left: 0; }
+.site-segment.active {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+}
+.site-segment:disabled { opacity: var(--md-state-disabled-content); cursor: not-allowed; }
+.site-segment:hover:not(:disabled):not(.active) {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-hover) * 100%), transparent);
+}
+
+/* ── Detail body ───────────────────────────────────────────────────────────── */
+
+.site-detail { padding-bottom: 24px; }
+
+.site-facts { margin: 0 0 16px; }
+.site-facts > div { display: flex; gap: 8px; padding: 4px 0; }
+.site-facts dt {
+  min-width: 90px;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+}
+.site-facts dd { margin: 0; font-size: 14px; }
+.site-facts a { color: var(--md-primary); }
+
+.site-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 4px;
+  accent-color: var(--md-primary);
+}
+
+.site-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.site-tag {
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-shape-xs);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.site-tag:disabled { opacity: var(--md-state-disabled-content); cursor: default; }
+.site-tag:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-on-surface) calc(var(--md-state-hover) * 100%), transparent);
+}
+
+.site-action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.site-button {
+  min-height: var(--hit);
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.site-button:disabled { opacity: var(--md-state-disabled-content); cursor: not-allowed; }
+.site-button-danger { background: var(--md-error); color: var(--md-on-error); }
+
+/* ── Extended FAB ──────────────────────────────────────────────────────────── */
+
+.site-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  box-shadow: var(--md-elev-3);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.site-fab-count {
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ── Side sheet (medium and expanded) ──────────────────────────────────────── */
+
+.site-side-sheet {
+  position: fixed;
+  top: 64px;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-surface-container-low);
+  border-left: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev-1);
+  animation: site-side-sheet-in var(--md-dur-short-4) var(--md-ease-standard);
+}
+
+@keyframes site-side-sheet-in {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-side-sheet { animation: none; }
+}
+
+.site-side-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.site-side-sheet-title { margin: 0; font-size: 16px; font-weight: 500; }
+
+.site-side-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* From medium up the rail takes the left gutter and the side sheet the right one. */
+@media (min-width: 680px) {
+  .site-main { margin-left: 88px; }
+  .site-page { padding-bottom: 32px; }
+  .site-fab { bottom: 24px; }
+}

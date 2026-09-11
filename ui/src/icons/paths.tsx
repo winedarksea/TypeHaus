@@ -84,4 +84,20 @@ export const ICON_PATHS: Record<IconName, ReactNode> = {
       <path d="M6.5 17.5L5 19" /></>
   ),
   "theme-dark": <path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 100 17 8.5 8.5 0 0010.5-6.5z" />,
+  // A hard hat: the site surface, and the only glyph in this set that says "out there"
+  // rather than "in the drawing".
+  "site": (
+    <><path d="M3 18h18" /><path d="M5 18v-2a7 7 0 0114 0v2" />
+      <path d="M9.5 4.5A2.5 2.5 0 0112 3a2.5 2.5 0 012.5 1.5v4" /><path d="M9.5 4.5v4" /></>
+  ),
+  // A ticked list: the build board.
+  "checklist": (
+    <><path d="M4 6l2 2 3-3" /><path d="M4 14l2 2 3-3" /><path d="M13 7h7" />
+      <path d="M13 15h7" /></>
+  ),
+  // A clipboard with a magnifier: an inspection is somebody else looking.
+  "inspection": (
+    <><path d="M9 4h6v3H9z" /><path d="M15 5.5h3v14H6v-14h3" />
+      <circle cx="12" cy="13" r="2.5" /><path d="M14 15l2 2" /></>
+  ),
 };

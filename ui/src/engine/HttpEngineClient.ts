@@ -15,12 +15,16 @@ import {
   type EngineClient,
   type EngineEvent,
   type HistoryResult,
+  type InspectionOp,
+  type InspectionsPayload,
   type MacroRequest,
   type MacroResult,
   type PatchOp,
   type PatchResult,
   type NoteEntry,
   type PreviewGeometry,
+  type SchedulePayload,
+  type SetVisitOp,
   RevisionConflict,
   type SheetManifest,
   type UnderlayCalibration,
@@ -96,6 +100,40 @@ export class HttpEngineClient implements EngineClient {
     });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as EngineCosts;
+  }
+
+  async getSchedule(): Promise<SchedulePayload> {
+    const res = await fetch(this.url("/schedule"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as SchedulePayload;
+  }
+
+  async getInspections(): Promise<InspectionsPayload> {
+    const res = await fetch(this.url("/inspections"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as InspectionsPayload;
+  }
+
+  async patchVisits(ops: SetVisitOp[]): Promise<SchedulePayload> {
+    // `set_visit` rides the existing /tasks writer — one file, one endpoint — and the
+    // response is the fresh SCHEDULE payload, since the board is what the caller is showing.
+    const res = await fetch(this.url("/tasks"), {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ops }),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return this.getSchedule();
+  }
+
+  async patchInspections(ops: InspectionOp[]): Promise<InspectionsPayload> {
+    const res = await fetch(this.url("/inspections"), {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ops }),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as InspectionsPayload;
   }
 
   async appendDetailNote(key: string, text: string): Promise<string> {

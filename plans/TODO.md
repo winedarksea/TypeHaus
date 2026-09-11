@@ -416,13 +416,25 @@ Two glazing gaps still leave the French doors out entirely, both wanting product
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
 
-# Project Management (deferred)
-* Track to inspection (list of inspections, calendar, pass registration). Likely includes Kanban somehow
-* Report final costs (but also reusable plan)
-* Upload pictures/notes/voice notes
-* system for collecting bids as a GC (bidders should see estimates for materials for their job but not the estimate cost already, that would give them numbers to aim at).
-* Show for bids as the main image the backside of the house (so the design looks cheaper, for lower bids)
-* local first (with drive, S3 bucket, or such for backup) or Cloudflare workers
+# Project Management
+
+**Built 2026-09-11** (decision #69, `docs/site-state-format.md`): visits, inspections,
+readiness, milestones, handoff lists, and the `#/site/board` surface. `haus schedule` and
+`haus inspections` are the phone-free version. What was on this list and is now done: the
+inspection list and pass registration; tracking work to completion (the board replaces the
+Kanban idea — a kanban column is a status somebody drags, and readiness is derived);
+final costs (`haus takeoff --csv` / `costs import`, and a visit shows its holdback).
+
+Still deferred, and each for its own reason:
+* **Photos, and voice notes.** Deliberately cut from v1: the two needs this surface exists
+  for are answered by derived checklists, and a photo is storage, sync and a privacy
+  question before it is a feature. A visit's `note` carries text today.
+* **Bids as a GC.** Bidders should see the material estimate for their own scope and not the
+  costed total — that is an access-control model, not a page, and there is no auth here yet.
+* **A calendar.** There is no calendar because there are no engine-computed dates; if one
+  arrives it renders authored `scheduled` values and nothing more.
+* **Show the backside of the house as the main bid image** (so the design reads cheaper).
+* **Local-first sync** (drive, S3, or Cloudflare Workers) for anything the phone writes.
 
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.

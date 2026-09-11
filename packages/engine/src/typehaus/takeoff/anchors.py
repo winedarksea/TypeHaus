@@ -98,21 +98,31 @@ def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
-def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
-                       sill_category: str) -> list:
-    """Embedded strap holdowns at the ends of the sill-plate runs.
+def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
+                            sill_category: str) -> tuple[list, list]:
+    """``(sill runs, merged end locations)`` — the geometry behind the holdown count.
 
-    Run ends that meet at a corner or a plate butt joint are one location, not two, so the
-    endpoints are merged before they are counted.
+    Extracted from :func:`strap_holdown_rows` so the pour-day handoff list can hand a
+    crew the *places*, not just the number. Run ends that meet at a corner or a plate butt
+    joint are one location, not two, so the endpoints are merged before anything is
+    counted.
     """
     returns = _sill_plate_returns(model, sill_category)
     if not returns:
-        return []
+        return [], []
     endpoints: list = []
     for ret in returns:
         endpoints.extend(centerline_endpoints(list(ret.outline)))
-    locations = merge_coincident_points(
+    return returns, merge_coincident_points(
         endpoints, rules.coincident_end_tolerance_in * M_PER_IN)
+
+
+def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
+                       sill_category: str) -> list:
+    """Embedded strap holdowns at the ends of the sill-plate runs."""
+    returns, locations = strap_holdown_locations(model, rules, sill_category)
+    if not returns:
+        return []
     count = len(locations) * rules.holdowns_per_run_end
     item = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     return [hardware_row(

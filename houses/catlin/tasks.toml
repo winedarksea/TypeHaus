@@ -1,0 +1,80 @@
+# tasks.toml — work-package status and the visits inside it.
+# Written by Type:Haus and safe to edit by hand. See docs/site-state-format.md.
+#
+# [visits] is the schedulable unit: one sub, one arrival. The split below started as
+# `haus schedule houses/catlin --propose task/concrete/building` and was then EDITED, which
+# is the whole arrangement — the engine proposes from the BOM row families and the tag
+# families, and it cannot know that this house's concrete is two subs and that the sleeves
+# have to be in the ground before the second one arrives. Dates and assignees are
+# deliberately absent until somebody is actually booked.
+
+[visits."task/concrete/building/footings"]
+label = "Footings and the thermal break — house, court, breezeway"
+rows = ["concrete:footing", "concrete:thermal_break", "allowances:concrete-pumping"]
+element_tags = ["FT-*"]
+depends_on = ["task/earth/basement", "task/earth/building", "insp/erosion"]
+constraints = [
+  { label = "rebar fabricated, galvanized after fabrication, delivered and inspected" },
+  { label = "thermal-break board on site — it is cast WITH the footing, not after" },
+  { label = "pump or chute access confirmed for the whole pour" },
+  { label = "approved plan set on site and current" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]
+
+[visits."task/concrete/basement/walls"]
+label = "Foundation walls — basement, garage ICF, sunken garden, curbs"
+depends_on = ["task/concrete/building/footings", "insp/footing"]
+constraints = [
+  { label = "sleeves and block-outs marked on the forms before any steel goes in" },
+  { label = "P/E/M on site during forming — every sleeve is a pre-pour operation" },
+  { label = "anchor bolt layout marked against the sill plan" },
+  { label = "cold-weather protection on site if the forecast says so" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]
+
+[visits."task/concrete/building/slabs"]
+label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
+rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
+        "hardware:AB-058-10-SS", "allowances:radon-passive-pipe-and-stack",
+        "allowances:concrete-cold-weather-protection"]
+element_tags = ["SL-*"]
+# Not the trade order: the sleeves, the radon collection point and the in-floor tube are all
+# plumbing work, and every one of them is under the slab. This is the dependency a
+# (trade x storey) package could not express.
+depends_on = ["task/concrete/basement/walls", "insp/underground_plumbing",
+              "insp/radon_rough"]
+constraints = [
+  { label = "under-slab insulation and vapour retarder placed, lapped and unpunctured" },
+  { label = "in-floor tube pressurised and gauged, and it stays under pressure through the pour" },
+  { label = "radon collection point and riser set, sump cover gasketed" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]
+
+[visits."task/concrete/building/flatwork"]
+label = "Flatwork — driveway apron, walks, and the damp-proofing"
+rows = ["allowances:concrete-driveway-apron-and-walks",
+        "allowances:foundation-damp-or-waterproofing"]
+element_tags = ["DW-*"]
+# Last, and deliberately after backfill: a new apron under a loaded truck is a repair.
+depends_on = ["task/concrete/building/slabs", "insp/foundation_backfill"]
+constraints = [
+  { label = "final grade set — the apron is poured to it, not corrected afterwards" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]
+
+# The weathertight milestone's last arrival, and the one with the hold that cannot be
+# checked afterwards. There is no WRB on this house: the continuous exterior foam IS the
+# weather plane, the girts are screwed through it, and once the foam is on nobody can see a
+# missed screw again. The same hold appears as an `[[extra]]` inspection with
+# `authority = "owner"` in inspections.toml, which is what makes it gate the whole walls
+# trade rather than only this one visit.
+[visits."task/walls/building/foam-and-girts"]
+label = "Continuous exterior foam, girts and the weather plane"
+depends_on = ["task/framing/building", "insp/framing", "insp/girt_screws"]
+constraints = [
+  { label = "girt screws verified on every wall — one 8\" screw per three-ply block, counted wall by wall" },
+  { label = "girt course phase checked against the window heads" },
+  { label = "foam boards and tape delivered, and enough tape for every seam" },
+  { label = "all wall penetrations set — nothing goes through the plane afterwards" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]

@@ -150,3 +150,33 @@ def advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result, code: st
              authority: Authority = Authority.PRESCRIPTIVE) -> Finding:
     return Finding(severity=severity, check_id=cid, message=msg, element_tags=tags,
                    code_ref=code, fix_hint=fix, result=result, authority=authority)
+
+
+#: The two verdicts that leave nothing outstanding on a checklist line.
+GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE})
+
+
+def fold_results(matched: list[Finding]) -> tuple[Result, str]:
+    """Roll a set of matched findings into one verdict, and the sentence for it.
+
+    Precedence: **FAIL beats UNKNOWN beats all-N/A beats PASS.** N/A only wins when *every*
+    matched finding is N/A — one real result on the line means the requirement did apply.
+    No findings at all is UNKNOWN and deliberately distinct from all-N/A: nobody looked is
+    not the same claim as this does not apply here.
+
+    Lives in this leaf module rather than in ``checks/permit.py`` because the permit gate
+    and the inspection board ask the same question of the same registry, and two copies of
+    this precedence would be two definitions of what a passing line is.
+    """
+    failed = [f for f in matched if f.result is Result.FAIL]
+    if failed:
+        return Result.FAIL, failed[0].message
+    unknown = [f for f in matched if f.result is Result.UNKNOWN]
+    if unknown:
+        return Result.UNKNOWN, unknown[0].message
+    if not matched:
+        return Result.UNKNOWN, "no evaluable model input"
+    na = [f for f in matched if f.result is Result.NOT_APPLICABLE]
+    if len(na) == len(matched):
+        return Result.NOT_APPLICABLE, na[0].message
+    return Result.PASS, f"{len(matched)} evaluated result(s) pass"

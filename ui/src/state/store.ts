@@ -24,6 +24,7 @@ import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model
 import { locateUid } from "./locate";
 import type { PanelId } from "./panels";
 import { createMutationActions, type MutationActions } from "./mutations";
+import { createSiteSlice, type SiteSlice } from "./site";
 import {
   ALL_TRADES,
   DEFAULT_EARTH_OPACITY,
@@ -32,7 +33,7 @@ import {
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
-export interface StoreState extends MutationActions {
+export interface StoreState extends MutationActions, SiteSlice {
   client: EngineClient;
   offline: boolean; // true once running against the in-browser pyodide engine
   offlineHouse: string | null;
@@ -155,7 +156,11 @@ let unsubscribeEvents: (() => void) | null = null;
 // firing a duplicate fetch — this is what collapses the old action+WS double reload (1a).
 let inflightReload: { revision: string | null; promise: Promise<void> } | null = null;
 
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create<StoreState>((set, get, store) => ({
+  // The site surface (→ state/site.ts). A separate slice, not a separate store: it needs
+  // the same EngineClient and the same zoomToUid, and click-to-locate crosses between them.
+  ...createSiteSlice(set, get, store),
+
   client: new HttpEngineClient(),
   offline: false,
   offlineHouse: null,
@@ -403,6 +408,9 @@ export function handleEvent(
       // External VSCode/Claude edit. If the user has no pending local edit, hot-reload
       // silently; the conflict banner is reserved for the 409 precondition path (#30).
       void get().reloadIfStale(e.revision);
+      // tasks.toml and inspections.toml are hand-editable and watched, so an owner editing
+      // them in the terminal has to move the board in the browser on the same event.
+      if (get().surface === "site") void get().loadSite();
       break;
     }
     case "writeback-failed": {
@@ -419,6 +427,8 @@ export function handleEvent(
       // Our own mutation already kicked a reloadIfStale keyed on this same revision, so this
       // echo joins that in-flight fetch (no double GET); for other tabs it fetches fresh (1a).
       void get().reloadIfStale(e.revision);
+      // A rebuild re-derives every visit and every finding behind a blocker.
+      if (get().surface === "site") void get().loadSite();
       break;
   }
   set({});

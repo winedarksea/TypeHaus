@@ -14,7 +14,14 @@ from typehaus.checks.jurisdiction import JurisdictionProfile
 from typehaus.checks.registry import CheckReport
 from typehaus.engineering.fingerprint import Freshness
 from typehaus.engineering.register import EngineeringRegister, Signoff
-from typehaus.findings import Authority, Finding, Result, Severity
+from typehaus.findings import (
+    GATE_OK,
+    Authority,
+    Finding,
+    Result,
+    Severity,
+    fold_results,
+)
 
 
 @dataclass(frozen=True)
@@ -72,10 +79,6 @@ class PermitChecklistItem:
         return self.seal is Freshness.FRESH
 
 
-#: The two verdicts that leave nothing outstanding on a permit line.
-_GATE_OK = frozenset({Result.PASS, Result.NOT_APPLICABLE})
-
-
 @dataclass(frozen=True)
 class PermitChecklist:
     """The gate intentionally covers only checks this engine actually evaluates."""
@@ -94,7 +97,7 @@ class PermitChecklist:
         N/A satisfies it because a requirement whose governed condition does not exist in
         this building has nothing left to answer.
         """
-        return all(item.result in _GATE_OK for item in self.items if item.blocking)
+        return all(item.result in GATE_OK for item in self.items if item.blocking)
 
     @property
     def sealed(self) -> bool:
@@ -162,33 +165,17 @@ def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[F
                         *, blocking: bool = True,
                         report: CheckReport | None = None) -> PermitChecklistItem:
     matched = [finding for finding in findings if finding.check_id in check_ids]
-    failed = [finding for finding in matched if finding.result is Result.FAIL]
-    unknown = [finding for finding in matched if finding.result is Result.UNKNOWN]
-    na = [finding for finding in matched if finding.result is Result.NOT_APPLICABLE]
     authority = (Authority.ENGINEERED
                  if any(x.authority is Authority.ENGINEERED for x in matched)
                  else Authority.PRESCRIPTIVE)
     items = tuple(sorted({x.engineering_item for x in matched if x.engineering_item}))
-
     seal, signoff = _seal_state(items, report)
-
-    def _item(result: Result, detail: str) -> PermitChecklistItem:
-        return PermitChecklistItem(label, result, detail, check_ids, blocking, authority,
-                                   items, seal, signoff)
-
-    # Precedence: FAIL beats UNKNOWN beats all-N/A beats PASS. N/A only wins when *every*
-    # matched finding is N/A — one real result on the line means the requirement did apply.
-    if failed:
-        return _item(Result.FAIL, failed[0].message)
-    if unknown:
-        return _item(Result.UNKNOWN, unknown[0].message)
-    if not matched:
-        # Distinct from "every matched finding is N/A" on purpose: no findings at all means
-        # nobody looked, which is not the same claim as "this does not apply here".
-        return _item(Result.UNKNOWN, "no evaluable model input")
-    if len(na) == len(matched):
-        return _item(Result.NOT_APPLICABLE, na[0].message)
-    return _item(Result.PASS, f"{len(matched)} evaluated result(s) pass")
+    # Precedence lives in ``findings.fold_results`` — the inspection board asks the same
+    # question of the same registry, and two copies of it would be two definitions of what
+    # a passing line is.
+    result, detail = fold_results(matched)
+    return PermitChecklistItem(label, result, detail, check_ids, blocking, authority,
+                               items, seal, signoff)
 
 
 #: Worst-first. One stale item on a line of four makes the whole line stale, and an

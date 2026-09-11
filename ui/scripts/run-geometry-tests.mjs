@@ -39,6 +39,14 @@ try {
   const { runSheetGroupingTests } = await server.ssrLoadModule("/src/model/sheets.test.ts");
   const { runNoteGroupingTests } = await server.ssrLoadModule("/src/model/notes.test.ts");
   const { runPublicSiteTests } = await server.ssrLoadModule("/src/state/public.test.ts");
+  const { runScheduleTests } = await server.ssrLoadModule("/src/model/schedule.test.ts");
+  const { runInspectionTests } = await server.ssrLoadModule("/src/model/inspections.test.ts");
+  const { runSiteStoreTests } = await server.ssrLoadModule("/src/state/site.test.ts");
+  const { runRouteTests } = await server.ssrLoadModule("/src/state/route.test.ts");
+  runScheduleTests();
+  runInspectionTests();
+  runSiteStoreTests();
+  runRouteTests();
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();

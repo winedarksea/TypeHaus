@@ -58,6 +58,8 @@ export function CommandPalette() {
   const openDocuments = useStore((s) => s.openDocuments);
   const reload = useStore((s) => s.reload);
   const offline = useStore((s) => s.offline);
+  const setSurface = useStore((s) => s.setSurface);
+  const setSitePage = useStore((s) => s.setSitePage);
 
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -103,6 +105,12 @@ export function CommandPalette() {
       { id: "documents-notes", title: "Notes (design and product notes)", group: "Model", run: () => openDocuments("notes") },
       { id: "documents-reports", title: "Reports (assembly, BOM, circuits, HVAC…)", group: "Model", run: () => openDocuments("reports") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
+      // The site surface replaces the whole workbench rather than opening over it, so these
+      // are a different kind of command from the readers above — hence their own group.
+      { id: "site-board", title: "Open site board (visits, what is ready)", group: "Site",
+        run: () => { setSitePage("board"); setSurface("site"); } },
+      { id: "site-inspections", title: "Open inspections", group: "Site",
+        run: () => { setSitePage("inspections"); setSurface("site"); } },
     ]
       // The published build does not offer every reader (state/public.ts). Filtering the
       // command list rather than the menu alone is the point: a palette entry for a page
@@ -131,7 +139,7 @@ export function CommandPalette() {
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
     setActivePanel, setRepresentation, setActiveWorkspace, setActiveLens,
     setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, openDocuments,
-    reload, offline]);
+    reload, offline, setSurface, setSitePage]);
 
   const results = useMemo(() => {
     if (!query) {

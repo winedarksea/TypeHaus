@@ -4,6 +4,17 @@
 // for the offline PWA (→ 40) without touching any editor code.
 
 import type { Finding, Model } from "../model/types";
+// The site surface's payloads. They live in model/scheduleTypes.ts rather than here
+// because that file is the frozen contract the engine was built against, and it deliberately
+// imports nothing.
+import type {
+  InspectionOp,
+  InspectionsPayload,
+  SchedulePayload,
+  SetVisitOp,
+} from "../model/scheduleTypes";
+
+export type { InspectionOp, InspectionsPayload, SchedulePayload, SetVisitOp };
 
 // A patch op mirrors the server's PatchOp (source/ops.py): element-level and flat.
 // `fields` carry authored-unit strings ("12'-6\"") and plain scalars; the server encodes
@@ -409,6 +420,13 @@ export interface EngineClient {
   // Fold ops over costs.toml and return the fresh payload; rejects OfflineUnsupported
   // without a server (the offline house snapshot is read-only).
   patchCosts(ops: CostsOp[]): Promise<EngineCosts>;
+  // The site surface (→ docs/site-state-format.md). The board is derived from the model,
+  // the findings and the owner's tasks.toml/inspections.toml; the two patch calls write
+  // those two files and return the fresh payload.
+  getSchedule(): Promise<SchedulePayload>;
+  getInspections(): Promise<InspectionsPayload>;
+  patchVisits(ops: SetVisitOp[]): Promise<SchedulePayload>;
+  patchInspections(ops: InspectionOp[]): Promise<InspectionsPayload>;
   // Append one construction note to the detail's Transition.notes markdown file.
   // Resolves to the updated file content; rejects OfflineUnsupported without a server.
   appendDetailNote(key: string, text: string): Promise<string>;

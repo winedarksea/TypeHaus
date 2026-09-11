@@ -58,6 +58,21 @@ export const STATES = [
     pose: `s.getState().setViewMode("3d");`,
     settled: `return !document.querySelector(".canvas-svg");`,
   },
+  // The site surface REPLACES the workbench rather than opening over it, so these two shots
+  // are the only ones in the matrix with no canvas in frame at all. They settle on a list
+  // item or on the stale banner: both payloads are fetched, so "the surface is mounted" is
+  // not enough — the shot would catch an empty page. The banner counts because a run with
+  // no engine reachable still has a correct screen to photograph.
+  {
+    id: "site-board",
+    pose: `s.getState().setSitePage("board"); s.getState().setSurface("site");`,
+    settled: `return !!document.querySelector(".site-list-item, .site-banner");`,
+  },
+  {
+    id: "site-inspections",
+    pose: `s.getState().setSitePage("inspections"); s.getState().setSurface("site");`,
+    settled: `return !!document.querySelector(".site-list-item, .site-banner");`,
+  },
 ];
 
 /** Every shot in the matrix, as {name, viewport, theme, state}. */
@@ -102,6 +117,7 @@ export const POSE_PREAMBLE = `
   reset.select(null, null);
   reset.clearToasts();
   reset.setActiveStorey(reset.model?.storeys?.[0]?.tag ?? null);
+  reset.setSurface("design");
 `;
 
 /**

@@ -18,7 +18,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from typehaus.takeoff.task_state import STATUSES, apply_task_op, load_tasks, write_tasks
+from typehaus.takeoff.task_state import (
+    STATUSES,
+    apply_task_op,
+    apply_visit_ops,
+    load_tasks,
+    write_tasks,
+)
 
 
 class TasksRequestError(ValueError):
@@ -72,7 +78,11 @@ def apply_task_ops(house_dir: Path, ops: Any) -> None:
         for op in ops:
             if not isinstance(op, dict):
                 raise TasksRequestError(f"each op must be an object, got {op!r}")
-            state = apply_task_op(state, op)
+            # Two vocabularies, one file. ``set_task`` closes out a (trade x storey)
+            # package; ``set_visit`` books one arrival inside it. They write different
+            # tables and neither can express the other.
+            state = (apply_visit_ops(state, op) if op.get("op") == "set_visit"
+                     else apply_task_op(state, op))
     except ValueError as exc:
         raise TasksRequestError(str(exc)) from exc
     write_tasks(house_dir, state)

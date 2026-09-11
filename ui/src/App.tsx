@@ -44,6 +44,11 @@ const LightingView = lazy(() => import("./components/LightingView")
 // and its Notes tab pulls marked, neither of which belongs in the chunk that draws a plan.
 const DocumentsView = lazy(() => import("./components/documents/DocumentsView")
   .then((m) => ({ default: m.DocumentsView })));
+// The site surface is a SECOND TOP-LEVEL SURFACE, not a reader: when it is up, none of the
+// design workbench is mounted. Lazy so a phone opening `#/site/board` never fetches the
+// canvas, the inspector or the three.js chunk at all.
+const SiteApp = lazy(() => import("./components/site/SiteApp")
+  .then((m) => ({ default: m.SiteApp })));
 
 // Interaction-state label shown near the top-left canvas corner (Phase 2).
 function interactionLabel(tool: string, subOperation: boolean): string {
@@ -86,6 +91,7 @@ export function App() {
 
   const isCompact = useIsCompact();
   const setViewMode = useStore((s) => s.setViewMode);
+  const surface = useStore((s) => s.surface);
 
   const [pwa, setPwa] = useState<PwaState>({
     online: true,
@@ -144,6 +150,18 @@ export function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo, subOperation, tool, selection.uid, setSubOperation, setTool, select,
     setCommandPaletteOpen, setDetailView, activePanel, setActivePanel]);
+
+  // Either/or, deliberately: readers render over a dimmed canvas with Canvas2D and Panel3D
+  // still alive behind them, and the site pages must not. Nothing of the design workbench is
+  // in the DOM while the owner is standing in a basement looking at the board.
+  if (surface === "site") {
+    return (
+      <div className="app site-surface">
+        <Suspense fallback={null}><SiteApp /></Suspense>
+        <Toasts />
+      </div>
+    );
+  }
 
   return (
     <div className="app">

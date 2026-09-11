@@ -40,6 +40,49 @@ class PermitItemSpec:
 
 
 @dataclass(frozen=True)
+class InspectionSpec:
+    """One inspection a jurisdiction requires, as data — beside :class:`PermitItemSpec`.
+
+    A permit item asks "does the *drawing set* answer this rule"; an inspection asks "may
+    the next trade start". They share the check registry and nothing else, which is why
+    this is a second spec rather than a field on the first.
+
+    Nothing here is a date or a duration. ``after`` is a partial order over inspections,
+    ``gates`` names the trades that may not start until this one passes, and when either
+    of those is satisfied is a fact about the site that only the owner can enter.
+    """
+
+    id: str
+    label: str
+    #: Who inspects. ``"report"`` is a third-party test result filed with the AHJ (a blower
+    #: door), ``"owner"`` a hold the owner placed on themselves — neither is an AHJ visit,
+    #: and calling both "building" would put a phone number on something nobody calls.
+    authority: str
+    #: Inspections that must be resolved before this one is requested.
+    after: tuple[str, ...] = ()
+    #: Trades (``emit.trades.TRADES``) that may not start until this passes.
+    gates: tuple[str, ...] = ()
+    #: Registry check ids whose findings must fold to PASS/N/A — same precedence as
+    #: ``permit.py``: FAIL beats UNKNOWN beats all-N/A beats PASS.
+    check_ids: tuple[str, ...] = ()
+    #: Documents and physical items that must be on site, ticked by hand. The model cannot
+    #: know whether the permit card is stapled to a stud.
+    on_site: tuple[str, ...] = ()
+    code_refs: tuple[str, ...] = ()
+    #: Which build milestone this inspection sits in
+    #: (:data:`typehaus.schedule.milestones.MILESTONES`). Declared rather than derived:
+    #: the slab inspection and the braced-wall inspection both gate a trade in the
+    #: weathertight slice, and only one of them happens in that phase of the build. No rule
+    #: over ``after`` and ``gates`` separates them, so a rule that tried would be a guess
+    #: dressed as a derivation. Empty inherits from ``after``, then falls to the first.
+    milestone: str = ""
+    #: Key into :mod:`typehaus.schedule.applicability`. ``None`` means the inspection always
+    #: applies. A key whose evidence is inconclusive leaves the inspection listed as
+    #: "applicability unknown" — N/A is earned, never assumed.
+    applies_when: str | None = None
+
+
+@dataclass(frozen=True)
 class JurisdictionProfile:
     """A versioned code profile (→ 12 §checks/code)."""
 
@@ -64,6 +107,10 @@ class JurisdictionProfile:
     soil_class: str | None = None
     # The permit checklist this jurisdiction gates on, in print order.
     permit_items: tuple[PermitItemSpec, ...] = ()
+    # The inspections this jurisdiction requires, in the order its rule states them.
+    # Empty on a profile that makes no inspection claim — `haus inspections` then says
+    # so rather than printing a plausible list nobody adopted.
+    inspections: tuple[InspectionSpec, ...] = ()
     # (check_id, reason) for registered checks this profile deliberately does not put on the
     # checklist. An unlisted, unreferenced check is a coverage hole, not a choice. The
     # coverage test gates CODE-tier ids; a check from another tier may be listed here too,
@@ -82,3 +129,9 @@ class JurisdictionProfile:
 
     def permit_check_ids(self) -> frozenset[str]:
         return frozenset(cid for item in self.permit_items for cid in item.check_ids)
+
+    def inspection(self, inspection_id: str) -> InspectionSpec | None:
+        for spec in self.inspections:
+            if spec.id == inspection_id:
+                return spec
+        return None

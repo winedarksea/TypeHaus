@@ -118,6 +118,28 @@ actually paid), `tasks.toml` (work-package status). The engine ships no price da
   updates rather than duplicates. No durations, crew sizes or dates — the model cannot know
   them.
 
+## Building it: visits and inspections
+
+```
+haus schedule houses/catlin                       # the build board: what is ready, what blocks it
+haus schedule houses/catlin --milestone weathertight
+haus schedule houses/catlin --propose task/concrete/building   # a visit split to paste
+haus inspections houses/catlin                    # every inspection, and what stands before each
+```
+
+- **Readiness is derived; dates are authored** (decision #69). `typehaus/schedule/` is a leaf
+  like `routing/` and `engineering/` — it computes no duration, no lead time and no date.
+- A **visit** (one sub, one arrival) is the schedulable unit, authored in `tasks.toml`'s
+  `[visits]`; a package nobody splits is one implicit visit. `--propose` prints, never writes.
+- The AHJ's own record lives in `houses/<name>/inspections.toml`
+  (`docs/site-state-format.md`), outside the undo journal like `costs.toml` — and the engine
+  ships no phone numbers: `[authorities]` is house-owned.
+- **FAIL blocks a visit, UNKNOWN is attention only.** An inspection is stricter and matches
+  the permit gate: its checks must fold to PASS/N/A. `verified` is the owner's own walk,
+  refused while a hold they wrote is still open.
+- In the UI the site pages are a **second top-level surface** (`#/site/board`), not a reader:
+  no canvas, no 3D, nothing of the design workbench is mounted.
+
 ## Routing: the engine proposes, the person commits
 
 `typehaus/routing/` searches for MEP routes and **proposes** them as dialect source to

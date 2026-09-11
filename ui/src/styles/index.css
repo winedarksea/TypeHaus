@@ -11,6 +11,9 @@
 @import "./panels.css";
 @import "./fields.css";
 @import "./sheets.css";
+/* The site surface. After sheets.css: its compact detail host IS a Sheet, and the side-sheet
+   variant has to win over the bottom-sheet rules for the same content. */
+@import "./site.css";
 @import "./canvas.css";
 @import "./readers.css";
 @import "./documents.css";

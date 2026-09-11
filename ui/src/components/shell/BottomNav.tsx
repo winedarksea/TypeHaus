@@ -3,7 +3,7 @@ import { Icon } from "../../icons/Icon";
 import { PANELS } from "../../state/panels";
 import { visibleFindings } from "../../state/locate";
 import { Menu } from "../ui/Menu";
-import { DOCUMENTS_DESTINATION, TOOL_GROUPS, GROUP_OF_TOOL } from "./navigationConfig";
+import { DOCUMENTS_DESTINATION, SITE_DESTINATION, TOOL_GROUPS, GROUP_OF_TOOL } from "./navigationConfig";
 
 /**
  * The phone-class replacement for the navigation rail.
@@ -72,6 +72,18 @@ export function BottomNav() {
           <Icon name={DOCUMENTS_DESTINATION.icon} size={22} />
         </span>
         <span className="rail-label">{DOCUMENTS_DESTINATION.label}</span>
+      </button>
+
+      {/* The phone is where the site surface is actually used, so it earns a bar slot. */}
+      <button
+        className="rail-item"
+        title={SITE_DESTINATION.hint}
+        onClick={() => useStore.getState().setSurface("site")}
+      >
+        <span className="rail-indicator">
+          <Icon name={SITE_DESTINATION.icon} size={22} />
+        </span>
+        <span className="rail-label">{SITE_DESTINATION.label}</span>
       </button>
 
       <Menu
