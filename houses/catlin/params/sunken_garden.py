@@ -398,11 +398,11 @@ class SunkenGardenSpec:
     # plank past each face is a drip line clear of the concrete, and it costs one more full
     # board and no rip.
     #
-    # ** IT ALSO MOVES W-RG-WEST/EAST-BALCONY. ** The 6" slot between the balcony's railing
-    # face and those two SRW returns is what TR-SG-LEADER-SE's 3" pipe threads; growing the
-    # deck into it without shortening the returns leaves the leader nowhere to hang. Both
-    # return nodes went 3'-0" -> 2'-9" the same day (params/raised_garden.py) so the whole
-    # SE detail translates 3" east unchanged.
+    # ** IT NO LONGER MOVES W-RG-WEST/EAST-BALCONY (2026-09-12). ** It did for nine days:
+    # the returns stopped one leader slot short of this edge, so growing the deck shortened
+    # them. The returns run to the court wall's outer face now and the slot is gone with
+    # them — the deck edge may move in x without touching them, and TR-SG-LEADER-SE's
+    # outlet is a shoe over the return's cap rather than a pipe threading a gap.
     #
     # 2.5' is R507.6.1's limit here (a quarter of the 10'-0" back span between beams), so
     # the joist is nowhere near governing. The plank module is.
@@ -3658,16 +3658,18 @@ _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
 # that axis, and W-SG-E1's 12" band (x 27.5-28.5) runs the whole drop below it. There is no
 # room inboard either — the front rail and the front beam both sit on the trough line, and
 # SL-SG-FLOOR stops at the wall's inner face. So the trough oversails the deck edge and the
-# pipe drops just clear of the wall's *outer* face, into the 6" slot between that face and
-# the raised garden's east return (raised_garden.py stands that leg 3' out, at x = 29.0).
-# 1.5" of clearance each side, about what a leader strap wants anyway.
+# pipe drops just clear of the wall's *outer* face at x = 29.0, on the balcony's front
+# plane. ** IT HANGS OVER W-RG-EAST-BALCONY SINCE 2026-09-12, NOT BESIDE IT. ** The return
+# used to stop 6" short and the pipe threaded that slot with 1.5" of strap clearance each
+# side; the notch that slot left in the retaining wall was closed instead, so the block now
+# runs under the pipe, 6" below its outlet. Nothing touches and no check grades the pair.
+# The outlet takes a cast elbow and a 1'-0" shoe south to discharge past the cap at
+# y = -11'-3", onto the same terrace stone — keeping a 200 sf deck's whole discharge off
+# the crest of a dry-stacked wall is the point, and the shoe is not modelled.
 _SG_LEADER_OUTSET = 0.25   # ft outboard of the deck edge, which IS the east wall's face
 _SG_GUTTER_OVERSAIL = 0.5  # ft of trough past that edge, to carry the outlet
 _SG_LEADER_X = _deck_x_e + _SG_LEADER_OUTSET
 _SG_LEADER_DIA_IN = 3.0
-# What a leader strap wants outboard of the pipe. Same figure as the inboard side, which is
-# what centres the pipe in its slot.
-_SG_LEADER_STRAP_CLEAR_FT = 1.5 / 12.0
 _GUTTER_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
                 pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_y_balcony_front)))
 # Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
@@ -3700,19 +3702,14 @@ BALCONY_LEADER = Downspout(
     gutter_ref="TR-SG-GUTTER",
 )
 
-# ** THE SLOT, PUBLISHED — the raised garden's two returns stop on THIS, not on a typed
-# 2'-9". ** `params/raised_garden.py` used to carry the return length as a literal with a
-# comment saying it was really `_deck_x_w`/`_deck_x_e` minus 6". That was true and unenforced:
-# a change to `joist_cantilever_in`, to the leader's diameter or to the strap allowance moved
-# the slot and left the returns where they were, and nothing in the engine grades a downspout
-# against a landscape wall. The slot is derived here, beside the leader that needs it, and
-# consumed there.
-#
-# Measured from the deck edge outward: the leader's own outset, its half-diameter, and the
-# strap clearance on the far side. 3" + 1 1/2" + 1 1/2" = 6".
-BALCONY_DECK_SPAN_X_FT = (_deck_x_w, _deck_x_e)
-BALCONY_LEADER_SLOT_FT = (_SG_LEADER_OUTSET + (_SG_LEADER_DIA_IN / 24.0)
-                          + _SG_LEADER_STRAP_CLEAR_FT)
+# ** THE SLOT IS GONE, AND SO IS ITS PUBLISHED CONTRACT (2026-09-12). ** For nine days the
+# raised garden's two returns were derived from a `BALCONY_LEADER_SLOT_FT` exported here, so
+# that a change to `joist_cantilever_in`, to the leader's bore or to its strap allowance
+# moved the returns with the pipe. The returns close on the court wall's outer face now —
+# the notch the slot left in a retaining wall outranked the pipe's clearance — so there is
+# nothing left to publish and nothing left to keep in step. The leader's own numbers are
+# `_SG_LEADER_X`, `_SG_LEADER_DIA_IN` and `_SG_LEADER_BOTTOM`, above, and its outlet shoe is
+# a drawing note in `params/raised_garden.py`.
 
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,

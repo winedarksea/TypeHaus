@@ -6,6 +6,10 @@ from typing import Any
 
 from typehaus.resolve.model import ResolvedModel
 
+# The solid categories that ARE a surface someone stands on or that covers a void. A
+# footing, a pier and a pipe are not, and neither is a railing around a hole.
+_COVERING_SOLID_CATEGORIES = frozenset({"slab", "ceiling", "soffit"})
+
 
 def build_space_summary(model: ResolvedModel) -> dict[str, object]:
     """Return per-storey and whole-house room-area metrics in square feet.
@@ -60,6 +64,47 @@ def build_space_summary(model: ResolvedModel) -> dict[str, object]:
                         "storage_ratio": _ratio(total)}}
 
 
+# A ring counts as built over when this much of it is covered. Not 100%: the balcony deck
+# oversails the raised terrace's bed by 3" each side, which is 5% of that ring and is a
+# cantilever over a garden rather than a floor in it.
+_BUILT_COVER_FRACTION = 0.5
+
+
+def _built_cover(model: ResolvedModel):
+    """Plan polygons of everything the plan builds a walking or covering surface out of.
+
+    Every storey's, deliberately: the question a ring asks is "is anything built over or
+    under this hole", and a stair well's answer is the deck of the storey below it.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.overlay import union_all
+
+    rings = [floor.deck_outline for floor in model.floors]
+    rings += [roof.footprint for roof in model.roofs]
+    rings += [room.clear_face for room in model.rooms]
+    rings += [solid.outline for solid in model.solids
+              if solid.category in _COVERING_SOLID_CATEGORIES]
+    bodies = []
+    for ring in rings:
+        if ring and len(ring) >= 3:
+            polygon = Polygon(ring).buffer(0)
+            if not polygon.is_empty:
+                bodies.append(polygon)
+    return union_all(bodies) if bodies else None
+
+
+def _is_built_over(ring, built_cover) -> bool:
+    """Is enough of ``ring`` built over to call it part of the footprint?
+
+    One union rather than a sum of overlaps: floors, ceilings and roofs stack on each other
+    everywhere, and a sum would cross the fraction on three partial covers of the same 20%.
+    """
+    if built_cover is None or ring.area <= 0.0:
+        return True
+    return ring.intersection(built_cover).area > _BUILT_COVER_FRACTION * ring.area
+
+
 def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
     """Per-storey exterior (cladding-to-cladding) footprint shells, room-enclosures only.
 
@@ -87,6 +132,7 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
     # Same derivation `structural.frost_depth` measures from, so the two cannot disagree
     # about which surfaces are open sky.
     open_ground = [polygon for _tag, polygon, _top in open_excavation_floors(model)]
+    built_cover = _built_cover(model)
     rooms_by_storey: dict[str, list] = {}
     for room in model.rooms:
         if room.clear_face and len(room.clear_face) >= 3:
@@ -129,9 +175,24 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
             # of open court and put it on the basement's gross area. Area overlap asks the
             # question actually meant — "is this ring open excavated ground?" — and does not
             # depend on how many elements the ground was modelled as.
+            #
+            # ** AND A HOLE NOTHING IS BUILT OVER STAYS A HOLE (2026-09-12). ** The
+            # excavation rule is a statement about ground BELOW grade, and it is the only
+            # one there was until a landscape wall merged with the house at grade: closing
+            # the 9" notch at each end of `W-RG-WEST/EAST-BALCONY` butted dry-stacked block
+            # against the court walls, which made the raised garden's apron one mass with
+            # the house (through the court walls and W-SG-BRKBM), and filling the ring
+            # between them put 255 sf of washed-stone garden bed on the basement's gross
+            # floor area. The bed is not below grade — it stands 3'-4" ABOVE the yard — so
+            # `open_excavation_floors` can never see it, and no plan element covers it.
+            # `_built_cover` is the other positive statement: a ring is filled only where
+            # the plan puts a floor, a slab, a room or a roof over it. A stair well, a chase
+            # and a vaulted void are all covered by the deck or roof of another storey and
+            # stay filled, which is the case the "no Room in it" rule got wrong.
             interiors = [ring for ring in poly.interiors
                          if any(Polygon(ring).intersection(floor).area > 0.0
-                                for floor in open_ground)]
+                                for floor in open_ground)
+                         or not _is_built_over(Polygon(ring), built_cover)]
             shell = Polygon(poly.exterior, interiors)
             # **An enclosure counts only if it encloses a Room.** The retaining walls of the
             # sunken garden, the porch and balcony guards, and the breezeway posts are all

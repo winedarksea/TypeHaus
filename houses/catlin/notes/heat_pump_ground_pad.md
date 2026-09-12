@@ -43,13 +43,13 @@ The yard pocket immediately east of the porch, bounded:
 |---|---|
 | west | `W-SG-E1`, the porch's east wall — faces x 27'-6" / 28'-6", top 0'-0", y -11'-0"..-0'-10" |
 | north | the house's south wall, cladding face y -0'-7 1/4" |
-| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top 0'-0", axis spanning **x 29'-3"..32'-0" only** (12" block, so the band is x 29'-3"..32'-6", y -11'-0"..-10'-0") |
+| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top 0'-0", axis spanning **x 28'-6"..32'-0"** (12" block, so the band is x 28'-6"..32'-6", y -11'-0"..-10'-0") |
 | east | **open side yard**, out to the EAST (SIDE) setback line at x 58'-0" |
 
 The house is **gable-ended** here, so nothing sheds off the roof onto the units. The
 basement wall behind is `W-B-S4`, which has no windows. The only neighbour in the pocket is
-`TR-SG-LEADER-SE` at (29'-0", -10'-6"), discharging at +0'-6" into the terrace slot, well
-south of everything here. Nothing was authored in `plan/site.py` inside it.
+`TR-SG-LEADER-SE` at (29'-0", -10'-6"), discharging at +0'-6" over the apron return's cap
+and turned south on a 1'-0" shoe onto the terrace stone, well south of everything here. Nothing was authored in `plan/site.py` inside it.
 
 **The pocket now holds two things and they are laid out around each other**: the condenser
 row against the house across the north strip, and `ST-SG-PORCH` — the porch's only way down
@@ -513,7 +513,7 @@ with a comfortable-looking `ft(5)` cannot pass silently the way this one did.
 part of it back on purpose.** Facing east, both cabinets discharged into the pocket's own
 north and west faces, which returned the stream **east and up** — and up meant
 `WIN-M-LIV-S1` (x 31'-5"..33'-11") and `WIN-S-STUDY2` above it. Facing south they discharge
-into open ground: `W-RG-EAST-BALCONY`'s axis spans only x 29'-3"..32'-0" and it tops out at
+into open ground: `W-RG-EAST-BALCONY`'s axis spans x 28'-6"..32'-0" and it tops out at
 0'-0", below the middle of either cabinet. That has not changed.
 
 What the tuck changed is the **casings**, and it is a real trade rather than a wash:
@@ -694,5 +694,15 @@ keep the leader's slot; and the whole court's tops came down 2" to the porch dat
 2026-09-10, so +0'-6" became 0'-0". The leader followed the deck edge east to x 29'-0" and
 its outlet is +0'-6", not +1'-0". None of it changes a conclusion in this note — the return
 is still below the middle of either cabinet and the leader is still well south of the pocket
-— but the numbers are now the model's. The returns' ends are derived from the leader's slot
-in `params/raised_garden.py` as of the same date, so this pair cannot drift apart again.
+— but the numbers are now the model's.
+
+**Then the return reached the concrete, 2026-09-12.** Its inboard end went x 29'-3" ->
+28'-6", closing the 9" notch between it and `W-SG-E1`'s outer face where the terrace fill
+met this pocket behind nothing. That is 9" of block along the pocket's south edge at
+y -11'-0"..-10'-0" — 7'-0" south of the pad and 1'-6" south of the flight's bottom nosing,
+so nothing this note concludes moves. The leader does: the return runs under it now, 6"
+below its outlet, and the outlet takes a cast elbow and a 1'-0" shoe south to discharge past
+the cap rather than onto the crest of a dry-stacked wall. The shoe is a drawing note, not a
+modelled solid. The returns are no longer derived from the leader's slot — that contract is
+retired in `params/sunken_garden.py` — so the figure to re-read if the court walls ever move
+is `RETAINING_WALL_SPAN_X_FT`, not the deck edge.

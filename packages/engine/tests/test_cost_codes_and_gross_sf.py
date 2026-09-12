@@ -113,13 +113,23 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     1,965 sf: 610 sf of open sky counted as floor area. `_exterior_shells_by_storey` keeps a
     hole that lies over an open excavation floor now.
 
-    What is left over is honest and is pinned rather than smoothed away: the court's own
-    retaining-wall CONCRETE is inside the merged shell's outer ring, so the basement carries
-    ~86 sf more than the storeys above it. That is the walls, not the court.
+    ** AND THE SAME ASSUMPTION BROKE AGAIN AT GRADE ON 2026-09-12. ** The raised garden's
+    apron used to stop 9" short of the court walls, so it too was a disjoint polygon with no
+    Room in it and was dropped whole. Butting those two returns against the concrete — the
+    notch was a hole in a retaining wall — merged the apron into the same mass, and the ring
+    between apron and court is the terrace's washed-stone bed: 255 sf of garden, over no
+    excavation (it stands 3'-4" ABOVE the yard) and so invisible to the rule above. It went
+    onto the basement's gross floor area. `_exterior_shells_by_storey` keeps a hole that
+    nothing is built over now as well as one over an excavation.
+
+    What is left over is honest and is pinned rather than smoothed away: the court walls'
+    and the apron's own CONCRETE AND BLOCK are inside the merged shell's outer ring, so the
+    basement carries ~160 sf more than the storeys above it — ~86 sf of court wall and
+    ~74 sf of SRW apron. That is the walls, not the court and not the terrace.
     """
     gross = gross_area_sf(catlin_model)["storeys"]
     court_walls_sf = gross["basement"] - gross["main"]
-    assert 60 < court_walls_sf < 120, court_walls_sf
+    assert 120 < court_walls_sf < 200, court_walls_sf
     # And the court itself — 488 sf of open ground — is not in there at any tolerance.
     assert gross["basement"] < gross["main"] + 400
 

@@ -77,9 +77,11 @@ Plan — a U whose north corners return three feet to the balcony railing:
   re-derived — two derivations silently diverge the next time a dimension moves. The apron
   closes against the balcony RAILING, so it follows the balcony, not the porch's beam plane
   (``PORCH_FRONT_AXIS_Y_FT``, -9.5').
-- **The U's north corners close back to the balcony.** ``W-RG-WEST-BALCONY`` and
-  ``W-RG-EAST-BALCONY`` are 3' SRW runs on that same plane. Their block faces meet the
-  balcony's side railing faces, closing the two open ends.
+- **The U's north corners close back to the court walls.** ``W-RG-WEST-BALCONY`` and
+  ``W-RG-EAST-BALCONY`` are 3'-6" SRW runs on that same plane, and their inboard ends butt
+  the OUTER faces of ``W-SG-W1``/``W-SG-E1`` (x 7'-6" / 28'-6"). They were 2'-9" until
+  2026-09-12, leaving a 9" notch at each corner where the terrace fill met the yard behind
+  nothing; closing it takes ``TR-SG-LEADER-SE``'s slot with it — see the NODES comment.
 - **``W-RG-INNER`` is gone.** Its job was to be the bed's inner cheek; ``W-SG-W2``/``E2``/
   ``S`` are the apron's inner face now, so a second wall on the same axis as ``W-SG-S``
   would be a duplicate. ``W-RG-BLOCK`` keeps uid ``RGW102AAAA`` on the south leg so it
@@ -113,9 +115,7 @@ from dataclasses import dataclass
 from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
 
 from params.sunken_garden import (
-    BALCONY_DECK_SPAN_X_FT,
     BALCONY_FRONT_AXIS_Y_FT,
-    BALCONY_LEADER_SLOT_FT,
     RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN,
     RETAINING_WALL_SPAN_X_FT,
     RETAINING_WALL_THICKNESS_IN,
@@ -171,16 +171,19 @@ X_EAST = _sg_x_east + _step_out_ft                       # 32.0
 Y_SOUTH = SOUTH_RETAINING_WALL_AXIS_Y_FT - _step_out_ft  # -33.33333
 Y_NORTH = BALCONY_FRONT_AXIS_Y_FT                        # -10.5
 
-# ** THE RETURNS' INBOARD ENDS ARE DERIVED NOW, NOT TYPED (2026-09-11). ** Both stop one
-# leader slot short of the balcony deck edge, which is what the comment beside NODES has
-# always claimed and what nothing enforced. `BALCONY_LEADER_SLOT_FT` is 6" today —
-# TR-SG-LEADER-SE's 3" outset + its 1 1/2" half-diameter + 1 1/2" of strap clearance,
-# derived beside the leader in `params/sunken_garden.py`. Move the balcony cantilever, the
-# leader's bore or its strap allowance and these two ends follow; they used to sit still and
-# the pipe lost its slot silently.
-_deck_x_w, _deck_x_e = BALCONY_DECK_SPAN_X_FT            # 7.25 / 28.75
-X_WEST_BALCONY = _deck_x_w - BALCONY_LEADER_SLOT_FT      # 6.75
-X_EAST_BALCONY = _deck_x_e + BALCONY_LEADER_SLOT_FT      # 29.25
+# ** THE RETURNS RUN ALL THE WAY TO THE CONCRETE NOW (owner, 2026-09-12). ** Both ends land
+# on the sunken-garden wall's OUTER face — x 7'-6" and 28'-6" — so the terrace fill is
+# retained corner to corner and the block butts cast concrete with no notch between them.
+# Derived off the court wall rather than typed: the faces move with
+# `RETAINING_WALL_SPAN_X_FT` and `RETAINING_WALL_THICKNESS_IN`, which are the two numbers
+# that can put them anywhere else.
+#
+# They stopped 6" short of the balcony deck edge (x 6'-9" / 29'-3") until this date, for
+# TR-SG-LEADER-SE's slot, which left a 9" gap at each north corner where the fill met the
+# yard behind nothing. Closing it is 9" of block per return and it costs the leader its
+# slot — see the NODES comment and `params/sunken_garden.py` beside the leader.
+X_WEST_BALCONY = _sg_x_west - _sg_half_thickness_ft      # 7.5
+X_EAST_BALCONY = _sg_x_east + _sg_half_thickness_ft      # 28.5
 
 # Level with the sunken-garden wall top, 3' down. The drop is a whole number of 6" courses
 # by construction, which is what lets the run be dry-stacked without a cut course.
@@ -199,49 +202,31 @@ NODES = [
          open_end=False),
     Node(uid="RGN004AAAA", tag="N-RG-NE", position=pt(ft(X_EAST), ft(Y_NORTH)),
          open_end=False),
-    # Short returns close the U against the balcony side railings. Their far ends remain
-    # open because they terminate at the balcony wall face rather than another RG wall axis.
+    # Short returns close the U against the sunken-garden walls. Their far ends stay OPEN
+    # because they terminate on a concrete wall face rather than on another RG wall axis.
     #
-    # ** 2'-9", NOT 3'-0", SINCE 2026-09-03 — AND THE 6" GAP IS THE POINT, NOT THE LENGTH. **
-    # These two ends stop 6" short of the balcony's side railing faces, and that slot is what
-    # ``TR-SG-LEADER-SE``'s 3" downspout threads on the east: the pipe hangs outboard of
-    # W-SG-E1's face because the wall's 12" band runs the whole drop inboard of it, and the
-    # RG return is the only other thing near it. That day ``joist_cantilever_in`` went 6" ->
-    # 9" so the balcony plank would drip clear of the 12" columns, which grew the deck 3"
-    # each side into these gaps. The returns give the 3" back, so the whole SE detail
-    # translates east unchanged and the leader keeps its clearances.
+    # ** 3'-6", TO THE CONCRETE, SINCE 2026-09-12 — THE 9" NOTCH IS CLOSED. ** Each return
+    # was 2'-9" and stopped 6" short of the balcony deck edge, which left a 9" gap between
+    # its end and the court wall's outer face (x 7'-6" / 28'-6") where the terrace fill met
+    # the yard with nothing retaining it. The gap was refused twice on the leader's account
+    # and it was still a hole in a retaining wall; the owner closed it. 3'-6" is 3 1/2 SRW
+    # units, so it is still one cut block per course on each return, and the cut is the same
+    # trade it always was against a ripped finish board on the deck.
     #
-    # It is 2 3/4 SRW units rather than 3, i.e. one cut block per course on each return —
-    # the trade against a RIPPED finish board on a watertight aluminium deck, which is the
-    # much worse cut (it takes the tongue and the plank's integral gutter channel off).
-    #
-    # ** ASKED AGAIN 2026-09-11: CLOSE THE GAP. THE ANSWER IS NO, AND THE LEADER IS WHY. **
-    # There is a real defect behind the request — a 9" notch at each north corner, between
-    # the sunken-garden wall's outer face (x 7.5 / 28.5) and the return's end, where the
-    # terrace fill meets the yard with nothing retaining it. It is a live open item. It is
-    # not closed HERE.
-    #
-    # **The east return cannot advance one inch.** TR-SG-LEADER-SE's 3" pipe resolves at
-    # x 28.875..29.125 with its bottom at +0'-6"; the return's end is at 29.25, which is
-    # exactly the 1 1/2" strap clearance and no more. Any westward move stands the wall
-    # under the pipe. Nothing in the engine would report it — the wall tops out at 0'-0",
-    # six inches BELOW the leader's outlet, so the two solids never touch and `haus check`
-    # stays green — and the building would be a 200 sf deck's entire discharge landing on
-    # the crest of a dry-stacked segmental wall, into the drainage stone and backfill that
-    # are the only thing holding it up. That is the SRW failure mode, not a detail.
-    #
-    # **And the leader has nowhere to go.** Inboard is blocked (the front rail and the front
-    # beam both sit on the trough line, and SL-SG-FLOOR stops at the wall's inner face); the
-    # east beam axis holds PT-SG-BF3 and W-SG-E1's 12" band; back into the sunken garden
-    # reverses the 2026-09 decision that took 200 sf off DRW-SG-MAIN, a 9'-deep soakaway
-    # with no outlet of its own. Falling the gutter WEST instead only moves the pipe into
-    # the mirror-image slot on the other side.
-    #
-    # **The west return is not extended alone.** Its gap is the same 9" leak, so closing one
-    # end is half a fix, and two different return lengths on a symmetric landscape U reads
-    # as an error rather than as a decision. The notch is answered at the terrace's edging
-    # and fabric — which this module already lists as not modelled — or by moving the
-    # leader, and moving the leader is its own pass.
+    # ** WHAT IT COSTS: TR-SG-LEADER-SE LOSES ITS SLOT, AND THE OUTLET IS A DETAIL NOW. **
+    # The leader's 3" pipe resolves at x 28'-10 7/8"..29'-1 1/8" on this same y, so the east
+    # return now runs UNDER it. Nothing collides — the wall tops out at 0'-0" and the pipe's
+    # outlet is at +0'-6", six inches above it, and `haus check` grades neither against the
+    # other — but a 200 sf deck discharging onto the crest of a dry-stacked segmental wall
+    # is the SRW failure mode, water into the joints and into the drainage stone that is the
+    # only thing holding the run up. **So the outlet takes a cast elbow and a 1'-0" shoe
+    # carrying it south clear of the cap, onto the terrace bed at y -11'-3".** That is 3"
+    # past the block's south face, it lands on the same washed stone the leader has
+    # discharged onto since the soakaway gave the balcony back, and it is the whole of the
+    # change: the pipe, its straps and its bore are where they were. The elbow is not
+    # modelled — `Downspout` is a vertical run with one outlet elevation — so it lives here
+    # and in `notes/heat_pump_ground_pad.md`, and it is the one piece of this corner a
+    # drawing has to carry rather than the model.
     Node(uid="RGN005AAAA", tag="N-RG-WEST-BALCONY",
          position=pt(ft(X_WEST_BALCONY), ft(Y_NORTH)), open_end=True),
     Node(uid="RGN006AAAA", tag="N-RG-EAST-BALCONY",

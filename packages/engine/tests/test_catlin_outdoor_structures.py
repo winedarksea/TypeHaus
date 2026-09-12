@@ -474,31 +474,41 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
     assert {round(x / FT, 4) for _, x in ((0, east.axis[0][0]), (0, east.axis[1][0]))} == {32.0}
 
 
-def test_the_raised_garden_returns_stop_six_inches_short_of_the_balcony(catlin_model) -> None:
-    """The GAP is the invariant, not the 2'-9" — it is TR-SG-LEADER-SE's slot.
+def test_the_raised_garden_returns_close_on_the_court_walls(catlin_model) -> None:
+    """The returns retain the terrace corner to corner, and the leader stands over one.
 
-    These two returns close the apron's U against the balcony's side railing faces, and they
-    deliberately stop 6" short of them. On the east that gap is the only place the balcony's
-    3" downspout can hang: W-SG-E1's 12" band runs the whole drop inboard of it and the RG
-    return is what is outboard. They were 3'-0" until 2026-09-03, when the balcony's joist
-    cantilever went 6" -> 9" (the plank has to drip clear of the 12" columns, and the deck
-    width has to stay divisible by the 6" board) and grew the deck 3" into both gaps. The
-    returns gave the 3" back rather than the leader losing its slot.
+    Each return ends on the OUTER face of the court wall it meets — x 7'-6" and 28'-6", the
+    sunken-garden axes less and plus half of a 12" wall — so there is no notch between block
+    and concrete for the terrace fill to escape through. They were 2'-9" and stopped 6"
+    short of the balcony deck edge until 2026-09-12, holding a slot open for
+    ``TR-SG-LEADER-SE``; the hole that left in a retaining wall outranked the pipe's
+    clearance. What the change costs is asserted below and it is a drawing detail, not a
+    collision: the block runs under the leader with its crest 6" below the outlet, so the
+    outlet needs a shoe carrying the discharge south past the cap.
     """
     returns = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS[3:]}
     for tag, wall in returns.items():
         length = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
                   + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
-        assert length == pytest.approx(2.75 * FT, abs=1e-9), tag
+        assert length == pytest.approx(3.5 * FT, abs=1e-9), tag
         assert {round(y / FT, 4) for _, y in wall.axis} == {-10.5}, tag
     west = returns["W-RG-WEST-BALCONY"]
     east = returns["W-RG-EAST-BALCONY"]
-    assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 6.75}
-    assert {round(x / FT, 4) for x, _ in east.axis} == {29.25, 32.0}
-    # And the gap each return leaves is 6", measured to the deck edge the railing stands on.
-    deck_x = [p.xy_m[0] for p in catlin_model.plan.by_tag("FS-SG-DECK").outline]
-    assert min(deck_x) - max(x for x, _ in west.axis) == pytest.approx(0.5 * FT, abs=1e-9)
-    assert min(x for x, _ in east.axis) - max(deck_x) == pytest.approx(0.5 * FT, abs=1e-9)
+    assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 7.5}
+    assert {round(x / FT, 4) for x, _ in east.axis} == {28.5, 32.0}
+    # Read off the court walls rather than typed: their outer faces ARE the return ends.
+    for return_wall, court_tag, sign in ((west, "W-SG-W1", -1), (east, "W-SG-E1", 1)):
+        court = _wall(catlin_model, court_tag)
+        face = court.axis[0][0] + sign * court.thickness_m / 2.0
+        ends = [x for x, _ in return_wall.axis]
+        assert min(abs(x - face) for x in ends) == pytest.approx(0.0, abs=1e-9), court_tag
+
+    # And the cost: the leader now hangs over the east return, 6" above its crest.
+    leader = next(s for s in catlin_model.solids if s.tag == "TR-SG-LEADER-SE")
+    pipe_x = [point[0] for point in leader.outline]
+    assert min(x for x, _ in east.axis) <= min(pipe_x)
+    assert max(pipe_x) <= max(x for x, _ in east.axis)
+    assert east.z1_m < leader.z0_m, "the solids never touch, so no check reports this"
 
 
 def test_the_apron_north_limit_is_the_balcony_front_plane(catlin_model) -> None:
