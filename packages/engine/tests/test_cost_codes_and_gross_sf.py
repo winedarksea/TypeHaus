@@ -178,7 +178,8 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
     assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
                      material="aluminum-deck").trade == "framing"
     # And a slab that is neither a pour nor a deck files where its material says.
-    assert cost_code("concrete", "slab:SG_FROST_WING_XPS1", material="xps").trade == "insulation"
+    # FPSF wing foam is the foundation contractor's (adjudicated 2026-09-12).
+    assert cost_code("concrete", "slab:SG_FROST_WING_XPS1", material="xps").trade == "concrete"
     assert cost_code("concrete", "slab:GARDEN_PUTTING_GREEN",
                      material="kbg-sod").trade == "landscaping"
     assert cost_code("concrete", "slab:DECK_EPS_INT",
@@ -217,10 +218,16 @@ def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(
     concrete_keys = {row["key"] for row in
                      estimate_costs(bom, prices, catlin_areas)["sections"]["concrete"]["rows"]
                      if row["trade"] == "concrete"}
+    from typehaus.emit.trade_rules import material_trade
+
     for key in concrete_keys:
         category, _, assembly = key.partition(":")
         material = material_of.get((category, assembly or None))
-        assert material in (None, "concrete"), f"{key} bills as concrete but is {material}"
+        # The one deliberate exception: FPSF wing foam laid in the foundation sequence is
+        # the foundation contractor's (adjudicated 2026-09-12).
+        laid_foam = category in ("slab", "pad") and material_trade(material) == "insulation"
+        assert material in (None, "concrete") or laid_foam, \
+            f"{key} bills as concrete but is {material}"
 
 
 # --- and the converse, which is what let a whole trade slip ------------------------------
@@ -287,7 +294,11 @@ def test_every_catlin_pour_reaches_the_concrete_sub(catlin_model, catlin_areas) 
     ({"domain": "electrical"}, "electrical"),
     ({"domain": "plumbing"}, "plumbing"),
     ({"domain": "appliance"}, "furniture"),
-    ({"domain": "furniture"}, "millwork"),
+    ({"domain": "furniture", "type": "CASE-PENINSULA-120", "name": "Peninsula run"}, "millwork"),
+    ({"domain": "furniture", "type": "FURN-BED-KING", "name": "King bed"}, "furniture"),
+    ({"domain": "furniture", "type": "FT-CURTAIN-ROD-48", "name": "Curtain rod, 48\""}, "furniture"),
+    ({"domain": "mechanical", "services": ["power_240"], "equipment_kind": "space_heater",
+      "name": "Gree FLEXX Ultra electric heat kit, 4.6 kW"}, "mechanical"),
     ({"domain": "mechanical", "services": ["supply_air", "power_240"],
       "equipment_kind": "ducted_air_handler"}, "mechanical"),
     ({"domain": "mechanical", "services": ["water_cold", "water_hot", "power_240"],

@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.1  
 **Model hash:** bc1e29f205ca2d4e  
-**Lines:** 111
+**Lines:** 115
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -23,7 +23,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
 | 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,460 | LF ordered | 156 pcs, 2204.4 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
-| 11.875 floor truss — joist, trimmer (11.875 floor truss) | 480 | LF ordered | 32 pcs, 469.2 LF cut | building |
+| 11.875 floor truss — joist, trimmer (11.875 floor truss) | 32 | ea | 32 pcs, 469.2 LF cut; 480.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 454 | LF ordered | 59 pcs, 403.2 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 332 | LF ordered | 44 pcs, 264.6 LF cut | building |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 3 pcs, 10.0 LF cut | building |
@@ -33,8 +33,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
 | 2-2x6 — header (2-2x6) | 18 | LF ordered | 2 pcs, 13.2 LF cut | building |
 | 2-2x8 — header (2-2x8) | 184 | LF ordered | 57 pcs, 153.5 LF cut | building |
-| 24 gable roof truss — roof truss (24 gable roof truss) | 48 | LF ordered | 2 pcs, 48.0 LF cut | building |
-| 24 roof truss — roof truss (24 roof truss) | 336 | LF ordered | 14 pcs, 336.0 LF cut | building |
+| 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
+| 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 536 | LF ordered | 64 pcs, 427.3 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.6 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 86.3 LF cut | building |
@@ -53,10 +53,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Aluminum deck board (Wahoo AridDeck-style), 1 1/2" subfloor (aluminum-deck:subfloor) | 7 | sheets 4x8 | 7 sheets 4x8 over 207.8 SF net | building |
+| Aluminum deck board (Wahoo AridDeck-style), 1 1/2" subfloor (aluminum-deck:subfloor) | 207.8 | SF | 7 sheets 4x8 over 207.8 SF net; 7.0 sheets in the takeoff | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| Composite decking (capped PVC/wood), 1" subfloor (composite-deck:subfloor) | 7 | sheets 4x8 | 7 sheets 4x8 over 205.8 SF net | building |
+| Composite decking (capped PVC/wood), 1" subfloor (composite-deck:subfloor) | 205.8 | SF | 7 sheets 4x8 over 205.8 SF net; 7.0 sheets in the takeoff | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3186.1 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
@@ -110,22 +110,21 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | 319 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
 
-## Pours and solids, by the yard
+## Pours and structural solids
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam (beam) | 0.01 | cy | 1 placed, 1.1 SF plan | main |
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 0.38 | cy | 3 placed, 8.5 SF plan | second |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 0.58 | cy | 9 placed, 19.4 SF plan | main |
-| Beam — BEAM_LVL (beam:BEAM_LVL) | 0.26 | cy | 3 placed, 7.1 SF plan | main, second |
-| Beam — BEAM_WHITE_PAINT (beam:BEAM_WHITE_PAINT) | 0.26 | cy | 2 placed, 7.5 SF plan | main |
-| Column — ELM_TIMBER (column:ELM_TIMBER) | 0.34 | cy | 4 placed, 1.0 SF plan | second |
-| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 0.02 | cy | 12 placed, 0.3 SF plan | main |
-| Column — POST_KDAT (column:POST_KDAT) | 0.13 | cy | 4 placed, 0.6 SF plan | main |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 0.06 | cy | 3 placed, 0.3 SF plan | main |
-| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 0.13 | cy | 2 placed, 0.4 SF plan | second |
-| Connector (connector) | 0.19 | cy | 70 placed, 9.1 SF plan | main |
-| Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 0.05 | cy | 1 placed, 7.3 SF plan | main |
+| Beam (beam) | 3.6 | bf | 1 placed, 1.1 SF plan; 0.01 cy in the takeoff | main |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 122.4 | bf | 3 placed, 8.5 SF plan; 0.38 cy in the takeoff | second |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 188.4 | bf | 9 placed, 19.4 SF plan; 0.58 cy in the takeoff | main |
+| Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
+| Beam — BEAM_WHITE_PAINT (beam:BEAM_WHITE_PAINT) | 84 | bf | 2 placed, 7.5 SF plan; 0.26 cy in the takeoff | main |
+| Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
+| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
+| Column — POST_KDAT (column:POST_KDAT) | 43.2 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
+| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 42 | bf | 2 placed, 0.4 SF plan; 0.13 cy in the takeoff | second |
+| Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
 ## Member protection tape
 
@@ -148,25 +147,35 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| sill-seal-foam | 142.7 | LF |  | building |
-| sill-seal-peel-stick | 260 | LF |  | building |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | 142.7 | LF |  | building |
+| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | 260 | LF |  | building |
 
 ## Assembly layers, by material
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Cabinet-grade hardwood plywood (3/4") finish, 3/4" — wall (cabinet-plywood:0.75) | 291.7 | SF net |  | building |
-| 5/8" CDX sheathing plywood sheathing, 5/8" — wall (cdx-plywood:0.625) | 690.2 | SF net |  | building |
+| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 690.2 | SF net |  | building |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,263.2 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,547.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | 7.3 | SF net |  | building |
 
-## Wall structure, by the yard
+## Wall structure
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | 0.47 | cy |  | basement |
+| STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | 153.6 | bf | 0.47 cy in the takeoff | basement |
+
+## Windows and doors, by product
+
+| item | quantity | unit | detail | storeys |
+|---|---|---|---|---|
+| rough opening, 7" x 7" (no type) (None) | 2 | ea | 7" x 7" | main, second |
+| rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
+| rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
+| rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
+| rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
+| rough opening, 60" x 78" arched (no type) (None) | 1 | ea | 60" x 78" | basement |
 
 ## Appendix A — elements, per line
 
@@ -265,7 +274,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW, PT-BW-IC, PT-BW-IE |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-N, P-M-STRWELL-S |
 | Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | PT-SG-BF2, PT-SG-BR2 |
-| Connector (connector) | CN-BW-BASE-NW, CN-BW-BASE-W, CN-BW-CAP-NW, CN-BW-CAP-W, CN-BW-IBASE-C, CN-BW-IBASE-E, CN-BW-JOINT-1, CN-BW-JOINT-2, CN-BW-JOINT-3, CN-BW-JOINT-4, CN-BW-JOINT-5, CN-BW-JOINT-6, CN-BW-JOINT-7, CN-BW-STDF-E, CN-BW-STDF-GE, CN-BW-STDF-GW, CN-BW-STDF-RE, CN-BW-STDF-RNE, CN-BW-STDF-W, CN-BW-TIE-E, CN-BW-TIE-GE, CN-BW-TIE-GW, CN-BW-TIE-RE, CN-BW-TIE-RNE, CN-BW-TIE-W, CN-BW-TRTIE-E1, CN-BW-TRTIE-E2, CN-BW-TRTIE-E3, CN-BW-TRTIE-W1, CN-BW-TRTIE-W2, CN-BW-TRTIE-W3, CN-M-HD-BALC-E, CN-M-HD-BALC-W, CN-M-HD-ENTRY-E, CN-M-HD-ENTRY-W, CN-M-HP1-A1, CN-M-HP1-A2, CN-M-HP1-A3, CN-M-HP1-A4, CN-M-HP3-A1, CN-M-HP3-A2, CN-M-HP3-A3, CN-M-HP3-A4, CN-SG-BASE-F2-N, CN-SG-BASE-F2-W, CN-SG-BASE-R2-N, CN-SG-BASE-R2-S, CN-SG-BASE-R2-W, CN-SG-CAP-F2, CN-SG-CAP-R2, CN-SG-HGR-E, CN-SG-HGR-FE, CN-SG-HGR-FW, CN-SG-HGR-W, CN-SG-HPB1, CN-SG-HPB2, CN-SG-HPB3, CN-SG-HPB4, CN-SG-SEAT-F1, CN-SG-SEAT-F3, CN-SG-SEAT-R1, CN-SG-SEAT-R3, CN-SG-STDF-COL, CN-SG-STDF-F1, CN-SG-STDF-F3, CN-SG-STDF-FCOL, CN-SG-STDF-R1, CN-SG-STDF-R3, CN-SG-TIE-COL, CN-SG-TIE-FCOL |
 | Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |
 | butyl-tape, 1 1/2" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |
@@ -274,15 +282,20 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | BM-SG-BLC, BM-SG-BLE, BM-SG-BLW |
 | butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | BM-BW-RE, BM-BW-RW, BM-SG-BKE, BM-SG-BKW, BM-SG-FRE, BM-SG-FRW |
 | Treated sill plate, KDAT southern yellow pine (treated exterior framing) (pt-sill-plate) | — |
-| sill-seal-foam | — |
-| sill-seal-peel-stick | — |
-| Cabinet-grade hardwood plywood (3/4") finish, 3/4" — wall (cabinet-plywood:0.75) | — |
-| 5/8" CDX sheathing plywood sheathing, 5/8" — wall (cdx-plywood:0.625) | — |
+| Sill seal foam gasket, under the sill plate (sill-seal-foam) | — |
+| Sill seal peel-and-stick membrane, under the sill plate (sill-seal-peel-stick) | — |
+| 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | — |
 | Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | — |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | — |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL |
+| rough opening, 7" x 7" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
+| rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
+| rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
+| rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
+| rough opening, 36" x 80" (no type) (None) | D-B-GYM |
+| rough opening, 60" x 78" arched (no type) (None) | AO-B-BRICK-DOOR |
 
 ## Appendix B — drawings
 

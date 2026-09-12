@@ -13,7 +13,14 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from typehaus.emit.trades import TRADE_LABELS, sequence_rank
+from typehaus.emit.trade_rules import material_trade
+from typehaus.emit.trades import (
+    DRAINAGE_CATEGORIES,
+    PIPE_ACCESSORY_CATEGORIES,
+    ROUTED_RUN_CATEGORIES,
+    TRADE_LABELS,
+    sequence_rank,
+)
 from typehaus.schedule.propose import family_rank
 from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
@@ -21,6 +28,78 @@ from typehaus.takeoff.cost_codes import cost_code
 from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe
 
 BUILDING = "building"
+
+#: ``structural_solids`` categories whose PRODUCT is billed in a dedicated section (pipe by
+#: the foot, hardware by the part, trim by the foot…). The solids table still carries their
+#: volume — that is the takeoff's geometry view — but a package that listed "0.01 cy of
+#: backflow preventer" beside the valve itself read as a cast pour to every reviewer
+#: (audit:2026-09-12, 41 rows across nine trades). Dropped from packages, never from the BOM.
+MIRRORED_SOLID_CATEGORIES = frozenset(
+    ROUTED_RUN_CATEGORIES | PIPE_ACCESSORY_CATEGORIES | DRAINAGE_CATEGORIES | {
+        "vent", "fascia", "flashing", "wall_corner", "eave_soffit", "bug_screen", "glazing",
+        "glazing_trim", "snow_guard", "seam_clamp", "panel_strap", "railing",
+        "railing_infill", "railing_glass", "connector", "ceiling", "soffit", "screen_slat",
+    })
+
+#: Aggregates a sub buys by the yard, even where the takeoff carries them as a layer area.
+_AGGREGATE_TRADES = frozenset({"earth", "landscaping"})
+_BF_PER_CUFT = 12.0
+_CY_PER_CUFT = 1.0 / 27.0
+
+
+def _mirrored(item: BomRow) -> bool:
+    if item.section in ("concrete", "timber"):
+        return item.key in MIRRORED_SOLID_CATEGORIES
+    # A room with no finish authored is a gap in the model, not a line to quote.
+    return item.section == "floor_finishes" and item.key in ("None", "")
+
+
+def _shaped_quantity(item: BomRow, trade: str, default_unit: str) -> tuple[float, str]:
+    """``(quantity, unit)`` in the unit this item is bought in (audit:2026-09-12).
+
+    The estimate prices a solid by the yard whatever it is; a sub does not. A wood beam is
+    board feet, an aluminium stand a piece, a foam wing or a plywood cap an area; brick and
+    block are wall face; aggregate under a green is a yard, not the net area of its layer.
+    """
+    row = item.row
+    key = item.key
+    material = str(item.material or row.get("material") or "").lower()
+    if item.section in ("concrete", "timber"):
+        if material == "concrete" or (not material and key in ("slab", "footing", "pad",
+                                                                "thermal_break", "dowel")):
+            if key == "dowel":
+                return float(row.get("count") or 0), "ea"
+            if key == "thermal_break":
+                return float(row.get("count") or 0), "ea"
+            return item.quantity, "cy"
+        if key in ("beam", "column"):
+            if "alum" in material or "steel" in material:
+                return float(row.get("count") or 0), "ea"
+            return round(float(row.get("volume_cuft") or 0) * _BF_PER_CUFT, 1), "bf"
+        return float(row.get("plan_area_sqft") or 0), "SF"
+    if item.section == "wall_structure":
+        mat_trade = material_trade(material)
+        if mat_trade in ("masonry", "landscaping", "siding"):
+            return float(row.get("net_area_sqft") or 0), "SF"
+        if mat_trade == "framing":
+            return round(float(row.get("volume_cuft") or 0) * _BF_PER_CUFT, 1), "bf"
+        return item.quantity, "cy"
+    if item.section == "envelope_layers" and trade in _AGGREGATE_TRADES:
+        mat = str(row.get("material") or "")
+        if not (mat.endswith("sod") or mat.startswith("geotextile")):
+            depth_ft = float(row.get("thickness_in") or 0) / 12.0
+            return round(float(row.get("net_area_sqft") or 0) * depth_ft * _CY_PER_CUFT, 2), "cy"
+    if item.section == "drainage" and key in ("drywell", "french_drain"):
+        return float(row.get("aggregate_cubic_yards") or 0), "cy"
+    if item.section == "solar_modules":
+        return float(row.get("panels") or 0), "ea"
+    if item.section == "framing" and "truss" in str(row.get("profile") or ""):
+        return float(row.get("pieces") or 0), "ea"
+    if item.section == "sheet_goods":
+        mat = str(row.get("material") or "")
+        if mat.endswith("-deck") or "membrane" in mat:
+            return float(row.get("net_area_sqft") or 0), "SF"
+    return item.quantity, default_unit
 
 
 @dataclass(frozen=True)
@@ -110,10 +189,13 @@ def _price_index(estimate: Mapping[str, Any] | None
     return index
 
 
-def _line(item: BomRow, storey_of: Mapping[str, str], labels: LabelIndex,
+def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelIndex,
           prices: Mapping[tuple[str, str], Mapping[str, Any]], priced: bool) -> BidLine:
     shape = shape_for(item.section)
     detail = shape.detail(item.row) if shape.detail else ""
+    quantity, unit = _shaped_quantity(item, trade, shape.unit or item.unit)
+    if unit != (shape.unit or item.unit) and item.quantity:
+        detail = f"{detail}; {item.quantity} {item.unit} in the takeoff".strip("; ")
     unit_price = total = None
     if priced:
         row = prices.get((item.section, item.qualified_key)) or prices.get((item.section, item.key))
@@ -123,7 +205,7 @@ def _line(item: BomRow, storey_of: Mapping[str, str], labels: LabelIndex,
     return BidLine(
         section=item.section, key=item.qualified_key,
         description=describe(item.section, item.qualified_key, item.row, labels),
-        quantity=round(item.quantity, 2), unit=shape.unit or item.unit, detail=detail,
+        quantity=round(quantity, 2), unit=unit, detail=detail,
         storeys=_storeys(item.tags, storey_of), element_tags=tuple(sorted(item.tags)),
         unit_price=unit_price, total=total)
 
@@ -145,6 +227,11 @@ def _allowance_lines(trade: str, estimate: Mapping[str, Any] | None, priced: boo
     return tuple(sorted(out, key=lambda line: line.key))
 
 
+def is_mirrored(item: BomRow) -> bool:
+    """Whether a walked row is left out of every package (see MIRRORED_SOLID_CATEGORIES)."""
+    return _mirrored(item)
+
+
 def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
                        estimate: Mapping[str, Any] | None = None, priced: bool = False,
                        labels: LabelIndex | None = None,
@@ -164,8 +251,10 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
     prices = _price_index(estimate)
     by_trade: dict[str, dict[str, list[BidLine]]] = {}
     for item in walk_bom(bom):
+        if _mirrored(item):
+            continue
         trade = cost_code(item.section, item.key, material=item.material, row=item.row).trade
-        line = _line(item, storey_of, labels, prices, priced)
+        line = _line(item, trade, storey_of, labels, prices, priced)
         by_trade.setdefault(trade, {}).setdefault(item.section, []).append(line)
     if estimate is not None:
         for row in estimate.get("sections", {}).get("allowances", {}).get("rows", []):
@@ -186,8 +275,9 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
             lines = sorted(by_trade[trade][section],
                            key=lambda line: (family_rank(trade, f"{section}:{line.key}"),
                                              line.key))
+            units = {line.unit for line in lines}
             groups.append(BidGroup(section=section, heading=shape.heading,
-                                   unit=shape.unit or (lines[0].unit if lines else ""),
+                                   unit=units.pop() if len(units) == 1 else "mixed",
                                    lines=tuple(lines)))
         sheets = tuple(s for s in recipe.sheets
                        if sheet_numbers is None or s in sheet_numbers)

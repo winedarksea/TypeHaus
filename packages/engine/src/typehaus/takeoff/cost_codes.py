@@ -18,6 +18,7 @@ edge trim's kind) before any key pattern or section default is consulted.
 from __future__ import annotations
 
 import fnmatch
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -181,7 +182,10 @@ SECTION_CODES: dict[str, CostCode] = {
     # being invisible.
     "reinforcement": CostCode("1310", "03 21 00", "concrete"),
     "concrete": CostCode("1300", "03 30 00", "concrete"),
-    "floor_heat": CostCode("3200", "23 83 00", "mechanical"),
+    # Electric floor-warming cable is a resistance heater on its own circuit; the tile
+    # setter lays the membrane, the electrician the cable and the stat (adjudicated
+    # audit:2026-09-12#floor_heat:electric, Schluter DITRA-HEAT handbook).
+    "floor_heat": CostCode("3300", "23 83 13", "electrical"),
     "placeables": CostCode("4100", "12 30 00", "millwork"),
     "floor_finishes": CostCode("4000", "09 60 00", "flooring"),
     "envelope_layers": CostCode("2100", "07 46 00", "siding"),
@@ -266,6 +270,12 @@ def _solid_code(key: str, material: str | None) -> CostCode | None:
 
 _WET_SERVICES = frozenset({"water_hot", "water_cold", "drain", "gas"})
 _ELECTRICAL_EQUIPMENT = frozenset({"battery", "inverter", "sauna_heater", "space_heater"})
+#: A placeable in the ``furniture`` domain is casework (millwork) unless its type says it
+#: is bought loose — a ``FURN-*`` tag, or a name that is a sofa, a bed, a rod, a track
+#: (audit:2026-09-12: 34 loose pieces landed on the cabinet sub).
+_LOOSE_FURNITURE_WORDS = ("sofa", "sectional", "chair", "stool", "bed", "table", "lounge",
+                          "curtain", "track", "workbench", "rack", "plant",
+                          "media unit", "wardrobe", "kitchenette", "ikea")
 _SIDING_EDGE_TRIM = frozenset({"fascia", "soffit", "eave_soffit", "corner_trim",
                                "wall_corner", "wrb_counterflashing", "bug_screen",
                                "beam_cap"})
@@ -279,16 +289,26 @@ _CAST_HARDWARE_ROLES = frozenset({"post_base_anchor", "mudsill_anchor",
 
 def _placeable_trade(row: Mapping[str, Any]) -> str | None:
     domain = str(row.get("domain") or "")
+    name = str(row.get("name") or "").lower()
     if domain in ("plumbing", "electrical"):
         return domain
     if domain == "appliance":
-        return "furniture"
+        # A disposer lands on the tailpiece and the trap: the plumber sets it
+        # (audit:2026-09-12#placeables:APPL-DISPOSAL, adjudicated).
+        return "plumbing" if "dispos" in name else "furniture"
     if domain == "furniture":
-        return "millwork"
+        if "access panel" in name:
+            return "drywall"           # set and finished with the board (adjudicated)
+        words = set(re.findall(r"[a-z]+(?: unit)?", name))
+        loose = str(row.get("type") or "").startswith("FURN-") or any(
+            word in words or (" " in word and word in name) for word in _LOOSE_FURNITURE_WORDS)
+        return "furniture" if loose else "millwork"
     if domain == "mechanical":
         services = {str(s) for s in (row.get("services") or ())}
         if services & _WET_SERVICES:
             return "plumbing"          # the water heater
+        if "heat kit" in name:
+            return "mechanical"        # audit:2026-09-12#placeables:EQ-T-GREE-FLEXX-HEATKIT-46KW
         if str(row.get("equipment_kind") or "") in _ELECTRICAL_EQUIPMENT:
             return "electrical"        # inverter, battery, resistance heaters
         return "mechanical"
@@ -329,19 +349,34 @@ def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
     elif section == "install_parts":
         carrier = str(row.get("carrier") or "")
         trade = {"appliance": "electrical", "pipe_accessory": "plumbing"}.get(carrier)
+        if "pairing kit" in str(row.get("part") or "").lower():
+            trade = "furniture"        # ships with the appliance (audit:2026-09-12)
     elif section == "construction_returns":
         category = str(row.get("category") or "")
-        if "masonry" in category:
+        by_material = material_trade(str(row.get("material") or "") or None)
+        if by_material == "landscaping":
+            trade = "landscaping"      # SRW block (audit:2026-09-12#masonry-corner-return)
+        elif "masonry" in category:
             trade = "masonry"
         elif "foam" in category:
             trade = "insulation"
         elif category.startswith("resilient-channel"):
             trade = "drywall"
         else:
-            trade = material_trade(str(row.get("material") or "") or None)
-            trade = trade if trade in ("insulation", "drywall", "masonry") else None
+            trade = by_material if by_material in ("insulation", "drywall", "masonry") else None
     elif section == "floor_finishes" and str(row.get("finish") or "").startswith("tile"):
         trade = "tile"
+    elif section == "openings" and row.get("type") in (None, "", "None"):
+        # A rough opening with no product is the framer's buck (audit:2026-09-12).
+        trade = "framing"
+    elif section == "wood_surfaces":
+        by_material = material_trade(str(row.get("material") or "") or None)
+        if str(row.get("kind") or "") == "floor":
+            trade = "flooring"         # audit:2026-09-12#wood_surfaces:oak
+        elif by_material == "tile":
+            trade = "tile"             # audit:2026-09-12#wood_surfaces:tile
+    elif section == "railings" and str(row.get("style") or "") == "masonry":
+        trade = "masonry"              # audit:2026-09-12#railings:(masonry guard wall)
     if trade is None:
         return None
     return _trade_code(section, trade)

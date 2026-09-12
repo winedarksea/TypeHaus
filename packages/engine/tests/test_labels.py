@@ -12,7 +12,7 @@ from typehaus.takeoff.labels import LabelIndex, describe, role_label
 
 #: Measured on catlin after the labels landed. Lower it as glossary entries land; a rise is
 #: a regression in a formatter or a type that lost its ``name``.
-ID_SHAPED_CEILING = 8
+ID_SHAPED_CEILING = 2
 
 
 def looks_like_an_id(section: str, key: str, description: str) -> bool:

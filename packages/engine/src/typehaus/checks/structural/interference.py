@@ -20,8 +20,8 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
-from typehaus.resolve.sweep import straight_sweep_band
 from typehaus.resolve.framing.truss_wall import TRUSS_CATEGORIES
+from typehaus.resolve.sweep import straight_sweep_band
 
 # Minimum shared plan area (m²) for a real interference. A face/side abutment
 # intersects in a zero-area line; this clears it with margin.

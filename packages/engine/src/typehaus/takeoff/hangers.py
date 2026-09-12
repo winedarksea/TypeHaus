@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 from typehaus.takeoff.hardware_catalog import (
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
@@ -24,7 +25,6 @@ from typehaus.takeoff.hardware_catalog import (
     hardware_row,
 )
 from typehaus.takeoff.hardware_config import HangerDetectionRules
-from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
 
 

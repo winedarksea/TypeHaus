@@ -43,7 +43,13 @@ prices and `costs.toml` files against.
 ## Invariants (pinned by `tests/test_bid_packages.py`)
 
 - Every recipe and shape names a section in `ESTIMATE_PLANS` and a trade in `TRADES`.
-- Every walked BOM row is in exactly one package; catlin never raises.
+- Every walked BOM row is in exactly one package, except `MIRRORED_SOLID_CATEGORIES` — the
+  `structural_solids` volume of a product billed by the foot or the piece in its own section
+  (pipe, ducts, raceways, trim, clamps, guards, connectors) — and the unresolved floor-finish
+  row, which are left out on purpose (`plans/trade-audit-decisions.md`); catlin never raises.
+- Quantities are restated in the unit a sub buys in (`bid_package._shaped_quantity`): wood
+  solids in board feet, brick and block by wall face, PV by the module, trusses each,
+  aggregate by the yard. The takeoff's own figure stays in the `detail` column.
 - Unpriced by default; `priced=True` without an estimate raises.
 - `tests/fixtures/bid_goldens/framing.md` is the framing golden (`--bless` rewrites it; the
   model-hash line is excluded from the comparison); two `--all` runs are byte-identical.

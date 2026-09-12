@@ -51,15 +51,18 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("composite-deck*", "framing"),
     ("aluminum-deck*", "framing"),
     ("plywood-subfloor*", "framing"),
+    ("cabinet-plywood", "millwork"),        # audit:2026-09-12#envelope_layers:cabinet-plywood
     ("*plywood*", "framing"),
+    # An equipment stand's extrusion is set by the HVAC installer with the unit on it
+    # (audit:2026-09-12#concrete:column:EQUIP_STAND_ALUM).
+    ("aluminum-extrusion", "mechanical"),
     ("spf", "framing"), ("kdat", "framing"), ("lvl", "framing"), ("glulam*", "framing"),
     ("*-timber", "framing"), ("douglas*", "framing"),
-    ("cabinet-plywood", "millwork"),
     ("sauna-shiplap", "millwork"),
     ("pvc-panel", "millwork"),
     ("*-tg", "millwork"),
     ("pet-felt*", "millwork"),
-    ("marble-look*", "millwork"),
+    ("marble-look*", "tile"),               # audit:2026-09-12#wood_surfaces:marble-look-panel
 )
 
 
@@ -164,7 +167,10 @@ def solid_trades(category: str | None, material: str | None = None) -> tuple[str
     if key in _CAST_BY_MATERIAL and mat == "concrete":
         return ("concrete",)
     if key in _LAID_BY_MATERIAL and mat and mat != "concrete":
-        return (material_trade(mat) or "framing",)
+        laid = material_trade(mat) or "framing"
+        # FPSF wing foam is laid on the bearing soil in the foundation sequence, by the
+        # foundation contractor (adjudicated audit:2026-09-12#concrete:slab:SG_FROST_WING).
+        return ("concrete",) if laid == "insulation" else (laid,)
     return (trade,)
 
 

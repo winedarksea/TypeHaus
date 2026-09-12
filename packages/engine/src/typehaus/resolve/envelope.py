@@ -35,8 +35,8 @@ from typehaus.resolve.model import (
 from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
-from typehaus.resolve.sweep import rect_profile
 from typehaus.resolve.stairs import _resolve_stair
+from typehaus.resolve.sweep import rect_profile
 
 
 def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:

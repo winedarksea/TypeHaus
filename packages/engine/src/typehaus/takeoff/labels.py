@@ -87,7 +87,33 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("concrete", "ceiling"): "Ceiling", ("concrete", "glazing"): "Glazing",
     ("concrete", "bug_screen"): "Rainscreen bug screen", ("concrete", "screen_slat"): "Screen slat",
     ("concrete", "dowel"): "Dowel", ("concrete", "connector"): "Connector",
+    ("concrete", "ro_stub"): "RO stub", ("concrete", "eave_soffit"): "Eave soffit",
+    ("concrete", "wall_corner"): "Wall corner closure",
+    ("sill_gaskets", "sill-seal-foam"): "Sill seal foam gasket, under the sill plate",
+    ("sill_gaskets", "sill-seal-peel-stick"):
+        "Sill seal peel-and-stick membrane, under the sill plate",
+    ("railings", "(untyped railing)"): "Guard or handrail, type not yet specified",
+    ("railings", "(masonry guard wall)"): "Masonry guard wall",
 }
+
+#: Function words a material name may already carry, so "XPS rigid insulation insulation"
+#: does not happen (audit:2026-09-12, seven rows).
+_FUNCTION_WORDS = ("insulation", "membrane", "sheathing", "cladding", "finish", "barrier",
+                   "board", "panel", "paint", "coating", "stone", "sand", "gravel", "sod")
+
+
+def _profile_label(profile: str) -> str:
+    """``0.416667x4.14235 panel`` -> ``7/16" x 4 1/8" formed panel``; ``deck 11x1.5`` ->
+    ``11" x 1 1/2" board``; lumber sizes pass through."""
+    import re
+
+    m = re.fullmatch(r"(\d[\d.]*)x(\d[\d.]*) panel", profile)
+    if m:
+        return f"{_fraction_in(m.group(1))} x {_fraction_in(m.group(2))} formed panel"
+    m = re.fullmatch(r"deck (\d[\d.]*)x(\d[\d.]*)", profile)
+    if m:
+        return f"{_fraction_in(m.group(1))} x {_fraction_in(m.group(2))} board"
+    return profile
 
 
 def _fraction_in(value: object) -> str:
@@ -160,15 +186,20 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return str(g("name") or labels.types.get(bare) or "") or None
     if section == "framing":
         roles = ", ".join(role_label(str(t)) for t in (g("types") or ()))
-        stock = f"{bare} {labels.material(g('material'))}".strip() if g("material") else bare
+        size = _profile_label(bare)
+        stock = f"{size} {labels.material(g('material'))}".strip() if g("material") else size
         return f"{stock} — {roles}" if roles else None
     if section == "sheet_goods":
         thickness = _fraction_in(g("thickness_in")) if g("thickness_in") else ""
         return f"{labels.material(g('material'))}, {thickness} {g('scope') or ''}".strip(", ")
     if section == "envelope_layers":
         thickness = _fraction_in(g("thickness_in")) if g("thickness_in") else ""
-        return (f"{labels.material(g('material'))} {g('function') or ''}, {thickness} — "
-                f"{g('scope') or ''}").replace(" ,", ",").strip(" —,")
+        name = labels.material(g("material"))
+        function = str(g("function") or "").split(" ")[0]
+        if any(word in name.lower() for word in _FUNCTION_WORDS) or function == "structure":
+            function = ""
+        return (f"{name} {function}, {thickness} — {g('scope') or ''}"
+                .replace(" ,", ",").strip(" —,"))
     if section in ("concrete", "timber"):
         head = KEY_GLOSSARY.get(("concrete", bare), bare.replace("_", " ").capitalize())
         assembly = g("assembly")
@@ -218,7 +249,7 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         kind = KEY_GLOSSARY.get((section, bare), bare.replace("-", " ").capitalize())
         return f"{kind}, {labels.material(g('material'))}"
     if section == "sill_gaskets":
-        return labels.material(bare)
+        return KEY_GLOSSARY.get((section, bare)) or labels.material(bare)
     if section == "drainage":
         kind = KEY_GLOSSARY.get((section, bare), bare.replace("_", " ").capitalize())
         size = f", {_fraction_in(g('size_in'))}" if g("size_in") else ""
@@ -233,6 +264,11 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{labels.material(g('material'))} ({g('kind')})" if g("kind") else None
     if section == "allowances":
         return bare.replace("-", " ").capitalize()
+    if section == "openings":
+        width, height = g("width_in"), g("height_in")
+        size = (f", {_fraction_in(width)} x {_fraction_in(height)}"
+                if width is not None and height is not None else "")
+        return f"Rough opening, no product assigned{size}" if bare in ("None", "") else None
     if section == "data_raceways":
         size = f", {_fraction_in(g('trade_size_in'))}" if g("trade_size_in") else ""
         return f"{KEY_GLOSSARY.get((section, bare), bare)}{size}"
@@ -248,7 +284,9 @@ def describe(section: str, key: str, row: Mapping[str, Any] | None = None,
     ``name``) keep it, with the id appended when the field does not already say it."""
     row = row or {}
     bare = str(key).split(":", 1)[0]
-    for field_name in ("description", "product", "name", "label"):
+    # ``drainage`` rows carry the material ref in ``product``; that is a tag, not a name.
+    readable = () if section == "drainage" else ("description", "product", "name", "label")
+    for field_name in readable:
         value = row.get(field_name)
         # A field that merely repeats the key (an allowance's synthetic row) says nothing.
         if (isinstance(value, str) and value and value != str(key)

@@ -78,6 +78,7 @@ def install_parts_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             assert isinstance(tags, list)
             tags.append(carrier.tag)
     return [
-        {"part": part, "count": int(entry["count"]), "tags": sorted(entry["tags"])}
+        {"part": part, "count": int(entry["count"]), "tags": sorted(entry["tags"]),
+         "carrier": entry["carrier"]}
         for part, entry in sorted(rows.items())
     ]
