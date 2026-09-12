@@ -286,16 +286,27 @@ def test_the_block_lands_on_the_stud_it_is_screwed_to(catlin_model):
     # without standing half its width out past the girt it carries (``GirtFrame.snap``'s
     # ``bounds``), so it takes half the post and that is the right trade. If this ratio ever
     # falls, the grid has drifted rather than a few gable stubs having been crowded.
-    # The band came down from 0.99 to 0.98 on 2026-08-29 and to 0.97 on 2026-09-01, and
-    # both moves are arithmetic rather than drift — the same denominator argument twice. In
-    # 2026-08-29 the attic's east and west girt walls left the model (the knee walls became
-    # 1 1/2" rafter plates), so the FIELD shrank ~15% while the gable stubs — which are the
-    # whole population of legitimate half-laps — did not. In 2026-09-01 the inner tier went
-    # and the block module doubled to 32", halving the field again against a third more
-    # courses; the stubs are a property of the gables and stayed put. 15 blocks out of 548.
+    # ** THIS WAS A RATIO UNTIL 2026-09-11, AND THE RATIO WAS MEASURING THE WRONG THING. **
+    # It came down from 0.99 to 0.98 on 2026-08-29 and to 0.97 on 2026-09-01, and neither
+    # move was drift — both were the same denominator argument. In 2026-08-29 the attic's
+    # east and west girt walls left the model (the knee walls became 1 1/2" rafter plates),
+    # so the FIELD shrank ~15% while the gable stubs — the whole population of legitimate
+    # half-laps — did not. In 2026-09-01 the inner tier went and the block module doubled to
+    # 32", halving the field again against a third more courses. On 2026-09-11 the kitchen's
+    # SEKTION retype moved five WallBacking bands (plan/backing.py), each of which is a
+    # continuous horizontal member that legitimately excludes the blocks at its own
+    # elevation, and the field fell 538 -> 501 for the third time with the stubs untouched.
+    #
+    # So the assertion is the COUNT now, which is what every one of those three notes was
+    # actually defending. The stubs are a property of the gables: fifteen on W-A-N1/N2/N2B/
+    # S1/S2/S3, plus one on W-M-W1B, and the same sixteen blocks before and after each of
+    # those three moves. A count also FAILS on a new half-lap instead of diluting it, which
+    # is the drift this test exists to catch.
     full = sum(1 for lap in laps if lap >= 1.5 * IN - 1e-6)
-    assert full / len(laps) >= 0.97, (
-        f"only {full}/{len(laps)} blocks lap their whole stud")
+    partial = len(laps) - full
+    assert partial <= 16, (
+        f"{partial} of {len(laps)} blocks lap under the whole stud, against 16 known gable "
+        "stubs — the block grid has drifted off the 16 in stud module")
 
 
 def test_the_block_is_three_plies_on_every_other_stud(catlin_model):

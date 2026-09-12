@@ -88,10 +88,11 @@ from typehaus.library.placeables.furniture import (
                                            WORKBENCH_60,
                                            WRITING_DESK,
 )
+from typehaus.library.placeables.sektion import SEKTION_CASEWORK_TYPES
 
 __all__ = [
     "STARTER_FURNITURE_TYPES", "STARTER_APPLIANCE_TYPES", "STARTER_FIXTURE_TYPES",
-    "STARTER_CASEWORK_TYPES",
+    "STARTER_CASEWORK_TYPES", "SEKTION_CASEWORK_TYPES",
     # furniture
     "STANDARD_SOFA", "LOVESEAT", "SECTIONAL", "ARMCHAIR", "COFFEE_TABLE", "END_TABLE",
     "BOOKCASE",

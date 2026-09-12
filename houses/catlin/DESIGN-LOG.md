@@ -1845,3 +1845,54 @@ one of them was about length.
   now rather than a figure derived off grade, so the owner's 36"-out-of-the-yard is a RESULT
   (40" against the -3'-4" yard the site authors) and not the constraint. The tops fell 2",
   stem 9.2865' → 9.1198', which took sliding 1.77 → 1.80 for free.
+
+
+## Kitchen: the IKEA SEKTION ladder
+
+**The decision was already made; the model had not heard.** `PROD-IKEA-SEKTION` and
+`PROD-IKEA-VOXTORP-WH` were registered 2026-09-06 and `prices.toml` priced the whole kitchen
+as SEKTION with VOXTORP fronts, arguing the Section 232 case for it — 25% on wooden cabinets
+from 2025-10-14, the scheduled 50% delayed to 2027-01-01, SEKTION's carcasses made in the US
+and insulated from it. Meanwhile every box in `plan/placeables.py` was a generic `CASE-*`
+type whose four governing constants — 13" upper depth, 42" upper height, 96" tall frame, 12"
+stacker — are **all four absent from SEKTION**. The estimate was priced against boxes nobody
+sells.
+
+**The leg is the only free variable, and it is what closes a ceiling.** Every SEKTION frame
+height is a multiple of five, so a stack totals a multiple of five and 108" is not reachable
+from a 4 1/2" leg: `4.5 + 90 + 15 = 109.5` and `4.5 + 80 + 20 = 104.5`. The owner chose to
+shorten the legs rather than fill at the ceiling, and one leg height has to serve both runs
+or the toe kick steps where the east tall bank meets `N3`. **3" closes both exactly** —
+`3 + 90 + 15` tall, `40 + 15` hung at 53 for the uppers — at the cost of 1 13/16" of sub-top
+under the 3 cm quartz to keep the counter on 36". That build-up is invisible under the stone
+and ordinary fabrication; the legs are screw-adjustable feet behind a cut board.
+
+**Four numbers moved and they moved together.** Uppers 54 → 53, stacker 96 → 93, over-cold
+75 → 78, mixer garage top box a new 76. Backing rails followed at their authored 2" below
+(`plan/backing.py`), and so did the under-cabinet tape (`plan/lighting.py`) — which also
+shifted 2" into the room, because a 15"-deep upper's front face is 2" nearer than a 13" one.
+
+**What 2" of depth cost: `FURN-M-KIT-WE3`.** The 12" box over `WIN-M-KITCH-N` sat in a
+12 3/8" slot between `E2`'s east end and `WN1`'s return. At 15" deep that return reaches 2"
+further west and the slot is 10 3/8"; IKEA's narrowest wall cabinet is 12". It is a scribed
+filler panel now, built in the plane of the upper fronts so `LR-M-KIT-N-WE3` still has
+something to fasten to. This restores rather than breaks the corner rule the kitchen header
+states — east claims the inside corner, north yields at 33'-4" — which is what the base run
+already did; WE3 was the one box that crossed it, and it only fit on 2" it no longer has.
+
+**Four boxes became two over the cold run.** A 30" frame at 78" lands on 108" by itself, so
+the `CASE-TS3278-12` stackers went with the 32 7/8" over-cabinets and there is no joint at
+8'-0" on that wall at all. 78" also gives the Frigidaire hinge 5 1/2" where the old 75" gave
+2 1/2". The bay's 5 3/4" of remainder is split 2 7/8" at each end against a tall cabinet,
+with the two boxes ganged on the appliance joint — not left as one gap floating between them
+where every eye in the room lands.
+
+**The one filler the ladder forces.** The mixer garage wants 72" from a 36" counter to a
+108" ceiling. No sum of 15/20/30/40 reaches 72; the best below is 70. `SEKT-TW24-40` at 36"
+under `SEKT-TW24-30` at 76" tops at 106" and the last 2" is a scribed panel. One element,
+one wall, written down in `notes/ikea_sektion_ladder.md` so nobody tries to close it.
+
+**MAXIMERA stayed out of the model, on purpose.** The engine has one solid carcass per
+cabinet and no drawer vocabulary, so adding drawers would have meant inventing geometry to
+carry a purchasing fact. It is `PROD-IKEA-MAXIMERA` instead, and which boxes are drawer
+stacks is prose beside the instances and in the SEKTION price block.

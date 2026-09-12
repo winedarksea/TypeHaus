@@ -32,6 +32,7 @@ from typehaus.library.doors import STARTER_DOOR_TYPES
 from typehaus.library.hardware import STRUCTURAL_HARDWARE
 from typehaus.library.materials import STARTER_MATERIALS
 from typehaus.library.placeables import (
+    SEKTION_CASEWORK_TYPES,
     STARTER_APPLIANCE_TYPES,
     STARTER_CASEWORK_TYPES,
     STARTER_FIXTURE_TYPES,
@@ -64,6 +65,7 @@ __all__ = [
     "STARTER_FLOOR",
     "STARTER_FURNITURE_TYPES",
     "STARTER_CASEWORK_TYPES",
+    "SEKTION_CASEWORK_TYPES",
     "STARTER_APPLIANCE_TYPES",
     "STARTER_FIXTURE_TYPES",
     "STARTER_DOOR_TYPES",

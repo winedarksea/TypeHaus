@@ -1569,6 +1569,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     deep (3 5/8"), 3/16" proud each face. Door extrados crowns at 81 5/8", window's at
     52 5/8". **Viewer-only** — an exported `.glb` still shows a plain spandrel.
 
+
+### Kitchen: the IKEA SEKTION ladder
+
+- **Every kitchen box is a SEKTION frame** (`library/placeables/sektion.py`, `SEKT-*`), since
+  2026-09-11. The generic `CASE-*` catalog is still the shared catalog and other rooms still
+  use it; the kitchen does not. `notes/ikea_sektion_ladder.md` carries the ladder, its
+  sources and the arithmetic.
+- **A width not on the ladder gets a FILLER, not a type.** Bases 12/15/18/21/24/30/36/38/47;
+  wall frames 15/20/30/40 high in 15" and 24" depths; high frames 80 and 90. Do not invent a
+  size — two house-local types (`FT-KIT-OVER-COLD-3278`, `FT-KIT-MIXER-GARAGE-24`) existed
+  only because the old catalog could not reach a number, and both are retired.
+- **The toe kick is 3", not IKEA's 4 1/2", and ONE height serves both runs.** Every SEKTION
+  frame height is a multiple of five, so nothing closes a 108" ceiling off a 4 1/2" leg. At
+  3": `3 + 90 + 15 = 108` tall, and `40 + 15` hung at 53 = 108 upper. Change the leg and
+  every course in the room moves.
+- **The counter still lands on 36", by build-up.** `3" leg + 30" frame = 33"`, and the
+  Silestone is 3 cm (1.181"), so **1 13/16" of sub-top** goes between them. The base types
+  stay 36" tall because 36" is what the object occupies.
+- **Uppers are 15" deep and hang at 53"; the stacker course is 93".** Not 13"/54"/96". The
+  backsplash is 17", inside NKBA's range. Backing rails moved with them
+  (`plan/backing.py`), as did the under-cabinet tape (`plan/lighting.py`).
+- **Two odd hangs and two fillers, all deliberate.** `FURN-M-KIT-WN1` hangs at 68" above
+  `WIN-M-KIT-E`'s 66" head; the over-cold pair hangs at 78" to clear the Frigidaire hinge.
+  The mixer garage scribes 2" at the ceiling (72" is unreachable) and the cold bay carries
+  2 7/8" at each end (65 3/4" is not two SEKTION widths). Do not try to close either.
+- **The north sink run did not move.** `5/8" scribe + B15 + DW + SINK-36 + B30 = 105 5/8"`
+  was already all SEKTION widths.
+- **MAXIMERA is a product, not a geometry** (`PROD-IKEA-MAXIMERA`). The model has no drawer
+  vocabulary; which boxes are drawer stacks is prose in `prices.toml` and `plan/placeables.py`.
+
 ## The engineering workflow
 
 Catlin carries ~46 engineered items across ten kinds — the requirements outside the

@@ -18,8 +18,9 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_DOOR_TYPES,
-                     STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
+from library import (SEKTION_CASEWORK_TYPES, STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES,
+                     STARTER_DOOR_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
+                     STARTER_RAILING_TYPES)
 
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
                     roof_trim, second_deck, solar, sunken_garden)
@@ -51,7 +52,7 @@ _library = Library(
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
-                     *furniture_types.FURNITURE_TYPES),
+                     *SEKTION_CASEWORK_TYPES, *furniture_types.FURNITURE_TYPES),
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.

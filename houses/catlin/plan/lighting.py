@@ -623,49 +623,50 @@ MAIN_LIGHTING = [
     # Endpoints are literal base joints: WE1 runs the full W-of-window bay 24'-7"..27'-10"
     # and WE2 the E-of-window bay 30'-10"..33'-4" — see plan/placeables.py's kitchen header.
     LightRun(uid="63DMV159RN", tag="LR-M-KIT-N-WE1", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(24, 7), ft(34, 5.375)), pt(ft(27, 10), ft(34, 5.375))),
+             path=(pt(ft(24, 7), ft(34, 3.375)), pt(ft(27, 10), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
     LightRun(uid="0ZE5GQV7CQ", tag="LR-M-KIT-N-WE2", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(30, 10), ft(34, 5.375)), pt(ft(33, 4), ft(34, 5.375))),
+             path=(pt(ft(30, 10), ft(34, 3.375)), pt(ft(33, 4), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    # ** FIFTH RUN, NEW 2026-09-11 — the one 13" upper that had no tape under it. **
-    # FURN-M-KIT-WE3 is the CASE-W12 bridge box over WIN-M-KITCH-N, x 33'-4 3/16"..34'-4
-    # 3/16", and the counter under it is FURN-M-KIT-N4's corner top. It was lit from above by
-    # ED-M-KITCH-CAN3 standing 1 3/8" off its front edge — a can that lit the cabinet doors
-    # and left the 11" of counter under the box in the box's own shadow. CAN3 moved out to
-    # the counter-front line; this replaces what it was nominally doing.
-    # 1'-0" exactly, on the same y=34'-5 3/8" line as WE1/WE2 (1" behind the uppers' front
-    # edge) but at 66", WE3's own hanging height — the same reason LR-M-KIT-E-WN1 is at 66".
-    # It stops at x=34'-4 3/16", 1 3/16" short of LR-M-KIT-E-WN1's x=34'-5 3/8" line, so the
-    # two legs meet at the corner without crossing.
+             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    # ** FIFTH RUN — the corner of the north run that had no tape under it. ** It was under
+    # FURN-M-KIT-WE3, a CASE-W12 bridge box over WIN-M-KITCH-N; WE3 is DELETED with the
+    # SEKTION retype (plan/placeables.py) because a 15"-deep return left its slot at
+    # 10 3/8", and that slot is a scribed filler panel now. The counter under it is still
+    # FURN-M-KIT-N4's corner top, and it is still the piece ED-M-KITCH-CAN3 used to light
+    # from above and shadow — CAN3 moved out to the counter-front line, so this run is what
+    # lights it. The filler is built in the plane of the upper fronts, so there is a soffit
+    # face to fasten to; there was going to be one either way.
+    # 10 3/8", on the same y=34'-3 3/8" line as WE1/WE2 (1" behind the uppers' new front
+    # edge) but at 68", the filler's own bottom — the same reason LR-M-KIT-E-WN1 is at 68".
+    # It stops at x=34'-2 3/8", 1" short of LR-M-KIT-E-WN1's x=34'-3 3/8" line, so the two
+    # legs meet at the corner without crossing.
     LightRun(uid="5SGJTPFRSQ", tag="LR-M-KIT-N-WE3", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(33, 4.1875), ft(34, 5.375)), pt(ft(34, 4.1875), ft(34, 5.375))),
+             path=(pt(ft(33, 4), ft(34, 3.375)), pt(ft(34, 2.375), ft(34, 3.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
     # Runs south to 27'-2 3/8" with FURN-M-KIT-WN4, the 15" box filling the gap the mixer
-    # garage left: the tape runs the whole continuous 13"-deep upper face from the garage's
+    # garage left: the tape runs the whole continuous 15"-deep upper face from the garage's
     # north side to the range, the whole of the peninsula's east counter and FURN-M-KIT-N3's
     # top.
     LightRun(uid="N9243MWVM0", tag="LR-M-KIT-E-WN3", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 5.375), ft(27, 2.375)), pt(ft(34, 5.375), ft(30, 5.375))),
+             path=(pt(ft(34, 3.375), ft(27, 2.375)), pt(ft(34, 3.375), ft(30, 5.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    # 66", not 54": this one is under the REHUNG FURN-M-KIT-WN1. At 54" it would be a strip
-    # of tape across WIN-M-KIT-E's glass.
+             mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    # 68", not 53": this one is under FURN-M-KIT-WN1, which hangs above WIN-M-KIT-E's 66"
+    # head. On the run's own line it would be a strip of tape across the glass.
     LightRun(uid="D1YNDEW7NK", tag="LR-M-KIT-E-WN1", type_ref="ED-T-LT-STRIP24-TASK",
-             path=(pt(ft(34, 5.375), ft(32, 11.375)), pt(ft(34, 5.375), ft(35, 4.375))),
+             path=(pt(ft(34, 3.375), ft(32, 11.375)), pt(ft(34, 3.375), ft(35, 4.375))),
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
-             mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # 12'-5" of tape at 5 W/ft = 62.1 W; x1.25 = 77.6 W — already past ED-T-LT-PSU-60's
-    # 60 VA, which is why the 200 W supply is specified. It loads to ~39% (~36% before
-    # LR-M-KIT-N-WE3's 1'-0" was added). NOT a share of
+             mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
+    # 12'-3 3/8" of tape at 5 W/ft = 61.4 W; x1.25 = 76.8 W — already past ED-T-LT-PSU-60's
+    # 60 VA, which is why the 200 W supply is specified. It loads to ~38%. NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

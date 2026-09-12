@@ -448,66 +448,25 @@ THEATER_BOOKCASE = FurnitureType(
 # someone might reach for, and this one was arithmetic, not a product.
 
 
-# The over-appliance box the retired CASE-OVER-36 can no longer be. Two 36" boxes need 72";
-# the bay is 65 3/4". 32 7/8" is not a cabinet size and never will be — it is an APPLIANCE
-# width, carried up so each box's ends land on its own column's sides and the run divides
-# with no filler at either end. Same 24" DEPTH as CASE-OVER-36 (see the library type's note:
-# base depth so the four fronts line up on x=20'-3 3/8" and the appliances stand 3" proud,
-# clearing their own door swing).
+# FT-KIT-OVER-COLD-3278 (32 7/8" x 24" x 21", hung at 75" over the Frigidaire columns) and
+# FT-KIT-MIXER-GARAGE-24 (24" x 24" x 72", standing on the peninsula at 36") are both
+# RETIRED, 2026-09-11, with the kitchen's move onto the IKEA SEKTION frame ladder
+# (library/placeables/sektion.py, notes/ikea_sektion_ladder.md). Both existed because a
+# number was unreachable on the generic CASE-* catalog, and both numbers are reachable now:
 #
-# ** 21" TALL, HUNG AT 75", NOT 24" AT 72". ** The Frigidaire columns are 71 1/2" high with
-# the hinge topping out at 72 1/2", and the manufacturer requires 1" of clearance above
-# (`_FRIGIDAIRE_SOURCE`, plan/appliance_types.py). A cabinet bottom at 72" stands 1/2" below
-# the hinge and 1 1/2" below the minimum — the door would not open. The kitchen's 96" stacker
-# course fixes the box's TOP; 21" is a stock wall-cabinet height, so the bottom lands at
-# 75" — 2 1/2" over the hinge, and coincidentally the datum of the 75" flush trim kit
-# Frigidaire sells for these columns (deliberately not ordered; see plan/appliance_types.py).
-# The cost is 3" of storage in two cabinets, the price of the door opening.
-OVER_COLD_3278 = FurnitureType(
-    tag="FT-KIT-OVER-COLD-3278", name='32 7/8" over-appliance cabinet',
-    footprint=(inch(32.875), ft(2)), height=inch(21), plan_symbol="wall-cabinet",
-    storage=True, work_surface=False,
-    source=('site-built to the appliance, 2026-08-24 — 32 7/8" is the Frigidaire '
-            'Professional column width, not a cabinet module. Millwork, not a catalog box. '
-            '21" tall hung at 75": the columns clear 72 1/2" at the hinge and the '
-            'manufacturer requires 1" above, so 24" at 72" did not fit.'),
-)
-
-
-# --- the peninsula's mixer garage -----------------------------------------------------
+#  * the over-cold boxes are two SEKT-TW30-30 at 78", with a 2 7/8" scribe at each end of
+#    the 65 3/4" bay. 78 + 30 = 108, so the CASE-TS3278-12 stackers went with them and four
+#    boxes became two. 78" still clears the columns' 72 1/2" hinge by the manufacturer's 1"
+#    and then some.
+#  * the mixer garage is SEKT-TW24-40 at 36" under SEKT-TW24-30 at 76", topping at 106"
+#    with 2" of scribe under the ceiling — 72" is not reachable on a ladder whose frames are
+#    all multiples of five, which is the one place in this kitchen a filler survives.
 #
-# ** WHERE THE STANDING MIXER LIVES, AND IT IS NOT A LIFT. ** The owner's ask — "mixer
-# slides straight out onto the peninsula, outlet in the cabinet" — means the mixer sits at
-# counter level already, in a cabinet ABOVE the top, sliding straight out onto the counter
-# beside it: no lifting a 25 lb machine out of a base cabinet, no holes cut in the stone.
-#
-# 24" x 24" x 72": it stands ON the peninsula's countertop at 36" and runs to the 108"
-# ceiling, so its bottom shelf IS the counter plane and the pull-out slides level. 72" is
-# not a stock cabinet height and cannot be — the dimension is "counter to ceiling" in THIS
-# room. Built as two ganged boxes behind one face frame is fine and is a shop decision; it
-# is modelled as the one article it reads as.
-#
-# It takes the peninsula's EAST 24", against the east wall, which is what makes it possible:
-# a counter-to-ceiling box in the middle of a peninsula would hang from the ceiling with
-# nothing behind it. That end was dead frontage before this — a seated diner's legs would
-# have gone where FURN-M-KIT-PANTRY-S1 stands — so the cabinet costs no seat. Three stools
-# was the honest count before it and still is.
-#
-# No ``clearances``, per the casework rule; the counter in front of it is the counter.
-MIXER_GARAGE_24 = FurnitureType(
-    tag="FT-KIT-MIXER-GARAGE-24", name='24" counter-to-ceiling mixer garage',
-    footprint=(inch(24), inch(24)), height=ft(6),
-    storage=True, work_surface=False, plan_symbol="tall-cabinet",
-    source="Site-built millwork, 36\" to 108\" on FURN-M-KIT-PENINSULA's countertop at its "
-           "east end, against the east wall. Bottom bay is a HEAVY-DUTY FULL-EXTENSION "
-           "PULL-OUT SHELF at the counter plane, rated for a ~30 lb stand mixer plus bowl "
-           "and travelling its full depth, so the machine comes out onto the open counter "
-           "rather than being lifted. Shelf face flush with the counter so nothing has to "
-           "be picked up over a lip. Two GFCI receptacles inside at 42\" "
-           "(ED-M-LIVING-KGF4/KMX1) — WIRE THEM BEFORE THE BOX GOES IN. Upper bays are "
-           "ordinary adjustable shelving; a roll-up or lift-up door keeps a raised door out "
-           "of the room, and is a millwork selection, not a model element.",
-)
+# Deleted rather than left unused, per FT-KIT-COLDSTORE-FILLER's rule above: an
+# unreferenced house-local type reads as a size someone might reach for. The fit-out prose
+# each carried on its `source` — the mixer garage's full-extension pull-out, its flush shelf
+# face and its two in-cabinet GFCI receptacles — moved to plan/placeables.py, where the
+# instances are, and to prices.toml [allowances], where the money is.
 
 
 # --- RM-M-PANTRY's shelf stack --------------------------------------------------------
@@ -845,7 +804,7 @@ FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
-                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_RETURN_3011, OVER_COLD_3278, MIXER_GARAGE_24,
+                   MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_RETURN_3011,
                    PANTRY_SHELVES_70, DINING_8_OPEN_CORNERS, SOFA_84_SEAT_BAND,
                    STUDY_BENCH, STUDY_DESK, FOLD_LEAF,
                    CLOSET_SHELF_ROD_60, CLOSET_SHELF_ROD_84, CLOSET_SHELF_ROD_96,

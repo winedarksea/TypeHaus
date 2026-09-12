@@ -371,6 +371,28 @@ MAIN_PLACEABLES = [
     # The two runs share one inside corner (35'-5 3/8", 35'-5 3/8"); only one 24"-deep run
     # can physically turn it. Post-swap the cooking run (east) claims it and the sink run
     # (north) yields at x=33'-4" — same joint/numbers as before the swap, just mirrored.
+    #
+    # ** EVERY BOX IS AN IKEA SEKTION FRAME (2026-09-11). ** The house had already decided
+    # on SEKTION — plan/products_interior.py registers it, prices.toml prices it and argues
+    # the tariff case for it — while the geometry was still the generic 3"-module CASE-*
+    # catalog, whose 13" upper depth, 42" upper height, 96" tall frame and 12" stacker are
+    # four numbers SEKTION does not sell. The types are SEKT-* now
+    # (library/placeables/sektion.py) and notes/ikea_sektion_ladder.md carries the ladder
+    # and the arithmetic. Three consequences live in this file and nowhere else:
+    #
+    #  * ** THE TOE KICK IS 3", NOT IKEA'S 4 1/2". ** Frame heights are all multiples of
+    #    five, so nothing closes a 108" ceiling off a 4 1/2" leg (4.5 + 90 + 15 = 109 1/2,
+    #    4.5 + 80 + 20 = 104 1/2). At 3" both runs land flush: 3 + 90 + 15 = 108 tall, and
+    #    40 + 15 hung at 53 = 108 upper. The legs are screw-adjustable feet behind a cut
+    #    board, so this costs a saw cut and nothing else. ONE leg height serves both runs
+    #    or the toe kick steps where the east tall bank meets FURN-M-KIT-N3.
+    #  * ** THE COUNTER STILL LANDS ON 36", BY BUILD-UP. ** 3" leg + 30" frame = 33", and
+    #    the Silestone is 3 cm (1.181"), so 1 13/16" of sub-top goes between them. A 3/4"
+    #    ply deck plus a 1" strip, invisible under the stone and ordinary fabrication. The
+    #    base types stay 36" tall because 36" is what the object occupies.
+    #  * ** UPPERS ARE 15" DEEP AND HANG AT 53", NOT 13" AND 54". ** The backsplash is 17",
+    #    inside NKBA's range, and the fronts moved 1" into the room. That 1" is what
+    #    deleted FURN-M-KIT-WE3 — see its note on the north run.
 
     # West run — cold storage and pantry against the centre bearing wall, opening east.
     # North to south: RM-M-PANTRY's south partition, freezer, refrigerator, closet pantry.
@@ -384,9 +406,9 @@ MAIN_PLACEABLES = [
     # The pair shifts SOUTH to meet that face and FURN-M-KIT-COLDSTORE-FILL is deleted with
     # them: the partition takes 4 3/4" off the north end, the filler gives 6 1/4" back, so
     # PANTRYC nets 1 1/2" north — the whole budget, and a bigger move means a shallower
-    # pantry. The bay is 65 3/4" now, EXACTLY two appliance widths, so the run divides with
-    # no filler at either end and the two over-cabinets retype CASE-OVER-36 ->
-    # FT-KIT-OVER-COLD-3278 to match (two 36" boxes no longer fit).
+    # pantry. The bay is 65 3/4", EXACTLY two appliance widths, so the appliances divide it
+    # with no filler at either end. The two over-cabinets DO need filler and cannot avoid
+    # it: 65 3/4" is not two SEKTION widths. See their note below.
     #
     # Fridge/freezer door zones: fronts at x=20'-6 3/8", so a 3'-0" zone reaches 23'-6 3/8"
     # — clear of W-M-PAN-E by 7 1/4" and south of the north counter run. ** DESIGN NOTE, and
@@ -420,11 +442,12 @@ MAIN_PLACEABLES = [
     # PANTRYC closes straight up against the freezer now that the filler is gone. It stands
     # 9 1/8" past W-M-C5's south end at y=25'-10", pre-existing, and draws no finding.
     # Do not "fix" it.
-    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
+    Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="SEKT-HIGH24-90", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(26, 4.875)), rotation=deg(90)),
     # ** THE TALL UNITS GO TO THE CEILING TOO (owner's call). ** The stacker is a 24"-DEEP
-    # box: a tall cabinet's carcass is base depth, so the WS (13") family would float a
-    # shallow box over it and put the step back in a different place.
+    # box: a tall cabinet's carcass is base depth, so the 15"-deep wall family would float
+    # a shallow box over it and put the step back in a different place. 3" toe + 90" frame
+    # tops at 93", and the 15" course closes it: SEKT-TS18-15 at 93".
     #
     # ** BUT NOT THE FULL 24" WIDE (owner's call). ** PANTRYC oversails the south end
     # of W-M-C5 at y=25'-10" — accepted at floor level (see its note above), because a
@@ -434,41 +457,45 @@ MAIN_PLACEABLES = [
     # stop where the WALL stops, not where the cabinet does.
     #
     # The oversail is 5 1/8", so the stacker is the 18" box: south end on y=25'-10 7/8",
-    # 7/8" clear of the wall's end. Above 8'-0" the passage is clear to the ceiling.
+    # 7/8" clear of the wall's end. Above 7'-9" the passage is clear to the ceiling.
     #
     # The 6 1/8" of PANTRYC's top left uncovered is a finished cabinet top, not a hole: it
     # is the same detail as the top of any 96" tall that stops short of a ceiling.
-    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="CASE-TS18-12", room="RM-M-LIVING",
+    Furniture(uid="ZMBSYYRCX5", tag="FURN-M-KIT-PANTRYC-ST", type_ref="SEKT-TS18-15", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(26, 7.875)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
-    # and the appliances stand 3" proud — clearing the fridge/freezer door swing. Retyped
-    # CASE-OVER-36 -> FT-KIT-OVER-COLD-3278: the bay is 65 3/4" and two 36"
-    # boxes need 72". 32 7/8" is the appliance width carried up, so each box's ends land on
-    # its own column's sides.
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+    # Over the two cold boxes: 24" deep like the talls, so all four fronts land on
+    # x=20'-3 3/8" and the appliances stand 3" proud — clearing the fridge/freezer door
+    # swing.
     #
-    # ** THE MOUNT IS 75", NOT 72", BECAUSE 72" DOES NOT FIT. ** The Frigidaire
-    # columns top out at 72 1/2" at the hinge and want 1" of air above; a cabinet bottom at
-    # 72" stood BELOW the hinge. The box shortened 24" -> 21" to match, so the top is still
-    # 96" and the stacker course is untouched. Both numbers are the manufacturer's own and
-    # were already quoted in plan/appliance_types.py — see FT-KIT-OVER-COLD-3278's note in
-    # plan/furniture_types.py for the whole arithmetic. Do not lower these back to 72".
-    Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(31, 6.1875)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
-    Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="FT-KIT-OVER-COLD-3278", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(28, 9.3125)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(75))),
-    # The stacker course over the cold run, 96" -> 108". 24" DEEP, not the 13" of the
-    # counter stackers: a stacker inherits the depth of the box it sits on, and a shallow
-    # box floating over a 24" over-appliance cabinet is the step this course exists to
-    # close. See CASE-TS3278-12's note in library/placeables/casework.py.
-    Furniture(uid="6SVFKKA66M", tag="FURN-M-KIT-OVER-FRIDGE-ST", type_ref="CASE-TS3278-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(31, 6.1875)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    Furniture(uid="WE0EY3QAXB", tag="FURN-M-KIT-OVER-FREEZER-ST", type_ref="CASE-TS3278-12", room="RM-M-LIVING",
-              position=pt(ft(19, 3.375), ft(28, 9.3125)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # ** TWO 30" SEKTION FRAMES AT 78", REPLACING FOUR BOXES (2026-09-11). ** This was a
+    # 32 7/8"-wide house-local FT-KIT-OVER-COLD-3278 at 75" with a CASE-TS3278-12 stacker
+    # over it, per appliance. 32 7/8" is an appliance width, not a cabinet width, and
+    # nobody sells it. The widest SEKTION frame that fits is 30", and 78 + 30 = 108 lands
+    # on the ceiling with no stacker at all.
+    #
+    # ** THE MOUNT IS 78", NOT 72" OR 75", BECAUSE OF THE HINGE. ** The Frigidaire columns
+    # top out at 72 1/2" at the hinge and want 1" of air above (plan/appliance_types.py), so
+    # 72" stood BELOW the hinge and 75" was the old 21"-tall box's answer. 78" is 5 1/2" of
+    # reveal above the hinge — more air than the detail needs, closed by a scribed panel
+    # rather than another box. Do not lower these.
+    #
+    # ** THE 5 3/4" OF FILLER, AND WHERE IT GOES. ** Bay 26'-11 3/8"..32'-11 3/8" is
+    # 65 3/4"; two 30" boxes are 60". The pair is GANGED, with its joint on the appliance
+    # joint at 30'-1 3/4", so each end of the bay takes a 2 7/8" scribe against a tall
+    # cabinet — instead of one 2 7/8" gap floating between the two boxes where every eye
+    # in the room lands. Box centres are 28'-10 3/4" and 31'-4 3/4", NOT the appliance
+    # centres below them.
+    Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="SEKT-TW30-30", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(31, 4.75)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(78))),
+    Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="SEKT-TW30-30", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(28, 10.75)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(78))),
+    # ** THE COLD RUN'S STACKER COURSE IS GONE, AND THAT IS THE POINT (2026-09-11). **
+    # FURN-M-KIT-OVER-FRIDGE-ST/-FREEZER-ST were two CASE-TS3278-12 at 96" closing a 21"
+    # box to the ceiling. A 30" SEKTION wall frame hung at 78" lands on 108" by itself, so
+    # four boxes became two and there is no joint at 8'-0" on this wall at all.
 
     # North run — the sink wall. Composed to centre the sink under
     # WIN-M-KITCH: the run is exactly full (5/8" scribe + B15 + DW + SINK-36 + B30 =
@@ -480,11 +507,11 @@ MAIN_PLACEABLES = [
     # W-M-PAN-E's east face at 24'-6 3/8" lands 5/8" off FURN-M-KIT-E1's carcass below,
     # which is a scribe, so the north counter run reads as starting at the pantry wall
     # exactly as it used to start at the pantry cabinet.
-    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B15", room="RM-M-LIVING",
+    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="SEKT-B15", room="RM-M-LIVING",
               position=pt(ft(25, 2.5), ft(34, 5.375))),
     # The 36" sink base is dead-centred under WIN-M-KITCH now that the window's column
     # moved to it (see storeys/main.py's OPENINGS) — no more off-centre split.
-    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
+    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="SEKT-SINK-B36", room="RM-M-LIVING",
               position=pt(ft(29, 4), ft(34, 5.375))),
     # Disposer hangs off FX-M-KITCH-SINK's drain fitting, at the sink's `drain_position`
     # (29'-4", 35'-0") — the flange, where the trap and SP-M-KITCH already are — not the
@@ -511,73 +538,73 @@ MAIN_PLACEABLES = [
     # a 24" cabinet opening already carries, so the run's arithmetic is unaffected.
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-LG-DISHWASHER", room="RM-M-LIVING",
               position=pt(ft(26, 10), ft(34, 5.375))),
-    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B30", room="RM-M-LIVING",
+    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="SEKT-B30", room="RM-M-LIVING",
               position=pt(ft(32, 1), ft(34, 5.375))),
 
     # North wall uppers — ordered with the base run. Nothing over the sink
     # (the window's there), the pantry (already full height) or the corner filler.
-    Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="CASE-W15", room="RM-M-LIVING",
-              position=pt(ft(25, 2.5), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="VKP909PNS6", tag="FURN-M-KIT-WE2", type_ref="CASE-W24", room="RM-M-LIVING",
-              position=pt(ft(26, 10), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    # ** THE STACKER COURSE. ** The uppers stop at 96" under a 108" ceiling and the owner
-    # asked for them to reach it. 12" is a STOCK wall-cabinet height (the "wall bridge"
-    # box), so 96 + 12 = 108 lands exactly with no custom carcass — which is why the answer
-    # is a second course rather than 54"-tall boxes. One per surviving upper, same width,
-    # same 13" depth, same face.
+    Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="SEKT-W15-40", room="RM-M-LIVING",
+              position=pt(ft(25, 2.5), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    Furniture(uid="VKP909PNS6", tag="FURN-M-KIT-WE2", type_ref="SEKT-W24-40", room="RM-M-LIVING",
+              position=pt(ft(26, 10), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    # ** THE STACKER COURSE, NOW AT 93". ** The 40" uppers hung at 53" stop at 93" under a
+    # 108" ceiling and the owner asked for them to reach it. 15" is the SHORTEST SEKTION
+    # wall frame, so 93 + 15 = 108 lands exactly with no custom carcass — the same trick the
+    # old 96 + 12 played, on a ladder that actually sells the box. One per surviving upper,
+    # same width, same 15" depth, same face.
     #
-    # WN1 and WE3 get none: both hang at 66" and are 42" tall, so they already land on 108".
+    # WN1 gets none: it hangs at 68" and is 40" tall, so it already lands on 108".
     #
-    # ** THE 96" TALL units are stacked to match. ** FURN-M-KIT-PANTRYC and the two east
-    # pantry closets each carry a CASE-TS24-12, so every cabinet in this kitchen lands on
-    # 108" and there is no step anywhere in the room.
-    Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="CASE-WS15-12", room="RM-M-LIVING",
-              position=pt(ft(25, 2.5), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    Furniture(uid="PVRA77ZM2N", tag="FURN-M-KIT-WE2-ST", type_ref="CASE-WS24-12", room="RM-M-LIVING",
-              position=pt(ft(26, 10), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # ** THE TALL units are stacked to match. ** FURN-M-KIT-PANTRYC and the two east pantry
+    # closets are 90" frames on a 3" toe, topping at 93", and each carries a SEKT-TS24-15 or
+    # -TS18-15, so every cabinet in this kitchen lands on 108" and there is no step anywhere
+    # in the room.
+    Furniture(uid="H3N6SVBPQY", tag="FURN-M-KIT-WE1-ST", type_ref="SEKT-W15-15", room="RM-M-LIVING",
+              position=pt(ft(25, 2.5), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+    Furniture(uid="PVRA77ZM2N", tag="FURN-M-KIT-WE2-ST", type_ref="SEKT-W24-15", room="RM-M-LIVING",
+              position=pt(ft(26, 10), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
     # ** THE COURSE RUNS ACROSS THE SINK WINDOW (owner's call). ** The uppers below stop
-    # either side of WIN-M-KITCH, but at 96" that no longer matters: the window's head is
-    # 78" (sill 42" + WT-2736's 36"), so the stacker course clears it by 18" and there is
+    # either side of WIN-M-KITCH, but at 93" that no longer matters: the window's head is
+    # 78" (sill 42" + WT-2736's 36"), so the stacker course clears it by 15" and there is
     # nothing up there to stop for. Filling it turns three floating boxes into one band at
     # the ceiling, which is what the course is for.
     #
     # 36" exactly: x 27'-10" to 30'-10", which is FURN-M-KIT-SINKBASE's own width carried
     # up, so the band's joints land on the base joints below. One stock bridge box, no
     # filler.
-    Furniture(uid="RSP5MTPXPM", tag="FURN-M-KIT-WE4-ST", type_ref="CASE-WS36-12", room="RM-M-LIVING",
-              position=pt(ft(29, 4), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    # ** EAST FLANK, OVER FURN-M-KIT-E2. ** CASE-W30 (E2's own
-    # width carried up) takes x 30'-10"..33'-4", so the joint lands on the base joint below
-    # and stops 1" clear of WIN-M-KITCH-N's RO at 33'-5", the same jamb condition WE3
-    # already has on its far side.
+    Furniture(uid="RSP5MTPXPM", tag="FURN-M-KIT-WE4-ST", type_ref="SEKT-W36-15", room="RM-M-LIVING",
+              position=pt(ft(29, 4), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+    # ** EAST FLANK, OVER FURN-M-KIT-E2. ** SEKT-W30-40 (E2's own width carried up) takes
+    # x 30'-10"..33'-4", so the joint lands on the base joint below and stops 1" clear of
+    # WIN-M-KITCH-N's RO at 33'-5".
     #
-    # Hung at 54" WITH a stacker, not at 66" flush with WE3: the owner's call, and it keeps
-    # the whole run's bottom on one line at 54" and buys a full extra shelf. WE3 stays the
-    # single box stepped up to 66", which now reads as the window's bridge rather than as
-    # one cabinet at an odd height. Tags are chronological here, not west-to-east — WE4-ST
-    # is the window stacker at 29'-4".
-    Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="CASE-W30", room="RM-M-LIVING",
-              position=pt(ft(32, 1), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="CASE-WS30-12",
-              room="RM-M-LIVING", position=pt(ft(32, 1), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    # ** A CABINET OVER THE EXISTING NORTH WINDOW. ** The owner asked for cabinets above
-    # BOTH small windows and WIN-M-KITCH-N has never had one. CASE-W12 spans the 12 3/8"
-    # between FURN-M-KIT-E2's east end (33'-4") and FURN-M-KIT-WN1's 13"-deep return
-    # (34'-4 3/8"), hung at 66" to clear the window head, 42" tall, top at 108".
+    # Hung at 53" WITH a stacker, not stepped up over the window: the owner's call, and it
+    # keeps the whole run's bottom on one line and buys a full extra shelf. East of it is
+    # the corner filler that replaced FURN-M-KIT-WE3 — see the note below. Tags are
+    # chronological here, not west-to-east — WE4-ST is the window stacker at 29'-4".
+    Furniture(uid="2V68CXXCNR", tag="FURN-M-KIT-WE5", type_ref="SEKT-W30-40", room="RM-M-LIVING",
+              position=pt(ft(32, 1), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    Furniture(uid="T0QD4C4KHD", tag="FURN-M-KIT-WE5-ST", type_ref="SEKT-W30-15",
+              room="RM-M-LIVING", position=pt(ft(32, 1), ft(34, 9.875)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+    # ** FURN-M-KIT-WE3 IS DELETED, AND THE 15" UPPER DEPTH IS WHY (2026-09-11). ** It was
+    # a CASE-W12 hung at 66" over WIN-M-KITCH-N, in the 12 3/8" between FURN-M-KIT-E2's
+    # east end (33'-4") and FURN-M-KIT-WN1's 13"-deep return (34'-4 3/8"). SEKTION's
+    # shallow wall frame is 15", not 13", so WN1's return now reaches west to 34'-2 3/8"
+    # and that slot is 10 3/8". IKEA's narrowest wall cabinet is 12" and this module will
+    # not invent a width, so the 10 3/8" is a SCRIBED FILLER PANEL at the inside corner,
+    # 68" to the ceiling, matching WN1's fronts.
     #
-    # It also retires a live clash: a 54" mount for WN1 laps WIN-M-KITCH-N's opening by
-    # 2 5/8" of plan width between 54" and the 66" head. Rehanging WN1 for the EAST window
-    # (below) is what fixes the NORTH one too.
-    Furniture(uid="CC9EXX28N7", tag="FURN-M-KIT-WE3", type_ref="CASE-W12", room="RM-M-LIVING",
-              position=pt(ft(33, 10.1875), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+    # It also restores this kitchen's own corner rule rather than breaking it: the header
+    # above says the east run claims the inside corner and the north run yields at 33'-4",
+    # which is what the BASE run already does. WE3 was the one box that crossed that line,
+    # and it only fit because 13" left it 2" it no longer has.
 
     # East run — the cooking wall. Range and hood sit north of centre, swapped with N3
     # (owner's call; corner filler N4 unchanged). Bases 24" deep (centre x=34'-5 3/8");
@@ -589,7 +616,7 @@ MAIN_PLACEABLES = [
     # the owner asked for the tall "pull-out" bank, which is FURN-M-KIT-PANTRY-S1/S2 below.
     # N3 is 24" (not 36") and slides north to fill exactly what is left between the
     # peninsula and the range, with no filler.
-    Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N4", type_ref="CASE-B30", room="RM-M-LIVING",
+    Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N4", type_ref="SEKT-B30", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(34, 2.375)), rotation=deg(-90)),
     # Product: LG LSIL6336FE induction slide-in
     # (plan/appliance_types.py). `APPL-ELECTRIC-RANGE` covered coil, radiant and induction
@@ -599,7 +626,7 @@ MAIN_PLACEABLES = [
     # which is why the position and the 3"-proud offset above are unchanged.
     Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-LG-INDUCTION-RANGE", room="RM-M-LIVING",
               position=pt(ft(34, 2.375), ft(31, 8.375)), rotation=deg(-90)),
-    Furniture(uid="7YPYR8K5FS", tag="FURN-M-KIT-N3", type_ref="CASE-B24", room="RM-M-LIVING",
+    Furniture(uid="7YPYR8K5FS", tag="FURN-M-KIT-N3", type_ref="SEKT-B24", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(29, 5.375)), rotation=deg(-90)),
 
     # The tall bank, y 21'-2 3/8"..25'-2 3/8" — 48" of it where N1/N2 gave 36" of base, and
@@ -631,64 +658,71 @@ MAIN_PLACEABLES = [
     #     NOT DEEPER: ** the insert is 18 1/2" deep, so every inch of cabinet past ~20" is
     #     dead space BEHIND a rack that cannot reach it, bought by pushing the carcass
     #     further into the aisle. 24" is the depth the product is sold against.
-    #   * HEIGHT needs 75"; a 96" carcass has ~90" of interior. The rack is 74 1/16" tall, so
-    #     it occupies the bottom 75" and leaves roughly 15" above it — a fixed top shelf,
-    #     reached from the step the pantry shelving already is.
+    #   * HEIGHT needs 75"; a SEKTION 90" frame has ~88 1/2" of interior. The rack is
+    #     74 1/16" tall, so it occupies the bottom 75" and leaves roughly 13 1/2" above it —
+    #     a fixed top shelf, reached from the step the pantry shelving already is. The frame
+    #     dropped 96" -> 90" with the SEKTION retype and this is the number that moved; it
+    #     still clears the insert's 75" minimum by 13 1/2".
     #
     # So the carcass type matches FURN-M-KIT-PANTRYC exactly as asked and the insert is a
     # prices.toml [allowances] line — the model has one solid carcass per cabinet, not a
     # fitting-out, so there is no element for it to hang on.
-    Furniture(uid="77DB93R0QZ", tag="FURN-M-KIT-PANTRY-S1", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
+    Furniture(uid="77DB93R0QZ", tag="FURN-M-KIT-PANTRY-S1", type_ref="SEKT-HIGH24-90", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90)),
     # S2 does not lap the corner of FURN-M-DINING's recommended chair zone — the table was
     # retyped, not moved; see the dining paragraph earlier in this file.
-    Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
+    Furniture(uid="K09MANH37J", tag="FURN-M-KIT-PANTRY-S2", type_ref="SEKT-HIGH24-90", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90)),
     # Both to the ceiling with PANTRYC — see its note on the west run.
-    Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
+    Furniture(uid="4WFET9VXWK", tag="FURN-M-KIT-PANTRY-S1-ST", type_ref="SEKT-TS24-15", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(24, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
-    Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="CASE-TS24-12", room="RM-M-LIVING",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
+    Furniture(uid="785R3FDGRK", tag="FURN-M-KIT-PANTRY-S2-ST", type_ref="SEKT-TS24-15", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(22, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
 
-    # East wall uppers, 13" deep. With the peninsula, FURN-M-KIT-WN2
+    # East wall uppers, 15" deep. With the peninsula, FURN-M-KIT-WN2
     # (which was over N2, at y 25'-5 3/8"..27'-11 3/8") is gone — the peninsula's east end
     # is under it and the tall bank south of that is 96" already, so there is nothing left
     # on this wall for an upper to hang over between the peninsula and the range.
     #
-    # ** WN1 REHANGS 54" -> 66". ** WIN-M-KIT-E's head is 66" and WN1 spans exactly the
-    # y-range the new window sits in, so at 54" it would be a cabinet across the glass.
-    # 66 + 42 = 108 = the ceiling, so this box needs no stacker — and the same move clears
-    # WIN-M-KITCH-N around the corner (see FURN-M-KIT-WE3 above).
-    Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="CASE-W30", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(34, 2.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
+    # ** WN1 HANGS AT 68", ABOVE WIN-M-KIT-E'S 66" HEAD. ** At the run's 53" it would be a
+    # cabinet across the glass. 68 + 40 = 108 = the ceiling, so this box needs no stacker,
+    # and the 2" between the window head and the cabinet bottom is jamb return and casing —
+    # ordinary wall, not a filler. It was 66" against a 42"-tall CASE-W30; the SEKTION frame
+    # is 40", so the box rose 2" rather than leaving 2" of scribe at the ceiling.
+    #
+    # It claims the inside corner, 15" deep to x=34'-2 3/8", which is the corner rule this
+    # file's header states and is what deleted FURN-M-KIT-WE3.
+    Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="SEKT-W30-40", room="RM-M-LIVING",
+              position=pt(ft(34, 9.875), ft(34, 2.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(68))),
     # Recirculating canopy hood, 30" over the cooktop: mount 5'-6" on a 3' range. Moved north
     # with the range.
     Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
               position=pt(ft(34, 7.375), ft(31, 8.375)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
     # WN3 follows N3: 30" -> 24" and north to 29'-5 3/8", so upper and base share a face.
-    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="CASE-W24", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(29, 5.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="FTTPRYMZEH", tag="FURN-M-KIT-WN3-ST", type_ref="CASE-WS24-12", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(29, 5.375)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="SEKT-W24-40", room="RM-M-LIVING",
+              position=pt(ft(34, 9.875), ft(29, 5.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    Furniture(uid="FTTPRYMZEH", tag="FURN-M-KIT-WN3-ST", type_ref="SEKT-W24-15", room="RM-M-LIVING",
+              position=pt(ft(34, 9.875), ft(29, 5.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
     # ** WN4 FILLS THE 15" THE GARAGE LEFT ** (owner's call): y 27'-2 3/8"..28'-5 3/8",
     # between FURN-M-KIT-MIXER-GARAGE's north face and WN3's south face, over the peninsula's
-    # east end. 15" is a stock wall-cabinet width and is why this is a second box rather than
+    # east end. 15" is a stock SEKTION wall width and is why this is a second box rather than
     # a wider WN3 — extending WN3 south would have made it 39", which is not a size anyone
-    # sells. It carries the same 54" mount, the same 13" depth and the same stacker course as
-    # the rest of the run, so the only step on this wall is the 11" from the garage's 24"
-    # depth out to the uppers' 13" — which is what a tall cabinet beside uppers always does.
-    Furniture(uid="0J52FYZBY6", tag="FURN-M-KIT-WN4", type_ref="CASE-W15", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(27, 9.875)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="N8BZY1M8FA", tag="FURN-M-KIT-WN4-ST", type_ref="CASE-WS15-12", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(27, 9.875)), rotation=deg(-90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(96))),
+    # sells. It carries the same 53" mount, the same 15" depth and the same stacker course as
+    # the rest of the run, so the only step on this wall is the 9" from the mixer garage's
+    # 24" depth out to the uppers' 15" — which is what a tall cabinet beside uppers always
+    # does.
+    Furniture(uid="0J52FYZBY6", tag="FURN-M-KIT-WN4", type_ref="SEKT-W15-40", room="RM-M-LIVING",
+              position=pt(ft(34, 9.875), ft(27, 9.875)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(53))),
+    Furniture(uid="N8BZY1M8FA", tag="FURN-M-KIT-WN4-ST", type_ref="SEKT-W15-15", room="RM-M-LIVING",
+              position=pt(ft(34, 9.875), ft(27, 9.875)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(93))),
 
     # ** THE ISLAND BECAME A PENINSULA. ** The prior 5'x3' CASE-ISLAND-60 island's aisle to
     # the range front was 3'-5 3/8", against the 42" a work aisle wants. Landing the east
@@ -760,16 +794,35 @@ MAIN_PLACEABLES = [
     # ** NOT A LIFT IN A BASE BAY. ** The mixer is meant to be AT counter level already and
     # slide out level onto the open counter west of it — no lifting 25 lb up out of a base,
     # and no holes cut in stone.
-    # The bottom bay is a heavy-duty full-extension pull-out at the counter plane; that and
-    # the two receptacles inside it are on the type's `source` (plan/furniture_types.py) and
-    # in prices.toml [allowances].
+    # ** THE FIT-OUT, which used to live on the retired FT-KIT-MIXER-GARAGE-24's `source`
+    # and now lives here, because the SEKT-* types are library frames and carry no house
+    # fit-out. ** The bottom bay is a HEAVY-DUTY FULL-EXTENSION PULL-OUT SHELF at the
+    # counter plane, rated for a ~30 lb stand mixer plus bowl and travelling its full depth,
+    # with its face flush with the counter so nothing is lifted over a lip. Two GFCI
+    # receptacles inside at 42" (ED-M-LIVING-KGF4/KMX1) — ** WIRE THEM BEFORE THE BOX GOES
+    # IN. ** Upper bays are ordinary adjustable shelving; a roll-up or lift-up door keeps a
+    # raised door out of the room and is a millwork selection, not a model element. The
+    # money is in prices.toml [allowances].
     #
     # It can only go at this end: a counter-to-ceiling box anywhere else on the peninsula
     # hangs from the ceiling with nothing behind it. Against the east wall it is a normal
     # tall cabinet that happens to start at 36".
-    Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="FT-KIT-MIXER-GARAGE-24",
+    # ** IT IS TWO BOXES NOW, AND 2" OF SCRIBE IS UNAVOIDABLE (2026-09-11). ** It was one
+    # house-local FT-KIT-MIXER-GARAGE-24, a 72"-tall carcass invented to span 36" to the
+    # ceiling exactly. 72" is not reachable on the SEKTION wall ladder and never will be:
+    # every wall frame is a multiple of five (15/20/30/40), so a stack from a 36" counter
+    # reaches 70" and stops. 40" + 30" tops at 106" and the last 2" is a scribed panel
+    # under the ceiling — the one place in this kitchen where a filler is the answer, and
+    # it is one element against one wall.
+    #
+    # The 40" frame goes on the BOTTOM: that is the bay the mixer slides out of at counter
+    # level, and the pull-out and its two receptacles want the taller of the two.
+    Furniture(uid="5T1VTCY3EV", tag="FURN-M-KIT-MIXER-GARAGE", type_ref="SEKT-TW24-40",
               room="RM-M-LIVING", position=pt(ft(34, 5.375), ft(26, 2.375)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+    Furniture(uid="34W6S0G5EX", tag="FURN-M-KIT-MIXER-GARAGE-UP", type_ref="SEKT-TW24-30",
+              room="RM-M-LIVING", position=pt(ft(34, 5.375), ft(26, 2.375)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(76))),
 
     # --- RM-M-PANTRY (storeys/main.py) -----------------------------------
     # The shelf stack, wall face to wall face across the room's whole 70 1/4" clear span,

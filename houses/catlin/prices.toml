@@ -1916,10 +1916,16 @@
 "APPL-LG-DISHWASHER" = { material = { low = 679, high = 1149 }, labour = { low = 150, high = 350 } }  # 1 ea. LDTS5552S, $679 stainless on LG.com against a $1,149 MSRP
 "APPL-LG-INDUCTION-RANGE" = { material = { low = 1150, high = 2999 }, labour = { low = 100, high = 250 } }  # 1 ea. LSIL6336FE. The widest bracket of the three and deliberately so: $1,150 was a Labor Day promo, typical street is $1,800-2,300, list is $2,999. Budget to the middle, not the low
 "APPL-LG-WASHTOWER" = { material = { low = 2499, high = 3399 }, labour = { low = 120, high = 320 } }  # 1 ea. WKHC252HBA, $2,599 Black Steel / $2,499 White on LG.com against a $3,399 MSRP. A heat-pump WashTower is roughly 2x the old stacked-pair allowance — that is the ventless dryer being bought, not an estimating error
-"CASE-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 1 ea
-"CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
-"CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 2 ea
-"CASE-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 2 ea
+# ** EVERY KITCHEN CASE-* ROW BELOW IS AT 0 ea SINCE 2026-09-11. ** The kitchen moved onto
+# the IKEA SEKTION frame ladder (SEKT-* rows further down, library/placeables/sektion.py,
+# notes/ikea_sektion_ladder.md), which is the system the [placeables] basis note above has
+# specified and priced the whole time. The rows stay for the reason CASE-ISLAND-60's does:
+# they are shared-catalog products and the next house may want them. The two that keep
+# a count — CASE-PANTRY-CLOSET-72 and CASE-PENINSULA-120 — are not kitchen cabinets.
+"CASE-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-B36" = { material = { low = 220, high = 550 }, labour = { low = 90, high = 220 } }  # 0 ea
 # CASE-ISLAND-60 has NO instance since 2026-08-24 — FURN-M-KIT-ISLAND became a peninsula.
 # The row stays: it is a shared-catalog product and the next house may want it.
 "CASE-ISLAND-60" = { material = { low = 500, high = 1400 }, labour = { low = 250, high = 600 } }  # 0 ea
@@ -1931,36 +1937,36 @@
 "CASE-OVER-36" = { material = { low = 150, high = 380 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The PANTRY-CLOSET rows are read as built-in casework at the same $/LF as the kitchen
 # boxes. If they are in fact wire/melamine closet systems they are 3-5x too high.
-"CASE-PANTRY-CLOSET-24" = { material = { low = 200, high = 550 }, labour = { low = 120, high = 300 } }  # 1 ea
+"CASE-PANTRY-CLOSET-24" = { material = { low = 200, high = 550 }, labour = { low = 120, high = 300 } }  # 0 ea
 "CASE-PANTRY-CLOSET-48" = { material = { low = 350, high = 950 }, labour = { low = 120, high = 300 } }  # 1 ea
 "CASE-PANTRY-CLOSET-72" = { material = { low = 500, high = 1400 }, labour = { low = 120, high = 300 } }  # 1 ea
-"CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-SINK-BASE-36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 0 ea
 # Both TALL-PANTRY rows lost their instances 2026-08-24: FURN-M-KIT-TALL-N/-S stood where
 # RM-M-PANTRY now is. Catalog rows, kept.
 "CASE-TALL-PANTRY-12" = { material = { low = 240, high = 600 }, labour = { low = 120, high = 300 } }  # 0 ea
 "CASE-TALL-PANTRY-18" = { material = { low = 280, high = 700 }, labour = { low = 120, high = 300 } }  # 0 ea
 # 12" is the narrowest wall box on the ladder; scaled off CASE-W24 by width.
-"CASE-W12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-W12" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The other rung the wall ladder was missing. The BASE ladder has had CASE-B15 since the
 # beginning; 15" is stock in both families and only turned up here when the mixer garage
 # left a 15" gap on the east wall.
-"CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 2 ea
-"CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 3 ea
-"CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+"CASE-W15" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-W24" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-W30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The stacker course, 96" -> 108". A 12"-high "wall bridge" box is a stock item and cheap
 # per unit; the labour is NOT proportionally cheap, because every one of them is hung at
 # 8'-0" off a ladder against a course that has to line up with the box under it. Labour is
 # therefore carried at the full wall-cabinet rate, not scaled down with the material.
-"CASE-WS15-12" = { material = { low = 55, high = 140 }, labour = { low = 90, high = 220 } }  # 2 ea
-"CASE-WS24-12" = { material = { low = 75, high = 190 }, labour = { low = 90, high = 220 } }  # 2 ea
-"CASE-WS30-12" = { material = { low = 90, high = 225 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-WS15-12" = { material = { low = 55, high = 140 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-WS24-12" = { material = { low = 75, high = 190 }, labour = { low = 90, high = 220 } }  # 0 ea
+"CASE-WS30-12" = { material = { low = 90, high = 225 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The 36" bridge box, added 2026-08-24 so the course runs across WIN-M-KITCH instead of
 # stopping either side of it. Stock width, material scaled off CASE-WS30-12 by width.
-"CASE-WS36-12" = { material = { low = 110, high = 270 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-WS36-12" = { material = { low = 110, high = 270 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The 24"-DEEP stacker, closing the three 96" tall cabinets to the 108" ceiling (owner,
 # 2026-08-24). Same width as CASE-WS24-12 at twice the depth, so material scales and labour
 # does not — it is the same box hung at the same height off the same ladder.
-"CASE-TS24-12" = { material = { low = 130, high = 320 }, labour = { low = 90, high = 220 } }  # 2 ea
+"CASE-TS24-12" = { material = { low = 130, high = 320 }, labour = { low = 90, high = 220 } }  # 0 ea
 # The narrow rung of the same course (owner, 2026-08-24): FURN-M-KIT-PANTRYC-ST stepped
 # 24" -> 15" so the stacker stops at the end of W-M-C5 rather than soffiting the passage.
 # Material is CASE-WS15-12 carried to base depth at the same 1.73x CASE-TS24-12 pays over
@@ -1969,10 +1975,70 @@
 # ...and its 18" sibling, which is the one actually hung: W-M-PAN-S moved 4" north later the
 # same day, the cold run went with it, and PANTRYC's oversail shrank from 9 1/8" to 5 1/8".
 # The 15" row stays for catalog reuse — the library carries the whole rung ladder.
-"CASE-TS18-12" = { material = { low = 110, high = 275 }, labour = { low = 90, high = 220 } }  # 1 ea
+"CASE-TS18-12" = { material = { low = 110, high = 275 }, labour = { low = 90, high = 220 } }  # 0 ea
 # 24" deep rather than 13", over the cold columns, and 32 7/8" is not a stock width — a
 # made-to-size box, so the material carries the house-local millwork premium.
-"CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 2 ea
+"CASE-TS3278-12" = { material = { low = 145, high = 360 }, labour = { low = 90, high = 220 } }  # 0 ea
+
+# --- IKEA SEKTION, the boxes this kitchen actually orders (2026-09-11) --------------------
+#
+# Priced off the CASE-* rows above rather than off IKEA's own sticker, deliberately: the
+# [placeables] basis note has always read these as INSTALLED casework at $75-200/LF, and a
+# SEKTION carcass arrives flat-packed with no doors, no drawers and no hardware in the
+# number. The material bands here are the same $/box the generic catalog carried at the same
+# size, which is where the $4,000-5,500 system band above comes from; the VOXTORP fronts,
+# the MAXIMERA drawers (PROD-IKEA-MAXIMERA, plan/products_interior.py) and the TopKnobs
+# pulls are inside that band and not separately lined out.
+#
+# Labour does NOT come down with a flat pack. It goes the other way — a frameless box is
+# assembled on site before it is hung — so every row carries the full wall/base rate the
+# CASE-* rows carry. The 3" toe kick and the 1 13/16" counter build-up are carpentry, not
+# cabinet: they are [framing] and the countertop's own substrate.
+#
+# ** WHICH BOXES ARE DRAWER STACKS ** (the TODO's actual question, and the model has no
+# drawer vocabulary to answer it in): SEKT-B24 and SEKT-B30 on the north and east runs are
+# three-drawer MAXIMERA stacks; SEKT-B15 is a two-drawer; SEKT-SINK-B36 is doors, because
+# the bowls take the space. MAXIMERA fits every base and pantry width here EXCEPT a 12"
+# base, of which this kitchen has none.
+
+# Bases. Same box at the same size as the CASE-B* rows, so the same material.
+"SEKT-B15" = { material = { low = 130, high = 330 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B24" = { material = { low = 170, high = 420 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-B30" = { material = { low = 190, high = 480 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-SINK-B36" = { material = { low = 230, high = 570 }, labour = { low = 90, high = 220 } }  # 1 ea
+# 15"-deep wall frames, 40" tall. The CASE-W* boxes were 42" tall and 13" deep; 2" shorter
+# and 2" deeper is a wash on material, so the bands are carried straight across.
+"SEKT-W15-40" = { material = { low = 115, high = 290 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W24-40" = { material = { low = 140, high = 350 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W30-40" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+# The stacker course at 93". 15" tall where CASE-WS*-12 was 12", so material scales 1.25x;
+# labour does not scale at all, for the reason the CASE-WS* note above gives — every one of
+# these is hung off a ladder against a course that has to line up with the box under it.
+"SEKT-W15-15" = { material = { low = 70, high = 175 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W24-15" = { material = { low = 95, high = 240 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-W30-15" = { material = { low = 115, high = 280 }, labour = { low = 90, high = 220 } }  # 1 ea
+"SEKT-W36-15" = { material = { low = 140, high = 340 }, labour = { low = 90, high = 220 } }  # 1 ea
+# 24"-deep wall frames. Scaled off CASE-OVER-36 (36x24x24 at 150/380) by face area, which is
+# what a carcass of a given depth costs.
+"SEKT-TW30-30" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-TW24-40" = { material = { low = 170, high = 430 }, labour = { low = 140, high = 340 } }  # 1 ea
+"SEKT-TW24-30" = { material = { low = 130, high = 325 }, labour = { low = 140, high = 340 } }  # 1 ea
+# The mixer garage's two boxes carry the OLD FT-KIT-MIXER-GARAGE-24 labour, not the wall
+# rate: they are stood on a finished stone counter against a finished wall, scribed to the
+# ceiling, with two receptacles inside — which is careful work whatever the carcass cost.
+#
+# 90" high frames, replacing CASE-PANTRY-CLOSET-24 in the kitchen. 6" shorter, so ~5% off
+# the material; the labour is identical, because setting a 7'-6" box and a 7'-9" box is the
+# same two-person lift.
+"SEKT-HIGH24-90" = { material = { low = 190, high = 520 }, labour = { low = 120, high = 300 } }  # 3 ea
+# The 15" course over them, 24" deep. CASE-TS24-12 and -TS18-12 at the same 1.25x the extra
+# 3" of height buys.
+"SEKT-TS24-15" = { material = { low = 160, high = 400 }, labour = { low = 90, high = 220 } }  # 2 ea
+"SEKT-TS18-15" = { material = { low = 140, high = 345 }, labour = { low = 90, high = 220 } }  # 1 ea
+# The rest of the SEKTION ladder (SEKT-B12/B18/B36, the 12"/18"/36" wall frames, SEKT-TW36-30,
+# SEKT-HIGH18-90, SEKT-HIGH30-90, SEKT-TS30-15) has no instance in this house and no row
+# here. Add one when a box is added; an unpriced type is silently DROPPED from the takeoff
+# and the total falls, which looks like a cheaper kitchen and is not one.
 "ED-T-AP-CEILING" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-AP-WALL" = { material = { low = 100, high = 350 }, labour = { low = 90, high = 200 } }  # 1 ea
 "ED-T-AP-OUTDOOR" = { material = { low = 150, high = 450 }, labour = { low = 90, high = 200 } }  # 1 ea
@@ -2241,17 +2307,12 @@
 # is shop time plus the set; the 2x4 framed behind the west panel is [framing].
 # FT-KIT-COLDSTORE-FILLER was here and is DELETED with its type (2026-08-24): the cold bay
 # is 65 3/4" now, exactly two appliance widths, so there is no remainder to scribe.
-# Site-built to the appliance: a 32 7/8" x 24" x 21" over-cabinet where a 36" stock box no
-# longer fits. Priced off CASE-OVER-36 with a made-to-size premium on the material. The
-# box lost 3" of height on 2026-08-24 (it has to clear the Frigidaire hinge) and the
-# material comes down with it; the labour does not, because it is the same hang.
-"FT-KIT-OVER-COLD-3278" = { material = { low = 155, high = 390 }, labour = { low = 90, high = 220 } }  # 2 ea
-# The mixer garage (owner, 2026-08-24): 24" x 24" x 72", standing on the peninsula's
-# countertop against the east wall. Priced as a tall cabinet's worth of carcass — it is
-# three quarters the height of a CASE-PANTRY-CLOSET-24 at the same width and depth — with a
-# made-to-size premium, because 72" is "counter to ceiling in this room" and not a stock
-# height. The pull-out shelf and the door hardware are [allowances], not this row.
-"FT-KIT-MIXER-GARAGE-24" = { material = { low = 240, high = 650 }, labour = { low = 140, high = 340 } }  # 1 ea
+# FT-KIT-OVER-COLD-3278 (a site-built 32 7/8" over-cabinet) and FT-KIT-MIXER-GARAGE-24 (a
+# 72" counter-to-ceiling box) were here and are DELETED with their types on 2026-09-11: both
+# were custom sizes invented because the generic catalog could not reach a number, and both
+# numbers are reachable on the SEKTION ladder. The over-cold pair is two SEKT-TW30-30 and the
+# mixer garage is SEKT-TW24-40 under SEKT-TW24-30. The garage's pull-out shelf and door
+# hardware stay in [allowances], where they always were.
 # RM-M-PANTRY's shelf stack, and it is NOT a closet system — see the type's `source` and
 # notes/pantry_climbable_shelving.md. ** MATERIAL FELL BY ~2/3 ON 2026-08-29 AND THE SHELVES
 # DID NOT GET CHEAPER. ** The twelve shelves are 1 1/2" solid white oak off the owner's own

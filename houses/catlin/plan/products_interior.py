@@ -314,6 +314,25 @@ IKEA_VOXTORP_WHITE = Product(
            "cannot see it, which is why real pulls (PROD-TOPKNOBS-BAR-SS) are still bought. "
            "Do NOT pay IKEA $459 a door for VEDHAMN oak when you mill oak.",
 )
+# ** THE DRAWER BOX IS A SEPARATE PURCHASE FROM THE CABINET, AND THAT IS THE POINT. ** A
+# SEKTION base frame arrives as a box with no interior: what goes in it is bought by the
+# drawer, which is why the kitchen's drawer decision is a product here and not a geometry in
+# the model. The model has no drawer vocabulary at all — one solid carcass per cabinet — so
+# WHICH boxes are drawer stacks is recorded in prose, in prices.toml's SEKTION block and in
+# plan/placeables.py beside the instances.
+IKEA_MAXIMERA = Product(
+    tag="PROD-IKEA-MAXIMERA", brand="IKEA", model="MAXIMERA",
+    name="MAXIMERA soft-close full-extension drawer, high/medium/low",
+    source="IKEA US product literature, read 2026-09-11. ** MAXIMERA, NOT FORVARA: ** "
+           "FORVARA is the basic drawer and is what a SEKTION base ships with if nobody "
+           "chooses; MAXIMERA is full-extension with integrated soft-close, and full "
+           "extension is the whole argument for a drawer base over a door base — a drawer "
+           "you cannot pull all the way out is a cupboard with a lid. Fronts sit on the "
+           "5/10/15 in. ladder, so a 30 in. base is 5+10+15 or 10+10+10 and the fronts "
+           "line up across a run either way. Fits every base and pantry width in this "
+           "kitchen; the two it does NOT fit are a 12 in. base and a corner base, and this "
+           "house has neither. Pulls are PROD-TOPKNOBS-BAR-SS, one size UP on a drawer.",
+)
 TOPKNOBS_BAR_PULL = Product(
     tag="PROD-TOPKNOBS-BAR-SS", brand="Top Knobs", model="Solid Bar Pull, SS304",
     name="Round solid bar cabinet pull, stainless steel 304",
@@ -422,7 +441,7 @@ INTERIOR_PRODUCTS = (
     DELTA_TRINSIC_FILLER, DELTA_R2707_ROUGH,
     KOHLER_CAXTON_BASIN, SWAN_CONTOUR_TOP,
     HARVIA_CILINDRO_PC110E, HARVIA_XENIO_CX170, CARIITTI_FIBRE_KIT,
-    IKEA_SEKTION, IKEA_VOXTORP_WHITE, TOPKNOBS_BAR_PULL,
+    IKEA_SEKTION, IKEA_VOXTORP_WHITE, IKEA_MAXIMERA, TOPKNOBS_BAR_PULL,
     SCHLAGE_LATITUDE, YALE_ASSURE_2,
     SILESTONE_ET_CALACATTA, MARAZZI_MODERN_FORMATION, TILEBAR_BRONX_WHITE,
     SCHLUTER_KERDI_LINE_VARIO,
