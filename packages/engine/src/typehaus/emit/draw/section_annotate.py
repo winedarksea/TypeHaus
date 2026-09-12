@@ -62,7 +62,7 @@ from typehaus.emit.draw.typography import (
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
 from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 
 __all__ = ["annotate_building_section"]
 
@@ -356,7 +356,10 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane) -> 
         width_in = len(name) * ANNO_PT * CHAR_ASPECT * per_pt
         if (u1 - u0) / M_PER_IN < width_in:
             continue
-        z_in = room_floor_elevation(model, room) / M_PER_IN + _ROOM_LABEL_RISE_IN
+        # Off the FINISHED floor: the label rise is a clearance above the plane the
+        # section draws a person standing on, and ``clear_height_m`` under it is now
+        # measured from the same plane.
+        z_in = room_finished_floor_elevation(model, room) / M_PER_IN + _ROOM_LABEL_RISE_IN
         centre_u = (u0 + u1) / 2.0 / M_PER_IN
         b.add(Text(anchor=(centre_u, z_in), content=name,
                    height=ANNO_IN, height_pt=ANNO_PT, layer="A-AREA-IDEN",

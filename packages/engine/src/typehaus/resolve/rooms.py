@@ -12,6 +12,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
 from typehaus.resolve.roof_geometry import room_head_limited_area_m2
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.room_openings import room_glazing_areas
 
 
@@ -126,8 +127,18 @@ def wall_lining_overrides(plan: PlanModel,
 
 
 def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
-    """Claim faces by room seeds; derive clear-face polygons + areas; check closure."""
+    """Claim faces by room seeds; derive clear-face polygons + areas; check closure.
+
+    **Two passes, and the split is load-bearing.** A room's clear height is measured from
+    the plane a foot lands on, and ``walking_surface.surfaces_at`` reads a room's
+    ``floor_finish`` off ``model.rooms`` to find the covering's depth. So a head derived
+    while the list is still filling sees the subfloor sheet and not the covering — 3/4"
+    instead of the 1 1/2" that is really there over a wood floor, and the answer would
+    depend on which storey happened to resolve first. Every room is appended first; only
+    then is any head derived.
+    """
     findings: list[Finding] = []
+    pending: list[tuple[int, object, Polygon]] = []
     for storey in plan.storeys:
         faces = _storey_faces(plan, storey.tag)
         for room in (e for e in plan.storey_elements(storey.tag)
@@ -152,13 +163,11 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             if clear.is_empty or clear.geom_type != "Polygon":
                 clear = face
             ring = [(x, y) for x, y in clear.exterior.coords[:-1]]
-            head, soffit_m2 = _clear_head(plan, model, storey, clear)
             resolved = ResolvedRoom(
                 uid=room.uid, tag=room.tag, storey=storey.tag,
                 occupancy=room.occupancy.value, conditioned=room.conditioned,
                 clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
                 finish_zones=_finish_zones(plan, storey.tag, room, clear),
-                clear_height_m=head, soffit_area_m2=soffit_m2,
                 head_limited_area_m2=room_head_limited_area_m2(
                     model, ring, storey.elevation.meters),
             )
@@ -166,12 +175,22 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             if glazing is not None:
                 resolved = replace(resolved, glazed_area_m2=glazing[0],
                                    operable_glazed_area_m2=glazing[1])
+            pending.append((len(model.rooms), storey, clear))
             model.rooms.append(resolved)
+    # Second pass: the finished-floor datum needs the whole room list (see the docstring).
+    # Floors resolve before rooms in ``resolve/pipeline.py``, so the decks themselves are
+    # already there; it is only the coverings that had to wait.
+    for index, storey, clear in pending:
+        room = model.rooms[index]
+        head, soffit_m2 = _clear_head(plan, model, storey, clear,
+                                      room_finished_floor_elevation(model, room))
+        model.rooms[index] = replace(room, clear_height_m=head, soffit_area_m2=soffit_m2)
     return findings
 
 
-def _clear_head(plan: PlanModel, model, storey, clear: Polygon) -> tuple[float | None, float]:
-    """``(clear height above this storey's datum, soffited area)`` for a room face.
+def _clear_head(plan: PlanModel, model, storey, clear: Polygon,
+                datum: float) -> tuple[float | None, float]:
+    """``(clear height above the room's FINISHED floor, soffited area)`` for a room face.
 
     **The soffit is the point.** ``ceiling_over._is_ceiling_deck`` admits a ``FloorSystem``
     and a non-walking ``Slab`` and nothing else, which is exactly why a dropped duct box was
@@ -187,14 +206,15 @@ def _clear_head(plan: PlanModel, model, storey, clear: Polygon) -> tuple[float |
     corner. A consumer that needs to grade the two areas separately has both numbers; one
     that only needs "how low does it get" has the height.
 
-    Height is measured from the storey datum, which omits the subfloor sheet standing on the
-    joists — the same known gap ``resolve.rooms.room_floor_elevation`` carries, so the
-    derived height reads 3/4" GENEROUS on a joisted floor. Recorded so nobody reads it as
-    exact.
+    ``datum`` is the plane a foot lands on — ``room_finished_floor_elevation``, not the
+    storey elevation. The storey datum is the TOP OF JOISTS, so measuring from it read the
+    subfloor sheet AND the covering as head room: 1 1/2" generous in a bedroom over a wood
+    floor, 0" on a bare basement slab. It is not a flat 3/4" and never was. The ceiling end
+    of the measurement stays structural on purpose — a thicker carpet eats the clear height
+    rather than lifting the deck (``resolve/room_floor.py``).
     """
     from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
 
-    datum = storey.elevation.meters
     undersides = [value for value in
                   (ceiling_underside_m(deck_storey, deck)
                    for deck_storey, deck in ceiling_decks_over(plan, storey.tag, clear))
