@@ -73,7 +73,7 @@ from typehaus.emit.trades import solid_trade
 from typehaus.resolve.geometry import light_run_band_profiles
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoom, Ring
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.sweep import sweep_legs
 
 
@@ -135,7 +135,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
-            storey_z = room_floor_elevation(model, room)
+            # The FINISHED floor, not the structural datum: this prism IS the floor
+            # covering, so drawing it on the subfloor sank it under the plane every
+            # placeable in the room stands on. Must stay in step with the IFC space
+            # (``emit/ifc/architectural.py``), which reads the same function.
+            storey_z = room_finished_floor_elevation(model, room)
             mb = _MeshBuilder()
             # The field finish is CUT by its zones rather than covered by them, matching
             # ``buildRoomFloor`` in the viewer (→ ``glb-emitter-parity``). Cutting is what

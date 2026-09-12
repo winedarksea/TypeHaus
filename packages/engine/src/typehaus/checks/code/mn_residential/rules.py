@@ -167,11 +167,12 @@ def _derived_clear_height(ctx: CheckContext,
     ``Slab`` only, would leave a ``Soffit`` invisible to it — and every consumer reads the
     same number: see ``ResolvedRoom.clear_height_m``.
 
-    The height is measured from the room's FLOOR LEVEL, taken as its storey datum. That
-    omits the subfloor sheet standing on the joists — a known and deliberate gap
-    (``resolve.rooms.room_floor_elevation`` shares it, and closing it moves every placeable
-    in every wood-floored room), so the derived height reads 3/4" GENEROUS on a joisted
-    floor. Recorded so nobody reads the number as exact.
+    The height is measured from the room's FINISHED floor — the plane a foot lands on, via
+    ``resolve.room_floor.room_finished_floor_elevation``. Measuring from the storey datum
+    (the top of joists) read the subfloor sheet and the covering as head room, up to 1 1/2"
+    generous over a wood floor and 0" on a bare slab. Nothing is fixable here: this function
+    reads ``ResolvedRoom.clear_height_m``, which ``resolve.rooms._clear_head`` computes, and
+    that is the only place the datum can be chosen.
 
     ** THE SOFFITED AREA IS DELIBERATELY NOT A SEPARATE MINIMUM, AND THIS IS THE DECISION. **
     A flat "lowest point in the room must clear 7'-0"" would be wrong, not merely strict:
@@ -204,10 +205,15 @@ def _derived_clear_height(ctx: CheckContext,
 
 
 def _deck_only_clear_height(ctx: CheckContext, storey: Any, resolved: Any) -> float | None:
-    """Height to the deck alone, ignoring soffits — the surplus-area case above."""
+    """Height to the deck alone, ignoring soffits — the surplus-area case above.
+
+    Measured off the same FINISHED floor datum ``_clear_head`` uses, or the two branches of
+    ``_derived_clear_height`` would report the same room against two different floors.
+    """
     from shapely.geometry import Polygon
 
     from typehaus.resolve.ceiling_over import ceiling_decks_over, ceiling_underside_m
+    from typehaus.resolve.room_floor import room_finished_floor_elevation
 
     face = Polygon([tuple(point) for point in resolved.clear_face])
     undersides = [value for value in
@@ -216,7 +222,7 @@ def _deck_only_clear_height(ctx: CheckContext, storey: Any, resolved: Any) -> fl
                   if value is not None]
     if not undersides:
         return None
-    return min(undersides) - storey.elevation.meters
+    return min(undersides) - room_finished_floor_elevation(ctx.model, resolved)
 
 
 def _follow_roof_ceiling_finding(ctx: CheckContext, room, minimum: Length) -> Finding:

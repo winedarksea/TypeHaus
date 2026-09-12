@@ -29,7 +29,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
 
 
@@ -387,11 +387,11 @@ def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],
         # Geometry is authored in the world frame (see ``ensure_local_placement``), so the
         # space's floor has to be given its real elevation here — it is not automatically
         # inherited from the containing IfcBuildingStorey's placement. Matches the glTF
-        # viewer's floor mesh (``emit/gltf/emitter.py``): both read ``room_floor_elevation``
-        # so a room whose slab is filed on a different storey than the room (the garage)
-        # doesn't disagree between the two exports.
+        # viewer's floor mesh (``emit/gltf/emitter.py``): both read
+        # ``room_finished_floor_elevation``, the plane a foot lands on and up to 1 1/2" over
+        # the joist tops, so neither the two exports nor the garage's off-storey slab drift.
         rep = ll.add_prism_from_profile(f, body, room.clear_face, 2.7,
-                                        room_floor_elevation(model, room))
+                                        room_finished_floor_elevation(model, room))
         ll.assign_representation(f, space, rep)
     ll.ensure_pset(f, space, PSET_SOURCE, {"uid": room.uid, "tag": room.tag})
     ll.ensure_pset(f, space, "Pset_SpaceCommon", {

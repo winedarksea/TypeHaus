@@ -43,7 +43,7 @@ from typehaus.emit.draw.typography import (
 )
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedCeiling, ResolvedModel, ResolvedRoom, Ring
-from typehaus.resolve.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_finished_floor_elevation
 
 SF_PER_M2 = 10.7639
 ROOM_LAYER = "A-AREA-IDEN"
@@ -308,7 +308,11 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         if room.storey != storey or len(room.clear_face) < 3:
             continue
         cx, cy = _inside_point(room.clear_face)
-        planes = _ceiling_planes(model, room, room_floor_elevation(model, room))
+        # The clear-height note is a floor-to-ceiling dimension a reader measures with a
+        # tape from the finished floor, so it takes the finished plane — the same datum
+        # ``code.R305_ceiling_height`` grades against.
+        planes = _ceiling_planes(model, room,
+                                 room_finished_floor_elevation(model, room))
         lines = [(room_display_name(room.tag), TEXT_PT),
                  (f"{room.area_m2 * SF_PER_M2:.0f} SF", DIM_TEXT_PT)]
         # A room a roof rakes into is two areas, and a plan that prints only the first one
