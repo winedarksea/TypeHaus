@@ -1,8 +1,9 @@
 """Wall backing: is there anything behind the thing that hangs on the wall?
 
-Two checks, and the split is the usual one — a ref that resolves to nothing is an ERROR,
+Three checks, and the split is the usual one — a ref that resolves to nothing is an ERROR,
 because a typo must not silently delete a band; whether a band *covers* what hangs in front
-of it is ADVISORY, because outside one case no residential code requires backing at all.
+of it, and whether its ends reach anything to nail to, are ADVISORY, because outside one case
+no residential code requires backing at all.
 
 **What the code actually says.** A handrail or guard carries IRC **Table R301.5**'s 200 lb
 concentrated load applied in any direction at any point along the top — adopted by Minnesota
@@ -40,6 +41,7 @@ from typehaus.resolve.framing.backing_panels import (
     band_face_height_m,
 )
 from typehaus.resolve.framing.carriers import backing_wall
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedWall
 
 #: How far a fastener may miss the band and still land in it. A bracket hole is drilled to a
@@ -222,4 +224,94 @@ def wall_backing_ref(ctx: CheckContext) -> list[Finding]:
                 f"backing {band.tag} on {wall_tag}: {band.height_m / M_PER_IN:.1f}\" of "
                 f"{band.profile} at {band.elevation_m / M_PER_IN:.0f}\" above the floor"
                 + (f" ({band.purpose})" if band.purpose else ""), tags))
+    return out
+
+
+#: How far a band end may sit from a stud face and still be nailable. Same 1" a fastener
+#: gets above, and for the same reason: a framer cuts to a bay, not to a laser line.
+_BEARING_REACH_M = 1.0 * M_PER_IN
+
+
+def floating_band_ends(
+        wall: ResolvedWall,
+        bands: tuple[BackingBand, ...] | list[BackingBand],
+) -> list[tuple[str, float, float]]:
+    """Band ends on this wall that land in open bay, as ``(tag, station_m, gap_m)``.
+
+    A band is a board laid across the studs, and a board is nailed at its ends. An end that
+    stops mid-bay has nothing behind it, so the block hangs off one nail and a bracket
+    screwed near it pulls out — which is a carpentry fact about this wall, not a cost
+    weighting, so it belongs in ``checks/`` (#32's line).
+
+    **An end at the wall's own end is exempt.** The plates and the corner pack close it, and
+    without the exemption every full-run band — most of them — false-positives.
+
+    The authored tag is recovered by re-sorting the wall's bands with the emitter's own key,
+    ``(elevation_m, tag)``, so a finding names something an author can edit rather than the
+    ``backing-<i>-<n>`` member key.
+    """
+    runs = [m for m in wall.members if m.child_key.startswith("backing-")]
+    if not runs:
+        return []
+    (x0, y0), (x1, y1) = wall.axis
+    axis_len = float(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5)
+    if axis_len <= 0.0:
+        return []
+    dx, dy = (x1 - x0) / axis_len, (y1 - y0) / axis_len
+
+    def station(point) -> float:
+        return (point[0] - x0) * dx + (point[1] - y0) * dy
+
+    faces: list[float] = []
+    for member in wall.members:
+        if member.category not in _STUD_CATEGORIES:
+            continue
+        centre = (station(member.p0) + station(member.p1)) / 2.0
+        half = cross_section(member.profile).width_m / 2.0
+        faces.append(centre - half)
+        faces.append(centre + half)
+    if not faces:
+        return []
+    ordered = sorted(bands, key=lambda b: (b.elevation_m, b.tag))
+    out: list[tuple[str, float, float]] = []
+    for member in sorted(runs, key=lambda m: m.child_key):
+        index = int(member.child_key.split("-")[1])
+        tag = ordered[index].tag if index < len(ordered) else member.child_key
+        for end in (station(member.p0), station(member.p1)):
+            if end <= _BEARING_REACH_M or end >= axis_len - _BEARING_REACH_M:
+                continue
+            gap = min(abs(end - face) for face in faces)
+            if gap > _BEARING_REACH_M:
+                out.append((tag, end, gap))
+    return out
+
+
+@check(Tier.ADVISORY, "advisory.wall_backing_bearing")
+def wall_backing_bearing(ctx: CheckContext) -> list[Finding]:
+    """Both ends of a backing band want a stud face to nail to."""
+    bands = backing_bands(ctx.plan)
+    walls = [wall for wall in ctx.model.walls
+             if any(m.child_key.startswith("backing-") for m in wall.members)]
+    if not walls:
+        return [not_applicable(
+            "advisory.wall_backing_bearing",
+            "no wall in this model resolved a backing member, so no band has an end to land")]
+    out: list[Finding] = []
+    for wall in sorted(walls, key=lambda w: w.tag):
+        floating = floating_band_ends(wall, bands.get(wall.tag, ()))
+        if not floating:
+            out.append(passed(
+                "advisory.wall_backing_bearing",
+                f"every backing band on {wall.tag} ends on a stud face or at the wall's own "
+                f"end", (wall.tag,)))
+            continue
+        for tag, end, gap in floating:
+            out.append(advisory(
+                "advisory.wall_backing_bearing",
+                f"backing {tag} on {wall.tag} ends at {end / M_PER_IN:.1f}\" along the wall, "
+                f"{gap / M_PER_IN:.1f}\" clear of the nearest stud face. A block with a free "
+                f"end is nailed at one end only, and a bracket screwed near it levers out",
+                (tag, wall.tag), Result.FAIL,
+                fix=f"give {tag} a start/length that lands both ends on a stud face — fill "
+                    f"the bay — or run it to the wall's end"))
     return out

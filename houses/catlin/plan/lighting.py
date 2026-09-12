@@ -1552,7 +1552,7 @@ GARAGE_LIGHTING = [
                      # x=28'-0" is 2'-0" in from the NE corner. The uid is the original
                      # light's: this element did not stop existing when it was retagged.
                      position=pt(ft(28), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(0),
+                     circuit="CKT-LT-MAIN", rotation=deg(180),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
     ElectricalDevice(uid="GT8NZ3DTSX", tag="ED-G-EXT-LT-W", kind=DeviceKind.LIGHT,
@@ -1560,7 +1560,7 @@ GARAGE_LIGHTING = [
                      # the door's centreline at x=18'-0". Same circuit, same switch: the pair
                      # is one control, not two.
                      position=pt(ft(8), ft(67, 6)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(0),
+                     circuit="CKT-LT-MAIN", rotation=deg(180),
                      controlled_by=("ED-G-EXT-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 8))),
     # Its switch, inside, beside ED-G-SW at the service door: 6" west of it and 4" east of

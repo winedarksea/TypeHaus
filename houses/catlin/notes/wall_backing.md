@@ -1,8 +1,9 @@
 # In-wall backing — the height schedule and where it comes from
 
 **House:** catlin
-**Structure:** every `WallBacking` in `plan/backing.py` (34 bands).
-**Written:** 2026-09-09.
+**Structure:** every `WallBacking` in `plan/backing.py` and `plan/backing_wet.py` (70 bands).
+**Written:** 2026-09-09. **Revised 2026-09-12**: the wet-wall plywood band became three 2x
+courses (§4), and `advisory.wall_backing_bearing` was added (§5).
 **Oracle for:** nothing. This is a **sources note**, not a calculation note — there is no
 arithmetic here to reproduce, only a set of heights and the authority behind each one.
 `advisory.wall_backing_present` grades coverage against it; no engine table repeats it.
@@ -27,6 +28,7 @@ wants, and that the wet-wall band's cost (below) is the trade you mean to make.
 | Grab bar (bar centreline) | 33"–36" | ADA 609.4 |
 | Mirror / medicine cabinet | blocks topping at 40" and 76" | Fox Cities Habitat QRG ch. 10a |
 | Towel bar | block topping at 60" (bar lands 48"–54") | Habitat QRG ch. 10a |
+| *(this house)* wet-wall courses | 32"–39 1/4", 44"–53 1/4", 72"–79 1/4" | §4 — CRC R328.1.1 plus two chosen heights |
 | Toilet paper holder | block topping at 26", span ≥ 12" | Habitat QRG ch. 10a |
 | Kitchen upper cabinets | ~54" (36" counter + 18" clear) and ~84" for a 30" box | NKBA 2023 Planning Guidelines |
 | Wall-hung vanity | bracket band under a 32"–34" top | manufacturer rough-ins |
@@ -86,21 +88,60 @@ framer's and the inspector's to carry.
 
 ## 4. What this house bought
 
+Until 2026-09-12 every wet wall carried **one continuous 3/4" Structural 1 plywood band,
+48" tall, 32"–80" AFF** — 17 of them, 106 LF + 8 LF ordered, about 13 sheets. It is retired.
+**Every one of those walls puts 5/8" gypsum straight on the studs**, so a 3/4" sheet either
+stands proud of the finish plane or is let into them; §5 of this note used to claim the
+second, which for a 48"-tall band means routing a 3/4" × 48" dado across roughly 65 studs.
+Nothing draws that and nothing prices it. The three courses below are laid flat and **fitted
+between the studs**, which is what the kitchen rails have always meant by "2x8 flat": nothing
+stands proud, nothing is dadoed, and the framer cuts to the bay.
+
+### The three wet-wall courses
+
+| Course | Profile | Bottom | Top | What it answers |
+| --- | --- | --- | --- | --- |
+| `-GRAB` | 2x8 | 32" | 39 1/4" | CRC R328.1.1 verbatim — 2x8 nominal min, 32"–39 1/4", flush with the framing |
+| `-MID` | 2x10 | 44" | 53 1/4" | towel bar (48"), robe hook, slide-bar lower bracket, `FURN-M-BATH2-CAB`'s 48" rail |
+| `-HIGH` | 2x8 | 72" | 79 1/4" | shower arm (78"), slide-bar upper bracket, high hook |
+
+All three on the 16 full-height wet walls; `W-A-STU-W` gets `-GRAB` and `-MID` only, because
+its plate is at 72 3/4" and `CARF01AAAA:rafter-020` rakes across it at 60 7/8".
+
+> ⚠ **What this gives up.** The retired band was continuous 32"–80". The courses leave
+> **39 1/4"–44", 53 1/4"–72" and everything above 80 1/4" unbacked.** A screw in one of those
+> gaps has nothing behind it. The policy has not changed — these are three standard anchor
+> heights authored where a screw *might* land, not a fit to today's fixtures; only one
+> modelled body in the whole house (`FURN-M-BATH2-CAB` at 48" on `W-M-HS1`) sat inside the
+> old 48" band at all, and `-MID` still covers it.
+
+**What it gains beyond the flat wall.** A per-bay block can be omitted or shifted at the bay
+a shower valve and its risers occupy. A continuous sheet cannot, and §5 flags that overlap as
+ungraded.
+
+**Only one of the four anchors the old prose named is finish backing.** The valve body, the
+tub spout and the shower arm are the plumber's **rough-in blocking**, set with the rough-in.
+Only the grab bar is this file's business.
+
 | Band | Count | Material |
 | --- | --- | --- |
-| Wet walls, 32"–80", 3/4" plywood | 16 | 106 LF ordered, ~$620–1,090 |
-| W-A-STU-W knee wall, 32"–56" | 1 | 8 LF |
-| Kitchen and curtain-rod rails, 2x8 flat | 10 | part of the 238 LF 2x8 row |
+| Wet walls, `-GRAB` + `-HIGH`, 2x8 flat | 33 | +148 LF on the 1,010 LF 2x8 row |
+| Wet walls, `-MID`, 2x10 flat | 17 | 114 LF of the 172 LF 2x10 row |
+| Kitchen and curtain-rod rails, 2x8 flat | 10 | part of the same 2x8 row |
 | Closet rods, 2x8 flat | 2 | " |
 | Plumbing access panel frames, 2x8 flat | 5 | " |
+| `BK-G-W-RAIL-FOOT` handrail block, 2x12 flat | 1 | 8 LF of 1.5x11.25 |
 
-> ⚠ **The wet-wall band costs more than the prose that asked for it assumed.**
-> `plan/fixture_types_wc.py` says "a continuous band costs about twelve dollars", which is
-> right for the 12"-wide strip it describes and wrong by roughly two orders of magnitude for
-> the 48"-tall band authored here. The 48" band is what actually covers the stated 40"–80"
-> range of anchors in one piece, and it is ~13 sheets of 3/4" ply. If that trade is not
-> wanted, the lever is `_WET_HEIGHT` in `plan/backing.py`, and the cost of narrowing it is
-> that a future anchor outside the surviving band has nothing behind it.
+**Cost, stated honestly.** The three courses run **$674–1,086** against the retired band's
+**$647–1,128**. That is a wash against today's price rows — which assume no dado — and a
+clear saving once let-in labour is priced. **The reason for the change is buildability, not
+money.** `prices.toml` keeps the two retired plywood rows at 0 LF so the comparison does not
+have to be re-derived.
+
+> ⚠ The old note recorded that `plan/fixture_types_wc.py` says "a continuous band costs about
+> twelve dollars". That is right for the 12"-wide strip it describes and wrong by two orders
+> of magnitude for anything that covers a 40"–80" range. It is still wrong; the prose has not
+> been fixed. Read the table above, not that sentence.
 
 ## 5. Not done, and why
 
@@ -115,11 +156,19 @@ framer's and the inspector's to carry.
   not to a check with no load to compute against. `advisory.wall_backing_present` grades
   *coverage*, the discipline `mep.deck_equipment_support` already keeps.
 * **Nothing grades a band against a pipe or a wire.** `structural.member_interference` reads
-  members only, and there is no member-versus-`PipeRun` check in `checks/mep/`. A 32"–80"
-  band in a wet wall passes straight through the plane a shower valve and its risers occupy,
-  at 0 FAIL. The band is built let-in flush with the stud face, which is how CRC R328.1.1
-  specifies it and how a framer installs it, so the overlap is intended — but nothing in the
-  engine proves that, and a reader should not infer that silence means clearance.
+  members only, and there is no member-versus-`PipeRun` check in `checks/mep/`. A course at
+  44"–53 1/4" in a wet wall passes straight through the plane a shower valve and its risers
+  occupy, at 0 FAIL, and a reader should not infer that silence means clearance. What the
+  three courses change is the *remedy*: a 2x fitted between studs can be omitted or shifted
+  at the one bay the valve occupies, and the framer decides that at the wall. The continuous
+  sheet that used to stand here could not be, which is part of why it is gone (§4).
+* **A band's ends are graded; its middle is not.** `advisory.wall_backing_bearing` (added
+  2026-09-12) requires both ends of every resolved band run to land within 1" of a stud face
+  or at the wall's own end, because a block with a free end is nailed at one end only. It was
+  written against a real defect: `BK-G-W-RAIL-FOOT` was a 12" block in a 24" o.c. bay that
+  lapped one stud by 1/4" and floated 10 1/4" clear at the other end, at 0 FAIL. It is now
+  cut to fill its bay, 192 3/4"–215 1/4". The check says nothing about what the band spans
+  between those ends, and nothing about capacity.
 
 ## 6. Sources
 

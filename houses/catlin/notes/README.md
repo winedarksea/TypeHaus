@@ -84,6 +84,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `porch_stair.md` | the porch stair geometry |
 | `roof_flash_and_batt.md` | the unvented flash-and-batt roof and its condensation gate |
 | `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |
+| `wall_backing.md` | the in-wall backing schedule: every height and the authority behind it, what the code actually requires and what it does not, and the 2026-09-12 pass that replaced the wet walls' 3/4" plywood band with three 2x courses |
 
 ## Detail notes — drawing content, byte-pinned
 

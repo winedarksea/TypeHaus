@@ -4255,20 +4255,20 @@
       "node": "polyline",
       "points": [
         [
-          119.625,
+          119.25,
           152.00000000000003
         ],
         [
-          120.375,
+          120.75,
           152.00000000000003
         ],
         [
-          120.375,
-          200.0
+          120.75,
+          159.25
         ],
         [
-          119.625,
-          200.0
+          119.25,
+          159.25
         ]
       ],
       "layer": "S-FRAM",
@@ -4283,28 +4283,140 @@
       "node": "hatch",
       "boundary": [
         [
-          119.625,
+          119.25,
           152.00000000000003
         ],
         [
-          120.375,
+          120.75,
           152.00000000000003
         ],
         [
-          120.375,
-          200.0
+          120.75,
+          159.25
         ],
         [
-          119.625,
-          200.0
+          119.25,
+          159.25
         ]
       ],
-      "pattern": "osb",
+      "pattern": "lumber",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "struct-1-plywood"
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          119.25,
+          164.0
+        ],
+        [
+          120.75,
+          164.0
+        ],
+        [
+          120.75,
+          173.24999999999997
+        ],
+        [
+          119.25,
+          173.24999999999997
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "backing-1-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          119.25,
+          164.0
+        ],
+        [
+          120.75,
+          164.0
+        ],
+        [
+          120.75,
+          173.24999999999997
+        ],
+        [
+          119.25,
+          173.24999999999997
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          119.25,
+          192.00000000000003
+        ],
+        [
+          120.75,
+          192.00000000000003
+        ],
+        [
+          120.75,
+          199.25
+        ],
+        [
+          119.25,
+          199.25
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CSW150AAAA",
+      "tag": "backing-2-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          119.25,
+          192.00000000000003
+        ],
+        [
+          120.75,
+          192.00000000000003
+        ],
+        [
+          120.75,
+          199.25
+        ],
+        [
+          119.25,
+          199.25
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
     },
     {
       "space": "model",

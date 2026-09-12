@@ -10,7 +10,9 @@ the present state. Read this when you want to know *why* a number is what it is,
 tried before, or which engine bug a rule exists to dodge — and when a decision here
 contradicts the model, the model wins.
 
-Sections match `CLAUDE.md`'s one for one.
+Sections match `CLAUDE.md`'s one for one, with one exception: **In-wall backing** at the
+bottom has no constraint-index section of its own — the constraints live in
+`notes/wall_backing.md` and in `plan/backing.py`'s own header.
 
 ## Site and the four structures
 
@@ -2025,3 +2027,79 @@ one wall, written down in `notes/ikea_sektion_ladder.md` so nobody tries to clos
 cabinet and no drawer vocabulary, so adding drawers would have meant inventing geometry to
 carry a purchasing fact. It is `PROD-IKEA-MAXIMERA` instead, and which boxes are drawer
 stacks is prose beside the instances and in the SEKTION price block.
+
+## In-wall backing
+
+**The wet walls' plywood band became three 2x courses, 2026-09-12, and money is not why.**
+Decision #68 gave this house 17 wet-wall bands: one continuous 3/4" Structural 1 plywood
+sheet each, 48" tall, 32"–80" above the floor, 106 LF ordered, about 13 sheets. The
+reasoning was sound and is still in `notes/wall_backing.md` §4 — 48" is half a sheet ripped
+the long way, it covers every anchor a bathroom will ever want in one piece, and blocking
+placed only where today's screws land pins the house to today's model forever.
+
+**What it never answered is how the sheet meets the wall.** Every one of those 17 walls puts
+5/8" gypsum straight on the studs. A 3/4" board laid on the stud face stands 3/4" proud of
+the finish plane, which is not buildable; the alternative is to let it in, and
+`notes/wall_backing.md` §5 claimed exactly that — "built let-in flush with the stud face,
+which is how CRC R328.1.1 specifies it". That claim is true of a 2x8 block and false of a
+48"-tall band: letting in a 48" sheet means routing a 3/4" × 48" dado across roughly 65
+studs. Nothing in the engine draws that dado, nothing in `prices.toml` prices it, and no
+check would have said a word either way. The owner read the model in the viewer and asked
+the question the record could not answer.
+
+**Three courses instead**, laid flat and fitted *between* the studs, which is what this
+house's kitchen rails have always meant by "2x8 flat": 2x8 at 32" (CRC R328.1.1's grab-bar
+band, verbatim), 2x10 at 44", 2x8 at 72". Nothing stands proud, nothing is dadoed, and the
+framer cuts to the bay.
+
+**The coverage lost is real and is written down rather than glossed.** The band was
+continuous 32"–80"; the courses leave 39 1/4"–44", 53 1/4"–72" and everything over 80 1/4"
+bare. The policy did not change — those are three standard anchor heights authored where a
+screw *might* land, not a fit to today's fixtures. What made the trade affordable is that
+**only one modelled body in the whole house sat inside the old band at all**
+(`FURN-M-BATH2-CAB` at 48" on `W-M-HS1`), so the band was pure future-proofing and its
+height was a policy choice rather than a measurement. The 44" course still covers it.
+
+**Three of the four anchors the old prose named were never this file's business.** Valve
+body, tub spout and shower arm are the plumber's rough-in blocking, set with the rough-in.
+Only the grab bar is finish backing.
+
+**What the courses gain beyond not being dadoed**: a per-bay 2x can be omitted or shifted at
+the one bay a shower valve and its risers occupy. A continuous sheet cannot, and §5 of the
+note already flagged that overlap as ungraded — the engine has no member-versus-`PipeRun`
+check, so the old band ran through the valve plane at 0 FAIL.
+
+**Cost is a wash and was measured, not assumed**: $674–1,086 for the three courses against
+$647–1,128 for the retired band, against price rows that assume no dado. `prices.toml` keeps
+`"0.75x48.0"` and `"0.75x24.0"` at 0 LF under the `glazed-green-brick` convention, because
+this question will be asked again and a deleted row is a row re-derived from scratch.
+
+**Two authored defects went with it, both at 0 FAIL and both found by eye.**
+`BK-G-W-RAIL-FOOT` was a 12" block in a 24" o.c. bay: its north end lapped a stud by 1/4"
+and its south end floated 10 1/4" clear of anything, so the block could be nailed at one end
+only. It is cut to fill the bay now, 192 3/4"–215 1/4", and the handrail bracket at 197"
+sits 4 1/4" inside it. And `W-M-E1`'s four cabinet bands carried no `start`/`length`, which
+`backing_panels.py` reads as the wall's whole 36 ft — roughly 59 LF of 2x8 running south
+into the living room to back nothing. They start at station 20'-0" now, in the gap between
+the last BESTA unit and the first pantry, on `WIN-M-LIV-E2`'s north jamb pack so the run
+begins on framing. `BK-M-E1-ROD` keeps its full run: at 82" it backs the two living-room
+curtain rods, which are exactly what the other four gave up.
+
+**The engine gained one check, not a model change.** `advisory.wall_backing_bearing`
+requires both ends of every resolved band run to land within 1" of a stud face or at the
+wall's own end. It found exactly one finding across 62 runs on the model as it stood — the
+garage block — and no false positives, which is the whole argument for it: a rule that
+reported nothing, or reported everywhere, would have been the wrong rule. The wall's own
+ends are exempt, since the plates and corner pack close them and without the exemption every
+full-run band reports.
+
+**The file split rather than grew.** 17 elements became 50 and `plan/backing.py` would have
+run past `AGENTS.md`'s 500 lines, so the wet courses moved to `plan/backing_wet.py` with the
+course constants, following the `plan/lighting_attic.py` precedent — split by SUBJECT here
+rather than by storey, because these 50 are one decision and the rest of the file is a dozen
+unrelated ones. An editable file cannot `from plan import ...`, so `plan/manifest.py`
+composes.
+
+**Left out as scope.** `FURN-M-BATH2-CAB` is 60" tall from 48", so its top rail lands near
+104" — above every course, old and new. A fourth course on `W-M-HS1` alone (2x8 flat at 98",
+topping at 105 1/4", on a 120" wall) would close it.

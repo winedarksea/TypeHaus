@@ -39,22 +39,6 @@
 from typehaus import WallBacking, ft, inch
 
 
-# --- the wet walls ---------------------------------------------------------------------
-#
-# One continuous 3/4" plywood band per wet wall, 32" to 80" above the floor, in ALL of them
-# including the ones with no slide bar planned. Blocking only where today's model's screws
-# land pins the house to today's model forever, and the sheet is ripped from stock either
-# way. The band's bottom edge is CRC R328.1.1's 32" and it runs up past every towel bar,
-# valve, drop elbow, tub spout, shower arm and slide-bar anchor in one piece.
-#
-# 48" tall is half a sheet ripped the long way, which is why the number is 48 and not 47:
-# a rip that yields two usable strips wastes nothing.
-
-_WET_ELEVATION = inch(32)
-_WET_HEIGHT = inch(48)
-_WET_PROFILE = "0.75x48.0"
-
-
 # --- the kitchen ------------------------------------------------------------------------
 #
 # 2x8 flat, not plywood: a wall cabinet hangs on a rail screwed through the back at the top
@@ -72,6 +56,18 @@ _WET_PROFILE = "0.75x48.0"
 #
 # A 2x8 laid flat is 7 1/4", so one band covers a spread of hangs: BK-M-E1-MID at 64" runs to
 # 71 1/4" and answers the range hood at 66" AND FURN-M-KIT-WN1 at 68" with one rail.
+#
+# ** W-M-E1's FOUR CABINET BANDS STOP AT THE KITCHEN. ** The wall is 36 ft and the four ran
+# all of it, because `start`/`length` left None is the wall's whole run. Kitchen cabinetry on
+# it starts at y 21'-2 3/8"; everything south of that is living room, so roughly 59 LF of 2x8
+# ran south to back nothing. They start at station 20'-0" now and run the remaining 16 ft to
+# the wall's end. y 20'-0" is the gap between the last BESTA unit (ends 19'-5") and the first
+# pantry (starts 21'-2 3/8"), and 240" lands inside the jack of WIN-M-LIV-E2's north jamb
+# pack, so the run begins on framing rather than in the middle of a bay.
+#
+# BK-M-E1-ROD is the exception and keeps its full run: at 82" it backs the two LIVING-ROOM
+# curtain rods, at y 4'-0" and 13'-3 5/8", which are exactly the part of the wall the other
+# four just gave up.
 
 # --- closet rods and shelves ------------------------------------------------------------
 #
@@ -97,8 +93,13 @@ _WET_PROFILE = "0.75x48.0"
 #    here could not have helped anyway: the station is 1/4" north of WIN-G-S1's bay, whose
 #    rough-opening exclusion clips any backing to the far side of that stud.
 #  * FOOT, y=50'-9 5/8" — the flight's bottom riser, 5" from the nearest stud, so this one
-#    gets a 2x12 laid flat across the bay, 12" long (station 15'-11"..16'-11" from
-#    N-G-NW), 11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
+#    gets a 2x12 laid flat, cut to FILL THE BAY: station 16'-0 3/4"..17'-11 1/4" from
+#    N-G-NW, which is face to face between the studs at 16'-0" and 18'-0" o.c. — 22 1/2" of
+#    clear bay, one cut, both ends nailed. It was authored 15'-11"..16'-11" until 2026-09-12
+#    and that 12" block lapped the north stud by 1/4" and floated 10 1/4" clear of anything
+#    at its south end; a block with one free end cannot be fastened. The bracket at station
+#    16'-5" sits 4 1/4" inside the north end of the bay either way.
+#    11 1/4" tall (`integrity.wall_backing_ref` holds `height` to the profile).
 #    Centred 2 1/2" below the rail top there — the resolver's own `_BRACKET_DROP_M` — so the
 #    arm lands mid-band with ~5" of play: 12"..23 1/4" above the garage datum, against a
 #    rail top at +20 3/4" where the nosing line meets the first riser.
@@ -110,39 +111,9 @@ _WET_PROFILE = "0.75x48.0"
 # by storey, so a band cannot ride in a list that mixes them.
 
 BASEMENT_BACKING = [
-    WallBacking(uid="MCEY2KK7X7", tag="BK-B-BA-E", wall_ref="W-B-BA-E",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="F2VB4ZSJM3", tag="BK-B-CE", wall_ref="W-B-CE",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="MVECH5GPSX", tag="BK-B-CW", wall_ref="W-B-CW",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="RVQ4CEHMJ6", tag="BK-B-CW3", wall_ref="W-B-CW3",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="DQFXW82JCN", tag="BK-B-HALL-W", wall_ref="W-B-HALL-W",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
 ]
 
 MAIN_BACKING = [
-    WallBacking(uid="63Q2NFMTRY", tag="BK-M-BA2E", wall_ref="W-M-BA2E",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="NGSM5DJCT1", tag="BK-M-BA2E2", wall_ref="W-M-BA2E2",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="9123HCR34E", tag="BK-M-BAE", wall_ref="W-M-BAE",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="QN93C99PCJ", tag="BK-M-HS1", wall_ref="W-M-HS1",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, over-toilet cabinet"),
-    WallBacking(uid="548DDSJFJ4", tag="BK-M-HS2", wall_ref="W-M-HS2",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
     WallBacking(uid="TR3XTCCY65", tag="BK-M-N1-SINK", wall_ref="W-M-N1",
                 elevation=inch(25), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="wall-mounted kitchen sink"),
@@ -157,21 +128,25 @@ MAIN_BACKING = [
                 elevation=inch(91), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (93 in.)"),
     WallBacking(uid="70856QPNT4", tag="BK-M-E1-LOW", wall_ref="W-M-E1",
+                start=ft(20), length=ft(16),
                 elevation=inch(51), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="upper cabinet bottom rail (53 in.)"),
     WallBacking(uid="GBHV48GS1S", tag="BK-M-E1-MID", wall_ref="W-M-E1",
+                start=ft(20), length=ft(16),
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="range hood (66 in.) and FURN-M-KIT-WN1 (68 in.)"),
     # FURN-M-KIT-MIXER-GARAGE-UP's bottom rail. The old one-piece 72" garage spanned 36" to
     # the ceiling and was caught by whichever bands it crossed; split at 76" it has a rail of
     # its own, between BK-M-E1-MID's top at 71 1/4" and BK-M-E1-ROD's bottom at 82".
     WallBacking(uid="Z31Y1280S2", tag="BK-M-E1-GARAGE", wall_ref="W-M-E1",
+                start=ft(20), length=ft(16),
                 elevation=inch(74), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="mixer garage upper box bottom rail (76 in.)"),
     WallBacking(uid="VXX1ME3YWS", tag="BK-M-E1-ROD", wall_ref="W-M-E1",
                 elevation=inch(82), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="curtain rod brackets (84 in.)"),
     WallBacking(uid="8PFKG4320V", tag="BK-M-E1-HIGH", wall_ref="W-M-E1",
+                start=ft(20), length=ft(16),
                 elevation=inch(91), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="stacker course rail (93 in.)"),
     WallBacking(uid="SBE1761N5C", tag="BK-M-C5-MID", wall_ref="W-M-C5",
@@ -197,24 +172,6 @@ MAIN_BACKING = [
 ]
 
 SECOND_BACKING = [
-    WallBacking(uid="DA0BDATHZ7", tag="BK-S-BA-E", wall_ref="W-S-BA-E",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="7114P8MNBY", tag="BK-S-BA-E1B", wall_ref="W-S-BA-E1B",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="NJJYT7QAMA", tag="BK-S-BD-N", wall_ref="W-S-BD-N",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="KFWVA9EPGE", tag="BK-S-BD-N1B", wall_ref="W-S-BD-N1B",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="D9754TGGC7", tag="BK-S-DC2", wall_ref="W-S-DC2",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
-    WallBacking(uid="YQESA1JG5K", tag="BK-S-SN3", wall_ref="W-S-SN3",
-                elevation=_WET_ELEVATION, height=_WET_HEIGHT, profile=_WET_PROFILE,
-                purpose="wet wall: grab bar, valve, spout, shower arm"),
     WallBacking(uid="0C6ST8E3ET", tag="BK-S-N1B-ROD", wall_ref="W-S-N1B",
                 elevation=inch(64), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="closet shelf and rod (66 in.)"),
@@ -228,23 +185,12 @@ SECOND_BACKING = [
 
 GARAGE_BACKING = [
     WallBacking(uid="1FTWGZ1WJ3", tag="BK-G-W-RAIL-FOOT", wall_ref="W-G-W",
-                start=ft(15, 11), length=inch(12),
+                start=ft(16, 0.75), length=inch(22.5),
                 elevation=inch(12), height=inch(11.25), profile="1.5x11.25",
                 material_ref="spf", purpose="handrail brackets (RL-G-SERVICE, foot of flight)"),
 ]
 
 ATTIC_BACKING = [
-    # W-A-STU-W is the one short wet wall, and it is short twice over. Its plate is at
-    # 72 3/4", so the standard 80" band has no stud to land on and `backing_panels.py` would
-    # drop it in silence. The binding limit is lower still: `CARF01AAAA:rafter-020` rakes
-    # down across this knee wall and passes 60 7/8" above its floor, which nothing in the
-    # framing solver knows about — `top_at` reads the wall's own plate, not the roof over
-    # it, so a 64" band resolved happily and `structural.member_interference` caught it.
-    # 32" to 56" clears the rafter by 4 7/8" and is the whole range a knee-wall bar sink's
-    # valve and towel ring can physically use.
-    WallBacking(uid="GCV1Y8MJ5J", tag="BK-A-STU-W", wall_ref="W-A-STU-W",
-                elevation=inch(32), height=inch(24), profile="0.75x24.0",
-                purpose="wet wall (short): bar sink valve and towel ring"),
     # IKEA requires the SUNNERSTA kitchenette (FURN-A-STUDIO-BAR-BASE, plan/placeables.py) be
     # anchored to the wall, and a 44 1/8" x 54 3/4" flat-pack on an attic deck is exactly the
     # thing that walks away from an unanchored screw. 46" puts a 2x8 flat at 46"..53 1/4", which
