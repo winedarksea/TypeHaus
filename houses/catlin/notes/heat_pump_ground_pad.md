@@ -43,12 +43,12 @@ The yard pocket immediately east of the porch, bounded:
 |---|---|
 | west | `W-SG-E1`, the porch's east wall — faces x 27'-6" / 28'-6", top 0'-0", y -11'-0"..-0'-10" |
 | north | the house's south wall, cladding face y -0'-7 1/4" |
-| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top +0'-6", spanning **x 29'-0"..32'-0" only** |
+| south | the `W-RG-EAST-BALCONY` apron return at y = -10'-6", top 0'-0", axis spanning **x 29'-3"..32'-0" only** (12" block, so the band is x 29'-3"..32'-6", y -11'-0"..-10'-0") |
 | east | **open side yard**, out to the EAST (SIDE) setback line at x 58'-0" |
 
 The house is **gable-ended** here, so nothing sheds off the roof onto the units. The
 basement wall behind is `W-B-S4`, which has no windows. The only neighbour in the pocket is
-`TR-SG-LEADER-SE` at (28'-9", -10'-6"), discharging at +1'-0" into the terrace slot, well
+`TR-SG-LEADER-SE` at (29'-0", -10'-6"), discharging at +0'-6" into the terrace slot, well
 south of everything here. Nothing was authored in `plan/site.py` inside it.
 
 **The pocket now holds two things and they are laid out around each other**: the condenser
@@ -513,8 +513,8 @@ with a comfortable-looking `ft(5)` cannot pass silently the way this one did.
 part of it back on purpose.** Facing east, both cabinets discharged into the pocket's own
 north and west faces, which returned the stream **east and up** — and up meant
 `WIN-M-LIV-S1` (x 31'-5"..33'-11") and `WIN-S-STUDY2` above it. Facing south they discharge
-into open ground: `W-RG-EAST-BALCONY` spans only x 29'-0"..32'-0" and tops out at +0'-6",
-below the middle of either cabinet. That has not changed.
+into open ground: `W-RG-EAST-BALCONY`'s axis spans only x 29'-3"..32'-0" and it tops out at
+0'-0", below the middle of either cabinet. That has not changed.
 
 What the tuck changed is the **casings**, and it is a real trade rather than a wash:
 
@@ -684,3 +684,15 @@ of this.
   ground behind a 2'-10" wall in Exposure B is a different and far smaller problem than wind
   on the same cabinet at +10'-0"; it is still not calculated here. The twelve wedge anchors
   are a bolt-down-per-the-instruction detail (IRC M1401.4), not a designed restraint.
+
+---
+
+**Stale extents corrected 2026-09-11.** Three figures above quoted the apron return and the
+leader as they stood before two earlier passes: the return was 3'-0" (x 29'-0"..32'-0") until
+2026-09-03, when the balcony's joist cantilever went 6" -> 9" and the return gave 3" back to
+keep the leader's slot; and the whole court's tops came down 2" to the porch datum on
+2026-09-10, so +0'-6" became 0'-0". The leader followed the deck edge east to x 29'-0" and
+its outlet is +0'-6", not +1'-0". None of it changes a conclusion in this note — the return
+is still below the middle of either cabinet and the leader is still well south of the pocket
+— but the numbers are now the model's. The returns' ends are derived from the leader's slot
+in `params/raised_garden.py` as of the same date, so this pair cannot drift apart again.

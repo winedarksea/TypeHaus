@@ -475,9 +475,23 @@ MAIN_LIGHTING = [
     #
     # The comment this replaces argued "panels over the working floor, cans over the
     # counters — a can right above where you stand puts your own shadow on the cutting
-    # board". That reasoning is about standing AT A COUNTER, and it is why CAN1-CAN4 sit
-    # 8-9 5/8" off the counter fronts rather than over them. It says nothing about the open
+    # board". That reasoning is about standing AT A COUNTER. It says nothing about the open
     # floor in the middle of the room, where there is no work surface to shadow.
+    #
+    # ** CAN1-CAN4 NOW SIT ON THEIR RUN'S COUNTER FRONT EDGE (2026-09-11). ** They were
+    # scattered — 8" out into the room on the north run, 9 5/8" IN over the cabinets on the
+    # east — and two of them were measurably inside something: **CAN3's centre was inside
+    # FURN-M-KIT-N4** (the 2'-0" x 2'-6" corner base) with its 4" body lapping the 13" upper
+    # FURN-M-KIT-WN1 by 5/8", and **CAN4's centre was inside APPL-M-RANGE**, 4 11/16" off
+    # APPL-M-HOOD, 2 3/8" north of the FURN-M-KIT-N3 its own comment said it was over.
+    # A can over a cabinet lights the cabinet; a recessed can over a cooktop is a grease trap.
+    #
+    # ONE RULE NOW, so the next move has something to be checked against: **a counter can's
+    # centre is on its run's counter front edge** — 2" of the 4" body over the counter's
+    # outer 2", 2" over the aisle. A 24" base under a 13" upper leaves 11" of counter, so
+    # every body clears every upper by 9" — measured, not assumed (see below) — and the tape
+    # under the upper lights the 11" the upper shades. It also keeps the can off the standing
+    # zone, which is in FRONT of the edge, not behind it.
     #
     # ~9,600 lm of panel down to 3,600 lm of can, and the whole room on one colour
     # temperature.
@@ -493,9 +507,15 @@ MAIN_LIGHTING = [
     # floor: 2'-0" north of the peninsula's back edge and 2'-11" south of the north counter
     # face, with CAN1-CAN4 already washing both of those. CAN5 takes the west walkway
     # between FURN-M-KIT-PANTRYC and the peninsula's west end, which the 2x2 also covered
-    # and a bare row of three would not. Measured against the resolved footprints: every one
-    # of the four is >= 1'-11 3/4" from any cabinet or appliance and >= 2'-4" from any
-    # existing can.
+    # and a bare row of three would not.
+    #
+    # ** RE-MEASURED 2026-09-11 against the resolved footprints, and one figure was off. **
+    # CAN5-CAN8 stand **>= 1'-11 23/32"** from any cabinet or appliance — CAN8 to
+    # APPL-M-RANGE at 23.72", which is 1/32" under the "1'-11 3/4"" this comment used to
+    # claim. The claim is corrected rather than the can moved: it is a stated layout margin,
+    # not a code clearance, and 23.72" is what the model says. Can to can is now
+    # **>= 2'-8"** (CAN4 to CAN8, 31.97"), up from the 2'-4" the old row measured, because
+    # CAN3 and CAN4 moved off the cabinets onto the counter-front lines.
     ElectricalDevice(uid="7WE319EHB5", tag="ED-M-KITCH-CAN5", kind=DeviceKind.LIGHT,
                      position=pt(ft(23), ft(27)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
@@ -518,27 +538,41 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # x=25'-2 1/2" follows FURN-M-KIT-E1's centre — the north counter run's west end, at the
     # pantry wall. It is NOT retagged into RM-M-PANTRY: its `controlled_by` is ED-M-KITCH-SW
-    # and the kitchen needs the can. y stays on CAN2's line, 8" south of the counter front.
+    # and the kitchen needs the can. y=33'-5 3/8" is the north run's counter front edge
+    # (FURN-M-KIT-E1/SINKBASE/E2 all front on it); the body clears FURN-M-KIT-WE1 by 9".
+    # CAN2 shares that line. Its body laps FX-M-KITCH-SINK's plan footprint by an inch,
+    # which is the point and not a clash: the sink is a counter-height basin and this is a
+    # ceiling can over it.
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 2.5), m(9.9884)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(25, 2.5), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000AAAA", tag="ED-M-KITCH-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(m(9.29111), m(9.99009)), type_ref="ED-T-LT-CAN4",
+                     position=pt(m(9.29111), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN3 over FURN-M-KIT-N4 (centre y=34'-2 3/8") and CAN4 over FURN-M-KIT-N3 (centre
-    # y=29'-5 3/8"), each over the cabinet actually underneath. x=34'-3" is 9 5/8" in from
-    # the counter front.
+    # CAN3 serves the NE corner and CAN4 the east run's FURN-M-KIT-N3, and both are now on a
+    # counter front edge rather than over the casework.
+    #
+    # CAN3 CANNOT sit over FURN-M-KIT-N4 at all: that corner block has cabinets on both
+    # adjoining runs, so there is no aisle above it, and the only clear line near it is the
+    # NORTH run's front edge. (33'-2", 33'-5 3/8") is the east end of that edge, over
+    # FURN-M-KIT-E2's last box; body 5 3/8" clear of APPL-M-HOOD, 9" clear of
+    # FURN-M-KIT-WE5. The corner counter itself is not left dark — LR-M-KIT-E-WN1 runs the
+    # whole of it, and LR-M-KIT-N-WE3 below is new for the 12" bridge box beside it.
+    #
+    # CAN4 goes where its comment always said it was: y=29'-5 3/8" is FURN-M-KIT-N3's own
+    # centre, x=33'-5 3/8" the east run's counter front edge. 10 1/16" clear of APPL-M-RANGE
+    # and 9" clear of the FURN-M-KIT-WN3 upper.
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 3), ft(34, 2.375)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 2), ft(33, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(m(10.1775), m(9.33823)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(33, 5.375), ft(29, 5.375)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -598,6 +632,21 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    # ** FIFTH RUN, NEW 2026-09-11 — the one 13" upper that had no tape under it. **
+    # FURN-M-KIT-WE3 is the CASE-W12 bridge box over WIN-M-KITCH-N, x 33'-4 3/16"..34'-4
+    # 3/16", and the counter under it is FURN-M-KIT-N4's corner top. It was lit from above by
+    # ED-M-KITCH-CAN3 standing 1 3/8" off its front edge — a can that lit the cabinet doors
+    # and left the 11" of counter under the box in the box's own shadow. CAN3 moved out to
+    # the counter-front line; this replaces what it was nominally doing.
+    # 1'-0" exactly, on the same y=34'-5 3/8" line as WE1/WE2 (1" behind the uppers' front
+    # edge) but at 66", WE3's own hanging height — the same reason LR-M-KIT-E-WN1 is at 66".
+    # It stops at x=34'-4 3/16", 1 3/16" short of LR-M-KIT-E-WN1's x=34'-5 3/8" line, so the
+    # two legs meet at the corner without crossing.
+    LightRun(uid="5SGJTPFRSQ", tag="LR-M-KIT-N-WE3", type_ref="ED-T-LT-STRIP24-TASK",
+             path=(pt(ft(33, 4.1875), ft(34, 5.375)), pt(ft(34, 4.1875), ft(34, 5.375))),
+             room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
+             controlled_by=("ED-M-KITCH-SW-UC",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
     # Runs south to 27'-2 3/8" with FURN-M-KIT-WN4, the 15" box filling the gap the mixer
     # garage left: the tape runs the whole continuous 13"-deep upper face from the garage's
     # north side to the range, the whole of the peninsula's east counter and FURN-M-KIT-N3's
@@ -614,8 +663,9 @@ MAIN_LIGHTING = [
              room="RM-M-LIVING", psu_ref="ED-M-KITCH-LT-PSU",
              controlled_by=("ED-M-KITCH-SW-UC",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(66))),
-    # 11'-5" of tape at 5 W/ft = 57.1 W; x1.25 = 71.3 W — already past ED-T-LT-PSU-60's
-    # 60 VA, which is why the 200 W supply is specified. It loads to ~36%. NOT a share of
+    # 12'-5" of tape at 5 W/ft = 62.1 W; x1.25 = 77.6 W — already past ED-T-LT-PSU-60's
+    # 60 VA, which is why the 200 W supply is specified. It loads to ~39% (~36% before
+    # LR-M-KIT-N-WE3's 1'-0" was added). NOT a share of
     # ED-M-LIVING-LT-PSU: that one is on CKT-LT-MAIN, and electrical_notes.md line 24 puts
     # kitchen lighting behind the backup relay.
     ElectricalDevice(uid="7VSVT7B8ZS", tag="ED-M-KITCH-LT-PSU", kind=DeviceKind.JUNCTION_BOX,

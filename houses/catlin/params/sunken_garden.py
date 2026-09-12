@@ -3645,6 +3645,10 @@ _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
 _SG_LEADER_OUTSET = 0.25   # ft outboard of the deck edge, which IS the east wall's face
 _SG_GUTTER_OVERSAIL = 0.5  # ft of trough past that edge, to carry the outlet
 _SG_LEADER_X = _deck_x_e + _SG_LEADER_OUTSET
+_SG_LEADER_DIA_IN = 3.0
+# What a leader strap wants outboard of the pipe. Same figure as the inboard side, which is
+# what centres the pipe in its slot.
+_SG_LEADER_STRAP_CLEAR_FT = 1.5 / 12.0
 _GUTTER_PATH = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
                 pt(ft(_deck_x_e + _SG_GUTTER_OVERSAIL), ft(_y_balcony_front)))
 # Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
@@ -3673,8 +3677,23 @@ BALCONY_LEADER = Downspout(
     position=pt(ft(_SG_LEADER_X), ft(_y_balcony_front)),
     top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
     bottom_elevation=_SG_LEADER_BOTTOM,
-    diameter=inch(3), material="metal-dark-kstyle", gutter_ref="TR-SG-GUTTER",
+    diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
+    gutter_ref="TR-SG-GUTTER",
 )
+
+# ** THE SLOT, PUBLISHED — the raised garden's two returns stop on THIS, not on a typed
+# 2'-9". ** `params/raised_garden.py` used to carry the return length as a literal with a
+# comment saying it was really `_deck_x_w`/`_deck_x_e` minus 6". That was true and unenforced:
+# a change to `joist_cantilever_in`, to the leader's diameter or to the strap allowance moved
+# the slot and left the returns where they were, and nothing in the engine grades a downspout
+# against a landscape wall. The slot is derived here, beside the leader that needs it, and
+# consumed there.
+#
+# Measured from the deck edge outward: the leader's own outset, its half-diameter, and the
+# strap clearance on the far side. 3" + 1 1/2" + 1 1/2" = 6".
+BALCONY_DECK_SPAN_X_FT = (_deck_x_w, _deck_x_e)
+BALCONY_LEADER_SLOT_FT = (_SG_LEADER_OUTSET + (_SG_LEADER_DIA_IN / 24.0)
+                          + _SG_LEADER_STRAP_CLEAR_FT)
 
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,

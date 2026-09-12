@@ -171,6 +171,16 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
 
     Both must also stay south of ``TR-RF-LEADER-W``, the roof leader on this facade at
     y=35'-6", and clear of the second-storey chase notch's +19'-0" cap.
+
+    ** THE x IT PINS MOVED ON 2026-09-11, AND THE OLD VALUE WAS THE BUG. ** It used to
+    require x = +0'-6" "at the wall". +6" is the middle of the stud cavity: W-M-W1B and
+    W-S-W1B resolve their outdoor face at x = -0'-7 1/4" (PBR-26 cladding over an outer
+    girt, a vent gap and 4" of foam), so both hoods stood a foot INSIDE the house and this
+    test held them there. ``Equipment.footprint`` is a plan rectangle centred on
+    ``position``, so a 12" hood box with its back plate flat on the cladding centres at
+    -7 1/4" - 6" = **-1'-1 1/4"**. That is the number pinned now, and it is pinned as a
+    NEGATIVE — a positive x on either of these is the gable/cavity regression this test
+    exists to catch.
     """
     hoods = {e.tag: e for e in catlin_plan.all_elements()
              if e.tag in ("EQ-M-ERV-HOOD-OA", "EQ-S-ERV-HOOD-EA")}
@@ -187,7 +197,7 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
         x, y = (v / _FT for v in hood.position.xy_m)
         # The west facade at the chase, not the north gable: x is at the wall, y is in the
         # chase band. If either drifts back onto the gable this reads it immediately.
-        assert x == pytest.approx(0.5, abs=0.01), tag
+        assert x == pytest.approx(-13.25 / 12.0, abs=0.01), tag
         assert 33.0 < y < 35.5, f"{tag} must stay south of the roof leader at y=35'-6\""
 
 

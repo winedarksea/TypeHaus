@@ -113,7 +113,9 @@ from dataclasses import dataclass
 from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
 
 from params.sunken_garden import (
+    BALCONY_DECK_SPAN_X_FT,
     BALCONY_FRONT_AXIS_Y_FT,
+    BALCONY_LEADER_SLOT_FT,
     RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN,
     RETAINING_WALL_SPAN_X_FT,
     RETAINING_WALL_THICKNESS_IN,
@@ -169,6 +171,17 @@ X_EAST = _sg_x_east + _step_out_ft                       # 32.0
 Y_SOUTH = SOUTH_RETAINING_WALL_AXIS_Y_FT - _step_out_ft  # -33.33333
 Y_NORTH = BALCONY_FRONT_AXIS_Y_FT                        # -10.5
 
+# ** THE RETURNS' INBOARD ENDS ARE DERIVED NOW, NOT TYPED (2026-09-11). ** Both stop one
+# leader slot short of the balcony deck edge, which is what the comment beside NODES has
+# always claimed and what nothing enforced. `BALCONY_LEADER_SLOT_FT` is 6" today —
+# TR-SG-LEADER-SE's 3" outset + its 1 1/2" half-diameter + 1 1/2" of strap clearance,
+# derived beside the leader in `params/sunken_garden.py`. Move the balcony cantilever, the
+# leader's bore or its strap allowance and these two ends follow; they used to sit still and
+# the pipe lost its slot silently.
+_deck_x_w, _deck_x_e = BALCONY_DECK_SPAN_X_FT            # 7.25 / 28.75
+X_WEST_BALCONY = _deck_x_w - BALCONY_LEADER_SLOT_FT      # 6.75
+X_EAST_BALCONY = _deck_x_e + BALCONY_LEADER_SLOT_FT      # 29.25
+
 # Level with the sunken-garden wall top, 3' down. The drop is a whole number of 6" courses
 # by construction, which is what lets the run be dry-stacked without a cut course.
 TOP = ft(RETAINING_WALL_TOP_FT)
@@ -202,13 +215,37 @@ NODES = [
     # the trade against a RIPPED finish board on a watertight aluminium deck, which is the
     # much worse cut (it takes the tongue and the plank's integral gutter channel off).
     #
-    # **These offsets are not free numbers: they are ``_deck_x_w``/``_deck_x_e`` minus 6".**
-    # If the balcony cantilever moves again they move with it, or the leader loses its slot
-    # and nothing in the engine will say so.
+    # ** ASKED AGAIN 2026-09-11: CLOSE THE GAP. THE ANSWER IS NO, AND THE LEADER IS WHY. **
+    # There is a real defect behind the request — a 9" notch at each north corner, between
+    # the sunken-garden wall's outer face (x 7.5 / 28.5) and the return's end, where the
+    # terrace fill meets the yard with nothing retaining it. It is a live open item. It is
+    # not closed HERE.
+    #
+    # **The east return cannot advance one inch.** TR-SG-LEADER-SE's 3" pipe resolves at
+    # x 28.875..29.125 with its bottom at +0'-6"; the return's end is at 29.25, which is
+    # exactly the 1 1/2" strap clearance and no more. Any westward move stands the wall
+    # under the pipe. Nothing in the engine would report it — the wall tops out at 0'-0",
+    # six inches BELOW the leader's outlet, so the two solids never touch and `haus check`
+    # stays green — and the building would be a 200 sf deck's entire discharge landing on
+    # the crest of a dry-stacked segmental wall, into the drainage stone and backfill that
+    # are the only thing holding it up. That is the SRW failure mode, not a detail.
+    #
+    # **And the leader has nowhere to go.** Inboard is blocked (the front rail and the front
+    # beam both sit on the trough line, and SL-SG-FLOOR stops at the wall's inner face); the
+    # east beam axis holds PT-SG-BF3 and W-SG-E1's 12" band; back into the sunken garden
+    # reverses the 2026-09 decision that took 200 sf off DRW-SG-MAIN, a 9'-deep soakaway
+    # with no outlet of its own. Falling the gutter WEST instead only moves the pipe into
+    # the mirror-image slot on the other side.
+    #
+    # **The west return is not extended alone.** Its gap is the same 9" leak, so closing one
+    # end is half a fix, and two different return lengths on a symmetric landscape U reads
+    # as an error rather than as a decision. The notch is answered at the terrace's edging
+    # and fabric — which this module already lists as not modelled — or by moving the
+    # leader, and moving the leader is its own pass.
     Node(uid="RGN005AAAA", tag="N-RG-WEST-BALCONY",
-         position=pt(ft(X_WEST + 2.75), ft(Y_NORTH)), open_end=True),
+         position=pt(ft(X_WEST_BALCONY), ft(Y_NORTH)), open_end=True),
     Node(uid="RGN006AAAA", tag="N-RG-EAST-BALCONY",
-         position=pt(ft(X_EAST - 2.75), ft(Y_NORTH)), open_end=True),
+         position=pt(ft(X_EAST_BALCONY), ft(Y_NORTH)), open_end=True),
 ]
 
 # ``unbalanced_fill`` is authored rather than derived, and has to be. The engine derives

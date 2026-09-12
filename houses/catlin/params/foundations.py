@@ -442,6 +442,56 @@ GARAGE_STEM_WALLS = [
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
                        assembly="FOOTING_20")
 
+# ** ASKED 2026-09-11: REPLACE THESE NINE WITH AN AGGREGATE FOOTING. THE ANSWER IS NO. **
+# This is a NEW proposal, not a revert — nothing in this repo's history ever put the garage
+# stem on stone. Five reasons, and the first is the one that ends it:
+#
+# 1. **There is nothing to dowel into.** `GARAGE_ICF_6` states
+#    `MasonrySpec(unit_size="ICF-6", core_fill=True, rebar_spacing=inch(16))`: a cast-in-
+#    place ICF wall with vertical bars at 16" o.c., and those bars lap dowels cast into the
+#    footing. The IRC does list "crushed stone footings" among the supports a foundation
+#    wall may bear on, but the design for one lives in R403.4, *Footings for precast
+#    concrete foundations* — it is written for a precast panel set on compacted stone, not
+#    for a wall poured in place with reinforcement running out of its base. (Neither section
+#    is encoded in this engine; `checks/code/mn_residential` carries R403.1.4 and R403.1.6
+#    only, so nothing here would have refused the change.)
+# 2. **These stems retain fill.** `structural.foundation_unbalanced_fill` reports 3'-6" of
+#    unbalanced fill (GM, 45 psf/ft) on all nine. The footing is the base restraint for that
+#    push as well as the bearing: the 20" strip under an 11" section (6" core + 2 x 2 1/2"
+#    EPS) is a symmetric 4 1/2" toe each side, and the dowels are what stop the base sliding.
+#    Stone gives friction and no keyway.
+# 3. **The bearing plane is a datum three other files were designed against.**
+#    `plan/mep_supply.py` routes PR-G-HYDRANT-CW under FT-GF-S-DR's -7'-0" plane and keeps
+#    an east leg out of FT-GF-S1/-S-DR's influence cone; `mep.footing_clearance` PASSES only
+#    because SP-GF-S-HYD names twelve footings, these nine among them; `plan/electrical.py`
+#    holds a run two feet clear of FT-GF-S2 at -6'-8"; and `params/north_entry_frame.py`
+#    sets its piers to stay outside FT-GF-S1/-S3's 45 degree line from a -6'-4" underside.
+#    Delete the footings and every one of those arguments loses its referent and the sleeve
+#    becomes a sleeve through nothing.
+# 4. **The cited precedent does not transfer.** `raised_garden.py`'s
+#    `FootingBedding(aggregate="MnDOT Class 5 aggregate base")` hosts on a FoundationWall
+#    because that wall is a DRY-STACKED SRW — a wall type that by design has no concrete
+#    under it. An ICF stem is the other case the element's own docstring separates.
+# 5. **`FOOTING_20` is shared with the house**, so this could not be a retype in any event:
+#    every FT-B-* strip is on it too.
+#
+# Frost is not the obstacle and should not be offered as one. These bases sit at -7'-0"
+# against a -2'-10" grade, 50" down against `frost_depth_in=42`, and `structural.frost_depth`
+# passes on depth alone. A well-drained NFS section CAN be counted toward frost depth
+# (`FootingBedding.non_frost_susceptible` + `drain_tile`, ASCE 32 via IRC R403.1.4.1) — but
+# that is a route to a SHALLOWER footing, not to no footing, and nothing here wants to come up.
+#
+# ** WHAT THE REQUEST IS ACTUALLY POINTING AT, AND IT IS REAL. ** These nine are the only
+# footings in this house with NO `FootingBedding` under them. `HOUSE_FOOTING_BEDDING` above
+# beds every FT-B-* on 7" of stone; `sunken_garden.py` beds every FT-SG-*; `raised_garden.py`
+# beds all five W-RG-*. `FOOTING_20`'s own `source` string even says the strip is "poured
+# against the bedding prep" — and for these nine there is none. Left open rather than
+# authored here for one honest reason: a bed's drain tile needs a collector below it, and the
+# garage has none. The house's falls to SM-B-RADON and the court's to DRW-SG-MAIN; there is
+# no sump in the garage and no gravity outlet below -7'-0" on this lot. An undrained bed is a
+# defensible thing to specify (the raised garden's are `drain_tile=False`) but it is an
+# excavation and a stone order nobody has costed, and it is a decision, not a correction.
+
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
     Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
