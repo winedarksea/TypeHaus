@@ -96,10 +96,34 @@ what they must produce, and which permit-set line it unblocks, and `03-open-item
 generated straight off that table. They are exactly as blocking as they were before they had
 names; what changed is that the outstanding work is now an assignment rather than an absence.
 
-## No PDF
+## The PDF
 
-A ~40-sheet calc series with variable-length assumption prose and long ACI citations would
-need pagination and text wrapping that `emit/draw/sheet_writer` has never had to do, with no
-golden harness behind it. Markdown is the source of truth; render it with your own tooling.
-The permit set keeps S-105 as its engineering page, and S-105 now names both `out/calcs/`
-and the oracle note per item, so the drawings and the calculations reference each other.
+`haus calcs --pdf` flattens the same sheets through `takeoff/calc_pdf.py` and writes
+`out/calcs.pdf`: a cover, then the markdown paginated at a fixed measure, page-anchored so
+a reviewer's note on page 14 stays on page 14. It exists because no jurisdiction accepts
+Markdown and a seal has to bind to a flattened file.
+
+Markdown stays the source of truth. The PDF is derived on every run and never edited
+beside the sheets; a correction goes into the model or the calc module, not into the page.
+Its metadata is pinned (no CreationDate, no ModDate) so two runs over an unchanged model
+produce identical bytes, which is what lets `haus handoff` prove a bundle was regenerated
+rather than touched up.
+
+`05-scope-of-review.md` is the front-matter page that says what a stamp on that PDF would
+and would not cover: the computed items by id, the deferred ones a fabricator seals
+instead, and the open inputs that must close first.
+
+## `MANIFEST.json`
+
+Every run writes `MANIFEST.json` — sorted relative path to sha256 — beside the front
+matter. It does two jobs. A reviewer can check that the file they are reading is the file
+that was sent. And the *next* run deletes anything the previous manifest listed and this
+run did not produce, which is how the folder stays a statement about the current model: a
+sheet for an item the house no longer has reads as a calculation somebody did.
+
+`haus calcs --item` writes one sheet plus the front matter and prunes nothing — "absent
+now" there means "not asked for". The helpers are in `takeoff/handoff.py`, shared with
+`haus handoff`.
+
+The permit set keeps S-105 as its engineering page, and S-105 names both `out/calcs/` and
+the oracle note per item, so the drawings and the calculations reference each other.

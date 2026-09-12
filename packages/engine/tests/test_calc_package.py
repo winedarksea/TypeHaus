@@ -100,6 +100,16 @@ def test_every_registered_kind_names_an_oracle_note_that_exists():
         if oracle.test and not (REPO_ROOT / "packages" / "engine" / oracle.test).exists()})
     assert not missing_tests, f"oracle tests named by a calc but absent: {missing_tests}"
 
+    # A note that opens with a superseded banner is an archive. It still exists, so the
+    # two checks above pass, and the package would print it as though it verified the calc.
+    superseded = sorted({
+        oracle.note for kind in registered_kinds() for oracle in oracles_for(kind)
+        if "superseded" in "\n".join(
+            (notes_dir / oracle.note).read_text(encoding="utf-8").splitlines()[:5]).lower()})
+    assert not superseded, (
+        f"these oracle notes are archived (a 'Superseded' banner in their first five "
+        f"lines) and cannot verify a live calc: {superseded}")
+
 
 def test_a_record_carries_the_oracle_of_its_kind(catlin_engineering):
     """The stamp is applied to the records, not merely declared beside them.
@@ -218,13 +228,17 @@ def test_unfinished_items_reach_the_open_register_with_their_missing_text(
             assert text in page, item
 
 
-def test_the_negative_citation_survives_into_the_package(package):
-    """``ESR-4729 does not cover this wall`` is the most load-bearing sentence in the
-    board-and-batten note: it is why the panel item is open at all. A package that dropped
-    it would read as though nobody had looked."""
+def test_the_manufacturers_own_exclusion_survives_into_the_package(package):
+    """The most load-bearing sentence behind the cladding item is the panel maker's own.
+
+    Metal Sales publishes a bending allowable and says in the same note that it "does not
+    address web crippling, fasteners, support material" — which is why withdrawal is
+    computed here from NDS rather than read from a table, and why a reviewer has to see
+    that exclusion rather than take the 58 psf as the whole answer. A package that dropped
+    it would read as though the published number covered the governing limit state."""
     everything = "\n".join(package.values())
     assert "board-batten-24" in everything
-    assert "published by no manufacturer at any spacing" in everything
+    assert "does not address web crippling, fasteners, support material" in everything
 
 
 def test_the_design_criteria_are_derived_and_not_typed(package):

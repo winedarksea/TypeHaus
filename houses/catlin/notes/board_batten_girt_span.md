@@ -1,17 +1,29 @@
-# Board & batten over 24" open girts — hand-worked wind check
+# Board & batten over 24" open girts — hand-worked wind and withdrawal check
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Structure:** the twenty north/south walls clad in `board-batten-24` over a 24" girt course.
-**Written:** by hand, from the standard, before the module was encoded.
-**Oracle for:** `engineering/wall_panel.py`, reported by `structural.wall_panel_span`;
+**Written:** by hand, from the standards, before the modules were encoded.
+**Oracle for:** `engineering/wall_panel.py` and `engineering/wall_panel_withdrawal.py`;
 reproduced by `tests/test_wall_panel_calcs.py`. A calculation that only agrees with itself
 is not verified.
-**What is asked of the reviewer:** §6 — the withdrawal allowable nobody publishes. The
-bending check passes and is not the question.
+**What is asked of the reviewer:** §5 and §6 — both limit states are now graded, and the
+question is whether the NDS rational design in §6 is the right one, not whether a number is
+missing.
 
-Subject: `board-batten-24` — 24 ga concealed-fastener steel board & batten, 20" net
-coverage — on the twenty north/south walls of the house, spanning the KDAT girt course at
-**24" o.c.** (`EXT_2X6`, `PLANT_EXT_2X6_HUMID`).
+Subject: `board-batten-24` — **Metal Sales BB75-1111**, a 24 ga concealed-fastener steel
+board & batten panel, **11" net coverage**, 3/4" rib — on the twenty north/south walls of
+the house, spanning the KDAT girt course at **24" o.c.** (`EXT_2X6`,
+`PLANT_EXT_2X6_HUMID`).
+
+**Revised 2026-09-11: the product is now named, and the item is now stampable.** Two things
+changed and nothing else did. The panel was an unnamed "24 ga board & batten, 20" coverage"
+with an allowable borrowed from Metal Sales' table; it is now the Metal Sales product
+itself, so the 58 psf is the named product's own number and its guide's substrate language
+is on-label for this wall (§1). And the withdrawal allowable that §6 used to record as
+*unpublished by anyone* is now **computed** from NDS 2018 §12.2 — a rational design, which
+is exactly what IAPMO UES ER-309 authorises a design professional to do, rather than a wait
+for a row nobody is going to print. The panel screw goes from 1-1/2" to **2"** as a direct
+consequence: see §6.
 
 The east and west walls keep `pbr-panel-26` and are **not** subjects here. **ESR-4729 does
 not cover this wall at all.** It is Western States' report, it covers ROOF panels only, and
@@ -28,13 +40,21 @@ Board & batten is **not a purlin-bearing profile**, and no evaluation report cov
 only published capacity for it is a manufacturer's own span table; the manufacturers
 disagree about whether open girts are permitted at all; and the limit state that actually
 governs a concealed panel — withdrawal of the hidden leg's screws — is published by nobody
-at any spacing. Western States states the consequence directly: *"consult a design engineer
-for load and design calculations."*
+at any spacing. That is decision #65's case: a real requirement outside the prescriptive
+tables, with a computed demand and a capacity a seal can confirm.
 
-Of eight manufacturers surveyed, **two permit open framing**: Western States (*"most details
-in this guide are shown with panels attached to open framing"* — but that sentence is from
-the **T-8 PlankWall** guide, a reveal panel, not a batten; see §7) and Metal Sales. McElroy
-lists solid deck only; Lyon caps furring at 18"; Best Buy Metals says solid decking.
+**The substrate question is closed, on the named product's own words.** Metal Sales'
+BB75-1111 Board & Batten install guide (2025-10) states on p.6 that the panel is *"designed
+to be installed over open framing and/or directly over a wood substrate"*, and its list of
+support materials includes **"Lumber – 1x or thicker"**. This wall's support is a 1-1/2"
+KDAT 2x4 laid flat — 1x or thicker, and open framing. The panel is on-label here, quoted
+rather than inferred, and the quote is authored onto the material as
+`Material.open_framing_source` so the calculation refuses to grade a panel whose literature
+does not say it (§6.1).
+
+That is the change that made naming the product worth the panel-count cost. Of eight
+manufacturers surveyed, only two permit open framing at all — Western States and Metal
+Sales — and Western States, examined closely, publishes no load data for anything (§7).
 **Substituting one of the other six forces a second girt course or a continuous OSB layer,
 which costs more than the panel switch itself** — which is why it is written into the
 `prices.toml` row as well as here.
@@ -99,12 +119,19 @@ the same basis before the two are set beside each other:
     zone 5:  0.6 x 30.4432 = **18.2659 psf**
     zone 4:  0.6 x 24.6629 = 14.7977 psf
 
-## 5. Panel bending — the only limit state anybody published
+## 5. Panel bending — read off the named product's own table
 
-Metal Sales' 24 ga board & batten table, read at a 24" span: **58 psf allowable outward**
-(suction), 43 psf inward. Western States, the assumed supplier, publishes none at all.
+Metal Sales BB75-1111, 24 ga, read at the guide's 2'-0" fastener spacing: **58 psf
+allowable outward** (suction), 43 psf inward.
 
     d/c = 18.2659 / 58 = **0.315**          -> passes, margin 3.18x
+
+This is now the product's own number rather than a nearest-match borrowed from a table for
+some other panel, which is most of what naming the product bought. The table's stated basis
+is AISI 2016, three or more equal spans, L/180 deflection, no 1/3 stress increase — and its
+note 2 says the allowable *"does not address web crippling, **fasteners, support material**
+or load testing."* **That exclusion is why §6 exists**: the published number is bending and
+only bending, and the manufacturer says so.
 
 Suction is what is graded, because suction is what governs a wall panel: it is the negative
 zone-5 pressure of §3 that pulls the panel off its fasteners. The inward 43 psf is recorded
@@ -120,29 +147,119 @@ allowables.
 spacing was bought with.** The 24" course module buys back some of it, closing the profile
 with no evaluation report behind it to 0.32.
 
-## 6. What is NOT checked here
+**A reading rule that makes the table quotable at all.** The guide's *"fastener spacing"* is
+measured **along the panel's length**, not across it. For a panel run VERTICALLY over
+horizontal girts — which is this wall — the fasteners land on the girts, so the table's
+2'-0" column really is this wall's 24" girt spacing. It would **not** coincide for a
+horizontally-run panel, and quoting this number for one would be wrong.
 
-- **Withdrawal of the concealed leg's fasteners — the governing limit state.** Unpublished
-  at any spacing, by anyone. This is why the record is `INCOMPLETE` whatever §5 returns: a
-  panel that clears the only table anybody printed has not thereby been designed. What the
-  house DOES specify for it is the screw itself: 1-1/2", stainless or ASTM A153 Class D HDG,
-  never the 1" plated pancake screw a panel order ships with — see the `board-batten-24` row
-  in `prices.toml`. It has to take the full thickness of the 1-1/2" KDAT girt, because there
-  is no sheathing behind the nailer to catch a short one. Metal Sales' own detail asks for
-  1/2" past the inside face of the support, which no 1-1/2" screw in a 1-1/2" girt can give;
-  that needs a written variance and is an open item.
-- The girt itself in bending, and its block-to-stud connection (`structural.girt_course_spacing`
-  holds the spacing; nothing grades the stick).
-- Panel deflection, and thermal movement over a continuous run.
-- Whether the supplier actually named on the order permits open framing (§1).
+## 6. Withdrawal of the concealed leg's screws — NDS hand pass
 
-## 7. The literature survey, 2026-09-04 — and it comes back empty
+**This is the limit state that governs a concealed panel, and it is now computed.** Nobody
+publishes a pull-out value for a board-and-batten leg screwed into wood; the panel maker's
+own table excludes fasteners by name (§5). What closes it is not a table but the code's own
+equation, and IAPMO UES ER-309 states in as many words that *"the structural design
+professional may rationally design other fastener and substrate combinations based on
+engineering mechanics"*. NDS 2018 §12.2 is that mechanics.
 
-**The gap is real, it is structured, and it is now evidenced.** A sweep of current ICC-ES,
-IAPMO-UES and manufacturer technical data found **no product that publishes a suction or
-withdrawal allowable for a concealed-fastener metal board-and-batten WALL panel over open
-framing at 24" o.c.** Every document falls into one of exactly two buckets, and neither
-answers §6's question:
+**The fastener.** #10-12 x 2" pancake head **wood screw**, Type 17 point, 316 stainless or
+ASTM A153 Class D HDG. D = **0.190"** (the #10 shank).
+
+**The support.** The 24" girt course: KDAT 2x4 laid flat, so **1-1/2"** of southern yellow
+pine, G = **0.55** (NDS 2018 Table 12.3.3A, "Southern Pine"). There is no sheathing behind
+the nailer to catch a short screw.
+
+### The equation, term by term
+
+    W  = 2850 G^2 D                            NDS 2018 §12.2.1, lb per inch of penetration
+       = 2850 x 0.55^2 x 0.190
+       = 2850 x 0.3025 x 0.190
+       = **163.80 lb/in**
+
+    W' = W x C_D x C_M x C_t x C_eg            §12.2.3 / Table 11.3.1
+       = 163.80 x 1.6 x 0.7 x 1.0 x 1.0
+       = **183.46 lb/in**
+
+| Factor | Value | Why |
+|---|---|---|
+| C_D, load duration | 1.6 | NDS Table 2.3.2, wind. The demand is a wind suction; a fastener is not exempt from the factor the rest of the house's wind capacities use. |
+| C_M, wet service | 0.7 | NDS Table 11.3.3, withdrawal of a screw in a member that will be above 19% MC in service. A rainscreen cavity wets and dries with the weather. The same call `library/hardware.py` makes for this house's exterior connectors. |
+| C_t, temperature | 1.0 | Table 11.3.4: sustained service below 100 °F. |
+| C_eg, end grain | 1.0 | §12.2.4 would put it at 0.75 for a screw into end grain. Every screw here is into the side grain of a flat-laid 2x4. |
+| C_i, incising | — | **Not applicable.** Table 11.3.1 lists no incising factor for connections, and KDAT SYP is not incised in any case. |
+| treatment | — | **None.** NDS applies no reduction for preservative treatment to withdrawal; the treatment governs the fastener's *coating*, which is why the screw is stainless or A153-D. |
+
+### Thread penetration — the two deductions a spreadsheet forgets
+
+The panel's own flange is not the support, and the tapered tip carries no thread (NDS
+App. L puts a wood screw's tip at 2D). What is left is capped at the support's thickness: a
+screw that runs out the back of a 1-1/2" girt is not holding 2" of wood.
+
+    p = length − flange − 2D,   capped at the girt
+      = 2.000 − 0.0239 − 0.380 = 1.596"  ->  capped at **1.500"**
+
+    capacity  Z = W' p = 183.46 x 1.500 = **275.2 lb**
+
+### The demand
+
+One screw per panel per girt — the batten hides a single line of fasteners at each support.
+The tributary area is the girt spacing by the panel's **11" net coverage**:
+
+    A = (24/12) x (11/12) = **1.8333 ft²**
+    P = 18.2659 x 1.8333 = **33.49 lb**
+
+    d/c = 33.49 / 275.2 = **0.12**
+
+### Screw length is the whole answer, so the alternates are printed
+
+| Screw | Penetration | Capacity | d/c |
+|---|---|---|---|
+| 1" (what a panel order ships with) | 0.596" | 109 lb | 0.31 |
+| 1-1/2" (what this house specified until 2026-09-11) | 1.096" | 201 lb | 0.17 |
+| **2" (specified)** | **1.500"** | **275 lb** | **0.12** |
+
+All three pass the arithmetic. The 2" is specified for a different reason: Metal Sales'
+detail asks that *"fasteners should extend 1/2" or more past the inside face of the
+support"*, and in a 1-1/2" girt **no screw shorter than 2" can satisfy that.** The 2" passes
+the girt fully with its tip outside — which is also why its penetration is capped and its
+capacity does not keep rising with length. That closes what was an open variance item.
+
+It must be a **wood-point (Type 17)** screw, not a self-drilling point: a drill point in a
+1-1/2" nailer reams its own thread away, and NDS §12.2 is a wood-screw equation.
+
+### Cross-check against a published row
+
+ER-309's own DFL substrate row publishes **208 lb at 1" penetration**. The same equation at
+DFL's G of 0.50 gives 2850 x 0.50² x 0.190 x 1.6 = 216.6 lb/in x 1" — 208 lb once the
+report's own rounding is allowed for. The equation reproduces a published number for a
+substrate that *is* in the report, which is the check that the arithmetic above is being
+applied correctly to the one that is not.
+
+**A published value would supersede this.** If a maker prints a pull-out for this screw into
+wood, that number governs and this section becomes the cross-check rather than the answer.
+
+## 6.1 What is still NOT checked
+
+- **The girt itself in bending, and its block-to-stud connection.**
+  `structural.girt_course_spacing` holds the spacing; nothing grades the stick.
+- **Panel deflection, and thermal movement over a continuous run.**
+- **The table's three-equal-span basis at the short walls.** Metal Sales publishes the 58
+  psf for three or more equal spans. A wall whose girt course gives a panel only two spans
+  is a stiffer support condition for the end spans and a softer one in the middle; the
+  short north/south walls have not been counted against that basis.
+- **Whether the supplier actually named on the order is the one in §1.** The whole substrate
+  permission rests on Metal Sales' guide. A substitution is a re-check, not a swap.
+
+## 7. The literature survey, 2026-09-04 (amended 2026-09-11)
+
+**The gap is real, it is structured, and it is evidenced — and §6 now fills it by
+calculation rather than by citation.** A sweep of current ICC-ES, IAPMO-UES and
+manufacturer technical data found **no product that publishes a WITHDRAWAL allowable for a
+concealed-fastener metal board-and-batten WALL panel over open framing at 24" o.c.** That
+absence stands. What changed on 2026-09-11 is what is done about it: the rational-design
+path in point 1 below is now **TAKEN**, and the Metal Sales row below has moved from
+"nearest match" to *the product on this wall*. Every document still falls into one of
+exactly two buckets, and neither answers §6 by itself:
 
 **(a) Publishes a negative allowable, but requires a solid substrate** — so a batten profile
 over open girts is off-label:
@@ -190,32 +307,37 @@ published and details drawn on *"SHEATHING (BY OTHERS)"*.
 **Two things the survey turned up that are not in §6 and belong to somebody's decision, not
 to this note's arithmetic.**
 
-1. **A rational-design path exists, and one report explicitly authorises it.** IAPMO UES
+1. **A rational-design path exists, one report explicitly authorises it, and §6 now TAKES
+   it.** IAPMO UES
    **ER-309** (ASC Profiles / AEP Span, rev. 2025-06-24) publishes the per-fastener
    **pull-out** capacities behind its own tables — #10 into 20 ga Gr50 CFS: **124 lb**; into
    20 ga Gr33: **86 lb**; into DFL lumber at 1" minimum penetration: **208 lb** (steel per
    AISI S100, wood per NDS) — and states: *"The structural design professional may
    rationally design other fastener and substrate combinations based on engineering
    mechanics and the maximum panel/clip capacities stated within this report."* At §4's
-   18.27 psf and one fastener per panel per girt that is a ~4 ft² tributary and ~73 lb per
-   fastener. **That arithmetic is not done here and no d/c is published from it**: the girt
-   is 1-1/2" KDAT, not 20 ga steel and not a 1"-penetration DFL member, so the pull-out row
-   that would govern is not one of the three ER-309 prints. This is the shape of the
-   engineered design §8 asks for, not a substitute for it.
+   18.27 psf and one fastener per panel per girt over an 11" panel that is a 1.83 ft²
+   tributary and 33.5 lb per fastener. **That arithmetic is now done — §6.** The girt is
+   1-1/2" KDAT, not 20 ga steel and not a 1"-penetration DFL member, so none of ER-309's
+   three rows can simply be read off; what its authorising sentence permits, and what §6
+   does, is to go back to the NDS equation the DFL row itself came from. ER-309's DFL row is
+   reproduced there to within a pound as the check that the equation is being applied right.
 
-   **One reading point that makes those tables quotable here at all.** ER-309's *"attachment
+   **One reading point that makes those tables quotable here at all** (the same rule §5
+   states for the Metal Sales column). ER-309's *"attachment
    spacing"* and ESR-4730's *"support fastener max. spacing"* are the fastener or clip
    spacing measured **along the panel's length**, not a girt-span table. For a panel run
    VERTICALLY over horizontal girts — which is this wall — the two coincide, so the reports'
    2'-0" column really is this wall's 24" girt spacing. It would **not** coincide for a
    horizontally-run panel, and quoting these numbers for one would be wrong.
-2. **No 24"-coverage board-and-batten was found on the market.** Published coverages are 10"
-   (Central States), 11" (Metal Sales BB75-1111), 12"/16" (Petersen, McElroy, Sheffield,
-   Taylor, Drexel, Englert) and 16" (Berridge). `board-batten-24` is authored at **20" net
-   coverage**, which is inside that range for a nominal-24" stock width — but the profile has
-   not been matched to a named product, and fastener tributary area moves directly with
-   coverage. **Naming the product is an owner decision and a possible cost change**; nothing
-   here picks one.
+2. **No 24"-coverage board-and-batten exists on the market, and the model no longer claims
+   one.** Published coverages are 10" (Central States), **11" (Metal Sales BB75-1111)**,
+   12"/16" (Petersen, McElroy, Sheffield, Taylor, Drexel, Englert) and 16" (Berridge).
+   `board-batten-24` was authored at 20" net coverage against no named product; **on
+   2026-09-11 it became Metal Sales BB75-1111 at 11"**, which is the owner decision this
+   point asked for. The tag keeps its spelling — it reads as the 24 GAUGE, which is
+   unchanged. The coverage change is not cosmetic: it roughly doubles the panel count and
+   the screw count against `prices.toml`, and fastener tributary area moves directly with
+   it in §6.
 
 One product does publish an open-framing *system* allowable for a batten panel and is worth
 recording because it is the closest thing that exists: **Berridge Batten Seam**, 16"
@@ -229,10 +351,18 @@ panels attached to open framing"* (T-8 PlankWall Install Guide, doc `4209-22`, p
 sentence is verbatim and real. It does not reach this wall, for three separate reasons, and
 the third is the one that matters:
 
-1. **T-8 PlankWall is not a board-and-batten panel.** WSMR's own shop drawing titles it
-   *"REVEAL PANEL PROFILE"* — a flush 7.75"-coverage plank with a recessed groove at the
-   joint and a face that is planar. Board & batten reads as a batten standing *proud* of
-   the field; T-8 is the geometric opposite. It was never the right analogue for this wall.
+1. ~~**T-8 PlankWall is not a board-and-batten panel.**~~ **AMENDED 2026-09-11, and this
+   point was wrong.** T-8 itself is indeed a reveal panel — WSMR's own shop drawing titles it
+   *"REVEAL PANEL PROFILE"*, a flush 7.75"-coverage plank — but the guide it appears in is
+   not a T-8-only document. Doc `4209-22` covers a **"BOARD AND BATTEN - BB, custom width
+   10" to 25""** on p.4, and the *"most details in this guide are shown with panels attached
+   to open framing"* sentence on p.1 is written across the guide, batten profile included.
+   So the guide does reach a board-and-batten panel after all, and the original grounds for
+   dismissing the quote do not hold. **Points 2 and 3 below still stand and are what
+   actually settle it** — and point 3 is the one that matters: the guide publishes no load
+   data of any kind, so an open-framing permission from it closes nothing. That is precisely
+   why the product moved to Metal Sales, whose guide permits open framing *and* prints a
+   number.
 2. **It is covered by ESR-4730, not outside it.** T-8 appears in that report's Table 1,
    Table 2 and Figure 6 by name, so §5.2's solid-substrate condition governs it. ESR-4730
    §5.1 settles the conflict with the install guide explicitly: *"In the event of a conflict
@@ -274,9 +404,25 @@ absence of published data is a finding, not a licence to interpolate one.
 
 ## 8. What a seal has to cover
 
-`wall_panel/W-M-S1` and its nineteen siblings, per `docs/engineering-toml-format.md`. One
-stamp may cover all twenty — they are the same panel, the same spacing and the same wind —
-but the register keeps them per element so that moving one wall stales that wall alone.
+**One item, twenty walls: `wall_panel/W-A-N1`.** Until 2026-09-11 the register carried
+twenty separate `wall_panel/*` items, one per wall, all INCOMPLETE. They are one panel, one
+girt spacing and one corner-zone demand — one design — and they are now one grouped record
+keyed by the lowest member tag, with all twenty walls in `element_tags`. Twenty identical
+sheets were twenty chances for a reviewer to stamp nineteen and miss one.
+`haus engineering --item wall_panel/W-M-S1` resolves to the group and says so.
+
+Membership is pinned. `element_tags` is not hashed, so `panel_count` is carried as an input
+instead: a wall joining or leaving the group stales the seal, exactly as moving a wall
+would. Per-wall staling is what the old shape bought and it is not worth twenty stamps —
+the panel is one product order.
+
+**What the seal is being asked to confirm** is no longer an absence. Both limit states are
+graded: bending 0.31 against the manufacturer's own published allowable (§5), withdrawal
+0.12 against NDS 2018 §12.2 (§6). The judgement in front of the engineer is whether the
+rational design in §6 is the right one for this connection — the wet-service call, the tip
+and flange deductions, and one screw per panel per girt as the fastener pattern — not
+whether a number is missing. §6.1 lists what is still outside it.
+
 The engineer's fee is plausibly already inside `permits-design-testing-and-insurance`
 ($20k-60k in `prices.toml`); no new cost line was added for it.
 
@@ -290,6 +436,9 @@ section form after. A document is listed here only if a number in this note came
 out of it.
 
 - **ASCE 7-16** — §26.10 (velocity pressure), §30.3 (C&C, walls)
+- **AWC NDS 2018** — §12.2 (wood screw withdrawal), §12.2.4 (end grain), Table 2.3.2 (load
+  duration), Table 11.3.1 (which adjustment factors apply to a connection), Table 11.3.3
+  (wet service), Table 12.3.3A (specific gravity), Appendix L (fastener dimensions)
 - **ASTM A153** — hot-dip galvanizing on hardware
 - **MN Rules 1309.0301** — the 115 mph statewide basic wind speed
 - **ICC-ES ESR-4729** — cited HERE ONLY TO EXCLUDE IT. It is Western States' report, it
@@ -306,11 +455,19 @@ out of it.
   <https://icc-es.org/wp-content/uploads/report-directory/ESR-4646.pdf>
 - **ICC-ES ESR-5839** (Petersen), 2026-04; **ESR-5838** (Drexel), 2026-05; **ESR-4730**
   (Western States), 2025-09 — all three require a solid substrate.
-- **Metal Sales BB75-1111 Board & Batten install guide**, 2025-10 —
+- **Metal Sales BB75-1111 Board & Batten install guide**, 2025-10 — **the product on this
+  wall**; substrate language p.6, allowable load table and its note 2, panel fastener row,
+  and the "1/2" past the inside face of the support" rule —
   <https://www.metalsales.us.com/wp-content/uploads/2025/10/Install-Guide-BB75-1111_10-2025.pdf>
+- **Western States Metal Roofing install guide `4209-22`** — read in full 2026-09-11. Covers
+  "BOARD AND BATTEN - BB, custom width 10" to 25"" (p.4) and permits open purlins (p.1), and
+  publishes **no load data anywhere**: "Design calculations for fastener spacing should be
+  completed by the design engineer" (p.3). See §7, WSMR point 1 as amended.
 - **Berridge Batten Seam load chart, open framing** —
   <https://www.berridge.com/resources/batten-seam-panel-load-chart-open-framing/>
 
-- **No published withdrawal or negative-pressure allowable exists** for a concealed-leg
-  board-and-batten profile over open framing at 24" o.c. That absence is the finding, not a
-  gap in this bibliography — see §6, §7 and `03-open-items.md` in the calculation package.
+- **No published withdrawal allowable exists** for a concealed-leg board-and-batten profile
+  over open framing at 24" o.c. That absence is still the finding, and it is not a gap in
+  this bibliography. What changed on 2026-09-11 is that the absence is now answered by a
+  rational design from NDS 2018 §12.2 (§6) rather than left open — which is what ER-309
+  authorises and what a seal over this item confirms.

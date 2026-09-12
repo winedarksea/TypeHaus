@@ -89,7 +89,8 @@ def _piers_on_their_own_footing(ctx: EngineeringContext) -> list[_Pier]:
 oracled_by(
     KIND,
     Oracle(note="sunken_garden_piers.md", test="tests/test_pier_calcs.py"),
-    Oracle(note="breezeway_piers.md"),
+    Oracle(note="north_entry_piers.md", section="§6",
+           test="tests/test_north_entry_piers.py"),
 )
 
 

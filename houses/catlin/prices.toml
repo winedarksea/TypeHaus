@@ -271,9 +271,11 @@
 # as `sheet_goods` scope "bearing stiffener rip" on the "struct-1-plywood" row.
 # Commented out rather than deleted; it would multiply against 0 LF.
 #
-# Same open item as the buck row: the $280-600 of PIECEWORK this row's labour half was
-# explicitly basised on (76 ends x 4-7 min) does not survive into 2 sheets x $16-34 = $32-68.
-# The material half does (2 sheets x $27-42 = $54-84 against the retired $88-128).
+# CLOSED 2026-09-11 by `"struct-1-plywood:bearing stiffener rip"` under the QUALIFIED BY
+# SCOPE banner below, which carries the $280-600 of PIECEWORK this row's labour half was
+# explicitly basised on (76 ends x 4-7 min) — 2 sheets x $16-34 = $32-68 never reached it.
+# The material half had always survived (2 sheets x $27-42 = $54-84 against the retired
+# $88-128) and is now stated at the 23/32" rate rather than inherited at the 1/2" one.
 # "4x1.4375 stiffener panel" = { material = { low = 1.1, high = 1.6 }, labour = { low = 3.75, high = 8 } }  # was 76 LF (76 pairs) -> 2 sheets
 # PLACEHOLDER, 2026-08-21 — no fabricator quote yet, confirm before treating the takeoff
 # delta as meaningful. FS-S-WEST's open-web trimmable trusses, same 11 7/8" depth as the
@@ -464,8 +466,8 @@
 # half carries across correctly ($297-462 of ply against the retired $233-357 over 496
 # fictional feet). Closing it wants a `scope` qualifier on `[sheet_goods]` (one line in
 # `cli/prices.QUALIFIED_KEY_FIELD`, exactly as `[envelope_layers]` qualifies on thickness),
-# then a `"struct-1-plywood:buck rip"` row here. Not taken in this pass: `cli/prices.py` was
-# out of scope for it.
+# then a `"struct-1-plywood:buck rip"` row here. BOTH LANDED — the qualifier on 2026-09-11
+# and the row with it; see the QUALIFIED BY SCOPE banner below.
 # "6x0.375 panel" = { material = { low = 0.47, high = 0.72 }, labour = { low = 0.9, high = 1.8 } }  # was 496 LF (fiction: 62 x 8' sticks) -> 9 sheets
 # RETIRED 2026-08-26 with the catlin truss, all three. The 5" strips were the Swinburne
 # truss's plywood TABS (1/2") and its 5"-deep window BUCKS (3/8"); the girt wall has no tab
@@ -660,6 +662,27 @@
 # CONFIDENCE: MEDIUM on material (shelf comparison), LOW-MEDIUM on labour (derived from
 # crew-hour, not quoted). Deleting this row returns the bucks to the flat rate above.
 "struct-1-plywood:buck rip" = { material = { low = 22, high = 34 }, labour = { low = 45, high = 90 } }  # 9 sheets — 3/8" bucks, ripped and fitted into the openings
+# The BEARING STIFFENERS, the second half of the same open item and closed the same way.
+# `takeoff/sheet_rips` bills 152 pieces of 4"-wide 23/32" rip as 2 sheets, scope "bearing
+# stiffener rip". Priced flat they would take the `struct-1-plywood` row above, and that row
+# is a sheet SCREWED TO A WALL — wrong on both halves again, but in the OPPOSITE direction
+# from the bucks on material.
+# MATERIAL is a thickness UP, not down: 23/32" CDX runs above the 1/2" shelf price, so
+# $45-65 the sheet, the same basis the `plywood-subfloor` row carries.
+# LABOUR is the real number and 2 sheets x $16-34 does not come close to it. This is
+# PIECEWORK and always was: 76 rafter ends, two blocks each cut to the 6:12 bevel and 8
+# nails, 4-7 minutes of a framer at $55-85/hr loaded = $280-600 all in. Divided over the 2
+# sheets the saw actually consumes, that is $140-300 a sheet. The sheet is the UNIT here,
+# not the work — so the per-sheet labour is deliberately an order above every other row in
+# this table, and it is not a typo.
+# CONFIDENCE: HIGH on material (shelf comparison), MEDIUM on labour (a time estimate carried
+# across from the retired per-LF row, not a quote). Deleting this row returns the stiffeners
+# to the flat rate above and silently drops ~$250-530 of framer time.
+"struct-1-plywood:bearing stiffener rip" = { material = { low = 45, high = 65 }, labour = { low = 140, high = 300 } }  # 2 sheets — 23/32" stiffener pairs, bevel-cut and nailed at 76 rafter ends
+# THE OTHER TWO RIP SCOPES ARE LEFT ON THE FLAT RATE DELIBERATELY. `sheathing rip` bills 1
+# sheet of 0.625" cdx-plywood and 1 of 0.5" struct-1-plywood — offcuts hung as sheathing,
+# which is exactly what both base rows are basised on. A scope row there would restate the
+# fallback and add a second place to keep in step.
 
 [hardware]
 # Schematic installed allowances, not supplier quotations. Replace with the engineered
@@ -2191,7 +2214,7 @@
 "ED-T-SAUNA-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-SWITCH" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 36 ea
 "ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 6 ea
-"ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
+"ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 2 ea — the plant room, and the garage soffit run since 2026-09-11
 "EQ-T-EG4-12KPV" = { material = { low = 2600, high = 3500 }, labour = { low = 1400, high = 3000 } }  # 1 ea
 # 2026-08-20 — NEW, and it was unpriced in BOTH [placeables] and [furnishings]. A duct heater
 # is not furniture, so it belongs here and nowhere else.
@@ -2219,19 +2242,26 @@
 # balancing pass — but the case now HANGS (see plan/electrical.py), which is the cheaper end
 # of that range rather than the dearer.
 "EQ-T-BROAN-B210E75RT" = { material = { low = 1400, high = 2400 }, labour = { low = 950, high = 2100 } }  # 1 ea
-# The three radial sub-manifolds. A 160 mm-collared plenum with six or ten 75 mm outlets and
+# The radial sub-manifolds: four rows, five manifolds. A 160 mm-collared plenum with six or
+# ten 75 mm outlets and
 # a balancing damper at each, plus the ONE 6" -> 160 mm adapter every manifold needs because
 # the Broan's ports are 6" and the manifold stock is metric. The adapter is a real part and a
 # real fitting-up, so it rides in these rows rather than being shrugged into the duct $/LF.
-"EQ-T-ERV-MANIFOLD-6" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 4 ea
+"EQ-T-ERV-MANIFOLD-6" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 2 ea — the supply side
+"EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 2 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
 "EQ-T-ERV-MANIFOLD-10" = { material = { low = 260, high = 600 }, labour = { low = 150, high = 380 } }  # 1 ea
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
 "EQ-T-ERV-MIXING-BOX" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea
-# The two gable hoods. Cheap castings; the labour is the flashing and the air-sealing of a
-# 6" penetration through a truss wall with 4" of closed-cell foam in it, which is most of it.
-"EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 2 ea
+# The two wall hoods, one row each since 2026-09-11 — they are stacked on the WEST face at the
+# NW chase, not on a gable, and the pair is one intake and one discharge. Same casting and the
+# same rate; two rows because the trunk's declared service IS the direction, and a single row
+# could not say which way the air goes. Cheap castings; the labour is the flashing and the
+# air-sealing of a 6" penetration through a truss wall with 4" of closed-cell foam in it,
+# which is most of it.
+"EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
+"EQ-T-ERV-HOOD-6-EXH" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, same casting, damper reversed
 "EQ-T-ESS-BATT" = { material = { low = 3000, high = 4400 }, labour = { low = 800, high = 1800 } }  # 1 ea
 # ** RE-RATED 2026-09-06, AND RAISING IT IS THE POINT, NOT A SIDE EFFECT. ** This row was
 # $300-900 material because the type was a generic 48" x 7" big-box insert. It is now a named
@@ -3370,27 +3400,49 @@
 # 1,678.3 SF — the NORTH AND SOUTH elevations of the house walls (EXT_2X6 and
 # PLANT_EXT_2X6_HUMID), from 2026-08-31, via a per-wall `layer_materials=` override on twenty
 # walls. The east and west walls' 1,416.6 SF stay on the PBR row above; the split is 54.2% /
-# 45.8%. 24 ga concealed-fastener board & batten at 20" net coverage, standard white PVDF.
-# Installed $6.00-10.60/SF against PBR's $4.50-7.25.
+# 45.8%. Installed $6.45-10.80/SF against PBR's $4.50-7.25.
 #
-# MATERIAL $2.30-4.05/SF. Most of the rise over PBR is the MANDATORY 26 ga -> 24 ga step:
-# PVDF is generally only offered on 24 ga board & batten, so 26 ga in this coating system may
-# not be a purchasable combination at all. This row carries the same trim uplift the PBR row
-# carries (46-72% over bare panel; 45 openings), for the same reason.
+# ** THE PRODUCT IS NAMED, from 2026-09-11: METAL SALES BB75-1111. ** 24 ga concealed-fastener
+# board & batten, standard white PVDF, **11" net coverage**, 3/4" rib. It was an unnamed
+# "24 ga board & batten at 20" coverage" until then, with an allowable borrowed from a Metal
+# Sales table for a panel nobody had picked. Naming it bought two things and cost one. It
+# bought the substrate permission in the maker's own words — p.6, "designed to be installed
+# over open framing and/or directly over a wood substrate", support materials including
+# "Lumber - 1x or thicker", which is exactly this wall's 1-1/2" KDAT girt — and it bought a
+# published 58 psf outward at 2'-0" that is now THIS panel's number rather than a nearest
+# match. It cost the panel count: 11" is real and 20" was not.
 #
-# LABOUR $3.70-6.55/SF, +35-50% on PBR, at the LOW end of the researched band because 20"
-# coverage is 1.8x PBR's panel count where 16" would have been 2.25x. The concealed screws
-# fold in at ~$0.04/SF — at 24" girts ~928 of them land on wood, up from ~696 at 32".
+# MATERIAL $2.30-4.05/SF, unchanged. It is a $/SF rate for sheet and trim, and coverage does
+# not move it. Most of the rise over PBR is the MANDATORY 26 ga -> 24 ga step: PVDF is
+# generally only offered on 24 ga board & batten, so 26 ga in this coating system may not be
+# a purchasable combination at all. This row carries the same trim uplift the PBR row carries
+# (46-72% over bare panel; 45 openings), for the same reason.
 #
-# ** THE CLADDING SCREW IS 1-1/2", STAINLESS OR ASTM A153 CLASS D HDG, ** on this row and on
-# the PBR row above, and it is NOT the 1" "plated" pancake screw a panel order ships with. It
-# has to take the full 1-1/2" thickness of the KDAT girt it lands in: this wall has no
-# sheathing behind the nailer to catch a short screw, and a fastener that stops part-way
-# through a treated ledge in a vented cavity is the one corrosion exposure in the assembly
-# (see the SDWS22800DB note in [hardware] for why the GIRT screw, encapsulated and dry, is
-# the opposite case and stays carbon steel). Metal Sales' published detail asks for 1/2" past
-# the inside face of the support, which no 1-1/2" screw in a 1-1/2" girt can give; that needs
-# a written variance from the supplier, and it is an open item.
+# ** LABOUR RE-STRUCK to $4.15-6.75/SF (was $3.70-6.55). ** The researched band is +35-50% on
+# PBR's $2.75-4.50, and the old row sat at the LOW end of it because 20" coverage was 1.8x
+# PBR's panel count. At the product's real 11" against PBR's 36" net coverage that is **3.3x**
+# the panels, so the low end is no longer defensible and the row moves to the TOP of the same
+# band (+50% both ends). The band itself did not move — only where in it this panel sits.
+#
+# ** ~915 CONCEALED SCREWS, at ~$0.04/SF, and they are inside the labour rate. ** One screw
+# per panel per girt is the concealed-leg pattern, so each screw is responsible for
+# 24" x 11" = 1.83 SF: 1,678.3 / 1.833 = ~915. That is the same tributary the withdrawal
+# calculation grades against (see below), so the count and the structural demand cannot drift
+# apart. If the installer puts a screw at each of the two concealed legs the count roughly
+# doubles to ~1,830 and every screw's demand halves — cheaper structurally, dearer in labour,
+# and neither the model nor this rate assumes it.
+#
+# ** THE CLADDING SCREW IS NOW 2", STAINLESS OR ASTM A153 CLASS D HDG ** on this row (the PBR
+# row above keeps 1-1/2", face-fastened into the same girt with no 1/2"-past rule on it), and
+# it is NOT the 1" plated pancake screw a panel order ships with. The length is a calculation,
+# not a preference: Metal Sales' own detail asks that fasteners "extend 1/2" or more past the
+# inside face of the support", and in a 1-1/2" girt no screw shorter than 2" can do it. The 2"
+# passes the girt fully with its tip outside. ** That closes the written-variance item this
+# row used to carry. ** It must be a wood-point (Type 17) screw: a self-drilling point reams
+# its own thread out of a 1-1/2" nailer. This wall has no sheathing behind the nailer to catch
+# a short screw, and a fastener stopping part-way through a treated ledge in a vented cavity
+# is the one corrosion exposure in the assembly — see the SDWS22800DB note in [hardware] for
+# why the GIRT screw, encapsulated and dry, is the opposite case and stays carbon steel.
 #
 # ** THE FIXINGS ARE INSIDE THIS RATE, unlike the PBR row. ** `board-batten-24` deliberately
 # does NOT set `Material.exposed_fastener`, so `takeoff.fasteners` bills no counted screw for
@@ -3398,25 +3450,31 @@
 # corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
 # would double-bill them.
 #
-# ** THE GIRTS CONSTRAIN THE SUPPLIER, AND A PURCHASING SUBSTITUTION MUST NOT HAPPEN
-# QUIETLY. ** Board & batten is not a purlin-bearing profile. At 24" o.c. (2026-09-01; it was
-# 32") Metal Sales publishes 58 psf outward and 43 psf inward for 24 ga board & batten, which
-# is d/c 0.31 / 0.47 against the 18.3 psf ASD zone-5 demand — the margin roughly doubled with
-# the course spacing and is no longer the thing to watch. ** ESR-4729 DOES NOT COVER THIS WALL
-# and the earlier note here was wrong to lean on it: ** it is Western States' report, for ROOF
-# panels only, on 24 ga minimum over 16 ga steel supports. PBR's wall capacity has to be
-# re-cited to a manufacturer wall table (ASC PS230 / Metal Panels Inc. / Homewood publish
-# 144-168 psf at 3'-0" spans, so 6x or better at 24"), not to an evaluation report that never
-# governed it. What has not changed is WHO WILL SELL IT: of
-# eight manufacturers surveyed only WESTERN STATES ("most details in this guide are shown with
-# panels attached to open framing") and METAL SALES permit open girts: McElroy lists solid deck
-# only, Lyon caps furring at 18", Best Buy Metals says solid decking. Substituting any of those
-# forces a second girt course or a continuous OSB layer, which costs MORE THAN THE PANEL SWITCH
-# ITSELF. Western States is the assumed supplier and that is load-bearing, not a preference.
+# ** THE ENGINEERING ITEM IS NOW ONE ITEM AND IT IS FINISHED. ** Twenty `wall_panel/*` records,
+# all INCOMPLETE, became one grouped `wall_panel/W-A-N1` covering all twenty walls: same panel,
+# same girt spacing, same corner-zone demand, one design and one seal. Bending is d/c 0.31
+# against the maker's published 58 psf; withdrawal — which that table excludes by name, "does
+# not address web crippling, fasteners, support material" — is COMPUTED at d/c 0.12 per NDS
+# 2018 section 12.2 from the girt's own specific gravity and the 2" screw's 1.50" penetration.
+# ** ESR-4729 DOES NOT COVER THIS WALL ** and an earlier note here was wrong to lean on it: it
+# is Western States' report, for ROOF panels only, on 24 ga minimum over 16 ga steel supports.
+# PBR's wall capacity is cited to a manufacturer wall table (ASC PS230 / Metal Panels Inc. /
+# Homewood publish 144-168 psf at 3'-0" spans, so 6x or better at 24"), not to that report.
+#
+# ** A PURCHASING SUBSTITUTION MUST NOT HAPPEN QUIETLY, and this is now sharper, not softer. **
+# Board & batten is not a purlin-bearing profile. The whole open-girt permission rests on the
+# named guide. Of eight manufacturers surveyed only Western States and Metal Sales permit open
+# girts at all — McElroy lists solid deck only, Lyon caps furring at 18", Best Buy Metals says
+# solid decking — and Western States, read in full on 2026-09-11 (doc 4209-22), publishes NO
+# load data of any kind for its board & batten: "Design calculations for fastener spacing
+# should be completed by the design engineer". Metal Sales is the one supplier that both
+# permits open framing and prints a number, which is why it is the one named. Substituting any
+# other forces a second girt course or a continuous OSB layer, which costs MORE THAN THE PANEL
+# SWITCH ITSELF.
 #
 # ** NOT TAKEN, and priced so the choice stays open: ALL FOUR ELEVATIONS. ** Extending the
 # override to the E/W walls' 1,416.6 SF is a `layer_materials` sweep and no rate change:
-# +$3,700-10,000 delivered against this option's +$2,000-5,400. Also not taken: the wood-grain
+# +$4,300-11,000 delivered against this option's +$2,700-6,200. Also not taken: the wood-grain
 # "white wood" print, which is CERAM-A-STAR SMP — a different coating system and warranty from
 # the PVDF on the rest of the envelope, about as much again as the switch itself, and not
 # quoted below a $3,000 job minimum.
@@ -3441,13 +3499,14 @@
 # foam closure matched to the rib ($0.45-0.72/LF published, plus butyl bedding); board &
 # batten's guide calls for zero closures.
 #
-# Sources: Western States Metal Roofing (board & batten install guide, panel widths, metal
-# siding cost, 24 vs 26 gauge), Metal Sales published span table (NOT ESR-4729 — see above), Steeldash
-# published trim list, Metal Sales board & batten span table. CONFIDENCE: MEDIUM on material,
-# MEDIUM-LOW on the labour uplift. OPEN: Western States' own board & batten install guide
-# could not be fetched, so its open-girt permission and maximum spacing are unverified by
-# hand — Metal Sales is the only one confirmed to permit open girts at all.
-"board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 3.7, high = 6.55 } }
+# Sources: Metal Sales BB75-1111 install guide, 2025-10 (coverage, substrate, allowable load
+# table and its note 2, fastener row, the 1/2"-past rule); Western States Metal Roofing doc
+# 4209-22 (open purlins, board & batten 10"-25" custom width, and no load data); Steeldash
+# published trim list. CONFIDENCE: MEDIUM on material, MEDIUM on the labour uplift (it was
+# MEDIUM-LOW while the panel count was a guess). The old OPEN item — "Western States' own
+# board & batten install guide could not be fetched" — is CLOSED: it was fetched and read on
+# 2026-09-11, and what it says is that it publishes nothing.
+"board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 4.15, high = 6.75 } }
 # 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
 # metal crew. Expect a floor of roughly $4,000-6,000 whatever the $/SF arithmetic says.
@@ -5738,6 +5797,19 @@ hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
 # both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
 electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
+# The garage's three exterior linear runs (two eave soffits + the gable face over the
+# overhead door), mark W / `ED-T-LT-LINEAR-EXT`, 2026-09-11. **An ALLOWANCE and not a
+# `[placeables]` row, and that is not a style choice**: `light_run_materials` is an UNREAD
+# table in `cli/prices.py` — it is keyed on `item` ("channel", "tape"), not on a luminaire
+# type — so a per-each row under `[placeables]` would match nothing at all and bill $0 with
+# no warning. A driven allowance is the one vehicle that reaches these three runs without
+# disturbing the 24V tape that shares the table.
+# Rate is the extrusion, the lens, the LED board and the end caps, plus hanging 64 LF of
+# channel at an eave off a ladder and making three damp-location terminations.
+# The table itself stays unpriced house-wide, so `channel` and `tape` keep appearing in the
+# takeoff's `unpriced` list exactly as they do today — including this run's own footage.
+# That is the fallback being honest, not this row failing.
+electrical-garage-exterior-linear = { low = 32, high = 85, unit = "LF", driver = "light_run_materials.quantity[type=ED-T-LT-LINEAR-EXT,item=channel]" }
 # CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
 # Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
 # `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $2,450-8,000 lump that

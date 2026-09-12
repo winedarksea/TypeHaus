@@ -73,6 +73,24 @@ def _resolve_house(house: Path | None) -> Path:
     return (house or Path.cwd()).resolve()
 
 
+def generation_date() -> str:
+    """Today, unless ``SOURCE_DATE_EPOCH`` says otherwise.
+
+    A deliverable stamped with the wall-clock date cannot be byte-compared between two
+    runs, which is how `haus handoff` proves a bundle was regenerated and not edited. The
+    variable is the reproducible-builds convention, so CI already knows how to set it.
+    """
+    from datetime import UTC, date, datetime
+
+    stamp = os.environ.get("SOURCE_DATE_EPOCH")
+    if stamp:
+        try:
+            return datetime.fromtimestamp(int(stamp), UTC).date().isoformat()
+        except (ValueError, OverflowError, OSError):
+            pass
+    return date.today().isoformat()
+
+
 def _detail(el: object) -> str:
     for attr in ("assembly", "host", "occupancy", "type_ref"):
         v = getattr(el, attr, None)

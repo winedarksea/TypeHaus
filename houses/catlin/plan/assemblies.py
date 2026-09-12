@@ -3431,8 +3431,8 @@ MATERIALS = [
              color="#6b7076", finish="ribbed-panel",
              skin_family="standing-seam", exposed_fastener=True,
              source="26 ga. PVDF-coated steel PBR (purlin-bearing rib) wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; same white paint and the same vapour-impermeable sheet steel as the four skins above"),
-    # `board-batten-24` — 24 ga CONCEALED-FASTENER board & batten at 20" net
-    # coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The east and
+    # `board-batten-24` — Metal Sales BB75-1111, 24 ga CONCEALED-FASTENER board & batten
+    # at 11" net coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The east and
     # west walls stay on `pbr-panel-26` above, which is why that row is still here: this is
     # a per-wall `layer_materials=` swap on twenty walls, not an assembly change.
     #
@@ -3440,28 +3440,51 @@ MATERIALS = [
     # this coating system may not be a purchasable combination at all. The gauge step is not
     # optional and it is most of the material premium.
     #
-    # 20" net coverage, not 16": Western States names 12" and 20" as their cost-effective
-    # widths and 16" carries an unpublished upcharge. 20" is also 1.8x PBR's panel count
-    # where 16" would have been 2.25x, which is why the labour uplift is at the low end of
-    # the researched band.
+    # 11" net coverage is the PRODUCT'S, not a choice. The row was authored at 20" against
+    # no named panel; the survey in notes/board_batten_girt_span.md §7 found no
+    # 24"-coverage batten panel on the market at all, and published coverages run 10", 11",
+    # 12" and 16". At 11" against PBR's 36" this is 3.3x the panel count, which is why the
+    # prices.toml labour band moved to its top.
     #
-    # Standard white PVDF and not the wood-grain print: "white wood" is CERAM-A-STAR SMP, a
-    # different coating system and warranty from the PVDF on the rest of the envelope, costs
-    # about as much again as the switch itself, and is not quoted below a $3,000 job minimum.
+    # ** The girts constrain the SUPPLIER, and that had to survive a substitution. **
+    # Board & batten is not a purlin-bearing profile, and it appears in no evaluation
+    # report. That is why the product is now NAMED rather than assumed: Metal Sales
+    # BB75-1111, whose own install guide (2025-10, p.6) says the panel is "designed to be
+    # installed over open framing and/or directly over a wood substrate" and lists
+    # "Lumber - 1x or thicker" among its supports. This wall's 1-1/2" KDAT girts at 24"
+    # o.c. are on-label under that sentence, which is the whole reason the switch was made
+    # away from an unnamed Western States panel that publishes no load data at all.
     #
-    # ** The 32" girts constrain the SUPPLIER, and that has to survive a substitution. **
-    # Board & batten is not a purlin-bearing profile: PBR at 32" o.c. carries ~160 psf
-    # negative under ICC-ES ESR-4729, board & batten is ~51 psf (24 ga, interpolated from
-    # Metal Sales' table, the only one published) and appears nowhere in ESR-4729. Against
-    # the -20 to -35 psf corner-zone demand it still passes, but the margin drops from ~4.5x
-    # to ~1.5x. Of eight manufacturers surveyed only Western States ("most details in this
-    # guide are shown with panels attached to open framing") and Metal Sales permit open
-    # girts — McElroy lists solid deck only, Lyon caps furring at 18", Best Buy Metals says
-    # solid decking. Substituting any of those forces a second girt course or a continuous
-    # OSB layer, which costs more than the panel switch itself. The governing limit state
-    # becomes concealed-leg screw withdrawal, which nobody publishes at any spacing; see
-    # houses/catlin/notes/board_batten_girt_span.md and the `wall_panel/W-*` engineering
-    # items — this panel is ENGINEERED where PBR was PRESCRIPTIVE.
+    # Against the -18.3 psf ASD corner-zone demand the guide's own 58 psf outward at 2'-0"
+    # is d/c 0.31 in bending. The limit state that actually governs a concealed panel is
+    # withdrawal of the hidden leg's screws, which the same table excludes by name ("does
+    # not address web crippling, fasteners, support material"), so it is COMPUTED per NDS
+    # 2018 section 12.2 from the girt's own G and the screw's penetration — d/c 0.12. See
+    # houses/catlin/notes/board_batten_girt_span.md and the single grouped
+    # `wall_panel/W-A-N1` engineering item covering all twenty walls: this panel is
+    # ENGINEERED where PBR was PRESCRIPTIVE, and it is now stampable rather than open.
+    #
+    # ** The screw is 2", and the length is the calculation. ** The guide's own 1" pancake
+    # screw leaves 0.596" of thread in the girt once the flange and the tapered tip are
+    # deducted, and it cannot meet Metal Sales' "fasteners should extend 1/2" or more past
+    # the inside face of the support" rule in a 1-1/2" girt. The 2" passes the girt fully,
+    # tip outside, and takes the full 1.50". It must be a wood-point (Type 17) screw: a
+    # self-drilling point reams its own thread out of a 1-1/2" nailer.
+    #
+    # ** 11" coverage, not 20". ** That is the product's real net coverage, and it is not
+    # cosmetic — panel count and the labour band both move with it (see the
+    # `board-batten-24` row in prices.toml), and fastener tributary area moves with it in
+    # the withdrawal calculation above. No 24"-coverage batten panel exists on the market;
+    # the survey in the note found published coverages of 10", 11", 12" and 16".
+    #
+    # ** Standard white PVDF and not the wood-grain print: ** "white wood" is CERAM-A-STAR
+    # SMP, a different coating system and warranty from the PVDF on the rest of the
+    # envelope, costs about as much again as the switch itself, and is not quoted below a
+    # $3,000 job minimum.
+    #
+    # ** The tag stays `board-batten-24`. ** It reads as the GAUGE, which is unchanged at
+    # 24 ga; renaming it would touch twenty layer_materials overrides, the prices.toml key
+    # and three unrelated tests for nothing.
     #
     # ** `exposed_fastener` is deliberately ABSENT (defaults False). ** A concealed-leg
     # panel's pancake screws are inside the $/SF rate, and leaving the flag on would bill
@@ -3481,26 +3504,19 @@ MATERIALS = [
     # `HOUSE_CLADDING_Y_FT`, `params/sunken_garden.py` `gap_to_house_in`, and the exterior
     # devices in `plan/electrical.py`. The roof footprint re-derives from the bearing walls'
     # outermost layer polygons and those constants do not, so any thickness change makes
-    # derived geometry and authored constants silently disagree at the rake ends. Steel
-    # board & batten is commonly 1"-1-1/4", so specifying 1-1/4" makes that problem vanish.
-    # `panel_allowable_psf` / `panel_allowable_span_in` are the manufacturer's published
-    # ALLOWABLE (ASD) uniform negative load and the span it was read at, and they are here
-    # rather than in the engine because they are a product fact. 58 psf at 24" (with the
-    # girt courses) is read off Metal Sales' 24 ga board & batten table — the only span
-    # table any of the eight manufacturers surveyed publishes
-    # for this profile — and Western States, the assumed supplier, publishes none at all.
-    # It is the OUTWARD (suction) figure, which is what governs a wall panel; the same table
-    # gives 43 psf inward, recorded in the note. **Treat it as the weakest number in this
-    # material.** `engineering/wall_panel.py` compares it against the ASCE 7-16 corner-zone
-    # suction and reports the item INCOMPLETE whatever the ratio, because the limit state
-    # that actually governs a concealed panel is withdrawal of the hidden leg's screws and
-    # nobody publishes that at any spacing.
-    Material(tag="board-batten-24", name="Board & batten concealed-fastener steel panel, 24 ga.",
+    # derived geometry and authored constants silently disagree at the rake ends. The
+    # BB75-1111 rib is 3/4" and the panel plus batten sits inside 1-1/4".
+    Material(tag="board-batten-24", name="Metal Sales BB75-1111 board & batten panel, 11\" coverage, 24 ga.",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="board-and-batten",
              skin_family="standing-seam",
              panel_allowable_psf=58.0, panel_allowable_span_in=24.0,
-             source="24 ga. PVDF-coated steel board & batten wall panel, 20\" net coverage, ~2\" applied batten, concealed-leg pancake screws over open girts (Western States Metal Roofing / Metal Sales are the two manufacturers permitting open framing); same white paint and the same vapour-impermeable sheet steel as the five skins above"),
+             open_framing_source="Metal Sales BB75-1111 Board & Batten install guide, 2025-10, p.6: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and the support materials listed include \"Lumber - 1x or thicker\"",
+             panel_fastener="#10-12 x 2\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
+             panel_fastener_diameter_in=0.190,
+             panel_fastener_length_in=2.0,
+             fastener_coverage_in=11.0,
+             source="Metal Sales BB75-1111: 24 ga. PVDF-coated steel board & batten wall panel, 11\" net coverage, 3/4\" rib, concealed-leg pancake screws over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 not covering fasteners or support material); same white paint and the same vapour-impermeable sheet steel as the five skins above"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
              source="foil facer is the sauna's vapour retarder as well as its CI"),

@@ -86,6 +86,36 @@ class Material(HausModel):
     # only published table is the manufacturer's own.
     panel_allowable_psf: float | None = None
     panel_allowable_span_in: float | None = None
+    # What the manufacturer's own literature says about the support this panel may be
+    # fastened to, quoted rather than summarised. A panel over open girts is on-label or it
+    # is not, and that turns on one sentence in one guide; a boolean would lose which guide
+    # and which words. ``engineering/wall_panel.py`` reports INCOMPLETE without it, because
+    # an open-framing installation nobody's literature permits is not a calculation
+    # problem — it is the wrong product.
+    open_framing_source: str | None = None
+    # The panel fastener, as the order spells it, and the two dimensions a withdrawal
+    # calculation needs from it. Prose plus numbers for the same reason: the prose is what
+    # gets bought, the numbers are what gets graded, and a diameter parsed out of a
+    # description would silently accept "#10-12" as 10 inches.
+    #
+    # There is no capacity here. Withdrawal is COMPUTED per NDS §12.2 from the diameter,
+    # the penetration and the SUPPORT material's specific gravity — no manufacturer
+    # publishes a pull-out value for a concealed-leg panel screw into wood, and a rational
+    # design from the code's own equation is what IAPMO UES ER-309 expressly authorises.
+    panel_fastener: str | None = None
+    panel_fastener_diameter_in: float | None = None
+    panel_fastener_length_in: float | None = None
+    # Net coverage of one panel, in inches — the width one run of fasteners is responsible
+    # for. It is the tributary width in the withdrawal demand, so it moves the answer
+    # directly, and it is a product fact (11", 12", 16") that no dimension in the assembly
+    # implies.
+    fastener_coverage_in: float | None = None
+    # Specific gravity, G, of a WOOD material, oven-dry — NDS 2018 Table 12.3.3A. It is a
+    # species fact, not a section fact, so it belongs on the material and not on a framing
+    # spec. The one consumer is fastener withdrawal, where W = 2850 G^2 D and the answer
+    # goes as the SQUARE of it: reading SPF (0.42) as southern pine (0.55) is a 1.7x error
+    # in a capacity, which is why nothing here defaults it.
+    specific_gravity: float | None = None
     # Gypsum board grade, where the material *is* gypsum board. Not a general fire-rating
     # field: residential construction has exactly two rated assemblies (the garage/dwelling
     # separation and a dwelling-unit separation), and putting a fire-resistance rating on

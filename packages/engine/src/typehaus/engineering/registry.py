@@ -161,6 +161,14 @@ class EngineeringResults(Mapping[str, EngineeringRecord]):
         if record is not None:
             return record
         element = key.split("/", 1)[1] if "/" in key else key
+        # A GROUP item is keyed by one member's tag and covers the rest — the twenty
+        # board-and-batten walls are one design and one seal, and `retaining_system` is the
+        # same shape. Asking by any member has to reach the record, or a person reading a
+        # FAIL on `W-M-S1` is told nothing is registered for a wall that is in fact graded.
+        # ``__contains__`` stays strict: the item list is the group keys, not their members.
+        for record in self._records.values():
+            if record.kind == kind and element in record.element_tags:
+                return record
         return _no_calc(kind, element)
 
     def __contains__(self, key: object) -> bool:

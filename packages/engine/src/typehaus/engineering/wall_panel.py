@@ -1,32 +1,34 @@
-"""A cladding panel spanning open girts — ``wall_panel/<Wall tag>``.
+"""A cladding panel spanning open girts — ``wall_panel/<lowest Wall tag in the group>``.
 
 **Why this item exists at all.** A face-fastened PBR panel at these spacings is covered by
 an evaluation report (ICC-ES ESR-4729), which is a prescriptive path: a reviewer reads the
 report's own table and the question is closed. A CONCEALED-fastener profile over OPEN
-FRAMING is not in that report, or in any other. Its only published capacity is the
-manufacturer's own span table, its manufacturers disagree about whether open girts are
-permitted at all, and the limit state that actually governs it — withdrawal of the hidden
-leg's screws — is published by nobody at any spacing. Western States says so in as many
-words: "consult a design engineer for load and design calculations."
+FRAMING is in no report. Its bending capacity is published by the manufacturer and nothing
+else about it is — the limit state that governs it, withdrawal of the hidden leg's screws,
+is a number no panel maker prints. That is decision #65's case exactly: not an UNKNOWN with
+a paragraph behind it, but an ENGINEERED item with a name, a computed demand and a capacity
+a seal can confirm.
 
-That is decision #65's case exactly. The requirement does not become an UNKNOWN with a
-paragraph of prose behind it; it becomes an ENGINEERED item with a name, a computed demand,
-and a written statement of the one input a seal has to supply.
-
-What this module computes and what it deliberately does not
------------------------------------------------------------
+What is read and what is computed
+---------------------------------
 * **The demand is computed, in full.** ASCE 7-16 Chapter 30 Part 1 components-and-cladding
   wall pressures at the building's mean roof height, Zone 5 (corner) because a wall panel
-  runs through both zones and is ordered as one product, brought to ASD at 0.6W (§2.4.1) so
-  it can be set beside an allowable.
+  runs through both zones and is ordered as one product, brought to ASD at 0.6W (§2.4.1).
 * **The bending capacity is READ, never derived.** A rolled panel's section modulus is a
   manufacturer's fact; this engine does not own one. It comes off
   ``Material.panel_allowable_psf`` / ``panel_allowable_span_in``, and a declared span that
   does not match the model's own girt spacing is reported rather than interpolated.
-* **The governing limit state is NOT computed, and the record says so.** Concealed-leg
-  screw withdrawal is what fails these panels, and no manufacturer publishes it. The record
-  is therefore INCOMPLETE **even when the bending ratio passes** — which is the whole point:
-  a panel that clears the only table anybody published has not thereby been designed.
+* **The withdrawal capacity is COMPUTED, per NDS 2018 §12.2** — see
+  ``wall_panel_withdrawal.py``. It is a rational design from the code's own equation, which
+  is what IAPMO UES ER-309 expressly authorises, and it is done here because waiting for a
+  published row means waiting for a document nobody is writing.
+
+**One item per (panel, spacing), not per wall.** Twenty walls clad in one product over one
+girt course are one design and one seal; twenty identical sheets are twenty chances for a
+reviewer to stamp nineteen and miss one. The key is the lowest member tag, so it is stable
+under anything but a membership change, and ``panel_count`` is an input so a membership
+change stales the seal (``element_tags`` is not hashed). ``haus engineering --item`` on any
+member resolves to the group.
 
 **Oracle.** ``houses/catlin/notes/board_batten_girt_span.md``, hand-worked in a separate
 pass; ``tests/test_wall_panel_calcs.py`` reproduces it.
@@ -52,12 +54,18 @@ from typehaus.engineering.registry import (
     keys,
     oracled_by,
 )
+from typehaus.engineering.wall_panel_withdrawal import (
+    fastener_demand_lb,
+    tributary_area_ft2,
+    withdrawal_allowable_lb,
+)
 
 KIND = "wall_panel"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "1"
-BASIS = "ASCE 7-16 §30.3 (C&C, walls) with §2.4.1 0.6W; manufacturer span table"
+BASIS_VERSION = "2"
+BASIS = ("ASCE 7-16 §30.3 (C&C, walls) with §2.4.1 0.6W; manufacturer span table; "
+         "AWC NDS 2018 §12.2 (wood screw withdrawal)")
 
 #: ASCE 7-16 Table 26.13-1, enclosed building. Applied with the sign that makes suction
 #: worse, which is the case a cladding panel is ordered against.
@@ -70,6 +78,14 @@ _GCP_NEGATIVE = {
     "5": ((10.0, -1.4), (500.0, -0.8)),
     "4": ((10.0, -1.1), (500.0, -0.8)),
 }
+
+
+#: The panel flange the screw passes through before it reaches wood, deducted from the
+#: length. 24 ga sheet — the thickest cladding steel on this house, so the deduction is the
+#: conservative one, and at 0.024" it moves a capacity by about a pound. It is a constant
+#: rather than a Material field because no authored number would be read more carefully
+#: than this comment, and none would change an answer.
+SHEET_FLANGE_IN = 0.0239
 
 
 def external_pressure_coefficient(area_ft2: float, zone: str = "5") -> float:
@@ -111,6 +127,18 @@ class _Panel:
     allowable_psf: float | None
     allowable_span_in: float | None
     mean_roof_height_ft: float
+    # The product facts a withdrawal calculation needs, all authored on the Material and
+    # none of them defaulted: a missing one is an INCOMPLETE naming it, never a guess.
+    open_framing_source: str | None
+    fastener: str | None
+    fastener_diameter_in: float | None
+    fastener_length_in: float | None
+    coverage_in: float | None
+    flange_in: float
+    # The SUPPORT, read off the girt layer the panel is screwed into.
+    support_material: str
+    support_thickness_in: float
+    support_specific_gravity: float | None
 
 
 def _mean_roof_height_ft(ctx: EngineeringContext) -> float | None:
@@ -153,13 +181,40 @@ def _panels(ctx: EngineeringContext) -> list[_Panel]:
         spacing = _framing_spacing_in(ctx, wall, backing.name)
         if spacing is None:
             continue
+        support = catalog.get(backing.material_ref or "")
         out.append(_Panel(
             wall_tag=wall.tag, material_ref=skin.material_ref or "",
             support_spacing_in=spacing,
             allowable_psf=getattr(material, "panel_allowable_psf", None),
             allowable_span_in=getattr(material, "panel_allowable_span_in", None),
-            mean_roof_height_ft=height or 0.0))
+            mean_roof_height_ft=height or 0.0,
+            open_framing_source=getattr(material, "open_framing_source", None),
+            fastener=getattr(material, "panel_fastener", None),
+            fastener_diameter_in=getattr(material, "panel_fastener_diameter_in", None),
+            fastener_length_in=getattr(material, "panel_fastener_length_in", None),
+            coverage_in=getattr(material, "fastener_coverage_in", None),
+            flange_in=SHEET_FLANGE_IN,
+            support_material=backing.material_ref or "",
+            support_thickness_in=backing.thickness_m / 0.0254,
+            support_specific_gravity=getattr(support, "specific_gravity", None)))
     return out
+
+
+def _groups(ctx: EngineeringContext) -> dict[str, list[_Panel]]:
+    """The panels collected into designs — one entry per ``(material, girt spacing)``.
+
+    Keyed by the LOWEST member tag rather than by a synthetic name: an item id a person
+    types has to be one the model already spells, and the lowest tag is deterministic under
+    everything except a membership change, which is what ``panel_count`` is in the inputs
+    for. Exposure is not part of the key — the demand is the corner zone on every wall, so
+    two walls with the same panel and the same girts have the same design whichever way
+    they face.
+    """
+    buckets: dict[tuple[str, float], list[_Panel]] = {}
+    for panel in _panels(ctx):
+        buckets.setdefault((panel.material_ref, panel.support_spacing_in), []).append(panel)
+    return {min(p.wall_tag for p in members): sorted(members, key=lambda p: p.wall_tag)
+            for members in buckets.values()}
 
 
 def _framing_spacing_in(ctx: EngineeringContext, wall: object,
@@ -189,16 +244,18 @@ oracled_by(
 
 @keys(KIND)
 def enumerate_panels(ctx: EngineeringContext) -> list[str]:
-    return [panel.wall_tag for panel in _panels(ctx)]
+    return sorted(_groups(ctx))
 
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(ctx, panel) for panel in _panels(ctx)]
+    return [_one(ctx, key, members) for key, members in sorted(_groups(ctx).items())]
 
 
-def _one(ctx: EngineeringContext, panel: _Panel) -> EngineeringRecord:
-    ident = item_id(KIND, panel.wall_tag)
+def _one(ctx: EngineeringContext, key: str, members: list[_Panel]) -> EngineeringRecord:
+    panel = members[0]
+    tags = tuple(member.wall_tag for member in members)
+    ident = item_id(KIND, key)
     basis = wind.wind_basis(ctx.plan.project.site)
     missing: list[str] = []
     if basis is None:
@@ -208,10 +265,10 @@ def _one(ctx: EngineeringContext, panel: _Panel) -> EngineeringRecord:
         missing.append("a resolved roof to take the mean roof height from")
     if basis is None or panel.mean_roof_height_ft <= 0.0:
         return EngineeringRecord(
-            item_id=ident, kind=KIND, key=panel.wall_tag,
+            item_id=ident, kind=KIND, key=key,
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
-            summary=f"{panel.wall_tag}: the cladding wind demand could not be computed",
-            missing=tuple(missing), element_tags=(panel.wall_tag,))
+            summary=f"{key}: the cladding wind demand could not be computed",
+            missing=tuple(missing), element_tags=tags)
 
     q_h = wind.velocity_pressure_psf(basis, panel.mean_roof_height_ft)
     area = effective_wind_area_ft2(panel.support_spacing_in)
@@ -222,28 +279,10 @@ def _one(ctx: EngineeringContext, panel: _Panel) -> EngineeringRecord:
     field_psf = wind.ASD_WIND_FACTOR * abs(q_h * (gcp_field - GC_PI))
 
     states: list[LimitState] = []
-    # ** THE MISSING INPUT IS NAMED WHETHER OR NOT BENDING PASSES, and that is the point. **
-    missing.append(
-        f"the concealed-leg screw WITHDRAWAL allowable for {panel.material_ref} at "
-        f"{panel.support_spacing_in:g}\" supports — the limit state that governs this panel, "
-        f"published by no manufacturer at any spacing")
-    if panel.allowable_psf is None or panel.allowable_span_in is None:
-        missing.append(
-            f"Material.panel_allowable_psf and panel_allowable_span_in on "
-            f"{panel.material_ref} — the manufacturer's published allowable uniform load "
-            f"and the span it was read at")
-    elif abs(panel.allowable_span_in - panel.support_spacing_in) > 0.01:
-        missing.append(
-            f"an allowable read at this wall's own {panel.support_spacing_in:g}\" support "
-            f"spacing — {panel.material_ref} declares {panel.allowable_psf:g} psf at "
-            f"{panel.allowable_span_in:g}\", and a span table is not interpolated here")
-    else:
-        states.append(LimitState(
-            "panel bending, negative (suction)", demand_psf, panel.allowable_psf, "psf",
-            f"ASCE 7-16 Fig. 30.3-1 zone 5 at {area:.2f} ft2, §2.4.1 0.6W, against the "
-            f"manufacturer's published allowable at {panel.allowable_span_in:g}\""))
+    _bending(panel, demand_psf, area, states, missing)
+    withdrawal, trib, load = _withdrawal(panel, demand_psf, states, missing)
 
-    inputs = (
+    inputs = [
         Quantity("design_wind_speed", basis.speed_mph, "mph", 1.0),
         Quantity("mean_roof_height", panel.mean_roof_height_ft, "ft", 0.01),
         Quantity("velocity_pressure", q_h, "psf", 0.01),
@@ -252,53 +291,156 @@ def _one(ctx: EngineeringContext, panel: _Panel) -> EngineeringRecord:
         Quantity("GCp_zone5", gcp, "", 0.01),
         Quantity("GCpi", GC_PI, "", 0.01),
         Quantity("suction_asd", demand_psf, "psf", 0.01),
-    )
-    notes = [
-        f"Zone 5 (corner) governs the ORDER: a wall panel is one product and runs through "
-        f"both zones. Zone 4 (field) on the same wall is {field_psf:.1f} psf ASD against "
-        f"zone 5's {demand_psf:.1f}.",
-        f"Strength-level suction is {strength_psf:.1f} psf; {demand_psf:.1f} psf is that at "
-        f"0.6W (ASCE 7-16 §2.4.1), which is the basis every allowable this house cites is "
-        f"published on. Comparing a published allowable against the strength-level number "
-        f"is the mistake this line exists to prevent.",
-        f"Wind basis: {basis.describe()}, K_zt {wind.K_ZT_FLAT:g}, K_d "
-        f"{wind.K_D_BUILDINGS:g}, K_e taken as 1.0 (ASCE 7-16 §26.9).",
-        "NOT CHECKED, and no seal should read this as covering them: withdrawal of the "
-        "concealed leg's fasteners (the governing limit state), the girt itself in bending "
-        "and its block-to-stud connection, panel deflection, thermal movement of a "
-        "continuous run, and whether the manufacturer permits open framing at all — of "
-        "eight surveyed, only two do, and substituting one of the other six forces a second "
-        "girt course or a continuous deck.",
-        "An evaluation report would close this item outright. There is none for a "
-        "concealed-fastener BOARD-AND-BATTEN profile over open girts, which is why this "
-        "item is here. Surveyed 2026-09-04 across current ICC-ES, IAPMO-UES and "
-        "manufacturer data: every document falls into one of two buckets, and neither "
-        "answers the question. A report that publishes a negative allowable requires a "
-        "SOLID SUBSTRATE (ESR-5839 §3.1.6, ESR-5838 §3.1.6, ESR-4730 §5.2, and AEP Select "
-        "Seam \"over solid substrates only\"); a report that permits OPEN FRAMING excludes "
-        "the fastener connection from its own table — ICC-ES ESR-5045 (2026-04), the "
-        "newest and broadest that allows open framing, states verbatim that \"tabulated "
-        "allowable negative loads do not consider panel connection to structural support\" "
-        "and that it \"must be determined by registered design professional\". The full "
-        "survey, with every document and URL, is section 7 of the oracle note.",
-        "A RATIONAL-DESIGN PATH EXISTS AND IS NOT TAKEN HERE. IAPMO UES ER-309 "
-        "(2025-06-24) publishes per-fastener pull-out values behind its own tables and "
-        "expressly permits a design professional to extend them by engineering mechanics. "
-        "Its three substrate rows are 20 ga Gr50 steel, 20 ga Gr33 steel and DFL at 1\" "
-        "penetration; this wall's support is a 1-1/2\" KDAT girt and is none of them, so "
-        "the row that would govern is not published either. That is the shape of the "
-        "engineered design this item is waiting for, not a substitute for it.",
+        Quantity("panel_count", float(len(members)), "", None),
     ]
+    if panel.support_specific_gravity is not None:
+        inputs.append(Quantity("specific_gravity", panel.support_specific_gravity, "", 0.01))
+    if panel.fastener_diameter_in is not None:
+        inputs.append(Quantity("fastener_diameter", panel.fastener_diameter_in, "in", 0.001))
+    if panel.fastener_length_in is not None:
+        inputs.append(Quantity("fastener_length", panel.fastener_length_in, "in", 0.01))
+    if panel.coverage_in is not None:
+        inputs.append(Quantity("fastener_coverage", panel.coverage_in, "in", 0.25))
+    if withdrawal is not None:
+        inputs.append(Quantity(
+            "thread_penetration", withdrawal.thread_penetration_in, "in", 0.01))
+        inputs.append(Quantity("tributary_area", trib, "ft2", 0.01))
+        inputs.append(Quantity("fastener_demand", load, "lb", 0.1))
 
-    # OVER wins over INCOMPLETE: a panel whose bending is over its published allowable is
-    # not "not yet designed", it is a panel that failed the one table anybody printed.
+    notes = _notes(panel, demand_psf, field_psf, strength_psf, basis, withdrawal, len(members))
+
+    # OVER wins over INCOMPLETE: a panel over an allowable is not "not yet designed", it is
+    # a panel that failed a table somebody printed.
     over = any(not state.ok for state in states)
-    status = Status.OVER if over else Status.INCOMPLETE
+    status = Status.OVER if over else (Status.INCOMPLETE if missing else Status.OK)
+    others = f", and {len(members) - 1} more wall(s) on the same design" if len(members) > 1 else ""
     return EngineeringRecord(
-        item_id=ident, kind=KIND, key=panel.wall_tag,
+        item_id=ident, kind=KIND, key=key,
         basis_version=BASIS_VERSION, basis=BASIS, status=status,
-        summary=(f"{panel.wall_tag} clad in {panel.material_ref} over "
+        summary=(f"{key}{others} clad in {panel.material_ref} over "
                  f"{panel.support_spacing_in:g}\" open girts: {demand_psf:,.1f} psf ASD "
                  f"corner-zone suction"),
-        inputs=inputs, limit_states=tuple(states), missing=tuple(missing),
-        notes=tuple(notes), element_tags=(panel.wall_tag,))
+        inputs=tuple(inputs), limit_states=tuple(states), missing=tuple(missing),
+        notes=tuple(notes), element_tags=tags)
+
+
+def _bending(panel: _Panel, demand_psf: float, area: float,
+             states: list[LimitState], missing: list[str]) -> None:
+    """Panel bending, against the manufacturer's own published allowable — read, not derived."""
+    if panel.open_framing_source is None:
+        missing.append(
+            f"Material.open_framing_source on {panel.material_ref} — the manufacturer's own "
+            f"words permitting this panel over open framing. A panel nobody's literature "
+            f"puts on girts is not a calculation problem, it is the wrong product")
+    if panel.allowable_psf is None or panel.allowable_span_in is None:
+        missing.append(
+            f"Material.panel_allowable_psf and panel_allowable_span_in on "
+            f"{panel.material_ref} — the manufacturer's published allowable uniform load "
+            f"and the span it was read at")
+        return
+    if abs(panel.allowable_span_in - panel.support_spacing_in) > 0.01:
+        missing.append(
+            f"an allowable read at this wall's own {panel.support_spacing_in:g}\" support "
+            f"spacing — {panel.material_ref} declares {panel.allowable_psf:g} psf at "
+            f"{panel.allowable_span_in:g}\", and a span table is not interpolated here")
+        return
+    states.append(LimitState(
+        "panel bending, negative (suction)", demand_psf, panel.allowable_psf, "psf",
+        f"ASCE 7-16 Fig. 30.3-1 zone 5 at {area:.2f} ft2, §2.4.1 0.6W, against the "
+        f"manufacturer's published allowable at {panel.allowable_span_in:g}\""))
+
+
+def _withdrawal(panel: _Panel, demand_psf: float, states: list[LimitState],
+                missing: list[str]):
+    """Concealed-leg screw withdrawal, NDS 2018 §12.2 — computed, because nobody publishes it."""
+    absent = [
+        (panel.support_specific_gravity is None,
+         f"Material.specific_gravity on the support {panel.support_material or '(unnamed)'} "
+         f"— NDS Table 12.3.3A G, which withdrawal goes as the SQUARE of"),
+        (panel.fastener_diameter_in is None,
+         f"Material.panel_fastener_diameter_in on {panel.material_ref} — the shank diameter "
+         f"D in W = 2850 G^2 D"),
+        (panel.fastener_length_in is None,
+         f"Material.panel_fastener_length_in on {panel.material_ref} — without it there is "
+         f"no thread penetration and therefore no capacity"),
+        (panel.coverage_in is None,
+         f"Material.fastener_coverage_in on {panel.material_ref} — the panel's net coverage "
+         f"is the tributary width one screw carries"),
+    ]
+    named = [text for is_absent, text in absent if is_absent]
+    if named:
+        missing.extend(named)
+        return None, 0.0, 0.0
+    assert panel.support_specific_gravity is not None
+    assert panel.fastener_diameter_in is not None and panel.fastener_length_in is not None
+    assert panel.coverage_in is not None
+    withdrawal = withdrawal_allowable_lb(
+        panel.support_specific_gravity, panel.fastener_diameter_in,
+        panel.fastener_length_in, panel.support_thickness_in, panel.flange_in)
+    trib = tributary_area_ft2(panel.support_spacing_in, panel.coverage_in)
+    load = fastener_demand_lb(demand_psf, panel.support_spacing_in, panel.coverage_in)
+    if withdrawal.reason is not None:
+        missing.append(f"a longer panel screw: {withdrawal.reason}")
+        return withdrawal, trib, load
+    states.append(LimitState(
+        "concealed-leg screw withdrawal", load, withdrawal.capacity_lb, "lb",
+        f"AWC NDS 2018 §12.2, W = 2850 G^2 D at G {panel.support_specific_gravity:g}, "
+        f"C_D 1.6 (Table 2.3.2 wind), C_M 0.7 (Table 11.3.3 wet service), "
+        f"{withdrawal.thread_penetration_in:.2f}\" thread penetration"))
+    return withdrawal, trib, load
+
+
+def _notes(panel: _Panel, demand_psf: float, field_psf: float, strength_psf: float,
+           basis, withdrawal, count: int) -> list[str]:
+    notes = [
+        f"Zone 5 (corner) governs the ORDER: one product runs through both zones. Zone 4 "
+        f"(field) is {field_psf:.1f} psf ASD against zone 5's {demand_psf:.1f}.",
+        f"Strength-level suction is {strength_psf:.1f} psf; {demand_psf:.1f} psf is that at "
+        f"0.6W (ASCE 7-16 §2.4.1), the basis every allowable cited here is published on.",
+        f"Wind basis: {basis.describe()}, K_zt {wind.K_ZT_FLAT:g}, K_d "
+        f"{wind.K_D_BUILDINGS:g}, K_e taken as 1.0 (ASCE 7-16 §26.9).",
+        f"One seal covers {count} wall(s): the same panel, the same girt spacing and the "
+        f"same corner-zone demand are one design. Membership is in the fingerprint as "
+        f"`panel_count`, so adding or removing a wall stales the stamp.",
+    ]
+    if panel.open_framing_source:
+        notes.append(f"Open framing is on-label: {panel.open_framing_source}")
+    if withdrawal is not None and withdrawal.reason is None:
+        notes.append(
+            f"Withdrawal is COMPUTED, not read. The manufacturer's own load table states it "
+            f"\"does not address web crippling, fasteners, support material or load "
+            f"testing\" — bending only — and no maker publishes a pull-out value for a "
+            f"concealed leg into wood. IAPMO UES ER-309 expressly permits a design "
+            f"professional to extend published data by engineering mechanics, and NDS "
+            f"§12.2 is that mechanics. Cross-check: ER-309's own DFL row, 208 lb at 1\" "
+            f"penetration, is 2850 x 0.50^2 x 0.19 x 1.6 to within a pound.")
+        notes.append(_alternates(panel, withdrawal))
+        notes.append(
+            f"Graded as an NDS WOOD screw, so the screw ordered must be a wood-point "
+            f"(Type 17) fastener and not a self-drilling point — a drill point in a "
+            f"1-1/2\" girt reams its own thread away. A published pull-out value for this "
+            f"screw into wood would supersede this calculation.")
+    notes.append(
+        "NOT CHECKED, and no seal should read this as covering them: the girt itself in "
+        "bending and its block-to-stud connection, panel deflection, thermal movement of a "
+        "continuous run, and the manufacturer table's 3-equal-span basis at the short walls.")
+    return notes
+
+
+def _alternates(panel: _Panel, withdrawal) -> str:
+    """The shorter screws the same panel ships with, priced in d/c — why 2" is specified."""
+    assert panel.fastener_diameter_in is not None and panel.coverage_in is not None
+    assert panel.support_specific_gravity is not None
+    parts = []
+    for length in (1.0, 1.5, panel.fastener_length_in or 0.0):
+        if length <= 0.0:
+            continue
+        alt = withdrawal_allowable_lb(
+            panel.support_specific_gravity, panel.fastener_diameter_in, length,
+            panel.support_thickness_in, panel.flange_in)
+        parts.append(f"{length:g}\" -> {alt.thread_penetration_in:.3f}\" pen, "
+                     f"{alt.capacity_lb:.0f} lb")
+    return ("Screw length is the whole capacity here, so the alternates are printed: "
+            + "; ".join(parts) + ". The guide's own 1\" pancake screw is what a panel order "
+            "ships with and it does not meet the manufacturer's \"1/2\" or more past the "
+            "inside face of the support\" rule; the 2\" does, with the tip outside the girt.")

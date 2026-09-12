@@ -6,11 +6,14 @@ millwork`` is not a section of ``haus takeoff --csv``: this is a *deliverable*, 
 read in a terminal; a calculation package is forty-odd sheets somebody opens in an editor,
 diffs against last week's, and sends to a licensed professional.
 
-Markdown, and no PDF. A ~40-sheet calc series with variable-length assumption prose and
-long ACI citations would need pagination and text wrapping that ``emit/draw/sheet_writer``
-has never had to do, with no golden harness behind it — and a calc package that renders
-wrong is worse than one that renders in a text editor. The permit set keeps S-105 as its
-engineering page; this is the source of truth behind it.
+Markdown is the source of truth. ``--pdf`` flattens the same sheets through
+``takeoff/calc_pdf`` for the file a seal actually binds to — a jurisdiction accepts no
+Markdown — but the pagination there is derived from these files and never edited beside
+them. The permit set keeps S-105 as its engineering page; this is what stands behind it.
+
+The folder is *regenerated*, never maintained. ``MANIFEST.json`` records what this run
+produced, and the next run deletes anything the previous manifest listed and this one did
+not: a sheet for an item the model no longer has reads as a calculation somebody did.
 """
 
 from __future__ import annotations
@@ -19,7 +22,8 @@ from pathlib import Path
 
 import typer
 
-from typehaus.cli._shared import _print_findings, _resolve_house, app, console
+from typehaus.cli._shared import (
+    _print_findings, _resolve_house, app, console, generation_date)
 
 
 @app.command()
@@ -43,12 +47,11 @@ def calcs(
     files — so the package is regenerated rather than maintained, and a diff between two
     runs is a real change in the model or in a calculation.
     """
-    from datetime import date
-
     from typehaus._meta import engine_version
     from typehaus.checks import build_context, evaluate_permit_checklist, run_checks
     from typehaus.source import load_plan
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
+    from typehaus.takeoff.handoff import MANIFEST, prune_unlisted, write_manifest
 
     directory = _resolve_house(house)
     loaded = load_plan(directory)
@@ -74,7 +77,7 @@ def calcs(
         item_ids=item_ids,
         results=ctx.engineering,
         register=ctx.engineering_register,
-        generated=date.today().isoformat(),
+        generated=generation_date(),
         engine_version=engine_version(),
         content_hash=loaded.content_hash,
         profile_name=ctx.profile.name,
@@ -86,6 +89,16 @@ def calcs(
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8", newline="")
+
+    # `--item` writes one sheet plus the front matter, so "absent now" means "not asked
+    # for" and nothing may be pruned against it.
+    full_run = item is None
+    if full_run and not (root / MANIFEST).is_file():
+        # A tree written before manifests existed: the sheets folder is the one place this
+        # run fully determines, so it is the only place swept without a manifest to diff.
+        for orphan in prune_unlisted(root, files, subdir="calcs"):
+            console.print(f"[dim]removed orphan {orphan}[/dim]", soft_wrap=True)
+    write_manifest(root, files, prune=full_run)
     console.print(f"wrote {root} ({len(files)} files, {len(item_ids)} engineered item(s))",
                   soft_wrap=True)
     if pdf:
@@ -96,7 +109,7 @@ def calcs(
         target = root.with_suffix(".pdf") if root.suffix else root.parent / "calcs.pdf"
         pages = write_calc_pdf(files, target, PdfInputs(
             house=ctx.model.plan.project.name or directory.name,
-            generated=date.today().isoformat(),
+            generated=generation_date(),
             engine_version=engine_version(),
             content_hash=loaded.content_hash,
             code_edition=ctx.profile.edition,

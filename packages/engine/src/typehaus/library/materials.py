@@ -52,6 +52,10 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="kdat", name="KDAT southern yellow pine (treated exterior framing)",
              r_per_inch=0.95, density=600.0, perm_rating=2.9, hatch="lumber",
              color="#bfa06a",
+             # NDS 2018 Table 12.3.3A, "Southern Pine". The withdrawal of every screw
+             # driven into a KDAT girt goes as G squared, so this is a structural input
+             # and not a description.
+             specific_gravity=0.55,
              source="SYP is the densest of the framing softwoods (SG ~0.55 green vs SPF "
                     "~0.42), and R/inch falls as density rises, so it sits below the "
                     "df-select-s4s 0.99-1.06 band already authored in catlin; "

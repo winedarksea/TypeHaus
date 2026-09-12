@@ -100,7 +100,7 @@ def engineering(
         raise typer.Exit(0)
 
     if item:
-        _print_item(results[item], register)
+        _print_item(results[item], register, requested=item)
         raise typer.Exit(0)
 
     records = [results[key] for key in item_ids]
@@ -189,7 +189,7 @@ def _row_json(record, register) -> dict:  # type: ignore[no-untyped-def]
     }
 
 
-def _print_item(record, register) -> None:  # type: ignore[no-untyped-def]
+def _print_item(record, register, requested=None) -> None:  # type: ignore[no-untyped-def]
     """One item, term by term — the form a reviewer can check against a hand calc."""
     from rich.table import Table
 
@@ -197,6 +197,12 @@ def _print_item(record, register) -> None:  # type: ignore[no-untyped-def]
     from typehaus.engineering import fingerprint as compute_fingerprint
 
     console.print(f"[bold]{record.item_id}[/bold]  ({record.kind} on {record.key})")
+    if requested is not None and record.item_id != requested:
+        # A group item: one design over many elements, keyed by the lowest member tag. Say
+        # so, or the reader thinks they typed the wrong thing.
+        console.print(f"[yellow]{requested} is a member of {record.item_id}, which covers "
+                      f"{len(record.element_tags)} element(s): "
+                      f"{', '.join(record.element_tags)}[/yellow]", soft_wrap=True)
     if record.basis:
         console.print(f"basis: {record.basis}  (basis_version {record.basis_version})")
     if record.summary:
