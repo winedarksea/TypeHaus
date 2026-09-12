@@ -1,11 +1,16 @@
 # Ridge beam RB-HOUSE — section, hangers, straps (2026-08-28)
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
-**Structure:** `RB-HOUSE`, the structural ridge, and the `header/D-G-OVERHEAD` opening that
-shares its deferral.
-**Written:** 2026-08-28; revised in part 2026-08-29 (see the banner).
-**Oracle for:** the `header/D-G-OVERHEAD` deferral in `engineering/deferred.py`. No
-calculation in the engine is pinned to the sections below.
+**Structure:** `RB-HOUSE`, the structural ridge.
+**Written:** 2026-08-28; revised in part 2026-08-29 and again 2026-09-11 (see the banners).
+**Oracle for:** nothing, as of 2026-09-11. It named the `header/D-G-OVERHEAD` deferral in
+`engineering/deferred.py`, which was always a poor fit — this note is about a ridge beam and
+that item was about a garage-door header — and that deferral is now gone: the header is a
+published-table read (`notes/garage_door_header.md`). No calculation in the engine is pinned
+to the sections below.
+**Superseded in part:** §4's hanger reaction, **600 lb at 4:12**, is re-struck at
+**~980 lb at 6:12** in `notes/roof_rafter_span_read.md` §4, against the LSSR2.37Z's 1,060 lb
+with web stiffeners. Use that number, not this one.
 
 > **SUPERSEDED IN PART, 2026-08-29 — the pitch and section below are one revision behind.**
 > The roof went from 4:12 to 6:12 and the ridge from `2-1.75x14 LVL` to **`2-1.75x16 LVL`**
@@ -82,6 +87,14 @@ ER-280 §3.2.2 permits the alternative outright:
 Each rafter delivers roughly **600 lb** to the ridge (12 sf tributary at ~50 psf) against an
 LSSR2.37 rated **1,565 lb**. Shortening the header nails and taking the NDS penetration
 reduction lands nowhere near the limit.
+
+> **RE-STRUCK 2026-09-11, and this paragraph is stale.** The 12 sf tributary is a 4:12
+> figure. At 6:12 over the roof's real 17'-9 3/4" horizontal run, half-span by 2'-0" o.c. is
+> **17.8 sf**, and the reaction is **~980 lb** once the ridge's share of the unbalanced case
+> is carried. Against the LSSR2.37Z's **1,060 lb** with web stiffeners that is d/c 0.92 —
+> tight, and no longer "nowhere near the limit". The working is in
+> `notes/roof_rafter_span_read.md` §4, which is the number to use. **Web stiffeners are not
+> optional at this reaction.**
 
 **Put the shorter fastener on the schedule.** This is the whole reason 3 1/2" is available
 here, and it would not be on a beam that was working near capacity. A ridge sized by bending
