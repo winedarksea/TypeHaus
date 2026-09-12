@@ -21,7 +21,6 @@ from typehaus.emit.trades import (
     TRADE_LABELS,
     sequence_rank,
 )
-from typehaus.schedule.propose import family_rank
 from typehaus.takeoff.bid_recipes import Recipe, recipe_for, shape_for
 from typehaus.takeoff.bom_walk import BomRow, walk_bom
 from typehaus.takeoff.cost_codes import cost_code
@@ -272,9 +271,10 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
         groups = []
         for section in sections:
             shape = shape_for(section)
-            lines = sorted(by_trade[trade][section],
-                           key=lambda line: (family_rank(trade, f"{section}:{line.key}"),
-                                             line.key))
+            # By key: the schedule's family order lives in the schedule leaf, which
+            # nothing upstream may import (tests/test_schedule_leaf.py); the recipe's
+            # section order is the ordering a package needs.
+            lines = sorted(by_trade[trade][section], key=lambda line: line.key)
             units = {line.unit for line in lines}
             groups.append(BidGroup(section=section, heading=shape.heading,
                                    unit=units.pop() if len(units) == 1 else "mixed",

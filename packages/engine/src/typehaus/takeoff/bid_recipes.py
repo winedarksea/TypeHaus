@@ -10,7 +10,7 @@ system and size in feet with fittings by the piece.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from typehaus.takeoff.labels import _fraction_in
@@ -241,5 +241,3 @@ def _validate(sections: tuple[str, ...] = ()) -> None:
     if unknown:
         raise ValueError(f"bid recipes name sections that do not exist: {unknown}")
 
-
-_ = field  # dataclasses.field kept importable for recipe extensions
