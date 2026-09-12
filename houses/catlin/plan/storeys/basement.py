@@ -1072,6 +1072,33 @@ OPENINGS = [
     # authored here because `_door_swing_clearance` used to let `flip_hinge` flip the side
     # too, and the pair cancelled; now that the two flags are independent, keeping both
     # would swing this leaf back into the bathroom and onto all three fixtures.
+    #
+    # ** A POCKET WAS PRICED HERE ON 2026-09-11 AND THE WALL CANNOT TAKE ONE. ** It would
+    # have made the swing argument moot, and `DT-POCKET-INT-32` is an exact width match, so
+    # it was tried rather than argued about. W-B-BA-E is 7'-6" long, N-B-BA-NE (y=25'-6")
+    # to N-B-BA-SE (y=18'-0"); the RO's jambs stand at y 22'-8 1/16" and 20'-0 1/16", so
+    # there is **33 15/16" of wall north of the mouth and 24 1/16" south of it**. A pocket
+    # needs the leaf plus the split jamb (`tables.pocket_run`, 2W+1 → 33") **plus
+    # `pockets.POCKET_PACK_MARGIN` (5") for the jamb pack relocated to the closed end** —
+    # 38" for a 32" leaf, north or south. `integrity.opening_fits` calls it at **4 1/16"
+    # short**, an ERROR, and it is right: 33 15/16" caps the leaf at 27 15/16", so even a
+    # 28" leaf misses by a sixteenth and only a 24" one fits. Trading a 2'-8" bathroom door
+    # for a 2'-0" one to avoid a swing is not a trade this house makes.
+    #
+    # The cavity cannot borrow the wall north of the corner either. W-B-WELL is colinear
+    # with this wall and shares N-B-BA-NE, but it is `STAIRWELL_PARTITION_4H` — 4 1/2"
+    # total, filling the void `resolve/stairs/common.py` reserves between ST-B2M's two
+    # flights. `pocket_segments` stops at an assembly change by rule, and the rule matches
+    # the building: a 5 1/2" staggered-stud leaf and its split studs do not enter a 4 1/2"
+    # partition, and widening that partition is taken out of the stair.
+    #
+    # Two more things stand in the run even if the length were there, and both are north of
+    # the mouth: `ED-B-BATH-SW` at y=24'-2" (`mep.pocket_occupancy` refuses a wall box in a
+    # cavity), and `BK-B-BA-E`, the wet-wall backing band at 32"..80" whose stated purpose
+    # is the grab bar at FX-B-BATH-WC — which is at y=24'-1 5/8", squarely in the pocket.
+    # A grab bar lags 2 1/2" into blocking; `tables.POCKET_MAX_FASTENER` is 1".
+    #
+    # So the out-swing stays, and the paragraphs above are still the reason why.
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-INT-SWING32",
          position=from_node("N-B-BA-NE", ft(2, 9.9375)), flip_hinge=True),
     # ESS closet door, opening west into the furnace room. DT-INT-SWING24: a 2'-0" leaf is

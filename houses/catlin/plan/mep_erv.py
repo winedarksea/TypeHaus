@@ -252,30 +252,50 @@ EQUIPMENT_ERV_SECOND = [
 # wall line, flashed curb through the PBR-26 cladding, on the outer girt. That is the one part
 # of the old west-facade objection that stands, and it only bites a run travelling ALONG the
 # facade. Coming straight out of the chase, neither does.
+#
+# ** BOTH HOOD BOXES HANG ON THE CLADDING, NOT INSIDE IT (2026-09-11). ** Read off the
+# resolved layers of W-M-W1B / W-S-W1B, the west wall stacks paint +6 5/8", gwb +6", stud
+# +6"..+0 1/2", sheathing +0 1/2"..0", spray foam 0"..-4", vent gap -4"..-4 1/2", outer girt
+# -4 1/2"..-6", PBR-26 cladding -6"..-7 1/4". **The outdoor face is x = -0'-7 1/4".** Both
+# hoods were authored at x=+0'-6" — dead centre of the stud cavity, a foot INSIDE the house —
+# which no more placed them on the facade than the -6" duct ends carried the ducts out of it.
+# `Equipment.footprint` is a PLAN rectangle centred on `position`, so a 12" x 12" hood box
+# whose back plate lands flat on the cladding has its centre 6" outboard of that face:
+# x = -7 1/4" - 6" = **-1'-1 1/4"**. The box then occupies x -1'-7 1/4"..-0'-7 1/4", entirely
+# in the open west yard, touching the cladding and nothing else.
+#
+# Both therefore carry `room=None`. EQ-S-ERV-HOOD-EA already did, for the chase reason below;
+# EQ-M-ERV-HOOD-OA named RM-M-MECH only because at +6" it happened to fall inside that room's
+# polygon. Outdoors it is not in a room at all, and naming the nearest one raises
+# `integrity.placeable_room_mismatch` — the same call EQ-M-HP3-OD and the porch AP make.
+#
+# NOT MODELLED, deliberately: the sealed hole itself. A framed-wall penetration is spelled
+# `PipeAccessory(PENETRATION_SEAL)` here (PA-M-PORCH-HYD-SEAL; `SleevePenetration` is cast
+# concrete only), but `resolve/mep._resolve_pipe_accessory` requires a resolved **PipeRun**
+# host and raises `integrity.pipe_accessory_host` without one — there is no duct-side
+# spelling of the element. Authoring one against an unrelated pipe to get the line item would
+# be a lie about what it sits on. The flashed curb stays prose until the element grows a duct
+# host; the take-off under-bills two escutcheon-and-foam kits, which is the honest gap.
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(6), ft(33, 11)), footprint=(inch(12), inch(12)),
+              position=pt(inch(-13.25), ft(33, 11)), footprint=(inch(12), inch(12)),
               # The intake, and it is the LOW one deliberately: an exhaust plume rises, so
               # the intake belongs under it, not over it. +4'-0" on the main storey is
               # 6'-10" above the -2'-10" grade plane — twice `erv_terminals`' 36" rule of
               # thumb, and clear of any drift a 50 psf ground-snow site puts against a wall.
               # 25'-11" from VR-M-RADON-VENT against a 3'-0" minimum.
-              room="RM-M-MECH", type_ref="EQ-T-ERV-HOOD-6",
+              room=None, type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(6), ft(34, 8)), footprint=(inch(12), inch(12)),
+              position=pt(inch(-13.25), ft(34, 8)), footprint=(inch(12), inch(12)),
               # The discharge, 13'-0" over the intake. Filed on `second`, so this mount
               # elevation is storey-relative: +7'-0" on a datum of +10'-0" is +17'-0" in the
-              # project frame. Inside, it is the second-storey chase notch in RM-S-BATH1's
-              # NW corner, which is capped at +19'-0" — a hood box centred on +17'-0" clears
-              # that by 1'-6".
-              # room=None deliberately, the way EQ-M-HP3-OD and the porch AP are authored.
-              # The notch is walled off from RM-S-BATH1 by W-S-CH-W and W-S-CH-S, so it is
-              # not part of that room's polygon and naming it raises
-              # `integrity.placeable_room_mismatch`. This hood's inside face is in a chase,
-              # not in a room, and the model should say so rather than pick the nearest name.
+              # project frame. The duct behind it leaves the second-storey chase notch in
+              # RM-S-BATH1's NW corner, which is capped at +19'-0" — a 12" hood box centred
+              # on +17'-0" clears that by 1'-6", so nothing on the inside face constrains the
+              # height either. room=None, as above and as EQ-M-HP3-OD is authored.
               room=None, type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]
@@ -383,19 +403,25 @@ DUCTS_ERV_RISERS = [
     # one straight penetration through the west wall: the intake at +4'-0" on the main
     # storey, the discharge at +17'-0" on the second.
     #
-    # The x=-0'-6" hood vertex on each is NOT decoration. `mep.erv_outdoor_terminals` decides
-    # which EXHAUST run is the machine's discharge by asking whether the run's LAST vertex
-    # lands outside every resolved room's `clear_face` — and `clear_face` sits on the wall
-    # AXIS, which for these `face("sheathing-ext")` walls is x=0'-0", not the cladding at
-    # x=-0'-7 1/4". A hood run that stopped at the interior face would still read as indoors,
-    # the check would find no discharge at all, the 10-ft test would never run, and the whole
-    # thing would degrade silently to a single PASS on hood height. -6" is outside the axis.
+    # ** THE HOOD VERTEX IS x = -0'-8", AND -0'-6" WAS SHORT (corrected 2026-09-11). **
+    # -6" was picked to clear `mep.erv_outdoor_terminals`, which decides which EXHAUST run is
+    # the machine's discharge by asking whether the run's LAST vertex lands outside every
+    # resolved room's `clear_face` — and `clear_face` sits on the wall AXIS, which for these
+    # `face("sheathing-ext")` walls is x=0'-0". A run stopping at the interior face reads as
+    # indoors, the check finds no discharge at all, the 10-ft test never runs, and the whole
+    # thing degrades silently to a single PASS on hood height. -6" cleared the axis and the
+    # check went green — but the axis is not the building. W-M-W1B / W-S-W1B resolve
+    # 7 1/4" of wall outboard of it (foam, vent gap, girt, PBR-26 cladding to x=-0'-7 1/4"),
+    # so BOTH ducts died 1 1/4" inside the cladding: a hood on the facade with no hole under
+    # it. **Nothing in the engine grades a duct end against a wall's layers**, which is why a
+    # check-driven number outlived the geometry it was standing in for.
+    # -0'-8" carries each run 3/4" past the cladding, into the hood's collar.
     DuctRun(uid="MW0MY7GDME", tag="DU-ERV-OA", system=DuctSystem.OUTDOOR_AIR,
             # Hood first, then inward and down to the basement manifold. The riser keeps its
             # x=1'-11" station in the shaft; only the top of it changed. y=33'-11" puts the
             # horizontal leg 5 5/8" north of RM-M-MECH's south face and 8'-0" under the two
             # wall-hung manifolds at +8'-0", so it crosses nothing in a 5'-3" x 1'-11" room.
-            path=(pt(inch(-6), ft(33, 11)), pt(inch(6), ft(33, 11)),
+            path=(pt(inch(-8), ft(33, 11)), pt(inch(6), ft(33, 11)),
                   pt(ft(1, 11), ft(33, 11)), pt(ft(1, 11), ft(33, 7.5)),
                   pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(32, 6)),
                   pt(ft(3, 8), ft(32, 6)), pt(ft(3, 8), ft(31, 1)),
@@ -414,7 +440,7 @@ DUCTS_ERV_RISERS = [
             # y=34'-8" is 9" clear of the shaft's north face.
             path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(31, 1)),
                   pt(ft(4, 7), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
-                  pt(ft(1, 11), ft(34, 8)), pt(inch(-6), ft(34, 8))),
+                  pt(ft(1, 11), ft(34, 8)), pt(inch(-8), ft(34, 8))),
             elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
                         inch(204), inch(204)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
