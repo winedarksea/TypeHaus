@@ -703,8 +703,11 @@ whoever roll-forms it, and it is the first detail to put in front of the roofer.
 
 Two items the engine does not grade: the roof deck oversails the last rafter and
 spans the wall girts, a cantilever nothing checks; and the rafters hang off the
-ridge on 38 hangers rather than bearing at the high end, so the printed span table
-does not apply and `structural.rafter_span` is correctly UNKNOWN at both spacings.
+ridge on 38 hangers rather than bearing at the high end, which is the condition the
+printed span table assumes. Since 2026-09-11 `structural.rafter_span` reads that
+published row prescriptively (17'-9 3/4" against 18'-4") and carries the hanging
+condition on the finding rather than reporting UNKNOWN; ForteWEB still owns the last
+word. See `houses/catlin/notes/roof_rafter_span_read.md` §3.
 
 ### BLD-08 — Split verdict: the heat pumps are right, the ERV scheme is off-catalog. **MED**
 

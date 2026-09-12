@@ -8,7 +8,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
-from typehaus.model.refs import FaceRef
+from typehaus.model.refs import FaceRef, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
@@ -320,6 +320,13 @@ class Beam(Element):
     # a simple-span table to a load path the table does not describe.
     engineering_note: str | None = None
     datum: FaceRef | None = None
+    # The published table row that answers this member's span, where one does. A
+    # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
+    # question is closed — so authoring one here takes the requirement out of the
+    # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
+    # carries the drift guards that stop a quotation outliving the model it was read for.
+    # A deck beam's row is indexed by the joist span it picks up: that is ``carried_span``.
+    published_span: PublishedSpan | None = None
     # Project-frame absolute top of the beam, overriding the derived bearing-stack drop.
     # The resolver normally hangs a beam a joist depth below its storey datum, which it
     # infers from the FloorSystem that bears on it. A beam that carries no joists but must

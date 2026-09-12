@@ -6,7 +6,14 @@ from typing import Literal
 
 from typehaus.model.base import Element
 from typehaus.model.enums import StructuralRole
-from typehaus.model.refs import Arch, FaceRef, LayerMaterial, OpeningPosition, ToRoof
+from typehaus.model.refs import (
+    Arch,
+    FaceRef,
+    LayerMaterial,
+    OpeningPosition,
+    PublishedSpan,
+    ToRoof,
+)
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -99,6 +106,12 @@ class Door(Element):
     # Per-opening engineered-header override (e.g. '2-ply 14" LVL'); None lets the framing
     # solver size the header. Falls back to the DoorType's header_spec when unset there too.
     header_spec: str | None = None
+    # The published table row that answers this member's span, where one does. A
+    # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
+    # question is closed — so authoring one here takes the requirement out of the
+    # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
+    # carries the drift guards that stop a quotation outliving the model it was read for.
+    published_span: PublishedSpan | None = None
 
 
 @register_element

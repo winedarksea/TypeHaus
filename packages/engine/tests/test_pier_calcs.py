@@ -726,70 +726,100 @@ def test_the_cover_is_read_off_the_authored_cage_not_the_code_minimum(results) -
     assert quantities["cover"] == pytest.approx(2.0)
 
 
-@pytest.mark.parametrize("tag", ["BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"])
-def test_the_glulam_beams_are_engineered_and_check_out(tag, results) -> None:
-    """§5 of the note. IRC Table R507.5(1) publishes sawn plies, so a glulam is delegated.
+# --- the balcony glulams: a PUBLISHED TABLE READ, with an NDS advisory beside it --------
+#
+# Until 2026-09-11 these three beams were `deck_beam/*` engineering items, delegated because
+# IRC Table R507.5(1) publishes sawn plies and has no row for a glulam. That reasoning missed
+# the supplier: Anthony/Canfor's Power Preserved Glulam Deck Guide tabulates exactly this
+# section against exactly this joist span, and reading a published row is a prescriptive act.
+#
+# The NDS arithmetic did not go away and must not — the deck guide's values are DRY-use and
+# every one of these stands in weather. It runs beside the table read as an advisory, and
+# `engineering/glulam_beam.py` is now a pure module exposing `nds_states`.
+
+_BALCONY_SPANS = {"BM-SG-BLW": 7.333, "BM-SG-BLC": 7.0, "BM-SG-BLE": 7.333}
+_BALCONY_JOIST_SPAN_FT = 10.0
+
+
+@pytest.mark.parametrize("tag,span_ft", sorted(_BALCONY_SPANS.items()))
+def test_the_nds_pass_on_a_balcony_glulam(tag, span_ft) -> None:
+    """§5 of the note, against the pure module rather than a record.
 
     Bearing governs — 3" on concrete against a wet-service F_c-perp of 392 psi — and it
     governs at under half. Nothing here is span-driven: 11-7/8" over the slimmer 9-1/2"
     option is the owner's planter margin, which is a decision and not a calculation.
     """
-    record = results[f"deck_beam/{tag}"]
-    assert record.status is Status.OK, record.summary
-    states = {state.name: state for state in record.limit_states}
+    from typehaus.engineering.glulam_beam import nds_states
+
+    states = {state.name: state
+              for state in nds_states(3.5, 11.875, span_ft, _BALCONY_JOIST_SPAN_FT)}
     assert set(states) == {"bending", "shear parallel to grain",
                            "bearing, compression perpendicular", "live-load deflection"}
-    assert all(state.ok for state in record.limit_states)
+    assert all(state.ok for state in states.values())
     assert states["bending"].capacity == pytest.approx(1920.0, abs=1.0)   # 2,400 x C_M 0.80
     assert states["shear parallel to grain"].capacity == pytest.approx(262.5, abs=0.5)
     assert states["bearing, compression perpendicular"].capacity == pytest.approx(392.2,
                                                                                   abs=0.5)
-    worst = max(record.limit_states, key=lambda s: s.demand / s.capacity)
+    worst = max(states.values(), key=lambda s: s.demand / s.capacity)
     assert worst.name == "bearing, compression perpendicular"
     assert worst.demand / worst.capacity < 0.5
 
 
-def test_the_centre_glulam_spans_less_than_its_neighbours(results) -> None:
-    """§5 — every balcony back span is shorter than the bay it sits in, and each for a reason.
-
-    BM-SG-BLC fell to 6'-9" when PT-SG-BF2 came north onto the deck; BLW and BLE fell to
-    7'-4" when PT-SG-BF1/BF3 came 5-1/4" north so the beams would cantilever 2" clear of the
-    12" rounds' tops. Neither is a dimension a reader would predict, and both are spent
-    straight out of R507.5.1's quarter-span overhang limit against a 20" rear overhang that
-    has not moved: 20.25" on BLC, 22.0" on BLW/BLE. **Nothing in the engine checks a beam
-    overhang** — `checks/structural/deck.py` grades beam SPAN only — so those margins live in
-    notes/balcony_moment_columns.md §5 and this pins the spans they are computed from.
-    """
-    spans = {tag: {q.name: q.value for q in results[f"deck_beam/{tag}"].inputs}["clear_span"]
-             for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")}
-    assert spans["BM-SG-BLW"] == pytest.approx(7.333, abs=0.01)
-    assert spans["BM-SG-BLE"] == pytest.approx(7.333, abs=0.01)
-    assert spans["BM-SG-BLC"] == pytest.approx(7.0, abs=0.01)
-    # The rear overhang is 20.0" on all three, so every back span has to carry it.
-    for tag, span_ft in spans.items():
-        assert 20.0 <= span_ft * 12.0 / 4.0, tag
-
-
-def test_wet_service_is_applied_to_the_glulam(results) -> None:
+def test_wet_service_is_applied_to_the_glulam() -> None:
     """The single most common way to overstate one of these by a quarter.
 
     AWC NDS Table 5.3.1: C_M is 0.80 on F_b and 0.833 on E for a glulam in weather. A
-    supplier's span table is quoted DRY, and a check that used the dry values would clear
-    this beam by a margin that does not exist outdoors.
+    supplier's span table is quoted DRY — which is exactly why this arithmetic still runs
+    beside the published row rather than being retired with the engineering item.
     """
-    from typehaus.engineering.glulam_beam import GLULAM_E_PSI, GLULAM_FB_PSI, WET_E, WET_FB
+    from typehaus.engineering.glulam_beam import GLULAM_FB_PSI, WET_FB, nds_states
 
-    quantities = {q.name: q.value for q in results["deck_beam/BM-SG-BLC"].inputs}
-    assert quantities["Fb_adjusted"] == pytest.approx(GLULAM_FB_PSI * WET_FB, abs=1.0)
-    assert quantities["E_adjusted"] == pytest.approx(GLULAM_E_PSI * WET_E, abs=100.0)
-    assert quantities["Fb_adjusted"] < GLULAM_FB_PSI
+    dry = GLULAM_FB_PSI
+    wet = nds_states(3.5, 11.875, 7.0, _BALCONY_JOIST_SPAN_FT)[0].capacity
+    assert wet == pytest.approx(dry * WET_FB, abs=1.0)
+    assert wet < dry
 
 
-def test_only_off_table_deck_beams_reach_the_glulam_calc(results) -> None:
-    """A beam IRC Table R507.5(1) publishes is graded there, prescriptively. Minting a
-    second engineered record for it would be two authorities on one span."""
-    beams = {key.split("/", 1)[1] for key in results if key.startswith("deck_beam/")}
-    assert beams == {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
+def test_no_deck_beam_is_an_engineering_item_any_more(results) -> None:
+    """The kind is deregistered. A published table read is not something a seal adds to."""
+    assert not [key for key in results if key.startswith("deck_beam/")]
+    from typehaus.engineering import registered_kinds
+
+    assert "deck_beam" not in registered_kinds()
+
+
+def test_the_balcony_beams_pass_prescriptively_against_the_deck_guide(catlin_model) -> None:
+    """Six findings on three beams: the published row, and the wet-service cross-check.
+
+    Both are needed and neither is the other. The row is the verdict a reviewer can open a
+    document and confirm; the NDS line is what says how much of the row's margin weather
+    spends, which the guide's dry-use values do not.
+    """
+    from typehaus.checks.registry import CheckContext, Preferences
+    from typehaus.checks.structural.deck import deck_beam_span
+    from typehaus.findings import Authority, Result
+
+    ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
+                       preferences=Preferences(), profile=None)
+    findings = [f for f in deck_beam_span(ctx)
+                if any(tag in _BALCONY_SPANS for tag in f.element_tags)]
+    assert len(findings) == 6
+    assert all(f.result is Result.PASS for f in findings), [f.message for f in findings]
+    assert not any(f.authority is Authority.ENGINEERED for f in findings)
+    assert not any(f.engineering_item for f in findings)
+
+    published = [f for f in findings if "prescriptive read" in f.message]
+    assert len(published) == 3
+    assert all("Power Preserved Glulam Deck Guide" in f.message for f in published)
+    # The back span, not the drawn length: each beam also cantilevers 1'-8".
+    for finding in published:
+        tag = next(t for t in finding.element_tags if t in _BALCONY_SPANS)
+        assert f"{_BALCONY_SPANS[tag]:.2f}'" in finding.message, tag
+
+    advisories = [f for f in findings if "WET SERVICE" in f.message]
+    assert len(advisories) == 3
+    assert all("bearing, compression perpendicular governs" in f.message
+               for f in advisories)
 
 
 # --- the north entry canopy: a ROOF-carrying moment column ------------------------------

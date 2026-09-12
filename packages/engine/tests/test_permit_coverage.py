@@ -124,6 +124,12 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # argument that a `retaining_wall/<tag>` record answers for it, which for a
 # top-and-bottom-supported wall does not exist. `MAX_UNSEALED_ITEMS` rose 8 -> 9 in the
 # same move; the pair only makes sense read together.
+#
+# UNCHANGED at 25 on 2026-09-11, and that is the point worth recording. Two items —
+# "Headers over wide openings" and "Deck beams outside the beam span table" — became
+# BLOCKING in the same commit that took them out of the engineered lane, so they left the
+# staged count and the engineered count at once and this number did not move. A reader
+# diffing only `MAX_UNSEALED_ITEMS` would think two items had been quietly downgraded.
 MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
@@ -152,7 +158,18 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # restraint are three things a screening tool has no standing to grade. It leaves this lane
 # when the structural engineer of record stamps `column_support/*`, not when this repo
 # learns anything, which is exactly the split the two pins exist to keep visible.
-MAX_UNSEALED_ITEMS = {"mn-2020": 9}
+#
+# LOWERED 9 -> 7 on 2026-09-11, and this is a ratchet moving the right way for the right
+# reason. "Headers over wide openings" and "Deck beams outside the beam span table" both
+# left the engineered lane, not because anyone stamped anything, but because both are
+# answered by a MANUFACTURER'S PUBLISHED TABLE — Weyerhaeuser's header schedule and
+# Anthony/Canfor's deck guide. Reading a published row is a prescriptive act and no seal
+# adds to it, which is the precedent PBR cladding already set: it stays out of the
+# engineering register on the strength of three published wall span tables. The rows are
+# now authored on the elements as `PublishedSpan` and graded by
+# `checks/structural/published.py`, with drift guards so a retype or a spacing change
+# turns the PASS back into an UNKNOWN. Both items flipped to BLOCKING in the same commit.
+MAX_UNSEALED_ITEMS = {"mn-2020": 7}
 
 
 def _engineered_labels(profile) -> set[str]:

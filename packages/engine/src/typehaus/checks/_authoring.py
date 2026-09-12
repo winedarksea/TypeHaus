@@ -47,12 +47,18 @@ from typehaus.findings import (
 
 
 def structural_advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-                        fix_hint: str | None = None) -> Finding:
+                        fix_hint: str | None = None, *, code: str | None = None) -> Finding:
     """A structural finding prefixed to say out loud that a prescriptive table lookup is not
     an engineered design. Five ``checks/structural/`` modules each defined this identically —
     the one thing distinguishing it from plain ``advisory`` is the message prefix, not a
-    different Finding shape."""
-    return advisory(cid, f"[advisory, not engineering] {msg}", tags, result, fix=fix_hint)
+    different Finding shape.
+
+    ``code`` carries the document the read rests on where there is one — a manufacturer's
+    table is a citation in the same sense IRC R602.7 is, and a reviewer filtering findings
+    by document should find it.
+    """
+    return advisory(cid, f"[advisory, not engineering] {msg}", tags, result, fix=fix_hint,
+                    code=code)
 
 
 def engineered(ctx, cid: str, item: str, msg: str, tags: tuple[str, ...],

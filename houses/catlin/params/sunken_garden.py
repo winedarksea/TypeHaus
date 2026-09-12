@@ -73,6 +73,7 @@ from typehaus import (
     JoistSpec,
     Node,
     Post,
+    PublishedSpan,
     Railing,
     RailingKind,
     ReinforcementSpec,
@@ -2804,17 +2805,35 @@ SECOND_NODES = [
 # from the section's own width, so the 3-1/2" glulam takes the same wide roll the 4-1/2"
 # 3-2x12 did. The formed aluminium caps (TR-SG-CAP-BL*) likewise size themselves off
 # `SPEC.balcony_beam` and follow the new width without a literal moving.
+# The published row that answers all three balcony beams' spans — a PRESCRIPTIVE read
+# (2026-09-11; they were engineering items before). Anthony/Canfor tabulate this exact
+# section against this exact joist span, and a reviewer opens the guide and closes the
+# question. The guide's values are DRY-use, which is why `structural.deck_beam_span` prints
+# the NDS wet-service arithmetic beside the row as an advisory rather than dropping it:
+# see notes/balcony_moment_columns.md §5.
+_BALCONY_BEAM_PUBLISHED = PublishedSpan(
+    source="Anthony Forest Products / Canfor Power Preserved Glulam Deck Guide (2020), Table 2 \"Beam Spans\" (maximum 2' cantilever)",
+    table="40 psf live + 10 psf dead, 10' joist span, 10' beam span: 3-1/2\" x 11-7/8\" Power Preserved Glulam",
+    member="3.5x11.875",
+    span=ft(10),
+    carried_span=ft(10),
+    load_psf=50.0,
+    condition="the guide's values are DRY-USE and these beams stand in weather, so the NDS wet-service cross-check beside this row is the governing arithmetic, not a duplicate; cantilevers are within the table's 2' maximum (1'-8\" here, and graded separately by R507.5.1); 3\" bearing on the cast columns; the columns' own base moments are a separate engineered item")
+
 BALCONY_BEAMS = [
     Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
+         published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
     Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
+         published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
+         published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]

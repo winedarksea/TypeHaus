@@ -84,6 +84,14 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
   `wind` and **never `checks`**. Its output is an `EngineeringRecord` (demand, capacity,
   ratio, governing limit state, citation), not a `Finding` — `Finding` has nowhere to hold
   numbers. `checks/_authoring.engineered()` is the one bridge between them.
+- **A published manufacturer table is a prescriptive read, not engineering.** A reviewer
+  opens the document, finds the row, and the question is closed — nothing a seal adds to.
+  Author a `PublishedSpan` on the element (source, the row in its own words, the member, the
+  span, and the conditions the row assumes) and grade it with
+  `checks/structural/published.py`, which refuses the row when the model drifts away from
+  what it was read at. PBR cladding is the precedent: it stays out of the register on the
+  strength of three published wall span tables. `engineered()` is for what no table
+  publishes.
 - **Every calculation is oracled against an independently hand-worked note** in
   `houses/<name>/notes/`, the way `typehaus/wind.py` is oracled against
   `catlin_truss_engineering.md`. A calc that only agrees with itself is not verified.

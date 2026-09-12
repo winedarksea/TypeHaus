@@ -438,15 +438,10 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
             limit = deck_beam_span_limit(beam.size, joist_span_ft)
             if limit is None:
                 # Off the end of R507.5(1) — a glulam, an LVL, or a joist span the table
-                # stops short of. Same reasoning as ``deck_post_size``'s round-column branch
-                # below: the table not publishing a row is not the same as the beam being
-                # wrong, and it is not something an author can fix by editing the model. It
-                # is a beam design, so it is delegated as one (decision #65).
-                out.append(_engineered(
-                    ctx, "structural.deck_beam_span", item_id("deck_beam", beam.tag),
-                    f"no IRC Table R507.5(1) row for a {beam.size} carrying "
-                    f"a {joist_span_ft:.2f}' joist span",
-                    (deck.tag, beam.tag), code="IRC R507.5(1)"))
+                # stops short of. The IRC not publishing a row does not mean nobody does:
+                # the beam's own supplier tabulates it, and reading that table is a
+                # prescriptive act (2026-09-11; it was an engineering item before).
+                out.extend(_off_table_beam(ctx, deck, beam, span_ft, joist_span_ft))
                 continue
             allowable, tabulated = limit
             carried = (f"a {tabulated:.0f}' joist span"
@@ -1055,4 +1050,40 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
                 f"{', '.join(sorted(heights))} at {min(heights.values()):.0f}\" or more",
                 (deck.tag, *sorted(heights)), Result.PASS,
             ))
+    return out
+
+
+def _off_table_beam(ctx, deck, beam, span_ft: float, joist_span_ft: float) -> list[Finding]:
+    """A beam IRC Table R507.5(1) has no row for: the supplier's table, plus an NDS advisory.
+
+    Two findings, deliberately. The published row is the VERDICT — a reviewer opens the deck
+    guide and the question is closed. The NDS pass beside it is an ADVISORY, because the
+    guide's values are dry-use and every beam on this house stands in weather: the advisory
+    is what says how much of the row's margin the wet-service factors spend.
+    """
+    from typehaus.checks.structural.published import graded_against_published
+    from typehaus.engineering.glulam_beam import describe_states, nds_states, section_of
+
+    source = ctx.plan.by_tag(beam.tag) if ctx.plan is not None else None
+    out = [graded_against_published(
+        "structural.deck_beam_span",
+        f"deck {deck.tag} beam {beam.tag} ({beam.size})",
+        (deck.tag, beam.tag), span_ft,
+        getattr(source, "published_span", None), beam.size,
+        carried_span_ft=joist_span_ft,
+        fix="author Beam.published_span with the supplier's deck-guide row for this beam "
+            "at this joist span, or leave the beam to an engineered design")]
+    section = section_of(beam)
+    if section is not None:
+        states = nds_states(section[0], section[1], span_ft, joist_span_ft)
+        worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
+        out.append(_advisory(
+            "structural.deck_beam_span",
+            f"deck {deck.tag} beam {beam.tag}: NDS cross-check with WET SERVICE applied "
+            f"(the published deck-guide row is dry-use) — {describe_states(states)}",
+            (deck.tag, beam.tag),
+            Result.PASS if worst.demand <= worst.capacity else Result.FAIL,
+            fix_hint=None if worst.demand <= worst.capacity else
+            "the supplier's dry-use row does not cover this member in weather — deepen it, "
+            "shorten the span, or have it designed"))
     return out

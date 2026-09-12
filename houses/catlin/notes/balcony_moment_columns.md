@@ -354,18 +354,34 @@ arm. At 3,000 psi the worked value was 20.9 kip-ft against the engine's 20,995; 
 
 **Product:** preservative-treated southern yellow pine structural glulam, **3-1/2" ×
 11-7/8", 24F-V5M1/SP** (Anthony Power Preserved / Boise Cascade, stocked through Lakeville),
-clear-finished. They replaced three site-built 3-ply KDAT 2x12s. IRC Table R507.5(1)
-publishes sawn plies only, so these are engineered items under `deck_beam/BM-SG-BL*`.
+clear-finished. They replaced three site-built 3-ply KDAT 2x12s.
+
+**THE SPAN IS A PUBLISHED-TABLE READ, and these stopped being engineering items on
+2026-09-11.** IRC Table R507.5(1) publishes sawn plies only, which is true and was taken to
+mean nobody publishes a row for a glulam. The *supplier* does. Anthony/Canfor's **Power
+Preserved Glulam Deck Guide (2020), Table 2 "Beam Spans"** (maximum 2' cantilever)
+tabulates a 3-1/2" × 11-7/8" at a **10' joist span** carrying a **10' beam span** under
+40 psf live + 10 psf dead. This balcony's beams carry a 10' joist span over 7.00'-7.33', so
+the read is inside the row on both indices, and reading it is a prescriptive act. The row is
+authored once as `_BALCONY_BEAM_PUBLISHED` in `params/sunken_garden.py` and grades all three.
+
+**The NDS arithmetic below did NOT go away, and must not.** The deck guide's values are
+**DRY-USE** and every one of these beams stands in weather. `structural.deck_beam_span`
+prints the wet-service pass beside the published row as an advisory — the row is the verdict
+a reviewer can open a document and confirm, and this is what says how much of its margin
+weather spends. `engineering/glulam_beam.py` is now a pure module exposing `nds_states`,
+with no registered kind behind it.
 
 **Spans.** BM-SG-BLW and BLE run corner column to corner column at **7.33'** — shortened
 from 7.77' when PT-SG-BF1/BF3 came 5-1/4" north so the beams would cantilever clear of the
 12" rounds' tops (see §6). That leaves a rear overhang of 20.0" and a south cantilever of
 8.0" against R507.5.1's quarter-span limit of **22.0"**. BM-SG-BLC runs PT-SG-BR2 to
-PT-SG-BF2 at **6.75'** — its back span shortened when BF2 moved north onto the porch deck
-(see §6), which leaves a rear overhang of 20.0" against a limit of 20.25" and a south
-cantilever of 15". **Both are legal, one by a quarter of an inch, and nothing in the engine
-checks a beam overhang** — `checks/structural/deck.py` grades beam SPAN only — so it is
-written down here instead.
+PT-SG-BF2 at **7.00'** (it was 6.75' before PT-SG-BF2's last move; the engine's own resolved
+back span is the number to trust and this line follows it), which leaves a rear overhang of
+20.0" against a limit of 21.0". **Nothing in the engine checks a beam overhang** —
+`checks/structural/deck.py` grades beam SPAN only, and `structural.deck_beam_cantilever`
+grades the overhang against the back span but not against the published row's own 2' cap —
+so both are written down here. Every overhang here is 1'-8", inside that cap.
 
 **Wet service is applied, and it is the difference between this and a supplier's span
 table.** AWC NDS 2018 Table 5.3.1: C_M = 0.80 on F_b, 0.875 on F_v, 0.53 on F_c⊥, 0.833 on E.

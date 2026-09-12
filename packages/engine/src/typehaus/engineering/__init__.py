@@ -26,7 +26,6 @@ from __future__ import annotations
 from typehaus.engineering import (
     deck_post,  # noqa: F401  (registration)
     deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
-    glulam_beam,  # noqa: F401  (registration)
     post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
@@ -67,7 +66,7 @@ __all__ = [
     "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity", "REGISTER_FILENAME",
     "Signoff", "Status",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "deck_post", "deferred", "glulam_beam", "roof_beam", "registered_kinds",
+    "deck_post", "deferred", "roof_beam", "registered_kinds",
     "retaining_system",
     "retaining_wall", "spread_footing", "wall_panel",
 ]

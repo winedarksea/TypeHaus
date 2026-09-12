@@ -549,16 +549,21 @@ EXT_2X6_SWINBURNE = Assembly(
 # That cantilever is not graded by anything in the engine and belongs in the PE scope.
 #
 # **24" o.c. forces the heavier joist, and that is the deal.** At 16" a TJI 110 carries the
-# 18'-0" HORIZONTAL span at Ps = 35 psf (Pg 50, Ramsey); at 24" it does not, and the 230 is
-# the first series that does with margin (19'-3" allowable, 15" spare). Net of the upcharge
-# the framing still comes down, and the better half is thermal: the framing factor falls from
-# 0.07 to 0.05 at no cost. Two things this engine will NOT tell you, recorded so they are not
-# mistaken for silence: `structural.rafter_span` is UNKNOWN/engineered at BOTH spacings (an
-# engineered profile is deliberately absent from the IRC R802.4.1 table), and no sheathing-
-# span or gypsum-ceiling rule reads the spacing at all. Both are fine — 5/8" board is rated
-# for a 24" o.c. ceiling where 1/2" is not — and neither is verified here. The printed TJ-4000
-# table also assumes bearing at the high end, where these joists HANG off the ridge on LSSR
-# hangers: confirm in ForteWEB, and see notes/roof_flash_and_batt.md.
+# 17'-9 3/4" HORIZONTAL run at Ps = 35 psf (Pg 50, Ramsey); at 24" it does not, and the 230
+# is the first series that does. ** THE ALLOWABLE IS 18'-4", NOT THE 19'-3" THIS COMMENT USED
+# TO CARRY: ** that figure was an interpolation between two published rows to 35 psf, which
+# is a move `checks/structural/snow.py` refuses for its own table and which must not be made
+# for a manufacturer's either. The honest read of TJ-4000's published row is 18'-4" — the
+# margin is 6-1/4", not 15". Net of the upcharge the framing still comes down, and the better
+# half is thermal: the framing factor falls from 0.07 to 0.05 at no cost.
+#
+# `structural.rafter_span` now grades this roof PRESCRIPTIVELY against that published row,
+# authored as `Roof.published_span` on RF-HOUSE (2026-09-11; it was UNKNOWN/engineered at
+# both spacings before). What the engine still will NOT tell you: no sheathing-span or
+# gypsum-ceiling rule reads the spacing at all — fine here, 5/8" board is rated for a 24"
+# o.c. ceiling where 1/2" is not, and neither is verified. And the printed table assumes
+# BEARING at the high end where these joists HANG off the ridge on LSSR hangers: confirm in
+# ForteWEB, and see notes/roof_rafter_span_read.md §3, which is the open item.
 #
 # The metal itself is unchanged: 24 ga mechanically field-seamed, hidden floating clips.
 ROOF = Assembly(

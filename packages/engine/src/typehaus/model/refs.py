@@ -116,3 +116,55 @@ def in_slab(depth: Length) -> Embed:
 
 def under_subfloor() -> Embed:
     return Embed(mode="under_subfloor")
+
+
+# --- a published manufacturer table, read as a prescriptive path -------------
+class PublishedSpan(HausModel):
+    """One row of a published span table, quoted onto the element it governs.
+
+    **A published table is a prescriptive read, not engineering.** A reviewer opens the
+    document, finds the row and the question is closed — which is the same act as reading
+    IRC Table R602.7(1), and nothing an engineer needs to seal. The PBR cladding set the
+    precedent: it stays out of the engineering register because ASC, Metal Panels Inc. and
+    Homewood all publish a wall span table for it. What this type adds is that the read is
+    now *in the model*, so the check can grade against it instead of reporting UNKNOWN and
+    waiting for a seal that nobody owes.
+
+    ``engineered()`` remains for what no table publishes.
+
+    **Four of these fields are drift guards, and they are the point.** A quoted allowable
+    is only true for the row it was read at. If the member is retyped, the spacing changes,
+    the carried span grows or the check's own demand climbs past the row's load basis, the
+    quotation stops describing this building — and the check must go UNKNOWN naming the
+    mismatch rather than keep printing a PASS off a stale row. That is why ``member``,
+    ``spacing``, ``carried_span`` and ``load_psf`` are here at all.
+
+    Not to be confused with ``Material.panel_allowable_psf`` / ``panel_allowable_span_in``,
+    which are a load-form input to a *computed* kind (`engineering/wall_panel.py` grades a
+    demand against them and computes a second limit state besides). Those stay where they
+    are: the shape is different, and folding them in here would suggest the panel item is a
+    table read, which is exactly what it is not.
+    """
+
+    #: The document, edition, page and table title — enough for a reviewer to open it.
+    source: str
+    #: The row and column actually read, in the table's own words.
+    table: str
+    #: The member the row is for, spelled as the model spells it. The drift guard for a
+    #: retype: a row for a 2-ply 14" LVL says nothing about the 2-ply 11-7/8" somebody
+    #: swapped in.
+    member: str
+    #: The maximum span that row publishes.
+    span: Length
+    #: What the row assumes that this engine does not check — bearing conditions, trimmer
+    #: count, deflection limits, dry service. Printed on the finding, because a prescriptive
+    #: PASS whose conditions nobody stated is not a read, it is a claim.
+    condition: str
+    #: The row's load basis (LL+DL, or snow+DL). The check refuses to use the row when its
+    #: own computed demand is higher.
+    load_psf: float | None = None
+    #: The o.c. spacing the row is indexed by, where it has one (rafters, joists).
+    spacing: Length | None = None
+    #: The carried span the row is indexed by, where it has one (a deck beam is tabulated
+    #: against the joist span it picks up).
+    carried_span: Length | None = None

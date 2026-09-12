@@ -185,13 +185,19 @@ wrong on the zone.
 
 Recorded plainly because the engine will neither stop you nor help you on any of it:
 
-- **The joist at 24" o.c.** `structural.rafter_span` is UNKNOWN/engineered at *both*
-  spacings — an engineered profile is deliberately absent from the IRC R802.4.1 sawn table.
-  The design reading is the Trus Joist TJ-4000 roof table, 11 7/8", **Low** slope column
-  (a 6:12 guide direction), interpolated to Ps = 35 psf (Pg 50 per MN Rules 1303.1700,
-  Ramsey; 0.7 x 50), against the **18'-0" HORIZONTAL** projection — span tables are
-  horizontal, not the 19.9' sloped length. TJI 230 @ 24" reads 19'-3", a 15" margin; the
-  TJI 110 that carried this roof at 16" o.c. reads 16'-8" at 24" and does not.
+- **The joist at 24" o.c.** `structural.rafter_span` grades this roof PRESCRIPTIVELY since
+  2026-09-11, against the published row authored on `RF-HOUSE` — see
+  `notes/roof_rafter_span_read.md`, which is now the note that owns this read. It was
+  UNKNOWN/engineered at both spacings before, on the reasoning that an engineered profile is
+  absent from the IRC R802.4.1 sawn table; that is true and it is not the end of it, because
+  the joist's own maker publishes a table.
+  The reading is the Trus Joist TJ-4000 roof table, 11 7/8", **Low** slope column (a 6:12
+  guide direction), against the **17'-9 3/4" HORIZONTAL** run — span tables are horizontal,
+  not the 19.9' sloped length. **TJI 230 @ 24" reads 18'-4", a 6-1/4" margin.**
+  **The 19'-3" this bullet used to give was WRONG:** it was an interpolation to Ps = 35 psf
+  between two published rows, and a span table is not interpolated — `snow.py` refuses
+  exactly that move for its own table. The TJI 110 that carried this roof at 16" o.c. does
+  not reach it at 24".
   **Two things make the printed table indicative rather than authoritative here**, and both
   belong in ForteWEB: its general note requires *a support beam or wall at the high end —
   ridge beam applications do not provide adequate support*, and catlin **hangs** its joists

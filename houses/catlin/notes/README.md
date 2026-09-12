@@ -32,20 +32,34 @@ each is kept because the *rule* it established usually outlives the design that 
 | Note | Oracles | Status |
 |---|---|---|
 | `board_batten_girt_span.md` | `engineering/wall_panel.py` + `engineering/wall_panel_withdrawal.py` (`tests/test_wall_panel_calcs.py`) | live |
-| `balcony_moment_columns.md` | `engineering/deck_post.py` §5 → `engineering/glulam_beam.py` (`tests/test_pier_section_calcs.py`) | live |
+| `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
 | `north_entry_structure.md` | the north entry bearing map and what carries what | live |
 | `north_entry_piers.md` | `engineering/roof_beam.py` §5, `engineering/pier_basis.py` / `deck_post.py` / `spread_footing.py` §6 (`tests/test_north_entry_piers.py`) | live |
 | `hp3_north_relocation.md` | cabinet/stand, airflow and services | schematic |
-| `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); `rafter/RF-*` deferral | live |
+| `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); the `rafter/RF-{GARAGE,BW-CANOPY}` deferral — the two TRUSSED roofs only | live |
 | `centre_pillar_bearing.md` | `engineering/post_bearing.py` (`tests/test_post_bearing.py`) | live |
 | `sunken_garden_court_free_body.md` | `engineering/retaining_system.py`, `retaining_basis.py` (`tests/test_retaining_court.py`) | live |
 | `sunken_garden_piers.md` | `engineering/pier_basis.py`, `engineering/spread_footing.py` (`tests/test_pier_calcs.py`) | live |
 | `sunken_garden_retaining_screening.md` | `engineering/retaining_wall.py` §4 (`tests/test_retaining_wall_calc.py`) | live |
 | `uplift_load_path.md` | `lateral_uplift/RF-*` deferral (`tests/test_uplift_load_path.py`) | live |
 | `soffit_rung_deflection.md` | `checks/structural/soffit.py` | live |
+
+### Published-table reads
+
+Not calculation notes and not deferrals: a manufacturer publishes a row, a reviewer opens
+the document, and the question is closed. Each is authored on the element as a
+`PublishedSpan` and graded by `checks/structural/published.py`, with drift guards so a
+retype or a spacing change turns the PASS back into an UNKNOWN.
+
+| Note | Reads | Status |
+|---|---|---|
+| `garage_door_header.md` | Weyerhaeuser TJ-9000 p.9 → `structural.header_prescriptive` on `D-G-OVERHEAD` | live |
+| `roof_rafter_span_read.md` | Weyerhaeuser TJ-4000 p.12 → `structural.rafter_span` on `RF-HOUSE`. §3 is OPEN | live |
+| `balcony_moment_columns.md` §5 | Anthony/Canfor Power Preserved Glulam Deck Guide Table 2 → `structural.deck_beam_span` on `BM-SG-BL{W,C,E}` | live |
+
 | `rebar_backout.md` | the rebar back-out in `takeoff/reinforcement.py` | live |
-| `ridge_beam_detail.md` | `header/D-G-OVERHEAD` deferral; the ridge beam section | live, revised in part |
+| `ridge_beam_detail.md` | the ridge beam section. Its §hanger reaction (600 lb at 4:12) is SUPERSEDED by `roof_rafter_span_read.md` §4 (~980 lb at 6:12), and it no longer oracles the garage header — that deferral is gone | live, revised in part |
 | `mep_drain_routing_basis.md` | `routing/{gravity,corridors,graph,search,tree}.py` (`tests/test_routing_oracle.py`); `mep.fixture_drain_reach` §1 | live, ahead of the code it oracles |
 | `mep_duct_routing_basis.md` | `routing/trades/duct.py`, the corridor half of `routing/corridors.py` | live, ahead of the code it oracles |
 

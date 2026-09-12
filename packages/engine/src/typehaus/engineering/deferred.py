@@ -1,10 +1,11 @@
 """The items this engine will never compute, declared rather than discovered.
 
-Five items — ``header/D-G-OVERHEAD``, ``lateral_uplift/RF-{HOUSE,GARAGE}`` and
-``rafter/RF-{HOUSE,GARAGE}`` — reach ``haus engineering`` today only because a check names
-an ``engineering_item`` of a kind nobody registered, and ``EngineeringResults.__getitem__``
-synthesises a bare ``NO_CALC`` for it. They exist by accident, and their record says only
-"no calculation is registered for this kind", which is true and useless: it does not say
+The trussed roofs and their uplift path — ``lateral_uplift/RF-*`` and ``rafter/RF-*``,
+plus the two ``column_support`` wall tops — reach ``haus engineering`` only because a check
+names an ``engineering_item`` of a kind nobody registered, and
+``EngineeringResults.__getitem__`` synthesises a bare ``NO_CALC`` for it. They exist by
+accident, and their record says only "no calculation is registered for this kind", which is
+true and useless: it does not say
 *who* designs the thing, *what* they have to hand over, or *which* line of the permit set
 stays shut until they do.
 
@@ -63,10 +64,12 @@ def _declare(deferral: Deferral) -> Deferral:
 
 _declare(Deferral(
     kind="rafter",
-    reason="the roof is outside the sawn-lumber rafter span table — it either resolves no "
-           "rafters at all (trussed, or framed on a ridge beam) or is framed in a profile "
-           "the table does not publish, such as an engineered I-joist. Either way the "
-           "component manufacturer's sealed design governs and this engine computes none",
+    reason="the roof resolves no rafter member at all — it is trussed, or framed on a "
+           "ridge beam — so there is no member for any span table to describe and the "
+           "component manufacturer's sealed design governs. A roof framed in an ENGINEERED "
+           "PROFILE is not here: its maker publishes a span table, reading one is a "
+           "prescriptive act, and `structural.rafter_span` grades it against an authored "
+           "`Roof.published_span` instead (2026-09-11)",
     designer="truss or I-joist manufacturer's engineer of record",
     deliverable="a sealed component design and placement plan for the roof, covering the "
                 "profile, the bearing reactions, the web stiffener and hanger schedule, "
@@ -90,17 +93,13 @@ _declare(Deferral(
                    test="tests/test_uplift_load_path.py"),),
 ))
 
-_declare(Deferral(
-    kind="header",
-    reason="the opening is wider than the prescriptive header table publishes, and no "
-           "engineered beam is authored for it — the supplier's schedule governs",
-    designer="overhead-door supplier's header schedule, or the structural engineer of "
-             "record where the supplier publishes none",
-    deliverable="a header size and bearing detail for the opening width, at this snow and "
-                "roof load, with the jamb studs it lands on",
-    unblocks="Structural headers — structural.header_prescriptive",
-    oracle=(Oracle(note="ridge_beam_detail.md"),),
-))
+# NOTE — there is NO ``header`` deferral, and its absence is deliberate (2026-09-11).
+# A wide opening's header was deferred here on the reasoning that the IRC table stops at 8'.
+# It does, but the beam supplier's own header table does not: reading a published row is a
+# prescriptive act and nothing a seal adds to. ``structural.header_prescriptive`` now grades
+# against an authored ``Door.published_span``, and a house that authors neither the beam nor
+# the row gets UNKNOWN with the hint rather than a deferral naming a designer nobody needs.
+# The ``ridge_beam_detail.md`` oracle went with it: it was never about a header.
 
 
 _declare(Deferral(
@@ -158,19 +157,12 @@ def _uplift_keys(ctx: EngineeringContext) -> list[str]:
 
 @keys("rafter")
 def _rafter_keys(ctx: EngineeringContext) -> list[str]:
-    """Roofs that resolve no rafter member — the trussed case, which is the one this engine
-    can never compute. A roof framed in a profile the span table does not publish (catlin's
-    RF-HOUSE, on 11-7/8" I-joists at 24") also raises a ``rafter/<tag>`` item; that one is
-    reached through the finding that names it, because re-deriving here which profiles the
-    table covers would be the same judgement written twice, free to drift."""
+    """Roofs that resolve no rafter member — the trussed case, and the only one left here.
+
+    A roof framed in a profile the sawn-lumber table does not publish (catlin's RF-HOUSE, on
+    11-7/8" I-joists at 24") used to raise a ``rafter/<tag>`` item too. It no longer does:
+    the joist maker publishes a horizontal clear span for it, and
+    ``structural.rafter_span`` reads that row rather than delegating the roof.
+    """
     return sorted(roof.tag for roof in ctx.model.roofs
                   if not any(member.category == "rafter" for member in roof.members))
-
-
-@keys("header")
-def _header_keys(_ctx: EngineeringContext) -> list[str]:
-    """None enumerated. Whether an opening is over the prescriptive table is a conclusion
-    ``structural.header_prescriptive`` reaches from the span table it owns, and re-deriving
-    the threshold here would be a second copy of it free to drift. The kind is registered so
-    the deferral above answers for every header item the checks do raise."""
-    return []

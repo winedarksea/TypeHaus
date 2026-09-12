@@ -64,10 +64,6 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
     "spread_footing": ("D + L, allowable stress design against presumptive bearing",
                        "IBC 2018 Table 1806.2; IRC R507.3.1"),
-    # ``glulam_beam`` sums DECK_DEAD_LOAD_PSF and DECK_LIVE_LOAD_PSF for bending and shear,
-    # and checks deflection against the live term alone (IRC Table R301.7).
-    "deck_beam": ("D + L, allowable stress design; L alone for deflection",
-                  "AWC NDS 2018 Ch. 3 and 5; IRC Table R301.5 / R301.7"),
 }
 
 

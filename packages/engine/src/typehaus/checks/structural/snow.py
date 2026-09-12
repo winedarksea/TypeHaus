@@ -15,6 +15,7 @@ from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.structural.published import graded_against_published
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import ConnectorKind
@@ -35,6 +36,15 @@ _MAX_REACH_FT = 15.0
 # Engineered profiles (I-joist, LVL, PSL) are deliberately absent: they are sized by their
 # manufacturer's software against the actual load case, so they resolve UNKNOWN below rather
 # than borrowing a sawn-lumber row.
+#: The load basis this check states when it compares its own demand against a published
+#: row's. ASCE 7-16 §7.3 flat-roof snow at this house's exposure, thermal and importance
+#: factors is Ps = 0.7 Ce Ct Is Pg = 0.7 x 50 = 35 psf, and the branch below already
+#: refuses to run at any Pg but 50 — so these are safe to state rather than derive, and
+#: a site that moves off 50 psf never reaches them.
+_ROOF_SNOW_PSF = 35.0
+#: Roof dead load, the figure every published residential roof table is indexed at.
+_ROOF_DEAD_PSF = 15.0
+
 _RAFTER_SPAN_FT: dict[tuple[str, float], float] = {
     ("2x6", 16.0): 9.1,
     ("2x8", 16.0): 11.5,
@@ -224,11 +234,21 @@ def rafter_span(ctx: CheckContext) -> list[Finding]:
         spacing_in = spacings.pop()
         allowable = _RAFTER_SPAN_FT.get((profile, spacing_in))
         if allowable is None:
-            out.append(_engineered(
-                ctx, cid, item_id("rafter", roof.tag),
-                f"roof {roof.tag} is framed with {profile} at {spacing_in:.0f}\" o.c., "
-                f"which the sawn-lumber rafter table does not publish",
-                (roof.tag,), code="IRC R802.4"))
+            # An engineered profile: no sawn-lumber row reaches it. Its maker publishes a
+            # span table of its own, though, and reading that is a prescriptive act — so
+            # the roof may author the row and be graded against it rather than wait for a
+            # seal nobody owes. See ``checks/structural/published.py``.
+            #
+            # The comparison is the HORIZONTAL projection, because that is what an I-joist
+            # roof table is indexed by. ``member.length_m`` is the sloped length and using
+            # it would fail a roof the table passes, by the secant of the pitch.
+            out.append(graded_against_published(
+                cid, f"roof {roof.tag}, framed with {profile}",
+                (roof.tag,), _horizontal_run_ft(roof, rafters),
+                _authored_row(ctx, roof.tag), profile,
+                spacing_in=spacing_in, demand_psf=_ROOF_SNOW_PSF + _ROOF_DEAD_PSF,
+                fix="author Roof.published_span with the manufacturer's span-table row for "
+                    "this joist at this spacing, or leave the roof to an engineered design"))
             continue
         span_ft = max(member.length_m for member in rafters) / _M_PER_FT
         within = span_ft <= allowable + 1e-6
@@ -240,6 +260,31 @@ def rafter_span(ctx: CheckContext) -> list[Finding]:
     if not out:
         out.append(_unknown(cid, "the model resolves no roofs"))
     return out
+
+
+def _authored_row(ctx: CheckContext, tag: str):
+    """The ``PublishedSpan`` off the AUTHORED element, not the resolved one.
+
+    ``ResolvedRoof`` carries geometry; a table quotation is authoring, and threading it
+    through the resolver would put a document citation in the shape the emitters read.
+    Same lookup ``structural.header_prescriptive`` makes.
+    """
+    source = ctx.plan.by_tag(tag) if ctx.plan is not None else None
+    return getattr(source, "published_span", None)
+
+
+def _horizontal_run_ft(roof, rafters) -> float:
+    """The rafters' longest HORIZONTAL projection, which is what a span table is indexed by.
+
+    ``member.length_m`` is the sloped length. At 6:12 that is 11.8% longer than the run, so
+    comparing it against a published horizontal span fails roofs the table passes — and the
+    error grows with the pitch, which is exactly backwards.
+
+    The run is measured across the slope axis: perpendicular to the ridge.
+    """
+    axis = 0 if roof.ridge_direction == "y" else 1
+    runs = [abs(member.p1[axis] - member.p0[axis]) for member in rafters]
+    return (max(runs) if runs else 0.0) / _M_PER_FT
 
 
 def _spacing_in(roof, rafters) -> float:

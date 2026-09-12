@@ -14,7 +14,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.floors import FinishZone
 from typehaus.model.placeables import Location, Mount
-from typehaus.model.refs import FollowRoof
+from typehaus.model.refs import FollowRoof, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
@@ -193,6 +193,12 @@ class Roof(Element):
     overhang: Length | None = None
     edge_overhangs: tuple[tuple[str, Length], ...] = ()  # per-edge overrides
     ridge_direction: str = "x"
+    # The published table row that answers this member's span, where one does. A
+    # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
+    # question is closed — so authoring one here takes the requirement out of the
+    # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
+    # carries the drift guards that stop a quotation outliving the model it was read for.
+    published_span: PublishedSpan | None = None
     # Which of the two ridge-axis ends may be a GABLE END, by compass name. A gable end
     # takes a drop/gable-end frame instead of a field truss, and SBCA's own definition is
     # that such a frame has continuous vertical support from the end wall or beam under its

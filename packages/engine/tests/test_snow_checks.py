@@ -183,35 +183,118 @@ def test_rafter_span_unknown_off_the_published_snow_load() -> None:
     assert "published at 50 psf" in findings[0].message
 
 
-def test_rafter_span_reports_unknown_rather_than_borrowing_a_row(catlin_model) -> None:
-    """Catlin's roof is framed in 11.875" I-joists — an engineered product sized by its
-    manufacturer's software, not by the sawn-lumber table. UNKNOWN, never a sawn-lumber row.
+def test_the_ijoist_roof_is_a_published_table_read_and_the_trussed_ones_are_not(
+        catlin_model) -> None:
+    """Catlin's three roofs split two ways, and the split is the point.
+
+    RF-HOUSE is framed in 11-7/8" I-joists — an engineered product the sawn-lumber table
+    does not publish. Until 2026-09-11 that made it an engineering item waiting for a seal.
+    It is not: Weyerhaeuser publishes a horizontal clear span for exactly this joist at
+    exactly this spacing and load, the roof authors that row, and reading it is a
+    prescriptive act. The two TRUSSED roofs stay engineered, because they resolve no member
+    for any table to describe.
     """
     ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
                        preferences=Preferences(), profile=None)
     findings = rafter_span(ctx)
     assert findings
-    assert all(f.result is Result.UNKNOWN for f in findings), \
-        [f.message for f in findings]
-    # The message names which engineering item governs, and the finding carries the
-    # authority beside its verdict — still UNKNOWN, still blocking, but with an id a
-    # professional seal can cover.
-    assert all(f.authority is Authority.ENGINEERED for f in findings)
-    # RF-BW-CANOPY joined them on 2026-09-10 — a second trussed roof, and so a second item
-    # that resolves no rafters at all rather than the wrong table row for the ones it has.
-    assert {f.engineering_item for f in findings} == {"rafter/RF-HOUSE", "rafter/RF-GARAGE",
-                                                      "rafter/RF-BW-CANOPY"}
-    # The roof names its series ("11.875 TJI 230") so the price row and the PE scope both
-    # key off something orderable. Either spelling is an engineered profile the sawn table
-    # does not publish, which is the point being asserted.
-    assert any("TJI" in f.message or "I-joist" in f.message for f in findings)
-    # The trussed garage roof is the case the two-gate split exists for: this engine will
-    # never compute it, so the item can never reach draft and correctly blocks a *sealed*
-    # submittal without pretending anything was computed.
-    for tag in ("RF-GARAGE", "RF-BW-CANOPY"):
-        trussed = next(f for f in findings if f.engineering_item == f"rafter/{tag}")
-        assert "resolves no rafters" in trussed.message, tag
-        assert "this engine computes none" in trussed.message, tag
+
+    house = next(f for f in findings if "RF-HOUSE" in f.element_tags)
+    assert house.result is Result.PASS
+    assert house.authority is Authority.PRESCRIPTIVE
+    assert house.engineering_item is None
+    assert "TJ-4000" in house.message
+    # The comparison is the HORIZONTAL run, 17'-9 3/4". The sloped length is 19.91' and
+    # would fail an 18'-4" row that the roof in fact passes.
+    assert "17.81'" in house.message and "18.33'" in house.message
+
+    trussed = [f for f in findings if "RF-HOUSE" not in f.element_tags]
+    assert {f.engineering_item for f in trussed} == {"rafter/RF-GARAGE",
+                                                     "rafter/RF-BW-CANOPY"}
+    for finding in trussed:
+        assert finding.result is Result.UNKNOWN
+        assert finding.authority is Authority.ENGINEERED
+        assert "resolves no rafters" in finding.message
+        assert "this engine computes none" in finding.message
+
+
+def test_an_engineered_profile_with_no_authored_row_is_unknown_not_engineered(
+        catlin_model) -> None:
+    """The house that authors nothing gets a hint, not a delegation.
+
+    This is the behaviour ``engineered()``'s NO_CALC branch used to supply and the grader
+    now has to: an off-table profile with no ``PublishedSpan`` is UNKNOWN PRESCRIPTIVE,
+    because what is missing is authoring — somebody reading the maker's table — and not a
+    professional seal.
+    """
+    findings = _rafter_findings_with(catlin_model, published=None)
+    house = next(f for f in findings if "RF-HOUSE" in f.element_tags)
+    assert house.result is Result.UNKNOWN
+    assert house.authority is Authority.PRESCRIPTIVE
+    assert house.engineering_item is None
+    assert "no published table row is authored" in house.message
+
+
+@pytest.mark.parametrize("edit,expected", [
+    ({"member": "11.875 TJI 110"}, "the row is for"),
+    ({"spacing": inch(16)}, "indexed at 16\" o.c."),
+    ({"load_psf": 40.0}, "published at 40 psf"),
+])
+def test_a_row_that_stopped_describing_the_model_goes_unknown(catlin_model, edit,
+                                                              expected) -> None:
+    """Three drift guards, one each. A quoted allowable is true for the row it was read at.
+
+    Retype the joist, change the spacing, or drop the row's load basis under this check's
+    own demand, and the quotation stops describing this building. UNKNOWN naming the
+    mismatch — never a PASS off a stale row, and never a FAIL, because a row that does not
+    describe the member is silent about it rather than damning.
+    """
+    findings = _rafter_findings_with(catlin_model, edit=edit)
+    house = next(f for f in findings if "RF-HOUSE" in f.element_tags)
+    assert house.result is Result.UNKNOWN
+    assert "no longer describes this member" in house.message
+    assert expected in house.message
+
+
+def test_a_run_past_the_published_row_fails(catlin_model) -> None:
+    findings = _rafter_findings_with(catlin_model, edit={"span": ft(12)})
+    house = next(f for f in findings if "RF-HOUSE" in f.element_tags)
+    assert house.result is Result.FAIL
+    assert "past the 12.00'" in house.message
+
+
+class _PlanWithRow:
+    """catlin's plan with RF-HOUSE's authored row edited or removed.
+
+    A stand-in rather than a ``model_copy``: ``PlanModel.elements`` is a dict keyed by kind
+    and carries a cached tag index, and the check reads exactly two things off the plan —
+    the site's ground snow and ``by_tag``. Rebuilding the whole model to change one field
+    would test the copy more than the check.
+    """
+
+    def __init__(self, plan, roof):
+        self._plan = plan
+        self._roof = roof
+        self.project = plan.project
+        self.library = plan.library
+
+    def by_tag(self, tag):
+        return self._roof if tag == "RF-HOUSE" else self._plan.by_tag(tag)
+
+
+def _rafter_findings_with(catlin_model, *, edit=None, published="keep"):
+    """catlin's rafter findings with RF-HOUSE's authored row edited or removed."""
+    plan = catlin_model.plan
+    roof = plan.by_tag("RF-HOUSE")
+    assert roof is not None and roof.published_span is not None
+    if published is None:
+        roof = roof.model_copy(update={"published_span": None})
+    else:
+        roof = roof.model_copy(update={
+            "published_span": roof.published_span.model_copy(update=edit or {})})
+    ctx = CheckContext(plan=_PlanWithRow(plan, roof), model=catlin_model,
+                       preferences=Preferences(), profile=None)
+    return rafter_span(ctx)
 
 
 def test_catlin_sliding_snow_has_no_pair_left_to_screen(catlin_model) -> None:

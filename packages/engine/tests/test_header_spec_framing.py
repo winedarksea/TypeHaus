@@ -215,3 +215,90 @@ def test_overhead_door_head_cripples_bear_on_the_track_backing():
         # every cripple inside the blocking.
         assert cripple.z0_m == pytest.approx(backing.z1_m)
         assert cripple.z1_m == pytest.approx(_plate_underside(rw))
+
+
+# --- the CHECK, not the framing: a wide opening is a published-table read ----------------
+#
+# `structural.header_prescriptive` used to hand every opening past IRC R602.7's 8' table to
+# the engineering register. Since 2026-09-11 it does not: the beam supplier publishes a
+# header schedule, reading a row is a prescriptive act, and the row is authored on the Door
+# as a `PublishedSpan`. These pin the three states that matter — read, absent, and drifted.
+
+
+class _PlanWithDoor:
+    """catlin's plan with D-G-OVERHEAD's authored row edited or removed.
+
+    A stand-in rather than a ``model_copy``: ``PlanModel.elements`` is a dict keyed by kind
+    with a cached tag index, and the check reads exactly one thing off the plan for this
+    opening. Rebuilding the model would test the copy more than the check.
+    """
+
+    def __init__(self, plan, door):
+        self._plan = plan
+        self._door = door
+        self.project = plan.project
+        self.library = plan.library
+
+    def by_tag(self, tag):
+        return self._door if tag == "D-G-OVERHEAD" else self._plan.by_tag(tag)
+
+
+def _header_finding(catlin_model, **update):
+    from typehaus.checks.registry import CheckContext, Preferences
+    from typehaus.checks.structural.checks import header_within_prescriptive
+
+    plan = catlin_model.plan
+    door = plan.by_tag("D-G-OVERHEAD")
+    assert door is not None and door.published_span is not None
+    if update.pop("_drop_row", False):
+        door = door.model_copy(update={"published_span": None})
+    elif update:
+        door = door.model_copy(update={
+            "published_span": door.published_span.model_copy(update=update)})
+    ctx = CheckContext(plan=_PlanWithDoor(plan, door), model=catlin_model,
+                       preferences=Preferences(), profile=None)
+    findings = header_within_prescriptive(ctx)
+    return next(f for f in findings if "D-G-OVERHEAD" in f.element_tags)
+
+
+def test_the_overhead_door_header_is_a_prescriptive_table_read(catlin_model) -> None:
+    """A 16' rough opening, headed with a 2-ply 14" LVL, answered by TJ-9000's own row."""
+    from typehaus.findings import Authority, Result
+
+    finding = _header_finding(catlin_model)
+    assert finding.result is Result.PASS
+    assert finding.authority is Authority.PRESCRIPTIVE
+    assert finding.engineering_item is None
+    assert "TJ-9000" in finding.message
+    assert "16.00'" in finding.message and "16.25'" in finding.message
+    # The conditions the row assumes and this engine does not check are printed, or the
+    # PASS is a claim rather than a read.
+    assert "GABLE END" in finding.message
+
+
+def test_no_authored_row_is_unknown_with_the_hint(catlin_model) -> None:
+    from typehaus.findings import Authority, Result
+
+    finding = _header_finding(catlin_model, _drop_row=True)
+    assert finding.result is Result.UNKNOWN
+    assert finding.authority is Authority.PRESCRIPTIVE
+    assert "no published table row is authored" in finding.message
+    assert "published_span" in (finding.fix_hint or "")
+
+
+def test_a_row_for_a_different_beam_stops_describing_the_opening(catlin_model) -> None:
+    """Retype the header and the quotation is about some other member. UNKNOWN, not PASS."""
+    from typehaus.findings import Result
+
+    finding = _header_finding(catlin_model, member='2-ply 11.875" LVL')
+    assert finding.result is Result.UNKNOWN
+    assert "no longer describes this member" in finding.message
+
+
+def test_an_opening_wider_than_its_row_fails(catlin_model) -> None:
+    from typehaus.quantities import ft
+    from typehaus.findings import Result
+
+    finding = _header_finding(catlin_model, span=ft(12))
+    assert finding.result is Result.FAIL
+    assert "past the 12.00'" in finding.message

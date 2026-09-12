@@ -407,19 +407,19 @@ def _notes(panel: _Panel, demand_psf: float, field_psf: float, strength_psf: flo
         notes.append(f"Open framing is on-label: {panel.open_framing_source}")
     if withdrawal is not None and withdrawal.reason is None:
         notes.append(
-            f"Withdrawal is COMPUTED, not read. The manufacturer's own load table states it "
-            f"\"does not address web crippling, fasteners, support material or load "
-            f"testing\" — bending only — and no maker publishes a pull-out value for a "
-            f"concealed leg into wood. IAPMO UES ER-309 expressly permits a design "
-            f"professional to extend published data by engineering mechanics, and NDS "
-            f"§12.2 is that mechanics. Cross-check: ER-309's own DFL row, 208 lb at 1\" "
-            f"penetration, is 2850 x 0.50^2 x 0.19 x 1.6 to within a pound.")
+            "Withdrawal is COMPUTED, not read. The manufacturer's own load table states it "
+            "\"does not address web crippling, fasteners, support material or load "
+            "testing\" — bending only — and no maker publishes a pull-out value for a "
+            "concealed leg into wood. IAPMO UES ER-309 expressly permits a design "
+            "professional to extend published data by engineering mechanics, and NDS "
+            "§12.2 is that mechanics. Cross-check: ER-309's own DFL row, 208 lb at 1\" "
+            "penetration, is 2850 x 0.50^2 x 0.19 x 1.6 to within a pound.")
         notes.append(_alternates(panel, withdrawal))
         notes.append(
-            f"Graded as an NDS WOOD screw, so the screw ordered must be a wood-point "
-            f"(Type 17) fastener and not a self-drilling point — a drill point in a "
-            f"1-1/2\" girt reams its own thread away. A published pull-out value for this "
-            f"screw into wood would supersede this calculation.")
+            "Graded as an NDS WOOD screw, so the screw ordered must be a wood-point "
+            "(Type 17) fastener and not a self-drilling point — a drill point in a "
+            "1-1/2\" girt reams its own thread away. A published pull-out value for this "
+            "screw into wood would supersede this calculation.")
     notes.append(
         "NOT CHECKED, and no seal should read this as covering them: the girt itself in "
         "bending and its block-to-stud connection, panel deflection, thermal movement of a "

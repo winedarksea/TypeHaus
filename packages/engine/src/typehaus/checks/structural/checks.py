@@ -50,32 +50,48 @@ _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
 
 @check(Tier.STRUCTURAL, "structural.header_prescriptive")
 def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
-    """Flag openings whose header exceeds prescriptive width (needs engineering)."""
+    """Grade an opening past IRC R602.7 against the beam manufacturer's own header table.
+
+    Past 8' the IRC's table stops and something else has to answer. Until 2026-09-11 that
+    was always an engineering item, which was right for a one-off beam and wrong for the
+    ordinary case: an LVL over a garage door is a row in the supplier's own header table,
+    and reading it is a prescriptive act. An authored ``Door.published_span`` is that read;
+    ``checks/structural/published.py`` grades against it and refuses the row when the model
+    drifts away from what it was read at.
+
+    A house that authors neither the row nor the beam gets UNKNOWN with the hint, exactly
+    as before.
+    """
+    from typehaus.checks.structural.published import graded_against_published
     from typehaus.quantities import m
 
     out: list[Finding] = []
     for op in ctx.model.openings:
         if op.width_m > m(8.0 * 0.3048).meters:  # > 8'
-            # An authored Door/DoorType.header_spec IS the engineered beam: the framing
-            # solver emits it verbatim, so the opening no longer rides the table at all.
-            spec = None
+            # An authored Door/DoorType.header_spec is the beam that got put in. The
+            # published row says which table row says it is big enough.
             source = ctx.plan.by_tag(op.tag) if ctx.plan is not None else None
             spec = getattr(source, "header_spec", None)
             if spec is None and source is not None:
                 type_ref = getattr(source, "type_ref", None)
                 door_type = ctx.plan.by_tag(type_ref) if type_ref else None
                 spec = getattr(door_type, "header_spec", None)
-            # Both branches are engineered work; they differ only in whether anyone has
-            # done it. Routing them through the register is what makes the difference
-            # visible as a *state* — the authored one PASSes and says AUTHORED, never
-            # computed, and both become an item a signoff can cover.
-            out.append(_engineered(
-                ctx, "structural.header_prescriptive", item_id("header", op.tag),
-                f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds the prescriptive "
-                f"header table",
-                (op.tag,), code="IRC R602.7", authored=spec,
-                fix=None if spec else "author Door.header_spec (or DoorType.header_spec) "
-                                     "with the engineered beam"))
+            if spec is None:
+                out.append(_advisory(
+                    "structural.header_prescriptive",
+                    f"opening {op.tag} is {op.width_m * 3.281:.1f}' wide, past IRC R602.7's "
+                    f"table, and no header is authored for it", (op.tag,), Result.UNKNOWN,
+                    code="IRC R602.7",
+                    fix_hint="author Door.header_spec (or DoorType.header_spec) with the "
+                             "beam, and Door.published_span with the table row that sizes it"))
+                continue
+            out.append(graded_against_published(
+                "structural.header_prescriptive",
+                f"opening {op.tag}, headed with {spec}",
+                (op.tag,), op.width_m / 0.3048,
+                getattr(source, "published_span", None), spec,
+                fix="author Door.published_span with the manufacturer's header-table row "
+                    "that sizes this beam, or leave the opening to an engineered design"))
     return out
 
 

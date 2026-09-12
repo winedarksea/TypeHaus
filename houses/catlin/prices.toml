@@ -242,8 +242,10 @@
 "11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2436 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
 # THE ROOF'S RAFTERS, AND A SEPARATE ROW ON PURPOSE (2026-08-31). Going to 24" o.c. traded
 # 358 LF of joist for a heavier series: at 16" the cheapest TJI in the line carried the
-# 18'-0" HORIZONTAL span at Ps = 35 psf, at 24" the first one that does with margin is the
-# 230 (19'-3" allowable). The upcharge is real and it is ~20% on material, which is exactly
+# 17'-9 3/4" HORIZONTAL run at Ps = 35 psf, at 24" the first one that does is the 230.
+# ** 18'-4" ALLOWABLE, corrected 2026-09-11 from the 19'-3" this row used to print: ** that
+# was an interpolation to 35 psf between two published rows, and a span table is not
+# interpolated. The margin is 6-1/4". The upcharge is real and it is ~20% on material, which is exactly
 # why this is not folded into the row above: that row carries 2,436 LF of FLOOR joist that
 # has no reason to be dragged up to the roof's rate. Naming the series is also what lets a
 # quote be asked for — "11.875 I-joist" cannot be ordered from anybody.

@@ -90,11 +90,19 @@ mean less, not more.
 
 ## Deferred items
 
-Five items in catlin are computed by nothing, by decision — a fabricator's or a supplier's
-sealed design governs. `engineering/deferred.py` declares each kind's designer of record,
+Seven items in catlin are computed by nothing, by decision — a fabricator's or a supplier's
+sealed design governs: the two trussed roofs, all three roofs' uplift path, and the two
+foundation wall tops carrying the balcony's fixed-base columns. `engineering/deferred.py` declares each kind's designer of record,
 what they must produce, and which permit-set line it unblocks, and `03-open-items.md` is
 generated straight off that table. They are exactly as blocking as they were before they had
 names; what changed is that the outstanding work is now an assignment rather than an absence.
+
+**A deferral is not the only alternative to a calculation.** Where a manufacturer publishes
+a span table, reading a row is a *prescriptive* act and belongs in neither lane: the element
+authors a `PublishedSpan` and `checks/structural/published.py` grades it. Three items left
+the register that way on 2026-09-11 — a garage-door header, an I-joist roof and three
+glulam deck beams — without anybody stamping anything. Before declaring a new `Deferral`,
+check that the member's own supplier has not already answered the question.
 
 ## The PDF
 

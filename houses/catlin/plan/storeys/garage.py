@@ -19,6 +19,7 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    PublishedSpan,
     Railing,
     RailingKind,
     Roof,
@@ -276,9 +277,22 @@ OPENINGS = [
     # test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade.
     # Head follows the threshold down to 7'-0" above the slab. params/foundations.py gaps
     # the stem to a grade beam under this opening so there's no curb for the car to climb.
+    # The header is a PRESCRIPTIVE read, not an engineered beam (since 2026-09-11). The
+    # supplier's own header table answers a 16' rough opening under this roof load, and a
+    # reviewer opens the document and closes the question — see notes/garage_door_header.md.
+    # The row is read for a bearing eave wall and this is a gable end, which carries less;
+    # the condition names it, because a conservative read is still a read of a row that
+    # assumes something else.
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-N",
          type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-NE", OVERHEAD_DOOR_OFFSET),
-         sill_height=ft(-1, -10), header_spec='2-ply 14" LVL'),
+         sill_height=ft(-1, -10), header_spec='2-ply 14" LVL',
+         published_span=PublishedSpan(
+             source="Weyerhaeuser TJ-9000 Trus Joist Beam, Header and Column Specifier's Guide (Nov 2013) p.9, \"Headers Supporting Roof\"",
+             table="snow 115%, 40 psf live + 15 psf dead, 24' house width, 16'-3\" rough opening: 3-1/2\" x 14\" Microllam LVL, two trimmers each end",
+             member='2-ply 14" LVL',
+             span=ft(16, 3),
+             load_psf=55.0,
+             condition="the row is for a BEARING EAVE wall and W-G-N is a GABLE END, so the real tributary is smaller; Ps 35 psf is read at the table's 40 psf column; three jacks each end are framed against the row's two trimmers; deflection L/240 live and L/180 total; the jamb pack and the door operator's own loads are not in the row")),
     # **This door reaches up to the breezeway, not down to the slab.** The deck is the
     # landing outside this door (code.R311_3_exterior_landing, and the house rule that both
     # breezeway doors open onto it at one level), so the threshold has to stay at 0'-0"

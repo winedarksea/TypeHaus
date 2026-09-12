@@ -48,8 +48,9 @@ MN_2020 = JurisdictionProfile(
         "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
         "target. "
         "Attic: R807.1 access and R806.2 ventilation net free area. "
-        "Structural: frost depth and I-joist span tables only — no engineered analysis, no "
-        "lateral system, no connection design. "
+        "Structural: frost depth, the IRC span tables, and manufacturers' published span "
+        "tables where an element authors the row it was read at — no engineered analysis, "
+        "no lateral system, no connection design. "
         "Plumbing: rough-in geometry and MN ch. 4714 sizing tables (sleeving, drain slope, "
         "wall occupancy, under-slab and footing clearance, sewer invert, DFU/WSFU sizing, "
         "trap-arm length) — no gas, no fixture venting beyond trap arms, no testing. "
@@ -375,9 +376,16 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Retaining walls outside the prescriptive path",
                        ("structural.foundation_unbalanced_fill",),
                        ("IRC R404.1.1", "IRC R404.4")),
-        PermitItemSpec("Engineered headers over wide openings",
+        # BLOCKING since 2026-09-11. The item was non-blocking on the standing rule that a
+        # kind with no registered calculation reports UNKNOWN and cannot gate. It no longer
+        # has that excuse: a wide opening's header is answered by the beam supplier's own
+        # published table, and `structural.header_prescriptive` grades an authored
+        # `Door.published_span` against the model. A house that authors neither the beam nor
+        # the row still gets UNKNOWN — which now correctly stops the permit set, because the
+        # missing thing is authoring, not somebody else's seal.
+        PermitItemSpec("Headers over wide openings (published table)",
                        ("structural.header_prescriptive",),
-                       ("IRC R602.7",), blocking=False),
+                       ("IRC R602.7", "manufacturer's published header table")),
         PermitItemSpec("Deck and porch posts and their footings",
                        ("structural.deck_post_size", "structural.deck_footing_size"),
                        ("IRC R507.3", "IRC R507.4"), blocking=False),
@@ -396,9 +404,12 @@ MN_2020 = JurisdictionProfile(
         #
         # `structural.deck_beam_span` reaches this when a deck beam is a glulam, an LVL or
         # any section outside Table R507.5(1)'s 2x8-2x12 plies.
+        # BLOCKING since 2026-09-11, for the same reason and in the same commit as the
+        # header line above: the supplier publishes a deck-guide row for the glulam IRC
+        # Table R507.5(1) has none for, so this is a table read and not a deferral.
         PermitItemSpec("Deck beams outside the beam span table",
                        ("structural.deck_beam_span",),
-                       ("IRC R507.5",), blocking=False),
+                       ("IRC R507.5", "supplier's published deck beam span table")),
         # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
         # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
         # and a braceless deck at storey height is exactly the thing a reviewer should be

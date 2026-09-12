@@ -22,8 +22,7 @@ from pathlib import Path
 
 import typer
 
-from typehaus.cli._shared import (
-    _print_findings, _resolve_house, app, console, generation_date)
+from typehaus.cli._shared import _print_findings, _resolve_house, app, console, generation_date
 
 
 @app.command()

@@ -19,6 +19,7 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    PublishedSpan,
     Railing,
     RailingKind,
     Roof,
@@ -627,6 +628,20 @@ ROOFS = [
          pitch=Pitch(6, 12),
          bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1", "W-A-W1B"),
          assembly="ROOF", overhang=ft(0), ridge_direction="y",
+         # A PRESCRIPTIVE read, not an engineered design (since 2026-09-11). The joist's own
+         # maker publishes a horizontal clear span for exactly this joist at exactly this
+         # spacing and load, and reading it closes the question — see
+         # notes/roof_rafter_span_read.md. The 19'-3" this house used to quote was an
+         # interpolation to 35 psf that snow.py's own no-interpolation rule forbids; the
+         # honest read of the published table is 18'-4".
+         published_span=PublishedSpan(
+             source="Weyerhaeuser TJ-4000 Trus Joist TJI Joist Specifier's Guide (Jul 2019) p.12, \"Maximum Horizontal Clear Spans\" (roof)",
+             table="11-7/8\" TJI 230 at 24\" o.c., 40 psf snow + 15 psf dead, low slope: 18'-4\"",
+             member="11.875 TJI 230",
+             span=ft(18, 4),
+             spacing=inch(24),
+             load_psf=55.0,
+             condition="the row is a HORIZONTAL clear span and this roof's run is 17'-9 3/4\" against a 19.91' sloped length; UNRESOLVED — the guide's high-end support note is transcribed two contradictory ways in this house and these joists HANG off RB-HOUSE on 38 LSSR2.37Z hangers rather than bearing on it, so ForteWEB owns the last word (notes/roof_rafter_span_read.md section 3); the hangers carry 1,060 lb with web stiffeners against a ~980 lb reaction, re-struck from ridge_beam_detail.md's 600 lb at 4:12; deflection L/240; the eave oversail and the birdsmouth are not in the row"),
          # The barge-board answer for a roof that cannot have a barge board.
          # With zero overhang the formed corner trim is the only piece standing at the rake,
          # and it was ordered in the panels' own white — so the gable read as a knife edge.

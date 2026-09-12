@@ -123,13 +123,13 @@ def test_a_record_carries_the_oracle_of_its_kind(catlin_engineering):
     assert not unoracled, unoracled
 
 
-def test_the_nine_deferred_items_name_a_designer_of_record(catlin_engineering):
+def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
     """The items that exist by accident now exist on purpose.
 
-    ``header/D-G-OVERHEAD``, ``lateral_uplift/RF-*`` and ``rafter/RF-*`` are computed by
-    nothing and must stay that way; what changed is that each says *who* designs it. The
-    summary must not fall back to the generic "no calculation is registered" sentence,
-    which names nobody.
+    ``lateral_uplift/RF-*``, the two trussed roofs' ``rafter/*`` and the two
+    ``column_support`` wall tops are computed by nothing and must stay that way; what
+    changed is that each says *who* designs it. The summary must not fall back to the
+    generic "no calculation is registered" sentence, which names nobody.
     """
     from typehaus.engineering.deferred import DEFERRALS
 
@@ -146,11 +146,17 @@ def test_the_nine_deferred_items_name_a_designer_of_record(catlin_engineering):
     # ON THE COLUMN by `deck_post` and land on concrete nothing in this engine grades —
     # the wall is answered prescriptively by a table with no surcharge column, and
     # `spread_footing` skips a shared wall footing. Named rather than silently absorbed.
+    # Seven since 2026-09-11, down from nine: `header/D-G-OVERHEAD` and `rafter/RF-HOUSE`
+    # both LEFT the deferred lane. Neither was stamped — both turned out to be answered by
+    # a manufacturer's published table (Weyerhaeuser's header schedule, and TJ-4000's
+    # horizontal clear spans for the I-joist), and reading a published row is a prescriptive
+    # act. They are graded by `checks/structural/published.py` against a `PublishedSpan`
+    # authored on the element. The trussed roofs stay: no member exists for a table to
+    # describe.
     assert {r.item_id for r in deferred} == {
         "column_support/W-SG-E1", "column_support/W-SG-W1",
-        "header/D-G-OVERHEAD",
         "lateral_uplift/RF-BW-CANOPY", "lateral_uplift/RF-GARAGE", "lateral_uplift/RF-HOUSE",
-        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE", "rafter/RF-HOUSE"}
+        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id
         assert "no calculation is registered for this kind" not in record.summary
