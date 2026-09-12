@@ -985,21 +985,27 @@ WALLS = [
     # elevation, and every datum lands on a whole modular course (2 2/3" per course, three
     # courses to 8"):
     #
+    #     firebox opening bottom                      24"          course 9
     #     BESTA counter line                          29 3/4"      —
-    #     window sills = firebox opening bottom       32"          course 12
-    #     flame centre                                42 3/16"     —
-    #     opening top (20 3/8" unit)                  52 3/8"      —
-    #     lintel band (rowlock or steel angle)  52 3/8"..56"       course 21
+    #     flame centre                                34 3/16"     —
+    #     opening top (20 3/8" unit)                  44 3/8"      —
+    #     masonry head / lintel bearing               44 5/8"      cut course
+    #     lintel band (BM-M-FIRE-LINTEL, steel)  44 5/8"..48 1/8"  —
     #     mantel shelf underside                      64"          course 24  <- WALL TOP
     #     mantel top (2 1/4", one brick bed)          66 1/4"      —
     #
-    # ** 32" IS NOT A COINCIDENCE. ** It is the east row's own sill line — WIN-M-LIV-E1/-E2
-    # and WIN-M-EAST-MID all sit at 2'-8" (see the row's note in OPENINGS below; the 2'-6"
-    # that comment used to claim was stale) — so one datum serves four openings, and the
-    # BESTA counter dies into the brick 2 1/4" below the firebox sill, the identical 2 1/4"
-    # the three window sills clear it by. Flame at 42 3/16" against a seated eye of ~46-48":
-    # you look slightly DOWN at a fire, which is right. It is a 14" rise on the old unit's
-    # 28" top.
+    # ** 24" WAS 32" FOR ONE DAY AND THE OWNER PUT IT BACK (2026-09-11). ** 32" was the east
+    # row's own sill line — WIN-M-LIV-E1/-E2 and WIN-M-EAST-MID all sit at 2'-8" (see the
+    # row's note in OPENINGS below; the 2'-6" that comment used to claim was stale) — so one
+    # datum served four openings, the BESTA counter died into the brick 2 1/4" below the
+    # firebox sill (the identical 2 1/4" the three window sills clear it by), and the flame
+    # sat at 42 3/16" against a seated eye of ~46-48", a 14" rise on the retired SE unit's
+    # 28" top. ** ALL OF THAT WAS TRUE AND IT LOST ON PREFERENCE. ** The firebox is back at
+    # 24" AFF, so the shared sill line with the east window row is GIVEN UP, the BESTA counter
+    # at 29 3/4" now crosses the opening rather than dying under it, and the flame centre is
+    # 34 3/16" — you look well down at the fire. The argument and the cost both live in
+    # plan/electrical.py's EQ-M-FIREPLACE block; 24" is still 9 whole courses, which is the
+    # one thing the drop did not spend.
     #
     # ** IT STOPS AT THE MANTEL, AND THAT IS THE OWNER'S CALL ABOUT WHAT THE OBJECT IS. ** A
     # breast running to the 9'-0" ceiling would be a chimney breast. One stopping 16" below
@@ -1050,7 +1056,7 @@ WALLS = [
     # ** THE PANEL IS FIVE WALLS AND THE FIREBOX IS A REAL HOLE (2026-09-06). ** W-M-FIRE was
     # ONE Wall, so it resolved to a 4-point rectangle and the 3D showed a solid brick slab
     # with EQ-M-FIREPLACE stuck on its face. Split into the courses a mason actually lays, the
-    # masonry opening — 29 1/2" wide x 20 5/8" high, sill 32" AFF, head 52 5/8" AFF — is the
+    # masonry opening — 29 1/2" wide x 20 5/8" high, sill 24" AFF, head 44 5/8" AFF — is the
     # gap between the four elements, not a subtraction from one.
     #
     # `base_elevation` is absolute and `top` is a HEIGHT off it, so both columns below are
@@ -1058,20 +1064,45 @@ WALLS = [
     #
     #     wall             width    base (abs)   top (abs)   height
     #     W-M-FIRE-STUB    44 1/4"  -13 7/16"      15/16"    14 3/8"
-    #     W-M-FIRE-PLINTH  45 1/2"      15/16"    32 15/16"  32"
-    #     W-M-FIRE-JAMB-S   8"       32 15/16"    53  9/16"  20 5/8"
-    #     W-M-FIRE-JAMB-N   8"       32 15/16"    53  9/16"  20 5/8"
-    #     W-M-FIRE-HEAD    45 1/2"   53  9/16"    64 15/16"  11 3/8"
+    #     W-M-FIRE-PLINTH  45 1/2"      15/16"    24 15/16"  24"
+    #     W-M-FIRE-JAMB-S   8"       24 15/16"    45  9/16"  20 5/8"
+    #     W-M-FIRE-JAMB-N   8"       24 15/16"    45  9/16"  20 5/8"
+    #     W-M-FIRE-HEAD    45 1/2"   45  9/16"    64 15/16"  19 3/8"
     #
-    # The three AFF datums the design is built on are unchanged: sill 32" (course 12, and the
-    # east window row's own sill line), head 52 5/8", mantel underside 64" (course 24).
+    # The three AFF datums the design is built on: sill 24" (course 9), head 44 5/8", mantel
+    # underside 64" (course 24).
     #
-    # ** THE OPENING HEAD IS A CUT COURSE AND THAT IS DELIBERATE. ** 52 5/8" AFF is 19.7
-    # modular courses. Putting it on a course line instead means 21 1/3", which leaves ~1" of
+    # ** THE SILL CAME BACK DOWN TO 24" AFF (2026-09-11, OWNER'S REVERSAL OF THE SAME DAY'S
+    # DECISION). ** This block argued FOR 32" until this revision, and the argument is kept
+    # here rather than deleted because it was not wrong — it was outvoted. It ran: the SE
+    # corner unit sat with its top at 28", a foot under the seated eye, `plans/
+    # pattern_language_review.md` C9 asked for fire AT seated eye level, and 32" AFF bought a
+    # 14" rise onto that old top while landing on course 12 exactly. The owner has looked at
+    # it at 32" and reversed it: at 32" the firebox reads as a picture hung on the wall rather
+    # than a hearth, the 45 1/2" panel is top-heavy with 32" of blank plinth under a 20 5/8"
+    # hole, and the seated sightline the rise was bought for is met from the armchairs at
+    # 5'-2" anyway. 24" AFF is exactly 9 modular courses, so the sill still lands on a bed
+    # joint and no closer is cut below the opening. ** THE DESIGN REASON FOR 32" WAS NEVER
+    # FALSIFIED — IT WAS OVERRULED, AND ON PREFERENCE. ** Nothing in `haus check` grades
+    # either height (see the R1001-R1004 disclaimer above), so this comment is the whole
+    # record of the trade and a future pass must not "restore" 32" on the strength of the
+    # paragraph above without asking.
+    #
+    # ** THE 8" THE PLINTH LOST WENT INTO THE HEAD, NOT INTO THE PANEL. ** W-M-FIRE-HEAD grows
+    # 11 3/8" -> 19 3/8" so the panel's top stays at 64 15/16" absolute. That is what keeps
+    # FURN-M-FIRE-MANTEL on the brick, keeps the hand-measured 0" gaps against the two BESTA
+    # banks true (plan/placeables.py), and keeps the brick quantity flat — the opening moved,
+    # the panel did not.
+    #
+    # ** THE OPENING HEAD IS A CUT COURSE AND THAT IS DELIBERATE. ** 44 5/8" AFF is 16.7
+    # modular courses. Putting it on a course line instead means 18 2/3", which leaves ~1" of
     # daylight over a TRIMLESS unit that has no flange to hide it. The 1/4" of tolerance all
-    # round the appliance's 20 3/8" rough opening is worth more than the whole course. The
-    # head is closed by a STEEL ANGLE LINTEL, not a rowlock — 29 1/2" of brick over an
-    # opening this wide is not a rowlock's job — and it is named on the drawing.
+    # round the appliance's 20 3/8" rough opening is worth more than the whole course. (It was
+    # 19.7 courses at the 32" sill and it is 16.7 at the 24" one: the opening HEIGHT never
+    # moved, so the cut course survives the drop unchanged.) The head is closed by a STEEL
+    # ANGLE LINTEL, not a rowlock — 29 1/2" of brick over an opening this wide is not a
+    # rowlock's job — and since 2026-09-11 it is a modelled element, BM-M-FIRE-LINTEL below,
+    # rather than a drawing note.
     #
     # ** THE STUB IS 1 1/4" NARROWER THAN THE PANEL. ** 44 1/4" against 45 1/2", so the plinth
     # corbels 5/8" over it at each end AT THE FLOOR LINE, buried under the lvp and invisible.
@@ -1081,19 +1112,19 @@ WALLS = [
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="4MHYR1HBC8", tag="W-M-FIRE-PLINTH", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(0.9375), top=inch(32),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(0.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="BVEVY6KVW8", tag="W-M-FIRE-JAMB-S", start_node="N-M-FIRE-JS-S",
          end_node="N-M-FIRE-JS-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(32.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(20.625),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="R8VJRRE4M6", tag="W-M-FIRE-JAMB-N", start_node="N-M-FIRE-JN-S",
          end_node="N-M-FIRE-JN-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(32.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(20.625),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="Z5314GVSNX", tag="W-M-FIRE-HEAD", start_node="N-M-FIRE-HD-S",
          end_node="N-M-FIRE-HD-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(53.5625), top=inch(11.375),
+         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(45.5625), top=inch(19.375),
          structural_role=StructuralRole.NONBEARING),
 ]
 
@@ -2035,6 +2066,41 @@ BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
          assembly="BEAM_LVL", top_elevation=ft(10)),
+    # W-M-FIRE-*'s lintel, MODELLED SINCE 2026-09-11 — it was prose in three files and an
+    # element in none, so nothing carried it into the BOM, the section or the 3D.
+    #
+    # ** WHY A BEAM AND NOT A MASONRY FIELD. ** There is no lintel element type in this
+    # engine and FIREPLACE_BRICK_WYTHE carries no MasonrySpec, so the choice was a Beam or a
+    # priced allowance. A Beam is the honest one: it has two ends, a section, a span and a
+    # place in space, which is everything a lintel is. `size` is a free string, so "3.5x3.5"
+    # is the ANGLE'S BOUNDING BOX — `resolve/framing/profiles.cross_section` parses that and
+    # only that (a "L3-1/2x3-1/2x1/4" or a trailing " STEEL" both fall through to the 1.5x5.5
+    # rectangle silently, which is the trap here). The piece is an L3-1/2 x 3-1/2 x 1/4 A36
+    # hot-dip galvanised angle; the drawn solid is therefore ~2.7x the steel actually there,
+    # and the takeoff will bill it as a 3 1/2" square stick. ** THAT OVER-BILL IS KNOWN AND
+    # IS THE PRICE OF MODELLING IT AT ALL ** — see plans/TODO.md.
+    #
+    # ** SPAN AND BEARING. ** N-M-FIRE-JS-S to N-M-FIRE-JN-N is the whole 45 1/2" panel, so
+    # the angle runs end to end with 8" of bearing on each jamb pier — the piers ARE the
+    # bearing and a shorter stick would have to invent nodes inside them. Clear span is the
+    # 29 1/2" masonry opening. A 1/4" angle over 29 1/2" carrying 19 3/8" of spandrel brick
+    # (~35 psf x 1.6 sf = ~56 lb) is not a calculation anybody needs; it is the minimum stock
+    # piece, chosen for stiffness and for the 4" nominal leg the trade lays brick on.
+    #
+    # ** ELEVATION. ** `top_elevation` 49 1/16" absolute puts the horizontal leg's underside
+    # on the jamb tops at 45 9/16" — the opening head — with the 3 1/2" vertical leg rising
+    # inside W-M-FIRE-HEAD's bed joints, which is where a veneer lintel's leg lives. The
+    # angle and the spandrel brick therefore share air in the model. That is correct about
+    # the building and unavoidable in the schema: a lintel is by definition inside masonry,
+    # and nothing in `haus check` grades a Beam against a Wall solid anyway.
+    #
+    # GALVANISED to match the house rebar convention (see notes/, catlin rebar is HDG
+    # house-wide); this piece is dry and interior, so the galvanising is consistency, not
+    # exposure.
+    Beam(uid="YCCXRC0ZP3", tag="BM-M-FIRE-LINTEL", start_node="N-M-FIRE-JS-S", end_node="N-M-FIRE-JN-N",
+         size="3.5x3.5", bearing_refs=("W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N"),
+         top_elevation=inch(49.0625),
+         engineering_note="L3-1/2x3-1/2x1/4 A36 hot-dip galvanised steel angle lintel over the 29 1/2 in firebox opening, 8 in bearing each end on the brick jamb piers. Minimum stock section, not a designed one: the spandrel it carries is ~56 lb. size is the angle's bounding box, so the modelled solid and its BOM row are both larger than the steel."),
 ]
 
 # The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall

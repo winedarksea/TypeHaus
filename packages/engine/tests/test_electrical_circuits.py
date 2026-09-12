@@ -689,13 +689,23 @@ def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
     # movable placeables (an Alarm has no position at all — it draws at the room seed), so
     # they are never canvas objects. They are still consumers — R314.4 puts them on a branch
     # circuit and the schedule has to say which — so they zoom through their room instead.
+    #
+    # A LINE-VOLTAGE ``LightRun`` is the second exception, for the same shape of reason. A
+    # run has a path rather than a position and is deliberately out of the placeable
+    # pipeline (``model/mep.py``: no ``_TYPE_COLLECTIONS`` entry, no canvas allowlist entry,
+    # exactly as ``ConduitRun`` is), so it is never a canvas object either. A 120V run does
+    # carry a branch circuit — only a 24V run feeds from a PSU instead — so the schedule
+    # names it, and it zooms through the lighting reader's own run list.
     payload = model_to_dict(catlin_model)
     alarms = {item["tag"]: item for item in payload["alarms"]}
     rooms = {item["tag"] for item in payload["rooms"]}
+    light_runs = {item["tag"] for item in payload["electrical"]["lighting"]["runs"]["runs"]}
     for row in payload["electrical"]["panel_schedule"]:
         for tag in row["devices"]:
             if tag in alarms:
                 assert alarms[tag]["room"] in rooms, tag
+                continue
+            if tag in light_runs:
                 continue
             assert tag in objects, tag
 

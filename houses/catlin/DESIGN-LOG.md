@@ -21,6 +21,81 @@ Sections match `CLAUDE.md`'s one for one.
 
 ## Shell: framing module and envelope
 
+### Three requirements left the engineering register without anybody stamping them (2026-09-11)
+
+`haus engineering` listed a garage-door header, the house roof's I-joist rafters and the
+three balcony glulams as ENGINEERED. All three were there on the same reasoning: the IRC's
+table stops, so an engineer owns it. That reasoning has a hole in it. The IRC is not the
+only body that publishes a table, and for all three the member's own maker publishes one —
+Weyerhaeuser's header schedule, TJ-4000's horizontal clear spans, Anthony/Canfor's deck
+guide. Reading a published row is a document a reviewer opens, which is the same act as
+reading IRC Table R602.7(1) and nothing a professional seal adds to. The PBR cladding had
+already set the precedent: it stays out of the register on the strength of three published
+wall span tables.
+
+So the read moved into the model. `PublishedSpan` carries the source, the row in the
+table's own words, the member it is for, the span, and the conditions the row assumes that
+this engine does not check — printed on the finding, because a prescriptive PASS whose
+conditions nobody stated is a claim rather than a read. Four of its fields are drift
+guards: retype the member, change the spacing, grow the carried span, or push the check's
+own demand past the row's load basis, and the finding goes UNKNOWN naming the mismatch
+instead of printing a PASS off a quotation that has stopped describing the building.
+
+Two house errors came out in the wash and are corrected rather than carried. The **19'-3"**
+rafter allowable quoted in five places was an interpolation to this site's 35 psf between
+two published rows — exactly the move `snow.py` refuses for its own table, with the comment
+that interpolating between rows is not a lookup but a design. The honest read is **18'-4"**,
+and the roof passes by 6-1/4" instead of by an imagined 17-1/4". And the rafter check had
+been comparing the **sloped** length against a table indexed by the **horizontal** run,
+which at 6:12 is 11.8% pessimistic and gets worse as the pitch steepens.
+
+One thing deliberately did not go away. The deck guide's values are dry-use and every
+balcony beam stands in weather, so the NDS wet-service arithmetic still runs beside the
+published row as an advisory — `engineering/glulam_beam.py` is now a pure module with no
+registered kind. And one thing is left open rather than smoothed: TJ-4000's high-end support
+note is transcribed two contradictory ways in this house, and since these joists hang off
+the ridge rather than bearing on it, ForteWEB owns the last word either way. It is written
+on the element's own `condition` string.
+
+The register went 41 items to 36, unfinished 9 to 7. Both permit lines flipped to
+BLOCKING in the same commit, so the staged count did not move — which is why
+`MAX_NON_BLOCKING_ITEMS` carries a note saying so.
+
+
+### Board & batten: the product got a name, and the item got a seal (2026-09-11)
+
+The north and south elevations were clad in "24 ga board & batten, 20" net coverage" —
+a description, not a product. Its 58 psf allowable was borrowed from a Metal Sales table for
+a panel nobody had chosen, its open-girt permission rested on a Western States sentence, and
+the limit state that actually governs a concealed panel, withdrawal of the hidden leg's
+screws, was recorded as published by nobody. Twenty `wall_panel/*` engineering items sat
+INCOMPLETE, and they were the only thing in the register that could never be closed by
+work — they were waiting on a document.
+
+Two moves closed it. **The product is now Metal Sales BB75-1111**, 11" coverage, whose own
+install guide says the panel is designed for open framing over "Lumber – 1x or thicker" —
+which is exactly this wall's 1-1/2" KDAT girt — so the substrate is on-label in the maker's
+words and the 58 psf is that product's own number. And **the withdrawal allowable is now
+computed** from NDS 2018 §12.2 rather than waited for: `W = 2850 G² D` at the girt's own
+G of 0.55, adjusted by C_D 1.6 and C_M 0.7, over the thread penetration left after the
+flange and the tapered tip. That is a rational design, and IAPMO UES ER-309 states in as
+many words that a design professional may do exactly this. The equation reproduces
+ER-309's own published DFL row to within a pound, which is the check that it is being
+applied correctly to the row that is not published.
+
+Three things followed. The screw went **1-1/2" → 2"**: not for capacity, which all three
+lengths have, but because Metal Sales asks for 1/2" past the inside face of the support and
+in a 1-1/2" girt nothing shorter can give it. That was a written-variance item and it is now
+closed. The twenty items became **one group item**, `wall_panel/W-A-N1` — one panel, one
+girt spacing, one demand is one design, and twenty identical sheets were twenty chances for
+a reviewer to stamp nineteen. And the panel count roughly doubled, because 11" is real
+coverage where 20" was not, so the labour rate moved to the top of its researched band.
+
+The register went from 60 items with 29 unfinished to 41 with 9. Nothing about the wall
+moved; what moved is that a reviewer now has two graded limit states to confirm instead of
+an absence to be told about.
+
+
 - The current CATLIN TRUSS WALL is the third wall stack. It replaced the Swinburne
   truss — a chiral block + plywood tab + KDAT outrigger *on edge* at 16" o.c. — which had
   in turn replaced a sheet WRB + 2" polyiso + 2" EPS + 1/2" furring on 537 eight-inch screws.
@@ -337,6 +412,55 @@ blank stretch was originally measured north of) was retired with them.
 
 **2026-09-06:** the pier between `WIN-M-LIV-E1` and `WIN-M-LIV-E2` became the fireplace — an
 eight-unit BESTA relayout (three south, five north of it) with the seating turned onto it.
+
+**2026-09-11, the sill went up and came back down the same day.** The morning's decision
+raised the firebox sill 24" → 32" AFF; the owner looked at it and reversed it by evening.
+The 32" case was sound and is worth keeping on the record, because it will be made again:
+`plans/pattern_language_review.md` C9 wanted fire at seated eye level, the retired SE-corner
+unit's top sat at 28" (a foot under it, and unraisable there — `WIN-M-LIV-E1`'s rough
+opening was directly over it), 32" bought a 14" rise onto that old top, it landed on course
+12 exactly, and it put the firebox sill on the east window row's own 2'-8" line so one datum
+served four openings. What beat it was not an error in any of that. At 32" the opening reads
+as a picture hung on a wall rather than as a hearth; 32" of blank plinth under a 20 5/8" hole
+makes the 45 1/2" panel top-heavy; and the seated sightline the rise was bought for is met
+from the armchairs at 5'-2" regardless. **A preference overruled a design argument.** The
+reversal costs the shared sill line with `WIN-M-LIV-E1`/`-E2` and drops the flame centre from
+42 3/16" to 34 3/16" AFF, ~12" below a seated eye instead of ~5".
+
+Two things held it flat. The 8" the plinth lost went into `W-M-FIRE-HEAD` (11 3/8" → 19 3/8"),
+not into the panel, so the top stayed at 64 15/16" absolute — mantel still on the brick, the
+hand-measured 0" BESTA gaps still true, brick still 20.4 SF. And the opening HEIGHT never
+moved, so the head stayed a cut course (19.7 modular courses at the old sill, 16.7 at the
+new) and the 24" sill is 9 courses exactly, as 32" was 12.
+
+**The lintel stopped being prose.** It had been named in `plan/storeys/main.py`,
+`plan/electrical.py` and `houses/catlin/CLAUDE.md` and modelled in none of them. There is no
+lintel element type in the engine and `FIREPLACE_BRICK_WYTHE` carries no `MasonrySpec`, so
+the schema choice was a `Beam` or a priced allowance. The `Beam` went in — `BM-M-FIRE-LINTEL`,
+`N-M-FIRE-JS-S`→`N-M-FIRE-JN-N` so the two jamb piers' existing `open_end` nodes give it 8"
+of bearing each end with nothing invented. Two things about it are compromises rather than
+facts: `size="3.5x3.5"` is the L3-1/2 x 3-1/2 x 1/4 angle's BOUNDING BOX, because
+`resolve/framing/profiles.cross_section` parses that spelling and silently falls to a 1.5x5.5
+rectangle for `"L3-1/2x3-1/2x1/4"` or anything with a trailing word; and a `Beam` bills
+through its `assembly` as a cubic-yard `beam · <assembly>` row, which is the wrong shape for
+an angle, so this one carries no assembly, bills $0, and wants an `[allowances]` lump instead.
+The real steel is named in `engineering_note` (a `Beam` has no `source` field).
+
+**The `Mount.elevation` datum was settled by reading the resolver, not the comments.**
+`plan/placeables.py`'s mantel note says the datum is the framing floor and `plan/electrical.py`
+described `EQ-M-FIREPLACE`'s `inch(32)` as 32" AFF; both could not be right.
+`resolve/placeables.py::_floor_elevation` returns `room_finished_floor_elevation(...)` and
+`resolved_mount_elevation` adds the mount to it — **the FINISHED floor** — with the structural
+plane kept only for what a ceiling mount hangs from. The resolved model agreed: the fireplace
+came out at 32 15/16" absolute for an authored 32". So the equipment was right and the mantel
+comment is stale, and the mantel, authored `inch(64.9375)` on the old reading, resolves to
+65 7/8" absolute and **would float 15/16" off the brick it is supposed to cap, at 0 FAIL**.
+Fixed the same day in a separate pass, since `plan/placeables.py` was not this change's to
+edit: it authors `inch(64)` now, and the resolved model puts the mantel base and
+`W-M-FIRE-HEAD`'s top at the same 1.6494125 m. The lesson worth keeping is that the bug was
+INVISIBLE to every gate — a placeable is graded against clearance zones and doors, never
+against the wall it is mounted on, so a stale datum comment is the only thing that was ever
+wrong and the only thing that could have caught it.
 
 Before the fireplace was a real modelled void, `SB-M-FIRE-MANTEL` was a `ResolvedShelfBank`
 with no position, and no emitter reads `model.shelf_banks` — so it was a cut list and

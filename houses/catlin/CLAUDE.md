@@ -256,8 +256,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - On `W-S-SS2` the channel must stay on the NORTH face: the south face carries ST-S2A's
     stringer ledger/handrail and a void boundary `attic.py` defines off it; moving it south
     leaves 35-1/2" against R311.7.1's 36".
-- Cladding split by orientation: `board-batten-24` (1,678.3 SF, 24 ga concealed-fastener
-  PVDF, 20" net coverage) on the 20 east-west-facing walls; `pbr-panel-26` (1,416.6 SF) on
+- Cladding split by orientation: `board-batten-24` (1,678.3 SF, Metal Sales BB75-1111,
+  24 ga concealed-fastener PVDF, 11" net coverage) on the 20 east-west-facing walls; `pbr-panel-26` (1,416.6 SF) on
   the rest — a per-wall `Wall.layer_materials` override, not a sibling assembly (→
   DESIGN-LOG.md, "Shell: framing module and envelope").
   - Thickness stays 1-1/4" — LOAD BEARING for the same four consumers listed above
@@ -274,16 +274,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Four wall corners now bill: `TrimKind.WALL_CORNER` + `Flashing.vertical`, 89.5 LF,
     derived off `_WALL_OUTBOARD_IN`. Without `vertical`, a 22'-4" corner bills as 1-1/4" of
     metal (`_EdgeRun.path` is a plan polyline).
-  - ENGINEERED, not prescriptive (decision #65): `wall_panel/<wall tag>` x 20 is INCOMPLETE
-    even though bending passes (d/c 0.31, 58 psf allowable at 24" girts) — screw-withdrawal
-    capacity is published by nobody, oracled by `notes/board_batten_girt_span.md`. PBR stays
-    prescriptive (ASC PS230/Metal Panels Inc./Homewood span tables, 144-168 psf at 3'-0").
+  - The panel is **Metal Sales BB75-1111**, 11" coverage, 24 ga (named 2026-09-11; the tag
+    `board-batten-24` reads as the GAUGE and does not change). 11" is the real coverage —
+    3.3x PBR's panel count, which is why `prices.toml` labour sits at the top of its band.
+  - ENGINEERED, not prescriptive (decision #65), and **one group item covering all twenty
+    walls**: `wall_panel/W-A-N1`, keyed by the lowest member tag. Bending d/c **0.31**
+    (58 psf published at 24" girts) governs; screw withdrawal d/c **0.12** is COMPUTED per
+    NDS 2018 §12.2, because the maker's table excludes fasteners by name. Status OK.
+    Oracled by `notes/board_batten_girt_span.md`. `--item wall_panel/W-M-S1` resolves to the
+    group. PBR stays prescriptive (ASC PS230/Metal Panels Inc./Homewood span tables,
+    144-168 psf at 3'-0").
   - ESR-4729 DOES NOT COVER THIS WALL — Western States' ROOF-panel report, 24 ga min over
     16 ga steel. Do not reintroduce it. Of eight surveyed, only Western States and Metal
-    Sales permit open girts, and only Metal Sales is verified — substituting another forces
-    a second girt course or a continuous deck. Cladding screw is 1-1/2", stainless or ASTM
-    A153 Class D HDG, never the 1" plated pancake screw a panel ships with — must take the
-    full girt thickness; Metal Sales' "1/2" past inside face" clause needs a variance (open).
+    Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
+    read in full) — substituting another forces a second girt course or a continuous deck.
+  - Cladding screw is **2"**, wood-point (Type 17), stainless or ASTM A153 Class D HDG. The
+    length is the calculation: Metal Sales' "1/2" past the inside face" clause cannot be met
+    by anything shorter in a 1-1/2" girt, so **that variance item is closed**. A drill point
+    would ream its own thread out of the nailer. PBR's face screw stays 1-1/2".
   - Revert = delete the twenty `layer_materials=` overrides; `pbr-panel-26` and its
     `prices.toml` row stay live on the other elevations.
 - Every exterior corner is construction-correct, 4-stud. Layout grid is struck from the
@@ -644,30 +652,59 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `out/render/elev_east.png` before touching this row.**
   The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" white-facebrick surround
   centred y=8'-8", walnut mantel at 5'-4". No window moved for it — the pier centre is a bay
-  centre on `W-M-E1`'s grid, and the 2'-8" sill is also the firebox opening's bottom (one
-  datum, four openings). `notes/east_breast_bearing.md` carries the bearing/floor opening —
-  **`haus check` grades neither**.
+  centre on `W-M-E1`'s grid. **The firebox sill NO LONGER shares the east row's 2'-8" line**
+  (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
+  **24" AFF**, so the one-datum-four-openings argument is retired and the fire does not
+  column with `WIN-M-LIV-E1`/`-E2`. That is a preference call overruling a design argument,
+  not a correction of one — the record and the cost are in `plan/electrical.py`'s
+  `EQ-M-FIREPLACE` block and `plan/storeys/main.py`'s `W-M-FIRE-*` block; do not restore 32"
+  without asking. `notes/east_breast_bearing.md` carries the bearing/floor opening —
+  **`haus check` grades none of this** (`mn_residential/profile.py` disclaims R1001-R1004).
   - The firebox is **five walls, not one**: `W-M-FIRE-STUB`/`-PLINTH`/`-JAMB-S`/`-JAMB-N`/
     `-HEAD`, all `FIREPLACE_BRICK_WYTHE`, NONBEARING, stacked on x=35'-1 11/16" with **its
     own `open_end` node pair each** (a shared node collapses every junction polygon it
-    touches). Masonry opening **29 1/2" x 20 5/8"** (sill 32" AFF, head 52 5/8" AFF) is the
+    touches). Masonry opening **29 1/2" x 20 5/8"** (sill 24" AFF, head 44 5/8" AFF) is the
     gap between elements, not a subtraction from one; elevations off the +15/16" finished
-    floor: STUB -13 7/16"→+15/16", PLINTH →32 15/16", jamb piers →53 9/16", HEAD →64 15/16".
-    Zero cut closers on the visible 45 1/2" opening; head is a deliberate CUT COURSE at 19.7
-    courses (a course line gives 21 1/3", ~1" of daylight) — steel angle lintel, not a
-    rowlock. Brick quantity is 24.8→20.4 SF and the $/SF rate deliberately does not drop — a
-    mason bills the panel on a job this small; re-rating down would deduct twice.
+    floor: STUB -13 7/16"→+15/16", PLINTH →24 15/16", jamb piers →45 9/16", HEAD →64 15/16".
+    **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` is
+    19 3/8" tall, not 11 3/8", so the panel top holds at 64 15/16" absolute, the mantel stays
+    on the brick, the hand-measured 0" BESTA gaps stay true and brick stays 20.4 SF. Sill is
+    9 modular courses exactly; zero cut closers on the visible 45 1/2" opening; head is a
+    deliberate CUT COURSE at 16.7 courses (a course line gives 18 2/3", ~1" of daylight) —
+    steel angle lintel, not a rowlock. The $/SF rate deliberately does not drop — a mason
+    bills the panel on a job this small; re-rating down would deduct twice.
+  - **The lintel is `BM-M-FIRE-LINTEL`, a `Beam`, since 2026-09-11** — it was prose in three
+    files and an element in none. There is no lintel type in the engine and
+    `FIREPLACE_BRICK_WYTHE` carries no `MasonrySpec`, so a `Beam` (free-string `size`, two
+    ends, a span) is the closest honest schema. It runs `N-M-FIRE-JS-S`→`N-M-FIRE-JN-N`, the
+    whole 45 1/2" panel, so 8" of bearing lands on each jamb pier and no node had to be
+    invented; `top_elevation=inch(49.0625)` puts the horizontal leg on the jamb tops at
+    45 9/16" with the vertical leg in `W-M-FIRE-HEAD`'s bed joints. Piece is an
+    **L3-1/2 x 3-1/2 x 1/4 A36 HDG angle**, named in `engineering_note` (a `Beam` has no
+    `source` field). **`size="3.5x3.5"` is the angle's BOUNDING BOX and it is the trap here**:
+    `cross_section` parses that and only that — `"L3-1/2x3-1/2x1/4"` or a trailing `" STEEL"`
+    both fall silently to the 1.5x5.5 rectangle. The drawn solid is ~2.7x the steel. It bills
+    at **$0**: a `Beam` reaches the estimate through its `assembly` as a `beam · <assembly>`
+    cubic-yard row, this one has none, and a volume rate is the wrong shape for an angle
+    anyway — the dollars want an `[allowances]` lump.
   - `FO-M-FIRE` is **47 3/4", not 4'-1"** (44 1/4" stub + 1/2" mason's clearance + one
     trimmer ply each side). Deliberately not 48.0" — `header_size` branches on `w_ft <= 4.0`
     and a span arriving as `4.0000000000000009` after a metre round trip would take the
     wrong branch silently. (`haus check` grades floor-opening headers at EIGHT feet, gated
     on a sawn-joist profile, so this I-joist opening draws the same header at any span.)
   - The mantel is `FURN-M-FIRE-MANTEL`/`FT-MANTEL-WALNUT-46`, a wall-mounted placeable
-    (`FURN-B-PLAY-TV` idiom), 45 1/2"x11 1/2"x2 1/4", resolving 64"–66 1/4" AFF on
+    (`FURN-B-PLAY-TV` idiom), 45 1/2"x11 1/2"x2 1/4", meant to sit 64"–66 1/4" AFF on
     `W-M-FIRE-HEAD`'s top (`depth` DELETED so `_carcass_depth_m` inherits from the type).
-    **`Mount.elevation` is off `room_floor_elevation` — the SUBFLOOR datum, not finished
-    floor** — hence the authored 64 15/16" for a 64" AFF shelf (64" would bury it 15/16" in
-    the brick at 0 FAIL). `work_surface` is UNSET, not False, to stay out of NEC 210.52(A)'s
+    **`Mount.elevation` IS OFF THE ROOM'S FINISHED FLOOR, and the guide said the opposite
+    until 2026-09-11.** `resolve/placeables.py::_floor_elevation` returns
+    `room_finished_floor_elevation(...)` and `resolved_mount_elevation` adds the mount to it;
+    the subfloor plane it also resolves is only what a CEILING mount hangs from. So the
+    authored `inch(64.9375)`, written for the old subfloor reading, resolves to **65 7/8"
+    absolute — the mantel would float 15/16" OFF the brick, at 0 FAIL**. **Fixed the same day:
+    `plan/placeables.py` now authors `elevation=inch(64)`**, and the comment block there that
+    argued for the subfloor reading is rewritten rather than deleted. `EQ-M-FIREPLACE`
+    was always authored on the correct reading (`inch(24)` = 24" AFF, landing exactly on the
+    plinth top), which is how the two were told apart. `work_surface` is UNSET, not False, to stay out of NEC 210.52(A)'s
     wall-space rule. `[allowances] finish-fireplace-mantel-walnut` is **deleted** (not
     zeroed) and `[placeables] "FT-MANTEL-WALNUT-46"` carries the scope instead — an unpriced
     type is silently dropped from the bill.
@@ -1601,7 +1638,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ## The engineering workflow
 
-Catlin carries ~46 engineered items across ten kinds — the requirements outside the
+Catlin carries ~36 engineered items across nine kinds — the requirements outside the
 prescriptive tables. The workflow lives in the root `CLAUDE.md`; what belongs here is where
 this house keeps its half of it.
 
@@ -1610,6 +1647,7 @@ haus engineering .                          # the register: what governs, and wh
 haus engineering . --item retaining_wall/W-SG-E2       # one item, term by term
 haus engineering . --fingerprint retaining_wall/W-SG-E2  # paste into engineering.toml
 haus calcs .                                # -> out/calcs/, the package a PE marks up
+haus handoff . --zip                        # -> out/handoff/ + .zip, the whole PE bundle
 haus print . --sealed                       # the submittal gate — exits 1 today, correctly
 ```
 
@@ -1621,17 +1659,44 @@ haus print . --sealed                       # the submittal gate — exits 1 tod
 - **No `engineering.toml` exists yet**, so every item reads `unsealed` and the sealed gate
   is shut. That is the true state, not a gap in the setup — the engine reads that file and
   never writes it, and pinning a seal stays a human act.
-- **Seven items are deferred to a designer of record** — all THREE roofs' rafters and uplift
-  path, and the overhead-door header. `out/calcs/03-open-items.md` names who owns each.
+- **`haus handoff` is how it gets sent.** One command writes `out/handoff/`: the calc
+  package and its PDF, only the notes those records cite (9 of the ~50 in `notes/`), the
+  IFC and GLB, a `MANIFEST.json` of sha256s, and `engineering.toml.draft` — the register as
+  a form with every fingerprint filled in and every human field a `<<blank>>`. The loader
+  refuses a register still holding one, so the draft cannot become a seal by being copied.
+  The bundle is **byte-deterministic**; regenerate it and diff the manifest to prove it.
+  `out/handoff-architect/` is the OTHER bundle (`haus print --handoff`, drawings for an
+  architect) and was renamed out of the way on 2026-09-11.
+- **The IFC in that bundle is enriched** and the one from `haus build` is not: section
+  profiles on every member, `Pset_TH_Engineering_<kind>` carrying each record and its
+  fingerprint, and a 55-row bar schedule under the pours, summing to the same 3,650 LF the
+  BOM bills. See `docs/handoff-bundle-format.md`.
+- **A published manufacturer table is a PRESCRIPTIVE read and stays out of the register**
+  (2026-09-11). Three requirements left the engineered lane that way, none of them stamped:
+  `D-G-OVERHEAD`'s header (Weyerhaeuser TJ-9000, `notes/garage_door_header.md`),
+  `RF-HOUSE`'s I-joist rafters (TJ-4000, `notes/roof_rafter_span_read.md` — **§3 is an open
+  item**), and the three balcony glulams (Anthony/Canfor deck guide,
+  `notes/balcony_moment_columns.md` §5, with the NDS wet-service pass beside it as an
+  advisory because the guide is dry-use). Each authors a `PublishedSpan` on the element;
+  `checks/structural/published.py` turns the PASS back into UNKNOWN if the member, the
+  spacing, the carried span or the load basis drifts off the row. **The 19'-3" rafter
+  allowable this house quoted in five places was WRONG** — an interpolation to 35 psf that
+  `snow.py`'s own rule forbids. The published row is **18'-4"**.
+- **Seven items are deferred to a designer of record** — the TWO trussed roofs' rafters, all
+  three roofs' uplift path, and the two wall tops under the balcony's fixed-base columns.
+  `out/calcs/03-open-items.md` names who owns each.
   `RF-BW-CANOPY` joined on 2026-09-10 and its deferral carries a condition the others do not:
   **quote its trusses against the DRIFT case, not the ground snow.** A fabricator reading
   "50 psf ground snow" prices ordinary trusses, and the surcharge off the house gable also
   reaches 3'-10" into the garage roof, so ITS two southernmost trusses are drift trusses too.
   S-001 prints the number; `preferences.toml [structural] roof_beam_snow_psf` is where it lives.
-- **One open engineering question** is real and is on that page, not hidden: the
-  concealed-fastener wall panel's withdrawal allowable over 24" open girts, which no
-  manufacturer publishes (`notes/board_batten_girt_span.md`). **The old second one is
-  closed** — the breezeway piers had no modelled plan area to shoelace, and
+- **The wall-panel question is closed too, as of 2026-09-11.** It was the one open
+  engineering question: the concealed-fastener panel's withdrawal allowable over 24" open
+  girts, which no manufacturer publishes. Naming the product settled the substrate on the
+  maker's own words, and the allowable is now **computed** from NDS 2018 §12.2 — the
+  rational design IAPMO UES ER-309 expressly authorises — rather than waited for. Twenty
+  INCOMPLETE items became one OK group item (`notes/board_batten_girt_span.md` §6).
+  **The other closed one:** the breezeway piers had no modelled plan area to shoelace, and
   `engineering/pier_basis.py::_roof_fields` now gives a roof-on-beams one. Their successors
   publish a real axial ratio against a real tributary (`notes/north_entry_piers.md` §6).
 

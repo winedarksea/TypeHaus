@@ -70,16 +70,40 @@ def test_deleting_the_supply_trunk_orphans_the_manifold(catlin_model):
     assert any("EQ-B-ERV-MAN-SUP" in m for m in orphaned), orphaned
 
 
-def test_a_reversible_casting_is_unknown_and_not_a_failure(catlin_model):
-    """EQ-T-ERV-HOOD-6 is "the same casting with the damper reversed" and declares
-    OUTDOOR_AIR once, so the discharge hood built from it is reached by an EXHAUST run.
-    Nothing is wrong with the building; what is missing is a model that can say a type is
-    directional and a placement reverses it. A FAIL there would report the catalog."""
+def test_the_discharge_hood_declares_the_direction_it_is_placed_in(catlin_model):
+    """The house side of the same question, since 2026-09-11. EQ-S-ERV-HOOD-EA used to
+    borrow EQ-T-ERV-HOOD-6 — one casting, one row, OUTDOOR_AIR stated once — and could only
+    read UNKNOWN. It is EQ-T-ERV-HOOD-6-EXH now: the same casting on a second catalog row at
+    the same rate, declaring EXHAUST_AIR, which is the direction its damper is hung in."""
     hood = [f for f in _findings(catlin_model, "mep.equipment_port_service")
             if f.element_tags == ("EQ-S-ERV-HOOD-EA",)]
     assert len(hood) == 1
-    assert hood[0].result.value == "unknown"
+    assert hood[0].result.value == "pass"
     assert "DU-ERV-EA" in hood[0].message
+
+
+def test_a_reversible_casting_is_unknown_and_not_a_failure(catlin_model):
+    """The UNKNOWN arm, now that no placement in catlin exercises it — so it is forced on a
+    synthetic model rather than deleted with the house edit that closed it.
+
+    Retype the discharge hood back to EQ-T-ERV-HOOD-6, the intake's row, and the check is
+    looking at a reversible casting stated once: the type declares OUTDOOR_AIR and the run
+    that reaches the case carries EXHAUST. Nothing is wrong with that building either — what
+    is missing is a model that can say a type is directional and a placement reverses it, and
+    a FAIL would report the catalog rather than the house. Splitting the row is what this
+    house did about it; a house that has not may still hit this arm."""
+    hood = next(el for el in catlin_model.plan.all_elements()
+                if el.tag == "EQ-S-ERV-HOOD-EA")
+    assert hood.type_ref == "EQ-T-ERV-HOOD-6-EXH"
+    reversed_casting = hood.model_copy(update={"type_ref": "EQ-T-ERV-HOOD-6"})
+    plan = _plan_with(catlin_model.plan, hood.tag, reversed_casting)
+    model = catlin_model.__class__(**{**catlin_model.__dict__, "plan": plan})
+    finding = [f for f in _findings(model, "mep.equipment_port_service")
+               if f.element_tags == ("EQ-S-ERV-HOOD-EA",)]
+    assert len(finding) == 1
+    assert finding[0].result.value == "unknown"
+    assert "DU-ERV-EA" in finding[0].message
+    assert "reversible casting" in finding[0].message
 
 
 # --- integrity.register_duct_ref --------------------------------------------------------

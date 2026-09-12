@@ -74,6 +74,20 @@ EQUIPMENT_TYPES_ERV = (
                   source="As EQ-T-ERV-MANIFOLD-6, ten ports. The level-2 extract manifold is the only one in the house that needs this many: RM-M-MECH gathers both the main storey's wet rooms and the second storey's, because they share one floor cavity.",
                   ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(4))),)),
+    # The same six-port manifold, cast for the EXTRACT side. Identical part, identical
+    # price, one field different: the trunk carries stale air away from the house, so the
+    # port is RETURN_AIR — which is what EQ-T-ERV-MANIFOLD-10 has always declared, this
+    # house's only other extract manifold. Two placements used the supply type and
+    # `mep.equipment_port_service` could only call them UNKNOWN, because a type that states
+    # its direction once cannot describe a placement that reverses it, and a FAIL there
+    # would have reported the catalog rather than the building.
+    EquipmentType(tag="EQ-T-ERV-MANIFOLD-6-EXH",
+                  name="Radial air manifold, 160 mm trunk, 6 x 75 mm ports, extract",
+                  footprint=(inch(24), inch(8)), height=inch(8),
+                  plan_symbol="erv",
+                  source="EQ-T-ERV-MANIFOLD-6's part on the extract side: same 160 mm-collared plenum, same six 75 mm outlets with a balancing damper at each, same 6 in -> 160 mm trunk adapter, same price. It is a separate catalog row only because the trunk's service is the direction, and the direction is what a check reads.",
+                  ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
+                                     position=(ft(0), ft(0), inch(4))),)),
     # The mixing box: where the ERV's fresh leg joins System 1's return. A box and not a tee
     # because of the damper in it — a backdraft damper on the ERV leg is what keeps the
     # return working when the ERV is off, which is the behaviour the owner asked for and is
@@ -101,15 +115,28 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(4))))),
-    # The two exterior hoods. One type, two placements — an intake hood and a discharge hood
-    # are the same casting with the damper reversed, and giving them one type is what keeps
-    # the BOM row honest.
+    # The two exterior hoods, ONE CASTING ON TWO ROWS. An intake hood and a discharge hood
+    # are the same part with the damper reversed; they were one type here for exactly that
+    # reason, and the BOM argument was the wrong way round. A row's honesty is its rate, not
+    # its count: these two rows carry the same $/ea, so one hood on each still orders the
+    # same two castings and the same two flashed 6" penetrations. What the single row cost
+    # was the only fact a check can read — which way the air goes. Stated once as
+    # OUTDOOR_AIR, the discharge hood reached by an EXHAUST run could only be UNKNOWN, and
+    # the UNKNOWN was about this catalog, not about the building. Split the row, keep the
+    # rate, and the model says what the damper says.
     EquipmentType(tag="EQ-T-ERV-HOOD-6",
                   name="Exterior ventilation hood, 6\" round, bird screen + backdraft damper",
                   footprint=(inch(12), inch(12)), height=inch(12),
                   plan_symbol="erv",
                   source="Generic 6\" wall/gable hood with 1/4\" bird screen and a gravity backdraft damper. Screen mesh is deliberately coarse: a fine mesh frosts shut on an intake at -15 F.",
                   ports=(ServicePort(tag="duct", service=Service.OUTDOOR_AIR,
+                                     position=(ft(0), ft(0), inch(6))),)),
+    EquipmentType(tag="EQ-T-ERV-HOOD-6-EXH",
+                  name="Exterior ventilation hood, 6\" round, discharge, bird screen + backdraft damper",
+                  footprint=(inch(12), inch(12)), height=inch(12),
+                  plan_symbol="erv",
+                  source="EQ-T-ERV-HOOD-6 with the damper reversed — the same casting, the same screen, the same price, on the discharge side. The screen stays the coarse 1/4\" mesh: a discharge hood carries humid room air and a fine mesh frosts shut on it as readily as on an intake.",
+                  ports=(ServicePort(tag="duct", service=Service.EXHAUST_AIR,
                                      position=(ft(0), ft(0), inch(6))),)),
 )
 

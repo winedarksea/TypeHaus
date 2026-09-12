@@ -1574,4 +1574,90 @@ GARAGE_LIGHTING = [
                      position=pt(ft(10, 2), ft(43, 10.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
+
+    # --- The garage's exterior linear (2026-09-11): two eave soffits + the gable face -----
+    #
+    # ** THE EAVES ARE EAST AND WEST, AND THAT IS GEOMETRY, NOT A CHOICE. ** RF-GARAGE is a
+    # gable with `ridge_direction="y"`, so the slopes fall east and west over W-G-E / W-G-W
+    # and the two GABLE ENDS are north and south. The north wall — the facade, the one with
+    # the overhead door in it — is a RAKE: 16" of ladder framing with no soffit panel under
+    # it at all (`_GARAGE_EAVE_TRIM` declares one soffit, and `EaveTrim` is eave trim). That
+    # is why there are two recessed runs and one surface-mounted one, and why the third is
+    # not simply "the north eave".
+    #
+    # ** THE CHANNEL SITS ON THE SOFFIT'S SOLID INBOARD STRIP, CLEAR OF THE VENT SLOTS. **
+    # `_GARAGE_EAVE_TRIM` is `soffit_vented=True`: this soffit is the INTAKE end of the
+    # attic's vent channel, and a 2 1/2" extrusion laid across the perforations is a blocked
+    # intake that nothing in `haus check` would ever grade. The soffit's clear width is 12
+    # 5/8" — 16" of overhang less the 7/8" the corrugated panel stands proud and the 2 1/2"
+    # of sub-fascia plus metal fascia at the outer edge — and its inboard ~3" is the solid
+    # strip where the panel is captured in its receiving channel against the wall, which
+    # carries no perforation because the receiver covers it. The luminaire is held tight to
+    # that receiver, aperture down, so its 2 1/2" lands entirely on the solid strip and all
+    # ~10 1/8" of perforated panel — the whole net free vent area — stays open. It also keeps
+    # the channel out of the weather side of the soffit, where wind-driven rain tracks in.
+    #
+    # ** 24'-0" EACH, AND THAT IS THE BUILDING. ** GARAGE_Y_SOUTH..GARAGE_Y_NORTH is exactly
+    # 24'-0" face to face, which is six 4' sections with nothing cut and an end cap landing
+    # on a gable wall line at each end rather than out under the rake.
+    #
+    # x is the channel's centreline: W-G-W's cladding face is 5'-11 1/8" (GARAGE_X_WEST less
+    # the 7/8" panel) and W-G-E's is 30'-0 7/8", and a 2 1/2" channel owes its face half its
+    # width, the same arithmetic ED-G-EXT-LT-E/-W's comment does for a 5" sconce.
+    #
+    # The elevation is stated, not derived: a `LightRun` outside every room has no room
+    # ceiling to hang from, and 8'-0" (storey-relative, so 7'-0" absolute) is the soffit
+    # plane about 4" under W-G-E/W-G-W's 8'-4" plate. It is a mounting height, not a
+    # structural datum — if the raised heel moves, this follows by hand.
+    LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
+             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
+             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # The gable face, over the overhead door. SURFACE mounted because there is nothing to
+    # recess into: no soffit on a rake, and the wall behind is GARAGE_WALL_2X6 under a
+    # corrugated panel. It spans the rough opening exactly — x 10'-0"..26'-0", four 4'
+    # sections — so the two end caps line up with the door jambs.
+    #
+    # ** CLEAR OF EVERYTHING ON THIS ELEVATION, IN THREE DIRECTIONS. ** D-G-OVERHEAD's RO is
+    # 16'-0" at a 4'-0" offset along W-G-N (x 10'..26'), head 7'-0" over the apron = 5'-2"
+    # storey-relative; this run is at 6'-0" storey-relative, 10" above that head and outside
+    # the opening, and an overhead door's panels retract INSIDE the building, so the face
+    # over the head is permanently clear. ED-G-EXT-LT-E/-W stand on the 4'-0" piers at
+    # x=28'-0" and x=8'-0", so each is 2'-0" clear of an end of this run in plan.
+    #
+    # y is the centreline the same way theirs is: W-G-N's cladding face is 67'-3 1/2"
+    # (GARAGE_Y_NORTH + 7/8") and a 2 1/2" channel wants 1 1/4" of it.
+    #
+    # `wet_rated` on the type is doing real work here and only here: the two runs above are
+    # under a soffit, this one is on an open wall with 16" of rake above it, which stops
+    # nothing at this height. `full_cutoff` is likewise a DETAIL — the channel is screwed
+    # through its back web with the aperture aimed down — and `advisory.dark_sky_lighting`
+    # grades this run on it, since a WALL mount gets no shelter exemption the way the two
+    # CEILING-mounted soffit runs do.
+    LightRun(uid="12K1TBK2FC", tag="LR-G-GABLE-N", type_ref="ED-T-LT-LINEAR-EXT",
+             path=(pt(ft(10), ft(67, 4.75)), pt(ft(26), ft(67, 4.75))),
+             circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+    # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging 64 LF of
+    # perimeter linear onto the door pair's switch would force one of two bad habits: either
+    # the two sconces burn all evening because somebody wanted the building lit, or the
+    # building is never lit because nobody wants to leave the sconces on. They are two
+    # LAYERS, not two halves of one thing — ED-G-EXT-LT-E/-W are a "somebody is at the door"
+    # light aimed at the apron, and these three runs are an ambient wash that wants to come
+    # on at dusk and go off by itself. So this is a TIMER switch (the plant room's
+    # ED-T-SWITCH-TIMER, same box as a toggle, control="timer" recording what was bought)
+    # rather than a second plain switch: unattended is the whole point of separating it, and
+    # a perimeter run left on until somebody notices is the dark-sky failure mode.
+    #
+    # Third in the gang at the service door, 6" east of ED-G-SW on the 6" spacing those two
+    # already use (10'-2", 10'-8", 11'-2"), same 80" over the slab = 46" over the landing.
+    # Same circuit as the loads it switches, so no NEC 210.7 two-circuit box.
+    ElectricalDevice(uid="S7ANA4Q300", tag="ED-G-SOFFIT-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(11, 2), ft(43, 10.375)), type_ref="ED-T-SWITCH-TIMER",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80))),
 ]

@@ -50,10 +50,14 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str,
                 "Door" if opening.is_door else "Window", opening.type_ref or "RO",
                 f"{opening.width_m / M_PER_IN:.0f}\" × {opening.height_m / M_PER_IN:.0f}\"",
                 *_energy_columns(spec, opening.is_door)))
-        headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type",
-                                    "Nominal footprint", "U-factor")
-        if want_windows:
-            headers = (*headers, "SHGC", "VT", "Operation", "Tempered")
+        # One header tuple for both kinds. A-601 used to stop at U-factor, on the reading
+        # that SHGC/VT/tempered are window facts; a glazed door is *fenestration* under
+        # R202 and carries all four on ``DoorType``, so the door supplier and the reviewer
+        # read the same columns. ``_add_table`` zips rows against headers, so this arity
+        # and ``_energy_columns``' must agree for every kind — they now do (5 each), which
+        # is also what lets ``kinds="all"`` put doors and windows in one table.
+        headers: tuple[str, ...] = ("Mark", "Tag", "Kind", "Type", "Nominal footprint",
+                                    "U-factor", "SHGC", "VT", "Operation", "Tempered")
         _add_table(fig, rows, headers, bbox=(0.04, 0.11, 0.92, 0.80))
 
 
@@ -67,13 +71,22 @@ def _energy_columns(spec, is_door: bool) -> tuple[str, ...]:
     derives the *locations* from geometry and can never know what was ordered.
 
     ``—`` is a type that states nothing, and it is never filled in: a defaulted SHGC on a
-    permit schedule is a compliance claim nobody made.
+    permit schedule is a compliance claim nobody made. An UNGLAZED door has no SHGC and no
+    VT to state — not a missing number but an absent property — and prints ``—`` for both
+    however the product is spelled.
+
+    **Operation joins the door table.** It is the one column here that is not a performance
+    claim: ``DoorOperation`` is a closed vocabulary that drives the plan symbol and the
+    framing pattern, so what prints is what the model built, and swing / slide / pocket /
+    overhead is the first thing a door supplier reads off a schedule. Its default (SWING)
+    is a product configuration the rest of the set already acts on, not an invented number
+    of the kind the ``—`` rule exists to forbid — the same call A-602 already made.
     """
     u_factor = getattr(spec, "u_factor", None)
     u_text = f"{u_factor.u_us:.2f}" if u_factor is not None else "—"
-    if is_door:
-        return (u_text,)
     shgc, vt = getattr(spec, "shgc", None), getattr(spec, "vt", None)
+    if is_door and not getattr(spec, "glazed", False):
+        shgc = vt = None  # a solid leaf has no glazing to state these of
     operation = getattr(spec, "operation", None)
     return (u_text,
             f"{shgc:.2f}" if shgc is not None else "—",

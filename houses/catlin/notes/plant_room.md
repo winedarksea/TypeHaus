@@ -378,8 +378,59 @@ misted or hosed.
 1. ~~**`D-S-DECK-W`** — keep balcony access through the plant room, or relocate it?~~
    CLOSED 2026-09-03: the door is deleted, `WIN-S-PLANT4` takes its station, and balcony
    access is `D-S-DECK-E` off the study. See Openings.
-2. **Floor drain** — confirm. It implies a drain line, a trap primer (the trap *will* dry),
-   and slope in `FS-SECOND`.
+2. ~~**Floor drain** — confirm.~~ CLOSED 2026-09-11, and the answer is **no drain and no
+   basin**. The stated need was never a sink: it is *watering that runs while the house is
+   empty*. That is an irrigation question, and irrigation takes no fixture.
+   - **The room is served by `FX-S-BALC-HYD`**, already modelled: `PR-M-CW-BALC-HYD` rises
+     inside `W-S-S1` to the seat at 2'-0" over the balcony deck, with
+     `PA-S-BALC-HYD-SEAT` behind it (`plan/mep_supply_devices.py`). Watering is a
+     **hose-connected drip system on a timer** — tubing, emitters and a hose-thread timer,
+     all of it a *purchase* and none of it a plumbing change. Nothing is added to the model
+     because nothing about the plumbing moves.
+   - **No basin, no drain, no vent, and that is the point.** The nearest DWV is a storey
+     down; a basin here would have meant a new drain run and a vent tie-in through
+     `FS-S-WEST`'s trusses for a fixture the need does not want. It would also have put a
+     trap in a room nobody uses in February — the dry-trap problem `TRAP_PRIMER` exists for.
+     Deleting the requirement deletes the drain line, the primer and the slope in
+     `FS-SECOND` that this item used to ask for. **The vinyl's 6" integral flash cove stays**
+     — it is the waterproofing whether or not anything drains, and with no drain it is the
+     *only* thing between a spill and the plywood.
+   - **Backflow is already bought, and irrigation is exactly why it matters.** Tubing lying
+     in wet growing medium is a cross connection in a way a watering can never was.
+     `FX-HYDRANT-SD34` (Woodford Model 19) carries an integral **ASSE 1052 hose connection
+     backflow preventer** — not the ASSE 1011 vacuum breaker on the garage yard hydrant.
+     The distinction is the one a timer raises: an 1011 device may not sit under continuous
+     pressure and a timer holds pressure at the thread between cycles; a 1052 device is
+     built for it. So no `PA-S-BALC-HYD-VB` is authored — `mep.backflow_prevention` reads
+     the flag off the fixture type, and a screw-on accessory would double-bill a part the
+     hydrant's price already includes.
+   - **Keep it hose-connected and portable.** That is what keeps this out of P2902.5.3's
+     permanent lawn-irrigation territory, which would want an atmospheric or pressure
+     vacuum breaker — or an RPZ — on a dedicated, hard-piped irrigation branch. The day any
+     of it is hard-piped, that far heavier assembly is owed.
+   - **Controller: a battery hose-end timer, and nothing is authored for it.** The hydrant's
+     thread is outdoors. `ED-S-PLANT-RC2` is the nearest receptacle at 1'-5 3/4" in plan,
+     but it is on the *far side* of `W-S-S1` — a cord to it would cross the Class I liner
+     and 4" of continuous exterior insulation, which is a hole in the one membrane this
+     room is designed around, punched for a device that does not want one. Hose-end timers
+     are battery units by design. No new `ElectricalDevice`, no new circuit, no price row.
+     (There is no receptacle on the balcony at all; whether NEC 210.52(E)(3) wants one is a
+     question to settle on its own merits, not as a side effect of a hose timer.)
+   - **The residual risk, stated rather than hidden: a leak with nothing to catch it.** No
+     drain means a burst emitter, a split tube or a timer that fails open empties onto the
+     floor until somebody walks in — and the premise of this system is that nobody does.
+     The cove holds a spill inside the room; it does nothing about the hours. **The answer
+     to that residual is a water-leak sensor on the floor, wired to shut the timer off.**
+     The engine has no element kind for a sensor, so it cannot be modelled — the same gap
+     the cavity "canary" RH sensors above run into, and it is already tracked in
+     `plans/TODO.md`.
+   - **What is NOT settled: how the tubing crosses the wall.** The hydrant's escutcheon is
+     outdoors at y=−5" (`PR-S-CW-BALC-HYD-CU`), so the timer and manifold hang on the
+     balcony. That waters balcony planters directly. Reaching the benches *inside*
+     `RM-S-PLANT` means a tubing pass through `W-S-S1` — through the liner, the foam and the
+     rainscreen — and that is a detail, not a run of tubing out a window. It belongs with
+     the sealed, insulated sleeve detail the hydrant barrel itself already owes
+     (`plans/TODO.md`, and Openings above). Do not open the wall for it without that detail.
 3. **KERDI-BOARD's 0.48 perm** and the **Pioneer/Blauberg latent recovery** figures are
    secondary-source or unpublished. Verify with the manufacturers if either becomes
    load-bearing for a decision.

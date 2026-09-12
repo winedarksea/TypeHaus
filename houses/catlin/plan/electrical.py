@@ -466,7 +466,9 @@ EQUIPMENT_TYPES = (
     # trim", combustible facing allowed, no floor clearance and no air slot — so any plan zone
     # authored here would be inventing a requirement the manufacturer does not state. The
     # mantel clearance is held instead by the elevation: SB-M-FIRE-MANTEL's underside at 64"
-    # against the opening top at 52 3/8" is 11 5/8", about 3x the published 4".
+    # against the opening top at 44 3/8" is 19 5/8", about 5x the published 4". (It was
+    # 11 5/8" and about 3x until 2026-09-11, when the owner reversed the sill back to 24" AFF
+    # — see EQ-M-FIREPLACE below. The margin grew; nothing about this paragraph turns on it.)
     #
     # ** FOUR THINGS TO CONFIRM IN WRITING FROM AMANTII BEFORE FRAMING: ** (1) the mantel
     # PROJECTION the 4" is quoted at — unpublished industry-wide; ask specifically whether 4"
@@ -1085,7 +1087,10 @@ MAIN_EQUIPMENT = [
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
     # --- the fire, moved out of the SE corner 2026-09-06 --------------------------------
     #
-    # ** IT WAS TOO LOW, NOTHING FACED IT, AND IT COULD NOT BE RAISED WHERE IT STOOD. ** In the
+    # ** IT WAS TOO LOW, NOTHING FACED IT, AND IT COULD NOT BE RAISED WHERE IT STOOD. **
+    # (READ THE ELEVATION PARAGRAPH BELOW BEFORE THIS ONE: the owner reversed the height half
+    # of this argument on 2026-09-11 and the sill is back at 24" AFF. The MOVE, which is what
+    # this paragraph is really about, stands.) In the
     # SE corner the 7" mount existed precisely to duck under WIN-M-LIV-E1's rough opening,
     # which sits directly over it — so the flame sat a foot below the seated eye and there was
     # no lifting it in place. `plans/pattern_language_review.md` C9/C10 asked for it at seated
@@ -1119,17 +1124,46 @@ MAIN_EQUIPMENT = [
     # `plan/storeys/main.py`'s derivation of 29 1/2" + 8" + 8", whose entire point is that no
     # closer is cut anywhere on this panel. Nothing was ever wrong but the sentence.
     #
-    # The opening's HEAD is a cut course and that one IS unavoidable: 52 5/8" AFF is 19.7
+    # The opening's HEAD is a cut course and that one IS unavoidable: 44 5/8" AFF is 16.7
     # courses of 2 2/3", so the brick is CUT along the head. That is normal for a trimless
     # unit — the brick is being cut to the opening anyway, there being no flange to hide a
     # joint under — and it is why the lintel here is a steel angle rather than a rowlock.
-    # Below the opening the coursing is exact: 32" AFF is 12 courses off the floor line.
+    # Below the opening the coursing is exact: 24" AFF is 9 courses off the floor line.
     #
-    # `elevation` is the BASE of the
-    # opening at 32" — the east row's own sill line, so one datum serves four openings — which
-    # puts the opening top at 52 3/8" and the flame centre at 42 3/16" against a seated eye of
-    # ~46-48". ** That is a 14" RISE on the old unit's 28" top. ** rotation -90 backs it to the
-    # wall and opens it west into the room.
+    # ** THE DATUM, ESTABLISHED RATHER THAN ASSUMED (2026-09-11). ** `Mount.elevation` is
+    # measured from the ROOM'S FINISHED FLOOR, not the subfloor. `resolve/placeables.py`'s
+    # `_floor_elevation` returns `room_finished_floor_elevation(...)` and hands it to
+    # `resolved_mount_elevation` as `floor_m`, which adds the mount to it. RM-M-LIVING's
+    # finished floor is +15/16", so an authored 24" resolves to 24 15/16" absolute — which is
+    # exactly W-M-FIRE-PLINTH's top, the brick sill, to the thousandth. That agreement is the
+    # check on the claim, and the resolved model confirms it: `canvas_objects` carries this
+    # unit at z=0.8366125 m = 32 15/16" absolute at the old authored 32". ** THE COMMENT ON
+    # FURN-M-FIRE-MANTEL IN plan/placeables.py STILL SAYS THE DATUM IS THE FRAMING FLOOR AND
+    # IT IS NOW WRONG ** — that was true when it was written and stopped being true when the
+    # finished-floor plane landed; the mantel, authored 64 15/16" against that reading, now
+    # resolves to 65 7/8" absolute and floats 15/16" OFF the top of W-M-FIRE-HEAD. Reported,
+    # not fixed here: that file is not this change's to edit.
+    #
+    # ** THE SILL IS BACK AT 24" AFF, AND THIS PARAGRAPH USED TO ARGUE THE OPPOSITE. ** It read:
+    # "`elevation` is the BASE of the opening at 32" — the east row's own sill line, so one
+    # datum serves four openings — which puts the opening top at 52 3/8" and the flame centre
+    # at 42 3/16" against a seated eye of ~46-48". That is a 14" RISE on the old unit's 28"
+    # top." Every number in it was right. The owner has seen it built to that height and
+    # REVERSED IT on 2026-09-11: 32" reads as a picture hung on a wall rather than as a
+    # hearth, and 32" of blank plinth under a 20 5/8" hole makes the 45 1/2" panel top-heavy.
+    # What the reversal costs is stated plainly: the opening top drops to 44 3/8" AFF and the
+    # flame centre to 34 3/16", which is ~12" BELOW a seated eye rather than ~5" below it, and
+    # the shared sill line with WIN-M-LIV-E1/-E2 at 32" is given up — the fire no longer
+    # datums with the east window row. ** THAT IS A PREFERENCE DECISION OVERRULING A DESIGN
+    # ARGUMENT, NOT A CORRECTION OF ONE, ** and nothing in `haus check` grades it either way
+    # (`checks/code/mn_residential/profile.py` disclaims IRC R1001-R1004). Do not "restore"
+    # 32" off the strength of the quoted sentences without asking the owner.
+    #
+    # The MOVE out of the SE corner stands on its own and is untouched by the reversal: there
+    # the 7" mount was ducking WIN-M-LIV-E1's rough opening directly above it, so 28" was a
+    # ceiling and not a choice. Here 24" is a choice, and 32" remains available.
+    #
+    # rotation -90 backs it to the wall and opens it west into the room.
     #
     # ** `recessed_into_host_surface=True` IS THE HONEST FLAG AND IT MATTERS. ** The body is
     # let INTO the W-M-FIRE-* brick, not stood in front of it, so its 4 1/2" of depth is a cavity
@@ -1148,7 +1182,7 @@ MAIN_EQUIPMENT = [
               position=pt(ft(35, 1.875), ft(8, 8)), footprint=(inch(29), inch(4.5)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
               circuit="CKT-FIREPLACE",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(32),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(24),
                           recessed_into_host_surface=True)),
 ]
 
@@ -2183,6 +2217,11 @@ NEC_FILL_SECOND = [
                      position=pt(ft(11, 4), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # RC2 is the outlet nearest FX-S-BALC-HYD (1'-5 3/4" in plan) and it is deliberately NOT
+    # the power for the room's drip-irrigation timer: the hydrant's thread is outdoors, so a
+    # cord from here would cross W-S-S1's Class I liner and 4" of continuous exterior foam
+    # for a device that ships as a battery unit. Nothing is authored on the balcony either.
+    # See notes/plant_room.md, open item 2.
     ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(5, 10.25), ft(0, 8.75)), type_ref="ED-T-RECEPTACLE-WR-GFCI",
                      circuit="CKT-RC-SECOND",

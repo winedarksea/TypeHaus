@@ -352,8 +352,26 @@ CIRCUITS = (
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Laundry receptacle (washer)"),
+    # ** THE GARAGE'S EXTERIOR LINEAR LANDED HERE ON 2026-09-11, AND IT IS THE FIRST LOAD ON
+    # THIS CIRCUIT THE PANEL SCHEDULE CANNOT SEE. ** LR-G-EAVE-W/-E (24'-0" each, in the two
+    # eave soffits) and LR-G-GABLE-N (16'-0" over D-G-OVERHEAD) are 64 LF of ED-T-LT-LINEAR-EXT
+    # at 2.5 W/ft = 160 VA, and they are on this circuit rather than CKT-RC-GARAGE for the same
+    # reason ED-G-LT1/2/3 are: a tool tripping a garage GFCI must not take the lights with it.
+    #
+    # `takeoff/electrical._connected_va` sums ElectricalDevices only — a `LightRun` carries a
+    # circuit but no `load_va`, and `connected_lighting_va` skips it too (a 24V run's load is
+    # its PSU's, and the 120V case was never separated out). So the schedule reads 821 VA of
+    # fixtures here where the truth is 821 + 160 = 981 VA: 54% of the 1,800 VA breaker, 68% of
+    # the 1,440 VA an NEC 210.19(A)(1) continuous load may occupy. Headroom, and checked.
+    #
+    # ** DELIBERATELY NOT PAPERED OVER WITH AN AUTHORED `load_va`. ** An authored value
+    # PREEMPTS the derivation outright (takeoff/electrical.py's first line: "derived, never
+    # hand-summed"), so writing 981 here would freeze the other thirty-eight fixtures against
+    # a number nobody re-adds when a can moves. The engine gap is worth a comment and a TODO,
+    # not a hand-sum that rots. Re-do the arithmetic above if this circuit grows.
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            afci=True, description="General lighting — main storey, porch and garage"),
+            afci=True,
+            description="General lighting — main storey, porch and garage (incl. the garage's exterior linear runs)"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each

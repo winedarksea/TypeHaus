@@ -347,10 +347,31 @@ MAIN_SHELVES = [
     # `shelf_count=1` for SB-M-STUDY-BENCH's reason: a ShelfBay counts horizontal boards
     # INCLUDING the case top, and here the mantel IS the top. `clear_height` is the void under
     # it, and the number that matters is the appliance clearance: 64" less the firebox opening
-    # top at 52 3/8" is 11 5/8", against the Amantii BI-30-XTRASLIM's published 4" mantel rule
-    # — about 3x. That margin is why the projection question (the 4" is quoted with NO
-    # projection qualifier anywhere in the industry) is a formality here rather than a risk. It
-    # is still on the list of things to get from Amantii in writing; see EQ-T-FIREPLACE-EL.
+    # top is the whole of it.
+    #
+    # ** 19 5/8", NOT 11 5/8", SINCE 2026-09-11. ** The owner reversed that day's own decision
+    # to raise the firebox and EQ-M-FIREPLACE's sill went 32" AFF -> 24" (plan/electrical.py
+    # carries the reversal and why). The appliance's 20 3/8" rough opening did not change
+    # height, so its top went 52 3/8" -> 44 3/8" AFF and the void under a mantel still at 64"
+    # gained the same 8". The mantel did NOT move — W-M-FIRE-HEAD grew 11 3/8" -> 19 3/8" to
+    # hold the panel's top at 64 15/16" absolute (plan/storeys/main.py) — so this is the only
+    # number in this bank the drop touches, and the board, the stock and the grain are all
+    # unchanged.
+    #
+    # Against the Amantii BI-30-XTRASLIM's published 4" mantel rule that is now about 5x,
+    # where it was about 3x. That margin is why the projection question (the 4" is quoted with
+    # NO projection qualifier anywhere in the industry) is a formality here rather than a
+    # risk. It is still on the list of things to get from Amantii in writing; see
+    # EQ-T-FIREPLACE-EL.
+    #
+    # ** CAVEAT ON "64 AFF", AND IT IS NOT THIS FILE'S TO FIX. ** 19 5/8" is measured to a
+    # mantel underside at 64" AFF, which is the design intent and what every other comment in
+    # the house states. The host placeable is authored `elevation=inch(64.9375)` on the
+    # reading that `Mount.elevation` is measured off the SUBFLOOR; `resolve/placeables.py`
+    # now measures it off the room's FINISHED floor, so FURN-M-FIRE-MANTEL actually resolves
+    # to 65 7/8" absolute — 15/16" high, floating off the brick. Reported against
+    # plan/placeables.py; if that is fixed to `inch(64)` this number stays right, and if it is
+    # not, the built clearance is 20 9/16" rather than 19 5/8" and still far past the 4".
     #
     # ** 12/4 STOCK, NOT THE STUDY'S 8/4, AND `haus millwork` IS WHAT SAID SO. ** Authored on
     # `walnut-shelf-8q` first, the schedule printed that 2 1/4" finished cannot come out of
@@ -378,7 +399,7 @@ MAIN_SHELVES = [
         material_ref="walnut-mantel-12q",
         thickness=inch(2.25),
         profile="S4S",
-        bays=(ShelfBay(width=inch(45.5), clear_height=inch(11.625), shelf_count=1),),
+        bays=(ShelfBay(width=inch(45.5), clear_height=inch(19.625), shelf_count=1),),
     ),
     ShelfBank(
         uid="STDXY9J49R", tag="SB-M-MUD-BENCH",

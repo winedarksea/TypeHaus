@@ -240,16 +240,21 @@ MAIN_PLACEABLES = [
     # space behind the brick, and it projects 6" past the brick face at 34'-11 7/8".
     # `rotation=deg(90)` turns the 45 1/2" onto y, flush with the panel's ends.
     #
-    # ** `elevation` IS THE BASE, AND ITS DATUM IS THE FRAMING FLOOR, NOT THE FINISHED ONE. **
-    # `resolve/placeables.resolved_mount_elevation` adds the mount to
-    # `room_floor_elevation`, which returns the wall's `base_ref_z_m` — the SUBFLOOR datum,
-    # z=0 on this storey. RM-M-LIVING's finished floor is +15/16" (3/4" subfloor + 3/16"
-    # lvp), so an authored 64" would resolve to 63 1/16" AFF and bury the shelf 15/16" into
-    # W-M-FIRE-HEAD. 64 15/16" is the same 64" AFF the whole design is dimensioned in, and it
-    # is the identical mistake the wall `top` made until 2026-09-06 (see plan/storeys/main.py)
-    # — the floor finish is where this design keeps losing 15/16".
-    # The body resolves 64 15/16"..67 3/16" absolute = 64"..66 1/4" AFF, sitting exactly on
-    # W-M-FIRE-HEAD's top — course 24. See plan/furniture_types.py for the shelf itself.
+    # ** `elevation` IS THE BASE, AND ITS DATUM IS THE FINISHED FLOOR (corrected 2026-09-11). **
+    # This block argued the opposite until today, and the shelf paid for it. The old text:
+    # "`resolved_mount_elevation` adds the mount to `room_floor_elevation` — the SUBFLOOR
+    # datum — so an authored 64" would resolve to 63 1/16" AFF and bury the shelf 15/16"
+    # into W-M-FIRE-HEAD", and 64 15/16" was authored to buy that 15/16" back. It is no
+    # longer true. `resolve/placeables._floor_elevation` returns BOTH planes and
+    # `resolve_placeables` passes the FINISHED one as `floor_m`; the structural plane goes
+    # in separately as `structural_floor_m` and is read only by the ceiling a ceiling mount
+    # hangs from. Its docstring says it outright: "an authored mount height and a body's
+    # base stand on the FINISHED floor". So the hand-added 15/16" was being applied twice
+    # and the mantel floated 15/16" clear of the brick, at 0 FAIL — nothing grades a
+    # placeable against the wall it is mounted on.
+    # An authored 64" IS 64" AFF. The body resolves 64"..66 1/4" AFF = 64 15/16"..67 3/16"
+    # absolute, sitting exactly on W-M-FIRE-HEAD's top — course 24. See
+    # plan/furniture_types.py for the shelf itself.
     #
     # ** KNOWN AND ACCEPTED: `placeable_clear_floor_obstruction` READS THIS AS A PROTRUDING
     # OBJECT. ** A base at 64" is under the 80" headroom exemption and 11 1/2" is past
@@ -260,7 +265,7 @@ MAIN_PLACEABLES = [
     Furniture(uid="5RWQRV1P72", tag="FURN-M-FIRE-MANTEL",
               type_ref="FT-MANTEL-WALNUT-46", room="RM-M-LIVING",
               position=pt(inch(419.625), ft(8, 8)), rotation=deg(90),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(64.9375))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(64))),
     # ** SAY THE COST OUT LOUD: TURNING THE SOFA EAST MEANS IT NO LONGER ADDRESSES THIS. **
     # The fire and this console now sit 90 degrees apart, and a 64" mantel with brick above it
     # cannot take a panel — so no screen can go over the fire either.

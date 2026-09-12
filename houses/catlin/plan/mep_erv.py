@@ -116,7 +116,7 @@ EQUIPMENT_ERV_BASEMENT = [
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
               position=pt(ft(6, 6), ft(28, 6)), footprint=(inch(24), inch(8)),
-              room="RM-B-FURNACE", type_ref="EQ-T-ERV-MANIFOLD-6",
+              room="RM-B-FURNACE", type_ref="EQ-T-ERV-MANIFOLD-6-EXH",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
 ]
 
@@ -160,7 +160,7 @@ EQUIPMENT_ERV_ATTIC = [
               # RM-A-POCKET, walled off as a storage pocket in the guest studio's west loft;
               # D-A-POCKET is a door rather than a scuttle precisely so this stays
               # serviceable.
-              room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6",
+              room="RM-A-POCKET", type_ref="EQ-T-ERV-MANIFOLD-6-EXH",
               mount=Mount(kind=MountKind.FLOOR)),
 ]
 
@@ -306,7 +306,7 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               # RM-S-BATH1's NW corner, which is capped at +19'-0" — a 12" hood box centred
               # on +17'-0" clears that by 1'-6", so nothing on the inside face constrains the
               # height either. room=None, as above and as EQ-M-HP3-OD is authored.
-              room=None, type_ref="EQ-T-ERV-HOOD-6",
+              room=None, type_ref="EQ-T-ERV-HOOD-6-EXH",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]
 
@@ -628,15 +628,33 @@ DUCTS_ERV_BASEMENT = [
 # than 35'-4", and everything that would naturally have used the 26'-0" bay uses 24'-8".
 #
 # HONEST LIMITS, both real and neither graded by anything:
-#   * The twelve lanes leave the closet on 4" centres — 3" ducts with an inch between them.
-#     That is what the neck of a radial bundle looks like coming off a pair of manifolds in a
-#     6'-0" closet, and they stay on those centres all the way south rather than fanning out,
-#     because a lane is a straight line in this model and a bundle is not.
+#   * The twelve lanes leave the closet as TWO INTERLEAVED FAMILIES, NOT ONE 4" MODULE, AND
+#     SIX PAIRS OVERLAP. The nine extract lanes are on a 4" module — x=36", 40", 44", 52",
+#     56", 60", 64", 68" (48" is vacant), plus PLANT out on its own at 34" — so within that
+#     family 3" ducts do sit an inch apart, which is what the neck of a radial bundle looks
+#     like off a pair of manifolds in a 6'-0" closet. The three SUPPLY lanes are not on it:
+#     LIVING/BED/STUDY are at x=38", 46", 54", the extract module's half-step, an 8" module
+#     interleaved between its lanes. That puts six pairs on 2" centres — PLANT/BATH1 (34/36),
+#     BATH1/LIVING (36/38), LIVING/VANITY (38/40), KITCH/BED (44/46), SUITEBATH/STUDY
+#     (52/54) and STUDY/LAUNDRY (54/56) — and a 3" duct on 2" centres OVERLAPS ITS NEIGHBOUR
+#     BY 1". They are drawn as straight lines because a lane is a straight line in this model
+#     and a bundle is not; in the field the neck is dressed and the flexible 75 mm runs pass
+#     each other, which is the whole reason the drawing is tolerable rather than wrong.
+#     **Nothing grades it.** `mep.duct_joist_bay_occupancy` pairs runs that share a bay
+#     CENTRELINE, and these lanes run south ACROSS the bays; crossing runs are deliberately
+#     not paired (a hanger-gap subtraction between them returns a meaningless number). It is
+#     the along-bay case below that the check sees, and it reports that one UNKNOWN. If the
+#     neck is ever to be modelled honestly rather than noted, the lever is a real Soffit or a
+#     per-lane offset in the first 3'-0" — not a wider spacing all the way south, which would
+#     move nine terminals to buy clearance in one closet.
 #   * Two pairs share part of one bay: STUDY and LAUNDRY both ride the 20'-8" bay from
 #     x=4'-8" to x=15'-0", and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay
-#     holds two 3" ducts side by side without argument; nothing in the engine grades
-#     duct-against-duct outside a modeled Soffit, so this note is the only record that it was
-#     looked at.
+#     holds two 3" ducts side by side without argument. This is the one duct-against-duct
+#     case the engine does grade outside a modeled Soffit: `mep.duct_joist_bay_occupancy`
+#     names STUDY and LAUNDRY on FS-S-WEST and reports UNKNOWN — the bay is wide enough, but
+#     the model gives a run one centreline per bay, so two lanes in one bay are necessarily
+#     drawn on top of each other. UNKNOWN is the honest verdict; the prose is not the record
+#     of this any more.
 _PORT_Z = inch(-20)
 _BAY_Z = inch(-10.375)
 

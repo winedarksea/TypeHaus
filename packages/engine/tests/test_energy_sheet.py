@@ -232,7 +232,23 @@ def test_a602_prints_u_factor_and_never_defaults_shgc(catlin_model, tmp_path):
     assert all(len(c) == 5 for c in columns)
     assert all(c[0] != "—" for c in columns), "every catlin window type states a U-factor"
     doors = {item.tag: item for item in catlin_model.plan.library.door_types}
-    assert all(len(_energy_columns(spec, True)) == 1 for spec in doors.values())
+    # A-601 carries the same five energy columns as A-602: a glazed door is fenestration
+    # under R202, and the table would not zip against its headers if the arities differed.
+    assert all(len(_energy_columns(spec, True)) == 5 for spec in doors.values())
+    # A glazed door that states an SHGC prints it; every other door prints a dash, and the
+    # dash is never filled in.
+    for spec in doors.values():
+        shgc_text, vt_text = _energy_columns(spec, True)[1:3]
+        if spec.glazed and spec.shgc is not None:
+            assert shgc_text == f"{spec.shgc:.2f}"
+        else:
+            assert shgc_text == "—"
+        assert vt_text == (f"{spec.vt:.2f}" if spec.glazed and spec.vt is not None else "—")
+    solid = next(spec for spec in doors.values() if not spec.glazed)
+    # Absence, not a missing number: a solid leaf prints a dash even with a number on the
+    # type, because there is no glazing for an SHGC to be a property of.
+    assert _energy_columns(solid.model_copy(update={"shgc": 0.3, "vt": 0.5}),
+                           True)[1:3] == ("—", "—")
 
 
 class _Capture:

@@ -754,9 +754,9 @@ MANTEL_WALNUT_46 = FurnitureType(
            "flush with the brick panel's ends and cantilevered off blocking let into "
            "W-M-FIRE-HEAD's back face. Its underside sits at 64\" AFF, on the head "
            "course — 24 modular courses of visible brick — and its top at 66 1/4\". "
-           "11 5/8\" of clearance from the firebox trim top at 52 3/8\" to the shelf, "
+           "19 5/8\" of clearance from the firebox trim top at 44 3/8\" to the shelf, "
            "against Amantii's 4\" minimum for the BI-30-XTRASLIM; the brick spandrel "
-           "over the 52 5/8\" masonry head is a different number (11 3/8\") for a "
+           "over the 44 5/8\" masonry head is a different number (19 3/8\") for a "
            "different thing, and both are stated on the drawing.",
 )
 

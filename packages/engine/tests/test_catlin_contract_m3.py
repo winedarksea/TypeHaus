@@ -1271,11 +1271,14 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # all-electric contract forbids is a *combustion* appliance, not a duct.
     air = {product.tag for product in plan.library.equipment_types
            if "supply_air" in {port.service.value for port in product.ports}}
-    # The ERV's FRESH air passes through two more boxes — the 6-port supply manifold and the
-    # mixing box where the ERV leg joins System 1's return. (The 10-port manifold and the
-    # gable hoods carry stale and outdoor air, so they declare RETURN_AIR and OUTDOOR_AIR
-    # instead and are not in this set.) None of the five burns anything, which is what this
-    # assertion is actually about.
+    # The ERV's FRESH air passes through two more boxes — the 6-port SUPPLY manifold and the
+    # mixing box where the ERV leg joins System 1's return. The extract side is deliberately
+    # absent: EQ-T-ERV-MANIFOLD-6-EXH is the same part as the supply manifold and the same
+    # price, split onto its own row on 2026-09-11 so its trunk can declare RETURN_AIR like
+    # the 10-port one always has, and EQ-T-ERV-HOOD-6-EXH is the intake hood's casting
+    # declaring EXHAUST_AIR. Those three and the intake hood (OUTDOOR_AIR) carry stale and
+    # outdoor air and are not in this set. None of the four below burns anything, which is
+    # what this assertion is actually about.
     assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX"}
 

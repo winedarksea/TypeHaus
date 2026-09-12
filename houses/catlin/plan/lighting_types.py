@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through U.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through W.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
@@ -224,6 +224,53 @@ AMBIENT_LUMINAIRE_TYPES = (
                   product_ref="PROD-DIODE-VALENT-X",
                   source="Diode LED VALENT X, 3000K, 95+ CRI / R9 90+, behind a light "
                          "rail/valance at the cabinet nose."),
+
+    # --- W: the garage's exterior linear (eave soffits + the north gable) --------------
+    # ** NOTHING IN THE CATALOG FITS, AND THE THREE NEAR MISSES ARE ALL INTERIOR. **
+    # ED-T-LT-STRIP24 (E) is 24V cove tape behind a shadow gap, ED-T-LT-STRIP24-TASK (U) is
+    # 24V task tape under a cabinet nose, and ED-T-LT-SHOP4 (Q) is an IP66 batten hung inside
+    # the garage. None of them is listed for an unconditioned soffit in Minnesota, and the two
+    # 24V types would each need a driver in a weatherproof enclosure out at the eave — three
+    # runs, three enclosures, three low-voltage feeds in free air. This is a line-voltage
+    # fixture with an integral driver for exactly that reason, the way ED-T-LT-WALL-LINEAR
+    # (G) and ED-T-LT-SLOT72 (T) already are: the long wire stays at 120V and the only thing
+    # at the eave is the luminaire.
+    #
+    # ** MARK W, BECAUSE W IS THE NEXT FREE LETTER. ** The schedule runs A..V today (I and O
+    # are skipped — both read as digits on a drawing), V being the sauna's fibre-optic projector, so W is
+    # the first unused letter and not a numbered variant of anything: this is a new family,
+    # not a second height of one.
+    #
+    # ** NO product_ref: the ED-T-LT-CAN3 / ED-T-LT-CAN4-4000 precedent. ** What is specified
+    # here is a requirement — an extruded aluminium channel, gasketed lens, IP66, 120V
+    # integral ELV/TRIAC driver, 4' modular sections with wet-location feed-through fittings.
+    # No SKU has been confirmed against a datasheet, and naming one that has not been read is
+    # how the 6" can housing got into this file.
+    #
+    # ** damp_rated AND wet_rated, and both are earned. ** The two eave runs are under a
+    # soffit (damp at worst), but the third is on the open north gable face over the overhead
+    # door with 16" of rake above it and nothing else — driving rain lands on it, which is a
+    # wet location under NEC 410.10. One type serves all three because a house does not want
+    # two schedule rows of the same extrusion in two listings.
+    #
+    # ** full_cutoff IS A MOUNTING INSTRUCTION AS MUCH AS A PRODUCT ATTRIBUTE. ** The channel
+    # is screwed through its back web with the aperture aimed DOWN — under a soffit it is the
+    # only way it can go, and on the gable face it is the difference between a downlight and
+    # a strip that sprays the sky. `advisory.dark_sky_lighting` exempts the ceiling-mounted
+    # soffit runs (the soffit is their shield) and grades the wall-mounted gable run on this
+    # flag, so the flag and the detail must stay in step. 3000K for the same section's ceiling.
+    LuminaireType(tag="ED-T-LT-LINEAR-EXT",
+                  name="Exterior linear LED in an aluminium channel, IP66",
+                  form=LuminaireForm.STRIP, type_mark="W",
+                  footprint=(inch(2.5), inch(2.5)), height=inch(2.5),
+                  lamp="LED module, 120V integral driver, 4' modular sections",
+                  watts_per_ft=2.5, lumens=210.0, cct_k=3000, cri=90, voltage=120,
+                  dimmable=True, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  source="Extruded aluminium exterior linear, gasketed frosted lens, IP66, "
+                         "120V integral ELV/TRIAC driver, 3000K / 90 CRI, ~2.5 W/ft at "
+                         "~210 lm/ft, in 4' sections with wet-location feed-through "
+                         "fittings. Aperture mounted facing DOWN (full cutoff). No "
+                         "product_ref until a datasheet is read."),
 
     # --- F: the plant-room tubes ------------------------------------------------------
     # Growth-spectrum, hung on a cable suspension kit over the plants at the south windows.

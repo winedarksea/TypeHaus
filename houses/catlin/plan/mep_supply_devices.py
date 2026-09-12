@@ -141,8 +141,18 @@ SUPPLY_STOPS = [
                   serves=("FX-M-BATH1-LAV",)),
     # RM-M-BATH2 — WC, shower, tub and sink; the busiest group in the house and the one
     # most worth being able to isolate on its own.
+    #
+    # The cold stop MOVED on 2026-09-11 to follow its run. It stood at (2'-3", 17'-2.4")
+    # — the station PR-B-CW-BATH2 rose at until 2026-09-09, when that riser came out of the
+    # middle of the bathroom floor and into W-M-HS1's x=1'-0" bay (plan/mep_supply.py). The
+    # hot sibling below never moved because PR-B-HW-BATH2 never did: it still terminates at
+    # (2'-3", 16'-9.6"). Nothing caught the drift — no check grades an accessory's position
+    # against its host run's polyline, so a stop two feet off its own pipe read as 0 FAIL.
+    # The new position is the run's last vertex, which is this file's rule for every stop
+    # here and what lets the accessory take the riser head's invert rather than a second,
+    # drift-prone copy of it.
     PipeAccessory(uid="3VR28WJF1E", tag="PA-M-BATH2-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(2, 3), ft(17, 2.4)),
+                  pipe_ref="PR-B-CW-BATH2", position=pt(ft(1), ft(22, 4)),
                   accessible=True, room="RM-M-BATH2",
                   model='3/4" quarter-turn ball valve, chrome, at the riser head',
                   serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
@@ -316,6 +326,21 @@ SUPPLY_DEVICES_MAIN = [
 
 # The balcony hydrant's two, on ``second``. No PA-S-BALC-HYD-VB, same reason as the porch's
 # — see the note above SUPPLY_DEVICES_MAIN.
+#
+# ** AND THAT STILL HOLDS WITH DRIP IRRIGATION ON THE END OF IT (2026-09-11). ** RM-S-PLANT
+# is watered by a hose-connected drip system on a timer hung off this hydrant, so the thread
+# now sees tubing lying in wet growing medium — a real cross connection, not a watering can.
+# FX-HYDRANT-SD34 is a Woodford Model 19 and its integral breaker is **ASSE 1052**, a hose
+# connection BACKFLOW PREVENTER, not the ASSE 1011 vacuum breaker on the garage yard hydrant
+# (PA-G-HYD-VB). The difference is exactly the one irrigation asks about: a 1011 device may
+# not be left under continuous pressure, and a timer holds pressure at the thread between
+# cycles; a 1052 device is built for it. So the protection this needs is already bought, and
+# a screw-on accessory here would still double-bill the fixture's own price.
+#
+# Keeping the system HOSE-CONNECTED AND PORTABLE is what keeps it out of P2902.5.3's
+# permanent lawn-irrigation territory (an atmospheric/pressure vacuum breaker or an RPZ on a
+# dedicated, hard-piped irrigation branch). Hard-pipe any of it and that assembly is owed.
+# → notes/plant_room.md, open item 2.
 #
 # Neither is an independent position: the seat is the inboard end of the barrel and the
 # seal is its escutcheon, so both are the hydrant's own station — the riser's, at x=7'-4".
