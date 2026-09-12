@@ -32,7 +32,7 @@ def test_the_millwork_kinds_are_registered_elements_and_dialect_constructors() -
     from typehaus.model.registry import constructor_names
 
     kinds, ctors = element_kinds(), constructor_names()
-    for name in ("WindowStool", "ShelfBank", "MillworkStandard"):
+    for name in ("WindowStool", "ShelfBank", "MillworkStandard", "Countertop"):
         assert name in kinds, f"{name} is not a registered element kind"
         assert name in ctors, f"{name} is not a dialect constructor"
     # ShelfBay is a HausModel, not an Element — it has no identity of its own — but the
@@ -229,3 +229,89 @@ def test_a_second_millwork_standard_is_an_error_not_a_winner(catlin_plan) -> Non
     assert standard is None
     assert [f.check_id for f in findings] == ["integrity.millwork_standard"]
     assert findings[0].severity is Severity.ERROR
+
+
+# --- countertops -------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def countertops(catlin_model_ro):
+    return {top.tag: top for top in catlin_model_ro.countertops}
+
+
+def test_a_countertops_area_is_derived_from_the_cabinets_under_it(countertops):
+    """The quantity is a consequence of the layout, which is the whole point of the element.
+
+    Re-derived here from the run rather than compared against one pinned total: a test that
+    asserted "61.34 SF" would pass just as happily against a hand figure typed into the
+    house, which is exactly what this element replaced.
+    """
+    M2_TO_FT2 = 10.7639104
+    north = countertops["CT-M-KIT-N"]
+    # Five hosts: B15, the dishwasher, the 36" sink base, B30, and the corner B30. The
+    # dishwasher is in the run because the slab runs over it.
+    assert north.hosts == ("FURN-M-KIT-E1", "APPL-M-DW", "FURN-M-KIT-SINKBASE",
+                           "FURN-M-KIT-E2", "FURN-M-KIT-N4")
+    # 24" of carcass plus the 1" a top oversails its doors — nothing authored the 25".
+    assert north.depth_m * M_TO_IN == pytest.approx(25.0, abs=1e-6)
+    # Area within a filler's worth of length x depth: the run turns a corner, so the slab is
+    # an L and its area is not simply its bounding box.
+    straight = north.length_m * north.depth_m * M2_TO_FT2
+    assert north.area_m2 * M2_TO_FT2 == pytest.approx(straight, rel=0.05)
+
+
+def test_the_peninsula_is_two_tops_meeting_at_the_carcass_face(countertops):
+    """The overhang decision, as geometry rather than as a paragraph."""
+    stone, bar = countertops["CT-M-KIT-PENINSULA"], countertops["CT-M-KIT-PENINSULA-BAR"]
+    assert stone.material_ref == "quartz-counter" and bar.material_ref == "oak-counter"
+    # The stone stops at the 24" carcass face and cantilevers nothing; the oak takes all 15".
+    assert stone.depth_m * M_TO_IN == pytest.approx(24.0, abs=1e-6)
+    assert stone.unsupported_overhang_m == pytest.approx(0.0, abs=1e-9)
+    assert bar.depth_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
+    assert bar.unsupported_overhang_m * M_TO_IN == pytest.approx(15.0, abs=1e-6)
+    # 96" of the peninsula's 120": the east 24" carries FURN-M-KIT-MIXER-GARAGE full depth.
+    assert bar.length_m * M_TO_IN == pytest.approx(96.0, abs=1e-6)
+
+
+def test_the_peninsula_type_states_how_much_of_its_depth_is_box(catlin_plan):
+    """Without this split a 39" top on a 24" carcass reads as fully supported."""
+    types = {ft.tag: ft for ft in catlin_plan.library.furniture_types}
+    peninsula = types["CASE-PENINSULA-120"]
+    assert peninsula.footprint[1].inches == pytest.approx(39.0)
+    assert peninsula.carcass_depth is not None
+    assert peninsula.carcass_depth.inches == pytest.approx(24.0)
+
+
+def test_one_quartz_slab_over_the_whole_peninsula_is_a_fail(countertops):
+    """The finding the two-material top exists to avoid — graded, not asserted in prose.
+
+    Caesarstone's published limits: 1/3 of depth, 15" absolute, 14" unsupported in 3 cm.
+    15" on a 39" top is 38%, which is the figure plan/assemblies.py records.
+    """
+    import dataclasses
+
+    from typehaus.checks.advisory.countertops import _grade
+    from typehaus.findings import Result
+
+    one_slab = dataclasses.replace(
+        countertops["CT-M-KIT-PENINSULA"], depth_m=39.0 / M_TO_IN,
+        unsupported_overhang_m=15.0 / M_TO_IN)
+    finding = _grade(one_slab)
+    assert finding.result is Result.FAIL
+    assert "38%" in finding.message
+    # Advisory, not code: WARN severity keeps it out of permit.py's ERROR-keyed gate while
+    # `haus check` still reports it as a failure.
+    assert finding.severity.name == "WARN"
+    # Support is what buys it back, and it is a stated fact rather than an inferred one.
+    assert _grade(dataclasses.replace(one_slab, support="steel-plate")).result is Result.PASS
+
+
+def test_the_house_as_built_is_inside_every_published_limit(catlin_model_ro):
+    from _helpers import check_context
+
+    from typehaus.checks.advisory.countertops import countertop_overhang
+    from typehaus.findings import Result
+
+    findings = countertop_overhang(check_context(model=catlin_model_ro))
+    assert findings and all(f.result is Result.PASS for f in findings)
+    # Only the stone is graded: the bar top is wood and the slab limits do not reach it.
+    assert not any("BAR" in f.message for f in findings)

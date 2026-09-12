@@ -81,7 +81,13 @@ from typehaus.model.mep import (
     SumpPump,
     VentRun,
 )
-from typehaus.model.millwork import MillworkStandard, ShelfBank, ShelfBay, WindowStool
+from typehaus.model.millwork import (
+    Countertop,
+    MillworkStandard,
+    ShelfBank,
+    ShelfBay,
+    WindowStool,
+)
 from typehaus.model.paneling import PanelingSpan, WallPaneling
 from typehaus.model.placeables import (
     ClearancePolicy,
@@ -269,7 +275,7 @@ __all__ = [
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
     "PanelingSpan", "WallPaneling", "WallBacking",
-    "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
+    "Countertop", "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

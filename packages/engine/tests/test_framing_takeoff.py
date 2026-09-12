@@ -183,6 +183,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # Species wood rollup: sauna liner, panelings,
                         # timber posts and species floors in sf/bf.
                         "wood_surfaces",
+                        # Work surfaces by the square foot a slab yard quotes —
+                        # the cabinets under them bill as carcasses in `placeables`.
+                        "countertops",
                         # The milling schedule: the same wood as a cut list in
                         # rough stock, plus the derived stools and shelf boards.
                         "hardwood",
@@ -312,6 +315,9 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # the section that says how much oak the mill has to saw.
     "window_stools": ("hardwood",),
     "shelf_banks": ("hardwood",),
+    # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
+    # countertop is a purchased fabricated top, not stock the owner's mill saws.
+    "countertops": ("countertops",),
 }
 
 

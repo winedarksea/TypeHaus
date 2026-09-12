@@ -38,6 +38,8 @@ PRICES_FILENAME = "prices.toml"
 
 _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
              "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
+             # Work surfaces by the square foot, keyed on material tag.
+             "countertops",
              "footing_bedding",
              "pipe_runs", "pipe_fittings", "ducts",
              # Duct elbows by the piece and duct wrap by the foot — the air-side mirrors of
@@ -214,6 +216,10 @@ class Prices:
     # billed primarily in envelope_layers / floor_finishes / structural_solids — price a
     # material here OR there, not in both tables.
     wood_surfaces: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Countertops by the square foot, keyed on material tag. Fabricated-and-installed rates:
+    # a slab yard quotes the finished top, so the slab yield loss is inside the rate and the
+    # takeoff applies no waste on top of it (→ takeoff/countertops.py).
+    countertops: Mapping[str, PriceRange] = field(default_factory=dict)
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)

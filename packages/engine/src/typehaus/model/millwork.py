@@ -17,6 +17,11 @@ Two derived-geometry elements and one declaration:
 * :class:`ShelfBank` — a run of shelves in one case, bay by bay. A shelf is board stock cut
   to a finished size; a placeable carcass's *symbol* shelves are display geometry built from
   a hard-coded literal (``model/placeable_symbols/_families.py``) and bill nothing.
+* :class:`Countertop` — the work surface over a run of base cabinets. Hosted on the
+  placeables it covers, so its plan area is *derived* from the run rather than authored:
+  a counter is the one piece of millwork whose quantity is a consequence of the layout,
+  and a hand-figured square footage in a price file goes stale the first time a cabinet
+  moves. It is not drawn — see ``resolve/millwork.py`` for why.
 * :class:`MillworkStandard` — declared once, derived many. It states the default stool
   material/thickness/overhang/horn and the *scope* of which windows get a stool, so 39
   near-identical elements never have to be authored, while a per-window ``WindowStool``
@@ -108,6 +113,53 @@ class ShelfBank(Element):
 
 
 @register_element
+class Countertop(Element):
+    """The work surface over a run of base cabinets — one fabricated slab, one material.
+
+    ``hosts`` names the placeables this slab covers, in run order. It is AUTHORED rather
+    than grown from adjacency alone, and the reference house is why: its peninsula's north
+    face butts the east run's south face, so a purely geometric walk would hand the
+    fabricator one L-shaped slab crossing two orientations, two depths and — after the
+    overhang decision below — two materials. Which cabinets share a slab is a fabrication
+    judgement (seam placement, slab yield, a material change at the knee), exactly as a
+    routed pipe is a judgement (``typehaus/routing``). What the resolver *does* derive is
+    everything a judgement cannot state honestly: the run's contiguity (a named gap is an
+    error, not a silently longer top), the slab polygon, its area, and the cantilever.
+
+    ``depth`` is the finished depth front edge to back. Leave it ``None`` — the normal case
+    — and it derives as the host's carcass depth plus ``overhang``, which is what a top on a
+    run against a wall is. Author it only where the slab deliberately stops short of the
+    footprint: the reference house's peninsula is a 39" rectangle carrying a 24" stone work
+    surface and a 15" wood bar top, meeting at the carcass face.
+
+    ``unsupported_overhang`` is how much of that depth cantilevers past the box. ``None``
+    derives it as ``depth - carcass depth``, which is right for a top that starts at the
+    carcass back; author it for a slab that sits entirely off the box (that bar top is 15"
+    deep and 15" of it is cantilever, and a derivation would report zero).
+    """
+
+    hosts: tuple[str, ...]
+    material_ref: str
+    thickness: Length
+    # How far the finished slab stands proud of the carcass face it covers. The ordinary
+    # 1"-ish oversail past a door, not the knee: that is ``unsupported_overhang``.
+    overhang: Length
+    # Finished depth, front edge to back. None = carcass depth + overhang.
+    depth: Length | None = None
+    # Finished length along the run. None = the run's own extent, which is the point.
+    length: Length | None = None
+    # None = derived (depth - carcass depth, floored at zero).
+    unsupported_overhang: Length | None = None
+    # What carries the cantilever: "none" (the slab alone), "corbels", "brackets",
+    # "steel-plate". A supported overhang is not a cantilever, and the fabricators' limits
+    # are cantilever limits — so this field is the difference between a finding and none,
+    # which is why it is a stated fact rather than an inference from a bracket nobody drew.
+    support: str = "none"
+    # What the fabricator runs on the exposed edge: "eased", "bullnose", "mitred", ...
+    profile: str = "eased"
+
+
+@register_element
 class MillworkStandard(Element):
     """The house's millwork defaults, declared once and derived over every window in scope.
 
@@ -142,6 +194,7 @@ for _name, _obj in (
     ("WindowStool", WindowStool),
     ("ShelfBay", ShelfBay),
     ("ShelfBank", ShelfBank),
+    ("Countertop", Countertop),
     ("MillworkStandard", MillworkStandard),
 ):
     register_constructor(_name, _obj)

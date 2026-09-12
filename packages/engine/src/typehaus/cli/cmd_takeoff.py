@@ -102,6 +102,9 @@ def takeoff(
                "envelope_layers": bom["envelope_layers"],
                "wall_structure": bom["wall_structure"],
                "wood_surfaces": bom["wood_surfaces"],
+               # Work surfaces by the square foot. Printed below rather than only
+               # forwarded: it is the one section a kitchen conversation is about.
+               "countertops": bom["countertops"],
                # The milling schedule. Forwarded but not PRINTED here: `haus millwork` is
                # its own command with the mill's own column set, and repeating a 17-row cut
                # list inside the BOM dump would bury the sections a builder reads.
@@ -255,6 +258,11 @@ def takeoff(
             label = item["name"] or item["type"]
             nema = f" NEMA {item['nema']}" if item["nema"] and item["nema"] not in label else ""
             console.print(f"  {item['count']:>5} ea    {item['kind']}: {label}{nema}")
+    if payload["countertops"]:
+        console.print("[bold]Countertops[/bold]  (material · net area · the run it covers)")
+        for item in payload["countertops"]:
+            console.print(f"  {item['net_area_sqft']:>7} sf   {item['material']:<16} "
+                          f"{item['length_ft']} LF · {', '.join(item['tops'])}")
     if payload["wood_surfaces"]:
         console.print("[bold]Wood surfaces by species[/bold]  (species · material · kind)")
         for item in payload["wood_surfaces"]:

@@ -118,6 +118,16 @@ class FurnitureType(HausModel):
     # from the wall breaks nothing whatever its top is made of.
     work_surface: bool | None = None
     clearance: tuple[Length, Length, Length, Length] | None = None  # front/back/L/R
+    # How deep the CARCASS is, where that is less than the footprint depth. An island or a
+    # peninsula is drawn as one rectangle because that is what it occupies in plan, but only
+    # part of that depth is box: the rest is knee space with a cantilevered top over it. The
+    # footprint alone cannot tell the two apart, and ``advisory.countertop_overhang`` needs
+    # exactly that split — without it a 39" top on a 24" box reads as fully supported and a
+    # cantilever nobody may build silently passes.
+    #
+    # ``None`` means "the carcass IS the footprint", which is true of every base cabinet in a
+    # run against a wall; a consumer reads ``footprint[1]`` in that case.
+    carcass_depth: Length | None = None
     mesh: MeshRef | None = None
     # The chosen product, by ``Product.tag`` (model/product.py). A type is a
     # *specification* — the width the run is cut to, the circuit the electrician pulls —

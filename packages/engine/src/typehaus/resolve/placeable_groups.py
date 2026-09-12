@@ -92,3 +92,52 @@ def _claim_occupants(
             if best is None or occupied_area > best[0]:
                 claim_by_uid[item.uid] = (occupied_area, anchor.anchor_tag)
     return {uid: anchor_tag for uid, (_area, anchor_tag) in claim_by_uid.items()}
+
+
+# --- runs of abutting casework ---------------------------------------------------------
+#
+# A second kind of geometry-derived group, and deliberately in this module rather than in a
+# new one: both answer "which placeables belong together, given only where they stand".
+# Nothing is shared beyond that — a clearance zone claims occupants by AREA inside it, while
+# a cabinet run is a chain of abutting boxes — so the code below reuses the idea and not the
+# function, which is the honest amount of reuse available.
+
+#: How wide a gap two cabinets may leave and still be one run. A leftover under 3" is a
+#: scribe or a filler on the drawing rather than a unit (library/placeables/casework.py), and
+#: the slab is cut straight across it — so the tolerance is the filler, not a fudge factor.
+RUN_GAP_TOLERANCE_M = 0.0762  # 3"
+
+
+def run_is_contiguous(footprints: list[Ring]) -> bool:
+    """Do these plan footprints, in the given order, form one unbroken run?
+
+    Consecutive only: a run is a chain, and testing every pair would call a U of cabinets
+    around a room contiguous when the two legs never meet.
+    """
+    return all(_abuts(first, second)
+               for first, second in zip(footprints, footprints[1:], strict=False))
+
+
+def run_gap_m(first: Ring, second: Ring) -> float:
+    """The filler between two footprints, in metres; 0.0 where they touch or overlap.
+
+    Bounding boxes rather than the polygons: casework is rectangular, and a corner unit meets
+    its neighbour on a face whose exact polygon overlap is zero by construction. The gap is
+    the larger of the two axis gaps, because the axis the pair overlaps on reports a negative
+    one and it is the other that separates them.
+    """
+    a_x0, a_y0, a_x1, a_y1 = _bounds(first)
+    b_x0, b_y0, b_x1, b_y1 = _bounds(second)
+    gap_x = max(b_x0 - a_x1, a_x0 - b_x1)
+    gap_y = max(b_y0 - a_y1, a_y0 - b_y1)
+    return max(0.0, gap_x, gap_y)
+
+
+def _abuts(first: Ring, second: Ring) -> bool:
+    return run_gap_m(first, second) <= RUN_GAP_TOLERANCE_M
+
+
+def _bounds(ring: Ring) -> tuple[float, float, float, float]:
+    xs = [point[0] for point in ring]
+    ys = [point[1] for point in ring]
+    return min(xs), min(ys), max(xs), max(ys)

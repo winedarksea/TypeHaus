@@ -2978,7 +2978,7 @@ MATERIALS = [
     # undisclosed shop you can neither inspect nor hold to a cantilevered overhang.
     Material(tag="quartz-counter", name="Engineered quartz countertop, 3 cm",
              density=2400.0, hatch="masonry", color="#f2efe9", finish="polished",
-             product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD",
+             product_ref="PROD-SILESTONE-ET-CALACATTA-GOLD", engineered_stone=True,
              source="Silestone Et Calacatta Gold, 3 cm, eased edge (owner selection 2026-09-06). Kitchen perimeter and sink run, the 48\" and 51\" vanity tops, and the peninsula's 24\" work surface. ** NEVER CLEAN IT WITH ANYTHING HIGH-pH: ** bleach, ammonia, glass cleaner, degreasers, scouring powder and melamine sponges are the #1 cause of light quartz yellowing across every brand — not UV. #2 is heat scorch, which is irreversible; induction helps (no flame spill, no hot grate) but a 400 F pan is still a 400 F pan. Put that in the owner's manual."),
     # ** THE PENINSULA'S OVERHANG IS THE ONE PLACE THE STONE STOPS, AND IT IS AN ENGINEERING
     # LIMIT RATHER THAN A PREFERENCE. ** CASE-PENINSULA-120 is a 24" carcass carrying a 15"

@@ -118,6 +118,16 @@ class Material(HausModel):
     # consumer is ``code.R806_5_unvented_roof``, where the phrase decides whether a fill may
     # be the condensation control against a sealed deck.
     air_impermeable: bool = False
+    # This material is ENGINEERED STONE — a quartz/resin slab, as distinct from natural
+    # granite, from sintered porcelain and from anything a mill cuts. Authored for the same
+    # reason ``foam_plastic`` and ``air_impermeable`` are: the one consumer
+    # (``advisory.countertop_overhang``) has to know which countertops the fabricators'
+    # cantilever limit reaches, and the alternatives are guessing from a tag substring
+    # ("quartz", "silestone", "caesarstone") or from ``hatch``, which says "masonry" about
+    # brick and tile too. A limit that silently stops applying is worse than no limit.
+    #
+    # It is a property of the substance and nothing else: no R-value, no quantity, no price.
+    engineered_stone: bool = False
     # Wood species ("basswood", "oak", "walnut", "elm", ...) where the material *is* a wood
     # product an estimator orders by species. Authoring it is what admits the material into
     # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —
