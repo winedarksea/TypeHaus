@@ -183,7 +183,10 @@ def test_layer_census_gains_the_c3_annotation_layers(catlin_model):
 def test_setback_labels_carry_required_and_provided(catlin_model):
     labels = _texts(build_site_plan(catlin_model), "C-PROP-SETB")
     front = [line for line in labels if line.startswith("FRONT SETBACK")]
-    assert front == ["FRONT SETBACK 30'-0\" REQ / 37'-9\" PROVIDED"]
+    # H1's 10' front, and the garage's north wall 17'-3" off the real 50' x 133' lot's
+    # front line. It read 30' REQ / 37'-9" PROVIDED against RL and the retired placeholder
+    # ring — RL is unavailable on a 50'-wide lot (houses/catlin/plan/site.py).
+    assert front == ["FRONT SETBACK 10'-0\" REQ / 17'-3\" PROVIDED"]
     assert all("REQ" in line and "PROVIDED" in line for line in labels)
 
 

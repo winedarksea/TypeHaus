@@ -100,6 +100,12 @@ def site_parcel_is_surveyed(ctx: CheckContext) -> list[Finding]:
     "who measured it". ``Site.parcel_basis`` is the answer and nothing infers it: a ring
     with no stated basis reads as UNKNOWN, not as a survey, because the failure mode of
     guessing here is a set that silently claims a measurement nobody made.
+
+    Three answers short of a survey, and they are not one answer. ``"placeholder"`` is a
+    ring somebody DREW — FAIL, because nothing on it is a measurement. ``"plat"`` is a
+    ring somebody STATED off a record but nobody certified — UNKNOWN, because the
+    dimensions may well be right and the engine cannot tell. ``None`` is UNKNOWN too, for
+    the different reason that nobody has said at all.
     """
     cid = "code.site_parcel_is_surveyed"
     site = ctx.plan.project.site
@@ -110,6 +116,12 @@ def site_parcel_is_surveyed(ctx: CheckContext) -> list[Finding]:
                          "has certified")]
     if basis == "placeholder":
         return [_placeholder(cid)]
+    if basis == "plat":
+        return [_unknown(cid, "the parcel dimensions are STATED but UNCERTIFIED (plat, "
+                         "county record or deed): no corner has been located and nobody "
+                         "has signed them, so the lot lines, setbacks and coverage on "
+                         "this set are only as good as that record — a certified survey "
+                         "is still owed")]
     if not site.survey_by:
         return [_unknown(cid, "the parcel is stated as surveyed but names no surveyor "
                          "(Site.survey_by)")]

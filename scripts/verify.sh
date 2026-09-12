@@ -100,10 +100,10 @@ $HAUS check houses/catlin --json --exit-on none > "$CATLIN_CHECK"
 $PY - "$CATLIN_CHECK" <<'PYEOF'
 import json, sys
 
-# The parcel ring. Owner/project state, not a defect: no lot has been bought, so every lot
-# line, setback and coverage figure on C-101 was drawn rather than measured. The MN profile
-# already declares the permit line `blocking=False`, so `haus print` does not stop on it.
-ACCEPTED = {("code.site_parcel_is_surveyed", ())}
+# Empty, and meant to stay that way: catlin is held to 0 FAIL. `code.site_parcel_is_surveyed`
+# sat here while the parcel was a drawn placeholder; the owner's stated 50' x 133' lot made
+# the basis "plat", which grades UNKNOWN rather than FAIL.
+ACCEPTED = set()
 
 payload = json.load(open(sys.argv[1]))
 failures = {

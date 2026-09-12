@@ -86,7 +86,12 @@ class Site(HausModel):
     # and worse answer than an honest "placeholder": the drawing then cannot mark itself.
     # ``"survey"`` is the only value a permit set may print without a caveat, and it earns
     # ``survey_by`` / ``survey_date`` beside it.
-    parcel_basis: Literal["placeholder", "survey"] | None = None
+    # ``"plat"`` sits between the two: the dimensions are STATED — off a recorded plat, a
+    # county parcel record or a deed — but nobody has certified them and no corner has been
+    # located in the field. That is a real and common project state, and it is neither a
+    # drawn stand-in nor a survey, so it grades UNKNOWN rather than borrowing either
+    # verdict (``checks/code/site.py::site_parcel_is_surveyed``). A survey is still owed.
+    parcel_basis: Literal["placeholder", "plat", "survey"] | None = None
     survey_by: str | None = None  # licensed surveyor of record
     survey_date: str | None = None  # ISO date of the certified survey
     # NOTE: no stored lot area. It is derived from ``parcel`` (emit/draw/site_metrics.py) so

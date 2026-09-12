@@ -127,6 +127,10 @@ def _survey_basis_row(site) -> tuple[str, str, bool]:
         return ("Survey basis", f"{by}" + (f", {when}" if when else ""), False)
     if basis == "placeholder":
         return ("Survey basis", "PLACEHOLDER — NOT A SURVEY", True)
+    if basis == "plat":
+        # Dimensions stated off a record, nobody's seal on them. Still a warning row: the
+        # reviewer must not scale off it either.
+        return ("Survey basis", "PLAT / RECORD DIMENSIONS — NOT A SURVEY", True)
     return ("Survey basis", "PARCEL NOT SURVEYED", True)
 
 

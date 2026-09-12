@@ -129,17 +129,11 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
     ]
     # Take an entry out rather than leaving it stale — that is what the assertion message
     # below asks of the next person.
-    accepted: set[tuple[str, tuple[str, ...]]] = {
-        # The parcel ring. **Owner/project state, not a defect** — no lot has been bought,
-        # so `Site.parcel_basis` says "placeholder" and every lot line, setback and
-        # coverage figure on C-101 was drawn rather than measured. It is a FAIL because
-        # that is true of the set and a reviewer must see it in red; it is WARN severity
-        # (checks/code/site.py::_placeholder) because the profile already declares the
-        # permit line `blocking=False` — a certified survey is a separate submittal on a
-        # surveyor's schedule. Design record: houses/catlin/plan/site.py's `parcel_basis`
-        # block. Delete this entry in the commit that lands a real survey.
-        ("code.site_parcel_is_surveyed", ()),
-    }
+    # EMPTY, and it is meant to stay that way. `code.site_parcel_is_surveyed` lived here
+    # while the parcel was a drawn placeholder; the owner has since stated the real
+    # 50' x 133' lot, so the basis is "plat" and the check reports UNKNOWN rather than
+    # FAIL (houses/catlin/plan/site.py's `parcel_basis` block).
+    accepted: set[tuple[str, tuple[str, ...]]] = set()
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "
         "leaving a stale entry", sorted(accepted - set(failures)))
