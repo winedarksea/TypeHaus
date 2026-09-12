@@ -110,6 +110,28 @@ class FloorSystem(Element):
     # Absolute joist-top datum for a local deck whose finished boards must meet a
     # threshold independently of the containing storey's structural floor datum.
     top_elevation: Length | None = None
+    #: **A joist field that follows tilted bearings.** The rise of the field's HIGH
+    #: perpendicular edge above the datum, which is taken at the LOW one — perpendicular
+    #: meaning across ``joists.direction``, the axis a fall runs along when the joists
+    #: themselves stay level. Unset (the default) is the flat plane every other deck here is.
+    #:
+    #: The joists do not rake. Each one is level at its own height, a staircase of small
+    #: steps across the field, which is exactly how a sloped deck is framed — the RIM bands,
+    #: which run along the slope, do rake, and carry their far-end elevations on
+    #: ``FramedMember.z0_end_m``/``z1_end_m``.
+    #:
+    #: **Author it with the beams, or not at all.** It exists because ``Beam.top_rise_end``
+    #: does: a tilted beam under a flat joist field puts the beam's top through the joists
+    #: it carries, which ``structural.member_interference`` reports and which is not a
+    #: drafting complaint — it is the model disagreeing with itself about where the bearing
+    #: is. The two rises have to match over the same run.
+    #:
+    #: **What it does NOT tilt: the deck PLANE.** ``ResolvedFloor.deck_z0_m``/``deck_z1_m``
+    #: are single values read by the room, energy, section and guard consumers, and they stay
+    #: at the datum — so the resolved walking surface is the deck's LOW edge. A house
+    #: authoring this is stating that its finished deck stands up to ``top_rise`` higher at
+    #: the far edge than the model's plane says.
+    top_rise: Length | None = None
     # Sistered plies + blocking under concentrated loads (a post bearing on the deck).
     # Empty is the ordinary case: a deck with no point load on it needs none.
     reinforcements: tuple[JoistReinforcement, ...] = ()

@@ -9,7 +9,9 @@ deck `FS-SG-PORCH` and carry `BM-SG-BLC`, the balcony's centre glulam.
 reproduced by `tests/test_post_bearing.py`.
 **Companions:** `notes/balcony_moment_columns.md` (the four cast columns and the glulam above
 these two), `notes/sunken_garden_piers.md` (`PT-SG-COL`/`FCOL`, which is where this load goes
-next).
+next), `notes/balcony_differential_movement.md` §6 (**the other half of this joint**: this
+note grades the bearing STRESS at the three-ply pack and says nothing about its cross-grain
+SHRINKAGE, which is 0.1-0.2", permanent, one-way, and at the middle two of six supports).
 
 > ## ⚠ THIS JOINT WAS OVER, AND NOTHING IN THE MODEL SAW IT.
 > Until this note and its calculation existed, catlin reported **0 FAIL** with `PT-SG-BF2`

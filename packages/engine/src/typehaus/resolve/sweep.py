@@ -134,6 +134,44 @@ def _ring_at(vertex: Vec3, direction: Vec3, right: Vec3, up: Vec3,
     return tuple(points)
 
 
+def straight_sweep_band(solid) -> tuple[tuple[Vec2, Vec2], float, float, float] | None:
+    """A tilted prism's plan axis, its section depth, and its soffit z at each end.
+
+    Returns ``((p0, p1), depth_m, soffit_at_p0, soffit_at_p1)``, or ``None`` for a solid
+    that is not a straight two-point sweep.
+
+    **Why this is shared rather than three copies.** ``ResolvedSolid.z0_m``/``z1_m`` carry
+    the WHOLE RUN's Z extent, which is the sweep contract and the only honest answer for a
+    consumer that cannot ask where along the run it is. Three consumers CAN ask, and get the
+    wrong answer from the box: ``checks/structural/interference.py`` reads a 2"-tilted
+    11 7/8" beam as a 14 1/2" box and reports every joist on it as an interpenetration;
+    ``takeoff/hangers.py`` reads the same box and bills those joists hangers they do not
+    need; ``takeoff/uplift.py`` measures the bearing seat at the run's HIGH end and loses
+    the ties instead. One reader, so the three cannot drift.
+
+    The path is the CENTRELINE. The depth comes back out of the box rather than out of the
+    profile: the box is the section depth plus whatever the tilt added, so subtracting the
+    rise leaves the depth, with no assumption about how the profile is wound.
+    """
+    sweep = getattr(solid, "sweep", None)
+    if sweep is None or len(sweep.path) != 2:
+        return None
+    (x0, y0, z0), (x1, y1, z1) = sweep.path
+    depth = max(0.0, (solid.z1_m - solid.z0_m) - abs(z1 - z0))
+    return ((x0, y0), (x1, y1)), depth, z0 - depth / 2.0, z1 - depth / 2.0
+
+
+def interpolate_along(seg, point, v0: float, v1: float) -> float:
+    """``v0``..``v1`` at ``point``'s projection onto ``seg``, clamped to the segment."""
+    (ax, ay), (bx, by) = seg
+    dx, dy = bx - ax, by - ay
+    run2 = dx * dx + dy * dy
+    if run2 < 1e-18:
+        return v0
+    t = max(0.0, min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / run2))
+    return v0 + (v1 - v0) * t
+
+
 def sweep_legs(sweep: SolidSweep) -> list[tuple[Ring3, Ring3]]:
     """One ``(start_ring, end_ring)`` pair per leg — each pair is exactly one ``GBox``.
 

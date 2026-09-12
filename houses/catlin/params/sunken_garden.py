@@ -2153,7 +2153,10 @@ MAIN_NODES = [
     Node(uid="SGNM06AAAA", tag="N-SGM-FCOL", position=pt(ft(_cx), ft(_y_ax_front))),
 ]
 
-# Two treated LVL back beams: sonotube column -> side-wall hangers (two ~9'6" spans).
+# Two 3-ply KDAT 2x12 back beams: cast column -> side-wall pockets (two ~9'6" spans).
+# **Not "treated LVL"** — that product does not exist at this depth, and ``SPEC.back_beam``
+# has read "3-2x12" with BEAM_KDAT since 2026-08-23; the HGAM10 comment below already
+# called it "the 3-ply KDAT beam". This header was the last line still saying LVL.
 BACK_BEAMS = [
     Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COL", end_node="N-SGM-NW",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
@@ -2493,7 +2496,8 @@ PORCH_STAIR_THRESHOLD_RAILS = [
 ]
 
 # ============================================================================
-# Second (balcony, ~10'): 6x6 pillars, three 3-ply 2x12 beams, aluminum deck.
+# Second (balcony, ~10'): four 12" cast columns + two 6x6 pillars, three 3-1/2" x
+# 11-7/8" treated glulam beams, aluminum deck.
 # ============================================================================
 # Six pillars. Four land on the two porch side walls at 0'-0"; PT-SG-BF2 lands on the front
 # column's top at -1'-6 1/2"; only PT-SG-BR2 stands on the porch decking. The pillar *tops*
@@ -2649,6 +2653,46 @@ _y_front_pillar = _y_balcony_front + (
     _corner_column_radius_in + _FRONT_COLUMN_CANTILEVER_IN) / 12.0  # -9.833333'
 _PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
                 ("F", _y_front_pillar, ft(0)))
+
+# ** THE DRAINAGE SLOPE, AND WHERE THE ENGINE USED TO THROW HALF OF IT AWAY. **
+#
+# `SPEC.rear_pillar_rise_in` raises the rear pillar row so the deck falls south, away from
+# the house. Over the 88" between the two bearing rows that is 0.23 in/ft against AridDek's
+# recommended minimum of 1/8 in/ft — correct, and generous by ~1.8x.
+#
+# Until 2026-09-12 the rise reached the POSTS and stopped there. ``_resolve_post``'s
+# docstring is explicit that it shortens the authored height rather than overriding the top
+# precisely so this offset survives — but ``_resolve_beam`` emitted a flat prism, so the
+# beams never tilted. Measured off out/model.json at the time: PT-SG-BR1/2/3 topped out at
+# 102.875" and the three beam soffits sat flat at 100.875". **Every rear column ran 2" up
+# inside the beam it carries, and `haus check` reported nothing** —
+# `structural.concrete_interference` is scoped to isolated pours and nothing grades a column
+# tangent to a beam.
+#
+# Two answers the old TODO line asked for, so they are not asked again:
+#   * **A chamfer cannot produce slope.** A chamfer is a corner bevel. The fall runs N-S,
+#     ALONG the beams.
+#   * **Sleepers are a dead end both ways.** On the joists they would run N-S, parallel to
+#     the AridDek plank, and the plank would lose its perpendicular bearing. On the beam
+#     tops they move the same interference from column-into-beam to joist-into-beam,
+#     because ``FloorSystem.top_elevation`` is a single value too.
+#
+# What fixes it is ``Beam.top_rise_end``: the beam is one member out of level, which is what
+# it is on site. Rise per inch of northward run, measured between the two BEARING rows (not
+# the beam ends — the beam oversails both, 20" north and 8" south, and taking the slope off
+# the ends would mis-state it by a quarter of an inch).
+_BEAM_RISE_PER_IN = SPEC.rear_pillar_rise_in / ((_y_rear_pillar - _y_front_pillar) * 12.0)
+
+
+def _balcony_rise_at(y_ft):
+    """Beam soffit at plan ``y``, relative to the FRONT bearing plane.
+
+    The front row is the datum because it is the low end and the one that did not move:
+    ``_balcony_beam_soffit`` is where PT-SG-BF1/2/3 top out, and the rear row is exactly
+    ``SPEC.rear_pillar_rise_in`` above it.
+    """
+    return inch((y_ft - _y_front_pillar) * 12.0 * _BEAM_RISE_PER_IN)
+
 # PT-SG-BF2 moves NORTH onto the porch deck, 3" inside the front beam axis — the exact
 # mirror of PT-SG-BR2's 3" south of the back beam line, and for the same two reasons. It
 # used to stand on PT-SG-FCOL's top, 19 1/2" below the porch walking surface, which made it
@@ -2822,21 +2866,48 @@ _BALCONY_BEAM_PUBLISHED = PublishedSpan(
     load_psf=50.0,
     condition="the guide's values are DRY-USE and these beams stand in weather, so the NDS wet-service cross-check beside this row is the governing arithmetic, not a duplicate; cantilevers are within the table's 2' maximum (1'-8\" here, and graded separately by R507.5.1); 3\" bearing on the cast columns; the columns' own base moments are a separate engineered item")
 
+# ** THE THREE BEAMS ARE TILTED, AND THEY ARE AUTHORED SOUTH-END-FIRST ON PURPOSE. **
+#
+# ``Beam.top_rise_end`` raises the END node relative to the START, and the START is the end
+# the beam's top elevation is answered at — here the derived one, `elevation - joist_drop`
+# from ``_bearing_stack_drops``. So the LOW (south) end has to lead: N-SGB-S* -> N-SGB-N*.
+# Nothing reads the node pair as a direction (every consumer treats it as a segment), so the
+# swap costs nothing, and putting the high end second is what makes the rise read as a rise.
+#
+# ** NOTHING AUTHORS ``top_elevation`` HERE, AND THAT IS A DELIBERATE 3/16". ** Authoring it
+# would pin the beams absolutely — and ``_bearing_stack_drops`` skips a beam that does, so the
+# six posts under them would lose their joist-depth drop and every one of their authored
+# heights would have to be restated. Those heights are an ENGINEERING input: `deck_post` reads
+# `Post.height` for the cantilever moment arm at the four cast columns, and
+# notes/balcony_moment_columns.md hand-works it at 108.125". Changing a sealed demand as a
+# side effect of a drainage fix is not a trade this file may make.
+#
+# So the datum stays derived and lands at the south NODE, which is 8" south of the front
+# bearing (`_FRONT_COLUMN_CANTILEVER_IN` + the round's radius). At 0.0227 in/in that is
+# **0.18" of seat gap, identical at all six columns** — the slope between the bearings is
+# exact, and the uniform 3/16" is taken up in the 1/2"-1" SS316-SHIM-35 standoff pack that is
+# already at every one of these seats and exists for precisely this tolerance. Before this
+# change the rear three columns ran **2" INSIDE** their beams. See
+# notes/balcony_differential_movement.md §2.
+_balcony_beam_rise = _balcony_rise_at(_y_in_n) - _balcony_rise_at(_y_balcony_front)
 BALCONY_BEAMS = [
-    Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-NW", end_node="N-SGB-SW",
+    Beam(uid="SGBB01AAAA", tag="BM-SG-BLW", start_node="N-SGB-SW", end_node="N-SGB-NW",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
          published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
+         top_rise_end=_balcony_beam_rise,
          bearing_refs=("PT-SG-BR1", "PT-SG-BF1")),
-    Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
+    Beam(uid="SGBB02AAAA", tag="BM-SG-BLC", start_node="N-SGB-SC", end_node="N-SGB-NC",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
          published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
+         top_rise_end=_balcony_beam_rise,
          bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
-    Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
+    Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-SE", end_node="N-SGB-NE",
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
          published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
+         top_rise_end=_balcony_beam_rise,
          bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
@@ -3078,6 +3149,24 @@ _ENCLOSURE_BLOCK_LINES = [_y_balcony_front + _k * SPEC.balcony_joist_oc_in / 12.
 # balcony's front plane to _y_in_n.
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
+    # ** THE FIELD FOLLOWS THE BEAMS. ** The three balcony beams tilt (`_balcony_beam_rise`),
+    # and a flat joist field on tilted beams is the model disagreeing with itself about where
+    # the bearing is — the beam tops come up THROUGH the joists they carry, which
+    # `structural.member_interference` reports and which is not a drafting complaint. The two
+    # rises are the same number over the same run, and they are the same expression here so
+    # they cannot drift apart: this field's perpendicular extent is `_y_balcony_front` to
+    # `_y_in_n`, which is exactly the beams' node-to-node span.
+    #
+    # Each joist stays LEVEL at its own height — a staircase of ~1/4" steps across the 16"
+    # o.c. field, which is how a sloped deck frames. The two rim bands run along the fall and
+    # rake; the resolver gives them their far-end elevations.
+    #
+    # **The deck PLANE does not tilt**, and the divergence is deliberate:
+    # `ResolvedFloor.deck_z0_m`/`deck_z1_m` are single values that the room, energy, section
+    # and guard consumers read, so the model's 10'-0" walking surface is this deck's SOUTH
+    # (low) edge and the built north edge stands 2 5/8" above it.
+    # notes/balcony_differential_movement.md §2.
+    top_rise=_balcony_beam_rise,
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
                      direction="x", cantilever=inch(SPEC.joist_cantilever_in),
                      # The two rim bands close the joist tips on the garden's front and rear
@@ -3476,7 +3565,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
             uid=_CORNER_SEAT_UID[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}",
             kind=ConnectorKind.POST_CAP,
             position=pt(ft(_PILLAR_X[_i - 1]), ft(_y)),
-            elevation=_balcony_beam_soffit, size="HGAM10",
+            elevation=_balcony_beam_soffit + _rise, size="HGAM10",
             connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
 
 # THE TWO CENTRE POST CAPS. A 3-1/2" glulam landing on a 6x6 is a CCQ46SDS2.5 (ESR-2604) —
@@ -3493,7 +3582,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
         uid=_CENTRE_CAP_UID[_row], tag=f"CN-SG-CAP-{_row}2",
         kind=ConnectorKind.POST_CAP,
         position=pt(ft(_cx), ft(_y_bf2 if _row == "F" else _y)),
-        elevation=_balcony_beam_soffit, size="CCQ46SDS2.5",
+        elevation=_balcony_beam_soffit + _rise, size="CCQ46SDS2.5",
         connects=("BM-SG-BLC", f"PT-SG-B{_row}2")))
 # Porch beam pockets, back and front: a hanger into each side wall + a hurricane tie over
 # each column.
@@ -3512,20 +3601,44 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # beside ``_back_beam_depth_ft``, because ``_WALL_UNDER_PILLAR`` needs the soffit long
 # before this point in the file.
 CONNECTORS += [
-    # HUCQ410-SDS, not LUS210. Both back-beam ends land in a pocket cast in a
-    # 12" SUNKEN_GARDEN_WALL — concrete, not a wood ledger — and LUS210 is a wood-to-wood
-    # hanger with an exposed face flange and 10d-into-lumber nailing that has nothing to
-    # bite here. HUCQ is the concealed-flange hanger Simpson publishes for exactly this
-    # joint (library/hardware.py, ROLE_CONCRETE_FACE_MOUNT_HANGER); the front pair below
-    # has carried it since the front beams went flush, and the back pair being different
-    # was an oversight, not a detail. uid, tag, position and elevation are unchanged, so
-    # the IFC GlobalIds survive the retype.
+    # HUC212-3, not HUCQ410-SDS and not LUS210. All four pockets carry one member — the
+    # 3-ply KDAT 2x12 back/front beams, 4 1/2" wide x 11 1/4" deep — into a pocket cast in
+    # a 12" SUNKEN_GARDEN_WALL.
+    #
+    # LUS210 was rejected first and correctly: a wood-to-wood face hanger with an exposed
+    # flange and 10d-into-lumber nailing has nothing to bite in a pour. **HUCQ410-SDS
+    # replaced it on 2026-08-22 and was wrong two further ways**, which nothing in the
+    # engine can see — no check validates a ``Connector.size`` against the member it carries:
+    #
+    #   * **Wrong substrate.** The C-C masonry/concrete hanger table (p. 280) lists HU and
+    #     HUC models only. Its concrete loads come from substituting the wood table's FACE
+    #     NAILS with 1/4" Titen screws, and an HUCQ has no nail holes to substitute — it is
+    #     fastened with Strong-Drive SDS wood screws that ship with the hanger. HUCQ is on
+    #     no page of that catalog that publishes a load into concrete.
+    #   * **Wrong seat.** HUCQ410-SDS is W 3 9/16" — the "410" is a 4x seat and 4x is
+    #     3 1/2". Three plies of 2x12 are 4 1/2". The beam was 15/16" wider than its hanger.
+    #
+    # HUC212-3 is the exact seat: W 4 11/16" x H 10 5/16", 14 ga, and it IS on p. 280, at
+    # 1,800 lbf uplift / 5,085 lbf download into concrete through (22) 1/4" x 2 3/4" Titen 2.
+    # HUC rather than HU for the reason LUS210 was rejected: the end sits in a 6" pocket
+    # inside a 12" wall and an exposed face flange has nowhere to go.
+    #
+    # **What the hanger is actually for here.** Each pocket is 6" deep, so 4 1/2" x 6" =
+    # 27 sq in of the three-ply bears DIRECTLY on the cast sill; gravity is carried by that
+    # bearing whatever the hanger is. These four take uplift and lateral restraint, and the
+    # 5,085 lbf download is headroom, not the load path. That, and p. 280 footnote 5 — "Titen
+    # screws are not exposed to weather", which a pocket in an open garden wall satisfies only
+    # because it is flashed, back-sloped and sealed — are both worked in
+    # notes/balcony_differential_movement.md and notes/beam_water_protection.md.
+    #
+    # uid, tag, position and elevation are unchanged, so the IFC GlobalIds survive the
+    # retype, exactly as the HGAM10 retype below was careful to do.
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_back_beam_mid,
-              size="HUCQ410-SDS", connects=("BM-SG-BKW", "W-SG-W1")),
+              size="HUC212-3", connects=("BM-SG-BKW", "W-SG-W1")),
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid,
-              size="HUCQ410-SDS", connects=("BM-SG-BKE", "W-SG-E1")),
+              size="HUC212-3", connects=("BM-SG-BKE", "W-SG-E1")),
     # HGAM10, not H2.5A. An H2.5A is a wood-to-wood tie; library/hardware.py's
     # own record says "rafter/joist-to-plate" and its published values are nails into lumber
     # on BOTH legs. At this joint one leg has the 3-ply KDAT beam and the other has a cast
@@ -3559,10 +3672,10 @@ CONNECTORS += [
     # Front-beam pockets, the same concrete-face-mount detail as the back pair above.
     Connector(uid="SGCH03AAAA", tag="CN-SG-HGR-FW", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_w), ft(_y_ax_front)), elevation=_back_beam_mid,
-              size="HUCQ410-SDS", connects=("BM-SG-FRW", "W-SG-W1")),
+              size="HUC212-3", connects=("BM-SG-FRW", "W-SG-W1")),
     Connector(uid="SGCH04AAAA", tag="CN-SG-HGR-FE", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_back_beam_mid,
-              size="HUCQ410-SDS", connects=("BM-SG-FRE", "W-SG-E1")),
+              size="HUC212-3", connects=("BM-SG-FRE", "W-SG-E1")),
     Connector(uid="SGCT02AAAA", tag="CN-SG-TIE-FCOL", kind=ConnectorKind.HURRICANE_TIE,
               position=pt(ft(_cx), ft(_y_ax_front)), elevation=_back_beam_soffit,
               size="HGAM10",
@@ -3578,8 +3691,20 @@ CONNECTORS += [
 # six make it countable.
 #
 # One per column top, beside the gusset that holds the beam down to it. The four balcony
-# corners land on `_balcony_beam_soffit`; PT-SG-COL and PT-SG-FCOL each carry a PAIR of
-# porch beams meeting over one top, which is one seat and one pack, on `_back_beam_soffit`.
+# corners land on `_balcony_beam_soffit` PLUS THEIR ROW'S RISE — the rear row's two seats are
+# 2" above the front row's, because the beams tilt (see `_balcony_rise_at`); PT-SG-COL and
+# PT-SG-FCOL each carry a PAIR of porch beams meeting over one top, which is one seat and one
+# pack, on `_back_beam_soffit`.
+#
+# ** THE FOUR BALCONY PACKS ARE LAPPED, NOT FLAT, AND THE SHAPE IS THE SPEC. ** A tilted beam
+# on a level cast seat bears on a LINE: at 0.0227 in/in the uphill edge of a 6" bearing stands
+# 1/8" off. The pack's leaves are lapped to form that taper — full leaves at the low edge,
+# progressively short ones toward the high — over the EPDM isolator the seat detail already
+# prescribes, which conforms the rest under load. **Do NOT spec a custom tapered metal shim**:
+# tapered stainless shims are laser-cut/CNC specialist items, not a stock construction part,
+# and a pack is already a stack of leaves. SJI requires no sloped seat below 3/8 in per foot
+# and bridge practice taper-shims sloped girders to the nearest 1/16 in, so this slope is
+# inside the range a conforming pad handles. notes/balcony_differential_movement.md §3.
 #
 # ``elevation`` is the SOFFIT LESS HALF THE PACK, for the same reason the seat connectors'
 # elevation comment gives above: a Connector draws as a marker box CENTRED on its elevation
@@ -3596,7 +3721,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
             uid=_STANDOFF_UID[(_row, _i)], tag=f"CN-SG-STDF-{_row}{_i}",
             kind=ConnectorKind.BEARING_STANDOFF,
             position=pt(ft(_PILLAR_X[_i - 1]), ft(_y)),
-            elevation=_balcony_beam_soffit - _shim_drop, size="SS316-SHIM-35",
+            elevation=_balcony_beam_soffit + _rise - _shim_drop, size="SS316-SHIM-35",
             connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
 CONNECTORS += [
     Connector(uid="SGSDCLAAAA", tag="CN-SG-STDF-COL",

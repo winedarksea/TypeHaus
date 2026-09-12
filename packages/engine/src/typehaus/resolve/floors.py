@@ -155,6 +155,19 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     z1 = (system.top_elevation.meters if system.top_elevation is not None
           else storey.elevation.meters)
     z0 = z1 - depth
+    # A field that follows tilted bearings (``FloorSystem.top_rise``). The datum above is
+    # taken at ``perp0``, the LOW perpendicular edge, and the field rises linearly from there
+    # to ``perp1`` — so each joist is level at its own height, a staircase of small steps,
+    # which is how a sloped deck actually frames. The rim bands run ALONG the slope and rake;
+    # they carry their far end on ``z0_end_m``/``z1_end_m``.
+    rise_m = system.top_rise.meters if system.top_rise is not None else 0.0
+    perp_span = perp1 - perp0
+
+    def lift(perp: float) -> float:
+        """How far the field has risen at perpendicular coordinate ``perp``."""
+        if abs(rise_m) < 1e-12 or abs(perp_span) < 1e-12:
+            return 0.0
+        return rise_m * (perp - perp0) / perp_span
 
     cant_m = spec.cantilever.meters if spec.cantilever else 0.0
     # Per-end overrides (a deck with a flush bearing at one end and an overhang at the
@@ -240,9 +253,10 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     p0, p1 = (segment_a, perp), (segment_b, perp)
                 else:
                     p0, p1 = (perp, segment_a), (perp, segment_b)
+                lifted = lift(perp)
                 members.append(FramedMember(
                     system.uid, f"joist-{span_index}-{index:03d}-{segment_index}", "joist",
-                    spec.member, p0, p1, z0, z1, segment_b - segment_a,
+                    spec.member, p0, p1, z0 + lifted, z1 + lifted, segment_b - segment_a,
                 ))
 
     # Sistered plies + solid blocking under an authored concentrated load. This runs on the
@@ -250,7 +264,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # before the opening/rim framing so a reinforced line is already in ``members`` when the
     # rim is drawn to the same tips.
     members.extend(_reinforcement_members(
-        system, spec, positions, along_x, ends.tip_lo, ends.tip_hi, z0, z1))
+        system, spec, positions, along_x, ends.tip_lo, ends.tip_hi, z0, z1, lift))
 
     # Opening edge framing is generated once per opening, after clipping.  A declared
     # bearing wall directly under a long edge is the explicit support path; otherwise a
@@ -307,9 +321,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             r0, r1 = (boundary, perp0), (boundary, perp1)
         else:
             r0, r1 = (perp0, boundary), (perp1, boundary)
+        # A rim runs from ``perp0`` to ``perp1`` — ALONG the fall — so on a tilted field it
+        # is a raked member, and it says so through the end elevations rather than being
+        # drawn level and left to interpenetrate the joists it closes.
         members.append(FramedMember(
             system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0, z1,
             perp1 - perp0, material=spec.rim_material,
+            z0_end_m=(z0 + rise_m) if rise_m else None,
+            z1_end_m=(z1 + rise_m) if rise_m else None,
         ))
 
     # The subfloor sheet over the joist field. Its extent is the framed field itself —
@@ -366,7 +385,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
 # the blocks bill themselves with no further wiring.
 def _reinforcement_members(system: FloorSystem, spec, positions: list[float], along_x: bool,
                            axis_lo: float, axis_hi: float,
-                           z0: float, z1: float) -> list[FramedMember]:
+                           z0: float, z1: float, lift=None) -> list[FramedMember]:
     """Sister plies + blocking for each of ``system.reinforcements``.
 
     The plies run the *whole* joist — bearing line to bearing line including both
@@ -411,11 +430,14 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
             p0, p1 = (axis_lo, perp), (axis_hi, perp)
         else:
             p0, p1 = (perp, axis_lo), (perp, axis_hi)
+        # A sister runs BESIDE its joist, so it is level at that joist's own height on a
+        # tilted field (``lift``) — the same staircase, one ply over.
+        raise_m = lift(perp) if lift is not None else 0.0
         for ply in range(existing, plies - 1):
             s0, s1 = _shift(p0, p1, normal, (ply + 1) * ply_width)
             out.append(FramedMember(
                 system.uid, f"sister-{index}-{ply}", "sister_joist", member,
-                s0, s1, z0, z1, axis_hi - axis_lo,
+                s0, s1, z0 + raise_m, z1 + raise_m, axis_hi - axis_lo,
             ))
         # Outer faces of the finished cluster (authored joist + every ply on this line,
         # this entry's and any earlier entry's).
@@ -442,9 +464,16 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
                 q0, q1 = (block_axis, a), (block_axis, b)
             else:
                 q0, q1 = (a, block_axis), (b, block_axis)
+            # A block spans BETWEEN two joist lines, so on a tilted field it rakes across
+            # the step between them, exactly as the rim does along the whole fall.
+            block_z0 = z0 + (lift(a) if lift is not None else 0.0)
+            block_z1 = z1 + (lift(a) if lift is not None else 0.0)
+            block_end = lift(b) - lift(a) if lift is not None else 0.0
             out.append(FramedMember(
                 system.uid, f"sister-{index}-block-{key}", "blocking", member,
-                q0, q1, z0, z1, b - a,
+                q0, q1, block_z0, block_z1, b - a,
+                z0_end_m=(block_z0 + block_end) if block_end else None,
+                z1_end_m=(block_z1 + block_end) if block_end else None,
             ))
     return out
 

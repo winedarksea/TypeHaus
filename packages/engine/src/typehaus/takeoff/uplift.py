@@ -40,8 +40,12 @@ from dataclasses import dataclass
 
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 from typehaus.takeoff.hardware_catalog import (
+    EXPOSURE_DRY,
+    EXPOSURE_TREATED,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     hardware_for_role,
@@ -72,6 +76,16 @@ class BearingSupport:
     #: so the plan test has to admit half a wall — and a 15 1/2" foundation wall and a 6 3/4"
     #: partition do not get the same allowance.
     half_width_m: float
+    #: The seat elevation at the FAR end (``p1``), for a support that is not level — a
+    #: TILTED beam (``Beam.top_rise_end``). ``None`` is level and ``top_z_m`` answers for
+    #: the whole run. The bounding box cannot: it reports the run's HIGH end, and a member
+    #: seated at the low end then measures ~2" BELOW its own bearing and is dropped.
+    top_z_end_m: float | None = None
+    #: Is the wood this support presents to a tie preservative-treated? Decides the tie's
+    #: COATING (see :func:`_exposure`), never its capacity. The support and not the member,
+    #: because the support is the leg the model can answer for: a joist carries no material
+    #: ref of its own, while a beam has an assembly and a wall has a layer stack.
+    treated: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,6 +104,10 @@ class BearingConnection:
     #: Plan location, snapped to ``coincident_bearing_tolerance_in``. Two joist segments that
     #: meet over an interior bearing wall are one joint and take one tie, not two.
     key_point: tuple
+    #: Whether the support is preservative-treated wood — see :func:`_exposure`. Part of the
+    #: connection and not of the row, because two joists of one profile can land on a dry
+    #: plate and a treated beam and must then be two orders.
+    support_treated: bool = False
 
 
 def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
@@ -104,14 +122,49 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
     if wall is not None:
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
-                              half_width_m=wall.thickness_m / 2.0)
+                              half_width_m=wall.thickness_m / 2.0,
+                              treated=_is_treated(model, wall.assembly))
     for solid in model.solids:
         if solid.tag != tag or solid.category != "beam":
             continue
+        treated = _is_treated(model, solid.assembly, material_ref=solid.material)
+        band = straight_sweep_band(solid)
+        if band is not None:
+            (start, end), depth, soffit0, soffit1 = band
+            return BearingSupport(tag=tag, p0=start, p1=end, top_z_m=soffit0 + depth,
+                                  half_width_m=fallback_half_width_m, treated=treated,
+                                  top_z_end_m=soffit1 + depth)
         start, end = centerline_endpoints(list(solid.outline))
         return BearingSupport(tag=tag, p0=start, p1=end, top_z_m=solid.z1_m,
-                              half_width_m=fallback_half_width_m)
+                              half_width_m=fallback_half_width_m, treated=treated)
     return None
+
+
+def _is_treated(model: ResolvedModel, assembly_tag: str | None,
+                material_ref: str | None = None) -> bool:
+    """Does this support present preservative-treated wood to a connector landing on it?
+
+    Read off the catalog ``Material``, never off a tag spelling: ``BEAM_GLULAM_TREATED``
+    happens to say so in its name and ``POST_KDAT`` does not, and a rule that grepped for
+    "treated" would get one right by luck and the other wrong.
+    """
+    ref = material_ref or assembly_structure_material(model.plan, assembly_tag)
+    if not ref:
+        return False
+    material = model.plan.library.material(ref)
+    return bool(material is not None and material.preservative_treated)
+
+
+def _exposure(connection) -> str:
+    """The wood-contact condition one bearing joint puts a tie in.
+
+    One question, asked of the support: is the wood this tie screws into carrying a chemical
+    preservative? IRC R317.3.1 answers what coating follows. It is deliberately NOT
+    "indoors or out" — the thirty-eight rafter heels on W-A-* face a weather wall and sit on
+    dry SPF plates under a roof, and sweeping those onto a ZMAX part would be a house-wide
+    price rise bought with no code requirement behind it.
+    """
+    return EXPOSURE_TREATED if connection.support_treated else EXPOSURE_DRY
 
 
 def _bearing_line(model: ResolvedModel, declared: BearingSupport,
@@ -164,7 +217,13 @@ def _bears_on(point: tuple, bottom_z_m: float, support: BearingSupport,
                            rules.bearing_plan_tolerance_in * M_PER_IN)
     if distance_point_to_segment(point, support.p0, support.p1) > plan_tolerance_m:
         return False
-    rise_m = bottom_z_m - support.top_z_m
+    # A TILTED support's seat is at a different elevation at every station, so the member
+    # end is measured against the seat directly under it rather than against the run's box.
+    top_z_m = support.top_z_m
+    if support.top_z_end_m is not None:
+        top_z_m = interpolate_along((support.p0, support.p1), point,
+                                    support.top_z_m, support.top_z_end_m)
+    rise_m = bottom_z_m - top_z_m
     return -1e-9 <= rise_m <= rules.bearing_seat_tolerance_in * M_PER_IN
 
 
@@ -266,7 +325,8 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
                     found[(support.tag, key_point)] = BearingConnection(
                         support_tag=support.tag, storey=resolved.storey,
                         assembly_tag=resolved.tag, member_profile=member.profile,
-                        member_category=member.category, key_point=key_point)
+                        member_category=member.category, key_point=key_point,
+                        support_treated=support.treated)
                     break  # one tie per end, even where two declared bearings overlap
     return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
 
@@ -281,23 +341,27 @@ def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list
     connections = bearing_connections(model, rules)
     if not connections:
         return []
-    item = hardware_for_role(ROLE_HURRICANE_TIE)
     groups: dict = {}
     for connection in connections:
-        entry = groups.setdefault((connection.member_category, connection.member_profile),
-                                  {"by_storey": Counter(), "supports": Counter()})
+        key = (connection.member_category, connection.member_profile,
+               _exposure(connection))
+        entry = groups.setdefault(key, {"by_storey": Counter(), "supports": Counter()})
         entry["by_storey"][connection.storey] += rules.ties_per_bearing
         entry["supports"][connection.support_tag] += 1
 
     rows = []
-    for (category, profile), entry in sorted(groups.items()):
+    for (category, profile, exposure), entry in sorted(groups.items()):
         by_storey, supports = entry["by_storey"], entry["supports"]
+        item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=exposure)
+        note = ("" if exposure == EXPOSURE_DRY else
+                " — preservative-treated bearings, so a G185/ZMAX tie under IRC R317.3.1")
         rows.append(hardware_row(
             item, scope=f"{category.replace('_', ' ')} bearing", size=profile,
             count=int(sum(by_storey.values())), by_storey=dict(sorted(by_storey.items())),
             basis=(f"{rules.ties_per_bearing} per bearing joint x {sum(supports.values())} "
                    f"{profile} {category} ends seated on the declared bearings "
-                   + ", ".join(f"{tag} x{n}" for tag, n in sorted(supports.items())))))
+                   + ", ".join(f"{tag} x{n}" for tag, n in sorted(supports.items()))
+                   + note)))
     return rows
 
 
@@ -333,7 +397,13 @@ def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> 
     if not groups:
         return []
 
-    item = hardware_for_role(ROLE_HURRICANE_TIE)
+    # DRY: ``FramedMember.continuously_supported`` is set on a beam bedded along a wall for
+    # its whole length, which in this house is the interior ridge on a dry SPF plate. A
+    # treated member has never been continuously supported here, and if one ever is, this is
+    # the line that has to start asking — a member carries no material ref of its own, so
+    # there is nothing here to ask *with* yet, and an invented answer would be worse than a
+    # stated assumption.
+    item = hardware_for_role(ROLE_HURRICANE_TIE, exposure=EXPOSURE_DRY)
     rows = []
     for (category, profile), entry in sorted(groups.items()):
         runs = ", ".join(f"{length} x{n}" for length, n in sorted(entry["runs"].items()))

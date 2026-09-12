@@ -47,6 +47,16 @@ class Material(HausModel):
     # from substrings in the tag, which cannot tell white brick from red. Recipes are defined
     # once per surface (ui/src/three/materials.ts MASONRY_STYLES, emit/gltf/emitter.py).
     finish: str | None = None
+    # Wood that carries a chemical preservative — KDAT, ACQ/CA-treated stock, treated
+    # glulam. **Not decoration, and not the same question as "is it outdoors".** Modern
+    # copper-based preservatives corrode plain G90 zinc, so IRC R317.3.1 requires every
+    # fastener and connector in CONTACT with treated wood to be hot-dip galvanized (G185 /
+    # ZMAX), stainless, silicon bronze or copper — and Simpson publish the same instruction
+    # per part. ``takeoff/uplift.py`` reads this off the member a tie lands on to pick the
+    # coating, which is why it lives on the material rather than in a house's prose: a roof
+    # truss on a dry SPF plate under a vented attic must NOT be swept up by an
+    # "exterior/interior" flag, and it is not swept up by this one.
+    preservative_treated: bool = False
     # A *coating* rather than a covering: a sealer, stain or paint that adds no measurable
     # thickness to what it is applied over. It still bills — by coverage area, with no waste
     # allowance — but it has no plane of its own, so the renderers must not draw one for it.

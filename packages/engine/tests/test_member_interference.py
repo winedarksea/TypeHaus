@@ -69,13 +69,31 @@ def test_member_footprint_raked_member_spans_min_max_z():
 
 
 def test_deck_stacks_post_beam_joist(catlin_model):
+    """post -> beam -> joist, measured AT A STATION rather than off the bounding box.
+
+    BM-SG-BLW tilts 2 5/8" over its run for drainage (``Beam.top_rise_end``), so its
+    ``z0_m``/``z1_m`` are the whole run's Z extent and comparing either against one joist is
+    comparing two different places. The sweep path is what says where the member is at a
+    given plan y, and FS-SG-DECK's field rises with it.
+    """
     tol = inch(0.25).meters
     solids = {s.tag: s for s in catlin_model.solids}
     post, beam = solids["PT-SG-BF1"], solids["BM-SG-BLW"]
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
-    joist = next(m for m in deck.members if m.category == "joist")
-    assert abs(post.z1_m - beam.z0_m) < tol   # post top meets beam soffit
-    assert abs(beam.z1_m - joist.z0_m) < tol  # beam top meets joist underside
+
+    (_x0, y0, cz0), (_x1, y1, cz1) = beam.sweep.path
+    depth = (beam.z1_m - beam.z0_m) - abs(cz1 - cz0)
+
+    def centre_at(y):
+        return cz0 + (cz1 - cz0) * (y - y0) / (y1 - y0)
+
+    # The post's top against the beam soffit directly over it.
+    assert abs(post.z1_m - (centre_at(post.outline[0][1]) - depth / 2.0)) < tol
+
+    # Every joist's underside against the beam top at that joist's own y: the field is a
+    # staircase on a tilted beam, so this holds at all eighteen or at none.
+    for joist in (m for m in deck.members if m.category == "joist"):
+        assert abs((centre_at(joist.p0[1]) + depth / 2.0) - joist.z0_m) < tol
 
 
 def test_outer_joist_spans_cantilever_nine_inches(catlin_model):

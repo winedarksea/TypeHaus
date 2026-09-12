@@ -212,6 +212,13 @@ class StructuralHardware:
     part_number_by_length_in: dict = field(default_factory=dict)
     # Nominal member sizes this part is published for (empty = size-independent).
     fits_nominal: tuple = ()
+    #: Which wood-contact condition this coating is for — :data:`EXPOSURE_DRY` or
+    #: :data:`EXPOSURE_TREATED`. ``None`` is the default and means "this part answers for
+    #: every exposure", which is the honest state for a role served by one product: nobody
+    #: has yet had to decide, and pretending otherwise would put a claim on ~40 records that
+    #: no catalog page was read for. Set it only where a role holds two coatings of one part
+    #: and ``hardware_for_role`` has to choose between them.
+    exposure: str | None = None
     # A part that does not fasten to the building on its own, but mounts on another
     # catalogued part — one of those is needed per unit of this one. Without it a BOM reads
     # as orderable while being short every bracket: the CanDuit ring holds the pipe, but it
@@ -252,13 +259,38 @@ def hardware_capacity_records() -> tuple:
     return CAPACITY_ONLY_RECORDS
 
 
-def hardware_for_role(role: str) -> StructuralHardware:
+#: The two answers :data:`StructuralHardware.exposure` gives, and the only two a caller may
+#: ask for. ``"dry"`` is plain G90 zinc territory: interior framing, and exterior framing
+#: that is untreated and stays out of the weather. ``"treated"`` is contact with
+#: preservative-treated wood, where IRC R317.3.1 requires hot-dip galvanized (G185 / ZMAX),
+#: stainless, silicon bronze or copper — the copper in modern preservatives eats G90.
+#:
+#: **It is deliberately a wood-contact question and not an indoor/outdoor one.** A roof truss
+#: heel on a dry SPF plate is "dry" even though the wall under it faces the weather, and a
+#: KDAT deck joist is "treated" even where it is under cover. The coating is decided by what
+#: the steel touches, which is the thing the code and the manufacturer both say.
+EXPOSURE_DRY = "dry"
+EXPOSURE_TREATED = "treated"
+
+
+def hardware_for_role(role: str, *, exposure: str | None = None) -> StructuralHardware:
     """The single catalog item serving ``role``, or raise — a BOM line without a part is
-    not a bill of materials, so an unserved role is a catalog bug, not a silent blank."""
+    not a bill of materials, so an unserved role is a catalog bug, not a silent blank.
+
+    ``exposure`` is the second key, and it exists because one role really can be served by
+    two products that are the same part in two coatings: an H2.5A and an H2.5AZ are one tie,
+    one published allowable and one price band apart, and a house that lands ties on both
+    SPF plates and treated glulam has to buy both. Where a role holds one product the
+    argument changes nothing (that product answers for every exposure); where it holds more
+    than one, omitting it is a LookupError rather than a silent pick of the cheaper part.
+    """
     items = [item for item in structural_hardware_catalog() if item.role == role]
+    if len(items) > 1 and exposure is not None:
+        items = [item for item in items if item.exposure == exposure]
     if len(items) != 1:
-        raise LookupError(f"expected exactly one library hardware item for role {role!r}, "
-                          f"found {[item.tag for item in items]}")
+        raise LookupError(f"expected exactly one library hardware item for role {role!r}"
+                          + (f" at exposure {exposure!r}" if exposure is not None else "")
+                          + f", found {[item.tag for item in items]}")
     return items[0]
 
 

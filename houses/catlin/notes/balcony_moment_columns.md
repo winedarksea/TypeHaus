@@ -609,12 +609,13 @@ above comes from the manufacturer's instructions rather than from the report.
 ```
 haus engineering houses/catlin
 haus engineering houses/catlin --item deck_post/PT-SG-BF1     # a corner column, term by term
-haus engineering houses/catlin --item deck_beam/BM-SG-BLC     # the centre glulam
 haus engineering houses/catlin --fingerprint deck_post/PT-SG-BF1
 ```
 
-Four `deck_post/PT-SG-B{R,F}{1,3}` records and three `deck_beam/BM-SG-BL*` records, all
-`draft`, all `unsealed`. `structural.lateral_racking` now names each corner column as the
+Four `deck_post/PT-SG-B{R,F}{1,3}` records, all `draft`, all `unsealed`. **The three
+`deck_beam/BM-SG-BL*` records are gone**, and §5 above is where that happened: the glulams
+moved onto a `PublishedSpan` on 2026-09-11, which is a prescriptive read and not something
+a seal adds to. `--item deck_beam/BM-SG-BLC` reports nothing now. `structural.lateral_racking` now names each corner column as the
 deck's lateral system and delegates to the same `deck_post/<tag>` item — one design, one
 stamp, two checks.
 

@@ -334,6 +334,34 @@ class Beam(Element):
     # tops are already dropped — has no such inference available, and authoring it into a
     # FloorSystem's bearing_refs to borrow the drop would claim joists it does not carry.
     top_elevation: Length | None = None
+    #: **The one field that turns this prism into a tilted member.** The END node's top,
+    #: measured RELATIVE to the start node's — positive raises the far end. Unset (the
+    #: default) is the flat beam every other member here is.
+    #:
+    #: A *rise*, not a second absolute elevation, and that is the whole design: the start
+    #: top is already answered two ways — authored on ``top_elevation``, or derived by
+    #: ``resolve/envelope.py::_bearing_stack_drops`` from the deepest joist bearing on this
+    #: beam — and a second absolute would have to pick one of them and would silently
+    #: disagree with the other. A rise composes with both, and the bearing-stack derivation
+    #: that shortens the posts under the beam keeps working untouched.
+    #:
+    #: **This is not a chamfer and cannot be done with one.** A chamfer is a corner bevel; a
+    #: drainage fall is the whole member out of level. Nor is it a ``Wedge``: a wedge is a
+    #: rip whose DEPTH changes, which is what you build when the member under it must stay
+    #: level, and stacking one on a beam only moves the interference up to the joists.
+    #:
+    #: A tilted beam resolves through ``SolidSweep`` rather than as a prism — see
+    #: ``_resolve_beam``. ``outline``/``z0_m``/``z1_m`` still carry the whole run's plan
+    #: silhouette and Z extent, so consumers that know nothing of sweeps read a box that
+    #: contains the member instead of a box beside it.
+    #:
+    #: **The catlin case, and why nothing caught it.** ``SPEC.rear_pillar_rise_in`` raises the
+    #: balcony's rear pillar row 2" so the deck falls south at 0.21 in/ft. The rise reached
+    #: the posts — ``_resolve_post`` shortens rather than overrides precisely to preserve it —
+    #: and stopped there, because a ``Beam`` was a flat extrusion. All three rear column tops
+    #: ran 2" up INSIDE the beams they carry, at 0 FAIL: ``structural.concrete_interference``
+    #: is scoped to isolated pours and nothing grades a column tangent to a beam.
+    top_rise_end: Length | None = None
     # Optional finish assembly (paint/stain), same contract as Post.assembly: the resolver
     # forwards it to the beam's solid so render/IFC read the finish instead of the bare
     # per-category palette colour. Unset leaves the beam its structural wood colour.

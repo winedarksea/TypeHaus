@@ -51,7 +51,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # into an interior wall by a takeoff that only knows "lumber".
     Material(tag="kdat", name="KDAT southern yellow pine (treated exterior framing)",
              r_per_inch=0.95, density=600.0, perm_rating=2.9, hatch="lumber",
-             color="#bfa06a",
+             color="#bfa06a", preservative_treated=True,
              # NDS 2018 Table 12.3.3A, "Southern Pine". The withdrawal of every screw
              # driven into a KDAT girt goes as G squared, so this is a structural input
              # and not a description.
@@ -70,6 +70,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # never sits in a vapour stack (Glaser reports UNKNOWN rather than a guess).
     Material(tag="glulam-treated", name="Preservative-treated SYP structural glulam",
              r_per_inch=0.95, density=560.0, hatch="lumber", color="#c8a877",
+             preservative_treated=True,
              source="SYP glulam laminations at ~35 pcf oven-dry (560 kg/m3), the AWC "
                     "NDS Supplement value for the group; R/inch shares the kdat SYP "
                     "figure, since the laminations are the same species"),

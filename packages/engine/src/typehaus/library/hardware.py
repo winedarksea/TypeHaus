@@ -33,6 +33,8 @@ strength of having read the code report and stopped there.
 from __future__ import annotations
 
 from typehaus.takeoff.hardware_catalog import (
+    EXPOSURE_DRY,
+    EXPOSURE_TREATED,
     ROLE_BEAM_HOLD_DOWN,
     ROLE_BEARING_STANDOFF,
     ROLE_BRACE_THROUGH_BOLT,
@@ -137,14 +139,119 @@ LUS_FACE_MOUNT_HANGER = StructuralHardware(
            "(strongtie.com/lus) — level joist into the face of a wood carrier",
 )
 
+#: The Simpson C-C masonry/concrete hanger table, read once and cited by all three records
+#: below. Page 280 is the only page in the catalog that publishes a hanger load INTO a pour,
+#: and everything about which family may be used there comes from it.
+_C_C_MASONRY_HANGERS = (
+    "Simpson Strong-Tie Wood Construction Connectors catalog C-C-2017, p. 280 "
+    "\"HU/HUC/HSUR/L Hangers (cont.)\" — the masonry/concrete table, updated 04/17/17, "
+    "read 2026-09-12. Footnote 1: uplift is already increased for wind/earthquake with no "
+    "further increase allowed. Footnote 2: minimum f'c = 2,500 psi, minimum f'm = 1,500 psi. "
+    "**Footnote 5: \"Products shall be installed such that Titen screws are not exposed to "
+    "weather.\"** The table is headed \"Allowable Loads (DF/SP)\" and publishes NO SPF/HF "
+    "column for the concrete case"
+)
+
+HUC_CONCRETE_HANGER = StructuralHardware(
+    tag="simpson-huc-concealed-flange-hanger",
+    name="HUC concealed-flange masonry/concrete hanger",
+    role=ROLE_CONCRETE_FACE_MOUNT_HANGER,
+    manufacturer=_SIMPSON,
+    model="HUC",
+    source="Simpson Strong-Tie HUC heavy concealed-flange face-mount hanger family "
+           "(strongtie.com/huc) — a wood member hung on concrete or grout-filled masonry, "
+           "the round header holes taking 1/4\" Titen concrete screws in place of the "
+           "16d commons the wood-header table is measured through. **The FAMILY record, "
+           "which is all a derived row can honestly name**: ``takeoff/hangers.py`` knows "
+           "only \"this resolver-emitted hanger lands on a foundation wall\" and has no "
+           "member depth to pick a model from. A house that knows the member authors the "
+           "size (\"HUC212-3\"), and ``hardware_by_model`` prefers the exact record. "
+           "This took the role from HUCQ on 2026-09-12: see that record for why",
+)
+
+#: **Retired from the concrete role, and kept as a capacity record — the retirement IS the
+#: finding.** HUCQ was on ``ROLE_CONCRETE_FACE_MOUNT_HANGER`` for two reasons that both
+#: turned out to be wrong, and a later reader reaching for it again should meet them rather
+#: than a blank.
+#:
+#: 1. **HUCQ is not in the masonry/concrete table at all.** ``_C_C_MASONRY_HANGERS`` (p. 280)
+#:    lists HU and HUC models only. The concrete capacity on that page comes from substituting
+#:    the wood table's FACE NAILS with 1/4" Titen screws — and an HUCQ has no nail holes to
+#:    substitute: the catalog's own HUCQ rows are fastened "(12) 1/4" x 2-1/2" SDS" to the
+#:    header, a Strong-Drive wood screw that ships with the hanger and bites nothing in a pour.
+#:    The product page says as much in one line: "for installation to masonry or concrete,
+#:    see p. 279".
+#: 2. **The seat was a size too narrow.** The four sunken-garden pockets carry a 3-ply 2x12
+#:    at 4-1/2" x 11-1/4". HUCQ410-SDS is W 3-9/16" — a 4x seat, and 4x is 3-1/2" — so the
+#:    beam was 15/16" wider than the hanger it was billed into. Nothing validates a
+#:    ``Connector.size`` against the member it carries, so the model was silent for three
+#:    weeks. ``houses/catlin/prices.toml`` half-noticed it and argued the wrong way round
+#:    ("still inside the 4x width the -410 designates").
 HUCQ_CONCRETE_HANGER = StructuralHardware(
     tag="simpson-hucq-concealed-flange-hanger",
-    name="HUCQ concealed-flange masonry/concrete hanger",
+    name="HUCQ concealed-flange hanger (WOOD HEADERS ONLY)",
     role=ROLE_CONCRETE_FACE_MOUNT_HANGER,
     manufacturer=_SIMPSON,
     model="HUCQ",
-    source="Simpson Strong-Tie HUCQ concealed-flange hanger (strongtie.com/hucq) — "
-           "published for wood members hung on concrete or masonry",
+    source="Simpson Strong-Tie HUCQ concealed-flange hanger (strongtie.com/hucq) — a "
+           "heavy concealed-flange hanger installed with Strong-Drive SDS screws supplied "
+           "with the hanger. **It is a WOOD-header part.** " + _C_C_MASONRY_HANGERS
+           + " lists HU/HUC only; HUCQ appears nowhere on it, and it carries no nail holes "
+           "for the Titen substitution that page's loads are built on",
+)
+
+#: The triple-2x12 concealed-flange hanger the sunken garden's four beam pockets take.
+#:
+#: **HUC rather than HU**: both beam ends land in a 6" pocket cast in a 12" wall, so an
+#: exposed face flange has nowhere to go — the same reasoning that rejected LUS210 here.
+#: **-212-3 rather than -410**: the member is a 3-ply 2x12, 4-1/2" x 11-1/4", and the seat
+#: has to be the member's.
+HUC212_3_CONCRETE_HANGER = StructuralHardware(
+    tag="simpson-huc212-3-concealed-flange-hanger",
+    name="HUC212-3 concealed-flange hanger, triple 2x12",
+    role=ROLE_CONCRETE_FACE_MOUNT_HANGER,
+    manufacturer=_SIMPSON,
+    model="HUC212-3",
+    source="Simpson Strong-Tie HUC212-3 — 14 ga, W 4-11/16\", H 10-5/16\", B 2-1/2\" "
+           "(C-C-2017 p. 136, the SPF/HF face-mount table, HU212-3 / HUC212-3 row, read "
+           "2026-09-12). W 4-11/16\" takes the 4-1/2\" three-ply seat with 3/16\" to "
+           "spare; H 10-5/16\" is the hanger's own height and is not the member depth. "
+           "A SEPARATE record from the HUC family above and not a size within it, for the "
+           "reason the H2.5ASS is separate: \"HUC212-3\".startswith(\"HUC\") is true, so "
+           "without this row a BOM line reading HUC212-3 would be captioned with the "
+           "family's name and carry no allowable at all",
+    # p. 280, HUC212-3 (Max.) row, CONCRETE columns. The (Min.) row of the same model is
+    # (16) screws for 1,135 lbf uplift / 4,920 lbf download; the Max. schedule is recorded
+    # because it is what these four pockets are detailed to and the schedule is stated with
+    # the number.
+    #
+    # ** THE DOWNLOAD IS NOT WHAT CARRIES THIS BEAM, AND THE RECORD SHOULD NOT BE READ AS
+    # IF IT WERE. ** Each pocket is 6" deep and the beam is 4-1/2" wide, so 27 sq in of the
+    # three-ply bears DIRECTLY on the cast sill of the pocket. The hanger's work here is
+    # uplift and lateral restraint. See houses/catlin/notes/balcony_differential_movement.md.
+    #
+    # ** FOOTNOTE 5 IS A LIVE CONDITION, NOT BOILERPLATE. ** "Titen screws are not exposed to
+    # weather" — and a pocket in the wall of an open garden is weather unless it is detailed
+    # not to be. The condition is carried on the joint, not waved: the pocket is flashed, back-
+    # sloped and sealed so the screws sit dry (notes/beam_water_protection.md). Type 316 Titen
+    # Turbo exists, but these published loads are measured through the CARBON screw and
+    # Simpson's stainless-parity letter (_L_F_SSNAILS) covers connector NAILS, not Titen
+    # anchors — so a stainless substitution here would be an unpublished swap, not a free one.
+    allowable=AllowableLoads(
+        uplift_lb=1800.0,
+        download_lb=5085.0,
+        load_duration_factor=1.6,  # uplift only; footnote 1. The download is 100/125.
+        species="DF/SP — **the masonry/concrete table publishes no SPF/HF column.** The "
+                "member here is a 3-ply KDAT 2x12 (southern pine, SG 0.55), which is inside "
+                "the column as published; the porch's SPF framing is not, and a later reader "
+                "hanging an SPF member in a pour has no number on this page to use",
+        fasteners="(22) 1/4\" x 2-3/4\" Titen 2 (TTN2-25234H) into the concrete and (10) "
+                  "10d common into the joist — the (Max.) schedule. Titen TTN25234H may "
+                  "also be used at full table loads. The (Min.) schedule is (16) screws and "
+                  "(6) 10d for 1,135 lbf uplift / 4,920 lbf download",
+        citation=_C_C_MASONRY_HANGERS + ". HUC212-3 (Max.) row, Concrete columns: uplift "
+                 "1,800 lbf at 160%, download 5,085 lbf at 100/125%",
+    ),
 )
 
 # **Retired from the knee-brace role, and kept as a capacity record.** It has no published
@@ -777,8 +884,13 @@ H25A_HURRICANE_TIE = StructuralHardware(
     role=ROLE_HURRICANE_TIE,
     manufacturer=_SIMPSON,
     model="H2.5A",
+    exposure=EXPOSURE_DRY,
     source="Simpson Strong-Tie H2.5A tie (strongtie.com/h25a) — rafter/joist-to-plate "
-           "uplift connection",
+           "uplift connection. **G90 zinc, so DRY wood contact only.** It took every "
+           "derived bearing tie in the house until 2026-09-12, including the twenty-four "
+           "on the sunken garden's treated frame, because the role held one product and "
+           "``hardware_for_role`` could not ask a second question. H25AZ_HURRICANE_TIE "
+           "below is that joint\'s part; this one keeps the ~270 dry ones",
     # ESR-2613 Table 1, H2.5A row. **The lateral values are the ones to notice: 110 lbf,
     # against 700 lbf uplift.** A check that compared a lateral demand against "the H2.5A's
     # 700 lb capacity" would pass a joint six times overloaded, which is precisely why
@@ -805,6 +917,56 @@ H25A_HURRICANE_TIE = StructuralHardware(
                   "2026-08-30; footnote 2 requires a unity check across uplift + both "
                   "lateral directions for simultaneous loading, footnote 5 states the uplift "
                   "is already increased for wind with no further increase allowed"),
+    ),
+)
+
+H25AZ_HURRICANE_TIE = StructuralHardware(
+    tag="simpson-h2-5az-hurricane-tie",
+    name="H2.5AZ ZMAX hurricane/seismic tie",
+    role=ROLE_HURRICANE_TIE,
+    exposure=EXPOSURE_TREATED,
+    manufacturer=_SIMPSON,
+    model="H2.5AZ",
+    source="Simpson Strong-Tie H2.5AZ — the H2.5A above in ZMAX, Simpson\'s G185 "
+           "hot-dip-galvanized-after-fabrication coating (strongtie.com/h25az). **The "
+           "coating is the whole record.** IRC R317.3.1 requires fasteners and connectors "
+           "in contact with preservative-treated wood to be hot-dip galvanized, stainless, "
+           "silicon bronze or copper; the copper in a modern ACQ/CA preservative corrodes "
+           "plain G90 zinc, and Simpson publish the same instruction per part. The twenty-"
+           "four ties on the sunken garden\'s treated glulam beams and KDAT porch beams "
+           "were billed as G90 H2.5A until 2026-09-12, at 0 FAIL, because "
+           "``hardware_for_role`` held one product per role and had no way to ask.",
+    # **Same steel, same holes, same report row — only the coating differs.** ESR-2613 is a
+    # structural report: it tabulates the H2.5A's allowable loads through a stated fastener
+    # schedule and says nothing about zinc thickness, so the Z model is the same row. That is
+    # a copy of a published value, not a derivation across a family:
+    # `_H25AZ_ESR2613` names the table, the row, and the date it was read, and the ZMAX
+    # coverage is the catalog's own — Simpson list the H2.5AZ under the same H2.5A entry.
+    #
+    # **The species caveat rides across unchanged and is still the live one.** These values
+    # are DF/SP (SG 0.50/0.55); ESR-2613 publishes no SPF column for the hurricane ties. Here
+    # that caveat is, for once, satisfied rather than carried: every joint this part is
+    # selected for lands on KDAT southern pine or treated SYP glulam, both SG 0.55.
+    allowable=AllowableLoads(
+        uplift_lb=700.0,
+        lateral_f1_lb=110.0,
+        lateral_f2_lb=110.0,
+        load_duration_factor=1.6,
+        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**, and ESR-2613 publishes "
+                "no SPF column for the hurricane ties. Unlike the galvanized record above, "
+                "this is not a caveat in force: the joints that select this part are all on "
+                "SYP (KDAT and treated glulam, SG 0.55), inside the published column",
+        fasteners="5 - 0.131 in x 2-1/2 in to the rafter/joist and 5 - 0.131 in x 2-1/2 in "
+                  "to the plates — the carbon schedule, unchanged. **Drive it with "
+                  "hot-dip-galvanized nails, not electrogalvanized**: R317.3.1 governs the "
+                  "nail as much as the connector, and a G90 nail through a ZMAX tie into "
+                  "treated wood is the same corrosion cell with a smaller anode",
+        citation=("ICC-ES ESR-2613 (Simpson hurricane ties) Table 1, H2.5A row, read "
+                  "2026-08-30 — the report tabulates the tie\'s structural capacity through "
+                  "a stated nail schedule and does not distinguish the G90 and ZMAX "
+                  "coatings, which are the same stamping; footnote 2 requires a unity check "
+                  "across uplift + both lateral directions under simultaneous loading, "
+                  "footnote 5 states the uplift already carries the wind increase"),
     ),
 )
 
@@ -1207,7 +1369,16 @@ BEARING_STANDOFF_SHIM = StructuralHardware(
            "footprint with NO grout island (epoxy grout confined under the plate if a "
            "levelling bed proves unavoidable, never a cementitious one), an EPDM or HDPE "
            "isolator where the pack meets an HGAM10 gusset, and the stack shimmed so the "
-           "soffit stands clear of the pour rather than bedded on it",
+           "soffit stands clear of the pour rather than bedded on it. **Where the beam is "
+           "TILTED, the leaves are LAPPED TO THE DRAINAGE SLOPE** — full leaves at the low "
+           "edge, progressively short ones toward the high edge — rather than a custom "
+           "tapered shim being fabricated: a tapered stainless shim is a laser-cut/CNC "
+           "specialist item, and a pack is already a stack of leaves. At catlin\'s balcony "
+           "that taper is 1/8\" over the 6\" bearing (0.0227 in/in), over an EPDM isolator "
+           "that conforms the rest under load. SJI requires no sloped seat below 3/8 in per "
+           "foot and bridge practice taper-shims sloped girders to the nearest 1/16 in, so "
+           "this slope is inside the range a conforming pad handles — "
+           "houses/catlin/notes/balcony_differential_movement.md §3",
 )
 
 # The ground-pad twin of the part above, and a much simpler joint: an equipment stand
@@ -1299,7 +1470,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LSSR_SLOPED_HANGER,
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
-    HUCQ_CONCRETE_HANGER,
+    HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,
     STHD_STRAP_HOLDOWN,
@@ -1316,6 +1487,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LTP4_LATERAL_TIE_PLATE,
     SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,
+    H25AZ_HURRICANE_TIE,
     HGAM10_MASONRY_GUSSET,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,
@@ -1353,4 +1525,6 @@ CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
     H25ASS_HURRICANE_TIE,
     APVKB_KNEE_BRACE,
+    HUCQ_CONCRETE_HANGER,
+    HUC212_3_CONCRETE_HANGER,
 )

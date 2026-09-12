@@ -127,6 +127,46 @@ the beam top is still open, and the joists then bear on it. That is fine for a c
 a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole
 labour half of the `beam_cap` price row; it is not a return-visit trade.
 
+## The four beam pockets, and the footnote that made the detail mandatory
+
+The back and front porch beams do not land on a column top: `BM-SG-BKW/BKE/FRW/FRE` end in
+**6" pockets cast in the 12" `W-SG-W1`/`E1` walls**, on the four hangers
+`CN-SG-HGR-W/-E/-FW/-FE`. A pocket is the one place in this structure where a beam end is
+put *inside* concrete, which is the classic end-grain rot detail — and since 2026-09-12 it is
+also a **published condition on the hanger's capacity**, which is what moved it from good
+practice to a requirement.
+
+Those four were retyped from `HUCQ410-SDS` to `HUC212-3` on 2026-09-12 (the HUCQ is a
+wood-header part and its seat was 15/16" too narrow — `library/hardware.py`). The HUC's
+concrete loads come from Simpson's masonry/concrete hanger table, C-C p. 280, and **footnote
+5 of that table reads, verbatim: "Products shall be installed such that Titen® screws are not
+exposed to weather."** A pocket in the wall of an open garden is weather until it is detailed
+not to be, so the detail below is what the hanger's 1,800 lbf uplift / 5,085 lbf download is
+conditional on. It is not a durability nicety any more.
+
+The pocket, in the order it goes in:
+
+1. **Form the pocket floor back-sloped to drain outward**, ~1/4" over the 6". A level pocket
+   floor is a cup, and a cup with a beam end in it is the failure this whole note is about.
+2. **A formed pan flashing under the bearing**, turned up at the back of the pocket and
+   lapped OUT over the wall face below, so anything that reaches the pocket leaves it on the
+   outside of the wall rather than behind the flashing.
+3. **An air gap at the end and both sides of the beam** — 1/2" is enough. The beam bears on
+   its 4 1/2" x 6" of sill and touches nothing else; end grain buried tight in a damp socket
+   never dries, whatever the treatment.
+4. **Sealant at the TOP of the pocket only, never at the bottom.** Sealing the bottom is how
+   a drained pocket becomes a cup. This is the one line of this detail a caulk gun gets
+   wrong by instinct.
+5. **The butyl top tape runs over the beam and into the pocket**, continuous with
+   `_BEAM_TAPE_WIDE` on the rest of the run — the ply seams do not stop at the wall face.
+
+**What the hanger is and is not doing here.** 4 1/2" x 6" = **27 sq in** of the three-ply
+bears directly on the cast sill, and that is the gravity path whatever hangs beside it. The
+four hangers take uplift and lateral restraint; the published download is headroom. Do not
+credit the hanger with the sill's work, and do not value-engineer the hanger out on the
+grounds that the sill carries the load.
+`notes/balcony_differential_movement.md` §8 carries the same joint from the hardware side.
+
 ## What was deliberately not done
 
 - **No extra cantilever**, for the reason at the top. The deck stays 21'-0" x 8'-8".

@@ -3920,8 +3920,16 @@ MATERIALS = [
     # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py
     # (CONTRIBUTING §Promotion flow); they arrive here through
     # STARTER_MATERIALS above.
+    # ``preservative_treated``: the paint is a finish over PT stock, which is what the name
+    # has always said. It decides the COATING of any connector landing on a member wearing
+    # this material (IRC R317.3.1 — copper preservative corrodes G90 zinc), and nothing else
+    # reads it. The live case is BM-SG-FRW/FRE, the porch's two 3-ply KDAT 2x12 front beams:
+    # sixteen derived hurricane ties land on them, and they billed as plain G90 until
+    # 2026-09-12 because this assembly names the PAINT as its structure layer and the paint
+    # said nothing about the wood under it.
     Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
              density=500.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
+             preservative_treated=True,
              source="balcony 6x6 pillars, exterior white paint; painted softwood ~1 perm-in"),
     # The two CENTRE balcony pillars only, and the species is the whole point of the tag.
     # Every Simpson cap and base in ICC-ES ESR-2604 is conditioned by §3.2.2 on wood of

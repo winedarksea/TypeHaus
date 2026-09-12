@@ -20,6 +20,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
+from typehaus.resolve.sweep import straight_sweep_band
 from typehaus.resolve.framing.truss_wall import TRUSS_CATEGORIES
 
 # Minimum shared plan area (m²) for a real interference. A face/side abutment
@@ -60,6 +61,21 @@ class _Candidate:
         t = max(0.0, min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / run2))
         return (self.zlo0 + (self.zlo1 - self.zlo0) * t,
                 self.zhi0 + (self.zhi1 - self.zhi0) * t)
+
+
+def _swept_axis(solid):
+    """A tilted member's plan axis and its z-band AT EACH END, or ``None``.
+
+    ``resolve/sweep.straight_sweep_band`` is the reader; this is the adaptation to
+    ``_Candidate.zends``, which is the same per-endpoint band a raked FRAMED member already
+    carries. Without it a 2" drainage tilt turns an 11 7/8" beam into a 14 1/2" box and
+    every joist bearing on it reads as an interpenetration.
+    """
+    band = straight_sweep_band(solid)
+    if band is None:
+        return None
+    seg, depth, soffit0, soffit1 = band
+    return seg, (soffit0, soffit0 + depth, soffit1, soffit1 + depth)
 
 
 def _point_on_segment(pt, a, b, tol: float) -> bool:
@@ -442,9 +458,13 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             continue
         poly = Polygon(solid.outline)
         if poly.is_valid and poly.area > _TOL_AREA:
+            seg, zends = _solid_segment(solid), None
+            swept = _swept_axis(solid)
+            if swept is not None:
+                seg, zends = swept
             candidates.append(_Candidate(solid.tag, poly, solid.z0_m, solid.z1_m,
-                                         seg=_solid_segment(solid), kind=solid.category,
-                                         parent=solid.tag))
+                                         seg=seg, kind=solid.category,
+                                         parent=solid.tag, zends=zends))
 
     if len(candidates) < 2:
         return []

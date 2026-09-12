@@ -202,8 +202,12 @@ def test_every_routed_run_category_is_declared(catlin_model_ro):
     categories ``resolve/mep.py`` actually mints are the ones it names."""
     from typehaus.emit.trades import ROUTED_RUN_CATEGORIES
 
+    # "railing" sweeps and is not a run. Neither is "beam": a member out of level is not a
+    # prism either, so a TILTED beam (``Beam.top_rise_end`` — catlin's three balcony glulams
+    # fall 2" south for drainage) resolves through the same ``SolidSweep``. The sweep is a
+    # GEOMETRY fact, not a trade one, and this assertion is about the trade vocabulary.
     minted = {(s.category or "").lower() for s in catlin_model_ro.solids if s.sweep is not None}
-    assert minted - {"railing"} <= ROUTED_RUN_CATEGORIES
+    assert minted - {"railing", "beam"} <= ROUTED_RUN_CATEGORIES
 
 
 def test_the_runs_are_still_in_the_file_as_segments(catlin_model_ro, catlin_ifc):

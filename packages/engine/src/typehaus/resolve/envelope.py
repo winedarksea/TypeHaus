@@ -30,10 +30,12 @@ from typehaus.resolve.model import (
     ResolvedSolid,
     ResolvedWall,
     Ring,
+    SolidSweep,
 )
 from typehaus.resolve.roof_bearing import roof_bearings
 from typehaus.resolve.roof_edge_geometry import skin_layers, skin_stand_ins
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
+from typehaus.resolve.sweep import rect_profile
 from typehaus.resolve.stairs import _resolve_stair
 
 
@@ -651,7 +653,26 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
     z1 = (beam.top_elevation.meters if beam.top_elevation is not None
           else elevation - joist_drop.get(beam.tag, 0.0))
     z0 = z1 - cs.depth_m
+    # A TILTED beam (``top_rise_end``) is not a prism and cannot be one: it is the section
+    # above carried along a raked axis, which is exactly what a ``SolidSweep`` says. The
+    # path is the beam's CENTRELINE, so it runs at mid-depth at both ends, and the profile
+    # is the section in the leg's own (right, up) frame — ``resolve/sweep.py`` projects
+    # world +Z perpendicular to the axis, so the member rotates with the rake the way a
+    # sloped glulam is actually set, rather than being sheared.
+    #
+    # ``outline``/``z0_m``/``z1_m`` keep carrying the WHOLE RUN's plan silhouette and Z
+    # extent, per the ``ResolvedSolid.sweep`` contract: a consumer that knows nothing about
+    # sweeps then reads a box that CONTAINS the beam — conservative and honest — instead of
+    # a flat box the member has half escaped.
+    rise = 0.0 if beam.top_rise_end is None else beam.top_rise_end.meters
+    sweep = None
+    if abs(rise) > 1e-9:
+        mid = z1 - cs.depth_m / 2.0
+        sweep = SolidSweep(
+            path=((p0[0], p0[1], mid), (p1[0], p1[1], mid + rise)),
+            profile=rect_profile(cs.width_m, cs.depth_m))
+        z1, z0 = max(z1, z1 + rise), min(z0, z0 + rise)
     # An unset assembly leaves the solid on the "beam" palette entry (wood) rather than the
     # neutral fallback, so an unfinished beam still reads as lumber in every renderer.
     return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1,
-                         assembly=beam.assembly)
+                         assembly=beam.assembly, sweep=sweep)

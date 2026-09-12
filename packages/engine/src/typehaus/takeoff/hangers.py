@@ -24,6 +24,7 @@ from typehaus.takeoff.hardware_catalog import (
     hardware_row,
 )
 from typehaus.takeoff.hardware_config import HangerDetectionRules
+from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
 
 
@@ -37,6 +38,21 @@ class CarryingElement:
     z0_m: float
     z1_m: float
     category: str = "beam"
+    #: Soffit and top at ``p1``, for a carrier that is not level — a TILTED beam
+    #: (``Beam.top_rise_end``). ``None`` is a level carrier and the flat pair above answers
+    #: for the whole run. Without this the run's bounding box stands in for its section, and
+    #: a 2" drainage tilt makes an 11 7/8" beam look 14 1/2" deep — deep enough for every
+    #: joist BEARING on it to read as hung inside it.
+    z0_end_m: float | None = None
+    z1_end_m: float | None = None
+
+    def band_at(self, point) -> tuple[float, float]:
+        """``(soffit, top)`` at plan ``point`` along this carrier."""
+        if self.z0_end_m is None:
+            return self.z0_m, self.z1_m
+        seg = (self.p0, self.p1)
+        return (interpolate_along(seg, point, self.z0_m, self.z0_end_m),
+                interpolate_along(seg, point, self.z1_m, self.z1_end_m))
 
 
 @dataclass(frozen=True)
@@ -66,6 +82,13 @@ def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     ]
     for solid in model.solids:
         if solid.category not in rules.carrier_solid_categories:
+            continue
+        band = straight_sweep_band(solid)
+        if band is not None:
+            (start, end), depth, soffit0, soffit1 = band
+            carriers.append(CarryingElement(
+                tag=solid.tag, p0=start, p1=end, z0_m=soffit0, z1_m=soffit0 + depth,
+                z0_end_m=soffit1, z1_end_m=soffit1 + depth))
             continue
         start, end = centerline_endpoints(list(solid.outline))
         carriers.append(CarryingElement(tag=solid.tag, p0=start, p1=end,
@@ -102,10 +125,13 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 if distance_point_to_segment(point, carrier.p0, carrier.p1) > gap_tolerance_m:
                     continue
                 # Bearing on top of the carrier is not a hanger; hanging means the member's
-                # depth is developed inside the carrier's depth.
-                if bottom_z >= carrier.z1_m - seat_tolerance_m:
+                # depth is developed inside the carrier's depth. Measured AT THE HUNG END's
+                # plan point, because a tilted carrier's depth is somewhere different at
+                # every station along it.
+                carrier_z0, carrier_z1 = carrier.band_at(point)
+                if bottom_z >= carrier_z1 - seat_tolerance_m:
                     continue
-                if top_z <= carrier.z0_m or bottom_z >= carrier.z1_m:
+                if top_z <= carrier_z0 or bottom_z >= carrier_z1:
                     continue
                 found.append(HungConnection(
                     member_key=f"{member.parent_uid}:{member.child_key}",
