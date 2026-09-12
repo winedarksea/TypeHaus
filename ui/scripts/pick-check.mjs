@@ -26,15 +26,14 @@ try {
       await new Promise(r => setTimeout(r, 200)); }
     throw new Error("model never arrived");`);
 
-  // Pose: 3D only, attic storey, and every skin layer group off so the framing is what the
+  // Pose: 3D only, attic storey, and every trade but framing off so the framing is what the
   // camera can actually see. A rafter under 8" of foam and standing seam is not pickable,
-  // and hiding a group takes its meshes out of the raycast too (isRenderedInScene).
+  // and hiding a trade takes its meshes out of the raycast too (isRenderedInScene).
   const pose = await evaluate(session, `
     const st = window.__haus.store;
     st.getState().setViewMode("3d");
     st.getState().setActiveStorey("attic");
-    for (const g of ["sheathing","membrane","insulation","airgap","furring","cladding","finish","other"])
-      st.getState().setLayerGroupVisible(g, false);
+    st.getState().showOnlyTrades(["framing"]);
     st.getState().select("member", null);
     const d = Date.now() + 40000; let c = null;
     while (Date.now() < d) { c = document.querySelector("canvas");
