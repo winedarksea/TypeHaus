@@ -334,6 +334,9 @@ class ResolvedOpening:
     # head. The opening's total height_m already includes this rise (straight run = height -
     # rise), so an 8'-tall opening with a 4' rise is a 4' rectangle capped by a 4' semicircle.
     arch_rise_m: float = 0.0
+    # The tag of the run this hole exists FOR (``RoughOpening.penetration_for``), or None.
+    # Only ``mep.run_through_opening`` reads it, and only to exempt that one pairing.
+    penetration_for: str | None = None
     # A pocket door's leaf parks inside the wall beside the opening. ``pocket_run_m`` is how
     # far that cavity runs past the rough opening and ``pocket_sign`` which way along the
     # wall axis (+1 toward the host's end node). Both are 0 for every other operation.

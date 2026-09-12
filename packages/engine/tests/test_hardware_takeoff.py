@@ -256,7 +256,13 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # "16 in o.c. strips x 24 in o.c. fasteners" grid PER WALL RUN, and re-cutting the same
     # perimeter into differently-sized pieces re-rounds every strip. Nine runs where there
     # were ten. See notes/garage_orientation_lot.md.
-    assert row["count"] == 1118 and furring[0]["count"] == 224
+    # ** 1118 -> 1127 ON 2026-09-11, AND IT IS THE TWO ERV PENETRATIONS. ** `AO-M-ERV-OA`
+    # and `AO-S-ERV-EA` (plan/mep_erv.py) put a 7" rough opening through W-M-W1B and
+    # W-S-W1B, and an opening in a girt wall packs block stations at its jambs exactly as a
+    # window does: W-M-W1B 14 -> 19, W-S-W1B 12 -> 16, +9 and nothing else in the house
+    # moved. Same "a station moved" arithmetic as every entry above — a hole in a girt wall
+    # is a hole whether a sash or a duct goes through it.
+    assert row["count"] == 1127 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

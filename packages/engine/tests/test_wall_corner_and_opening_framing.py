@@ -548,7 +548,16 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # 8 mod 16, so the 14" RO falls wholly inside one bay. Same tag, different station,
     # different type, different argument — and this one took RM-S-BED3 off R303.1
     # Exception 1, which the 23'-4" unit had also done and the moves had given back.
-    assert len(framed) == 13, [o.tag for o in framed]
+    #
+    # ** 13 -> 15 ON 2026-09-11, AND THE TWO NEW ONES ARE NOT WINDOWS. ** `AO-M-ERV-OA` and
+    # `AO-S-ERV-EA` are the ERV's two outdoor penetrations, 7" square holes through the west
+    # wall for a 6" duct and its flashed curb (`plan/mep_erv.py`). They are in this list for
+    # the family's own reason and no other: a 7" RO lands wholly inside a bay, so it takes no
+    # header, no jack and no king, and the bay's bounding studs carry its rough sill. They
+    # belong here precisely BECAUSE the rule is about width against the module and says
+    # nothing about what fills the hole — which is what makes a duct penetration and a 14"
+    # window the same framing problem.
+    assert len(framed) == 15, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

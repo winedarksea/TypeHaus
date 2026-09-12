@@ -229,6 +229,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     center_along_m=center, kind=kind, is_door=is_door,
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,
                     arch_rise_m=arch_rise,
+                    penetration_for=getattr(el, "penetration_for", None),
                     pocket_run_m=pocket_run, pocket_sign=pocket_sign,
                 )
             )

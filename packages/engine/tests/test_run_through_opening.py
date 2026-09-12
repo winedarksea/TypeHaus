@@ -92,7 +92,8 @@ def test_a_riser_standing_in_an_opening_is_caught(catlin_model) -> None:
         model = catlin_model
 
     prisms = {tag: prism for tag, _door, _host, prism, *_ in opening_prisms(_Ctx())}
-    bands = {tag: (low, high) for tag, _door, _host, _p, low, high in opening_prisms(_Ctx())}
+    bands = {tag: (low, high)
+             for tag, _door, _host, _p, low, high, _pen in opening_prisms(_Ctx())}
     assert "D-S-PLANT" in prisms, "the opening the check was written for must resolve"
     low, high = bands["D-S-PLANT"]
     assert high - low == pytest.approx(80 * 0.0254, abs=1e-6), "a 6'-8\" door"
@@ -109,3 +110,58 @@ def test_the_jamb_tolerance_does_not_swallow_a_real_crossing() -> None:
     keep catching that class."""
     assert OPENING_EDGE_M < 0.0254, "under an inch — smaller than any framing member"
     assert MIN_CROSSING_FT < 0.21, "must still report CD-A-PV-EAST's 0.21 ft clip"
+
+
+def test_a_penetration_is_exempt_only_for_the_run_it_exists_for(catlin_model) -> None:
+    """``RoughOpening.penetration_for`` names the one run whose crossing IS the point.
+
+    The check's premise is "this is the hole the trades leave for something else". When the
+    something else is the run itself — catlin's two ERV wall penetrations, `AO-M-ERV-OA` for
+    `DU-ERV-OA` and `AO-S-ERV-EA` for `DU-ERV-EA` — the crossing is the design, not a defect.
+    Before the field existed the choice was to leave the hole unmodelled (an outdoor hood on
+    a facade with no opening under it, at 0 FAIL) or to suppress a true finding.
+
+    The exemption is a PAIRING, not a flag on the opening: any other run through this hole
+    still reports, and so does this run through any other hole. That is what the second half
+    of this test pins, because a blanket exemption on the opening would have been the easy
+    and wrong implementation.
+    """
+    from typehaus.checks.mep.routing_openings import opening_prisms
+
+    class _Ctx:
+        model = catlin_model
+
+    named = {tag: pen for tag, _d, _h, _p, _lo, _hi, pen in opening_prisms(_Ctx())
+             if pen is not None}
+    assert named == {"AO-M-ERV-OA": "DU-ERV-OA", "AO-S-ERV-EA": "DU-ERV-EA"}
+
+    # The pairing is one-to-one: no opening claims a run that another opening also claims,
+    # and no run is exempted at more than one hole.
+    assert len(set(named.values())) == len(named)
+
+
+def test_the_opening_band_is_measured_from_the_framing_base(catlin_model) -> None:
+    """A sill is stated up from the room floor, not from where the cladding stops.
+
+    ``ResolvedWall.base_ref_z_m`` exists for exactly this and every other consumer that adds
+    a sill to an elevation already reads it. ``opening_prisms`` read ``z0_m`` instead, which
+    on catlin's main-storey exterior walls — extended 13 7/16" down over the rim — put every
+    opening more than a foot below where it is built. That is far enough to miss a run
+    crossing one, and it did: `DU-ERV-OA` through `AO-M-ERV-OA` went unreported while its
+    second-storey twin, on a wall whose base and z0 coincide, reported correctly.
+    """
+    walls = {w.tag: w for w in catlin_model.walls}
+    wall = walls["W-M-W1B"]
+    assert wall.plate_base_z_m is not None, "the wall this is about is extended over the rim"
+    assert wall.base_ref_z_m != wall.z0_m, "...so the two datums genuinely differ"
+
+    from typehaus.checks.mep.routing_openings import opening_prisms
+
+    class _Ctx:
+        model = catlin_model
+
+    bands = {tag: (low, high)
+             for tag, _d, _h, _p, low, high, _pen in opening_prisms(_Ctx())}
+    low, _high = bands["AO-M-ERV-OA"]
+    # Authored sill 44.5" on a framing base of 0'-0", which is where the duct is at +4'-0".
+    assert low == pytest.approx(44.5 * 0.0254, abs=1e-6)

@@ -30,13 +30,19 @@ OPENING_EDGE_M = 0.0127
 MIN_CROSSING_FT = 0.1
 
 
-def opening_prisms(ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, float]]:
-    """Every rough opening as ``(tag, is_door, host tag, plan footprint, z low, z high)``.
+def opening_prisms(
+        ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, float, str | None]]:
+    """Each opening as ``(tag, is_door, host, footprint, z low, z high, penetration_for)``.
 
     The footprint is the opening's slice of its host wall through the WHOLE wall thickness,
     because that is the hole: a window buck runs the full depth of the assembly, and a run
     that crosses the opening's width anywhere in that depth is in it. The band is the host
-    wall's own base plus the authored sill, which is how ``resolve`` places the buck.
+    wall's FRAMING base plus the authored sill, which is how ``resolve`` places the buck.
+
+    ``base_ref_z_m``, not ``z0_m``: a wall extended down over the rim keeps its floor where
+    the framing is, and every other consumer that adds a sill to an elevation already reads
+    it. Reading ``z0_m`` put every opening in catlin's main-storey exterior walls 13 7/16"
+    below where it is built, which is exactly far enough to miss a run crossing it.
     """
     import math
 
@@ -60,9 +66,9 @@ def opening_prisms(ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, 
         prism = prism.buffer(-OPENING_EDGE_M)
         if prism.is_empty or not prism.is_valid:
             continue
-        low = wall.z0_m + opening.sill_m
+        low = wall.base_ref_z_m + opening.sill_m
         out.append((opening.tag, bool(opening.is_door), wall.tag, prism,
-                    low, low + opening.height_m))
+                    low, low + opening.height_m, opening.penetration_for))
     return out
 
 
@@ -132,7 +138,12 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
             za, zb = z[index], z[index + 1]
             segment = LineString([a, b])
             standing = segment.length <= OPENING_EDGE_M
-            for otag, is_door, host, prism, low, high in prisms:
+            for otag, is_door, host, prism, low, high, penetration_for in prisms:
+                if penetration_for == tag:
+                    # This hole exists FOR this run: it is the penetration, not an opening
+                    # the run was drawn across. Only this pairing is exempt — another run
+                    # through this opening, or this run through another, still reports.
+                    continue
                 if standing:
                     if not prism.covers(Point(a)):
                         continue

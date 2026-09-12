@@ -2596,7 +2596,8 @@ def test_the_laundry_pocket_clears_the_bearing_corner_and_owns_its_wall(catlin_m
 FACADE_WALLS = ("W-M-N1", "W-M-S1", "W-M-E1", "W-M-W1")
 
 
-def _facade_stations(model, wall_tag: str, category: str, child_prefix: str = ""):
+def _facade_stations(model, wall_tag: str, category: str, child_prefix: str = "",
+                     child_exclude: tuple[str, ...] = ()):
     """``{storey: [station in inches]}`` for one facade line's members of ``category``.
 
     ``child_prefix`` narrows a category that more than one layer writes into: ``strapping``
@@ -2618,6 +2619,8 @@ def _facade_stations(model, wall_tag: str, category: str, child_prefix: str = ""
             if framed.category != category:
                 continue
             if child_prefix and not framed.child_key.startswith(child_prefix):
+                continue
+            if any(framed.child_key.startswith(skip) for skip in child_exclude):
                 continue
             station = ((framed.p0[0] - ox) * dx + (framed.p0[1] - oy) * dy) / inch(1).meters
             out.setdefault(member.storey, set()).add(round(station, 3))
@@ -2700,7 +2703,14 @@ def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, w
     grade says it is and not where the module does. That is a real building corner in every
     sense but the plan one, so it is named here rather than allowed by a tolerance.
     """
-    by_storey = _facade_stations(catlin_model, wall_tag, "stud")
+    # ``flank-`` is opening framing, not a module stud, and the paragraph above already
+    # exempts that category — a king and a jack carry their own `category` and so never
+    # reach this sweep, but a flank stud is spelled `category="stud"` and would. A flank
+    # stands at a rough opening's jamb when the bay's own bounding stud is missing, which
+    # on a facade means the segment's module ran on through a tee: `AO-M-ERV-OA` sits in
+    # W-M-W1B's last bay and W-M-W1B has no stud at its south end, so its rough sill gets
+    # one. That is where the opening puts it, exactly as a jamb pack is.
+    by_storey = _facade_stations(catlin_model, wall_tag, "stud", child_exclude=("flank-",))
     corners = (min(min(v) for v in by_storey.values()),
                max(max(v) for v in by_storey.values()))
     allowed = corners + _FRAMED_RUN_ENDS.get(wall_tag, ())

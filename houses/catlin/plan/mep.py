@@ -57,6 +57,10 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  # different storey from its EXHAUST partner because the pair is stacked,
                  # which is what makes it legal without ten feet of facade.
                  *mep_erv.EQUIPMENT_ERV_HOODS_MAIN,
+                 # The hole that hood sits over. A RoughOpening, because an Equipment
+                 # placeable resolves no solid and the wall carried no void — see the
+                 # penetration note in mep_erv.py.
+                 *mep_erv.PENETRATIONS_ERV_MAIN,
                  *mep_erv.DUCTS_ERV_RISERS,
                  *mep_registers.REGISTERS_MAIN]
 
@@ -85,6 +89,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_erv.EQUIPMENT_ERV_SECOND,
                    # The stale-air DISCHARGE hood, 13 ft over the intake.
                    *mep_erv.EQUIPMENT_ERV_HOODS_SECOND,
+                   *mep_erv.PENETRATIONS_ERV_SECOND,
                    # Filed here, not on `main`, though their manifolds hang in RM-M-MECH one
                    # storey down: these run in FS-S-WEST's cavity and the bay check matches a
                    # segment against sibling floors ON THE DUCT'S OWN STOREY.

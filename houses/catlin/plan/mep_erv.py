@@ -84,6 +84,8 @@ from typehaus import (
     EquipmentKind,
     Mount,
     MountKind,
+    RoughOpening,
+    from_node,
     ft,
     inch,
     pt,
@@ -289,7 +291,15 @@ EQUIPMENT_ERV_HOODS_MAIN = [
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(-13.25), ft(34, 8)), footprint=(inch(12), inch(12)),
+              position=pt(inch(-13.25), ft(34, 0)), footprint=(inch(12), inch(12)),
+              # ** y=34'-0" IS A STUD BAY, AND 34'-8" WAS A STUD (2026-09-11). ** W-S-W1B
+              # frames studs at y 400"/416"/430 3/4"; the hood and its duct sat at y=416"
+              # dead on `stud-001`, so the 6" penetration bored the middle out of a bearing
+              # 2x6 — R602.6 allows 2 1/5" in a 5 1/2" stud. Nothing in the engine grades a
+              # duct against a member, so it read 0 FAIL. y=34'-0" is the centre of the
+              # 400 3/4"..415 1/4" bay: a 7" rough opening clears each stud by 3 15/16".
+              # The 9" offset from the intake this spends was only cosmetic — see the hood
+              # note above; 13'-0" of rise is what makes the pair legal.
               # The discharge, 13'-0" over the intake. Filed on `second`, so this mount
               # elevation is storey-relative: +7'-0" on a datum of +10'-0" is +17'-0" in the
               # project frame. The duct behind it leaves the second-storey chase notch in
@@ -298,6 +308,62 @@ EQUIPMENT_ERV_HOODS_SECOND = [
               # height either. room=None, as above and as EQ-M-HP3-OD is authored.
               room=None, type_ref="EQ-T-ERV-HOOD-6",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+]
+
+# =============================== THE TWO WALL PENETRATIONS =============================
+#
+# ** THE HOLE IS NOW AN ELEMENT (2026-09-11). ** Until this pass the two outdoor legs ran to
+# x=-0'-8", 3/4" past the cladding, and the hoods stood flat on it — and NOTHING DREW THE
+# HOLE. An `Equipment` placeable resolves no solid at all, so neither hood appears in any
+# elevation, section or exported GLB; the wall's own layers carried no void, so `W-M-W1B`
+# and `W-S-W1B` read as unbroken cladding straight across both ducts. The model asserted a
+# hood on a facade with no opening under it, at 0 FAIL.
+#
+# A `RoughOpening` is the spelling that exists: "a bare framed/cut opening (pass-through,
+# future penetration host)". It resolves a real void through every layer of the wall, and
+# `framing/openings.needs_jamb_pack` gives a non-door opening that fits inside one stud bay
+# NO king/jack/header pack — so a 7" hole costs no phantom framing, which is also how it is
+# actually built.
+#
+# 7", not the duct's 6": 6 5/8" of flashed curb plus 3/16" a side to set it. The R-8 wrap
+# terminates at the wall line (see the hood note above), so the wrap's ~8" OD never enters
+# the opening.
+#
+# ** WHAT EACH ONE CUTS, AND THE TWO ARE NOT ALIKE. **
+#   - `AO-M-ERV-OA` (intake, +4'-0") clears both studs by 2 29/32" but lands squarely on
+#     girt course 003, which runs z 48"..51 1/2" across the whole wall. That cut is
+#     ACCEPTED and is the detail the hood note already describes — a KDAT 2x4 laid flat in
+#     free air, broken in one 14 1/2" bay, with the curb screwed to the two cut ends. A girt
+#     carries the panel's wind load into the blocks either side, not gravity.
+#   - `AO-S-ERV-EA` (discharge, +17'-0") cuts NOTHING. It clears every girt course by
+#     5 3/16" and, since the hood moved to the y=34'-0" bay, both studs by 3 15/16".
+#
+# Still NOT MODELLED, deliberately, and unchanged by this: the sealed hole's PRODUCT. A
+# framed-wall penetration is spelled `PipeAccessory(PENETRATION_SEAL)` here
+# (PA-M-PORCH-HYD-SEAL; `SleevePenetration` is cast concrete only), but
+# `resolve/mep._resolve_pipe_accessory` requires a resolved **PipeRun** host and raises
+# `integrity.pipe_accessory_host` without one — there is no duct-side spelling of the
+# element. Authoring one against an unrelated pipe to get the line item would be a lie about
+# what it sits on. The take-off still under-bills two escutcheon-and-foam kits; the hole
+# itself is no longer missing, only the kit that seals it.
+PENETRATIONS_ERV_MAIN = [
+    # W-M-W1B runs N-M-NW (y=36'-0") south to N-M-MECH1 (y=33'-4"). DU-ERV-OA leaves at
+    # y=33'-11", so the 7" opening spans y 33'-8 1/2"..34'-3 1/2" and its near jamb is
+    # 1'-9 1/2" along from N-M-NW. Sill 3'-8 1/2" puts its centre on the duct's +4'-0".
+    RoughOpening(uid="PNDXBSMTFB", tag="AO-M-ERV-OA", host="W-M-W1B",
+                 position=from_node("N-M-NW", inch(21.5)),
+                 width=inch(7), height=inch(7), sill_height=inch(44.5),
+                 penetration_for="DU-ERV-OA"),
+]
+PENETRATIONS_ERV_SECOND = [
+    # W-S-W1B runs N-S-NW (y=36'-0") south to N-S-CH3. DU-ERV-EA leaves at y=34'-0", so the
+    # opening spans y 33'-8 1/2"..34'-3 1/2" and its near jamb is 1'-8 1/2" along from
+    # N-S-NW. Sill is STOREY-RELATIVE: 6'-8 1/2" on a +10'-0" datum centres the hole on
+    # +17'-0" in the project frame, which is where the duct and the hood are.
+    RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-W1B",
+                 position=from_node("N-S-NW", inch(20.5)),
+                 width=inch(7), height=inch(7), sill_height=inch(80.5),
+                 penetration_for="DU-ERV-EA"),
 ]
 
 # ====================================== RISERS =======================================
@@ -438,11 +504,20 @@ DUCTS_ERV_RISERS = [
             # 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" x 26". At y=35'-6" an 8" envelope would
             # stand 4 5/8" inside W-M-N3B / W-S-N3B's stud cavity for its whole height;
             # y=34'-8" is 9" clear of the shaft's north face.
+            # ** THE RISER STAYS AT y=34'-8"; ONLY THE HEAD JOGS SOUTH. ** The hood moved to
+            # the y=34'-0" stud bay (see EQUIPMENT_ERV_HOODS_SECOND), and carrying the whole
+            # leg with it would have stood this riser at (1'-11", 34'-0") against DU-ERV-OA's
+            # at (1'-11", 33'-7 1/2") — 4 1/2" apart, two 6" ducts overlapping outright. So
+            # the riser holds its station and the run turns south 8" at +17'-0", inside the
+            # shaft (clear x 0'-6 5/8"..2'-6 5/8"), then leaves the wall square. Two elbows
+            # bought, and the penetration is still the straight through-wall shot the hood
+            # note requires — the turn happens in the chase, not in the stud cavity.
             path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(31, 1)),
                   pt(ft(4, 7), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
-                  pt(ft(1, 11), ft(34, 8)), pt(inch(-8), ft(34, 8))),
+                  pt(ft(1, 11), ft(34, 8)), pt(ft(1, 11), ft(34, 0)),
+                  pt(inch(-8), ft(34, 0))),
             elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
-                        inch(204), inch(204)),
+                        inch(204), inch(204), inch(204)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]

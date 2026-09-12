@@ -122,6 +122,12 @@ class RoughOpening(Element):
     height: Length
     sill_height: Length | None = None
     arch: Arch | None = None
+    #: The tag of the run this hole exists FOR — a duct, pipe or raceway penetration rather
+    #: than a pass-through. ``mep.run_through_opening`` grades "a run drawn across the hole
+    #: the trades left for something else"; when the something else IS that run, the crossing
+    #: is the point. Naming the run here exempts that ONE pairing and nothing else: any other
+    #: run crossing this opening is still a finding, and so is this run crossing any other.
+    penetration_for: str | None = None
 
 
 for _name, _obj in (

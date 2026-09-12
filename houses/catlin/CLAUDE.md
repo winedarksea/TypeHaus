@@ -763,13 +763,37 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     insulated ducts, six plumbing vents, `VR-M-RADON-VENT`, and eight conduits, ~25% fill of a
     30 1/8" x 32 3/8" shaft (`plan/mep_erv.py`). Nothing else goes in that chase.
   - **The two outdoor hoods are STACKED on the west face at the NW chase**: `EQ-M-ERV-HOOD-OA`
-    intake (0'-0", 33'-11") +4'-0"; `EQ-S-ERV-HOOD-EA` discharge (0'-0", 34'-8") +17'-0",
-    13'-0" apart, exhaust over intake, south of `TR-RF-LEADER-W` at y=35'-6".
+    intake (-1'-1 1/4", 33'-11") +4'-0"; `EQ-S-ERV-HOOD-EA` discharge (-1'-1 1/4", 34'-0")
+    +17'-0", 13'-0" apart, exhaust over intake, south of `TR-RF-LEADER-W` at y=35'-6". The x
+    is the CLADDING face (-0'-7 1/4") plus half a 12" box — both hoods hang ON the panel and
+    are entirely outdoors, which is why both carry `room=None`.
     - Exhaust must stay the UPPER hood: `mep.erv_outdoor_terminals` measures 3-D distance and
       13' of rise alone clears its 10' rule (→ DESIGN-LOG.md, "Ventilation, ducts and
       soffits"). Neither hood may turn and travel inside the wall: an R-8 wrapped 6" duct is
       ~8" OD against a 5 1/2" stud cavity, so each must be a straight through-wall
       penetration. `test_catlin_erv.py` pins this stack order.
+    - **BOTH HOLES ARE MODELLED, AND THE DISCHARGE MOVED 8" TO GET ONE (2026-09-11).**
+      `AO-M-ERV-OA` and `AO-S-ERV-EA` are 7" `RoughOpening`s — 6 5/8" of flashed curb plus
+      3/16" a side — each naming its duct in `penetration_for`, which is what keeps
+      `mep.run_through_opening` from reporting the hole it exists for. Before them an
+      `Equipment` placeable resolved NO solid and the wall carried no void, so the hoods
+      drew in no elevation, section or GLB and the cladding read unbroken across both ducts.
+      A 7" RO lands wholly inside a bay, so it takes no header, jack or king; it does pack
+      girt blocks at its jambs (+9 house-wide, `test_hardware_takeoff.py`).
+    - **The discharge is at y=34'-0" because 34'-8" was `stud-001`.** W-S-W1B frames studs at
+      400"/416"/430 3/4" and the duct sat dead on the middle one, boring a bearing 2x6 that
+      R602.6 allows 2 1/5" of. y=34'-0" is the bay centre, 3 15/16" to each stud. **Only the
+      HEAD moved**: carrying the whole leg south would have stood its riser 4 1/2" from
+      `DU-ERV-OA`'s, two 6" ducts overlapping, so the run turns south 8" at +17'-0" inside
+      the shaft and leaves the wall square.
+    - **The intake cuts girt course 003 and that is accepted.** `AO-M-ERV-OA` clears both
+      studs but z 44 11/16"..51 5/16" crosses the course at z 48"..51 1/2". A girt is a KDAT
+      2x4 laid flat in free air carrying the panel's wind load into the blocks either side,
+      not gravity — broken in one 14 1/2" bay with the curb screwed to the cut ends. The
+      discharge cuts nothing, clearing every course by 5 3/16".
+    - Still NOT modelled: the seal PRODUCT. `PipeAccessory(PENETRATION_SEAL)` hard-requires a
+      resolved `PipeRun` host and there is no duct-side spelling, so the take-off still
+      under-bills two escutcheon-and-foam kits. The hole is no longer the missing part.
 - **A duct or machine inside a `Soffit` NAMES IT via `soffit_ref`, and the clear section is
   DERIVED — never author a clear width.** `mep.duct_soffit_occupancy` derives the cavity from
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
