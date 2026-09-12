@@ -263,11 +263,25 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
     puts the two halves of the rule out of reach of each other, the clear band between the
     courses is the answer, and a 48" unit on this 24" module is exactly that case.
 
-    Re-swept at 1/8" from -16" to +8" over the current model, zero remains the right phase
-    on the metric this test bounds: 31 slivers, fewest of any LEGAL offset, and no other
-    phase comes close (+4.5" reaches 15 exact but for 37 slivers; +8"/-16" reach 14 for
-    38). -3.5" still shows fewest slivers overall (24, at 10 exact) and is still ILLEGAL on
-    its 24.75" bay.
+    ** RE-SWEPT 2026-09-12, AND THE EXACT FLOOR FELL 12 -> 8. ** The west face's four 14"
+    units came off a 4'-0" sill onto 3'-6" (CLAUDE.md, Head lines: they hold the 4'-6" centre
+    line now, not the 6'-0" head line). A 4'-0" sill datum and a 6'-0" head both land ON
+    courses; a 3'-6" sill datum (36-1/2") and a 5'-6" head land between them. So four
+    openings x two edges stopped being exact hits, and nothing else in the house moved. This
+    is a consequence of a facade decision, not a girt regression: the courses did not move,
+    the phase did not move, and `structural.girt_course_spacing` still passes.
+
+    Re-swept at 1/8" from -16" to +8" over the current model, zero is held: 8 exact against
+    33 slivers, max bay exactly 24.000". Two other phases are worth knowing about and neither
+    is taken. **-2.5"** is LEGAL (24.000") and reaches 28 slivers, the fewest of any legal
+    offset, but at ZERO exact hits — net 28 redundant boards against zero's 25, so it is
+    worse on the metric that matters. **+4.5"** reaches 15 exact for 35 slivers, a net 20,
+    which IS better than zero's 25 by about five boards. It is not taken because the phase is
+    not free: the root CLAUDE.md's NEW-OPENING RULE ("head on a 24" multiple above the sole
+    plate, or sill 3-1/2" above one") is written against `course_offset=inch(0)`, every girt
+    in the house moves with it, and each of the ~31 window and door stations would have to be
+    re-checked against the moved courses. Flagged here rather than banked. -3.5" still shows
+    the fewest slivers overall (30, at 6 exact) and is still ILLEGAL on its 24.750" bay.
     """
 
     conflicts: list[tuple[str, str, float]] = []
@@ -286,7 +300,7 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
                     exact += 1
                 elif gap < _CONFLICT_IN - 1e-6:
                     conflicts.append((wall.tag, f"{opening.tag} {name}", round(gap, 2)))
-    assert exact >= 12, f"only {exact} opening edges land on a course line"
+    assert exact >= 8, f"only {exact} opening edges land on a course line"
     assert len(conflicts) <= 33, (
         f"{len(conflicts)} field courses in the shadow of an opening's own course "
         f"(33 is the swept optimum at 24\" o.c. among the phases that keep every bay "

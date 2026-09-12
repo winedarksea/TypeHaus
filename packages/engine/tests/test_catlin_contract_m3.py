@@ -926,11 +926,22 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
         assert second_y == pytest.approx(expected_y, abs=1e-6), second_tag
         # A column is only a column if the units match, not just their centrelines.
         assert main.width_m == pytest.approx(second.width_m, abs=1e-6), (main_tag, second_tag)
-        # One 6'-0" head line carries the whole face — the 27" units off a 3'-0" sill and
-        # the 14" units off 4'-0" (CLAUDE.md, Facade rules / Head lines).
+        # TWO datums, and which one applies is a property of the WIDTH FAMILY (CLAUDE.md,
+        # Facade rules / Head lines). The 27" units head on the 6'-0" line off a 3'-0" sill.
+        # The 14" units do NOT: since 2026-09-12 they sit on a 3'-6" sill, head at 5'-6", and
+        # hold the 4'-6" CENTRE line instead — 36"..72" is centred at 54" and 42"..66" is
+        # centred at 54" too, which is the whole reason the sill dropped 6". Asserting one
+        # shared head over both families is what this test did until that change, and it is
+        # the assertion that caught it.
         for opening in (main, second):
-            assert opening.sill_m + opening.height_m == pytest.approx(ft(6).meters, abs=1e-6), \
-                opening.tag
+            head = opening.sill_m + opening.height_m
+            midline = opening.sill_m + opening.height_m / 2.0
+            assert midline == pytest.approx(ft(4, 6).meters, abs=1e-6), \
+                f"{opening.tag}: every unit on this face holds the 4'-6\" centre line"
+            if opening.width_m == pytest.approx(inch(14).meters, abs=1e-6):
+                assert head == pytest.approx(ft(5, 6).meters, abs=1e-6), opening.tag
+            else:
+                assert head == pytest.approx(ft(6).meters, abs=1e-6), opening.tag
 
     vanity_y, vanity = _opening_plan_y(catlin_model, "WIN-S-VANITY-W")
     bath_y, bath = _opening_plan_y(catlin_model, "WIN-M-BATH1-W")

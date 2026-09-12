@@ -483,6 +483,31 @@ bucks, four flashings, and eight jamb returns.
 **2026-09-06**; the authored value was `ft(4)` (4'-0") the whole time. Correcting the prose
 moved nothing.
 
+**The west face's 14" family left the 6'-0" head line for the 4'-6" centre line
+(2026-09-12, owner's call on the facade).** Four leaves — `WIN-M-BATH1-W`, `WIN-M-MUD`,
+`WIN-S-VANITY-W`, `WIN-S-BATH-W`, every WT-1424 on the west face — went from a 4'-0" sill to
+**3'-6"**. The arithmetic is exact, which is why it is a rule and not a nudge: a 27" unit
+spans 36"..72" off its 3'-0" sill and is centred at **54"**; a 24"-tall unit at a 3'-6" sill
+spans 42"..66" and is centred at **54"** as well. At the old 4'-0" sill the small units
+shared the 6'-0" head and sat 6" high of the family's centre, so each one carried a deep
+blank sill below it and the face read as two unrelated bands.
+
+The trade is a real one and is worth stating: the house gains a composed facade and loses
+the single head datum that made every west-face head one dimension. Three tests encoded the
+old datum and were re-swept rather than suppressed — the facade-column test now asserts
+6'-0" for the 27" units and the 4'-6" centre for the 14" units, so the new rule is pinned as
+tightly as the one it replaced. Two tripwire counts moved with the sills and neither is a
+design fact: girt-course exact edge hits fell **12 → 8** (a 3'-6" sill and a 5'-6" head land
+between courses where 4'-0"/6'-0" landed on them) and the truss-block count rose
+**1127 → 1131** (four openings' jamb stations re-packed). `structural.girt_course_spacing`
+still passes and no course moved — the offset is still zero.
+
+**It was committed by accident, in `92e7495a` ("concrete column refinement"), with no prose
+and no test update**, and surfaced as three failing tests a commit later. The change itself
+is kept; only its record was missing. The lesson is the one this log already carries about
+silent drift: four windows moved 6" and every comment beside them still argued for the sill
+they had left.
+
 **Gables.**
 
 The north gable's history: `WIN-A-N1` moved 7'-4"→8'-0", mirroring `WIN-A-N2` at 28'-0"

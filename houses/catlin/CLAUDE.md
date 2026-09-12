@@ -624,8 +624,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   32'-0"; second: 4'-0"/9'-4"/14'-8"(door)/21'-4"(door)/26'-8"/32'-0" — every pair sums to
   36'-0"). Attic gables do not join these (see **Gables**).
   West face stacks FIVE (y 5'-4", 10'-8", 20'-0", 24'-8", 31'-4"): first three 27" family on
-  a 3'-0" sill; fourth pairs tempered 14" awnings (`RM-M-BATH1`/`RM-S-VANITY`) on a 4'-0"
-  sill; fifth pairs `WIN-M-MUD`/`WIN-S-BATH-W`; all share one 6'-0" head line.
+  a 3'-0" sill; fourth pairs tempered 14" awnings (`RM-M-BATH1`/`RM-S-VANITY`) on a 3'-6"
+  sill; fifth pairs `WIN-M-MUD`/`WIN-S-BATH-W`, also 3'-6". The 27" units share one 6'-0"
+  head line; the two 14" pairs share the 4'-6" centre line instead (see **Head lines**).
   `WIN-M-BATH2` is WT-2736-T (retyped from WT-1424-T) at a 3'-0" sill to reach the third
   column (the 8" rule, also satisfying R303.3's window alternative). West attic pair:
   4'-8"/31'-4", symmetric about y=18'-0" (→ DESIGN-LOG.md for the chase/backing history).
@@ -718,8 +719,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `test_each_facade_block_grid_is_one_grid_on_every_storey`). The stair well's east edge
   lost its guard with the wall, so `RL-A-STAIR` gained a 3'-0" east leg (`code.R312_1_guard`).
 
-- **Head lines.** West face: every main/second head on one 6'-0" line — 27" units at a
-  3'-0" sill, 14" units at 4'-0". South face shares a 2'-8" sill. `WIN-S-BED3-N` is a
+- **Head lines.** West face: the 27" units head on one 6'-0" line off a 3'-0" sill.
+  **The 14" family does NOT — it holds the 4'-6" CENTRE line instead (owner, 2026-09-12).**
+  Four leaves (`WIN-M-BATH1-W`, `WIN-M-MUD`, `WIN-S-VANITY-W`, `WIN-S-BATH-W`) came off a
+  4'-0" sill onto **3'-6"**, so they head at 5'-6". The arithmetic is exact and is the whole
+  reason: a 27" unit spans 36"..72" and is centred at 54"; a 24"-tall unit at a 3'-6" sill
+  spans 42"..66" and is centred at 54" too. At 4'-0" they shared the head and stood 6" high
+  of that centre, leaving a deep blank sill under each small unit. **A 14" unit on this face
+  is dimensioned from the centre line, never from the head line** — and the 27" units did not
+  move. Pinned by `test_the_west_facade_stacks_five_two_storey_window_columns`.
+  South face shares a 2'-8" sill. `WIN-S-BED3-N` is a
   WT-1424 at a 4'-0" sill (as is `WIN-S-BED3` around the corner), so it heads at 6'-0" —
   leaving the east face's 3'-0" datum (`WIN-S-BED1`/`WIN-S-BED2` still hold it) when it was
   retyped down to a 14" unit, the rule working, not an exception.

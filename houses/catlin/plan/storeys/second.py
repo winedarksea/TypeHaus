@@ -749,7 +749,15 @@ OPENINGS = [
            position=from_node("N-S-W3", ft(2, 6.5)), sill_height=ft(3)),     # y 5'-0"
     # Restores west daylight to the double-vanity alcove without competing with its two
     # north-wall sinks and mirror lights. Paired exactly with WIN-M-BATH1-W below; the 14"
-    # RO fits one stud bay, and the tempered awning shares the facade's 6'-0" head line.
+    # RO fits one stud bay.
+    # ** SILL 4'-0" -> 3'-6" ON 2026-09-12, AND IT TRADES THE HEAD LINE FOR THE CENTRE LINE.
+    # ** Owner's call, on the facade: the 14" family now reads CENTRED on the 27" family
+    # instead of hung from its head. The 27" units span 36"..72" off their 3'-0" sill, midline
+    # 54"; a 24"-tall unit at a 3'-6" sill spans 42"..66" — the SAME 4'-6" midline, exactly.
+    # At the old 4'-0" sill it shared the 6'-0" head and sat 6" high of that centre, which is
+    # what left a deep blank sill under each small unit. So these four 14" leaves are a
+    # deliberate exception to the west face's 6'-0" head line (houses/catlin/CLAUDE.md, Head
+    # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     # 1'-3" off N-S-W1 since 2026-08-29, the twin of WIN-M-BATH1-W's identical compensation
     # one storey down: N-S-W1 moved 2" north with the y=26'-6" line, and a `from_node` offset
     # rides its node. Left at 1'-1" the unit slid 2" north with it and
@@ -774,6 +782,14 @@ OPENINGS = [
     # stud line instead of centering in the bay, breaking two studs and pulling in a
     # header/jacks a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
+    # ** SILL 4'-0" -> 3'-6" ON 2026-09-12, AND IT TRADES THE HEAD LINE FOR THE CENTRE LINE.
+    # ** Owner's call, on the facade: the 14" family now reads CENTRED on the 27" family
+    # instead of hung from its head. The 27" units span 36"..72" off their 3'-0" sill, midline
+    # 54"; a 24"-tall unit at a 3'-6" sill spans 42"..66" — the SAME 4'-6" midline, exactly.
+    # At the old 4'-0" sill it shared the 6'-0" head and sat 6" high of that centre, which is
+    # what left a deep blank sill under each small unit. So these four 14" leaves are a
+    # deliberate exception to the west face's 6'-0" head line (houses/catlin/CLAUDE.md, Head
+    # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(3, 6)),
     # ** MOVED 29'-4" -> 24'-0" ON 2026-09-06, AND THE THREE-STOREY COLUMN IS SPENT. **

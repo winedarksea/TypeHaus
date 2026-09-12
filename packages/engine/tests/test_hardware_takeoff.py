@@ -262,7 +262,16 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # window does: W-M-W1B 14 -> 19, W-S-W1B 12 -> 16, +9 and nothing else in the house
     # moved. Same "a station moved" arithmetic as every entry above — a hole in a girt wall
     # is a hole whether a sash or a duct goes through it.
-    assert row["count"] == 1127 and furring[0]["count"] == 224
+    # ** 1127 -> 1131 ON 2026-09-12, AND IT IS THE WEST FACE'S 14" SILLS. ** The four WT-1424
+    # units on that face (WIN-M-BATH1-W, WIN-M-MUD, WIN-S-VANITY-W, WIN-S-BATH-W) came off a
+    # 4'-0" sill onto 3'-6" so the small family reads centred on the 27" family rather than
+    # hung from its head (houses/catlin/CLAUDE.md, Head lines). No opening was added, removed
+    # or resized — but a 6" move re-phases which courses each RO crosses, and the courses pack
+    # block stations against the jambs they cross, so four stations moving is +4. The same "a
+    # station moved" arithmetic as every entry above, and the assertion tying this to the
+    # resolved blocks is the one that proves it is only that. Its cost is in
+    # test_truss_girt_courses, whose exact-hit floor fell 12 -> 8 and was re-swept there.
+    assert row["count"] == 1131 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

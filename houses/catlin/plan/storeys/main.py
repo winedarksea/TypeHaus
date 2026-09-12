@@ -1319,9 +1319,17 @@ OPENINGS = [
            type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 10.5)),
            sill_height=ft(3)),                                               # y 19'-8"
     # Paired with WIN-S-VANITY-W at the centre of the 4'-0" room band. The 14" RO fits
-    # wholly between studs; the 4'-0" sill preserves privacy and the west face's 6'-0"
-    # head line. Tempered because the safety-glazing check treats the wet-room location as
-    # hazardous below 60".
+    # wholly between studs. Tempered because the safety-glazing check treats the wet-room
+    # location as hazardous below 60" — and at a 3'-6" sill it still is, so the `-T` stands
+    # for the same reason it always did.
+    # ** SILL 4'-0" -> 3'-6" ON 2026-09-12, AND IT TRADES THE HEAD LINE FOR THE CENTRE LINE.
+    # ** Owner's call, on the facade: the 14" family now reads CENTRED on the 27" family
+    # instead of hung from its head. The 27" units span 36"..72" off their 3'-0" sill, midline
+    # 54"; a 24"-tall unit at a 3'-6" sill spans 42"..66" — the SAME 4'-6" midline, exactly.
+    # At the old 4'-0" sill it shared the 6'-0" head and sat 6" high of that centre, which is
+    # what left a deep blank sill under each small unit. So these four 14" leaves are a
+    # deliberate exception to the west face's 6'-0" head line (houses/catlin/CLAUDE.md, Head
+    # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
     # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
     Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
@@ -1330,8 +1338,15 @@ OPENINGS = [
     # plan/placeables.py). Re-authored off N-M-MECH1: a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made
     # N-M-MECH1 the start, the window silently slid 2'-8" south. 1'-5" off N-M-MECH1 restores
-    # y=31'-4" — a bay centre, so the 14" RO stays inside a stud bay. Sill raised to 4'-0"
-    # puts its head on the shared 6'-0" line.
+    # y=31'-4" — a bay centre, so the 14" RO stays inside a stud bay.
+    # ** SILL 4'-0" -> 3'-6" ON 2026-09-12, AND IT TRADES THE HEAD LINE FOR THE CENTRE LINE.
+    # ** Owner's call, on the facade: the 14" family now reads CENTRED on the 27" family
+    # instead of hung from its head. The 27" units span 36"..72" off their 3'-0" sill, midline
+    # 54"; a 24"-tall unit at a 3'-6" sill spans 42"..66" — the SAME 4'-6" midline, exactly.
+    # At the old 4'-0" sill it shared the 6'-0" head and sat 6" high of that centre, which is
+    # what left a deep blank sill under each small unit. So these four 14" leaves are a
+    # deliberate exception to the west face's 6'-0" head line (houses/catlin/CLAUDE.md, Head
+    # lines): they head at 5'-6" and hold 4'-6" instead. The 27" units did NOT move.
     #
     # It stopped columning with WIN-S-BATH-W on 2026-08-21 and stays here anyway: the bench
     # centreline is what fixes this window, and N-M-MECH1 is on 33'-4" where it has always
