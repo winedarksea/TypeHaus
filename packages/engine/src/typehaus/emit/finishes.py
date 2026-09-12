@@ -37,7 +37,7 @@ ELEMENT_KEYS = frozenset({
 ACCESSORY_KEYS = frozenset({
     "railing", "railing_infill", "railing_glass",
     "dowel", "thermal_break", "connector", "snow_guard", "seam_clamp", "panel_strap",
-    "sump", "vent", "fascia", "soffit",
+    "sump", "vent", "fascia", "soffit", "eave_soffit", "wall_corner",
     "gutter", "ridge_cap", "corner_trim", "flashing",
     # Stormwater (→ emit/trades.py DRAINAGE_CATEGORIES). The leader is the gutter's own
     # aluminium; the buried three read as what they are made of — perforated HDPE tile and
@@ -120,20 +120,17 @@ def member_material_key(member: FramedMember) -> str:
     return normalize(member.category)
 
 
-# --- layer visibility groups ----------------------------------------------------------
-# The togglable bands of an assembly, mirroring ALL_LAYER_VISIBILITY_GROUPS and
-# LAYER_FUNCTION_ALIASES in ui/src/model/visibility.ts. Per-layer visibility rides plain node
-# visibility in the viewer, so a group name the UI does not know is a band that can never be
-# turned off. `tests/test_layer_group_parity.py` pins the two lists equal.
+# --- layer groups ------------------------------------------------------------------------
+# The band families a stack is built from, stamped on every ``GPart.layer_group`` of the
+# geometry IR. Engine-internal since 2026-09-12: the viewer toggles by TRADE
+# (``emit/trade_rules.layer_trade``), so nothing here is mirrored into the UI any more.
 LAYER_VISIBILITY_GROUPS = (
     "structure", "sheathing", "membrane", "insulation", "airgap", "furring", "cladding",
     "finish", "other",
 )
 
 # Synonyms the engine emits for the same bucket. `lining` is an interior finish stack, and
-# `fascia`/`soffit` are the derived eave trim that continues the cladding plane. Public (no
-# leading underscore): `emit/vocabulary_manifest.py` imports this alongside
-# LAYER_VISIBILITY_GROUPS to build the generated table ui/src/model/visibility.ts consumes.
+# `fascia`/`soffit` are the derived eave trim that continues the cladding plane.
 LAYER_GROUP_ALIASES = {
     "air_gap": "airgap",
     "lining": "finish",

@@ -414,15 +414,18 @@ export function runSolidMaterialTests() {
     "An unmapped category is still readable on the day it lands");
   assert(solidCategoryLabel(undefined) === "Solid", "A category-less solid still has a heading");
   assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
-  assert(solidTrade(solid("fascia")) === "roof", "Roof edge trim rides the roof toggle");
+  assert(solidTrade(solid("fascia")) === "siding", "Fascia is the siding contractor's trim");
+  assert(solidTrade(solid("flashing")) === "roofing", "Drip flashing rides the roofing toggle");
   // The stormwater run is one toggle end to end — gutter and pit both route through the same
   // trade, so one checkbox shows the whole drainage path.
   assert(solidTrade(solid("gutter")) === "drainage", "A gutter is the head of the storm run");
   assert(solidTrade(solid("downspout")) === "drainage", "A leader follows its gutter");
   assert(solidTrade(solid("sump")) === "drainage", "The pit is the tail of the same run");
   assert(solidTrade(solid("glazing")) === "openings", "Glazing reads as fenestration");
-  assert(solidTrade(solid("soffit")) === "floors",
+  assert(solidTrade(solid("soffit")) === "drywall",
     "A dropped soffit is finished like the ceiling it hangs under");
+  assert(solidTrade({ ...solid("column"), trades: ["concrete"] }) === "concrete",
+    "A cast column stamped by the engine is concrete, whatever its category says");
   assert(solidTrade(solid("slab")) === "concrete", "A pour is still concrete");
   assert(solidTrade(solid("no-such-category")) === "concrete",
     "An unclassified category falls back to concrete rather than dropping out of the scene");
@@ -441,8 +444,8 @@ export function runSolidMaterialTests() {
   // Connection hardware, by what kind of connection it is.
   assert(solidTrade(solid("connector")) === "framing",
     "A hanger, tie, post base or hold-down is the carpenter's hardware");
-  assert(solidTrade(solid("snow_guard")) === "roof", "A snow rail sits on the roof skin");
-  assert(solidTrade(solid("seam_clamp")) === "roof",
+  assert(solidTrade(solid("snow_guard")) === "roofing", "A snow rail sits on the roof skin");
+  assert(solidTrade(solid("seam_clamp")) === "roofing",
     "So does a seam clamp, whatever it happens to be holding");
 
   // --- translucency ----------------------------------------------------------------------
@@ -538,9 +541,11 @@ export function runSelectionRegistrationTests() {
     { ...member("W-1-closure-0-outrigger"), category: "furring", material: "kdat" },
   ];
   buildWall(tradeGroups, closureWall, [], [0, 0], "schematic", PALETTE, walls.picks, walls.byUid);
-  assert(tradeGroups.walls.children.length > 0,
-    "A wall's cladding closure band builds into the walls group");
-  assert(tradeGroups.framing.children.length > 0,
+  const skinOn = (trade: Trade) => ALL_TRADES.flatMap((t) => tradeGroups[t].children)
+    .filter((c) => (c.userData.trades as string[] | undefined)?.includes(trade));
+  assert(skinOn("siding").length > 0,
+    "A wall's cladding closure band is tagged siding, in the wall body's container");
+  assert(skinOn("framing").length > 0,
     "A wall's furring closure band still builds into the framing group");
 
   // The Swinburne truss pack. Every piece of it names a material — the block is spf, the
@@ -565,8 +570,8 @@ export function runSelectionRegistrationTests() {
   ];
   buildWall(trussGroups, trussWall, [], [0, 0], "schematic", PALETTE, registry().picks,
     registry().byUid);
-  assert(trussGroups.walls.children.length === 0,
-    "No piece of the truss pack is envelope skin — the walls group takes none of it");
+  assert(ALL_TRADES.every((t) => t === "framing" || trussGroups[t].children.length === 0),
+    "No piece of the truss pack is envelope skin — no other container takes any of it");
   assert(trussGroups.framing.children.length > 0,
     "The truss pack draws with the studs, on the framing toggle");
 
@@ -594,8 +599,8 @@ export function runSelectionRegistrationTests() {
   ];
   buildWall(girtGroups, girtWall, [], [0, 0], "schematic", PALETTE, registry().picks,
     registry().byUid);
-  assert(girtGroups.walls.children.length === 0,
-    "No piece of the girt pack is envelope skin — the walls group takes none of it");
+  assert(ALL_TRADES.every((t) => t === "framing" || girtGroups[t].children.length === 0),
+    "No piece of the girt pack is envelope skin — no other container takes any of it");
   assert(girtGroups.framing.children.length > 0,
     "The girt pack draws with the studs, on the framing toggle");
 
@@ -614,7 +619,11 @@ export function runSelectionRegistrationTests() {
   // gable end's whole raking face — five layers of real wall — under the roof toggle, where
   // turning the roof off took the wall with it, and a click on it selected the roof.
   const closureRoof = new THREE.Group();
-  const closureWalls = new THREE.Group();
+  // The closure band files under the container of its own trade (cladding → siding).
+  const closureGroups = Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
+  ) as Record<Trade, THREE.Group>;
+  const closureWalls = closureGroups.siding;
   const closures = registry();
   const closure = {
     ...member("W-1-closure-0-cladding"), parent_uid: "W-1", category: "cladding",
@@ -628,9 +637,11 @@ export function runSelectionRegistrationTests() {
     ridge_direction: "x", assembly: "ROOF-1", surface_area_m2: 26,
     members: [closure, ridgeCap], provenance: null,
   } as Roof, [0, 0], "schematic", PALETTE, undefined, closures.picks, closures.byUid,
-    undefined, undefined, closureWalls);
+    undefined, undefined, closureGroups);
   assert(closureWalls.children.length > 0,
-    "The closure band draws into the walls group, so the walls toggle owns it");
+    "The closure band draws into the siding container, tagged with the wall's trade");
+  assert((closureWalls.children[0].userData.trades as string[]).join() === "siding",
+    "…and carries the siding trade the band continues");
   assert(resolveMemberPickUid(closureWalls.children[0] as THREE.Mesh, 0, 0) === "W-1::W-1-closure-0-cladding",
     "Clicking the closure band selects it as the wall's member, not the roof's");
   assert((closures.byUid.get("W-1") ?? []).length > 0,
@@ -759,19 +770,25 @@ export function runWholeHouseGlbTests() {
   assert(wholeHouseGlbAssignment("not-a-trade|wall|W-1", undefined) === null,
     "An unknown trade token does not classify");
 
-  const fromExtras = wholeHouseGlbAssignment(undefined, { trade: "walls", uid: "W-1", kind: "wall" });
-  assert(fromExtras !== null && fromExtras.trade === "walls" && fromExtras.uid === "W-1"
-    && fromExtras.kind === "wall", "glTF extras assign trade + uid + selection kind");
+  const fromExtras = wholeHouseGlbAssignment(undefined,
+    { trade: "siding", trades: ["siding", "insulation"], uid: "W-1", kind: "wall" });
+  assert(fromExtras !== null && fromExtras.trade === "siding" && fromExtras.uid === "W-1"
+    && fromExtras.kind === "wall" && fromExtras.trades.join() === "siding,insulation",
+    "glTF extras assign the trade set + uid + selection kind");
+  const setOnly = wholeHouseGlbAssignment(undefined, { trades: ["drainage", "earth"] });
+  assert(setOnly !== null && setOnly.trade === "drainage" && setOnly.trades.length === 2,
+    "A set alone is enough; its first member is the primary");
 
   const fromName = wholeHouseGlbAssignment("furniture|canvas_object|CO-9", undefined);
   assert(fromName !== null && fromName.trade === "furniture" && fromName.uid === "CO-9"
     && fromName.kind === "canvas_object", "The <trade>|<kind>|<uid> name convention is the fallback");
 
-  const envelopeOnly = wholeHouseGlbAssignment("roof", undefined);
-  assert(envelopeOnly !== null && envelopeOnly.trade === "roof" && envelopeOnly.uid === null
-    && envelopeOnly.kind === null, "Non-selectable envelope geometry only needs its trade");
+  const envelopeOnly = wholeHouseGlbAssignment("roofing+framing", undefined);
+  assert(envelopeOnly !== null && envelopeOnly.trade === "roofing" && envelopeOnly.uid === null
+    && envelopeOnly.kind === null && envelopeOnly.trades.join() === "roofing,framing",
+    "Non-selectable envelope geometry only needs its trades, spelled a+b in the name");
 
-  const extrasWinName = wholeHouseGlbAssignment("walls|wall|FROM-NAME", { trade: "concrete", uid: "FROM-EXTRAS", kind: "wall" });
+  const extrasWinName = wholeHouseGlbAssignment("siding|wall|FROM-NAME", { trade: "concrete", uid: "FROM-EXTRAS", kind: "wall" });
   assert(extrasWinName !== null && extrasWinName.trade === "concrete" && extrasWinName.uid === "FROM-EXTRAS",
     "Explicit extras take precedence over the name convention");
 

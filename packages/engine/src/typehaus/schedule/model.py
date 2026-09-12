@@ -181,6 +181,9 @@ class Visit:
     needs_rewalk: bool = False
     #: Ticks naming a handoff item this model no longer derives. Reported, never deleted.
     orphan_ticks: tuple[str, ...] = ()
+    #: Authored ``rows`` that are not in this visit's package any more (a re-filed trade,
+    #: a retired key). Kept so ``rules.validate`` can refuse them instead of dropping them.
+    orphan_rows: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return {"slug": self.slug, "id": self.id, "package": self.package,
@@ -202,6 +205,7 @@ class Visit:
                 "log": [dict(x) for x in self.log], "updated": self.updated,
                 "needs_rewalk": self.needs_rewalk,
                 "orphan_ticks": list(self.orphan_ticks),
+                "orphan_rows": list(self.orphan_rows),
                 "planned": self.planned, "booked": self.booked,
                 "duration_days": self.duration_days,
                 "materials": [dict(m) for m in self.materials],

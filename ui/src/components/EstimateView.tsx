@@ -16,6 +16,7 @@ import type { EngineCosts } from "../engine/EngineClient";
 import { formatRange } from "../model/engineCosts";
 import {
   GROUPS,
+  tradeLabel,
   SORTS,
   SORT_KEYS,
   barWidths,
@@ -83,7 +84,7 @@ function rowColumns(widest: number): ReaderColumn<EstimateRow>[] {
     {
       key: "trade", header: "trade",
       cell: (row) => row.trade
-        ? <span className="reader-chip estimate-trade">{row.trade}</span>
+        ? <span className="reader-chip estimate-trade" title={row.trade}>{tradeLabel(row.trade)}</span>
         : <span className="muted">—</span>,
     },
     {

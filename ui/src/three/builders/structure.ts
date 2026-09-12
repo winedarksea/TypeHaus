@@ -9,7 +9,8 @@ import type {
   Brace, Catalog, FootingBedding, Floor, LightRun, Member, Paneling, Roof, Room, Solid,
   SoffitFraming, SolarPanel, Stair, Vec2,
 } from "../../model/types";
-import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
+import { layerTrades, memberTrades, primaryTrade } from "../../model/tradeVisibility";
+import type { Trade } from "../../state/vocabulary";
 import {
   authoredAppearance, finishBaseColor, floorSurface, materialColor, type MaterialAppearance,
   type ResolvedNordicPalette,
@@ -35,7 +36,7 @@ import { createSolidMaterial } from "../solidMaterials";
 import { createSweepGeometry } from "../tubeGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import type { SelectionKind } from "../../state/vocabulary";
-import { registerSelectable, tagLayerGroup } from "./registry";
+import { registerSelectable, tagTrades } from "./registry";
 
 // A resolved solid: a plan prism, or — when it carries a `sweep` — the mitred tube of a run.
 //
@@ -226,6 +227,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
   // building — not hidden behind the floors toggle. Same split roof/wall framing use.
   const framingFirstChildIndex = framingGroup.children.length;
   buildMembers(framingGroup, floor.members, center, mode, palette, floor.uid, materials);
+  tagTrades(framingGroup, framingFirstChildIndex, ["framing"]);
   registerSelectable(framingGroup, framingFirstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
@@ -387,22 +389,25 @@ function bandAxis(outline: readonly Vec2[]): [Vec2, Vec2] {
   return best;
 }
 
-// One owner's skin bands, merged per layer group so the assembly-layer toggles reach them.
-// `skinLines` reaches only here: a closure band is a wall's own panel carried up past the top
-// plate, and it takes its module phase from the facade the wall was laid out on so the ribs
-// cross the joint unbroken.
-function buildSkinByLayerGroup(group: THREE.Group, members: Member[], ownerUid: string,
+// One owner's skin bands, merged per trade set so the trade chips reach them. `skinLines`
+// reaches only here: a closure band is a wall's own panel carried up past the top plate, and
+// it takes its module phase from the facade the wall was laid out on so the ribs cross the
+// joint unbroken.
+function buildSkinByTrade(group: THREE.Group, members: Member[], ownerUid: string,
   center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   catalog: Catalog | undefined, skinLines?: readonly SkinLine[]) {
-  const byGroup = new Map<LayerVisibilityGroup, Member[]>();
+  const byTrades = new Map<string, { trades: Trade[]; members: Member[] }>();
   for (const member of members) {
-    const key = layerVisibilityGroupOf(member.category);
-    byGroup.set(key, [...(byGroup.get(key) ?? []), member]);
+    const trades = memberTrades(member);
+    const key = trades.join("+");
+    const bucket = byTrades.get(key) ?? { trades, members: [] };
+    bucket.members.push(member);
+    byTrades.set(key, bucket);
   }
-  for (const [key, bucket] of byGroup) {
+  for (const { trades, members: bucket } of byTrades.values()) {
     const firstIndex = group.children.length;
     buildMembers(group, bucket, center, mode, palette, ownerUid, catalog?.materials, skinLines);
-    tagLayerGroup(group, firstIndex, key);
+    tagTrades(group, firstIndex, trades);
   }
 }
 
@@ -412,7 +417,7 @@ function buildSkinByLayerGroup(group: THREE.Group, members: Member[], ownerUid: 
 export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group,
-  skinLines?: readonly SkinLine[], wallsGroup?: THREE.Group) {
+  skinLines?: readonly SkinLine[], tradeGroups?: Record<Trade, THREE.Group>) {
   const firstChildIndex = parent.children.length;
   const triangles = roofPlaneTriangles(roof);
   const offsetAt = roofOffsetter(triangles);
@@ -470,7 +475,7 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
       });
     if (seam) applyStandingSeamRoofUv(geo, roof, center, seamProfile);
     const mesh = makeSurfaceMesh(geo, mat);
-    mesh.userData.layerGroup = layerVisibilityGroupOf(layer.function);
+    mesh.userData.trades = layerTrades({ function: layer.function, trades: undefined });
     parent.add(mesh);
     base = top;
   }
@@ -484,24 +489,33 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   // *wall's* own layer stack carried past the top plate, and they carry the wall's uid. They
   // build into `wallsGroup` under that uid, so the walls toggle takes them and a click lands on
   // the wall. Filing them by container instead put a gable end's whole raking face — five
-  // layers, ten feet of wall, not a 12" eave strip — behind the roof toggle.
+  // layers, ten feet of wall, not a 12" eave strip — behind the roof toggle. Each band files
+  // under the container of its own trade (a cladding closure with the siding).
   const skin = roof.members.filter((m) => !isRoofFramingMember(m));
   const framing = roof.members.filter(isRoofFramingMember);
   const owned = skin.filter((m) => !m.parent_uid || m.parent_uid === roof.uid);
   const foreign = skin.filter((m) => m.parent_uid && m.parent_uid !== roof.uid);
-  buildSkinByLayerGroup(parent, owned, roof.uid, center, mode, palette, catalog, skinLines);
+  buildSkinByTrade(parent, owned, roof.uid, center, mode, palette, catalog, skinLines);
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
-  if (wallsGroup && foreign.length) {
+  if (tradeGroups && foreign.length) {
     for (const owner of [...new Set(foreign.map((m) => m.parent_uid as string))].sort()) {
-      const ownerFirstIndex = wallsGroup.children.length;
-      buildSkinByLayerGroup(wallsGroup, foreign.filter((m) => m.parent_uid === owner), owner,
-        center, mode, palette, catalog, skinLines);
-      registerSelectable(wallsGroup, ownerFirstIndex, owner, "wall", picks, byUid);
+      const bands = foreign.filter((m) => m.parent_uid === owner);
+      const byContainer = new Map<THREE.Group, Member[]>();
+      for (const band of bands) {
+        const container = tradeGroups[primaryTrade(memberTrades(band))];
+        byContainer.set(container, [...(byContainer.get(container) ?? []), band]);
+      }
+      for (const [container, members] of byContainer) {
+        const ownerFirstIndex = container.children.length;
+        buildSkinByTrade(container, members, owner, center, mode, palette, catalog, skinLines);
+        registerSelectable(container, ownerFirstIndex, owner, "wall", picks, byUid);
+      }
     }
   }
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;
     buildMembers(framingGroup, framing, center, mode, palette, roof.uid, catalog?.materials);
+    tagTrades(framingGroup, framingFirstIndex, ["framing"]);
     registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
   }
 }

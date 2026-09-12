@@ -44,22 +44,14 @@ __all__ = [
     "waste_in_quantity",
 ]
 
+from typehaus.takeoff.labels import EMPTY_LABELS, LabelIndex, describe
 from typehaus.takeoff.product_labels import specified_product
 
-#: BOM fields that read as a human description, most specific first. A CSV row that says
-#: only "framing / 2x6" is not something a supplier can quote from.
-_DESCRIPTION_FIELDS = ("description", "scope", "name", "label", "product", "assembly")
 
-
-def _describe(row: Mapping[str, object], section: str, key: str) -> str:
-    for field_name in _DESCRIPTION_FIELDS:
-        value = row.get(field_name)
-        if isinstance(value, str) and value:
-            return value
-    types = row.get("types")
-    if isinstance(types, (list, tuple)) and types:
-        return ", ".join(str(t) for t in types)
-    return f"{section.replace('_', ' ')} · {key}"
+def _describe(row: Mapping[str, object], section: str, key: str,
+              labels: LabelIndex = EMPTY_LABELS) -> str:
+    """A description a supplier can quote from, the id kept (→ ``takeoff/labels``)."""
+    return describe(section, key, row, labels)
 
 
 def _sum(ranges: Iterable[PriceRange]) -> PriceRange:
@@ -599,7 +591,8 @@ def _driver_overlaps(consumed: Mapping[str, list[tuple[str, Mapping[str, Any]]]]
 
 def estimate_costs(bom: dict[str, Any], prices: Prices,
                    areas: Mapping[str, float] | None = None,
-                   products: Mapping[tuple[str, str], str] | None = None
+                   products: Mapping[tuple[str, str], str] | None = None,
+                   labels: LabelIndex | None = None,
                    ) -> dict[str, Any]:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 
@@ -627,7 +620,12 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     ``product`` label, which is the plan's answer to "which product is this line?" and takes
     no part in any arithmetic: it is not a price, it never reaches a subtotal, and a caller
     that passes nothing gets exactly the payload it got before.
+
+    ``labels`` is what the plan calls its own types, materials and assemblies
+    (:class:`typehaus.takeoff.labels.LabelIndex`); it only sharpens ``description`` and,
+    like ``products``, takes no part in any arithmetic.
     """
+    labels = labels or EMPTY_LABELS
     from typehaus.takeoff.cost_codes import cost_code
     from typehaus.takeoff.cost_model import (
         apply_waste,
@@ -747,11 +745,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
             # ``structure_material`` is absent on every BOM row but a solid's, and
             # only the solids section reads it — see ``cost_codes._solid_code``.
             code = cost_code(name, key, dict(prices.codes),
-                             material=row.get("structure_material"))
+                             material=row.get("structure_material"), row=row)
             # The product the PLAN specifies for this line, where it names one — never the
             # as-bought record, which lives in costs.toml and is the estimator's to write.
             specified = specified_product(name, key, row, products)
-            rows.append({"key": key, "description": _describe(row, name, key),
+            rows.append({"key": key, "description": _describe(row, name, key, labels),
                          **({"product": specified} if specified else {}),
                          **({"driver": driver} if driver else {}),
                          "quantity": round(quantity, 2), "unit": unit,

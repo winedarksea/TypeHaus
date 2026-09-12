@@ -64,9 +64,9 @@ def test_every_resolved_member_reaches_model_json(catlin_model_ro):
 def test_soffit_ladder_framing_is_in_the_payload(catlin_model_ro):
     """The instance the test above was written for, pinned by name.
 
-    ``trade="framing"``, not ``"floors"``: ``emit/trades.py``'s "soffit" -> "floors" entry is
-    a SOLID-category map that routes the finished box, and a stick belongs with every other
-    stick in the building rather than behind the floors toggle. The finished box is a separate
+    ``trade="framing"``, not ``"drywall"``: ``emit/trades.py``'s "soffit" -> "drywall" entry
+    is a SOLID-category map that routes the finished box, and a stick belongs with every
+    other stick in the building rather than behind the drywall toggle. The finished box is a separate
     node on the same uid — which is why the framing node reuses ``kind="solid"`` and needs no
     new ``SelectionKind``.
     """

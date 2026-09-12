@@ -55,6 +55,7 @@ is already parallel.
 .venv/bin/haus tasks houses/catlin --csv out/tasks.csv        # work packages for a PM tool
 .venv/bin/haus millwork houses/catlin                         # hardwood cut list for the mill
 .venv/bin/haus millwork houses/catlin --md out/milling.md --csv out/milling.csv
+.venv/bin/haus bids houses/catlin --all --out out/bids       # unpriced per-trade RFQs (docs/bid-package-format.md)
 .venv/bin/haus costs import out/estimate.csv --house houses/catlin   # actuals back in
 scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
 scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only

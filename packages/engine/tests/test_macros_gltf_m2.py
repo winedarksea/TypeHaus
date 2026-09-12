@@ -209,12 +209,9 @@ def test_glb_endpoint_serves_binary(client):
     assert resp.content[:4] == b"glTF"
 
 
-# The 13 visibility trades the UI honours (ui/src/state/vocabulary.ts ALL_TRADES). A whole-house
-# glb is only promoted to the primary scene when every node classifies to one of these.
-_ALL_TRADES = {
-    "walls", "openings", "framing", "floors", "concrete", "roof",
-    "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage",
-}
+# The trades the UI honours (ui/src/state/vocabulary.ts ALL_TRADES, generated from the same
+# table). A whole-house glb is only promoted to the primary scene when every node classifies.
+from typehaus.emit.trades import TRADES as _ALL_TRADES  # noqa: E402
 
 # The selection kinds the UI honours (ui/src/state/store.ts SelectionKind). Spelled out here
 # rather than imported from the emitter so a change to the vocabulary has to be made twice —
@@ -238,6 +235,8 @@ def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
         extras = node.get("extras")
         assert extras is not None, f"every node needs extras: {node.get('name')}"
         assert extras["trade"] in _ALL_TRADES, f"trade must be an allowlisted token: {extras}"
+        assert extras["trades"] and set(extras["trades"]) <= _ALL_TRADES, extras
+        assert extras["trades"][0] == extras["trade"]
         if extras["trade"] != "earth":
             # The site sheet is context, not an element: it has no uid to carry, which is the
             # same contract ui/src/three/builders/site.ts states for the ground it draws (and
@@ -250,9 +249,9 @@ def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
     wall_nodes = [n for n in nodes if n["extras"].get("kind") == "wall"]
     assert wall_nodes, "expected at least one selectable wall node"
     wall = wall_nodes[0]
-    assert wall["extras"]["trade"] == "walls"
+    assert wall["extras"]["trade"] in _ALL_TRADES
     assert wall["extras"]["uid"]
-    assert wall["name"].split("|") == ["walls", "wall", wall["extras"]["uid"]]
+    assert wall["name"].split("|") == [wall["extras"]["trade"], "wall", wall["extras"]["uid"]]
 
 
 def test_emit_gltf_dict_tags_every_node_with_a_kind_and_uid(plan):
@@ -304,7 +303,7 @@ def test_add_object_rejects_an_unknown_selection_kind(plan):
     mb = _MeshBuilder()
     mb.add_prism([(0, 0), (1, 0), (1, 1)], 0.0, 1.0, (0.5, 0.5, 0.5, 1.0))
     with pytest.raises(ValueError):
-        _SceneBuilder().add_object(mb, trade="concrete", kind="gutter", uid="X-1")
+        _SceneBuilder().add_object(mb, ("concrete",), kind="gutter", uid="X-1")
 
 
 def test_emit_gltf_dict_emits_canvas_object_nodes(plan):
@@ -404,15 +403,18 @@ def test_roof_sticks_export_to_framing_and_skin_stays_with_the_shell(catlin_mode
     from typehaus.emit.gltf import emit_gltf_dict
 
     gltf, _blob = emit_gltf_dict(catlin_model)
-    by_uid = {}
+    by_uid: dict = {}
     for node in gltf["nodes"]:
         extras = node.get("extras", {})
         if extras.get("kind") == "roof":
-            by_uid.setdefault(extras["uid"], set()).add(extras["trade"])
+            by_uid.setdefault(extras["uid"], []).append(tuple(extras["trades"]))
     assert by_uid, "fixture regression: catlin lost its roofs"
     for roof in catlin_model.roofs:
-        # Both roofs are framed (rafters on the house, trusses on the garage).
-        assert by_uid[roof.uid] == {"roof", "framing"}, roof.tag
+        # Both roofs are framed (rafters on the house, trusses on the garage): one node is
+        # the sticks, the other the shell, whose trade set is its layers' (roofing first).
+        assert ("framing",) in by_uid[roof.uid], roof.tag
+        shell = [t for t in by_uid[roof.uid] if t != ("framing",)]
+        assert shell and shell[0][0] == "roofing", (roof.tag, by_uid[roof.uid])
 
 
 def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):

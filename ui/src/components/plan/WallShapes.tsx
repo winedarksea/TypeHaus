@@ -6,7 +6,7 @@
 // not re-render when an unrelated hover changes.
 import { memo } from "react";
 import type { Layer, Opening, Vec2, Wall } from "../../model/types";
-import { isLayerVisible, type LayerVisibilityGroup } from "../../model/visibility";
+import { isLayerVisible, type VisibleTrades } from "../../model/visibility";
 import { layerCarriesControl, lensStrokeSpec } from "../LensBar";
 import type { Lens } from "../../state/vocabulary";
 import { formatFtIn, pointAlong, wallLength } from "../../model/geometry";
@@ -22,15 +22,15 @@ import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nor
 const MEMBER_FOOTPRINT_MIN_PX = 2;
 
 export const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming,
-  showLayers, visibleLayerGroups, activeLens, onSelect, onHover }: {
+  showLayers, visibleTrades, activeLens, onSelect, onHover }: {
   w: Wall;
   openings: Opening[];
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
   showFraming: boolean;
-  showLayers: boolean; // Walls discipline — off leaves the framing and the axis alone
-  visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  showLayers: boolean; // none of the wall's trades is on — leaves the framing and axis alone
+  visibleTrades: VisibleTrades;
   activeLens: Lens; // draws the control-layer overlay the lens is about
   onSelect: (wall: Wall, event: React.MouseEvent<SVGGElement>) => void;
   onHover: (uid: string | null) => void;
@@ -70,10 +70,10 @@ export const WallShape = memo(function WallShape({ w, openings, project, selecte
         })}
       </mask>
       <g className="wall-fills" mask={`url(#${openingMaskId})`}>
-        {/* Layer fills answer to the Walls discipline *and* to the per-layer control, so the
-            weather skin can be dropped while the cavity fill behind it stays drawn. */}
+        {/* Each layer fill answers to its own trade, so the siding can be dropped while the
+            insulation behind it stays drawn. */}
         {showLayers && w.layers.map((ly: Layer, i: number) =>
-          ly.polygon.length >= 3 && isLayerVisible(ly, visibleLayerGroups) ? (
+          ly.polygon.length >= 3 && isLayerVisible(ly, visibleTrades) ? (
             <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
               stroke="var(--panel-line)" strokeWidth={0.5} />
           ) : null,

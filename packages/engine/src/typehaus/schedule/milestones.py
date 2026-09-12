@@ -8,15 +8,10 @@ a jurisdiction contributes its inspections and nothing else.
 Deliberately no dates and no order beyond the trade order that already exists. A milestone
 is *done* when every visit in it is done, not when a date passes.
 
-``preconstruction`` and ``complete`` own no trades either, and own only standalone visits:
-permits, locates, utility coordination, deliveries, the final survey, the punch list. A
-visit authored as ``site/<label>`` names its own milestone and lands in one of them.
-
-``insulated`` owns no trades, and that is not an oversight. Insulation and air sealing are
-billed inside the wall, roof and floor assemblies — the takeoff has no "insulation" trade
-and inventing one to fill this row would put a trade in ``TRADES`` that no BOM row maps to.
-What the milestone does own is the three inspections that decide whether the house may be
-closed up, which is the whole reason it is a milestone rather than a step.
+``preconstruction`` owns ``general`` (permits, insurance, site protection) and the standalone
+``site/<label>`` visits that name it: locates, utility coordination, deliveries. ``complete``
+owns ``landscaping`` and the close-out visits. ``insulated`` owns the insulation trade and
+the three inspections that decide whether the house may be closed up.
 """
 
 from __future__ import annotations
@@ -30,13 +25,14 @@ from typehaus.schedule.model import Milestone
 #: ``CONSTRUCTION_SEQUENCE`` exactly — ``_validate`` below refuses anything else, so a new
 #: trade cannot be added upstream without somebody deciding where in the build it lands.
 MILESTONE_SPECS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
-    ("preconstruction", "Preconstruction", ()),
+    ("preconstruction", "Preconstruction", ("general",)),
     ("foundation", "Foundation", ("earth", "concrete", "drainage")),
-    ("weathertight", "Weathertight", ("framing", "floors", "roof", "walls", "openings")),
+    ("weathertight", "Weathertight", ("framing", "masonry", "roofing", "openings", "siding")),
     ("rough_ins", "Rough-ins", ("plumbing", "electrical", "mechanical")),
-    ("insulated", "Insulated and closed up", ()),
-    ("final", "Finishes", ("stairs", "furniture")),
-    ("complete", "Complete", ()),
+    ("insulated", "Insulated and closed up", ("insulation",)),
+    ("final", "Finishes", ("drywall", "paint", "millwork", "tile", "flooring", "stairs",
+                           "furniture")),
+    ("complete", "Complete", ("landscaping",)),
 )
 
 MILESTONE_IDS: tuple[str, ...] = tuple(spec[0] for spec in MILESTONE_SPECS)
@@ -86,8 +82,8 @@ def milestone_of_inspection(spec: Any, by_id: dict[str, Any]) -> str:
     """Where an inspection sits, declared first and inherited only as a fallback.
 
     ``InspectionSpec.milestone`` is authoritative because no rule over ``after`` and
-    ``gates`` can separate the slab inspection (foundation, gates ``floors``) from the
-    braced-wall one (weathertight, gates ``walls``). An inspection that declares none —
+    ``gates`` can separate the slab inspection (foundation, gates ``flooring``) from the
+    framing one (weathertight, gates ``insulation``). An inspection that declares none —
     a house's own ``[[extra]]``, usually — inherits the latest milestone among its
     predecessors, which is right far more often than the first milestone would be.
     """

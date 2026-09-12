@@ -21,10 +21,13 @@ def test_the_slices_partition_the_trade_order_contiguously() -> None:
     assert set(MILESTONE_OF_TRADE) == TRADES
 
 
-def test_insulated_owns_no_trade_on_purpose() -> None:
-    """Insulation is billed inside the assemblies; inventing a trade would break TRADES."""
+def test_insulated_owns_the_insulation_trade() -> None:
+    """Closing up is its own milestone, and since 2026-09-12 the trade that fills the
+    cavities is its own bid; the milestone owns exactly that one."""
     by_id = {spec[0]: spec[2] for spec in MILESTONE_SPECS}
-    assert by_id["insulated"] == ()
+    assert by_id["insulated"] == ("insulation",)
+    assert by_id["preconstruction"] == ("general",)
+    assert by_id["complete"] == ("landscaping",)
 
 
 class _Spec:
@@ -65,7 +68,7 @@ class _Visit:
 def test_state_is_derived_from_the_visits_in_it() -> None:
     milestones = build_milestones(
         [_Visit("a", "earth", "verified"), _Visit("b", "concrete", "done"),
-         _Visit("c", "framing", "todo"), _Visit("d", "floors", "scheduled")], [])
+         _Visit("c", "framing", "todo"), _Visit("d", "roofing", "scheduled")], [])
     by_id = {m.id: m for m in milestones}
     assert by_id["foundation"].state == "done"
     assert by_id["weathertight"].state == "in_progress"

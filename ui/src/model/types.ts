@@ -40,6 +40,10 @@ export interface Layer {
   function: string;
   material: string;
   thickness_m: number;
+  // The trade this band belongs to (→ emit/trade_rules.py layer_trade). The viewer draws
+  // the band iff any of them is visible; absent on an older payload, which falls back to
+  // the function map in generated/vocabulary.json.
+  trades?: string[];
   polygon: Vec2[];
   control: string[];
   // Insulation filling a STRUCTURE layer's framing bays: shares that layer's polygon and
@@ -162,6 +166,8 @@ export interface Wall {
   tag: string;
   storey: string;
   assembly: string;
+  // Every trade the body layers belong to, sequence-ordered (→ resolve/geometry_build).
+  trades?: string[];
   provenance: Provenance | null;
   axis: [Vec2, Vec2];
   z0_m: number;
@@ -349,6 +355,7 @@ export interface CanvasObject {
   kind: string;
   type: string | null;
   domain: string;
+  trades?: string[];
   room: string | null;
   position_m: Vec2 | null;
   z_m?: number;
@@ -1178,6 +1185,8 @@ export interface Roof {
   surface_area_m2: number;
   members: Member[];
   provenance: Provenance | null;
+  // The roof shell's trade set — its assembly layers' (roofing first).
+  trades?: string[];
   bearing_z_m?: number | null;
   layer_edge_setbacks?: RoofLayerSetback[];
 }
@@ -1197,6 +1206,7 @@ export interface Paneling {
   wall_tag: string;
   material_ref: string;
   layout_line: string | null;
+  trades?: string[];
   replaces_wall_finish: boolean;
   area_m2: number;
   run_m: number;
@@ -1220,6 +1230,9 @@ export interface Solid {
   z0_m: number;
   z1_m: number;
   assembly: string | null;
+  // The trade set, category re-filed by material (a cast column is concrete, a plank deck
+  // framing). Absent on an older payload → solidTrades() falls back to the category map.
+  trades?: string[];
   // The material the authored element named directly, for the solids that have one instead of
   // an assembly (the trim-run family). Mirrors ResolvedSolid.material.
   material?: string | null;
@@ -1306,6 +1319,7 @@ export interface FootingBedding {
   aggregate: string;
   geotextile: boolean;
   drain_tile: boolean;
+  trades?: string[];
   provenance: Provenance | null;
 }
 

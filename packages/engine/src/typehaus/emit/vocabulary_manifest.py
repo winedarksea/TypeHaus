@@ -13,8 +13,9 @@ The five tables:
   of implicit: both ``memberColors`` and ``solidColors`` are the whole palette.
 * ``emit/trades.py`` ``SOLID_CATEGORY_TRADE`` <-> the mirror inlined in
   ``ui/src/three/solidMaterials.ts``.
-* ``emit/finishes.py`` ``LAYER_VISIBILITY_GROUPS`` + ``LAYER_GROUP_ALIASES`` <->
-  ``ui/src/model/visibility.ts`` ``ALL_LAYER_VISIBILITY_GROUPS`` + ``LAYER_FUNCTION_ALIASES``.
+* ``emit/trades.py`` + ``emit/trade_rules.py`` (the trade vocabulary, groups, labels and the
+  classification maps) <-> ``ui/src/model/tradeVisibility.ts``. The per-layer visibility
+  groups this used to carry retired on 2026-09-12: a layer's function IS a trade now.
 * ``emit/draw/typography.py``'s sizing constants <-> ``ui/src/components/detailTypography.ts``
   (the constants only — ``modelInPerPt``/``paperInPerModelIn``/``wrapColumnsFor`` are logic,
   authored once per language on purpose, and stay hand-written in both).
@@ -54,9 +55,20 @@ from typehaus.emit.draw.typography import (
     NOTES_PT,
     TEXT_PT,
 )
-from typehaus.emit.finishes import LAYER_GROUP_ALIASES, LAYER_VISIBILITY_GROUPS
 from typehaus.emit.gltf.palette import _PALETTE
-from typehaus.emit.trades import SOLID_CATEGORY_TRADE
+from typehaus.emit.trade_rules import (
+    CANVAS_DOMAIN_TRADE,
+    LAYER_FUNCTION_TRADE,
+    RECORD_FAMILY_TRADES,
+    solid_trades,
+)
+from typehaus.emit.trades import (
+    CONSTRUCTION_SEQUENCE,
+    FALLBACK_TRADE,
+    SOLID_CATEGORY_TRADE,
+    TRADE_GROUPS,
+    TRADE_LABELS,
+)
 
 
 def _to_hex(rgba: tuple[float, float, float, float]) -> int:
@@ -85,8 +97,20 @@ def build_vocabulary_manifest() -> dict[str, object]:
         "memberColors": palette_hex,
         "solidColors": palette_hex,
         "solidTrades": dict(SOLID_CATEGORY_TRADE),
-        "layerVisibilityGroups": list(LAYER_VISIBILITY_GROUPS),
-        "layerGroupAliases": dict(LAYER_GROUP_ALIASES),
+        # The trade vocabulary (emit/trades.py, emit/trade_rules.py): sequence order, chip
+        # labels, the viewer's toggle groups, and the classification maps the viewer falls
+        # back to when a model.json record carries no ``trades`` of its own.
+        "trades": list(CONSTRUCTION_SEQUENCE),
+        "tradeLabels": dict(TRADE_LABELS),
+        "tradeGroups": [{"id": gid, "label": label, "trades": list(trades)}
+                        for gid, label, trades in TRADE_GROUPS],
+        "layerFunctionTrades": dict(LAYER_FUNCTION_TRADE),
+        "canvasDomainTrades": dict(CANVAS_DOMAIN_TRADE),
+        "solidTradeSets": {category: list(solid_trades(category))
+                           for category in SOLID_CATEGORY_TRADE},
+        "solidTradeFallback": FALLBACK_TRADE,
+        "recordFamilyTrades": {family: list(trades)
+                               for family, trades in RECORD_FAMILY_TRADES.items()},
         "typography": {
             "CHAR_ASPECT": CHAR_ASPECT,
             "LINE_SPACING": LINE_SPACING,

@@ -149,11 +149,11 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     ("column:POST_WHITE_PAINT", "framing"),
     ("glazing:BREEZEWAY_GLAZED_WALL", "openings"),
     ("glazing:BREEZEWAY_ROOF_GLAZING", "openings"),
-    ("bug_screen:EXT_2X6", "openings"),
+    ("bug_screen:EXT_2X6", "siding"),
     ("drywell", "drainage"),
     ("drain_tile", "drainage"),
     ("sump", "drainage"),
-    ("soffit", "floors"),
+    ("soffit", "drywall"),
     ("beam", "framing"),
 ])
 def test_a_solid_that_is_not_a_pour_is_not_filed_as_concrete(key, trade) -> None:
@@ -174,9 +174,13 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
     settle on its own — and silence is not evidence, so a row with no assembly stays a
     pour."""
     assert cost_code("concrete", "slab:PORCH_DECK_COMPOSITE",
-                     material="composite-deck").trade == "floors"
+                     material="composite-deck").trade == "framing"
     assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
-                     material="aluminum-deck").trade == "floors"
+                     material="aluminum-deck").trade == "framing"
+    # And a slab that is neither a pour nor a deck files where its material says.
+    assert cost_code("concrete", "slab:SG_FROST_WING_XPS1", material="xps").trade == "insulation"
+    assert cost_code("concrete", "slab:GARDEN_PUTTING_GREEN",
+                     material="kbg-sod").trade == "landscaping"
     assert cost_code("concrete", "slab:DECK_EPS_INT",
                      material="concrete").trade == "concrete"
     assert cost_code("concrete", "slab", material=None).trade == "concrete"
@@ -195,7 +199,8 @@ def test_every_trade_a_solid_category_can_name_has_an_account() -> None:
     from typehaus.emit.trades import SOLID_CATEGORY_TRADE
     from typehaus.takeoff.cost_codes import _SOLID_TRADE_CODES
 
-    assert set(SOLID_CATEGORY_TRADE.values()) <= set(_SOLID_TRADE_CODES)
+    # Concrete is absent on purpose: a pour falls through to the footing/flatwork rows.
+    assert set(SOLID_CATEGORY_TRADE.values()) <= set(_SOLID_TRADE_CODES) | {"concrete"}
 
 
 def test_no_catlin_solid_reaches_the_concrete_sub_unless_it_is_concrete(
@@ -273,3 +278,75 @@ def test_every_catlin_pour_reaches_the_concrete_sub(catlin_model, catlin_areas) 
     assert pours, "the house has cast solids; if this empties, the walk is broken"
     for row in pours:
         assert row["trade"] == "concrete", f"{row['key']} is a pour filed as {row['trade']}"
+
+
+# --- facts beat spelling (2026-09-12) ------------------------------------------------------
+
+
+@pytest.mark.parametrize("row,trade", [
+    ({"domain": "electrical"}, "electrical"),
+    ({"domain": "plumbing"}, "plumbing"),
+    ({"domain": "appliance"}, "furniture"),
+    ({"domain": "furniture"}, "millwork"),
+    ({"domain": "mechanical", "services": ["supply_air", "power_240"],
+      "equipment_kind": "ducted_air_handler"}, "mechanical"),
+    ({"domain": "mechanical", "services": ["water_cold", "water_hot", "power_240"],
+      "equipment_kind": "water_heater"}, "plumbing"),
+    ({"domain": "mechanical", "services": ["power_240"], "equipment_kind": "inverter"},
+     "electrical"),
+    ({"domain": "mechanical", "services": ["power_240"], "equipment_kind": "heat_pump"},
+     "mechanical"),
+])
+def test_a_placeable_files_by_its_domain_and_services(row, trade) -> None:
+    assert cost_code("placeables", "X", row=row).trade == trade
+
+
+@pytest.mark.parametrize("row,trade", [
+    ({"scope": "wall", "function": "finish", "material": "gwb"}, "drywall"),
+    ({"scope": "wall", "function": "finish", "material": "latex-paint"}, "paint"),
+    ({"scope": "wall", "function": "finish", "material": "sauna-shiplap"}, "millwork"),
+    ({"scope": "wall", "function": "cladding", "material": "board-batten-24"}, "siding"),
+    ({"scope": "roof", "function": "cladding", "material": "standing-seam"}, "roofing"),
+    ({"scope": "roof", "function": "sheathing", "material": "struct-1-plywood"}, "framing"),
+    ({"scope": "wall", "function": "insulation (cavity)", "material": "fiberglass"},
+     "insulation"),
+    ({"scope": "slab", "function": "membrane", "material": "polyethylene"}, "concrete"),
+    ({"scope": "slab", "function": "sheathing", "material": "capillary-break-stone"}, "earth"),
+    ({"scope": "slab", "function": "finish", "material": "kbg-sod"}, "landscaping"),
+])
+def test_an_envelope_layer_files_by_function_scope_and_material(row, trade) -> None:
+    assert cost_code("envelope_layers", str(row["material"]), row=row).trade == trade
+
+
+def test_no_catlin_mep_placeable_bills_as_furniture(catlin_model, catlin_areas) -> None:
+    """The audit finding: 105 ED/EQ/REG/FX rows, ~$87k, filed under furniture."""
+    from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.takeoff.bom import bill_of_materials
+
+    prices = load_prices(catlin_model.plan.source_root)
+    bom = bill_of_materials(catlin_model)
+    rows = estimate_costs(bom, prices, catlin_areas)["sections"]["placeables"]["rows"]
+    assert rows
+    for row in rows:
+        prefix = row["key"].split("-", 1)[0]
+        if prefix in ("ED", "EQ", "REG", "FX"):
+            assert row["trade"] != "furniture", row["key"]
+
+
+def test_catlin_allowances_split_across_their_trades(catlin_model, catlin_areas) -> None:
+    from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.takeoff.bom import bill_of_materials
+
+    prices = load_prices(catlin_model.plan.source_root)
+    bom = bill_of_materials(catlin_model)
+    rows = estimate_costs(bom, prices, catlin_areas)["sections"]["allowances"]["rows"]
+    by_key = {row["key"]: row["trade"] for row in rows}
+    assert by_key["site-general-conditions"] == "general"
+    assert by_key["site-scaffolding-and-lift-rental"] == "general"
+    assert by_key["permits-mep"] == "general"
+    assert by_key["site-excavation-backfill-grading"] == "earth"
+    assert by_key["envelope-air-sealing-and-blower-door"] == "insulation"
+    assert by_key["paint-trim-and-doors"] == "paint"
+    assert by_key["finish-wall-tile-material"] == "tile"
+    assert by_key["finish-floor-prep-and-self-levelling"] == "flooring"
+    assert "earth" not in {t for k, t in by_key.items() if k.startswith("permits-")}

@@ -63,6 +63,18 @@ def shared_rows(board: Any) -> list[str]:
     return out
 
 
+def orphan_rows(board: Any) -> list[str]:
+    """A visit naming a BOM row its package no longer holds. Used to be dropped in silence,
+    so a re-filed trade quietly emptied the visit it was scheduled under."""
+    out: list[str] = []
+    for visit in board.visits:
+        for row in getattr(visit, "orphan_rows", ()):
+            out.append(f"[visits.\"{visit.slug}\"] names row {row!r}, which is not in "
+                       f"package {visit.package} — it moved trade or its key changed; "
+                       "re-file the row under the package that holds it now")
+    return out
+
+
 def unassigned_scope(board: Any) -> list[str]:
     """A split package whose rows or tags no visit covers: work nobody is arriving for."""
     by_package: dict[str, list[Any]] = {}
@@ -159,6 +171,7 @@ def validate(board: Any, model: Any = None) -> tuple[list[str], list[str]]:
     errors = list(board.errors)
     errors += dangling_dependencies(board)
     errors += shared_rows(board)
+    errors += orphan_rows(board)
     errors += verification_errors(board, model)
     warnings = unassigned_scope(board)
     warnings += exception_warnings(board)

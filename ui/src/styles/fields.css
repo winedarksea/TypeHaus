@@ -117,6 +117,17 @@
   border-right: 0;
   transform: translateY(-1px) rotate(-45deg);
 }
+/* A group header whose chips are only partly on: a dash, the same ink as the tick. */
+.trade-chip input[type="checkbox"]:indeterminate {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+}
+.trade-chip input[type="checkbox"]:indeterminate::before {
+  content: "";
+  width: 10px;
+  height: 0;
+  border-top: 2px solid var(--md-on-primary);
+}
 
 /* Hierarchy pills — same chip language as .seg-row. */
 .hierarchy-levels {

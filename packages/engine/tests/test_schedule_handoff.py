@@ -70,7 +70,7 @@ def test_nothing_penetrates_catlins_roof_and_the_evidence_says_why(catlin_model_
     found, evidence = roof_penetrations(catlin_model_ro)
     assert found == []
     assert "exits through a wall" in evidence or "no pipe, duct" in evidence
-    item = [i for i in handoff_items(catlin_model_ro, _visit("roof"))
+    item = [i for i in handoff_items(catlin_model_ro, _visit("roofing"))
             if i.id == "roof_penetrations"]
     assert item and item[0].count == 0
     assert "stop" in item[0].label

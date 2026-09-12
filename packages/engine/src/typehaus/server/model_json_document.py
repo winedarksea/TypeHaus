@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
+from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.findings import Finding
 from typehaus.model.canvas import resolved_canvas_objects
 from typehaus.resolve import site_earth
@@ -49,9 +50,11 @@ def _document_header(
         # signal `npm run shots` needs to tell "the house changed" from "the server restarted".
         "contentHash": content_hash,
         "units": "imperial",
-        "canvas_objects": resolved_canvas_objects(
-            model, lambda tag: _provenance(provenance, tag)
-        ),
+        "canvas_objects": [
+            {**item, "trades": [CANVAS_DOMAIN_TRADE.get(str(item.get("domain")), "furniture")]}
+            for item in resolved_canvas_objects(
+                model, lambda tag: _provenance(provenance, tag))
+        ],
         "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
         "project": {

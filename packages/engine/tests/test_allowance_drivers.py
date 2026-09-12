@@ -130,7 +130,7 @@ def test_a_driven_row_is_still_an_allowance(tmp_path) -> None:
     row = section["rows"][0]
     assert row["quantity"] == 9.0 and row["driver"] == "openings.count[kind=window]"
     # The `permits-` prefix still declares the trade, exactly as for a lump sum.
-    assert row["nahb_code"] == "1000"
+    assert row["nahb_code"] == "9000" and row["trade"] == "general"
 
 
 # --- what a driver refuses to guess ---------------------------------------------------------

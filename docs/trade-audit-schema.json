@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TradeAuditReport",
+  "description": "One reviewer's verdicts over one chunk of a bid package. Produced by the reviewer fan-out in plans/trade-audit-decisions.md; folded into emit/trade_rules.py, takeoff/cost_codes.py and takeoff/labels.py by a person.",
+  "type": "object",
+  "required": ["reviewer", "model", "trade", "chunk", "findings"],
+  "properties": {
+    "reviewer": {"type": "string", "enum": ["A", "B"], "description": "A: the sub receiving the package. B: the GC checking nothing landed on the wrong sub."},
+    "model": {"type": "string"},
+    "trade": {"type": "string"},
+    "chunk": {"type": "integer", "minimum": 0},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["row_id", "section", "key", "trade_fit", "readability", "unit", "confidence"],
+        "properties": {
+          "row_id": {"type": "string", "description": "<section>:<key> as printed in the CSV."},
+          "section": {"type": "string"},
+          "key": {"type": "string"},
+          "trade_fit": {"type": "object", "required": ["ok"], "properties": {
+            "ok": {"type": "boolean"}, "alternate_trade": {"type": ["string", "null"]}, "reason": {"type": "string"}}},
+          "readability": {"type": "object", "required": ["ok"], "properties": {
+            "ok": {"type": "boolean"}, "label": {"type": ["string", "null"], "description": "Proposed label; the id is kept by the engine."}, "reason": {"type": "string"}}},
+          "unit": {"type": "object", "required": ["ok"], "properties": {
+            "ok": {"type": "boolean"}, "expected_unit": {"type": ["string", "null"]}, "reason": {"type": "string"}}},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1, "description": "Below 0.6 needs a reason in the flagged axis."},
+          "sources": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "IdAuditReport": {
+      "type": "object",
+      "required": ["reviewer", "model", "findings"],
+      "properties": {
+        "reviewer": {"type": "string"}, "model": {"type": "string"},
+        "findings": {"type": "array", "items": {"type": "object",
+          "required": ["id", "kind", "self_explanatory", "confidence"],
+          "properties": {
+            "id": {"type": "string"}, "kind": {"type": "string", "enum": ["type", "material", "assembly", "enum"]},
+            "self_explanatory": {"type": "boolean"}, "label": {"type": ["string", "null"]},
+            "reason": {"type": "string"}, "confidence": {"type": "number", "minimum": 0, "maximum": 1}}}}
+      }
+    }
+  }
+}

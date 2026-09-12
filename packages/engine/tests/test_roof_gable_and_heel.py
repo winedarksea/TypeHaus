@@ -378,7 +378,9 @@ def test_authored_eave_soffit_and_fascia_resolve_to_trim_solids():
     )
     model, _ = resolve(_plan(extra_elements=runs))
     by_tag = {solid.tag: solid for solid in model.solids}
-    assert by_tag["TR-SOFFIT-1"].category == "soffit"
+    # "eave_soffit", not "soffit": the dropped box resolve/soffits.py mints keeps that
+    # name, and the two are different trades (siding vs drywall).
+    assert by_tag["TR-SOFFIT-1"].category == "eave_soffit"
     assert by_tag["TR-FASCIA-1"].category == "fascia"
     assert by_tag["TR-SOFFIT-1"].z1_m == pytest.approx(ft(9.5).meters)
 

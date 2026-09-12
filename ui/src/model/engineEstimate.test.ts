@@ -139,6 +139,12 @@ export function runEngineEstimateTests(): void {
   assert(byName[1].rows.map((r) => r.key).join(",") === "footing,slab",
     "…and rows alphabetically inside");
 
+  const byPackage = groupRows(rows, "group", "key", ESTIMATE.total);
+  assert(byPackage.map((g) => g.label).join(",") === "Site,Concrete & masonry,Furniture",
+    "Grouping by package names the viewer's toggle groups, in their order");
+  assert(byPackage[0].rows[0].key === "site-excavation" && byPackage[1].rows.length === 2,
+    "…with each trade's rows under its package");
+
   const bySection = groupRows(rows, "section", "cost", ESTIMATE.total);
   assert(bySection.map((g) => g.label).join(",") === "allowances,concrete,furnishings",
     "Grouping by section names the prices.toml block a row lives in");

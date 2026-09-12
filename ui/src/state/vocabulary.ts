@@ -6,6 +6,7 @@
 // They live one level below the store on purpose: model/visibility.ts and the 3D panel both
 // need `Trade` and `SelectionKind`, and neither should have to reach through a module that
 // constructs an EngineClient to get them.
+import vocabulary from "../generated/vocabulary.json";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension" | "measure";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
@@ -25,21 +26,23 @@ export type Representation = "conceptual" | "schematic" | "detailed" | "fabricat
 // actual perms per layer rather than only "this layer is tagged vapour".
 export type Lens = "none" | "air" | "water" | "thermal" | "vapor";
 
-// 3D trade visibility (→ 21 §3D panel WP7): one THREE.Group per trade so toggling never
-// rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,
-// insulation, cladding); "framing" is every stick in the building — wall members
-// (studs/plates/headers), floor joists, roof rafters and the ridge beam, plus the standalone
-// Beam/Post solids the resolver emits; "floors" is floor decks (hideable for stair continuity)
-// and dropped soffits; "concrete" is the pours (slabs, footings, pads) and the fallback for any
-// solid category not yet classified; "roof" is the roof shell and its edge trim, but not its
-// sticks; "earth" is the translucent site context sheet; "drainage" is the whole stormwater run
-// — gutters, leaders, the perimeter tile ring, trenches, drywells and the sump pit, which used
-// to be split between the roof and concrete toggles. Which trade a resolved solid lands on
-// is the shared table in three/solidMaterials.ts::SOLID_CATEGORY_TRADE.
-export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "plumbing" | "electrical" | "mechanical" | "earth" | "drainage";
-export const ALL_TRADES: Trade[] = [
-  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage",
-];
+// The trade vocabulary (→ emit/trades.py, generated into generated/vocabulary.json). A trade
+// is a plausible separate bid; the viewer shows them in GROUPS (model/tradeVisibility.ts) and
+// an element carries a SET of trades — a wall body is every trade its layers belong to — and
+// draws iff any of them is visible. The literal union is what makes a typo a compile error;
+// ALL_TRADES is the engine's list in construction order, and model/visibility.test.ts pins
+// the two equal.
+export type Trade =
+  | "general" | "earth" | "drainage" | "landscaping"
+  | "concrete" | "masonry"
+  | "framing" | "stairs"
+  | "roofing"
+  | "siding" | "insulation" | "drywall" | "paint"
+  | "openings"
+  | "tile" | "flooring" | "millwork"
+  | "plumbing" | "electrical" | "mechanical"
+  | "furniture";
+export const ALL_TRADES: Trade[] = vocabulary.trades as Trade[];
 
 // How solid the site sheet is drawn, 0..1 — the Views panel's Ground opacity slider. It sits
 // here, not with the builder that consumes it (three/builders/site.ts re-exports it as

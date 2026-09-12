@@ -9,18 +9,15 @@ from typehaus.emit.gltf.geometry import _to_gltf
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color
 from typehaus.emit.gltf.scene import _SceneBuilder
+from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 
-_CANVAS_TRADES = {"plumbing": "plumbing", "electrical": "electrical", "mechanical": "mechanical"}
-
 
 def _canvas_trade(domain: str) -> str:
-    """Route a resolved canvas object to its visibility trade, mirroring Panel3D.setModel:
-    plumbing/electrical/mechanical keep their discipline; everything else (furniture,
-    appliances, ...) lands in the furniture trade."""
-    return _CANVAS_TRADES.get(domain, "furniture")
+    """Route a resolved canvas object to its viewer trade by domain (→ emit/trade_rules)."""
+    return CANVAS_DOMAIN_TRADE.get(domain, "furniture")
 
 
 _PLACEABLE_TYPE_COLLECTIONS = ("furniture_types", "fixture_types", "appliance_types",
@@ -53,7 +50,7 @@ def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
             drawn = _add_canvas_parts(mb, item, product_type)
         if not drawn:
             _add_canvas_box(mb, item, heights.get(item.type_ref))
-        scene.add_object(mb, trade=_canvas_trade(item.domain),
+        scene.add_object(mb, (_canvas_trade(item.domain),),
                          kind="canvas_object", uid=item.uid)
 
 

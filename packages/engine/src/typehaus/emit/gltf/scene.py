@@ -73,7 +73,7 @@ class _SceneBuilder:
             })
         return index
 
-    def add_object(self, mb: _MeshBuilder, trade: str,
+    def add_object(self, mb: _MeshBuilder, trades: tuple[str, ...] | str,
                    kind: str | None = None, uid: str | None = None) -> None:
         """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
@@ -87,10 +87,14 @@ class _SceneBuilder:
         if kind is not None and kind not in _SELECTION_KINDS:
             raise ValueError(f"unknown selection kind {kind!r}; "
                              f"expected one of {sorted(_SELECTION_KINDS)}")
-        # Solids take their trade from a table (emit/trades.py); a typo there has to fail
-        # here rather than ship a node whose group the UI has nowhere to put.
-        if trade not in TRADES:
-            raise ValueError(f"unknown trade {trade!r}; expected one of {sorted(TRADES)}")
+        # ``trades`` is the element's trade SET (a wall body is every trade its layers
+        # belong to); extras carry both the set and its first member as ``trade`` for the
+        # readers keyed on one. A typo has to fail here rather than ship a node the UI
+        # has nowhere to put.
+        trade_set = (trades,) if isinstance(trades, str) else tuple(trades)
+        if not trade_set or any(trade not in TRADES for trade in trade_set):
+            raise ValueError(f"unknown trade in {trade_set!r}; expected {sorted(TRADES)}")
+        trade = trade_set[0]
         primitives: list[dict] = []
         for color, positions, indices in mb.buckets():
             # De-index into flat triangle soup with one geometric normal per face. Every builder
@@ -112,7 +116,7 @@ class _SceneBuilder:
             return
         mesh_index = len(self._meshes)
         self._meshes.append({"primitives": primitives})
-        extras: dict[str, str] = {"trade": trade}
+        extras: dict[str, object] = {"trade": trade, "trades": list(trade_set)}
         if kind is not None:
             extras["kind"] = kind
         if uid is not None:

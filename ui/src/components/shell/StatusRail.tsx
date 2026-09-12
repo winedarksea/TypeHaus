@@ -1,7 +1,6 @@
 import { useStore } from "../../state/store";
 import { visibleFindings } from "../../state/locate";
 import { ALL_TRADES } from "../../state/vocabulary";
-import { ALL_LAYER_VISIBILITY_GROUPS } from "../../model/visibility";
 import { LENSES } from "../LensBar";
 import { Menu } from "../ui/Menu";
 
@@ -16,7 +15,6 @@ export function StatusRail() {
   const activeStorey = useStore((s) => s.activeStorey);
   const representation = useStore((s) => s.representation);
   const visibleTrades = useStore((s) => s.visibleTrades);
-  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const activeLens = useStore((s) => s.activeLens);
   const setActiveLens = useStore((s) => s.setActiveLens);
   const activePanel = useStore((s) => s.activePanel);
@@ -28,7 +26,6 @@ export function StatusRail() {
   const adviseCount = findings.filter((f) => f.severity === "info").length;
 
   const shownTrades = ALL_TRADES.filter((t) => visibleTrades[t]).length;
-  const hiddenLayers = ALL_LAYER_VISIBILITY_GROUPS.filter((g) => !visibleLayerGroups[g]).length;
   const activeLensSpec = LENSES.find((l) => l.id === activeLens) ?? LENSES[0];
 
   return (
@@ -43,14 +40,8 @@ export function StatusRail() {
         <span>{activeStorey ?? "—"}</span>
         <span className="sep">·</span>
         <span>
-          {shownTrades === ALL_TRADES.length ? "All disciplines" : `${shownTrades} disciplines`}
+          {shownTrades === ALL_TRADES.length ? "All trades" : `${shownTrades} of ${ALL_TRADES.length} trades`}
         </span>
-        {hiddenLayers > 0 && (
-          <>
-            <span className="sep">·</span>
-            <span>{hiddenLayers} layer{hiddenLayers === 1 ? "" : "s"} hidden</span>
-          </>
-        )}
         <span className="sep">·</span>
         <span>{representation[0].toUpperCase() + representation.slice(1)}</span>
       </button>

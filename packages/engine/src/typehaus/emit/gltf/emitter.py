@@ -69,12 +69,19 @@ from typehaus.emit.gltf.walls import (
     _add_wall_body,
     _wall_top_at,  # noqa: F401
 )
-from typehaus.emit.trades import solid_trade
+from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
+from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry import light_run_band_profiles
+from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoom, Ring
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.sweep import sweep_legs
+
+
+def _solid_trades(model: ResolvedModel, solid) -> tuple[str, ...]:
+    """The solid's trade set: its category, re-filed by what it is made of."""
+    return solid_trades(solid.category, solid_material_ref(model.plan, solid))
 
 
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
@@ -111,12 +118,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored)
         for member in closures.get(wall.uid, ()):
             _add_member(body, member)
-        scene.add_object(body, trade="walls", kind="wall", uid=wall.uid)
+        scene.add_object(body, wall_trades(wall), kind="wall", uid=wall.uid)
         if wall.members:
             framing = _MeshBuilder()
             for member in wall.members:
                 _add_member(framing, member)
-            scene.add_object(framing, trade="framing", kind="wall", uid=wall.uid)
+            scene.add_object(framing, ("framing",), kind="wall", uid=wall.uid)
 
     door_types = {dt.tag: dt for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
@@ -131,7 +138,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                              is_glazed=op.is_door and door_type is not None and door_type.glazed,
                              is_trimless=(op.is_door and door_type is not None
                                            and door_type.trimless))
-        scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
+        scene.add_object(mb, ("openings",), kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
@@ -156,8 +163,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                 zb = _MeshBuilder()
                 zb.add_prism(zone.outline, storey_z, storey_z + 0.021,
                              _room_floor_color(model, zone.material_ref))
-                scene.add_object(zb, trade="floors", kind="room", uid=room.uid)
-            scene.add_object(mb, trade="floors", kind="room", uid=room.uid)
+                scene.add_object(zb, ("flooring",), kind="room", uid=room.uid)
+            scene.add_object(mb, ("flooring",), kind="room", uid=room.uid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
@@ -168,16 +175,14 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             color = _solid_color(model, solid)
             for start, end in legs:
                 mb.add_gbox(GBox(corners_bottom=start, corners_top=end), color)
-            scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
-                             uid=solid.uid)
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
         elif solid.outline:
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
             # Not every solid is a pour: a standalone beam or post is framing, a routed pipe
-            # run is plumbing, roof edge trim is roof (→ emit/trades.py).
-            scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
-                             uid=solid.uid)
+            # run is plumbing, a cast column is concrete (→ emit/trade_rules.py).
+            scene.add_object(mb, _solid_trades(model, solid), kind="solid", uid=solid.uid)
 
     # WallPaneling bands. A band is an applied surface on the room side of a wall. Its
     # colour resolves through the catalog material, the same path the viewer's
@@ -190,18 +195,20 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         mb.add_prism(band.outline, band.z0_m, band.z1_m,
                      _material_finish_color(band.material_ref, "finish", authored))
-        scene.add_object(mb, trade="walls", kind="paneling", uid=band.uid)
+        scene.add_object(mb, ("millwork",), kind="paneling", uid=band.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         if bedding.outline and bedding.z1_m > bedding.z0_m:
             mb = _MeshBuilder()
             mb.add_prism(bedding.outline, bedding.z0_m, bedding.z1_m, _color("pad"))
-            scene.add_object(mb, trade="concrete", kind="footing_bedding", uid=bedding.uid)
+            scene.add_object(mb, RECORD_FAMILY_TRADES["footing_bedding"],
+                             kind="footing_bedding", uid=bedding.uid)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         _add_roof(mb, roof, model, authored)
-        scene.add_object(mb, trade="roof", kind="roof", uid=roof.uid)
+        scene.add_object(mb, assembly_trades(model.plan, roof.assembly, "roof"),
+                         kind="roof", uid=roof.uid)
         # Rafters, trusses and gable studs are framing, and belong in the framing trade with
         # every other stick in the building — not hidden behind the roof toggle. Same split
         # walls already use (body → walls, members → framing); selection still lands on the
@@ -210,17 +217,17 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         for member in roof.members:
             if is_roof_framing_member(member):
                 _add_member(framing, member)
-        scene.add_object(framing, trade="framing", kind="roof", uid=roof.uid)
+        scene.add_object(framing, ("framing",), kind="roof", uid=roof.uid)
 
     for panel in sorted(model.solar_panels, key=lambda item: item.uid):
         mb = _MeshBuilder()
         _add_solar_panel(mb, panel)
-        scene.add_object(mb, trade="electrical", kind="solid", uid=panel.uid)
+        scene.add_object(mb, ("electrical",), kind="solid", uid=panel.uid)
 
     for run in sorted(model.light_runs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         _add_light_run(mb, run)
-        scene.add_object(mb, trade="electrical", kind="solid", uid=run.uid)
+        scene.add_object(mb, ("electrical",), kind="solid", uid=run.uid)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
         # Joists are framing, and belong in the framing trade with every other stick in the
@@ -228,19 +235,19 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         framing = _MeshBuilder()
         for member in floor.members:
             _add_member(framing, member)
-        scene.add_object(framing, trade="framing", kind="floor", uid=floor.uid)
+        scene.add_object(framing, ("framing",), kind="floor", uid=floor.uid)
         # The subfloor sheet over those joists — its own node, the way a wall's body is
         # separate from its studs, so the deck can be hidden without hiding the framing.
         deck = _MeshBuilder()
         _add_deck(deck, model, floor)
         if not deck.is_empty():
-            scene.add_object(deck, trade="floors", kind="floor", uid=floor.uid)
+            scene.add_object(deck, ("framing",), kind="floor", uid=floor.uid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in stair.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="stairs", kind="stair", uid=stair.uid)
+        scene.add_object(mb, ("stairs",), kind="stair", uid=stair.uid)
 
     for brace in sorted(model.braces, key=lambda item: item.uid):
         mb = _MeshBuilder()
@@ -248,17 +255,16 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             _add_member(mb, member)
         # ``brace.kind`` rather than the literal: ResolvedBrace hosts wedges too, and the
         # Inspector should not label six drainage shims as knee braces.
-        scene.add_object(mb, trade="framing", kind=brace.kind, uid=brace.uid)
+        scene.add_object(mb, ("framing",), kind=brace.kind, uid=brace.uid)
 
     # Soffit ladder framing. ``ResolvedModel.all_members()`` has collected these since the
     # soffit generator landed, so they are in the BOM and in
     # ``checks/structural/interference.py`` — but neither emitter walked them, so a Soffit
     # rendered as one solid prism with its lumber nowhere in the 3D view.
     #
-    # ``trade="framing"``, not ``"floors"``, for the same reason floor joists are framing
-    # above: a stick belongs with every other stick in the building, not behind the floors
-    # toggle. ``emit/trades.py``'s "soffit" -> "floors" entry is a SOLID-category map — it
-    # routes the finished box, which is a different node.
+    # Framing, not drywall, for the same reason floor joists are framing above: a stick
+    # belongs with every other stick in the building. ``emit/trades.py``'s "soffit" ->
+    # "drywall" entry is a SOLID-category map — it routes the finished box, a different node.
     #
     # ``kind="solid"`` reusing the soffit's own uid, not a new "soffit" kind: the finished
     # box already emits as ``kind="solid"`` on this uid, so the framing node becomes its
@@ -270,7 +276,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         for member in soffit.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="framing", kind="solid", uid=soffit.uid)
+        scene.add_object(mb, ("framing",), kind="solid", uid=soffit.uid)
 
     _add_canvas_objects(scene, model)
 
@@ -279,12 +285,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     if not earth.is_empty():
         # No kind/uid: the earth is site *context*, not a selectable element — the same
         # contract ui/src/three/builders/site.ts states for the sheet it draws.
-        scene.add_object(earth, trade="earth")
+        scene.add_object(earth, ("earth",))
 
     if scene.is_empty():  # keep the container valid even for an empty model
         mb = _MeshBuilder()
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
-        scene.add_object(mb, trade="earth")
+        scene.add_object(mb, ("earth",))
     return scene.build()
 
 

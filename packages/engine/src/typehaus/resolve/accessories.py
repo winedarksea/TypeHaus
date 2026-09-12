@@ -60,16 +60,17 @@ from typehaus.resolve.vent_termination import (
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
 _TRIM_CATEGORY = {
     "fascia": "fascia",
-    "soffit": "soffit",
+    # The vented eave panel, not the dropped box ``resolve/soffits.py`` mints as "soffit":
+    # one is the siding contractor's trim, the other the drywaller's ceiling.
+    "soffit": "eave_soffit",
     "gutter": "gutter",
     "downspout": "downspout",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
     "beam_cap": "flashing",
-    # A wall corner closure is formed metal like the rest of the flashing family; the solid
-    # category is a LABEL the 3D inspector prints and never an element family, so it shares
-    # theirs rather than minting a name for one element.
-    "wall_corner": "flashing",
+    # A wall corner closure is formed metal like the flashing family but it is the siding
+    # contractor's, not the roofer's, so it keeps its own label and rides the siding trade.
+    "wall_corner": "wall_corner",
     # The glazing extrusions share the edge-run shape but not the flashing category: they
     # are an aluminium order billed by the lineal foot, and the take-off groups on this.
     "glazing_channel": "glazing_trim",

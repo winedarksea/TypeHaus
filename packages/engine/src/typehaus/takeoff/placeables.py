@@ -27,19 +27,50 @@ def placeables_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     Row = dict[str, object]
     groups: dict[tuple[str, str, str], Row] = {}
+    types = _placeable_types(model)
     for item in model.canvas_objects:
         if item.domain == "opening":
             continue
         key = (item.type_ref or item.kind, item.domain, item.storey)
         row = groups.get(key)
         if row is None:
+            product = types.get(item.type_ref or "")
             row = groups[key] = {"type": key[0], "domain": item.domain,
-                                 "storey": item.storey, "count": 0, "tags": []}
+                                 "storey": item.storey, "count": 0, "tags": [],
+                                 # The facts ``cost_codes._fact_code`` files the row by, and
+                                 # the plain name a supplier can quote from.
+                                 "name": getattr(product, "name", None) or None,
+                                 "services": _services(product),
+                                 "equipment_kind": _equipment_kind(model, item)}
         row["count"] = int(row["count"]) + 1
         tags = row["tags"]
         assert isinstance(tags, list)
         tags.append(item.tag)
     return [{**groups[key], "tags": sorted(groups[key]["tags"])} for key in sorted(groups)]
+
+
+def _placeable_types(model: ResolvedModel) -> dict[str, object]:
+    library = model.plan.library
+    return {t.tag: t for name in ("furniture_types", "fixture_types", "appliance_types",
+                                  "equipment_types", "register_types",
+                                  "electrical_device_types")
+            for t in getattr(library, name, ())}
+
+
+def _services(product: object) -> list[str]:
+    """Every service the type needs or ports — the water heater's hot/cold legs are ports,
+    a dishwasher's drain is a need."""
+    found = {s.value for s in getattr(product, "needs", ()) or ()}
+    found |= {p.service.value for p in getattr(product, "ports", ()) or ()}
+    return sorted(found)
+
+
+def _equipment_kind(model: ResolvedModel, item) -> str | None:
+    if item.kind != "Equipment":
+        return None
+    element = model.plan.by_tag(item.tag)
+    kind = getattr(element, "kind", None)
+    return getattr(kind, "value", kind) if kind is not None else None
 
 
 def floor_heat_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

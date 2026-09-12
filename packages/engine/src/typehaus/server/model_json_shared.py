@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.emit.trade_rules import layer_trade
 from typehaus.findings import Finding
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
@@ -83,7 +84,7 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
     }
 
 
-def _layer_json(layer) -> dict[str, Any]:
+def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
     """One resolved layer, including its band when it has one.
 
     ``z0_m``/``z1_m`` are ``Layer.extent`` resolved to absolute elevations — null on the
@@ -97,7 +98,9 @@ def _layer_json(layer) -> dict[str, Any]:
             "control": sorted(layer.control),
             "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,
             "z0_m": layer.z0_m, "z1_m": layer.z1_m,
-            "board_run": layer.board_run}
+            "board_run": layer.board_run,
+            # The trade this band belongs to; the viewer derives visibility from it.
+            "trades": [layer_trade(layer.function, scope, layer.material_ref)]}
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:

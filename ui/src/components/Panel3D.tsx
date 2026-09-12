@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { useStore } from "../state/store";
 import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type SelectionKind, type Trade } from "../state/vocabulary";
-import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
+import { allVisibleTrades, anyTradeVisible, type VisibleTrades } from "../model/tradeVisibility";
 import type { Model } from "../model/types";
 import type { EngineClient } from "../engine/EngineClient";
 import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
@@ -15,10 +14,9 @@ import {
   clampDollyRadius, frameRadiusForBounds, normalizedWheelDeltaPx, pinchDollyRadius,
   VIEW_FIT_POLAR_ANGLE, VIEW_PAN_STEP_FRACTION, WHEEL_DOLLY_SENSITIVITY, type PanDirection,
 } from "../three/cameraFraming";
-import {
-  wholeHouseGlbAssignment, WHOLE_HOUSE_GLB_PRIMARY, type GlbNodeAssignment,
-} from "../three/wholeHouseGlb";
-import { isRenderedInScene } from "../three/builders/registry";
+import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
+import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
+import { applyTradeVisibility, isRenderedInScene } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
 import { applyEarthOpacity } from "../three/builders/site";
 import {
@@ -63,7 +61,6 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
-  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const earthOpacity = useStore((s) => s.earthOpacity);
   const client = useStore((s) => s.client);
   const { theme } = useTheme();
@@ -120,14 +117,8 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   }, [selection]);
 
   useEffect(() => {
-    for (const trade of ALL_TRADES) api.current?.setVisibility(trade, visibleTrades[trade]);
+    api.current?.setVisibleTrades(visibleTrades);
   }, [visibleTrades]);
-
-  useEffect(() => {
-    for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
-      api.current?.setLayerGroupVisibility(group, visibleLayerGroups[group]);
-    }
-  }, [visibleLayerGroups]);
 
   // Retarget the site sheet's material in place. Deliberately not a setModel dependency: a
   // slider drag would otherwise rebuild every wall, stick and placeable per frame.
@@ -192,8 +183,7 @@ interface SceneApi {
   zoomBy: (factor: number) => void;
   resetView: () => void;
   highlight: (uid: string | null) => void;
-  setVisibility: (trade: Trade, visible: boolean) => void;
-  setLayerGroupVisibility: (group: LayerVisibilityGroup, visible: boolean) => void;
+  setVisibleTrades: (visible: VisibleTrades) => void;
   setEarthOpacity: (opacity: number) => void;
   dispose: () => void;
 }
@@ -243,9 +233,11 @@ function createScene(
 
   const content = new THREE.Group();
   scene.add(content);
-  // One persistent THREE.Group per trade (→ WP7): created once, repopulated by setModel,
-  // visibility flipped in place — never rebuilt, never re-created, so toggling a trade off
-  // and back on costs nothing but a bool flip + one render.
+  // One persistent THREE.Group per trade (→ WP7): created once, repopulated by setModel. The
+  // containers are keyed by an element's PRIMARY trade; visibility is never flipped on the
+  // container, because an element rides a SET of trades (a wall body is siding + insulation
+  // + drywall) and draws iff any of them is on — `applyTradeVisibility` walks the tagged
+  // meshes instead (→ model/tradeVisibility.ts).
   const tradeGroups = Object.fromEntries(
     ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
   ) as Record<Trade, THREE.Group>;
@@ -273,10 +265,10 @@ function createScene(
   let highlightSourceModel: Model | null = null;
   let highlightPlanCenter: PlanCenter = [0, 0];
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
-  // Layer-group visibility lives on the meshes, which setModel rebuilds — unlike the trade
-  // groups, which persist. Remembering the hidden set here is what lets a rebuild land with
-  // the user's per-layer filter still applied.
-  const hiddenLayerGroups = new Set<LayerVisibilityGroup>();
+  // Trade visibility lives on the meshes, which setModel rebuilds — unlike the trade groups,
+  // which persist. Remembering the filter here is what lets a rebuild land with the user's
+  // filter still applied.
+  let visibleTrades: VisibleTrades = allVisibleTrades();
   // Ground opacity is remembered here for the same reason: the sheet is one of the meshes a
   // rebuild throws away, so populateScene reads this rather than the default.
   let earthOpacity = DEFAULT_EARTH_OPACITY;
@@ -670,6 +662,7 @@ function createScene(
     populateScene({
       tradeGroups, model: m, center, mode, palette, earthOpacity, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
+      tradeVisible: (trades) => anyTradeVisible(trades, visibleTrades),
     });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
@@ -691,83 +684,23 @@ function createScene(
       key.target.updateMatrixWorld();
     }
     if (!preserveView) applyFraming(false);
-    applyLayerVisibility(); // the rebuild dropped the meshes the filter was applied to
+    applyTradeVisibility(content, visibleTrades); // the rebuild dropped the tagged meshes
     requestRender();
   };
 
-  // Promote the engine's whole-house glb to the primary scene when it carries per-object trade
-  // metadata; otherwise leave the model.json baseline that setModel built. Async and guarded by
-  // the scene generation captured at call time, so a load resolving after the next setModel is
-  // dropped. Emitter contract to make the glb primary (see the module header): every renderable
-  // node declares its trade + element via glTF `extras`
-  // { trade: <Trade>, uid?: string, kind?: "wall"|"canvas_object" } or a "<trade>|<kind>|<uid>"
-  // node name. A single untagged node (today's color-bucketed "building" mesh) is treated as
-  // unstructured and discarded, so nothing regresses until the emitter opts in.
   const setWholeHouseGlb = (blob: Blob) => {
     const generation = sceneGeneration;
-    blob.arrayBuffer().then((buffer) => {
-      if (generation !== sceneGeneration) return;
-      new GLTFLoader().parse(buffer, "", (gltf) => {
-        if (generation !== sceneGeneration) { disposeGroup(gltf.scene); return; }
-        applyWholeHouseGlb(gltf.scene);
-      }, () => { /* parse failure → keep the model.json baseline */ });
-    }).catch(() => { /* read failure → keep the model.json baseline */ });
-  };
-
-  const applyWholeHouseGlb = (root: THREE.Object3D) => {
-    // Gated off by decision, not by missing geometry parity (see WHOLE_HOUSE_GLB_PRIMARY):
-    // promoting the glb would trade the procedural standing-seam/CMU finishes for the export's
-    // flat portable colours. Keep the richer model.json baseline that setModel built.
-    if (!WHOLE_HOUSE_GLB_PRIMARY) { disposeGroup(root); return; }
-    // Classify first: only take over when every renderable node maps to a trade. Walk up from
-    // each mesh so a tagged parent covers its (often untagged) child primitives.
-    const tagged: { mesh: THREE.Mesh; assignment: GlbNodeAssignment }[] = [];
-    let renderable = 0;
-    let unstructured = false;
-    root.traverse((node) => {
-      if (unstructured || !(node instanceof THREE.Mesh)) return;
-      renderable++;
-      let assignment: GlbNodeAssignment | null = null;
-      for (let o: THREE.Object3D | null = node; o && !assignment; o = o.parent) {
-        assignment = wholeHouseGlbAssignment(o.name, o.userData);
-      }
-      if (!assignment) { unstructured = true; return; }
-      tagged.push({ mesh: node, assignment });
+    loadWholeHouseGlb(blob, () => generation === sceneGeneration, (root) => {
+      const selectedUid = highlighted;
+      if (!applyWholeHouseGlb(root, tradeGroups, registry)) return;
+      // Structured glb took over: the per-item furniture loaders of the superseded scene are
+      // dropped by the generation bump, and the filter and selection are re-applied against
+      // the rebuilt materials.
+      sceneGeneration++;
+      highlighted = null;
+      applyTradeVisibility(content, visibleTrades);
+      highlight(selectedUid);
     });
-    if (renderable === 0 || unstructured) { disposeGroup(root); return; }
-
-    // Structured glb → take over. Bump the generation so any pending per-item furniture loaders
-    // from the superseded model.json scene are dropped, then replace every trade group's
-    // contents with the glb's nodes (re-parented in place, world transform baked).
-    sceneGeneration++;
-    const selectedUid = highlighted; // re-apply against the rebuilt materials below
-    for (const trade of ALL_TRADES) {
-      disposeGroup(tradeGroups[trade]);
-      tradeGroups[trade].clear();
-    }
-    registry.picks = [];
-    registry.byUid.clear();
-    highlighted = null;
-    root.updateMatrixWorld(true);
-    for (const { mesh, assignment } of tagged) {
-      const world = mesh.matrixWorld.clone();
-      const group = tradeGroups[assignment.trade];
-      group.add(mesh); // trade groups sit at the world origin, so world == local below
-      world.decompose(mesh.position, mesh.quaternion, mesh.scale);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      if (assignment.uid) {
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        registry.byUid.set(assignment.uid, [...(registry.byUid.get(assignment.uid) ?? []), ...materials]);
-        if (assignment.kind) {
-          mesh.userData.uid = assignment.uid;
-          mesh.userData.selectionKind = assignment.kind;
-          registry.picks.push(mesh);
-        }
-      }
-    }
-    disposeGroup(root); // drop any leftover empty container nodes
-    highlight(selectedUid); // restore the current selection's emissive against the new materials
   };
 
   const setPalette = (palette: ResolvedNordicPalette) => {
@@ -795,18 +728,10 @@ function createScene(
     requestRender();
   };
 
-  const setVisibility = (trade: Trade, visible: boolean) => {
-    tradeGroups[trade].visible = visible;
+  const setVisibleTrades = (visible: VisibleTrades) => {
+    visibleTrades = visible;
+    applyTradeVisibility(content, visibleTrades);
     requestRender();
-  };
-
-  // Apply the remembered per-layer filter to whatever is in the scene right now. Cheap enough
-  // to run on every rebuild: one traversal, one bool per tagged object, no geometry work.
-  const applyLayerVisibility = () => {
-    content.traverse((object) => {
-      const group = object.userData.layerGroup as LayerVisibilityGroup | undefined;
-      if (group) object.visible = !hiddenLayerGroups.has(group);
-    });
   };
 
   // Retarget the live material rather than rebuilding: a drag is many events a second, and the
@@ -823,13 +748,6 @@ function createScene(
     requestRender();
   };
 
-  const setLayerGroupVisibility = (group: LayerVisibilityGroup, visible: boolean) => {
-    if (visible) hiddenLayerGroups.delete(group);
-    else hiddenLayerGroups.add(group);
-    applyLayerVisibility();
-    requestRender();
-  };
-
   return {
     setModel,
     setWholeHouseGlb,
@@ -838,8 +756,7 @@ function createScene(
     zoomBy,
     resetView,
     highlight,
-    setVisibility,
-    setLayerGroupVisibility,
+    setVisibleTrades,
     setEarthOpacity,
     dispose: () => {
       cancelAnimationFrame(raf);

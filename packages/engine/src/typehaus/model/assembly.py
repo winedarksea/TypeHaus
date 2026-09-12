@@ -422,6 +422,9 @@ class Assembly(HausModel):
     ``default_lining`` is the interior-of-structure finish stack, overridable per room."""
 
     tag: str
+    # A plain name for the BOM and the bid packages ("12\" concrete pier"). The one catalog
+    # record with no ``name``; optional because a tag like EXT_2X6 is already legible.
+    label: str | None = None
     # Base assemblies list their layers; a variant leaves this empty and resolves layers
     # live against its base via ``substitute`` (#35).
     layers: tuple[Layer, ...] = ()

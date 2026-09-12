@@ -85,6 +85,8 @@ def visit_from(item: Any, slug: str, entry: VisitEntry, depends_on: tuple[str, .
                implicit: bool, costs_entries: Any) -> Visit:
     rows = tuple(row for row in item.rows
                  if not entry.rows or f"{row[0]}:{row[1]}" in entry.rows)
+    known = {f"{section}:{key}" for section, key in item.rows}
+    orphan_rows = tuple(sorted(r for r in entry.rows if r not in known))
     tags = tuple(tag for tag in item.element_tags if _matches(tag, entry.element_tags))
     status = entry.derived_status
     # A holdback is only *open* once the owner has verified the work and some row on it is
@@ -97,6 +99,7 @@ def visit_from(item: Any, slug: str, entry: VisitEntry, depends_on: tuple[str, .
         status=status, scheduled=entry.scheduled, assignee=entry.assignee,
         contact=entry.contact, note=entry.note, depends_on=tuple(depends_on),
         rows=rows, element_tags=tags, constraints=holds_of(entry),
+        orphan_rows=orphan_rows,
         checked=tuple(entry.checked), estimate_fmt=item.estimate.fmt(),
         holdback_open=holdback, implicit=implicit,
         blocks_successors=entry.blocks_successors, shared_rows=entry.shared_rows,

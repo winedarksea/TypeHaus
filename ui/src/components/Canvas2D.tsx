@@ -3,7 +3,8 @@ import { useStore } from "../state/store";
 import { locateUid } from "../state/locate";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Opening, Room, Vec2, Wall } from "../model/types";
-import { canvasObjectTrade } from "../model/visibility";
+import { anyTradeVisible, canvasObjectTrades } from "../model/visibility";
+import { wallTrades } from "../model/tradeVisibility";
 import type { PlanWarningMarker } from "../model/planWarnings";
 import {
   formatFtIn, M_PER_FT, openingHostWall, snapWorld, orthoLock, wallLength,
@@ -57,7 +58,6 @@ export function Canvas2D() {
   // The plan reads the same visibility model the 3D panel does (→ model/visibility.ts), so a
   // discipline or an assembly layer hidden in one view is hidden in the other.
   const visibleTrades = useStore((s) => s.visibleTrades);
-  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const activeLens = useStore((s) => s.activeLens);
   const activeStorey = useStore((s) => s.activeStorey);
   const workspace = useStore((s) => s.activeWorkspace);
@@ -157,7 +157,7 @@ export function Canvas2D() {
     // Doors/windows remain topology-aware SVG shapes below; their normalized records
     // serve inspection/interchange consumers and must not render a second footprint.
     .filter((item) => item.domain !== "opening" && item.position_m &&
-      visibleTrades[canvasObjectTrade(item)] &&
+      anyTradeVisible(canvasObjectTrades(item), visibleTrades) &&
       (!activeStorey || item.storey === activeStorey)),
   [model.canvas_objects, visibleTrades, activeStorey]);
   const popupWall = useMemo(
@@ -435,7 +435,9 @@ export function Canvas2D() {
             project={project} onSelect={selectRoom} />
           {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
               in flight, so connected walls visibly stretch/shrink before the commit lands */}
-          {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
+          {wallsOnStorey.map((w) => {
+            const layersVisible = anyTradeVisible(wallTrades(w), visibleTrades);
+            if (!layersVisible && !visibleTrades.framing) return null;
             const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
             const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
             return (
@@ -447,8 +449,8 @@ export function Canvas2D() {
                 selected={selection.uid === w.uid}
                 hovered={hoverUid === w.uid}
                 showFraming={showFraming && visibleTrades.framing}
-                showLayers={visibleTrades.walls}
-                visibleLayerGroups={visibleLayerGroups}
+                showLayers={layersVisible}
+                visibleTrades={visibleTrades}
                 activeLens={activeLens}
                 onSelect={selectWallWithPopup}
                 onHover={hoverEl}

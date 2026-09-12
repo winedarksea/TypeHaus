@@ -17,6 +17,16 @@ the number a whole schedule then gets built on.
 
 `[entries."task/<trade>/<storey>"]` is unchanged (`status`, `started`, `completed`,
 `assignee`, `note`) and still keyed on the work-package slug `takeoff/tasks.py` derives.
+
+**The trade vocabulary widened on 2026-09-12** (decision #70): `walls`, `floors` and `roof`
+are retired, and `general`, `landscaping`, `masonry`, `roofing`, `siding`, `insulation`,
+`drywall`, `paint`, `tile`, `flooring` and `millwork` joined. A package slug carries its
+trade, so a renamed package is a **new GlobalId** — a PM tool that keyed on the old id sees a
+new task, not an update. `haus site migrate --write` renames the one-to-one pair in place
+(`task/roof/` → `task/roofing/`, `task/floors/` → `task/flooring/`, in slugs, `trade =`,
+`gates` and `trades`) and prints every `walls` / `furniture` mention for a person to re-file,
+because those split. A visit whose authored `rows` no longer belong to its package is now a
+validation **error** rather than a silently emptied visit.
 The status vocabulary gained one value: `verified`. `done` is the sub's claim that they are
 finished; `verified` is the owner's own walk of the handoff list afterwards.
 

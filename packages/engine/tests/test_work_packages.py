@@ -102,7 +102,13 @@ def test_a_row_spanning_storeys_goes_building_wide_rather_than_being_split(packa
     authored, and the per-storey numbers would then be confidently wrong."""
     items, _ = packages
     framing = [item for item in items if item.trade == "framing"]
-    assert framing and all(item.storey == BUILDING for item in framing)
+    building = next((item for item in framing if item.storey == BUILDING), None)
+    assert building is not None, "the lumber roll-up must land building-wide"
+    # The whole-building roll-ups (lumber by profile, sheet goods) carry no tags, so they
+    # can only be here; a wall_structure row whose walls all sit on one storey may split.
+    assert ("framing", "2x6") in building.rows and ("sheet_goods", "gwb") not in building.rows
+    assert all(all(section != "framing" for section, _key in item.rows)
+               for item in framing if item.storey != BUILDING)
 
 
 def test_a_row_whose_elements_share_a_storey_lands_on_that_storey(packages) -> None:

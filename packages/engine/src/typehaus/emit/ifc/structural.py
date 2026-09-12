@@ -102,7 +102,8 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "panel_strap": ("IfcDiscreteAccessory", None),
     "vent": ("IfcBuildingElementProxy", None),
     "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
-    "flashing": ("IfcCovering", None),
+    "flashing": ("IfcCovering", None), "wall_corner": ("IfcCovering", None),
+    "eave_soffit": ("IfcCovering", None),
     "thermal_break": ("IfcBuildingElementProxy", None),
     # stormwater (→ emit/trades.py DRAINAGE_CATEGORIES)
     "gutter": ("IfcPipeSegment", "GUTTER"),

@@ -5,9 +5,8 @@
 // real geometry of its own (arch tessellation, the piece decomposition around openings, the
 // raked top of a gable or ToRoof wall) rather than a straight extrusion of a resolved polygon.
 import * as THREE from "three";
-import type { LayerVisibilityGroup } from "../../model/visibility";
-import { layerVisibilityGroupOf } from "../../model/visibility";
-import type { DoorOperation, MaterialSpec, Member, Opening, Wall } from "../../model/types";
+import { layerTrades, primaryTrade, wallTrades } from "../../model/tradeVisibility";
+import type { DoorOperation, MaterialSpec, Opening, Wall } from "../../model/types";
 import {
   authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
 } from "../../nordic/palette";
@@ -16,7 +15,7 @@ import {
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
-import { buildMembers, categoryColor, isSkinMember, type SkinLine } from "../members";
+import { categoryColor } from "../members";
 import {
   applyPlankWallUv, createPlankMaterial, isWoodPlank, plankStyleFor, plankTileSizeM,
 } from "../plankMaterial";
@@ -24,7 +23,8 @@ import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
-import { registerMemberPicks, registerSelectable, tagLayerGroup } from "./registry";
+import { registerMemberPicks, registerSelectable, tagTrades } from "./registry";
+import { buildWallSkinMembers } from "./wallSkin";
 import type { Trade } from "../../state/vocabulary";
 import { createArchRingGeometry } from "./archRing";
 import { wallBandShapes, type ArchSoffitCylinder } from "./wallBandShape";
@@ -79,9 +79,13 @@ export function buildWall(
   materials?: MaterialSpec[],
 ) {
   const mats: THREE.Material[] = [];
+  // The body files under the wall's PRIMARY trade (siding for an exterior wall, drywall for
+  // a partition, concrete for a foundation) and every band carries its own trade set, so
+  // "only insulation" keeps the foam and drops the cladding around it.
+  const body = tradeGroups[primaryTrade(wallTrades(w))];
   for (const ly of w.layers) {
-    const layerGroup = layerVisibilityGroupOf(ly.function);
-    const layerFirstChildIndex = tradeGroups.walls.children.length;
+    const bandTrades = layerTrades(ly);
+    const layerFirstChildIndex = body.children.length;
     if (ly.polygon.length < 3) continue;
     // Cavity fill shares its host structure layer's polygon — extruding it would only
     // z-fight with the studs it lives between.
@@ -162,7 +166,7 @@ export function buildWall(
       mesh.userData.uid = w.uid;
       mesh.userData.selectionKind = "wall";
       mesh.userData.tag = w.tag;
-      tradeGroups.walls.add(mesh);
+      body.add(mesh);
       picks.push(mesh);
 
       // Nordic outlines, except on the cladding. `wallLayerPieces` splits a layer at every
@@ -172,7 +176,7 @@ export function buildWall(
       // building's corners come from the shading, so the outermost layer goes without; the
       // layers behind it keep theirs, where the piece boundary is a real edge.
       if (mode === "nordic" && ly.function !== "cladding") {
-        tradeGroups.walls.add(new THREE.LineSegments(
+        body.add(new THREE.LineSegments(
           new THREE.EdgesGeometry(geo, 25),
           new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),
         ));
@@ -201,36 +205,25 @@ export function buildWall(
         mesh.userData.uid = w.uid;
         mesh.userData.selectionKind = "wall";
         mesh.userData.tag = w.tag;
-        tradeGroups.walls.add(mesh);
+        body.add(mesh);
         picks.push(mesh);
         // No Nordic outline: the ring's own joints are its definition, and an edge line per
         // facet would scribble over the coursing the ring exists to show.
       }
     }
-    tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
+    tagTrades(body, layerFirstChildIndex, bandTrades);
   }
   const framingFirstIndex = tradeGroups.framing.children.length;
-  const wallsSkinFirstIndex = tradeGroups.walls.children.length;
-  buildWallSkinMembers(tradeGroups, w.uid, w.members, center, mode, palette, materials,
+  const skinFirstIndex = body.children.length;
+  buildWallSkinMembers(tradeGroups, body, w.uid, w.members, center, mode, palette, materials,
     [{ axis: w.axis, datum: w.layout_axis ?? w.axis }]);
   // A wall's studs are pickable as themselves; the wall body remains pickable through its
   // layer meshes above, so both "this wall" and "this stud" stay one click away.
   registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
-  registerMemberPicks(tradeGroups.walls, wallsSkinFirstIndex, picks);
+  registerMemberPicks(body, skinFirstIndex, picks);
   byUid.set(w.uid, mats);
 }
 
-// A skin member continuing the furring band (a truss wall's outrigger or girt closure) is
-// still real lumber — the carpenter's work — so it stays with the studs on the Framing trade.
-// Every other skin category (cladding, sheathing, membrane, insulation, airgap, finish) is
-// envelope skin and belongs with the wall body it continues, on the Walls trade, or a cladding
-// closure band running up to the roof reads as framing while the wall's own cladding prism
-// below it reads as walls.
-//
-// The catlin truss puts THREE furring closure bands on a wall where the Swinburne outrigger
-// put one — the inner girt, the outer girt and, beside them, foam and vent-gap bands that are
-// NOT furring and correctly stay on Walls. Routing on the layer group rather than the wall
-// type handles both without the rule changing.
 /** The metal-panel profile a wall layer renders with, or null for an untextured one.
  *
  * A metal panel finish is DECLARED first and guessed second. `metalPanelProfileForFinish`
@@ -257,55 +250,6 @@ export function metalPanelProfileFor(
   const declared = metalPanelProfileForFinish(declaredFinish);
   if (declared !== null) return declared;
   return layerFunction === "cladding" && isStandingSeam(materialRef) ? SEAM_PROFILE : null;
-}
-
-const FRAMING_SKIN_GROUPS = new Set<LayerVisibilityGroup>(["furring"]);
-
-/** Which trade draws one wall member: the stick trade, or the envelope the member continues.
- *
- * `isSkinMember` asks the member's *category*, not whether it names a material — every piece
- * of either truss pack (Swinburne, catlin) names one, block through girt, and all of them are
- * lumber. Routing on `member.material` instead would send the entire truss wall to the Walls
- * trade under the "Other" layer group, dropping it from the framing view in 3D.
- */
-function memberTrade(member: Member, tradeGroups: Record<Trade, THREE.Group>,
-  group: LayerVisibilityGroup): THREE.Group {
-  return !isSkinMember(member) || FRAMING_SKIN_GROUPS.has(group)
-    ? tradeGroups.framing : tradeGroups.walls;
-}
-
-// Wall members split two ways for visibility: lumber and a furring skin band (the outrigger or
-// girt closure) answer to the Framing trade, while every other skin band (a cladding/sheathing/
-// membrane closure, a trim run) is a derived envelope skin and answers to the assembly-layer
-// control that governs the layer it continues, on the Walls trade. Both halves still carry
-// their layer-group tag, so a member that names a material stays reachable from the per-layer
-// toggles whichever trade draws it. The split has to happen before the merge, since a merged
-// mesh has one visibility flag for all of it.
-function buildWallSkinMembers(
-  tradeGroups: Record<Trade, THREE.Group>, wallUid: string, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, materials?: MaterialSpec[],
-  lines?: readonly SkinLine[],
-) {
-  const lumber = members.filter((member) => !member.material);
-  buildMembers(tradeGroups.framing, lumber, center, mode, palette, wallUid);
-  // Bucketed by (trade, layer group), not by layer group alone: "other" collects both a
-  // truss block and a corner-trim run, and those two answer to different trades.
-  const skinByBucket = new Map<string, { parent: THREE.Group; group: LayerVisibilityGroup;
-    members: Member[] }>();
-  for (const member of members) {
-    if (!member.material) continue;
-    const group = layerVisibilityGroupOf(member.category);
-    const parent = memberTrade(member, tradeGroups, group);
-    const key = `${parent === tradeGroups.framing ? "framing" : "walls"}|${group}`;
-    const bucket = skinByBucket.get(key) ?? { parent, group, members: [] };
-    bucket.members.push(member);
-    skinByBucket.set(key, bucket);
-  }
-  for (const { parent, group, members: skin } of skinByBucket.values()) {
-    const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode, palette, wallUid, materials, lines);
-    tagLayerGroup(parent, firstChildIndex, group);
-  }
 }
 
 export interface WallLayerPiece {

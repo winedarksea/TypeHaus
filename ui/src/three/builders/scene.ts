@@ -13,11 +13,14 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Model } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { disposeGroup, type SkinLine } from "../members";
-import { solidTrade } from "../solidMaterials";
+import {
+  canvasObjectTrades, primaryTrade, RECORD_FAMILY_TRADES, roofTrades, solidTrades, wallTrades,
+} from "../../model/tradeVisibility";
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
-import type { Trade } from "../../state/vocabulary";
+import { ALL_TRADES, type Trade } from "../../state/vocabulary";
+import { tagTrades } from "./registry";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
@@ -45,6 +48,9 @@ export interface PopulateSceneOptions {
   generation: number;
   currentGeneration: () => number;
   requestRender: () => void;
+  /** The trade filter at the moment an async placeable asset lands, so it arrives hidden
+   *  when its trade is. Optional: a caller with no filter shows everything. */
+  tradeVisible?: (trades: readonly string[]) => boolean;
 }
 
 /**
@@ -70,13 +76,25 @@ function placeableElevationM(model: Model, storeyTag: string | null | undefined)
   return model.storeys.find((storey) => storey.tag === storeyTag)?.elevation_m ?? 0;
 }
 
-function placeableGroup(
-  tradeGroups: Record<Trade, THREE.Group>, domain: string | null | undefined,
-): THREE.Group {
-  if (domain === "plumbing") return tradeGroups.plumbing;
-  if (domain === "electrical") return tradeGroups.electrical;
-  if (domain === "mechanical") return tradeGroups.mechanical;
-  return tradeGroups.furniture;
+// Every builder writes into one or more trade containers; the container is the element's
+// PRIMARY trade and the meshes carry the element's whole trade SET (fill-in: a builder that
+// already tagged finer sets — a wall's bands, a roof's skin buckets — keeps them). Snapshot
+// every container before a builder call, tag what appeared afterwards.
+type Snapshot = Record<Trade, number>;
+
+function snapshot(tradeGroups: Record<Trade, THREE.Group>): Snapshot {
+  return Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, tradeGroups[trade].children.length]),
+  ) as Snapshot;
+}
+
+function tagNew(tradeGroups: Record<Trade, THREE.Group>, before: Snapshot,
+  trades: readonly Trade[]) {
+  for (const trade of ALL_TRADES) {
+    // Whatever landed in the framing container is the framer's, whichever element built it.
+    const set = trade === "framing" ? ["framing"] : trades;
+    tagTrades(tradeGroups[trade], before[trade], set);
+  }
 }
 
 // One loader and one in-flight load per asset URL, kept across rebuilds.
@@ -127,42 +145,53 @@ function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
 export function populateScene(options: PopulateSceneOptions) {
   const {
     tradeGroups, model, center, mode, palette, earthOpacity, registry, generation,
-    currentGeneration, requestRender,
+    currentGeneration, requestRender, tradeVisible,
   } = options;
+  const build = (trades: readonly Trade[], run: () => void) => {
+    const before = snapshot(tradeGroups);
+    run();
+    tagNew(tradeGroups, before, trades);
+  };
+  const family = (name: string) => RECORD_FAMILY_TRADES[name] ?? ["concrete"];
+  const container = (trades: readonly Trade[]) => tradeGroups[primaryTrade(trades)];
 
   for (const wall of model.walls) {
     const wallOpenings = model.openings.filter((opening) => opening.host === wall.tag);
-    buildWall(tradeGroups, wall, wallOpenings, center, mode, palette, registry.picks,
-      registry.byUid, model.catalog?.materials);
+    build(wallTrades(wall), () => buildWall(tradeGroups, wall, wallOpenings, center, mode,
+      palette, registry.picks, registry.byUid, model.catalog?.materials));
     for (const opening of wallOpenings) {
       const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
-      buildOpening(tradeGroups.openings, opening, wall, center, mode, palette, doorType?.operation,
-        registry.picks, registry.byUid, doorType?.glazed ?? false, doorType?.trimless ?? false);
+      build(family("opening"), () => buildOpening(tradeGroups.openings, opening, wall, center,
+        mode, palette, doorType?.operation, registry.picks, registry.byUid,
+        doorType?.glazed ?? false, doorType?.trimless ?? false));
     }
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out
   // of the raycast set and a click through it falls to whatever building geometry is behind.
-  buildEarth(tradeGroups.earth, model, center, mode, earthOpacity);
-  // A solid is not automatically concrete: a standalone beam or post is framing (the same
-  // lumber as the studs and rafters it carries), a routed pipe run is plumbing, roof edge trim
-  // is roof. The mapping is shared with the exporter — see solidTrade / emit/trades.py.
+  build(family("earth"), () => buildEarth(tradeGroups.earth, model, center, mode, earthOpacity));
+  // A solid is not automatically concrete: a standalone beam or post is framing, a routed pipe
+  // run is plumbing, a cast column is concrete. The set is stamped by the engine
+  // (model.json `trades`) and falls back to the generated category map.
   for (const solid of model.solids ?? []) {
-    buildSolid(tradeGroups[solidTrade(solid)], solid, center, mode, palette, model.catalog,
-      registry.picks, registry.byUid, model.catalog?.materials);
+    const trades = solidTrades(solid);
+    build(trades, () => buildSolid(container(trades), solid, center, mode, palette,
+      model.catalog, registry.picks, registry.byUid, model.catalog?.materials));
   }
-  // A paneling band rides the walls trade: it is an applied surface on a wall, and turning
-  // the walls off should take its wainscot with it.
+  // A paneling band is the millworker's applied surface on a wall.
   for (const band of model.panelings ?? []) {
-    buildPaneling(tradeGroups.walls, band, center, mode, palette, model.catalog?.materials,
-      registry.picks, registry.byUid);
+    const trades = (band.trades?.length ? band.trades : family("paneling")) as Trade[];
+    build(trades, () => buildPaneling(container(trades), band, center, mode, palette,
+      model.catalog?.materials, registry.picks, registry.byUid));
   }
   for (const bedding of model.footing_beddings ?? []) {
-    // Beddings have no category to consult: a footing's gravel bed is a pour by definition.
-    buildFootingBedding(tradeGroups.concrete, bedding, center, mode, registry.picks, registry.byUid);
+    // Washed stone with the tile bedded in it: drainage first, and the excavator's too.
+    const trades = (bedding.trades?.length ? bedding.trades : family("footing_bedding")) as Trade[];
+    build(trades, () => buildFootingBedding(container(trades), bedding, center, mode,
+      registry.picks, registry.byUid));
   }
   for (const floor of model.floors ?? []) {
-    buildFloor(tradeGroups.floors, floor, center, mode, palette, registry.picks, registry.byUid,
-      tradeGroups.framing, model.catalog?.materials);
+    build(family("floor_deck"), () => buildFloor(tradeGroups.framing, floor, center, mode,
+      palette, registry.picks, registry.byUid, tradeGroups.framing, model.catalog?.materials));
   }
   // Room finishes go over the decks, so they build after every floor is in. Deck openings are
   // per storey, not per floor system, so they are gathered once and cut out of each finish —
@@ -172,8 +201,9 @@ export function populateScene(options: PopulateSceneOptions) {
     const openings = floors.filter((floor) => floor.storey === room.storey)
       .flatMap((floor) => floor.openings);
     const top = storeyFloorTopM(floors, room.storey, placeableElevationM(model, room.storey));
-    buildRoomFloor(tradeGroups.floors, room, top, openings, center, mode, palette,
-      model.catalog?.materials, registry.picks, registry.byUid);
+    build(family("room_floor"), () => buildRoomFloor(container(family("room_floor")), room, top,
+      openings, center, mode, palette, model.catalog?.materials, registry.picks,
+      registry.byUid));
   }
   // The facade datums every wall's cladding is framed on (builders/walls.ts uses the same
   // `layout_axis ?? axis`), handed to the roofs so a wall→roof closure band's panel module
@@ -182,27 +212,31 @@ export function populateScene(options: PopulateSceneOptions) {
     axis: wall.axis, datum: wall.layout_axis ?? wall.axis,
   }));
   for (const roof of model.roofs ?? []) {
-    buildRoof(tradeGroups.roof, roof, center, mode, palette, model.catalog, registry.picks,
-      registry.byUid, tradeGroups.framing, skinLines, tradeGroups.walls);
+    const trades = roofTrades(roof);
+    build(trades, () => buildRoof(container(trades), roof, center, mode, palette,
+      model.catalog, registry.picks, registry.byUid, tradeGroups.framing, skinLines,
+      tradeGroups));
   }
   for (const panel of model.solar_panels ?? []) {
-    buildSolarPanel(tradeGroups.electrical, panel, center, mode, registry.picks, registry.byUid);
+    build(family("solar_panel"), () => buildSolarPanel(tradeGroups.electrical, panel, center,
+      mode, registry.picks, registry.byUid));
   }
   for (const run of model.light_runs ?? []) {
-    buildLightRun(tradeGroups.electrical, run, center, mode, registry.picks, registry.byUid);
+    build(family("light_run"), () => buildLightRun(tradeGroups.electrical, run, center, mode,
+      registry.picks, registry.byUid));
   }
   for (const stair of model.stairs ?? []) {
-    buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid,
-      model.catalog?.materials);
+    build(family("stair"), () => buildStair(tradeGroups.stairs, stair, center, mode, palette,
+      registry.picks, registry.byUid, model.catalog?.materials));
   }
   for (const soffit of model.soffits ?? []) {
-    buildSoffitFraming(tradeGroups.framing, soffit, center, mode, palette, registry.picks,
-      registry.byUid, model.catalog?.materials);
+    build(family("soffit_framing"), () => buildSoffitFraming(tradeGroups.framing, soffit,
+      center, mode, palette, registry.picks, registry.byUid, model.catalog?.materials));
   }
 
   for (const brace of model.braces ?? []) {
-    buildBrace(tradeGroups.framing, brace, center, mode, palette, registry.picks, registry.byUid,
-      model.catalog?.materials);
+    build(family("brace"), () => buildBrace(tradeGroups.framing, brace, center, mode, palette,
+      registry.picks, registry.byUid, model.catalog?.materials));
   }
 
   const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
@@ -211,11 +245,14 @@ export function populateScene(options: PopulateSceneOptions) {
     // record is for shared inspection and interchange, not a second 3D proxy.
     if (item.domain === "opening") continue;
     if (!item.position_m) continue;
-    const group = placeableGroup(tradeGroups, item.domain);
+    const trades = canvasObjectTrades(item);
+    const group = container(trades);
     const type = types.get(item.type ?? "");
     const elevation = item.z_m ?? placeableElevationM(model, item.storey);
+    const before = snapshot(tradeGroups);
     const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
       registry.picks, registry.byUid);
+    tagNew(tradeGroups, before, trades);
     if (!type?.model_glb || !fallback) continue;
     loadPlaceableAsset(type.model_glb).then((prototype) => {
       if (generation !== currentGeneration() || !item.position_m) return;
@@ -229,6 +266,8 @@ export function populateScene(options: PopulateSceneOptions) {
       registry.picks = registry.picks.filter((mesh) => !replaced.has(mesh));
       visual.position.copy(projectPointToScene(item.position_m, elevation, center));
       visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
+      visual.userData.trades = [...trades];
+      visual.visible = tradeVisible?.(trades) ?? true;
       const materials: THREE.Material[] = [];
       visual.traverse((node) => {
         if (!(node instanceof THREE.Mesh)) return;

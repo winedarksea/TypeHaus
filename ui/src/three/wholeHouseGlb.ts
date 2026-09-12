@@ -26,12 +26,15 @@ export const WHOLE_HOUSE_GLB_PRIMARY = false;
 
 // How a whole-house glb node maps back to an interactive element. A node earns an assignment
 // via glTF `extras` (GLTFLoader copies these onto object.userData) or, as a fallback, a
-// "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: untagged envelope geometry only
+// "<trade>[+<trade>]|<kind>|<uid>" node name. `kind`/`uid` are optional: untagged envelope geometry only
 // needs a trade (to land in the right visibility group), while a selectable node also carries
 // its model uid so picking and highlight resolve to the same record model.json uses. The `kind`
 // vocabulary is the shared SelectionKind (→ state/store.ts, emit/gltf/emitter.py).
 export interface GlbNodeAssignment {
+  /** The primary trade — the container the node files under. */
   trade: Trade;
+  /** The full set; the node draws iff any of these is visible. */
+  trades: Trade[];
   uid: string | null;
   kind: SelectionKind | null;
 }
@@ -41,11 +44,18 @@ export function wholeHouseGlbAssignment(
   userData: Record<string, unknown> | undefined,
 ): GlbNodeAssignment | null {
   const parts = (name ?? "").split("|");
-  const tradeRaw = typeof userData?.trade === "string" ? userData.trade : parts[0];
-  if (!tradeRaw || !(ALL_TRADES as readonly string[]).includes(tradeRaw)) return null;
+  // extras.trades is the set; extras.trade its first member. The name fallback spells the
+  // set as "a+b|kind|uid".
+  const fromExtras = Array.isArray(userData?.trades)
+    ? (userData!.trades as unknown[]).filter((t): t is string => typeof t === "string")
+    : typeof userData?.trade === "string" ? [userData.trade] : null;
+  const tradesRaw = fromExtras ?? (parts[0] ? parts[0].split("+") : []);
+  const known = (ALL_TRADES as readonly string[]);
+  if (!tradesRaw.length || tradesRaw.some((t) => !known.includes(t))) return null;
   const kindRaw = typeof userData?.kind === "string" ? userData.kind : parts[1];
   const kind = (ALL_SELECTION_KINDS as readonly string[]).includes(kindRaw)
     ? kindRaw as SelectionKind : null;
   const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
-  return { trade: tradeRaw as Trade, uid: uidRaw || null, kind };
+  const trades = tradesRaw as Trade[];
+  return { trade: trades[0], trades, uid: uidRaw || null, kind };
 }

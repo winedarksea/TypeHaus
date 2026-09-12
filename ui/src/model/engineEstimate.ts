@@ -16,6 +16,8 @@ import type {
   EnginePerSf,
   EnginePriceRange,
 } from "../engine/EngineClient";
+import { ALL_TRADES } from "../state/vocabulary";
+import { TRADE_GROUP_OF, TRADE_GROUPS, TRADE_LABEL } from "./tradeVisibility";
 import { formatRange } from "./engineCosts";
 
 /** One priced row, lifted out of its section and told what it is worth relative to itself. */
@@ -127,18 +129,23 @@ function compare(a: number | string, b: number | string, descending: boolean): n
 
 // --- grouping -----------------------------------------------------------------------------
 
-export type GroupKey = "trade" | "section" | "none";
+export type GroupKey = "trade" | "group" | "section" | "none";
 
 /**
- * The construction trades in build order (`emit/trades.py::CONSTRUCTION_SEQUENCE`, the same
- * 13-value vocabulary the 3D viewer's visibility toggles use). Copied rather than derived
- * because the browser has no import of the engine's Python; `tests/test_solid_trade_parity.py`
- * is what keeps the two spellings from drifting.
+ * The construction trades in build order (`emit/trades.py::CONSTRUCTION_SEQUENCE`), the same
+ * vocabulary the viewer's toggles use, generated into vocabulary.json rather than copied.
  */
-export const TRADE_SEQUENCE: string[] = [
-  "earth", "concrete", "drainage", "framing", "floors", "roof", "walls", "openings",
-  "plumbing", "electrical", "mechanical", "stairs", "furniture",
-];
+export const TRADE_SEQUENCE: readonly string[] = ALL_TRADES;
+
+/** The viewer's toggle groups, in the same order — a "Package" is one sub's bundle of
+ *  trades (Walls = siding + insulation + drywall + paint). */
+const PACKAGE_ORDER: readonly string[] = TRADE_GROUPS.map((group) => group.label);
+
+/** What a trade chip prints; an unfiled row keeps its raw token. */
+export function tradeLabel(trade: string | null | undefined): string {
+  if (!trade) return "unfiled";
+  return (TRADE_LABEL as Record<string, string>)[trade] ?? trade;
+}
 
 /** A set of rows that share a trade or a section, with what the header has to print. */
 export interface EstimateGroup {
@@ -158,6 +165,10 @@ export interface EstimateGroup {
 
 function groupLabelOf(row: EstimateRow, group: GroupKey): string {
   if (group === "section") return row.section;
+  if (group === "group") {
+    const id = row.trade ? (TRADE_GROUP_OF as Record<string, string>)[row.trade] : undefined;
+    return TRADE_GROUPS.find((g) => g.id === id)?.label ?? "unfiled";
+  }
   // Even ungrouped, the excluded rows keep their own trailing block and say so: a reader
   // scanning a "flat ranked list" from the top must not meet a sofa among the things the
   // construction total is made of.
@@ -180,10 +191,10 @@ function bucketKeyOf(row: EstimateRow, group: GroupKey): string {
 }
 
 const GROUP_LABELS: Record<GroupKey, string> = {
-  trade: "Trade", section: "Section", none: "Ranked",
+  trade: "Trade", group: "Package", section: "Section", none: "Ranked",
 };
 
-export const GROUP_KEYS: GroupKey[] = ["trade", "section", "none"];
+export const GROUP_KEYS: GroupKey[] = ["trade", "group", "section", "none"];
 
 /** The grouping vocabulary as data, for the segmented control. */
 export const GROUPS = GROUP_KEYS.map((key) => ({ key, label: GROUP_LABELS[key] }));
@@ -202,7 +213,7 @@ export function groupRows(
   total?: EnginePriceRange | null,
 ): EstimateGroup[] {
   const spec = SORTS[sort];
-  const order = group === "trade" ? TRADE_SEQUENCE : null;
+  const order = group === "trade" ? TRADE_SEQUENCE : group === "group" ? PACKAGE_ORDER : null;
   const buckets = new Map<string, EstimateRow[]>();
   for (const row of rows) {
     const id = bucketKeyOf(row, group);
@@ -241,7 +252,7 @@ export function groupRows(
 }
 
 /**
- * The groups that start COLLAPSED, so the page opens on the 13 trade headlines rather than
+ * The groups that start COLLAPSED, so the page opens on the trade headlines rather than
  * on ~470 rows.
  *
  * Here rather than in the component for the same reason every other ordering decision on

@@ -29,7 +29,7 @@ from typehaus.emit.finishes import (
     member_material_key,
     normalize,
 )
-from typehaus.emit.trades import solid_trade
+from typehaus.emit.trade_rules import assembly_trades, layer_trades, solid_trades
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_ir import (
     ElementGeometry,
@@ -115,7 +115,14 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
                                    name=layer.name,
                                    thickness_m=layer.thickness_m),
         ))
-    return ElementGeometry(uid=wall.uid, kind="wall", trade="walls", parts=tuple(parts))
+    return ElementGeometry(uid=wall.uid, kind="wall", trades=wall_trades(wall),
+                           parts=tuple(parts))
+
+
+def wall_trades(wall: ResolvedWall) -> tuple[str, ...]:
+    """Every trade a wall's body layers belong to, in sequence order."""
+    scope = "foundation wall" if wall.is_foundation else "wall"
+    return layer_trades(wall.body_layers(), scope) or ("framing",)
 
 
 def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
@@ -138,7 +145,8 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
                       for start, end in sweep_legs(solid.sweep))
         if boxes:
             return ElementGeometry(
-                uid=solid.uid, kind=solid.category, trade=solid_trade(solid.category),
+                uid=solid.uid, kind=solid.category,
+                trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
                 parts=(GPart(key="body", solids=boxes,
                              material_key=normalize(solid.category),
                              layer_group="structure",
@@ -149,7 +157,8 @@ def _solid_geometry(solid: ResolvedSolid, plan) -> ElementGeometry:
     prism = GPrism(ring=solid.outline, z0_m=solid.z0_m, z1_m=solid.z1_m,
                    voids=tuple(solid.voids))
     return ElementGeometry(
-        uid=solid.uid, kind=solid.category, trade=solid_trade(solid.category),
+        uid=solid.uid, kind=solid.category,
+        trades=solid_trades(solid.category, solid_material_ref(plan, solid)),
         parts=(GPart(key="body", solids=(prism,),
                      material_key=normalize(solid.category),
                      layer_group="structure",
@@ -167,12 +176,13 @@ def _opening_geometry(wall: ResolvedWall, opening, door_types) -> ElementGeometr
         is_glazed=door_type is not None and door_type.glazed,
         is_trimless=door_type is not None and door_type.trimless,
     )
-    return ElementGeometry(uid=opening.uid, kind="opening", trade="openings", parts=parts)
+    return ElementGeometry(uid=opening.uid, kind="opening", trades=("openings",), parts=parts)
 
 
 def _roof_geometry(roof: ResolvedRoof, model: ResolvedModel) -> ElementGeometry:
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
-    return ElementGeometry(uid=roof.uid, kind="roof", trade="roof",
+    return ElementGeometry(uid=roof.uid, kind="roof",
+                           trades=assembly_trades(model.plan, roof.assembly, "roof"),
                            parts=roof_parts(roof, assembly))
 
 
@@ -188,7 +198,7 @@ def _floor_deck_geometry(floor: ResolvedFloor) -> ElementGeometry | None:
                    z0_m=floor.deck_z0_m, z1_m=floor.deck_z1_m,
                    voids=tuple(tuple(tuple(p) for p in ring) for ring in floor.deck_voids))
     return ElementGeometry(
-        uid=floor.uid, kind="floor", trade="floors",
+        uid=floor.uid, kind="floor", trades=("framing",),
         parts=(GPart(key="deck", solids=(prism,),
                      material_key=layer_material_key(floor.deck_material_ref, "sheathing"),
                      layer_group="sheathing",
@@ -214,7 +224,7 @@ def _earth_geometry(model: ResolvedModel) -> ElementGeometry | None:
     prism = GPrism(ring=tuple(tuple(p) for p in parcel),
                    z0_m=grade_z - EARTH_SHEET_THICKNESS_M, z1_m=grade_z, voids=voids)
     return ElementGeometry(
-        uid="site-earth", kind="earth", trade="earth",
+        uid="site-earth", kind="earth", trades=("earth",),
         parts=(GPart(key="sheet", solids=(prism,), material_key="earth", layer_group="other"),),
     )
 
@@ -222,7 +232,7 @@ def _earth_geometry(model: ResolvedModel) -> ElementGeometry | None:
 def _solar_geometry(panel) -> ElementGeometry:
     """The precedent this IR generalized: a PV module already *was* eight corners."""
     return ElementGeometry(
-        uid=panel.uid, kind="solar_panel", trade="electrical",
+        uid=panel.uid, kind="solar_panel", trades=("electrical",),
         parts=(GPart(key="module",
                      solids=(GBox(corners_bottom=panel.corners_bottom,
                                   corners_top=panel.corners_top),),
@@ -237,18 +247,18 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     # Framing rides its owner, so a wall's studs stay addressable as that wall's parts —
     # which is what lets the exporter merge them into one node per owner and still resolve a
     # pick back to the individual stick.
-    for owner, _trade in ((model.walls, "walls"), (model.floors, "floors"),
-                          (model.roofs, "roof"), (getattr(model, "stairs", ()), "stairs"),
+    for owner in (model.walls, model.floors, model.roofs, getattr(model, "stairs", ()),
                           # A brace (and a wedge — same record) hosts itself, so its sticks
                           # reach the IR the same way a wall's studs do. Without this the
                           # section pipeline cannot cut them and a detail whose whole subject
                           # is a tapered shim draws nothing where the shim is.
-                          (getattr(model, "braces", ()), "framing")):
+                  getattr(model, "braces", ())):
         for host in owner:
             parts = _member_parts(getattr(host, "members", ()))
             if parts:
                 elements.append(ElementGeometry(
-                    uid=f"{host.uid}::framing", kind="framing", trade="framing", parts=parts,
+                    uid=f"{host.uid}::framing", kind="framing", trades=("framing",),
+                    parts=parts,
                 ))
 
     openings_by_wall: dict[str, list] = {}

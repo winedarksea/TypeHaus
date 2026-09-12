@@ -1,22 +1,25 @@
 {
-  "layerGroupAliases": {
-    "air_gap": "airgap",
-    "fascia": "cladding",
-    "lining": "finish",
-    "roofing": "cladding",
-    "soffit": "cladding"
+  "canvasDomainTrades": {
+    "appliance": "furniture",
+    "electrical": "electrical",
+    "furniture": "furniture",
+    "mechanical": "mechanical",
+    "opening": "openings",
+    "plumbing": "plumbing"
   },
-  "layerVisibilityGroups": [
-    "structure",
-    "sheathing",
-    "membrane",
-    "insulation",
-    "airgap",
-    "furring",
-    "cladding",
-    "finish",
-    "other"
-  ],
+  "layerFunctionTrades": {
+    "air_gap": "siding",
+    "airgap": "siding",
+    "cladding": "siding",
+    "finish": "drywall",
+    "furring": "siding",
+    "insulation": "insulation",
+    "insulation (cavity)": "insulation",
+    "lining": "drywall",
+    "membrane": "siding",
+    "sheathing": "framing",
+    "structure": "framing"
+  },
   "memberColors": {
     "air_gap": 13425126,
     "airgap": 13425126,
@@ -48,6 +51,7 @@
     "duct_supply": 13094097,
     "duct_transfer": 11712690,
     "earth": 8413248,
+    "eave_soffit": 14737625,
     "fascia": 15461350,
     "finish": 15131611,
     "flashing": 12567756,
@@ -123,9 +127,49 @@
     "truss_tab": 13415568,
     "vacuum_breaker": 12096583,
     "vent": 14737627,
+    "wall_corner": 12567756,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_trim": 1842980
+  },
+  "recordFamilyTrades": {
+    "brace": [
+      "framing"
+    ],
+    "earth": [
+      "earth"
+    ],
+    "floor_deck": [
+      "framing"
+    ],
+    "footing_bedding": [
+      "drainage",
+      "earth"
+    ],
+    "light_run": [
+      "electrical"
+    ],
+    "opening": [
+      "openings"
+    ],
+    "paneling": [
+      "millwork"
+    ],
+    "room_floor": [
+      "flooring"
+    ],
+    "soffit_framing": [
+      "framing"
+    ],
+    "solar_panel": [
+      "electrical"
+    ],
+    "stair": [
+      "stairs"
+    ],
+    "wall_lumber": [
+      "framing"
+    ]
   },
   "solidColors": {
     "air_gap": 13425126,
@@ -158,6 +202,7 @@
     "duct_supply": 13094097,
     "duct_transfer": 11712690,
     "earth": 8413248,
+    "eave_soffit": 14737625,
     "fascia": 15461350,
     "finish": 15131611,
     "flashing": 12567756,
@@ -233,15 +278,181 @@
     "truss_tab": 13415568,
     "vacuum_breaker": 12096583,
     "vent": 14737627,
+    "wall_corner": 12567756,
     "water_hammer_arrestor": 10396584,
     "winder": 11699540,
     "window_trim": 1842980
   },
+  "solidTradeFallback": "concrete",
+  "solidTradeSets": {
+    "backflow_preventer": [
+      "plumbing"
+    ],
+    "beam": [
+      "framing"
+    ],
+    "bug_screen": [
+      "siding"
+    ],
+    "ceiling": [
+      "drywall"
+    ],
+    "column": [
+      "framing"
+    ],
+    "conduit_data": [
+      "electrical"
+    ],
+    "conduit_power": [
+      "electrical"
+    ],
+    "connector": [
+      "framing"
+    ],
+    "dowel": [
+      "concrete"
+    ],
+    "downspout": [
+      "drainage"
+    ],
+    "drain_tile": [
+      "drainage"
+    ],
+    "drywell": [
+      "drainage"
+    ],
+    "duct_dryer": [
+      "mechanical"
+    ],
+    "duct_exhaust": [
+      "mechanical"
+    ],
+    "duct_outdoor_air": [
+      "mechanical"
+    ],
+    "duct_return": [
+      "mechanical"
+    ],
+    "duct_supply": [
+      "mechanical"
+    ],
+    "duct_transfer": [
+      "mechanical"
+    ],
+    "eave_soffit": [
+      "siding"
+    ],
+    "fascia": [
+      "siding"
+    ],
+    "flashing": [
+      "roofing"
+    ],
+    "footing": [
+      "concrete"
+    ],
+    "french_drain": [
+      "drainage"
+    ],
+    "glazing": [
+      "openings"
+    ],
+    "glazing_trim": [
+      "openings"
+    ],
+    "gutter": [
+      "drainage"
+    ],
+    "main_shutoff": [
+      "plumbing"
+    ],
+    "pad": [
+      "concrete"
+    ],
+    "panel_strap": [
+      "roofing"
+    ],
+    "penetration_seal": [
+      "plumbing"
+    ],
+    "pipe_drain": [
+      "plumbing"
+    ],
+    "pipe_gas": [
+      "plumbing"
+    ],
+    "pipe_radon": [
+      "plumbing"
+    ],
+    "pipe_sleeve": [
+      "plumbing"
+    ],
+    "pipe_vent": [
+      "plumbing"
+    ],
+    "pipe_water_cold": [
+      "plumbing"
+    ],
+    "pipe_water_hot": [
+      "plumbing"
+    ],
+    "railing": [
+      "stairs"
+    ],
+    "railing_glass": [
+      "stairs"
+    ],
+    "railing_infill": [
+      "stairs"
+    ],
+    "ridge_cap": [
+      "roofing"
+    ],
+    "ro_stub": [
+      "plumbing"
+    ],
+    "screen_slat": [
+      "siding"
+    ],
+    "seam_clamp": [
+      "roofing"
+    ],
+    "shutoff": [
+      "plumbing"
+    ],
+    "slab": [
+      "concrete"
+    ],
+    "snow_guard": [
+      "roofing"
+    ],
+    "soffit": [
+      "drywall"
+    ],
+    "sump": [
+      "drainage"
+    ],
+    "thermal_break": [
+      "concrete"
+    ],
+    "vacuum_breaker": [
+      "plumbing"
+    ],
+    "vent": [
+      "mechanical"
+    ],
+    "wall_corner": [
+      "siding"
+    ],
+    "water_hammer_arrestor": [
+      "plumbing"
+    ]
+  },
   "solidTrades": {
     "backflow_preventer": "plumbing",
     "beam": "framing",
-    "bug_screen": "openings",
-    "ceiling": "floors",
+    "bug_screen": "siding",
+    "ceiling": "drywall",
     "column": "framing",
     "conduit_data": "electrical",
     "conduit_power": "electrical",
@@ -256,8 +467,9 @@
     "duct_return": "mechanical",
     "duct_supply": "mechanical",
     "duct_transfer": "mechanical",
-    "fascia": "roof",
-    "flashing": "roof",
+    "eave_soffit": "siding",
+    "fascia": "siding",
+    "flashing": "roofing",
     "footing": "concrete",
     "french_drain": "drainage",
     "glazing": "openings",
@@ -265,7 +477,7 @@
     "gutter": "drainage",
     "main_shutoff": "plumbing",
     "pad": "concrete",
-    "panel_strap": "roof",
+    "panel_strap": "roofing",
     "penetration_seal": "plumbing",
     "pipe_drain": "plumbing",
     "pipe_gas": "plumbing",
@@ -277,19 +489,156 @@
     "railing": "stairs",
     "railing_glass": "stairs",
     "railing_infill": "stairs",
+    "ridge_cap": "roofing",
     "ro_stub": "plumbing",
-    "screen_slat": "walls",
-    "seam_clamp": "roof",
+    "screen_slat": "siding",
+    "seam_clamp": "roofing",
     "shutoff": "plumbing",
     "slab": "concrete",
-    "snow_guard": "roof",
-    "soffit": "floors",
+    "snow_guard": "roofing",
+    "soffit": "drywall",
     "sump": "drainage",
     "thermal_break": "concrete",
     "vacuum_breaker": "plumbing",
     "vent": "mechanical",
+    "wall_corner": "siding",
     "water_hammer_arrestor": "plumbing"
   },
+  "tradeGroups": [
+    {
+      "id": "site",
+      "label": "Site",
+      "trades": [
+        "general",
+        "earth",
+        "drainage",
+        "landscaping"
+      ]
+    },
+    {
+      "id": "concrete_masonry",
+      "label": "Concrete & masonry",
+      "trades": [
+        "concrete",
+        "masonry"
+      ]
+    },
+    {
+      "id": "structure",
+      "label": "Framing",
+      "trades": [
+        "framing",
+        "stairs"
+      ]
+    },
+    {
+      "id": "roof",
+      "label": "Roof",
+      "trades": [
+        "roofing"
+      ]
+    },
+    {
+      "id": "walls",
+      "label": "Walls",
+      "trades": [
+        "siding",
+        "insulation",
+        "drywall",
+        "paint"
+      ]
+    },
+    {
+      "id": "openings",
+      "label": "Openings",
+      "trades": [
+        "openings"
+      ]
+    },
+    {
+      "id": "finishes",
+      "label": "Finishes",
+      "trades": [
+        "tile",
+        "flooring",
+        "millwork"
+      ]
+    },
+    {
+      "id": "plumbing",
+      "label": "Plumbing",
+      "trades": [
+        "plumbing"
+      ]
+    },
+    {
+      "id": "electrical",
+      "label": "Electrical",
+      "trades": [
+        "electrical"
+      ]
+    },
+    {
+      "id": "mechanical",
+      "label": "Mechanical",
+      "trades": [
+        "mechanical"
+      ]
+    },
+    {
+      "id": "furniture",
+      "label": "Furniture",
+      "trades": [
+        "furniture"
+      ]
+    }
+  ],
+  "tradeLabels": {
+    "concrete": "Concrete",
+    "drainage": "Drainage",
+    "drywall": "Drywall",
+    "earth": "Earthwork",
+    "electrical": "Electrical",
+    "flooring": "Flooring",
+    "framing": "Framing",
+    "furniture": "Furniture & appliances",
+    "general": "General conditions",
+    "insulation": "Insulation",
+    "landscaping": "Landscaping",
+    "masonry": "Masonry",
+    "mechanical": "Mechanical",
+    "millwork": "Millwork & casework",
+    "openings": "Windows & doors",
+    "paint": "Paint",
+    "plumbing": "Plumbing",
+    "roofing": "Roofing",
+    "siding": "Siding & trim",
+    "stairs": "Stairs & guards",
+    "tile": "Tile"
+  },
+  "trades": [
+    "general",
+    "earth",
+    "concrete",
+    "drainage",
+    "framing",
+    "masonry",
+    "roofing",
+    "openings",
+    "siding",
+    "plumbing",
+    "electrical",
+    "mechanical",
+    "insulation",
+    "drywall",
+    "paint",
+    "millwork",
+    "tile",
+    "flooring",
+    "stairs",
+    "furniture",
+    "landscaping"
+  ],
   "typography": {
     "CHAR_ASPECT": 0.62,
     "DIM_TEXT_PT": 6.5,

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import { ALL_TRADES } from "../state/vocabulary";
-import { ALL_LAYER_VISIBILITY_GROUPS, LAYER_VISIBILITY_GROUP_LABEL } from "../model/visibility";
+import { groupState, TRADE_GROUPS, TRADE_LABEL } from "../model/tradeVisibility";
 import { HIDDEN_REPORTS } from "../state/public";
 
 // Command palette (Phase 4): fuzzy-searchable actions + recent commands. The registry is
@@ -51,8 +51,7 @@ export function CommandPalette() {
   const setRepresentation = useStore((s) => s.setRepresentation);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const setActiveLens = useStore((s) => s.setActiveLens);
-  const setLayerGroupVisible = useStore((s) => s.setLayerGroupVisible);
-  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
+  const setTradesVisible = useStore((s) => s.setTradesVisible);
   const showEverything = useStore((s) => s.showEverything);
   const setDetailView = useStore((s) => s.setDetailView);
   const openDocuments = useStore((s) => s.openDocuments);
@@ -117,20 +116,22 @@ export function CommandPalette() {
       // that is not there is a dead end you can still type your way into.
       .filter((command) => !command.id.startsWith("reader-")
         || !HIDDEN_REPORTS.has(command.id.slice("reader-".length)));
+    // A group toggle flips every trade in it (a mixed group turns fully on); a trade
+    // toggle flips one chip.
+    for (const group of TRADE_GROUPS) {
+      list.push({
+        id: `group-${group.id}`,
+        title: `Toggle ${group.label} visibility`,
+        group: "Isolate",
+        run: () => setTradesVisible(group.trades, groupState(group.id, visibleTrades) !== "on"),
+      });
+    }
     for (const trade of ALL_TRADES) {
       list.push({
         id: `trade-${trade}`,
-        title: `Toggle ${trade} visibility`,
+        title: `Toggle ${TRADE_LABEL[trade].toLowerCase()} visibility`,
         group: "Isolate",
         run: () => setTradeVisible(trade, !visibleTrades[trade]),
-      });
-    }
-    for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
-      list.push({
-        id: `layer-${group}`,
-        title: `Toggle ${LAYER_VISIBILITY_GROUP_LABEL[group].toLowerCase()} layers`,
-        group: "Isolate",
-        run: () => setLayerGroupVisible(group, !visibleLayerGroups[group]),
       });
     }
     // Keep an unused reference so a shading toggle reads intent; threeMode drives the label.
@@ -138,7 +139,7 @@ export function CommandPalette() {
     return list;
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
     setActivePanel, setRepresentation, setActiveWorkspace, setActiveLens,
-    setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, openDocuments,
+    setTradesVisible, showEverything, setDetailView, openDocuments,
     reload, offline, setSurface, setSitePage]);
 
   const results = useMemo(() => {

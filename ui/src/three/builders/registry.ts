@@ -1,12 +1,12 @@
 // The bookkeeping every scene builder shares: which meshes a click can land on, which model
-// element each one answers to, and which assembly layer band it belongs to.
+// element each one answers to, and which trades it rides.
 //
 // Split out of components/Panel3D.tsx with the builders themselves. The contract is the same
 // one it always was — snapshot `parent.children.length` before you build, pass it here
 // afterwards — and having it in one small module is what keeps the four builder families from
 // each inventing their own.
 import * as THREE from "three";
-import type { LayerVisibilityGroup } from "../../model/visibility";
+import { anyTradeVisible, type VisibleTrades } from "../../model/tradeVisibility";
 import { carriesMemberIdentity } from "../memberPicking";
 import type { SelectionKind } from "../../state/vocabulary";
 
@@ -18,16 +18,28 @@ export function isRenderedInScene(object: THREE.Object3D): boolean {
   return true;
 }
 
-// Stamp every object a builder just added to `parent` with the assembly layer group it belongs
-// to, so per-layer visibility can flip it without rebuilding the scene. Snapshot
-// parent.children.length before building and pass it here afterwards — the same contract
-// registerSelectable uses.
-export function tagLayerGroup(
-  parent: THREE.Object3D, firstChildIndex: number, group: LayerVisibilityGroup,
+// Stamp every object a builder just added to `parent` with the trade set it rides, so trade
+// visibility can flip it without rebuilding the scene. Fill-in semantics: an object a builder
+// already tagged (a wall's per-layer bands, a roof's skin buckets) keeps its own, finer set,
+// and only the untagged rest takes the element's. Snapshot parent.children.length before
+// building and pass it here afterwards — the same contract registerSelectable uses.
+export function tagTrades(
+  parent: THREE.Object3D, firstChildIndex: number, trades: readonly string[],
 ) {
   for (let index = firstChildIndex; index < parent.children.length; index++) {
-    parent.children[index].userData.layerGroup = group;
+    const child = parent.children[index];
+    if (!child.userData.trades) child.userData.trades = [...trades];
   }
+}
+
+/** Apply the trade filter to everything under `root`: an object draws iff any trade in its
+ *  set is visible. Objects with no set are left alone — their ancestors decide. One
+ *  traversal, one bool per tagged object, no geometry work, so it runs on every rebuild. */
+export function applyTradeVisibility(root: THREE.Object3D, visible: VisibleTrades) {
+  root.traverse((object) => {
+    const trades = object.userData.trades as string[] | undefined;
+    if (trades) object.visible = anyTradeVisible(trades, visible);
+  });
 }
 
 // Make every mesh a builder just added to `parent` resolve to one model element: snapshot

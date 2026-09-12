@@ -194,8 +194,15 @@ class ElementGeometry:
 
     uid: str
     kind: str
-    trade: str
+    #: The trade SET this element rides: a wall body is every trade its layers belong to, a
+    #: solid is one. An element draws iff any of its trades is visible (→ ui tradeVisibility).
+    trades: tuple[str, ...] = ()
     parts: tuple[GPart, ...] = ()
+
+    @property
+    def trade(self) -> str:
+        """The primary trade — what the IFC emitter and the slicer key on."""
+        return self.trades[0] if self.trades else "concrete"
 
 
 @dataclass(frozen=True)

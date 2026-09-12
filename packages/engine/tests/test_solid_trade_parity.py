@@ -18,11 +18,18 @@ from __future__ import annotations
 import json
 
 import pytest
-
-from typehaus.emit.trades import (
-    DRAINAGE_CATEGORIES, FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade)
-from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
 from _helpers import REPO_ROOT
+
+from typehaus.emit.trade_rules import solid_trades
+from typehaus.emit.trades import (
+    DRAINAGE_CATEGORIES,
+    FALLBACK_TRADE,
+    SOLID_CATEGORY_TRADE,
+    TRADES,
+    solid_trade,
+)
+from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
+from typehaus.resolve.assembly_material import solid_material_ref
 
 VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
@@ -49,9 +56,13 @@ def test_the_checked_in_manifest_matches_a_fresh_build() -> None:
     no longer a second, independently authored TypeScript table to compare against.
     Regenerate the manifest in memory and diff it against the file on disk, to catch the
     checked-in copy going stale relative to ``SOLID_CATEGORY_TRADE``."""
-    fresh = build_vocabulary_manifest()["solidTrades"]
-    checked_in = json.loads(VOCABULARY_JSON.read_text())["solidTrades"]
-    assert fresh == checked_in, (
+    fresh = build_vocabulary_manifest()
+    checked_in = json.loads(VOCABULARY_JSON.read_text())
+    for key in ("solidTrades", "solidTradeSets", "solidTradeFallback", "trades",
+                "tradeLabels", "tradeGroups", "layerFunctionTrades", "canvasDomainTrades",
+                "recordFamilyTrades"):
+        assert fresh[key] == checked_in[key], key
+    assert fresh["solidTrades"] == checked_in["solidTrades"], (
         "ui/src/generated/vocabulary.json is stale — regenerate it "
         "(typehaus.emit.vocabulary_manifest.write_vocabulary_manifest) after this change to "
         "emit/trades.py")
@@ -79,6 +90,25 @@ def test_standalone_beams_and_posts_are_framing(catlin_model) -> None:
     assert all(solid_trade(s.category) == "framing" for s in posts)
 
 
+def test_a_cast_column_is_concrete_in_the_viewer_too(catlin_model) -> None:
+    """The material-aware verdict used to live only in ``takeoff/cost_codes``, so the six
+    cast piers drew under the Framing toggle while billing to the concrete sub. One rule,
+    ``solid_trades``, now serves the viewer, the glTF and the BOM."""
+    plan = catlin_model.plan
+    posts = [s for s in catlin_model.solids if s.category == "column"]
+    by_trade: dict[str, set[str]] = {}
+    for solid in posts:
+        trade = solid_trades(solid.category, solid_material_ref(plan, solid))[0]
+        by_trade.setdefault(trade, set()).add(solid.assembly or "")
+    assert "PIER_CONCRETE_12" in by_trade["concrete"]
+    assert "SUNKEN_GARDEN_COLUMN_12" in by_trade["concrete"]
+    assert "ELM_TIMBER" in by_trade["framing"]
+    assert set(by_trade) == {"concrete", "framing"}
+    assert solid_trades("column", "concrete") == ("concrete",)
+    assert solid_trades("column", "kdat") == ("framing",)
+    assert solid_trades("column", None) == ("framing",)
+
+
 def test_routed_pipe_runs_are_plumbing(catlin_model) -> None:
     pipes = [s for s in catlin_model.solids if s.category.startswith("pipe_")]
     assert pipes, "fixture regression: the Catlin house lost its routed plumbing"
@@ -89,8 +119,8 @@ def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:
     """The whole stormwater run — gutter, leader, sump pit — is one trade, one toggle."""
     for category in ("gutter", "downspout", "sump"):
         assert solid_trade(category) == "drainage"
-    assert DRAINAGE_CATEGORIES == {"gutter", "downspout", "sump",
-                                   "drain_tile", "french_drain", "drywell"}
+    assert {"gutter", "downspout", "sump",
+                                   "drain_tile", "french_drain", "drywell"} == DRAINAGE_CATEGORIES
     leaders = [s for s in catlin_model.solids if s.category == "downspout"]
     assert leaders, "fixture regression: the Catlin house lost its downspouts"
 

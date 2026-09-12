@@ -22,6 +22,7 @@ import {
 } from "../nordic/palette";
 import { assemblyFaceMaterial } from "../model/solidLabels";
 import type { Trade } from "../state/vocabulary";
+import { solidTrades } from "../model/tradeVisibility";
 import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
 import vocabulary from "../generated/vocabulary.json";
 
@@ -37,9 +38,11 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = vocabulary.solidColo
 // blocks cast into them.
 export const SOLID_CATEGORY_TRADE: Record<string, Trade> = vocabulary.solidTrades as Record<string, Trade>;
 
-/** The trade group a resolved solid belongs to (engine: emit/trades.py::solid_trade). */
-export function solidTrade(solid: Pick<Solid, "category">): Trade {
-  return SOLID_CATEGORY_TRADE[solid.category?.toLowerCase() ?? ""] ?? "concrete";
+/** The primary trade a resolved solid files under (engine: emit/trade_rules.py::solid_trades).
+ *  The record's own `trades` (category re-filed by material — a cast column is concrete) win
+ *  over the category map. */
+export function solidTrade(solid: Pick<Solid, "category" | "trades">): Trade {
+  return solidTrades(solid)[0];
 }
 
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing

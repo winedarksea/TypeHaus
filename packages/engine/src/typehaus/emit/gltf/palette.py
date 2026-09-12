@@ -199,7 +199,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "duct_outdoor_air": (0.360, 0.640, 0.780, 1.0),  # outdoor air, insulated and sealed
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
-    "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
+    "soffit": (0.88, 0.88, 0.85, 1.0),     # dropped soffit box / soffit skin member
+    "eave_soffit": (0.88, 0.88, 0.85, 1.0),  # vented soffit panel under the overhang
     # A room's own ceiling plane (resolve/ceilings.py). Painted-gwb tone; almost every
     # ceiling states its own FINISH material and wins over this fallback (see _solid_color),
     # so this is only what an unpainted/uncoloured ceiling material falls back to.
@@ -215,6 +216,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
+    "wall_corner": (0.75, 0.77, 0.80, 1.0),  # formed-metal wall corner closure
     # LightRun's channel + tape (→ emit/gltf/emitter.py::_add_light_run). Mirrors
     # ui/src/three/builders/structure.ts COVE_CHANNEL_COLOR / LED_TAPE_COLOR.
     "cove_channel": (0.80, 0.80, 0.80, 1.0),  # mill-finish aluminium extrusion

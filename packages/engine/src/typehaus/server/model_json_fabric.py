@@ -11,8 +11,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
+from typehaus.resolve.assembly_material import solid_material_ref
+from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_shared import _layer_json, _member_json, _provenance
 from typehaus.source.provenance import Provenance
@@ -26,6 +29,10 @@ def _layout_axis(model: ResolvedModel, wall_tag: str) -> list[list[float]] | Non
         return None
     (ox, oy), (dx, dy) = line.origin, line.direction
     return [[ox, oy], [ox + dx, oy + dy]]
+
+
+def _wall_scope(wall) -> str:
+    return "foundation wall" if wall.is_foundation else "wall"
 
 
 def wall_graph_json(
@@ -55,8 +62,10 @@ def wall_graph_json(
                 # (resolve/layout_lines.py). None for a wall on no line.
                 "layout_axis": _layout_axis(model, w.tag),
                 "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
-                "layers": [_layer_json(ly) for ly in w.layers],
+                "layers": [_layer_json(ly, _wall_scope(w)) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],
+                # Every trade the body layers belong to (→ resolve/geometry_build).
+                "trades": list(wall_trades(w)),
             }
             for w in sorted(model.walls, key=lambda x: x.uid)
         ],
@@ -120,6 +129,8 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "voids": [[list(point) for point in ring] for ring in solid.voids],
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "material": solid.material,
+             "trades": list(solid_trades(solid.category,
+                                         solid_material_ref(model.plan, solid))),
              # Manufacturer part number where the solid IS a purchased part (connectors);
              # null on everything cut from stock.
              "product": solid.product,
@@ -139,7 +150,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
         "panelings": [
             {"uid": band.uid, "tag": band.tag, "storey": band.storey, "room": band.room,
              "wall_tag": band.wall_tag, "material_ref": band.material_ref,
-             "layout_line": band.layout_line,
+             "trades": ["millwork"], "layout_line": band.layout_line,
              "replaces_wall_finish": band.replaces_wall_finish,
              "area_m2": band.area_m2, "run_m": band.run_m,
              "outline": [list(point) for point in band.outline],
@@ -174,6 +185,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "host": bedding.host,
              "outline": [list(point) for point in bedding.outline],
              "z0_m": bedding.z0_m, "z1_m": bedding.z1_m, "aggregate": bedding.aggregate,
+             "trades": list(RECORD_FAMILY_TRADES["footing_bedding"]),
              "geotextile": bedding.geotextile, "drain_tile": bedding.drain_tile,
              "provenance": _provenance(provenance, bedding.tag)}
             for bedding in sorted(model.footing_beddings, key=lambda item: item.uid)
@@ -187,6 +199,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "bearing_z_m": roof.bearing_z_m,
              "layer_edge_setbacks": [dict(entry) for entry in roof.layer_edge_setbacks],
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
+             "trades": list(assembly_trades(model.plan, roof.assembly, "roof")),
              "surface_area_m2": roof.surface_area_m2,
              "members": [_member_json(member) for member in roof.members],
              "provenance": _provenance(provenance, roof.tag)}

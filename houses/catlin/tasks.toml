@@ -77,7 +77,7 @@ constraints = [
 
 # The mason is a different sub on a different trip, and both wythes are built against
 # cured concrete: the veneer stands on W-SG-BRKBM and the firebox on the main deck.
-[visits."task/concrete/building/masonry"]
+[visits."task/masonry/building/masonry"]
 label = "Brick — the court veneer and the living-room firebox"
 rows = ["wall_structure:BASEMENT_BRICK_VENEER:brown-brick",
         "wall_structure:FIREPLACE_BRICK_WYTHE:white-brick"]
@@ -91,13 +91,14 @@ constraints = [
   { label = "firebox head is a CUT COURSE on a steel angle lintel, not a rowlock", owner = "owner" },
 ]
 
-# The weathertight milestone's last arrival, and the one with the hold that cannot be
-# checked afterwards. There is no WRB on this house: the continuous exterior foam IS the
-# weather plane, the girts are screwed through it, and once the foam is on nobody can see a
-# missed screw again. The same hold appears as an `[[extra]]` inspection with
-# `authority = "owner"` in inspections.toml, which is what makes it gate the whole walls
-# trade rather than only this one visit.
-[visits."task/walls/building/foam-and-girts"]
+# The insulation trade's first arrival, and the one with the hold that cannot be checked
+# afterwards. There is no WRB on this house: the continuous exterior foam IS the weather
+# plane, the girts are screwed through it, and once the foam is on nobody can see a missed
+# screw again. The same hold appears as an `[[extra]]` inspection with `authority = "owner"`
+# in inspections.toml, which is what makes it gate the whole insulation trade rather than
+# only this one visit. Siding follows it by the `depends_on` below, not by the trade order:
+# exterior foam before cladding is this house's sequence, not every house's.
+[visits."task/insulation/building/foam-and-girts"]
 label = "Continuous exterior foam, girts and the weather plane"
 depends_on = ["task/framing/building", "insp/framing", "insp/girt_screws"]
 constraints = [
@@ -147,7 +148,7 @@ constraints = [
 
 [visits."site/building-permit"]
 label = "Building permit — Saint Paul DSI"
-trade = "earth"
+trade = "general"
 milestone = "preconstruction"
 depends_on = ["site/survey-stakes"]
 constraints = [
@@ -159,7 +160,7 @@ constraints = [
 
 [visits."site/construction-management-acknowledgement"]
 label = "Construction Management Acknowledgement — before any work starts"
-trade = "earth"
+trade = "general"
 milestone = "preconstruction"
 constraints = [
   { label = "CMA signed and filed", owner = "owner", next_action = "Saint Paul requires it before work starts, separately from the building permit" },
@@ -202,7 +203,7 @@ constraints = [
 
 [visits."site/zoning-and-fees"]
 label = "Zoning design review, SAC and parkland fees"
-trade = "earth"
+trade = "general"
 milestone = "preconstruction"
 constraints = [
   { label = "zoning design review cleared", owner = "owner", severity = "attention" },

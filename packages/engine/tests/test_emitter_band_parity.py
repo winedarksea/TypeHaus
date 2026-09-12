@@ -29,8 +29,26 @@ import uuid
 import pytest
 
 from typehaus.model import (
-    Assembly, Building, Layer, LayerBound, LayerDatum, LayerExtent, LayerFunction, Library,
-    Material, Node, PlanModel, Project, Site, Slice, Storey, Wall, degF, ft, inch, pt,
+    Assembly,
+    Building,
+    Layer,
+    LayerBound,
+    LayerDatum,
+    LayerExtent,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Slice,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.model.enums import SliceKind
 from typehaus.resolve import resolve
@@ -191,7 +209,7 @@ def test_the_banded_walls_glb_node_carries_one_bucket_per_region(banded_model):
     wall = banded_model.wall(_SLOT_WALL)
     node = next(n for n in gltf["nodes"]
                 if n.get("extras", {}).get("uid") == wall.uid
-                and n["extras"].get("trade") == "walls")
+                and n["extras"].get("trades") != ["framing"])
     expected = {_layer_color(ly, authored) for ly in wall.body_layers() if ly.polygon}
     assert len(expected) >= 3, "the fixture must keep its regions in distinct colours"
     assert len(gltf["meshes"][node["mesh"]]["primitives"]) == len(expected)
@@ -213,10 +231,10 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     gltf, _blob = emit_gltf_dict(catlin_model_ro)
     authored = authored_colors(catlin_model_ro)
     # A wall emits two nodes with one uid — its body and, at the framed LOD, its members —
-    # so the trade is what picks the body out.
+    # so the trade set is what picks the body out: the members are exactly ("framing",).
     nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
              if n.get("extras", {}).get("kind") == "wall"
-             and n["extras"].get("trade") == "walls"}
+             and n["extras"].get("trades") != ["framing"]}
     # The body node also carries the wall's closure bands: the roof resolves them (only the
     # roof planes say how high each layer climbs) but they are this wall's own skin carried
     # past the top plate, and they draw with the wall so the walls toggle keeps them. Their

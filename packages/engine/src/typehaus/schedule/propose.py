@@ -21,9 +21,13 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from typehaus.emit.trades import TRADES
+
 #: Constraint labels worth proposing per trade. Judgement, authored once, and deliberately
 #: not derived: nothing in a geometry model says a crane needs booking.
 DEFAULT_CONSTRAINTS: dict[str, tuple[str, ...]] = {
+    "general": ("permit issued and the approved set on site", "insurance certificates on file",
+                "dumpster and site protection in place"),
     "earth": ("locates called and marked", "spoil and topsoil stockpile located",
               "erosion control in place before the first cut"),
     "concrete": ("rebar fabricated, delivered and inspected",
@@ -31,19 +35,26 @@ DEFAULT_CONSTRAINTS: dict[str, tuple[str, ...]] = {
                  "pump or chute access confirmed for the whole pour"),
     "drainage": ("washed rock and filter fabric on site",
                  "discharge daylight or drywell excavated"),
+    "landscaping": ("final grade set and approved", "sod and rootzone delivered the day of"),
     "framing": ("sealed truss drawings on site", "crane booked",
                 "hangers, straps and hold-downs delivered and sorted"),
-    "floors": ("subfloor adhesive and fasteners on site",),
-    "roof": ("all penetrations set — nothing goes through afterwards",
-             "edge metal and underlayment on site", "fall protection rigged"),
-    "walls": ("girt screws verified on every wall — inspect the pattern before the "
-              "sprayer arrives, it is invisible once the foam is on",
-              "sprayer, rig and installer booked; substrate dry and above the product's "
-              "minimum temperature",
-              "cladding fastener pattern agreed and mocked up"),
+    "masonry": ("brick and mortar delivered, one blend", "anchor and weep schedule agreed"),
+    "roofing": ("all penetrations set — nothing goes through afterwards",
+                "edge metal and underlayment on site", "fall protection rigged"),
+    "siding": ("cladding fastener pattern agreed and mocked up",
+               "corner and window trim profiles confirmed"),
+    "insulation": ("sprayer, rig and installer booked; substrate dry and above the product's "
+                   "minimum temperature",
+                   "every penetration through the plane set before the foam"),
+    "drywall": ("rough-in inspections passed and the insulation inspection signed",
+                "board delivered and stocked per room"),
+    "paint": ("drywall finished to the agreed level", "colours confirmed per room"),
     "openings": ("windows delivered and checked against the RO schedule",
                  "flashing tape and sill pans on site",
                  "rough openings measured before the truck is unloaded"),
+    "tile": ("substrate flat and dry", "layout and grout colours confirmed"),
+    "flooring": ("subfloor flat, dry and swept", "material acclimatised on site"),
+    "millwork": ("casework template verified", "finished floor elevations confirmed"),
     "plumbing": ("fixture schedule confirmed against what was ordered",
                  "test equipment on site"),
     "electrical": ("permit filed with the authority named in [authorities], and the "
@@ -52,7 +63,7 @@ DEFAULT_CONSTRAINTS: dict[str, tuple[str, ...]] = {
     "mechanical": ("equipment delivered and staged out of the weather",
                    "balancing report scheduled"),
     "stairs": ("treads and guards fabricated to the as-built rise",),
-    "furniture": ("appliances delivered and uncrated", "casework template verified"),
+    "furniture": ("appliances delivered and uncrated",),
 }
 
 #: On every arrival, whatever the trade. The list an owner-builder forgets exactly once.
@@ -69,14 +80,22 @@ ARRIVAL_CONSTRAINTS: tuple[str, ...] = (
 #: alphabetical sort, which put ``concrete:flatwork`` second and the footings fourth.
 #: A family this does not name keeps its BOM order, after the ones that are named.
 FAMILY_ORDER: dict[str, tuple[str, ...]] = {
+    "general": ("permits", "site"),
     "earth": ("excavation", "backfill", "grading"),
     "concrete": ("footing", "thermal_break", "wall", "column", "slab", "flatwork"),
     "drainage": ("drain_tile", "drywell", "gutter"),
+    "landscaping": ("slab", "kbg-sod"),
     "framing": ("post", "beam", "wall_structure", "joist", "truss", "sheathing"),
-    "floors": ("joist", "sheet_goods", "floor_finish"),
-    "roof": ("sheathing", "membrane", "roofing", "trim", "flashing"),
-    "walls": ("insulation", "furring", "cladding", "trim"),
+    "masonry": ("wall", "wall_structure"),
+    "roofing": ("sheathing", "membrane", "roofing", "trim", "flashing"),
+    "siding": ("furring", "cladding", "trim"),
+    "insulation": ("insulation", "rim-spray-foam"),
+    "drywall": ("gwb", "resilient-channel", "soffit"),
+    "paint": ("latex-paint", "latex-paint-accent"),
     "openings": ("window", "door", "flashing", "hardware"),
+    "tile": ("tile-uncoupling-membrane", "tile"),
+    "flooring": ("floor_finish", "carpet-pad", "carpet", "lvp"),
+    "millwork": ("placeables", "countertops", "wood_surfaces"),
     "plumbing": ("pipe_runs", "plumbing_specialties", "fixtures"),
     "electrical": ("conduit", "devices", "panel", "luminaires"),
     "mechanical": ("ducts", "duct_fittings", "equipment", "registers"),
@@ -96,6 +115,18 @@ TAG_FAMILY: dict[str, str] = {
     "CD": "conduit", "ST": "stairs", "RL": "railings", "FURN": "placeables",
     "APPL": "appliances", "DRW": "drywell", "FD": "drain_tile",
 }
+
+
+def _validate() -> None:
+    """Import-time guard: both tables cover exactly the trades that exist."""
+    for name, table in (("DEFAULT_CONSTRAINTS", DEFAULT_CONSTRAINTS),
+                        ("FAMILY_ORDER", FAMILY_ORDER)):
+        if set(table) != TRADES:
+            raise ValueError(f"{name} must have one entry per trade: "
+                             f"{sorted(set(table) ^ TRADES)}")
+
+
+_validate()
 
 
 def family_rank(trade: str, family: str) -> tuple[int, str]:

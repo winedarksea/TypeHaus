@@ -230,10 +230,10 @@ def test_waived_and_na_both_satisfy_an_after_dependency() -> None:
 
 def test_a_house_extra_inspection_joins_the_list_and_can_gate() -> None:
     extra = ExtraInspection(id="girt_screws", label="Girt screws", authority="owner",
-                            gates=("walls",), milestone="weathertight")
-    board = _board([_item("walls")], extra=[extra])
+                            gates=("insulation",), milestone="weathertight")
+    board = _board([_item("insulation")], extra=[extra])
     assert board.inspection("girt_screws").extra is True
-    assert "insp/girt_screws" in board.visit("task/walls/building").depends_on
+    assert "insp/girt_screws" in board.visit("task/insulation/building").depends_on
 
 
 def test_the_board_cannot_deadlock_itself() -> None:

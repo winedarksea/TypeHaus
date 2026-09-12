@@ -20,13 +20,12 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Model, Severity } from "../model/types";
-import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
+import { allVisibleTrades, onlyTrades, type VisibleTrades } from "../model/tradeVisibility";
 import { locateUid } from "./locate";
 import type { PanelId } from "./panels";
 import { createMutationActions, type MutationActions } from "./mutations";
 import { createSiteSlice, type SiteSlice } from "./site";
 import {
-  ALL_TRADES,
   DEFAULT_EARTH_OPACITY,
   type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Representation, type Selection,
   type ThreeMode, type Toast, type Tool, type Trade,
@@ -72,8 +71,7 @@ export interface StoreState extends MutationActions, SiteSlice {
   labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default hover)
   // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
   // answer "which discipline", layer groups answer "which band of the assembly".
-  visibleTrades: Record<Trade, boolean>;
-  visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  visibleTrades: VisibleTrades;
   // How solid the 3D site sheet is drawn, 0..1. Independent of `visibleTrades.earth`, which
   // is still what turns the ground off entirely: this only says how much of the basement the
   // ground you *are* showing lets through, from the translucent default up to real dirt.
@@ -117,7 +115,9 @@ export interface StoreState extends MutationActions, SiteSlice {
   setThreeMode: (m: ThreeMode) => void;
   setLabelMode: (v: LabelMode) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
-  setLayerGroupVisible: (group: LayerVisibilityGroup, visible: boolean) => void;
+  // Several at once (a group header), and the isolation gesture: exactly these, nothing else.
+  setTradesVisible: (trades: readonly Trade[], visible: boolean) => void;
+  showOnlyTrades: (trades: readonly Trade[]) => void;
   setEarthOpacity: (opacity: number) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
@@ -190,14 +190,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
   labelMode: "hover",
-  visibleTrades: {
-    walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
-    stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
-    drainage: true,
-  },
-  visibleLayerGroups: Object.fromEntries(
-    ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
-  ) as Record<LayerVisibilityGroup, boolean>,
+  visibleTrades: allVisibleTrades(),
   earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
   documentsTab: "drawings",
@@ -325,16 +318,13 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setLabelMode: (labelMode) => set({ labelMode }),
   setTradeVisible: (trade, visible) =>
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
-  setLayerGroupVisible: (group, visible) =>
-    set((s) => ({ visibleLayerGroups: { ...s.visibleLayerGroups, [group]: visible } })),
+  setTradesVisible: (trades, visible) =>
+    set((s) => ({ visibleTrades: {
+      ...s.visibleTrades, ...Object.fromEntries(trades.map((trade) => [trade, visible])),
+    } })),
+  showOnlyTrades: (trades) => set({ visibleTrades: onlyTrades(trades) }),
   setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
-  showEverything: () =>
-    set({
-      visibleTrades: Object.fromEntries(ALL_TRADES.map((trade) => [trade, true])) as Record<Trade, boolean>,
-      visibleLayerGroups: Object.fromEntries(
-        ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
-      ) as Record<LayerVisibilityGroup, boolean>,
-    }),
+  showEverything: () => set({ visibleTrades: allVisibleTrades() }),
   // Leaving for the canvas always clears the origin: whatever opened the reader, the user
   // is now back at the plan, and a stale "came from Documents" would send the *next* Back
   // to a hub nobody opened.

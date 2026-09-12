@@ -68,8 +68,11 @@ def install_parts_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """The sealing/mounting consumables, one row per distinct part, billed each."""
     rows: dict[str, dict[str, object]] = {}
     for carrier in _install_part_carriers(model):
+        # What carries the kit decides who buys it: an appliance's control loop is the
+        # electrician's, a hydrant's escutcheon gasket the plumber's (→ cost_codes).
+        kind = "appliance" if isinstance(carrier, Appliance) else "pipe_accessory"
         for part in carrier.install_parts:
-            entry = rows.setdefault(part, {"count": 0, "tags": []})
+            entry = rows.setdefault(part, {"count": 0, "tags": [], "carrier": kind})
             entry["count"] = int(entry["count"]) + 1
             tags = entry["tags"]
             assert isinstance(tags, list)
