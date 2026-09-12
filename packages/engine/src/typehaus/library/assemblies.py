@@ -490,6 +490,26 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
            "no STC is claimed",
 )
 
+# A glazed wall with no frame of its own: one 16mm multiwall polycarbonate sheet standing
+# in a U-channel at the sill and an F-channel at the head, spanning post to post unaided.
+# The sheet is STRUCTURE, not CLADDING, because it IS the wall — the same reading a single
+# plank layer gets on a deck. Under rafters that do the spanning it would be cladding, and
+# that is a different assembly.
+#
+# Span is the whole question and the sheet answers it: SABIC publishes wall spans for
+# THERMOCLEAR 16mm, and a house that stands one further apart than the published table
+# allows is authoring a ``PublishedSpan``, not this tag.
+GLAZED_WALL_MULTIWALL_16MM = Assembly(
+    tag="GLAZED_WALL_MULTIWALL_16MM",
+    label="16mm multiwall polycarbonate glazed wall",
+    layers=(
+        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="SABIC LEXAN THERMOCLEAR 16mm five-wall sheet, self-spanning between posts in "
+           "U-channel (sill) and F-channel (head) glazing profiles",
+)
+
 STARTER_FLOOR = {"subfloor": "plywood-subfloor", "joist": "11.875 I-joist"}
 
 # Assemblies whose R-value / card should render for M1 acceptance.
@@ -510,4 +530,5 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
+    GLAZED_WALL_MULTIWALL_16MM,
 )

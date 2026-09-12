@@ -732,11 +732,12 @@ WALLS = [
     # delete it) and the whole ~9'-4" west edge reads as unsupported and gets a full LVL
     # header it does not need for 90% of its length — see FO-S-STAIR in second.py.
     #
-    # Both segments are MUDROOM_INT_2X6_EXPOSED, appearance-grade DF studs open to the
-    # mudroom (coat nooks) with 3/4" cabinet plywood on the stair face — `interior_room` picks
-    # the mudroom side as layer 0. Until 2026-07-30 the mudroom segment was plain
-    # INT_2X6_BRG (spf vs. df-select-s4s), which `integrity.junction_fallback` flagged
-    # at N-M-STRJ.
+    # Both segments are INT_2X6_BRG_EXPOSED_PLY with `layer_materials` swapping the stud to
+    # appearance-grade DF: the studs are open to the mudroom (coat nooks) and 3/4" cabinet
+    # plywood closes the stair face — `interior_room` picks the mudroom side as layer 0.
+    # Until 2026-07-30 the mudroom segment was plain INT_2X6_BRG (spf vs. df-select-s4s),
+    # which `integrity.junction_fallback` flagged at N-M-STRJ. The species was its own tag
+    # (MUDROOM_INT_2X6_EXPOSED) until 2026-09-12; a material is not a wall (#70).
     #
     # ALIGNMENT: this stack is 6 1/4" vs. INT_2X6_BRG's 6 3/4". The axis is pinned
     # 3 3/8" inboard of the plywood's stair face (not centred) because FO-S-STAIR's west edge
@@ -747,7 +748,8 @@ WALLS = [
     # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
     # 34'-8", so no stud is cut and no header is needed.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
-         end_node="N-M-STRJ", assembly="MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         end_node="N-M-STRJ", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
@@ -762,7 +764,8 @@ WALLS = [
     # the vertical load path either as W-M-STRW2 (this wall) or its predecessor. Its job is
     # FO-S-STAIR's bearing_refs, not the stack.
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
-         end_node="N-M-STR1", assembly="MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         end_node="N-M-STR1", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(9),
+         layer_materials=(LayerMaterial(layer="stud", material="df-select-s4s"),),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR3"),

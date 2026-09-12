@@ -58,6 +58,31 @@ def band_datums(z0: float, z1: float, grade_m: float,
             LayerDatum.LINE_TOP.value: z1 if line is None else line.top_z_m}
 
 
+def band_ends_on_wall(band_z0: float | None, band_z1: float | None,
+                      z0: float, z1: float, tol: float = 1e-9
+                      ) -> tuple[float | None, float | None]:
+    """Drop a band end that lands on the wall's own end, reporting it as ``None``.
+
+    ``ResolvedLayer.is_banded`` asks whether a layer runs the whole wall, and until this
+    it answered "does the layer STATE an extent", which is a different question. A band is
+    clamped to its host (:func:`resolve_band_spec`), so a stated extent reaching past the
+    wall resolves to exactly the wall — full height, nothing vertically compound about it —
+    and still reported as banded. That cost real output: the IFC exporter pulled such a
+    layer out of the ``IfcMaterialLayerSet`` and re-emitted it as an aggregated
+    ``IfcBuildingElementPart``, so a wall whose layer set should sum to its full depth did
+    not, over a band that trims nothing.
+
+    catlin's sauna is the case. One ceiling band on the liner serves all four walls that
+    carry it; on the two partitions that already stop AT the 7'-6" ceiling it is a no-op,
+    and only the two that run past it are actually compound.
+
+    ``band()`` falls back to the wall's own ends, so a dropped end resolves to the same
+    elevation it did before — this changes what a layer SAYS about itself, not where it is.
+    """
+    return (None if band_z0 is not None and abs(band_z0 - z0) <= tol else band_z0,
+            None if band_z1 is not None and abs(band_z1 - z1) <= tol else band_z1)
+
+
 def resolve_band_spec(spec: BandSpec | None, z0: float, z1: float,
                       datums: dict[str, float]) -> tuple[float | None, float | None]:
     """A ``BandSpec``'s absolute vertical extent, or ``(None, None)`` for a full-height layer.
@@ -100,5 +125,6 @@ def reband(wall: ResolvedWall, z0: float, z1: float, grade_m: float,
             out.append(layer)
             continue
         band_z0, band_z1 = resolve_band_spec(layer.band_spec, z0, z1, datums)
+        band_z0, band_z1 = band_ends_on_wall(band_z0, band_z1, z0, z1)
         out.append(replace(layer, z0_m=band_z0, z1_m=band_z1))
     return tuple(out)

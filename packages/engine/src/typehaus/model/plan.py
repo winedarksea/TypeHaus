@@ -68,15 +68,30 @@ class Library(HausModel):
         layers = list(base.layers)
         for sub in asm.substitute:
             layers = _apply_substitution(layers, sub)
-        return base.model_copy(
-            update={
-                "tag": asm.tag,
-                "layers": tuple(layers),
-                "variant_of": asm.variant_of,
-                "stc": asm.stc if asm.stc is not None else base.stc,
-                "interfaces": asm.interfaces or base.interfaces,
-            }
-        )
+        update = {
+            "tag": asm.tag,
+            "layers": tuple(layers),
+            "variant_of": asm.variant_of,
+            "stc": asm.stc if asm.stc is not None else base.stc,
+            "interfaces": asm.interfaces or base.interfaces,
+        }
+        # A variant's own scalar fields are its own. Copying the base and overriding only
+        # the layer stack silently dropped them: a variant that states its purchasing
+        # ``source``, its own room-side ``default_lining``, a different ``junction_policy``
+        # or ``role`` resolved with the base's. Each falls back to the base when unset, so
+        # a variant that says nothing still tracks its base exactly as before.
+        for field in ("label", "source"):
+            value = getattr(asm, field)
+            if value is not None:
+                update[field] = value
+        if asm.default_lining:
+            update["default_lining"] = asm.default_lining
+        defaults = type(asm).model_fields
+        for field in ("junction_policy", "role"):
+            value = getattr(asm, field)
+            if value != defaults[field].default:
+                update[field] = value
+        return base.model_copy(update=update)
 
 
 def _apply_substitution(layers: list, sub: object) -> list:

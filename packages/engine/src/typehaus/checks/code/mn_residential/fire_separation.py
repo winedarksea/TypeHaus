@@ -126,7 +126,10 @@ def garage_separation(ctx: CheckContext) -> list[Finding]:
                                           Occupancy.UNCONDITIONED.value)
                 and room.storey == garages[0].storey
                 and len(room.clear_face) >= 3]
-    assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
+    # RESOLVED, not authored: a variant's own ``layers`` is empty and its stack lives on
+    # its base (#35), so a raw lookup reads it as no wall at all.
+    assemblies = {a.tag: ctx.plan.library.resolve_assembly(a.tag)
+                  for a in ctx.plan.library.assemblies}
     doors = [e for e in ctx.plan.all_elements() if e.element_kind == "Door"]
     sleeping = {room.tag for room in ctx.model.rooms
                 if room.occupancy in {o.value for o in SLEEPING_OCCUPANCIES}}

@@ -747,7 +747,7 @@ def _heelward_offset(ctx: EngineeringContext, wall, footing) -> tuple[float, str
 
 def _structure_thickness_in(ctx: EngineeringContext, assembly_tag: str) -> float | None:
     """The concrete STRUCTURE layer's nominal thickness. The foam over it retains nothing."""
-    assembly = next((a for a in ctx.plan.library.assemblies if a.tag == assembly_tag), None)
+    assembly = ctx.plan.library.resolve_assembly(assembly_tag)
     if assembly is None:
         return None
     for layer in assembly.layers:

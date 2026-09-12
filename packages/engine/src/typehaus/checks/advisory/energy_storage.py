@@ -131,7 +131,10 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
     if not batteries:
         return [_na(cid, _NO_ESS)]
     rooms = {room.tag: room for room in ctx.model.rooms}
-    assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
+    # RESOLVED, not authored: a variant's own ``layers`` is empty and its stack lives on
+    # its base (#35), so a raw lookup reads it as no wall at all.
+    assemblies = {a.tag: ctx.plan.library.resolve_assembly(a.tag)
+                  for a in ctx.plan.library.assemblies}
 
     out: list[Finding] = []
     for room_tag in sorted({getattr(b, "room", None) for b in batteries} - {None}):

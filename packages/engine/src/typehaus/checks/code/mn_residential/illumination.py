@@ -402,7 +402,10 @@ def _gypsum_finishes(ctx: CheckContext, room) -> set[str]:
     """Names of gypsum finish layers on the assemblies of the room's bounding walls."""
     from typehaus.model.enums import LayerFunction
 
-    assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
+    # RESOLVED, not authored: a variant's own ``layers`` is empty and its stack lives on
+    # its base (#35), so a raw lookup reads it as no wall at all.
+    assemblies = {a.tag: ctx.plan.library.resolve_assembly(a.tag)
+                  for a in ctx.plan.library.assemblies}
     found: set[str] = set()
     for wall in _bounding_walls(ctx, room):
         assembly = assemblies.get(getattr(wall, "assembly", "") or "")

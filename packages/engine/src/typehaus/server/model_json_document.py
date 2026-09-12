@@ -127,7 +127,10 @@ def _building_science(
                 heating_design_temp_f=heating.fahrenheit if heating else None,
                 preferences=preferences,
             ).as_dict()
-            for assembly in model.plan.library.assemblies
+            # Resolved: a variant carries its stack on its base (#35), so the raw
+            # record would be analysed as a wall with no layers.
+            for assembly in (model.plan.library.resolve_assembly(a.tag)
+                             for a in model.plan.library.assemblies)
         ],
     }
 

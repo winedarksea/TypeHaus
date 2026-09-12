@@ -229,7 +229,10 @@ def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
     walls = _retaining_walls(ctx)
     if not walls:
         return [_pass(cid, "no foundation wall encloses interior space below grade", code)]
-    assemblies = {a.tag: a for a in ctx.plan.library.assemblies}
+    # RESOLVED, not authored: a variant's own ``layers`` is empty and its stack lives on
+    # its base (#35), so a raw lookup reads it as no wall at all.
+    assemblies = {a.tag: ctx.plan.library.resolve_assembly(a.tag)
+                  for a in ctx.plan.library.assemblies}
     by_assembly: dict[str, list[str]] = {}
     for wall in walls:
         by_assembly.setdefault(wall.assembly, []).append(wall.tag)

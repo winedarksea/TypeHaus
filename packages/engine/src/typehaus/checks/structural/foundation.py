@@ -57,7 +57,7 @@ def _structural_thickness_in(ctx: CheckContext, assembly_tag: str) -> float | No
     The wall's *total* thickness is the wrong number: BASEMENT_12 is 12" of concrete
     plus damp-proofing plus 4" of XPS, and the foam retains nothing.
     """
-    assembly = next((a for a in ctx.plan.library.assemblies if a.tag == assembly_tag), None)
+    assembly = ctx.plan.library.resolve_assembly(assembly_tag)
     if assembly is None:
         return None
     for layer in assembly.layers:

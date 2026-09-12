@@ -208,7 +208,7 @@ def _is_concrete_assembly(ctx: CheckContext, assembly_ref: str | None) -> bool:
     (``resolve/construction_assemblies.py``)."""
     if not assembly_ref:
         return False
-    assembly = next((a for a in ctx.plan.library.assemblies if a.tag == assembly_ref), None)
+    assembly = ctx.plan.library.resolve_assembly(assembly_ref)
     if assembly is None:
         return False
     return any(layer.material_ref == "concrete" for layer in assembly.layers)

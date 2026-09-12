@@ -81,8 +81,7 @@ def _is_non_concrete_slab(ctx: CheckContext, solid: ResolvedSolid) -> bool:
     """
     if not solid.assembly:
         return False
-    assembly = next((a for a in ctx.plan.library.assemblies
-                     if a.tag == solid.assembly), None)
+    assembly = ctx.plan.library.resolve_assembly(solid.assembly)
     if assembly is None:
         return False
     stack = list(assembly.default_lining) + list(assembly.layers)

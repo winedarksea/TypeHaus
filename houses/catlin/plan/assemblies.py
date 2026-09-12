@@ -19,7 +19,10 @@ from typehaus import (
     LayerFunction,
     MasonrySpec,
     Material,
+    Substitution,
     inch,
+    inside_of,
+    layers,
 )
 from typehaus.model import PartitionLayout
 from library import (
@@ -661,7 +664,7 @@ ROOF = Assembly(
 # W-B-BRICK's ventilated cavity, with no UV and no impact on it. What is genuinely exposed
 # on the south is 6" of nobody's business either side of the excavation, so W-B-S1 and
 # W-B-S4 took the ordinary BASEMENT_8 coated band and the court segments took
-# nothing. See `_GARDEN_PARGE` below for the retirement in full.
+# nothing. See the parge retirement note below.
 #
 # So the two are no longer the same tail. The banded walls carry 4.175" outboard of the
 # concrete face over their band and 4.05" below it; the court walls carry 4.05" throughout.
@@ -709,32 +712,13 @@ _PROTECTION_PANEL = Layer(name="foundation-coating",
                           extent=LayerExtent(
                               bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6))))
 
-# **UNREFERENCED. Kept for the revert**, on the EXT_2X6_SWINBURNE precedent above:
-# putting the parge back is two `assembly=` edits in plan/storeys/basement.py plus four
-# `_GARDEN_PARGE,` lines here. Be honest about what that buys — every consumer in this
-# house derives from *walls*, so an unreferenced assembly saves no test churn at all. It
-# preserves the reasoning and nothing else.
-#
-# Parge coat over mesh: exposed XPS degrades under UV/impact, and on the south the exposure
-# was read as running the full wall from the sunken garden floor to the main-storey siding
-# — bare pink foam reading as the wall's finish. Reuses the porch railing's Portland-cement
-# stucco; rides outboard of everything so the concrete face (the footings/damp-proofing/
-# drain-tile datum) is untouched.
-#
-# **Why it went.** The finish was 273.7 SF billed, of which about 29 SF — W-B-S1/S4's band
-# above grade — was ever a visible exposed surface. ~139 SF sits inside W-B-BRICK's
-# ventilated cavity where there is neither UV nor impact, and ~106 SF is behind 6'-4" of
-# backfill. prices.toml's own note said a parge scope this size sits near a plasterer's
-# minimum call-out, so the $/SF arithmetic was never the real number: a $1,500-2,500
-# mobilization was, and deleting the scope deletes the trade. The exposed 29 SF is not a
-# material swap either — the protection panel costs MORE per SF — it is the same GRADE band
-# the N/E/W walls have always carried, which is what those two segments' exposure actually
-# is.
-#
-# `Material(tag="stucco")` stays in library/materials.py: it is a library item, CONTRIBUTING
-# has a promotion flow and no de-promotion flow, and engine tests use the tag.
-_GARDEN_PARGE = Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
-                      function=LayerFunction.FINISH)
+# The full-height stucco parge over the south foundation was RETIRED 2026-09-04 and its one
+# remaining consumer, BASEMENT_8_GARDEN, is deleted with it (2026-09-12, #70: a tag nothing
+# references is deleted). The short version: 273.7 SF billed, ~29 SF of it ever visible, the
+# rest inside W-B-BRICK's ventilated cavity or behind 6'-4" of backfill — a scope that never
+# cleared a plasterer's mobilisation. The 29 SF is now the same GRADE band the N/E/W walls
+# carry. The layer, the assembly and the full argument are in git; `Material(tag="stucco")`
+# stays in library/materials.py because engine tests use the tag.
 
 # The east wall (W-B-E1/E2), the only perimeter run SL-M-DECK bears on.
 # ** THE POUR IS AUTHORED HERE NOW, NOT SPLATTED FROM THE LIBRARY CORE. **
@@ -767,23 +751,6 @@ BASEMENT_8 = Assembly(
     ),
     interfaces=(_CONCRETE_BEARING,),
     source="library FOUNDATION_WALL_8_XPS4 + the house's above-grade acrylic coating band (catlin basement west/north, wood floor only)",
-)
-
-# The south wall, which the sunken garden opens to the air over its whole 9'.
-#
-# **UNREFERENCED** — W-B-S1 and W-B-S4 moved to BASEMENT_8 with the stucco
-# retirement, and they were its only two instances. Kept, with `_GARDEN_PARGE`, so the
-# revert is two `assembly=` edits in plan/storeys/basement.py.
-BASEMENT_8_GARDEN = Assembly(
-    tag="BASEMENT_8_GARDEN",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
-              function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
-        *FOUNDATION_WALL_XPS4_OUTBOARD,
-        _GARDEN_PARGE,
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source="library FOUNDATION_WALL_8_XPS4 + the house's full-height parge over the sunken garden (catlin basement south)",
 )
 
 # Basement slab-on-grade: 2" XPS below the slab (R-10 @ 25 psi compressive — rated for
@@ -1167,19 +1134,10 @@ BREEZEWAY_ROOF_GLAZING = Assembly(
     source="breezeway roof — two 4'x4' pieces of one 16mm 5-wall sheet on drainage wedges over 2x6 rafters",
 )
 
-# The east and west walls: one 4'x8' sheet each, standing in a U-channel at the deck and an
-# F-channel at the beam, with no framing of its own — the 6x6 posts either end are the frame.
-# The sheet is STRUCTURE here, not CLADDING: it is the whole wall and it spans the 4'-0"
-# between those posts unaided, exactly as PORCH_DECK_COMPOSITE's single plank layer is the
-# spanning walking surface. On the roof, where 2x6 rafters do the spanning, it is cladding.
-BREEZEWAY_GLAZED_WALL = Assembly(
-    tag="BREEZEWAY_GLAZED_WALL",
-    layers=(
-        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
-              function=LayerFunction.STRUCTURE),
-    ),
-    source="breezeway side walls — one 4'x8' 16mm multiwall sheet per side, bird-safety film",
-)
+# The breezeway's own glazed side wall was deleted 2026-09-12 with the rest of the breezeway
+# (#70: a tag nothing references is deleted). Its stack — one self-spanning 16mm multiwall
+# polycarbonate sheet, STRUCTURE and not CLADDING because it IS the wall — was generic
+# enough to promote, and lives in the library now as `GLAZED_WALL_MULTIWALL_16MM`.
 
 BALCONY_DECK_ALUMINUM = Assembly(
     tag="BALCONY_DECK_ALUMINUM",
@@ -2248,7 +2206,7 @@ CANOPY_ROOF = Assembly(
 # face as `paint-a`/`paint-b`. Both faces separate conditioned rooms, so there's no vapour
 # drive to control — the paint is here purely for the finish takeoff. Deliberately unpainted
 # elsewhere: SAUNA_* (T&G/foil-polyiso is already the vapour/air control, no paint in a
-# löyly room), MUDROOM_INT_2X6_EXPOSED (exposed wood faces, already hardwax-oil
+# löyly room), INT_2X6_BRG_EXPOSED_PLY (exposed wood faces, already hardwax-oil
 # finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
 # (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
 # library/assemblies.py for why it doesn't get layers added).
@@ -2326,7 +2284,7 @@ INT_2X6_BRG = Assembly(
 # That row is also the through-bolt line for the bookcase door's hinge-side jamb.
 #
 # No CavityFill (the cavity is the shelf), no `default_lining` and no paint layer (the study
-# face is millwork — the MUDROOM_INT_2X6_EXPOSED precedent above), and no `stc=`:
+# face is millwork — the INT_2X6_BRG_EXPOSED_PLY precedent below), and no `stc=`:
 # STC in this house is a transcribed lab test, never a computed number.
 # The "INT" token is load-bearing as everywhere else (`_is_interior_assembly` in
 # --- the bedroom half of the centreline -------------------------------------
@@ -2373,25 +2331,29 @@ INT_2X6_BRG = Assembly(
 # The batt is FIBREGLASS, per the sweep (see the note above EXT_2X6_SWINBURNE):
 # nothing about this cavity is damp, and the acoustic work here is done by the channel's
 # decoupling, not by which wool sits behind it.
+# A VARIANT of INT_2X6_BRG (#70): the channel and the batt are the whole difference, and
+# the substitution says exactly that. The cold face, the paint, the interfaces and the
+# bearing stud's layout line track the base.
 INT_2X6_BRG_RC = Assembly(
     tag="INT_2X6_BRG_RC",
-    layers=(
-        _PAINT_FINISH_A,
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="resilient-channel", material_ref="resilient-channel",
-              thickness=inch(0.5), function=LayerFunction.FURRING,
-              framing=FramingSpec(member="25 ga. resilient channel", spacing=inch(24),
-                                  direction="horizontal")),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", layout_origin="line"),
-              cavity=CavityFill(material_ref="fiberglass")),
-        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("gwb-a", "stud"),
+            replacement=(
+                Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),
+                Layer(name="resilient-channel", material_ref="resilient-channel",
+                      thickness=inch(0.5), function=LayerFunction.FURRING,
+                      framing=FramingSpec(member="25 ga. resilient channel",
+                                          spacing=inch(24), direction="horizontal")),
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", layout_origin="line"),
+                      cavity=CavityFill(material_ref="fiberglass")),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
     source="catlin-house centreline bearing wall at RM-M-BED (W-M-C1), 2026-08-31: INT_2X6_BRG with 1/2 in. resilient channel at 24 in. o.c. on the bedroom face and 5-1/2 in. fibreglass in the bay; same 2x6 studs, same bearing role, same layout line",
 )
 
@@ -2457,20 +2419,22 @@ INT_2X4_BOOKCASE_12 = Assembly(
 # `layout_origin` is deliberately left at its default, unlike INT_2X6_BRG: this is a
 # 5.5" cavity a 3" stack runs down, and phase-locking its studs to a global line is the one
 # thing that could put a stud where the drain has to go.
+# A VARIANT of INT_2X6_BRG (#70): only the stud differs, and it differs in exactly the two
+# ways the note above argues for — the batt, and no `layout_origin`.
 INT_2X6_BRG_PLUMBING = Assembly(
     tag="INT_2X6_BRG_PLUMBING",
-    layers=(
-        _PAINT_FINISH_A,
-        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
-              cavity=CavityFill(material_ref="fiberglass", thickness=inch(5.5))),
-        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6"),
+                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(5.5))),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
     source="catlin-house bearing wet wall (2x6, continuous studs): the x=10 ft line on the second storey, which carries the cut ends of FO-A-HALL's attic joists. INT_2X6_PLUMBING plus a 5.5 in. fiberglass batt, to keep the batt the staggered assembly it replaces already had",
 )
 
@@ -2504,38 +2468,42 @@ INT_ESS_CLOSET_STEEL = Assembly(
 # the foil-faced polyiso is the vapour/air control layer and the T&G liner is a
 # low-conductivity species chosen so the boards stay touchable at löyly temperatures.
 # Per notes/sauna_basement_wall_detail.md.
-_SAUNA_LINER = (
-    Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
-          function=LayerFunction.FINISH),
-    Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
-          function=LayerFunction.FURRING,
-          framing=FramingSpec(member="1x4", direction="horizontal")),
-    Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
-          function=LayerFunction.INSULATION,
-          control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
-)
-
-# **The sauna's ceiling is 7'-6" over the basement slab**, and the two walls that run past
-# it band their liner to it so the takeoff does not buy basswood, furring and foil-faced
-# polyiso for the space above a ceiling.
+# **The sauna's ceiling is 7'-6" over the basement slab**, and the liner bands to it so the
+# takeoff does not buy basswood, furring and foil-faced polyiso for the space above a
+# ceiling. It is one band on the liner itself, not a per-wall extent: the ceiling is one
+# plane and every wall in the room meets it at the same elevation.
 #
-# Measured off WALL_BASE and not WALL_TOP, and the reason is worth stating
-# because the old datum was silently wrong the moment these walls were framed:
-# ``resolve/platform.py`` grows a framed bearing wall's solid UP to meet the wall stacking
-# on it, so the top of both of these is the main-floor datum now rather than the -13 7/16"
-# bearing seat a pour stopped at. A band hung off the top would have run the liner
-# 13 7/16" past the ceiling. A base is also the datum a ceiling height is actually stated
-# from, which is why the offsets below read as the number a builder would recognise.
+# LINE_BASE, and that is what makes one band enough. The three walls carrying the liner
+# start at three different elevations — the curb at the slab, the framed walkout 7 1/4"
+# up on top of it, the east wall at the slab — but all three belong to layout lines based
+# at the slab (LL-W-A-C1, LL-W-A-S1, LL-W-B-S1 all read -2.7797 m), so 90" above the LINE
+# base is the ceiling on all of them. WALL_BASE could not do this: it needed 90" on one
+# wall and 82 3/4" on the wall standing on the curb, which is two constants for one plane.
+#
+# Not WALL_TOP either, and the old datum was silently wrong the moment these walls were
+# framed: ``resolve/platform.py`` grows a framed bearing wall's solid UP to meet the wall
+# stacking on it, so a band hung off the top would have run the liner 13 7/16" past the
+# ceiling. A band is clamped to its host wall (``layer_bands.py``), so the curb — whose top
+# is below the band's — simply stays fully lined, and SAUNA_2X4's partitions, which top out
+# at the ceiling, band to their own top and change not at all.
 #
 # PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the
-# liner would run the wall's whole height and these extents should come back off.
-_SAUNA_CEILING_OVER_SLAB = LayerExtent(
-    top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(90.0)))
-# The same ceiling seen from the framed walkout, whose base is the top of the 7 1/4" curb:
-# 7'-6" less 7 1/4" is 82 3/4". The curb's own liner below it is unbanded and carries the
-# missing 7 1/4", so the two together are the room's full height.
-_SAUNA_CEILING_OVER_CURB = LayerExtent(
-    top=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(82.75)))
+# liner would run the wall's whole height and this extent should come off.
+_SAUNA_CEILING = LayerExtent(
+    top=LayerBound(datum=LayerDatum.LINE_BASE, offset=inch(90.0)))
+
+_SAUNA_LINER = (
+    Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
+          function=LayerFunction.FINISH, extent=_SAUNA_CEILING),
+    Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
+          function=LayerFunction.FURRING,
+          framing=FramingSpec(member="1x4", direction="horizontal"),
+          extent=_SAUNA_CEILING),
+    Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+          function=LayerFunction.INSULATION,
+          control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
+          extent=_SAUNA_CEILING),
+)
 
 # Sauna partition: hot side liner, 2x4 framing, gwb on the cold side.
 SAUNA_2X4 = Assembly(
@@ -2569,44 +2537,40 @@ SAUNA_2X4 = Assembly(
 # RM-B-PLAY-N is real acoustic and thermal mass, and the sauna's vapour control moves from
 # liner-on-pour to a framed stack. Both are the trade W-B-STR already made.
 #
-# The three liner layers are restated rather than splatted from ``_SAUNA_LINER`` because
-# they carry a vertical extent that must not leak onto the partitions: the sauna's ceiling
-# is 7'-6" over the slab (W-B-SA-W/-N are `top=ft(7, 6)`) and ``resolve/platform.py`` grows
-# this wall's solid up to the main-floor datum to meet W-M-C1, so without the band the
-# liner would run 13 7/16" past the ceiling and bill basswood for it.
-#
 # **"INT" in the tag is load-bearing.** ``_is_interior_assembly`` in mn_energy.py is
 # literally ``"INT" in tag.split("_")``, so an interior assembly without the token is
 # graded against the R-21 exterior wall row. SAUNA_LINER_ON_CONCRETE carried no such token
 # and never needed one — a 12" interior pour is not in that table's population — which is
 # exactly the kind of thing that only bites on the day the assembly changes.
 #
-# ``layout_origin="line"`` matches INT_2X6_BRG above it, so the studs on the x=18'
-# line stack basement-to-attic instead of each segment restarting its own module.
+# A VARIANT of INT_2X6_BRG (#35, #70) rather than a copy of it: this wall IS the centreline
+# bearing wall with the sauna's hot side hung on it, and the shared half — the cold face,
+# the interfaces, ``layout_origin="line"`` so the studs on the x=18' line stack
+# basement-to-attic — tracks the base forever instead of drifting from it. The substitution
+# takes the whole room-side leaf (paint, gypsum) and the stud, because the stud here is not
+# the base's: it is at a stated 16" o.c., on a gasketed sill, with mineral wool in the bay.
+#
+# What that changes on the cold face: it is the base's ``gwb-b`` + ``paint-b`` now, where
+# it was an unpainted ``gwb-cold``. Same 5/8" of board, plus 0.01" of paint on the
+# RM-B-PLAY-N side, which is the paint every other face of that room already has.
 SAUNA_LINER_INT_2X6_BRG = Assembly(
     tag="SAUNA_LINER_INT_2X6_BRG",
-    layers=(
-        Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
-              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_SLAB),
-        Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="horizontal"),
-              extent=_SAUNA_CEILING_OVER_SLAB),
-        Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
-              function=LayerFunction.INSULATION,
-              control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
-              extent=_SAUNA_CEILING_OVER_SLAB),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", spacing=inch(16),
-                                  sill_gasket=inch(0.0625),
-                                  layout_origin="line"),
-              cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("paint-a", "stud"),
+            replacement=(
+                *_SAUNA_LINER,
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", spacing=inch(16),
+                                          sill_gasket=inch(0.0625),
+                                          layout_origin="line"),
+                      cavity=CavityFill(material_ref="mineral-wool")),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
-    source="catlin basement sauna east wall (W-B-CS), framed 2026-08-28: SAUNA_2X4's liner and cold-side gwb over 2x6 spf bearing studs at 16 in. o.c. on a PT sill, per notes/sauna_basement_wall_detail.md and notes/basement_to_framed_wall_detail.md",
+    source="catlin basement sauna east wall (W-B-CS), framed 2026-08-28: INT_2X6_BRG with SAUNA_2X4's liner in place of its room-side leaf and 2x6 spf bearing studs at 16 in. o.c. on a PT sill, per notes/sauna_basement_wall_detail.md and notes/basement_to_framed_wall_detail.md",
 )
 
 # SAUNA_LINER_ON_BASEMENT_8_GARDEN was RETIRED when W-B-S2 became a 7 1/4" curb under a
@@ -2792,11 +2756,10 @@ GARDEN_CURB_6 = Assembly(
 # joint are flush, so this is one continuous plane and not a return.
 SAUNA_LINER_ON_GARDEN_CURB = Assembly(
     tag="SAUNA_LINER_ON_GARDEN_CURB",
-    layers=(
-        *_SAUNA_LINER,
-        *_GARDEN_CURB_CORE,
+    variant_of="GARDEN_CURB_6",
+    substitute=(
+        Substitution(span=inside_of("concrete"), replacement=_SAUNA_LINER),
     ),
-    interfaces=(_CONCRETE_BEARING,),
     source="catlin sunken-garden curb under the sauna (W-B-S2), 2026-08-28: GARDEN_CURB_6 with the sauna liner carried down over its face so the hot side's vapour control is continuous to the slab",
 )
 
@@ -2812,65 +2775,41 @@ GARDEN_FRAMED_2X6 = Assembly(
     source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the same outboard tail the curb below it carries (damp-proofing, 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement) so the sunken garden's finished face does not move",
 )
 
-# The sauna's south face, on the framed run. The liner instead of gypsum, and
-# `_SAUNA_CEILING_OVER_CURB` stopping it at the room's 7'-6" ceiling — 82 3/4" above this
-# wall's own base, because its base is the top of the curb and the curb's liner carries the
-# first 7 1/4".
+# The sauna's south face, on the framed run: GARDEN_FRAMED_2X6 with the liner in place of
+# its gypsum leaf. The liner's own band stops it at the room's 7'-6" ceiling; the curb's
+# liner below carries the first 7 1/4".
 SAUNA_LINER_ON_GARDEN_FRAMED = Assembly(
     tag="SAUNA_LINER_ON_GARDEN_FRAMED",
-    layers=(
-        Layer(name="shiplap-liner", material_ref="sauna-shiplap", thickness=inch(1.0),
-              function=LayerFunction.FINISH, extent=_SAUNA_CEILING_OVER_CURB),
-        Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
-              function=LayerFunction.FURRING,
-              framing=FramingSpec(member="1x4", direction="horizontal"),
-              extent=_SAUNA_CEILING_OVER_CURB),
-        Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
-              function=LayerFunction.INSULATION,
-              control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR},
-              extent=_SAUNA_CEILING_OVER_CURB),
-        _GARDEN_FRAMED_STUD,
-        *_GARDEN_FRAMED_OUTBOARD,
+    variant_of="GARDEN_FRAMED_2X6",
+    substitute=(
+        Substitution(span=layers("gwb-a", "gwb-a"), replacement=_SAUNA_LINER),
     ),
-    interfaces=(_STUD_BEARING,),
     source="catlin basement sauna south wall (W-B-S2-FR), framed 2026-08-28: the sauna liner over GARDEN_FRAMED_2X6's studs and outboard tail",
 )
 
-# --- mudroom exposed-stud wall ---------------------------------------------------
-# W-M-STRW only. No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a
-# finished face made of the framing itself, not drywall left off. The open 2x6 bays are the
-# coat nooks, so no cavity fill either — insulating them would fill the nooks, and both
-# sides are conditioned anyway. Stair side closes with 3/4" cabinet plywood: stair finish
-# and screw-anywhere hook backing at once. "INT" in the tag is load-bearing (see
-# FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING, _is_interior_assembly in mn_energy.py) — without it
-# the uninsulated bays would fail as an exterior wall against R-21.
-# `layout_origin="line"`: W-M-STRW/STRW2 are the main storey of the stair line, standing on
-# W-B-STR/STR2/STR3 below. The exposed studs are the ones you can see from the mudroom, so
-# they were always the ones a broken module showed up on.
-MUDROOM_INT_2X6_EXPOSED = Assembly(
-    tag="MUDROOM_INT_2X6_EXPOSED",
-    layers=(
-        Layer(name="stud", material_ref="df-select-s4s", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", layout_origin="line")),
-        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
-              function=LayerFunction.FINISH),
-    ),
-    interfaces=(_STUD_BEARING,),
-    source="plans/TODO.md — mudroom coat wall: exposed Select Structural S4S 2x6 DF studs on the mudroom face (open bays = coat nooks), 3/4\" cabinet-grade plywood on the stair face",
-)
-
-# --- basement stair-shaft bearing walls -------------------------------------------
-# W-B-STR3 / W-B-STR, the last two 12" interior pours on the x=10' line, framed instead.
-# They carry no earth; what they carry is FS-M-MECH/FS-M-STAIR's short
-# joists and the W-M-STRW/W-M-STRW2 stack above, which is a stud-wall job on a footing.
-# Both continue MUDROOM_INT_2X6_EXPOSED's plywood plane on the stair face, so the
-# well's west face is one plywood surface from the basement floor to the main-storey
-# ceiling — but with plain `spf` studs: nothing down here is exposed to a finished room.
-# The "INT" token is load-bearing exactly as it is there (`_is_interior_assembly` in
-# mn_energy.py keeps an uninsulated bay out of the R-21 exterior table).
-STAIRWALL_INT_2X6_BRG = Assembly(
-    tag="STAIRWALL_INT_2X6_BRG",
+# --- the stair-line bearing wall, exposed studs one face and plywood the other --------
+# W-M-STRW/W-M-STRW2 (mudroom, main) and W-B-STR3B/W-B-STR2 (basement) are ONE wall: 2x6
+# bearing studs at 16" o.c. on a gasketed sill, 3/4" cabinet plywood on the stair face. It
+# was authored twice, as MUDROOM_INT_2X6_EXPOSED and STAIRWALL_INT_2X6_BRG, and the only
+# difference between the two stacks was the stud species. That is a material, not a wall
+# (#70), so the mudroom's exposed Select Structural DF is `Wall.layer_materials` on those
+# two walls and the tag is neutral about where it stands.
+#
+# No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a finished face made
+# of the framing itself, not drywall left off. The open 2x6 bays are the coat nooks, so no
+# cavity fill either — insulating them would fill the nooks, and both sides are conditioned
+# anyway. The plywood is stair finish and screw-anywhere hook backing at once, and it runs
+# as one plane from the basement floor to the main-storey ceiling.
+#
+# "INT" in the tag is load-bearing (see FOUNDATION_WALL_12_INT, INT_2X6_PLUMBING,
+# _is_interior_assembly in mn_energy.py) — without it the uninsulated bays would fail as an
+# exterior wall against R-21.
+#
+# `layout_origin="line"`: the main-storey walls stand on the basement ones, so the module
+# has to run through the storey split. The exposed studs are the ones you can see from the
+# mudroom, so they were always the ones a broken module showed up on.
+INT_2X6_BRG_EXPOSED_PLY = Assembly(
+    tag="INT_2X6_BRG_EXPOSED_PLY",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
@@ -2881,7 +2820,7 @@ STAIRWALL_INT_2X6_BRG = Assembly(
               function=LayerFunction.FINISH),
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall (W-B-STR3): 2x6 spf bearing studs at 16 in. o.c. on a PT sill, 3/4 in. plywood on the stair face continuing MUDROOM_INT_2X6_EXPOSED",
+    source="catlin stair-line bearing wall (W-B-STR2/STR3B basement, W-M-STRW/STRW2 main): 2x6 bearing studs at 16 in. o.c. on a gasketed PT sill, 3/4 in. cabinet-grade plywood on the stair face. The mudroom pair carries exposed Select Structural S4S DF studs (open bays = coat nooks) via Wall.layer_materials; everything below is plain spf, where nothing is exposed to a finished room.",
 )
 
 # ** The same wall where it walls the under-stair storage (2026-09-05). ** W-B-STR3's
@@ -2893,49 +2832,49 @@ STAIRWALL_INT_2X6_BRG = Assembly(
 # 5/8" Type X in place of the ply, the stud band held by the alignment, the face retreating
 # to 123 1/4" and clearing the stringer by 1/8".
 #
-# ** What this costs: the exposed-plywood stair face, on this segment only. ** The ply is
-# MUDROOM_INT_2X6_EXPOSED continued up the stairway, and a triangular strip of it —
-# about 32" tall at the landing end, dying out around y=27'-1" where the stringer top meets
-# the wall's 8'-0" head — was visible from the upper flight. A `Wall` carries one leaf, so
-# protecting the closet below and exposing ply above is not authorable. W-B-STR (north of
-# N-B-ESS-SE) and W-B-STR2/W-B-STR3B keep theirs; only the closet's own segment changes.
+# ** What this costs: the exposed-plywood stair face, on this segment only. ** A triangular
+# strip of ply — about 32" tall at the landing end, dying out around y=27'-1" where the
+# stringer top meets the wall's 8'-0" head — was visible from the upper flight. A `Wall`
+# carries one leaf, so protecting the closet below and exposing ply above is not authorable.
+# W-B-STR (north of N-B-ESS-SE) and W-B-STR2/W-B-STR3B keep theirs; only the closet's own
+# segment changes.
 #
 # `code.R302_7_under_stair_protection` PASSED before this retype and would pass after
 # reverting it — it screens for gypsum on ANY bounding wall, and the closet has four other
 # gypsum-lined faces. This is the rule read properly rather than the check satisfied.
 STAIRWALL_INT_2X6_BRG_UNDERSTAIR = Assembly(
     tag="STAIRWALL_INT_2X6_BRG_UNDERSTAIR",
-    layers=(
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", spacing=inch(16),
-                                  sill_gasket=inch(0.0625),
-                                  layout_origin="line")),
-        Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
+    variant_of="INT_2X6_BRG_EXPOSED_PLY",
+    substitute=(
+        Substitution(
+            span=layers("ply-stair", "ply-stair"),
+            replacement=(
+                Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: STAIRWALL_INT_2X6_BRG with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
+    source="catlin basement stair wall where it encloses the under-stair storage (W-B-STR3), 2026-09-05: INT_2X6_BRG_EXPOSED_PLY with 5/8 in. Type X on the closet face in place of the 3/4 in. stair plywood, per IRC R302.7",
 )
 
-# The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf on the closet
-# face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
+# The same wall where it forms RM-B-ESS's west side: one 5/8" Type X leaf ADDED on the
+# closet face, which is what `advisory.ess_enclosure` sums for now that the mass of 12" of
 # concrete is no longer there to satisfy it. Same `gwb-x` material as INT_ESS_CLOSET_STEEL.
+# `inside_of("stud")` on a stack whose first layer IS the stud is a pure insert: nothing is
+# replaced, the plywood face is untouched.
 STAIRWALL_INT_2X6_BRG_TYPEX = Assembly(
     tag="STAIRWALL_INT_2X6_BRG_TYPEX",
-    layers=(
-        Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", spacing=inch(16),
-                                  sill_gasket=inch(0.0625),
-                                  layout_origin="line")),
-        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
-              function=LayerFunction.FINISH),
+    variant_of="INT_2X6_BRG_EXPOSED_PLY",
+    substitute=(
+        Substitution(
+            span=inside_of("stud"),
+            replacement=(
+                Layer(name="gwb-x", material_ref="gwb-x", thickness=inch(0.625),
+                      function=LayerFunction.FINISH),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
-    source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: STAIRWALL_INT_2X6_BRG with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
+    source="catlin basement stair wall (W-B-STR) where it is also RM-B-ESS's west enclosure: INT_2X6_BRG_EXPOSED_PLY with a 5/8 in. Type X leaf on the closet face (notes/backup_power.md)",
 )
 
 # ** THE U-STAIR'S WELL PARTITION, GIVEN FACES AND A ROOM SIDE 2026-09-05. **
@@ -3990,6 +3929,19 @@ _HUMID_LINER = (
 # perm would sandwich the stud bay between two vapour barriers with wet-prone wood at 25 F
 # in between) is moot now that there is no board in the stack at all; it is left here as the
 # reason the foam's permeance is a spec line and not an incidental.
+# ** LEFT FLAT, DELIBERATELY, WHERE ITS THREE SIBLINGS BECAME VARIANTS (2026-09-12, #70). **
+# The obvious conversion is `variant_of="EXT_2X6"` with the humid liner as
+# `default_lining` — it would delete the whole verbatim copy of EXT_2X6's outboard tail
+# below. It was built and measured, and it moves the building: `resolve/rooms.py`
+# polygonises from wall AXES and insets by LINING, so shifting 3.29" of liner out of
+# `layers` and into `default_lining` moves this wall's axis and every second-storey room
+# polygon with it — conditioned area 5,001 -> 4,973 sf, RM-S-PLANT 159 -> 156 sf, and the
+# ventilation and heating loads that are derived from them. Not one check failed, which is
+# the point: it is a silent 28 sf, and no room actually changed size on site.
+#
+# Keeping it flat costs the duplication. That is the honest trade until a variant can state
+# an EMPTY `default_lining` distinct from an absent one — today an empty one means "track
+# the base", and the base's painted gypsum is exactly what must NOT land in this room.
 PLANT_EXT_2X6_HUMID = Assembly(
     tag="PLANT_EXT_2X6_HUMID",
     layers=(
@@ -4090,19 +4042,24 @@ PLANT_EXT_2X6_HUMID = Assembly(
 # `layout_origin="line"` for the same reason `PLANT_EXT_2X6_HUMID` has it on the facades:
 # W-S-C1 is a member of the x=18'-0" centreline, and one wall left on its own start node
 # puts a jog in a line that is otherwise continuous. Same line, humid liner.
+# A VARIANT of INT_2X6_BRG (#70): the liner replaces the base's room-side leaf and the bay
+# gains mineral wool; the study face is the base's own painted gypsum (`gwb-b`+`paint-b`,
+# the same 5/8"+0.01" the hand-written `gwb-cold`+`paint-b` was).
 PLANT_INT_2X6_BRG_HUMID = Assembly(
     tag="PLANT_INT_2X6_BRG_HUMID",
-    layers=(
-        *_HUMID_LINER,
-        Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", layout_origin="line"),
-              cavity=CavityFill(material_ref="mineral-wool")),
-        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
-              function=LayerFunction.FINISH),
-        _PAINT_FINISH_B,
+    variant_of="INT_2X6_BRG",
+    substitute=(
+        Substitution(
+            span=layers("paint-a", "stud"),
+            replacement=(
+                *_HUMID_LINER,
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", layout_origin="line"),
+                      cavity=CavityFill(material_ref="mineral-wool")),
+            ),
+        ),
     ),
-    interfaces=(_STUD_BEARING,),
     source="notes/plant_room.md — plant room / RM-S-STUDY2 bearing line; humid liner one face, painted gypsum the other",
 )
 
@@ -4298,7 +4255,6 @@ ASSEMBLIES = [
     ROOF,
     BASEMENT_12,
     BASEMENT_8,
-    BASEMENT_8_GARDEN,
     SLAB_FLOOR,
     DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
@@ -4310,7 +4266,6 @@ ASSEMBLIES = [
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
     BREEZEWAY_ROOF_GLAZING,
-    BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
     POST_WHITE_PAINT_DF,
@@ -4366,8 +4321,7 @@ ASSEMBLIES = [
     PLANT_EXT_2X6_HUMID,
     PLANT_INT_2X6_BRG_HUMID,
     PLANT_INT_2X4_HUMID,
-    MUDROOM_INT_2X6_EXPOSED,
-    STAIRWALL_INT_2X6_BRG,
+    INT_2X6_BRG_EXPOSED_PLY,
     STAIRWALL_INT_2X6_BRG_TYPEX,
     STAIRWALL_INT_2X6_BRG_UNDERSTAIR,
     STAIRWELL_PARTITION_4H,

@@ -602,8 +602,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **Interior bearing walls opt in too**, STRUCTURE layer only (no liner-band phase-lock,
     unlike the exterior pair): `INT_2X6_BRG`/`PLANT_INT_2X6_BRG_HUMID` (the x=18'-0"
     **centreline**, `W-M-C1..C5B`/`W-S-C1..C4B`/`W-A-C1..C2`) and
-    `STAIRWALL_INT_2X6_BRG`/`STAIRWALL_INT_2X6_BRG_TYPEX`/`MUDROOM_INT_2X6_EXPOSED` (the
-    **stair line**, `W-B-STR/STR2/STR3` under `W-M-STRW/STRW2`). **No code compels this**
+    `INT_2X6_BRG_EXPOSED_PLY` and its two variants `STAIRWALL_INT_2X6_BRG_TYPEX`/
+    `_UNDERSTAIR` (the **stair line**, `W-B-STR/STR2/STR3` under `W-M-STRW/STRW2`). **No code compels this**
     (R602.3.3 is the bearing-stud rule; R602.3.2's single-top-plate exception is about
     rafters/joists centred over studs within 1"; in-line framing is an APA technique) — done
     because the centreline carries `RB-HOUSE` continuously to the footings. Pinned by
@@ -618,6 +618,22 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     first (`framing/solver.py`'s face-parity rounding at a 4"/12" phase would collapse runs
     onto one face and destroy the acoustic decoupling; it can't fire at the staggered walls'
     universal phase 0.0, and a non-zero phase is exactly what opting in would hand it).
+
+- **Minting a wall tag** (decision #72). A tag is ONE geometry stack: same detail drawing,
+  same IFC wall type, same takeoff row, same condition keys. Before adding one, check
+  whether the difference is already sayable. A **material** is `Wall.layer_materials` (the
+  mudroom's DF studs on `INT_2X6_BRG_EXPOSED_PLY`). What the wall **lands on, or its
+  height**, is `Wall.base_elevation`/`top`/`FoundationWall.top_elevation`. A **room-side
+  finish** over a base with a `default_lining` is `Room.wall_lining`. A stack that **shares
+  most of a base** is `variant_of` + `substitute` — the card prints "variant of X" and the
+  shared layers track the base forever. A tag **nothing references** is deleted unless it is
+  a named revert with a note (`EXT_2X6_SWINBURNE` is one). Stars curate the *permit* set and
+  are not a reason to keep a tag. `advisory.assembly_variety` FAILs a material-only twin and
+  prints the inventory; catlin must stay clean.
+  - The UI's assembly inspector **refuses to edit a variant's layers**
+    (`source/assembly_ops.py`): duplicate first, and the duplicate is flat.
+  - `PLANT_EXT_2X6_HUMID` is deliberately NOT a variant — see its own note in
+    `plan/assemblies.py`.
 
 - **Columns.** South face stacks columns at x 4'-0"/32'-0" (main+second); second adds
   9'-4"/26'-8" (none on main); both mirror about x=18'-0" (main: 4'-0"/14'-8"/21'-4"(door)/
@@ -950,8 +966,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     where the coating PASSes (→ DESIGN-LOG.md, "Basement").
   - `W-B-S1`/`W-B-S4` use `BASEMENT_8` (no stucco) for ~37 SF of coating. Court segments
     carry **no skin at all** (XPS sits inside `W-B-BRICK`'s ventilated cavity).
-    `BASEMENT_8_GARDEN`/`_GARDEN_PARGE` remain defined but unreferenced in
-    `plan/assemblies.py` as the documented revert path.
+    `BASEMENT_8_GARDEN`/`_GARDEN_PARGE` were **deleted 2026-09-12** (#72: a tag nothing
+    references is deleted); the revert is in git, pointed at from `plan/assemblies.py`.
   - Pour thickness: only `W-B-E1`/`E2` are `BASEMENT_12` — they bear `SL-M-DECK`, the one
     remaining cast deck. The other nine segments are 8" with `#5 @ 41" o.c.` vertical steel
     per IRC Table R404.1.2(8). `W-B-STR`/`W-B-STR3` and `W-B-CS` are 2x6 bearing **stud**

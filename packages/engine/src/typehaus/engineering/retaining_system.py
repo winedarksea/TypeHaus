@@ -261,8 +261,7 @@ def _verify(ctx: EngineeringContext, ref: str, members: list) -> list[str]:
             missing.append(f"a concrete STRUCTURE layer on {wall.tag} (assembly "
                            f"{wall.assembly}) — the loop has to be cast, not framed")
             continue
-        assembly = next((a for a in ctx.plan.library.assemblies
-                         if a.tag == wall.assembly), None)
+        assembly = ctx.plan.library.resolve_assembly(wall.assembly)
         if assembly is not None and not any(
                 layer.function is LayerFunction.STRUCTURE
                 and "concrete" in (layer.material_ref or "")

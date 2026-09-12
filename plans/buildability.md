@@ -523,10 +523,24 @@ and they are cheaper to solve than the deck is to build.
 
 ### BLD-04 — Thirteen wall assemblies used once, ten door types used once. **MED · SIMPLIFY**
 
+**RESOLVED 2026-09-12 — and the count was mostly honest.** Measured, catlin carried 29 wall
+assemblies over 143 walls, not 37 over 178 (that count included roofs, slabs, decks and
+posts). Exactly ONE pair was a genuine duplicate — the mudroom and stair walls, one wall
+authored twice over a stud species — and it is now `INT_2X6_BRG_EXPOSED_PLY` with
+`Wall.layer_materials` carrying the species. The two families below are *real* stack
+differences and could not be merged, so they were given provenance instead: eight
+assemblies became `variant_of` + `substitute` (#35), whose cards name their base and whose
+shared layers track it forever. Two dead tags went, one promoted to the library, and
+`advisory.assembly_variety` now FAILs a material-only twin and prints the inventory. **28
+wall assemblies over 143 walls, 11 used once.** Decision #72 is the rule for keeping it
+there; stars were the wrong lever, since `Transition.star` curates only the permit set.
+
+The original finding, for the record:
+
 The lookup burden, not any single assembly, is what generates callbacks for an
 owner-GC. Two consolidations look free on inspection and want measuring:
 
-- The four stair-wall variants (`STAIRWALL_INT_2X6_BRG`, `_TYPEX`,
+- The four stair-wall variants (`STAIRWALL_INT_2X6_BRG`, since merged, `_TYPEX`,
   `_UNDERSTAIR`, `STAIRWELL_PARTITION_4H`) are one wall built four ways along its
   length. `_TYPEX` and `_UNDERSTAIR` differ only in the Type X substitution and
   both exist for the same R302.7 reason.

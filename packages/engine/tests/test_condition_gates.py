@@ -298,7 +298,7 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     Three of the keys were INT_ESS_CLOSET_STEEL leftovers from the ESS closet's move to the
     NE corner — W-B-CW3 and W-B-STR2 kept its steel studs and Type X while serving nothing.
     Re-specified to their neighbours (W-B-CW3 -> W-B-CW's INT_2X6_PLUMBING, W-B-STR2 ->
-    W-B-STR3's STAIRWALL_INT_2X6_BRG, alignment and all), N-B-CW-E and N-B-BA-W stop
+    W-B-STR3's family tag, INT_2X6_BRG_EXPOSED_PLY since 2026-09-12, alignment and all), N-B-CW-E and N-B-BA-W stop
     being changes of construction at all — one wall type down each line — and
     `integrity.junction_fallback` stops reporting three unsupported mixed junctions with it.
     N-B-STR is still a change and still one key, INT_2X4_PARTITION against
@@ -380,6 +380,12 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # staggered sound wall, the one node where this key still fires against a plain
         # INT_2X4_PARTITION neighbour.
         "assembly_change:INT_2X4_STAGGERED_GWB|INT_2X6_STAGGERED_PLUMBING",
+        # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
+        # the family's stair plywood — the leaf stops here because the closet does. The base
+        # tag was STAIRWALL_INT_2X6_BRG until 2026-09-12, when it merged with the mudroom's
+        # twin under a neutral name (#72); the condition is the same one.
+        ("assembly_change:INT_2X6_BRG_EXPOSED_PLY|"
+         "STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
         # N-M-C1: W-M-C1 alone carries INT_2X6_BRG_RC — a resilient channel and a
         # batt on the RM-M-BED face — and W-M-C2 east of the node does not. Exactly the
         # same kind of key as INT_2X4_PARTITION|INT_2X4_RC below, and it earns its sheet
@@ -407,9 +413,5 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # face against W-B-STR3's, which is Type X on the storage side. One rated leaf
         # stopping against another is still a change of construction on one line.
         ("assembly_change:STAIRWALL_INT_2X6_BRG_TYPEX|"
-         "STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
-        # N-B-BA-NW. W-B-STR3 (the closet's Type X face) hands off to W-B-STR3B, which keeps
-        # the family's stair plywood — the leaf stops here because the closet does.
-        ("assembly_change:STAIRWALL_INT_2X6_BRG|"
          "STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
     ]

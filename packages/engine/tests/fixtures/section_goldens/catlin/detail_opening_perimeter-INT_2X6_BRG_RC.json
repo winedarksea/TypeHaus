@@ -84,7 +84,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/gwb-cold"
+      "tag": "W-B-CS/gwb-b"
     },
     {
       "space": "model",
@@ -113,6 +113,34 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          219.375,
+          -17.716535433070867
+        ],
+        [
+          219.385,
+          -17.716535433070867
+        ],
+        [
+          219.385,
+          0.0
+        ],
+        [
+          219.375,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW111AAAA",
+      "tag": "W-B-CS/paint-b"
     },
     {
       "space": "model",
@@ -1690,7 +1718,32 @@
         219.0625,
         -6.424999999999999
       ],
-      "text": "gwb-cold 0.625\"",
+      "text": "gwb-b 0.625\"",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          219.38,
+          -10.216666666666665
+        ],
+        "name": ""
+      },
+      "at": [
+        201.27248031496066,
+        -10.216666666666665
+      ],
+      "to": [
+        219.38,
+        -10.216666666666665
+      ],
+      "text": "paint-b 0.01\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

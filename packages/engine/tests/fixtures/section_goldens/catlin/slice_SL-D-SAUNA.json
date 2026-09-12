@@ -252,7 +252,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CBW111AAAA",
-      "tag": "W-B-CS/gwb-cold"
+      "tag": "W-B-CS/gwb-b"
     },
     {
       "space": "model",
@@ -281,6 +281,34 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          218.88000000000002,
+          -109.4375
+        ],
+        [
+          219.88,
+          -109.4375
+        ],
+        [
+          219.88,
+          0.0
+        ],
+        [
+          218.88000000000002,
+          0.0
+        ]
+      ],
+      "layer": "A-WALL-FINI",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW111AAAA",
+      "tag": "W-B-CS/paint-b"
     },
     {
       "space": "model",
@@ -2601,7 +2629,32 @@
         219.0625,
         -12.52
       ],
-      "text": "gwb-cold 0.625\" (NTS)",
+      "text": "gwb-b 0.625\" (NTS)",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          219.38,
+          -15.12
+        ],
+        "name": ""
+      },
+      "at": [
+        95.00000000000001,
+        -15.12
+      ],
+      "to": [
+        219.38,
+        -15.12
+      ],
+      "text": "paint-b 0.01\" (NTS)",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

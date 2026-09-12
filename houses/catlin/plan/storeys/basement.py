@@ -827,7 +827,7 @@ WALLS = [
     # bathroom's north partition and N-B-BA-W. The plywood face lands on the bathroom over
     # this stretch, which is what W-B-STR2's note below already says about its own run.
     Wall(uid="VZPMT59XVQ", tag="W-B-STR3B", start_node="N-B-BA-NW",
-         end_node="N-B-BA-W", assembly="STAIRWALL_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-BA-W", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE",
          structural_role=StructuralRole.BEARING),
@@ -845,7 +845,7 @@ WALLS = [
     # ceiling-level crossings (vent, hot, cold) are bored, as they have been since the pour
     # went away.
     Wall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
-         end_node="N-B-STR", assembly="STAIRWALL_INT_2X6_BRG", top=ft(8),
+         end_node="N-B-STR", assembly="INT_2X6_BRG_EXPOSED_PLY", top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.625)),
          interior_room="RM-B-FURNACE"),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G/furring/foil-faced

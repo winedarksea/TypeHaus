@@ -89,3 +89,55 @@ def test_variant_resolves_against_base() -> None:
     resolved = lib.resolve_assembly("B-BRICK")
     names = [layer.name for layer in resolved.layers]
     assert names == ["stud", "wrb", "brick"]
+
+
+def test_variant_keeps_its_own_scalar_fields() -> None:
+    """A variant's ``source``/``default_lining`` are its own, not the base's (#35, #70)."""
+    from typehaus.model import (
+        Assembly,
+        JunctionPolicy,
+        Layer,
+        LayerFunction,
+        Library,
+        Substitution,
+        inch,
+        outside_of,
+    )
+
+    gwb = Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
+                function=LayerFunction.FINISH)
+    base = Assembly(
+        tag="B",
+        label="base wall",
+        source="base note",
+        default_lining=(gwb,),
+        layers=(Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE),),
+    )
+    plain = Assembly(tag="B-PLAIN", variant_of="B", substitute=())
+    own = Assembly(
+        tag="B-OWN",
+        label="own wall",
+        variant_of="B",
+        source="variant note",
+        default_lining=(Layer(name="ply", material_ref="ply", thickness=inch(0.75),
+                              function=LayerFunction.FINISH),),
+        junction_policy=JunctionPolicy.FINISH_BUTTS,
+        substitute=(Substitution(span=outside_of("stud"), replacement=(gwb,)),),
+    )
+    lib = Library(assemblies=(base, plain, own))
+
+    # A variant that states nothing still tracks the base.
+    tracks = lib.resolve_assembly("B-PLAIN")
+    assert tracks.source == "base note"
+    assert tracks.label == "base wall"
+    assert [layer.name for layer in tracks.default_lining] == ["gwb-a"]
+    assert tracks.junction_policy is JunctionPolicy.STRUCTURE_BUTTS_FINISH_WRAPS
+
+    # One that states its own keeps them.
+    resolved = lib.resolve_assembly("B-OWN")
+    assert resolved.source == "variant note"
+    assert resolved.label == "own wall"
+    assert [layer.name for layer in resolved.default_lining] == ["ply"]
+    assert resolved.junction_policy is JunctionPolicy.FINISH_BUTTS
+    assert [layer.name for layer in resolved.layers] == ["stud", "gwb-a"]

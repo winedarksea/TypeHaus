@@ -19,7 +19,12 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import length, polygon_area, rect_between, sub, unit
-from typehaus.resolve.layer_bands import band_datums, band_spec, resolve_band_spec
+from typehaus.resolve.layer_bands import (
+    band_datums,
+    band_ends_on_wall,
+    band_spec,
+    resolve_band_spec,
+)
 from typehaus.resolve.model import (
     JunctionIncident,
     ResolvedJunction,
@@ -276,6 +281,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         # fill with it, since a cavity has no business outliving its host.
         if band_z0 is not None and band_z1 is not None and band_z1 - band_z0 <= 1e-9:
             continue
+        # A band that resolves to the wall's own ends is not a band on THIS wall.
+        band_z0, band_z1 = band_ends_on_wall(band_z0, band_z1, z0, z1)
         layers.append(
             ResolvedLayer(
                 name=layer.name,

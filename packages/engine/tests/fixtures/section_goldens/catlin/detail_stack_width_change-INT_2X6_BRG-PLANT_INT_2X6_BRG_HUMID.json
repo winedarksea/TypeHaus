@@ -224,7 +224,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CSW114AAAA",
-      "tag": "W-S-C1/gwb-cold"
+      "tag": "W-S-C1/gwb-b"
     },
     {
       "space": "model",
@@ -1213,7 +1213,7 @@
         219.0625,
         230.59999999999997
       ],
-      "text": "gwb-cold 0.625\"",
+      "text": "gwb-b 0.625\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -1508,7 +1508,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-544",
+      "content": "SHEET A-545",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

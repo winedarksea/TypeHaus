@@ -1646,7 +1646,9 @@
 # in FULL to labour but as 1 + 0.15x(1.15-1) = 1.0225 to materials. Every localised figure in this
 # file's 2026-08-20 pass uses that split. Homewyse excludes GC overhead (13-22%) and sales tax.
 # The glass and skylight upgrades are priced in plans/cost-options.md, not here.
-"glazing:BREEZEWAY_GLAZED_WALL" = { material = { low = 4400, high = 10200 }, labour = { low = 4500, high = 9600 } }  # 0.16 cy = 79.2 SF
+# "glazing:BREEZEWAY_GLAZED_WALL" = { material = { low = 4400, high = 10200 }, labour = { low = 4500, high = 9600 } }
+# stood here for 0.16 cy = 79.2 SF. RETIRED 2026-09-12 with the assembly, which went with the
+# rest of the breezeway; the generic stack is library GLAZED_WALL_MULTIWALL_16MM now.
 "glazing:BREEZEWAY_ROOF_GLAZING" = { material = { low = 7200, high = 16600 }, labour = { low = 8800, high = 15400 } }  # 0.03 cy = 16.0 SF
 #
 # ALUMINIUM BALCONY DECK — moved to [sheet_goods] `aluminum-deck` on 2026-08-22, when
@@ -3919,10 +3921,10 @@
 # bought in [envelope_layers], where every other gwb face in the house is.
 "STAIRWELL_PARTITION_4H" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # W-B-WELL, 0.47 CY — billed in [framing], see above
 "BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-N1/N2/N3, W-B-W1/W2
-# The south wall, split out 2026-08-18 so its full-height parge could stay while the others
-# took an above-grade panel instead. Identical pour, identical formwork, so identical basis —
-# the assemblies differ only outboard of the concrete.
-"BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
+# "BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
+# stood here from 2026-08-18, the south wall split out so its full-height parge could stay
+# while the others took an above-grade band. RETIRED 2026-09-12 with the assembly: the parge
+# went on 2026-09-04, W-B-S1/S4 moved to "BASEMENT_8" above, and nothing referenced the tag.
 # 2026-08-18: the same pour with the sauna's liner inboard of it (W-B-S2). Priced identically
 # to its parent above, because this table prices PLACED CONCRETE by the yard and the concrete
 # is the same concrete — the liner it gained is basswood, furring and foil-polyiso, and all

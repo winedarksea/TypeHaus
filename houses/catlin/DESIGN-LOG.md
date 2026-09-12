@@ -1027,8 +1027,11 @@ pocket was possible there at all.
     between get **no skin at all** — their XPS is inside `W-B-BRICK`'s ventilated cavity,
     with no UV and no impact on it, and 273.7 SF of parge was buying a plasterer's
     mobilization to finish a surface nobody sees. `BASEMENT_8_GARDEN` and
-    `_GARDEN_PARGE` survive unreferenced in `plan/assemblies.py`, documented, so the revert
-    is two `assembly=` edits.
+    `_GARDEN_PARGE` survived unreferenced for a week and were **deleted 2026-09-12** under
+    decision #72 — an unreferenced assembly saves no consumer any churn, because every
+    consumer in this house derives from *walls*, so all it preserved was reasoning, and
+    reasoning is what git is for. `plan/assemblies.py` keeps a short pointer; the revert is
+    the two `assembly=` edits plus a `git show`.
   - *The pour.* 12" used to be earned wherever a cast concrete deck landed on the
     wall top beside the sill plate and needed a bearing seat inboard of it. After the
     basement-ceiling overhaul the only cast deck left is `SL-M-DECK`, which bears on the

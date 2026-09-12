@@ -226,7 +226,7 @@ def _framing_spacing_in(ctx: EngineeringContext, wall: object,
     still is.
     """
     tag = getattr(wall, "assembly", None)
-    assembly = next((a for a in ctx.plan.library.assemblies if a.tag == tag), None)
+    assembly = ctx.plan.library.resolve_assembly(tag)
     if assembly is None:
         return None
     layer = next((lay for lay in assembly.layers if lay.name == layer_name), None)
