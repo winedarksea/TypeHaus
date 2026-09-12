@@ -259,6 +259,9 @@ _SOLID_TRADE_CODES: dict[str, CostCode] = {
     "electrical": CostCode("3300", "26 05 33", "electrical"),  # raceways
     "mechanical": CostCode("3200", "23 31 00", "mechanical"),  # vent runs
     "stairs": CostCode("2700", "05 52 00", "stairs"),          # guards and handrails
+    # The envelope trade, same 2100 / 07 20 00 account `envelope_layers` already files
+    # under. Its one solid category today is `screen_slat`, the breezeway's KDAT infill.
+    "walls": CostCode("2100", "07 20 00", "walls"),
 }
 
 #: The one thing a solid's *category* cannot say: whether a flat horizontal solid was cast

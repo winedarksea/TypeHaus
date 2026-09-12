@@ -97,9 +97,18 @@ def test_the_permit_set_is_an_ordered_subset_of_the_full_one(catlin_model):
 
 
 def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_model):
-    """The ask that started this: 109 sheets is not a set anybody reviews."""
+    """The ask that started this: 109 sheets is not a set anybody reviews.
+
+    The cap is a judgement about a reviewer's patience, not a code limit, and it moved 55 ->
+    60 on 2026-09-11 for one stated reason: the extruded garage is a second structure, and it
+    brought A-507 (north entry: gable, bridge landing and east tiers) and A-508 (its
+    longitudinal foundation and threshold section) as AUTHORED details. Those are exactly
+    what a plan checker needs to review the thing that is new, so the alternative — dropping
+    two sheets to hold a round number — would have removed drawings somebody deliberately
+    starred. **Raise this only with a reason written here.**
+    """
     permit = build_sheet_index(catlin_model, sets="permit")
-    assert len(permit) <= 55, [s.number for s in permit]
+    assert len(permit) <= 60, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
     assert {"G-001", "C-101", "S-001", "S-100", "S-101.1", "A-101", "A-201",

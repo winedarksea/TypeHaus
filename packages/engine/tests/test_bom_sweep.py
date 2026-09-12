@@ -29,8 +29,11 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     """``length_ft`` is what prices a railing and none of the new columns may disturb it:
     ten authored railings, grouped by product and storey, at their plan run.
 
-    RL-SG-PORCH replaced the porch's masonry parapet, so the ``style == "masonry"`` group
-    this test excludes is empty."""
+    RL-SG-PORCH replaced the porch's masonry parapet, but the ``style == "masonry"`` group
+    this test excludes is not empty any more: on 2026-09-11 the breezeway's guard moved into
+    the screen line, so W-BW-SCREEN is a wall doing a guard's job and bills as one row. It
+    prices at zero here by design — its volume already billed through ``wall_structure`` —
+    which is what keeps a wall-as-guard from being ordered twice."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
     # RL-G-SERVICE is the handrail on the garage service stair, new because the *stair* is
     # new, and R311.7.8 asks for a handrail on any flight of four or more risers.
@@ -47,8 +50,16 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # RL-SG-PORCH-NE, added 2026-09-04 when the flight moved to the MIDDLE of the porch's
     # east edge: an opening at the end of a run is one path point, an opening in the middle
     # of one is two elements.
-    assert sum(int(row["count"]) for row in rows) == 22
-    assert not [row for row in bom["railings"] if row["style"] == "masonry"]
+    #
+    # Twenty, down from twenty-two on 2026-09-11, and both losses are one guard absorbing
+    # another. RL-BW-WEST stood 1 1/2" west of SC-BW-WEST — two elements an inch apart doing
+    # one job — and the screen line took the guard over. RL-BW-GARAGE-W went with it: the
+    # interior landing stands against W-G-W, and a wall is its own guard.
+    assert sum(int(row["count"]) for row in rows) == 20
+    masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
+    assert [row["tags"] for row in masonry] == [["W-BW-SCREEN"]]
+    assert all(row["post_count"] == 0 and row["bracket_count"] == 0 for row in masonry), \
+        "a wall-as-guard buys no posts and no bracket kits"
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
@@ -81,10 +92,18 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # bills by its RUN, so a shorter run must bill shorter — the failure mode this test
     # catches is a railing that quietly keeps billing a length it no longer runs.
     assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(27.3, abs=0.1)
-    # 36.7, in two parts: RL-A-HANDRAIL runs beside ST-S2A's winder fan as well as its
-    # straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail` rather than read
-    # off `continuous=True`), and RL-G-SERVICE adds 3'-8" on the garage stair.
-    assert by_type["(untyped railing)"] == pytest.approx(36.7, abs=0.1)
+    # 45.6 over four storey groups, and this is the catch-all: every guard or handrail that
+    # names no `type_ref` lands here. RL-A-HANDRAIL's 13.0 runs beside ST-S2A's winder fan as
+    # well as its straight flight (per R311.7.8.2, measured by `code.R311_7_8_handrail`
+    # rather than read off `continuous=True`); RL-G-SERVICE adds 3'-8" on the garage stair;
+    # the two main-storey and two second-storey stair handrails make up 29.0 between them.
+    #
+    # 36.7 -> 45.6 on 2026-09-11: RL-BW-ENTRY and RL-BW-GARAGE-E joined the main group with
+    # the extruded garage. **Both are EXTERIOR guards sitting in the untyped bucket**, which
+    # is a gap rather than a design — they price off the catch-all rate in prices.toml
+    # instead of an aluminium guard product — and it is recorded here so the number moving
+    # is what says so.
+    assert by_type["(untyped railing)"] == pytest.approx(45.6, abs=0.1)
 
 
 def test_the_untyped_group_key_is_also_what_gets_emitted(bom):

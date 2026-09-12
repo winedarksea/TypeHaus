@@ -150,6 +150,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "snow_guard": (0.72, 0.73, 0.75, 1.0),
     "seam_clamp": (0.72, 0.73, 0.75, 1.0),
     "panel_strap": (0.72, 0.73, 0.75, 1.0),
+    # Breezeway slat infill (→ resolve/screens.py). KDAT on edge, so it reads as the same
+    # treated stock as the beam it hangs under rather than as the mill aluminium above.
+    "screen_slat": (0.62, 0.46, 0.28, 1.0),
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
     # routed plumbing runs (→ resolve/mep.py _emit_run_solids), riser-diagram colors

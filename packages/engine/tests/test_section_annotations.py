@@ -13,6 +13,7 @@ import pytest
 
 from typehaus.emit.draw.elevation_annotate import feet_inches_signed, merged_levels
 from typehaus.emit.draw.plan_labels import room_display_name
+from typehaus.emit.draw.lineweights import CUT_HEAVY
 from typehaus.emit.draw.scene import ArchDimension, Leader, Polyline, Symbol, Text
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.section_annotate import (
@@ -114,9 +115,13 @@ def test_datum_labels_do_not_overprint_each_other(section):
 # --- 2. the ground line ------------------------------------------------------------------
 def test_grade_line_is_drawn_outboard_of_the_building_only(section):
     """A section's ground stops at the foundation — it must not cross the basement."""
+    # By lineweight, not by flatness: the layer also carries the 45° hatch ticks, and those
+    # are LIGHT where a ground run is CUT_HEAVY. A run is no longer guaranteed flat (see
+    # ``test_section_ground_runs_are_flat_at_the_soil_plane``), so flatness cannot be the
+    # thing that picks it out.
     ground = [n for n in section.nodes
               if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD"
-              and len(n.points) > 1 and n.points[0][1] == n.points[-1][1]]
+              and n.lineweight == CUT_HEAVY]
     assert len(ground) == 2  # one run each side of the house
     left, right = sorted(ground, key=lambda n: n.points[0][0])
     walls = [n for n in section.nodes if getattr(n, "layer", "") in {"A-WALL", "S-FNDN"}]
@@ -131,15 +136,25 @@ def test_section_ground_runs_are_flat_at_the_soil_plane(section):
 
     That band is exactly what a *facade* must not use, and the difference is deliberate:
     an elevation looks at one wall, and the ground behind it is the far side of the house.
-    Both of this cut's runs sample the near ring on each side and come out flat at -3'-0",
-    which is what the sheet has always drawn — the elevation fix must not move it.
+    Both of this cut's runs sample the near ring on each side and sit at -3'-0" across
+    everything they draw beside the building.
+
+    **The east run is not flat to its very end, and that is honest rather than a defect.**
+    The profile is extended a flat 24" past the drawn extent, and when the garage pushed
+    that extent past the x=39'-0" spot on 2026-09-10, the extension started interpolating
+    toward the x=45'-0" spot at -3'-4". The line falls 0.09" over its last 1.6" — the real
+    beginning of the fall away to the east, and invisible at any sheet scale.
     """
     runs = [n for n in section.nodes
             if isinstance(n, Polyline) and n.layer == "L-SITE-GRAD"
-            and len(n.points) > 1 and n.points[0][1] == n.points[-1][1]]
+            and n.lineweight == CUT_HEAVY]
     assert len(runs) == 2
     for run in runs:
-        assert {round(point[1], 6) for point in run.points} == {-36.0}
+        assert run.points[0][1] == pytest.approx(-36.0, abs=1e-6)
+        # Monotone and within a tenth of an inch of the soil plane the whole way: what the
+        # sheet draws is one ground line, not a profile with a step in it.
+        assert all(point[1] <= -36.0 + 1e-6 for point in run.points), run.points
+        assert all(point[1] >= -36.1 for point in run.points), run.points
 
 
 def test_a_structure_spot_beside_the_cut_is_not_section_ground(catlin_model, plane):

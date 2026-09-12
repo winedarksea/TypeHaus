@@ -140,12 +140,18 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     assert poured["SL-M-HP3PAD"] == '4"' and poured["SL-M-HP1PAD"] == '4"'
     assert "SL-SG-STOOP" not in poured, "the stoop was retired 2026-09-05"
     assert poured["SL-SG-FIELD"] == '18"'
+    # SL-BW-TIER1..4 are the four cast terrace tiers that replaced SL-G-STEP-0 on 2026-09-10,
+    # and 6-3/4" is a real thickness rather than a rounded one: it is the 6.8" rise itself,
+    # since each tier is wedding-caked fully onto the one below (params/breezeway.py states
+    # the case, and plan/assemblies.py::ENTRY_STEP_TIER says why it is not frost-founded).
+    assert all(thickness == '6-3/4"' for tag, thickness in poured.items()
+               if tag.startswith("SL-BW-TIER")), poured
     assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
-               if not tag.startswith(("SL-G-STEP-", "SL-SG-FROST-", "SL-SG-HPPAD",
-                                      "SL-SG-STAIRPAD", "SL-M-HP3PAD", "SL-M-HP1PAD",
-                                      "SL-SG-FIELD"))), poured
-    assert not {tag for tag in poured if tag.startswith("SL-G-STEP-")}
-    assert [tag for tag in poured if tag.startswith("SL-G-STEP-")] == ["SL-G-STEP-0"]
+               if not tag.startswith(("SL-G-STEP-", "SL-BW-TIER", "SL-SG-FROST-",
+                                      "SL-SG-HPPAD", "SL-SG-STAIRPAD", "SL-M-HP3PAD",
+                                      "SL-M-HP1PAD", "SL-SG-FIELD"))), poured
+    assert not {tag for tag in poured if tag.startswith("SL-G-STEP-")}, \
+        "SL-G-STEP-0 was retired 2026-09-10 with the terrace that replaced it"
     assert {poured[tag] for tag in poured if tag.startswith("SL-SG-FROST-")} == {'1"', '2"'}
 
 

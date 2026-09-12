@@ -169,6 +169,10 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # the same reason: it penetrates the skin, so it rides the skin rather than following
     # the leader or riser it happens to be holding.
     "panel_strap": "roof",
+    # Breezeway slat infill (``resolve/screens.py``). KDAT sticks, but an enclosure panel by
+    # what it does: it fills the opening between a wall's top plate and a beam soffit, and it
+    # goes up with the envelope layers rather than with the frame that carries it.
+    "screen_slat": "walls",
 }
 
 

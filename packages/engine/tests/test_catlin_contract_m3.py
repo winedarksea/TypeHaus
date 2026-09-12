@@ -1630,7 +1630,12 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     door's landing (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that
     both breezeway doors open onto it at one level), so the threshold stays at 0'-0" and the
     sill is positive: +1'-0" over a garage storey at -1'-0", with the 2'-10" taken inside
-    instead — by the SL-G-STEP-0 landing and the ST-G-SERVICE flight below it.
+    instead — by the FS-BW-GARAGE landing and the ST-G-SERVICE flight below it.
+
+    That landing was the SL-G-STEP-0 pour until 2026-09-10 and is a DECK now, continuous
+    with FS-BW-FLOOR across a 1/4" threshold joint. What it does is unchanged, so the
+    assertions below are on its height rather than on what it is made of — and the pour's
+    absence is asserted, so it cannot come back alongside the deck that replaced it.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
@@ -1645,12 +1650,12 @@ def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_m
     assert abs(deck_top - threshold) <= inch(1.5).meters
     assert threshold - slab.z1_m == pytest.approx(inch(34.0).meters)
 
-    # Five 6.8" risers inside close that 2'-10": a 3'-0" concrete landing level with the
-    # threshold, and four pressure-treated treads below it.
-    landing = next(s for s in catlin_model.solids if s.tag == "SL-G-STEP-0")
-    assert landing.z1_m == pytest.approx(threshold)
-    assert [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")] == \
-        ["SL-G-STEP-0"]
+    # Five 6.8" risers inside close that 2'-10": a landing level with the threshold, and four
+    # pressure-treated treads below it.
+    landing = next(f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE")
+    assert landing.deck_z1_m == pytest.approx(threshold)
+    assert not [s.tag for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")], \
+        "the pour was replaced by FS-BW-GARAGE, not left under it"
 
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-G-SERVICE")
     assert stair.riser_count == 5
@@ -2251,7 +2256,14 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
     assert all(stair.going_depth_m == pytest.approx(inch(10).meters, abs=1e-9)
                for tag, stair in stairs.items()
-               if tag not in ("ST-G-SERVICE", "ST-SG-PORCH"))
+               if tag not in ("ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"))
+    # ST-BW-ENTRY is the exterior terrace flight and takes neither trade: its treads are the
+    # four cast tiers themselves (`carriage="cast"`), so the going is the tier's own 18" and
+    # there is no board to nose. 2R + T is 31.6", outside the 24"-25" comfort rule, which is
+    # inherent to a tiered terrace and is not a code limit (params/breezeway.py says so).
+    assert stairs["ST-BW-ENTRY"].going_depth_m == pytest.approx(inch(18).meters, abs=1e-9)
+    assert stairs["ST-BW-ENTRY"].nosing_depth_m == 0.0
+    assert stairs["ST-BW-ENTRY"].riser_count == 5
     # ST-SG-PORCH takes the garage stair's trade for the garage stair's reasons — see below.
     assert stairs["ST-SG-PORCH"].going_depth_m == pytest.approx(inch(11).meters, abs=1e-9)
     assert stairs["ST-SG-PORCH"].riser_count == 5

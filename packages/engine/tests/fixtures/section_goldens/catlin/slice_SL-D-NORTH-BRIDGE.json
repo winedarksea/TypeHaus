@@ -8031,19 +8031,19 @@
       "node": "polyline",
       "points": [
         [
-          450.0,
+          449.25,
           88.0
         ],
         [
-          451.5,
+          450.75,
           88.0
         ],
         [
-          451.5,
+          450.75,
           148.75000000000003
         ],
         [
-          450.0,
+          449.25,
           148.75000000000003
         ]
       ],
@@ -8059,19 +8059,19 @@
       "node": "hatch",
       "boundary": [
         [
-          450.0,
+          449.25,
           88.0
         ],
         [
-          451.5,
+          450.75,
           88.0
         ],
         [
-          451.5,
+          450.75,
           148.75000000000003
         ],
         [
-          450.0,
+          449.25,
           148.75000000000003
         ]
       ],
@@ -8087,11 +8087,11 @@
       "node": "polyline",
       "points": [
         [
-          450.0,
+          449.25,
           91.5
         ],
         [
-          451.5,
+          450.75,
           91.5
         ]
       ],
@@ -8107,11 +8107,11 @@
       "node": "polyline",
       "points": [
         [
-          450.0,
+          449.25,
           145.25
         ],
         [
-          451.5,
+          450.75,
           145.25
         ]
       ],
@@ -8313,102 +8313,6 @@
       "closed": false,
       "uid": "YX2GDZJMBV",
       "tag": "truss-002/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          517.125,
-          88.0
-        ],
-        [
-          518.625,
-          88.0
-        ],
-        [
-          518.625,
-          148.75000000000003
-        ],
-        [
-          517.125,
-          148.75000000000003
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "YX2GDZJMBV",
-      "tag": "truss-003"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          517.125,
-          88.0
-        ],
-        [
-          518.625,
-          88.0
-        ],
-        [
-          518.625,
-          148.75000000000003
-        ],
-        [
-          517.125,
-          148.75000000000003
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          517.125,
-          91.5
-        ],
-        [
-          518.625,
-          91.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "YX2GDZJMBV",
-      "tag": "truss-003/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          517.125,
-          145.25
-        ],
-        [
-          518.625,
-          145.25
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "YX2GDZJMBV",
-      "tag": "truss-003/flange"
     },
     {
       "space": "model",

@@ -336,6 +336,20 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     # hangers is a small over-bill on a real detail (those two joists are blocked and nailed
     # to the carriers beside them), and it is recorded here rather than asserted away.
     assert len(breezeway_joists & hung_keys) == 2, sorted(breezeway_joists & hung_keys)
+    # FS-BW-GARAGE is the garage landing, split off FS-BW-FLOOR on 2026-09-10, and its seven
+    # are two different things. FIVE ARE REAL: its 2x8s run east-west between BM-BW-FC and
+    # BM-BW-FE and share their depth exactly (-8 1/4" to -1"), which is a flush frame and
+    # buys a hanger each. The other TWO are the parallel false positive again, and worse
+    # here — the floor outline runs beam-line to beam-line, so each rim lands colinear with
+    # the beam under it and reads as dying into it. Same over-bill, same reason, recorded.
+    garage_landing = next(f for f in catlin_model.floors if f.tag == "FS-BW-GARAGE")
+    landing_keys = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members}
+    landing_hung = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members
+                    if m.category == "joist"} & hung_keys
+    landing_rims = {f"{m.parent_uid}:{m.child_key}" for m in garage_landing.members
+                    if m.category == "rim"} & hung_keys
+    assert len(landing_hung) == 5, sorted(landing_hung)
+    assert len(landing_rims) == 2, sorted(landing_rims)
     # BM-SG-FRW/FRE are not flush-framed: dropping them put PT-SG-FCOL's top, and
     # PT-SG-BF2 with it, on concrete. Those 18 hangers are 32 derived uplift ties now; the
     # joists bear on top.
@@ -348,9 +362,9 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     breezeway_keys = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members}
     bearing_keys = {f"{member.parent_uid}:{member.child_key}"
                     for floor in catlin_model.floors for member in floor.members
-                    if floor.tag != "FS-BW-FLOOR"}
+                    if floor.tag not in ("FS-BW-FLOOR", "FS-BW-GARAGE")}
     assert bearing_keys
-    assert not (bearing_keys & hung_keys - flush_beam_keys - breezeway_keys)
+    assert not (bearing_keys & hung_keys - flush_beam_keys - breezeway_keys - landing_keys)
 
 
 # --- sill anchorage ------------------------------------------------------------------
@@ -571,26 +585,27 @@ def test_a_part_that_mounts_on_another_also_bills_that_carrier(catlin_model) -> 
     rail and the clamps it mounts on stay one modeled ``Connector`` — this split only
     affects how the BOM itemizes the same hardware, not the geometry.
 
-    ** THE HOUSE CONTAINS NO ``requires_role`` PART ANY MORE, AND THAT IS WHAT THIS NOW
-    PINS. ** ColorGard was the only one, and its six rails were deleted on 2026-09-07 with
-    the slope that needed them: the garage's overhead door turned north, its ridge turned
-    with it, and the south slope that used to shed onto the breezeway canopy became a rake.
-    The rule itself is unchanged and still lives in ``takeoff/hardware.py``; what is gone is
-    its only witness in this house.
+    ColorGard is this house's only ``requires_role`` part, and it left and came back. The
+    six rails on RF-GARAGE's south slope were deleted on 2026-09-07 when that slope became a
+    rake and stopped shedding onto the breezeway canopy. The four here are a different rail
+    for a different reason: they sit on the EAST AND WEST EAVES over the screen, the tier
+    approach and the equipment circulation, which ``notes/north_entry_structure.md`` §5
+    requires snow retention along. The target is a walking surface rather than a roof, so
+    ``sliding_snow`` cannot see it and the note is the only thing that asks for it.
 
-    So this test asserts the ABSENCE on both sides — no rail, and no carried clamp row
-    implied by one — rather than deleting itself. If a rail ever comes back, the carried row
-    must come back with it, and the assertion below is what will say so.
+    Four rails, four carried clamps, one apiece — and no bare seam clamp authored anywhere,
+    which is the other half of the rule: every S-5! in this house is implied by a rail.
     """
     rows = hardware_takeoff(catlin_model)
     rails = sum(row["count"] for row in rows if row["role"] == "snow_retention")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
-    assert rails == 0, "no snow-retention rail is modeled since 2026-09-07"
+    assert rails == 4, "the four CN-BW-SNOW eave rails over the entry zone"
     assert not [row for row in seam if row["scope"] == "modeled connector"], \
         "no bare seam clamp is authored any more; every S-5! is implied by the rail"
-    assert not [row for row in seam
-                if row["scope"] == "carried-mount" and "ColorGard" in row["basis"]], \
-        "a carried-mount row with no rail to carry would be billing hardware for nothing"
+    carried = [row for row in seam
+               if row["scope"] == "carried-mount" and "ColorGard" in row["basis"]]
+    assert sum(row["count"] for row in carried) == rails, \
+        "a rail reaches the seam through a clamp; the two counts move together"
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:

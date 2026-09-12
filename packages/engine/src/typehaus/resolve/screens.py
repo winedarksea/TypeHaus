@@ -48,7 +48,7 @@ def resolve_screens(model):
                 )
                 model.solids.append(
                     ResolvedSolid(
-                        screen.uid,
+                        f"{screen.uid}-s{index:03d}",
                         f"{screen.tag}-SLAT-{index:02d}",
                         storey.tag,
                         "screen_slat",
