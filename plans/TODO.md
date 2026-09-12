@@ -385,13 +385,22 @@ the future.
   to record "leave it" if that's the answer.
 - Do we need to cover the underside of ST-S2A in anyway, or is code fine with exposed wood here? If not we could frame it in as a small closet or as shelves
 
-Two glazing gaps still leave the French doors out entirely, both wanting product data:
-- `checks/building_science/energy_load.py` gives a door a UA but no solar gain — `DoorType`
-  has no `shgc` field, so ~100 sf of south/east glass contributes nothing to a cooling load
-  that's 63% window solar.
-- `checks/code/mn_energy.py` grades every `WindowType` against `window_u_max` and no
-  `DoorType` at all — the three glazed exterior door types (U-0.20/0.25) would pass, but
-  nothing checks it.
+Both glazing gaps CLOSED 2026-09-11. `DoorType` carries `shgc`/`vt`;
+`energy_load.py` accumulates a door solar term (and names an UNKNOWN for a glazed exterior
+leaf that states no SHGC, exactly as a window does); `mn_energy.py` grades EXTERIOR door
+types against `door_u_max`, which is the same N1102.1.2 fenestration column as
+`window_u_max` because R202 makes a glazed door fenestration. The count in the old note was
+wrong and is worth recording: there are **two** glazed exterior door types, `DT-EXT-FRENCH60`
+(U-0.20) and `DT-EXT-SLIDE60` (U-0.25) — the third U-0.20 leaf, `DT-EXT-SWING36`, is exterior
+but OPAQUE. Both glazed types now state SHGC 0.35 / VT 0.5 (the house glazing package), which
+moved the block cooling load from 17,752 to 21,579 BTU/h (1.48 -> 1.80 tons).
+
+One thing did NOT come for free, and the assumption that it would is worth killing:
+`emit/draw/schedules/openings.py` prints only the U-factor column for a door
+(`_energy_columns(spec, is_door=True)` returns a 1-tuple and the door header set stops at
+"U-factor"), so A-601 still does not show the new SHGC/VT. Lighting it up means widening the
+door table and re-blessing `test_energy_sheet.py`'s column-count assertion — a schedule-sheet
+change, not an energy one, and deliberately left out of the 2026-09-11 batch.
 
 ## Found while doing the 2026-08-23 batch
 
@@ -463,10 +472,6 @@ All five were handled **price-side** in `houses/catlin/prices.toml` (rate correc
 true quantity, comment says so). Each is really a takeoff-code fix and a takeoff change alters
 quantities for every house, so each deserves its own commit/test rather than riding in with
 documentation.
-
-- **No fabricated ROOF-truss profile exists** (`resolve/framing/profiles.py` has only
-  `_RE_FLOOR_TRUSS`) — a trussed roof bills its chords as plain 2x4 stick rates.
-  `prices.toml` carries a dormant `"36 roof truss"` row that activates once the profile lands.
 
 Two pricing decisions correct today that become double bills the moment anything moves:
 

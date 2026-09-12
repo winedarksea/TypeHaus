@@ -53,10 +53,17 @@ DOOR_TYPES = [
     # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
     # definition, so this is a property of the product wherever it is hung — which is why it
     # is set on the three glazed types below and needs no tempered variant of any of them.
+    # SHGC/VT on the two GLAZED EXTERIOR leaves (2026-09-11): a glazed door is fenestration
+    # under R202, so the block load's solar term and the energy certificate's area-weighted
+    # average both want a number, and an unstated one is a permanent UNKNOWN rather than a
+    # zero. 0.35 / 0.5 is the house's glazing package — the same numbers every WindowType
+    # carries — and is the spec to hold the supplier to, not a measured NFRC label.
     DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20)),
+             operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20),
+             shgc=0.35, vt=0.5),
     DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="slide", glazed=True, tempered=True, u_factor=u_us(0.25)),
+             operation="slide", glazed=True, tempered=True, u_factor=u_us(0.25),
+             shgc=0.35, vt=0.5),
     DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
     # 3'-0" interior leaf, new 2026-09-07: the basement equipment route. D-B-FURN and
     # D-B-SHOP are the two doors an appliance or a machine actually passes through, off a

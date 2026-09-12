@@ -288,7 +288,7 @@ def estimate_block_load(
     if soil_temp_f is None and (foundation_area or slab_area):
         unknown.append("Site.soil_temp_f (below-grade components use outdoor design air ΔT)")
 
-    window_area = window_ua = window_solar = door_area = door_ua = 0.0
+    window_area = window_ua = window_solar = door_area = door_ua = door_solar = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
     for opening in envelope_openings:
         area = opening.width_m * opening.height_m * _M2_TO_FT2
@@ -307,22 +307,30 @@ def estimate_block_load(
         if u_factor is None:
             unknown.append(f"{kind} {opening.tag} U-factor")
             continue
+        # A glazed door is fenestration under R202 and admits solar gain exactly as a window
+        # does. An opaque leaf transmits none, so it earns no solar term and no UNKNOWN —
+        # "no SHGC stated" is only a gap where there is glass to state one about.
+        glazed = not opening.is_door or bool(getattr(product, "glazed", False))
+        solar = 0.0
+        if glazed:
+            wall = wall_by_tag.get(opening.host_wall)
+            if product is None or product.shgc is None:
+                unknown.append(f"{'door' if opening.is_door else 'window'} "
+                               f"{opening.tag} SHGC")
+            elif wall is not None:
+                solar = (area * product.shgc
+                         * solar_orientation[_facade_for_wall(wall, model)]
+                         * preferences.cooling_solar_gain_btu_per_hour_ft2)
         if kind == "doors":
             door_area += area
             door_ua += area * u_factor
+            door_solar += solar
         else:
             window_area += area
             window_ua += area * u_factor
-            wall = wall_by_tag.get(opening.host_wall)
-            if product is None or product.shgc is None:
-                unknown.append(f"window {opening.tag} SHGC")
-            elif wall is not None:
-                window_solar += (
-                    area * product.shgc * solar_orientation[_facade_for_wall(wall, model)]
-                    * preferences.cooling_solar_gain_btu_per_hour_ft2
-                )
+            window_solar += solar
     components.extend((_component("windows", window_area, window_ua, window_solar),
-                       _component("doors", door_area, door_ua)))
+                       _component("doors", door_area, door_ua, door_solar)))
     # Air-side terms. Both the blower-door result and the ERV's airflow are whole-house
     # facts, so a zone gets its share of each by conditioned volume — the quantity the air
     # in a zone actually scales with.
@@ -340,8 +348,11 @@ def estimate_block_load(
 
     heating = sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
                   for component in components) + infiltration_heating + ventilation_heating
-    cooling = window_solar + air_cooling + sum(
-        component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
+    # Solar is summed off the components rather than off ``window_solar``: it was the window
+    # term by name, so the glazed doors' gain sat in the report and outside the load.
+    cooling = air_cooling + sum(
+        component.solar_gain_btu_per_hour
+        + component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
         for component in components
     )
     return EnergyReport(heating, cooling, cooling / 12000.0, tuple(components),
