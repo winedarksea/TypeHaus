@@ -4417,14 +4417,14 @@
 # it loses in height (a 6'-0" leaf is a stock size at most millwork suppliers, so there is
 # no special-order adder) and the labour does not move — hanging a door is hanging a door.
 "DT-INT-CLOSET24" = { material = { low = 125, high = 410 }, labour = { low = 135, high = 280 } }  # 1 ea
-"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 11 ea (D-A-STUBATH left 2026-09-09) — high end is solid-core paint-grade
+"DT-INT-SWING30" = { material = { low = 150, high = 520 }, labour = { low = 145, high = 305 } }  # 8 ea — high end is solid-core paint-grade. Was "11 ea" until 2026-09-12: the 2026-09-09 note that D-A-STUBATH left was right, but the count never followed it. Read off `haus takeoff`, which splits this type across three rows (4+3+1) by host assembly
 "DT-INT-SWING32" = { material = { low = 155, high = 540 }, labour = { low = 145, high = 305 } }  # 5 ea — was 7 until D-B-FURN widened to 36" and D-B-GYM took the glazed 32" (2026-09-07); the "9 ea" this line carried was already two stale
 # 2026-09-07, the basement equipment route: D-B-FURN widened and D-B-SHOP is new. Bracketed off
 # the 32" row above with a shade added for the wider leaf and slab — a 36" prehung is a stock
 # size, not a special, so the step is small; labour is the same hang either way plus the wider
 # jamb pack.
 "DT-INT-SWING36" = { material = { low = 175, high = 590 }, labour = { low = 150, high = 315 } }  # 2 ea
-"DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 1 ea — was 38% low; a solid-core divided-lite is a real door
+"DT-INT-SWING30-GLAZED" = { material = { low = 350, high = 900 }, labour = { low = 165, high = 350 } }  # 2 ea (D-S-PLANT, D-M-STUDY — both borrowed light) — was 38% low; a solid-core divided-lite is a real door. The "1 ea" this line carried until 2026-09-12 predated D-M-STUDY's 2026-08-29 retype
 "DT-INT-DOUBLE60" = { material = { low = 400, high = 1000 }, labour = { low = 255, high = 500 } }  # 1 ea — flush solid-core pair, paint-grade to stain-grade
 # 56" needs a FOUR-panel bifold, not a two-panel — doornmore prices a 4-door at $302.40 against
 # $103.50-206.50 for a 2-door, which is why the old $150 floor was wrong.

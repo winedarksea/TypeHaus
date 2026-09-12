@@ -28,7 +28,7 @@ from typehaus.library.assemblies import (
     INT_2X6_STAGGERED_PLUMBING,
     STARTER_FLOOR,
 )
-from typehaus.library.doors import STARTER_DOOR_TYPES
+from typehaus.library.doors import DT_POCKET_INT_48, STARTER_DOOR_TYPES
 from typehaus.library.hardware import STRUCTURAL_HARDWARE
 from typehaus.library.materials import STARTER_MATERIALS
 from typehaus.library.placeables import (
@@ -69,5 +69,6 @@ __all__ = [
     "STARTER_APPLIANCE_TYPES",
     "STARTER_FIXTURE_TYPES",
     "STARTER_DOOR_TYPES",
+    "DT_POCKET_INT_48",
     "STARTER_RAILING_TYPES",
 ]

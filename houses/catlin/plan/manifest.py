@@ -18,8 +18,8 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from library import (SEKTION_CASEWORK_TYPES, STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES,
-                     STARTER_DOOR_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
+from library import (DT_POCKET_INT_48, SEKTION_CASEWORK_TYPES, STARTER_APPLIANCE_TYPES,
+                     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
                      STARTER_RAILING_TYPES)
 
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
@@ -43,10 +43,16 @@ _library = Library(
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
     products=products.PRODUCTS,
-    # The library's pocket family alongside the house's own catalog. Only the pocket
-    # types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for another
-    # day, and `integrity.duplicate_catalog_tag` proves the two tag sets stay disjoint.
-    door_types=(*STARTER_DOOR_TYPES, *main.DOOR_TYPES),
+    # The one library pocket size this house hangs, alongside the house's own catalog. Only
+    # the pocket types are shared so far — the rest of `main.DOOR_TYPES` is a promotion for
+    # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
+    #
+    # ** THE CATALOG CARRIES WHAT THE HOUSE HANGS, NOT THE WHOLE LADDER (2026-09-12). ** This
+    # was `*STARTER_DOOR_TYPES`, which pulled all six Johnson 1500PF sizes in and left five of
+    # them with no door, no price row and nothing to bill — the same dead weight the two
+    # retired house types in `main.DOOR_TYPES` carried. D-M-LAUN is the only pocket in the
+    # house. A second pocket door adds its size back here by name.
+    door_types=(DT_POCKET_INT_48, *main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and

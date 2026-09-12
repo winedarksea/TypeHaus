@@ -128,9 +128,12 @@ def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):
     operations = {door_type.Name: door_type.OperationType
                   for door_type in f.by_type("IfcDoorType")}
     assert operations["DT-EXT-OVERHEAD192"] == "ROLLINGUP"  # IFC4 has no OVERHEAD_DOOR term
-    assert operations["DT-INT-BIFOLD60"] == "FOLDING_TO_LEFT"
+    # Repointed 2026-09-12 off DT-INT-BIFOLD60 and DT-EXT-SLIDE60, the two orphaned types
+    # deleted from the catalog that day, onto the leaves that actually carry those two
+    # operations in the built house: O-S-CLOSET's bifold and the two bypass pairs.
+    assert operations["DT-INT-BIFOLD56"] == "FOLDING_TO_LEFT"
     assert operations["DT-EXT-FRENCH60"] == "DOUBLE_DOOR_SINGLE_SWING"
-    assert operations["DT-EXT-SLIDE60"] == "SLIDING_TO_LEFT"
+    assert operations["DT-INT-BYPASS48"] == "SLIDING_TO_LEFT"
     assert operations["DT-EXT-SWING36"] == "SINGLE_SWING_LEFT"
     assert all(door_type.PredefinedType == "DOOR"
                for door_type in f.by_type("IfcDoorType"))

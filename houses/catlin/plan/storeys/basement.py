@@ -1075,7 +1075,9 @@ OPENINGS = [
     #
     # ** A POCKET WAS PRICED HERE ON 2026-09-11 AND THE WALL CANNOT TAKE ONE. ** It would
     # have made the swing argument moot, and `DT-POCKET-INT-32` is an exact width match, so
-    # it was tried rather than argued about. W-B-BA-E is 7'-6" long, N-B-BA-NE (y=25'-6")
+    # it was tried rather than argued about. (That size is a LIBRARY type this house does
+    # not carry — since 2026-09-12 the manifest pulls in only DT-POCKET-INT-48, the one
+    # pocket it hangs — so do not go looking for it in `main.DOOR_TYPES`.) W-B-BA-E is 7'-6" long, N-B-BA-NE (y=25'-6")
     # to N-B-BA-SE (y=18'-0"); the RO's jambs stand at y 22'-8 1/16" and 20'-0 1/16", so
     # there is **33 15/16" of wall north of the mouth and 24 1/16" south of it**. A pocket
     # needs the leaf plus the split jamb (`tables.pocket_run`, 2W+1 → 33") **plus

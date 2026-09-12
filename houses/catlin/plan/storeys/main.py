@@ -61,9 +61,10 @@ DOOR_TYPES = [
     DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
              operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20),
              shgc=0.35, vt=0.5),
-    DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="slide", glazed=True, tempered=True, u_factor=u_us(0.25),
-             shgc=0.35, vt=0.5),
+    # DT-EXT-SLIDE60 retired 2026-09-12: a 5'-0" glazed exterior slider that never hung.
+    # All three exterior glazed openings (D-M-BALC, D-S-DECK-E, D-B-PATIO) are French pairs
+    # on DT-EXT-FRENCH60 — a swing pair weathers better at a threshold this house raises
+    # above a flood step, and a slider's fixed half buys nothing a window does not.
     DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
     # 3'-0" interior leaf, new 2026-09-07: the basement equipment route. D-B-FURN and
     # D-B-SHOP are the two doors an appliance or a machine actually passes through, off a
@@ -110,7 +111,9 @@ DOOR_TYPES = [
     # above, one storey down.
     DoorType(tag="DT-INT-CLOSET24", width=ft(2), height=ft(6),
              source="2026-09-05 under-stair closet — the tallest leaf ST-B2M's raking soffit admits at D-B-CLOSET's far jamb"),
-    DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
+    # DT-INT-BIFOLD60 retired 2026-09-12: never hung. O-S-CLOSET is the house's only bifold
+    # and W-S-CLN takes the 56" below; D-M-LAUN was the other candidate and became a pocket
+    # (DT-POCKET-INT-48) on 2026-08-21, which is what retired the second BIFOLD56 as well.
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     # RM-M-MUD-CLOSET's bypass pair: no floor for a swing, same reasoning as
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the

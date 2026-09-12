@@ -72,7 +72,6 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
     expected = {
         "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
         "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
-        "DT-EXT-SLIDE60": (60.0, DoorOperation.SLIDE, True, True),
         "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
         # The basement equipment route, 2026-09-07: D-B-FURN and D-B-SHOP are the two leaves
         # an air handler or a water heater actually passes through, so both went to a full
@@ -82,7 +81,6 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
         "DT-INT-SWING30-TRIMLESS": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
-        "DT-INT-BIFOLD60": (60.0, DoorOperation.BIFOLD, False, False),
         "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
         # RM-M-MUD-CLOSET's bypass slider: the framed replacement for FURN-M-MUD-CLOSET-S,
         # keeping the furniture's sliding-door intent.
@@ -109,14 +107,20 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # ACCESS24 above is the service opening, this one has casing and a passage set.
         "DT-INT-CLOSET24": (24.0, DoorOperation.SWING, False, False),
     }
-    # The house catalog is the union of its own types and the library's shared pocket
-    # family, which is what D-M-LAUN is typed from. The two tag sets must stay disjoint —
-    # `integrity.duplicate_catalog_tag` proves it at load time, and this pins that the
-    # promotion did not quietly shadow a house type.
+    # The house catalog is its own types plus the ONE library pocket size it hangs —
+    # DT-POCKET-INT-48, which is what D-M-LAUN is typed from. It is not the whole 1500PF
+    # ladder: until 2026-09-12 the manifest spliced all six `STARTER_DOOR_TYPES` in and five
+    # of them had no door, no price row and nothing to bill. A catalog entry is a size this
+    # house hangs, and that is what this asserts.
+    #
+    # The house and library tag sets must still stay disjoint — `integrity.duplicate_catalog_tag`
+    # proves it at load time, and this pins that the promotion did not shadow a house type.
+    house_pockets = {"DT-POCKET-INT-48"}
     library_pockets = {door_type.tag for door_type in STARTER_DOOR_TYPES}
-    assert set(types) == set(expected) | library_pockets
+    assert house_pockets < library_pockets
+    assert set(types) == set(expected) | house_pockets
     assert not (set(expected) & library_pockets)
-    assert all(types[tag].operation is DoorOperation.POCKET for tag in library_pockets)
+    assert all(types[tag].operation is DoorOperation.POCKET for tag in house_pockets)
     for tag, (width_in, operation, exterior, glazed) in expected.items():
         door_type = types[tag]
         assert door_type.width.inches == pytest.approx(width_in)
@@ -370,10 +374,13 @@ def test_catlin_laundry_door_emits_the_pocket_symbol(catlin_model):
 
 
 def test_synthetic_slide_door_emits_the_sliding_symbol():
-    """No SLIDE-operation door is instantiated in the catlin model: DT-EXT-SLIDE60 is
-    orphaned (no opening references it) but deliberately kept in the catalog, so the
-    SLIDE operation must still be exercised synthetically here — a slider must not
-    draw a swing arc into the room.
+    """A slider must not draw a swing arc into the room.
+
+    Synthetic because this pins the operation-to-symbol mapping itself, not a house: the
+    two SLIDE doors catlin does hang are bypass pairs (D-M-MUDC, D-M-PANTRY), and the
+    docstring here used to claim DT-EXT-SLIDE60 was the only SLIDE type and was
+    "deliberately kept in the catalog" while orphaned. It was neither — the bypass pairs
+    predate it — and it was deleted on 2026-09-12 along with DT-INT-BIFOLD60.
     """
     width_in = 60.0
     assert symbol_name_for_operation(DoorOperation.SLIDE) == DOOR_SLIDING
