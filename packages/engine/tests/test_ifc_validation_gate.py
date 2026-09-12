@@ -35,7 +35,13 @@ BASELINE_IDS = Path(__file__).resolve().parent / "data" / "baseline.ids"
 
 # (house, LOD). `core` is the handoff LOD — the one that was never validated.
 COMBINATIONS = [("starter", "core"), ("starter", "framed"),
-                ("catlin", "core"), ("catlin", "framed")]
+                ("catlin", "core"), ("catlin", "framed"),
+                # The bundle `haus handoff` sends a PE: the same geometry plus section
+                # profiles, engineering property sets and a bar schedule. It is a different
+                # file from the permit IFC and has to clear the same EXPRESS rules — an
+                # enrichment that produces an invalid file is worse than no enrichment,
+                # because the reviewer's viewer is where it shows up.
+                ("catlin", "framed-engineering")]
 
 
 @pytest.fixture(scope="session")
@@ -46,6 +52,13 @@ def built_ifc(request, tmp_path_factory) -> Path:
     result = load_plan(HOUSES / house)
     assert result.plan is not None, [f.message for f in result.findings]
     model, _findings = resolve(result.plan)
+    if lod == "framed-engineering":
+        from typehaus.checks import build_context, run_checks
+
+        ctx, _ = build_context(result.plan, HOUSES / house)
+        run_checks(ctx)
+        return emit_ifc(model, out, lod="framed", house_dir=HOUSES / house,
+                        engineering=ctx.engineering, register=ctx.engineering_register)
     return emit_ifc(model, out, lod=lod)
 
 

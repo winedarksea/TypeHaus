@@ -2,7 +2,7 @@
 
 Run with Blender so the milestone handoff test exercises the actual target importer:
 
-  Blender --background --python scripts/verify_bonsai_import.py -- out/handoff/model_core.ifc
+  Blender --background --python scripts/verify_bonsai_import.py -- out/handoff-architect/model_core.ifc
 """
 
 from __future__ import annotations

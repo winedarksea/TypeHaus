@@ -265,7 +265,12 @@ def _write_handoff_bundle(house: Path, model, preferences=None, profile=None,
     from typehaus.emit.draw.sheet_writer import LEDGER
     from typehaus.server.model_json import write_model_json
 
-    handoff = house / "out" / "handoff"
+    # `out/handoff-architect/`, not `out/handoff/`: renamed 2026-09-11 when `haus handoff`
+    # took the plain name for the ENGINEER'S bundle. Two different bundles for two different
+    # readers — this one is drawings, DXFs and the decision log for an architect; that one is
+    # calculations, notes and the models for a PE — and one folder holding whichever ran last
+    # is how somebody sends the wrong thing.
+    handoff = house / "out" / "handoff-architect"
     handoff.mkdir(parents=True, exist_ok=True)
     # The bundle carries one set, under one name: whoever opens it wants *the* drawings,
     # not a choice between two papers. It is the paper the command was asked for.

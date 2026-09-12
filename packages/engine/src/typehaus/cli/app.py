@@ -38,6 +38,7 @@ from typehaus.cli.cmd_calcs import calcs  # noqa: E402,F401
 from typehaus.cli.cmd_record import record  # noqa: E402,F401
 from typehaus.cli.cmd_schedule import inspections, schedule  # noqa: E402,F401
 from typehaus.cli.cmd_site import site_app  # noqa: E402,F401
+from typehaus.cli.cmd_handoff import handoff  # noqa: E402,F401
 
 
 def main() -> None:

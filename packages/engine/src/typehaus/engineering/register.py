@@ -39,6 +39,11 @@ from typehaus.engineering.item import EngineeringRecord
 
 REGISTER_FILENAME = "engineering.toml"
 
+#: The delimiters ``engineering/scaffold.py`` wraps every field a person must replace in.
+#: A scaffold is a form, and a form returned with its blanks still in it is not a seal — so
+#: the loader refuses one rather than treating "<<ENGINEER NAME, PE>>" as an engineer's name.
+PLACEHOLDER = ("<<", ">>")
+
 _REQUIRED = ("id", "scope", "covers", "engineer", "license", "sealed_on")
 
 
@@ -125,6 +130,9 @@ def _signoff(entry: Any, path: Path, index: int) -> Signoff:
     for key in _REQUIRED:
         if key not in entry:
             raise ValueError(f"{where} is missing required key `{key}`")
+    # Before anything is parsed, and before the date in particular: an unedited scaffold
+    # would otherwise fail on `sealed_on` and send the reader to fix the wrong field.
+    _refuse_placeholders(entry, where)
     covers = entry["covers"]
     if not isinstance(covers, list) or not all(isinstance(x, str) for x in covers):
         raise ValueError(f"{where} (`{entry['id']}`): `covers` must be a list of item ids "
@@ -155,6 +163,22 @@ def _signoff(entry: Any, path: Path, index: int) -> Signoff:
         document=entry.get("document"), note=entry.get("note"),
         fingerprints=dict(prints),
     )
+
+
+def _refuse_placeholders(entry: dict[str, Any], where: str) -> None:
+    """Refuse a signoff still carrying a scaffold's blanks.
+
+    ``haus handoff`` writes ``engineering.toml.draft`` with ``<<ENGINEER NAME, PE>>`` and
+    friends. Copying it over unedited is the one plausible way to produce a file that looks
+    like a seal register and records nobody's seal, so the loader names the field.
+    """
+    opener, closer = PLACEHOLDER
+    for key, value in sorted(entry.items()):
+        if isinstance(value, str) and opener in value and closer in value:
+            raise ValueError(
+                f"{where}: `{key}` still holds the scaffold placeholder {value!r}. This "
+                f"file was copied from `engineering.toml.draft` without being filled in — "
+                f"a form with its blanks still in it is not a seal.")
 
 
 def _refuse_duplicates(signoffs: tuple[Signoff, ...], path: Path) -> None:

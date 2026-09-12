@@ -213,7 +213,11 @@ def write_calc_pdf(files: dict[str, str], out, inputs: PdfInputs) -> object:
 
     pages = paginate(files)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with PdfPages(out) as pdf:
+    # CreationDate and ModDate are wall-clock by default, so two runs over an unchanged
+    # model would differ in bytes and a reviewer could not tell a regenerated package from
+    # an edited one. The package's own date is on the cover, where a person reads it.
+    with PdfPages(out, metadata={"CreationDate": None, "ModDate": None,
+                                 "Producer": "Type:Haus"}) as pdf:
         _draw_cover(pdf, inputs, pages)
         for page in pages:
             _draw_page(pdf, inputs, page)

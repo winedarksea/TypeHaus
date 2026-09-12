@@ -41,7 +41,7 @@ every storey (#43's motivating case).
 - Sheet sizes: 11×17 and Arch D 24×36 presets (many MN cities accept 11×17 residential).
 - `haus print` = build → render all sheets → single bookmarked `out/permit_set.pdf` +
   per-sheet DXF.
-- **`haus print --handoff`** additionally emits `out/handoff/` — the "give this to your
+- **`haus print --handoff`** additionally emits `out/handoff-architect/` — the "give this to your
   architect" bundle: core-LOD IFC, all DXFs, the permit-set PDF, `brief.md`, the decision log
   (from `/import-review` rounds if any), and the diff baseline. This is the exit-ramp-2
   deliverable (→ 00 §Success): a package a professional imports and builds on directly.

@@ -102,15 +102,51 @@ no way to notice if the roof changes under it.
 
 ## Workflow
 
+`haus handoff` assembles everything a professional needs and, with it, a **draft of this
+file**. That is the ordinary path; the item-at-a-time commands below are for looking at one
+number, not for preparing a handover.
+
+```
+haus handoff houses/catlin --zip                  # -> out/handoff/ and out/handoff.zip
+# ... send the zip. The PE stamps calcs.pdf and fills in engineering.toml.draft.
+cp out/handoff/engineering.toml.draft houses/catlin/engineering.toml
+haus engineering houses/catlin --require-seal     # every computed item FRESH?
+haus print houses/catlin --sealed                 # the submittal gate
+```
+
+**The draft is a form, and the loader enforces that.** Every field a person must supply is
+written as `<<LIKE THIS>>`, and this file is **refused** while any of them remains — naming
+the field, so the reader fixes the right one. That is what keeps the engine's scaffolding
+from becoming a seal by being copied: the engine writes into `out/`, never into the house,
+and decision #65's rule that pinning a seal is a human act is unchanged.
+
+**The fingerprints in the draft are already filled in and must not be edited.** Obtaining
+forty of them one at a time was the part of this workflow that invited transcription error,
+and a mistyped fingerprint produces a seal that reads FRESH against nothing.
+
+**One `[[signoff]]` per kind, and blocks may be split.** A professional stamps a scope, not
+a line item; the draft groups accordingly. If the work was split between two people, split
+the block and give each its own `id` — every item must appear in exactly one, and the
+loader refuses a duplicate. Delete the blocks nobody sealed rather than leaving them
+half-filled.
+
+Deferred kinds arrive **commented out**, with their designer and deliverable in the comment
+and no fingerprint. There is nothing to pin, and an unpinned seal never satisfies
+`--require-seal`, so a live block would only invite a stamp that cannot work.
+
+### Looking at one item
+
 ```
 haus engineering houses/catlin                    # what needs a seal, and what governs
 haus engineering houses/catlin --item retaining_wall/W-SG-E2   # the calc, term by term
 haus engineering houses/catlin --fingerprint retaining_wall/W-SG-E2
-# ... send the item's calc out for review; when it comes back sealed, write the
-#     [[signoff]] block above and paste the fingerprint into [signoff.fingerprint].
 haus engineering houses/catlin --unsealed         # what is still outstanding
-haus print houses/catlin --sealed                 # the submittal gate
 ```
 
-See also: `docs/prices-toml-format.md`, whose conventions this file follows, and decision
-#65 in `plans/01-decisions.md` for why authority is orthogonal to verdict.
+`--item` on a member of a GROUP item resolves to the group and says so — twenty walls clad
+in one panel are one design and one seal, keyed on the lowest member tag. `covers` lists
+the group's id, not its members.
+
+See also: `docs/handoff-bundle-format.md` for what the bundle contains,
+`docs/prices-toml-format.md`, whose conventions this file follows, and decision #65 in
+`plans/01-decisions.md` for why authority is orthogonal to verdict.

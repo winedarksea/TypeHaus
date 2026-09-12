@@ -77,6 +77,7 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
 .venv/bin/haus engineering houses/catlin --item retaining_wall/W-SG-E2   # term by term
 .venv/bin/haus engineering houses/catlin --fingerprint retaining_wall/W-SG-E2
 .venv/bin/haus calcs houses/catlin                        # the calc package a PE marks up
+.venv/bin/haus handoff houses/catlin --zip                # the whole bundle a PE gets
 .venv/bin/haus print houses/catlin --sealed               # the submittal gate
 ```
 
@@ -103,6 +104,12 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
   register, and one nine-section sheet per item, byte-deterministic and regenerated rather
   than maintained (`docs/calc-package-format.md`). Each kind declares its oracle note with
   `oracled_by(KIND, Oracle(...))`, and a test lints that every kind names one that exists.
+- **`haus handoff` is the whole handover in one command**: `out/handoff/` carries the calc
+  package, its PDF, only the notes those records cite, the models, a manifest of sha256s and
+  `engineering.toml.draft` — the seal register as a FORM, fingerprints filled in and every
+  human field a visible `<<blank>>`. The loader **refuses** a register still holding one, so
+  the engine can scaffold without ever writing a seal. The bundle is byte-deterministic, or
+  the manifest would prove nothing (`docs/handoff-bundle-format.md`).
 - The seal lives in `houses/<name>/engineering.toml` (`docs/engineering-toml-format.md`),
   never on the elements: those are `# haus: editable` and undoable, and `_content_hash`
   hashes every `plan/**/*.py`, so a stamp written into plan source would change the hash it

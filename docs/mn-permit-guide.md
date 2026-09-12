@@ -31,7 +31,7 @@ Verify the emitted core IFC in the M3 target importer, Bonsai for Blender:
 
 ```bash
 /Applications/Blender.app/Contents/MacOS/Blender --background \
-  --python scripts/verify_bonsai_import.py -- houses/catlin/out/handoff/model_core.ifc
+  --python scripts/verify_bonsai_import.py -- houses/catlin/out/handoff-architect/model_core.ifc
 ```
 
 The verifier requires imported walls, roofs, spaces, storeys, and Blender geometry; it does

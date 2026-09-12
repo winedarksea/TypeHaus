@@ -21,33 +21,21 @@ from pathlib import Path
 
 import typer
 
-from typehaus.cli._shared import _print_findings, _resolve_house, app, console
+from typehaus.cli._shared import app, console
 
 
 def _load(house: Path | None):  # type: ignore[no-untyped-def]
     """The house's engineering items, its results, and its register.
 
-    The *item list* comes from running the checks and collecting every
-    ``Finding.engineering_item``, not from asking the suite to enumerate itself. That is
-    deliberate: which requirements in a house are outside the prescriptive path is a
-    conclusion the checks reach — 7 feet of unbalanced fill here, 3 feet next door — and a
-    second enumeration living in the suite would be the same judgement written twice, free
-    to drift. Any kind that registers its own keys is unioned in, for an item nothing asks
-    about.
+    A thin adapter over ``cli/engineering_load.load_engineering``, which is shared with
+    ``haus calcs`` and ``haus handoff`` so that the three cannot disagree about what this
+    house owes an engineer. See that module for why the item list is the checks' conclusion
+    and not the suite enumerating itself.
     """
-    from typehaus.checks import build_context, run_checks
-    from typehaus.source import load_plan
+    from typehaus.cli.engineering_load import load_engineering
 
-    directory = _resolve_house(house)
-    loaded = load_plan(directory)
-    if loaded.plan is None:
-        _print_findings(loaded.findings)
-        raise typer.Exit(1)
-    ctx, _ = build_context(loaded.plan, directory)
-    report = run_checks(ctx)
-    named = {x.engineering_item for x in report.findings if x.engineering_item}
-    item_ids = sorted(named | set(ctx.engineering))
-    return directory, item_ids, ctx.engineering, ctx.engineering_register
+    load = load_engineering(house)
+    return load.directory, list(load.item_ids), load.results, load.register
 
 
 def _seal_label(state, signoff) -> tuple[str, str]:  # type: ignore[no-untyped-def]

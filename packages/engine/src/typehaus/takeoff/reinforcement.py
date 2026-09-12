@@ -216,3 +216,64 @@ def _add(rows: dict[tuple[str, str, str], dict[str, object]], entry: Any, pour_c
     tags = row["tags"]
     assert isinstance(tags, list)
     tags.append(tag)
+
+
+def reinforcement_by_host(model: Any) -> list[dict[str, object]]:
+    """The same steel as :func:`reinforcement_takeoff`, one row per ``(host, role)``.
+
+    The BOM aggregates by ``(bar, coating, scope)`` because that is how steel is bought. The
+    IFC needs the opposite cut — which bars belong to WHICH element — so that a reviewer
+    clicking a pier sees its cage rather than a house-wide total.
+
+    It is the same arithmetic through the same two helpers, deliberately, so the two views
+    cannot disagree: ``tests/test_ifc_structural_enrichment.py`` sums these back up and
+    compares against the BOM.
+    """
+    plan = model.plan
+    out: list[dict[str, object]] = []
+
+    net_areas = wall_net_areas_m2(model)
+    for wall in sorted(model.walls, key=lambda w: w.tag):
+        element = plan.by_tag(wall.tag)
+        spec = getattr(element, "reinforcement", None)
+        if spec is None:
+            continue
+        area_m2 = _wall_structure_area_m2(model, wall, net_areas)
+        if area_m2 <= 0.0:
+            continue
+        scope = "foundation wall" if wall.is_foundation else "wall"
+        _rows_for(out, spec, plan, element, wall.tag, scope,
+                  lambda entry, a=area_m2: _spaced_length_ft(entry, a * _M2_TO_FT2))
+
+    for solid in sorted(model.solids, key=lambda s: s.tag):
+        element = plan.by_tag(solid.tag)
+        spec = getattr(element, "reinforcement", None) if element is not None else None
+        if spec is None:
+            continue
+        if solid.category == "column":
+            _rows_for(out, spec, plan, element, solid.tag, "column",
+                      lambda entry, sp=spec, so=solid: _cage_length_ft(entry, sp, so))
+            continue
+        area_ft2 = _plan_area_ft2(solid)
+        _rows_for(out, spec, plan, element, solid.tag, solid.category,
+                  lambda entry, a=area_ft2: _spaced_length_ft(entry, a))
+    return out
+
+
+def _rows_for(out: list[dict[str, object]], spec: Any, plan: Any, element: Any,
+              tag: str, scope: str, length_of: Any) -> None:
+    pour_coating = _pour_coating(plan, element)
+    for entry in spec.bars:
+        if entry.bar not in BARS:
+            continue
+        length_ft = length_of(entry)
+        if length_ft <= 0.0:
+            continue
+        out.append({
+            "tag": tag, "scope": scope, "role": entry.role, "bar": f"#{entry.bar}",
+            "coating": entry.coating or pour_coating or "",
+            "length_ft": float(length_ft),
+            "weight_lb": float(length_ft) * BARS[entry.bar].weight_plf,
+            "diameter_in": BARS[entry.bar].diameter_in,
+            "area_in2": BARS[entry.bar].area_in2,
+        })

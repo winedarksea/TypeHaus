@@ -22,7 +22,7 @@ from pathlib import Path
 
 import typer
 
-from typehaus.cli._shared import _print_findings, _resolve_house, app, console, generation_date
+from typehaus.cli._shared import app, console, generation_date
 
 
 @app.command()
@@ -47,29 +47,17 @@ def calcs(
     runs is a real change in the model or in a calculation.
     """
     from typehaus._meta import engine_version
-    from typehaus.checks import build_context, evaluate_permit_checklist, run_checks
-    from typehaus.source import load_plan
+    from typehaus.cli.engineering_load import load_engineering, require_item
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
     from typehaus.takeoff.handoff import MANIFEST, prune_unlisted, write_manifest
 
-    directory = _resolve_house(house)
-    loaded = load_plan(directory)
-    if loaded.plan is None:
-        _print_findings(loaded.findings)
-        raise typer.Exit(1)
-    ctx, _ = build_context(loaded.plan, directory, profile)
-    report = run_checks(ctx)
-    # The item list is the checks' conclusion, unioned with any kind that enumerates its own
-    # keys — the same derivation ``haus engineering`` uses, and deliberately not a second
-    # one. See ``cli/cmd_engineering.py::_load``.
-    named = {f.engineering_item for f in report.findings if f.engineering_item}
-    item_ids = tuple(sorted(named | set(ctx.engineering)))
-    if item is not None and item not in item_ids:
-        console.print(f"[red]{item}: no such engineering item in this house[/red]")
-        console.print("[dim]run `haus engineering` for the list[/dim]")
-        raise typer.Exit(1)
+    load = load_engineering(house, profile)
+    directory, ctx, item_ids = load.directory, load.ctx, load.item_ids
+    loaded = load.loaded
+    if item is not None:
+        require_item(load, item)
 
-    checklist = evaluate_permit_checklist(report, ctx.profile)
+    checklist = load.checklist
     files = calc_package(PackageInputs(
         house=directory.name,
         model=ctx.model,

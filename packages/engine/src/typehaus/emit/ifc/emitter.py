@@ -30,6 +30,15 @@ from typehaus.emit.ifc.architectural import (
     _emit_wall_types,
 )
 from typehaus.emit.ifc.electrical import emit_conduits, emit_light_runs, emit_solar_panels
+from typehaus.emit.ifc.engineering_pset import attach_engineering_psets
+from typehaus.emit.ifc.lowlevel_guids import (
+    pin_header_timestamp,
+    pin_project_guid,
+    pin_relation_member_order,
+    pin_relationship_guids,
+    pin_spatial_guids,
+    pin_unit_order,
+)
 from typehaus.emit.ifc.mep import (
     _ACCESSORY_IFC_CLASS,
     _PIPE_SYSTEM_OBJECT_TYPES,
@@ -44,6 +53,8 @@ from typehaus.emit.ifc.mep import (
     _emit_stormwater_system,
     _emit_sump_pumps,
 )
+from typehaus.emit.ifc.profiles import attach_profiles
+from typehaus.emit.ifc.reinforcement import emit_reinforcement
 from typehaus.emit.ifc.roof import emit_roof
 from typehaus.emit.ifc.site import (
     _emit_footing_bedding,
@@ -73,8 +84,17 @@ __all__ = ["emit_ifc", "_ACCESSORY_IFC_CLASS", "_PIPE_SYSTEM_OBJECT_TYPES",
 
 
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
-             sequence: bool = False, house_dir: Path | None = None) -> Path:
+             sequence: bool = False, house_dir: Path | None = None,
+             engineering: Any = None, register: Any = None) -> Path:
     """Emit the resolved model to an IFC4 file at ``out_path``. Returns the path.
+
+    ``engineering`` and ``register`` are the engineering results and the seal register.
+    Passed, every element an ``EngineeringRecord`` names carries that record as a
+    ``Pset_TH_Engineering_<kind>`` property set — item id, status, governing limit state,
+    demand, capacity, ratio, citation, fingerprint and seal freshness. That is what makes
+    the IFC something a reviewing engineer can check against rather than only look at, and
+    it is why ``haus handoff`` ships one. Omitted (the ordinary ``haus build``), nothing
+    changes: the permit IFC goes to a plan reviewer who wants geometry.
 
     ``sequence=True`` additionally writes the derived work packages as
     ``IfcWorkPlan``/``IfcWorkSchedule``/``IfcTask`` plus ``IfcCostSchedule``/``IfcCostItem``
@@ -222,7 +242,34 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
 
     # Containment was collected rather than written as it went (→ ll.assign_container);
     # this is where it becomes entities, and it must happen before the file is serialized.
+    # The reinforcing steel, as a bar schedule under each pour. Before the profile pass:
+    # a bar is an IfcReinforcingBar and takes no section profile of its own.
+    if engineering is not None:
+        emit_reinforcement(f, model, element_entities)
+
+    # Section profiles and material grades on every structural member — the thing that
+    # makes this file checkable against the calculation package rather than only viewable.
+    attach_profiles(f, model, engineering)
+
+    if engineering is not None:
+        # After every element exists and before the GUIDs are pinned: the property sets
+        # this writes are themselves machine-minted and must be pinned with the rest.
+        attach_engineering_psets(f, model, element_entities, engineering, register)
+
     ll.flush_containers(f)
+
+    # Everything ifcopenshell minted for us on the way past — relationships, property sets,
+    # the header timestamp — is a fresh uuid4 or a wall-clock reading, which made two
+    # identical builds differ by a few thousand bytes. `haus handoff` ships a manifest of
+    # sha256s to a PE, and a manifest over a file that changes on every run proves nothing.
+    # This must be the LAST thing before the write: it rewrites GUIDs on entities the
+    # emitters above are still creating.
+    pin_project_guid(ifc_project, project_uuid)
+    pin_spatial_guids(f, project_uuid)
+    pin_relation_member_order(f)
+    pin_relationship_guids(f, project_uuid)
+    pin_unit_order(f)
+    pin_header_timestamp(f)
 
     f.write(str(out_path))
     return out_path

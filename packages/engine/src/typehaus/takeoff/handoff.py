@@ -13,7 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import zipfile
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 
 #: The manifest's own name, so callers do not spell it three times.
@@ -127,3 +127,117 @@ def manifest_table(digests: Mapping[str, str]) -> str:
     lines = ["| File | sha256 |", "|---|---|"]
     lines += [f"| `{name}` | `{digest}` |" for name, digest in sorted(digests.items())]
     return "\n".join(lines)
+
+
+def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: str,
+              records, notes: Sequence[str], checklist, has_pdf: bool) -> str:
+    """The page a reviewing engineer opens first — five minutes, in order.
+
+    Written as a route through the bundle rather than a description of it. A PE handed forty
+    calculation sheets and three models needs to know where to start, what a stamp would and
+    would not cover, and how to hand the work back; everything else in the folder answers a
+    question they have not asked yet.
+    """
+    from typehaus.engineering.item import Status
+
+    ok = [r for r in records if r.status is Status.OK]
+    incomplete = [r for r in records if r.status is Status.INCOMPLETE]
+    over = [r for r in records if r.status is Status.OVER]
+    deferred = [r for r in records if r.status is Status.NO_CALC]
+
+    out = [
+        f"# {house} — engineering handoff",
+        "",
+        "**NOT FOR CONSTRUCTION.** Nothing in this bundle is sealed. It is one house's",
+        "engineered requirements, the calculations behind them, and the hand-worked notes",
+        "each calculation is checked against, assembled so that a licensed professional can",
+        "confirm them and stamp what they agree with.",
+        "",
+        "| | |",
+        "|---|---|",
+        f"| Generated | {generated} |",
+        f"| Engine | {engine_version} |",
+        f"| Model content hash | `{content_hash}` |",
+        f"| Items | {len(records)} |",
+        "",
+        "## Five minutes, in order",
+        "",
+        "1. **`calcs/00-cover.md`** — the building, the code edition, and the design",
+        "   criteria every calculation shares. If a criterion is wrong, stop here.",
+        "2. **`calcs/02-item-register.md`** — every item, its governing limit state and its",
+        "   demand/capacity ratio, on one page.",
+        "3. **`calcs/03-open-items.md`** — what is *not* finished, and who owns each one.",
+        "4. **`calcs/<kind>__<tag>.md`** — one nine-section sheet per item: scope,",
+        "   references, given, analysis, result, assumptions, open inputs, independent",
+        "   check, and what the sheet does not cover.",
+        f"5. **`notes/`** — {len(notes)} hand-worked note(s). Each calculation in this engine",
+        "   is checked against an independent hand pass, and section 8 of every sheet names",
+        "   the note that checks it. A calculation that only agrees with itself is not",
+        "   verified, and these are how that rule is kept.",
+        "",
+    ]
+    if has_pdf:
+        out += ["`calcs.pdf` is the same content flattened and page-anchored — the file to",
+                "mark up and stamp, because no jurisdiction accepts Markdown.", ""]
+
+    out += [
+        "## What a stamp here covers",
+        "",
+        f"- **{len(ok)} item(s) are computed and check out.** Every limit state is graded",
+        "  and under 1, with nothing missing. These are what a seal can cover today.",
+    ]
+    if incomplete:
+        out.append(f"- **{len(incomplete)} item(s) are INCOMPLETE** — computed, but an input")
+        out.append("  is missing. `03-open-items.md` names each one. You may well be the")
+        out.append("  person who supplies it.")
+    if over:
+        out.append(f"- **{len(over)} item(s) are OVER capacity.** These are not review")
+        out.append("  items, they are design changes.")
+    if deferred:
+        out.append(f"- **{len(deferred)} item(s) are DEFERRED and are not yours** — a truss")
+        out.append("  fabricator's or a supplier's sealed design governs them, and this")
+        out.append("  engine computes nothing for them. They carry no fingerprint and a")
+        out.append("  stamp over them could not be pinned.")
+    out += [
+        "",
+        "**Not in this bundle, and not covered by any stamp on it:** anything answered by a",
+        "prescriptive table (the IRC's, or a manufacturer's published span table read on the",
+        "element) and anything the sheets' section 9 lists as out of scope.",
+        "",
+        "## Pinning, and why the fingerprints matter",
+        "",
+        "Each item carries a **fingerprint** — a hash of the inputs its calculation actually",
+        "consumed, each rounded to its own declared tolerance, plus the calculation's basis",
+        "version. It is not a hash of the model: a doorknob moving must not stale a footing",
+        "seal. When the model changes in a way that changes an input, the fingerprint stops",
+        "matching and the item reads STALE rather than sealed. That is the mechanism that",
+        "keeps a stamp meaning something six months later.",
+        "",
+        "## How to hand the work back",
+        "",
+        "1. Stamp `calcs.pdf` (or the sheets you reviewed).",
+        "2. Fill in `engineering.toml.draft` — it is a form, with every blank marked",
+        "   `<<LIKE THIS>>`, and the fingerprints already filled in. Do not edit those.",
+        "3. Return both. The owner copies the draft to `houses/<name>/engineering.toml` and",
+        "   runs `haus engineering --require-seal` and `haus print --sealed`.",
+        "",
+        "The engine refuses to load that file while any `<<placeholder>>` remains, so an",
+        "unedited form cannot become a seal by being copied.",
+        "",
+        "## The models",
+        "",
+        "`model.ifc` is IFC4, framing level of detail. It opens in Bonsai (the Blender IFC",
+        "add-on) and in any IFC4 viewer. Structural members carry their section profiles and",
+        "material grades, and every engineered item's record rides on its elements as a",
+        "`Pset_TH_Engineering_<kind>` property set: item id, status, governing limit state,",
+        "demand, capacity, ratio, citation and fingerprint. `model.glb` is the same building",
+        "for a viewer that does not read IFC.",
+        "",
+        "## Integrity",
+        "",
+        "`MANIFEST.json` lists every file in this bundle with its sha256. The bundle is",
+        "byte-deterministic: regenerating it from an unchanged model reproduces every hash,",
+        "so a changed hash is a changed model and not a re-run.",
+        "",
+    ]
+    return "\n".join(out) + "\n"
