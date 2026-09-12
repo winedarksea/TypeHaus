@@ -300,7 +300,10 @@ def _post_links(ctx: CheckContext) -> list:
     links: list = []
     for tag in sorted(posts):
         post = posts[tag]
-        if post.within_wall:
+        # ``within_wall`` is geometric — the framer cuts the plates around the post — so it
+        # cannot on its own say the base joint is made. A post standing in a stud line on an
+        # authored base (the breezeway canopy columns) still has that base graded.
+        if post.within_wall and tag not in based:
             continue  # developed by the wall's own plates and studs; the SP tie bills that
         if _is_concrete(ctx, post):
             # A cast column on a cast footing is joined by a doweled lap into the column's

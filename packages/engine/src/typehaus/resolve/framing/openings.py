@@ -181,13 +181,23 @@ def sole_plate_breaks(
     Stations are on the same wall axis ``WallOpening.center_m`` uses, which is the axis the
     plate is stationed on, so no reprojection is needed.
     """
-    spans = sorted(
+    return merge_spans([
         (o.center_m - o.width_m / 2.0, o.center_m + o.width_m / 2.0)
         for o in openings
         if o.sill_m < -1e-9
-    )
+    ])
+
+
+def merge_spans(spans: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Sorted ``(lo, hi)`` spans, overlapping or touching ones fused into one.
+
+    Lifted out of :func:`sole_plate_breaks`, which grew it first, so the plate-break list
+    can be assembled from two producers — an opening that drops below the framing base, and
+    a post standing in the stud line (``framing/posts.py``) — without either learning about
+    the other, and without two spellings of the same merge drifting apart.
+    """
     merged: list[tuple[float, float]] = []
-    for lo, hi in spans:
+    for lo, hi in sorted(spans):
         if merged and lo <= merged[-1][1] + 1e-9:
             merged[-1] = (merged[-1][0], max(merged[-1][1], hi))
         else:

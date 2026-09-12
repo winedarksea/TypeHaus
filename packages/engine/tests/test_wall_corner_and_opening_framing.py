@@ -145,6 +145,64 @@ def test_a_door_on_the_framing_base_leaves_the_sole_plate_whole():
     assert [m.child_key for m in plates] == ["plate-bottom"]
 
 
+# ------------------------------------------------------- post-in-wall plate-cut tests
+_POST_HALF = inch(5.5).meters / 2.0  # a 6x6's face-to-face half-width along the axis
+
+
+def _post_wall(centre_m: float):
+    """A 4 m wall with one 6x6's band centred at ``centre_m``, and its members."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    bands = ((centre_m, _POST_HALF),)
+    return bands, frame_wall(_plan_double(), rw, openings=[], post_bands=bands)
+
+
+def test_a_post_in_the_stud_line_cuts_every_plate_course_at_its_faces():
+    """``Post.within_wall``'s own promise: the framer cuts the plates around the post.
+
+    All THREE courses, not just the bottom one — an opening below the framing base breaks
+    only the sole plate (the top plate runs over a garage door), but a 6x6 standing in the
+    wall interrupts the whole stack. And the cut lands flush on the post faces, unwidened,
+    because that is where the framer saws it.
+    """
+    bands, members = _post_wall(2.0)
+    centre, half = bands[0]
+    for course in ("plate-bottom", "plate-top-0", "plate-top-1"):
+        plates = sorted((m for m in members if m.child_key.startswith(course)),
+                        key=lambda m: m.p0[0])
+        assert [m.child_key for m in plates] == [f"{course}-0", f"{course}-1"], course
+        assert plates[0].p1[0] == pytest.approx(centre - half, abs=1e-9)
+        assert plates[1].p0[0] == pytest.approx(centre + half, abs=1e-9)
+    # And the module parts around it: no stud centreline lands inside the post, nor within
+    # half its own face of it, which is what ``post_keepouts`` widens the band to buy.
+    keepout = half + _STUD_THICKNESS / 2.0
+    verticals = [m for m in members if m.category in _VERTICAL_CATEGORIES]
+    assert verticals, "the fixture wall should still frame studs"
+    assert not [m for m in verticals if abs(m.p0[0] - centre) < keepout - 1e-9]
+
+
+def test_a_post_at_the_wall_end_trims_the_plate_rather_than_splitting_it():
+    """The single-segment key convention, which every wall in every house depends on.
+
+    A band straddling station 0 leaves a residue shorter than the wall's own thickness on
+    the near side, which ``_plate_segments`` drops as a sliver. One segment is left, so the
+    course keeps its historical key — ``plate-bottom``, not ``plate-bottom-0``. Anything
+    else churns the member id of every plate in the model.
+    """
+    bands, members = _post_wall(0.0)
+    for course in ("plate-bottom", "plate-top-0", "plate-top-1"):
+        plates = [m for m in members if m.child_key.startswith(course)]
+        assert [m.child_key for m in plates] == [course], course
+        assert plates[0].p0[0] == pytest.approx(bands[0][1], abs=1e-9)
+
+
+def test_a_wall_with_no_post_in_it_keeps_every_plate_key_unchanged():
+    """The regression guard for the convention above, stated from the other side."""
+    rw = _mitred_wall(4.0, 0.0, at_start=True)
+    members = frame_wall(_plan_double(), rw, openings=[])
+    assert sorted(m.child_key for m in members if m.category == "plate") == [
+        "plate-bottom", "plate-top-0", "plate-top-1"]
+
+
 # ---------------------------------------------------------- small-opening unit tests
 def _fourteen_inch_window_wall():
     """A 4 m wall with a 14" window centred on the bay between the 4th and 5th studs."""

@@ -284,6 +284,12 @@ class Post(Element):
     # ``structural.member_interference`` clears the post against exactly this wall's
     # framing and no other. Authored, never guessed (same doctrine as flush-framed beams):
     # a post that merely crashes into a wall it never named is still reported.
+    #
+    # The field is **geometric and only geometric**. It does not say the post's base joint is
+    # developed by the wall: a post standing in a stud line on an authored base still buys its
+    # own part and is still graded for its uplift link (the breezeway canopy columns stand in
+    # W-BW-SCREEN *and* on ABU66SS over cast piers). Consumers key that exemption on the
+    # joint — ``tags_covered_by`` — never on this field alone.
     within_wall: str | None = None
     # The reinforcing cage in a CAST post, verbatim — e.g. '(4) #5 vertical, #3 ties @ 10"
     # o.c.'. Same contract as FoundationWall.vertical_reinforcement (records what the member

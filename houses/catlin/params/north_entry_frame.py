@@ -462,8 +462,13 @@ for _uid, _tag, _x, _pad_in, _top in (
 COLUMN_HEIGHT_FT = HEADER_SOFFIT_FT - BEARING_TOP_FT
 FULL_HEIGHT_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
 ROOF_COLUMNS = [
+    # Both stand ON the screen panel's line, interior to its run, so the panel's plates and
+    # studs are cut around them and the 2x4 infill butts the column faces (``Post
+    # .within_wall``). The field is geometric only: these two still stand on their own
+    # authored ABU66SS bases over cast piers, and still buy their cast-in bolts.
     Post(uid=_uid, tag=_tag, position=pt(ft(_x), ft(_y)),
-         size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier)
+         size="6x6", height=ft(COLUMN_HEIGHT_FT), assembly="POST_KDAT", supported_by=_pier,
+         within_wall="W-BW-SCREEN")
     for _uid, _tag, _x, _y, _pier in (
         ("BWPT07AAAA", "PT-BW-CW", LANDING_WEST_FT, PIER_LINE_Y_FT, "PT-BW-W"),
         ("BWPT11AAAA", "PT-BW-CNW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "PT-BW-GW"),

@@ -281,8 +281,13 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # the carriers they were meant to hold, sized off the pier top); since 2026-09-11 they
     # are 25 3/4" 4x4 posts on authored bases, and they left the squash-block set with the
     # height.
+    # No ``within_wall`` filter, and deliberately not: since 2026-09-12 that field is
+    # geometric only (the framer cuts the plates around the post), so it says nothing about
+    # whether the base joint is made. PT-BW-CW / -CNW now carry it — they stand in
+    # W-BW-SCREEN's stud line — and still stand on their own authored ABU66SS bases. The
+    # tudor timbers, which also carry it, stay out of this set on their 6.125x6.125 section.
     wood = {e.tag for e in catlin_model_ro.plan.all_elements()
-            if isinstance(e, Post) and e.supported_by and not e.within_wall
+            if isinstance(e, Post) and e.supported_by
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
         "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE",
@@ -339,6 +344,11 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # The population is the union of authored and derived bases, which is why this does not
     # equal the derived rows alone: `CN-BW-BASE-W` / `-NW` (ABU66SS) are authored and each
     # still need their bolt.
+    #
+    # It stayed 4 on 2026-09-12, when PT-BW-CW / -CNW gained ``within_wall="W-BW-SCREEN"``
+    # so the screen panel's plates would be cut around them. That field used to stand this
+    # rule down on its own and would have deleted these two bolts; it is now keyed on the
+    # JOINT, and a post standing in a stud line on an authored base still buys its part.
     assert row["count"] == 4
     assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 2
     assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \

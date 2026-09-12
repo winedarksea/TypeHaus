@@ -216,7 +216,12 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     by_storey: Counter = Counter()
     tags: list = []
     for storey, post in _posts(model):
-        if post.within_wall or is_squash_block(post, rules):
+        # ``within_wall`` is geometric: it says the framer cuts the plates around this post.
+        # It does NOT say the base joint is developed by the wall — the breezeway's canopy
+        # columns stand in the screen panel's stud line *and* on authored ABU66SS bases over
+        # cast piers. Key the exemption on the joint instead, or authoring the geometric
+        # field deletes those bolts from the order.
+        if (post.within_wall and post.tag not in covered) or is_squash_block(post, rules):
             continue
         # The size gate comes FIRST, and it applies to the authored half too. The
         # breezeway's four ABU66SS ``Connector`` elements name both members of the joint —

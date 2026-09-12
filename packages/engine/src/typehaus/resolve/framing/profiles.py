@@ -24,6 +24,7 @@ from functools import lru_cache
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import inch
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
+from typehaus.resolve.geometry import circle_outline
 
 # Default ridge/girder section: 2 plies of 1.75" LVL stock (3.5" combined) x 14" deep.
 #
@@ -367,3 +368,24 @@ def open_web_opening_m(section: CrossSection) -> float | None:
     if section.shape != "floor_truss" or section.flange_thickness_m is None:
         return None
     return section.depth_m - 2 * section.flange_thickness_m
+
+
+# A round column has no first-class prism in the solid IR, so every consumer draws it as
+# this many facets. One number, because two consumers drawing the same sonotube at
+# different facet counts would disagree about where its face is.
+COLUMN_FACETS = 16
+
+
+def post_outline(center: tuple[float, float], section: CrossSection) -> list[tuple[float, float]]:
+    """The plan outline of a post of ``section`` centred on ``center``.
+
+    Shared by ``resolve/envelope.py``, which extrudes it into the column solid, and
+    ``resolve/framing/posts.py``, which projects it onto a wall axis to cut the plates at
+    the post's faces. Those two must agree to the last decimal or the plate would stop
+    somewhere other than the face the reader sees.
+    """
+    cx, cy = center
+    if section.shape == "round":
+        return circle_outline(center, section.width_m / 2.0, COLUMN_FACETS)
+    hw, hd = section.width_m / 2.0, section.depth_m / 2.0
+    return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]

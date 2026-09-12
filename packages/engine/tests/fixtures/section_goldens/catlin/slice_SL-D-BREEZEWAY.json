@@ -1744,7 +1744,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "BWWS01AAAA",
-      "tag": "plate-bottom"
+      "tag": "plate-bottom-1"
     },
     {
       "space": "model",
@@ -1800,7 +1800,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "BWWS01AAAA",
-      "tag": "plate-top-0"
+      "tag": "plate-top-0-1"
     },
     {
       "space": "model",
@@ -1856,7 +1856,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "BWWS01AAAA",
-      "tag": "plate-top-1"
+      "tag": "plate-top-1-1"
     },
     {
       "space": "model",

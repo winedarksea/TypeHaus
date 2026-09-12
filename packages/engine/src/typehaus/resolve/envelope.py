@@ -18,9 +18,9 @@ from typehaus.resolve.ceiling_over import (
     deck_structure_underside_m,
 )
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, post_outline
 from typehaus.resolve.framing.solver import band_axis
-from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
+from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import (
     BoundaryCondition,
     ResolvedFootingBedding,
@@ -509,7 +509,6 @@ def _resolve_roof(
 # Posts (→ IfcColumn) and standalone Beams (→ IfcBeam) become ResolvedSolids so the same
 # glTF/IFC/model.json consumers that draw slabs also draw the framing. Run this AFTER roof
 # framing so authored ridge Beams (already emitted as roof members) are excluded.
-_COLUMN_FACETS = 16
 
 
 def _bearing_stack_drops(model: ResolvedModel) -> tuple[dict[str, float], dict[str, float]]:
@@ -617,16 +616,8 @@ def _resolve_post(post: Post, storey_tag: str, elevation: float,
     else:
         z0, z1 = elevation - height, elevation - drop
     return ResolvedSolid(post.uid, post.tag, storey_tag, "column",
-                         tuple(_post_outline(post.position.xy_m, cs)), z0, z1,
+                         tuple(post_outline(post.position.xy_m, cs)), z0, z1,
                          assembly=post.assembly)
-
-
-def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:
-    cx, cy = center
-    if cs.shape == "round":
-        return circle_outline(center, cs.width_m / 2.0, _COLUMN_FACETS)
-    hw, hd = cs.width_m / 2.0, cs.depth_m / 2.0
-    return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]
 
 
 def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,

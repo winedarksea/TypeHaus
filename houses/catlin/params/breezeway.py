@@ -289,10 +289,20 @@ GARAGE_STOREY_ELEMENTS = []
 # ** THE STUD LINE HOLDS THE DATUM, NOT THE MIDDLE OF THE STACK (2026-09-11). ** The panel
 # is centred between PT-BW-CW and PT-BW-CNW, two 6x6s on the same x=6'-0" node line, and the
 # 2x4s are what die into them. Left to centre on its own axis the stack would re-centre when
-# the east corrugated skin came off, sliding every plate and stud 7/16" east off the columns
-# -- `structural.member_interference` reports that six times over, once per plate/column pair.
-# It would also slide the WEST corrugated face 7/16" east off the plane it shares with the
-# garage's own panel, which is the one plane on this wall that is not free to move.
+# the east corrugated skin came off, sliding every plate and stud 7/16" east off the columns.
+#
+# ** WHAT THAT 7/16" WAS HOLDING OFF CHANGED ON 2026-09-12, AND ONLY HALF OF IT SURVIVES. **
+# The reason written here was `structural.member_interference`, six FAILs, one per
+# plate/column pair. That reading was upside down: 7/16" was simply the first value that
+# exceeded `interference_tolerance_in`, and the clash it "fixed" was the plates running
+# straight THROUGH both 6x6s, which `_butt_joint` cleared by treating a column as a centroid
+# point. Both columns now carry `within_wall="W-BW-SCREEN"` and the solver cuts all three
+# plate courses at their faces, so there are no plate/column pairs left to report and the
+# offset buys nothing there.
+#
+# What survives is the other half, and it is the load-bearing one: without the offset the
+# WEST corrugated face slides 7/16" east off the plane it shares with the garage's own panel,
+# which is the one plane on this wall that is not free to move.
 # `alignment=face("stud-ext", offset=inch(-1.75))` is a hardcoded HALF of the 2x4, the same
 # idiom (and the same trap) as `W-B-CS`/`W-B-CS3` in params/main_deck.py: an offset that
 # stopped matching the stud would slide the axis off x=6'-0" silently. The west cladding face

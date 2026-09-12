@@ -280,10 +280,18 @@ paying weather money for it. The shear is taken on the west face alone.
 
 The wall carries `alignment=face("stud-ext", offset=inch(-1.75))` so its 2x4s stay centred on
 the `PT-BW-CW`/`-CNW` column line at x=6'-0". Without it the stack re-centres when the east
-skin comes off and slides every plate 7/16" east off the two 6x6s, which
-`structural.member_interference` reports six times over — and it slides the west corrugated
-face off the plane it shares with the garage panel, which is the one plane here that is not
-free to move.
+skin comes off and slides the west corrugated face off the plane it shares with the garage
+panel, which is the one plane here that is not free to move.
+
+Until 2026-09-12 that offset was recorded as holding off six `structural.member_interference`
+FAILs, one per plate/column pair, and that reading was backwards. 7/16" was the first value
+that exceeded `interference_tolerance_in`, and the clash underneath it was the panel's three
+plate courses running straight **through** both 6x6s — cleared only because `_butt_joint`
+treats a column as a degenerate centroid point. `Post.within_wall` has always promised the
+framer cuts the plates around such a post; since 2026-09-12 the solver honours it, both
+columns carry it, and each course is cut flush at the column faces into 7 1/2", 54 1/4" and
+6 1/8" segments. There are no plate/column pairs left to report, so the alignment now rests
+on the cladding plane alone.
 
 **`W-BW-SCREEN-SKIRT`, −0'-1" down to −1'-2 1/2".** The same corrugated sheet, carried 13 1/2"
 further down over `BM-BW-SCSILL`, the two seat beams and the `ABU66SS` standoff bases under
