@@ -1,13 +1,14 @@
 > Current north entry, 2026-09-10 (engineered pass, then an owner revision the same day):
-> the canopy is FREESTANDING — `RF-BW-CANOPY`, four 24' trusses between two 3-ply 2x12 KDAT
-> headers, each header on TWO 6x6 KDAT columns of its own over cast piers, bearing on the
-> garage for nothing but the shared sheathing diaphragm. SIX piers on TWO depths: house-side
-> −9'-9 7/16" (cast with the open basement excavation), garage-side −7'-0" (cast with the
-> garage footings). The landing touches nothing on the house; the tiers are four CAST pours
-> on a compacted base, no wood and no piers. The canopy BRACES ITSELF: `PT-BW-RE`/`-RNE` are
-> full-height cast columns fixed at the base (east) and `W-BW-SCREEN` is a sheathed shear
-> panel (west); the garage joint is a tied diaphragm, not the lateral system. `W-BW-SCREEN`
-> is also the guard, with `SC-BW-WEST` a slat clerestory over it; `RL-BW-SCREEN` is retired.
+> the canopy is FREESTANDING — `RF-BW-CANOPY`, three 24' trusses between two 3-ply 2x12 KDAT
+> headers, the WEST one on two 6x6 KDAT columns over cast piers and the EAST one on
+> full-height cast columns, bearing on the garage for nothing but the shared sheathing
+> diaphragm. SIX piers on TWO depths: house-side −9'-9 7/16" (cast with the open basement
+> excavation), garage-side −7'-0" (cast with the garage footings). The landing touches
+> nothing on the house; the tiers are four CAST pours on a compacted base, no wood and no
+> piers. The canopy BRACES ITSELF: `PT-BW-RE`/`-RNE` are full-height cast columns fixed at
+> the base (east) and `W-BW-SCREEN` is a sheathed shear panel (west); the garage joint is a
+> tied diaphragm, not the lateral system. `W-BW-SCREEN` is also the guard, with `SC-BW-WEST`
+> a slat clerestory over it; `RL-BW-SCREEN` is retired.
 > **2026-09-11: `D-G-SERVICE` is hard in the garage's SW corner** (RO 6'-7"..9'-7", centre
 > x=8'-1", an inch off `D-M-ENTRY`), the landing narrowed to its east jamb (3'-7" wide, piers
 > at x=6'-0"/9'-7"), the interior landing and `ST-G-SERVICE` stand against `W-G-W` with a
@@ -178,6 +179,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
 - **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing. **Its two faces are not the same** (2026-09-11): WEST is 5/8" CDX under 7/8" `corrugated-panel-26` and carries the shear ALONE; EAST is one 5/8" APA Rated Siding 303 MDO panel doing shear and finish together, uncounted, because that face stands under the canopy roof and is a finish problem rather than a weather one. It carries `alignment=face("stud-ext", offset=inch(-1.75))` so the 2x4s stay centred on the `PT-BW-CW`/`-CNW` line at x=6'-0" — without it the stack re-centres, six `structural.member_interference` FAILs open against the two 6x6s, and the west corrugated face leaves the plane it shares with the garage panel. **`W-BW-SCREEN-SKIRT`** carries that west sheet 13 1/2" further down over the sill, the seat beams and the two `ABU66SS` bases, stopping 1" ABOVE the pier tops — the bottom edge is OPEN and must stay open, it is how the flutes drain and the column bases dry. It is a second element with its own node pair, not a lower base on the panel, because a wall's layers cannot run below its base and its sole plate would land on the piers in the seat beams. `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
+- **`BM-BW-RW`/`-RE` stay 3-ply 2x12 KDAT; the exterior glulam is REFUSED** (owner, 2026-09-12), and the engine is the reason rather than capacity. These are the only two `roof_beam` items in the house, and `engineering/roof_beam.py`'s `_SECTION` matches a sawn `N-2xM` and nothing else — a `"3.5x11.875"` makes both records INCOMPLETE, and nothing picks them up (`engineering/glulam_beam.py` left the registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at `C_D` 1.0, which cannot carry this 73.7 psf drift case). Retyping trades a d/c of **0.71** for a gap in the register. **The ply seam does not reach these two**: both headers ARE the eave bearing lines, the trusses land on their TOPS, so both seams sit inside the roof assembly under the deck, 1'-4" inboard of the drip line — which is the FPInnovations carve-out for appressed treated plies, and **not** the porch's 2026-09-06 refusal, which rested on tape plus a formed cap. No cap here, and its absence is not a gap. Cost confirms rather than drives: ~$325-450 over 11.4 LF. (→ DESIGN-LOG.md, "Site and the four structures")
+- **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — twelve of them, six at the north entry (`CN-BW-STDF-*`) and six in the garden (`CN-SG-STDF-*`), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The `HGAM10` beside the pack is the **TIE**, never the bearing — two parts, two jobs. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `CCQ46SDS2.5` caps on `ABU66SS` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's porch columns rise 10'-0 15/16" out of the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
@@ -1284,8 +1287,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   doweled into the 12" wall tops of `W-SG-W1`/`E1` — the balcony's entire
   lateral system in both plan directions.
 - 12", not 10": 2" cover on a #5 cage inside #3 ties needs a 6-5/8" bar circle,
-  flush with both wall faces. `SUNKEN_GARDEN_COLUMN_12` serves all five cast
-  columns; `_COLUMN_20` is retired.
+  flush with both wall faces. `SUNKEN_GARDEN_COLUMN_12` serves all SIX cast
+  columns in the court (`PT-SG-COL` joined them on 2026-09-10); `_COLUMN_20` is
+  retired.
 - Exposure F3 + C2, not F2: w/cm <= 0.40, f'c >= 5,000 psi, 6% ±1.5 air. Bar is
   hot-dip galvanized (ASTM A767 cl. 1 or A1094) — do not substitute epoxy or
   stainless. **Galvanize AFTER fabrication, and say so on the order.** A767's
@@ -1298,8 +1302,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the rebar order (→ `plans/buildability.md` BLD-02).
 - Beam seat is CAST TO LINE, no grout island: screed the wash/drip lip, take
   tolerance in the `SS316-SHIM-35` shim pack (`CN-SG-STDF-*`), HGAM10 gusset +
-  Titen Turbo. `PIER_CONCRETE_12` still carries a grout island at `PT-SG-COL` —
-  a known follow-up.
+  Titen Turbo at >=3" edge distance. `PIER_CONCRETE_12` says NO GROUT ISLAND too
+  since 2026-09-12; retyping `PT-SG-COL` did not close that follow-up, it rode
+  the island over to the north entry's own seats.
 - Two CENTRE pillars stay wood 6x6, bearing on a 3-ply pack (joist + two
   sisters) with squash blocks, through a cut-out in the composite deck
   (composite bears nothing). `CCQ46SDS2.5` cap closes uplift at each.

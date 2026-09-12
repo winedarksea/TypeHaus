@@ -1322,7 +1322,7 @@ OPENINGS = [
     # 1'-3" off N-M-W1 since 2026-08-29, restoring y=25'-3" after that node moved 2" north
     # with the y=26'-6" line — same compensation, same reason, as the WIN-M-MUD-W note below.
     Window(uid="FGWPV572DB", tag="WIN-M-BATH1-W", host="W-M-W2", type_ref="WT-1424-T",
-           position=from_node("N-M-W1", ft(1, 3)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-M-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
     # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
     # plan/placeables.py). Re-authored off N-M-MECH1: a `from_node` offset is
     # measured from the host's *start* node, so when the 2026-07-28 MECH split made
@@ -1335,7 +1335,7 @@ OPENINGS = [
     # been. It was the second storey's chase that moved.
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
-           sill_height=ft(4)),
+           sill_height=ft(3, 6)),
     # South face, living room: one unit at 32'-8", a stud line on W-M-S2's grid, stacking
     # exactly under WIN-S-STUDY1. Moved 8" west off the old 33'-4" bay centre with the
     # WT-3048 narrowing (see WIN-M-BED-S1/2). The two south segments are 8" out of phase, so

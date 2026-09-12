@@ -70,7 +70,9 @@ comes from. If §3 is wrong, every ratio in §5 and §6 is wrong by the same fac
 | footing underside | house footing underside | −9'-9 7/16" |
 | footing thickness | authored | 10" |
 | roof column length | 6'-4 3/4" − (−1'-3 1/2") | 7'-8 1/4" |
-| header span, bearing to bearing | 43'-2 5/8" − 37'-6" | 5'-8 5/8" = 5.719 ft |
+| header span, node to node | 43'-2 5/8" − 37'-6" | 5'-8 5/8" = 5.719 ft |
+| header back span, bearing to bearing | `GARAGE_SEAT_Y_FT` 42'-5 3/4" − 37'-6" | 4'-11 3/4" = 4.979 ft |
+| header tail past the north bearing | 43'-2 5/8" − 42'-5 3/4" | 8 7/8" |
 | canopy plan footprint | (31'-4" − 4'-8") x (43'-2 5/8" − 37'-2 5/8") | 26.667 x 6.0 = 160.0 ft² |
 
 **Why the line sits at 37'-6" and not further south.** At 37'-2 5/8" a 12" round leaves
@@ -206,23 +208,35 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 | limit | L/240 = 68.63 / 240 | 0.286 in → d/c 0.13 |
 
 **Bending governs at d/c 0.71.** **Ply count is the lever, not depth**: a 2-ply 2x12 reaches
-d/c 1.06 in bending and 0.76 in shear, and a 2-ply 2x10 fails outright at d/c 1.57. A
-3-1/2" x 11-7/8" treated glulam is the alternative at roughly 4x the material rate; take it
-only if the exposed 3-ply seam is objectionable.
+d/c 1.06 in bending and 0.76 in shear, and a 2-ply 2x10 fails outright at d/c 1.57.
+
+**The glulam alternative is REFUSED, and the engine is the reason (owner, 2026-09-12).** A
+3-1/2" x 11-7/8" treated glulam would carry this easily; what it would not do is stay in the
+register. `_SECTION` above matches a sawn `N-2xM` and nothing else, so a `"3.5x11.875"` makes
+`_one()` return `_incomplete("published design values for the section as sold")` and both
+records go INCOMPLETE. Nothing picks them up: `engineering/glulam_beam.py` left the
+registered-kind tuple on 2026-09-11 and is deck-only besides — 40 psf live at `C_D` 1.0,
+which cannot carry this 73.7 psf drift case. Retyping trades a d/c of 0.71 for a gap.
+**And the ply seam, the one real durability argument, does not reach these two.** Both beams
+ARE the canopy's eave bearing lines: the trusses land on their tops, so both seams sit inside
+the roof assembly under the deck, 1'-4" inboard of the drip line. FPInnovations' mass-timber
+durability guidance carves out exactly this case — avoid appressed parallel beams holding a
+capillary **unless the beams are preservative treated**, and KDAT is. (→ DESIGN-LOG.md,
+"Site and the four structures")
 
 **No repetitive-member factor.** NDS §4.3.9's C_r of 1.15 wants three or more members
 **spaced** not more than 24" apart and joined by a load-distributing element. A built-up
 beam's plies are in contact and share load through their nails alone. Claiming C_r would
 buy 15% of capacity the section has not got.
 
-**The span above is the whole beam, and since 2026-09-10 that is conservative by ~40%.**
-`roof_beam.py` takes node to node, 5.719 ft, as a simple span. What is built is a 4.906 ft
+**The span above is the whole beam, and since 2026-09-10 that is conservative by ~38%.**
+`roof_beam.py` takes node to node, 5.719 ft, as a simple span. What is built is a 4.979 ft
 back span between `PT-BW-CW` and `PT-BW-CNW` with an 8 7/8" tail carrying the roof plane out
-to the garage wall. The real maximum is about 3,370 lb-ft (span moment less half the
-cantilever moment w a²/2 = 321 lb-ft) against the 4,787 above, so **every ratio in this
-section is on the safe side of what is built and none of them was re-pinned.** If the module
-ever learns to resolve a beam's real bearings, expect d/c 0.71 to drop to about 0.50 and
-re-work this table rather than assuming it drifted.
+to the garage wall. The real maximum is about 3,470 lb-ft (back-span moment w L²/8 =
+3,629 less half the cantilever moment w a²/2 = 320 lb-ft) against the 4,787 above, so
+**every ratio in this section is on the safe side of what is built and none of them was
+re-pinned.** If the module ever learns to resolve a beam's real bearings, expect d/c 0.71 to
+drop to about 0.51 and re-work this table rather than assuming it drifted.
 
 ## 6. The piers (oracles `pier_basis` / `deck_post` / `spread_footing`)
 

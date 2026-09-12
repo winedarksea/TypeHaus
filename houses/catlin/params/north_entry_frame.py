@@ -262,18 +262,37 @@ for index, (suffix, x) in enumerate(zip(("FC", "FE"), BEAM_X_FT, strict=True), 4
 # THAT continuity is the only thing the two structures share. It is the canopy's lateral
 # system (AN-BW-ROOF says so) and it carries no gravity load in either direction.
 #
-# The headers run 8" past the north columns to y=GARAGE_Y_SOUTH so the roof plane reaches
+# The headers run 8 7/8" past the north columns to y=GARAGE_Y_SOUTH so the roof plane reaches
 # the garage wall. R507.5.1's quarter-of-the-back-span is a DECK table and does not reach a
 # roof header; what bounds this tail is the header's own bending and shear, which
 # `engineering/roof_beam.py` grades.
 #
 # ** PLY COUNT IS THE LEVER, NOT DEPTH. ** Each header carries a 12' half-span of a 24' truss
-# over the 5'-8 3/4" bay = 72 sf, under the roof-step drift case (42 psf balanced + up to
-# 50 psf drift + 10 dead), which is ~6,260 lb and a ~4,690 lb-ft moment. A 2-ply 2x10 KDAT
-# at C_M 0.85 is d/c 1.40 and fails; a 2-ply 2x12 reaches d/c 1.04 in bending and 0.95 in
-# SHEAR, so it fails in shear before bending. 3-ply 2x12 is d/c 0.69, deflection 0.045"
-# against L/240 = 0.30". A 3-1/2"x11-7/8" treated glulam (BEAM_GLULAM_TREATED) is the
-# alternative at ~4x the material rate; take it only if the exposed 3-ply seam is objectionable.
+# over the 5'-8 5/8" bay = 80 sf, under the roof-step drift case (42 psf balanced + up to
+# 50 psf drift + 10 dead = 73.7 psf authored design snow), which is ~6,700 lb and a
+# 4,787 lb-ft moment. A 2-ply 2x10 KDAT at C_M 0.85 is d/c 1.57 and fails outright; a 2-ply
+# 2x12 reaches d/c 1.06 in bending and 0.76 in shear. 3-ply 2x12 is d/c 0.71 bending, 0.51
+# shear, deflection 0.037" against L/240 = 0.286". `engineering/roof_beam.py` publishes all
+# of it and notes/north_entry_piers.md Sec 5 is the hand-worked oracle.
+#
+# ** AND THE GLULAM ALTERNATIVE IS REFUSED (owner, 2026-09-12). ** BEAM_GLULAM_TREATED would
+# carry this easily. What it would not do is stay in the register: `roof_beam.py`'s `_SECTION`
+# matches a sawn N-2xM and nothing else, so a "3.5x11.875" makes both these records go
+# INCOMPLETE, and nothing picks them up -- `engineering/glulam_beam.py` left the
+# registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at C_D 1.0, which
+# cannot carry this drift case. A d/c of 0.71 traded for a gap in the register is the whole
+# argument, and cost only confirms it: ~$325-450 more over these 11.4 LF, at a material rate
+# nearer 3x than the 4x this comment used to quote (prices.toml BEAM_GLULAM_TREATED/BEAM_KDAT).
+#
+# ** THE PLY SEAM, THE ONE REAL DURABILITY ARGUMENT, DOES NOT REACH THESE TWO. ** Both headers
+# ARE the canopy's eave bearing lines: the trusses land on their TOPS, so both seams sit
+# inside the roof assembly under the deck, 1'-4" inboard of the drip line (RF-BW-CANOPY's own
+# overhang). FPInnovations' mass-timber durability guidance carves out exactly this case --
+# avoid appressed parallel beams holding a capillary UNLESS the beams are preservative
+# treated, and KDAT is. This is NOT the porch's 2026-09-06 refusal repeated: that one rested
+# on butyl tape plus a formed cap, and the IRC commentary to R317.1.5 says outright that
+# capping an exposed glulam with metal is not sufficient. Neither argument transfers, so the
+# absence of a cap here is not a gap. (-> DESIGN-LOG.md, "Site and the four structures")
 beam(6, "BM-BW-RW", LANDING_WEST_FT, PIER_LINE_Y_FT,
      LANDING_WEST_FT, GARAGE_Y_SOUTH.feet, ("PT-BW-CW", "PT-BW-CNW"), HEADER_TOP_FT,
      "3-2x12")

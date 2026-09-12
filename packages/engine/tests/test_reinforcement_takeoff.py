@@ -78,12 +78,13 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
 
     **The columns used to be the exception and are not one any more.** Until 2026-09-03
     neither ``SUNKEN_GARDEN_COLUMN_12`` nor ``PIER_CONCRETE_12`` carried a ``ConcreteSpec``,
-    so the galvanizing on five of the ten cages was an authored fact with nowhere else to
-    live and was stated per-bar via ``BarSpec.coating`` — while the other five read black.
-    ``PIER_CONCRETE_12`` now names ``EXPOSED_MIX`` and its five inherit A767 from the
-    pour. ``SUNKEN_GARDEN_COLUMN_12`` still keeps its per-bar override (its mix is the
-    deferred half of that migration), which is why this asserts a UNIFORM result reached by
-    two different routes: the whole house is galvanized, and no scope carries both.
+    so the galvanizing on half the cages was an authored fact with nowhere else to live and
+    was stated per-bar via ``BarSpec.coating`` — while the other half read black.
+    ``PIER_CONCRETE_12`` named ``EXPOSED_MIX`` that day and ``SUNKEN_GARDEN_COLUMN_12``
+    followed on 2026-09-10, so both now inherit A767 from the pour and the per-bar overrides
+    are belt and braces rather than the only route. Six columns on each type, twelve cages.
+    This still asserts a UNIFORM result reached by two routes, because either one alone
+    would be enough and a scope carrying two coatings is the failure worth catching.
 
     Uniformity is the assertion worth making rather than a coincidence to tolerate. Mixing
     coatings inside one pour is specifying a corrosion cell, and the check that would notice

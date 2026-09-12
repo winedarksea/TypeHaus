@@ -1183,8 +1183,10 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               # as the weaker of the two — the garden type stated its 5,000 psi mix in prose
               # only, so every calc on PT-SG-FCOL fell back to the presumptive 3,000 while
               # this one was graded on the real mix. Both come off the same truck. The
-              # retype also drops the grout island PIER_CONCRETE_12 carries and the garden
-              # type refuses (see NO GROUT ISLAND in plan/assemblies.py).
+              # retype also drops the grout island PIER_CONCRETE_12 carried and the garden
+              # type refuses -- but it did NOT close that follow-up: the island rode the
+              # assembly to PT-BW-RE/-RNE and was struck at the source on 2026-09-12. Both
+              # types say NO GROUT ISLAND now (see plan/assemblies.py).
               assembly="SUNKEN_GARDEN_COLUMN_12",
               # ** THE CAGE IS THE MINIMUM ACI PERMITS, AND IT IS NOT OPTIONAL. **
               # A_g = 113.10 in2, so §10.6.1.1's 1% floor is 1.131 in2; (4) #5 = 1.24 in2

@@ -790,10 +790,10 @@
 # both ends, it just buys a different part to do it.
 "H2.5A" = { low = 0.8, high = 1.75 }  # 340 ea — all derived
 # ** THE STAINLESS TWIN, AND IT IS A SEPARATE PART AND A SEPARATE PRICE FOR TWO REASONS. **
-# RF-BW-CANOPY's four trusses land on 3-ply KDAT headers at an entry that is salted every
+# RF-BW-CANOPY's three trusses land on 3-ply KDAT headers at an entry that is salted every
 # winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
 # ABU66/ABU66SS pair above — one row, priced at the stainless rate, because nothing in the
-# model can say "buy the stainless variant" of a DERIVED part — these eight are AUTHORED, so
+# model can say "buy the stainless variant" of a DERIVED part — these six are AUTHORED, so
 # they carry their own part number and bill on their own row. `library/hardware.py` keeps the
 # H2.5ASS as a capacity-only record, and since 2026-09-11 it carries the galvanised tie's
 # 700/110/110: Simpson letter L-F-SSNAILS rates a stainless connector at its carbon twin's
@@ -805,7 +805,7 @@
 # same shape as the ABU66 -> ABU66SS jump ($55 -> $202) recorded above. Retail listings for
 # the H2.5ASS sit around $3.50-$5.50 each in small quantities; this band is that, widened,
 # and it is a LIST BAND rather than a quote.
-"H2.5ASS" = { low = 3.0, high = 6.5 }  # 8 ea — all authored (CN-BW-TRTIE-W1..4 / -E1..4)
+"H2.5ASS" = { low = 3.0, high = 6.5 }  # 6 ea — all authored (CN-BW-TRTIE-W1..3 / -E1..3), two per truss and there are three
 # The masonry gusset angle at the two beam-on-column joints (CN-SG-TIE-COL, CN-SG-TIE-FCOL),
 # closing the OPEN item that stood in params/sunken_garden.py: those two ties reach a cast
 # column top, and an H2.5A has nothing to nail to there. #14 screws into the 3-ply KDAT beam

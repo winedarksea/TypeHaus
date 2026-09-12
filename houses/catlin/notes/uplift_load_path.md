@@ -175,8 +175,15 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   hand-worked demand it is sized against.
 - 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
-- 6 × HGAM10 masonry gusset angles at the cast-column beam seats — the two porch columns
-  (`H2.5A` until 2026-08-28) plus, since 2026-09-03, the four balcony corner columns
+- 12 × HGAM10 masonry gusset angles at the cast-column beam seats, and **every one of them is
+  the TIE beside a bearing, never the bearing itself** — the wood sits on an `SS316-SHIM-35`
+  pack, twelve of those too. Six in the garden: the two porch columns (`H2.5A` until
+  2026-08-28) plus, since 2026-09-03, the four balcony corner columns. Six at the north entry
+  (`CN-BW-TIE-W`/`-E`/`-GW`/`-GE` at the landing seats, `-RE`/`-RNE` at the east header),
+  authored 2026-09-10 when that side went to full-height cast columns. **The BOM prints them
+  as two rows, 2 + 10**, because the two porch ties are filed `HURRICANE_TIE` and the other
+  ten `POST_CAP`; the total of 12 is right and the kind split is an inconsistency, not a
+  second part.
 - 2 × CCQ46SDS2.5 column caps at the two wood centre pillars (ESR-2604). A 3-1/2" glulam on
   a 6x6 is the UNEQUAL-width case the PC6Z is not published for, and these are what close
   the post-to-beam leg at the only two balcony joints with no pour to hold the beam down.

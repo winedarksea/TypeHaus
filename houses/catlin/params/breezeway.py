@@ -363,8 +363,11 @@ SCREEN = SlatScreen(
 # it holds the treated soffit off the pour so water cannot sit in the joint and the copper
 # treatment never touches the concrete, and it is where the levelling tolerance is taken. The
 # HGAM10 gusset is the TIE: #14 screws into the wood leg, Titen Turbo into the concrete leg,
-# 1 1/2" minimum edge distance. `structural.uplift_path_coverage` grades the second one --
-# a shim pack is not a hold-down, and a beam simply resting on a pier is a break in the chain.
+# >=3" edge distance -- the figure PIER_CONCRETE_12 and SUNKEN_GARDEN_COLUMN_12 both carry on
+# the 12" round, not Simpson's bare 1 1/2" floor, which is what this said until 2026-09-12. A
+# 3" seat beam centred on a 12" circle leaves 4 1/2" per side, so the tighter rule is free.
+# `structural.uplift_path_coverage` grades the second one -- a shim pack is not a hold-down,
+# and a beam simply resting on a pier is a break in the chain.
 SEAT_BEARINGS = []
 for _i, (_t, _x, _y, _beam) in enumerate((
     ("W", LANDING_WEST_FT, HOUSE_SEAT_Y_FT, "BM-BW-HOUSE-SEAT"),

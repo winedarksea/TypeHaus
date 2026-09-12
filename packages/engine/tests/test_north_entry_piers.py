@@ -24,7 +24,9 @@ def catlin_engineering(catlin_plan):
 
 
 # --- §1 geometry, straight off the note --------------------------------------------------
-_SPAN_FT = 5.719          # header bearing to bearing, 5'-8 5/8"
+_SPAN_FT = 5.719          # header NODE TO NODE, 5'-8 5/8" -- what roof_beam.py spans.
+#                           The built back span is 4'-11 3/4" with an 8 7/8" tail; see
+#                           notes/north_entry_piers.md Sec 5 for why the longer one is pinned.
 _CANOPY_AREA_FT2 = 160.0  # 26.667 x 6.000, the overhang-expanded plan footprint
 _BEARING_LINES = 2
 

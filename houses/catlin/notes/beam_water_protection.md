@@ -94,11 +94,20 @@ durability-per-dollar item in the whole porch. Recorded in `POST_WHITE_PAINT.sou
 **2b. The beam soffit at the two cast columns.** `SUNKEN_GARDEN_COLUMN_20.source` already
 specified a >=15° top wash and a level non-shrink-grout island, so the column top sheds. What
 was missing is the AITC/WoodWorks **1/2"–1" standoff** — a grout island is a levelling bed,
-not a standoff, and without one the KDAT soffit sits on concrete that wicks. Added
-*beside* the grout island, not instead of it, on both `SUNKEN_GARDEN_COLUMN_20` and
-`PIER_CONCRETE_12` (PT-SG-COL is the only one of the five piers with wood landing on it). It
-must be stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel.
-This is at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
+not a standoff, and without one the KDAT soffit sits on concrete that wicks. It must be
+stainless, or hot-dip with an isolator: KDAT is copper-treated and eats plain steel. This is
+at the beam *soffit* and so does not touch the cap/tape order at the beam *top*.
+
+**And the standoff ended up INSTEAD OF the grout island, not beside it.** It went in beside
+one, and the 2026-09-02 rebar pass then struck the island outright: an exposed non-shrink
+island is a 10–20 year element, not air-entrained, at the wettest point on the column, and the
+top is cast to line under the beam footprint with the tolerance taken in the shim pack
+instead. `SUNKEN_GARDEN_COLUMN_20` is retired — the 20" front column is a 12" round now — and
+`SUNKEN_GARDEN_COLUMN_12`, which replaced it, says NO GROUT ISLAND. `PIER_CONCRETE_12` did
+not until 2026-09-12, because retyping `PT-SG-COL` on 2026-09-10 was read as closing that
+follow-up and instead rode the island over to `PT-BW-RE`/`-RNE`, the north entry's own beam
+seat. **Twelve standoffs house-wide now, and not one grout island**: six in the garden
+(`CN-SG-STDF-*`), six at the north entry (`CN-BW-STDF-*`).
 
 **It is a MODELLED PART as of 2026-09-03, and it stopped being prose.** `SS316-SHIM-35`
 (`library/hardware.py`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316

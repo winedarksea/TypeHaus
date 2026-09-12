@@ -1163,10 +1163,27 @@ DECK_EQUIPMENT_ANCHOR = StructuralHardware(
 # PIER_CONCRETE_12.source — a real purchased item at a real joint, with nothing in the BOM,
 # nothing in 3D and nothing a reviewer could click.
 #
-# * **It holds a GAP, and the gap is the point.** IRC R317.1.4 wants a wood member on
-#   concrete held clear of it; a beam sitting flat on a wash ponds against its own end grain.
-#   1/2"-1" is the range the column tops are cast to, so the pack is shimmed to suit rather
-#   than being one thickness.
+# * **It holds a GAP, and the gap is the point.** A beam sitting flat on a wash ponds against
+#   its own end grain; the gap drains and lets both faces dry. 1/2"-1" is AITC/WoodWorks'
+#   range for exposed timber on concrete and the range the column tops are cast to, so the
+#   pack is shimmed to suit rather than being one thickness. FPInnovations' durability
+#   hierarchy is the reason it is a gap and not a membrane: drain and dry the joint before
+#   trying to seal it, and a barrier that can hold water is worse than the air it replaced.
+# * **NO CODE SECTION REQUIRES THIS PART, and the record should not pretend one does.** This
+#   said "IRC R317.1.4 wants a wood member on concrete held clear of it" until 2026-09-12 and
+#   that is not what R317.1.4 says: it governs wood COLUMNS, and its 1"/6"/8" projections are
+#   exceptions that RELIEVE the treatment requirement rather than impose a clearance.
+#   R317.1 item (2) needs a foundation wall and less than 8" to grade; R317.1.2 is embedment,
+#   not bearing. A treated beam on a concrete column top satisfies R317 with no barrier and
+#   no standoff. This is a durability choice on top of the code. (The R317.1.4 citation on
+#   ABU66SS above is a different joint and is correct — that one IS a wood column on
+#   concrete.) FPInnovations bounds the wood-on-concrete wicking concern to ~150 mm above
+#   soil, and published equilibrium capillary rise in concrete is 100-480 mm — bounded by
+#   evaporation, not by suction, which is why a taller column does not pull further. Nothing
+#   this part sits on is within reach of that: catlin's north-entry pier tops stand 18 1/2"
+#   above grade, its two full-height canopy columns 9'-2 3/4", and the garden's porch columns
+#   rise 10'-0 15/16" out of the court floor. What the gap IS aimed at is rain standing on the
+#   pour, and end-grain uptake where a beam END lands there rather than crossing it.
 # * **NO GROUT ISLAND under it.** An exposed non-shrink cementitious island is a 10-20 year
 #   element carrying a 100-year member, and it re-wets the soffit it was meant to lift. Where
 #   a levelling bed is unavoidable it is EPOXY grout confined under the plate — that sentence

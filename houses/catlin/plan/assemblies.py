@@ -962,13 +962,14 @@ SG_VENEER_BEAM_14 = Assembly(
 # under the beam footprint with the wash screeded around it, and tolerance is taken up in
 # the stainless standoff's shim pack. If a levelling bed proves unavoidable it is an EPOXY
 # grout confined under the standoff plate, never a cementitious island with exposed
-# shoulders. PIER_CONCRETE_12 still carries its island at PT-SG-COL; aligning that one is
-# a follow-up, not a silent edit here.
+# shoulders. PIER_CONCRETE_12 carried its island until 2026-09-12 and says NO GROUT ISLAND
+# now too; the follow-up this sentence opened is closed, and closed at the source rather than
+# by a retype that only moved it.
 #
 # The assembly is required, not cosmetic: ``emit/draw/section.py::_solid_material`` would
 # hatch a "12 round" correctly on the size string alone, but what the assembly does is put
 # ``structure_material="concrete"`` on the BOM row so the [concrete] price table's material
-# guard admits it — the same job PIER_CONCRETE_12 does for the five 12" sonotubes. It is a
+# guard admits it — the same job PIER_CONCRETE_12 does for the six north-entry pours. It is a
 # SEPARATE tag from PIER_CONCRETE_12 at the same diameter because the cage and the seat are
 # different; billing them from one row would price an F3/C2 galvanized column at a
 # sonotube's rate. That split stays, and since 2026-09-10 it runs between the COURT and the
@@ -987,9 +988,11 @@ SG_VENEER_BEAM_14 = Assembly(
 # below is that prose made readable; the source text is unchanged and still carries the
 # detailing.
 #
-# It also closes the grout-island follow-up named two paragraphs up: the island lives on
-# PIER_CONCRETE_12 and PT-SG-COL was the one column carrying it. Retyping removes it, which
-# is what the NO GROUT ISLAND paragraph wanted.
+# ** IT DOES NOT CLOSE THE GROUT-ISLAND FOLLOW-UP, AND IT LOOKED LIKE IT DID. ** Retyping
+# PT-SG-COL moved it off an island, but the island lived on PIER_CONCRETE_12, which is still
+# a live type -- so the island rode the assembly to PT-BW-RE and PT-BW-RNE, the north entry's
+# own beam seat. Struck at the source on 2026-09-12; PIER_CONCRETE_12 now says NO GROUT
+# ISLAND as well, which is what the paragraph above wanted all along.
 SUNKEN_GARDEN_COLUMN_12 = Assembly(
     tag="SUNKEN_GARDEN_COLUMN_12",
     layers=(
@@ -1470,26 +1473,32 @@ POST_KDAT = Assembly(
     source="catlin-house breezeway 6x6 posts — ground-contact-rated KDAT, left unpainted with a clear water repellent",
 )
 
-# The 12" sonotube piers: PR-BW-1..4 under the breezeway posts and PT-SG-COL at the garden
-# back-beam midspan. Every one of the five is a round cast pier, and `solid_material_ref`
-# already reads "12 round" as concrete for the section hatch — but only for the hatch. The
-# assembly is what puts `structure_material="concrete"` on the BOM row so the [concrete]
-# price table's material guard admits it, which is the difference between the pier billing
-# at ready-mix and the pier billing at whatever rate the bare "column" key happened to hold.
+# The 12" round pours at the NORTH ENTRY, and nothing else since 2026-09-10: PT-BW-W/-E on
+# the pier line, PT-BW-GW/-GE on the garage-side line, and PT-BW-RE/-RNE, which are the same
+# section, cage, mix and pad but do not stop at the bearing plane — they run unbroken to
+# BM-BW-RE's soffit as the canopy's east lateral system. SIX, 1.51 cy. What left: PT-SG-COL
+# went to SUNKEN_GARDEN_COLUMN_12, and PR-BW-1..4 went with the breezeway. Every one is a
+# round cast pour, and `solid_material_ref` already reads "12 round" as concrete for the
+# section hatch — but only for the hatch. The assembly is what puts
+# `structure_material="concrete"` on the BOM row so the [concrete] price table's material
+# guard admits it, which is the difference between the pier billing at ready-mix and the pier
+# billing at whatever rate the bare "column" key happened to hold.
 # ** THE MIX HERE USED TO BE PROSE, AND THE PROSE DID NOT ADD UP. ** The source string below
 # said "4,000 psi ... ACI 318-19 class F2", and ACI Table 19.3.2.1 asks **4,500 psi** of class
 # F2. Nothing could see that while the numbers were sentences; `structural.
 # concrete_mix_matches_exposure` sees it the moment they are a `ConcreteSpec`, which is what
 # that check is for.
 #
-# Resolved by pouring these five from `EXPOSED_MIX` — F3/C2 at 5,000 — rather than by
-# minting a compliant fourth mix at F2/4,500. Two reasons, and the second is the real one:
-#   * these are 0.82 CY in total. A separate ticket for four fifths of a yard is a delivery
-#     charge and a batching risk to save nothing;
-#   * PT-SG-COL stands in the sunken garden, which is the salt-splash court `EXPOSED_MIX`
-#     exists for. Grading it F2 was always the generous reading of where it sits.
-# The four breezeway piers get a richer mix than their exposure needs. That is the price of
-# one ticket instead of two, and at this volume it is not a price worth arguing about.
+# Resolved by pouring the set from `EXPOSED_MIX` — F3/C2 at 5,000 — rather than by minting
+# a compliant fourth mix at F2/4,500. Two reasons, and the second is the real one:
+#   * volume. It was 0.82 CY when the set was five; it is 1.51 CY now. Either way a separate
+#     ticket for a yard and a half is a delivery charge and a batching risk to save nothing;
+#   * the pier tops stand 18 1/2" out of the ground at an entry that is salted every winter,
+#     and PT-BW-RE/-RNE carry on to 9'-2 3/4" above grade. F3/C2 is the honest reading of
+#     where they sit; F2 never was.
+# That second reason belonged to PT-SG-COL and the sunken garden when this was written, and
+# it survived the 2026-09-10 retype because the north entry has the same exposure. The
+# argument did not have to be re-made — but it did have to be re-grounded, and this is it.
 #
 # **This galvanizes their cages**, because `bar_coating` is a property of the pour: ~149 lb of
 # #5 and #3 moves from black to A767 in the takeoff. That is the 2026-09-02 owner call (hot-dip
@@ -1504,14 +1513,32 @@ PIER_CONCRETE_12 = Assembly(
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    # One of these five, PT-SG-COL, is the only pier in the set with WOOD landing on it: the
-    # two porch back beams share its top. It gets the same beam-seat detail the 16" front
-    # column carries — a top wash, a levelling grout island, a 1/2"-1" stainless (or isolated
-    # hot-dip) standoff so the KDAT soffit stands clear of the pour, and an HGAM10 masonry
-    # gusset angle rather than the wood-to-wood H-tie that used to be drawn here. The other
-    # four take breezeway posts on ABU66SS standoff bases and need none of it.
+    # ** ALL SIX CARRY WOOD, AND NOT ONE OF THEM TAKES A GROUT ISLAND (2026-09-12). **
+    # PT-BW-W/-E/-GW/-GE each take a 2-2x8 seat beam across the circle; PT-BW-RE/-RNE take
+    # BM-BW-RE's 3-ply 2x12, and its south END lands on PT-BW-RE, the one beam end on a pour
+    # here. Six joints, one detail: a >=15 degree top wash with a drip lip, an SS316-SHIM-35
+    # stainless shim pack holding the KDAT soffit 1/2"-1" clear so the joint drains and dries
+    # (AITC/WoodWorks), and an HGAM10 masonry gusset angle beside it as the TIE. **The shim
+    # pack IS the bearing and the gusset is never it** — two parts, two jobs, as
+    # params/breezeway.py already states. PT-BW-W and PT-BW-GW take a 6x6's ABU66SS base on
+    # the same circle as their seat beam; that base is a wood COLUMN on concrete and
+    # IRC R317.1.4 really does reach it, which is the one place in this set that citation fits.
+    #
+    # The grout island this carried until 2026-09-12 is DELETED, not moved. An exposed
+    # non-shrink island is a 10-20 year element, not air-entrained, sitting at the wettest
+    # point on the column; the NO GROUT ISLAND paragraph above said so on 2026-09-02 and the
+    # SS316-SHIM-35 catalog record has said so since. Retyping PT-SG-COL on 2026-09-10 was
+    # read as closing that follow-up and did not: the island rode this assembly to
+    # PT-BW-RE/-RNE. If a levelling bed proves unavoidable it is EPOXY grout confined under
+    # the standoff plate, never a cementitious island with exposed shoulders.
+    #
+    # Titen Turbo edge distance is >=3", the same figure SUNKEN_GARDEN_COLUMN_12 carries on
+    # the identical 12" round — not Simpson's bare 1-1/2" floor, which is what this said. A
+    # 4 1/2" 3-ply centred on a 12" circle leaves 3 3/4" per side and a 3" seat beam leaves
+    # 4 1/2", so >=3" costs nothing anywhere in the set. BM-BW-RE and both its columns share
+    # the axis ROOF_COLUMN_EAST_X_FT, so that centring is exact, not nominal.
     # (single literal: the editable dialect forbids concatenated strings)
-    source="catlin-house 12\" round sonotube piers — cast in a fibre form on a spread pad, stripped to the form line; EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); at PT-SG-COL, where the two porch back beams bear: >=15 degree top wash, level non-shrink-grout island, an SS316-SHIM-35 standoff shim pack under the KDAT soffit (modeled at CN-SG-STDF-COL), and an HGAM10 gusset angle anchored with Titen Turbo at >=1-1/2\" edge distance",
+    source="catlin-house 12\" round north-entry piers and columns — cast in a fibre form on a spread pad, stripped to the form line; EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and A767 galvanized bar (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); PT-BW-RE and PT-BW-RNE run unbroken to BM-BW-RE's soffit and are FIXED at the base, same section and cage; at every joint where wood bears (PT-BW-W/-E/-GW/-GE under the seat beams, PT-BW-RE/-RNE under the header): >=15 degree top wash with a >=1\" drip lip screeded around it, top CAST TO LINE under the beam footprint and NO grout island — tolerance taken in the SS316-SHIM-35 stainless standoff shim pack that holds the KDAT soffit 1/2\"-1\" clear (modeled at CN-BW-STDF-*, and its catalog record carries the detailing), or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round",
 )
 
 # Cast pedestals: the top of a shared pier where a beam end and a post base cannot both sit

@@ -757,7 +757,7 @@ OPENINGS = [
     # LL-W-A-W1, so its legal stations are 14" + n×16" and a 2" drift interrupts a stud.
     # 1'-3" restores y=25'-3" and with it the exact pairing with WIN-M-BATH1-W below.
     Window(uid="RGC7QGVF7Y", tag="WIN-S-VANITY-W", host="W-S-W2", type_ref="WT-1424-T",
-           position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(4)),       # y 24'-4"
+           position=from_node("N-S-W1", ft(1, 3)), sill_height=ft(3, 6)),       # y 24'-4"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid,
     # STUDY1 stacking exactly over WIN-M-LIV-S1 (STUDY2's partner below, WIN-M-LIV-S2, was
     # deleted 2026-08-24, so STUDY2 no longer columns with anything). Moved 8" west off the old bay centres with the
@@ -775,7 +775,7 @@ OPENINGS = [
     # header/jacks a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
-           position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(4)),
+           position=from_node("N-S-CH3", ft(1, 1.875)), sill_height=ft(3, 6)),
     # ** MOVED 29'-4" -> 24'-0" ON 2026-09-06, AND THE THREE-STOREY COLUMN IS SPENT. **
     # It was at 29'-4" to column with WIN-M-KITCH over the kitchen sink below; the 6:12 rake
     # had already pulled WIN-A-N2 off that station in 2026-09-03, so what remained was a
