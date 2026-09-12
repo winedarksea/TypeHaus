@@ -703,6 +703,10 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "envelope_layers", "wood_surfaces",
         # The milling schedule — the same wood as a rough-stock cut list.
         "hardwood",
+        # The work surfaces, by the square foot a slab yard quotes. Not in
+        # `wood_surfaces` and not in `placeables`: the boxes under a top bill as
+        # carcasses, and the slab each cabinet SYMBOL draws billed nothing at all.
+        "countertops",
         "glazing_panels", "glazing_trim", "edge_trim",
         # Self-adhered membrane over framing tops, by the foot of member.
         "member_protection",

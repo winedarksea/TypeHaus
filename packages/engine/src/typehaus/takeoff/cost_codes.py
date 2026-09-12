@@ -176,6 +176,11 @@ SECTION_CODES: dict[str, CostCode] = {
     "floor_finishes": CostCode("4000", "09 60 00", "floors"),
     "envelope_layers": CostCode("2100", "07 20 00", "walls"),
     "wood_surfaces": CostCode("4100", "06 20 00", "walls"),
+    # Countertops are 12 36 00 Countertops under MasterFormat's FURNISHINGS
+    # division, not 06 20 00 finish carpentry: the slab is fabricated off site
+    # and set by the yard that cut it, which is a different sub from the one
+    # that hangs the boxes under it.
+    "countertops": CostCode("4200", "12 36 00", "furniture"),
     "openings": CostCode("2400", "08 00 00", "openings"),
     "footing_bedding": CostCode("1100", "31 23 00", "earth"),
     "pipe_runs": CostCode("3100", "22 10 00", "plumbing"),

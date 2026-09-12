@@ -301,11 +301,16 @@ than tracked here. These three are the rest.
 
 ### Schema gaps found during selections/fireplace passes
 
-- **A countertop is not an element** (`library/placeables/casework.py` docstring only). The
-  2026-09-06 selections pass priced material + allowance but left geometry unaddressed: the
-  ~63 SF is a hand figure in a `prices.toml` comment, doesn't move with the casework, and
-  nothing grades a cantilevered stone top (no top exists to grade). A `Countertop` element
-  hosted on `FurnitureType` (material_ref, thickness, overhang) would fix all three.
+- ~~**A countertop is not an element**~~ — **DONE 2026-09-11.** `Countertop`
+  (`model/millwork.py`) hosts on the placeables it covers; `resolve/millwork.py` derives the
+  slab polygon, its area and its cantilever off the run, `takeoff/countertops.py` bills it by
+  the square foot, and `advisory.countertop_overhang` grades it against the published slab
+  limits (1/3 of depth, 15" absolute, 14" unsupported in 3 cm). The ~63 SF hand figure is
+  gone: 61.34 SF of quartz and 10.00 SF of oak are derived, and both `[allowances]` lumps are
+  retired. It does NOT draw — `counter_case` already draws the slab, so a `ResolvedSolid`
+  would be a second surface in the same place. The one new type fact it needed was
+  `FurnitureType.carcass_depth`: a peninsula is 39" of footprint over 24" of box, and without
+  the split a 15" cantilever reads as fully supported.
 - **Door hardware has no schema vocabulary** — `DoorType` has no lockset/hinge/lever/function/
   finish field; it's one `[allowances]` lump. Measured cost: the $84-306/ea allowance is right
   on average but short $100-200 on each privacy POCKET door (needs a mechanism + two pulls,

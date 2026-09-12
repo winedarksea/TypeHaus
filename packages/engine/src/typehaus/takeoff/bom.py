@@ -10,6 +10,7 @@ from __future__ import annotations
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import sill_gasket_rows
 from typehaus.takeoff.backup_calc import backup_runtime_summary
+from typehaus.takeoff.countertops import countertop_takeoff
 from typehaus.takeoff.data import data_device_schedule, data_raceway_takeoff, poe_budget
 from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
@@ -135,6 +136,10 @@ def bill_of_materials(
         # carry ``also_in_envelope_layers`` / ``also_in_structural_solids`` /
         # ``also_in_floor_finishes``; the primary billing stays in those sections.
         "wood_surfaces": wood_surfaces_takeoff(model),
+        # The work surfaces, by the square foot a slab yard quotes. Mirrors nothing: the
+        # cabinets under them bill in `placeables` as carcasses, and the counter each symbol
+        # DRAWS on top of one is display geometry that never billed anything.
+        "countertops": countertop_takeoff(model),
         # The milling schedule: the same wood as a CUT LIST in rough stock — finished
         # T x W x L, nominal quarters, rough board feet, and the glue-up flag. A view of
         # ``wood_surfaces``, ``framing`` and ``stair_finish`` for everything it shares with

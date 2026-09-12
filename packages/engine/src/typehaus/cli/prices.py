@@ -91,6 +91,9 @@ ESTIMATE_PLANS = (
     # Order quantity like floor_finishes (wood is bought with its waste). Timber rows
     # carry no order_area_sqft and price as 0 here — they bill via structural_solids.
     ("wood_surfaces", "wood_surfaces", "material", "order_area_sqft", "SF"),
+    # Net area, not an order quantity: a countertop's slab yield is inside the fabricated
+    # rate, so there is no waste to add (→ takeoff/countertops.py).
+    ("countertops", "countertops", "material", "net_area_sqft", "SF"),
     ("openings", "openings", "type", "count", "ea"),
     ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
     ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),

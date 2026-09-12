@@ -730,6 +730,36 @@ class ResolvedWindowStool:
 
 
 @dataclass(frozen=True)
+class ResolvedCountertop:
+    """One fabricated slab over a run of base cabinets (→ model/millwork.py).
+
+    ``outline`` is the slab in plan — the union of each host's covered rectangle, grown by
+    the front overhang — and ``area_m2`` is its area, which is what the fabricator quotes
+    and what the estimate multiplies. Neither is authored anywhere: move a cabinet and both
+    move with it, which is the whole reason this element exists.
+
+    ``unsupported_overhang_m`` is the cantilever past the carcass. ``support`` says what
+    carries it, and the two together are all ``advisory.countertop_overhang`` reads.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    room: str | None
+    hosts: tuple[str, ...]
+    material_ref: str
+    thickness_m: float
+    depth_m: float
+    length_m: float
+    overhang_m: float
+    unsupported_overhang_m: float
+    support: str
+    profile: str
+    outline: Ring
+    area_m2: float
+
+
+@dataclass(frozen=True)
 class ResolvedShelf:
     """One bay's worth of identical shelf boards inside a :class:`ResolvedShelfBank`."""
 
@@ -1110,6 +1140,7 @@ class ResolvedModel:
     # Interior millwork: derived stools and shelf banks (→ resolve/millwork.py).
     window_stools: list[ResolvedWindowStool] = field(default_factory=list)
     shelf_banks: list[ResolvedShelfBank] = field(default_factory=list)
+    countertops: list[ResolvedCountertop] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     # Derived wall-line chains (#43): collinear within a storey, stacked across them,
@@ -1150,7 +1181,7 @@ class ResolvedModel:
         for collection in (
             self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
             self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
-            self.panelings, self.window_stools, self.shelf_banks,
+            self.panelings, self.window_stools, self.shelf_banks, self.countertops,
             self.pipe_runs, self.pipe_accessories, self.sleeves, self.ducts,
             self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
             self.canvas_objects,

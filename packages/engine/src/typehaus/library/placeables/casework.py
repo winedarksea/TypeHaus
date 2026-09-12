@@ -7,10 +7,12 @@ front of a run is a property of the room's layout, not of any one cabinet, and g
 encroachments. Appliance doors — a refrigerator's, a dishwasher's — keep their zones, and
 those are what the aisles actually have to clear.
 
-Countertops are not separate elements: the ``base-cabinet`` symbol is ``counter_case``, which
-already draws the slab, the carcass under it and the toe kick, so a run of bases *is* the
-counter run. Tall units are 96" under a 9' plate — "floor to ceiling" as the brief asks, with
-the 12" of soffit/crown above them left unmodeled.
+The ``base-cabinet`` symbol is ``counter_case``, which DRAWS the slab, the carcass under it
+and the toe kick — but drawing is all it does. The top a run of bases carries is a
+:class:`~typehaus.model.millwork.Countertop`, hosted on the placeables it covers: one slab,
+one material, one area to bill and one cantilever to grade. Tall units are 96" under a 9'
+plate — "floor to ceiling" as the brief asks, with the 12" of soffit/crown above them left
+unmodeled.
 
 Widths are the standard 3" cabinet module (12/15/18/24/30/36), so a run is composed the way a
 shop would quote it, and a leftover under 3" is a scribe/filler on the drawing rather than a
@@ -139,7 +141,7 @@ PANTRY_CLOSET_72 = FurnitureType(
 ISLAND_60 = FurnitureType(
     tag="CASE-ISLAND-60", name='60" kitchen island', footprint=(ft(5), ft(3)),
     height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
-    source=REFERENCE,
+    carcass_depth=_BASE_DEPTH, source=REFERENCE,
 )
 # A peninsula is an island with one end landed on a wall, so the aisle it used to need on
 # that side becomes counter. 39" deep, not the 36" ISLAND_60 carries: 24" of carcass plus
@@ -150,10 +152,15 @@ ISLAND_60 = FurnitureType(
 # Deliberately no ``clearances``, per this module's header rule: which side overhangs and
 # what sits against the far end are properties of the layout, stated at the instance and by
 # the stools, not of the type. ``advisory.clearance_overlap`` therefore does not grade it.
+# ``carcass_depth`` is the 24" of that 39" which is actually box. It is what lets a
+# countertop over this type know it is cantilevered — a 39" slab on a 24" carcass hangs 15",
+# which is 38% of its depth and outside what any slab manufacturer will warrant unsupported
+# (``advisory.countertop_overhang``). Without the split the footprint reads as all box and
+# the cantilever is invisible.
 PENINSULA_120 = FurnitureType(
     tag="CASE-PENINSULA-120", name='120" kitchen peninsula', footprint=(ft(10), inch(39)),
     height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
-    source=REFERENCE,
+    carcass_depth=_BASE_DEPTH, source=REFERENCE,
 )
 
 
