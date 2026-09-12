@@ -119,6 +119,10 @@ DETAIL_FILL: dict[str, str] = {
     "mineral-wool": "#a8a8a8",
     "fiberglass": "#ddecc8",
     "air-barrier": "#1e3a5f",
+    # Below-grade waterproofing: near-black, a shade off the air barrier's navy, because a
+    # section that shows both (the curb under a framed walkout wall does) must not read them
+    # as one product — one is 54 perm and the other 0.05.
+    "waterproofing": "#2f2b2a",
     "standing-seam": "#2f2f2f",
     "standing-seam-snaplock": "#2f2f2f",
     "standing-seam-nailstrip": "#2f2f2f",
@@ -223,6 +227,7 @@ DETAIL_HATCH: dict[str, str] = {
     "fiberglass-r19": "batt",
     "blown-fiberglass": "batt",
     "air-barrier": "membrane",
+    "waterproofing": "membrane",
     "roof-deck-vapor-barrier": "membrane",
     "roof-underlayment-synthetic": "membrane",
     # The vent mat is an air gap that happens to be a product: hatching it as a membrane

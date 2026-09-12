@@ -124,7 +124,12 @@ const DETAIL_FILL: Record<string, string> = {
   polyiso: "#f4e6b1", "polyiso-foil": "#efdf9e",
   eps: "#c8e0f8", "icf-eps": "#d8e8fa", xps: "#a7d7c5",
   "mineral-wool": "#a8a8a8", fiberglass: "#ddecc8",
-  "air-barrier": "#1e3a5f", "standing-seam": "#2f2f2f",
+  "air-barrier": "#1e3a5f",
+  // Below-grade waterproofing draws a shade off the air barrier's navy, deliberately: a
+  // curb under a framed walkout wall shows both in one section and they are opposite
+  // products (54 perm against 0.05). Mirrors emit/draw/palette.py DETAIL_FILL.
+  waterproofing: "#2f2b2a",
+  "standing-seam": "#2f2f2f",
   // Same detail ink for all five metal skins — the section drawing shows metal, and
   // snap-lock, nail strip, 26 ga nail strip and the exposed-fastener PBR panel all draw
   // identically to a mechanically seamed pan. Mirrors emit/draw/palette.py DETAIL_FILL.

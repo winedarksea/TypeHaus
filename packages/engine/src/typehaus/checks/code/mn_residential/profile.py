@@ -74,8 +74,11 @@ MN_2020 = JurisdictionProfile(
         "Added 2026-08-15: R302.7 under-stair protection, R303.7/R303.8 interior and "
         "exterior stairway illumination (presence and switching only — illuminance is a "
         "photometric result this model cannot compute), R403.1.6 sill-plate anchorage "
-        "(the schedule rule, not a bolt count), R405.1 foundation drainage, R406.1 "
-        "dampproofing, and MN Rules 1303.2400-.2402 passive radon control — the state's "
+        "(the schedule rule, not a bolt count), R405.1 foundation drainage, MN Rules "
+        "1309.0406 below-grade waterproofing (subp. 1 deletes IRC R406.1 outright, so "
+        "dampproofing is not an option in this state and the rule is graded against subp. "
+        "2's eight acceptable materials), and MN Rules 1303.2400-.2402 passive radon "
+        "control — the state's "
         "own rule, with no IRC parent, covering the collection point, the sealed sump "
         "cover, the exhaust's separation from openings into conditioned space, and the "
         "power source for a future fan. Not covered within that radon rule, because the "
@@ -280,12 +283,15 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Foundation frost depth", ("structural.frost_depth",), ("IRC R403.1.4",)),
         PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),
                        ("IRC R403.1.6",)),
-        # Drainage and dampproofing are one sheet's worth of review — "how does water get
+        # Drainage and waterproofing are one sheet's worth of review — "how does water get
         # away from this concrete" — but two independent findings, because a wall can have
-        # tile and no membrane or the reverse.
-        PermitItemSpec("Foundation drainage and dampproofing",
-                       ("code.R405_1_foundation_drainage", "code.R406_1_dampproofing"),
-                       ("IRC R405.1", "IRC R406.1")),
+        # tile and no membrane or the reverse. The second cites the Minnesota rule and not
+        # the IRC section it replaces, the convention 1309.0305 already set: subp. 1 deletes
+        # R406.1 in its entirety, so citing R406.1 on a Minnesota permit set cites nothing.
+        PermitItemSpec("Foundation drainage and waterproofing",
+                       ("code.R405_1_foundation_drainage",
+                        "code.MN_1309_0406_waterproofing"),
+                       ("IRC R405.1", "Minn. R. 1309.0406")),
         # Minnesota's own rule, with no IRC parent: every new residential structure in the
         # state gets a passive soil-gas system, and it is drawn on the foundation and
         # plumbing sheets rather than described in a note.

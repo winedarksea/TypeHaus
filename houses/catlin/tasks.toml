@@ -40,6 +40,31 @@ constraints = [
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 
+# ** THE MEMBRANE IS A VISIT NOW (2026-09-12), AND IT STANDS BEFORE BACKFILL. **
+# Until today the below-grade waterproofing was filed on the SIDING trade — `takeoff/
+# envelope.py` scopes a foundation wall's layers as "foundation wall", which was not in
+# `emit/trade_rules._POUR_SCOPES` — so it collapsed into `task/walls/building`, which
+# depends on framing and the roof. The wall it goes on is buried weeks before either.
+# Its own arrival: one crew, one day on the wall, and the backfill follows it in the same
+# mobilisation. `insp/foundation_backfill` ("Waterproofing, drainage and backfill") is what
+# releases the earth and framing trades, and its on-site list is this visit's own checklist.
+[visits."task/concrete/building/waterproofing"]
+label = "Waterproofing, free-draining stone and backfill"
+rows = ["envelope_layers:waterproofing", "allowances:foundation-free-draining-backfill"]
+depends_on = ["task/concrete/basement/walls"]
+checkpoints = [
+  { id = "membrane", label = "Cold joint treated, primer flashed off, sheet rolled and corners reinforced" },
+  { id = "foam", label = "XPS bonded to the cured membrane with foam-compatible mastic" },
+  { id = "stone", label = "Free-draining stone and geotextile against the lower wall", after = ["insp/foundation_backfill"] },
+]
+constraints = [
+  { label = "forms stripped and the wall face clean and dry — the sheet is adhered, not hung" },
+  { label = "membrane grade matched to the forecast: Low Temperature + Primer B2 LVC below 40 F" },
+  { label = "backfill booked inside 30 days of the sheet going on — it is not UV-stable" },
+  { label = "backfill placed in controlled lifts: there is no protection course over the foam" },
+  { label = "confirmed with the sub 48 hours ahead" },
+]
+
 [visits."task/concrete/building/slabs"]
 label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
 rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
@@ -60,9 +85,13 @@ constraints = [
 ]
 
 [visits."task/concrete/building/flatwork"]
-label = "Flatwork — driveway apron, walks, and the damp-proofing"
-rows = ["allowances:concrete-driveway-apron-and-walks",
-        "allowances:foundation-damp-or-waterproofing"]
+label = "Flatwork — driveway apron and walks"
+# ** THE WATERPROOFING IS NOT HERE ANY MORE (2026-09-12). ** This visit carried
+# `allowances:foundation-damp-or-waterproofing`, and this visit `depends_on
+# insp/foundation_backfill` — so the membrane that has to be on the wall BEFORE the backfill
+# inspection was scheduled after it. The allowance is deleted and the membrane is a modelled
+# layer on the concrete trade now, which puts it in the wall package where it belongs.
+rows = ["allowances:concrete-driveway-apron-and-walks"]
 element_tags = ["DW-*"]
 # Last, and deliberately after backfill: a new apron under a loaded truck is a repair.
 # And `blocks_successors = false` because of the other half of that sentence: framing's

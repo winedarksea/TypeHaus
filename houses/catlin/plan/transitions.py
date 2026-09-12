@@ -125,7 +125,7 @@ TRANSITIONS = (
     # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
     # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
     # EXT_* walls take: there is no truss plane down here, the unit sits in the stud
-    # plane, and the wall's water plane is the damp-proofing over the sheathing.
+    # plane, and the wall's water plane is the waterproofing over the sheathing.
     # SAUNA_LINER_ON_GARDEN_FRAMED needs nothing here — WIN-B-SAUNA's perimeter is the
     # vapour-control return TR-CATLIN-SAUNA-OPENING already draws, and its `SAUNA_*`
     # pattern reaches the framed variant unchanged.

@@ -3041,8 +3041,39 @@
 # $/SF net, by material tag
 # RE-SCOPED 2026-08-23: 6,328 SF of this was the sheet WRB in EXT_2X6, and the truss
 # wall dropped it — closed-cell foam is the water plane now, seamless and bonded, so there is
-# no membrane to hang there. What is left is the foundation-wall sheet and the roof's.
-"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 2057.9 SF
+# no membrane to hang there.
+# ** RE-SCOPED AGAIN 2026-09-12, AND THIS ROW IS THE ROOF'S UNDERLAYMENT NOW. ** 1,016 SF of
+# the 2,057.9 was the below-grade foundation sheet, modelled as `air-barrier` — DuPont Tyvek
+# HomeWrap, 54 perm — because there was no other membrane in the catalog. Minnesota does not
+# permit dampproofing at all (Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 outright), let
+# alone housewrap, so that face moved to `waterproofing` below and this key stopped being
+# three products under one price.
+"air-barrier" = { material = { low = 0.25, high = 0.6 }, labour = { low = 0.35, high = 0.75 } }  # 882.8 SF, the roof deck
+# ** BELOW-GRADE WATERPROOFING — THE ONE LAYER THIS STATE DOES NOT LET YOU OMIT. **
+# Minn. R. 1309.0406 subp. 2: every exterior foundation wall that retains earth and encloses
+# below-grade space "shall be waterproofed ... from the top of the footing to the finished
+# grade". No high-water-table precondition, no dampproofing rung below it. The selection is a
+# 60-mil self-adhered rubberised-asphalt sheet — subp. 2's item 5, and the strongest published
+# numbers of its eight (0.05 perm, 300% elongation, 200 ft head, crack-cycled at -25 F).
+# MATERIAL, and this half is solid. Published metro material pricing, 200 SF roll:
+#   Bituthene 3000   $162.77/roll = $0.81/SF
+#   Polyguard 650    $173.86/roll = $0.87/SF
+#   MiraDRI 860      $159.58/roll = $0.80/SF
+# Plus the two things a roll price leaves out and the field cannot skip: Primer B2 / B2 LVC at
+# 250-350 SF/gal and $60-90/gal = $0.17-0.36/SF, and the 2-ply reinforced corners (a 3/4"
+# liquid cant fillet, then a 12" strip centred on every inside and outside corner, then full
+# sheets over it) plus penetration detailing, which is 10-15% more sheet on a footprint with
+# this many corners. 0.81 + 0.17 + 10% -> 1.10; 0.87 + 0.36 + 15% -> 1.55.
+# LABOUR, and ⚠️ THIS HALF WANTS A QUOTE. Published installed figures for this product class
+# run $2.50-4.50/SF, but the aggregators they come from are dominated by RETROFIT INTERIOR
+# work — excavating an existing house — which is a different job from rolling sheet onto a
+# green wall in an open excavation. Net of material that is $1.65-3.65/SF, and Minneapolis
+# labour runs ~38% over the national rates those aggregators quote, so the spread below is
+# wide on purpose. THREE METRO QUOTES FOR NEW CONSTRUCTION ARE THE THING THAT CLOSES IT.
+# Cold weather is a price question as well as a schedule one: `Bituthene Low Temperature`
+# (25-60 F) with `Primer B2 LVC` is a premium grade, and it is not optional if the foundation
+# lands below 40 F. The high end carries it.
+"waterproofing" = { material = { low = 1.10, high = 1.55 }, labour = { low = 1.70, high = 3.80 } }  # the below-grade face
 # THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
 # see `cli/prices.QUALIFIED_KEY_FIELD`.
 #
@@ -3890,15 +3921,26 @@
 # section as of 2026-09-03 and [rebar_inclusive] wall_structure = true is this rate declaring
 # that it still absorbs its own steel. Pricing [reinforcement] without flipping that to false
 # is a hard error naming both sides — see cli/price_file._check_rebar_not_double_billed.
-# ** DAMP-PROOFING IS NO LONGER OUTSIDE THE MODEL. ** `damp-proof` (library/assemblies.py:170)
-# bills in [envelope_layers] as `air-barrier`, so the "not modelled separately" half of the
-# argument above is stale for that item and this rate may now be ~$7-18/LF high. Logged in
-# plans/TODO.md; not re-derived in the 2026-08-30 allowance pass, because it is a rate
-# re-derivation and not a defect fix.
+# ** THE WATERPROOFING IS OUT OF THESE RATES AS OF 2026-09-12, AND THEY CAME DOWN FOR IT. **
+# The market anchor above quotes a poured wall "INCLUDING forms, rebar, concrete and basic
+# damp-proofing", and the paragraph then backs out ~$7-18/LF of damp-proofing on the argument
+# that it was not modelled separately. It has been modelled since 2026-08-30 — badly, as
+# 54-perm housewrap — and properly since 2026-09-12 as `[envelope_layers]."waterproofing"`,
+# a 60-mil self-adhered sheet at $2.80-5.35/SF over the 1,016.4 SF below-grade face. Both
+# halves of the double-bill were live for two weeks; plans/TODO.md carried it open.
+# STRUCK, rather than the note rewritten, because the layer is the honest place for it: the
+# quote is a NATIONAL all-in rate for a generic wall and this house's membrane is a specified
+# product with its own quantity, its own trade and its own inspection.
+# The deduction, at each row's own yield, split 30/70 material/labour the way an adhered
+# membrane actually splits ($0.81-0.87/SF sheet against $1.70-3.80/SF to roll it):
+#   BASEMENT_12  0.3333 cy/LF -> $7-18/LF = $21-54/cy   -> material -$6/-$16, labour -$15/-$38
+#   BASEMENT_8   0.2305 cy/LF -> $7-18/LF = $30-78/cy   -> material -$9/-$23, labour -$21/-$55
+# The all-in rate still absorbs its own rebar; [rebar_inclusive] wall_structure = true is
+# unchanged and that condition is enforced, not merely written down.
 # SPLIT 2026-08-27 on the same pre-tax ready-mix anchor as [concrete]: $180-200/cy plus the
 # rebar this all-in rate absorbs. Forming, bracing, placing and stripping are the residual and
 # are most of the number, which is exactly the paragraph above's point about thickness.
-"BASEMENT_12" = { material = { low = 210, high = 260 }, labour = { low = 210, high = 440 } }  # W-B-E1/E2 only since 2026-08-21
+"BASEMENT_12" = { material = { low = 204, high = 244 }, labour = { low = 195, high = 402 } }  # W-B-E1/E2 only since 2026-08-21; net of the waterproofing, see above
 # 2026-08-21: the eight non-deck-bearing perimeter segments went 12" -> 8" (108 LF, -12.4 cy).
 # ** DO NOT price these off the 12" row. ** $420-700/cy was derived per-CY at 12"; applied to
 # an 8" volume it books the saving as ~$5,200-8,700, when the trade only gives back ~$25-45/LF
@@ -3920,7 +3962,7 @@
 # row at anything but zero buys them twice. The 1/2" board on both faces is real and is
 # bought in [envelope_layers], where every other gwb face in the house is.
 "STAIRWELL_PARTITION_4H" = { material = { low = 0, high = 0 }, labour = { low = 0, high = 0 } }  # W-B-WELL, 0.47 CY — billed in [framing], see above
-"BASEMENT_8" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }  # W-B-N1/N2/N3, W-B-W1/W2
+"BASEMENT_8" = { material = { low = 206, high = 247 }, labour = { low = 259, high = 485 } }  # W-B-N1/N2/N3, W-B-W1/W2; net of the waterproofing, see above
 # "BASEMENT_8_GARDEN" = { material = { low = 215, high = 270 }, labour = { low = 280, high = 540 } }
 # stood here from 2026-08-18, the south wall split out so its full-height parge could stay
 # while the others took an above-grade band. RETIRED 2026-09-12 with the assembly: the parge
@@ -5411,22 +5453,87 @@ site-drain-tile-daylight-outlet = { low = 1500, high = 4000 }
 # which is maybe $200-450 of hours and yardage off the top of this range. Left in — it is
 # well inside the spread, and the pour count did not change.
 concrete-pumping = { low = 4600, high = 7800 }
-# ** RE-RATED 2026-08-30 TO THE UPGRADE DELTA ONLY — the old band double-billed the base
-# coat. ** CATLIN_BASEMENT_*'s `damp-proof` layer (library/assemblies.py:170) is MODELLED, and
-# it bills in [envelope_layers] under its material ref `air-barrier` at $0.60-1.35/SF over
-# 2,057.9 SF. The code minimum (IRC R406.1) is therefore already bought. This row was carrying
-# $1.08-14.33/SF on the same face, so its bottom ~$1.08/SF was the same damp-proofing a second
-# time.
-# What is left, and all this row may now hold, is the UPGRADE nobody has chosen:
-#   damp-proofing only, IRC R406.1 minimum   -> $0.00/SF here; already a modelled layer
-#   + dimple drainage board                  -> ~$2.00-5.00/SF over the base coat
-#   full adhered/spray membrane              -> ~$6.00-12.50/SF over the base coat
-# So $0.00-12.50/SF, and the LOW END OF ZERO IS THE POINT: take the code minimum and this row
-# is correctly nothing, because the money is already in [envelope_layers]. THE DECISION IS
-# STILL UNMADE; what changed is only that choosing "minimum" no longer costs twice.
-# Driver unchanged — the below-grade face, 1,016.4 SF today — so it still follows the wall.
-# (The 1,116.3 SF this comment used to claim was itself two passes out of date.)
-foundation-damp-or-waterproofing = { low = 0.0, high = 12.50, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=air-barrier]" }
+# ** RETIRED 2026-09-12: `foundation-damp-or-waterproofing`, $0.00-12.50/SF, is DELETED. **
+# It was a ladder — dampproofing only / + dimple board / full adhered membrane — over a
+# 1,016 SF below-grade face, and every rung of it is now wrong:
+#   - The BOTTOM rung is not legal here. Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 in
+#     its entirety, so "dampproofing only, IRC R406.1 minimum" names a section Minnesota
+#     struck. There is no rung below waterproofing in this state.
+#   - The TOP rung is the baseline now, not an upgrade. The 60-mil self-adhered sheet is
+#     selected, modelled and priced as `[envelope_layers]."waterproofing"` at $2.80-5.35/SF
+#     installed. A lump allowance over the same face on top of that is the double-bill this
+#     row was re-rated in 2026-08-30 to avoid, coming back by the other door.
+#   - The MIDDLE rung is decided against: no dimple mat. Delta-MS wants its head mechanically
+#     fastened and sealed to the wall, and outboard of 4" of XPS there is nothing in reach to
+#     fasten into. Free-draining stone against the lower wall does the drainage instead —
+#     `[earth]."foundation-free-draining-backfill"` below.
+# The decision this row held open is TAKEN, which is why the row is gone rather than zeroed:
+# a $0.00-12.50 band standing next to a modelled layer is an invitation to buy it twice.
+# See plans/cost-options.md, where the matching upgrade line was struck the same day.
+# ** FREE-DRAINING STONE AGAINST THE LOWER WALL — what replaces the dimple mat. **
+# The decision is no mat, and the reason is buildability rather than money: Delta-MS wants
+# its head mechanically fastened and sealed to the wall, and outboard of 4" of XPS bonded
+# with mastic there is nothing in reach to fasten into. That is the one genuinely unsolved
+# detail in this design, and skipping it also leaves the layer stack and the outboard face
+# untouched. Free-draining stone does the drainage instead, and it is already on the drawing
+# — notes/basement_to_framed_wall_detail.md calls for "additional compacted aggregate in
+# front of footing (equal to footing height, geotextile-lined)" and a geotextile-lined river
+# rock trench against the foundation — and was missing only from the model.
+#
+# ** NOT A `FrenchDrain`, AND DELIBERATELY NOT. ** The model has no element kind for a
+# VERTICAL drainage column: `FrenchDrain` is a trench (invert / trench_width / trench_depth)
+# and `FootingBedding.undercut` is depth BELOW the footing. Authoring a perimeter FrenchDrain
+# here would put a second trench over the one the footing bedding already derives and bill
+# the same washed stone twice — the exact hazard notes/basement_to_framed_wall_detail.md
+# names. So this is a backfill SPECIFICATION: a priced quantity, plus a drawn section.
+#
+# THE SECTION, which is what the drawing has to show: 12" of ASTM C33 #57 washed stone
+# against the XPS, from the top of the footing bedding up 4'-0", geotextile between the
+# stone and the retained soil, turned down over the bedding so the two courses are one
+# connected path to the tile already in it.
+#   125.7 LF of below-grade wall x 1.0 ft x 4.0 ft = 502.8 cf = 18.6 cy
+#   #57 washed stone $45-75/cy delivered + $25-50/cy placed by hand and skid in a lined
+#   trench = $70-125/cy -> $1,302-2,325
+#   geotextile 125.7 LF x ~6 ft = 754 SF at $0.30-0.70/SF installed -> $226-528
+#   = $1,528-2,853 over the 1,016.4 SF below-grade face = $1.50-2.81/SF
+# RECONCILE AGAINST [footing_bedding], which is a DIFFERENT order of the same stone: 78.14
+# cy of #57 under the footings, undercut BELOW them. This row is the 18.6 cy standing beside the
+# wall. If the two ever read as one line on a quote, one of them is being bought twice.
+# Driven off the waterproofed face so it follows the wall, exactly as the membrane does.
+foundation-free-draining-backfill = { low = 1.50, high = 2.80, unit = "SF", driver = "envelope_layers.net_area_sqft[scope=foundation wall,material=waterproofing]" }
+# ** THE SUNKEN GARDEN'S DRAINED BACKFILL — and this one is STRUCTURAL, not just moisture. **
+# W-SG-W2 / W-SG-E2 / W-SG-S retain 9.12 ft of soil, 52.6 LF between them, and
+# notes/sunken_garden_court_free_body.md is blunt about what is missing: "No drainage or
+# hydrostatic case — and NOTHING IN THE MODEL MAKES THE DRAINAGE WORK. ... A saturated
+# backfill roughly doubles the thrust and would take the system well under 1.0. ... It is
+# the single largest unpriced assumption in section 9." engineering/retaining_wall.py says
+# the same in its own voice. So the money on these walls belongs in drained backfill, which
+# relieves the thrust, and NOT in a membrane, which relieves nothing.
+#
+# ** AND THERE IS NO MEMBRANE ON THESE WALLS ON PURPOSE. ** Minn. R. 1309.0406 subp. 2 scopes
+# to walls that retain earth AND enclose below-grade interior space; no W-SG-* wall has a
+# room behind it, and `_retaining_walls()` already implements exactly that test. SUNKEN_GARDEN
+# _WALL is EXPOSED_MIX — w/cm 0.40, f'c 5,000, 6% air, ACI F3/W1/C2 with HDG bar — which is a
+# better long-term moisture barrier than an asphalt coat would be. Do not "correct" this by
+# adding one; see houses/catlin/DESIGN-LOG.md for the full reasoning.
+#
+# THE SECTION: 12" of #57 washed stone against the stem, from the top of the footing bedding
+# up 7'-0", geotextile between the stone and the retained soil and turned down over the bed.
+#   52.6 LF x 1.0 ft x 7.0 ft = 368 cf = 13.6 cy at $70-125/cy -> $952-1,700
+#   geotextile 52.6 LF x ~9 ft = 473 SF at $0.30-0.70/SF installed -> $142-331
+# NO TILE IN THIS ROW: the court's footing beddings already carry 4" sock-wrapped tile to
+# DRW-SG-MAIN (params/sunken_garden.py), and buying it again here is the double-count the
+# row above warns about. What is bought here is the column that gets water DOWN to it.
+# A LUMP and not driven, because the only driver the BOM offers for these walls is
+# wall_structure's cubic yards of concrete, and $/cy of stem is a meaningless unit for
+# backfill. The LF above is the derivation; re-strike it if the court's plan changes.
+# ** THIS DOES NOT FIX THE R404.4 FAILURE. ** The sliding factor of safety is ~0.57 against
+# 1.50 and still needs the consultant notes/sunken_garden_retaining_screening.md was written
+# for. Drained backfill relieves the hydrostatic case the engineering explicitly does not run.
+# KEYED `site-excavation-*` and not `foundation-*`: this is the excavator's work, placed as
+# the court is backfilled, and that family puts it on the earth trade (31 20 00) where the
+# house row's `foundation-*` puts the membrane-adjacent stone on concrete (07 10 00).
+site-excavation-sunken-garden-drained-backfill = { low = 1100, high = 2050 }
 # ** DRIVEN 2026-09-01, AND THE TWO OPENINGS ARE NOT THE ONES THIS ROW NAMED. **
 # `opening_takeoff` now carries `host_assembly` and a coarse `host_structure` off the host
 # wall's STRUCTURE layer — the same `material_ref` `wall_structure` groups its pours by — so

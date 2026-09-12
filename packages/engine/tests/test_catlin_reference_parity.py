@@ -140,7 +140,7 @@ def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
                            ("BASEMENT_8", "foundation-coating")):
         asm = catlin_model.plan.library.resolve_assembly(tag)
         assert [layer.name for layer in asm.layers] == [
-            "concrete", "damp-proof", "xps-a", "xps-b", outermost
+            "concrete", "waterproofing", "xps-a", "xps-b", outermost
         ]
 
 

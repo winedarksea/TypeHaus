@@ -97,7 +97,13 @@ LAYER_FUNCTION_TRADE: dict[str, str] = {
 
 _ROOF_SCOPES = ("roof",)
 _CEILING_SCOPES = ("roof ceiling", "ceiling")
-_POUR_SCOPES = ("slab", "footing")
+# "foundation wall" is ``takeoff/envelope.py``'s scope for a wall flagged ``is_foundation``,
+# and it belongs here for the same reason "slab" does: the membrane on a foundation wall is
+# applied by the concrete/earth crew against green concrete and buried the same week. Left
+# out, it fell through to the siding branch below and the below-grade waterproofing
+# scheduled after the roof was on — with ``insp/foundation_backfill`` ("Waterproofing,
+# drainage and backfill") waiting on it from the other side.
+_POUR_SCOPES = ("slab", "footing", "foundation wall")
 
 
 def layer_trade(function: str | None, scope: str | None = None,
@@ -116,7 +122,7 @@ def layer_trade(function: str | None, scope: str | None = None,
         if where in _ROOF_SCOPES:
             return "roofing"
         if where in _POUR_SCOPES:
-            return "concrete"        # under-slab vapour retarder, damp-proofing
+            return "concrete"        # under-slab vapour retarder, below-grade waterproofing
         if where in _CEILING_SCOPES:
             return "insulation"      # ceiling vapour retarder goes up with the blown fill
         return "siding"              # WRB / air barrier on a wall

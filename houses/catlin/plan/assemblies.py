@@ -619,7 +619,7 @@ ROOF = Assembly(
 # --- concrete family -----------------------------------------------------------
 #
 # **The pour is not this house's to own.** It comes from library
-# `FOUNDATION_WALL_8_XPS4_CORE` / `_12_XPS4_CORE` — the pour, damp-proofing and two
+# `FOUNDATION_WALL_8_XPS4_CORE` / `_12_XPS4_CORE` — the pour, waterproofing and two
 # staggered 2" XPS courses (R-21.8 either way; the concrete's R-0.08/in is noise) — and each
 # wall below splats one of those cores and appends the one skin that covers the foam. What stays house-local is exactly that skin, because it is a colour and
 # exposure decision: neither `foundation-coating-acrylic` nor `stucco` resolves in
@@ -673,7 +673,7 @@ ROOF = Assembly(
 # until 2026-09-04, struck against the parge; the parge's deletion left the node stranded
 # half an inch off the foam with nothing describing the gap. See BASEMENT_BRICK_VENEER's
 # `air-gap` layer. Those nodes stand over the COURT segments, not the banded walls, so the
-# band's own thickness has never been theirs to follow. 4.05" is 0.05" damp-proof + 2x 2"
+# band's own thickness has never been theirs to follow. 4.06" is 0.06" waterproofing + 2x 2"
 # XPS, and is independent of the pour's thickness.
 
 # The exposed-foundation band runs from 6" *below* grade — so no foam edge shows at the
@@ -699,9 +699,9 @@ ROOF = Assembly(
 # on `any(layer.function == "cladding")` — retagging to FINISH would drop both foundation
 # walls out of the Glaser scope entirely, which makes the UNKNOWN vanish by losing the check
 # rather than by answering it. CLADDING also holds `_is_exterior_assembly`, the rainscreen
-# terminator, and `code.R406_1_dampproofing`'s accepted-function list.
+# terminator, and `code.MN_1309_0406_waterproofing`'s accepted-function list.
 #
-# **The outboard sum moves 4.55" -> 4.175"** over the band (0.05 damp-proof + 2 + 2 XPS +
+# **The outboard sum moves 4.55" -> 4.185"** over the band (0.06 waterproofing + 2 + 2 XPS +
 # 0.125 coating) and is unchanged at 4.05" below it. `W-B-BRICK` does NOT follow: its
 # `N-B-BRICK-W/-E` nodes stand over the *south court* walls, which carry no band at all, so
 # the band's thickness was never theirs and the 1-1/2" cavity (IRC R703.8.4 asks 1"
@@ -878,7 +878,7 @@ SG_VENEER_BEAM_14 = Assembly(
     tag="SG_VENEER_BEAM_14",
     layers=(
         # Concrete first, board second — the same order every other foundation wall in this
-        # house states (W-B-S2 runs concrete, damp-proof, xps-a, xps-b). Authored the other
+        # house states (W-B-S2 runs concrete, waterproofing, xps-a, xps-b). Authored the other
         # way round `code.R316_4` FAILs it: the innermost layer is what that rule reads as
         # facing a room, and a bare 2" of XPS there needs a thermal barrier. It is also
         # simply the truth about the pour: the board is a form face applied to a side of the
@@ -978,7 +978,7 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
 
 # Brick veneer over the exposed basement wall (sunken garden excavated against it).
 # There is no CMU backer wythe here, because the existing basement concrete
-# (damp-proofing + 4" XPS already outboard) IS the backer — this wall stands 1-1/2" off
+# (waterproofing + 4" XPS already outboard) IS the backer — this wall stands 1-1/2" off
 # it on masonry ties. A fictional backer would double-count concrete already modeled by
 # W-B-S2/W-B-S3. No `interfaces`: non-bearing.
 #
@@ -2596,7 +2596,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 # saving is the floor, not the number.
 #
 # **The stack is the concrete one with studs where the pour was**, not EXT_2X6: the
-# outboard face has to stay exactly where it is. The damp-proofing and the 4" of XPS continue
+# outboard face has to stay exactly where it is. The waterproofing and the 4" of XPS continue
 # from W-B-S1 and W-B-S4 either side, and W-B-BRICK stands 4.05" off its own footing with two
 # arched reveals dimensioned to it. `alignment=face("sheathing-ext")` puts the sheathing's
 # outboard face on the node line exactly where `face("concrete-ext")` put the pour's, so the
@@ -2613,7 +2613,7 @@ SAUNA_LINER_INT_2X6_BRG = Assembly(
 _GARDEN_FRAMED_OUTBOARD = (
     Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
           function=LayerFunction.SHEATHING),
-    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+    Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
     Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
@@ -2655,7 +2655,7 @@ _GARDEN_FRAMED_OUTBOARD = (
     #      walls gain the detail they now genuinely warrant. Re-run the goldens.
     #
     # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
-    # is already 4" of XPS plus damp-proofing at roughly 0.13 perm, so this wall can only
+    # is already 4" of XPS plus the 60-mil membrane at 0.05 perm, so this wall can only
     # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
     # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
     # EPS also holds up better than XPS in long-term ground contact, and the bottom of
@@ -2675,7 +2675,7 @@ _GARDEN_FRAMED_STUD = Layer(
 # The curbs the framed run stands on: W-B-S2 and W-B-S3, 7 1/4" of pour on the existing
 # footings. **6" and not the 8" the rest of the south wall is**, and the reason is a plane
 # and not a load: 6" of concrete is exactly stud-plus-sheathing, so the curb's outboard
-# face lands on the node line where the sheathing's does — keeping the damp-proofing, the
+# face lands on the node line where the sheathing's does — keeping the waterproofing, the
 # XPS and W-B-BRICK's cavity on one plane top to bottom — AND its inboard
 # face lands where the studs' does, so there is no shelf inside the room to collect water.
 # An 8" curb would have bought a 2" ledge on the wet side of a sauna wall. The curb
@@ -2683,11 +2683,11 @@ _GARDEN_FRAMED_STUD = Layer(
 #
 # The three outboard layers are restated rather than sliced off
 # FOUNDATION_WALL_8_XPS4_CORE: this file is `# haus: editable` and the dialect allows no
-# subscripting. They are the same damp-proofing and 2 x 2" of XPS, in the same order.
+# subscripting. They are the same waterproofing and 2 x 2" of XPS, in the same order.
 _GARDEN_CURB_CORE = (
     Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
           function=LayerFunction.STRUCTURE, concrete=BURIED_MIX),
-    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+    Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
     Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
@@ -2729,7 +2729,7 @@ _GARDEN_CURB_CORE = (
     #      walls gain the detail they now genuinely warrant. Re-run the goldens.
     #
     # It is EPS and not more XPS on purpose. The stack outboard of the concrete/sheathing
-    # is already 4" of XPS plus damp-proofing at roughly 0.13 perm, so this wall can only
+    # is already 4" of XPS plus the 60-mil membrane at 0.05 perm, so this wall can only
     # dry inward. EPS at 3.9 perm/in is ~2 perms at 2" — it adds R without adding a second
     # vapour shutter, and it lets the assembly dry OUTWARD into the ventilated cavity.
     # EPS also holds up better than XPS in long-term ground contact, and the bottom of
@@ -2745,7 +2745,7 @@ GARDEN_CURB_6 = Assembly(
         *_GARDEN_CURB_CORE,
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on its own damp-proofing and 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement",
+    source="catlin sunken-garden curb (W-B-S3), 2026-08-28: 6 in. of the south pour kept 7 1/4 in. above the slab under the framed walkout, on its own waterproofing and 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement",
 )
 
 # The same curb under the sauna's south face. The liner runs DOWN over it — it is not
@@ -2772,7 +2772,7 @@ GARDEN_FRAMED_2X6 = Assembly(
         *_GARDEN_FRAMED_OUTBOARD,
     ),
     interfaces=(_STUD_BEARING,),
-    source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the same outboard tail the curb below it carries (damp-proofing, 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement) so the sunken garden's finished face does not move",
+    source="catlin basement south walkout (W-B-S3-FR), framed 2026-08-28: 2x6 spf at 16 in. o.c. with mineral wool, on the same outboard tail the curb below it carries (waterproofing, 4 in. XPS, bare to the brick cavity since the 2026-09-02 stucco retirement) so the sunken garden's finished face does not move",
 )
 
 # The sauna's south face, on the framed run: GARDEN_FRAMED_2X6 with the liner in place of
@@ -3798,7 +3798,7 @@ MATERIALS = [
     #
     # **The XPS is bonded, not anchored, and that is the manufacturer's own instruction** -
     # "secure the foam boards to the wall using TOTAL WALL Blue Mastic #11 Adhesive or TOTAL
-    # WALL fasteners". Foam-compatible adhesive to the liquid-applied damp-proofing below,
+    # WALL fasteners". Foam-compatible adhesive to the self-adhered waterproofing below,
     # captured by the rainscreen Z-flash above and 6" of bury at the bottom. Nothing is given
     # up against the board it replaces: that board's washered pins went into the XPS, never
     # through to concrete, so no version of this band has ever had a masonry anchor in it.

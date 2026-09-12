@@ -95,14 +95,14 @@ class SunkenGardenSpec:
     clear_length_ft: float = 26.0  # N-S between wall inner faces
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
     gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
-    # The house's real BELOW-GRADE outboard face, on the south run: 0.05" damp-proofing +
+    # The house's real BELOW-GRADE outboard face, on the south run: 0.06" waterproofing +
     # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
     # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
     # same way `basement_depth_ft` is. `house_ext_layers_in = 5.0` above is the
     # ABOVE-GRADE stack (polyiso + EPS + furring + cladding) and is why `_y_ax_n` landed
     # on -10" rather than on this plane: the porch deck clears the cladding, but the court
     # wall meets the foundation.
-    house_below_grade_face_in: float = 4.175
+    house_below_grade_face_in: float = 4.185
     # The XPS isolation board between the court's side walls and the house — same 2" and
     # same 40 psi as SG_VENEER_BEAM_14's `xps-break` and the DW-SG-* footing blocks.
     #

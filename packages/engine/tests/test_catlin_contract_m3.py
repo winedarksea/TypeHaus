@@ -1312,7 +1312,7 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
 
     Eight on N/E/W with an above-grade protection band, three on the south with a
     full-height parge into the sunken garden — of which W-B-S2 also carries the sauna's
-    liner inboard of the pour. The foam is identical on all of them and so is the 4.05" it
+    liner inboard of the pour. The foam is identical on all of them and so is the 4.06" it
     puts outboard of the pour; the splits are about what covers the foam outside, what (if
     anything) lines the room inside, and how thick the pour behind it is.
     """
@@ -1324,7 +1324,7 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     # curbs carry the identical outboard tail. It was 15 for part of 2026-09-05, while the
     # rotated sauna's south face ran onto W-B-S1B; the shrink that afternoon put the room
     # wholly on the curb and W-B-S1 back together. The foam is identical on every one and
-    # still 4.05" outboard of whatever is behind it, which is what this test is about.
+    # still 4.06" outboard of whatever is behind it, which is what this test is about.
     assert len(perimeter) == 14  # same wall line, split at grid/tee/curb/room nodes
     # Six south segments: two buried 8" pours (W-B-S1 west of the excavation, W-B-S4 east of
     # it), the two 7 1/4" curbs inside it, and the two framed walls standing on those curbs.
@@ -1384,8 +1384,8 @@ def test_only_the_deck_bearing_perimeter_stays_twelve_inches(catlin_model):
 
 
 def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
-    """Every perimeter assembly carries the library core's 4.05" tail outboard of the pour
-    (0.05" damp-proofing + 2 x 2" XPS), and it must survive a change of pour thickness — the
+    """Every perimeter assembly carries the library core's 4.06" tail outboard of the pour
+    (0.06" waterproofing + 2 x 2" XPS), and it must survive a change of pour thickness — the
     veneer, the excavation, the XPS plane and the drain tile are all measured off the
     *exterior* face, which is the datum the walls align on, so only the inside face moves.
 
@@ -1399,8 +1399,8 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
     """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
-        core = [l for l in asm.layers if l.name in ("damp-proof", "xps-a", "xps-b")]
-        assert sum(l.thickness.inches for l in core) == pytest.approx(4.05), tag
+        core = [l for l in asm.layers if l.name in ("waterproofing", "xps-a", "xps-b")]
+        assert sum(l.thickness.inches for l in core) == pytest.approx(4.06), tag
         skin = [l for l in asm.layers if l.name in ("parge", "foundation-coating")]
         if tag in _BURIED_ASSEMBLIES:
             assert [l.name for l in skin] == ["foundation-coating"], tag
@@ -2067,13 +2067,16 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
 
     # The wythe bears on the beam's CONCRETE over its whole width. Its position is the
     # invariant of this whole detail: the beam's north face cannot pass -10", so the brick
-    # sits at -10.05..-13.675 and NOTHING may move it. What fills the 6" behind it has
+    # sits just clear of it and nothing in the cavity may push it back. (-10.06 since
+    # 2026-09-12, when the membrane took its real 60 mil and the court segments' outboard
+    # tail grew 0.01"; N-B-BRICK-W/-E followed so the cavity stays closed, and 0.01"
+    # further off the beam changes nothing about the bearing.) What fills the 6" behind it has
     # already changed twice and may change again — 6" of bare air on 2026-09-04, then 2" of
     # EPS on the backup wall plus a 4" cavity on 2026-09-05.
     brick = catlin_model.wall("W-B-BRICK")
     faces = {ly.name: span_in(ly.polygon) for ly in brick.layers}
-    assert faces["brick"] == pytest.approx((-13.675, -10.05), abs=1e-6)
-    assert faces["air-gap"] == pytest.approx((-10.05, -6.05), abs=1e-6)
+    assert faces["brick"] == pytest.approx((-13.685, -10.06), abs=1e-6)
+    assert faces["air-gap"] == pytest.approx((-10.06, -6.06), abs=1e-6)
 
     # ** NO UNDESCRIBED VOID BETWEEN THE BACKUP AND THE CAVITY. ** This detail has fallen
     # into that trap once already: on 2026-09-04 the south wall's parge was deleted and
@@ -2083,15 +2086,15 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # outermost layer, whatever either of them happens to be on the day.
     for backup in ("W-B-S2", "W-B-S3", "W-B-S2-FR", "W-B-S3-FR"):
         outermost = catlin_model.wall(backup).layers[-1]
-        assert span_in(outermost.polygon)[0] == pytest.approx(-6.05, abs=1e-6), backup
-    assert faces["air-gap"][1] == pytest.approx(-6.05, abs=1e-6)
+        assert span_in(outermost.polygon)[0] == pytest.approx(-6.06, abs=1e-6), backup
+    assert faces["air-gap"][1] == pytest.approx(-6.06, abs=1e-6)
 
     # And the backup's face must stay INBOARD of the wall standing on its seat: the basement
     # skin tucks under EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
     # upper one turns that lap into an upward-facing ledge. 4" of EPS did exactly that at
     # -8.05" and nothing in `haus check` noticed.
     main_face = min(y for ly in catlin_model.wall("W-M-S1").layers for _x, y in ly.polygon)
-    assert -6.05 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
+    assert -6.06 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
     beam_lo, beam_hi = span_in(layers["concrete"].polygon)
     assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi, \
         "the wythe must sit wholly on the beam, not overhang its north edge"
@@ -2143,11 +2146,11 @@ def test_the_house_strip_footings_sit_under_the_walls_they_carry(catlin_model):
     for tag in ("W-B-N1", "W-B-N2", "W-B-N3", "W-B-N4", "W-B-W1", "W-B-W2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 8.0), abs=1e-6), tag
-        assert footing == pytest.approx((-8.0875, 11.9125), abs=1e-6), tag
+        assert footing == pytest.approx((-8.0925, 11.9075), abs=1e-6), tag
     for tag in ("W-B-E1", "W-B-E2"):
         footing, pour = spans(tag)
         assert pour == pytest.approx((0.0, 12.0), abs=1e-6), tag
-        assert footing == pytest.approx((-6.0875, 13.9125), abs=1e-6), tag
+        assert footing == pytest.approx((-6.0925, 13.9075), abs=1e-6), tag
 
     # The eleven that stay on the node line: the garden-end four on their 6" trim, and the
     # seven interior walls a 20" strip already straddles symmetrically.

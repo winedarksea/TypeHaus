@@ -85,7 +85,7 @@ def test_the_weathertight_milestone_names_its_real_blockers(house: Path) -> None
         app, ["schedule", str(house), "--milestone", "weathertight"])
     assert result.exit_code == 0, result.output
     assert "Weathertight" in result.stdout
-    assert "Damproofing, drainage and backfill passed" in result.stdout
+    assert "Waterproofing, drainage and backfill passed" in result.stdout
     assert "Girt screws verified on every wall" in result.stdout
     # Only the one milestone.
     assert "Foundation\n" not in result.stdout

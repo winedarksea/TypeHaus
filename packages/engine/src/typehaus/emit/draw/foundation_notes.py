@@ -75,7 +75,7 @@ def foundation_general_notes(model: ResolvedModel,
     notes.append("SILL ANCHORS ARE SCHEDULED AT THEIR PITCH; NO PLATE RUN TAKES FEWER "
                  "THAN 2 (IRC R403.1.6). REINFORCEMENT LAP CLASS IS ACI 318-19 §25.5.2.1; "
                  "\"—\" MEANS NO CLASS IS AUTHORED.")
-    notes.extend(_dampproofing_notes(model))
+    notes.extend(_waterproofing_notes(model))
     notes.extend(radon_control_notes(model))
     notes.append("FOOTING, PAD, WALL AND SLAB GEOMETRY IS RESOLVED FROM THE PLAN SOURCE; "
                  "SIZES ARE AUTHORED, NOT ENGINEERED.")
@@ -83,22 +83,27 @@ def foundation_general_notes(model: ResolvedModel,
 
 
 def _water_control_layers(assembly: Any) -> list[Any]:
-    """Layers that dampproof the earth face, by the criterion ``code.R406_1_dampproofing``
-    uses — one definition, so the sheet and the verdict cannot disagree about one wall."""
+    """Layers that waterproof the earth face, by the criterion
+    ``code.MN_1309_0406_waterproofing`` uses — one definition, so the sheet and the verdict
+    cannot disagree about one wall."""
     return [layer for layer in assembly.layers
             if ControlLayer.WATER in (layer.control or set())
             and layer.function in (LayerFunction.MEMBRANE, LayerFunction.SHEATHING,
                                    LayerFunction.CLADDING)]
 
 
-def _dampproofing_notes(model: ResolvedModel) -> list[str]:
-    """R406.1 — what actually dampproofs each foundation-wall assembly, named.
+def _waterproofing_notes(model: ResolvedModel) -> list[str]:
+    """Minn. R. 1309.0406 — what actually waterproofs each foundation-wall assembly, named.
 
-    Assembly by assembly rather than wall by wall: dampproofing is a layer, and a house
+    The Minnesota rule and not IRC R406.1, which subp. 1 deletes in its entirety: a
+    dampproofing callout on a Minnesota permit set cites a section that is not there.
+
+    Assembly by assembly rather than wall by wall: waterproofing is a layer, and a house
     with thirteen basement walls has two or three answers, not thirteen. Walls whose
-    assembly carries no water-control layer are listed but not judged — whether R406.1
-    reaches a given wall is ``code.R406_1_dampproofing``'s question (it also asks whether
-    the wall encloses space below grade, which this sheet does not re-derive).
+    assembly carries no water-control layer are listed but not judged — whether the rule
+    reaches a given wall is ``code.MN_1309_0406_waterproofing``'s question (it also asks
+    whether the wall encloses space below grade, which this sheet does not re-derive, and
+    whether the layer is one of subp. 2's eight acceptable materials).
     """
     from typehaus.emit.draw.foundation_schedule import foundation_walls
 
@@ -116,12 +121,14 @@ def _dampproofing_notes(model: ResolvedModel) -> list[str]:
         product = (f"{_layer_thickness(proofed[0])} "
                    f"{proofed[0].material_ref.upper()} ('{proofed[0].name.upper()}')")
         by_product.setdefault(product, []).append(f"{assembly_tag} ({len(tags)})")
-    notes = [f"DAMPPROOFING (IRC R406.1), EARTH FACE, TOP OF FOOTING TO FINISHED GRADE: "
+    notes = [f"WATERPROOFING (MINN. R. 1309.0406), EARTH FACE, TOP OF FOOTING TO "
+             f"FINISHED GRADE: "
              f"{', '.join(assemblies)} CARRY {product}."
              for product, assemblies in sorted(by_product.items())]
     if bare:
         notes.append("NO WATER-CONTROL LAYER IS MODELLED IN " + ", ".join(bare)
-                     + "; SEE code.R406_1_dampproofing FOR WHICH OF THESE R406.1 REACHES.")
+                     + "; SEE code.MN_1309_0406_waterproofing FOR WHICH OF THESE "
+                       "MINN. R. 1309.0406 REACHES.")
     return notes
 
 
@@ -422,7 +429,8 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
     walls = foundation_walls(model)
     if walls:
         findings.extend(_sill_anchorage_findings(model))
-    # Presence only. WHICH walls R406.1 reaches is code.R406_1_dampproofing's question and
+    # Presence only. WHICH walls the rule reaches is
+    # code.MN_1309_0406_waterproofing's question and
     # it asks a second one this sheet does not re-derive (does the wall enclose space below
     # grade); a house with no water-control layer anywhere has nothing for either to print.
     if walls and not any(
@@ -430,9 +438,9 @@ def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:
             for assembly in {model.plan.library.resolve_assembly(wall.assembly)
                              for wall in walls} if assembly is not None):
         findings.append(Finding(
-            severity=Severity.WARN, check_id="sheet.foundation.dampproofing",
+            severity=Severity.WARN, check_id="sheet.foundation.waterproofing",
             message="no foundation-wall assembly carries a water-control layer, so S-100 "
-                    "shows no dampproofing callout (IRC R406.1)",
+                    "shows no waterproofing callout (Minn. R. 1309.0406)",
             element_tags=tuple(wall.tag for wall in walls)[:1], result=Result.UNKNOWN,
             fix_hint="add a MEMBRANE layer with control={WATER} outboard of the STRUCTURE "
                      "layer in the foundation wall assembly",

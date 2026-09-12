@@ -130,6 +130,26 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              vapor_permeance_perms=54.0, hatch="membrane", color="#4a4a4a",
              source="DuPont Tyvek HomeWrap physical-properties data sheet: 54 perm by "
                     "ASTM E96-05 Method B (56 perm Method A) — a sheet rating, not perm-in"),
+    # BELOW-GRADE WATERPROOFING, and it is a different product from `air-barrier` above in
+    # every way that matters: 0.05 perm against 54, adhered against hung, and required
+    # rather than optional. Minnesota deleted IRC R406.1 outright (Minn. R. 1309.0406
+    # subp. 1) and subp. 2 puts WATERPROOFING on every exterior foundation wall that
+    # retains earth and encloses below-grade space — no high-water-table precondition, and
+    # crawl spaces named. Authoring the layer as housewrap was how a 54-perm sheet came to
+    # stand in for the one product the state does not let you omit.
+    #
+    # 60-mil rubberised-asphalt peel-and-stick sheet: item 5 of subp. 2's eight acceptable
+    # materials ("40 mil polymer modified asphalt"), and the strongest published numbers of
+    # the eight. Bituthene 3000 is the reference; Polyguard 650 and Carlisle MiraDRI 860
+    # are equals. Specify `Bituthene Low Temperature` with `Primer B2 LVC` for a pour that
+    # lands below 40 F — the standard grade gates the whole foundation on a warm week.
+    Material(tag="waterproofing",
+             name="Below-grade waterproofing (60 mil self-adhered rubberised asphalt)",
+             r_per_inch=0.0, density=1100.0, vapor_permeance_perms=0.05, hatch="membrane",
+             color="#2f2b2a",
+             source="GCP Bituthene 3000 data sheet: 0.05 perm (ASTM E96 B), 300% "
+                    "elongation (D412), 200 ft hydrostatic head (D5385), 50 lb puncture "
+                    "(E154), crack-cycled 100x at -25 F unaffected (C836), 60 mil"),
     # Closed-cell (2 lb) spray polyurethane foam — what fills a rim cavity that no sheet
     # membrane can reach. It is the insulation, the air barrier AND the vapour retarder in
     # one bonded, seamless application, which is exactly why it is specified where a floor

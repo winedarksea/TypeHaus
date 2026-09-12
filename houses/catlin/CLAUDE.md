@@ -958,12 +958,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 - **Foundation wall assemblies** compose `library/FOUNDATION_WALL_{8,12}_XPS4_CORE` plus a
   house-local skin — the core must not drift between the variants.
+  - **Minnesota requires WATERPROOFING, not dampproofing, and there is no rung below it.**
+    Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 in its entirety; subp. 2 names eight
+    acceptable materials, with no high-water-table precondition. The `waterproofing` layer
+    is a **60-mil self-adhered rubberised-asphalt sheet at 0.05 perm** (Bituthene 3000;
+    Polyguard 650 / MiraDRI 860 as equals) — subp. 2's item 5.
+    `code.MN_1309_0406_waterproofing` grades the layer's MATERIAL against that list, so
+    repointing it at anything
+    else is a FAIL, not a silent downgrade; it was `air-barrier` (Tyvek, 54 perm) until
+    2026-09-12 and PASSed on presence alone. Insulation goes OVER the membrane.
+  - **The wall dries INWARD only, so the interior face must stay vapour-open.** No poly, no
+    vinyl wallpaper in the basement. Both walls PASS the cold-snap screen only since the
+    membrane tightened (→ DESIGN-LOG.md, "Basement").
+  - **No dimple mat and no below-grade protection course, by decision.** Nothing outboard of
+    4" of mastic-bonded XPS can take a mechanical fastener. Free-draining stone against the
+    lower wall does the drainage — `[allowances] foundation-free-draining-backfill`, priced
+    off the waterproofed face — and **backfill in controlled lifts** is what protects the
+    foam, which is why it is an `insp/foundation_backfill` item. Do **not** author a
+    perimeter `FrenchDrain` for it: it would bill the footing bedding's stone twice.
+  - **No membrane on the sunken-garden court walls (`W-SG-*`), and that is deliberate** —
+    subp. 2 reaches only walls that also enclose below-grade interior space, and none of
+    them does. They get drained backfill instead, which relieves the thrust that a coat
+    would not. It does **not** fix their R404.4 sliding FS of ~0.57 (→ DESIGN-LOG.md).
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic` (troweled
     over mesh) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
     datum so a grade lift grows it with no edit. Do not revert to the old
     `foundation-protection-panel` alternate (kept, priced, as a named alternate only) — its
     joint permeance is unpublished and makes `building_science.condensation` report UNKNOWN,
-    where the coating PASSes (→ DESIGN-LOG.md, "Basement").
+    where the coating PASSes (→ DESIGN-LOG.md, "Basement"). **That coating is the
+    above-grade exposed-XPS band only**, ~276 SF of a ~1,016 SF face: a UV and impact skin,
+    not a below-grade protection board. There is no below-grade protection course.
   - `W-B-S1`/`W-B-S4` use `BASEMENT_8` (no stucco) for ~37 SF of coating. Court segments
     carry **no skin at all** (XPS sits inside `W-B-BRICK`'s ventilated cavity).
     `BASEMENT_8_GARDEN`/`_GARDEN_PARGE` were **deleted 2026-09-12** (#72: a tag nothing

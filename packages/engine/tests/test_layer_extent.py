@@ -125,17 +125,17 @@ def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model
 
 
 def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catlin_model):
-    """The two banded assemblies agree with each other, and the number is 4.175".
+    """The two banded assemblies agree with each other, and the number is 4.185".
 
     It used to be 4.55", matching N-B-BRICK-W/-E's authored ``inch(-4.55)`` stand-off, and
     the docstring here used to claim the skin was sized to keep that match. **That reasoning
     was wrong and this test now pins the correction.** Those nodes stand over the *south
-    court* segments, which carry no skin at all (4.05" of bare XPS outboard of the concrete);
+    court* segments, which carry no skin at all (4.06" of bare XPS outboard of the concrete);
     they have never stood over a banded wall. The equality was a coincidence, so retyping the
     band from a 1/2" board to a 1/8" coating moved this sum and moved nothing else — the
     veneer's clear cavity is untouched by it (that cavity is 6" since 2026-09-05, and what
     moved it was the grade beam under the wythe, not this band). The court segments'
-    own 4.05" core is pinned by test_catlin_contract_m3.py, which walks every perimeter
+    own 4.06" core is pinned by test_catlin_contract_m3.py, which walks every perimeter
     assembly; it is not re-derived here because W-B-S2/S3 also carry the sauna's framed
     liner and their wall-level sum is 7.55", not the assembly's.
 
@@ -146,8 +146,8 @@ def test_both_basement_assemblies_stand_the_same_distance_off_the_concrete(catli
         return sum(ly.thickness_m for ly in wall.depth_layers()
                    if ly.name != "concrete") / inch(1).meters
 
-    assert outboard_in("W-B-N1") == pytest.approx(4.175, abs=1e-6)
-    assert outboard_in("W-B-S1") == pytest.approx(4.175, abs=1e-6)
+    assert outboard_in("W-B-N1") == pytest.approx(4.185, abs=1e-6)
+    assert outboard_in("W-B-S1") == pytest.approx(4.185, abs=1e-6)
 
 
 def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):

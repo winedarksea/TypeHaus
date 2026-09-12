@@ -119,8 +119,8 @@ NODES = [
     # 28'-0" is `_x_ax_e`, the AXIS of the court's east retaining wall, whose faces are at
     # 27'-6" and 28'-6". The excavation edge is `_x_in_e` = 27'-6". So the split stood half
     # a wall INSIDE the soil, and W-B-S3-FR — a 2x6 framed wall — ran its last 6" of studs,
-    # sheathing, damp-proofing and outboard foam into that soil column, end-grain and foam
-    # edge unclosed. Nothing grades it: `code.R406_1_dampproofing` and
+    # sheathing, waterproofing and outboard foam into that soil column, end-grain and foam
+    # edge unclosed. Nothing grades it: `code.MN_1309_0406_waterproofing` and
     # `structural.foundation_unbalanced_fill` iterate FoundationWall, so a framed run is
     # invisible to both, and no check exists for wood against soil. The brick wythe made
     # exactly this retreat the same day (N-B-BRICK-E below); the framing did not follow.
@@ -275,7 +275,7 @@ NODES = [
     # any wall loop). x runs only as far as the excavation in front of it: N-B-S1's x (8'-10")
     # to 28'-0" (params/sunken_garden.py's ``_x_ax_e``, where grade comes back up).
     # y is NOT 0'-0": the south walls' node line is the concrete face, and the south stack
-    # carries 4.05" outboard of it (0.05" damp-proofing + 2x 2" XPS) — a tail that is
+    # carries 4.06" outboard of it (0.06" waterproofing + 2x 2" XPS) — a tail that is
     # independent of the pour thickness; the veneer stands off that finished face, hence
     # the -4.55".
     #
@@ -306,7 +306,7 @@ NODES = [
     # The two edits cancel at the air gap's outboard face: the wythe stays at -5.55..-9.175",
     # so the two arched reveals, the veneer's own footing and every garage-relative literal
     # downstream are all untouched. Only the 0.5" of nothing becomes something.
-    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-6.05)),
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-6.06)),
          open_end=True),
     # ** 27'-6", NOT 28'-0", SINCE 2026-09-05. ** 28'-0" is W-SG-E1's AXIS, and while the
     # wythe stood at y -5.55..-9.175" that was harmless: it ended north of the retaining
@@ -320,7 +320,7 @@ NODES = [
     # The reveals do NOT move: they are positioned `from_node("N-B-BRICK-W", ...)`, measured
     # from the WEST node, so shortening the east end leaves every station where it was.
     # `integrity.reveal_concentric` is what proves that, and it still passes.
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-6.05)),
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-6.06)),
          open_end=True),
 ]
 
@@ -524,7 +524,7 @@ WALLS = [
     # not the 8'-0" they would be off the slab.
     #
     # `face("sheathing-ext")` is the deliberate mirror of the pour's `face("concrete-ext")`:
-    # it pins the sheathing's outboard face on the node line, so the damp-proofing and the 4"
+    # it pins the sheathing's outboard face on the node line, so the waterproofing and the 4"
     # of XPS continue on exactly the plane they occupy on W-B-S1 and W-B-S4 either side, and
     # W-B-BRICK's stand-off and its two arched reveals do not move (see N-B-BRICK-W
     # above).

@@ -185,9 +185,9 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
     # was declining to print a number it was already holding; they schedule now, so the
     # WARN survives only for a house that models neither a strap nor an anchor bolt.
     assert "sheet.foundation.sill_anchorage" not in ids
-    # Every foundation wall assembly that R406.1 could reach is dampproofed, so the
-    # presence finding does not fire either.
-    assert "sheet.foundation.dampproofing" not in ids
+    # Every foundation wall assembly that Minn. R. 1309.0406 could reach is waterproofed,
+    # so the presence finding does not fire either.
+    assert "sheet.foundation.waterproofing" not in ids
     # `sheet.foundation.vapour_retarder` is NOT in that set: SLAB_FLOOR and
     # GARAGE_SLAB_ON_GRADE carry a 10-mil ASTM E1745 Class A retarder over a 4" capillary
     # break, and the exterior slabs that never needed one — the garden floor, the garage
@@ -278,8 +278,8 @@ def test_s100_radon_block_is_derived_item_by_item(catlin_model):
     # A schedule that abbreviates carries its legend on the sheet, not in this repo.
     assert "NO PLATE RUN TAKES FEWER THAN 2 (IRC R403.1.6)" in notes
     assert "LAP CLASS IS ACI 318-19 §25.5.2.1" in notes
-    # R406.1 reads the assembly's water-control layer rather than asserting a product.
-    assert "BASEMENT_8 (8)" in notes and "50 MIL AIR-BARRIER ('DAMP-PROOF')" in notes
+    # 1309.0406 reads the assembly's water-control layer AND its material against subp. 2.
+    assert "BASEMENT_8 (8)" in notes and "60 MIL WATERPROOFING ('WATERPROOFING')" in notes
 
 
 def test_s100_is_not_a_floor_plan(catlin_model):

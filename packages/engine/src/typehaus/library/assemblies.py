@@ -112,7 +112,7 @@ GARAGE_ICF = Assembly(
 # The generic 8"/12" family. A house draws the pour from here rather than re-minting it,
 # and adds its own outermost protective skin (parge, panel, veneer) on top of a ``_CORE``
 # tuple where it wants one — that skin is a colour and exposure decision, which is a house
-# decision, while the pour, the damp-proofing, the two staggered 2" XPS courses and the
+# decision, while the pour, the waterproofing, the two staggered 2" XPS courses and the
 # bearing face are not.
 #
 # **8" vs 12" is a soil/height question, never a default.** IRC Table R404.1.2(8) is what
@@ -163,7 +163,9 @@ FOUNDATION_WALL_12_INT = Assembly(
 # assemblies for a house that wants the core as-is.
 #
 # 2 x 2" rather than one 4" board: staggered joints, and 2" is the stocked thickness.
-# Damp-proofing outboard of the pour and inboard of the foam is IRC R406.1's position.
+# Waterproofing outboard of the pour and inboard of the foam is where Minn. R. 1309.0406
+# subp. 2 puts it, and it is also GCP's own instruction: "Insulation, if used, must be
+# applied over the membrane."
 #: Everything OUTBOARD of the pour, published separately because a house that states its own
 #: mix has to author its own concrete layer and cannot splat one that carries somebody else's.
 #: A ``ConcreteSpec`` is a purchase decision — one ticket from one plant — so it belongs to
@@ -171,7 +173,7 @@ FOUNDATION_WALL_12_INT = Assembly(
 #: at the point of use is not open to a house either: ``plan/*.py`` is the constrained
 #: editable dialect, which forbids subscripting.
 FOUNDATION_WALL_XPS4_OUTBOARD = (
-    Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+    Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
           function=LayerFunction.MEMBRANE,
           control={ControlLayer.AIR, ControlLayer.WATER}),
     Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
@@ -192,23 +194,24 @@ FOUNDATION_WALL_12_XPS4_CORE = (
     *FOUNDATION_WALL_XPS4_OUTBOARD,
 )
 
-# 8" + damp-proofing + 4" XPS = 12.05" total, ~R-21.8.
+# 8" + waterproofing + 4" XPS = 12.06" total, ~R-21.8.
 FOUNDATION_WALL_8_XPS4 = Assembly(
     tag="FOUNDATION_WALL_8_XPS4",
     layers=FOUNDATION_WALL_8_XPS4_CORE,
     interfaces=(_CONCRETE_BEARING,),
     source=_R404_SOURCE + "; 8 in. requires #6 at 48 in. o.c. vertical. Exterior "
-                          "insulation 2 x 2 in. XPS over damp-proofing per IRC R406.1",
+                          "insulation 2 x 2 in. XPS over waterproofing per Minn. R. "
+                          "1309.0406 subp. 2, which deletes IRC R406.1",
 )
 
-# 12" + the same tail = 16.05".
+# 12" + the same tail = 16.06".
 FOUNDATION_WALL_12_XPS4 = Assembly(
     tag="FOUNDATION_WALL_12_XPS4",
     layers=FOUNDATION_WALL_12_XPS4_CORE,
     interfaces=(_CONCRETE_BEARING,),
     source=_R404_SOURCE + "; 12 in. reads NR (no vertical reinforcement required). "
-                          "Exterior insulation 2 x 2 in. XPS over damp-proofing per "
-                          "IRC R406.1",
+                          "Exterior insulation 2 x 2 in. XPS over waterproofing per "
+                          "Minn. R. 1309.0406 subp. 2, which deletes IRC R406.1",
 )
 
 

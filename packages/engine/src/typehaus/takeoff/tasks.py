@@ -207,8 +207,9 @@ def _one_trade_per_row(rows: Iterator[tuple[str, str, PriceRange, CostCode]]
                        ) -> dict[tuple[str, str], str]:
     """``(section, key)`` -> the ONE trade its package is filed under.
 
-    Two BOM rows can share a price key and file on different trades — the wall air barrier
-    and the roof underlayment are both ``envelope_layers:air-barrier``, siding and roofing.
+    Two BOM rows can share a price key and file on different trades — the below-grade
+    waterproofing on the pour and the same sheet carried up the framed walkout walls are
+    both ``envelope_layers:waterproofing``, concrete and siding.
     The CSV keeps both. A work package cannot: ``(section, key)`` is the join
     ``tasks.toml`` visits and ``costs.toml`` check-offs are written against, and a row that
     is in two packages is counted twice. The trade carrying the most money wins; on the

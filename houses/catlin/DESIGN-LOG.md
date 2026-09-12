@@ -735,6 +735,144 @@ pocket was possible there at all.
 
 ## Basement
 
+- **MINNESOTA DOES NOT PERMIT DAMPPROOFING, AND THE LAYER WAS MODELLED AS
+  HOUSEWRAP (2026-09-12).** Two owner questions — "review the basement
+  dampproofing, good quality and good value" and "review the protection board"
+  — were researched together. The second was already answered and stale; the
+  first had a code floor nobody in this repo knew about.
+  - **Minn. R. 1309.0406 subp. 1: "Section R406.1 is deleted in its
+    entirety."** Subp. 2 replaces it: exterior foundation walls that retain
+    earth and enclose below-grade interior spaces, floors **and crawl spaces**
+    "shall be waterproofed ... from the top of the footing to the finished
+    grade". **There is no high-water-table precondition** — the IRC's
+    "dampproof unless R406.2 applies" ladder does not exist here, and its
+    bottom rung is not a choice a Minnesota house may take. So "what is a good
+    value dampproofing product" has no legal answer, and the `$0-12.50/SF`
+    allowance ladder whose first rung read "damp-proofing only, IRC R406.1
+    minimum" was offering something the state struck.
+  - **The engine was grading the section Minnesota deleted.**
+    `code.R406_1_dampproofing` cited IRC R406.1 and PASSed — on PRESENCE of a
+    WATER control layer. It is `code.MN_1309_0406_waterproofing` now, it cites
+    the Minnesota rule the way `rules.py` already cites 1309.0305, and it grades
+    the layer's MATERIAL against subp. 2's eight-item list. Presence was exactly
+    what the defect below satisfied.
+  - **The modelled membrane was Tyvek HomeWrap at 54 perms.** `damp-proof`
+    pointed at `material_ref="air-barrier"`, 400x looser than every document
+    that reasoned about it (this log said "~0.13 perm"; the wall detail note
+    said "liquid-applied membrane"; `prices.toml` described the XPS mastic as
+    bonding to "the liquid-applied damp-proofing"). It also priced under **one
+    key shared by three products** — the foundation sheet, the roof underlayment
+    and the framed-wall WRB — so the Glaser walk, the money and the drawings all
+    read a layer nobody had chosen.
+  - **The selection: 60-mil rubberised-asphalt peel-and-stick sheet** —
+    Bituthene 3000, with Polyguard 650 and Carlisle MiraDRI 860 as equals. Subp.
+    2's item 5, and the strongest published numbers of the eight: **0.05 perm,
+    300% elongation, crack-cycled 100x at -25 F unaffected, 200 ft hydrostatic
+    head, 50 lb puncture**. GCP states it "is capable of bridging shrinkage
+    cracks in the concrete and will accommodate minor differential movement."
+    Material is sourceable at $0.80-0.87/sf; the INSTALLED half is the weak one
+    and wants three metro quotes (see `prices.toml`).
+  - **THE CONDENSATION VERDICT IMPROVED, WHICH IS NOT OBVIOUS AND WAS
+    MEASURED.** The membrane is INBOARD of the foam, so tightening it 54 -> 0.05
+    perm moves the wall's vapour resistance to the warm side of the control
+    plane rather than trapping moisture behind it. `BASEMENT_8`'s monthly gate
+    went from **69 Pa below saturation (worst month January, xps-b at 79% RH)**
+    to **105 Pa (December, 75% RH)**; `BASEMENT_12` from 73 Pa to 105 Pa. The
+    cold-snap screen is the bigger move: both walls read **"dew point reached at
+    xps-b"** at -15 F before and read **"no dew-point crossing, 12 Pa below
+    saturation"** after. A 0.05-perm layer means the wall dries INWARD only,
+    which is the intended cold-climate behaviour — and it is why the interior
+    face must stay vapour-open. It is: the check reports "no rated warm-side
+    vapour retarder" on both. **No poly, no vinyl wallpaper in this basement.**
+  - **The layer order does not change.** GCP's own instruction is "Insulation,
+    if used, must be applied over the membrane", which is what
+    `FOUNDATION_WALL_XPS4_OUTBOARD` already did. Thickness went 0.05" -> 0.06"
+    for the real 60 mil; the face moves 0.01", far inside `resolve/stacking.py`'s
+    0.5" `_TOL`, and no junction detail appeared or vanished.
+  - **NO DIMPLE MAT, and the reason is buildability rather than money.**
+    Delta-MS wants its head mechanically fastened and sealed to the wall, and
+    outboard of 4" of XPS bonded with mastic there is nothing in reach to fasten
+    into — the one genuinely unsolved detail in this design. Skipping it also
+    leaves the layer stack and the outboard face untouched. **Free-draining
+    stone against the lower wall** does the drainage instead: 12" of #57 washed
+    stone up 4'-0" from the footing bedding, geotextile-lined, 18.6 cy. It was
+    already on the drawing and missing only from the model. It is NOT authored
+    as a `FrenchDrain` — there is no element kind for a VERTICAL drainage column,
+    and a perimeter FrenchDrain over the trench the footing bedding already
+    derives would bill the same stone twice.
+  - **The "protection board" question was stale.** The 1/2" aluminium-faced
+    board became a 1/8" trowel-applied acrylic coating on 2026-09-04, because a
+    butted board's installed permeance is its joints and nothing in that class
+    publishes an ASTM E96 number. **Do not revert it.** Anchoring was answered
+    at the same time: mastic to the membrane, head under the rainscreen
+    Z-flashing, foot buried 6", backfill below — and the board it replaced was
+    pinned into the FOAM, never through to concrete, so the swap gave up
+    nothing. The one clarification it was missing: **that coating is the
+    ABOVE-GRADE exposed-XPS band only**, 276.3 SF of ~1,016 SF, a UV and impact
+    skin rather than a below-grade protection board. Below grade there is no
+    protection course at all, which is why backfill **in controlled lifts** is
+    now an `insp/foundation_backfill` item rather than an assumption.
+  - **It was filed on the wrong trade and scheduled after the roof was on.**
+    `takeoff/envelope.py` scopes a foundation wall's layers as `"foundation
+    wall"`, which was not in `emit/trade_rules._POUR_SCOPES`, so the membrane
+    fell through to `"siding"` — despite the comment one line above naming
+    damp-proofing as what the `concrete` branch is for. Merged with the roof
+    underlayment under one `air-barrier` key, `_one_trade_per_row` forced the
+    lot into `task/walls/building`, which `depends_on` framing and roof. Meanwhile
+    `insp/foundation_backfill` is literally "Waterproofing, drainage and
+    backfill". One word fixed it. The **second** inversion was the allowance:
+    it sat in `task/concrete/building/flatwork`, which `depends_on
+    insp/foundation_backfill`, and deleting the allowance deleted it outright.
+  - **The allowance is gone and the layers are priced.** `[envelope_layers]
+    "waterproofing"` at **$2.80-5.35/SF installed** over 1,136.9 SF (1,016.4 of
+    below-grade face plus the two framed court tails), and
+    `foundation-damp-or-waterproofing`'s $0-12,705 is deleted. The double-bill
+    `plans/TODO.md` had carried open is closed the same day: `BASEMENT_8` and
+    `BASEMENT_12`'s all-in $/cy rates were struck by the $7-18/LF of
+    damp-proofing their own derivation note says they absorb. **The estimate's
+    low end rises and its high end falls, and that is the point of modelling it
+    directly** rather than holding a $0-12.50/SF band open beside a real layer.
+  - **NO MEMBRANE ON THE SUNKEN-GARDEN COURT WALLS, and it is not a cost cut.
+    DO NOT "CORRECT" THIS.** 1309.0406 subp. 2 scopes to walls that retain earth
+    **and** enclose below-grade interior space; no `W-SG-*` wall has a room
+    behind it, and `_retaining_walls()` already implements exactly that test —
+    its docstring records that screening on fill alone "reported four FAILs
+    against walls neither section is addressed to." `SUNKEN_GARDEN_WALL` is
+    `EXPOSED_MIX`: w/cm 0.40, f'c 5,000, 6% air, ACI F3/W1/C2 with HDG bar,
+    which is a better long-term moisture barrier than an asphalt coat.
+    - **What those walls get instead is the drained backfill the free-body note
+      says nothing in the model provides.** `notes/sunken_garden_court_free_body.md`:
+      "No drainage or hydrostatic case — and NOTHING IN THE MODEL MAKES THE
+      DRAINAGE WORK. ... A saturated backfill roughly doubles the thrust and
+      would take the system well under 1.0. ... It is the single largest
+      unpriced assumption in §9." `engineering/retaining_wall.py` says the same
+      in its own voice. So the money on these walls belongs in stone that
+      relieves the thrust, not in a coat that relieves nothing: 12" of #57 up
+      7'-0" over W-SG-W2 / E2 / S, 52.6 LF, geotextile-lined, discharging to the
+      4" socked tile their footing beddings already carry.
+    - **THIS DOES NOT FIX THE R404.4 FAILURE.** Sliding FS is ~0.57 against
+      1.50 and still needs the consultant
+      `notes/sunken_garden_retaining_screening.md` was written for. Drained
+      backfill relieves the hydrostatic case the engineering explicitly does not
+      run. Nothing here should make the report look better than the building is.
+  - **Three conditions carried into the spec**, each answering a known failure
+    mode, all in `notes/basement_to_framed_wall_detail.md`: **cold weather**
+    (standard Bituthene 3000 needs 40 F; spec `Bituthene Low Temperature`, 25-60
+    F, with `Primer B2` or `B2 LVC` — otherwise the membrane gates the whole
+    foundation on a warm week); **seams**, which is the failure mode rather than
+    the field (BSC BA-1015: walls "ostensibly 'waterproof' ... have been
+    documented to fail at poorly connected seams" — 2" laps rolled firmly, 2-ply
+    reinforced corners over a 3/4" cant fillet, every penetration detailed); and
+    **Primer B2 is solvent-based and attacks polystyrene** (it sits between
+    concrete and membrane so the XPS never touches it, but require full flash-off
+    or specify B2 LVC). Also into the drawings: cold-joint treatment at the
+    footing/wall joint, positive flashing and weeps at `W-SG-BRKBM`'s brick
+    ledge, and **backfill within 30 days** — the UV limit on this product class.
+  - **Open, and outside the model:** three metro quotes for installed
+    peel-and-stick on NEW construction (published installed figures are
+    retrofit-weighted), the pour season, and MN DLI's 2024-IRC rulemaking, which
+    is mid-cycle with no effective date and may or may not move 1309.0406.
+
 - **THE SLABS WERE THINNED, and the psi grade is stated per use.** The
   basement slab went 3" -> 2" XPS at **>=25 psi** (R-16.1 -> R-11.1 whole-assembly, against
   an owner target of R-10; still PASSes `code.energy_prescriptive`'s R-10 slab row), and the
@@ -1654,7 +1792,9 @@ pocket was possible there at all.
       unbraced air. Now 6" is foam and 4" is cavity. The anchor is still
       engineered — see the note, §5.1.
     - **EPS and not more XPS, deliberately.** The stack is already 4" XPS plus
-      damp-proofing at ~0.13 perm and can only dry inward; EPS at ~2 perms over
+      the 60-mil self-adhered membrane at 0.05 perm and can only dry inward
+      (the "~0.13 perm" this entry claimed until 2026-09-12 was a guess about a
+      layer that was in fact modelled as 54-perm housewrap); EPS at ~2 perms over
       2" adds R without adding a second vapour shutter and lets the wall dry
       out into the vented cavity. It also beats XPS in long-term ground
       contact, and this run's foot is in a court that can pond.

@@ -1,8 +1,8 @@
-"""R403.1.6 sill anchorage, R405.1 foundation drainage, R406.1 dampproofing.
+"""R403.1.6 sill anchorage, R405.1 foundation drainage, Minn. R. 1309.0406 waterproofing.
 
 Three rules a plan reviewer reads off the foundation sheet and nothing in this engine
 graded, even though the house models all three conditions: the sill-plate anchor schedule
-(a takeoff derivation), the drain tile in every footing bedding, and the damp-proof
+(a takeoff derivation), the drain tile in every footing bedding, and the waterproofing
 membrane in the basement wall assembly. They live in one module because they are one
 drawing's worth of review — "how is the wood held down, and how does water get away from
 the concrete" — and because they share the same applicability question: which foundation
@@ -46,10 +46,24 @@ def _group_one_soils() -> frozenset:
     return frozenset(name for name, psf in SOIL_LATERAL_PSF_PER_FT.items() if psf == 30)
 
 
-# R406.1 dampproofs "from the top of the footing to the finished grade". A wall retaining
-# less than this is a curb, not a below-grade enclosure, and the same 2 ft margin the
-# storey-classification helper uses keeps a slab-on-grade stem out of the rule.
+# 1309.0406 subp. 2 waterproofs "from the top of the footing to the finished grade". A wall
+# retaining less than this is a curb, not a below-grade enclosure, and the same 2 ft margin
+# the storey-classification helper uses keeps a slab-on-grade stem out of the rule.
 _MIN_RETAINED_FILL = ft(2)
+
+# Minn. R. 1309.0406 subp. 2's eight acceptable waterproofing materials, keyed by the
+# material tag that stands for each in this catalog. The list is CLOSED — subp. 2 names
+# eight products and ends "or in accordance with the manufacturer's installation
+# instructions" for the extent, not for the product — so a water-control layer made of
+# something else is a FAIL that names what it is, not a pass on presence.
+#
+# Most of the eight have no material in this catalog because nothing has specified one;
+# add the tag here when a house does, rather than loosening the test.
+_MN_1309_0406_MATERIALS = {
+    "waterproofing": "60 mil self-adhered rubberised asphalt (item 5, 40 mil polymer "
+                     "modified asphalt, exceeded)",
+    "polyethylene": "6 mil polyethylene (item 4)",
+}
 # How far past a foundation wall's own face to probe for a room on its inboard side.
 _WALL_SIDE_PROBE_M = 0.15
 
@@ -59,7 +73,8 @@ def _retaining_walls(ctx: CheckContext) -> list[FoundationWall]:
 
     Both rules are scoped by their own text to walls that "retain earth and enclose
     habitable or usable spaces located below grade" (R405.1) / "enclose interior spaces and
-    floors below grade" (R406.1). Retaining fill is therefore only half the test, and the
+    floors and crawl spaces below grade" (Minn. R. 1309.0406 subp. 2). Retaining fill is
+    therefore only half the test, and the
     half that over-reaches on its own: this house's sunken-garden walls, its yard retaining
     blocks and its garage ICF stem all hold back soil, and not one of them has a below-grade
     room behind it. Screening on fill alone reported four FAILs against walls neither
@@ -205,23 +220,39 @@ def foundation_drainage(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-@check(Tier.CODE, "code.R406_1_dampproofing")
-def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
-    """R406.1 — a damp-proof layer from the top of the footing to finished grade.
+@check(Tier.CODE, "code.MN_1309_0406_waterproofing")
+def foundation_waterproofing(ctx: CheckContext) -> list[Finding]:
+    """Minn. R. 1309.0406 subp. 2 — WATERPROOFING, footing to finished grade.
 
-    Read off the assembly rather than off a wall flag: dampproofing is a *layer* on the
+    Minnesota does not permit dampproofing at all. Subpart 1 is one sentence — "Section
+    R406.1 is deleted in its entirety" — and subpart 2 replaces it with: "Exterior
+    foundation walls that retain earth and enclose below grade interior spaces, floors,
+    and crawl spaces shall be waterproofed ... from the top of the footing to the finished
+    grade or in accordance with the manufacturer's installation instructions." There is no
+    high-water-table precondition, so the IRC's "dampproof unless R406.2 applies" ladder
+    does not exist here and its bottom rung is not an option a Minnesota house may take.
+
+    Two consequences for how this grades. Presence of a WATER control layer is not enough —
+    subp. 2 names eight acceptable materials and this reads the layer's material against
+    that list, because "a water-control layer of some kind" is exactly what a 54-perm
+    housewrap satisfied for as long as the reference house had one modelled there. And the
+    subject clause adds crawl spaces to the IRC's "interior spaces and floors"; the
+    enclosure test in ``_retaining_walls`` is unchanged, since a crawl space on a storey
+    classified below grade is a room like any other to it.
+
+    Read off the assembly rather than off a wall flag: waterproofing is a *layer* on the
     earth side of the concrete, and the assembly is where this model says what a wall is
-    made of. A layer qualifies when it carries the WATER control layer — which is the same
-    property the envelope's water-control continuity checks read, so a wall cannot satisfy
-    one and fail the other for a naming reason.
+    made of. A layer qualifies when it carries the WATER control layer — the same property
+    the envelope's water-control continuity checks read, so a wall cannot satisfy one and
+    fail the other for a naming reason.
 
-    R406.1 asks for the layer "from the top of the footing to finished grade", and until
+    Subpart 2 asks for the layer "from the top of the footing to finished grade", and until
     ``Layer.extent`` existed only *presence* could be tested: a layer had one vertical
     extent, the wall's, so there was nothing to compare against grade. A layer that now
     states a band has to reach that far, and a band that stops short of grade is graded
     exactly as a missing layer is — it is missing over the height that matters.
     """
-    cid, code = "code.R406_1_dampproofing", "R406.1"
+    cid, code = "code.MN_1309_0406_waterproofing", "Minn. R. 1309.0406 subp. 2"
     grade = ctx.plan.project.site.grade
     if grade is None:
         return [_unknown(cid, "the site states no grade datum, so no wall can be classified "
@@ -250,23 +281,35 @@ def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
                    if ControlLayer.WATER in (layer.control or set())
                    and layer.function in (LayerFunction.MEMBRANE, LayerFunction.SHEATHING,
                                           LayerFunction.CLADDING)]
-        if proofed:
-            short = _bands_short_of_grade(proofed)
-            if short:
-                out.append(_fail(
-                    cid, f"{assembly_tag} ({len(tags)} wall(s)) dampproofs the earth side "
-                         f"with '{proofed[0].name}', but its authored extent stops "
-                         f"{short}; R406.1 wants it from the top of the footing to "
-                         "finished grade: " + ", ".join(tags), tuple(tags), code))
-            else:
-                out.append(_pass(cid, f"{assembly_tag} ({len(tags)} wall(s)) dampproofs the "
-                                      f"earth side with '{proofed[0].name}'", code))
-        else:
+        listed = [layer for layer in proofed
+                  if layer.material_ref in _MN_1309_0406_MATERIALS]
+        if not proofed:
             out.append(_fail(cid, f"{assembly_tag} ({len(tags)} wall(s) retaining earth "
                                   "against interior space) carries no water-control layer; "
-                                  "R406.1 requires dampproofing from the top of the footing "
-                                  "to finished grade: " + ", ".join(tags),
+                                  "subp. 2 requires waterproofing from the top of the "
+                                  "footing to finished grade: " + ", ".join(tags),
                              tuple(tags), code))
+            continue
+        if not listed:
+            names = ", ".join(sorted({f"'{layer.name}' ({layer.material_ref})"
+                                      for layer in proofed}))
+            out.append(_fail(cid, f"{assembly_tag} ({len(tags)} wall(s)) carries a "
+                                  f"water-control layer — {names} — but subp. 1 deletes "
+                                  "IRC R406.1 entirely and subp. 2's eight acceptable "
+                                  "materials do not include it, so nothing here waterproofs "
+                                  "the earth face: " + ", ".join(tags), tuple(tags), code))
+            continue
+        short = _bands_short_of_grade(listed)
+        if short:
+            out.append(_fail(
+                cid, f"{assembly_tag} ({len(tags)} wall(s)) waterproofs the earth side "
+                     f"with '{listed[0].name}', but its authored extent stops "
+                     f"{short}; subp. 2 wants it from the top of the footing to "
+                     "finished grade: " + ", ".join(tags), tuple(tags), code))
+        else:
+            out.append(_pass(cid, f"{assembly_tag} ({len(tags)} wall(s)) waterproofs the "
+                                  f"earth side with '{listed[0].name}' — "
+                                  f"{_MN_1309_0406_MATERIALS[listed[0].material_ref]}", code))
     return out
 
 
@@ -296,4 +339,4 @@ def _bands_short_of_grade(proofed: list[Layer]) -> str | None:
     return None
 
 
-__all__ = ["foundation_anchorage", "foundation_dampproofing", "foundation_drainage"]
+__all__ = ["foundation_anchorage", "foundation_drainage", "foundation_waterproofing"]

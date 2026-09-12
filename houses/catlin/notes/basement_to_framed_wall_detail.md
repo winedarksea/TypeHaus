@@ -17,15 +17,15 @@ source:
 ### General
 - Framed wall: 2x6 at 16" o.c., R-19 bays, 4" continuous exterior.
 - Basement wall: 8" pour, #5 at 41" o.c., aligned on the concrete face.
+- Waterproofed per Minn. R. 1309.0406, not dampproofed: 60 mil self-adhered asphalt, footing to grade.
 - Basement CI: 4" XPS in two layers, seams staggered, outer layer taped.
-- Exposed XPS band: 1/8" acrylic coating over mesh, 276.3 SF. Head at the wall top, foot 6" below grade.
+- Exposed XPS band: 1/8" acrylic over mesh, 276.3 SF, grade-6" to wall top.
 - Bearing seat: pour tops at -13 7/16", then gasket, mudsill and 11 7/8" rim.
 - Sill: one shared 2x6 PT mudsill, 370.0 LF, on 1/16" compressed EPDM.
-- Slab: 3-1/2" at 3,500 psi on 3" XPS at 40 psi, 10 mil poly, 4" gravel.
-- Footing drain: 4" perforated pipe in lined stone beside the footing.
+- Slab: 3-1/2" at 3,500 psi on 3" XPS, 10 mil poly, 4" gravel. Drain: 4" pipe.
 
 ### Keyed
-- [K1 @ host#layer:damp-proof:out] Liquid membrane on sheathing and concrete, lapped across sill and rim.
+- [K1 @ host#layer:waterproofing:out] Bituthene 3000 or equal on concrete and sheathing. 2" laps; 2-ply corners; insulation over it; backfill in 30 days.
 - [K2 @ host#layer:xps-b:out] Z-flashing with drip at the outrigger base, set to the 1" vent, not 3-1/2".
 - [K3] Insect mesh above it, stapled to the outriggers and run behind the flashing.
 - [K4] L-flashing from sheathing base onto the foam; seal its outer end.
@@ -35,7 +35,10 @@ source:
 
 ### Spec 07 21 00
 - Use XPS with published low water absorption; confirm compressive strength for below-grade use.
-- Bond the basement XPS to the damp-proofing with foam-compatible mastic. Do not anchor it.
+- Bond the basement XPS to the waterproofing with foam-compatible mastic. Do not anchor it.
+- Free-draining backfill: 12" of #57 washed stone against the foam, bedding up 4'-0", geotextile against the soil and turned down over the bedding.
+- No dimple mat and no protection course below grade: place backfill in controlled lifts.
+- Brick ledge at W-SG-BRKBM: positive flashing over the membrane, weeped.
 - Fill each remaining void and transition with low-expansion foam for air-barrier continuity.
 
 ### Spec 04 21 13
@@ -49,7 +52,12 @@ source:
 - Above-grade wall: 2x6 framing (LSL recommended) with R-19 cavity insulation and continuous exterior insulation totaling 4".
   - **The CI is sprayed, and the stand-off is horizontal.** `EXT_2X6` is a **catlin truss**: 4" of 2 lb closed-cell spray foam around two tiers of flat horizontal 2x4 girts at 24" o.c., each course bearing on 3-1/2" blocks at the 16" stud module — inner girt SPF and buried in the foam, outer girt KDAT standing in a 1/2" vent gap, with the cladding on the outer girt. **There is no WRB** — the foam is the water plane — and the cladding face stands 6-1/2" proud of the sheathing. See `notes/outie_window_truss_detail.md`, which carries the build order: the window bucks go in BEFORE the foam is sprayed, and band A is sprayed BEFORE the inner girts (foam cannot reach behind a flat girt).
 
-- Foundation waterproofing / air barrier: liquid-applied membrane on sheathing and on concrete foundation wall; maintain continuity at the sill/rim transition with overlap, sealant, and/or additional liquid membrane as needed.
+- **Foundation waterproofing: 60-mil self-adhered rubberised-asphalt sheet, and in Minnesota it is WATERPROOFING and not dampproofing.** Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 in its entirety; subp. 2 requires every exterior foundation wall that retains earth and encloses below-grade space to be waterproofed from the top of the footing to finished grade, with no high-water-table precondition, and lists eight acceptable materials. The selection is subp. 2's item 5 — **Bituthene 3000, or Polyguard 650 / Carlisle MiraDRI 860 as equals**: 0.05 perm, 300% elongation, 200 ft hydrostatic head, 50 lb puncture, crack-cycled 100x at -25 F unaffected. It runs on the concrete and up onto the framed wall's sheathing, one continuous plane; maintain continuity at the sill/rim transition with overlap, sealant and liquid membrane as needed. Insulation goes OVER the membrane, which is both GCP's instruction and where the assembly puts it.
+  - **Cold weather is a spec decision, not a field one.** Standard Bituthene 3000 needs 40 F. If the foundation lands below that, **`Bituthene Low Temperature` (25-60 F) with `Primer B2` or `B2 LVC`**, both rated for damp or green concrete. Without it the membrane gates the whole foundation on a warm week.
+  - **Seams are the failure mode, not the field.** BSC BA-1015: even walls that are ostensibly waterproof "have been documented to fail at poorly connected seams." So: 2" minimum laps, rolled firmly; **2-ply reinforced corners** — a 3/4" liquid-membrane cant fillet, then a 12" sheet strip centred on the corner, then the full sheets over it, inside and outside corners alike; and every penetration detailed.
+  - **Primer B2 is solvent-based and attacks polystyrene.** It sits between the concrete and the membrane so the XPS never touches it, but require full flash-off before the foam goes on, or specify B2 LVC.
+  - **Treat the footing/wall cold joint** before the sheet goes on.
+  - **Backfill within 30 days** — the UV limit on this product class.
 
 - Basement CI: 4" XPS in two layers with staggered seams; tape seams on the outer layer. Use lower water-absorption XPS types (most are) and confirm compressive strength / below-grade suitability.
 
@@ -59,7 +67,7 @@ source:
 
 - **The coating is specified over the 1/2" protection board because the board could not be graded.** A butted, unsealed board's installed permeance is dominated by its joints, no manufacturer in that class publishes an ASTM E96 number for it, and `building_science.condensation` therefore reported UNKNOWN on *both* basement assemblies for as long as it was authored. A mesh-reinforced trowel lamina is monolithic and seamless, a published band describes it, and both walls now PASS the January gate with the tightest plane 69-73 Pa below saturation. The board is kept as the **named alternate** — its material and its price row both stay live — and going back to it is one `material_ref` edit. Note what it is *not*: cheaper. Installed, the coating bills alongside the board, not under it. The reason for the swap is the verdict.
 
-- **The XPS is bonded, and nothing anchors it.** Foam-compatible mastic to the liquid-applied damp-proofing, per the membrane manufacturer, and that is the whole attachment. It is sufficient because the band is captured mechanically at both ends regardless: its head tucks under the rainscreen Z-flashing at the bearing seat, and its foot is buried 6" in soil, with backfill holding everything below. It also gives up nothing — the board it replaces was pinned into the *foam*, never through to the concrete, so no version of this band has ever had an anchor in the wall. There is no hardware line for it and there should not be: the mastic rides in the `xps:2.0` labour rate, which is what an unfastened layer means.
+- **The XPS is bonded, and nothing anchors it.** Foam-compatible mastic to the self-adhered waterproofing, per the membrane manufacturer, and that is the whole attachment. It is sufficient because the band is captured mechanically at both ends regardless: its head tucks under the rainscreen Z-flashing at the bearing seat, and its foot is buried 6" in soil, with backfill holding everything below. It also gives up nothing — the board it replaces was pinned into the *foam*, never through to the concrete, so no version of this band has ever had an anchor in the wall. There is no hardware line for it and there should not be: the mastic rides in the `xps:2.0` labour rate, which is what an unfastened layer means.
 
 - **There is no parge coat on any wall in this house.** `W-B-S1`/`W-B-S4` — the buried ends either side of the excavation — carry the same grade-banded coating: 6'-4" of fill with 2'-2 9/16" standing out of it is exactly a grade band. The court segments carry no skin at all: their foam is inside `W-B-BRICK`'s ventilated cavity, and since 2026-09-05 that foam is 4" XPS plus a 2" EPS board, 6.05" outboard of the concrete face. The banded walls carry 4.175" outboard over the band and 4.05" below it, unchanged. `N-B-BRICK-W`/`-E` did **not** follow the *band* and still do not — those nodes stand over the court segments, which have never carried a skin — but they did follow the court segments' own new EPS face to -6.05". Two different faces; do not conflate them.
 
@@ -84,10 +92,17 @@ source:
 - Interface flashing: provide L-flashing from bottom of sheathing down onto the top of basement foam. Terminate within the insulation plane and seal the outer end with spray foam (Pestblock) to avoid an exterior thermal bridge. This is meant as a foam layer insect barrier. The "insulation plane" it terminates within is the wall's own sprayed foam rather than a board course, so the seal is foam to foam — bonded, not lapped.
 
 - Drainage: 4" perforated french drain in geotextile-lined washed stone (wider area, not under footing). Additional compacted aggregate in front of footing (equal to footing height, geotextile-lined). River rock trench (geotextile-lined) against foundation for top of soil.
+  - **There is NO dimple mat and NO protection course below grade, by decision (2026-09-12).** Delta-MS and its class want the head mechanically fastened and sealed to the wall, and outboard of 4" of XPS bonded with mastic there is nothing in reach to fasten into — the one genuinely unsolved detail in this design. **Free-draining stone against the lower wall replaces its drainage function**, and it was already on this drawing and missing only from the model: **12" of ASTM C33 #57 washed stone against the XPS, from the top of the footing bedding up 4'-0", geotextile between the stone and the retained soil and turned down over the bedding** so the two courses are one connected path to the tile already in it. 125.7 LF x 1.0 x 4.0 = 18.6 cy; `[allowances] foundation-free-draining-backfill` prices it, and it is a DIFFERENT order of stone from `[footing_bedding]`'s 89.82 cy under the footings.
+  - **Backfill in controlled lifts, and this is an inspection item rather than an assumption.** Free-draining backfill against XPS is ordinary practice — the foam is closed-cell and low-absorption — but with no mat in front of it, placement is the only thing protecting it. `insp/foundation_backfill` carries it.
+  - **The brick ledge is where a membrane gets ruined.** `W-SG-BRKBM` carries the veneer, and a horizontal ledge is where a sheet gets UV-exposed, punctured by masons and ponded on. Detail a positive flashing over the ledge and weep it.
   - **"French drain" here and "drain tile" in the model are the same article, with no
-    duplication.** There is no `FrenchDrain` element kind and no such element
-    in the plan; the pipe this line describes is what `FootingBedding.drain_tile_spec`
-    models, and its length agrees to 0.1 LF across two independent tables (`[concrete]`
+    duplication.** `FrenchDrain` IS an element kind and `params/sunken_garden.py` has
+    authored four since 2026-09-05 (the court's underdrain, its two leads and its
+    overflow) — the premise sentence that stood here until 2026-09-12, "there is no
+    `FrenchDrain` element kind and no such element in the plan", was simply false. The
+    no-double-count argument it supported still holds for THE HOUSE PERIMETER, which is
+    what this line is about: no FrenchDrain is authored here, the pipe this line describes
+    is what `FootingBedding.drain_tile_spec` models, and its length agrees to 0.1 LF across two independent tables (`[concrete]`
     `drain_tile` 761.4 LF by its SF-per-foot conversion, `[footing_bedding]` 515.3 + 246.0 =
     761.3 by its own). If a `FrenchDrain` element is ever authored, THAT is the moment a
     duplicate can appear — a second element over the same trench billing the same stone

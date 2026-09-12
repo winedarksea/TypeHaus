@@ -65,14 +65,20 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
     InspectionSpec(
         # The one line that has to pass before anything gets buried, which is why it gates
         # both the earth trade (backfill) and framing (the walls it would brace).
-        id="foundation_backfill", label="Damproofing, drainage and backfill",
+        id="foundation_backfill", label="Waterproofing, drainage and backfill",
         authority="building", after=("foundation_wall",), gates=("earth", "framing"),
-        check_ids=("code.R405_1_foundation_drainage", "code.R406_1_dampproofing",
+        check_ids=("code.R405_1_foundation_drainage",
+                   "code.MN_1309_0406_waterproofing",
                    "drainage.discharge_consistency", "code.R401_3_grading"),
-        on_site=("damproofing applied and cured", "drain tile bedded in washed rock",
-                 "filter fabric over the rock"),
+        on_site=("membrane applied, rolled and cured, laps 2 in. minimum",
+                 "corners and penetrations reinforced with a 12 in. sheet strip over a "
+                 "cant fillet",
+                 "drain tile bedded in washed rock", "filter fabric over the rock",
+                 "free-draining stone placed against the lower wall",
+                 "backfill in controlled lifts — there is no protection course over the "
+                 "foam"),
         milestone="foundation",
-        code_refs=("IRC R405.1", "IRC R406.1"),
+        code_refs=("IRC R405.1", "Minn. R. 1309.0406"),
     ),
     InspectionSpec(
         id="underground_plumbing", label="Under-slab plumbing, under test",

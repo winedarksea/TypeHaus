@@ -201,7 +201,7 @@ Small, and this is where a cost-cutting row goes once it is taken.
 | upgrade | costs | note |
 |---|---|---|
 | Roof ice barrier: eave-only → full-deck high-temp | $12,400–27,300 | Neither is in the estimate today. Code wants eave-only; standing seam runs hot enough that full-deck is normal practice |
-| **Foundation: damp-proofing → full adhered membrane** | **$0–14,650** | New 2026-08-30. $0.00–12.50/SF over the 1,010.2 SF below-grade face, through the ladder. The code-minimum coat is a **modelled layer and already bought**, which is why the low end is zero; this row is the **upgrade delta only**. Dimple board is the middle rung at ~$2–5/SF |
+| ~~Foundation: damp-proofing → full adhered membrane~~ | ~~$0–14,650~~ | **STRUCK 2026-09-12: this was never an upgrade.** Minn. R. 1309.0406 subp. 1 deletes IRC R406.1 in its entirety, so the ladder's bottom rung — "damp-proofing only, code minimum" — is not legal in Minnesota, and the top rung is the baseline. The 60-mil self-adhered sheet is selected and modelled at $2.80–5.35/SF installed over the 1,016.4 SF face; the middle rung (dimple board) is decided against, with free-draining stone in its place |
 | Garage: full-height ICF walls (stem extended to plate) | $3,540–7,940 net | Before unquantified framing-removal savings. Needs new engine work for the truss-to-ICF sill |
 | Garage: CMU block + exterior Zip-R | $11,200–15,600 net | Counterintuitively **dearer** than full ICF, with a bigger engine gap. Right answer only if wall weight matters more than dollars |
 | Breezeway glazing: 16 mm polycarb → aluminium storefront + IGU | $6,700–13,300 | Glazier minimum and shop drawings alone are $1,500–3,500 on a 79 SF job |
