@@ -26,6 +26,11 @@ class DoorType(HausModel):
     width: Length
     height: Length
     u_factor: UFactor | None = None
+    # A glazed door is *fenestration* under R202, so it admits solar gain exactly as a window
+    # does and the block load has to see it. Same semantics as ``WindowType.shgc``/``vt``;
+    # meaningful only where ``glazed`` is true.
+    shgc: float | None = None  # solar heat gain coefficient
+    vt: float | None = None  # visible transmittance
     operation: DoorOperation = DoorOperation.SWING
     exterior: bool = False
     # A glazed leaf is transparent in 3D exports and the live viewer. Kept separate from

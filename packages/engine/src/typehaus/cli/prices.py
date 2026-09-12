@@ -267,6 +267,13 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     "drainage": "product", "wall_structure": "material",
     "framing": "material", "envelope_layers": "thickness_in",
     "ducts": ("material", "diameter_in"),
+    # ``sheet_goods`` keys on the MATERIAL, and a sheet that gets RIPPED INTO STRIPS is not
+    # the same article as the same sheet hung flat: ``takeoff/sheet_rips`` already reports
+    # the member category as ``scope`` ("buck rip", "sheathing rip") precisely so the two
+    # can price apart. The material cost per sheet is barely moved; the labour is a table
+    # saw and a pile of ribbons nobody re-uses. A house that keeps its bare material key
+    # keeps one rate over hung and ripped alike.
+    "sheet_goods": "scope",
 }
 
 

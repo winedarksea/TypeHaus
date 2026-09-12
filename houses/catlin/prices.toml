@@ -643,6 +643,23 @@
 # SHELF PRICING, not a quoted yard price. Labour is a touch over the CDX row's — same hang,
 # but a finish face gets its joints laid out and its screws set to a line.
 "siding-303-mdo" = { material = { low = 70, high = 120 }, labour = { low = 20, high = 40 } }  # 1 sheet
+# --- QUALIFIED BY SCOPE (2026-09-11) ---------------------------------------------------
+# A sheet_goods key may now carry the takeoff's `scope` — `material:scope` falls back to
+# `material`, so every row above is untouched and only the key authored here moves.
+# The window/door BUCKS: 9 sheets of 3/8" struct-1-plywood that `takeoff/sheet_rips` bills
+# as "buck rip". Hung flat they would price on the `struct-1-plywood` row above, which is
+# basised on a 1/2" sheet SCREWED TO A WALL, and neither half of that rate is right here.
+# MATERIAL is a thickness DOWN: 3/8" struct-1 runs about four-fifths of the 1/2" shelf
+# price, so $22-34 against that row's $27-42.
+# LABOUR is the real difference and it is up roughly 3x. Nothing about this sheet is hung:
+# it is broken down on a table saw into narrow strips, and the 9 sheets become ~14 rip cuts
+# each plus the cross-cuts, and every strip is then fitted and fastened INSIDE a rough
+# opening — a cut-and-fit operation at the rate of the opening, not of the panel. $45-90
+# the sheet is a half to a full man-hour of saw work plus the setting, at the same
+# $61-74/hr crew rate the aluminum-deck row above is decoded at.
+# CONFIDENCE: MEDIUM on material (shelf comparison), LOW-MEDIUM on labour (derived from
+# crew-hour, not quoted). Deleting this row returns the bucks to the flat rate above.
+"struct-1-plywood:buck rip" = { material = { low = 22, high = 34 }, labour = { low = 45, high = 90 } }  # 9 sheets — 3/8" bucks, ripped and fitted into the openings
 
 [hardware]
 # Schematic installed allowances, not supplier quotations. Replace with the engineered

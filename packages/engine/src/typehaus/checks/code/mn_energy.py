@@ -32,6 +32,13 @@ class PrescriptiveEnvelope:
     basement_wall_r: float = 15.0
     slab_r: float = 10.0
     window_u_max: float = 0.32
+    # Same column, not a second number. IRC Table N1102.1.2 carries ONE fenestration
+    # U-factor for climate zone 6 and R202 makes a glazed door fenestration, so a French or
+    # sliding leaf is graded on the window limit. The separate "door U-factor" column of the
+    # 2009-era table is gone; what remains is R402.3.4's exemption for ONE side-hinged
+    # opaque door of 24 sf or less, which is why an opaque exterior leaf that states nothing
+    # is not reported as a gap below.
+    door_u_max: float = 0.32
 
 
 MN_ZONE_6 = PrescriptiveEnvelope()
@@ -41,8 +48,8 @@ MN_ZONE_6 = PrescriptiveEnvelope()
 class PrescriptiveRow:
     """One EN-1 table row: a component checked against its MN zone-6 requirement."""
 
-    component: str  # tag (assembly or window type)
-    role: str  # "roof" | "above-grade wall" | "foundation wall" | "slab" | "window"
+    component: str  # tag (assembly, window type, or door type)
+    role: str  # "roof" | "above-grade wall" | "foundation wall" | "slab" | "window" | "door"
     required: str  # "R-49" | "U-0.32"
     provided: str  # "R-95.2" | "UNKNOWN (missing r_per_inch: ...)"
     verdict: str  # "pass" | "fail" | "unknown"
@@ -241,6 +248,25 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
         u = window_type.u_factor.u_us
         verdict = "pass" if u <= envelope.window_u_max + 1e-6 else "fail"
         rows.append(PrescriptiveRow(window_type.tag, "window", f"U-{envelope.window_u_max:.2f}",
+                                    f"U-{u:.2f}", verdict))
+
+    # Only EXTERIOR doors: the prescriptive table grades the thermal envelope, and an
+    # interior leaf is not on it. DT-INT-SWING30-GLAZED is glazed and states no U-factor —
+    # a loop over every door type would report that as a gap in the envelope it is not part
+    # of. An exterior OPAQUE leaf with nothing stated is left silent for R402.3.4's
+    # side-hinged-door exemption; a GLAZED one is fenestration and owes a number.
+    for door_type in plan.library.door_types:
+        if not door_type.exterior:
+            continue
+        if door_type.u_factor is None:
+            if door_type.glazed:
+                rows.append(PrescriptiveRow(door_type.tag, "door",
+                                            f"U-{envelope.door_u_max:.2f}",
+                                            "UNKNOWN (no U-factor)", "unknown"))
+            continue
+        u = door_type.u_factor.u_us
+        verdict = "pass" if u <= envelope.door_u_max + 1e-6 else "fail"
+        rows.append(PrescriptiveRow(door_type.tag, "door", f"U-{envelope.door_u_max:.2f}",
                                     f"U-{u:.2f}", verdict))
     return rows
 
