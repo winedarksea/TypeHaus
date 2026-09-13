@@ -25,6 +25,7 @@ from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 
+
 def minimum_slope(diameter_m: float) -> float:
     """The grade this diameter must hold, in inches per foot of developed plan run.
 

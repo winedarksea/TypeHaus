@@ -59,7 +59,7 @@ def test_the_reduced_slope_exception_reaches_only_four_inch_and_larger() -> None
     # Below 4" the exception does not exist, so neither does the reduction.
     assert minimum_drain_slope_in_per_ft(inch(3).meters, approval)[0] == 0.25
     assert not reduced_slope_approval_is_valid(inch(3).meters, approval)
-    assert REDUCED_SLOPE_MIN_DIAMETER_M == pytest.approx(inch(4).meters)
+    assert inch(4).meters == pytest.approx(REDUCED_SLOPE_MIN_DIAMETER_M)
 
 
 def test_no_approval_means_no_reduction() -> None:
