@@ -115,19 +115,28 @@ EXPOSED_MIX = ConcreteSpec(
 #
 #   * MICRO-monofilament targets PLASTIC shrinkage — the first hours, before the concrete has
 #     any strength. It carries no post-crack residual, so it replaces NO steel and no mesh.
-#     It is the polishable one, which is why SL-M-DECK is poured from it
-#     (notes/mixed_deck_movement_joint.md, which has said "replaces no steel" all along).
+#     It is what a thin cap over EPS wants and what a LIGHT trowel embeds cleanly
+#     (GCP TB-1204: magnesium bullfloat, jitterbug, finish late), which is why SL-M-DECK is
+#     poured from it (notes/mixed_deck_movement_joint.md, which has said "replaces no
+#     steel" all along).
 #   * MACRO-synthetic carries a measurable post-crack residual (ASTM C1609) and is what ACI
 #     544.4R recognises as a replacement for welded wire mesh against DRYING shrinkage and
 #     thermal movement. It is also visible at a finished surface, which is exactly why it
 #     cannot go in the floor above.
+#
+# ** THE 2026-09-12 FINISH CHANGE DID NOT MOVE THE FIBRE, AND THE REASON CHANGED. ** The cap
+# now takes a coating rather than a cream polish, so the old argument ("what little presents
+# at the surface sits in the paste a cream polish removes") is gone. The answer is the same
+# fibre for a new reason: the coating route grinds to ICRI CSP 2-3, which would RE-EXPOSE a
+# macro fibre rather than remove it, and ANSI/SDI C-2017's mesh substitution needs >=4.0
+# lb/cy — a different dose and a different argument, not a drop-in swap. Micro stays.
 #
 # One mix serving both meant SL-B-FLOOR — 14 CY of basement slab on grade — had nothing at all
 # controlling drying shrinkage: no mesh, and a fibre that does not do that job. The house
 # elsewhere claims "fibre replaces the mesh", and for EXPOSED_MIX's garage and garden
 # slabs that is true. It was not true here, and the fix is a second mix rather than a quieter
 # claim.
-POLISHED_MIX = ConcreteSpec(
+DECK_CAP_MIX = ConcreteSpec(
     fc_psi=4000.0,
     w_cm_max=0.45,
     exposure_f="F0",
@@ -137,7 +146,7 @@ POLISHED_MIX = ConcreteSpec(
     fiber=FiberSpec(kind="micro-synthetic", dose_pcy=1.5,
                     product="monofilament PP, 1/2\" - confirm the dose against the supplier TDS and the finisher before ordering"),
     max_aggregate=inch(0.75),
-    source="the polished deck cap SL-M-DECK: no chloride, no freeze-thaw, so black bar and galvanizing would buy nothing. Micro-MONOFILAMENT fibre, deliberately NOT macro — it targets plastic shrinkage, replaces no steel, and what little presents at the surface sits in the paste a cream polish removes (notes/mixed_deck_movement_joint.md)",
+    source="the deck cap SL-M-DECK, coated: no chloride, no freeze-thaw, so black bar and galvanizing would buy nothing. Micro-MONOFILAMENT fibre, deliberately NOT macro — it targets plastic shrinkage (what a thin cap over EPS is prone to), replaces no steel (ACI 544.4R, ICC-ES ESR-1699), and is the fibre a LIGHT steel trowel embeds. Macro would be re-exposed by the CSP 2-3 grind the coating needs (notes/mixed_deck_movement_joint.md)",
 )
 
 # ** NO ENTRAINED AIR, AND THAT IS NOT AN OMISSION. ** Both interior mixes leave air unset,
@@ -147,6 +156,11 @@ POLISHED_MIX = ConcreteSpec(
 # slows bleed water's rise, the trowel seals a surface over water still coming up, and the
 # risk climbs with every percent of air. At the 6% EXPOSED_MIX carries it is already
 # a bad bet.
+#
+# ** AND THE ORDER DESK IS WHERE THIS IS LOST. ** Air is a plant default in Minnesota —
+# a winter batch plant ships air-entrained unless told otherwise, and "interior slab" is not
+# the instruction. Say "NO ENTRAINED AIR" on the ticket and check the delivered air content
+# at the truck, because nothing downstream of the pour can undo it.
 #
 # F0/W0/C0 is what makes omitting it safe: there is no freeze-thaw indoors to need the air
 # for, so the two requirements never collide. They WOULD collide on a hard-trowelled exterior
@@ -840,15 +854,24 @@ SLAB_FLOOR = Assembly(
 # (x 18'-36', y 13'-36', 414 SF); the other 819 SF is wood I-joists on the same 18' span,
 # and the two systems are interchangeable bay by bay because their depths match.
 #
-# The depth is the whole point. 4 5/8" cap + 8" form = 12 5/8", which is exactly the
-# second floor's 11 7/8" joist (truss west of x=18', I-joist east — same depth either
-# way) plus its 3/4" plywood subfloor: same soffit plane, same
-# finished-floor plane, same 18' span to the x=18' bearing line. Both numbers are owned by
-# ``params/main_deck.py`` (EPS_CAP / EPS_FORM_DEPTH), and the 10" form + 3" cap alternative
-# — same depth class, ~21% less concrete, R-31 — is a one-line swap there.
+# The depth is the whole point. 4 3/8" cap + 10" form = 14 3/8", which is exactly the
+# 11 7/8" joist beside it (truss west of x=18', I-joist east — same depth either way) plus
+# its 3/4" plywood subfloor, its 1 1/2" mudsill and the 1/16" compressed gasket under that:
+# same bearing seat, same finished-floor plane, same 18' span to the x=18' bearing line.
+# (The old "4 5/8" cap + 8" form = 12 5/8"" reading here predates the 2026-08-23 deepening
+# and was stale until 2026-09-12.) Both numbers are owned by ``params/main_deck.py``
+# (EPS_CAP / EPS_FORM_DEPTH); ``integrity.slab_thickness`` fails the build if these two
+# layers drift from them.
 #
-# BuildDeck's published table takes an 8" form to a 20' clear span at a 4" cap with 4,000
-# psi concrete and 60 ksi rebar under 15 psf dead + 40 psf live; the span here is 18'-0".
+# ** BUILDDECK IS THE BASIS OF DESIGN. ** The row actually read is BuildDeck's 10" deck /
+# 4" cap at 2-#5 beam bars: 20'-0" span at 62 psf live load, f'c 4,000 psi, fy 60 ksi,
+# +15 psf additional dead load, deflection < L/480. The span here is 18'-0" at a cap
+# 3/8" deeper than the row, and the row is quoted onto ``SL-M-DECK.published_span`` where
+# ``structural.slab_published_span`` grades it and refuses it if the section drifts.
+# LiteDeck (LiteForm) and Insul-Deck stay named alternates — the depth-matching argument
+# above is product-neutral, which is the point — but neither publishes a span table for
+# this section in its free literature, and BuildDeck's shoring design is PE-sealed where
+# LiteDeck's is the installer's.
 #
 # Layers read top-down like SLAB_FLOOR. The gypsum is not optional trim: IRC R316.4
 # requires a thermal barrier over foam plastic on the room side, and this is it.
@@ -856,7 +879,7 @@ DECK_EPS_INT = Assembly(
     tag="DECK_EPS_INT",
     layers=(
         Layer(name="concrete-cap", material_ref="concrete", thickness=inch(4.375),
-              function=LayerFunction.STRUCTURE, concrete=POLISHED_MIX),
+              function=LayerFunction.STRUCTURE, concrete=DECK_CAP_MIX),
         Layer(name="eps-form", material_ref="eps-deck-form", thickness=inch(10.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # The form's own integral steel rib, which is what the ceiling screws to — the same
@@ -3056,12 +3079,12 @@ MATERIALS = [
              source="TileBar Bronx White 12x24 matte rectified, DCOF 0.5 (owner selection 2026-09-06). Smooth matte deliberately: a DEEPLY textured matte holds soap film and a gloss glaze shows every drip. Grout is SPECTRALOCK PRO epoxy on the walls and in the pan. ** COLOUR-MATCHED 100% SILICONE AT EVERY CHANGE OF PLANE (TCNA EJ171), 5-6 tubes from one lot: ** grouting a perimeter hard defeats the uncoupling membrane you paid for, and sanded ACRYLIC caulk sits right beside the grout in matching colours and is not a movement joint. ** TRIMLESS EDGES, WITH THREE EXCEPTIONS: ** profile on the shower CURB only (the most abused edge in the house -- never mitre a curb); mitre the shower outside corner if the setter has a portfolio of them; and no profile where the wall tile stops -- use a drywall shadow-gap reveal, because a horizontal bead at eye level is a visible ledge and a dust-catcher. Return field tile into the niche rather than trimming it, size the niche to the 12x24 module so the back is full pieces, and SLOPE THE SILL: a flat niche sill is a permanent puddle and the most common niche failure."),
     # The EPS stay-in-place deck form (DECK_EPS_INT). Deliberately *not* `icf-eps`,
     # whose R-4.0/inch is the bead EPS on its own: this section is ribbed, and the concrete
-    # that fills the ribs bridges it. BuildDeck publishes R-25 for the 8" section as
-    # installed, which is R-3.125/inch through the finished deck — the number that belongs
-    # in a thermal model of this floor, and 22% below the bare-foam figure.
-    Material(tag="eps-deck-form", name="EPS stay-in-place deck form", r_per_inch=3.125,
+    # that fills the ribs bridges it. BuildDeck publishes the R as installed per section,
+    # and this deck is the 10" one at R-29 — R-2.9/inch through the finished deck. Name the
+    # SECTION, not a per-inch constant carried over from another depth.
+    Material(tag="eps-deck-form", name="BuildDeck EPS deck form", r_per_inch=2.9,
              perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
-             source="BuildDeck brochure: R-25 at the 8\" base section as installed (ribs bridged by the pour), i.e. R-3.125/inch; permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
+             source="BuildDeck published R-values as installed (ribs bridged by the pour): R-23 at 8\", R-29 at 10\", R-36 at 12\". This deck is the 10\" section, i.e. R-2.9/inch — 28% below the bare-foam figure, and the number that belongs in a thermal model of this floor. (Was 3.125/inch, the 8\" section's, until 2026-09-12.) Both faces of this deck are conditioned, so no energy or envelope check reads it. Permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- the sunken-garden court's field build-up ---------------------------------
     # Five house-local materials, all specific to `GARDEN_PUTTING_GREEN`. None appears in any
     # other assembly, so retiring the turf field retires them with it. Every one of them is

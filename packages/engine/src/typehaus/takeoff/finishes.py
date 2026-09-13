@@ -42,6 +42,10 @@ _WASTE: dict[str, float] = {
     # rate over a cap that is already poured. Nothing is cut to the room, so nothing is
     # scrapped at an edge.
     "polished-concrete": 0.0,
+    # And a coating is the same argument once more: a roller-applied primer and topcoat,
+    # ordered by the TDS's coverage rate over a cap that is already poured and ground.
+    # Nothing is cut to the room, so nothing is scrapped at an edge.
+    "coated-concrete": 0.0,
     # Sheet vinyl is rolled goods with heat-welded seams and, in the plant room, a 6"
     # integral flash cove up every wall. 0.12 rather than plank's 0.10: the cove is
     # material cut off the roll's edge and formed, and a welded seam is scribed twice.

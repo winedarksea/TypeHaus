@@ -53,6 +53,11 @@ export const FLOOR_FINISH_SURFACE: Record<string, FloorSurface> = {
   "sealed-concrete": { roughness: 0.85, metalness: 0 },
   // Rolled rubber is dead matte and dark.
   rubber: { roughness: 0.95, metalness: 0 },
+  // A matte 2K PU film sits between a sealer and LVP: a resin skin has a real specular
+  // lobe even at a matte sheen, which is the visible difference from `sealed-concrete`.
+  // (`polished-concrete` is deliberately still absent and falls to the default — a polish
+  // is its own entry and nobody has measured one.)
+  "coated-concrete": { roughness: 0.6, metalness: 0 },
 };
 
 /** The lighting response for a floor finish; never undefined. */

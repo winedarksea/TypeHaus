@@ -281,10 +281,21 @@ the model has nowhere to state it, or states it in a form nothing can read.
 2. **The garage ICF stems' vertical steel**, `GARAGE_ICF_6`, 8.82 cy. Stated only as
    `MasonrySpec.rebar_spacing = 16"` — a spacing with **no bar size**, which is not a
    readable schedule. That field is marked superseded and read by nothing.
-3. **`SL-M-DECK`'s cap steel.** `DECK_EPS_INT`'s own source cites BuildDeck's table at
-   "4,000 psi concrete and 60 ksi rebar", so there is rebar in the 4 5/8" cap. The model
-   carries no rib width or spacing for the EPS T-beam form, so the flexural schedule cannot
-   be derived and was not guessed.
+3. **`SL-M-DECK`'s cap steel — THE RESEARCH HALF IS NOW CLOSED (2026-09-12).** This item
+   used to read "the model carries no rib width or spacing for the EPS T-beam form, so the
+   flexural schedule cannot be derived and was not guessed". It no longer has to be derived:
+   **BuildDeck publishes the schedule with the row**. The BuildDeck Design, Engineering and
+   Installation Manual (BuildBlock, 2022), 10" deck / 4" cap, 2-#5 beam-bar row names
+   **2-#5 in each beam rib, #3 stirrups over 4'-0" at each end at 5" o.c., and slab
+   reinforcement as a 12"x12" grid of #4**. That row is quoted verbatim onto
+   `SL-M-DECK.published_span` (`params/main_deck.py`) and graded by
+   `structural.slab_published_span`, so it is in the model as a *read* already.
+   **What is still open is the AUTHORING.** Turning the schedule into a `ReinforcementSpec`
+   on the slab moves real tonnage into the estimate and lands in the middle of §3's back-out
+   arithmetic, which is why it was deliberately left to a later commit rather than folded
+   into the finish change. The rib width and spacing the flexural check would want are still
+   not in the model — but they no longer have to be, because nobody is deriving the schedule
+   any more.
 4. **Dowels** — deliberately not billed, and it is **two** distinct laps, separated here on
    2026-09-11 because a reviewer counting rebar in the column rows could not tell from one
    line which of them was accounted for:
@@ -328,7 +339,7 @@ and thermal crack control, so the garage and garden slabs were correctly describ
 interior mix carried MICRO-monofilament at 1.5 lb/cy, which targets plastic shrinkage in the
 first hours, carries no post-crack residual and **replaces nothing** — `SL-B-FLOOR`, 14 CY of
 basement slab on grade, had neither mesh nor a fibre that does the job the mesh was deleted
-for. Split into `POLISHED_MIX` (micro, `SL-M-DECK`) and `INTERIOR_SLAB_MIX`
+for. Split into `DECK_CAP_MIX` (micro, `SL-M-DECK`) and `INTERIOR_SLAB_MIX`
 (macro, `SL-B-FLOOR`) on 2026-09-03. Control joints are still required on that slab and are
 not modelled anywhere.
 
@@ -400,7 +411,7 @@ gap and authors steel to close it.
 - **`SL-B-FLOOR` and the other slabs on grade.** No mesh and no bar: macro-synthetic fibre
   at 4 lb/cy replaces the mesh (ACI 544.4R recognises it for drying-shrinkage and thermal
   crack control), which is why `INTERIOR_SLAB_MIX` exists as a separate mix from
-  `POLISHED_MIX`'s plastic-shrinkage-only micro-monofilament. Control joints are still
+  `DECK_CAP_MIX`'s plastic-shrinkage-only micro-monofilament. Control joints are still
   required on that slab and are still not modelled anywhere — that IS a gap, and it is a
   jointing gap, not a steel one.
 

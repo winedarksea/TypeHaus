@@ -8,7 +8,7 @@ from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
 from typehaus.model.rebar import ReinforcementSpec
-from typehaus.model.refs import Embed
+from typehaus.model.refs import Embed, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
 
@@ -250,6 +250,14 @@ class Slab(Element):
     # under it (``datum == "structure"``): a slab-on-grade with no occupied space below
     # authors none. Same convention as ``FloorSystem.ceiling_below``.
     ceiling_below: tuple[Layer, ...] = ()
+    # The published table row that answers this deck's span, where one does. A
+    # manufacturer's table is a PRESCRIPTIVE read — a reviewer opens the document and the
+    # question is closed — so authoring one here takes the requirement out of the
+    # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
+    # carries the drift guards that stop a quotation outliving the model it was read for,
+    # and ``checks/structural/slab_span.py``, which grades it. Only a SUSPENDED slab
+    # (a room underneath) spans anything; a slab-on-grade authors none.
+    published_span: PublishedSpan | None = None
 
 
 class SoffitOpening(HausModel):

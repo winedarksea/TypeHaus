@@ -488,7 +488,7 @@ def slab_thickness_matches_assembly(ctx: CheckContext) -> list[Finding]:
 # whatever is underneath. Kept here beside the rule that needs it, the way
 # ``takeoff/finishes.py::_WASTE`` keeps its own table: ``Material`` has no substrate field,
 # and adding one would be a schema change carrying a fact only this check reads.
-_CONCRETE_FINISHES = {"sealed-concrete", "polished-concrete"}
+_CONCRETE_FINISHES = {"sealed-concrete", "polished-concrete", "coated-concrete"}
 
 # How much of the finished area has to sit over a slab. Not 100%, and the slack is measured
 # rather than guessed: RM-GARAGE is a legitimate sealed slab that covers only ~85%, because

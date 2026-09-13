@@ -124,9 +124,9 @@ def surfaces_at(model: ResolvedModel,
             else (None, None, 0.0))
         # A deck carrying its own ``floor_finish`` outranks the room's, which is the FIELD
         # finish (resolve/rooms.py::_derived_finish_zones bills the same way). Catlin's
-        # RM-M-LIVING is the case: it is authored LVP and spans a wood bay and a polished
+        # RM-M-LIVING is the case: it is authored LVP and spans a wood bay and a coated
         # concrete band, and its centroid lands on the band. Taking the room's finish there
-        # stood the plank on top of the polish and lifted the floor 6 mm.
+        # stood the plank on top of the cap and lifted the floor 6 mm.
         own = _own_finish(model, tag)
         if own is not None:
             finish_ref, finish_in = own, _finish_depth(model, own)

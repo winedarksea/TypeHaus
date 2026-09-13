@@ -151,7 +151,7 @@ derived by hand from the design.
 
 | Trade | Distinct mobilisations | Why more than one |
 |---|---|---|
-| Concrete | **at least 5** | footings and basement walls · garage ICF stem (a different sub) · slabs · the cast deck over the LiteDeck form, which needs a pump after sill plates are set · sunken-garden walls, piers and the six cast columns · then the polished-concrete finish pass, which cannot happen until the building is closed |
+| Concrete | **at least 5** | footings and basement walls · garage ICF stem (a different sub) · slabs · the cast deck over the LiteDeck form, which needs a pump after sill plates are set · sunken-garden walls, piers and the six cast columns · then the deck cap's coating pass (a cream polish until 2026-09-12 — BLD-03), which cannot happen until the building is closed and the cap has passed its ASTM F2170 RH test |
 | Envelope | **4, with an inspection hold** | framer lays blocks and girts flat before tilt · **hold: the 8-inch screws must be inspected before the sprayer arrives, because they are blind and invisible once foamed** · foam sub · panel sub · window sub, mounting outie on the girt plane |
 | Masonry | **2** | the five-element firebox with its steel lintel · the 129 sf sunken-court wythe, a minimum-mobilisation job needing scaffold |
 | Metals | **5+** | garage stem coil band on its vented standoff · six drip flashing runs · wall panels · roof panels · eave water chain · two guard systems with two different mounting details · snow guards and seam clamps |
@@ -177,7 +177,7 @@ is still the first thing to remove.
 | BLD-12 | No soils report, and the piers make one mandatory | HIGH | **SIMPLIFY** | +$2,500 to $5,000 |
 | BLD-06 | Service load calc rests on unlisted devices | HIGH | **SIMPLIFY** | +$0 or +$10k–15k |
 | BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
-| BLD-03 | Two floor systems on the main storey | HIGH | **SIMPLIFY** | **−$7,536 to −$13,486** |
+| BLD-03 | Two floor systems on the main storey | HIGH | **KEEP — resolved 2026-09-12** (product decision + finish change) | cut declined; the −$7,536 to −$13,486 stands as the measured price of the feature |
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
@@ -191,6 +191,10 @@ is still the first thing to remove.
 
 **The two measured simplifications together are −$9,240 to −$18,121** (as of
 `286ef997`; see BLD-01a on why its engineering-register figure needs re-striking).
+**BLD-03 is no longer one of them** — resolved 2026-09-12 as KEEP, so its −$7,536 to
+−$13,486 is now the measured *price of a feature that is being bought*, not a saving on
+offer. It stays quoted in the ablation below and in `plans/cost-options.md`'s premium table,
+which is where a price belongs.
 
 **METHOD NOTE — the baseline was re-read on 2026-09-12 and this file's is stale.**
 `haus check houses/catlin` reads **1245 pass / 0 fail / 45 unknown / 30 N/A**, and the
@@ -606,7 +610,125 @@ between house and garden footings, and the requirement that every wall-to-house
 joint carry one continuous 2-inch board from the house footing underside to the
 porch wall top.
 
-### BLD-03 — Two floor systems on the main storey. **HIGH · SIMPLIFY**
+### BLD-03 — Two floor systems on the main storey. **HIGH · RESOLVED 2026-09-12**
+
+**RESOLVED 2026-09-12 — KEEP, with a product decision and a finish change. Three of the
+four findings do not survive contact with the manufacturers' own documents, and one of them
+was already contradicted by this repo's `prices.toml`, which is the later and better-sourced
+record.** The concrete stays: the thermal mass under the south glazing, `FH-M-DINING`'s
+in-slab radiant embed and the acoustic separation over `RM-B-PLAY-N` are what it was bought
+for, and none of them is replaceable by wood. What changed is that the deck now names a
+product, carries a published span row the engine grades, and takes a finish with less
+execution risk than the polish.
+
+**Verdict: SIMPLIFY → KEEP.** The roll-up row and the summary above are updated; BLD-03 no
+longer sums into the measured simplifications.
+
+**What the deck IS now.** **BuildDeck (BuildBlock) is the basis of design.**
+`plan/assemblies.py` already sourced both its span basis *and* its R-value from BuildDeck
+while naming LiteDeck as the product — the change makes the model self-consistent and picks
+up two documents LiteDeck's free literature does not publish.
+
+| | LiteDeck (LiteForm) | **BuildDeck (BuildBlock)** |
+|---|---|---|
+| Span table for a 10" deck + 4" cap | not in the free manual (the 2013 design book 403s) | **yes** — 20 ft @ 2-#5 = 62 psf LL |
+| Shoring design | **the installer's**, per ACI 347R, in writing | **PE-sealed** (McLaren Engineering Group, File 150609.00, 2016) |
+| Rebar schedule | "installer responsible, per ACI 318" | **published** — #3 stirrups 4' each end @ 5" o.c., 12"x12" #4 grid |
+| ICC-ES report | none found | none found |
+| Nearest source | Benchmark Foam, Watertown SD (~3h) | Ostertag Cement, Shakopee MN (a BuildBlock distributor; **unverified for BuildDeck**) |
+| Depths, R as installed | 8" base + 2/4/6" top hat | 8" R-23, **10" R-29**, 12" R-36 |
+
+LiteDeck and Insul-Deck stay **named alternates** — the depth-matching argument in
+`params/main_deck.py` is product-neutral and that is the point — but a substitution has to
+bring its own span table, its own shoring design and its own R per section with it.
+
+**Finding by finding.**
+
+1. *No MN dealer* — **PARTLY STANDS.** Benchmark Foam (Watertown SD, ~3h) lists Lite-Deck;
+   BuildBlock lists a Shakopee MN distributor. **Both need a phone call to confirm**, and
+   neither has been made. This is the one finding that survives essentially intact.
+2. *Off common use, no ICC-ES* — **the ICC-ES half STANDS**, for all four systems examined.
+   Note the trap: `ESR-1269` is cited on Amvic's AmDeck page and evaluates **wall** forms,
+   not decks. Nobody publishes an evaluation report for an EPS floor deck.
+   What does NOT stand is the conclusion drawn from it — "the building official will be
+   reading manufacturer engineering plus a PE stamp". A published allowable-load table is a
+   **prescriptive read**, the same act as reading an IRC table. It is now IN the model:
+   BuildDeck's 10" deck / 4" cap / 2-#5 row (20'-0" at 62 psf) is quoted onto
+   `SL-M-DECK.published_span` and graded by the new `structural.slab_published_span`, which
+   refuses the row if the section, the product or the demand drifts away from what it was
+   read at. Before this the deck was graded by **nothing at all** — no `engineering/` kind
+   for a suspended slab, no check reading a slab's span. That is the substantive change this
+   finding produced.
+3. *Shoring is the installer's liability* — **DOES NOT SURVIVE.** BuildDeck publishes a
+   **PE-sealed** shoring design (McLaren Engineering Group, File 150609.00, 2016): wood stud
+   walls at 6'-0" o.c. with 2x8/2x10 joists at 24" o.c., 97 psf dead + 25 psf construction
+   live, in place no more than 6 weeks, struck after the 28-day cure. `prices.toml` said so
+   on 2026-08-23 and BLD-03 did not read it. **One open question remains for the EOR, and it
+   is not a defect:** McLaren used 25 psf construction live load where ACI 347 §2.2.1 asks
+   for ≥50 psf live and ≥100 psf combined. 97 + 25 = 122 psf clears the combined floor and
+   not the live-load floor. Ask.
+4. *Polishing a suspended slab* — **ALREADY DESIGNED AROUND, and now superseded.** The cited
+   mechanism is non-uniform **aggregate exposure** following curl, and
+   `notes/mixed_deck_movement_joint.md` has specified a **cream** polish — surface paste
+   only, ~1/16", no aggregate — since before this audit was written. Superseded regardless:
+   the deck now takes a **coating**, and the cream polish is kept in the note and in
+   `prices.toml` as the named, costed fallback the owner may revert to at pour time.
+   The corrected finish spec, in order: ACI 302.1R **Class 3/7** two-course floor — "Class A"
+   is a *formed-surface* class and says nothing about a floor; a **light** steel trowel (ACI
+   302.1R's maximum density for a slab receiving an adhered covering); ACI 117's 3/8"-under-a
+   -10'-straightedge and **no F-numbers**, because ASTM E1155 §7.2.1 sets a **320 ft² minimum
+   test section** and 414 SF cannot carry a meaningful set; wet cure or a cure-and-seal the
+   primer bonds through; diamond grind to **ICRI CSP 2-3** (every coating TDS found — Tnemec
+   201, Sikafloor-1620/217, Dur-A-Flex, Sherwin-Williams — asks for CSP 2-4, and a
+   hard-troweled cream reads *below* CSP 2, so a hone toward 200 grit moves away from
+   profile); **ASTM F2170 in-situ RH at 40% of depth as the gate**; a moisture-mitigating
+   primer rated to 100% RH; and a matte 2K aliphatic PU topcoat, **roller-applied**, since
+   spray moves isocyanate handling to supplied-air.
+
+   **The real risk the coating introduces is moisture, and it is manageable.** The cap dries
+   **upward only** (EPS below) and hard troweling collapses capillaries — one study found
+   burnished slabs holding >94% in-situ RH for 18 months. Because the deck pours at
+   *structure* stage and coats at *finish* stage the 4-5 month conditioned dry is probably
+   free, but *probably* is not a test result. Nothing in the engine grades any of this: a
+   `floor_finish` is not a `Layer`, so no vapour check sees a near-vapour-tight film over a
+   cap that can only dry one way. Recorded in the note.
+
+**And BLD-03's silica paragraph is WRONG, about polishing as well as about coating.**
+29 CFR 1926.1153 Table 1 puts a light hone and a full polish in the **same row** —
+walk-behind floor grinders with dust collection, **no respirator required at any duration
+indoors**. The finding's "APF 10 respirators once the task passes four hours" is not what
+Table 1 says for this equipment indoors. Grinding to CSP 2-3 is near-identical work in that
+same row, so the silica question does not distinguish the two finishes at all. What IS owed
+either way, and the finding is right about, is the written exposure control plan, the
+designated competent person, training, and medical exams for anyone in a respirator 30+ days
+a year. Corrected rather than transferred.
+
+**Two corrections to the measured ablation below, which otherwise stands and is kept intact.**
+The four evicted MEP runs are a real finding and the honest half of this section.
+
+- **Reconcile the two deltas.** BLD-03 measures **−$7,536 to −$13,486**; `plans/cost-options.md`
+  says **$6,300–10,700** for the same cut. They are not averaged and neither is wrong:
+  BLD-03's is `built` (an ablation in a sandbox at `286ef997`, which also deleted the four
+  cast sleeves) and cost-options' is `arithmetic`. **Quote the `built` figure**, and say which
+  it is.
+- **The fire-rated separation is NOT given up by going to wood.** The original's "also given
+  up ... the fire-rated separation over the media room" is wrong.
+  `code.R302_13_floor_protection` is satisfied by the 5/8" gypsum, which is continuous over
+  both systems either way (`ceiling_below` on the joists, the R316.4 thermal barrier on the
+  deck). What is genuinely given up is the **acoustic** separation over `RM-B-PLAY-N`, the
+  thermal mass, and the concrete as a finished floor — three real things, and the fourth was
+  never at stake.
+
+**What changed in the tree (2026-09-12):** `Slab.published_span` + `checks/structural/slab_span.py`
+(the new prescriptive read); `params/main_deck.py` (the row, the BuildDeck docstring, the
+coating); `plan/assemblies.py` (`POLISHED_MIX` → `DECK_CAP_MIX`, R-3.125 → R-2.9 for the 10"
+section, the stale 4 5/8"/8" comment); `coated-concrete` in `library/materials.py`,
+`takeoff/finishes.py` and `checks/integrity`; `prices.toml`;
+`notes/mixed_deck_movement_joint.md`; `notes/rebar_backout.md`. **Not done, deliberately:**
+authoring the now-sourced cap rebar schedule as a `ReinforcementSpec` — it moves tonnage into
+the estimate and lands in the middle of `notes/rebar_backout.md` §3's back-out arithmetic.
+
+The original finding, for the record:
 
 Upgraded from MED after the research. `SL-M-DECK` puts 414 square feet of 10-inch
 LiteDeck EPS stay-in-place form under a 4 3/8-inch cast topping inside an I-joist

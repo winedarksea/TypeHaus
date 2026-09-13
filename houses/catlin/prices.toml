@@ -2894,6 +2894,24 @@
 # RM-M-BED and its closet, and RM-B-PLAY-N.
 "carpet" = { material = { low = 1.5, high = 4 }, labour = { low = 1, high = 2.25 } }  # 1074 SF — labour INCLUDES pad and tack strip
 "carpet-pad" = { material = { low = 0.35, high = 1 }, labour = { low = 0, high = 0 } }  # 1074 SF — labour is 0 ON PURPOSE: laying the pad is inside the carpet rate above
+# 2026-09-12: SL-M-DECK's cap, COATED. This is the finish BLD-03's resolution moved the deck
+# to — see plans/buildability.md and notes/mixed_deck_movement_joint.md. The cap is billed in
+# [concrete] exactly as `sealed-concrete` and `polished-concrete` say, so this is the
+# coating scope only. Built up rather than quoted from one rate:
+#   * diamond grind to ICRI CSP 2-3 -- ~$1.50/SF at this size (Signature Floor Prep's
+#     published surface-prep rates). NOT a polish: every coating TDS found (Tnemec 201,
+#     Sikafloor-1620/217, Dur-A-Flex, Sherwin-Williams) asks for CSP 2-4, and a hard-troweled
+#     cream reads BELOW CSP 2.
+#   * a moisture-mitigating primer -- the class that tolerates 100% RH, because this cap
+#     dries upward only (EPS below it) and ordinary primer ceilings are 80-85% RH.
+#   * a matte 2K aliphatic PU topcoat, roller-applied (spray moves isocyanate handling to
+#     supplied-air and is not in this rate).
+# Against the MN market for resinous/epoxy flooring at $4-10/SF installed, which is where the
+# build-up lands.
+# ** 414 SF IS BELOW EVERY MOBILISATION MINIMUM FOUND. ** A grinder, a slurry vac and a
+# two-day return for primer-then-topcoat arrive for a day each either way. Treat the $/SF
+# below as a BUDGET FIGURE and expect a LUMP -- the same caution the polish row carries.
+"coated-concrete" = { material = { low = 1.25, high = 3 }, labour = { low = 2.75, high = 7 } }  # 414 SF — grind to CSP 2-3 + moisture-mitigating primer + matte 2K PU; the cap is in [concrete]
 # ** 2026-09-05b: 889 -> 796 SF ordered. ** RM-S-BATH1 left for tile — it is the one
 # second-storey floor with a radiant mat under it (FH-S-BATH1), and plank caps that mat at
 # 80-85 F. Everything below still describes the two moves that got the row to 889.
@@ -2935,6 +2953,12 @@
 # have drifted since that figure was blessed. Re-blessed from `haus takeoff`, like every
 # other quantity here — 506 sf net, 557 ordered at the 10% waste.)
 "oak" = { material = { low = 4, high = 8 }, labour = { low = 7.5, high = 12.5 } }  # 557 SF — labour INCLUDES sand and finish (nail-down $4.00-6.50 + 3-coat site finish $3.50-6.00)
+# RETIRED 2026-09-12 as the deck's finish, kept priced per the glazed-green-brick
+# convention — and kept for a second reason: the cream polish is the NAMED FALLBACK the
+# owner may revert to at pour time (notes/mixed_deck_movement_joint.md), so this is a live
+# alternative price, not a fossil. SL-M-DECK now takes `coated-concrete` above. Quantity
+# resolves to 0 SF until somebody reverts the finish.
+#
 # 2026-08-21: SL-M-DECK's cap. A polish is not a covering and not the sealer above it —
 # it is a mechanical grind, 4-6 passes on progressively finer diamonds, with a lithium
 # densifier between passes and a guard coat at the end. The slab itself is billed in
@@ -2946,7 +2970,7 @@
 # arrive for a day either way. Expect a LUMP of $2,000-3,500 rather than the $/SF arithmetic. **
 # Sources: concretenetwork.com polished-concrete cost guide 2026, homeguide.com polished
 # concrete chart, CPAA cream-polish class specifications.
-"polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 411 SF — cream polish over the EPS-deck cap; grinding only, the cap is in [concrete]
+"polished-concrete" = { material = { low = 0.75, high = 2 }, labour = { low = 3.5, high = 7 } }  # 0 SF (was 411) — RETIRED 2026-09-12; cream polish over the EPS-deck cap, kept as the costed fallback. Grinding only, the cap is in [concrete]
 "rubber" = { material = { low = 3, high = 8 }, labour = { low = 1.5, high = 3.5 } }  # 357 SF — adhesive-set; substrate prep is NOT in this number
 "sealed-concrete" = { material = { low = 0.35, high = 1.2 }, labour = { low = 0.75, high = 2 } }  # 1190 SF — densifier + 2 coats, NO grinding. A real polish is a separate specialty contract at $3-7/SF more
 # 2026-08-25: the tile scope collapsed from 495 SF to 119. RM-B-SAUNA went to sealed

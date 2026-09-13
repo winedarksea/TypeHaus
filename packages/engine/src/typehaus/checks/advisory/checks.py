@@ -195,7 +195,7 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
     finish, and the polygon test reports both.
 
     And a room is not one finish. ``Room.finish_zones`` overrides the field over part of the
-    floor — a hearth pad, or the band where the room sits on a slab whose polished cap IS the
+    floor — a hearth pad, or the band where the room sits on a slab whose finished cap IS the
     finished floor — so the finish a loop actually runs under is decided per polygon, not per
     room. FH-M-DINING is the case that forced this: it lies wholly inside SL-M-DECK's band, so
     reading RM-M-LIVING's field ``lvp`` would report a plank constraint over what is bare

@@ -95,7 +95,7 @@ table is here: **a feature and its slice are the same money.**
 | **Sauna** — 127 sf, heater, benches, T&G liner, shower, its own ERV pair | **$12,700–29,500** | 1.4% / 1.6% | Two basement walls carry a second house-local liner stack |
 | **Insulated + heated detached garage** — the insulation and heat only | **$12,500–23,600** | 1.4% / 1.2% | the whole garage is $62,300–119,100 |
 | ⏳ **Raised garden apron** — 245 SF of SRW wrapping the sunken garden | **$8,700–17,400** | 0.9% / 0.9% | defer — a landscape contract |
-| **Concrete deck over the theatre** — 414 SF of LiteDeck + cast cap | **$6,300–10,700** | 0.7% / 0.6% | premium over I-joists |
+| **Concrete deck over the theatre** — 414 SF of BuildDeck + cast cap | **$6,300–10,700** | 0.7% / 0.6% | premium over I-joists. **KEPT** — `plans/buildability.md` BLD-03 resolved 2026-09-12 as KEEP with a product decision (BuildDeck is the basis of design) and a finish change (coating, not a cream polish) |
 | **all seven** | **$195,200–$375,000** | **21.3% / 19.8%** | |
 
 Method: ablation — delete the feature's elements from the *resolved* model, re-run
@@ -121,7 +121,7 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 | ⏳ Raised garden apron — defer | $8,700–17,400 | ablation | yes | **its own premium-table row — the same money** | Nothing. A landscape contract, let any spring |
 | Windows → vinyl or entry fibreglass, same U-0.25 | $6,500–11,000 | `[openings]` note | no | **imports: windows — do not sum** | Frame material and warranty |
 | **Single-tier girt on 5.5" blocks** (deletes the inner SPF tier) | $6,400–10,300 | arithmetic | no | attic; both ccSPF rows | A new failure mode: the block **cantilevers**, so bending and screw prying become the design case. **Not without an engineer** |
-| Concrete deck over the theatre → I-joists | $6,300–10,700 | arithmetic | no | **its own premium-table row — the same money** | Acoustic isolation over `RM-B-PLAY-N`; `FH-M-DINING`'s in-slab embed; the thermal mass under the south glazing |
+| Concrete deck over the theatre → I-joists | $6,300–10,700 | arithmetic | no | **its own premium-table row — the same money** | Acoustic isolation over `RM-B-PLAY-N`; `FH-M-DINING`'s in-slab embed; the thermal mass under the south glazing. **DECLINED 2026-09-12** (buildability.md BLD-03). `buildability.md` measured the same cut by ABLATION at $7,536–13,486 — that is the `built` number and this row is the `arithmetic` one; they are not averaged, and the ablation additionally evicts four MEP runs |
 | **Delete the 5 discretionary attic windows** | **$5,016–10,114** | **built, re-measured** | no | attic | The south-gable mirror about x=18' and the north pair. **`WIN-A-S-JUL-W` is not one of the five** — see *Do not reopen* |
 | **Exterior CI: 4" → 2.5" of ccSPF** | **$5,422–7,996** | **built, re-measured** | no | attic; single-tier girt | R-41.4 card / ≈R-38.2 honest → ≈R-32. The one row that spends measurable building performance. **Weigh it last** |
 | Plant room → an ordinary second-floor room | $5,300–10,400 | arithmetic | part | — | This is *delete the plant room*, not cheapen it: the liner is what lets the room run at 75 °F / 70% RH |

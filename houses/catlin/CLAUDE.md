@@ -348,8 +348,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     doesn't overhang, not by bending demand (→ DESIGN-LOG.md, "Bearing lines and floor decks").
 - **Basement ceiling: ONE FLAT BEARING SEAT at -13 7/16", not one depth.** `FS-M-WEST`,
   `FS-M-MECH`, `FS-M-STAIR` (x 0'-18') and `FS-M-EAST` (x 18'-36', y 0'-13') are 11 7/8"
-  I-joists at 16" o.c.; `SL-M-DECK` (414 SF) is a 10" LiteDeck EPS SIP beam (8" base + 2" top
-  hat) under 4 3/8" cast cover. One plate serves studs and joists, no step in the forms.
+  I-joists at 16" o.c.; `SL-M-DECK` (414 SF) is a 10" **BuildDeck** EPS SIP beam (8" base + 2"
+  top hat) under 4 3/8" cast cover — BuildDeck is the basis of design since 2026-09-12
+  (LiteDeck/Insul-Deck are named alternates), and its published 10"/4"/2-#5 row (20'-0" at
+  62 psf) is quoted onto `SL-M-DECK.published_span`, where
+  `structural.slab_published_span` grades the 18'-0" span as a PRESCRIPTIVE read. One plate serves studs and joists, no step in the forms.
   Seat/depth constants live in `params/main_deck.py` — moving the boundary is a one-line
   edit there. `structural.mixed_deck_bearing_seat` (FAIL) and `integrity.floor_bearing_grid`
   hold this.
@@ -358,7 +361,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     TWO ceilings — 234 SF at -11 7/8", 90 SF at -13 7/16" — since ceilings derive per *deck
     region* (`resolve/ceilings.py`, `ceiling_over.ceiling_regions`), not per room. A seam
     alone isn't a step: `RM-M-LIVING` (2nd-floor truss/I-joist split, same depth) is ONE.
-  - Floor finish follows the deck via `_BAND_Y`: `SL-M-DECK.floor_finish=polished-concrete`,
+  - Floor finish follows the deck via `_BAND_Y`: `SL-M-DECK.floor_finish=coated-concrete`
+    (`polished-concrete` until 2026-09-12),
     `RM-M-LIVING.floor_finish=lvp` over the wood bays; this band is the room's only zone,
     and nothing is currently authored on it. Prefer a derived zone over authoring one here —
     an authored zone's drawn ring must be clipped to the room, same as its area (fixed
@@ -367,12 +371,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     uncoupling membrane (`integrity.concrete_finish_needs_concrete_deck` keeps them off
     concrete since `FS-M-MECH` is I-joist/plywood) — tiled because their doors open INTO the
     mudroom, not because they're wet; don't put either back on plank, it islands the tile.
-  - Two walking planes meet flush (plank +0.986" vs polished cap +15/16") on both legs of
+  - Two walking planes meet flush (plank +0.986" vs the coated cap's +15/16") on both legs of
     the L; only the mudroom breaks it (~+1 5/16", ~5/16" strip at `D-M-MUD`, the one
     threshold on the storey). Oak (+1 1/2") is the two studies' floor only — never extend it
     to a cap edge (→ DESIGN-LOG.md, "Bearing lines and floor decks"). Junction detail is in
-    `notes/mixed_deck_movement_joint.md`; mix is `POLISHED_MIX` (micro-monofilament PP, no
-    macro fibre or steel).
+    `notes/mixed_deck_movement_joint.md`; mix is `DECK_CAP_MIX` (micro-monofilament PP, no
+    macro fibre or steel — macro would be re-exposed by the coating's CSP 2-3 grind).
+    The finish is a **coating**, not a cream polish, since 2026-09-12: light steel trowel,
+    grind to ICRI CSP 2-3, ASTM F2170 RH gate, moisture-mitigating primer, matte 2K PU.
+    The polish stays as a costed fallback in `prices.toml`.
 - **Second floor's deck is mixed for services, not material.** `FS-S-WEST` (x 0'-18') is
   11 7/8" open-web trimmable floor trusses at 16" o.c.; `FS-S-EAST` (x 18'-36') is 11 7/8"
   I-joists. West carries nearly every 2nd-floor service crossing (both drain stacks, 4

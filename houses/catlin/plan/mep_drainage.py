@@ -67,7 +67,7 @@ DRAINS = [
     # -13 7/16", a furred plane 5/8" UNDER the slab, so anything hung beneath that deck is
     # in the theater by construction. Rerouting inside the basement cannot fix that.
     #
-    # ** THE FIX IS TO STAY IN THE DECK, NOT UNDER IT. ** SL-M-DECK is a LiteDeck EPS
+    # ** THE FIX IS TO STAY IN THE DECK, NOT UNDER IT. ** SL-M-DECK is a BuildDeck EPS
     # stay-in-place form: 4 3/8" of cast cover over a 10" foam beam whose ribs run in x, the
     # same direction this leg travels. So the drain drops through the cap only, turns west at
     # -7 1/2" inside the foam — a routed channel between ribs, which is what an EPS deck is

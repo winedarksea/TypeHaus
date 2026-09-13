@@ -6,8 +6,10 @@ From the basement-ceiling overhaul (`plans/TODO.md § Basement Ceiling`, decisio
 
 The main floor over the basement is two structures that meet on one line:
 
-- **East of x = 18', north of y = 13'** — `SL-M-DECK`, 414 SF of 10" LiteDeck EPS
-  stay-in-place beam (8" base panel + 2" top hat) under a 4 3/8" cast cover. Bears on the
+- **East of x = 18', north of y = 13'** — `SL-M-DECK`, 414 SF of the 10" BuildDeck EPS
+  stay-in-place section (8" base panel + 2" top hat) under a 4 3/8" cast cover, read
+  against BuildDeck's published 20'-0" / 62 psf row and graded by
+  `structural.slab_published_span`. Bears on the
   x=18' line and the east foundation wall.
 - **Everywhere else** — `FS-M-WEST`, `FS-M-MECH`, `FS-M-STAIR` and `FS-M-EAST`, 11 7/8"
   I-joists at 16" o.c. with a 3/4" plywood subfloor. Same bearing lines; 18'-0" spans except
@@ -27,11 +29,20 @@ What is *not* continuous is stiffness.
 The two systems deflect differently under the same load, and neither number is small enough
 to ignore against a rigid floor finish:
 
-- The concrete band is a one-way slab on an 18'-0" span. Its live-load deflection is small
-  and it creeps slowly over years.
+- The concrete band is a one-way slab on an 18'-0" span. **Corrected 2026-09-12: it does
+  not "barely move".** BuildDeck publishes the row this deck is read at — 10" deck, 4" cap,
+  2-#5 — at **deflection < L/480**, which is the same order as the best of the I-joist bays
+  beside it, not an order better. What differs is *when* and *how*: the slab's
+  instantaneous live-load deflection is bounded at L/480 and then it **creeps** over years
+  under sustained load, and creep is a one-way movement the joists do not have.
 - The I-joist bays are designed to L/360 at worst and L/480 at best over the same 18'-0" —
   which is 0.45" to 0.60" of live-load deflection at midspan, and it moves *now*, under a
   person walking.
+
+The joint is still right; the *reason* is the one above, and the reason matters because the
+tile rule below rests on it. Two independent systems that happen to share a deflection limit
+still meet at a hinge: they are loaded separately, they creep differently, and nothing ties
+them together.
 
 Along y = 13'-0" the two midspans are 18' apart in the span direction but adjacent across
 the line, so the differential shows up as a hinge. Two consequences to draw:
@@ -61,12 +72,13 @@ the line, so the differential shows up as a hinge. Two consequences to draw:
   detail and the half a homeowner reports.
 - **Finish above.** The joint lives in the finish, not in the structure — and since
   2026-08-21 the model can name what it is on each side. `SL-M-DECK` carries
-  `floor_finish="polished-concrete"`: the cap's own top *is* the finished floor over the
+  `floor_finish="coated-concrete"` (`"polished-concrete"` until 2026-09-12): the cap's own
+  top *is* the finished floor over the
   band, and `RM-M-LIVING`'s `floor_finish="lvp"` is the field finish over the wood bays
   only. The resolver intersects the slab with each room's clear face and emits the result as
   a finish zone, so the boundary is stated once — `_BAND_Y` in `params/main_deck.py` — and
   the finish moves when it does. As of 2026-09-05 that is the ONLY zone in the room: 410.2
-  SF of polish, and 355.6 SF of plank field over everything else — south bay, stair lane and
+  SF of coated cap, and 355.6 SF of plank field over everything else — south bay, stair lane and
   hall band alike. Both of the authored zones this room briefly carried (a `vinyl-sheet` hall
   band, then an `oak` south bay) are gone, which is worth keeping that way: a derived zone
   follows `_BAND_Y` when the boundary moves, and an authored one has to be chased.
@@ -158,13 +170,68 @@ detailed: break the board on y = 13'-0" with a control joint (which this note al
 for, since the joint has to be there anyway) and let the reveal absorb the offset, rather
 than floating a feathered transition over a moving line.
 
-**The polish spec.** A **cream polish** — grind the surface paste only, about 1/16" — not
-aggregate exposure. The cap is 4 5/8" over EPS form and its reinforcement cover is not there
-to survive a salt-and-pepper grind. That implies the pour itself: hard steel trowel finish,
-and either a wet cure or a cure-and-seal the polisher's densifier will bond through — a
-film-forming curing compound has to come off before the first pass and is a cost, not a
-saving. Hairline flexural cracks over the one-way span are expected on a slab this thin and
-are filled with semi-rigid joint filler as part of the polish, not treated as a defect.
+**The finish spec (2026-09-12 — a COATING).** The cap takes a resinous coating, not a
+polish, and the two want opposite surfaces: every coating TDS found (Tnemec 201,
+Sikafloor-1620 / 217, Dur-A-Flex, Sherwin-Williams) asks for **ICRI CSP 2-4**, a
+hard-troweled cream reads *below* CSP 2, and honing toward 200 grit moves further from
+profile rather than toward it. In order:
+
+1. **ACI 302.1R Class 3/7 two-course floor.** Not "Class A" — that is a *formed-surface*
+   class (ACI 347/301) and says nothing about a floor. Floors are ACI 302.1R Classes 1-9,
+   and a topping over a structural deck is Class 3/7.
+2. **A LIGHT steel trowel.** ACI 302.1R names a light steel trowel as the maximum surface
+   density for a slab receiving an adhered covering; a burnished cream is a bond problem and
+   a drying problem at once.
+3. **Flatness by straightedge: ACI 117's 3/8" under an unleveled 10' straightedge.**
+   **No F-numbers.** ASTM E1155 §7.2.1 sets a **320 ft² minimum test section**, and at
+   414 SF in an L-free rectangle there is no room to lay a statistically meaningful set —
+   an F-number specified here would be unverifiable, which is worse than no number.
+4. **Wet cure, or a cure-and-seal the primer bonds through.** A film-forming curing compound
+   has to come off before the grind and is a cost, not a saving.
+5. **Diamond grind to ICRI CSP 2-3.** This is surface *preparation*, not polishing: it opens
+   the paste instead of closing it.
+6. **ASTM F2170 in-situ RH at 40% of slab depth is THE GATE.** This cap dries **upward
+   only** — EPS below it — and a hard-troweled surface collapses the capillaries that let it
+   (one study found burnished slabs holding >94% in-situ RH for 18 months). Ordinary primer
+   ceilings are 80% RH (Tnemec 201) to 85% (Sikafloor-217). Because the deck pours at
+   *structure* stage and coats at *finish* stage, the 4-5 month conditioned dry is probably
+   free — **probably is not a test result**. Measure before ordering the primer.
+7. **A moisture-mitigating primer**, the class rated to 100% RH, not an ordinary epoxy
+   primer. A *class*, not a product: Sika's own web page and PDS disagree on
+   Sikafloor-1620's RH limit (96% vs 85%), so confirm against the current TDS before
+   ordering.
+8. **A matte 2K aliphatic polyurethane topcoat, ROLLER-APPLIED.** Spray moves isocyanate
+   handling to supplied-air respiratory protection and a trained applicator, which is a
+   different job and a different price.
+
+Hairline flexural cracking over the one-way span is still expected on a cap this thin. It is
+filled with semi-rigid joint filler **before the coating goes down**, not after — a coating
+bridges nothing, and a crack that moves under a film telegraphs as a line in the finish.
+
+**Two things nothing in the engine grades, recorded here because nothing else will:**
+
+- The coating is a `floor_finish`, not a `Layer`, so **no vapour or condensation check sees
+  a near-vapour-tight film over a cap that can only dry upward.** `code.R806_5_unvented_roof`
+  and the Glaser pass both read layers; a finish tag has no permeance field at all. The
+  F2170 gate above is the whole of the defence, and it is a human one.
+- Nothing grades the CSP profile, the trowel weight or the flatness either. They are a
+  specification for the finisher, not a model fact.
+
+**The cream polish remains the named fallback, and it is still costed.** If the owner
+reverts at pour time: a **cream polish** — grind the surface paste only, about 1/16" — not
+aggregate exposure. The cap is 4 3/8" over EPS form and its reinforcement cover is not there
+to survive a salt-and-pepper grind. That implies a **hard** steel trowel finish (the opposite
+instruction from the coating route — this is the decision that has to be taken *before* the
+pour, not after), and either a wet cure or a cure-and-seal the polisher's densifier will bond
+through. Hairline cracks are filled with semi-rigid joint filler as part of the polish.
+`prices.toml` keeps the `polished-concrete` row live for exactly this reason.
+
+**And the silica argument is not a reason to prefer either one.** 29 CFR 1926.1153 Table 1
+puts a light hone and a full polish in the *same row* — walk-behind floor grinders, dust
+collection, **no respirator required at any duration indoors** — and the grind to CSP 2-3 is
+near-identical work in the same row. The written exposure control plan, the competent person
+and the medical-surveillance trigger are unchanged whichever finish is taken. See
+`plans/buildability.md` BLD-03, where the opposite claim was made and is corrected.
 
 ### Fibre — this note said NO, and now says MICRO-MONOFILAMENT
 
@@ -177,21 +244,36 @@ surface, and this is an interior floor.
 The owner asked for fibre here anyway, wanting a floor that is *pretty enough for everyday
 use* rather than museum grade, and there is a middle path that gets both:
 
-**Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`POLISHED_MIX`). It is
-a different product answering a different question — it targets **plastic shrinkage**
-cracking in the first hours, a 55-70% reduction, which is exactly the surface cracking a
-thin 4 5/8" cap over EPS is prone to. Monofilament, not fibrillated. At the correct dosage
-and finished properly it does not fuzz, and what little presents at the surface sits in the
-paste layer a **cream polish removes** — the polish and the fibre are compatible precisely
-because the polish is a cream one.
+**Micro-synthetic MONOFILAMENT polypropylene at ~1.5 lb/cy** (`DECK_CAP_MIX`, renamed from
+`POLISHED_MIX` on 2026-09-12 with the finish). It is a different product answering a
+different question — it targets **plastic shrinkage** cracking in the first hours, a 55-70%
+reduction, which is exactly the surface cracking a thin 4 3/8" cap over EPS is prone to.
+Monofilament, not fibrillated.
 
-It is not structural and replaces no steel. The hard steel trowel finish and the cure
-requirements above are unchanged and matter more with fibre in the mix, not less.
+**The coating change did not move the fibre, and the reason changed.** The old argument was
+that what little presents at the surface sits in the paste a cream polish removes. Under a
+coating there is no cream polish, so the argument has to be remade — and it comes out the
+same way:
+
+- Micro-mono is the fibre a **light** steel trowel embeds cleanly, which is the trowel the
+  coating route asks for (GCP TB-1204: magnesium bullfloat, jitterbug, finish late).
+- **Do not switch to macro-synthetic.** The CSP 2-3 grind would *re-expose* it rather than
+  remove it, and ANSI/SDI C-2017's mesh substitution needs **>=4.0 lb/cy** — a different
+  dose and a different argument, not a drop-in swap.
+- Either way the fibre **replaces no steel** (ACI 544.4R; ICC-ES ESR-1699), which this note
+  has said all along.
+
+The cure requirements above are unchanged and matter more with fibre in the mix, not less.
 
 **Confirm the dose and the product against a supplier TDS before ordering.** The published
-range is 0.75-1.5 lb/cy and the finisher's opinion on a *polished* floor should govern the
-top end — 1.5 is where this house sits, and it is the end of the range, not the middle.
-Sika Fibermesh-150 and Euclid's micro-synthetic line are the two obvious candidates.
+range is 0.75-1.5 lb/cy and the finisher's opinion should govern the top end — 1.5 is where
+this house sits, and it is the end of the range, not the middle. Sika Fibermesh-150 and
+Euclid's micro-synthetic line are the two obvious candidates.
+
+**And the mix has NO ENTRAINED AIR — say so at the order desk.** ACI 302.1R §5.7.1 and
+ASCC PS-1: entrained air under a troweled finish blisters and delaminates. Air is a plant
+default in Minnesota; "interior slab" is not the instruction. Put "no entrained air" on the
+ticket and check the delivered content at the truck.
 
 ## Model gap, recorded rather than solved
 

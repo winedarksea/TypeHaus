@@ -263,7 +263,7 @@ an absence to be told about.
   flat bearing seat at -13 7/16" instead, giving one plate for studs and joists and no step
   in the forms. `structural.mixed_deck_bearing_seat` was written to hold this.
 - The 2 1/16" step between the two gypsum ceiling faces at the `RM-B-GYM` boundary breaks
-  down as 1/2" (the LiteDeck form's steel rib) + 1 9/16" (the deck being deeper than the
+  down as 1/2" (the EPS deck form's steel rib) + 1 9/16" (the deck being deeper than the
   wood bay). The model states only the 1 9/16" it can derive from geometry — the rib's 1/2"
   belongs to the EPS form, and EPS is never modelled in this engine, so that portion is not
   represented even though the physical step is real.
@@ -278,7 +278,7 @@ an absence to be told about.
   against the hall. Correcting it to porcelain cost +$298 to +$627 delivered.
 - The two flush walking-plane legs run `y=13'` (17.9 lf) and `x=18'` (13.6 lf). The oak bay
   along the `y=13'` leg was tried and withdrawn the same day (2026-09-05). Oak finishes at
-  +1 1/2"; against the polished cap's +15/16" that leg would have needed a 9/16" reducer,
+  +1 1/2"; against the cap's +15/16" that leg would have needed a 9/16" reducer,
   which could not be designed out because `structural.mixed_deck_bearing_seat` only gives
   the cap 1/16" of lift, not 9/16". The height mismatch was undesirable, so the bay
   reverted to plank: -$1,980 to -$2,751 delivered, and the `oak` price row fell back under
@@ -290,7 +290,8 @@ an absence to be told about.
   rendered a foot outside the east and south walls at 0 FAIL. The engine fix makes an
   authored zone draw clipped, the way a derived one always did.
 - `notes/mixed_deck_movement_joint.md`'s "no fibres" clause for the polished cream mix was
-  superseded 2026-09-03: it now runs micro-monofilament PP at ~1.5 lb/cy (`POLISHED_MIX`).
+  superseded 2026-09-03: it now runs micro-monofilament PP at ~1.5 lb/cy (`DECK_CAP_MIX`, named
+  `POLISHED_MIX` until 2026-09-12).
   Macro fibre and steel remain excluded — the distinction between "no fibres" and "no
   macro/steel fibres" is the whole finding.
 - `FS-S-EAST` is unchanged from the old whole-floor `FS-SECOND`; only the west field became

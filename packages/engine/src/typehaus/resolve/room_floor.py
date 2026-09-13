@@ -87,7 +87,7 @@ def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> f
 
     The covering is the one standing at the room's centroid, which is not always the room's
     own ``floor_finish``: a deck carrying its own outranks it (``surfaces_at``), and catlin's
-    RM-M-LIVING is exactly that — authored LVP, and its centroid on SL-M-DECK's polished cap,
+    RM-M-LIVING is exactly that — authored LVP, and its centroid on SL-M-DECK's coated cap,
     which IS the finished floor there.
 
     ** AN UNSOURCED COVERING RESOLVES TO THE DECK, AND THAT IS NOT A PASS. ** A resolver

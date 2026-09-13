@@ -492,6 +492,30 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "cap itself, not a covering over it — no thickness, so no thermal or "
                     "vapour fields; distinct from `sealed-concrete`, which is a roll-on "
                     "sealer over a trowel finish at roughly half the rate"),
+    # The third way to finish a cast cap, and the one with a film on it. A polish and a
+    # sealer both leave the concrete as the wearing surface; this leaves a coating as the
+    # wearing surface, and that is a different set of requirements: every coating TDS found
+    # (Tnemec 201, Sikafloor-1620/217, Dur-A-Flex, Sherwin-Williams) asks for ICRI CSP 2-4,
+    # which is a GRIND, not a polish — a hard-troweled cream reads below CSP 2 and a hone to
+    # 200 grit moves further away from profile, not toward it. ``coating=True`` and no
+    # thickness, like `latex-paint`: a film has no plane of its own and is billed by
+    # coverage area.
+    #
+    # ** THE RISK THIS FINISH CARRIES IS MOISTURE, AND NOTHING IN THE ENGINE GRADES IT. **
+    # A floor_finish is not a ``Layer``, so no vapour check sees a near-vapour-tight film
+    # over a cap that can only dry upward (EPS below it). Primer ceilings run 80% RH
+    # (Tnemec 201) to 85% (Sikafloor-217); only a moisture-mitigating class tolerates 100%.
+    # ASTM F2170 in-situ RH at 40% of depth is the gate, and it belongs in the house's own
+    # note, not here. Confirm the product class against its current TDS before ordering:
+    # published RH limits disagree between a manufacturer's web page and its PDS.
+    Material(tag="coated-concrete", name="Coated concrete floor (2K PU over primer)",
+             hatch="concrete", color="#bfbdb6", coating=True, finish="matte-2k-pu",
+             source="a resinous floor on the cast cap itself: diamond grind to ICRI CSP "
+                    "2-3, a moisture-mitigating primer, and a matte two-component "
+                    "aliphatic polyurethane topcoat, roller-applied. No thickness, so no "
+                    "thermal or vapour fields; distinct from `polished-concrete`, which "
+                    "leaves the concrete itself as the wearing surface, and from "
+                    "`sealed-concrete`, which is a roll-on sealer over a trowel finish"),
     Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",
              color="#54585c", finish_thickness_in=0.3125,
              source="finish covering, not an assembly layer; thermal/vapour fields unset. "

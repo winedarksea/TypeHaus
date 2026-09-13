@@ -17,6 +17,7 @@ from typehaus.checks.structural import (
     lateral_racking,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks
+    slab_span,  # noqa: F401 - registers checks
     snow,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
     stairs,  # noqa: F401 - registers checks

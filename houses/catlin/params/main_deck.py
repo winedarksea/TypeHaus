@@ -18,12 +18,12 @@ and the basement wall comes out at exactly 8'-0".
                     WOOD BAY                          EPS DECK BAY
       +1 5/16" 5/16" porcelain + 1/8" uncoupling membrane (RM-M-MUDROOM)
       +0.95"..0.99" 6 mm SPC LVP (5 mm + 1 mm IXPE)   -- everywhere else
-      +15/16" ------------------------------------  cap top, polished  <- finished floor
+      +15/16" ------------------------------------  cap top, coated   <- finished floor
       +3/4"   3/4" plywood subfloor
       0'-0"   ------------------------------------  STOREY DATUM (top of joists)
               11 7/8" I-joist @ 16" o.c.             4 3/8" cast cover
      -11 7/8" ----- joist soffit ------                 +
-              1 1/2" PT mudsill                     10" LiteDeck (8" base + 2" top hat)
+              1 1/2" PT mudsill                     10" BuildDeck (8" base + 2" top hat)
      -13 3/8"
               1/16" EPDM gasket, compressed
      -13 7/16" ==== BEARING SEAT - FLAT, NO STEP ====  deck soffit
@@ -86,22 +86,49 @@ and ``W-B-CS3`` carry ``alignment=face("stud-ext", offset=inch(-2.75))``, a hard
 of the stud thickness; an alignment offset that stopped matching would slide their axis off
 x=18' and inject a bay of stub joists. Both resolve to 18.000 exactly today.
 
+**BuildDeck is the basis of design (2026-09-12), and the model half-said so already.** This
+file named LiteDeck as the product while sourcing both its span basis and its R-value from
+BuildDeck. Making BuildDeck the product makes the model self-consistent and picks up two
+things LiteDeck's free literature does not publish: a sealed shoring design and a rebar
+schedule. LiteDeck (LiteForm) and Insul-Deck stay named ALTERNATES — the depth-matching
+argument above is product-neutral and that is exactly the point — but a substitution has to
+bring its own span table, its own shoring design and its own R per section with it.
+
 Quantities, from the manufacturers' published tables:
 
-* LiteDeck's form is modular — an 8" base panel plus a 2"/4"/6" top hat gives a 10"/12"/14"
-  beam, and the cast cover over it is specified separately. This deck is the 10" beam (8" +
-  2" hat) under a 4 3/8" cover. BuildDeck's 8" form spans 20' clear at a 4" cap (4,000 psi,
-  60 ksi rebar, 15 psf dead + 40 psf live); this span is 18'-0" at a deeper section.
+* The section is modular either way: a base panel plus a top hat gives a 10"/12"/14" beam
+  and the cast cover over it is specified separately. This deck is the **10" section under a
+  4 3/8" cover**. BuildDeck publishes R as installed per section — R-23 at 8", **R-29 at
+  10"**, R-36 at 12" — so ``eps-deck-form`` carries R-2.9/inch, not the 8" section's 3.125.
+* **The published row, quoted onto ``DECK.published_span`` below.** BuildDeck's
+  allowable-live-load table takes the 10" deck with a 4" cap and 2-#5 beam bars to a 20'-0"
+  span at 62 psf live load: f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load,
+  deflection < L/480, #3 stirrups 4'-0" each end at 5" o.c. and slab reinforcement a 12"x12"
+  grid of #4. This span is 18'-0" at a cap 3/8" deeper than the row.
+  ``structural.slab_published_span`` grades that read and refuses the row if the section,
+  the product or the demand drifts away from what it was read at. The manual states its
+  tables are for estimation and that the Engineer of Record reviews and approves — which is
+  a review of a table read, not a design nobody has done.
 * The LiteDeck WRS manual's consumption table reads 58 SF/cy for the 10" beam at a 4" cover
   and 52 SF/cy at 4 1/2", so 4 3/8" interpolates to ~53.5 SF/cy = 0.01869 cy/SF. The 414 SF
-  band is 7.74 cy — against 34.26 cy for the whole 9" slab it replaced.
-* **It needs shoring.** The manual requires continuous temporary shoring at 6' o.c. for any
-  span over 5', held until 75% design strength / 21 days. Adjustable posts at 6' o.c. under
-  a 414 SF band are a rental line, not the 9" slab's commercial plywood-and-mobilisation
-  package — the line is in ``prices.toml``.
+  band is 7.74 cy — against 34.26 cy for the whole 9" slab it replaced. (Kept as the
+  consumption basis: it is a geometric figure for the same 10" section, and BuildDeck
+  publishes no equivalent table.)
+* **The shoring design is PE-SEALED, not the installer's.** BuildDeck publishes one by
+  McLaren Engineering Group (File 150609.00, 2016): wood stud walls at 6'-0" o.c. with
+  2x8/2x10 joists at 24" o.c., 97 psf dead + 25 psf construction live, in place no more than
+  6 weeks, struck after the 28-day cure. That is a rental-and-carpentry line, not the 9"
+  slab's commercial plywood-and-mobilisation package — the line is in ``prices.toml``, which
+  said this on 2026-08-23 before this docstring caught up.
+* **One open question for the EOR, and it is not a defect.** McLaren's design uses 25 psf
+  construction live load where ACI 347 §2.2.1 asks for >=50 psf live and >=100 psf combined.
+  97 + 25 = 122 psf clears the combined floor and not the live-load floor. Ask; do not
+  assume either way.
 
-Sources: LiteDeck WRS installation manual, Sept 2020 (liteform.com), BuildDeck brochure
-(buildblock.com), Insul-Deck technical summary, ICF Builder's foam-decking comparison.
+Sources: BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022) and its
+McLaren shoring design; LiteDeck WRS installation manual, Sept 2020 (liteform.com);
+Insul-Deck technical summary; ICF Builder's foam-decking comparison. No ICC-ES report was
+found for any of the four EPS deck systems examined — see plans/buildability.md BLD-03.
 """
 
 from typehaus import (
@@ -112,6 +139,7 @@ from typehaus import (
     Layer,
     LayerFunction,
     Point2D,
+    PublishedSpan,
     Slab,
     ft,
     inch,
@@ -184,7 +212,7 @@ BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
 
 # **The deck's depth is what reaches that seat**, not a copy of the wood bay's depth.
 #
-# The split into stay-in-place form and cast cover is the LiteDeck section: the form is an
+# The split into stay-in-place form and cast cover is the deck-form section: the form is an
 # 8" base panel plus a 2"/4"/6" top hat, giving a 10", 12" or 14" beam, and the cover over it
 # is specified separately. This is the 10" beam under a 4 3/8" cover.
 #
@@ -195,7 +223,7 @@ BEARING_SEAT = inch(-(_SILL_GASKET_COMPRESSED.inches + _MUDSILL.inches
 #     so DECK_EPS_INT's two structural layers cannot read these and must be edited to
 #     match. ``integrity.slab_thickness`` fails the build if they drift apart, and
 #     ``structural.mixed_deck_bearing_seat`` fails it if the seat itself drifts.
-EPS_FORM_DEPTH = inch(10.0)   # LiteDeck 8" base + 2" top hat
+EPS_FORM_DEPTH = inch(10.0)   # BuildDeck 10" section (8" base + 2" top hat)
 EPS_CAP = inch(4.375)         # cast cover over the form
 DECK_DEPTH = inch(EPS_FORM_DEPTH.inches + EPS_CAP.inches)
 
@@ -480,12 +508,23 @@ DECK = Slab(
     uid="CMS501AAAA", tag="SL-M-DECK",
     outline=_rect(_CENTRE_X, _BAND_Y, _HOUSE, _HOUSE),
     thickness=DECK_DEPTH, assembly="DECK_EPS_INT",
-    # The cap's own top is the finished floor: a cream polish, no covering, no subfloor.
-    # Every room that sits on this outline resolves a derived finish zone from it
+    # The cap's own top is the finished floor: a coating on the cap, no covering, no
+    # subfloor. Every room that sits on this outline resolves a derived finish zone from it
     # (``resolve/rooms.py``), so RM-M-LIVING keeps LVP as its FIELD finish over the wood
-    # bays and the band bills as polished concrete. Move _BAND_Y and the finish moves too —
+    # bays and the band bills as coated concrete. Move _BAND_Y and the finish moves too —
     # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
-    floor_finish="polished-concrete",
+    #
+    # ** 2026-09-12: A COATING, NOT A CREAM POLISH. ** A polish and a coating want opposite
+    # surfaces — every coating TDS found asks for ICRI CSP 2-4, a hard-troweled cream reads
+    # below CSP 2, and a hone toward 200 grit moves further from profile rather than toward
+    # it. So the route is a LIGHT steel trowel (ACI 302.1R's maximum density for a slab
+    # receiving an adhered covering), a diamond grind to CSP 2-3, and a coating over a
+    # moisture-mitigating primer. The cream polish stays in the note as a named, costed
+    # fallback the owner may revert to at pour time. The risk the coating adds is moisture,
+    # not silica: this cap dries UPWARD ONLY (EPS below), so ASTM F2170 in-situ RH at 40% of
+    # depth is a gate and not a formality. Nothing in the engine grades it — a floor_finish
+    # is not a Layer, so no vapour check sees the film. notes/mixed_deck_movement_joint.md.
+    floor_finish="coated-concrete",
     # Ceiling is 5/8" gypsum end to end (CLAUDE.md) — the media room below sees the same
     # board as the wood bays either side of it, no EPS layer (per the owner: EPS is always
     # hidden, never modelled).
@@ -501,6 +540,26 @@ DECK = Slab(
     # ``structural.mixed_deck_bearing_seat`` FAILs on either if it stops meeting the wood.
     # SL-G-FLOOR pins itself the same way.
     top_elevation=DECK_TOP,
+    # ** THE DECK'S STRUCTURE IS A PRESCRIPTIVE READ, NOT A SEAL. ** Until 2026-09-12 the
+    # span of this deck was graded by nothing at all: there is no engineering/ kind for a
+    # suspended slab and no check read a slab's span, so it sat outside both gates. It does
+    # not need a seal — BuildDeck publishes an allowable-live-load table for exactly this
+    # section, and reading the row is the same act as reading an IRC table.
+    # ``structural.slab_published_span`` grades it, and the four drift guards on
+    # PublishedSpan are what stop the quotation outliving the model: retype the form,
+    # deepen the cap, rename the product or raise the occupancy demand past 62 psf and the
+    # finding goes UNKNOWN naming the mismatch instead of printing a PASS off a stale row.
+    #
+    # ``member`` is spelled the way ``checks/structural/slab_span.py`` derives it from
+    # DECK_EPS_INT — form thickness, form material name, cap thickness. Do not "tidy" it.
+    published_span=PublishedSpan(
+        source="BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022), allowable live load table, 10\" deck / 4\" cap",
+        table="10\" deck, 4\" cap, 2-#5 beam bars, 20'-0\" span, 62 psf live load",
+        member="10\" BuildDeck EPS deck form under a 4 3/8\" cast cap",
+        span=ft(20),
+        load_psf=62.0,
+        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/8\" against the row's 4\" — more section, not less. The stirrup and grid schedule is NOT yet authored as a ReinforcementSpec (notes/rebar_backout.md)",
+    ),
 )
 
 MAIN_ELEMENTS = [WEST_FLOOR, MECH_FLOOR, STAIR_FLOOR, EAST_FLOOR, DECK]
