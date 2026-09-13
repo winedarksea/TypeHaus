@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import failed as _fail
+from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep.plumbing_common import _M_TO_FT, VERTICAL_PLAN_FT
@@ -250,4 +251,85 @@ def fixture_drain_reach(ctx: CheckContext) -> list[Finding]:
                         "on the run that serves it. Expect mep.trap_arm_length's limit to "
                         "DROP when it does: it takes the minimum diameter over the serving "
                         "runs, and a truthful 1 1/2\" arm is not the 3\" stack"))
+    return out
+
+
+@check(Tier.ADVISORY, "mep.drain_slope_margin")
+def drain_slope_margin(ctx: CheckContext) -> list[Finding]:
+    """How much grade a drain holds **over** the minimum — the number BLD-05 needed.
+
+    ``mep.drain_slope`` answers a yes/no: is the flattest segment at or above 1/4"/ft. A run
+    at exactly 0.250"/ft passes it as cleanly as one at 0.779"/ft, and the two are not the
+    same building. The field method is rigid standoffs stepped about a whole inch every four
+    feet, and BLD-05's own finding #2 is that the plumber's tolerance is **one-directional,
+    toward more pitch** — so the surplus over the minimum is the buildability fact, and
+    nothing in the model could state it.
+
+    **The margin is printed on PASS too, and that is most of the value here.** "holds
+    0.779"/ft, 0.529"/ft over the 0.250"/ft minimum" is what BLD-05 was reaching for and
+    could not get; a check that only spoke when it was unhappy would leave the five thin
+    runs on catlin as invisible as they were before.
+
+    ADVISORY, and the docstring of
+    :attr:`~typehaus.checks.registry.MepPreferences.min_drain_slope_margin_in_per_ft` says
+    plainly that the threshold is not a code number. The code's number is the minimum, which
+    this check never restates — it takes it from ``resolve/mep_slope.py``, the same owner
+    ``mep.drain_slope`` and ``routing/gravity`` read, so the three cannot disagree about what
+    a run is being measured against.
+
+    ``VERTICAL_PLAN_FT`` is reused rather than re-chosen, so this and
+    ``mep.drain_offset_geometry`` cannot drift into disagreeing about which segments exist.
+    """
+    from typehaus.resolve.mep_slope import minimum_drain_slope_in_per_ft
+
+    cid = "mep.drain_slope_margin"
+    floor = ctx.preferences.mep.min_drain_slope_margin_in_per_ft
+    drains = [r for r in ctx.model.pipe_runs if r.system == "drain"]
+    if not drains:
+        # Earned from positive evidence of absence, not assumed: there is no drain in this
+        # model, so there is no grade for a margin to be measured against. A model that HAS
+        # drains and cannot measure one is the UNKNOWN below, and the two are different.
+        return [_na(cid, "this model routes no drain piping, so no run has a grade to hold "
+                         "margin over")]
+    out: list[Finding] = []
+    for run in drains:
+        if run.z_m is None or len(run.z_m) != len(run.path):
+            continue
+        flattest: tuple[float, int] | None = None
+        for index in range(len(run.path) - 1):
+            a, b = run.path[index], run.path[index + 1]
+            plan_ft = (((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5) * _M_TO_FT
+            if plan_ft <= VERTICAL_PLAN_FT:
+                continue  # a stack holds no grade, so it has no margin either
+            slope = (run.z_m[index] - run.z_m[index + 1]) / M_PER_IN / plan_ft
+            if flattest is None or slope < flattest[0]:
+                flattest = (slope, index)
+        if flattest is None:
+            continue  # all vertical — mep.drain_slope says so, and says it once
+        minimum, _citation = minimum_drain_slope_in_per_ft(
+            run.diameter_m, getattr(run, "reduced_slope_approval", None))
+        margin = flattest[0] - minimum
+        if margin < -1e-9:
+            continue  # below the minimum outright: mep.drain_slope's FAIL, not a margin
+        held = (f"pipe run {run.tag} holds {flattest[0]:.3f}\"/ft at its flattest "
+                f"(segment {flattest[1]}), {margin:+.3f}\"/ft over the {minimum}\"/ft "
+                "minimum")
+        if margin >= floor - 1e-9:
+            out.append(_pass(cid, held, (run.tag,)))
+        else:
+            out.append(advisory(
+                cid,
+                f"{held} — under the {floor:.4g}\"/ft this house asks a drain to keep in "
+                "hand. A rigid standoff is stepped about an inch every four feet and the "
+                "trade's tolerance runs one way, toward MORE pitch, which this run has no "
+                "room to absorb",
+                (run.tag,), Result.FAIL,
+                fix="steepen the run, or raise its head, or shorten its plan route. Check "
+                    "where the extra fall lands before spending it — `mep.drain_tie_in` "
+                    "grades the other end, and a branch can be steepened straight under "
+                    "the collector it joins"))
+    if not out:
+        return [_unknown(cid, f"{len(drains)} drain run(s), and not one has a horizontal "
+                              "segment whose grade could be measured — every one is "
+                              "vertical, or carries no resolved elevations")]
     return out

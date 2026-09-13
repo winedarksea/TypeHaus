@@ -111,6 +111,20 @@ class MepPreferences:
     #: as a slant. Graded in conjunction with the slope, never alone: neither term separates
     #: the defect from a legitimate 45-degree offset by itself.
     max_drain_offset_fall_in: float = 18.0
+    #: How much grade a drain must hold **over** the code minimum before its margin stops
+    #: being a finding. ``mep.drain_slope_margin``'s line, and **it is not a code number** —
+    #: the code's number is 1/4"/ft and ``resolve/mep_slope.py`` owns it. This is the
+    #: buildability fact beside it.
+    #:
+    #: 1/16"/ft is a quarter inch spread over the four feet a rigid standoff is stepped at,
+    #: which is BLD-05's own finding #2: the trade method is standoffs stepped about a whole
+    #: inch every four feet, and the plumber's tolerance is one-directional *toward more
+    #: pitch*. A run at exactly the minimum has nowhere to absorb that, and the model could
+    #: not say so — it passed as cleanly as a run at three times the grade.
+    #:
+    #: A house with no head left may author 0.0 with the argument beside it; catlin does,
+    #: and every PASS still prints its margin, which is most of the check's value.
+    min_drain_slope_margin_in_per_ft: float = 0.0625
 
 
 @dataclass

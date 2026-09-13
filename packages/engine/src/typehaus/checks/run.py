@@ -97,6 +97,8 @@ def load_preferences(house_dir: Path) -> Preferences:
             max_drain_offset_slope_in_per_ft=mep.get(
                 "max_drain_offset_slope_in_per_ft", 12.0),
             max_drain_offset_fall_in=mep.get("max_drain_offset_fall_in", 18.0),
+            min_drain_slope_margin_in_per_ft=mep.get(
+                "min_drain_slope_margin_in_per_ft", 0.0625),
         ),
         structural=StructuralPreferences(
             max_guard_dead_load_on_wood_plf=structural.get(

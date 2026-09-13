@@ -107,6 +107,29 @@ drain_stack_required_structure_in = 5.5
 # visible_basement_material = "copper"
 # visible_basement_finish = "lacquered"
 
+[mep]
+# ** ZERO, AND THE REASON IS THE BASEMENT HEAD BUDGET, NOT INDIFFERENCE. **
+#
+# `mep.drain_slope_margin` asks a drain to hold some grade IN HAND over the code minimum,
+# because a rigid standoff is stepped about an inch every four feet and the plumber's
+# tolerance runs one way — toward more pitch. The engine's default is 1/16"/ft. Twelve
+# catlin runs are under it and the tightest, PR-B-BATH-DRAIN, is at EXACTLY 1/4"/ft with
+# nothing in hand at all.
+#
+# It cannot be bought. SP-B-SEWER-EXIT's invert is CAST. PR-B-MAIN-DRAIN holds 0.267"/ft
+# to reach it — 0.017"/ft over the minimum itself — and PR-B-BATH-DRAIN arrives 0.190"
+# over its centreline. Steepening the branch 0.05"/ft costs 0.43" over 8.64 ft and puts it
+# UNDER the main: an advisory traded for a real `mep.drain_tie_in` FAIL. The basement head
+# budget is genuinely spent, and the honest record of that is this number plus this
+# paragraph, not a suppression that says nothing.
+#
+# **Every PASS still prints its margin**, which is what keeps the twelve thin runs visible
+# without gating on them — and printing the margin is what BLD-05 was reaching for and
+# could not get. Raise this toward the engine's 0.0625 the day the exit invert or the
+# basement ceiling moves. The engine default is deliberately left alone so a NEW house gets
+# the useful rule, and so houses/starter carries it unsuppressed.
+min_drain_slope_margin_in_per_ft = 0.0
+
 [units]
 system = "imperial"
 
