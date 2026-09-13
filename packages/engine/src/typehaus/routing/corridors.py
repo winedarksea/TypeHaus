@@ -26,11 +26,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from typehaus.resolve.model import ResolvedFloor, ResolvedModel, ResolvedSoffit
 
-#: The chord a floor truss's open web leaves. ``resolve/framing/profiles.open_web_opening_m``
-#: owns the real number; this is the fraction of the member's depth that is chord, used only
-#: when that helper cannot answer for a member — a 2x4 flat chord top and bottom.
-_CHORD_M = 0.0381  # 1 1/2"
-
 
 @dataclass(frozen=True)
 class Corridor:
@@ -106,36 +101,23 @@ def crossing_window(model: ResolvedModel,
                     floor: ResolvedFloor) -> tuple[float, float] | None:
     """The z band a run may occupy while crossing this floor's members, or None.
 
-    An open-web truss lets a service through its webs and an I-joist wants a bored hole;
-    both come out here as a band, because what a route needs to know is the same either
-    way. ``open_web_opening_m`` owns the truss reading — the note's §3 checks it by hand
-    at 8 7/8" against an 11 7/8" truss — and a member it cannot answer for falls back to
-    the depth less a chord at each face, which is the conservative direction.
+    A three-line delegation to :func:`~typehaus.resolve.mep_crossings.member_window`, which
+    is now the one place the truss / I-joist / solid-sawn readings live. What stood here
+    was two of the three plus a hardcoded 1 1/2" chord fallback, reached because
+    ``open_web_opening_m`` takes a ``CrossSection`` and was handed a ``profile`` *string*:
+    the call raised, the caller swallowed it, and the fallback happened to give the same
+    8 7/8" on catlin's truss. Its own docstring recorded that it "answered right for the
+    wrong reason on the one floor it was checked against".
+
+    Importing ``resolve.mep_queries``' neighbour is the same direction this module already
+    takes ``clear_bay_width_m`` in, and for the same reason: the leaf rule is about
+    *direction* — routing may read resolve, nothing reads routing — not self-sufficiency.
+    The ``(model, floor)`` signature stays so the routing oracle compiles unchanged.
     """
-    members = [m for m in floor.members if m.z0_m is not None]
-    if not members:
-        return None
-    low = min(m.z0_m for m in members)
-    high = max(getattr(m, "z1_m", None) or floor.deck_z0_m for m in members)
-    opening = _open_web_opening(members[0].profile)
-    if opening is not None and opening > 0:
-        margin = ((high - low) - opening) / 2.0
-        return (low + margin, high - margin)
-    return (low + _CHORD_M, high - _CHORD_M)
+    from typehaus.resolve.mep_crossings import member_window
 
-
-def _open_web_opening(profile: str) -> float | None:
-    """The chord-to-chord opening of this member's section, or None if it has no web space.
-
-    ``open_web_opening_m`` takes a ``CrossSection`` and a ``FramedMember.profile`` is the
-    *string* that names one — a distinction that cost a silently dead branch: passing the
-    string raised, the caller swallowed it, and the chord fallback happened to give the
-    same 8 7/8" on catlin's truss. It answered right for the wrong reason on the one floor
-    it was checked against and would have answered wrong on any other section.
-    """
-    from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
-
-    return open_web_opening_m(cross_section(profile))
+    window = member_window(floor)
+    return None if window is None else (window.z0_m, window.z1_m)
 
 
 def soffit_corridors(model: ResolvedModel) -> list[Corridor]:

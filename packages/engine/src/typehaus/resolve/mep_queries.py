@@ -15,8 +15,9 @@ from __future__ import annotations
 
 from typehaus.model.enums import DuctRouting
 from typehaus.quantities import M_PER_IN, inch
-from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.mep_crossings import member_window
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedConduitRun,
@@ -526,9 +527,15 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     joist_lines = joist_line_stations(floor)
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
-    # From a JOIST, not from ``members[0]``, which was whichever member the resolver happened
-    # to emit first — a rim board on most floors, and a rim board is never an open web.
-    opening_m = (open_web_opening_m(cross_section(edges[0].profile)) if edges else None)
+    # ``mep_crossings.member_window`` owns every reading of "the window a service gets" — an
+    # open web, an I-joist's flanges, R502.8.1's 2" on solid-sawn. This used to ask
+    # ``open_web_opening_m`` itself and treat "no answer" as a conflict, which is right for a
+    # truss and wrong for the two sections that publish a window by a different rule. The
+    # member is passed explicitly because a bay EDGE is the section a crossing meets, and
+    # ``members[0]`` is whichever the resolver emitted first — a rim board on most floors,
+    # and a rim board is never an open web.
+    window = member_window(floor, edges[0]) if edges else None
+    opening_m = window.height_m if window is not None else None
 
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
@@ -571,8 +578,9 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                     conflicts.append(
                         f"segment {i} runs perpendicular/oblique across joist line(s) "
                         f"{[round(v, 3) for v in crossed]} — depth "
-                        f"{depth_m / M_PER_IN:.1f}\" exceeds the {opening_m / M_PER_IN:.1f}\" "
-                        "chord-to-chord opening"
+                        f"{depth_m / M_PER_IN:.1f}\" exceeds the "
+                        f"{opening_m / M_PER_IN:.1f}\" it gets "
+                        f"{window.basis if window is not None else ''}"
                     )
                 else:
                     conflicts.append(
