@@ -18,6 +18,7 @@ from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_crossings import member_window
+from typehaus.resolve.mep_tie_ins import drain_tie_ins
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedConduitRun,
@@ -380,53 +381,6 @@ def pipe_invert_at(run, point: tuple[float, float], tol: float = 1e-6) -> float 
         candidates.append(run.z_m[index]
                           + (run.z_m[index + 1] - run.z_m[index]) * fraction)
     return min(candidates) if candidates else None
-
-
-# Arrival may read slightly below the receiving invert at the matched vertex: authored
-# inverts interpolate along whole segments, while the physical wye sits a little way
-# downstream of a corner (catlin's kitchen branch arrives 0.43" under the main's invert
-# at the (6', 16'-6") turn). One inch of slack keeps the *load* graph connected — grading
-# slope/backflow is drain_slope's job, not the rollup's; a missed tie-in here silently
-# under-sizes the pipe downstream, which is the worse failure.
-_TIE_IN_INVERT_TOL_M = 0.0254
-
-
-def drain_tie_ins(pipe_runs) -> dict[str, str]:
-    """Child drain run tag → the drain run it discharges into, derived geometrically.
-
-    ``PipeRun`` carries no upstream/downstream refs, so the connection is the geometry
-    itself: a run ties into another when its *last* path vertex lies on a segment of the
-    other's path and arrives at or above the other's invert there (a branch below the
-    main it joins would not flow — the resolver-level gravity test pins the same
-    relation). Runs without elevation data can't be judged and never tie in.
-
-    A run never receives at its own terminal vertex: that point is where *it*
-    discharges, so several branches all ending on one junction are siblings meeting at
-    a wye on whatever continues downstream, not each other's parents (this is also what
-    keeps the derivation acyclic on real junctions).
-    """
-    drains = [r for r in pipe_runs if r.system == "drain"]
-    out: dict[str, str] = {}
-    for child in drains:
-        if child.z_m is None or not child.path:
-            continue
-        end_point, end_invert = child.path[-1], child.z_m[-1]
-        best: tuple[float, str] | None = None
-        for parent in drains:
-            if parent.tag == child.tag or not parent.path:
-                continue
-            if length(sub(end_point, parent.path[-1])) <= 1e-6:
-                continue  # the parent terminates here too — a sibling, not a receiver
-            invert = pipe_invert_at(parent, end_point)
-            if invert is None or end_invert < invert - _TIE_IN_INVERT_TOL_M:
-                continue
-            # Of several runs passing under the arrival point, the receiving pipe is
-            # the one whose invert sits closest beneath the arrival.
-            if best is None or invert > best[0]:
-                best = (invert, parent.tag)
-        if best is not None:
-            out[child.tag] = best[1]
-    return out
 
 
 def accumulated_serves(pipe_runs) -> dict[str, tuple[str, ...]]:

@@ -310,8 +310,14 @@ MN_2020 = JurisdictionProfile(
         # trap-arm items below already cite ch. 4714 correctly, so this line was the one
         # place the profile disagreed with itself about which plumbing code applies.
         # UPC 708.0 is 1/4"/ft at every size and 706.3 governs a change in direction.
+        # `drain_tie_in` joins this line rather than earning its own: a reviewer asks
+        # "does this drainage system fall correctly and are its fittings right" as ONE
+        # question, and a new label would need a staging entry and a MAX_NON_BLOCKING_ITEMS
+        # bump — a ratchet moving the wrong way for no gain. This item is already
+        # blocking=True, so neither ratchet moves.
         PermitItemSpec("Plumbing drain slope and offsets",
-                       ("mep.drain_slope", "mep.drain_offset_geometry"),
+                       ("mep.drain_slope", "mep.drain_offset_geometry",
+                        "mep.drain_tie_in"),
                        ("MN Plumbing Code (ch. 4714) 708.0",
                         "MN Plumbing Code (ch. 4714) 706.3")),
         # Every one of these plumbing checks answers a line a plan reviewer actually asks
