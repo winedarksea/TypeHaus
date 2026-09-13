@@ -2524,7 +2524,7 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
 
     ``_BAND_Y`` in ``params/main_deck.py`` is the one place the concrete/wood boundary lives:
     the two FloorSystem outlines and the Slab outline are all cut from it. Because
-    ``RM-M-LIVING``'s polished-concrete zone is intersected out of ``SL-M-DECK`` rather than
+    ``RM-M-LIVING``'s coated-concrete zone is intersected out of ``SL-M-DECK`` rather than
     written as a polygon on the room, moving that one line moves the finish with it. An
     authored zone would have gone stale silently — which is exactly how the three
     sealed-concrete rooms ended up over a wood deck.
@@ -2543,7 +2543,7 @@ def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
         model, findings = resolve(result.plan)
         assert not [f for f in findings if f.severity.value == "error"]
         living = next(room for room in model.rooms if room.tag == "RM-M-LIVING")
-        zones = [z for z in living.finish_zones if z.material_ref == "polished-concrete"]
+        zones = [z for z in living.finish_zones if z.material_ref == "coated-concrete"]
         assert len(zones) == 1 and zones[0].source_ref == "SL-M-DECK"
         return zones[0].area_m2 * 10.7639104
 

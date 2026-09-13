@@ -217,7 +217,7 @@ def test_every_finish_row_resolved_a_real_material(bom):
                if not row["known"] and row["finish"] is not None]
     assert unknown == [], unknown
     assert {row["finish"] for row in bom["floor_finishes"] if "under" not in row} == {
-        "carpet", "lvp", "oak", "tile", "sealed-concrete", "polished-concrete", "rubber",
+        "carpet", "lvp", "oak", "tile", "sealed-concrete", "coated-concrete", "rubber",
         "vinyl-sheet", None}
 
 
@@ -249,7 +249,7 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     # the one hall row bills what used to be two rooms; solid oak retreated to the studies
     # (§Hardwood).
     # RM-M-PANTRY contributes ZERO area: it stands entirely on
-    # SL-M-DECK, so its whole floor derives polished-concrete and its authored "lvp" is the
+    # SL-M-DECK, so its whole floor derives coated-concrete and its authored "lvp" is the
     # intent if that slab outline ever moves, not a field finish. It is in the room list
     # because the list is by authored finish; the sqft assertions elsewhere are what pin
     # that it adds nothing.
@@ -265,7 +265,7 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
                                  "RM-M-LIVING", "RM-M-STUDY", "RM-M-PANTRY",
                                  "RM-M-BATH1", "RM-M-LAUNDRY", "RM-S-NCLOSET"}
     # NET of in-room finish zones. RM-M-LIVING is the reason: 411 SF of it sits on
-    # SL-M-DECK, whose polished cap is the finished floor there, so the plank stops at the
+    # SL-M-DECK, whose coated cap is the finished floor there, so the plank stops at the
     # band. Summing room areas alone would order LVP for a floor nobody covers.
     lvp_area = sum(room.area_m2 - sum(zone.area_m2 for zone in room.finish_zones)
                    for room in catlin_model.rooms

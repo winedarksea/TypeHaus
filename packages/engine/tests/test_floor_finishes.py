@@ -20,10 +20,10 @@ from typehaus.emit.draw.palette import material_color
 
 # Every finish string that reaches a floor anywhere in houses/catlin — the field finishes
 # authored on Rooms plus the zone finishes, which include one taken from a Slab
-# (SL-M-DECK's polished cap) rather than authored on a room at all. Kept explicit rather
+# (SL-M-DECK's coated cap) rather than authored on a room at all. Kept explicit rather
 # than derived so that adding a finish to a storey without adding its material trips here.
 _CATLIN_FINISHES = {"oak", "lvp", "carpet", "tile", "sealed-concrete", "rubber",
-                    "vinyl-sheet", "polished-concrete"}
+                    "vinyl-sheet", "coated-concrete"}
 
 
 def _library(catlin_model):
@@ -194,7 +194,7 @@ def test_radiant_under_a_limited_finish_is_advised(catlin_model):
     FH-M-DINING is the case the polygon match exists for — it carries no ``room_ref`` at
     all, so a ref lookup would miss it entirely — and it is also why the check reads
     ``finish_zones`` rather than ``Room.floor_finish``. The loop sits wholly inside
-    SL-M-DECK's band, where the finish is the polished cap, not RM-M-LIVING's field LVP.
+    SL-M-DECK's band, where the finish is the coated cap, not RM-M-LIVING's field LVP.
     Polished concrete is exactly what radiant wants, so there is nothing to advise.
     """
     from typehaus.checks.advisory.checks import floor_finish_over_radiant
@@ -215,7 +215,7 @@ _STRADDLING_LOOP = [(7.0104, 3.3528), (9.144, 3.3528), (9.144, 4.8768), (7.0104,
 def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(catlin_model):
     """The half-and-half case the polygon test exists to catch.
 
-    A loop spanning the concrete/wood boundary in RM-M-LIVING runs under polished concrete
+    A loop spanning the concrete/wood boundary in RM-M-LIVING runs under the coated cap
     for part of its length and under a covering for the rest. The covered half is still
     surface-temperature limited, and reading either the field finish alone or the zone alone
     would report exactly one of the two wrongly.
@@ -248,7 +248,7 @@ def test_a_radiant_loop_that_crosses_a_finish_boundary_reports_the_limited_half(
 # RM-M-LIVING is one 766 SF claim over two structures: SL-M-DECK's EPS-formed cap north of
 # y=13' east of x=18', and FS-M-EAST / FS-M-WEST's I-joists and plywood everywhere else.
 # ``Room.floor_finish`` is one string, so before ``Slab.floor_finish`` existed the room
-# billed 766 SF of LVP — 411 of it over a polished concrete cap nobody was going to cover.
+# billed 766 SF of LVP — 411 of it over a finished concrete cap nobody was going to cover.
 
 _M2_TO_FT2 = 10.7639104
 
@@ -261,14 +261,14 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # until 2026-09-05, then an authored `oak` south bay for part of that same day; both are
     # deleted rather than replaced. The hall's finish is the room's own field `lvp`, which is
     # what the rooms off it carry too, and the south bay is that same `lvp` — the oak would
-    # have stood 9/16" proud of the polished cap at y=13' and the concrete cannot be raised
+    # have stood 9/16" proud of the coated cap at y=13' and the concrete cannot be raised
     # to meet it (``structural.mixed_deck_bearing_seat`` holds DECK_TOP within 1/4" of the
     # subfloor). Nothing is left for an authored zone to override, which is the state this
     # room is easiest to keep honest in: a derived zone follows its slab and cannot go stale.
     assert len(living.finish_zones) == 1
     assert all(z.source_ref is not None for z in living.finish_zones)
     zone = next(z for z in living.finish_zones if z.source_ref is not None)
-    assert zone.material_ref == "polished-concrete"
+    assert zone.material_ref == "coated-concrete"
     # Derived, not authored — and it names the slab, which is the answer to "why is this
     # band different" in the Inspector and in the takeoff.
     assert zone.source_ref == "SL-M-DECK"
@@ -282,7 +282,7 @@ def test_the_living_room_splits_its_floor_where_its_structure_splits(catlin_mode
     # passage: the pantry gave 2.1 sf of clear face back to the
     # living room. ** THE INVARIANT IS THE SUM, NOT EITHER HALF. ** Both rooms sit wholly on
     # SL-M-DECK, so moving the wall between them only moves area from one derived zone to the
-    # other — the billed polished-concrete total in
+    # other — the billed coated-concrete total in
     # test_the_billed_finishes_move_with_the_split is 410.2 before and after, and does not
     # move when this number does.
     #
@@ -324,10 +324,10 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # it is in the lvp room LIST below and adds nothing to the lvp number. The zone total
     # barely moves (411.3 -> 410.2): the room did not leave the slab, it only grew two
     # partitions that stand on it.
-    assert rows["polished-concrete"]["rooms"] == ["RM-M-LIVING", "RM-M-PANTRY"]
-    assert rows["polished-concrete"]["coating"] is True
-    assert rows["polished-concrete"]["waste_pct"] == 0.0
-    assert float(rows["polished-concrete"]["net_area_sqft"]) == pytest.approx(410.2, abs=0.5)
+    assert rows["coated-concrete"]["rooms"] == ["RM-M-LIVING", "RM-M-PANTRY"]
+    assert rows["coated-concrete"]["coating"] is True
+    assert rows["coated-concrete"]["waste_pct"] == 0.0
+    assert float(rows["coated-concrete"]["net_area_sqft"]) == pytest.approx(410.2, abs=0.5)
     # ** 2026-09-05, the main-floor finishes. ** 694.3 -> 808.2 of LVP. The plank GAINED,
     # in three moves:
     #   * +48.5   the hall band's vinyl-sheet zone was DELETED, so the corridor falls back
@@ -335,7 +335,7 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     #   * +46.0   RM-M-BATH1 and RM-M-LAUNDRY retyped off vinyl-sheet onto the plank the
     #             hall now carries
     #   * +231.7  the south bay, which went to an authored oak zone earlier the same day and
-    #             came back — oak stood 9/16" proud of the polished cap and LVP lands 1/64"
+    #             came back — oak stood 9/16" proud of the coated cap and LVP lands 1/64"
     #             proud of it, which is flush (main.py, RM-M-LIVING)
     # The mudroom SUITE went the other way, to tile — see the tile assertion below for why
     # its two closets are not in this list.

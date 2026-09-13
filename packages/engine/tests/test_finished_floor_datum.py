@@ -58,18 +58,18 @@ def test_a_floored_room_walks_above_its_storey_datum(catlin_model, tag, finish_i
 
 
 def test_a_deck_that_is_its_own_finish_outranks_the_rooms_field_finish(catlin_model):
-    """RM-M-LIVING is authored LVP and its centroid lands on polished concrete.
+    """RM-M-LIVING is authored LVP and its centroid lands on the coated cap.
 
     ``Room.floor_finish`` is the FIELD finish; SL-M-DECK carries its own and its cap top IS
     the finished floor there (params/main_deck.py pins it flush with the plywood beside it).
-    Taking the room's finish at that probe stood the plank on top of the polish.
+    Taking the room's finish at that probe stood the plank on top of the cap.
     """
     living = _room(catlin_model, "RM-M-LIVING")
     assert living.floor_finish == "lvp"
     assert _build_up_in(catlin_model, "RM-M-LIVING") == pytest.approx(0.0, abs=1e-9)
     band = next(s for s in surfaces_at(catlin_model, (8.0, 4.0))
                 if s.deck_tag == "SL-M-DECK")
-    assert band.finish_ref == "polished-concrete"
+    assert band.finish_ref == "coated-concrete"
     assert band.finish_in == 0.0
 
 
