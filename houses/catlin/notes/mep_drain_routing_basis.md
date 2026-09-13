@@ -77,8 +77,18 @@ preference.
 **The minimum-slope feasibility statement.** Over 5.7513 ft at 0.25"/ft the collector needs
 1.4378" of fall. The available head is (117.0 ceiling on the start) − (115.5 stack head) =
 1.5". **Slack: 0.0622".** That is the sense in which this terminal's route is nearly unique,
-and it is the whole argument of §5. Had the stack head stayed at 115.5 with the collector
-tying there, rather than at 112 on the barrel below it, there would have been 1/16" in hand.
+and it is the whole argument of §5.
+
+**What that 0.0622" is NOT is this run's build margin**, and the distinction matters because
+the number has been read the other way. It is measured to the stack **head** at 115.5,
+because that is the arrival a *search* must assume before it knows where on the barrel the
+tie will land. The authored run ties at **112.0**, 3.5" lower, so what the pipe as drawn
+actually holds is **3.062" of surplus fall** — 0.779"/ft flattest against 0.25"/ft, a 3.1×
+margin. `mep.drain_slope_margin` is the check that reports the build number; `slack_in` is
+an ordering key and reports the search number. Had the stack head stayed at 115.5 with the
+collector tying there, rather than at 112 on the barrel below it, there would have been 1/16"
+in hand — which is exactly what makes 0.0622" the right *ordering* number and the wrong
+*margin* number.
 
 **The two 1 1/2" arms**, each tying onto the collector's south leg rather than onto the stack
 (two wyes 18" apart on a 3" beats three pipes at one point):
@@ -88,7 +98,10 @@ tying there, rather than at 112 on the barrel below it, there would have been 1/
 | LAV | (165.5, 268) ↓ → (165.5, 246) → (134.81, 246) | 22" + 30.69" = 4.3908 ft | 117.5625 → 116.25 | 0.293"/ft |
 | TUB | (197.615, 261.125) ↓ → (197.615, 228) → (134.81, 228) | 33.125" + 62.805" = 7.9942 ft | 117.4375 → 115.0625 | 0.294"/ft |
 
-Each end elevation is checked against the collector's own invert at that station, which is
+Each end elevation is checked against the collector's own **centreline** at that station
+(`pipe_invert_at` interpolates the authored elevations, and an authored elevation is a
+centreline — see `model/mep.py`). An arm entering in the collector's upper half is an
+ordinary side entry; `mep.drain_tie_in` grades it. That station is
 the interpolation above: at y=246 the collector reads 116.5 − 4.5 × (4.625/69.015) = 116.198,
 and the arm arrives at 116.25 — **0.052" above it**, a side entry into the upper half of the
 3". At y=228 the collector reads 116.5 − 4.5 × (22.625/69.015) = 115.025 against the arm's
@@ -207,7 +220,9 @@ group is the counter-example.
 
 **Slack, per terminal** — the head each has left over after its own minimum fall, where the
 start ceiling comes from §3's chord window and the required arrival is the stack head at
-115.5:
+115.5. **These are ordering keys, not build margins**, for the reason §2 gives: the arrival
+is the stack head because a search does not yet know where on the barrel the tie will land.
+The routes these produce tie in lower and hold far more fall than the table shows:
 
 Routes are **rectilinear** — `|Δx| + |Δy|`, which is what the router produces and what §4's
 lattice can express — not the straight lines of §1:

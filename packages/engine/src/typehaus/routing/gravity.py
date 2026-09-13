@@ -99,6 +99,15 @@ class HeadBudget:
         The oracle note's table: 0.062" for the water closet, 0.168" for the tub, 0.694"
         for the lavatory. A terminal with less slack has a route that is more nearly
         forced, which is why ``tree.py`` routes it first.
+
+        **This is an ordering key, not a build margin, and it has been read as one.**
+        ``required_m`` is the arrival a *search* must assume — the stack HEAD — because
+        before the search runs there is no tie-in station to measure to. A route that then
+        ties onto the barrel below that head holds every inch of the difference. Catlin's
+        water closet is the case: 0.062" here, and **3.062"** of surplus fall as authored,
+        because it ties at 112.0 rather than at the 115.5 head this number assumes.
+        ``mep.drain_slope_margin`` is the check that reports what a run as drawn holds; the
+        two answer different questions and are supposed to disagree.
         """
         return self.available_in - self.needed_in
 

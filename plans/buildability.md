@@ -179,7 +179,7 @@ is still the first thing to remove.
 | BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
 | BLD-03 | Two floor systems on the main storey | HIGH | **KEEP — resolved 2026-09-12** (product decision + finish change) | cut declined; the −$7,536 to −$13,486 stands as the measured price of the feature |
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
-| BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
+| BLD-05 | ~~Suite bathroom drain, 0.062" of slack~~ **`PR-B-BATH-DRAIN` at the code minimum, under a slab** | HIGH | **SIMPLIFY — re-struck + graded 2026-09-12** | ~free if timed right; the branch itself cannot be bought out |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
 | BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | **RESOLVED 2026-09-12 — standard parts, provenance closed** | **+$766 to +$1,520** measured; the conventional-ERV comparison + warranty stay owner calls |
 | BLD-07 | Unvented roof: painter, insulator, undrawn eave | MED | KEEP + 2 instructions | — |
@@ -837,7 +837,86 @@ Deliberately **not** on this list: `W-B-CW3`/`W-B-STR2`'s over-specified
 steel-stud assembly, which `plans/TODO.md` already records as not worth
 re-opening.
 
-### BLD-05 — The suite bathroom drain group. **HIGH · SIMPLIFY**
+### BLD-05 — The suite bathroom drain group. ~~**HIGH · SIMPLIFY**~~ **RESOLVED 2026-09-12 — re-aimed at `PR-B-BATH-DRAIN`**
+
+> **VERDICT RE-STRUCK, 2026-09-12. All three numbers in the original finding are
+> engine-internal metrics, not field margins — and the run it names is the sixth *loosest*
+> drain in the house.** Measured against the resolved model, not estimated:
+>
+> | BLD-05 said | What the number actually is | Measured |
+> |---|---|---|
+> | 0.062" of head slack over 5.75 ft | `HeadBudget.slack_in` — a **search ordering key** (`routing/gravity.py`), computed against a hypothetical arrival at the stack **head** (115.5") from the chord-window ceiling (117.0"). The authored run ties at **112.0"**, on the barrel 3.5" below it. | **3.062" of surplus fall.** 0.779"/ft flattest against a 0.25"/ft minimum — a 3.1× margin. |
+> | 1/2" of crown clearance in an 11 7/8" truss | The **conservative whole-leg envelope** — the crown at the leg's high end against the chord ceiling. That high end (y=250.625) sits in the 241.75–254.25 **clear bay**, where there is no truss at all. | **+0.944"** at `joist-0-015-0`, graded at 3" PVC's real 3.500" OD, the tightest of the three truss lines the leg actually crosses. |
+> | ties in 0.052" above the collector **invert** | 0.052" above its **centreline** — elevations are centrelines (`model/mep.py`), and §2 of the note said "invert" for one. An ordinary upper-half side entry. | Fine as drawn (+0.052"). |
+>
+> **So the design is not the problem. The absence of grading was**, and *that* half of the
+> original finding was exactly right — for different reasons than it gave. Four conditions
+> nobody graded, now graded:
+>
+> * **`mep.run_member_crossing`** (STRUCTURAL) — nothing graded a pipe, duct or raceway
+>   crossing a floor's members. The 8 7/8" window that sets every starting invert on this
+>   storey was prose and a router invariant; the note's §6 conceded it outright. Three trades
+>   thread that field.
+> * **`mep.drain_tie_in`** (CODE) — `drain_tie_ins` silently `continue`d past a branch
+>   arriving below its collector, so `accumulated_serves` under-counted and `mep.pipe_sizing`
+>   under-sized downstream pipe **with no finding at all**.
+> * **`mep.drain_slope_margin`** (ADVISORY) — a run at exactly 0.250"/ft passed as cleanly as
+>   one at 0.78"/ft. The field method is rigid standoffs stepped ~1" every 4 ft, so the
+>   *surplus* over the minimum is the buildability fact, and the model could not state it.
+> * **The MN slope citation was wrong.** The profile cited **IRC P3005.3**; Minn. R.
+>   1309.0010 subp. 3.D deletes IRC chapters 25–33, and P3005 is in ch. 30. UPC 708.0 is
+>   1/4"/ft at **every** size, and the reduced-slope exception reaches only 4"+ with the
+>   building official's approval. The engine's `>3" → 0.125"/ft` row was an IRC row with no
+>   Minnesota force. Finding #1 below was right about the code and the engine disagreed with it.
+>
+> **And the finding was aimed at the wrong run.** Swept over every drain segment against
+> MN/UPC's 1/4"/ft at every size, flattest per run:
+>
+> | margin over min | slope | dia | run |
+> |---|---|---|---|
+> | **+0.000"/ft** | 0.250 | 3" | **`PR-B-BATH-DRAIN`** — authored `slope_in_per_ft=0.25`, **under the slab** |
+> | +0.013 | 0.263 | 3" | `PR-B-WC1-DRAIN` |
+> | +0.015 | 0.265 | 2" | `PR-A-STUBATH-SH-DRAIN` |
+> | +0.017 | 0.267 | 4" | `PR-B-MAIN-DRAIN` — reads as comfortable only under the deleted IRC row |
+> | +0.023 | 0.273 | 2" | `PR-B-KITCH-DRAIN` |
+> | **+0.529** | 0.779 | 3" | **`PR-M-S-SUITE-WC-DRAIN`** — the run BLD-05 named, **6th loosest of 30** |
+>
+> **`PR-B-BATH-DRAIN` is the finding BLD-05 was reaching for.** It sits at *exactly* the code
+> minimum with zero margin; its own authoring comment records that at 0.3"/ft "the branch
+> arrives BELOW the 4" line's invert" — measured, **0.26"/ft, a 4% overpitch, puts it under
+> the main.** Finding #2 below is that the plumber's tolerance runs one way, *toward more
+> pitch*, which here is exactly the wrong direction — and it is buried under a slab, which is
+> HIGH risk by this file's own definition.
+>
+> **And it cannot be fixed.** Steepening it 0.05"/ft costs 0.43" of fall over 8.64 ft and
+> lands it 0.24" **below** the main — trading an advisory for a real `mep.drain_tie_in` FAIL.
+> The main itself runs 0.267"/ft to a **cast** invert at `SP-B-SEWER-EXIT`. The basement head
+> budget is genuinely spent, so catlin authors `min_drain_slope_margin_in_per_ft = 0.0` in
+> `preferences.toml` with that argument beside it, and every PASS still prints its margin —
+> which is what keeps the five thin runs visible without gating on them. The engine default
+> stays 0.0625.
+>
+> **`PR-M-S-SUITE-WC-DRAIN` is not moved.** The decision was to let the check decide, and it
+> has: at +0.944" it is not close to the tightest crossing in the house (`PR-B-HW-SUITE`, the
+> 1/2" hot line to the suite, is +0.062").
+>
+> **What the new check found instead, and it is not a drain.** Fifteen crossings sit below
+> the chord window on `FS-S-WEST`: `CD-M-DATA-KITCH` and `CD-M-DATA-PORCH`, whose authoring
+> comment claimed 3/4" EMT "passes between the 8 7/8" chords without a hole in anything" —
+> real EMT is 0.922" OD, not 0.750", so the invert was 0.086" *into* the bottom chord — and
+> **thirteen ERV radials**, whose shared `_BAY_Z` put a 4" duct's invert on the bottom of the
+> bottom chord. That elevation is correct for the legs riding a bay and 1.5" wrong for the
+> south legs that cross. All fixed; see workstream C of the plan.
+>
+> **The JLC coordination argument survives intact and is now mechanical.** An owner hold
+> `insp/truss_mep_review` stands ahead of `site/long-lead-orders` in `inspections.toml`, so
+> "reviewed by the plumber before trusses are fabricated" is a blocker the board reports
+> rather than a sentence in a document.
+>
+> **Risk stays HIGH and the verdict stays SIMPLIFY**, on `PR-B-BATH-DRAIN`: a zero-margin
+> branch under a slab, in a basement with no head left to give it.
+
+The original finding, for the record:
 
 `PR-M-S-SUITE-WC-DRAIN` carries **0.062 inches** of head slack over 5.75 feet,
 threads an 11 7/8-inch open-web truss with half an inch of clearance at the pipe

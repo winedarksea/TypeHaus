@@ -122,8 +122,9 @@ DRAINS = [
             # the run is over RM-B-FURNACE and RM-B-WORKSHOP where nothing cares how low it
             # hangs, takes 13 5/8" over 19'-0" at 0.717"/ft.
             #
-            # The end lands at 6'-9 1/8", 1/16" over PR-B-MAIN-DRAIN's interpolated invert at
-            # x=4'-6" — a side entry into the 4" barrel's upper half, which is what a 2"
+            # The end lands at 6'-9 1/8", 1/16" over PR-B-MAIN-DRAIN's interpolated
+            # CENTRELINE at x=4'-6" (an authored elevation is a centreline — model/mep.py)
+            # — a side entry into the 4" barrel's upper half, which is what a 2"
             # branch wants, and inside `drain_tie_ins`' 1" tolerance so the load still rolls
             # up. It ties on the main's y=16'-6" leg rather than at its (6'-0") head, which
             # is 1'-6" of 2" PVC saved and one fitting fewer.
@@ -232,10 +233,14 @@ DRAINS = [
     # ** THE GRADE IS 1/4"/ft, NOT 0.3, AND THE ROTATED ROOM IS WHY. ** The WC moved to the
     # bath's north end, which is 4'-1 5/8" further from the main than the old west-end
     # station — 17.64 ft of plan run against 13.17. At 0.3"/ft that eats 5.3" of the 5.7"
-    # the main's crown has under the slab and the branch arrives BELOW the 4" line's invert.
-    # 1/4"/ft is IRC P3005.3's published minimum for 3" and above (and twice the 1/8"/ft
-    # `mep.drain_slope` floor), and it lands the branch at -13" against the main's -13.2"
-    # invert — the same hair of margin the old route had.
+    # the main's crown has under the slab and the branch arrives BELOW the 4" line.
+    # 1/4"/ft is MN ch. 4714 (UPC) 708.0's minimum, which is 1/4" at EVERY size — the
+    # 1/8"/ft row for pipe over 3" is IRC P3005.3, and Minn. R. 1309.0010 subp. 3.D deletes
+    # IRC ch. 25-33. So this run has NO margin at all, not a halved one: it is the flattest
+    # drain in the house at exactly the minimum, and `mep.drain_slope_margin` reports
+    # +0.000"/ft on it. It lands the branch at -13" against the main's -13.2" CENTRELINE,
+    # +0.190" of arrival — the same hair of margin the old route had, and there is no head
+    # left in the basement to buy more (see BLD-05 and preferences.toml's [mep] note).
     PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(12), inch(289.625)), pt(ft(12), inch(289.625)),
                   pt(ft(12), ft(15, 6)), pt(ft(3), ft(15, 6))),
@@ -396,9 +401,15 @@ SECOND_BRANCH_DRAINS = [
     # ** THE SUITE BATH'S 3" COLLECTOR. ** The water closet is floor-drained and its flange
     # at (134.81", 250.625") lands cleanly in the 241.75"..254.25" bay, so this one drops
     # vertically — no offset bend needed. South across the trusses to the y=16'-10.8" bay the
-    # stack head sits in, then 1'-9 3/16" east onto it. It starts at 9'-8 1/2" so its 3"
-    # crown clears the truss webs' 118 1/2" ceiling by 1/2", and lands at 9'-4" on the stack's
-    # vertical, 3 1/2" below where the attic branch enters it.
+    # stack head sits in, then 1'-9 3/16" east onto it. It starts at 9'-8 1/2".
+    #
+    # ** THE 1/2" IS THE WHOLE-LEG ENVELOPE, NOT WHAT THIS PIPE CLEARS. ** Taken as nominal
+    # 3" at the leg's HIGH end, the crown is 118.0 against the webs' 118.5 ceiling — but that
+    # high end (y=250.625) sits in the 241.75..254.25 clear bay, where there is no truss.
+    # Graded at the three truss lines the leg actually crosses, and at 3" PVC's real 3.500"
+    # OD, `mep.run_member_crossing` reports **+0.944"** of crown at `joist-0-015-0`, the
+    # tightest of them. It lands at 9'-4" on the stack's vertical, 3 1/2" below where the
+    # attic branch enters it.
     PipeRun(uid="885X4850FE", tag="PR-M-S-SUITE-WC-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(134.81), inch(250.625)), pt(inch(134.81), inch(250.625)),
                   pt(inch(134.81), ft(16, 10.8)), pt(ft(13), ft(16, 10.8))),
@@ -741,7 +752,7 @@ STUDIO_DRAINS = [
     # The 36" pan's 2" waste. FS-ATTIC is I-joists, not the second floor's trusses, so this
     # leg buys its freedom by running WEST — parallel to the joists, in the 241 1/4"..254 3/4"
     # bay the pan's grate already sits in — and crosses nothing at all for 6'-7". It ties into
-    # the leg above at (9'-7 1/2", 20'-7 5/8"), 1/16" over that pipe's invert there.
+    # the leg above at (9'-7 1/2", 20'-7 5/8"), 1/16" over that pipe's CENTRELINE there.
     PipeRun(uid="BVZG9VAP7M", tag="PR-A-STUBATH-SH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(16, 2.625), ft(20, 7.625)), pt(ft(16, 2.625), ft(20, 7.625)),
                   pt(ft(9, 7.5), ft(20, 7.625))),
