@@ -4,9 +4,10 @@ PERF.md recorded a 44 ms ``move_nodes`` and a "sub-50 ms resolve pipeline"; by t
 anyone measured again, resolve alone was 488 ms of a 533 ms rebuild. Nothing failed in
 between, because nothing was watching. This is the thing that watches.
 
-The budgets are deliberately loose — roughly 2.5-3x the measured minimum — because a
-loaded laptop and a cold import cache both move the number and a flaky perf test gets
-deleted rather than fixed. It is a tripwire for a large regression, not a benchmark.
+The budgets are deliberately loose — roughly 2.5x the minimum measured inside the
+six-way parallel suite that runs them — because contention and a cold import cache both
+move the number and a flaky perf test gets deleted rather than fixed. It is a tripwire
+for a large regression, not a benchmark.
 
 It does not gate CI, and that is deliberate. A GitHub runner's wall clock varies about
 2x run to run: across two release runs of code that differed in nothing touching the
@@ -60,11 +61,22 @@ BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 # budgeted because nothing else here watches the drawing stage, and the section migration is
 # exactly the kind of change that could quietly make every detail a full geometry walk.
 #
-# These budgets grade THIS machine and gate nothing on CI — see ``_ON_CI`` below. They are
-# ~2.5-3x the local minimum, which makes the tripwire sharp enough to catch a 3x regression
-# rather than only the 10x one a CI-sized budget could see.
-REBUILD_BUDGET_MS = 2000
-STAGE_BUDGETS_MS = {"resolve": 1500, "resolve.junctions": 300, "draw.details": 3500}
+# These budgets grade THIS machine and gate nothing on CI — see ``_ON_CI`` below.
+#
+# They are sized against the *loaded* suite, not a quiet one, because the loaded suite is
+# what gates: `scripts/verify.sh` runs six-way parallel and that is where this fires. The
+# distinction is not academic. Quiet, `resolve` mins at ~480 ms; inside the parallel suite
+# it mins at ~1767 ms — and it measured 1764 ms there *before* the walking-surface fix that
+# cut its quiet median by 30%. Under six-way contention the minimum is set by the other five
+# workers, so grading it cannot see a change of this size at all. Budget the quiet number
+# and the guard fails every honest run; budget this one and it still catches the large
+# regression it exists for.
+#
+# Measured minima, 0.1.1, inside the six-way suite: full rebuild 2331 ms, resolve 1767 ms,
+# junctions 355 ms, draw.details ~2500 ms. Each budget is ~2.2-2.5x that. Re-measure with
+# `scripts/verify.sh` — not a bare `bench_rebuild.py` — whenever these move.
+REBUILD_BUDGET_MS = 5000
+STAGE_BUDGETS_MS = {"resolve": 4000, "resolve.junctions": 900, "draw.details": 6000}
 
 
 #: A GitHub runner's wall clock is not a measurement of this engine (→ module docstring),
