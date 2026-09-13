@@ -26,6 +26,7 @@
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
+    "beam_cap": 12567756,
     "bearing_stiffener": 10054466,
     "blocking": 10712639,
     "brace": 10712639,
@@ -177,6 +178,7 @@
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
+    "beam_cap": 12567756,
     "bearing_stiffener": 10054466,
     "blocking": 10712639,
     "brace": 10712639,
@@ -290,6 +292,9 @@
     ],
     "beam": [
       "framing"
+    ],
+    "beam_cap": [
+      "siding"
     ],
     "bug_screen": [
       "siding"
@@ -451,6 +456,7 @@
   "solidTrades": {
     "backflow_preventer": "plumbing",
     "beam": "framing",
+    "beam_cap": "siding",
     "bug_screen": "siding",
     "ceiling": "drywall",
     "column": "framing",

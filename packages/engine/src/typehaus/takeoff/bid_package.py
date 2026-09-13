@@ -35,7 +35,8 @@ BUILDING = "building"
 #: (audit:2026-09-12, 41 rows across nine trades). Dropped from packages, never from the BOM.
 MIRRORED_SOLID_CATEGORIES = frozenset(
     ROUTED_RUN_CATEGORIES | PIPE_ACCESSORY_CATEGORIES | DRAINAGE_CATEGORIES | {
-        "vent", "fascia", "flashing", "wall_corner", "eave_soffit", "bug_screen", "glazing",
+        "vent", "fascia", "flashing", "wall_corner", "beam_cap", "eave_soffit",
+        "bug_screen", "glazing",
         "glazing_trim", "snow_guard", "seam_clamp", "panel_strap", "railing",
         "railing_infill", "railing_glass", "connector", "ceiling", "soffit", "screen_slat",
     })

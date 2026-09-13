@@ -313,7 +313,19 @@ the future.
  - **The selection is a 60-mil self-adhered rubberised-asphalt sheet** (Bituthene 3000, or Polyguard 650 / MiraDRI 860 as equals) — subp. 2's item 5 and the strongest published numbers of the eight: 0.05 perm, 300% elongation, 200 ft head, crack-cycled 100x at -25 F. **Spec `Bituthene Low Temperature` + `Primer B2 LVC` if the pour lands below 40 F** — the standard grade needs 40 F and would otherwise gate the whole foundation on a warm week.
  - **`Material.product_ref` was NOT set, and it is not an oversight.** The plan called for a `Product` record naming the GCP datasheet so the BOM row reads "GCP Bituthene 3000". `Material.product_ref` can only be set where the material is authored; the material has to live in `library/materials.py` because a LIBRARY assembly (`FOUNDATION_WALL_XPS4_OUTBOARD`) references it; and a library material may not name a house-owned `Product` tag — `Library.products` is populated from `plan/products.py` and every other house would resolve it to `None`. There is no override path: `PlanModel.material()` returns the FIRST match, so a house appending a duplicate tag is shadowed for geometry while WINNING in `product_labels`, which is worse than not doing it. The identity lives in the material's `source` and in the `prices.toml` selection note instead. Closing it properly means either a house-level material-override mechanism or moving the foundation tail out of the library.
  - **Still open, small:** `FS-SG-DECK`'s joists are one flat plane on the now-tilted beams, so the model's deck is the deck's SOUTH (low) edge and the real north edge stands up to 2.45" higher. Closing it means teaching `resolve/floors.py` to take each joist's z from its tilted bearings, which reaches `ResolvedFloor.deck_z0_m`/`deck_z1_m` and every room, energy, section and guard consumer that reads them. (make sure the D-S-DECK-E door is aligned with the real height closely enough for easy entrance)
- - The Disciplines toggles for view options don't always toggle the right things. Footing beddings should probably be "drainage". The 6 concrete columns should be concrete, not framing. Corner flashing shouldn't be roof but wall cladding (such as TR-H-CORNER-SW-1). The concrete walls should be concrete, not walls (although perhaps we should redesign this so some items can be two or more disciplines?).
+ - **Disciplines toggles: three of the four complaints are closed, one is real.** Verified
+   against a fresh build on 2026-09-13 — `footing_bedding` is `("drainage","earth")`, the six
+   north-entry piers stamp `["concrete"]`, and every `TR-H-CORNER-*` is `wall_corner` ->
+   `siding`. `TrimKind.BEAM_CAP` was the one genuine misfile and is fixed.
+   **What is left is the multi-trade case.** A foundation wall's trade set is
+   `("concrete","insulation")` — 2 walls exactly, plus 20 more on wider sets like
+   `("concrete","siding","insulation","drywall")` — and `anyTradeVisible()` in
+   `ui/src/model/tradeVisibility.ts` draws a solid when **any** trade in its set is visible,
+   so turning Concrete off still leaves the wall on screen under Insulation and a foundation
+   wall can never be isolated away. Closing it needs a primary-trade axis for VISIBILITY:
+   `primaryTrade()` already exists (`tradeVisibility.ts:158`) but the three.js builders
+   (`walls.ts:85`, `structure.ts:505`, `scene.ts:156`) use it only to pick which
+   `tradeGroups` container an object files under. Recorded, not scheduled.
  - Model a rain garden to the west of the garage gathering water with drain tile from TR-G-LEADER-W and TR-RF-LEADER-W
  - **Six soffit boxes; three are candidates to retire.** `SF-S-DUCT` (second-storey hallway,
    hosts `REG-S-HP-STAIR`, three cans and an LED driver), `SF-S-HP1` (it IS the air-handler

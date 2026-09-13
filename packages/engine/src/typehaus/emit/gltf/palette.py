@@ -217,6 +217,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
     "wall_corner": (0.75, 0.77, 0.80, 1.0),  # formed-metal wall corner closure
+    "beam_cap": (0.75, 0.77, 0.80, 1.0),  # mill-finish aluminium beam cap
     # LightRun's channel + tape (→ emit/gltf/emitter.py::_add_light_run). Mirrors
     # ui/src/three/builders/structure.ts COVE_CHANNEL_COLOR / LED_TAPE_COLOR.
     "cove_channel": (0.80, 0.80, 0.80, 1.0),  # mill-finish aluminium extrusion

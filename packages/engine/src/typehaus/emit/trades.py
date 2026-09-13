@@ -100,16 +100,18 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # Fenestration: the glazing and the extrusions holding it, even in a roof plane.
     "glazing": "openings", "glazing_trim": "openings",
     # Roof edge trim (``resolve/roof_trim.py``, ``resolve/accessories.py``). ``flashing``
-    # collapses drip, counterflashing and beam caps; the BOM's ``edge_trim`` rows keep the
-    # real kind and split siding from roofing there.
+    # collapses drip and counterflashing; the BOM's ``edge_trim`` rows keep the real kind
+    # and split siding from roofing there.
     "flashing": "roofing",
     "ridge_cap": "roofing",
     # Fastened INTO the standing-seam skin, whatever the clamp holds.
     "snow_guard": "roofing", "seam_clamp": "roofing", "panel_strap": "roofing",
     # The siding contractor's trim: fascia, the vented eave soffit panel, wall corner
-    # closures, the rainscreen base strip and breezeway slat infill.
+    # closures, the aluminium cap over an exposed beam, the rainscreen base strip and
+    # breezeway slat infill. ``beam_cap`` split off ``flashing`` so the sunken-garden caps
+    # stop showing under Roof; ``takeoff/cost_codes._SIDING_EDGE_TRIM`` already billed it here.
     "fascia": "siding", "eave_soffit": "siding", "wall_corner": "siding",
-    "bug_screen": "siding", "screen_slat": "siding",
+    "beam_cap": "siding", "bug_screen": "siding", "screen_slat": "siding",
     # Stormwater: one run from the gutter to daylight, one toggle. The IFC emitter groups
     # exactly these into ``IfcDistributionSystem/STORMWATER``.
     "gutter": "drainage", "downspout": "drainage", "sump": "drainage",

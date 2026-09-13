@@ -67,7 +67,12 @@ _TRIM_CATEGORY = {
     "downspout": "downspout",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
-    "beam_cap": "flashing",
+    # A beam cap is formed metal like the flashing family, but it caps an exposed beam in a
+    # wall plane and is the siding contractor's, not the roofer's — the BOM has always
+    # billed it under ``_SIDING_EDGE_TRIM``. Collapsed onto "flashing" it rode the roofing
+    # trade and the sunken-garden caps showed under Roof in the viewer, so it keeps its own
+    # label and its own trade, exactly as the wall corner below does.
+    "beam_cap": "beam_cap",
     # A wall corner closure is formed metal like the flashing family but it is the siding
     # contractor's, not the roofer's, so it keeps its own label and rides the siding trade.
     "wall_corner": "wall_corner",
