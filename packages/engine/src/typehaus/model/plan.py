@@ -15,10 +15,10 @@ from typehaus.model.project import Project, Storey
 from typehaus.model.types import (
     ApplianceType,
     DoorType,
+    DuctProductType,
     ElectricalDeviceType,
     EquipmentType,
     FixtureType,
-    DuctProductType,
     FurnitureType,
     RailingType,
     RegisterType,
