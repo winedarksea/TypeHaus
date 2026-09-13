@@ -11,14 +11,18 @@ each other, and would break), this re-labels at the boundary: every element stan
 level's datum is handed to the drawing code wearing the level's own storey tag. The existing
 comparisons then do the right thing untouched.
 
-**The re-label is lossless here and nowhere else.** Two storeys grouped into one level are
-at the same elevation *by construction* (``PlanModel.levels`` groups on it), so anything a
-consumer derives from the tag — the datum, a ceiling height, a z — is unchanged by swapping
-one for the other. What the tag also carries is the element's *building*, and that is
-genuinely lost. So this must not be used where a building matters: ``code.R302_5`` narrows
-its room list by building precisely to keep a garage wall reaching over the house footprint
-from raising a fire-separation finding across four feet of outdoor air. Drawings have no such
-question — a plan draws what the cut crosses — and ``checks/`` never calls this.
+**What the re-label loses, and why a drawing does not care.** The swapped tag carries two
+other facts: the element's *building*, and its *datum*. A level may cross datums where a
+storey authors ``level=`` (the garage bears its walls a foot below the house's deck and is
+still the same floor plan), so a consumer that reads an elevation back off the tag would be
+wrong by that foot. Verified: nothing in ``emit/draw`` does — the plan builders derive no
+elevation from a storey tag, and ``sheets._storey_elevation`` is only ever asked about the
+unrelabelled model. Geometry is already absolute by this stage, so nothing drawn moves.
+
+The *building* is lost outright, so this must not be used where one matters: ``code.R302_5``
+narrows its room list by building precisely to keep a garage wall reaching over the house
+footprint from raising a fire-separation finding across four feet of outdoor air. Drawings
+have no such question — a plan draws what the cut crosses — and ``checks/`` never calls this.
 """
 
 from __future__ import annotations
@@ -78,9 +82,16 @@ def model_at_level(model: ResolvedModel, primary: str) -> ResolvedModel:
 
 
 def at_level(build: Any, primary: str, **kwargs: Any) -> Any:
-    """A ``SceneFn`` that draws ``primary``'s whole level rather than its storey alone."""
+    """A ``SceneFn`` that draws ``primary``'s whole level rather than its storey alone.
+
+    Carries ``func``/``keywords`` the way the ``functools.partial`` it replaces did, so that
+    "which builder does this sheet use" stays an answerable question — the one thing
+    ``test_sheet_index`` asserts to keep S-100 and S-101 from quietly aliasing the floorplan.
+    """
 
     def scene(model: ResolvedModel) -> Scene:
         return build(model_at_level(model, primary), storey=primary, **kwargs)
 
+    scene.func = build          # type: ignore[attr-defined]
+    scene.keywords = {"storey": primary, **kwargs}  # type: ignore[attr-defined]
     return scene

@@ -310,7 +310,14 @@ def test_s101_schedules_headers_over_their_openings(catlin_model):
 
 
 def test_s101_draws_the_load_path_beam_to_post_to_support(catlin_model):
-    levels = framed_levels(catlin_model, "second")
+    # Scoped to the LEVEL, the way S-101 itself is built. The balcony's cast columns stand on
+    # `court-upper` — its own building, the same datum as `second` — so asking the raw model
+    # about one storey finds the beams that bear on those columns and not the columns, which
+    # is a load path drawn half-way (→ emit/draw/datum).
+    from typehaus.emit.draw.datum import model_at_level
+
+    scoped = model_at_level(catlin_model, "second")
+    levels = framed_levels(scoped, "second")
     tables = {table.title: table for table in build_storey_framing_schedules(levels)}
     load_path = tables["BEAM / POST SCHEDULE (LOAD PATH)"]
     beams = [row for row in load_path.rows if row[2] == "BEAM"]
@@ -318,7 +325,7 @@ def test_s101_draws_the_load_path_beam_to_post_to_support(catlin_model):
     assert beams and posts
     assert any(row[5].startswith("PT-SG-") for row in beams)      # beam bears on posts
     assert all(row[5] for row in posts)                            # post bears on something
-    scene = build_framing_plan(catlin_model, "second")
+    scene = build_framing_plan(scoped, "second")
     assert "S-BEAM" in scene.by_layer() and "S-COLS" in scene.by_layer()
     assert "CONNECTOR SCHEDULE" in _joined(scene)
 

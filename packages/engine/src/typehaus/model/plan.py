@@ -197,21 +197,41 @@ class PlanModel(HausModel):
         gave nine plumbing plans and a main floor plan with no porch on it.
 
         ``primary`` is the tag the level is NAMED and addressed by, and it is the dwelling's
-        storey wherever one stands on the datum, so the level list reads ``basement, garage,
-        main, second, attic`` rather than fourteen entries. Grouping is by rounded elevation:
-        two storeys reading one constant are bit-equal, but a datum should not split on the
-        last ulp of a float that has been through JSON.
+        storey wherever one stands on the level, so catlin's fourteen storeys read as
+        ``basement, main, second, attic``. Grouping is by ``Storey.level`` where a storey
+        authors one and by its datum otherwise — see :meth:`_level_key`.
         """
-        groups: dict[int, list[Storey]] = {}
+        groups: dict[str, list[Storey]] = {}
         for storey in self.storeys:
-            groups.setdefault(round(storey.elevation.meters * 1e4), []).append(storey)
+            groups.setdefault(self._level_key(storey), []).append(storey)
         levels = []
-        for key in sorted(groups):
+        for key in groups:
             here = sorted(groups[key], key=lambda s: (
                 self.building_of(s.tag) not in self._dwelling_tags(),
-                self.building_order(self.building_of(s.tag)), s.tag))
+                self.building_order(self.building_of(s.tag)),
+                s.elevation.meters, s.tag))
             levels.append((here[0], tuple(groups[key])))
-        return tuple(levels)
+        # By the primary's datum, so the list still reads bottom-up.
+        return tuple(sorted(levels, key=lambda item: item[0].elevation.meters))
+
+    def _level_key(self, storey: Storey) -> str:
+        """What groups this storey with others: its authored ``level``, else its datum.
+
+        An authored level wins outright — a storey naming one is making a claim about which
+        floor it is drawn with, and that claim may cross datums (the garage's ``-1'-0"`` stem
+        top is the same floor as the house's ``0'-0"`` deck). Unauthored, the datum is the
+        honest default and rounds to 0.1 mm: two storeys reading one constant are bit-equal,
+        but a float that has been through JSON should not split a floor on the last ulp.
+        """
+        if storey.level:
+            joined = self.storey(storey.level)
+            # One hop only. ``level`` names the storey to be drawn with, so the target's own
+            # key is the answer — and a target that itself names one would make the grouping
+            # depend on chain order, so it is not followed.
+            if joined is not None and not joined.level:
+                return f"datum:{round(joined.elevation.meters * 1e4)}"
+            return f"level:{storey.level}"
+        return f"datum:{round(storey.elevation.meters * 1e4)}"
 
     def _dwelling_tags(self) -> frozenset[str]:
         return frozenset(b.tag for b in self.buildings() if b.kind == "dwelling")
@@ -226,9 +246,8 @@ class PlanModel(HausModel):
         storey = self.storey(storey_tag)
         if storey is None:
             return (storey_tag,)
-        key = round(storey.elevation.meters * 1e4)
-        return tuple(s.tag for s in self.storeys
-                     if round(s.elevation.meters * 1e4) == key)
+        key = self._level_key(storey)
+        return tuple(s.tag for s in self.storeys if self._level_key(s) == key)
 
     def storey_elements(self, storey_tag: str) -> tuple[Element, ...]:
         return self.elements.get(storey_tag, ())

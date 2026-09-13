@@ -66,8 +66,9 @@ export function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty
   );
 }
 
-// One tab per LEVEL, never per storey: catlin has fourteen storeys on five datums, and the
-// four extra tags at 0'-0" are the same floor of four other structures (→ model/levels.ts).
+// One tab per LEVEL, never per storey: catlin's fourteen storeys are four floors, and the
+// extra tags are the same floor of another structure — the garage, the porch, the north
+// entry — which a plan wants drawn WITH the house, not beside it (→ model/levels.ts).
 export function StoreyTabs({ model }: { model: Model }) {
   const activeStorey = useStore((s) => s.activeStorey);
   const setActiveStorey = useStore((s) => s.setActiveStorey);

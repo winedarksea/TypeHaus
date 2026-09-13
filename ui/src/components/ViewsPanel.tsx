@@ -152,7 +152,7 @@ export function ViewsPanel() {
       <DisciplinesGrid viewMode={viewMode} />
 
       <h3>Level</h3>
-      {/* Levels, not storeys: fourteen storeys stand on five datums here (→ model/levels.ts). */}
+      {/* Levels, not storeys: fourteen storeys make four levels here (→ model/levels.ts). */}
       <select value={activeLevelKey(model, activeStorey) ?? ""}
         onChange={(e) => setActiveStorey(e.target.value || null)} style={{ width: "100%" }}>
         {levelsOf(model).map((l) => (

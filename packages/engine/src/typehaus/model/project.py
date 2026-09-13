@@ -127,6 +127,25 @@ class Storey(Element):
     default_ceiling_height: Length
     vertical_datum: FaceRef = face("sheathing-ext")  # #43 default
     building: str = ""
+    level: str = ""
+    """The storey this one is DRAWN WITH — same floor plan, same work package. Empty = alone.
+
+    Names another storey's ``tag`` rather than a free label, so there is nothing to keep in
+    sync: ``Storey(tag="garage", level="main")`` says "the garage is drawn on the main floor
+    plan", and ``main`` itself authors nothing.
+
+    The third axis, and the one a drawing actually wants. ``building`` says which structure a
+    storey belongs to and ``elevation`` says where its datum is; neither answers "is this the
+    same floor as that". The garage bears its wood walls at ``-1'-0"`` (the ICF stem top) and
+    the house's main deck is at ``0'-0"``, so grouping on elevation alone puts them on
+    separate floor plans and cuts the north entry — whose landing is ``0'-0"`` and whose
+    screen wall stands on the garage's datum — in half. A foot is a step, not a storey, and no
+    builder wants the garage on its own sheet away from the house it is attached to.
+
+    Authored rather than inferred from a tolerance: "within four feet is the same floor" is a
+    magic number that works here and silently merges two real floors in the next house. Which
+    storeys are one floor is a claim the designer makes, like building membership.
+    """
 
 
 @register_element

@@ -202,7 +202,12 @@ _storeys = (
     # the overhead door carries a negative sill (plan/storeys/garage.py). Plates are 8'-4"
     # so the garage roof stays put as grade takes the storey down; see the note on WALLS
     # there.
-    Storey(uid="STGARAAAAA", tag="garage", building="garage",
+    # DRAWN WITH THE MAIN FLOOR. The garage bears its wood walls on the ICF stem top a foot
+    # below the house's deck, and a foot is a step, not a storey: the garage is attached to
+    # the house, a door connects them, and a reader holding the main floor plan needs to see
+    # both. `level=` groups the sheet and the work package without moving the datum, which
+    # stays the real bearing elevation every wall and sleeve here is resolved against.
+    Storey(uid="STGARAAAAA", tag="garage", building="garage", level="main",
            elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
            default_ceiling_height=ft(8, 4)),
     # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
@@ -245,7 +250,10 @@ _storeys = (
     # ** THE ELEVATION IS THE GARAGE STOREY'S OWN EXPRESSION, CHARACTER FOR CHARACTER. ** Not
     # a literal -1'-0": the stem tops out GARAGE_STEM_REVEAL above GRADE, and a literal here
     # would drift the panel off the stem the first time grade moved. Delta zero.
-    Storey(uid="E1V1RZ6S8B", tag="entry-low", building="entry",
+    # Same floor, same reason — and this is the split the whole exercise was aimed at: the
+    # screen wall stands on the garage's datum while the landing it encloses is at 0'-0", so
+    # without this the north entry appears on two sheets and on neither of them whole.
+    Storey(uid="E1V1RZ6S8B", tag="entry-low", building="entry", level="main",
            elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
            default_ceiling_height=ft(8, 4)),
     # The landing level: the bridge deck, its beams, piers, tiers and guards, at the main
