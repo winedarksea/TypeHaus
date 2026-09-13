@@ -60,6 +60,31 @@ def _rating_label(product: object) -> str:
     return "dry"
 
 
+def _run_watts(run: object, product: object) -> float:
+    """One run's connected watts: its type's per-foot draw over its *resolved* length.
+
+    The single place that product is formed — the authored ``LightRun`` carries a ``path``,
+    not a length, so every caller reads ``ResolvedLightRun.length_m``.
+    """
+    watts_per_ft = getattr(product, "watts_per_ft", None) or 0.0
+    return watts_per_ft * getattr(run, "length_m", 0.0) * _M_TO_FT
+
+
+def line_voltage_run_va(model: ResolvedModel) -> dict[str, float]:
+    """``{run tag: connected VA}`` for every *line-voltage* run, indexed by tag.
+
+    A line-voltage run is one with a ``circuit`` and no ``psu_ref``: it is a load on a
+    branch circuit in its own right, and nothing else in the model accounts for it. A 24V
+    run is deliberately absent — its load belongs to its supply, which is a device on a
+    circuit like any other, and counting both would double the tape
+    (→ ``takeoff/electrical._connected_va``, which indexes this by the authored element's
+    tag). VA is taken as watts: an LED driver at unity power factor.
+    """
+    types = _device_types(model)
+    return {run.tag: _run_watts(run, types.get(run.type_ref))
+            for run in model.light_runs if run.circuit and run.psu_ref is None}
+
+
 def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per luminaire *type* that is actually installed, keyed by schedule mark.
 
@@ -173,9 +198,8 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
 
     for run in sorted(model.light_runs, key=lambda item: item.tag):
         product = types.get(run.type_ref)
-        watts_per_ft = getattr(product, "watts_per_ft", None) or 0.0
         length_ft = run.length_m * _M_TO_FT
-        watts = watts_per_ft * length_ft
+        watts = _run_watts(run, product)
         runs.append({
             "tag": run.tag, "type": run.type_ref,
             "mark": getattr(product, "type_mark", None) or "",
@@ -268,13 +292,21 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
     """The real connected lighting load per circuit, against the 220.82 area allowance.
 
     A 24V run contributes nothing directly: its load is its supply's, and the supply is a
-    device on a branch circuit like any other. Counting both would double the tape.
+    device on a branch circuit like any other. Counting both would double the tape. A
+    *line-voltage* run is the opposite case — it is the load on its circuit, and it is
+    counted here, under ``runs`` rather than in the ``fixtures`` count: a run has lineal
+    feet, not a unit to count.
     """
     types = _device_types(model)
     luminaire_tags = set(luminaire_types(model.plan.library))
     psu_tags = {run.psu_ref for run in model.light_runs if run.psu_ref}
 
     by_circuit: dict[str, dict[str, object]] = {}
+
+    def _row(circuit: str) -> dict[str, object]:
+        return by_circuit.setdefault(circuit, {"circuit": circuit, "fixtures": 0, "runs": 0,
+                                               "connected_va": 0.0})
+
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if element.element_kind != "ElectricalDevice":
@@ -285,15 +317,22 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
             if circuit is None:
                 continue
             va = getattr(types.get(element.type_ref or ""), "load_va", None) or 0.0
-            row = by_circuit.setdefault(circuit, {"circuit": circuit, "fixtures": 0,
-                                                  "connected_va": 0.0})
+            row = _row(circuit)
             row["fixtures"] = int(row["fixtures"]) + 1
             row["connected_va"] = float(row["connected_va"]) + va
+
+    for run in model.light_runs:
+        if run.circuit is None or run.psu_ref is not None:
+            continue
+        row = _row(run.circuit)
+        row["runs"] = int(row["runs"]) + 1
+        row["connected_va"] = float(row["connected_va"]) + _run_watts(run, types.get(run.type_ref))
 
     conditioned_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
     total = sum(float(row["connected_va"]) for row in by_circuit.values())
     return {
         "per_circuit": [{"circuit": row["circuit"], "fixtures": int(row["fixtures"]),
+                         "runs": int(row["runs"]),
                          "connected_va": round(float(row["connected_va"]), 1)}
                         for row in (by_circuit[key] for key in sorted(by_circuit))],
         "total_connected_va": round(total, 1),

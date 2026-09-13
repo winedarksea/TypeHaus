@@ -3,8 +3,9 @@
 Circuits are authored (``Library.circuits``); everything here is a projection of them plus
 the devices/equipment that reference them. Connected VA prefers the authored
 ``Circuit.load_va``; when unset it is summed from the referencing devices' typed
-``ElectricalDeviceType.load_va`` — a circuit with neither reports 0 and the schedule shows
-it, which is the honest state, not an estimate.
+``ElectricalDeviceType.load_va``, plus any line-voltage ``LightRun`` on it at its type's
+watts per resolved foot — a circuit with neither reports 0 and the schedule shows it, which
+is the honest state, not an estimate.
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import math
 from typehaus.model.enums import BackupTier
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.lighting import line_voltage_run_va
 
 _M2_TO_FT2 = 10.7639104167
 
@@ -48,13 +50,25 @@ def _circuit_consumers(model: ResolvedModel) -> dict[str, list]:
 
 
 def _connected_va(model: ResolvedModel, circuit, consumers: list) -> float:
+    """Authored ``load_va`` if the circuit states one; otherwise what is on it.
+
+    Devices bill their type's ``load_va``. A line-voltage ``LightRun`` has no ``load_va`` —
+    it is watts per foot over a length — so its VA is indexed by tag from the *resolved*
+    runs (the authored element carries a ``path``, not a length). A 24V run is not on a
+    circuit at all; its PSU is, and the PSU is a device counted above.
+    """
     if circuit.load_va is not None:
         return float(circuit.load_va)
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    run_va = line_voltage_run_va(model)
     return sum(
         float(types[element.type_ref].load_va or 0.0)
         for element in consumers
         if element.element_kind == "ElectricalDevice" and element.type_ref in types
+    ) + sum(
+        run_va.get(element.tag, 0.0)
+        for element in consumers
+        if element.element_kind == "LightRun"
     )
 
 

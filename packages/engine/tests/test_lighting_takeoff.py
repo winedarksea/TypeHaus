@@ -183,3 +183,28 @@ def test_no_lighting_circuit_exceeds_its_continuous_rating(catlin_model):
         circuit = circuits[row["circuit"]]
         limit = circuit.breaker_amps * 120 * 0.8
         assert row["connected_va"] <= limit, (row, limit)
+
+
+def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
+    """A 120V run is a load on its circuit, and both the lighting summary and the panel
+    schedule say so — it has no ``load_va`` to bill, only watts per resolved foot."""
+    from typehaus.takeoff.electrical import panel_schedule
+    from typehaus.takeoff.lighting import line_voltage_run_va
+
+    va = line_voltage_run_va(catlin_model)
+    # The garage's three exterior linears: 64 LF of a 2.5 W/ft type.
+    assert set(va) == {"LR-G-EAVE-W", "LR-G-EAVE-E", "LR-G-GABLE-N"}
+    assert sum(va.values()) == pytest.approx(160.0, abs=0.05)
+    # A 24V run is absent: its load is its supply's, and counting both doubles the tape.
+    assert "LR-S-HALL-GAP" not in va
+
+    per_circuit = {r["circuit"]: r for r in connected_lighting_va(catlin_model)["per_circuit"]}
+    row = per_circuit["CKT-LT-MAIN"]
+    # Runs are counted under their own key — a run has lineal feet, not a unit to count.
+    assert row["runs"] == 3 and row["fixtures"] == 38
+    assert row["connected_va"] == pytest.approx(981.0, abs=0.05)
+
+    panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
+    assert panel["connected_va"] == pytest.approx(981.0, abs=0.5)
+    # 981 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may take.
+    assert panel["connected_va"] <= panel["breaker_amps"] * 120 * 0.8
