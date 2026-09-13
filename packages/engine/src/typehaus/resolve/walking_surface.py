@@ -73,6 +73,32 @@ def _finish_depth(model: ResolvedModel, finish_ref: str | None) -> float | None:
     return None
 
 
+def _bbox_misses(point: tuple[float, float], ring) -> bool:
+    """True when ``point`` lies outside ``ring``'s bounding box.
+
+    A cheap gate in front of the expensive one. ``buffer(-eps)`` only ever *shrinks* a
+    polygon, so a probe outside the raw outline's bbox cannot be covered by the shrunk one —
+    and that negative buffer is a GEOS offset-curve build, the single most expensive call in
+    the resolve pipeline: every probe used to buffer every deck and every slab in the house
+    (~1,300 offsets per ``resolve.placeables``, ~40% of the stage). Almost none of them can
+    contain the probe.
+    """
+    x, y = point
+    min_x = min_y = float("inf")
+    max_x = max_y = float("-inf")
+    for vertex in ring:
+        vx, vy = vertex[0], vertex[1]
+        if vx < min_x:
+            min_x = vx
+        if vx > max_x:
+            max_x = vx
+        if vy < min_y:
+            min_y = vy
+        if vy > max_y:
+            max_y = vy
+    return not (min_x <= x <= max_x and min_y <= y <= max_y)
+
+
 def _covers(model: ResolvedModel, point: tuple[float, float]):
     """(tag, storey, structural top) for every modelled surface standing at ``point``.
 
@@ -89,7 +115,7 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
     """
     probe = Point(*point)
     for floor in model.floors:
-        if len(floor.deck_outline) < 3:
+        if len(floor.deck_outline) < 3 or _bbox_misses(point, floor.deck_outline):
             continue
         cover = Polygon(floor.deck_outline,
                         holes=[list(void) for void in floor.deck_voids]
@@ -97,7 +123,8 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
         if not cover.is_empty and cover.contains(probe):
             yield floor.tag, floor.storey, floor.deck_z1_m
     for solid in model.solids:
-        if solid.category != "slab" or len(solid.outline) < 3:
+        if (solid.category != "slab" or len(solid.outline) < 3
+                or _bbox_misses(point, solid.outline)):
             continue
         cover = Polygon(solid.outline,
                         holes=[list(void) for void in solid.voids]).buffer(-_PLAN_EPS_M)
@@ -105,7 +132,8 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
             yield solid.tag, solid.storey, solid.z1_m
     for surface in getattr(model.plan.project.site, "impervious_surfaces", ()):
         verts = [vertex.xy_m for vertex in surface.outline]
-        if len(verts) >= 3 and Polygon(verts).buffer(-_PLAN_EPS_M).contains(probe):
+        if (len(verts) >= 3 and not _bbox_misses(point, verts)
+                and Polygon(verts).buffer(-_PLAN_EPS_M).contains(probe)):
             yield f"'{surface.label}'", None, surface.near_elevation.meters
 
 
@@ -155,7 +183,8 @@ def room_finish_at(model: ResolvedModel, storey: str, point: tuple[float, float]
     """
     probe = Point(*point)
     for room in model.rooms:
-        if room.storey != storey or len(room.clear_face) < 3:
+        if (room.storey != storey or len(room.clear_face) < 3
+                or _bbox_misses(point, room.clear_face)):
             continue
         if Polygon(room.clear_face).covers(probe):
             return room.tag, room.floor_finish, _finish_depth(model, room.floor_finish)
