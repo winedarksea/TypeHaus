@@ -26,6 +26,29 @@ def test_every_check_id_is_registered() -> None:
     assert not unknown, f"inspections name unregistered check(s): {unknown}"
 
 
+def test_every_extra_inspection_in_the_reference_house_is_registered() -> None:
+    """The same guard as above, for the holds a HOUSE authors — and it has to live here.
+
+    An unregistered ``check_ids`` entry on an ``[[extra]]`` is worse than an error:
+    ``fold_results([])`` is UNKNOWN (``schedule/readiness.py``), so the record sits at
+    ``not_ready`` for ever, ``cmd_schedule`` prints only ``record.unmet`` and never says
+    why, and it still cannot stop a recorded pass. Nothing anywhere reports the typo.
+
+    It cannot live in ``schedule/rules.py``: ``test_schedule_leaf.py`` forbids that package
+    from importing the check registry, which is exactly the leaf rule that makes the
+    scheduler testable without the checks tree. So the guard is a test, and this is it.
+    """
+    from _helpers import CATLIN
+
+    from typehaus.schedule.inspection_state import load_inspections
+
+    known = {check_id for check_id, _fn in registered()}
+    state = load_inspections(CATLIN)
+    named = {cid for extra in state.extra for cid in extra.check_ids}
+    assert named, "the reference house should author at least one extra hold"
+    assert not sorted(named - known), f"unregistered check(s) on an [[extra]]: {named - known}"
+
+
 def test_every_gated_trade_exists() -> None:
     unknown = sorted({trade for spec in MN_INSPECTIONS for trade in spec.gates} - TRADES)
     assert not unknown, f"inspections gate unknown trade(s): {unknown}"

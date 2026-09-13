@@ -16,11 +16,21 @@
 # Minn. R. 1300.0210 subp. 4 obliges the authority to state them at permit issuance: they
 # are open items, and the board says so until they are filled in.
 #
-# The `[[extra]]` girt-screw hold is NOT an AHJ inspection: no Minnesota rule requires it, and
-# the profile is right not to list it. It is here because the exterior foam is this house's
-# weather plane (there is no WRB), the girts are screwed through it, and once the foam is on
-# nobody can see a missed screw again. `authority = "owner"` — a hold the owner placed on
-# themselves is not an AHJ visit, and giving it a phone number would be a lie.
+# The `[[extra]]` holds are NOT AHJ inspections: no Minnesota rule requires either, and the
+# profile is right not to list them. `authority = "owner"` throughout — a hold the owner
+# placed on themselves is not an AHJ visit, and giving it a phone number would be a lie.
+#
+#   * `girt_screws` is here because the exterior foam is this house's weather plane (there
+#     is no WRB), the girts are screwed through it, and once the foam is on nobody can see a
+#     missed screw again.
+#   * `truss_mep_review` is BLD-05's actual recommendation, made mechanical. Three trades
+#     thread FS-S-WEST's 8 7/8" web window and none of them sees the others' drawings; JLC
+#     on open-web floor trusses is blunt about the remedy — "it is beneficial to have
+#     plumbing layouts designed in advance and reviewed by the plumber BEFORE trusses are
+#     fabricated" — and a truss blank is the one thing on this job that cannot be corrected
+#     after the fact. It is an `[[extra]]` rather than an authored hold on the visit because
+#     only `[[extra]]` carries `attempts`, and the first set of shop drawings is usually not
+#     the last.
 
 [permit]
 # Filled in at issuance. The code edition is a FIELD and not a constant: the 2024-IRC-based
@@ -75,6 +85,40 @@ confirmed = "2026-09-11"
 label = "Third-party test report, filed with DSI"
 lead_days = 0
 
+
+[[extra]]
+# ** THIS ONE HAS NO `gates`, DELIBERATELY, AND `girt_screws` ABOVE IS WHY. **
+#
+# A gate names a TRADE and a trade is not schedulable. `girt_screws`'s own `gates` is
+# dropped as circular today (`haus site validate` prints it) and it bites solely through the
+# authored `depends_on` in tasks.toml. Worse here: implied gates never reach a standalone
+# visit at all — `schedule/visits.py` calls `implied_gates()` only in the implicit-package
+# branch — so a gate could never attach to `site/long-lead-orders`, which is the one visit
+# this hold exists to stand in front of. And a gate on "framing" would also catch
+# `task/framing/basement`, a stairwell partition that owes the fabricator nothing.
+#
+# The two authored `depends_on` edges in tasks.toml are the mechanism that works.
+#
+# ** DO NOT GIVE THIS A `requires`. ** It is a sink — no `after`, no `requires` — and that
+# is what keeps it out of a cycle: gates run visit -> inspection only, so nothing can come
+# back around. `requires` is the one field that could deadlock it, the way `gates` stapling
+# a later inspection onto an earlier trade's implicit visit deadlocked foundation_backfill.
+#
+# `check_ids` names `mep.run_member_crossing` because that check IS this review, done by the
+# engine: it grades every pipe, duct and raceway against the window its floor's section
+# gives it. An id here that is not registered would be worse than an error — `fold_results`
+# of nothing is UNKNOWN, the record sits at `not_ready` for ever, and nothing prints why.
+id = "truss_mep_review"
+label = "MEP layout reviewed against the floor-truss webs, before the trusses are fabricated"
+authority = "owner"
+check_ids = ["mep.run_member_crossing"]
+on_site = [
+  "FS-S-WEST layout issued to the truss fabricator, with the MEP overlay on it",
+  "plumber has reviewed the drain layout against the 8 7/8\" web window and signed it",
+  "chases designed INTO the webs where a run cannot hold the window",
+  "electrician and HVAC have marked their crossings on the same sheet",
+]
+milestone = "preconstruction"
 
 [[extra]]
 id = "girt_screws"

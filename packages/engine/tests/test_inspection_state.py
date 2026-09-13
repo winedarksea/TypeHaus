@@ -184,4 +184,7 @@ def test_the_catlin_file_loads() -> None:
     assert "building" in state.authorities
     # Saint Paul runs its own electrical inspections on its own number.
     assert state.authorities["electrical"].phone == "651-266-9003"
-    assert [x.id for x in state.extra] == ["girt_screws"]
+    # Two owner holds: the girt screws under the foam, and BLD-05's truss-shop MEP review
+    # ahead of the truss order. Neither is an AHJ inspection and neither has a phone number.
+    assert sorted(x.id for x in state.extra) == ["girt_screws", "truss_mep_review"]
+    assert {x.authority for x in state.extra} == {"owner"}

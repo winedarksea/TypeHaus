@@ -534,7 +534,10 @@ def test_catlin_has_a_ready_visit_and_a_reachable_excavation() -> None:
     assert "insp/foundation_backfill" not in earth.depends_on
 
     # And framing does not wait on the driveway apron, which is poured after they leave.
-    framing = board.visit("task/framing/building")
+    # The slug is the AUTHORED visit's: a visit slug is a package slug plus a label, so
+    # naming framing's blockers (BLD-05's truss-order edge) meant authoring
+    # `task/framing/building/frame` rather than the implicit `task/framing/building`.
+    framing = board.visit("task/framing/building/frame")
     assert framing is not None
     assert "task/concrete/building/flatwork" not in framing.depends_on
 
@@ -567,3 +570,57 @@ def test_write_inspections_round_trips_an_instance_and_its_attempts(tmp_path: Pa
     })
     write_inspections(tmp_path, state)
     assert load_inspections(tmp_path) == state
+
+
+# --- the truss-shop review (BLD-05) ------------------------------------------------------
+
+def test_the_truss_review_gates_the_order_and_the_board_still_has_ready_work() -> None:
+    """BLD-05's real recommendation, on the reference house, end to end.
+
+    *JLC* on open-web floor trusses: "it is beneficial to have plumbing layouts designed in
+    advance and reviewed by the plumber **before trusses are fabricated**." Three trades
+    thread FS-S-WEST's 8 7/8" web window and none sees the others' drawings, and a truss
+    blank is the one thing on this job that cannot be corrected afterwards.
+
+    Before this, ``site/long-lead-orders`` carried the floor-truss row, had no ``depends_on``
+    and **nothing downstream referenced it** — so "before the truss order" was a sentence in
+    a document and not a state the board could be in.
+
+    The board must still have ready work: a hold that stops everything is a hold nobody
+    keeps.
+    """
+    from _helpers import CATLIN
+
+    from typehaus.schedule.inspection_state import load_inspections
+
+    state = load_inspections(CATLIN)
+    review = next(x for x in state.extra if x.id == "truss_mep_review")
+    assert review.authority == "owner", "an owner hold is not an AHJ visit"
+    assert review.milestone == "preconstruction"
+    assert review.check_ids == ("mep.run_member_crossing",)
+    # A sink: no `after`, no `gates`, no `requires` — which is what keeps it out of a cycle.
+    assert review.after == () and review.gates == ()
+    assert len(review.on_site) == 4
+
+
+def test_the_catlin_board_is_acyclic_with_the_truss_hold_on_it() -> None:
+    """The one field that could deadlock this is ``[entries.truss_mep_review].requires``;
+    the TOML comment warns against it and this is the guard behind the warning."""
+    from _helpers import CATLIN
+
+    from typehaus.cli.cmd_schedule import _board as board_of
+
+    _model, board, _items = board_of(CATLIN)
+    assert not board.errors, board.errors
+    assert not find_cycles(board.visits, board.inspections)
+    ready = [slug for slug, record in board.readiness.items() if record.state == "ready"]
+    assert ready, "a hold that stops everything is a hold nobody keeps"
+
+    order = board.readiness["site/long-lead-orders"]
+    assert order.state == "blocked"
+    assert "truss_mep_review" in [c.ref for c in order.blockers if c.kind == "inspection"]
+
+    # And the order now gates the framing that consumes it — until this edge existed,
+    # site/long-lead-orders blocked nothing at all.
+    framing = board.readiness["task/framing/building/frame"]
+    assert "site/long-lead-orders" in [c.ref for c in framing.blockers if c.kind == "visit"]

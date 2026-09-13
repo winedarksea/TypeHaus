@@ -113,6 +113,18 @@ A visit's status **derives** from its checkpoints — `in_progress` once the fir
 `done` when the last is done — so `status` on a checkpointed visit is a validation error.
 `verified` stays a visit-level fact: the owner walks the arrival once, not once per pause.
 
+**A checkpoint's `after` is printed and validated but never blocks.** It is the authored
+order inside one arrival, and it is read back so a person can see it; the thing that
+actually holds work is a `depends_on` naming `slug#checkpoint`. Authoring `after` and
+expecting a blocker is the mistake this sentence exists to prevent.
+
+**An unregistered `check_ids` entry is worse than an error.** `fold_results([])` is UNKNOWN
+(`schedule/readiness.py`), so a record naming a check id that no module registers sits at
+`not_ready` for ever, `haus schedule` prints only `record.unmet` and never says why, and it
+still cannot stop a recorded pass — a typo becomes a permanent silent block. The guard is a
+test rather than a rule in `schedule/rules.py`, because `test_schedule_leaf.py` forbids that
+package from importing the check registry.
+
 ### `[calendar]`, `[contractors]` and `milestones`
 
 ```toml

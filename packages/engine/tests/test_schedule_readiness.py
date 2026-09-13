@@ -295,3 +295,50 @@ def test_a_genuinely_stale_dependency_is_still_reported() -> None:
                    visits={"task/concrete/building/footings": entry})
     labels = [c.label for c in board.readiness["task/concrete/building/footings"].constraints]
     assert any("names no current visit" in label for label in labels)
+
+
+def test_an_extra_with_no_gates_blocks_only_what_names_it() -> None:
+    """**The assertion that pins BLD-05's `depends_on`-over-`gates` choice shut.**
+
+    ``insp/truss_mep_review`` has to stand in front of one standalone visit — the truss
+    order — and in front of nothing else. ``gates`` cannot do that twice over: implied gates
+    are only applied in the implicit-package branch, so they never reach a standalone visit
+    at all, and a gate names a TRADE, so a gate on "framing" would also catch a stairwell
+    partition that owes the fabricator nothing. An authored ``depends_on`` is the mechanism
+    that works, and this is the test that stops someone "tidying" it into a gate.
+    """
+    review = ExtraInspection(id="truss_mep_review", label="MEP vs the truss webs",
+                             authority="owner", milestone="foundation")
+    board = _board(
+        [_item("earth"), _item("framing")],
+        visits={"site/long-lead-orders": VisitEntry(
+            label="Long-lead orders", trade="framing",
+            depends_on=("insp/truss_mep_review",))},
+        extra=(review,))
+
+    order = board.readiness["site/long-lead-orders"]
+    assert order.state == "blocked"
+    assert [c.ref for c in order.blockers if c.kind == "inspection"] == ["truss_mep_review"]
+
+    # And it attaches to NO implicit visit: framing is blocked by its own trade gate only.
+    framing = board.readiness["task/framing/building"]
+    assert "truss_mep_review" not in [c.ref for c in framing.blockers]
+    assert [c.ref for c in framing.blockers if c.kind == "inspection"] == ["backfill"]
+
+
+def test_an_extra_that_is_a_sink_cannot_close_a_cycle() -> None:
+    """``truss_mep_review`` authors no ``after`` and no ``gates``, so nothing routes back
+    into it — structurally unlike the ``foundation_backfill`` deadlock, which closed because
+    ``gates`` stapled a later inspection onto an earlier trade's implicit visit."""
+    from typehaus.schedule.graph import find_cycles
+
+    review = ExtraInspection(id="truss_mep_review", label="MEP vs the truss webs",
+                             authority="owner", milestone="foundation")
+    assert review.after == () and review.gates == ()
+    board = _board(
+        [_item("earth"), _item("framing")],
+        visits={"site/long-lead-orders": VisitEntry(
+            label="Long-lead orders", trade="framing",
+            depends_on=("insp/truss_mep_review",))},
+        extra=(review,))
+    assert not find_cycles(board.visits, board.inspections)

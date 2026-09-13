@@ -138,6 +138,37 @@ constraints = [
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 
+# ** AUTHORED ONLY TO NAME ITS BLOCKERS, AND THE SLUG HAD TO CHANGE TO DO IT. **
+# A visit slug is a PACKAGE slug plus a label, so there is no way to author the implicit
+# `task/framing/building` visit in place — `task/framing/building/frame` is a new visit id.
+# The work PACKAGE keeps its own slug and GlobalId, which is what `haus tasks --csv` exports
+# and what a PM tool keyed on, so the re-export updates rather than duplicates there.
+#
+# Why author it at all: `site/long-lead-orders` carries the floor-truss row and, until the
+# `insp/truss_mep_review` edge above, nothing downstream referenced it. The truss order now
+# waits on the MEP review; this is the edge that makes the framing wait on the order, so the
+# hold gates something that gates something.
+#
+# An authored visit inherits NO trade gate, so `insp/foundation_backfill` has to be restated
+# here. That is the cost of authoring, paid deliberately — dropping it would silently let
+# framing start over an un-inspected backfill.
+#
+# **Package slugs, not the four concrete arrival slugs.** A later re-split of the concrete
+# packages must not leave this list stale, and a package slug survives one where an arrival
+# slug does not.
+#
+# `site/long-lead-orders` is named LAST so the date line keeps naming
+# `task/concrete/basement/walls`: `visit_dates` skips inspection dependencies and reads the
+# order of this list back.
+[visits."task/framing/building/frame"]
+label = "Frame the building — walls, decks, roof"
+depends_on = [
+  "task/concrete/building",
+  "task/concrete/basement",
+  "insp/foundation_backfill",
+  "site/long-lead-orders",
+]
+
 # ---------------------------------------------------------------------------------------
 # The calendar and the subs.
 #
@@ -273,10 +304,16 @@ constraints = [
   { label = "spoil and topsoil stockpile located clear of the excavation", owner = "owner" },
 ]
 
+# ** THE TRUSS ORDER WAITS ON THE MEP REVIEW, AND THIS EDGE IS THE ONLY THING THAT SAYS SO. **
+# BLD-05's real recommendation is a meeting held at the right time, and until now it was a
+# sentence in a document: this visit carried the floor-truss row, had no `depends_on`, and
+# nothing downstream referenced it. `insp/truss_mep_review` is an owner hold in
+# inspections.toml; see the comment on it for why it is an `[[extra]]` with no `gates`.
 [visits."site/long-lead-orders"]
 label = "Long-lead orders — trusses, windows, ERV, steel, cabinets"
 trade = "framing"
 milestone = "preconstruction"
+depends_on = ["insp/truss_mep_review"]
 # Every `lead_days` below is deliberately BLANK until it is quoted. The board says "lead
 # time unknown" and asks for it thirty days before the suggested start; it never defaults
 # one, because a fabricated lead time is the number a schedule gets built on.
