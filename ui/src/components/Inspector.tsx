@@ -536,7 +536,9 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
   const confirmed = w.assembly && w.assembly !== "UNCONFIGURED";
   const assemblies = model.catalog?.assemblies ?? [];
   const assignAssembly = async (tag: string) => {
-    const ok = await applyOps([{ op: "update", type: "Wall", tag: w.tag, fields: { assembly: tag } }]);
+    const ok = await applyOps([
+      { op: "update", type: w.kind ?? "Wall", tag: w.tag, fields: { assembly: tag } },
+    ]);
     if (ok) toast(`${w.tag} → ${tag}`);
   };
   return (

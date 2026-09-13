@@ -122,3 +122,49 @@ def test_reconcile_recovers_when_the_in_memory_plan_diverges(starter_dir, tmp_pa
     assert state.plan.model_dump() == load_plan(dst).plan.model_dump()
     assert notified == [True]
     assert state.model is not None
+
+
+def test_foundation_wall_patch_applies_rather_than_422(tmp_path: Path) -> None:
+    """A PATCH addressed to a FoundationWall lands in source (was: WritebackError → 422).
+
+    `writeback_py._call_kind` matches the constructor `Name` literally — deliberately, so a
+    rewrite is honest about which constructor it edits — so the op has to carry the element's
+    real class name. model.json now emits it per wall (`server/model_json_fabric._wall_kind`)
+    and the UI sends it back instead of a hardcoded "Wall".
+    """
+    dst = tmp_path / "catlin"
+    copy_house(CATLIN, dst)
+    state = ProjectState.open(dst)
+    basement = dst / "plan" / "storeys" / "basement.py"
+    assert 'FoundationWall(uid="CBW101AAAA", tag="W-B-S1"' in basement.read_text()
+    before = basement.read_text().count('assembly="BASEMENT_12"')
+
+    state.apply_edit([PatchOp("update", "FoundationWall", "W-B-S1",
+                              {"assembly": "BASEMENT_12"})], None)
+    state._flush_writes()
+    assert 'tag="W-B-S1"' in basement.read_text()
+    assert basement.read_text().count('assembly="BASEMENT_12"') > before
+
+    # The literal match is the point: the base kind is NOT a valid address for a subclass.
+    with pytest.raises(WritebackError):
+        state.apply_edit([PatchOp("update", "Wall", "W-B-S1", {})], None)
+
+
+def test_model_json_kind_is_what_the_writeback_accepts(tmp_path: Path) -> None:
+    """The emitted `kind` and the writeback's constructor match are one contract."""
+    from typehaus.resolve import resolve
+    from typehaus.server.model_json import model_to_dict
+
+    dst = tmp_path / "catlin"
+    copy_house(CATLIN, dst)
+    result = load_plan(dst)
+    model, _ = resolve(result.plan)
+    kinds = {w["tag"]: w["kind"] for w in model_to_dict(model)["walls"]}
+    assert kinds["W-B-S1"] == "FoundationWall"
+
+    state = ProjectState.open(dst)
+    state.apply_edit([PatchOp("update", kinds["W-B-S1"], "W-B-S1",
+                              {"assembly": "BASEMENT_12"})], None)
+    state._flush_writes()
+    assert 'assembly="BASEMENT_12"' in (
+        dst / "plan" / "storeys" / "basement.py").read_text()

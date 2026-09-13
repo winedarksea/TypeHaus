@@ -442,3 +442,21 @@ def test_every_payload_key_has_a_ui_type(catlin_payload):
         f"model_to_dict emits {missing} but ui/src/model/types.ts's Model interface "
         "has no matching field(s) — the UI cannot see this data"
     )
+
+
+def test_every_wall_carries_its_authored_kind(catlin_payload):
+    """The wall payload names the constructor, so the UI can address it for writeback.
+
+    A writeback op matches the constructor `Name` literally (source/writeback_py._call_kind),
+    so an editor that sent `type: "Wall"` for every wall could never patch a FoundationWall —
+    the op routed to no file and the server answered 422.
+    """
+    walls = catlin_payload["walls"]
+    assert walls
+    for wall in walls:
+        assert wall["kind"] in ("Wall", "FoundationWall"), wall["tag"]
+    by_tag = {w["tag"]: w for w in walls}
+    assert by_tag["W-B-S1"]["kind"] == "FoundationWall"
+    assert by_tag["W-B-S1"]["is_foundation"] is True
+    # And a plain framed wall is still spelled "Wall" — the kind is the class, not a flag.
+    assert any(w["kind"] == "Wall" for w in walls)

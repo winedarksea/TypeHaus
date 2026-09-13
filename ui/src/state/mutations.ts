@@ -135,7 +135,7 @@ export function createMutationActions(
     let tag: string | null = null;
     if (selection.kind === "wall") {
       const w = model.walls.find((x) => x.uid === selection.uid);
-      type = "Wall"; tag = w?.tag ?? null;
+      type = w?.kind ?? "Wall"; tag = w?.tag ?? null;
     } else if (selection.kind === "opening") {
       const o = model.openings.find((x) => x.uid === selection.uid);
       type = o?.kind === "rough_opening" ? "RoughOpening" : o?.is_door ? "Door" : "Window";

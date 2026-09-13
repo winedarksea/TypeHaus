@@ -194,6 +194,12 @@ export interface Wall {
   // on no line, where its own axis is the only datum there is.
   layout_axis: [[number, number], [number, number]] | null;
   is_foundation: boolean;
+  // The authored constructor's class name — "Wall", "FoundationWall", … A writeback op is
+  // matched against the constructor name LITERALLY, so every op addressing a wall must send
+  // this back rather than a hardcoded "Wall" (a FoundationWall so addressed routes to no
+  // file and comes back 422). Optional only for hand-built test fixtures; the engine always
+  // emits it (→ server/model_json_fabric._wall_kind). Read it as `w.kind ?? "Wall"`.
+  kind?: string;
   layers: Layer[];
   members: Member[];
 }

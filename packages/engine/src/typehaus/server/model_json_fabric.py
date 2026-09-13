@@ -35,6 +35,12 @@ def _wall_scope(wall) -> str:
     return "foundation wall" if wall.is_foundation else "wall"
 
 
+def _wall_kind(model: ResolvedModel, wall) -> str:
+    """The authored element's class name, for the writeback's literal constructor match."""
+    element = model.plan.by_tag(wall.tag)
+    return getattr(element, "element_kind", None) or "Wall"
+
+
 def wall_graph_json(
     model: ResolvedModel, provenance: Provenance | None
 ) -> dict[str, Any]:
@@ -43,6 +49,14 @@ def wall_graph_json(
         "walls": [
             {
                 "uid": w.uid, "tag": w.tag, "storey": w.storey, "assembly": w.assembly,
+                # The authored constructor's own class name — "Wall", "FoundationWall", …
+                # A writeback op matches the constructor `Name` LITERALLY
+                # (source/writeback_py._call_kind), so an editor that addressed every wall
+                # as `type: "Wall"` could never patch a FoundationWall: the op routed to no
+                # file and came back 422. The UI sends this back verbatim instead of
+                # guessing. Falls back to "Wall" for a wall with no authored element behind
+                # it (params-generated), which is unaddressable either way.
+                "kind": _wall_kind(model, w),
                 "provenance": _provenance(provenance, w.tag),
                 "axis": [list(w.axis[0]), list(w.axis[1])],
                 "z0_m": w.z0_m, "z1_m": w.z1_m, "top_z0_m": w.top_z0_m,

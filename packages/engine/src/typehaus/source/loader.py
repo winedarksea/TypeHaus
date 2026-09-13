@@ -504,6 +504,11 @@ def _alias_library() -> None:
 # (loader.editable_files). If such an instance is authored in a non-editable module, the
 # edit fails at commit with no source change — the silent "move didn't save" bug. We make
 # that a hard load-time ERROR so the house can never contain an un-editable movable element.
+#
+# These are BASE kinds: a subclass is as movable as its base (the MRO walk in
+# `_consistency_check`), and it is addressable because model.json emits each element's own
+# class name for the op to carry — `type: "FoundationWall"`, never the base's spelling, since
+# the writeback matches the constructor `Name` literally (`writeback_py._call_kind`).
 _UI_EDITABLE_KINDS = frozenset({
     "Furniture", "Fixture", "Appliance", "Equipment", "Register", "ElectricalDevice",
     "Door", "Window", "RoughOpening", "Wall", "Room", "Node", "Stair", "Railing",
@@ -606,7 +611,10 @@ def _consistency_check(
     missing = set(elements) - prov.editable_tags()
     for tag in sorted(missing):
         el = elements[tag]
-        # MRO walk: a FoundationWall(Wall) is as UI-movable as its base kind.
+        # MRO walk: a FoundationWall(Wall) is as UI-movable as its base kind — and really
+        # is addressable, because the op carries `el.element_kind`, which is what
+        # model.json emits for it (server/model_json_fabric._wall_kind) and what
+        # `_noneditable_authored` looks for below.
         movable = any(c.__name__ in _UI_EDITABLE_KINDS for c in type(el).__mro__)
         gen_loc = prov.location(tag)
         under_plan = gen_loc is not None and gen_loc.file.startswith("plan/")

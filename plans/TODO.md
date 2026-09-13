@@ -350,9 +350,12 @@ the future.
   `resolve/overlay.py`'s fixed-precision helper). **The class of bug is still the open item**:
   pin a Pyodide smoke test into CI, or bump Pyodide to 0.28.x (newer GEOS). Until then,
   `pytest` passing proves nothing about the published app's geometry.
-- **The writeback can't address a `FoundationWall` as `type: "Wall"`** — a PATCH comes back
-  422 even though the wall is authored in an editable file. A UI drag of a foundation wall
-  presumably fails the same way.
+- **`source/macros_walls.py` still hardcodes `"Wall"` in its split/heal/draw ops** (`:74`,
+  `:198-199`, `:272-273`), so those macros 422 on a foundation wall even though a plain
+  PATCH now works. Residual of the 2026-09-13 writeback fix, which taught `model.json` to
+  emit each wall's authored `kind` and the UI to send it back; the macros mint their own
+  ops and never see it. The same `_wall_kind` answer applies — they need the tag's real
+  class, not a constant.
 - **`W-B-CW3`/`W-B-STR2` are over-specified** (steel-stud ESS-closet assembly, closet is gone)
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
