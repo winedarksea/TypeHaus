@@ -603,16 +603,21 @@ ERV_CONDENSATE = [
 # fixable by elevation: the deck soffit is the ceiling here, so the whole usable band is
 # 1 5/8" deep and 0.3"/ft eats it in five feet.
 #
-# So the gym leg moved north onto y=10'-11", beside DU-B-ERV-R-GYM's y=10'-6 5/8" lane, and
-# SF-B-GYM (plan/storeys/basement.py) boxes the pair — the same band SF-B-HALL carries on
-# the other side of W-B-CS3, continued through the wall. 2 1/2" of clear y between the
-# pipe's surface and the duct's, which is all a 3/4" line beside a 3" duct needs.
+# So the gym leg moved north onto y=10'-11", beside DU-B-ERV-R-GYM's y=10'-6 5/8" lane —
+# one service band rather than two, 2 1/2" of clear y between the pipe's surface and the
+# duct's, which is all a 3/4" line beside a 3" duct needs.
 #
 # It leaves that band the only way that stays hidden: SOUTH INSIDE W-B-CS3 AND W-B-CS on
 # x=18'-0", dead centre of both stud cores (13'-4"..15'-2 3/4"), which are continuous
 # across y=10'-0". At y=9'-0" it is back in RM-B-SAUNA's service void and runs west to the
-# drop exactly as before. Head at 7'-8" rather than 7'-5 3/8": the extra 2 5/8" is what
-# leaves 1 1/2" between the pipe and SF-B-GYM's underside at its deep end.
+# drop exactly as before. Head at 7'-8" rather than 7'-5 3/8", which is what keeps the
+# pipe's bottom at 89" over the whole gym leg.
+#
+# ** SF-B-GYM BOXED THE PAIR AND IS RETIRED (2026-09-13). ** RM-B-GYM now declares its
+# ceiling open (plan/storeys/basement.py), so this leg and the duct beside it are the room's
+# design rather than a finding, and both are graded against the 6'-8" headroom line instead:
+# 89" and 88 1/2", 9" and 8 1/2" clear. NOTHING ON THIS RUN MOVES FOR THAT. The 2 5/8" the
+# head came up was argued off the deck soffit's own 1 5/8" usable band, not off the box.
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
             path=(pt(ft(27), ft(10, 11)), pt(ft(18), ft(10, 11)), pt(ft(18), ft(9)),

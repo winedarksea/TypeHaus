@@ -76,7 +76,7 @@ def test_soffit_ladder_framing_is_in_the_payload(catlin_model_ro):
     # is COVERAGE, not a census: enumerating the tags made this a tripwire that fired on any
     # new soffit (two basement bulkheads landed on 2026-09-07), which is not what it is for.
     assert set(soffits) == {item.tag for item in catlin_model_ro.soffits}
-    assert {"SF-S-DUCT", "SF-S-HP1", "SF-S-SUITE"} <= set(soffits)
+    assert {"SF-S-DUCT", "SF-S-HP1"} <= set(soffits)
     assert all(entry["members"] for entry in soffits.values())
     hp1 = soffits["SF-S-HP1"]
     categories = {member["category"] for member in hp1["members"]}

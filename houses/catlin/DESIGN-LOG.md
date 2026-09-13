@@ -1027,7 +1027,17 @@ pocket was possible there at all.
       line and the ERV is west of the hall, so ANY route between them crosses it — so they
       are boxed out by **`SF-B-HALL`**, a full-width bulkhead at the hall's south dead end
       (x 170.0725"..212.615", y 123.8125"..133.4375", underside 85 15/16" storey-relative,
-      7'-1 15/16" clear). The third was a modelling artefact worth fixing rather than boxing:
+      7'-1 15/16" clear). **[2026-09-13: that bulkhead is retired. `Room.exposed_services`
+      landed on 2026-09-13 and `RM-B-STAIR` now says in words what the box said in board —
+      the owner accepts exposed services in the basement, and the hall's south end is
+      circulation, not a room anybody sits in. Nothing about the paragraph above was wrong;
+      it was the best answer the model could hold at the time. Both runs still clear the
+      6'-8" headroom line on their own numbers, so no route was re-solved for the deletion.
+      `SF-B-GYM`, built on the same argument six days later, went with it — and so did
+      `SF-S-SUITE` upstairs, on `RM-S-SUITE`'s own declaration. Three boxes, one idea: a
+      soffit authored to answer a check was the engine's notion of a ceiling standing in for
+      the owner's.]** The third was a
+      modelling artefact worth fixing rather than boxing:
       `PR-B-HW-SAUNA` was **stacked 1 3/16" under `PR-B-CW-SAUNA`** on the same x=17'-4"
       line, which is not how a supply pair gets hung. They are side by side now — x=17'-4"
       and 17'-3", both at 7'-10 5/8" — and both clear at 2.55". There is no elevation pair

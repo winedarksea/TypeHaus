@@ -323,7 +323,8 @@ DUCTS_HVAC_SECOND = [
     # It begins ON the air handler's discharge face at (19'-6", 30'-4 1/2") inside SF-S-HP1
     # and crosses the y=27'-8" seam into SF-S-DUCT. `soffit_ref` names the hall box because
     # that is where the great majority of it runs; the check clips a run's extent to the box
-    # it names, which is the same idiom DU-S-HP-SUITE uses where SF-S-SUITE abuts.
+    # it names. (DU-S-HP-SUITE used the same idiom where SF-S-SUITE abutted; that box was
+    # retired 2026-09-13 and the branch is EXPOSED now, so this trunk is the only user left.)
     #
     # It ends at y=9'-10", where DU-S-HP-SOUTH-RISE picks it up COLLINEARLY at the cap.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
@@ -362,10 +363,21 @@ DUCTS_HVAC_SECOND = [
     # zone, then runs west down the suite's entry arm to the grille near D-S-SUITEBATH.
     # 175 cfm feeds two terminals — REG-S-HP-SUITE (100) and REG-A-HP-WEST (75), a floor
     # boot up through FS-ATTIC directly above. 315 fpm through 10x8, quiet.
+    #
+    # ** EXPOSED SINCE 2026-09-13, AND THE ELEVATION IS AUTHORED BECAUSE OF IT. ** SF-S-SUITE
+    # boxed this branch out of the entry arm and is retired; RM-S-SUITE declares its ceiling
+    # open instead. Dropping `soffit_ref` also drops the cavity that DERIVED this run's z —
+    # `_derived_base_z` would fall back to the storey datum and lay a supply duct on the
+    # floor — so the centreline is authored at the height the box had already given it:
+    # 100 1/8" storey-relative, which is DU-S-HP-SUP's own centreline inside SF-S-DUCT.
+    # ** THAT IS THE CEILING ON IT, NOT A PREFERENCE. ** A branch cannot tee above the trunk
+    # it comes off, so 216 1/8"..224 1/8" absolute is where this duct can be, exposed or not.
+    # Underside 8'-0 1/8" over the arm floor, against the 6'-8" headroom line the declaration
+    # does not retire.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
-            width=inch(10), depth=inch(8), routing=DuctRouting.SOFFIT,
-            soffit_ref="SF-S-SUITE", design_cfm=175),
+            width=inch(10), depth=inch(8), routing=DuctRouting.EXPOSED,
+            start_elevation=inch(100.125), end_elevation=inch(100.125), design_cfm=175),
     # The two south rooms' branch: RM-S-PLANT and RM-S-STUDY2 are fed off DU-S-HP-SOUTH,
     # which reaches them from FS-ATTIC's I-joist bay at y=3'-4". The soffit stops at
     # y=2'-10" and neither room is under it; the bay is how the air crosses the x=18'

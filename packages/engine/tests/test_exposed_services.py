@@ -2,7 +2,8 @@
 
 Boxing a run out with a ``Soffit`` was the only authored answer to
 ``mep.run_in_finished_volume`` until this landed, which made a soffit the engine's idea of a
-ceiling rather than the owner's: three of catlin's exist for no other reason.
+ceiling rather than the owner's: three of catlin's existed for no other reason, and all
+three were retired on 2026-09-13 once their rooms could say it in words.
 
 What these tests pin is the difference between this and a suppression, because that
 difference is the whole point and nothing about the code's shape defends it:
@@ -161,16 +162,18 @@ def test_a_declaration_that_grades_nothing_says_so(catlin_model) -> None:
 
 def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
     """The demonstration, pinned. Both rooms pass with their own sentence quoted, and the
-    gym's names the run it is carrying — ``PR-B-COND``, which crosses it under
-    ``SF-B-GYM``'s band rather than inside it.
+    gym's names both runs it is carrying — ``PR-B-COND`` and ``DU-B-ERV-R-GYM``, which
+    hang in its open ceiling since ``SF-B-GYM`` was retired on 2026-09-13.
 
-    ``RM-S-SUITE`` names none: ``SF-S-SUITE`` still boxes its duct out, so the declaration
-    is not yet what is carrying that room. Saying which of the two answered is the whole
-    reason the empty case gets its own sentence instead of "0 run(s)".
+    ``RM-S-SUITE`` names ``DU-S-HP-SUITE``. It named nothing until 2026-09-13, when
+    ``SF-S-SUITE`` was retired — and the empty case's own sentence is what said so, which
+    is the whole reason it exists instead of "0 run(s)".
     """
     passes = {f.element_tags[0]: f.message for f in _findings(catlin_model_ro)
               if f.result is Result.PASS and f.element_tags}
     assert "exposed services in the basement" in passes["RM-B-GYM"]
     assert "PR-B-COND" in passes["RM-B-GYM"]
+    assert "DU-B-ERV-R-GYM" in passes["RM-B-GYM"]
     assert "exposed duct in the primary suite" in passes["RM-S-SUITE"]
-    assert "nothing currently hangs in its open air" in passes["RM-S-SUITE"]
+    assert "DU-S-HP-SUITE" in passes["RM-S-SUITE"]
+    assert "nothing currently hangs in its open air" not in passes["RM-S-SUITE"]

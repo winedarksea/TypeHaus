@@ -324,16 +324,16 @@ the future.
    (`walls.ts:85`, `structure.ts:505`, `scene.ts:156`) use it only to pick which
    `tradeGroups` container an object files under. Recorded, not scheduled.
  - Model a rain garden to the west of the garage gathering water with drain tile from TR-G-LEADER-W and TR-RF-LEADER-W
- - **Six soffit boxes; three are candidates to retire.** `SF-S-DUCT` (second-storey hallway,
-   hosts `REG-S-HP-STAIR`, three cans and an LED driver), `SF-S-HP1` (it IS the air-handler
-   enclosure, with a framed `SoffitOpening` lidded by `FURN-S-NCLOSET-AP`) and `SF-B-BATH`
-   stay. **Answer: exposed pipe and duct are acceptable** — in the basement especially, and
-   exposed duct in the suite is fine — so `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` should go.
-   It is not a deletion, though: all three were authored to answer
-   `mep.run_in_finished_volume`, and catlin is held to a clean report, so deleting a box
-   just converts it into a finding. A run (or a room's ceiling) needs a way to be declared
-   deliberately exposed — positive authored evidence, not a suppression, since a suppressed
-   check folds to UNKNOWN and does not open the permit gate.
+ - **Soffits: three retired 2026-09-13, three stay.** `SF-B-HALL`, `SF-B-GYM` and
+   `SF-S-SUITE` are gone; `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE` carry
+   `Room.exposed_services` instead — a sentence the check quotes back in a PASS, so the
+   decision is in the report rather than suppressed. `DU-S-HP-SUITE` is `DuctRouting.EXPOSED`
+   with an authored centreline and `REG-S-HP-SUITE` sits in its underside at 8'-0 1/8".
+   `prices.toml`'s aggregate soffit row re-derived: 196.5 SF / 5.06 cy over three boxes.
+   `SF-S-DUCT` (a duct trunk) and `SF-S-HP1` (the air-handler enclosure) stay.
+   **`SF-B-BATH` stays too, and not for want of numbers** — its three runs clear the 6'-8"
+   headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided
+   a bathroom ceiling should be open. That is a design question, not a cleanup.
  - **Rebar (~5 tons, $10,000-18,000) is deliberately inside the `[concrete]` $/cy rates.** If
   it's ever authored as real elements, cut the concrete rates the same day. We may want to model rebar so it is clearly shown as a model element (selectable separately from concrete in the 3d view)
  - See if the sunken garden still has a R404.4 sliding failure

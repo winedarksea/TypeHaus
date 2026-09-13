@@ -41,7 +41,8 @@ would be claiming coverage it does not have.
 
 **A room may answer this in words.** Boxing a run out with a ``Soffit`` was the only
 authored answer until 2026-09-13, which made a soffit the engine's idea of a ceiling
-rather than the owner's: three of catlin's exist for no other reason. ``Room.exposed_services``
+rather than the owner's: three of catlin's existed for no other reason, and all three were
+retired the same week once their rooms could say it instead. ``Room.exposed_services``
 is the other answer — a sentence saying the room's ceiling is deliberately open — and it is
 positive evidence, not a suppression: the PASS quotes it back, so the report carries the
 decision instead of a silence. It retires the ceiling comparison for that room and **only**

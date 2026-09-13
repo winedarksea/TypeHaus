@@ -1763,38 +1763,55 @@
 # beam's clothes, now over four members instead of six.
 "beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.26 cy = ~20 LF — the porch front pair BM-SG-FRW/FRE only. The balcony's west and east beams left this row on 2026-09-03 for BEAM_GLULAM_TREATED, clear-finished
 #
-# FRAMED DUCT SOFFITS — THREE of them now, and the basis moved from LF to SF of board on
+# FRAMED DUCT SOFFITS — THREE of them, and the basis moved from LF to SF of board on
 # 2026-08-31 because a cubic-yard rate calibrated on one section shape stops meaning anything
 # once the shapes differ by 4x in area.
 #
-#   SF-S-DUCT    35"     x 14" over 24.8 LF   5.25 SF/LF   130.4 SF
-#   SF-S-SUITE   36"     x 14" over  6.5 LF   5.33 SF/LF    34.9 SF
-#   SF-S-HP1     40 3/4" x 21" over  7.8 LF   6.90 SF/LF    53.7 SF
-#                                                           219.0 SF  5.69 cy
+# ** RE-DERIVED 2026-09-13, AND THE COMMENT WAS STALE IN BOTH DIRECTIONS. ** Three soffits
+# were retired that day — SF-B-HALL, SF-B-GYM and SF-S-SUITE, each built only to satisfy
+# `mep.run_in_finished_volume` and each replaced by a `Room.exposed_services` sentence. But
+# the SF table below had ALSO never contained the basement boxes at all: it read 219.0 SF /
+# 5.69 cy, which is the three SECOND-STOREY boxes, while the take-off was billing 6.72 cy
+# over six of them. So the rate was calibrated on one population and applied to another for
+# six days. Every box the take-off bills is now in the table, which is the point of having
+# one. Read off the resolved model (plan area and z1 - z0), not off the authored drops:
 #
-# ** BOTH THE HALL BOX AND THE MACHINE BOX CHANGED SHAPE ON 2026-09-04. ** The air handler
-# crossed from RM-S-STUDY2's ceiling to RM-S-NCLOSET's, so SF-S-HP1 went from a 77"-wide,
-# 6'-8" box to a 40 3/4"-wide, 7'-9" one, and SF-S-DUCT was recut at both ends (y 2'-10"
-# instead of 7'-6" at the south, y 27'-8" instead of 34'-0" at the north). Net: 21.1 SF and
-# 1.27 cy less board and framing. The three boxes run 39.1 LF between them.
+#   box         plan (w x L)          drop      SF/LF   LF      SF       cy
+#   SF-B-BATH   24 5/8" x 39 15/16"   9 1/8"    3.573    3.33    11.89   0.192
+#   SF-S-DUCT   35"     x 298"        14 1/8"   5.271   24.83   130.90   3.158
+#   SF-S-HP1    40 3/4" x 93 3/8"     21"       6.896    7.78    53.66   1.713
+#                                                       35.94   196.45   5.063
+#
+#   SF/LF is (width + 2 x drop)/12 — an underside and two returns, the three planes a
+#   finisher tapes. cy is w x L x drop / 46656. The take-off reports 5.06 cy over 3 boxes,
+#   which is the last column.
+#
+# ** WHAT THE RETIREMENTS AND THE MISSING BOX DID, SEPARATELY. ** SF-S-SUITE took 34.9 SF
+# and 0.843 cy off the second storey. SF-B-HALL (0.096 cy) and SF-B-GYM (0.708 cy) were never
+# in the SF table, so they cost it nothing and cost the BILL 0.804 cy. SF-B-BATH joins the
+# table at 11.89 SF — a shallow narrow box is board-rich per cubic yard (61.8 SF/cy against
+# SF-S-HP1's 31.3), which is exactly the distortion this basis exists to keep out of the rate.
 #
 # Earlier stale text, for the record: the comment once read "SF-S-DUCT and SF-S-SUITE,
 # 4.38 cy ... 101.4 LF" — stale twice over. SF-S-HP1 joined on 2026-08-30 and went from a
 # 17" drop to 21" on 2026-08-31 for the FLEXX Ultra cabinet, and the "101.4 LF" was never a
-# run length: it was 4.38 cy divided by a nominal 14"x12" section.
+# run length: it was 4.38 cy divided by a nominal 14"x12" section. On 2026-09-04 the air
+# handler crossed from RM-S-STUDY2's ceiling to RM-S-NCLOSET's, so SF-S-HP1 went from a
+# 77"-wide, 6'-8" box to a 40 3/4"-wide, 7'-9" one, and SF-S-DUCT was recut at both ends.
 #
 # The unit rate is unchanged in substance — $28-60/LF at 3.17 SF/LF is $8.83-18.93 per SF of
 # finished board (framing $15-34/LF, homewyse "cost to frame soffit" is $19.50-34.40/LF for
 # exactly this article; board $4-7; corner bead + tape + 3-coat + sand $9-19). Soffits are
 # labour-dominated — three narrow planes with two outside corners per foot, and finishers
 # charge a premium over flat wall work — so the 28.5% material split carries over.
-# -> 219.0 SF x $8.83-18.93 = $1,934-4,146, i.e. $340-729 per cy over 5.69 cy.
+# -> 196.45 SF x $8.83-18.93 = $1,735-3,719, i.e. $343-735 per cy over 5.063 cy.
+#    Split 28.5/71.5: material $98-210, labour $245-525.
 #
 # NOTE what a per-cy rate over-bills if left alone: a wide box is mostly air, so its volume
-# runs ahead of its board. That gap narrowed with the reshape — SF-S-HP1 is 24% of the board
-# on a section not far off the other two — but it is the whole reason this moved to SF.
+# runs ahead of its board. That is the whole reason this moved to SF, and the SF-B-BATH line
+# above is what it looks like when it runs the other way.
 # DISTINCT from the 101.1 LF of PVC ROOF soffit in [edge_trim]; unrelated articles, one word.
-"soffit" = { material = { low = 97, high = 208 }, labour = { low = 243, high = 521 } }  # 5.69 cy = 219.0 SF of board over 39.1 LF, three boxes
+"soffit" = { material = { low = 98, high = 210 }, labour = { low = 245, high = 525 } }  # 5.06 cy = 196.5 SF of board over 35.9 LF, three boxes
 #
 # BUG SCREEN / RAINSCREEN VENT STRIP — 240 LF of Cor-A-Vent SV-3 class corrugated strip closing
 # the top and bottom of the rainscreen cavity, split 144 LF house / 96 LF garage. $2.00-4.50/LF

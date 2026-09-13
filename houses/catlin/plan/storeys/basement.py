@@ -1243,8 +1243,14 @@ ROOMS = [
     # **The seed moved into the hall on 2026-09-05.** (14', 30') is inside W-B-WELL's new
     # footprint (x 13'-8 7/16"..14'-0 15/16"), which would be a guaranteed
     # `integrity.room_unclaimed`. The hall is the same room, so the seed only has to find it.
+    # ** THE HALL'S CEILING IS OPEN ON PURPOSE (2026-09-13), AND SF-B-HALL IS RETIRED. **
+    # DU-B-ERV-R-GYM and PR-B-SAUNA-VENT cross the hall's south end and cannot be routed
+    # anywhere else; the box that hid them is gone and this sentence carries the room. Same
+    # call the gym made, one wall west. `mep.run_in_finished_volume` quotes it and still
+    # holds both runs to the 6'-8" headroom line — see the retirement note above SOFFITS.
     Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(inch(186), ft(22)),
-         occupancy=Occupancy.STAIR, floor_finish="sealed-concrete"),
+         occupancy=Occupancy.STAIR, floor_finish="sealed-concrete",
+         exposed_services="owner accepts exposed services in the basement: the duct and the sauna vent cross the hall's south end in the open, painted out with the joists, the same as the gym next door"),
     # ** THE VOLUME UNDER THE ARRIVING FLIGHT IS PART OF THIS ROOM AGAIN (2026-09-05,
     # round three), AND IT IS NOT A `Room` OF ITS OWN. ** It was RM-B-UNDERSTAIR, a 17.5 sf
     # closet walled off at y=31'-0" by W-B-CL-N. That wall is gone: the storage runs the
@@ -1359,8 +1365,9 @@ ROOMS = [
     # ** THE GYM CEILING IS OPEN ON PURPOSE (2026-09-13). ** The owner is comfortable with
     # exposed pipe and duct down here, and saying so is a design statement, not a waiver:
     # mep.run_in_finished_volume reads the sentence and PASSES with it quoted, and every run
-    # crossing this room is still measured against the 6'-8" headroom line. SF-B-GYM is
-    # untouched by this and stays until its retirement is decided on its own merits.
+    # crossing this room is still measured against the 6'-8" headroom line. SF-B-GYM was
+    # built for this room's two runs and is RETIRED on the strength of this sentence — see
+    # the note where it stood, below SOFFITS.
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
          occupancy=Occupancy.LIVING, floor_finish="rubber",
          exposed_services="owner accepts exposed services in the basement: the gym ceiling is left open to the deck above, painted out, and the pipe and duct crossing it are part of how the room looks"),
@@ -1454,72 +1461,66 @@ PANELING = [
 # arithmetic is stated here and `integrity.basement_bearing_seat` is what guards the datum
 # it rests on. 88 7/16" leaves 7'-4 7/16" clear under the box, against R305.1's 6'-8" for a
 # bathroom, and the ceiling either side of it is untouched.
-# --- The hall's south-end bulkhead ---------------------------------------------------
+# --- SF-B-HALL IS RETIRED (2026-09-13) ------------------------------------------------
 #
 # ** THE HALL INHERITED THE WORKSHOP'S SERVICE CEILING (2026-09-07). ** Two runs cross the
 # x=13'-10 11/16"..18'-0" band at y~10'-6" on their way east: `DU-B-ERV-R-GYM` (3" round,
 # el 7'-6", to the gym's register through W-B-CS3) and `PR-B-SAUNA-VENT` (2", falling from
 # 7'-3 7/16" at the sauna riser). While that band was RM-B-WORKSHOP nothing graded them —
 # UTILITY is in `EXPOSED_SERVICE_OCCUPANCIES` and a workshop ceiling is a service plane. The
-# hall is RM-B-STAIR, which is not, and `mep.run_in_finished_volume` called both at 8.4" and
-# 10.7" below the finished ceiling.
+# hall is RM-B-STAIR, which is not, and `mep.run_in_finished_volume` called both at 8.9" and
+# 10.8" below the finished ceiling. Neither is reroutable: the gym register is east of the
+# x=18' bearing line and the ERV is west of the hall, so ANY route between them crosses this
+# hall, and the vent has to rise off the sauna's fixtures and fall west to the stack.
 #
-# Neither is reroutable. The gym register is east of the x=18' bearing line and the ERV is
-# west of the hall, so ANY route between them crosses this hall; the vent has to rise off
-# the sauna's fixtures and fall west to the stack. That is the case the check's own hint
-# names, and this house has answered it once already twenty lines up: box them out.
+# So a bulkhead was built — x 170.0725"..212.615", y 123.8125"..133.4375", underside
+# 85 15/16" (7'-1 15/16" clear). It answered the check and nothing else: the hall did not
+# want a lower ceiling, the runs are 2" and 3", and the box was 28 SF of board hung to keep
+# a workshop's habits out of a room that had stopped being a workshop.
 #
-# Same rules as SF-B-BATH, and they are worth restating because they are the traps.
-# ONE axis-aligned rectangle (`soffit_clear_section` frames nothing else). The corners are
-# the resolved LAYER faces, not `Room.clear_face`: W-B-HALL-W's east face at 170.0725",
-# W-B-CS3's west face at 212.615", W-B-SA-N2's north face at 123.8125". The north edge at
-# 133 7/16" is 4" past D-B-SHOP's near jamb, which is 4 3/8" past the duct's north surface.
-# The LONG axis is x, which is the way both runs travel, so the clear section is read across
-# the 9 5/8" of y.
+# ** RM-B-STAIR SAYS IT INSTEAD. ** The owner accepts exposed services down here — the gym
+# said so first — and this is the same service band four feet further west, in a circulation
+# slot, not a room anybody sits in. `Room.exposed_services` on RM-B-STAIR (see ROOMS above)
+# is the declaration, and it is evidence rather than a silence: the PASS quotes the sentence
+# and names the runs it is carrying.
 #
-# `underside_elevation` is storey-relative and this soffit is filed on the BASEMENT, whose
-# datum is -9'-1 7/16": 85 15/16" is the -23 7/16" the vent's falling riser reaches at the
-# sauna wall, which is the deepest surface in the box. It leaves 7'-1 15/16" clear — against
-# R305.1.1's 6'-8" for a basement and 6'-4" for what may project below it — and it clears
-# D-B-SHOP's and D-B-GYM's 6'-8" heads by 5 15/16".
+# ** IT RETIRES THE CEILING COMPARISON AND NOTHING ELSE. ** Both runs are measured again
+# against the 6'-8" headroom line, and both clear it on their own numbers — the duct's bottom
+# at 87 1/8" (7 1/8" of slack) and the vent's at 85 1/4" (5 1/4") where it is deepest, at the
+# sauna wall. Neither moved. The band this hall's ceiling now shows is the same band it
+# always carried; what changed is that the model says so.
+#
+# ** READ THE PASS'S RUN LIST, IT IS FOUR AND NOT TWO. ** `DU-B-ERV-R-BATH` and
+# `PR-B-HW-SUITE` also dip under this ceiling, shallowly enough that the check's 3" intrusion
+# allowance never reported them. A declaration is per ROOM, so they come with it: they are
+# now named as the design instead of being tolerated silently, and they too are held to the
+# headroom line. That is the trade a declaration makes and it is worth knowing before one is
+# written on a room with a lot of ceiling.
 SOFFITS = [
-    Soffit(uid="6PDC44K3A0", tag="SF-B-HALL",
-           outline=(pt(inch(170.0725), inch(123.8125)), pt(inch(212.615), inch(123.8125)),
-                    pt(inch(212.615), inch(133.4375)), pt(inch(170.0725), inch(133.4375))),
-           underside_elevation=inch(85.9375),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
     Soffit(uid="CEWX9GPQMQ", tag="SF-B-BATH",
            outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
                     pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
            underside_elevation=inch(88.4375),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
-    # --- RM-B-GYM: SF-B-HALL's band, carried through the wall -------------------------
+    # --- SF-B-GYM IS RETIRED (2026-09-13) ---------------------------------------------
     #
-    # W-B-CS3 is 6 3/4" of framed wall and the service band does not stop at it: DU-B-ERV-R-GYM
-    # comes through it at y=10'-6 5/8" on its way to REG-B-SUP1, and since 2026-09-09
-    # PR-B-COND's collector leg rides beside it at y=10'-11". Both were in RM-B-GYM's air —
-    # `mep.run_in_finished_volume` at 8.4" and 10.6" — and neither is reroutable: the
-    # register is where it is, and a 3" duct under a ceiling can never make the check's 3"
-    # (its own radius spends half of it). This is the answer SF-B-HALL and SF-B-BATH already
-    # gave twice: box them out.
+    # It existed for eleven days and for exactly one reason: DU-B-ERV-R-GYM at y=10'-6 5/8"
+    # and PR-B-COND's collector leg at y=10'-11" were in RM-B-GYM's air, 8.4" and 10.6" under
+    # its finished ceiling, and neither is reroutable. Boxing them out was the only answer the
+    # engine would read. RM-B-GYM now SAYS its ceiling is open — see the Room above — and
+    # `mep.run_in_finished_volume` reads the sentence, so a 107 SF bulkhead built to satisfy a
+    # check is 107 SF of board nobody wanted. The declaration is stronger evidence than the
+    # box was: the box hid the decision, the sentence states it.
     #
-    # Same rules, and they are the traps. ONE axis-aligned rectangle (`soffit_clear_section`
-    # frames nothing else). The west edge is W-B-CS3's resolved EAST layer face at
-    # 18'-3 3/8", so the box butts the wall the runs come through rather than reaching into
-    # it. The south edge at 13'-1 1/2" lands on the y=13'-0" ceiling step, which is where
-    # REG-B-SUP1 sits; the east edge at 27'-2 1/2" is 2 1/2" past the collector head. The
-    # LONG axis is x, which is the way both runs travel, so the clear section is read across
-    # the 3'-0" of y.
+    # What the retirement does NOT retire: both runs are still measured, against the 6'-8"
+    # headroom line instead of the ceiling. The duct's bottom sits at 88 1/2" and the pipe's
+    # at 89" at its deep west end, 8 1/2" and 9" clear of that line, so both pass on their
+    # own numbers rather than on the declaration. Nothing moved to make that true.
     #
-    # `underside_elevation` is storey-relative and this soffit is filed on the BASEMENT,
-    # whose datum is -9'-1 7/16": 7'-3 7/16" is 1 1/16" under the duct's bottom and 1 9/16"
-    # under the pipe's at its deep west end. It leaves 7'-3 7/16" clear — against R305.1's
-    # 7'-0" for a habitable room, and 6'-4" for what may project below it.
-    Soffit(uid="40MXMHYA46", tag="SF-B-GYM",
-           outline=(pt(inch(219.385), inch(121.5)), pt(inch(326.5), inch(121.5)),
-                    pt(inch(326.5), inch(157.5)), pt(inch(219.385), inch(157.5))),
-           underside_elevation=inch(87.4375),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
+    # PR-B-COND's 2026-09-09 reroute STAYS as it is. Its head came up 2 5/8" to 7'-8" and its
+    # gym leg went north onto y=10'-11" to sit beside the duct, and both of those were argued
+    # from the deck soffit's own 1 5/8" usable band, not from this box — see
+    # plan/mep_drainage.py. The soffit only ever covered what that reroute left exposed.
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS,

@@ -1,19 +1,27 @@
 # Soffit ladder rungs — the deflection check, worked by hand
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
-**Structure:** the three `Soffit` elements on the second storey and the rungs that frame them.
+**Structure:** the `Soffit` elements on the second storey and the rungs that frame them.
 **Written:** 2026-08-31, independently of the code it grades. **Re-worked 2026-09-04**, when
 `SF-S-HP1` moved from `RM-S-STUDY2`'s ceiling to `RM-S-NCLOSET`'s and changed shape from
-77" x 80" to 40 3/4" x 7'-9 3/8". The arithmetic is unchanged; the span it is applied to is
-not, and an oracle that no longer matches what the check computes is not an oracle.
+77" x 80" to 40 3/4" x 7'-9 3/8". **Re-worked again 2026-09-13**, when `SF-S-SUITE` was
+retired — `RM-S-SUITE` declares its ceiling open and the duct that box held is exposed, so
+there are two second-storey boxes now, not three. The arithmetic is unchanged; the spans it
+is applied to are not, and an oracle that no longer matches what the check computes is not
+an oracle.
 **Oracle for:** `checks/structural/soffit.py`, reported by `structural.soffit_rung_span`.
 
-Model: `plan/storeys/second.py` (the three `Soffit` elements and their
+Model: `plan/storeys/second.py` (the second-storey `Soffit` elements and their
 `FramingSpec`s), `packages/engine/src/typehaus/resolve/framing/soffit.py` (the generator that
 lays the members). Graded by `structural.soffit_rung_span`
 (`packages/engine/src/typehaus/checks/structural/soffit.py`), which this note is the oracle
 for. **A calc that only agrees with itself is not verified** — the arithmetic below was done
 independently of the code, and the engine reproduces it to the third decimal.
+
+**Scope gap, stated rather than hidden:** this note has only ever worked the SECOND-STOREY
+boxes. `SF-B-BATH` is framed by the same generator and graded by the same check and has
+never been in the table below. (`SF-B-HALL` and `SF-B-GYM` stood in the same position and
+were retired on 2026-09-13, so the gap is one box wide now instead of three.)
 
 ## What had to be decided
 
@@ -89,22 +97,26 @@ governing, and quoting a stress ratio for them would dress an arithmetic identit
 **The 2x3 line is why the interim recommendation in this house's own notes was wrong.** It
 assumed the rung stood on edge (I = 1.9531 in⁴, δ = 0.074", L/978). Flat, it fails.
 
-## The three boxes as the house actually stands (2026-09-04)
+## The second-storey boxes as the house actually stands (2026-09-13)
 
-A limit that fails everything is not a limit. The same arithmetic at the three live spans:
+A limit that fails everything is not a limit. The same arithmetic at the live spans:
 
 | soffit | rungs | L | I | δ | ratio |
 |---|---|---|---|---|---|
 | SF-S-DUCT | 18 x 2x2 | 30.75" | 0.4219 | 0.0109" | **L/2808** |
-| SF-S-SUITE | 4 x 2x2 | 31.75" | 0.4219 | 0.0124" | **L/2551** |
 | SF-S-HP1 | 5 x 2x4 | 36.50" | 0.9844 | 0.0093" | **L/3918** |
+
+`SF-S-SUITE` stood here until 2026-09-13 at **4 x 2x2, L = 31.75", δ = 0.0124", L/2551** —
+the deepest of the three and still 7x the limit. It is struck rather than left in place
+because the box no longer exists, and a note that grades a deleted element is the kind of
+drift this file's own header warns about. Nothing about the arithmetic changed with it.
 
 SF-S-HP1's line, worked out: L⁴ = 36.50⁴ = 1.77501e6 in⁴, so
 δ = 5(0.5556)(1.77501e6) / (384 · 1.4e6 · 0.9844) = 4.9310e6 / 5.2921e8 = **0.00932"**, and
 36.50 / 0.00932 = **L/3917**. The engine reports L/3918; the third figure is rounding in the
 last term and the two agree to within it.
 
-**Every box in the house passes now, and that is not a weakening of the check.** The
+**Every box on this storey passes now, and that is not a weakening of the check.** The
 discrimination is in the fixture: the same generator, the same load, the same rungs at
 72.75" fail at L/212, and δ going as L⁴ is what puts two orders of magnitude between 30" and
 73". Nothing here is graded by a limit that cannot bite.

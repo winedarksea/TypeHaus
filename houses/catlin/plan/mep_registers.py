@@ -71,8 +71,10 @@ from typehaus.model import m
 # W-S-BW1/2/3's stud bay above the 80" head, then a 90 degree ceiling boot up to the gypsum.
 #
 # RM-S-SUITE's terminal (REG-S-HP-SUITE) sits at DU-S-HP-SUITE's west terminus (12'-6",
-# 14'-1 7/8") in SF-S-SUITE's end face, throwing down the entry arm into the suite's main
-# volume. This branch is what made the suite's old ERV supply (REG-S-SUP6) redundant.
+# 14'-1 7/8"), throwing down the entry arm into the suite's main volume. This branch is what
+# made the suite's old ERV supply (REG-S-SUP6) redundant. It was in SF-S-SUITE's underside
+# until 2026-09-13; that box is retired and the grille is in the EXPOSED duct's own bottom
+# face now — which is why its elevation is the duct's underside and not a ceiling plane.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
              position=pt(ft(22, 6), ft(13, 6)), duct_ref="DU-S-HP-SUP",
@@ -117,13 +119,18 @@ REGISTERS_HVAC_SECOND = [
              position=pt(inch(222), ft(24)), duct_ref="DU-S-HP-SUP", rotation=deg(90),
              type_ref="REG-T-HP-SUP-SIDE", design_cfm=50,
              mount=Mount(kind=MountKind.WALL, elevation=inch(97.125))),
-    # The suite's supply, in SF-S-SUITE's soffit face at the branch's west terminus,
-    # throwing west out of the entry arm. 7'-10" because SF-S-SUITE drops 14" off the
-    # 9'-0" ceiling.
+    # The suite's supply, at the branch's west terminus, throwing down the entry arm.
+    # ** 96 1/8" IS DERIVED AND IS THE DUCT'S UNDERSIDE ** — the same rule REG-S-HP-STAIR's
+    # 97 1/8" follows. DU-S-HP-SUITE is EXPOSED since SF-S-SUITE's retirement (2026-09-13)
+    # and its centreline resolves at 100 1/8" storey-relative, so an 8" section leaves its
+    # bottom at 96 1/8" and the grille is cut into that face. It read 7'-10" while the box
+    # stood, which was the box's underside; change the branch's elevation or its depth and
+    # this moves with them. Nothing in the engine grades a Register against its host surface
+    # (a Register resolves no solid), so this number is only ever as true as it is authored.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
              position=pt(ft(12, 6), ft(14, 1.875)), duct_ref="DU-S-HP-SUITE",
              type_ref="REG-T-HP-SUP", design_cfm=100,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
+             mount=Mount(kind=MountKind.CEILING, elevation=inch(96.125))),
     # The two south rooms, both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay branch at
     # y=3'-4" that reaches them from above, because the air handler's case fills SF-S-DUCT
     # from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling

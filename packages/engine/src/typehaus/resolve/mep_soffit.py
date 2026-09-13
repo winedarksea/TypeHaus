@@ -153,9 +153,10 @@ def duct_occupants(model: ResolvedModel, soffit: ResolvedSoffit,
     claim a corner of the cavity it never touches.
 
     The ``along`` extent is clipped to the box; the ``across`` extent deliberately is not.
-    A run leaving through the *end* of a soffit is ordinary (SF-S-SUITE abuts SF-S-DUCT and
-    reads as one continuous box), so clipping along keeps that quiet; a run leaving through
-    the *side* is a hole in a ladder rail, and that is worth saying out loud.
+    A run leaving through the *end* of a soffit is ordinary — DU-S-HP-SUITE tees off
+    DU-S-HP-SUP inside SF-S-DUCT and leaves through its end, which is why that trunk's
+    ``soffit_ref`` names one box and not two — so clipping along keeps that quiet; a run
+    leaving through the *side* is a hole in a ladder rail, and that is worth saying out loud.
     """
     occupants: list[SoffitOccupant] = []
     problems: list[str] = []

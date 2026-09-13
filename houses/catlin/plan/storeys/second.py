@@ -998,7 +998,9 @@ ROOMS = [
     # it followed the walnut: a species change in a 27 SF doorway buys a reducer strip and a
     # second set-up for nothing.
     # Exposed duct in the suite is the owner's own call — see RM-B-GYM's note for what the
-    # declaration does and does not buy. SF-S-SUITE is untouched here.
+    # declaration does and does not buy. SF-S-SUITE was still boxing that duct out when this
+    # sentence was written and is RETIRED as of 2026-09-13, which is what makes it true: the
+    # branch hangs on the arm's ceiling now, and this room's PASS names it.
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
          occupancy=Occupancy.BEDROOM, floor_finish="oak",
          exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
@@ -1181,7 +1183,8 @@ SOFFITS = [
     # non-rectangular outline returns None and every occupant goes UNKNOWN rather than
     # graded. This box is FLUSH on all four finished faces — it IS the closet/hall ceiling,
     # not a bulkhead in a wide room, so there is no shadow-gap inset here the way there is
-    # on SF-S-DUCT and SF-S-SUITE. That flushness is what forces W-S-BW4's retype to
+    # on SF-S-DUCT. (SF-S-SUITE used the same inset and was retired 2026-09-13; the rule it
+    # illustrated is still SF-S-DUCT's.) That flushness is what forces W-S-BW4's retype to
     # INT_2X4_RC (see its block above): without it the east face jogs 1/2" at y=30'-10" and
     # the outline stops being a rectangle at all.
     #
@@ -1240,24 +1243,39 @@ SOFFITS = [
                tag="AO-S-HP1-AP",
                outline=(pt(ft(18, 10), ft(31, 10)), pt(ft(21, 4), ft(31, 10)),
                         pt(ft(21, 4), ft(34, 3)), pt(ft(18, 10), ft(34, 3)))),)),
-    # The west branch to the suite (DU-S-HP-SUITE) — rerouted 2026-07-30 onto the short
-    # straight line over D-S-SUITE and the suite's entry arm, instead of a 2026-07-29 detour
-    # crossing RM-S-SUITEBATH's fixtures. The duct passes through W-S-C2B in the cripple
-    # zone above the door header — the right place to cross a bearing wall already broken
-    # by a door below.
+    # --- SF-S-SUITE IS RETIRED (2026-09-13) -------------------------------------------
     #
-    # The soffit is the arm's ceiling, sitting 3" off both arm-wall axes (y 12'-8"..15'-8")
-    # — the same shadow-gap inset SF-S-DUCT uses, needed because an outline ON the wall
-    # lines puts the ladder rails inside the walls' own stud zones
-    # (structural.member_interference). Runs x 12'-0" (D-S-SUITEBATH's jamb) to 18'-6 1/2"
-    # (abutting SF-S-DUCT, reading as one continuous box). 36" of plan width for a single
-    # 10" duct — `mep.duct_soffit_occupancy` prints what that leaves once the lining and the
-    # ladders are taken off, so the number is not restated here.
-    Soffit(uid="CSF6S1AAAA", tag="SF-S-SUITE",
-           outline=(pt(ft(12), ft(12, 8)), pt(ft(18, 6.5), ft(12, 8)),
-                    pt(ft(18, 6.5), ft(15, 8)), pt(ft(12), ft(15, 8))),
-           drop=inch(14),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
+    # It was the suite entry arm's ceiling: x 12'-0" (D-S-SUITEBATH's jamb) to 18'-6 1/2"
+    # (abutting SF-S-DUCT and reading as one continuous box), y 12'-8"..15'-8", a 14" drop,
+    # 36" of plan width around a single 10x8 branch. Thirty-five square feet of board and
+    # ladder built so one duct would not be seen.
+    #
+    # RM-S-SUITE says instead that it should be. `Room.exposed_services` there is the
+    # owner's own sentence — "the supply branch runs on the face of the ceiling rather than
+    # inside it" — and this retirement is what makes that sentence true rather than
+    # decorative. Until today the room's PASS read "nothing currently hangs in its open air:
+    # a Soffit or a wall still covers every run that crosses it", which was the check saying
+    # out loud that the box, not the declaration, was carrying the room.
+    #
+    # ** THE BRANCH KEEPS THE ELEVATION THE BOX GAVE IT, AND THAT IS DERIVED, NOT CHOSEN. **
+    # `DU-S-HP-SUITE` tees off `DU-S-HP-SUP` inside SF-S-DUCT, so its top cannot rise above
+    # that trunk's top; both sit on SF-S-DUCT's own cavity floor at 216 1/8" absolute. The
+    # branch is now `DuctRouting.EXPOSED` with that centreline authored on it (100 1/8"
+    # storey-relative, 8" section), so it resolves exactly where it resolved yesterday
+    # instead of falling back to the storey datum. Nothing about the duct moved; the box
+    # around it went.
+    #
+    # ** THE CLEAR HEIGHT UNDER THE DUCT IS 8'-0 1/8", AND `code.R305_ceiling_height` DOES
+    # NOT SEE IT. ** That check measures the structure overhead and reports 8'-10" for this
+    # room now that no soffit hangs in it; a duct is not a ceiling element. What grades the
+    # duct is `mep.run_in_finished_volume`'s 6'-8" headroom line, which the declaration
+    # explicitly does NOT retire — 16 1/8" of slack, and the room's PASS names the run.
+    # The arm gained 2 1/8" of finished height either side of the duct (7'-10 1/8" to
+    # 8'-0 1/8" under it, the full 8'-10" beside it).
+    #
+    # The duct still passes through W-S-C2B in the cripple zone above D-S-SUITE's header —
+    # the wall runs to the deck at 228 1/8" and the duct crosses at 216 1/8"..224 1/8", so
+    # the crossing is unchanged by the ceiling below it opening up.
 ]
 
 # Drawn to the main floor's *finished* well, the way FO-M-STAIR is drawn to the basement's

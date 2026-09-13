@@ -3,7 +3,8 @@
 ``run_route_efficiency`` used to say the model had no per-room ceiling plane and so could
 not ask this. It has had one since the ceiling work; this is the check that asks. Catlin's
 basement service corridor was real, and all eleven findings were closed on 2026-09-09 by
-reroutes, walls and one soffit. The house passes.
+reroutes, walls and one soffit. Two of those soffits were retired again on 2026-09-13 for
+``Room.exposed_services`` declarations on ``RM-B-GYM`` and ``RM-B-STAIR``. The house passes.
 
 What these tests pin is the machinery, because that is what had to survive the fix and is
 what would rot now that nothing exercises it in anger: the band's lower edge, the
@@ -68,10 +69,11 @@ def test_the_work_list_is_clear(findings) -> None:
     can reach its receptor at all — the ERV pan is at 4'-6" and the sauna's ceiling is at
     6'-10 13/16", so it can never travel over it the way ``PR-B-COND`` does.
 
-    BOXED OUT: ``DU-B-ERV-R-GYM`` and ``PR-B-COND``'s gym leg, under ``SF-B-GYM``. A 3"
-    duct under a ceiling can never make the 3" this check allows — its own radius spends
-    half of it — so a box is the only answer there, and this is the one finding whose fix
-    could not have been anything else.
+    DECLARED OPEN: ``DU-B-ERV-R-GYM`` and ``PR-B-COND``'s gym leg. A 3" duct under a
+    ceiling can never make the 3" this check allows — its own radius spends half of it — so
+    for eleven days the answer was ``SF-B-GYM``, a bulkhead. ``RM-B-GYM.exposed_services``
+    replaced it on 2026-09-13: the run is still measured, against the 6'-8" headroom line,
+    and it is the sentence rather than 107 SF of board that carries the room.
 
     SPLIT: ``CD-B-GARAGE`` wanted the basement ceiling indoors and -4'-0" of burial in the
     house/garage gap, and a ``ConduitRun`` changes elevation only at its LAST vertex. It is
@@ -119,9 +121,22 @@ def test_it_leads_with_depth_not_length(catlin_model) -> None:
     theater's 6.7". The message says the depth first.
 
     ``CD-B-GARAGE``'s pre-split form is put back to say so — flat at -4'-0" the whole way
-    across the house, which is five feet off the basement slab."""
+    across the house, which is five feet off the basement slab.
+
+    **``RM-B-STAIR``'s declaration is taken back off for this one test**, and that is the
+    point of it rather than a workaround. The room says its services are deliberately
+    exposed as of 2026-09-13 (``SF-B-HALL``'s retirement), so on the live house this
+    conduit would be graded against the 6'-8" headroom line — a real finding, in the other
+    branch, reading 19.3". The branch under test here is the CEILING comparison and its
+    depth-first ranking, and a fixture that quietly stopped exercising it would still have
+    passed on the headroom wording.
+    """
     from typehaus.model import ft
 
+    catlin_model = dataclasses.replace(
+        catlin_model,
+        rooms=tuple(dataclasses.replace(r, exposed_services=None)
+                    if r.tag == "RM-B-STAIR" else r for r in catlin_model.rooms))
     assert not _fails_for(catlin_model, "CD-B-GARAGE")
     original = next(r for r in catlin_model.conduits if r.tag == "CD-B-GARAGE")
     regressed = dataclasses.replace(

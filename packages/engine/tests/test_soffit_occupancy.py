@@ -48,13 +48,6 @@ def test_sf_s_duct_derives_the_thirty_and_three_quarter_inches(catlin_model) -> 
     assert section.width_m / M_PER_IN == pytest.approx(30.75, abs=1e-6)
 
 
-def test_sf_s_suite_clears_a_ten_inch_duct_with_room_to_spare(catlin_model) -> None:
-    """36" finished gives 31 3/4", which is what "room to spare" was worth."""
-    _, section = _section(catlin_model, "SF-S-SUITE")
-    assert section.width_m / M_PER_IN == pytest.approx(31.75, abs=1e-6)
-    assert section.width_m > 10 * M_PER_IN
-
-
 def test_a_fourteen_inch_drop_clears_an_eight_inch_duct(catlin_model) -> None:
     """11 1/4", not 9 3/4": the box's TOP rail sits directly over its bottom rail, one stock
     depth in from each long face and therefore outside the clear width entirely. Subtracting
@@ -136,13 +129,17 @@ def test_catlin_reports_no_soffit_conflict(soffit_findings) -> None:
 
 def test_both_soffits_are_actually_graded(soffit_findings) -> None:
     """A check that reports UNKNOWN for every soffit would pass the test above for the wrong
-    reason. Both boxes carry a ``FramingSpec`` and both must come back PASS."""
+    reason. Both remaining boxes carry a ``FramingSpec`` and both must come back PASS.
+
+    ``SF-S-SUITE`` was a third until 2026-09-13. It held one 10x8 branch in 31 3/4" of clear
+    width and was retired when ``RM-S-SUITE`` declared its ceiling open; the duct is
+    ``DuctRouting.EXPOSED`` now and claims no box, so there is nothing here to grade."""
     graded = {tuple(f.element_tags): f.result for f in soffit_findings}
     assert graded.get(("SF-S-DUCT",)) is Result.PASS
-    assert graded.get(("SF-S-SUITE",)) is Result.PASS
     # SF-S-HP1 is the one that has to be graded: it is the only box in the house holding a
     # machine and two lanes side by side.
     assert graded.get(("SF-S-HP1",)) is Result.PASS
+    assert ("SF-S-SUITE",) not in graded
 
 
 def test_the_air_handler_hangs_inside_the_soffit_not_at_the_storey_ceiling(catlin_model) -> None:

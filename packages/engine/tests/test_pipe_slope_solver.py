@@ -163,10 +163,12 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: 85.042" on the condensate chase); only the free vertex at index 3 moves in either.
 #:
 #: ** PR-B-COND RE-PINNED 2026-09-09, six vertices from five. ** Its gym leg moved north
-#: onto y=10'-11" and out of RM-B-GYM's air into SF-B-GYM's box, and it now leaves that band
+#: onto y=10'-11", beside DU-B-ERV-R-GYM in one service band, and it now leaves that band
 #: southward inside W-B-CS3/W-B-CS instead of running straight west — one more corner. The
-#: head came up 2 5/8" to 7'-8" to keep 1 1/2" between the pipe and the soffit's underside,
-#: so every invert on it moves; the grade is still the one authored fact.
+#: head came up 2 5/8" to 7'-8" for the deck soffit's own 1 5/8" usable band, so every invert
+#: on it moves; the grade is still the one authored fact. SF-B-GYM boxed the pair out at the
+#: time and was retired on 2026-09-13 for RM-B-GYM's own declaration; NONE of these numbers
+#: moved with it, which is why they are still here unchanged.
 _PINNED_FT = {
     "PR-B-COND": [-1.45313, -1.67813, -1.72604, -1.83854, -1.85896, -8.36979],
     "PR-B-BATH-DRAIN": [-9.11979, -9.83646, -10.01636, -10.20396],

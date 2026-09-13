@@ -922,8 +922,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   DERIVED — never author a clear width.** `mep.duct_soffit_occupancy` derives the cavity from
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
   width is a second source of truth that drifts the first time framing changes. Current
-  derived boxes: `SF-S-DUCT` 30 3/4" x 11 1/4"; `SF-S-SUITE` 31 3/4" x 11 1/4"; `SF-S-HP1`
+  derived boxes: `SF-S-DUCT` 30 3/4" x 11 1/4"; `SF-S-HP1`
   40 3/4" x 7'-9 3/8" (in `RM-S-NCLOSET`'s ceiling), drop 21", underside at 7'-3".
+  **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
+  each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
+  `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE`. Two soffits
+  and `SF-B-BATH` remain. **`SF-B-BATH` would survive the same treatment on the numbers and
+  has NOT been retired**: measured with the box deleted, its three runs (`PR-B-BATH-VENT`
+  8.4", `PR-B-HW-BATH` 3.8", `PR-B-LSINK-DRAIN` 6.0" under the ceiling) all clear the 6'-8"
+  headroom line with ~7 1/2" to spare, so a declaration on `RM-B-BATH` would pass. The
+  reason not to is not arithmetic — it is that a 92 SF lined bathroom is not a gym or a
+  service hall, and no owner has said its ceiling should be open. That is a design decision,
+  not a takeoff one.
+  `DU-S-HP-SUITE` lost its `soffit_ref` with `SF-S-SUITE` and is `DuctRouting.EXPOSED` with
+  an AUTHORED centreline (100 1/8" storey-relative): without it `_derived_base_z` falls back
+  to the storey datum and lays a supply duct on the floor.
   - **A box's LONG plan dimension is its axis; every occupant is measured ACROSS the other
     one.** Near-square soffits (e.g. `SF-S-HP1`) need this ordering chosen deliberately, or
     the check grades the trunk's travel as "width" and never compares lane to machine.
@@ -1128,12 +1141,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     in `params/main_deck.py` at x=14'-6"/16'-9", `at` y=**217"** (not 216" — equidistant
     between the 208"/224" joist lines). These two entries must stay **LAST** in
     `_WEST_FLOOR_REINFORCEMENT`.
-  - `RM-B-STAIR` (not a `EXPOSED_SERVICE_OCCUPANCIES` room, unlike the workshop) now covers
-    the hall's ceiling, so `mep.run_in_finished_volume` (3" tolerance) grades pipes there.
+  - `RM-B-STAIR` (not a `EXPOSED_SERVICE_OCCUPANCIES` room, unlike the workshop) covers the
+    hall's ceiling, so `mep.run_in_finished_volume` (3" tolerance) grades pipes there.
     `DU-B-ERV-R-GYM` and `PR-B-SAUNA-VENT` cannot be rerouted around it — any route between
-    the sauna and the ERV crosses this space — so they are boxed out by bulkhead
-    **`SF-B-HALL`** (full-width, x 170.0725"..212.615", y 123.8125"..133.4375", 7'-1 15/16"
-    clear). Do not remove it without re-solving both runs. `PR-B-HW-SAUNA` and
+    the sauna and the ERV crosses this space. **They were boxed out by `SF-B-HALL` until
+    2026-09-13; that bulkhead is RETIRED and `RM-B-STAIR.exposed_services` carries the room
+    instead** — the owner accepts exposed services down here, the same call `RM-B-GYM` makes.
+    Both runs are still held to the 6'-8" headroom line (duct bottom 87 1/8", vent 85 1/4"),
+    and the declaration also takes `DU-B-ERV-R-BATH` and `PR-B-HW-SUITE` — two shallow
+    crossings the 3" allowance had been tolerating silently — out of the ceiling comparison.
+    Do not re-box either run without re-reading the declaration. `PR-B-HW-SAUNA` and
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
   - Lighting/outlets: three `ED-T-LT-CAN3` on `CKT-LT-BACKUP` at x=190",
