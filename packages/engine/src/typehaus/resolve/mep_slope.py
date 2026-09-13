@@ -143,3 +143,62 @@ def _solve_slope(run: _SlopedRun, path: list[tuple[float, float]],
                  "leg has no plan run to fall over, so both its ends must be authored",
             prefix)
     return z, []
+
+
+# ---------------------------------------------------------------------------
+# The minimum grade a drain must hold, and the document that says so.
+# ---------------------------------------------------------------------------
+#
+# **This lives in ``resolve`` because both ``checks/`` and ``routing/`` need it and neither
+# may import the other.** ``routing/gravity.minimum_slope`` and ``mep.drain_slope`` each
+# carried their own copy of the pair of numbers, and a verdict that disagreed with the
+# router about whether a route was feasible would be worse than either being wrong alone.
+#
+# ** MINNESOTA IS NOT AN IRC PLUMBING STATE, AND THE ENGINE SAID IT WAS. ** Minn. R.
+# 1309.0010 subp. 3.D **deletes IRC chapters 25 through 33**; P3005 is in chapter 30. What
+# governs is Minn. R. ch. 4714, which adopts the UPC, and **UPC 708.0 is 1/4" per foot at
+# every size**. The `>3" -> 1/8"/ft` row both modules used to carry is IRC P3005.3's, and it
+# has no force here: on catlin it read PR-B-MAIN-DRAIN's 4" line as holding twice its
+# required grade when it is in fact 0.017"/ft over the minimum.
+#
+# The reduced-slope exception is real but narrow, and it is **not a house preference**: UPC
+# 708.0 reaches it only for pipe 4" and larger, only where 1/4" is impractical, and only with
+# the building official's approval — which is an approval of ONE pipe, granted on one set of
+# drawings. So it is authored on the run (``PipeRun.reduced_slope_approval``) and the finding
+# quotes the approval rather than claiming the code permits it.
+
+#: UPC 708.0's grade, at every size. Not IRC P3005.3's two-row table.
+MIN_DRAIN_SLOPE_IN_PER_FT = 0.25
+#: The grade UPC 708.0's exception may reduce to, with the building official's approval.
+REDUCED_SLOPE_IN_PER_FT = 0.125
+#: The smallest pipe that exception reaches. Below this an authored approval is a FAIL: the
+#: code has nothing to approve, so the paper cannot be what it claims to be.
+REDUCED_SLOPE_MIN_DIAMETER_M = 4 * inch(1).meters
+
+_UPC_SLOPE_CODE = "MN Plumbing Code (ch. 4714) 708.0"
+
+
+def minimum_drain_slope_in_per_ft(diameter_m: float,
+                                  approval: str | None = None) -> tuple[float, str]:
+    """The grade this drain must hold, and the sentence a finding should cite for it.
+
+    ``approval`` is ``PipeRun.reduced_slope_approval`` — the building official's approval
+    for *this pipe*, authored verbatim. It lowers the grade only where UPC 708.0's exception
+    actually reaches; on smaller pipe the caller is told the approval does not apply, and
+    :func:`reduced_slope_approval_is_valid` is the predicate a check grades that with.
+    """
+    if approval and diameter_m >= REDUCED_SLOPE_MIN_DIAMETER_M - 1e-9:
+        return (REDUCED_SLOPE_IN_PER_FT,
+                f"{_UPC_SLOPE_CODE} exception (pipe 4\" and larger, where 1/4\" per foot is "
+                f"impractical, as approved by the building official: {approval})")
+    return (MIN_DRAIN_SLOPE_IN_PER_FT,
+            f"{_UPC_SLOPE_CODE} — 1/4\" per foot at every size")
+
+
+def reduced_slope_approval_is_valid(diameter_m: float, approval: str | None) -> bool:
+    """Whether an authored reduced-slope approval is one UPC 708.0 could have granted.
+
+    An approval on pipe under 4" is not a tight call to be advised about: the exception does
+    not reach that pipe, so no building official could have approved what the run claims.
+    """
+    return not approval or diameter_m >= REDUCED_SLOPE_MIN_DIAMETER_M - 1e-9

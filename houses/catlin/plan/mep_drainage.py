@@ -501,7 +501,7 @@ LAUNDRY_MAIN = [
 #
 # Route: west across the sauna's hung drop ceiling (SP-B-CS-COND crossing), then north to
 # the drain and straight down in a boxed chase 1'-9" off W-B-SA-N. Air gap is 9" above
-# finish floor, falling 0.3"/ft (above IRC P3005.3's 1/4"/ft `mep.drain_slope` minimum)
+# finish floor, falling 0.3"/ft (above ch. 4714 (UPC) 708.0's 1/4"/ft minimum)
 # across all three legs. The drop point sits over FX-B-SAUNA-SH's centre line — an indirect
 # waste has to discharge over its receptor.
 # --- the ERV's condensate ---------------------------------------------------------------
@@ -522,7 +522,7 @@ LAUNDRY_MAIN = [
 # PR-B-COND's drop: two air gaps over one trapped floor drain that sees
 # water in normal use, which is the whole reason that receptor was chosen in the first place.
 # 0.3"/ft across both horizontal legs, the same grade as its neighbour and above IRC
-# P3005.3's 1/4"/ft minimum.
+# ch. 4714 (UPC) 708.0's 1/4"/ft minimum.
 #
 # ** THE NORTH-SOUTH LEG MUST STAY CLEAR OF D-B-FURN'S ROUGH OPENING. ** At x=3'-11" it
 # would pass through W-B-CW at y=18'-0", the furnace room door (RO x 3'-4"..6'-0", head
@@ -533,7 +533,7 @@ LAUNDRY_MAIN = [
 # opening is to carry it over the head; the head is at 80" basement-relative and the run
 # STARTS at 72", at the Broan's condensate spigot. There is no gravity route over it, and
 # there is no re-levelling either — the whole point of the run is 0.3"/ft of continuous fall
-# to FX-B-SAUNA-FD, above IRC P3005.3's 1/4"/ft. So the leg moves west out of the opening
+# to FX-B-SAUNA-FD, above ch. 4714 (UPC) 708.0's 1/4"/ft. So the leg moves west out of the opening
 # and everything else stays.
 #
 # ** x=2'-11" IS A MEASURED BAY, AND x=2'-9" — THE OBVIOUS GUESS — IS NOT. ** W-B-CW
@@ -703,7 +703,7 @@ STUDIO_DRAINS = [
     # 4.16 ft of plan. That is 27.5"/ft and there is no fitting for it; `mep.drain_slope` was
     # blind to it (it grades the FLATTEST segment) and `mep.drain_offset_geometry` now is not.
     # The drop bottoms at 9'-8" so the east leg still holds 1.5" over its 4.161 ft —
-    # 0.36"/ft, clear of P3005.3's 1/4" — and its 3" crown sits at 9'-9 1/2", inside the
+    # 0.36"/ft, clear of 708.0's 1/4" — and its 3" crown sits at 9'-9 1/2", inside the
     # 8 7/8" chord-to-chord window a leg crossing FS-S-WEST's trusses has to stay in. That
     # window is what took PR-M-S-SUITE-DRAIN's head down 1 1/2" (below); the two profiles
     # move together or neither moves. It lands at 9'-6 1/2" on the stack's vertical, 2 1/2"
@@ -727,7 +727,7 @@ STUDIO_DRAINS = [
                   pt(ft(9, 7.5), ft(19, 4))),
             diameter=inch(2), material="pvc",
             # 1" over the 3'-1" west leg and 1" over the 3'-1 3/8" north one — both clear
-            # P3005.3's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole
+            # 708.0's 1/4"/ft, which `mep.drain_slope` grades segment by segment. The whole
             # profile sits inside FS-ATTIC's 11 7/8" joist band (19'-0 1/8"..20'-0"), and it
             # lands at 19'-5 3/4" — above PR-A-STUBATH-DRAIN's own 19'-3 1/2" entry on the
             # same vertical, so the two inlets do not collide.

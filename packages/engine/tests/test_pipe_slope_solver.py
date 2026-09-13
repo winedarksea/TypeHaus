@@ -174,7 +174,7 @@ _PINNED_FT = {
 }
 
 #: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
-#: 1/4"/ft — IRC P3005.3's published minimum for 3" and above, and twice `mep.drain_slope`'s
+#: 1/4"/ft — ch. 4714 (UPC) 708.0's minimum at every size, and `mep.drain_slope`'s
 #: 1/8"/ft floor — when the rotated bathroom put its water closet 4'-1 5/8" further from the
 #: main: at 0.3"/ft the extra run ate the 5.7" of crown the 4" line has under the slab and
 #: the branch arrived below its invert.

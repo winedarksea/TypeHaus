@@ -64,7 +64,7 @@ across the trusses, east onto the stack.
 | east | → (156, 202.8) 112.0 | 156 − 134.81 = 21.19" = 1.7658 ft | 1.375" | 0.779"/ft |
 
 Developed plan length 69.015" = 5.7513 ft; total fall 4.5"; **mean 0.782"/ft**, and the
-flattest segment is 0.779"/ft against P3005.3's 0.25"/ft minimum. `mep.drain_slope` grades
+flattest segment is 0.779"/ft against ch. 4714 (UPC) 708.0's 0.25"/ft minimum. `mep.drain_slope` grades
 the flattest and reports it.
 
 **Why the drop bottom is 116.5 and not higher.** The south leg crosses the trusses, so the

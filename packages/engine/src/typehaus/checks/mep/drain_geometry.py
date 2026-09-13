@@ -24,10 +24,14 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import M_PER_IN
 
-#: The section that governs a drain's changes in direction, and the same one
-#: ``mep.drain_slope`` is listed against on the permit checklist — the two are complements
-#: of one rule, graded from opposite ends.
-_OFFSET_CODE = "IRC P3005.3"
+#: The section that governs a drain's changes in direction, and a companion to the grade
+#: rule ``mep.drain_slope`` reads — the two are complements of one question, graded from
+#: opposite ends, and they share a line on the permit checklist.
+#:
+#: **ch. 4714, not IRC P3005.3.** Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33
+#: and P3005 is in chapter 30; what governs a drain's offsets in Minnesota is the UPC as
+#: adopted. ``resolve/mep_slope.py`` carries the same correction for the grade half.
+_OFFSET_CODE = "MN Plumbing Code (ch. 4714) 706.3"
 
 
 @check(Tier.CODE, "mep.drain_offset_geometry")
@@ -61,8 +65,8 @@ def drain_offset_geometry(ctx: CheckContext) -> list[Finding]:
     same tolerance ``mep.drain_slope`` skips a vertical on, lifted to a shared constant so
     the two cannot drift into disagreeing about which segments exist.
 
-    CODE rather than ADVISORY: P3005.3 governs the shape of a drain's changes in direction,
-    and a segment failing both terms here is not a fitting the code recognises. What the
+    CODE rather than ADVISORY: ch. 4714 § 706.3 governs the shape of a drain's changes in
+    direction, and a segment failing both terms here is not a fitting the code recognises. What the
     check does *not* claim is a fitting take-off — it grades the polyline, and a route that
     passes still has to be built out of real elbows.
     """

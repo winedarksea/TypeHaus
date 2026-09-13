@@ -86,6 +86,14 @@ class PipeRun(Element):
     # invert is authored — set one without an anchor invert and the resolver errors rather
     # than picking a datum out of the air (``integrity.pipe_run_slope``).
     slope_in_per_ft: float | None = None
+    #: The building official's approval for **this pipe** to run at the reduced grade UPC
+    #: 708.0's exception allows, authored verbatim (a permit number, a letter reference).
+    #: Not a preferences flag, because an approval is of one pipe on one set of drawings,
+    #: never of every 4" drain in a house. The exception reaches only pipe 4" and larger;
+    #: an approval on anything smaller is a ``mep.drain_slope`` FAIL, because no official
+    #: could have granted what the run claims. ``resolve/mep_slope.py`` owns the rule.
+    #: Optional with a default, so the editable dialect is untouched.
+    reduced_slope_approval: str | None = None
     serves: tuple[str, ...] = ()  # upstream Fixture tags
     wall_refs: tuple[str | None, ...] | None = None  # host wall per segment
     wall_ref: str | None = None  # sugar: every segment hosted by this one wall

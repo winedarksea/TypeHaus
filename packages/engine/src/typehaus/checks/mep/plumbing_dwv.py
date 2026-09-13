@@ -25,14 +25,22 @@ from typehaus.findings import Finding
 from typehaus.model.enums import Service
 from typehaus.model.mep import VentRun
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_slope import (
+    minimum_drain_slope_in_per_ft,
+    reduced_slope_approval_is_valid,
+)
 from typehaus.resolve.vent_termination import (
     VENT_TERMINATION_CLEARANCE_M,
     derived_termination_elevation,
 )
 
-_MIN_SLOPE_SMALL_IN_PER_FT = 0.25  # <= 3" diameter
-_MIN_SLOPE_LARGE_IN_PER_FT = 0.125  # > 3" diameter
-_LARGE_DIAMETER_M = 0.0762  # 3"
+#: The document that governs a drain's grade in Minnesota. NOT IRC P3005.3 — Minn. R.
+#: 1309.0010 subp. 3.D deletes IRC chapters 25-33, and P3005 is in chapter 30.
+#: ``mep.drain_slope`` is ``Tier.CODE`` and emitted no ``code_ref`` at all before this,
+#: a latent ``test_permit_coverage.py`` failure waiting for a house with drains to reach
+#: the starter fixture.
+_UPC_CODE = "MN Plumbing Code (ch. 4714) 708.0"
+
 # A hand-authored termination is a dimension a builder reads off the plan set, so it only
 # has to agree with the derived plane to within the 1" the elevation is drawn at.
 _TERMINATION_TOLERANCE_M = 0.0254  # 1"
@@ -43,13 +51,30 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
     """Per-segment where the run carries a routed 3D path; whole-run for legacy inverts.
 
     Vertical drops (zero plan length) are exempt — a stack has no slope to hold. A
-    reverse-sloped segment is called out as such, not just as "below minimum"."""
+    reverse-sloped segment is called out as such, not just as "below minimum".
+
+    **The minimum is UPC 708.0's, not IRC P3005.3's**, and the two disagree: Minn. R.
+    1309.0010 subp. 3.D deletes IRC chapters 25-33, and 708.0 is 1/4" per foot at *every*
+    size. ``resolve/mep_slope.minimum_drain_slope_in_per_ft`` is the one owner of that rule
+    and of the sentence to cite for it, so this check and ``routing/gravity`` cannot reach
+    different answers about whether a route is feasible.
+    """
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
         if run.system != "drain":
             continue
-        minimum = (_MIN_SLOPE_SMALL_IN_PER_FT if run.diameter_m <= _LARGE_DIAMETER_M
-                  else _MIN_SLOPE_LARGE_IN_PER_FT)
+        approval = getattr(run, "reduced_slope_approval", None)
+        if not reduced_slope_approval_is_valid(run.diameter_m, approval):
+            out.append(_fail(
+                "mep.drain_slope",
+                f"pipe run {run.tag} authors a reduced-slope approval ({approval}) on "
+                f"{run.diameter_m / M_PER_IN:.2g}\" pipe, but UPC 708.0's exception reaches "
+                "only pipe 4\" and larger — there is nothing here a building official could "
+                "have approved", (run.tag,), code=_UPC_CODE,
+                fix="drop `reduced_slope_approval` and hold 1/4\"/ft, or, if the approval is "
+                    "real, check which pipe it was actually granted for"))
+            continue
+        minimum, citation = minimum_drain_slope_in_per_ft(run.diameter_m, approval)
         if run.z_m is not None and len(run.z_m) == len(run.path):
             worst: tuple[float, int] | None = None
             for i in range(len(run.path) - 1):
@@ -63,27 +88,31 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
             if worst is None:
                 out.append(_pass("mep.drain_slope",
                                  f"pipe run {run.tag} is all vertical drop — no "
-                                 "horizontal segment to hold slope", (run.tag,)))
+                                 "horizontal segment to hold slope", (run.tag,),
+                                 code=_UPC_CODE))
             elif worst[0] < -1e-9:
                 out.append(_fail(
                     "mep.drain_slope",
                     f"pipe run {run.tag} segment {worst[1]} slopes BACKWARD "
-                    f"({worst[0]:.3f}\"/ft) — water stands in it", (run.tag,)))
+                    f"({worst[0]:.3f}\"/ft) — water stands in it", (run.tag,),
+                    code=_UPC_CODE))
             elif worst[0] >= minimum - 1e-9:
                 out.append(_pass(
                     "mep.drain_slope",
                     f"pipe run {run.tag}: every segment holds >= {minimum}\"/ft "
-                    f"(flattest {worst[0]:.3f}\"/ft)", (run.tag,)))
+                    f"(flattest {worst[0]:.3f}\"/ft) — {citation}", (run.tag,),
+                    code=_UPC_CODE))
             else:
                 out.append(_fail(
                     "mep.drain_slope",
                     f"pipe run {run.tag} segment {worst[1]} slopes {worst[0]:.3f}\"/ft, "
-                    f"below the {minimum}\"/ft minimum", (run.tag,)))
+                    f"below the {minimum}\"/ft minimum — {citation}", (run.tag,),
+                    code=_UPC_CODE))
             continue
         if run.z_start_m is None or run.z_end_m is None or run.length_m <= 1e-9:
             out.append(_unknown(
                 "mep.drain_slope", f"pipe run {run.tag} has no authored inverts to check",
-                (run.tag,),
+                (run.tag,), code=_UPC_CODE,
             ))
             continue
         length_ft = run.length_m * 3.280839895
@@ -92,13 +121,13 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
             out.append(_pass(
                 "mep.drain_slope",
                 f"pipe run {run.tag} slopes {slope_in_per_ft:.3f}\"/ft (>= {minimum}\"/ft "
-                f"minimum)", (run.tag,),
+                f"minimum) — {citation}", (run.tag,), code=_UPC_CODE,
             ))
         else:
             out.append(_fail(
                 "mep.drain_slope",
                 f"pipe run {run.tag} slopes {slope_in_per_ft:.3f}\"/ft, below the "
-                f"{minimum}\"/ft minimum", (run.tag,),
+                f"{minimum}\"/ft minimum — {citation}", (run.tag,), code=_UPC_CODE,
             ))
     return out
 

@@ -100,7 +100,7 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
 _STOCK_ELBOW_DEG = (90.0, 45.0, 22.5)
 #: How far off a stock angle a *measured* turn may be and still be that fitting. This is the
 #: pitch a bend absorbs, not slop: a 1/4 bend taking a stack into a branch at 2"/ft measures
-#: 80.5°, not 90°, and 2"/ft is eight times IRC P3005.3's minimum. A trap arm dropping
+#: 80.5°, not 90°, and 2"/ft is eight times ch. 4714 (UPC) 708.0's minimum. A trap arm dropping
 #: steeper than that is genuinely not a stock elbow and says so.
 _STOCK_SNAP_DEG = 10.0
 #: Below this, a vertex is not a fitting at all — it is where a run changes grade, which is

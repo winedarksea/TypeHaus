@@ -303,10 +303,17 @@ MN_2020 = JurisdictionProfile(
         # Grouped, because they are two halves of one line on the reviewer's list and two
         # complements in the engine: `drain_slope` grades a run by its FLATTEST segment
         # (where the water stops) and `drain_offset_geometry` by its steepest (where the
-        # geometry stops being a fitting). P3005.3 governs both.
+        # geometry stops being a fitting).
+        #
+        # ** THE CITATION WAS IRC P3005.3 AND MINNESOTA DELETED IT. ** Minn. R. 1309.0010
+        # subp. 3.D strikes IRC chapters 25-33; P3005 is in chapter 30. The sizing and
+        # trap-arm items below already cite ch. 4714 correctly, so this line was the one
+        # place the profile disagreed with itself about which plumbing code applies.
+        # UPC 708.0 is 1/4"/ft at every size and 706.3 governs a change in direction.
         PermitItemSpec("Plumbing drain slope and offsets",
                        ("mep.drain_slope", "mep.drain_offset_geometry"),
-                       ("IRC P3005.3",)),
+                       ("MN Plumbing Code (ch. 4714) 708.0",
+                        "MN Plumbing Code (ch. 4714) 706.3")),
         # Every one of these plumbing checks answers a line a plan reviewer actually asks
         # about, so they go on the checklist rather than into the exclusion list — the
         # pour-day sleeve schedule most of all, since it is the one item that cannot be

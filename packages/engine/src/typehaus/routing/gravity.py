@@ -25,19 +25,21 @@ from dataclasses import dataclass
 
 from typehaus.quantities import M_PER_IN
 
-#: IRC P3005.3's minimum for pipe of 3" and under: 1/4" per foot. The larger-pipe row
-#: (1/8"/ft over 3") is ``mep.drain_slope``'s, and this module takes the governing minimum
-#: from the caller rather than re-deriving it, so the two rules cannot disagree about a
-#: diameter's grade.
-MIN_SLOPE_SMALL_IN_PER_FT = 0.25
-MIN_SLOPE_LARGE_IN_PER_FT = 0.125
-LARGE_DIAMETER_M = 0.0762  # 3"
-
-
 def minimum_slope(diameter_m: float) -> float:
-    """The grade this diameter must hold, in inches per foot of developed plan length."""
-    return (MIN_SLOPE_SMALL_IN_PER_FT if diameter_m <= LARGE_DIAMETER_M
-            else MIN_SLOPE_LARGE_IN_PER_FT)
+    """The grade this diameter must hold, in inches per foot of developed plan run.
+
+    **One owner, in ``resolve/mep_slope.py``**, which both this module and ``checks/`` may
+    import and which neither may reach through the other. The pair of numbers used to be
+    duplicated here and in ``mep.drain_slope``, and a router that disagreed with the verdict
+    about whether a route is feasible would be worse than either being wrong on its own.
+
+    The numbers themselves changed with that move: this module cited IRC P3005.3's two-row
+    table, and Minn. R. 1309.0010 subp. 3.D deletes IRC chapters 25-33. UPC 708.0 is 1/4"
+    per foot at every size, so there is no larger-pipe row to take.
+    """
+    from typehaus.resolve.mep_slope import minimum_drain_slope_in_per_ft
+
+    return minimum_drain_slope_in_per_ft(diameter_m)[0]
 
 
 @dataclass(frozen=True)
@@ -156,7 +158,7 @@ def developed_lengths(points: Sequence[tuple[float, ...]]) -> list[float]:
     """Cumulative developed **plan** length at each vertex, in feet.
 
     Plan and not 3-D, because that is the datum every slope rule in this engine measures
-    against — ``mep.drain_slope``, ``resolve/mep_slope`` and IRC P3005.3 alike. A vertical
+    against — ``mep.drain_slope``, ``resolve/mep_slope`` and UPC 708.0 alike. A vertical
     leg contributes nothing, which is the arithmetic reason a stack has no slope to hold.
     """
     out = [0.0]
